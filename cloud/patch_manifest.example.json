@@ -1,0 +1,20 @@
+{
+  "task_id": "task_002",
+  "mode": "SAFE_PATCH",
+  "round": 1,
+  "description": "UA-0009 card markup fix, single file, no production publication",
+  "patch_dir": "cloud/patches/task_002",
+  "allowed_files": [
+    "site/cards/UA-0009.html"
+  ],
+  "expected_tests": [
+    "html_wellformed",
+    "json_valid"
+  ],
+  "rollback_source": "auto_backup",
+  "sandbox_scope": "targets",
+  "ua_0009": true,
+  "owner_visual_check": true,
+  "created_by": "cloud",
+  "created_at": "2026-08-25T00:00:00Z"
+}
