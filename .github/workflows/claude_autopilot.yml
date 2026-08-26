@@ -1,0 +1,41 @@
+name: Claude Autopilot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tasks/**'
+      - 'CLAUDE.md'
+      - 'automation/claude_worker.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: claude-autopilot
+  cancel-in-progress: false
+
+jobs:
+  run-claude:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run autonomous Claude worker
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+        run: python3 automation/claude_worker.py
+      - name: Commit Claude outputs
+        run: |
+          if git diff --quiet -- cloud/; then
+            echo 'No cloud changes'
+            exit 0
+          fi
+          git config user.name 'ua-art-claude-worker'
+          git config user.email 'actions@users.noreply.github.com'
+          git add cloud/
+          git commit -m 'Claude autopilot: process latest task'
+          git push origin HEAD:main
