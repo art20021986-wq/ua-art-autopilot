@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# UA ART autonomous Claude bridge: GitHub task -> Claude API -> cloud outputs
 import json, os, pathlib, re, subprocess, sys, urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
