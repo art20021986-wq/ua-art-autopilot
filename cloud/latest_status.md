@@ -1,10 +1,10 @@
-TASK_ID: task_003
+TASK_ID: task_004
 ROUND: 1
 CLAUDE_STATUS: DONE
-CURRENT_ACTION: Autonomous Claude workflow completed; the read-only UA-0009 release-gate probe, specification, and report were generated, statically checked, and committed without production access.
-FILES_CREATED: cloud/ua0009_release_probe.py, cloud/ua0009_release_report_spec.md, cloud/cloud_report_003.md, cloud/latest_status.md
+CURRENT_ACTION: Delivered a stdlib-only, statically-reviewed PythonAnywhere launcher that read-only-resolves the UA-0009 duplicate-count ambiguity and builds an isolated, non-production sandbox draft card/diagnostics page for owner visual review; publication remains blocked.
+FILES_CREATED: cloud/ua0009_task004_launcher.py, cloud/ua0009_task004_spec.md, cloud/cloud_report_004.md
 PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: NO
-OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Inspect the existing PythonAnywhere UA-0009 release-gate evidence, reconcile it with the generated probe, and issue the next strictly read-only or sandbox task. Do not publish UA-0009 and do not modify production until the duplicate and missing-field findings are resolved.
-UPDATED_AT_UTC: 2026-08-26T12:58:00+00:00
+OWNER_ACTION_REQUIRED: YES
+OWNER_QUESTION: Please have an authorized operator run cloud/ua0009_task004_launcher.py on PythonAnywhere and share the resulting /home/Carix/video/ua0009_task004.txt final block plus a visual check of the generated sandbox card; only then supply any fields still listed as UA0009_OWNER_INPUT_REQUIRED (expected at most: transmission, drivetrain, color, price, stage).
+NEXT_FOR_CHATGPT: Arrange execution of cloud/ua0009_task004_launcher.py on PythonAnywhere, review the duplicate classification and sandbox output, and confirm whether the release gate can be turned green before any CRITICAL publish step for UA-0009 is considered.
+UPDATED_AT_UTC: 2025-05-30T00:00:00Z
