@@ -7,6 +7,7 @@ on:
       - 'tasks/**'
       - 'CLAUDE.md'
       - 'automation/claude_worker.py'
+      - '.github/workflows/claude_autopilot.yml'
   workflow_dispatch:
 
 permissions:
@@ -30,12 +31,12 @@ jobs:
         run: python3 automation/claude_worker.py
       - name: Commit Claude outputs
         run: |
-          if git diff --quiet -- cloud/; then
+          git add -A -- cloud/
+          if git diff --cached --quiet -- cloud/; then
             echo 'No cloud changes'
             exit 0
           fi
           git config user.name 'ua-art-claude-worker'
           git config user.email 'actions@users.noreply.github.com'
-          git add cloud/
           git commit -m 'Claude autopilot: process latest task'
           git push origin HEAD:main
