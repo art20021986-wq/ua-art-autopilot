@@ -1,10 +1,10 @@
 TASK_ID: task_006
 ROUND: 1
 CLAUDE_STATUS: DONE
-CURRENT_ACTION: Delivered universal read-only new-card factory gate replacing per-card task cycle for UA-0009, UA-0010, and future cards
+CURRENT_ACTION: Universal read-only card factory gate is ready for UA-0009, UA-0010, and future UA-XXXX cards.
 FILES_CREATED: cloud/uaart_card_factory_gate.py, cloud/uaart_card_factory_spec.md, cloud/uaart_card_factory_morning.md, cloud/cloud_report_006.md
 PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: NO
-OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Ask owner to run the 5-step morning instruction on PythonAnywhere with UA-0009 and UA-0010, then review /home/Carix/video/uaart_card_factory_report.txt before any visual check or CRITICAL publication approval.
-UPDATED_AT_UTC: 2025-06-15T00:00:00+00:00
+OWNER_ACTION_REQUIRED: YES
+OWNER_QUESTION: Run /home/Carix/uaart_card_factory_gate.py once on PythonAnywhere and return /home/Carix/video/uaart_card_factory_report.txt.
+NEXT_FOR_CHATGPT: Review the live report, show only missing vehicle data, then prepare the separate visual approval and CRITICAL publication step.
+UPDATED_AT_UTC: 2026-08-26T19:05:00Z
