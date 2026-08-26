@@ -1,10 +1,10 @@
-TASK_ID: task_004
+TASK_ID: task_005
 ROUND: 1
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Delivered a stdlib-only, statically-reviewed PythonAnywhere launcher that read-only-resolves the UA-0009 duplicate-count ambiguity and builds an isolated, non-production sandbox draft card/diagnostics page for owner visual review; publication remains blocked.
-FILES_CREATED: cloud/ua0009_task004_launcher.py, cloud/ua0009_task004_spec.md, cloud/cloud_report_004.md
+CLAUDE_STATUS: WAITING_OWNER
+CURRENT_ACTION: Delivered hardened ua0009_finish_runner.py plus spec, morning instructions, and publication plan; no code was executed against live PythonAnywhere/crm.db from this environment.
+FILES_CREATED: cloud/ua0009_finish_runner.py, cloud/ua0009_finish_spec.md, cloud/ua0009_morning_instructions.md, cloud/ua0009_publication_plan.md, cloud/cloud_report_005.md
 PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Please have an authorized operator run cloud/ua0009_task004_launcher.py on PythonAnywhere and share the resulting /home/Carix/video/ua0009_task004.txt final block plus a visual check of the generated sandbox card; only then supply any fields still listed as UA0009_OWNER_INPUT_REQUIRED (expected at most: transmission, drivetrain, color, price, stage).
-NEXT_FOR_CHATGPT: Arrange execution of cloud/ua0009_task004_launcher.py on PythonAnywhere, review the duplicate classification and sandbox output, and confirm whether the release gate can be turned green before any CRITICAL publish step for UA-0009 is considered.
-UPDATED_AT_UTC: 2025-05-30T00:00:00Z
+OWNER_QUESTION: Please run cloud/ua0009_finish_runner.py once on PythonAnywhere per cloud/ua0009_morning_instructions.md and share the resulting ua0009_finish_report.json/.txt; no other action is needed yet.
+NEXT_FOR_CHATGPT: Wait for the real ua0009_finish_report.json from PythonAnywhere; use it (not state/current_status.md) as the live source of truth, then decide whether to request owner-missing fields or proceed to the visual YES/NO step.
+UPDATED_AT_UTC: 2025-06-20T15:30:00Z
