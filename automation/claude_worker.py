@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import datetime as dt
+import http.client
 import json
 import os
 import pathlib
 import re
 import tempfile
+import time
 import urllib.error
 import urllib.request
 
@@ -227,20 +229,40 @@ def call_claude(system_text: str, task_text: str) -> dict:
         method="POST",
     )
 
-    try:
-        with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
-            request_id = response.headers.get("request-id", "NONE")
-            data = json.load(response)
-    except urllib.error.HTTPError as exc:
-        raise SystemExit(_http_error_message(exc)) from exc
-    except urllib.error.URLError as exc:
-        raise SystemExit(
-            f"ANTHROPIC_NETWORK_ERROR:{_clean_log_value(exc.reason)}"
-        ) from exc
-    except TimeoutError as exc:
-        raise SystemExit("ANTHROPIC_TIMEOUT") from exc
-    except json.JSONDecodeError as exc:
-        raise SystemExit("ANTHROPIC_RESPONSE_NOT_JSON") from exc
+    transient_error = None
+    for attempt in range(1, 4):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+                request_id = response.headers.get("request-id", "NONE")
+                data = json.load(response)
+            transient_error = None
+            break
+        except urllib.error.HTTPError as exc:
+            raise SystemExit(_http_error_message(exc)) from exc
+        except json.JSONDecodeError as exc:
+            raise SystemExit("ANTHROPIC_RESPONSE_NOT_JSON") from exc
+        except (
+            urllib.error.URLError,
+            TimeoutError,
+            http.client.RemoteDisconnected,
+            ConnectionResetError,
+        ) as exc:
+            transient_error = exc
+            if attempt >= 3:
+                reason = getattr(exc, "reason", exc)
+                raise SystemExit(
+                    f"ANTHROPIC_NETWORK_ERROR_AFTER_RETRIES:"
+                    f"{_clean_log_value(reason)}"
+                ) from exc
+            delay = 2 ** attempt
+            print(
+                f"ANTHROPIC_TRANSIENT_RETRY attempt={attempt}/3 "
+                f"delay_seconds={delay} "
+                f"error={_clean_log_value(exc)}"
+            )
+            time.sleep(delay)
+    if transient_error is not None:
+        raise SystemExit("ANTHROPIC_NETWORK_ERROR_AFTER_RETRIES")
 
     content = data.get("content", []) if isinstance(data, dict) else []
     if not isinstance(content, list):
