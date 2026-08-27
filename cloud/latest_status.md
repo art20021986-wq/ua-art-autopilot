@@ -1,12 +1,16 @@
-TASK_ID: task_043
+TASK_ID: task_046
 ROUND: 1
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Corrected TASK 042 defects with a contextual HTML/text transform, a hardened fail-closed read-only discovery tool, an isolated atomic Gate A builder, an offline-testable PythonAnywhere controller, and a disabled workflow template; delivered under cloud/task_043_ferry_wording/. No real PythonAnywhere execution occurred in this round.
-FILES_CREATED: cloud/task_043_ferry_wording/README.md, cloud/task_043_ferry_wording/transform.py, cloud/task_043_ferry_wording/discover.py, cloud/task_043_ferry_wording/gate_a.py, cloud/task_043_ferry_wording/controller.py, cloud/task_043_ferry_wording/workflow_template.yml, cloud/task_043_ferry_wording/tests/test_transform.py, cloud/task_043_ferry_wording/tests/test_discover.py, cloud/task_043_ferry_wording/tests/test_gate_a.py, cloud/task_043_ferry_wording/tests/test_controller.py, cloud/task_043_ferry_wording/run_tests.py, cloud/task_043_ferry_wording/TASK_043_REPORT.md, cloud/task_043_ferry_wording/AUDIT_RESPONSE_TABLE.md, cloud/task_043_ferry_wording/OPERATOR_INSTRUCTIONS.md, cloud/task_043_ferry_wording/ROLLBACK_AND_GATE_B_PLAN.md
+CLAUDE_STATUS: PARTIAL_TASK_046_AST_SQLITE_READY_FOR_CONTROLLER_AUDIT
+CURRENT_ACTION: Fixed rebuild-AST transform (parent-aware Expr/Return handling) and SQLite ownership transform (conn.execute cursor discovery, guarded close order, timeout, tuple materialization) per TASK 041 controller root causes; launcher/orchestrator intentionally deferred.
+FILES_CREATED: cloud/crm_speed_optimization/candidate_transforms.py, cloud/crm_speed_optimization/sqlite_ownership.py, cloud/crm_speed_optimization/test_task_046_ast_sqlite.py, cloud/crm_speed_optimization/TASK_046_REPORT.md
 PRODUCTION_TOUCHED: NO
+CRM_TOUCHED: NO
+GATE_A_EXECUTED: NO
+UA_0009_PUBLISHED: NO
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Independently run cloud/task_043_ferry_wording/run_tests.py, audit controller.py and workflow_template.yml for real PythonAnywhere wiring, and only after that audit authorize a real read-only discovery run. Finish state is READY_FOR_CODEX_CONTROLLER_AUDIT. UA0009_SAFE_TO_PUBLISH remains NO. CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c. MEMORY_VERSION_READ: 4.
-UPDATED_AT_UTC: 2026-08-27T20:43:49Z
-MEMORY_VERSION_READ: 4
+NEXT_FOR_CHATGPT: Run `python3 -m py_compile cloud/crm_speed_optimization/*.py` and `python3 -m unittest discover -v -s cloud/crm_speed_optimization -p 'test*.py'` offline; merge these two files against the real main-branch baseline (byte-diff Section 2 / UA-0009 evidence API in sqlite_ownership.py, which was not visible in this bounded context, per the disclosure in TASK_046_REPORT.md); then run full discovery (not just the new focused file) before considering any Gate A step; open TASK 047 (or next free number) for launcher relocation and the Gate A orchestrator, which are intentionally out of scope here.
+UPDATED_AT_UTC: 2026-08-27T21:12:08Z
+
 CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+MEMORY_VERSION_READ: 4
