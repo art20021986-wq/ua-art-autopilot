@@ -1,0 +1,41 @@
+{
+  "already_applied": false,
+  "candidate_path": "/home/Carix/autopilot_inbox/cloud/bot_logistics/task049_cars_ui.py.candidate",
+  "candidate_sha256": "3c6f12227e45a3ba936d48d4a12435378045e879fea481def04f3378f6a0f12f",
+  "candidate_size": 132247,
+  "checks": {
+    "card_entry": 1,
+    "compiled": true,
+    "editor_entry": 1,
+    "hub_container_action": 1,
+    "hub_days_action": 1,
+    "hub_handler_registration": 1,
+    "hub_outer_labels": 2,
+    "hub_stage_action": 1,
+    "old_delivery_button": 0,
+    "old_editor_container": 0,
+    "old_editor_days": 0,
+    "old_post_stage_button": 0
+  },
+  "crm_write": false,
+  "db_write": false,
+  "errors": [],
+  "gate_b_executed": false,
+  "mode": "GATE_A_ISOLATED_CANDIDATE",
+  "operations": [
+    "centralize_card_keyboard",
+    "remove_logistics_from_editor_grid",
+    "add_editor_hub_entry",
+    "rename_eta_field_label",
+    "remove_post_stage_delivery_button",
+    "insert_logistics_hub",
+    "register_logistics_hub"
+  ],
+  "production_write": false,
+  "service_reload": false,
+  "source_path": "/home/Carix/cars_ui.py",
+  "source_sha256": "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7",
+  "status": "PASS",
+  "task_id": "task_049",
+  "ua0009_published": false
+}
