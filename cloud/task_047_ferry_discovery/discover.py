@@ -1,15 +1,12 @@
-"""
-discover.py -- TASK 052 baseline-restored ferry discovery.
+"""TASK 053 — Bounded, fail-closed, read-only discovery.
 
-Restores the TASK 047 safe-read contract (lstat regular/nlink==1, O_NOFOLLOW,
-fstat before/after identity, bounded read with oversize/TOCTOU BLOCK, full
-SHA256) and the fixed /home/Carix registry, and adds the TASK 049 verified
-CRM schema (table cars, identity auto_number, container sea_container).
+No production write. No CRM write. No Gate A/B execution. Reads only,
+from a fixed registry, under a single base directory. Missing files are
+reported honestly, never fabricated.
 
-No PythonAnywhere execution occurs from this module. The CLI never accepts an
-arbitrary path argument; only test code may inject a temp root explicitly.
+The CLI root is fixed at /home/Carix. Tests can inject a temporary base only
+through function parameters; environment variables cannot retarget the CLI.
 """
-from __future__ import annotations
 
 import ast
 import hashlib
@@ -18,332 +15,494 @@ import os
 import re
 import sqlite3
 import stat
-from pathlib import Path
-from typing import Optional
+import sys
+from typing import Dict, List, Optional, Tuple
 
 import transform
 
-DEFAULT_ROOT = Path("/home/Carix")
+BASE_DIR = "/home/Carix"
 
-HTML_CORE_PAGES = [
-    "video/index.html",
-    "video/katalog.html",
-    "video/info.html",
-    "video/podbor.html",
-]
+MAX_SIZE = 20 * 1024 * 1024  # 20 MiB bound for a single file read
+MAX_DB_SIZE = 512 * 1024 * 1024
 
-UA_CARD_PAGES = [f"video/UA-{i:04d}.html" for i in range(1, 10)]
+UA_IDS = tuple("UA-%04d" % i for i in range(1, 10))
 
-PY_MODULES = [
-    "stranica.py", "yadro.py", "master_card.py", "cars_ui.py",
-    "team_bot.py", "avtoperedacha.py", "db.py", "run_all.py", "start_safe.py",
-]
+REGISTRY: Dict[str, List[str]] = {
+    "video_pages": [
+        "video/index.html", "video/katalog.html", "video/info.html", "video/podbor.html",
+    ] + ["video/UA-%04d.html" % i for i in range(1, 10)],
+    "site_pages": [
+        "site/index.html", "site/katalog.html", "site/info.html", "site/podbor.html",
+    ] + ["site/UA-%04d.html" % i for i in range(1, 10)],
+    "diag_track_candidates": (
+        ["video/UA-%04d-diag.html" % i for i in range(1, 10)]
+        + ["video/UA-%04d-track.html" % i for i in range(1, 10)]
+    ),
+    "python_modules": [
+        "stranica.py", "yadro.py", "master_card.py", "cars_ui.py", "team_bot.py",
+        "avtoperedacha.py", "db.py", "run_all.py", "start_safe.py",
+    ],
+    "database": ["crm.db"],
+}
 
-DB_FILE_NAME = "crm.db"
+PRIMARY_TABLE = "cars"
+PRIMARY_ID_COLUMN = "auto_number"
+ID_COLUMN_ALIASES = ("ua_id", "catalog_id", "id", "code")
+PRIMARY_CONTAINER_COLUMN = "sea_container"
+CONTAINER_COLUMN_ALIASES = ("container",)
+SANITIZED_OUTPUT_COLUMNS = {
+    "stage", "status", "sea_container", "container", "tracking",
+    "diagnostics", "cta",
+}
 
-REQUIRED_UA_IDS = [f"UA-{i:04d}" for i in range(1, 10)]
-
-SECRET_PATTERNS = [
-    re.compile(p, re.IGNORECASE) for p in [
-        r'password\s*[:=]\s*\S+',
-        r'api[_-]?key\s*[:=]\s*\S+',
-        r'secret\s*[:=]\s*\S+',
-        r'token\s*[:=]\s*\S+',
-        r'AKIA[0-9A-Z]{16}',
-        r'-----BEGIN [A-Z ]*PRIVATE KEY-----',
-    ]
-]
-
-
-def redact_text(s: str) -> str:
-    for pat in SECRET_PATTERNS:
-        s = pat.sub("[REDACTED]", s)
-    return s
-
-
-def redact_obj(obj):
-    if isinstance(obj, str):
-        return redact_text(obj)
-    if isinstance(obj, dict):
-        return {k: redact_obj(v) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [redact_obj(v) for v in obj]
-    return obj
+SECRET_RE = re.compile(
+    r"(?i)([\"']?\b(?:secret|token|password|api[-_]?key|authorization|"
+    r"private[-_]?key|credential)\b[\"']?\s*[:=]\s*[\"']?)"
+    r"([^\"'\s,}]+)"
+)
 
 
-def _path_has_symlink_ancestor(path: Path, root: Path) -> bool:
-    p = path
-    while True:
-        if p.is_symlink() and p != path:
-            return True
-        if p == root or p == p.parent:
-            break
-        p = p.parent
-    return False
+class _PathIssue(Exception):
+    def __init__(self, kind: str, reason: str) -> None:
+        self.kind = kind
+        self.reason = reason
+        super().__init__(reason)
 
 
-def safe_read_file(path: Path, root: Path, max_bytes: int = 5_000_000):
-    """Verified, non-following, bounded read. Returns (meta, data_or_None).
+def _resolve_contained_path(base_dir: str, rel_path: str) -> str:
+    base_real = os.path.realpath(base_dir)
+    rel_norm = os.path.normpath(rel_path)
+    parts = rel_norm.split(os.sep)
+    if os.path.isabs(rel_norm) or parts[0] == "..":
+        raise _PathIssue("BLOCKED", "PATH_ESCAPE_RELATIVE")
+    cur_path = base_dir
+    for part in parts[:-1]:
+        cur_path = os.path.join(cur_path, part)
+        if os.path.islink(cur_path):
+            raise _PathIssue("BLOCKED", "SYMLINK_PARENT")
+        if not os.path.isdir(cur_path):
+            raise _PathIssue("MISSING", "MISSING_PARENT_DIR")
+    full = os.path.join(cur_path, parts[-1])
+    full_real = os.path.realpath(full)
+    try:
+        common = os.path.commonpath([base_real, full_real])
+    except ValueError:
+        raise _PathIssue("BLOCKED", "PATH_ESCAPE_DIFFERENT_ROOT")
+    if common != base_real:
+        raise _PathIssue("BLOCKED", "PATH_ESCAPE")
+    return full
 
-    meta["status"] is OK or BLOCKED; meta["reason"] explains BLOCKED.
+
+def _safe_read_file_bytes(
+    base_dir: str,
+    rel_path: str,
+    require_utf8: bool = True,
+    max_size: Optional[int] = None,
+) -> Tuple[dict, Optional[bytes]]:
+    """Return verified metadata and the exact bytes from the verified fd.
+
+    Raw bytes are internal-only. Public receipts use safe_read_file(), which
+    returns metadata without ever serializing file content.
     """
-    result = {"path": str(path), "status": "BLOCKED", "reason": None}
+    if max_size is None:
+        max_size = MAX_SIZE
     try:
-        resolved = path.resolve(strict=False)
-        root_resolved = root.resolve(strict=False)
-        resolved.relative_to(root_resolved)
-    except Exception:
-        result["reason"] = "OUTSIDE_ROOT_OR_RESOLVE_FAILED"
-        return result, None
-
-    if _path_has_symlink_ancestor(path, root):
-        result["reason"] = "SYMLINK_IN_PATH"
-        return result, None
+        full = _resolve_contained_path(base_dir, rel_path)
+    except _PathIssue as exc:
+        if exc.kind == "MISSING":
+            return {"status": "MISSING", "path": rel_path}, None
+        return {"status": "BLOCKED", "reason": exc.reason, "path": rel_path}, None
 
     try:
-        st_before = os.lstat(path)
+        st_l = os.lstat(full)
     except FileNotFoundError:
-        result["reason"] = "MISSING"
-        return result, None
-    except OSError:
-        result["reason"] = "LSTAT_FAILED"
-        return result, None
+        return {"status": "MISSING", "path": rel_path}, None
+    except OSError as exc:
+        return {"status": "BLOCKED", "reason": "LSTAT_FAILED:%s" % exc, "path": rel_path}, None
 
-    if not stat.S_ISREG(st_before.st_mode):
-        result["reason"] = "NOT_REGULAR"
-        return result, None
-    if st_before.st_nlink != 1:
-        result["reason"] = "NLINK_NOT_ONE"
-        return result, None
+    if stat.S_ISLNK(st_l.st_mode):
+        return {"status": "BLOCKED", "reason": "SYMLINK_FINAL", "path": rel_path}, None
+    if not stat.S_ISREG(st_l.st_mode):
+        return {"status": "BLOCKED", "reason": "NOT_REGULAR_FILE", "path": rel_path}, None
+    if st_l.st_nlink != 1:
+        return {"status": "BLOCKED", "reason": "HARDLINK_DETECTED", "path": rel_path}, None
 
     flags = os.O_RDONLY
     if hasattr(os, "O_NOFOLLOW"):
         flags |= os.O_NOFOLLOW
     try:
-        fd = os.open(path, flags)
-    except OSError:
-        result["reason"] = "OPEN_FAILED"
-        return result, None
+        fd = os.open(full, flags)
+    except OSError as exc:
+        return {"status": "BLOCKED", "reason": "OPEN_FAILED:%s" % exc, "path": rel_path}, None
 
     try:
-        fst1 = os.fstat(fd)
-        if (fst1.st_dev, fst1.st_ino) != (st_before.st_dev, st_before.st_ino):
-            result["reason"] = "IDENTITY_MISMATCH"
-            return result, None
+        st_before = os.fstat(fd)
+        identity_before = (
+            st_before.st_dev, st_before.st_ino, st_before.st_size, st_before.st_mtime_ns,
+        )
+        identity_lstat = (st_l.st_dev, st_l.st_ino, st_l.st_size, st_l.st_mtime_ns)
+        if identity_before != identity_lstat:
+            return {"status": "BLOCKED", "reason": "TOCTOU_MISMATCH", "path": rel_path}, None
+        if st_before.st_size > max_size:
+            return {"status": "BLOCKED", "reason": "OVERSIZE", "path": rel_path}, None
 
-        data = bytearray()
-        while True:
-            chunk = os.read(fd, 65536)
+        chunks: List[bytes] = []
+        remaining = st_before.st_size
+        while remaining > 0:
+            chunk = os.read(fd, min(65536, remaining))
             if not chunk:
-                break
-            data.extend(chunk)
-            if len(data) > max_bytes:
-                result["reason"] = "OVERSIZE"
-                return result, None
+                return {"status": "BLOCKED", "reason": "TRUNCATED_READ", "path": rel_path}, None
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        if os.read(fd, 1):
+            return {
+                "status": "BLOCKED", "reason": "SIZE_CHANGED_DURING_READ", "path": rel_path,
+            }, None
 
-        fst2 = os.fstat(fd)
-        if (fst2.st_dev, fst2.st_ino, fst2.st_size, fst2.st_mtime_ns) != (
-            fst1.st_dev, fst1.st_ino, fst1.st_size, fst1.st_mtime_ns
-        ):
-            result["reason"] = "CHANGED_DURING_READ"
-            return result, None
-        if len(data) != fst2.st_size:
-            result["reason"] = "SIZE_MISMATCH"
-            return result, None
+        st_after = os.fstat(fd)
+        identity_after = (
+            st_after.st_dev, st_after.st_ino, st_after.st_size, st_after.st_mtime_ns,
+        )
+        if identity_after != identity_before:
+            return {"status": "BLOCKED", "reason": "TOCTOU_AFTER_READ", "path": rel_path}, None
     finally:
         os.close(fd)
 
-    sha = hashlib.sha256(bytes(data)).hexdigest()
-    result.update({
-        "status": "OK",
-        "reason": None,
-        "sha256": sha,
-        "size": fst2.st_size,
-        "dev": fst2.st_dev,
-        "inode": fst2.st_ino,
-        "mtime_ns": fst2.st_mtime_ns,
-    })
-    return result, bytes(data)
-
-
-def check_crm(db_path: Path):
-    receipt = {"status": "BLOCKED", "reason": None}
-    if not db_path.exists():
-        receipt["reason"] = "DB_MISSING"
-        return receipt
-    try:
-        st1 = os.lstat(db_path)
-    except OSError:
-        receipt["reason"] = "LSTAT_FAILED"
-        return receipt
-
-    uri = f"file:{db_path.as_posix()}?mode=ro"
-    try:
-        conn = sqlite3.connect(uri, uri=True)
-        conn.execute("PRAGMA query_only=ON")
-        qc = conn.execute("PRAGMA quick_check").fetchone()
-        if not qc or qc[0] != "ok":
-            conn.close()
-            receipt["reason"] = "QUICK_CHECK_FAILED"
-            return receipt
-
-        cols = [r[1] for r in conn.execute("PRAGMA table_info(cars)").fetchall()]
-        if "auto_number" not in cols or "sea_container" not in cols:
-            conn.close()
-            receipt["reason"] = "SCHEMA_MISMATCH"
-            return receipt
-
-        placeholders = ",".join("?" * len(REQUIRED_UA_IDS))
-        rows = conn.execute(
-            f"SELECT auto_number, sea_container FROM cars WHERE auto_number IN ({placeholders})",
-            REQUIRED_UA_IDS,
-        ).fetchall()
-        conn.close()
-    except sqlite3.Error:
-        receipt["reason"] = "SQLITE_ERROR"
-        return receipt
-
-    st2 = os.lstat(db_path)
-    if (st1.st_dev, st1.st_ino, st1.st_size, st1.st_mtime_ns) != (
-        st2.st_dev, st2.st_ino, st2.st_size, st2.st_mtime_ns
-    ):
-        receipt["reason"] = "DB_CHANGED"
-        return receipt
-
-    found_ids = [r[0] for r in rows]
-    found_set = set(found_ids)
-    missing = [i for i in REQUIRED_UA_IDS if i not in found_set]
-    duplicates = len(found_ids) != len(found_set)
-
-    if missing:
-        receipt["reason"] = "MISSING_IDS"
-        receipt["missing"] = missing
-        return receipt
-    if duplicates:
-        receipt["reason"] = "DUPLICATE_IDS"
-        return receipt
-
-    receipt["status"] = "PASS"
-    receipt["ids_found"] = sorted(found_set)
-    return receipt
-
-
-def run_discovery(root: Path, db_path: Optional[Path] = None) -> dict:
-    root = Path(root)
-    if db_path is None:
-        db_path = root / DB_FILE_NAME
-
-    if not str(root) or not root.exists():
-        return {
-            "status": "BLOCKED", "reason": "ROOT_MISSING", "root": str(root),
-            "markers": _markers(),
-        }
-
-    required_core = list(HTML_CORE_PAGES) + list(UA_CARD_PAGES)
-    html_results = {}
-    missing_core = []
-    total_source_occurrences = 0
-    ambiguous_targets = []
-
-    for rel in required_core:
-        p = root / rel
-        meta, data = safe_read_file(p, root, max_bytes=5_000_000)
-        if meta["status"] != "OK":
-            missing_core.append(rel)
-            html_results[rel] = meta
-            continue
+    data = b"".join(chunks)
+    if require_utf8:
         try:
-            text = data.decode("utf-8")
+            data.decode("utf-8", errors="strict")
         except UnicodeDecodeError:
-            meta["status"] = "BLOCKED"
-            meta["reason"] = "DECODE_ERROR"
-            missing_core.append(rel)
-            html_results[rel] = meta
-            continue
-        _new_text, report = transform.transform_html(text)
-        occ = len(report["changes"])
-        amb = report["ambiguous"]
-        total_source_occurrences += occ
-        if rel in UA_CARD_PAGES and amb:
-            ambiguous_targets.append(rel)
-        html_results[rel] = {
-            "status": "OK", "sha256": meta["sha256"], "size": meta["size"],
-            "changes": occ, "ambiguous": len(amb),
-        }
+            return {"status": "BLOCKED", "reason": "NON_UTF8", "path": rel_path}, None
 
-    py_results = {}
-    for rel in PY_MODULES:
-        p = root / rel
-        meta, data = safe_read_file(p, root, max_bytes=5_000_000)
-        if meta["status"] != "OK":
-            py_results[rel] = meta
-            continue
-        try:
-            src = data.decode("utf-8")
-            ast.parse(src)
-            parse_ok = True
-        except (UnicodeDecodeError, SyntaxError):
-            parse_ok = False
-        py_results[rel] = {
-            "status": "OK" if parse_ok else "BLOCKED",
-            "sha256": meta["sha256"], "size": meta["size"], "parse_ok": parse_ok,
-        }
-
-    crm = check_crm(db_path)
-
-    overall_status = "OK"
-    reasons = []
-    if missing_core:
-        overall_status = "BLOCKED"
-        reasons.append("MISSING_CORE_PAGES")
-    if crm["status"] != "PASS":
-        overall_status = "BLOCKED"
-        reasons.append("CRM_NOT_PASS")
-    if ambiguous_targets:
-        overall_status = "BLOCKED"
-        reasons.append("AMBIGUOUS_TARGET")
-    if total_source_occurrences == 0:
-        overall_status = "BLOCKED"
-        reasons.append("ZERO_OCCURRENCES")
-
-    receipt = {
-        "status": overall_status,
-        "reasons": reasons,
-        "root": str(root),
-        "html": html_results,
-        "python": py_results,
-        "crm": crm,
-        "total_source_occurrences": total_source_occurrences,
-        "ambiguous_targets": ambiguous_targets,
-        "markers": _markers(),
-    }
-    return receipt
-
-
-def _markers():
     return {
-        "PRODUCTION_TOUCHED": "NO",
-        "CRM_TOUCHED": "NO",
-        "CRM_DB_WRITTEN": "NO",
-        "GATE_B_EXECUTED": "NO",
+        "status": "OK", "path": rel_path,
+        "sha256": hashlib.sha256(data).hexdigest(), "size": len(data),
+        "mtime_ns": st_after.st_mtime_ns, "dev": st_after.st_dev,
+        "ino": st_after.st_ino,
+    }, data
+
+
+def safe_read_file(base_dir: str, rel_path: str) -> dict:
+    metadata, _data = _safe_read_file_bytes(base_dir, rel_path)
+    return metadata
+
+
+def discover_registry(base_dir: str = BASE_DIR) -> Dict[str, dict]:
+    results: Dict[str, dict] = {}
+    for _cat, files in REGISTRY.items():
+        for f in files:
+            results[f] = safe_read_file(base_dir, f)
+    return results
+
+
+def crm_readonly_summary(path: str) -> dict:
+    absolute = os.path.abspath(path)
+    db_base = os.path.dirname(absolute) or "."
+    db_rel = os.path.basename(absolute)
+    before, _raw = _safe_read_file_bytes(
+        db_base, db_rel, require_utf8=False, max_size=MAX_DB_SIZE,
+    )
+    if before["status"] == "MISSING":
+        return {"status": "MISSING", "path": path}
+    if before["status"] != "OK":
+        return {"status": "BLOCKED", "reason": "DB_%s" % before.get("reason", "READ_FAILED")}
+
+    outcome: dict
+    conn = None
+    try:
+        conn = sqlite3.connect("file:%s?mode=ro" % absolute, uri=True, timeout=2)
+        conn.execute("PRAGMA query_only=ON")
+        qc_row = conn.execute("PRAGMA quick_check").fetchone()
+        quick_check_ok = bool(qc_row) and qc_row[0] == "ok"
+        if not quick_check_ok:
+            outcome = {"status": "BLOCKED", "reason": "QUICK_CHECK_FAILED", "quick_check": False}
+        else:
+            tables = [row[0] for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()]
+            table = next((name for name in tables if name.lower() == PRIMARY_TABLE), None)
+            if table is None:
+                outcome = {
+                    "status": "BLOCKED", "reason": "AMBIGUOUS_SCHEMA_NO_TABLE",
+                    "quick_check": True,
+                }
+            else:
+                quoted_table = '"%s"' % table.replace('"', '""')
+                columns = [row[1] for row in conn.execute(
+                    "PRAGMA table_info(%s)" % quoted_table
+                ).fetchall()]
+                by_lower = {column.lower(): column for column in columns}
+
+                id_col = by_lower.get(PRIMARY_ID_COLUMN)
+                if id_col is None:
+                    id_aliases = [by_lower[name] for name in ID_COLUMN_ALIASES if name in by_lower]
+                    id_col = id_aliases[0] if len(id_aliases) == 1 else None
+
+                container_col = by_lower.get(PRIMARY_CONTAINER_COLUMN)
+                if container_col is None:
+                    container_aliases = [
+                        by_lower[name] for name in CONTAINER_COLUMN_ALIASES if name in by_lower
+                    ]
+                    container_col = container_aliases[0] if len(container_aliases) == 1 else None
+
+                if id_col is None or container_col is None:
+                    outcome = {
+                        "status": "BLOCKED", "reason": "AMBIGUOUS_SCHEMA_NO_ID_COLUMN",
+                        "quick_check": True,
+                    }
+                else:
+                    output_cols = [container_col]
+                    for lower_name, actual in sorted(by_lower.items()):
+                        if lower_name in SANITIZED_OUTPUT_COLUMNS and actual not in output_cols:
+                            output_cols.append(actual)
+                    selected = [id_col] + output_cols
+                    quoted_selected = ", ".join(
+                        '"%s"' % column.replace('"', '""') for column in selected
+                    )
+                    quoted_id = '"%s"' % id_col.replace('"', '""')
+                    placeholders = ",".join("?" for _ in UA_IDS)
+                    rows = conn.execute(
+                        "SELECT %s FROM %s WHERE %s IN (%s)" % (
+                            quoted_selected, quoted_table, quoted_id, placeholders,
+                        ),
+                        UA_IDS,
+                    ).fetchall()
+                    grouped: Dict[str, List[tuple]] = {ua: [] for ua in UA_IDS}
+                    for row in rows:
+                        if row[0] in grouped:
+                            grouped[row[0]].append(row)
+                    missing = [ua for ua, found in grouped.items() if not found]
+                    duplicate = [ua for ua, found in grouped.items() if len(found) != 1]
+                    if missing:
+                        outcome = {
+                            "status": "BLOCKED", "reason": "MISSING_IDS",
+                            "missing": missing, "quick_check": True,
+                        }
+                    elif duplicate:
+                        outcome = {
+                            "status": "BLOCKED", "reason": "DUPLICATE_IDS",
+                            "duplicates": duplicate, "quick_check": True,
+                        }
+                    else:
+                        results: Dict[str, Optional[dict]] = {}
+                        for ua in UA_IDS:
+                            row = grouped[ua][0]
+                            results[ua] = dict(zip(output_cols, row[1:]))
+                        outcome = {
+                            "status": "OK", "quick_check": True, "table": table,
+                            "id_column": id_col, "container_column": container_col,
+                            "results": results,
+                        }
+    except sqlite3.Error as exc:
+        outcome = {"status": "BLOCKED", "reason": "SQLITE_ERROR:%s" % exc}
+    finally:
+        if conn is not None:
+            conn.close()
+
+    after, _raw_after = _safe_read_file_bytes(
+        db_base, db_rel, require_utf8=False, max_size=MAX_DB_SIZE,
+    )
+    if after.get("status") != "OK":
+        return {"status": "BLOCKED", "reason": "DB_READ_AFTER_FAILED"}
+    identity_keys = ("dev", "ino", "size", "mtime_ns", "sha256")
+    if any(before.get(key) != after.get(key) for key in identity_keys):
+        return {"status": "BLOCKED", "reason": "IDENTITY_CHANGED_AFTER_READ"}
+    outcome["sha256"] = before["sha256"]
+    return outcome
+
+
+def _markers() -> dict:
+    return {
+        "PRODUCTION_TOUCHED": "NO", "CRM_TOUCHED": "NO",
+        "CRM_DB_WRITTEN": "NO", "GATE_B_EXECUTED": "NO",
         "UA_0009_PUBLISHED": "NO",
     }
 
 
+def _inventory_python_literals(source: str, rel_path: str) -> List[dict]:
+    occurrences: List[dict] = []
+    tree = ast.parse(source)
+    target_phrases = (
+        "В море · Корея → Грузия", "У морі · Корея → Грузія",
+        "В море", "У морі", "Море",
+    )
+
+    class Visitor(ast.NodeVisitor):
+        def __init__(self) -> None:
+            self.hints: List[str] = []
+
+        def visit_Assign(self, node: ast.Assign) -> None:
+            hints = [target.id for target in node.targets if isinstance(target, ast.Name)]
+            self.hints.append(hints[-1] if hints else "")
+            self.visit(node.value)
+            self.hints.pop()
+
+        def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+            hint = node.target.id if isinstance(node.target, ast.Name) else ""
+            self.hints.append(hint)
+            if node.value is not None:
+                self.visit(node.value)
+            self.hints.pop()
+
+        def visit_Constant(self, node: ast.Constant) -> None:
+            if not isinstance(node.value, str):
+                return
+            matched = next((phrase for phrase in target_phrases if phrase in node.value), None)
+            if matched is None:
+                return
+            hint = (self.hints[-1] if self.hints else "").upper()
+            if any(word in hint for word in ("ALIAS", "LEGACY", "INPUT_MAP")):
+                classification = "LEGACY_INPUT_ALIAS"
+            elif any(word in hint for word in ("LABEL", "TEXT", "STATUS", "STAGE", "HTML", "TEMPLATE")):
+                classification = "USER_FACING"
+            else:
+                classification = "AMBIGUOUS"
+            occurrences.append({
+                "path": rel_path, "line": getattr(node, "lineno", None),
+                "before": matched, "classification": classification,
+                "action": "PRESERVE",
+            })
+
+    Visitor().visit(tree)
+    return occurrences
+
+
+def run_discovery(base_dir: str = BASE_DIR) -> dict:
+    if not os.path.isdir(base_dir):
+        return {
+            "status": "BLOCKED", "reasons": ["ROOT_MISSING"],
+            "base_dir": base_dir, "markers": _markers(),
+        }
+
+    required_html = set(REGISTRY["video_pages"])
+    html_paths = (
+        REGISTRY["video_pages"] + REGISTRY["site_pages"]
+        + REGISTRY["diag_track_candidates"]
+    )
+    html_results: Dict[str, dict] = {}
+    missing_required: List[str] = []
+    ambiguous_required: List[str] = []
+    total_occurrences = 0
+
+    for rel_path in html_paths:
+        meta, raw = _safe_read_file_bytes(base_dir, rel_path)
+        if meta["status"] != "OK":
+            html_results[rel_path] = meta
+            if rel_path in required_html:
+                missing_required.append(rel_path)
+            continue
+        source = raw.decode("utf-8")
+        _preview, occurrences = transform.transform_document(source)
+        ambiguous = [item for item in occurrences if item.get("classification") == "AMBIGUOUS"]
+        total_occurrences += len(occurrences)
+        if rel_path in required_html and ambiguous:
+            ambiguous_required.append(rel_path)
+        html_results[rel_path] = {
+            "status": "OK", "sha256": meta["sha256"], "size": meta["size"],
+            "occurrences": len(occurrences), "ambiguous": len(ambiguous),
+        }
+
+    python_results: Dict[str, dict] = {}
+    python_blocked: List[str] = []
+    python_ambiguous: List[str] = []
+    for rel_path in REGISTRY["python_modules"]:
+        meta, raw = _safe_read_file_bytes(base_dir, rel_path)
+        if meta["status"] != "OK":
+            python_results[rel_path] = meta
+            python_blocked.append(rel_path)
+            continue
+        try:
+            source = raw.decode("utf-8")
+            occurrences = _inventory_python_literals(source, rel_path)
+        except (UnicodeDecodeError, SyntaxError):
+            python_results[rel_path] = {"status": "BLOCKED", "reason": "PARSE_FAILED"}
+            python_blocked.append(rel_path)
+            continue
+        ambiguous = [item for item in occurrences if item["classification"] == "AMBIGUOUS"]
+        total_occurrences += len(occurrences)
+        if ambiguous:
+            python_ambiguous.append(rel_path)
+        python_results[rel_path] = {
+            "status": "OK", "sha256": meta["sha256"], "size": meta["size"],
+            "occurrences": occurrences,
+        }
+
+    crm = crm_readonly_summary(os.path.join(base_dir, REGISTRY["database"][0]))
+    reasons: List[str] = []
+    if missing_required:
+        reasons.append("MISSING_CORE_PAGES")
+    if python_blocked:
+        reasons.append("PYTHON_SOURCES_BLOCKED")
+    if ambiguous_required or python_ambiguous:
+        reasons.append("AMBIGUOUS_TARGET")
+    if crm.get("status") != "OK":
+        reasons.append("CRM_NOT_PASS")
+    if total_occurrences == 0:
+        reasons.append("ZERO_OCCURRENCES")
+
+    return {
+        "status": "BLOCKED" if reasons else "OK", "reasons": reasons,
+        "base_dir": base_dir, "html": html_results, "python": python_results,
+        "crm": crm, "total_source_occurrences": total_occurrences,
+        "missing_required": missing_required,
+        "ambiguous_targets": sorted(set(ambiguous_required + python_ambiguous)),
+        "markers": _markers(),
+    }
+
+
+def discover_all(base_dir: str = BASE_DIR) -> dict:
+    return run_discovery(base_dir)
+
+
+def scan_for_secrets(serialized: str) -> bool:
+    return any(match.group(2) != "[REDACTED]" for match in SECRET_RE.finditer(serialized))
+
+
+def redact_secrets(serialized: str) -> str:
+    return SECRET_RE.sub(lambda match: match.group(1) + "[REDACTED]", serialized)
+
+
+def redact_obj(value):
+    if isinstance(value, str):
+        return redact_secrets(value)
+    if isinstance(value, list):
+        return [redact_obj(item) for item in value]
+    if isinstance(value, tuple):
+        return [redact_obj(item) for item in value]
+    if isinstance(value, dict):
+        redacted = {}
+        for key, item in value.items():
+            normalized = str(key).lower().replace("-", "_")
+            if normalized in {
+                "secret", "token", "password", "api_key", "authorization",
+                "private_key", "credential",
+            }:
+                redacted[key] = "[REDACTED]"
+            else:
+                redacted[key] = redact_obj(item)
+        return redacted
+    return value
+
+
 def serialize_receipt(receipt: dict) -> str:
-    redacted = redact_obj(receipt)
-    s = json.dumps(redacted, ensure_ascii=False, sort_keys=True)
-    for pat in SECRET_PATTERNS:
-        if pat.search(s):
-            minimal = {"status": "BLOCKED", "reason": "SECRET_LEAK_DETECTED"}
-            return json.dumps(minimal, ensure_ascii=False, sort_keys=True)
-    return s
+    serialized = json.dumps(redact_obj(receipt), ensure_ascii=False, sort_keys=True)
+    if scan_for_secrets(serialized):
+        return json.dumps(
+            {"status": "BLOCKED", "reason": "SECRET_LEAK_DETECTED"},
+            ensure_ascii=False, sort_keys=True,
+        )
+    return serialized
 
 
-def main():
-    receipt = run_discovery(DEFAULT_ROOT)
-    print(serialize_receipt(receipt))
+def main() -> int:
+    try:
+        receipt = run_discovery(BASE_DIR)
+    except Exception as exc:  # noqa: BLE001 - fail closed, single JSON, no traceback
+        receipt = {"status": "BLOCKED", "reason": "EXCEPTION:%s:%s" % (type(exc).__name__, exc)}
+    sys.stdout.write(serialize_receipt(receipt) + "\n")
+    return 0 if receipt.get("status") == "OK" else 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -1,184 +1,328 @@
+import os
+import sys
 import unittest
 
-import transform
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-RU_STATUS = "\u0412 \u043c\u043e\u0440\u0435"          # "\u0412 \u043c\u043e\u0440\u0435"
-RU_STATUS_NEW = "\u041d\u0430 \u043f\u0430\u0440\u043e\u043c\u0435"
-UK_STATUS = "\u0423 \u043c\u043e\u0440\u0456"
-UK_STATUS_NEW = "\u041d\u0430 \u043f\u043e\u0440\u043e\u043c\u0456"
-SHORT_RU = "\u041c\u043e\u0440\u0435"
-SHORT_RU_NEW = "\u041f\u0430\u0440\u043e\u043c"
+import transform  # noqa: E402
 
 
-class TransformBaselineTests(unittest.TestCase):
+class TestMappings(unittest.TestCase):
+    def test_ru_status(self):
+        html = '<span class="status-pill">В море</span>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, '<span class="status-pill">На пароме</span>')
+        self.assertEqual(len(occ), 1)
+        self.assertEqual(occ[0]["classification"], "USER_FACING_STATUS")
+        self.assertEqual(occ[0]["language"], "ru")
 
-    def test_ordinary_prose_preserved(self):
-        html = f"<p>\u0410\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044c {RU_STATUS} \u0443\u0436\u0435 20 \u0434\u043d\u0435\u0439</p>"
-        out, report = transform.transform_html(html)
+    def test_uk_status(self):
+        html = '<span class="status-pill">У морі</span>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, '<span class="status-pill">На поромі</span>')
+        self.assertEqual(occ[0]["language"], "uk")
+
+    def test_ru_long(self):
+        html = '<div class="route-long">В море · Корея → Грузия</div>'
+        out, _ = transform.transform_document(html)
+        self.assertEqual(out, '<div class="route-long">На пароме · Корея → Грузия</div>')
+
+    def test_uk_long(self):
+        html = '<div class="route-long">У морі · Корея → Грузія</div>'
+        out, _ = transform.transform_document(html)
+        self.assertEqual(out, '<div class="route-long">На поромі · Корея → Грузія</div>')
+
+    def test_ru_heading(self):
+        html = '<h2 class="route-heading">В море: Корея → Грузия</h2>'
+        out, _ = transform.transform_document(html)
+        self.assertEqual(out, '<h2 class="route-heading">На пароме: Корея → Грузия</h2>')
+
+    def test_uk_heading(self):
+        html = '<h2 class="route-heading">У морі: Корея → Грузія</h2>'
+        out, _ = transform.transform_document(html)
+        self.assertEqual(out, '<h2 class="route-heading">На поромі: Корея → Грузія</h2>')
+
+    def test_short_ru(self):
+        html = '<span class="stage-step" data-lang="ru">Море</span>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, '<span class="stage-step" data-lang="ru">Паром</span>')
+        self.assertEqual(occ[0]["classification"], "USER_FACING_SHORT_STAGE")
+
+    def test_short_uk(self):
+        html = '<span class="stage-step" data-lang="uk">Море</span>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, '<span class="stage-step" data-lang="uk">Пором</span>')
+
+    def test_short_ambiguous_without_lang(self):
+        html = '<span class="stage-step">Море</span>'
+        out, occ = transform.transform_document(html)
         self.assertEqual(out, html)
-        self.assertEqual(report["changes"], [])
+        self.assertEqual(occ[0]["classification"], "AMBIGUOUS")
 
-    def test_script_alias_preserved(self):
-        html = f'<script>const legacy="{RU_STATUS}";</script>'
-        out, report = transform.transform_html(html)
+    def test_ambiguous_short_never_becomes_parom(self):
+        html = '<span class="stage-step">Море</span>'
+        out, _ = transform.transform_document(html)
+        self.assertNotIn("Паром", out)
+        self.assertNotIn("Пором", out)
+
+    def test_data_ru_and_data_uk_together(self):
+        html = ('<div data-ru="В море · Корея → Грузия" '
+                'data-uk="У морі · Корея → Грузія"></div>')
+        out, occ = transform.transform_document(html)
+        self.assertIn('data-ru="На пароме · Корея → Грузия"', out)
+        self.assertIn('data-uk="На поромі · Корея → Грузія"', out)
+        self.assertEqual(len(occ), 2)
+
+    def test_previously_failing_span_status_pill(self):
+        html = '<span class="status-pill">В море</span>'
+        out, _ = transform.transform_document(html)
+        self.assertNotIn("В море", out)
+        self.assertIn("На пароме", out)
+
+    def test_nested_elements(self):
+        html = ('<div class="card"><div class="status-pill">'
+                '<span>В море</span></div></div>')
+        out, occ = transform.transform_document(html)
+        self.assertIn("На пароме", out)
+        self.assertEqual(len(occ), 1)
+
+
+class TestTask053RealContexts(unittest.TestCase):
+    def test_audit_mixed_case_prose_is_unchanged(self):
+        html = '<p>Автомобиль В море уже 20 дней</p>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_longer_prose_in_data_attribute_is_unchanged(self):
+        html = '<p data-ru="В море уже 20 дней" data-uk="У морі вже 20 днів">текст</p>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_longer_prose_in_status_class_is_unchanged(self):
+        html = '<p class="status-pill">В море уже 20 дней</p>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_script_with_tag_looking_string_is_opaque(self):
+        html = '<script>const x="<span>В море</span>";</script><p>ok</p>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_audit_bilingual_attributes_and_visible_text(self):
+        html = '<div class="status-pill" data-ru="В море" data-uk="У морі">В море</div>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(
+            out,
+            '<div class="status-pill" data-ru="На пароме" data-uk="На поромі">На пароме</div>',
+        )
+        self.assertEqual(len(occ), 3)
+
+    def test_real_bilingual_long_attributes(self):
+        html = (
+            '<div class="status-pill" data-ru="В море · Корея → Грузия" '
+            'data-uk="У морі · Корея → Грузія">В море · Корея → Грузия</div>'
+        )
+        out, occ = transform.transform_document(html)
+        self.assertIn('data-ru="На пароме · Корея → Грузия"', out)
+        self.assertIn('data-uk="На поромі · Корея → Грузія"', out)
+        self.assertIn('>На пароме · Корея → Грузия</div>', out)
+        self.assertEqual(len(occ), 3)
+
+    def test_four_sibling_spans(self):
+        html = (
+            '<div style="display:flex"><span>Корея</span><span>Море</span>'
+            '<span>Грузия</span><span>Киев</span></div>'
+        )
+        out, occ = transform.transform_document(html)
+        self.assertEqual(
+            out,
+            '<div style="display:flex"><span>Корея</span><span>Паром</span>'
+            '<span>Грузия</span><span>Киев</span></div>',
+        )
+        self.assertEqual(len(occ), 1)
+        self.assertEqual(occ[0]["context"], "FOUR_SPAN_SEQUENCE")
+
+    def test_four_span_markup_inside_script_is_unchanged(self):
+        html = (
+            '<script>const x="<span>Корея</span><span>Море</span>'
+            '<span>Грузия</span><span>Киев</span>";</script>'
+        )
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_four_span_markup_inside_unclosed_script_is_unchanged(self):
+        html = (
+            '<script>const x="<span>Корея</span><span>Море</span>'
+            '<span>Грузия</span><span>Киев</span>";'
+        )
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_four_span_markup_in_legacy_attribute_is_unchanged(self):
+        html = (
+            '<div data-template="&lt;span&gt;Корея&lt;/span&gt;'
+            '&lt;span&gt;Море&lt;/span&gt;&lt;span&gt;Грузия&lt;/span&gt;'
+            '&lt;span&gt;Киев&lt;/span&gt;">ok</div>'
+        )
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_four_span_out_of_order_is_ambiguous_not_rewritten(self):
+        html = (
+            '<div><span>Корея</span><span>Море</span>'
+            '<span>Киев</span><span>Грузия</span></div>'
+        )
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(len(occ), 1)
+        self.assertEqual(occ[0]["classification"], "AMBIGUOUS")
+
+    def test_chip_short_word_defaults_to_ru(self):
+        html = '<div class="chip">Море</div>'
+        out, _ = transform.transform_document(html)
+        self.assertEqual(out, '<div class="chip">Паром</div>')
+
+    def test_etap_route_heading(self):
+        html = '<div class="etap tut"><div class="krug">3</div>Море: Корея → Грузия</div>'
+        out, _ = transform.transform_document(html)
+        self.assertEqual(
+            out,
+            '<div class="etap tut"><div class="krug">3</div>Паром: Корея → Грузия</div>',
+        )
+
+    def test_info_exact_phrase(self):
+        html = '<p>Море Корея → Грузия — около 60 дней</p>'
+        out, _ = transform.transform_document(html)
+        self.assertEqual(out, '<p>Паром Корея → Грузия — около 60 дней</p>')
+
+    def test_bare_status_is_ambiguous(self):
+        html = '<span>В море</span>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ[0]["classification"], "AMBIGUOUS")
+
+    def test_new_contexts_are_idempotent(self):
+        html = (
+            '<div class="chip">В море</div>'
+            '<div><span>Корея</span><span>Море</span><span>Грузия</span><span>Киев</span></div>'
+        )
+        once, _ = transform.transform_document(html)
+        twice, second_occ = transform.transform_document(once)
+        self.assertEqual(once, twice)
+        self.assertEqual(second_occ, [])
+
+
+class TestOrdinaryProseUnchanged(unittest.TestCase):
+    def test_prose_car_in_sea(self):
+        html = '<p>Автомобиль в море уже 20 дней</p>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_prose_sea_worries(self):
+        html = '<p>Море волнуется, паром в порту</p>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_prose_rest_at_sea(self):
+        html = '<p>Отдых на море</p>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+
+class TestScriptStyleCommentLegacy(unittest.TestCase):
+    def test_script_untouched(self):
+        html = '<script>var s="В море";</script>'
+        out, occ = transform.transform_document(html)
+        self.assertEqual(out, html)
+        self.assertEqual(occ, [])
+
+    def test_style_untouched(self):
+        html = '<style>.x::before{content:"В море"}</style>'
+        out, occ = transform.transform_document(html)
         self.assertEqual(out, html)
 
-    def test_style_block_preserved(self):
-        html = f'<style>.x::before{{content:"{RU_STATUS}";}}</style>'
-        out, report = transform.transform_html(html)
+    def test_comment_untouched(self):
+        html = '<!-- В море -->'
+        out, occ = transform.transform_document(html)
         self.assertEqual(out, html)
+        self.assertEqual(occ, [])
 
-    def test_comment_preserved(self):
-        html = f"<!-- {RU_STATUS} -->"
-        out, report = transform.transform_html(html)
-        self.assertEqual(out, html)
+    def test_legacy_alias_untouched(self):
+        html = '<span class="status-pill" data-legacy-alias="В море">В море</span>'
+        out, occ = transform.transform_document(html)
+        self.assertIn('data-legacy-alias="В море"', out)
+        self.assertIn("На пароме", out)
 
-    def test_data_ru_and_data_uk_both_corrected(self):
-        html = f'<div data-ru="{RU_STATUS}" data-uk="{UK_STATUS}">{RU_STATUS}</div>'
-        out, report = transform.transform_html(html)
-        self.assertIn(f'data-ru="{RU_STATUS_NEW}"', out)
-        self.assertIn(f'data-uk="{UK_STATUS_NEW}"', out)
-        self.assertIn(f">{RU_STATUS_NEW}<", out)
 
-    def test_four_span_sequence_corrected(self):
-        html = ('<div style="display:flex"><span>\u041a\u043e\u0440\u0435\u044f</span><span>\u041c\u043e\u0440\u0435</span>'
-                '<span>\u0413\u0440\u0443\u0437\u0438\u044f</span><span>\u041a\u0438\u0435\u0432</span></div>')
-        out, report = transform.transform_html(html)
-        self.assertIn("<span>\u041f\u0430\u0440\u043e\u043c</span>", out)
-        self.assertIn("<span>\u041a\u043e\u0440\u0435\u044f</span>", out)
-        self.assertIn("<span>\u0413\u0440\u0443\u0437\u0438\u044f</span>", out)
-        self.assertIn("<span>\u041a\u0438\u0435\u0432</span>", out)
-        self.assertEqual(report["ambiguous"], [])
+class TestStructuralPreservation(unittest.TestCase):
+    def test_internal_markers_untouched(self):
+        html = ('<a href="?f=sea" id="stage-sea-1" data-stage="sea" '
+                'class="status-pill">В море</a>')
+        out, _ = transform.transform_document(html)
+        self.assertIn('href="?f=sea"', out)
+        self.assertIn('id="stage-sea-1"', out)
+        self.assertIn('data-stage="sea"', out)
+        self.assertIn("На пароме", out)
 
-    def test_four_span_out_of_order_not_transformed(self):
-        html = ('<div><span>\u041c\u043e\u0440\u0435</span><span>\u041a\u043e\u0440\u0435\u044f</span>'
-                '<span>\u0413\u0440\u0443\u0437\u0438\u044f</span><span>\u041a\u0438\u0435\u0432</span></div>')
-        out, report = transform.transform_html(html)
-        self.assertIn("<span>\u041c\u043e\u0440\u0435</span>", out)
-        self.assertEqual(len(report["ambiguous"]), 1)
+    def test_quote_variants(self):
+        html_double = '<div data-ru="В море"></div>'
+        html_single = "<div data-ru='В море'></div>"
+        out_d, _ = transform.transform_document(html_double)
+        out_s, _ = transform.transform_document(html_single)
+        self.assertIn('data-ru="На пароме"', out_d)
+        self.assertIn("data-ru='На пароме'", out_s)
 
-    def test_four_children_not_spans_not_transformed(self):
-        html = ('<div><i>\u041a\u043e\u0440\u0435\u044f</i><i>\u041c\u043e\u0440\u0435</i>'
-                '<i>\u0413\u0440\u0443\u0437\u0438\u044f</i><i>\u041a\u0438\u0435\u0432</i></div>')
-        out, report = transform.transform_html(html)
-        self.assertIn(">\u041c\u043e\u0440\u0435<", out)
-
-    def test_four_spans_different_words_untouched(self):
-        html = '<div><span>A</span><span>B</span><span>C</span><span>D</span></div>'
-        out, report = transform.transform_html(html)
-        self.assertEqual(out, html)
-
-    def test_standalone_more_ambiguous(self):
-        html = "<div><span>\u041c\u043e\u0440\u0435</span></div>"
-        out, report = transform.transform_html(html)
-        self.assertIn("<span>\u041c\u043e\u0440\u0435</span>", out)
-        self.assertEqual(len(report["ambiguous"]), 1)
-
-    def test_chip_short_status(self):
-        html = f'<div class="chip">{RU_STATUS}</div>'
-        out, report = transform.transform_html(html)
-        self.assertIn(f">{RU_STATUS_NEW}<", out)
-
-    def test_status_pill_short_status(self):
-        html = f'<span class="status-pill">{RU_STATUS}</span>'
-        out, report = transform.transform_html(html)
-        self.assertIn(f">{RU_STATUS_NEW}<", out)
-
-    def test_uk_status_short(self):
-        html = f'<div class="chip">{UK_STATUS}</div>'
-        out, report = transform.transform_html(html)
-        self.assertIn(f">{UK_STATUS_NEW}<", out)
-
-    def test_etap_tut_krug_short_word(self):
-        html = '<div class="etap tut"><span class="krug">\u041c\u043e\u0440\u0435</span></div>'
-        out, report = transform.transform_html(html)
-        self.assertIn(">\u041f\u0430\u0440\u043e\u043c<", out)
-
-    def test_krug_without_etap_tut_ambiguous(self):
-        html = '<div><span class="krug">\u041c\u043e\u0440\u0435</span></div>'
-        out, report = transform.transform_html(html)
-        self.assertIn(">\u041c\u043e\u0440\u0435<", out)
-        self.assertEqual(len(report["ambiguous"]), 1)
-
-    def test_long_pattern(self):
-        html = f"<p>{RU_STATUS} \u00b7 \u041a\u043e\u0440\u0435\u044f \u2192 \u0413\u0440\u0443\u0437\u0438\u044f</p>"
-        out, report = transform.transform_html(html)
-        self.assertIn(f"{RU_STATUS_NEW} \u00b7 \u041a\u043e\u0440\u0435\u044f \u2192 \u0413\u0440\u0443\u0437\u0438\u044f", out)
-
-    def test_heading_status(self):
-        html = f"<h3>{RU_STATUS}: \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e \u0441\u0435\u0433\u043e\u0434\u043d\u044f</h3>"
-        out, report = transform.transform_html(html)
-        self.assertIn(f"{RU_STATUS_NEW}: \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e \u0441\u0435\u0433\u043e\u0434\u043d\u044f", out)
-
-    def test_route_heading(self):
-        html = "<h2>\u041c\u043e\u0440\u0435: \u041a\u043e\u0440\u0435\u044f \u2192 \u0413\u0440\u0443\u0437\u0438\u044f</h2>"
-        out, report = transform.transform_html(html)
-        self.assertIn("\u041f\u0430\u0440\u043e\u043c: \u041a\u043e\u0440\u0435\u044f \u2192 \u0413\u0440\u0443\u0437\u0438\u044f", out)
-
-    def test_info_phrase(self):
-        html = "<p>\u041c\u043e\u0440\u0435 \u041a\u043e\u0440\u0435\u044f \u2192 \u0413\u0440\u0443\u0437\u0438\u044f \u2014 \u043e\u043a\u043e\u043b\u043e 60 \u0434\u043d\u0435\u0439</p>"
-        out, report = transform.transform_html(html)
-        self.assertIn("\u041f\u0430\u0440\u043e\u043c \u041a\u043e\u0440\u0435\u044f \u2192 \u0413\u0440\u0443\u0437\u0438\u044f \u2014 \u043e\u043a\u043e\u043b\u043e 60 \u0434\u043d\u0435\u0439", out)
-
-    def test_no_target_zero_changes(self):
-        html = "<p>\u0417\u0434\u0435\u0441\u044c \u043d\u0435\u0442 \u0446\u0435\u043b\u0435\u0432\u043e\u0433\u043e \u0441\u043b\u043e\u0432\u0430.</p>"
-        out, report = transform.transform_html(html)
-        self.assertEqual(out, html)
-        self.assertEqual(report["changes"], [])
-
-    def test_attribute_only_one_language_present(self):
-        html = f'<div data-ru="{RU_STATUS}">{RU_STATUS}</div>'
-        out, report = transform.transform_html(html)
-        self.assertIn(f'data-ru="{RU_STATUS_NEW}"', out)
-        self.assertNotIn("data-uk", out)
-
-    def test_non_target_attribute_untouched(self):
-        html = f'<div data-ru="{RU_STATUS}" title="{RU_STATUS} \u0443\u0436\u0435 5 \u0434\u043d\u0435\u0439">{RU_STATUS}</div>'
-        out, report = transform.transform_html(html)
-        self.assertIn(f'title="{RU_STATUS} \u0443\u0436\u0435 5 \u0434\u043d\u0435\u0439"', out)
-
-    def test_void_element_untouched(self):
-        html = f'<div class="chip">{RU_STATUS}<br>\u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0435\u043d\u0438\u0435</div>'
-        out, report = transform.transform_html(html)
+    def test_void_elements_preserved(self):
+        html = '<span class="status-pill">В море<br>текст</span>'
+        out, _ = transform.transform_document(html)
         self.assertIn("<br>", out)
 
-    def test_nested_chip_descendant(self):
-        html = f'<div class="chip"><b>{RU_STATUS}</b></div>'
-        out, report = transform.transform_html(html)
-        self.assertIn(f">{RU_STATUS_NEW}<", out)
+    def test_uppercase_tags_preserved(self):
+        html = '<SPAN CLASS="status-pill">В море</SPAN>'
+        out, _ = transform.transform_document(html)
+        self.assertTrue(out.startswith("<SPAN"))
+        self.assertTrue(out.endswith("</SPAN>"))
+        self.assertIn("На пароме", out)
 
     def test_entity_preserved(self):
-        html = "<p>\u041a\u043e\u043c\u043f\u0430\u043d\u0438\u044f &amp; \u043f\u0430\u0440\u0442\u043d\u0451\u0440\u044b</p>"
-        out, report = transform.transform_html(html)
+        html = '<span class="status-pill">В&nbsp;море</span>'
+        out, occ = transform.transform_document(html)
         self.assertEqual(out, html)
+        self.assertEqual(occ, [])
 
-    def test_multiple_independent_targets(self):
-        html = (f'<div class="chip">{RU_STATUS}</div>'
-                '<div><span>\u041c\u043e\u0440\u0435</span></div>')
-        out, report = transform.transform_html(html)
-        self.assertIn(f">{RU_STATUS_NEW}<", out)
-        self.assertIn(">\u041c\u043e\u0440\u0435<", out)
 
-    def test_report_change_count_status(self):
-        html = f'<div class="chip">{RU_STATUS}</div>'
-        out, report = transform.transform_html(html)
-        self.assertEqual(len(report["changes"]), 1)
+class TestDeterminismAndIdempotence(unittest.TestCase):
+    SAMPLE = ('<div class="status-pill">В море</div>'
+              '<div class="route-long">У морі · Корея → Грузія</div>'
+              '<span class="stage-step" data-lang="ru">Море</span>')
 
-    def test_full_document_roundtrip_no_target(self):
-        html = "<html><head><title>\u0417\u0430\u0433\u043e\u043b\u043e\u0432\u043e\u043a</title></head><body><p>\u0422\u0435\u043a\u0441\u0442</p></body></html>"
-        out, report = transform.transform_html(html)
-        self.assertEqual(out, html)
+    def test_ten_run_determinism(self):
+        first, _ = transform.transform_document(self.SAMPLE)
+        for _ in range(10):
+            out, _ = transform.transform_document(self.SAMPLE)
+            self.assertEqual(out, first)
 
-    def test_uk_short_word_context(self):
-        html = '<div data-uk="\u041c\u043e\u0440\u0435">\u041c\u043e\u0440\u0435</div>'
-        out, report = transform.transform_html(html)
-        self.assertIn('data-uk="\u041f\u043e\u0440\u043e\u043c"', out)
+    def test_idempotence(self):
+        once, _ = transform.transform_document(self.SAMPLE)
+        twice, _ = transform.transform_document(once)
+        self.assertEqual(once, twice)
 
-    def test_uk_map_uses_real_source_phrase(self):
-        # regression: previous defect used a fabricated "\u0412 \u043c\u043e\u0440\u0456" instead of real "\u0423 \u043c\u043e\u0440\u0456"
-        html = f'<div class="chip">\u0412 \u043c\u043e\u0440\u0456</div>'
-        out, report = transform.transform_html(html)
-        self.assertEqual(out, html)
+
+class TestCompiles(unittest.TestCase):
+    def test_module_compiles(self):
+        import py_compile
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        py_compile.compile(os.path.join(here, "transform.py"), doraise=True)
 
 
 if __name__ == "__main__":
