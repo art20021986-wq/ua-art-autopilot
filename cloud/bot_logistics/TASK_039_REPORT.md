@@ -8,7 +8,7 @@ controller placeholder that always exited without contacting PythonAnywhere.
 No production, CRM or database action occurred during that failed audit.
 
 Codex repaired the package and reran it using only the standard library.
-The final result is 75 tests passed, with zero failures, errors, skips or
+The final result is 76 tests passed, with zero failures, errors, skips or
 resource warnings. All Python files compile.
 
 ## Repaired discovery
@@ -97,3 +97,9 @@ container anchor exceeded the bounded result limit in cars_ui.py. The retry
 removes that generic anchor, keeps exact UI labels and logistics identifiers,
 and adds a regression with 200 irrelevant container references. It remains
 read-only and does not weaken any file, database or receipt bound.
+
+The second receipt proved the real CRM aliases auto_number and sea_container.
+The next read therefore adds only that proven UA identity column and targeted
+handler identifiers (card/edit/stage, eta_days, sea_container, sea_date_out
+and related callbacks). A real-schema regression requires UA-0006 to resolve
+through auto_number while preserving every other field.

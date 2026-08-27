@@ -394,6 +394,28 @@ class TestDiscoverySourceContract(DiscoveryTestBase):
 
 
 class TestDiscoveryDbContract(DiscoveryTestBase):
+    def test_real_schema_auto_number_identity_is_supported(self):
+        conn = sqlite3.connect(self.db_path)
+        conn.execute(
+            "CREATE TABLE cars ("
+            "id INTEGER PRIMARY KEY, auto_number TEXT UNIQUE, "
+            "sea_container TEXT, other TEXT)"
+        )
+        conn.execute(
+            "INSERT INTO cars VALUES (42, 'UA-0006', ?, 'keep')",
+            (discovery.CORRECT_CONTAINER,),
+        )
+        conn.commit()
+        conn.close()
+        result = discovery.run_discovery(
+            self.db_path, list(self.required_sources)
+        )
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["db"]["matched_id_column"], "auto_number")
+        self.assertEqual(
+            result["db"]["matched_container_column"], "sea_container"
+        )
+
     def test_unapproved_db_path_is_blocked_before_read(self):
         self._make_db()
         other = os.path.join(self.tmpdir, "other.db")

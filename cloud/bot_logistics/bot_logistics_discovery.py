@@ -51,6 +51,7 @@ ID_COLUMN_CANDIDATES = (
     "ua_code",
     "number",
     "car_id",
+    "auto_number",
 )
 CONTAINER_COLUMN_HINTS = ("container", "контейнер")
 ANCHOR_PATTERNS = (
@@ -71,6 +72,18 @@ ANCHOR_PATTERNS = (
     "set_container",
     "change_stage",
     "set_stage",
+    "def card_kb",
+    "def edit_menu",
+    "def stage_menu",
+    "def stage_set",
+    "car_setf:",
+    "car_stage:",
+    "car_wait",
+    "eta_days",
+    "sea_container",
+    "sea_date_out",
+    "days_to_kyiv",
+    "ge_to_kyiv_at",
 )
 
 HEX64_RE = re.compile(r"^[0-9a-f]{64}$")
