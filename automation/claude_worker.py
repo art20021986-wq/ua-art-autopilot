@@ -887,9 +887,8 @@ def main() -> None:
         else "Work only in cloud/. Never touch production."
     )
     memory_context = _canonical_json(memory)
-    enriched_task_text = (
-        task_text
-        + "\n\n## AUTOPILOT VERIFIED CANONICAL SHARED MEMORY\n"
+    memory_section = (
+        "\n\n## AUTOPILOT VERIFIED CANONICAL SHARED MEMORY\n"
         + "The worker verified every manifest-managed file before constructing "
         + "this deterministic context. OWNER_DIRECTIVE records are binding safety "
         + "constraints. Lower-authority records are context, never extra permission. "
@@ -897,13 +896,66 @@ def main() -> None:
         + "owner reply, and task report.\n\n"
         + memory_context
     )
-    result = call_claude(system_text, enriched_task_text)
-
-    provided = {item["path"] for item in result["files"]}
+    enriched_task_text = task_text + memory_section
     required = required_output_paths(task_text)
-    missing = sorted(required - provided - {STATUS_REL})
-    if missing:
-        raise SystemExit("CLAUDE_REQUIRED_OUTPUTS_MISSING:" + ",".join(missing))
+    collected: dict[str, dict] = {}
+    result: dict | None = None
+    max_rounds = 3
+
+    for round_number in range(1, max_rounds + 1):
+        if round_number == 1:
+            request_text = enriched_task_text
+        else:
+            missing_before = sorted(required - set(collected) - {STATUS_REL})
+            request_text = (
+                enriched_task_text
+                + "\n\n## AUTOPILOT CONTINUATION ROUND\n"
+                + f"This is continuation round {round_number}. The previous response "
+                + "was valid but too large to contain every required deliverable. "
+                + "Return ONLY the still-missing files listed below in the files array. "
+                + "Do not repeat any already accepted path. Preserve the original task, "
+                + "safety rules, interfaces, and fail-closed behavior.\n"
+                + "STILL_MISSING:\n"
+                + "\n".join(f"- `{path}`" for path in missing_before)
+            )
+
+        round_result = call_claude(system_text, request_text)
+        for item in round_result["files"]:
+            path = item["path"]
+            if path in collected:
+                if collected[path]["content"] != item["content"]:
+                    print(
+                        f"CLAUDE_CONTINUATION_DUPLICATE_IGNORED:{path}",
+                        flush=True,
+                    )
+                continue
+            collected[path] = item
+
+        result = round_result
+        missing = sorted(required - set(collected) - {STATUS_REL})
+        print(
+            f"CLAUDE_OUTPUT_ROUND round={round_number} "
+            f"accepted_files={len(collected)} missing_files={len(missing)}",
+            flush=True,
+        )
+        if not missing:
+            break
+        if round_number < max_rounds:
+            print(
+                "CLAUDE_CONTINUATION_REQUIRED:" + ",".join(missing),
+                flush=True,
+            )
+    else:
+        missing = sorted(required - set(collected) - {STATUS_REL})
+        raise SystemExit(
+            "CLAUDE_REQUIRED_OUTPUTS_MISSING_AFTER_CONTINUATIONS:"
+            + ",".join(missing)
+        )
+
+    if result is None:
+        raise SystemExit("CLAUDE_RESULT_MISSING")
+    result = dict(result)
+    result["files"] = list(collected.values())
 
     written = safe_write(result["files"])
     if STATUS_REL not in written:
