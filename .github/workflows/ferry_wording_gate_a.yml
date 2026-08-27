@@ -5,6 +5,12 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/ferry_wording_gate_a.yml'
+      - 'cloud/task_047_ferry_discovery/transform.py'
+      - 'cloud/task_047_ferry_discovery/discover.py'
+      - 'cloud/task_047_ferry_discovery/gate_a_remote.py'
+      - 'cloud/task_047_ferry_discovery/gate_a_controller.py'
+      - 'cloud/task_047_ferry_discovery/run_tests.py'
+      - 'cloud/task_047_ferry_discovery/tests/**'
   workflow_dispatch:
 
 permissions:
