@@ -1,0 +1,25 @@
+{
+  "task_id": "task_013",
+  "candidate_name": "ua_cards_unified",
+  "generated_by": "claude_github_worker",
+  "owner_publication_intent_received": true,
+  "owner_publication_intent_text": "УТВЕРЖДАЮ ПУБЛИКАЦИЮ",
+  "owner_publication_intent_binding_status": "NOT_BOUND_TO_MANIFEST_SHA_YET",
+  "note_on_binding": "This phrase was received before the exact candidate bytes existed and MUST NOT be treated as Gate B for the file hashes below. A new exact-phrase approval bound to this manifest's post-commit SHA-256 values is required.",
+  "files": [
+    {"path": "cloud/ua_cards_unified/UNIFIED_CARDS_SPEC.md", "sha256": "PENDING_POST_COMMIT_SHA256"},
+    {"path": "cloud/ua_cards_unified/LEGACY_CONFLICT_AUDIT.md", "sha256": "PENDING_POST_COMMIT_SHA256"},
+    {"path": "cloud/ua_cards_unified/START_UA_CARDS_UNIFIED.py", "sha256": "PENDING_POST_COMMIT_SHA256"},
+    {"path": "cloud/ua_cards_unified/PRODUCTION_PATCH_PLAN.md", "sha256": "PENDING_POST_COMMIT_SHA256"},
+    {"path": "cloud/ua_cards_unified/TEST_MATRIX.md", "sha256": "PENDING_POST_COMMIT_SHA256"}
+  ],
+  "run_id": "PENDING_GATE_A_EXECUTION",
+  "commit_sha": "PENDING_GIT_COMMIT",
+  "preview_url": "PENDING_REACHABLE_PREVIEW_NOT_YET_ISSUED",
+  "gate_a_status": "NOT_EXECUTED",
+  "gate_b_status": "NOT_GRANTED",
+  "production_touched": false,
+  "ua0009_publication_readiness": "FAIL",
+  "safe_to_publish_ua0009": "NO",
+  "instructions": "Recompute each file sha256 exactly after this commit lands, insert real values here, then request the exact Gate A phrase for sandbox execution, then the exact Gate B phrase bound to these final hashes before any production patch from PRODUCTION_PATCH_PLAN.md is attempted."
+}
