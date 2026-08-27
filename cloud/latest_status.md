@@ -1,12 +1,12 @@
-TASK_ID: task_041
+TASK_ID: task_042
 ROUND: 1
 CLAUDE_STATUS: DONE
-CURRENT_ACTION: Corrected the invalid TASK 038 test assertion and closed the five real fail-open candidate-transform defects (RebuildQueue callback sanitization, usercustomize positive allowlist, launcher future-import/exit-code correction, avtoperedacha call-graph proof, SQLite per-handle ownership verifier/transform), plus made orchestrate_gate_a fail-closed on any unavailable extended transform with exactly eight bound candidates. Status is READY_FOR_CONTROLLER_REVIEW_TASK_041, not READY_FOR_GATE_A.
-FILES_CREATED: cloud/crm_speed_optimization/canonical_modules.py, cloud/crm_speed_optimization/candidate_transforms.py, cloud/crm_speed_optimization/sqlite_ownership.py, cloud/crm_speed_optimization/crm_speed_gate_a.py, cloud/crm_speed_optimization/test_task_038_real_candidates.py, cloud/crm_speed_optimization/test_task_041_architecture_audit.py, cloud/crm_speed_optimization/TASK_041_REPORT.md, cloud/owner_reply.md
+CURRENT_ACTION: Built complete offline Gate A candidate package (canonical RU/UA ferry-wording mapping, deterministic idempotent transform, bounded read-only discovery tool, 9-card + future-card preview matrix on synthetic fixtures, full unittest suite, inventory/hash scaffolds, acceptance matrix, milestone reports, rollback plan) under cloud/task_042_ferry_wording/. Real PythonAnywhere discovery and Gate A execution were not performed because this execution context has no filesystem access to /home/Carix.
+FILES_CREATED: cloud/task_042_ferry_wording/README.md, cloud/task_042_ferry_wording/ferry_wording.py, cloud/task_042_ferry_wording/transform.py, cloud/task_042_ferry_wording/discover.py, cloud/task_042_ferry_wording/gate_a_preview.py, cloud/task_042_ferry_wording/tests/test_ferry_wording.py, cloud/task_042_ferry_wording/inventory.json, cloud/task_042_ferry_wording/manifest_hashes.json, cloud/task_042_ferry_wording/acceptance_matrix.md, cloud/task_042_ferry_wording/milestone_20.json, cloud/task_042_ferry_wording/milestone_40.json, cloud/task_042_ferry_wording/milestone_60.json, cloud/task_042_ferry_wording/milestone_80.json, cloud/task_042_ferry_wording/TASK_042_REPORT.md, cloud/task_042_ferry_wording/rollback_gate_b_plan.md
 PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Run the controller command (py_compile + unittest discover) on cloud/crm_speed_optimization at least five times after first green, independently verify the new call-graph/SQLite/launcher/usercustomize defect fixes with the added test_task_041_architecture_audit.py cases, and confirm no Exception in thread, no network access, and no /home/Carix access occurred before considering any further Gate A step. CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c. MEMORY_VERSION_READ: 4.
-UPDATED_AT_UTC: 2026-08-27T20:28:50Z
+NEXT_FOR_CHATGPT: Audit cloud/task_042_ferry_wording/TASK_042_REPORT.md and run the offline unittest suite; note that real PythonAnywhere read-only discovery against /home/Carix has not been executed (NOT_PROVEN), so the honest terminal state is READY_FOR_CODEX_AUDIT, not AWAITING_GATE_B or DONE-in-production. UA0009_SAFE_TO_PUBLISH remains NO. CONTEXT_BUNDLE_SHA256=2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c MEMORY_VERSION_READ=4.
+UPDATED_AT_UTC: 2026-08-27T20:32:51Z
 MEMORY_VERSION_READ: 4
 CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c

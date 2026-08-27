@@ -1,0 +1,13 @@
+{
+  "note": "Protected-asset hash tracking scaffold for TASK 042. All entries below are NOT_ACCESSED because this execution context has no filesystem access to /home/Carix. Whoever runs the bounded read-only discovery on PythonAnywhere must fill in real before/after SHA-256 pairs and confirm byte-identical values, since this task forbids all production/CRM writes.",
+  "protected_assets": {
+    "crm_db": {"path": "/home/Carix/crm.db", "status": "NOT_ACCESSED", "sha256_before": null, "sha256_after": null, "expected": "byte-identical (no write permitted)"},
+    "production_generators": {"path": "NOT_PROVEN", "status": "NOT_ACCESSED", "sha256_before": null, "sha256_after": null, "expected": "byte-identical (no write permitted in this task)"},
+    "live_site_pages": {"path": "NOT_PROVEN", "status": "NOT_ACCESSED", "sha256_before": null, "sha256_after": null, "expected": "byte-identical (no write permitted)"},
+    "media": {"path": "NOT_PROVEN", "status": "NOT_ACCESSED", "sha256_before": null, "sha256_after": null, "expected": "byte-identical (no write permitted)"},
+    "UA-0001..UA-0009": {"path": "NOT_PROVEN", "status": "NOT_ACCESSED", "sha256_before": null, "sha256_after": null, "expected": "byte-identical; UA-0009 additionally must remain unpublished"}
+  },
+  "task_package_files": {
+    "note": "These are the newly created isolated deliverable files themselves (this package), not protected production assets. Their content is embedded in this delivery; exact SHA-256 values should be recomputed by the auditor from the delivered bytes to confirm integrity, since this static response does not execute a hashing pass over itself."
+  }
+}
