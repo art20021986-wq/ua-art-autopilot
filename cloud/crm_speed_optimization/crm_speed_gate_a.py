@@ -1,12 +1,12 @@
 """CRM-SPEED-001 Gate A orchestration (TASK 032/035 canonical
 integration, TASK 038 real candidate-transform integration, TASK 041
-fail-closed correction).
+fail-closed correction, TASK 055 orchestrator/receipt closure).
 
 This module provides one canonical evidence-computation core plus two
 callers:
 
 - run_gate_a(fixture): historical compatibility adapter for in-memory
-  source fixtures (unit tests). Unchanged by TASK 038/041.
+  source fixtures (unit tests). Unchanged by TASK 038/041/055.
 
 - orchestrate_gate_a(config, opener=None, clock=None): the real public
   orchestration entry point. TASK 038 extended phase40/60/80 to
@@ -24,6 +24,20 @@ callers:
   legacy original usercustomize.py key is never present), all eight are
   compiled without import/execute, and all eight are written as
   candidates+diffs through SafeWriter.
+
+  TASK 055 correction: (1) on any early transform block, phase40 now
+  always stores a fully bounded candidates_compile dict tagged
+  accepted_candidate_set=False; (2) the fixed REQUIRED_PREDICATES
+  skeleton is completed (missing/malformed entries become bounded
+  BLOCKED "skipped_due_to_prior_block" entries) before evaluate_gate_a
+  ever runs or any receipt is emitted, so evaluate_gate_a can never
+  observe missing/skipped evidence; (3) the canonical UA-0009
+  publication probe is guaranteed to run exactly once per invocation --
+  normally from phase80, or otherwise from phase100 if phase80 never
+  reached it -- and is never invoked twice; (4) phase100 finalization
+  now records bounded before/after evidence per-section so a partial
+  finalization exception can never suppress the rest of the predicate
+  skeleton or the receipt/report write.
 
 Gate A is never executed against production by this repository. Every
 function here operates only on paths/strings explicitly supplied by the
@@ -319,7 +333,8 @@ def check_ua0009_not_public(url, opener=None):
     """Historical fixture-facing adapter, preserved unchanged for
     _compute_evidence()/run_gate_a() compatibility. orchestrate_gate_a()
     uses the canonical ua0009_publication_check.canonical_probe_ua0009
-    directly instead (see phase80 below) rather than this adapter."""
+    directly instead (see _run_canonical_probe_once() below) rather than
+    this adapter."""
     if not url or not url.startswith("https://"):
         return {"status": "BLOCKED", "reason": "missing_or_non_https_url"}
     if opener is None:
@@ -841,6 +856,43 @@ def _render_report(receipt):
     return os.linesep.join(lines) + os.linesep
 
 
+def _run_canonical_probe_once(config, opener, publication_state):
+    """TASK 055: call ua0009_publication_check.canonical_probe_ua0009 at
+    most once per orchestrate_gate_a() invocation, tracked via the
+    shared publication_state dict. Never fabricates PASS on a bounded
+    probe exception; records a sanitized BLOCKED reason and marks the
+    attempt consumed either way, so a later caller never retries."""
+    if publication_state.get("consumed"):
+        return
+    publication_state["consumed"] = True
+    try:
+        probe_result = ua0009_publication_check.canonical_probe_ua0009(config["ua0009_url"], opener=opener)
+        publication_state["result"] = {
+            "status": "OK" if probe_result.status == "PASS" else "BLOCKED",
+            "reason": probe_result.reason,
+            "http_status": probe_result.status_code,
+        }
+    except Exception as exc:
+        publication_state["result"] = {
+            "status": "BLOCKED",
+            "reason": f"probe_exception:{type(exc).__name__}",
+        }
+
+
+def _ensure_predicate_skeleton(evidence):
+    """TASK 055: ensure every REQUIRED_PREDICATES key exists in evidence
+    with a well-formed {"status": "OK"|"BLOCKED", ...} dict before
+    evaluate_gate_a() or receipt emission ever runs. Never upgrades an
+    already-BLOCKED or already-OK entry; only fills genuinely missing or
+    malformed predicates with a bounded skipped-due-to-prior-block
+    marker. This guarantees evaluate_gate_a() can never observe missing
+    or skipped evidence."""
+    for key in REQUIRED_PREDICATES:
+        item = evidence.get(key)
+        if not isinstance(item, dict) or item.get("status") not in ("OK", "BLOCKED"):
+            evidence[key] = {"status": "BLOCKED", "reason": "skipped_due_to_prior_block"}
+
+
 def orchestrate_gate_a(config, opener=None, clock=None):
     """The single, real, public orchestration entry point."""
     clock = clock or time.monotonic
@@ -852,6 +904,7 @@ def orchestrate_gate_a(config, opener=None, clock=None):
     input_records = {}
     state = {"blocked": False}
     sqlite_state = {"before": None, "after": None}
+    publication_state = {"consumed": False, "result": None}
     run_dir = None
     lock = None
     candidate_writer = None
@@ -931,15 +984,20 @@ def orchestrate_gate_a(config, opener=None, clock=None):
                 compile_result = check_candidates_compile(compile_map)
             except Exception as exc:
                 compile_result = {"status": "BLOCKED", "reason": f"exception:{type(exc).__name__}"}
+            if not isinstance(compile_result, dict) or compile_result.get("status") not in ("OK", "BLOCKED"):
+                compile_result = {"status": "BLOCKED", "reason": "compile_evidence_unavailable"}
             if compile_result.get("status") == "OK":
                 evidence["candidates_compile"] = {
                     "status": "OK",
                     "candidate_origin": "original_due_to_transform_block",
+                    "accepted_candidate_set": False,
                     "compiled": compile_result.get("compiled", []),
                 }
             else:
                 evidence["candidates_compile"] = dict(
-                    compile_result, candidate_origin="original_due_to_transform_block"
+                    compile_result,
+                    candidate_origin="original_due_to_transform_block",
+                    accepted_candidate_set=False,
                 )
             raise _GateABlocked("cars_ui_transform_blocked")
 
@@ -1009,6 +1067,14 @@ def orchestrate_gate_a(config, opener=None, clock=None):
                     if len(extended_candidate_sources) != 8:
                         extended["blocked_reasons"].append("extended_candidate_count_invalid")
                     else:
+                        # TASK 055: successful phase40 clears any legacy
+                        # temporary candidate map and makes
+                        # candidate_sources contain exactly the eight
+                        # extended candidate keys; the legacy original
+                        # usercustomize.py key is never present here.
+                        candidate_sources.clear()
+                        candidate_sources.update(extended_candidate_sources)
+
                         candidate_writer = SafeWriter(run_dir)
                         for name, src in extended_candidate_sources.items():
                             candidate_writer.write_text(os.path.join("candidates", name), src)
@@ -1147,12 +1213,8 @@ def orchestrate_gate_a(config, opener=None, clock=None):
                 "cars_ui": (transform_cars_ui, cars_ui_source, ()),
             })
 
-        publication_result = ua0009_publication_check.canonical_probe_ua0009(config["ua0009_url"], opener=opener)
-        evidence["ua0009_not_public"] = {
-            "status": "OK" if publication_result.status == "PASS" else "BLOCKED",
-            "reason": publication_result.reason,
-            "http_status": publication_result.status_code,
-        }
+        _run_canonical_probe_once(config, opener, publication_state)
+        evidence["ua0009_not_public"] = publication_state["result"]
 
         required_here = [
             "admin_routes_text_only", "media_persistence_unchanged", "usercustomize_inert",
@@ -1165,42 +1227,72 @@ def orchestrate_gate_a(config, opener=None, clock=None):
             raise _GateABlocked("predicate_failed:" + ",".join(failed))
 
     def phase100():
-        fingerprints_after = {p: fingerprint_file(p) for p in config["required_inputs"]}
-        evidence["_fingerprints_after"] = fingerprints_after
-        fingerprints_before = evidence.get("_fingerprints_before")
-        if fingerprints_before:
-            evidence["protected_fingerprints_unchanged"] = check_protected_fingerprints_unchanged(fingerprints_before, fingerprints_after)
-        else:
-            evidence["protected_fingerprints_unchanged"] = {"status": "BLOCKED", "reason": "missing_before_fingerprints"}
-        for root, names in config["site_roots"].items():
-            try:
-                site_after[root] = scan_bounded_inventory(root, names)
-            except Exception as exc:
-                site_after[root] = {"status": "BLOCKED", "reason": f"exception:{type(exc).__name__}"}
-        site_ok = True
-        changed_roots = []
-        for root in config["site_roots"]:
-            b = site_before.get(root)
-            a = site_after.get(root)
-            if not b or b.get("status") != "OK" or not a or a.get("status") != "OK" or b.get("entries") != a.get("entries"):
-                site_ok = False
-                changed_roots.append(root)
-        evidence["site_inventory_unchanged"] = {"status": "OK"} if site_ok else {"status": "BLOCKED", "changed_roots": changed_roots}
+        # TASK 055: every section below is independently bounded so a
+        # partial finalization exception can never suppress the rest of
+        # the predicate skeleton or the receipt/report write.
+        try:
+            fingerprints_after = {p: fingerprint_file(p) for p in config["required_inputs"]}
+            evidence["_fingerprints_after"] = fingerprints_after
+            fingerprints_before = evidence.get("_fingerprints_before")
+            if fingerprints_before:
+                evidence["protected_fingerprints_unchanged"] = check_protected_fingerprints_unchanged(
+                    fingerprints_before, fingerprints_after)
+            else:
+                evidence["protected_fingerprints_unchanged"] = {"status": "BLOCKED", "reason": "missing_before_fingerprints"}
+        except Exception as exc:
+            evidence["protected_fingerprints_unchanged"] = {"status": "BLOCKED", "reason": f"exception:{type(exc).__name__}"}
 
-        db_path = _find_input_path(config, "crm.db")
-        before_ev = sqlite_state["before"] or sqlite_ownership.OwnershipEvidence(
-            status="BLOCKED", reason="not_collected_before_block"
-        )
-        after_ev = _collect_ua0009_sqlite_evidence(config, db_path)
-        sqlite_state["before"] = before_ev
-        sqlite_state["after"] = after_ev
-        cmp_ok, cmp_reason = sqlite_ownership.compare_ownership_evidence(before_ev, after_ev)
-        evidence["ua0009_fingerprint_unchanged"] = {"status": "OK" if cmp_ok else "BLOCKED", "reason": cmp_reason}
-        evidence["_sqlite_ownership_before"] = before_ev.to_dict()
-        evidence["_sqlite_ownership_after"] = after_ev.to_dict()
+        try:
+            for root, names in config["site_roots"].items():
+                try:
+                    site_after[root] = scan_bounded_inventory(root, names)
+                except Exception as exc:
+                    site_after[root] = {"status": "BLOCKED", "reason": f"exception:{type(exc).__name__}"}
+            site_ok = True
+            changed_roots = []
+            for root in config["site_roots"]:
+                b = site_before.get(root)
+                a = site_after.get(root)
+                if not b or b.get("status") != "OK" or not a or a.get("status") != "OK" or b.get("entries") != a.get("entries"):
+                    site_ok = False
+                    changed_roots.append(root)
+            evidence["site_inventory_unchanged"] = {"status": "OK"} if site_ok else {"status": "BLOCKED", "changed_roots": changed_roots}
+        except Exception as exc:
+            evidence["site_inventory_unchanged"] = {"status": "BLOCKED", "reason": f"exception:{type(exc).__name__}"}
 
-        evidence["no_production_write"] = check_no_production_write(
-            evidence.get("_fingerprints_before") or {}, fingerprints_after, site_before, site_after)
+        try:
+            db_path = _find_input_path(config, "crm.db")
+            before_ev = sqlite_state["before"] or sqlite_ownership.OwnershipEvidence(
+                status="BLOCKED", reason="not_collected_before_block"
+            )
+            after_ev = _collect_ua0009_sqlite_evidence(config, db_path)
+            sqlite_state["before"] = before_ev
+            sqlite_state["after"] = after_ev
+            cmp_ok, cmp_reason = sqlite_ownership.compare_ownership_evidence(before_ev, after_ev)
+            evidence["ua0009_fingerprint_unchanged"] = {"status": "OK" if cmp_ok else "BLOCKED", "reason": cmp_reason}
+            evidence["_sqlite_ownership_before"] = before_ev.to_dict()
+            evidence["_sqlite_ownership_after"] = after_ev.to_dict()
+        except Exception as exc:
+            evidence["ua0009_fingerprint_unchanged"] = {"status": "BLOCKED", "reason": f"exception:{type(exc).__name__}"}
+
+        try:
+            # TASK 055: if phase80 never reached the canonical probe
+            # (skipped/blocked before it), phase100 attempts it exactly
+            # once here instead. If phase80 already consumed the single
+            # attempt, this is a bounded no-op.
+            _run_canonical_probe_once(config, opener, publication_state)
+            evidence["ua0009_not_public"] = publication_state.get("result") or {
+                "status": "BLOCKED", "reason": "probe_result_unavailable",
+            }
+        except Exception as exc:
+            evidence["ua0009_not_public"] = {"status": "BLOCKED", "reason": f"exception:{type(exc).__name__}"}
+
+        try:
+            evidence["no_production_write"] = check_no_production_write(
+                evidence.get("_fingerprints_before") or {}, evidence.get("_fingerprints_after", {}),
+                site_before, site_after)
+        except Exception as exc:
+            evidence["no_production_write"] = {"status": "BLOCKED", "reason": f"exception:{type(exc).__name__}"}
 
     try:
         outcome = run_phase(20, "lock_preflight_backup_fingerprints_sqlite_before", phase20)
@@ -1218,6 +1310,9 @@ def orchestrate_gate_a(config, opener=None, clock=None):
         run_phase(100, "finalization_fingerprints_inventories_sqlite_after_receipt", phase100)
 
         public_evidence = {k: v for k, v in evidence.items() if not k.startswith("_")}
+        # TASK 055: complete the fixed predicate skeleton before
+        # evaluate_gate_a ever runs or any receipt is emitted.
+        _ensure_predicate_skeleton(public_evidence)
         status, unmet = evaluate_gate_a(public_evidence)
 
         extended_info = evidence.get("_extended", {})

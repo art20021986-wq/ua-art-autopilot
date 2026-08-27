@@ -3,6 +3,12 @@ canonical concurrency primitives and secure writer.
 
 No network access. No PythonAnywhere paths. Only temporary directories,
 local processes and local threads are used.
+
+TASK 055 correction: test_pid_reuse_start_mismatch_takeover now injects
+a deterministic canonical_modules._process_start_time callable instead
+of relying on the real /proc/<pid>/stat lookup, because that lookup can
+be unavailable inside the controller container. Product code is
+unchanged; only the test's timing source is made deterministic.
 """
 import multiprocessing
 import os
@@ -75,16 +81,35 @@ class TestCrossProcessLockSafety(unittest.TestCase):
         newcomer.release()
 
     def test_pid_reuse_start_mismatch_takeover(self):
-        # pid is alive (this test process) but start_time is wrong ->
-        # must be classified 'dead' (mismatch), allowing safe takeover.
-        evidence = LockEvidence(os.getpid(), "not-the-real-start-time", "tok", time.time())
-        with open(self.lock_path, "w") as fh:
-            fh.write(evidence.to_line())
-        status = _owner_status(evidence)
-        self.assertEqual(status, "dead")
-        newcomer = CrossProcessLock(self.lock_path)
-        self.assertTrue(newcomer.acquire())
-        newcomer.release()
+        # TASK 055: inject a deterministic canonical_modules._process_start_time
+        # so this test never depends on /proc/<pid>/stat actually being
+        # available or returning a specific value inside the controller
+        # container. pid is alive (this test process) but the recorded
+        # start_time does not match the deterministic value the product
+        # code will look up -> must be classified 'dead' (mismatch),
+        # allowing safe takeover.
+        import canonical_modules as canon
+
+        real_pid = os.getpid()
+        original = canon._process_start_time
+
+        def deterministic_start_time(pid):
+            if pid == real_pid:
+                return "real-start-time"
+            return original(pid)
+
+        canon._process_start_time = deterministic_start_time
+        try:
+            evidence = LockEvidence(real_pid, "not-the-real-start-time", "tok", time.time())
+            with open(self.lock_path, "w") as fh:
+                fh.write(evidence.to_line())
+            status = _owner_status(evidence)
+            self.assertEqual(status, "dead")
+            newcomer = CrossProcessLock(self.lock_path)
+            self.assertTrue(newcomer.acquire())
+            newcomer.release()
+        finally:
+            canon._process_start_time = original
 
     def test_unknown_identity_fails_closed(self):
         import canonical_modules as canon
