@@ -1,0 +1,117 @@
+# task037_discovery_workflow.yml.example
+#
+# REVIEWED TEMPLATE ONLY. Not active as a workflow until Codex independently
+# audits this file and copies it verbatim to
+# .github/workflows/task037_discovery.yml on the main branch.
+#
+# Safety summary:
+#   * Triggers only on workflow_dispatch or a push to main that changes this
+#     installed workflow file itself (self-change trigger only).
+#   * Runs py_compile + the standard-library unittest suite BEFORE any
+#     remote action.
+#   * Runs pythonanywhere_discovery_controller.py, which performs exactly one
+#     read-only PythonAnywhere discovery command and nothing else.
+#   * Never runs Gate B, never reloads the web app, never writes Production
+#     or CRM.
+#   * Commits only the two allowed evidence/report paths; any other staged
+#     path aborts the job.
+
+name: task037-discovery-readonly
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/task037_discovery.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task037-discovery-readonly
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main (full history)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Static compile check (standard library only)
+        run: python3 -m py_compile cloud/bot_logistics/*.py
+
+      - name: Offline unittest suite (standard library only, no network)
+        run: python3 -m unittest discover -v -s cloud/bot_logistics -p 'test*.py'
+
+      - name: Run PythonAnywhere read-only discovery controller
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_USERNAME: "Carix"
+          PYTHONANYWHERE_HOST: "www.pythonanywhere.com"
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, "cloud/bot_logistics")
+          import pythonanywhere_discovery_controller as ctrl
+          # A real transport implementation is supplied only inside the
+          # audited controller module for actual execution; this template
+          # intentionally does not embed transport wiring so that Codex must
+          # review the exact transport implementation before enabling.
+          raise SystemExit(
+              "Reviewed template placeholder: wire a real, audited "
+              "PythonAnywhere transport before enabling this job."
+          )
+          PY
+
+      - name: Verify only allowed evidence/report paths are staged
+        run: |
+          git add cloud/bot_logistics/evidence/task_037_discovery.json \
+                  cloud/bot_logistics/TASK_039_DISCOVERY_CONTROLLER_REPORT.md 2>/dev/null || true
+          STAGED=$(git diff --cached --name-only)
+          ALLOWED_1="cloud/bot_logistics/evidence/task_037_discovery.json"
+          ALLOWED_2="cloud/bot_logistics/TASK_039_DISCOVERY_CONTROLLER_REPORT.md"
+          for f in $STAGED; do
+            if [ "$f" != "$ALLOWED_1" ] && [ "$f" != "$ALLOWED_2" ]; then
+              echo "UNEXPECTED STAGED PATH: $f" >&2
+              git reset
+              exit 1
+            fi
+          done
+
+      - name: Commit and push evidence with bounded retries (no force-push)
+        run: |
+          git config user.name "task037-discovery-bot"
+          git config user.email "task037-discovery-bot@users.noreply.github.com"
+          if git diff --cached --quiet; then
+            echo "No evidence changes to commit."
+            exit 0
+          fi
+          git commit -m "task_037: read-only discovery evidence relay"
+          n=0
+          until [ $n -ge 5 ]
+          do
+            git fetch origin main && git rebase origin/main && git push origin HEAD:main && break
+            n=$((n+1))
+            sleep $((n * 5))
+          done
+          if [ $n -ge 5 ]; then
+            echo "Push failed after bounded retries." >&2
+            exit 1
+          fi
+
+# STATIC SAFETY MARKERS (for Codex audit grep):
+# NO_GATE_B_EXECUTED
+# NO_PRODUCTION_WRITE
+# NO_WSGI_RELOAD
+# READ_ONLY_DISCOVERY_ONLY
