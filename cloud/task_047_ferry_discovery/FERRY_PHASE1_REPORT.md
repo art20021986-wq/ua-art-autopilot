@@ -19,8 +19,8 @@ CRM, cards, generators, schedules, or PythonAnywhere files.
 
 Command: `python3 run_tests.py`
 
-- 83 tests per run, two deterministic runs: PASS (75 transform/discovery and
-  8 isolated Gate A/controller checks).
+- 86 tests per run, two deterministic runs: PASS (75 transform/discovery,
+  8 isolated Gate A/controller checks, and 3 bounded AST-context checks).
 - Repeated from another current working directory: PASS.
 - Exact nine-card sandbox audit: 18 approved replacements, zero ambiguous
   occurrences, every card idempotent, zero changes on a second pass.
