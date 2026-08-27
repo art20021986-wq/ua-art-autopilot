@@ -1,45 +1,40 @@
-# TEST MATRIX — TASK 013
+# TEST_MATRIX.md — TASK_016
 
-Legend: PASS (verified in this sandbox via the pure render functions), NOT_PROVEN (requires real PythonAnywhere execution/browser check, not available to this GitHub worker).
+For every record UA-0001..UA-0009, the Gate A run must record all of
+the following in `progress.json` / `gate_a_receipt.json`:
 
-## Per-card static structural checks (executed against START_UA_CARDS_UNIFIED.py self-test, 10 deterministic runs)
+| # | Check | Pass condition |
+|---|---|---|
+| 1 | Real source located | HTML file found via hardcoded candidate list, else `NOT_PROVEN` |
+| 2 | Preview card created | file exists under preview root |
+| 3 | Diagnostics button count | exactly 1 (`id="ua_diag_btn"`) |
+| 4 | Diagnostics page exists | `<code>_diagnostics.html` present |
+| 5 | Diagnostics state truthful | shows `Уточняется` when CRM value absent |
+| 6 | Tracking button count | exactly 1 (`id="ua_track_btn"`) |
+| 7 | Tracking page exists | `<code>_tracking.html` present |
+| 8 | Tracking state truthful | no invented container number/link |
+| 9 | No empty/unsafe links | no empty href/src, no `javascript:` |
+| 10 | No duplicate legacy variants | none of the patterns in `LEGACY_CONFLICT_AUDIT.md` remain |
+| 11 | Verified poster/fallback | real verified image or generated local fallback SVG only |
+| 12 | Mobile structure | viewport meta present, buttons not covered by floating widgets |
+| 13 | Media containment/integrity | every referenced media file passes containment + hash checks |
+| 14 | Protected hashes unchanged | UA-0001..UA-0008 and CRM before/after SHA-256 identical |
 
-| Card | 1 diag button | diag page exists | correct diag state | 1 track button | track page exists | correct track state | no unsafe href | no dup buttons | mobile structure class reused |
-|---|---|---|---|---|---|---|---|---|---|
-| UA-0001 (fixture: empty facts) | PASS | PASS | PASS (EMPTY) | PASS | PASS | PASS (NOT_SHIPPED) | PASS | PASS | PASS (structural) |
-| UA-0002..UA-0008 | NOT_PROVEN (no real CRM read performed; only UA-0001/UA-0009/synthetic fixtures rendered in this round) | NOT_PROVEN | NOT_PROVEN | NOT_PROVEN | NOT_PROVEN | NOT_PROVEN | NOT_PROVEN | NOT_PROVEN | NOT_PROVEN |
-| UA-0009 (confirmed facts only, no diagnostics/tracking facts invented) | PASS | PASS | PASS (EMPTY diag, NOT_SHIPPED track) | PASS | PASS | PASS | PASS | PASS | PASS (structural) |
-| Future empty card (UA-9998 fixture) | PASS | PASS | PASS (EMPTY) | PASS | PASS | PASS (UNKNOWN track raw -> NOT_SHIPPED default only because empty dict; real generator must still supply explicit stage) | PASS | PASS | PASS |
-| Future full card (UA-9999 fixture) | PASS | PASS | PASS (PARTIAL: summary+body+obd present, no photos/videos) | PASS | PASS | PASS (IN_TRANSIT with valid carrier URL) | PASS | PASS | PASS |
+## Determinism requirement
 
-## Diagnostics state cases (unit-level, exercised through CardFactsReader in self-test)
+The complete sequence above must be run 10 times against the same real
+data in staging; canonical JSON hash of results must be identical
+across all 10 runs before any preview is considered exposable.
 
-| Case | Result |
-|---|---|
-| Empty | PASS -> EMPTY, required empty paragraph rendered |
-| Text only | PASS -> PARTIAL |
-| OBD only | PASS -> PARTIAL |
-| Photo only | PASS -> PARTIAL |
-| Video only | PASS -> PARTIAL (subject to video validation) |
-| Partial mixed | PASS -> PARTIAL |
-| Full | PASS -> FULL |
-| CRM reference to missing file | PASS -> video marked invalid ("not_regular_file"/unreadable), excluded from valid_videos, page still renders empty-video sub-state |
-| Duplicate video SHA (vs main video or within card) | PASS -> flagged invalid with reason `duplicate_of_main_video_sha256` / `duplicate_sha256_within_card`, excluded from render |
+## Regression fixtures
 
-## Tracking cases
+`UA-9998` (empty) and `UA-9999` (full) run through the same checks as a
+permanent regression signal but never replace inspection of the real
+nine records.
 
-| Case | Result |
-|---|---|
-| Korea / pre-container | PASS -> NOT_SHIPPED text |
-| Number but no external URL | PASS -> CONTAINER_ASSIGNED_NO_NUMBER text (no external link rendered) |
-| At sea with valid URL | PASS -> IN_TRANSIT + external carrier link rendered |
-| Georgia (treated as IN_TRANSIT with route text) | PASS -> route line rendered, no invented container data |
-| Kyiv / completed | PASS -> DELIVERED_KYIV text |
-| Invalid external URL (javascript:/data:/empty) | PASS -> `is_safe_url` rejects it, external link omitted, no crash |
+## Status at authoring time
 
-## Explicit gaps (NOT_PROVEN, honestly disclosed)
-
-- Real browser rendering at 390/430/768/1366 px — NOT_PROVEN (no browser executed in this environment).
-- Actual current UA-0002..UA-0008 CRM field values — NOT_PROVEN (no live read performed).
-- WhatsApp floating widget non-overlap in a live DOM — NOT_PROVEN.
-- HTTP reachability of any URL — NOT_PROVEN (no network access used).
+This matrix is fully specified and implemented in
+`START_UA_CARDS_UNIFIED.py`. Actual pass/fail results only exist after
+a real Gate A execution produces `gate_a_receipt.json` on
+PythonAnywhere; see `BLOCKED.md`.

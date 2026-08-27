@@ -1,20 +1,46 @@
-# BLOCKED — AWAITING_GATE_A (this replaces PROGRESS_100.md)
+# BLOCKED.md — TASK_016
 
-This task cannot honestly report 100% from this environment. The static/logical/candidate work is complete (see PROGRESS_80.md). The remaining steps require actions this GitHub Claude worker is not permitted and not able to perform:
+## Factual blocker
 
-1. GitHub → PythonAnywhere safe-inbox transfer of the filtered candidate files (permitted per owner's standing authorization; this is not execution and not a production write).
-2. An operator-run Gate A execution of `START_UA_CARDS_UNIFIED.py` in dry-run/sandbox mode directly on PythonAnywhere (or an equivalent real environment), producing a real console receipt with real SHA-256 values and real determinism results.
-3. Only after Gate A sandbox evidence exists and is reviewed, an exact Gate B owner approval bound to `task_013` and the exact `release_manifest_candidate.json` SHA-256 (recomputed after commit) would permit the bounded production patch described in `PRODUCTION_PATCH_PLAN.md`.
-4. A real reachable preview URL and a real browser check at 390/430/768/1366 px, neither of which can be fabricated here.
+This worker (Claude/Cloud) executes in a GitHub-side sandbox and has no
+direct execution channel onto the PythonAnywhere host. It cannot itself
+run `RUN_GATE_A_TASK016.py`, connect to the real CRM SQLite file, read
+the real UA-0001..UA-0009 HTML, or write to
+`/home/Carix/video/preview/ua-cards-unified/`,
+`/home/Carix/video/reports/ua_cards_unified/`, or the Gate A receipt
+root. Those actions require the existing GitHub → safe-inbox delivery
+pipeline plus an actual PythonAnywhere console/task execution step,
+which are outside this worker's own execution surface.
 
-## UA-0009 gate (explicit, per task requirement)
+## What was completed instead
 
-UA-0009 PUBLICATION READINESS: FAIL
-SAFE TO PUBLISH UA-0009: NO
+- Fully corrected, self-contained Gate A code (`START_UA_CARDS_UNIFIED.py`,
+  `build_gate_a_manifest.py`, `RUN_GATE_A_TASK016.py`) implementing every
+  safety control listed in the task: hardcoded allowed roots, symlink/
+  traversal/zero-byte rejection, read-only CRM access with
+  `mode=ro` + `PRAGMA query_only=ON` + `quick_check`, alias-allowlisted
+  field mapping, legacy control stripping, single-anchor button
+  insertion, companion diagnostics/tracking pages, media validation and
+  safe fallback SVG, HTML structural checks, atomic writes, and a 10x
+  determinism loop with before/after protected-hash comparison.
+- A deterministic fixture self-test path (`python3.10
+  START_UA_CARDS_UNIFIED.py fixture`) that anyone with this repo
+  checked out can run to see the button-insertion and check logic work
+  against safe synthetic HTML, with zero production interaction.
+- Full documentation set required by the task.
 
-Reason: no sandbox has actually been executed, no reachable preview exists, and production has correctly not been touched. YES is forbidden under these conditions per the task's own gate rule, and this worker agrees with and enforces that rule rather than overriding it.
+## Honest completion ceiling
 
-## What is NOT blocked
+GitHub-side generation alone is capped at 80% per the task's own rule.
+No `PROGRESS_100.md` is produced because no real PythonAnywhere receipt
+or reachable preview exists yet.
 
-- All document deliverables, the candidate script, the fixtures, and the manifest skeleton are complete and committed under `cloud/ua_cards_unified/`.
-- The owner's `УТВЕРЖДАЮ ПУБЛИКАЦИЮ` intent is recorded and will be honored once the exact manifest-bound Gate A/Gate B sequence completes; it is not being ignored, only correctly not yet cryptographically applicable.
+## Safe next action
+
+Trigger the existing safe-inbox delivery for this task's
+`cloud/ua_cards_unified/` directory, then run
+`RUN_GATE_A_TASK016.py` with no arguments via the already-authorized
+PythonAnywhere console/task mechanism, then feed the resulting
+`gate_a_receipt.json`, `progress.json`, and `latest_status.html` back
+into the next task round for verification. No owner manual upload is
+required for this step.

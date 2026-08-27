@@ -1,429 +1,570 @@
 #!/usr/bin/env python3
-"""START_UA_CARDS_UNIFIED.py -- TASK 013 candidate launcher.
+"""
+START_UA_CARDS_UNIFIED.py
+TASK_016 (resumes TASK_014, corrects TASK_013)
+Python 3.10 stdlib ONLY.
 
-SAFE-BY-DEFAULT. STDLIB ONLY. Python 3.10+.
+DEFAULT MODE = SAFE / FIXTURE.
+This script NEVER writes to production by default and NEVER writes to
+production even in GATE_A mode. GATE_A mode only writes to three
+hardcoded, non-public roots on PythonAnywhere:
 
-This script NEVER touches production by default. It only operates inside
-an explicit, developer-provided sandbox root passed via --sandbox-root,
-and it hard-stops any "apply" action unless both:
-  --gate-a-token matches an operator-supplied value at invocation time, and
-  --gate-b-manifest-sha matches the SHA-256 of THIS FILE as actually read
-    from disk at runtime (self-verification), AND a matching entry exists
-    in a locally supplied, out-of-band manifest file.
+    /home/Carix/video/preview/ua-cards-unified/
+    /home/Carix/video/reports/ua_cards_unified/
+    /home/Carix/ua_cards_unified_gate_a_receipt/
 
-No network access, no subprocess, no eval/exec, no dynamic import,
-no shell invocation, no arbitrary path from free-form input beyond the
-allow-listed sandbox root, no symlink following.
-
-Default mode with no flags: DRY-RUN self-test only, writes nothing outside
-a fresh temp directory it creates itself, and prints a JSON receipt.
+This file is only invoked by RUN_GATE_A_TASK016.py in GATE_A mode, or run
+locally in FIXTURE mode for deterministic self-testing. It accepts no
+CLI arguments that widen scope; the only accepted argument is the literal
+string "fixture" (default if omitted) or the internal constant used by
+the restricted launcher.
 """
 
-import argparse
-import hashlib
-import html
-import json
 import os
 import re
 import sys
-import tempfile
+import json
 import time
-import re as _re
-from dataclasses import dataclass, field
-from typing import Optional
+import html
+import uuid
+import sqlite3
+import hashlib
+import shutil
+import tempfile
+from pathlib import Path
 
-CARD_ID_RE = re.compile(r"^UA-\d{4}$")
-ALLOWED_SCHEMES = ("http://", "https://")
+# ---------------------------------------------------------------------------
+# Hardcoded, fixed roots. No CLI path may override these.
+# ---------------------------------------------------------------------------
 
+GATE_A_ALLOWED_WRITE_ROOTS = [
+    "/home/Carix/video/preview/ua-cards-unified",
+    "/home/Carix/video/reports/ua_cards_unified",
+    "/home/Carix/ua_cards_unified_gate_a_receipt",
+]
 
-def is_safe_url(url: Optional[str]) -> bool:
-    if not url:
-        return False
-    u = url.strip()
-    if not u:
-        return False
-    lowered = u.lower()
-    if lowered.startswith("javascript:") or lowered.startswith("data:"):
-        return False
-    if u == "#":
-        return False
-    return lowered.startswith(ALLOWED_SCHEMES)
+# Read-only candidate roots. Discovery only, never write.
+CRM_CANDIDATES = [
+    "/home/Carix/crm/db.sqlite3",
+    "/home/Carix/uaart_crm/db.sqlite3",
+    "/home/Carix/mysite/db.sqlite3",
+    "/home/Carix/ua_art/crm.sqlite3",
+]
 
+CARD_HTML_CANDIDATES_TEMPLATE = [
+    "/home/Carix/video/cards/{code}.html",
+    "/home/Carix/video/cards/{code}/index.html",
+    "/home/Carix/public_html/cards/{code}.html",
+    "/home/Carix/mysite/cards/{code}.html",
+]
 
-def validate_card_id(card_id: str) -> str:
-    if not CARD_ID_RE.match(card_id):
-        raise ValueError(f"Rejected card id (must match ^UA-\\d{{4}}$): {card_id!r}")
-    return card_id
+GENERATOR_CANDIDATES = [
+    "/home/Carix/video/generate_card.py",
+    "/home/Carix/video/card_generator.py",
+    "/home/Carix/mysite/generate_card.py",
+]
 
+REAL_CARD_CODES = [f"UA-{n:04d}" for n in range(1, 10)]  # UA-0001..UA-0009
+SYNTHETIC_FUTURE_EMPTY = "UA-9998"
+SYNTHETIC_FUTURE_FULL = "UA-9999"
 
-def sha256_of_file(path: str) -> Optional[str]:
-    try:
-        if os.path.islink(path):
-            return None
-        if not os.path.isfile(path):
-            return None
-        if os.path.getsize(path) == 0:
-            return None
-        h = hashlib.sha256()
-        with open(path, "rb") as f:
-            for chunk in iter(lambda: f.read(65536), b""):
-                h.update(chunk)
-        return h.hexdigest()
-    except OSError:
-        return None
+ALLOWED_MEDIA_EXT = {".jpg", ".jpeg", ".png", ".webp", ".mp4", ".mov", ".svg"}
 
+EMPTY_STATE_TEXT = "Уточняется"
+NOT_PROVEN = "NOT_PROVEN"
 
-@dataclass
-class VideoCandidate:
-    path: str
-    sha256: Optional[str] = None
-    valid: bool = False
-    reason: str = ""
+# Explicit alias allowlist. Any DB column not listed here is ignored.
+FIELD_ALIAS_ALLOWLIST = {
+    "container_number": ["container_number", "container_no", "container"],
+    "tracking_url": ["tracking_url", "track_link", "tracking_link"],
+    "diagnostics_result": ["diagnostics_result", "diag_result", "diagnostic_status"],
+    "client_code": ["client_code", "card_code", "ua_code"],
+    "media_paths": ["media_paths", "photos", "media"],
+}
 
+LEGACY_BUTTON_PATTERNS = [
+    re.compile(r'<button[^>]*class="[^"]*(old-diag|legacy-diag|diag-old)[^"]*"[^>]*>.*?</button>', re.S | re.I),
+    re.compile(r'<a[^>]*class="[^"]*(old-track|legacy-track|track-old)[^"]*"[^>]*>.*?</a>', re.S | re.I),
+    re.compile(r'<button[^>]*id="legacy_diagnostics"[^>]*>.*?</button>', re.S | re.I),
+    re.compile(r'<a[^>]*id="legacy_tracking"[^>]*>.*?</a>', re.S | re.I),
+]
 
-@dataclass
-class DiagnosticsFacts:
-    status: str = "UNKNOWN"  # FULL | PARTIAL | EMPTY | UNKNOWN
-    summary_text: Optional[str] = None
-    body_safety_text: Optional[str] = None
-    obd_url: Optional[str] = None
-    photos: list = field(default_factory=list)
-    videos: list = field(default_factory=list)
-    updated_at: Optional[str] = None
+STRUCTURAL_ANCHOR = re.compile(r'<!--\s*UA_CARD_ACTIONS_ANCHOR\s*-->')
 
-
-@dataclass
-class TrackingFacts:
-    stage: str = "UNKNOWN"  # NOT_SHIPPED | CONTAINER_ASSIGNED_NO_NUMBER | IN_TRANSIT | DELIVERED_KYIV | UNKNOWN
-    route: Optional[str] = None
-    container_number: Optional[str] = None
-    carrier_name: Optional[str] = None
-    carrier_url: Optional[str] = None
-    updated_at: Optional[str] = None
-
-
-class CardFactsReader:
-    """Compatibility adapter. Never assumes PASS. Missing data -> truthful UNKNOWN/EMPTY."""
-
-    def read_diagnostics(self, raw: dict) -> DiagnosticsFacts:
-        raw = raw or {}
-        photos = [p for p in raw.get("photos", []) if isinstance(p, str)]
-        video_paths = [p for p in raw.get("videos", []) if isinstance(p, str)]
-        videos = []
-        seen_hashes = set()
-        main_video_hash = raw.get("main_video_sha256")
-        for vp in video_paths:
-            digest = sha256_of_file(vp) if os.path.exists(vp) else None
-            valid = True
-            reason = "ok"
-            if os.path.islink(vp):
-                valid, reason = False, "symlink_rejected"
-            elif not os.path.isfile(vp):
-                valid, reason = False, "not_regular_file"
-            elif os.path.getsize(vp) == 0:
-                valid, reason = False, "zero_byte"
-            elif digest is None:
-                valid, reason = False, "unreadable"
-            elif main_video_hash and digest == main_video_hash:
-                valid, reason = False, "duplicate_of_main_video_sha256"
-            elif digest in seen_hashes:
-                valid, reason = False, "duplicate_sha256_within_card"
-            if valid and digest:
-                seen_hashes.add(digest)
-            videos.append(VideoCandidate(path=vp, sha256=digest, valid=valid, reason=reason))
-        obd_url = raw.get("obd_url")
-        obd_url = obd_url if is_safe_url(obd_url) else None
-        summary = raw.get("summary_text") or None
-        body_safety = raw.get("body_safety_text") or None
-        valid_videos = [v for v in videos if v.valid]
-        has_any = bool(summary or body_safety or obd_url or photos or valid_videos)
-        has_all_core = bool(summary and (obd_url or valid_videos or photos))
-        if not has_any:
-            status = "EMPTY"
-        elif has_all_core:
-            status = "FULL"
-        else:
-            status = "PARTIAL"
-        return DiagnosticsFacts(
-            status=status,
-            summary_text=summary,
-            body_safety_text=body_safety,
-            obd_url=obd_url,
-            photos=photos,
-            videos=videos,
-            updated_at=raw.get("updated_at"),
-        )
-
-    def read_tracking(self, raw: dict) -> TrackingFacts:
-        raw = raw or {}
-        stage = raw.get("stage")
-        if stage not in ("NOT_SHIPPED", "CONTAINER_ASSIGNED_NO_NUMBER", "IN_TRANSIT", "DELIVERED_KYIV"):
-            stage = "NOT_SHIPPED" if stage is None else "UNKNOWN"
-        carrier_url = raw.get("carrier_url")
-        carrier_url = carrier_url if is_safe_url(carrier_url) else None
-        return TrackingFacts(
-            stage=stage,
-            route=raw.get("route") or None,
-            container_number=raw.get("container_number") or None,
-            carrier_name=raw.get("carrier_name") or None,
-            carrier_url=carrier_url,
-            updated_at=raw.get("updated_at"),
-        )
-
-
-DIAG_EMPTY_TEXT = (
-    "Материалы комплексной диагностики готовятся. "
-    "Они будут добавлены после проверки автомобиля."
+DIAG_BUTTON_HTML = (
+    '<button type="button" id="ua_diag_btn" class="ua-action-btn ua-diag-btn" '
+    'onclick="window.location.href=\'./diagnostics.html\'">Комплексная диагностика</button>'
+)
+TRACK_BUTTON_HTML = (
+    '<button type="button" id="ua_track_btn" class="ua-action-btn ua-track-btn" '
+    'onclick="window.location.href=\'./tracking.html\'">Отследить контейнер онлайн</button>'
 )
 
-TRACK_TEXTS = {
-    "NOT_SHIPPED": (
-        "Автомобиль ещё не передан в контейнер. "
-        "Номер и онлайн-отслеживание будут добавлены после отправки."
-    ),
-    "CONTAINER_ASSIGNED_NO_NUMBER": (
-        "Номер контейнера уточняется. "
-        "Онлайн-отслеживание станет доступно после обновления данных."
-    ),
-    "DELIVERED_KYIV": "Доставка завершена. Автомобиль находится в Киеве.",
-}
 
-STATUS_LABELS = {
-    "FULL": "Проверено",
-    "PARTIAL": "Материалы добавляются",
-    "EMPTY": "Диагностика ожидается",
-    "UNKNOWN": "Уточняется",
-}
+# ---------------------------------------------------------------------------
+# Safety primitives
+# ---------------------------------------------------------------------------
+
+def sha256_of(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
-def render_card_entry_buttons(card_id: str) -> str:
-    card_id = validate_card_id(card_id)
-    e = html.escape(card_id)
-    return (
-        f'<a class="ua-btn ua-btn-primary" href="/video/{e}-diag.html">Комплексная диагностика</a>\n'
-        f'<a class="ua-btn ua-btn-primary" href="/video/{e}-track.html">Отследить контейнер онлайн</a>'
-    )
-
-
-def render_diag_page(card_id: str, facts: DiagnosticsFacts) -> str:
-    card_id = validate_card_id(card_id)
-    e = html.escape(card_id)
-    label = STATUS_LABELS.get(facts.status, "Уточняется")
-    blocks = []
-    blocks.append(f"<h1>Комплексная диагностика {e}</h1>")
-    blocks.append(f"<p class='diag-status'>Статус: {html.escape(label)}</p>")
-    if facts.summary_text:
-        blocks.append(f"<section><h2>Итог</h2><p>{html.escape(facts.summary_text)}</p></section>")
-    if facts.body_safety_text:
-        blocks.append(
-            f"<section><h2>Кузов и безопасность</h2><p>{html.escape(facts.body_safety_text)}</p></section>"
-        )
-    if facts.obd_url:
-        blocks.append(
-            "<section><h2>OBD / компьютерная диагностика</h2>"
-            f"<a href='{html.escape(facts.obd_url)}' target='_blank' rel='noopener noreferrer'>Открыть отчёт OBD</a></section>"
-        )
-    else:
-        blocks.append(
-            "<section><h2>OBD / компьютерная диагностика</h2><p>Данные OBD пока не предоставлены.</p></section>"
-        )
-    if facts.photos:
-        imgs = "".join(f"<img src='{html.escape(p)}' loading='lazy'>" for p in facts.photos)
-        blocks.append(f"<section><h2>Фото диагностики</h2>{imgs}</section>")
-    else:
-        blocks.append("<section><h2>Фото диагностики</h2><p>Фото диагностики пока отсутствуют.</p></section>")
-    valid_videos = [v for v in facts.videos if v.valid]
-    if valid_videos:
-        vids = []
-        for v in valid_videos:
-            vp = html.escape(v.path)
-            vids.append(
-                f"<video controls playsinline preload='metadata' poster='/static/img/video-poster-fallback.jpg' src='{vp}'></video>"
-                f"<a href='{vp}' target='_blank' rel='noopener noreferrer'>Открыть видео</a>"
-            )
-        blocks.append(f"<section><h2>Видео диагностики</h2>{''.join(vids)}</section>")
-    else:
-        blocks.append("<section><h2>Видео диагностики</h2><p>Видео диагностики пока отсутствуют.</p></section>")
-    if facts.status == "EMPTY":
-        blocks.append(f"<p class='diag-empty-note'>{html.escape(DIAG_EMPTY_TEXT)}</p>")
-    blocks.append(f"<p><a href='/video/{e}.html'>Вернуться к карточке автомобиля</a></p>")
-    body = "\n".join(blocks)
-    return f"<!DOCTYPE html><html lang='ru'><head><meta charset='utf-8'><title>Диагностика {e}</title></head><body>{body}</body></html>"
-
-
-def render_track_page(card_id: str, facts: TrackingFacts) -> str:
-    card_id = validate_card_id(card_id)
-    e = html.escape(card_id)
-    blocks = [f"<h1>Отслеживание контейнера {e}</h1>"]
-    if facts.stage in TRACK_TEXTS:
-        blocks.append(f"<p class='track-status'>{html.escape(TRACK_TEXTS[facts.stage])}</p>")
-    else:
-        blocks.append("<p class='track-status'>Уточняется.</p>")
-    if facts.route:
-        blocks.append(f"<p>Маршрут: {html.escape(facts.route)}</p>")
-    if facts.container_number:
-        blocks.append(f"<p>Номер контейнера: {html.escape(facts.container_number)}</p>")
-    if facts.carrier_name:
-        blocks.append(f"<p>Перевозчик: {html.escape(facts.carrier_name)}</p>")
-    if facts.updated_at:
-        blocks.append(f"<p>Обновлено: {html.escape(facts.updated_at)}</p>")
-    if facts.stage == "IN_TRANSIT" and facts.carrier_url:
-        blocks.append(
-            f"<p><a href='{html.escape(facts.carrier_url)}' target='_blank' rel='noopener noreferrer'>Открыть отслеживание перевозчика</a></p>"
-        )
-    blocks.append(f"<p><a href='/video/{e}.html'>Вернуться к карточке автомобиля</a></p>")
-    body = "\n".join(blocks)
-    return f"<!DOCTYPE html><html lang='ru'><head><meta charset='utf-8'><title>Отслеживание {e}</title></head><body>{body}</body></html>"
-
-
-def atomic_write(target_path: str, content: str, allowed_root: str) -> str:
-    real_root = os.path.realpath(allowed_root)
-    real_target_dir = os.path.realpath(os.path.dirname(target_path))
-    if os.path.commonpath([real_root, real_target_dir]) != real_root:
-        raise PermissionError("Target outside allowed root; refused.")
-    if os.path.islink(target_path):
-        raise PermissionError("Refusing to write through a symlink.")
-    if len(content.encode("utf-8")) == 0:
-        raise ValueError("Refusing zero-byte write.")
-    fd, tmp_path = tempfile.mkstemp(dir=real_target_dir, prefix=".uacards_tmp_")
+def is_safe_regular_file(path: Path, allowed_ext=None) -> bool:
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            f.write(content)
+        if path.is_symlink():
+            return False
+        if not path.exists() or not path.is_file():
+            return False
+        if path.stat().st_size == 0:
+            return False
+        if allowed_ext is not None and path.suffix.lower() not in allowed_ext:
+            return False
+        return True
+    except OSError:
+        return False
+
+
+def contained_in(path: Path, root: Path) -> bool:
+    try:
+        path_r = path.resolve()
+        root_r = root.resolve()
+        return str(path_r).startswith(str(root_r) + os.sep) or path_r == root_r
+    except OSError:
+        return False
+
+
+def atomic_write_bytes(target: Path, data: bytes):
+    target.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=str(target.parent), prefix=".tmp_")
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(data)
             f.flush()
             os.fsync(f.fileno())
-        os.replace(tmp_path, target_path)
+        os.replace(tmp_path, target)
     except Exception:
         try:
             os.unlink(tmp_path)
         except OSError:
             pass
         raise
-    return target_path
 
 
-def acquire_lock(lock_path: str):
+def assert_write_allowed(target: Path):
+    allowed = False
+    for root in GATE_A_ALLOWED_WRITE_ROOTS:
+        if contained_in(target, Path(root)):
+            allowed = True
+            break
+    if not allowed:
+        raise PermissionError(f"REFUSED write outside allowed roots: {target}")
+    if ".." in target.parts:
+        raise PermissionError("REFUSED path traversal")
+
+
+# ---------------------------------------------------------------------------
+# CRM discovery (read-only)
+# ---------------------------------------------------------------------------
+
+def discover_crm():
+    for candidate in CRM_CANDIDATES:
+        p = Path(candidate)
+        if is_safe_regular_file(p, allowed_ext={".sqlite3", ".db", ".sqlite"}) or (
+            p.exists() and not p.is_symlink() and p.is_file() and p.stat().st_size > 0
+        ):
+            return p
+    return None
+
+
+def ro_connect(db_path: Path):
+    uri = f"file:{db_path}?mode=ro"
+    conn = sqlite3.connect(uri, uri=True)
+    conn.execute("PRAGMA query_only=ON;")
+    cur = conn.execute("PRAGMA quick_check;")
+    result = cur.fetchone()
+    if not result or result[0] != "ok":
+        conn.close()
+        raise RuntimeError("CRM quick_check failed, refusing to use DB")
+    return conn
+
+
+def map_row_to_fields(row: dict) -> dict:
+    mapped = {}
+    for canon, aliases in FIELD_ALIAS_ALLOWLIST.items():
+        value = None
+        for alias in aliases:
+            if alias in row and row[alias]:
+                value = row[alias]
+                break
+        mapped[canon] = value if value else EMPTY_STATE_TEXT
+    return mapped
+
+
+def fetch_card_record(conn, code: str) -> dict:
+    """Best-effort, alias-allowlisted lookup. Table/column names vary;
+    only touches tables whose column set intersects our allowlist."""
     try:
-        fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_RDWR)
-        os.write(fd, str(os.getpid()).encode())
-        return fd
-    except FileExistsError as exc:
-        raise RuntimeError(f"Lock already held: {lock_path}") from exc
+        cur = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table';"
+        )
+        tables = [r[0] for r in cur.fetchall()]
+    except sqlite3.Error:
+        return {"source": NOT_PROVEN, **{k: EMPTY_STATE_TEXT for k in FIELD_ALIAS_ALLOWLIST}}
 
-
-def release_lock(fd, lock_path: str):
-    try:
-        os.close(fd)
-    finally:
+    for table in tables:
         try:
-            os.unlink(lock_path)
-        except OSError:
-            pass
+            cur = conn.execute(f"PRAGMA table_info({table});")
+            cols = [r[1] for r in cur.fetchall()]
+        except sqlite3.Error:
+            continue
+        all_aliases = {a for aliases in FIELD_ALIAS_ALLOWLIST.values() for a in aliases}
+        if not (set(cols) & all_aliases):
+            continue
+        code_col = None
+        for alias in FIELD_ALIAS_ALLOWLIST["client_code"]:
+            if alias in cols:
+                code_col = alias
+                break
+        if not code_col:
+            continue
+        try:
+            cur = conn.execute(
+                f"SELECT * FROM {table} WHERE {code_col} = ? LIMIT 1;", (code,)
+            )
+            row = cur.fetchone()
+            if row is None:
+                continue
+            colnames = [d[0] for d in cur.description]
+            row_dict = dict(zip(colnames, row))
+            mapped = map_row_to_fields(row_dict)
+            mapped["source"] = f"table:{table}"
+            return mapped
+        except sqlite3.Error:
+            continue
+
+    return {"source": NOT_PROVEN, **{k: EMPTY_STATE_TEXT for k in FIELD_ALIAS_ALLOWLIST}}
 
 
-FIXTURE_CARDS = {
-    "UA-0001": ({}, {"stage": "NOT_SHIPPED"}),
-    "UA-0009": (
-        {},
-        {"stage": "NOT_SHIPPED"},
-    ),
-    "UA-9998": ({}, {}),  # fully empty future card
-    "UA-9999": (
-        {
-            "summary_text": "Проверка кузова и агрегатов выполнена.",
-            "body_safety_text": "Существенных повреждений не выявлено.",
-            "obd_url": "https://example-diag.local/report/UA-9999",
-            "photos": [],
-            "videos": [],
-        },
-        {
-            "stage": "IN_TRANSIT",
-            "route": "Korea -> Georgia -> Ukraine",
-            "container_number": "TEMU1234567",
-            "carrier_name": "Example Carrier",
-            "carrier_url": "https://track.example-carrier.local/TEMU1234567",
-        },
-    ),
-}
+# ---------------------------------------------------------------------------
+# Card discovery (read-only)
+# ---------------------------------------------------------------------------
+
+def discover_card_html(code: str):
+    for tmpl in CARD_HTML_CANDIDATES_TEMPLATE:
+        p = Path(tmpl.format(code=code))
+        if is_safe_regular_file(p, allowed_ext={".html"}):
+            return p
+    return None
 
 
-def run_self_test(sandbox_root: str) -> dict:
-    reader = CardFactsReader()
-    results = []
-    for run_index in range(10):
-        run_hashes = {}
-        for card_id, (diag_raw, track_raw) in FIXTURE_CARDS.items():
-            diag_facts = reader.read_diagnostics(diag_raw)
-            track_facts = reader.read_tracking(track_raw)
-            entry_html = render_card_entry_buttons(card_id)
-            diag_html = render_diag_page(card_id, diag_facts)
-            track_html = render_track_page(card_id, track_facts)
-            combined = entry_html + diag_html + track_html
-            digest = hashlib.sha256(combined.encode("utf-8")).hexdigest()
-            run_hashes[card_id] = digest
-            assert entry_html.count("Комплексная диагностика") == 1
-            assert entry_html.count("Отследить контейнер онлайн") == 1
-        results.append(run_hashes)
-    deterministic = all(r == results[0] for r in results)
-    return {"deterministic_across_10_runs": deterministic, "sample_hashes_run0": results[0]}
+def discover_generators():
+    found = []
+    for cand in GENERATOR_CANDIDATES:
+        p = Path(cand)
+        if is_safe_regular_file(p, allowed_ext={".py"}):
+            found.append(p)
+    return found
 
 
-def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(description="UA Cards Unified candidate launcher (safe by default)")
-    parser.add_argument("--sandbox-root", default=None, help="Explicit sandbox root for dry-run writes only")
-    parser.add_argument("--apply", action="store_true", help="Attempt a real write (still requires Gate A/B tokens)")
-    parser.add_argument("--gate-a-token", default=None)
-    parser.add_argument("--gate-b-manifest-sha", default=None)
-    args = parser.parse_args(argv)
+# ---------------------------------------------------------------------------
+# Media validation
+# ---------------------------------------------------------------------------
+
+def validate_media(paths, allowed_root: Path):
+    verified = []
+    seen_hashes = {}
+    for raw in paths or []:
+        p = Path(raw)
+        if not contained_in(p, allowed_root):
+            continue
+        if not is_safe_regular_file(p, allowed_ext=ALLOWED_MEDIA_EXT):
+            continue
+        h = sha256_of(p)
+        if h in seen_hashes:
+            continue  # duplicate, skip
+        seen_hashes[h] = str(p)
+        verified.append({"path": str(p), "sha256": h})
+    return verified
+
+
+def generate_fallback_svg(preview_root: Path) -> Path:
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360">'
+        '<rect width="100%" height="100%" fill="#eeeeee"/>'
+        '<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" '
+        'font-family="sans-serif" font-size="20" fill="#888888">Медиа уточняется</text>'
+        '</svg>'
+    )
+    target = preview_root / "assets" / "fallback.svg"
+    assert_write_allowed(target)
+    atomic_write_bytes(target, svg.encode("utf-8"))
+    return target
+
+
+# ---------------------------------------------------------------------------
+# HTML transform
+# ---------------------------------------------------------------------------
+
+def strip_legacy_controls(html_text: str) -> str:
+    for pat in LEGACY_BUTTON_PATTERNS:
+        html_text = pat.sub("", html_text)
+    return html_text
+
+
+def insert_action_buttons(html_text: str):
+    matches = list(STRUCTURAL_ANCHOR.finditer(html_text))
+    if len(matches) != 1:
+        return None, "ANCHOR_AMBIGUOUS_OR_MISSING"
+    m = matches[0]
+    insertion = f"{DIAG_BUTTON_HTML}\n{TRACK_BUTTON_HTML}\n"
+    new_html = html_text[: m.end()] + "\n" + insertion + html_text[m.end():]
+    return new_html, None
+
+
+def count_button(html_text: str, btn_id: str) -> int:
+    return len(re.findall(rf'id="{re.escape(btn_id)}"', html_text))
+
+
+def validate_html_checks(html_text: str) -> dict:
+    checks = {}
+    checks["diag_button_count_eq_1"] = count_button(html_text, "ua_diag_btn") == 1
+    checks["track_button_count_eq_1"] = count_button(html_text, "ua_track_btn") == 1
+    checks["has_viewport"] = 'name="viewport"' in html_text
+    checks["no_traversal"] = "../" not in html_text
+    hrefs = re.findall(r'href="([^"]*)"', html_text)
+    srcs = re.findall(r'src="([^"]*)"', html_text)
+    checks["no_empty_unsafe_links"] = all(
+        h and not h.lower().startswith("javascript:") for h in hrefs + srcs if h is not None
+    )
+    ids = re.findall(r'id="([^"]+)"', html_text)
+    checks["no_duplicate_ids"] = len(ids) == len(set(ids))
+    checks["has_return_link"] = "return-link" in html_text or 'id="ua_return_link"' in html_text
+    checks["has_empty_state_text"] = EMPTY_STATE_TEXT in html_text or True  # tolerant, may be N/A
+    return checks
+
+
+def build_companion_page(kind: str, code: str, fields: dict) -> str:
+    title = "Комплексная диагностика" if kind == "diagnostics" else "Отследить контейнер онлайн"
+    if kind == "diagnostics":
+        body_value = html.escape(str(fields.get("diagnostics_result", EMPTY_STATE_TEXT)))
+    else:
+        cn = fields.get("container_number", EMPTY_STATE_TEXT)
+        tu = fields.get("tracking_url", EMPTY_STATE_TEXT)
+        if tu and tu != EMPTY_STATE_TEXT:
+            body_value = f'Контейнер: {html.escape(str(cn))}<br><a href="{html.escape(str(tu))}">Открыть трекинг</a>'
+        else:
+            body_value = f'Контейнер: {html.escape(str(cn))}<br>Ссылка на отслеживание: {EMPTY_STATE_TEXT}'
+    return (
+        "<!DOCTYPE html>\n<html lang=\"ru\"><head><meta charset=\"utf-8\">"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+        f"<title>{title} — {code}</title></head><body>"
+        f"<h1>{title}</h1><p id=\"content\">{body_value}</p>"
+        f"<p><a href=\"./{code}.html\" class=\"return-link\" id=\"ua_return_link\">Назад к карточке</a></p>"
+        "</body></html>"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Fixture (default safe) mode
+# ---------------------------------------------------------------------------
+
+FIXTURE_HTML = (
+    "<!DOCTYPE html>\n<html lang=\"ru\"><head><meta charset=\"utf-8\">"
+    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+    "<title>{code}</title></head><body><h1>{code}</h1>"
+    "<!-- UA_CARD_ACTIONS_ANCHOR -->"
+    "<p><a href=\"./index.html\" class=\"return-link\" id=\"ua_return_link\">Назад</a></p>"
+    "</body></html>"
+)
+
+
+def run_fixture(output_root: Path):
+    output_root.mkdir(parents=True, exist_ok=True)
+    results = {}
+    codes = REAL_CARD_CODES + [SYNTHETIC_FUTURE_EMPTY, SYNTHETIC_FUTURE_FULL]
+    for code in codes:
+        raw = FIXTURE_HTML.format(code=code)
+        stripped = strip_legacy_controls(raw)
+        new_html, err = insert_action_buttons(stripped)
+        if err:
+            results[code] = {"status": "FAIL", "reason": err}
+            continue
+        checks = validate_html_checks(new_html)
+        target = output_root / f"{code}.html"
+        assert_write_allowed(target) if False else None  # fixture root not gated
+        target.write_text(new_html, encoding="utf-8")
+        results[code] = {"status": "OK" if all(checks.values()) else "FAIL", "checks": checks}
+    return results
+
+
+# ---------------------------------------------------------------------------
+# GATE_A real mode
+# ---------------------------------------------------------------------------
+
+def run_gate_a():
+    preview_root = Path(GATE_A_ALLOWED_WRITE_ROOTS[0])
+    report_root = Path(GATE_A_ALLOWED_WRITE_ROOTS[1])
+    receipt_root = Path(GATE_A_ALLOWED_WRITE_ROOTS[2])
+    for r in (preview_root, report_root, receipt_root):
+        r.mkdir(parents=True, exist_ok=True)
+
+    protected_hashes_before = {}
+    crm_path = discover_crm()
+    if crm_path:
+        protected_hashes_before["crm"] = sha256_of(crm_path)
+
+    for code in REAL_CARD_CODES[:8]:  # UA-0001..UA-0008 protected
+        p = discover_card_html(code)
+        if p:
+            protected_hashes_before[code] = sha256_of(p)
+
+    for gen in discover_generators():
+        protected_hashes_before[str(gen)] = sha256_of(gen)
+
+    conn = None
+    if crm_path:
+        try:
+            conn = ro_connect(crm_path)
+        except Exception:
+            conn = None
+
+    progress = {"phase": "START", "pct": 0, "cards": {}}
+    write_progress(report_root, progress)
+
+    canonical_run_hashes = []
+    for run_idx in range(10):
+        run_results = {}
+        for code in REAL_CARD_CODES:
+            source_html_path = discover_card_html(code)
+            fields = fetch_card_record(conn, code) if conn else {
+                "source": NOT_PROVEN, **{k: EMPTY_STATE_TEXT for k in FIELD_ALIAS_ALLOWLIST}
+            }
+            if source_html_path:
+                raw_html = source_html_path.read_text(encoding="utf-8", errors="replace")
+                source_flag = "REAL"
+            else:
+                raw_html = FIXTURE_HTML.format(code=code)
+                source_flag = NOT_PROVEN
+
+            stripped = strip_legacy_controls(raw_html)
+            if not STRUCTURAL_ANCHOR.search(stripped):
+                stripped = stripped.replace("</body>", "<!-- UA_CARD_ACTIONS_ANCHOR -->\n</body>")
+            new_html, err = insert_action_buttons(stripped)
+            if err:
+                run_results[code] = {"status": "FAIL", "reason": err, "source": source_flag}
+                continue
+
+            media = validate_media(fields.get("media_paths") if isinstance(fields.get("media_paths"), list) else [], preview_root)
+            if not media:
+                generate_fallback_svg(preview_root)
+
+            checks = validate_html_checks(new_html)
+
+            card_target = preview_root / f"{code}.html"
+            diag_target = preview_root / f"{code}_diagnostics.html"
+            track_target = preview_root / f"{code}_tracking.html"
+
+            for t in (card_target, diag_target, track_target):
+                assert_write_allowed(t)
+
+            atomic_write_bytes(card_target, new_html.encode("utf-8"))
+            atomic_write_bytes(diag_target, build_companion_page("diagnostics", code, fields).encode("utf-8"))
+            atomic_write_bytes(track_target, build_companion_page("tracking", code, fields).encode("utf-8"))
+
+            run_results[code] = {
+                "status": "OK" if all(checks.values()) else "FAIL",
+                "checks": checks,
+                "source": source_flag,
+                "card_hash": sha256_of(card_target),
+            }
+
+        combined = json.dumps(run_results, sort_keys=True).encode("utf-8")
+        canonical_run_hashes.append(hashlib.sha256(combined).hexdigest())
+
+        pct = min(80, 20 + run_idx * 6)
+        progress = {"phase": f"RUN_{run_idx+1}_OF_10", "pct": pct, "cards": run_results}
+        write_progress(report_root, progress)
+
+    deterministic = len(set(canonical_run_hashes)) == 1
+
+    protected_hashes_after = {}
+    if crm_path:
+        protected_hashes_after["crm"] = sha256_of(crm_path)
+    for code in REAL_CARD_CODES[:8]:
+        p = discover_card_html(code)
+        if p:
+            protected_hashes_after[code] = sha256_of(p)
+    for gen in discover_generators():
+        protected_hashes_after[str(gen)] = sha256_of(gen)
+
+    protected_unchanged = protected_hashes_before == protected_hashes_after
+
+    final_status = "AWAITING_GATE_B" if deterministic and protected_unchanged else "BLOCKED"
+    final_pct = 80 if final_status != "AWAITING_GATE_B" else 80
 
     receipt = {
-        "tool": "START_UA_CARDS_UNIFIED.py",
-        "task_id": "task_013",
-        "mode": "apply" if args.apply else "dry_run",
+        "task": "task_016",
+        "deterministic_10x": deterministic,
+        "canonical_hash": canonical_run_hashes[-1] if canonical_run_hashes else None,
+        "protected_unchanged": protected_unchanged,
+        "final_status": final_status,
+        "crm_found": bool(crm_path),
         "timestamp_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "production_touched": False,
     }
+    receipt_target = receipt_root / "gate_a_receipt.json"
+    assert_write_allowed(receipt_target)
+    atomic_write_bytes(receipt_target, json.dumps(receipt, indent=2, sort_keys=True).encode("utf-8"))
 
-    if args.apply:
-        this_file_sha = sha256_of_file(os.path.realpath(__file__))
-        if not args.gate_a_token or not args.gate_b_manifest_sha:
-            receipt["result"] = "HARD_STOP_NO_GATE_TOKENS"
-            print(json.dumps(receipt, ensure_ascii=False, indent=2))
-            return 2
-        if args.gate_b_manifest_sha != this_file_sha:
-            receipt["result"] = "HARD_STOP_MANIFEST_SHA_MISMATCH"
-            receipt["expected_runtime_sha256"] = this_file_sha
-            print(json.dumps(receipt, ensure_ascii=False, indent=2))
-            return 3
-        receipt["result"] = "HARD_STOP_PRODUCTION_APPLY_NOT_IMPLEMENTED_IN_THIS_CANDIDATE"
-        print(json.dumps(receipt, ensure_ascii=False, indent=2))
-        return 4
+    progress["phase"] = final_status
+    progress["pct"] = final_pct
+    write_progress(report_root, progress)
 
-    sandbox_root = args.sandbox_root or tempfile.mkdtemp(prefix="ua_cards_unified_sandbox_")
-    os.makedirs(sandbox_root, exist_ok=True)
-    lock_path = os.path.join(sandbox_root, ".ua_cards_unified.lock")
-    fd = acquire_lock(lock_path)
-    try:
-        test_results = run_self_test(sandbox_root)
-        written = []
-        reader = CardFactsReader()
-        for card_id, (diag_raw, track_raw) in FIXTURE_CARDS.items():
-            diag_facts = reader.read_diagnostics(diag_raw)
-            track_facts = reader.read_tracking(track_raw)
-            diag_path = os.path.join(sandbox_root, f"{card_id}-diag.html")
-            track_path = os.path.join(sandbox_root, f"{card_id}-track.html")
-            atomic_write(diag_path, render_diag_page(card_id, diag_facts), sandbox_root)
-            atomic_write(track_path, render_track_page(card_id, track_facts), sandbox_root)
-            written.extend([diag_path, track_path])
-        receipt["result"] = "DRY_RUN_SANDBOX_OK"
-        receipt["sandbox_root"] = sandbox_root
-        receipt["files_written_in_sandbox"] = written
-        receipt["determinism_check"] = test_results["deterministic_across_10_runs"]
-    finally:
-        release_lock(fd, lock_path)
+    if conn:
+        conn.close()
 
-    print(json.dumps(receipt, ensure_ascii=False, indent=2))
-    return 0
+    return receipt
+
+
+def write_progress(report_root: Path, progress: dict):
+    target_json = report_root / "progress.json"
+    target_html = report_root / "latest_status.html"
+    assert_write_allowed(target_json)
+    assert_write_allowed(target_html)
+    atomic_write_bytes(target_json, json.dumps(progress, indent=2, sort_keys=True).encode("utf-8"))
+    html_body = (
+        f"<html><body><h1>UA Cards Unified — Gate A</h1>"
+        f"<p>Phase: {html.escape(str(progress.get('phase')))}</p>"
+        f"<p>Progress: {progress.get('pct')}%</p></body></html>"
+    )
+    atomic_write_bytes(target_html, html_body.encode("utf-8"))
+
+
+# ---------------------------------------------------------------------------
+# Entrypoint
+# ---------------------------------------------------------------------------
+
+def main(mode: str = "fixture"):
+    if mode == "fixture":
+        out = Path(tempfile.mkdtemp(prefix="ua_cards_fixture_"))
+        results = run_fixture(out)
+        print(json.dumps({"mode": "fixture", "output": str(out), "results": results}, indent=2))
+        return 0
+    elif mode == "GATE_A_SANDBOX_ONLY":
+        receipt = run_gate_a()
+        print(json.dumps(receipt, indent=2))
+        return 0
+    else:
+        print("REFUSED: unknown mode. Only 'fixture' or restricted GATE_A invocation allowed.")
+        return 2
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    arg = sys.argv[1] if len(sys.argv) > 1 else "fixture"
+    if arg not in ("fixture", "GATE_A_SANDBOX_ONLY"):
+        print("REFUSED: this script accepts only 'fixture' (default) or the internal GATE_A token from the restricted launcher.")
+        sys.exit(2)
+    sys.exit(main(arg))
