@@ -1,5 +1,5 @@
-name: Task 039 Safe Retry
-# Round 3: exact eight-file response
+name: Task 039 Pinned Safe Retry
+# Round 4: pin the worker to task_039 so concurrent higher-numbered tasks cannot replace it.
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: task-039-safe-retry
+  group: task-039-pinned-safe-retry
   cancel-in-progress: false
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
-      - name: Generate reviewed Task 039 outputs
+      - name: Generate pinned Task 039 outputs
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
@@ -31,18 +31,30 @@ jobs:
           ANTHROPIC_NETWORK_ATTEMPTS: '4'
           ANTHROPIC_MAX_TOKENS: '128000'
           ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
-        run: python3 automation/claude_worker.py
-      - name: Commit only cloud outputs with bounded conflict handling
+        run: >-
+          python3 -c "import pathlib; import automation.claude_worker as worker;
+          worker.latest_task = lambda: pathlib.Path('tasks/task_039.md'); worker.main()"
+      - name: Validate and commit exact Task 039 outputs
         run: |
           grep -q '^TASK_ID: task_039$' cloud/latest_status.md
-          git add -A -- cloud/
-          if git diff --cached --quiet -- cloud/; then
+          mapfile -t changes < <(git diff --name-only -- cloud/)
+          if [ "${#changes[@]}" -eq 0 ]; then
             echo 'No Task 039 cloud changes'
             exit 1
           fi
+          for path in "${changes[@]}"; do
+            case "${path}" in
+              cloud/bot_logistics/bot_logistics_discovery.py|              cloud/bot_logistics/test_bot_logistics.py|              cloud/bot_logistics/pythonanywhere_discovery_controller.py|              cloud/bot_logistics/test_discovery_controller.py|              cloud/bot_logistics/task037_discovery_workflow.yml.example|              cloud/bot_logistics/TASK_039_REPORT.md|              cloud/latest_status.md|              cloud/owner_reply.md) ;;
+              *)
+                echo "Unexpected Task 039 path: ${path}"
+                exit 1
+                ;;
+            esac
+          done
+          git add --             cloud/bot_logistics/bot_logistics_discovery.py             cloud/bot_logistics/test_bot_logistics.py             cloud/bot_logistics/pythonanywhere_discovery_controller.py             cloud/bot_logistics/test_discovery_controller.py             cloud/bot_logistics/task037_discovery_workflow.yml.example             cloud/bot_logistics/TASK_039_REPORT.md             cloud/latest_status.md             cloud/owner_reply.md
           git config user.name 'ua-art-claude-worker'
           git config user.email 'actions@users.noreply.github.com'
-          git commit -m 'Claude autopilot: process task 039 retry'
+          git commit -m 'Claude autopilot: process pinned task 039'
 
           for attempt in 1 2 3 4 5; do
             git fetch origin main
