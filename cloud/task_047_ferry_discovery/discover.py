@@ -1,4 +1,4 @@
-"""TASK 053 — Bounded, fail-closed, read-only discovery.
+"""FERRY-PHASE1 — Bounded, fail-closed, read-only discovery.
 
 No production write. No CRM write. No Gate A/B execution. Reads only,
 from a fixed registry, under a single base directory. Missing files are
