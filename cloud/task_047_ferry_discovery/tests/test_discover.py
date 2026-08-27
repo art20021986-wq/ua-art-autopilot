@@ -216,7 +216,7 @@ class TestCRM(TempDirCase):
         self.assertEqual(before, after)
 
 
-class TestTask053Discovery(TempDirCase):
+class TestFerryPhase1Discovery(TempDirCase):
     def _make_real_db(self, duplicate=False):
         path = os.path.join(self.tmp, "crm.db")
         conn = sqlite3.connect(path)
