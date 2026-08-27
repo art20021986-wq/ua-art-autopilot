@@ -38,8 +38,9 @@ MAX_UPLOAD_ATTEMPTS = 8
 MIN_UPLOAD_INTERVAL_SECONDS = 1.5
 ALLOWED_SUFFIXES = {
     ".py", ".md", ".txt", ".json", ".yaml", ".yml", ".html", ".htm",
-    ".css", ".js", ".csv", ".toml", ".ini", ".cfg", ".sh", ".sql", ".proposed",
+    ".css", ".js", ".csv", ".jsonl", ".toml", ".ini", ".cfg", ".sh", ".sql", ".proposed",
 }
+ALLOWED_BASENAMES = {".gitkeep"}
 SECRET_PATTERNS = [
     ("anthropic_key", re.compile(rb"sk-ant-[A-Za-z0-9_-]{20,}")),
     ("github_pat", re.compile(rb"github_pat_[A-Za-z0-9_]{20,}")),
@@ -119,7 +120,7 @@ def filter_file(path: pathlib.Path) -> tuple[str, bytes, str]:
         fail(f"PATH_ESCAPE:{path}")
     rel = resolved.relative_to(ROOT.resolve()).as_posix()
     suffix = resolved.suffix.lower()
-    if suffix not in ALLOWED_SUFFIXES:
+    if suffix not in ALLOWED_SUFFIXES and resolved.name not in ALLOWED_BASENAMES:
         fail(f"UNSUPPORTED_EXTENSION:{rel}:{suffix or 'NONE'}")
     size = resolved.stat().st_size
     if size > MAX_FILE_BYTES:
