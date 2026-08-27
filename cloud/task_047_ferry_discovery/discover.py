@@ -578,10 +578,10 @@ def transform_python_source(source: str, rel_path: str) -> Tuple[str, List[dict]
         token for token in tokenize.generate_tokens(io.StringIO(source).readline)
         if token.type == tokenize.STRING
     ]
-    by_position = {(token.start[0], token.start[1], token.end[0], token.end[1]): token for token in tokens}
     replacements = []
     records = []
     seen_positions = set()
+    seen_token_positions = set()
     for item in approved:
         line_number = item["line"]
         end_line = item["end_line"]
@@ -597,41 +597,71 @@ def transform_python_source(source: str, rel_path: str) -> Tuple[str, List[dict]
         if position in seen_positions:
             raise PythonTransformBlocked("duplicate_literal_position")
         seen_positions.add(position)
-        token = by_position.get(position)
-        if token is None:
-            raise PythonTransformBlocked("literal_not_single_string_token")
-        try:
-            value = ast.literal_eval(token.string)
-        except (SyntaxError, ValueError) as exc:
-            raise PythonTransformBlocked("literal_not_static_string_token") from exc
-        if not isinstance(value, str):
-            raise PythonTransformBlocked("literal_not_text")
+        node_start = (line_number, start_character)
+        node_end = (end_line, end_character)
+        node_tokens = [
+            token for token in tokens
+            if node_start <= token.start and token.end <= node_end
+        ]
+        if not node_tokens:
+            raise PythonTransformBlocked("literal_has_no_string_tokens:%s" % line_number)
+        values = []
+        for token in node_tokens:
+            token_position = (token.start, token.end)
+            if token_position in seen_token_positions:
+                raise PythonTransformBlocked("overlapping_literal_tokens:%s" % line_number)
+            try:
+                value_part = ast.literal_eval(token.string)
+            except (SyntaxError, ValueError) as exc:
+                raise PythonTransformBlocked(
+                    "literal_not_static_string_token:%s" % line_number
+                ) from exc
+            if not isinstance(value_part, str):
+                raise PythonTransformBlocked("literal_not_text:%s" % line_number)
+            values.append(value_part)
+        value = "".join(values)
         if hashlib.sha256(value.encode("utf-8")).hexdigest() != item["literal_sha256"]:
-            raise PythonTransformBlocked("literal_hash_mismatch")
+            raise PythonTransformBlocked("literal_hash_mismatch:%s" % line_number)
         mapped, change_count = _mapped_python_text(value)
         if change_count < 1 or mapped == value:
-            raise PythonTransformBlocked("approved_literal_not_changed")
-        token_text = token.string
-        mapped_token_text = token_text
+            raise PythonTransformBlocked("approved_literal_not_changed:%s" % line_number)
         direct_changes = 0
-        for before, after in PYTHON_TEXT_REPLACEMENTS:
-            count = mapped_token_text.count(before)
-            if count:
-                mapped_token_text = mapped_token_text.replace(before, after)
-                direct_changes += count
+        mapped_parts = []
+        for token, value_part in zip(node_tokens, values):
+            mapped_part, part_changes = _mapped_python_text(value_part)
+            token_text = token.string
+            mapped_token_text = token_text
+            token_direct_changes = 0
+            for before, after in PYTHON_TEXT_REPLACEMENTS:
+                count = mapped_token_text.count(before)
+                if count:
+                    mapped_token_text = mapped_token_text.replace(before, after)
+                    token_direct_changes += count
+            if token_direct_changes != part_changes:
+                raise PythonTransformBlocked(
+                    "literal_requires_escape_rewrite:%s" % line_number
+                )
+            try:
+                evaluated = ast.literal_eval(mapped_token_text)
+            except (SyntaxError, ValueError) as exc:
+                raise PythonTransformBlocked("mapped_literal_invalid:%s" % line_number) from exc
+            if evaluated != mapped_part:
+                raise PythonTransformBlocked(
+                    "mapped_literal_value_mismatch:%s" % line_number
+                )
+            mapped_parts.append(mapped_part)
+            direct_changes += token_direct_changes
+            if token_direct_changes:
+                start_offset = starts[token.start[0] - 1] + token.start[1]
+                end_offset = starts[token.end[0] - 1] + token.end[1]
+                if source[start_offset:end_offset] != token_text:
+                    raise PythonTransformBlocked("token_offset_mismatch:%s" % line_number)
+                replacements.append((start_offset, end_offset, mapped_token_text))
+            seen_token_positions.add((token.start, token.end))
         if direct_changes != change_count:
-            raise PythonTransformBlocked("literal_requires_escape_rewrite")
-        try:
-            evaluated = ast.literal_eval(mapped_token_text)
-        except (SyntaxError, ValueError) as exc:
-            raise PythonTransformBlocked("mapped_literal_invalid") from exc
-        if evaluated != mapped:
-            raise PythonTransformBlocked("mapped_literal_value_mismatch")
-        start_offset = starts[token.start[0] - 1] + token.start[1]
-        end_offset = starts[token.end[0] - 1] + token.end[1]
-        if source[start_offset:end_offset] != token_text:
-            raise PythonTransformBlocked("token_offset_mismatch")
-        replacements.append((start_offset, end_offset, mapped_token_text))
+            raise PythonTransformBlocked("literal_target_crosses_tokens:%s" % line_number)
+        if "".join(mapped_parts) != mapped:
+            raise PythonTransformBlocked("mapped_parts_value_mismatch:%s" % line_number)
         records.append({
             "line": line_number,
             "before": item["before"],
