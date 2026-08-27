@@ -50,6 +50,7 @@ def _base_receipt():
         "production_sources_unchanged": False,
         "discovery_reasons": [],
         "candidates": [],
+        "generator_candidates": [],
         "python_sources": [],
         "crm": {},
         "errors": [],
@@ -171,6 +172,7 @@ def _run_gate_a(source_root, candidate_root, enforce_fixed):
                         "line": occurrence.get("line"),
                         "column": occurrence.get("column"),
                         "end_line": occurrence.get("end_line"),
+                        "end_column": occurrence.get("end_column"),
                         "before": occurrence.get("before"),
                         "classification": occurrence.get("classification"),
                         "action": occurrence.get("action"),
@@ -194,6 +196,49 @@ def _run_gate_a(source_root, candidate_root, enforce_fixed):
             return receipt
 
         source_hashes = {}
+        for rel_path, result in sorted(discovery.get("python", {}).items()):
+            user_facing = [
+                item for item in result.get("occurrences", [])
+                if item.get("classification") == "USER_FACING"
+            ]
+            if not user_facing:
+                continue
+            meta, raw = discover._safe_read_file_bytes(source_root, rel_path)
+            if meta.get("status") != "OK" or raw is None:
+                raise GateABlocked("generator_source_read_failed")
+            source_hashes[rel_path] = meta["sha256"]
+            source_text = raw.decode("utf-8", errors="strict")
+            try:
+                candidate_text, changes = discover.transform_python_source(
+                    source_text, rel_path
+                )
+                second_text, second_changes = discover.transform_python_source(
+                    candidate_text, rel_path
+                )
+            except discover.PythonTransformBlocked as exc:
+                raise GateABlocked("generator_transform_blocked:" + str(exc))
+            if candidate_text == source_text or not changes:
+                raise GateABlocked("generator_candidate_has_no_changes")
+            if second_text != candidate_text or second_changes:
+                raise GateABlocked("generator_candidate_not_idempotent")
+            candidate_bytes = candidate_text.encode("utf-8")
+            candidate_rel = "python/" + rel_path
+            target = _candidate_path(candidate_root, candidate_rel)
+            _atomic_write(target, candidate_bytes)
+            persisted = pathlib.Path(target).read_bytes()
+            if persisted != candidate_bytes:
+                raise GateABlocked("generator_candidate_readback_mismatch")
+            receipt["generator_candidates"].append({
+                "path": rel_path,
+                "candidate_path": os.path.join(CANDIDATE_ROOT, candidate_rel),
+                "source_sha256": meta["sha256"],
+                "candidate_sha256": sha256_bytes(candidate_bytes),
+                "source_size": len(raw),
+                "candidate_size": len(candidate_bytes),
+                "changes": sum(item["replacements"] for item in changes),
+                "occurrences": changes,
+            })
+
         for rel_path in discover.REGISTRY["video_pages"]:
             meta, raw = discover._safe_read_file_bytes(source_root, rel_path)
             if meta.get("status") != "OK" or raw is None:
@@ -237,11 +282,9 @@ def _run_gate_a(source_root, candidate_root, enforce_fixed):
                 raise GateABlocked("production_source_changed_during_gate_a")
 
         receipt["production_sources_unchanged"] = True
-        needs_generator = any(
-            item.get("classification") == "USER_FACING"
-            for item in receipt["python_sources"]
+        receipt["status"] = (
+            "PASS_READY_FOR_GATE_B" if receipt["generator_candidates"] else "PASS"
         )
-        receipt["status"] = "PASS_NEEDS_GENERATOR_PATCH" if needs_generator else "PASS"
         receipt["errors"] = []
         return receipt
     except GateABlocked as exc:
@@ -259,7 +302,7 @@ def run_gate_a():
 def main():
     receipt = run_gate_a()
     print(json.dumps(receipt, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
-    return 0 if receipt["status"] in {"PASS", "PASS_NEEDS_GENERATOR_PATCH"} else 2
+    return 0 if receipt["status"] in {"PASS", "PASS_READY_FOR_GATE_B"} else 2
 
 
 if __name__ == "__main__":
