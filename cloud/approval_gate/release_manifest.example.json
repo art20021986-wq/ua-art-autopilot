@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "task_id": "task_010",
+  "created_at_utc": "2024-01-01T00:00:00Z",
+  "source_commit_sha": "0000000000000000000000000000000000abcd",
+  "github_actions_run_id": "1234567890",
+  "github_actions_run_url": "https://github.com/example-org/example-repo/actions/runs/1234567890",
+  "claude_authored": true,
+  "files": [
+    {
+      "path": "cloud/approval_gate/example_safe_script.py",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "size_bytes": 123
+    }
+  ],
+  "target_mode": "SANDBOX_ONLY",
+  "allowed_action": {
+    "action_type": "SAFE_SCRIPT_RUN",
+    "command_id": "RUN_SANDBOX_CHECK_V1",
+    "target_paths": [
+      "/home/Carix/autopilot_inbox/sandbox/example_safe_script.py"
+    ]
+  },
+  "requires_gate_a": true,
+  "requires_gate_b": false,
+  "backup_required": false,
+  "rollback_plan": "No mutable target touched; sandbox execution only, nothing to roll back.",
+  "visual_check_required": false,
+  "risk_level": "LOW",
+  "gate_a": null,
+  "gate_b": null,
+  "manifest_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+}
