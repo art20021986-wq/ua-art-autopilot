@@ -1,4 +1,5 @@
-"""CRM-SPEED-001 Gate A orchestration (TASK 032 canonical integration).
+"""CRM-SPEED-001 Gate A orchestration (TASK 032 canonical integration,
+TASK 035 evidence integration).
 
 This module provides one canonical evidence-computation core plus two
 callers:
@@ -23,9 +24,21 @@ callers:
 Gate A is never executed against production by this repository. Every
 function here operates only on paths/strings explicitly supplied by the
 caller (production launcher DEFAULT_CONFIG or a test fixture/config).
-Until TASK 033 delivers real transform/SQLite/publication evidence for
-UA-0009, orchestrate_gate_a intentionally records certain predicates as
-BLOCKED rather than fabricating a PASS from missing evidence.
+
+TASK 035 integration: the canonical read-only SQLite ownership evidence
+(sqlite_ownership.collect_ua0009_ownership_evidence /
+compare_ownership_evidence) and the canonical no-redirect publication
+probe (ua0009_publication_check.canonical_probe_ua0009) are used
+directly by orchestrate_gate_a -- their logic is never duplicated here.
+UA-0009 evidence is collected once before the candidate workload and
+once after the entire workload, and compared through the canonical
+helper; missing/non-OK/changed evidence always BLOCKS, never fabricated
+as unchanged. When cars_ui semantic analysis blocks the transform
+before compile-time evidence would otherwise exist, safe compile-only
+evidence is still recorded from the exact secure original bytes
+(candidate_origin=original_due_to_transform_block); this never permits
+a final PASS by itself since the remaining structural predicates stay
+missing/BLOCKED in that path.
 """
 import os
 import ast
@@ -42,6 +55,8 @@ import urllib.error
 
 from canonical_modules import CrossProcessLock, SingletonGuard, RebuildQueue, SafeWriter
 import cars_ui_transform
+import sqlite_ownership
+import ua0009_publication_check
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -100,6 +115,13 @@ DEFAULT_CONFIG = {
     "protected_function_names": [],
     "db_function_source": None,
     "min_free_bytes": 10 * 1024 * 1024,
+    # UA-0009 SQLite row-identity table/column configuration is
+    # intentionally left unconfigured pending owner-verified schema
+    # confirmation. Until configured, UA-0009 ownership evidence fails
+    # closed (BLOCKED) rather than fabricating an unchanged result.
+    "ua0009_table": None,
+    "ua0009_id_column": None,
+    "ua0009_id_value": "UA-0009",
 }
 
 REQUIRED_PREDICATES = [
@@ -306,6 +328,10 @@ class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
 
 
 def check_ua0009_not_public(url, opener=None):
+    """Historical fixture-facing adapter, preserved unchanged for
+    _compute_evidence()/run_gate_a() compatibility. orchestrate_gate_a()
+    uses the canonical ua0009_publication_check.canonical_probe_ua0009
+    directly instead (see phase80 below) rather than this adapter."""
     if not url or not url.startswith("https://"):
         return {"status": "BLOCKED", "reason": "missing_or_non_https_url"}
     if opener is None:
@@ -539,6 +565,21 @@ def check_no_production_write(protected_before, protected_after, site_before, si
     return {"status": "OK"}
 
 
+def _collect_ua0009_sqlite_evidence(config, db_path):
+    """Delegates entirely to sqlite_ownership.collect_ua0009_ownership_evidence
+    (the exact canonical implementation) -- no duplicated logic. Missing
+    table/column/db configuration fails closed (BLOCKED), never
+    fabricated."""
+    table = config.get("ua0009_table")
+    id_column = config.get("ua0009_id_column")
+    id_value = config.get("ua0009_id_value", "UA-0009")
+    if not db_path or not table or not id_column:
+        return sqlite_ownership.OwnershipEvidence(
+            status="BLOCKED", reason="ua0009_table_or_column_not_configured"
+        )
+    return sqlite_ownership.collect_ua0009_ownership_evidence(db_path, table, id_column, id_value)
+
+
 def evaluate_gate_a(evidence):
     unmet = []
     for key in REQUIRED_PREDICATES:
@@ -630,6 +671,7 @@ def run_gate_a(fixture):
         "unmet_predicates": unmet,
         "evidence": evidence,
         "production_write": "NO",
+        "pii_emitted": "NO",
         "generated_at": time.time(),
     }
     run_dir = fixture.get("run_dir")
@@ -764,6 +806,15 @@ def orchestrate_gate_a(config, opener=None, clock=None):
     injected temporary-directory configuration and an injected fake
     HTTPS opener). Never scans an account recursively; only reads the
     exact bounded paths present in `config`.
+
+    TASK 035: read-only UA-0009 SQLite ownership evidence is collected
+    once before the candidate workload (end of phase20) and once again
+    only after the entire workload (start of phase100), always via the
+    canonical sqlite_ownership.collect_ua0009_ownership_evidence /
+    compare_ownership_evidence functions -- never duplicated here. The
+    publication probe in phase80 delegates directly to the canonical
+    ua0009_publication_check.canonical_probe_ua0009 with the injected
+    opener.
     """
     clock = clock or time.monotonic
     phases = []
@@ -773,6 +824,7 @@ def orchestrate_gate_a(config, opener=None, clock=None):
     candidate_sources = {}
     input_records = {}
     state = {"blocked": False}
+    sqlite_state = {"before": None, "after": None}
     run_dir = None
     lock = None
 
@@ -813,6 +865,15 @@ def orchestrate_gate_a(config, opener=None, clock=None):
         if backup_result["status"] != "OK":
             raise _GateABlocked("backup_verification_failed")
         evidence["_fingerprints_before"] = {p: fingerprint_file(p) for p in config["required_inputs"]}
+
+        # Canonical, read-only, fail-closed UA-0009 SQLite ownership
+        # evidence, collected once here (before the candidate workload).
+        # Delegates entirely to sqlite_ownership; database resources are
+        # closed internally before returning, i.e. strictly before any
+        # transform/hashing/HTTP/filesystem work below.
+        db_path = _find_input_path(config, "crm.db")
+        sqlite_state["before"] = _collect_ua0009_sqlite_evidence(config, db_path)
+
         for root, names in config["site_roots"].items():
             site_before[root] = scan_bounded_inventory(root, names)
 
@@ -827,19 +888,47 @@ def orchestrate_gate_a(config, opener=None, clock=None):
         cars_ui_source = input_records[cars_ui_path]["data"].decode("utf-8")
         usercustomize_source = input_records[usercustomize_path]["data"].decode("utf-8")
         avtoperedacha_source = input_records[avtoperedacha_path]["data"].decode("utf-8")
+        evidence["_cars_ui_source"] = cars_ui_source
+        evidence["_usercustomize_source"] = usercustomize_source
+        evidence["_avtoperedacha_source"] = avtoperedacha_source
+
         result = transform_cars_ui(cars_ui_source)
         evidence["_transform_result"] = result
         if result["status"] != "OK" or result.get("candidate") is None:
+            # Semantic transform blocked before a candidate could be
+            # created. Still record safe compile-only evidence from the
+            # exact secure original bytes (never executed/imported).
+            # This is explicitly NOT an accepted candidate and never by
+            # itself permits a final PASS -- the remaining structural
+            # predicates (admin_routes_text_only, media_persistence,
+            # etc.) stay missing/BLOCKED because phase80 is skipped.
+            compile_map = {
+                "cars_ui.py": cars_ui_source,
+                "usercustomize.py": usercustomize_source,
+                "avtoperedacha.py": avtoperedacha_source,
+            }
+            try:
+                compile_result = check_candidates_compile(compile_map)
+            except Exception as exc:
+                compile_result = {"status": "BLOCKED", "reason": f"exception:{type(exc).__name__}"}
+            if compile_result.get("status") == "OK":
+                evidence["candidates_compile"] = {
+                    "status": "OK",
+                    "candidate_origin": "original_due_to_transform_block",
+                    "compiled": compile_result.get("compiled", []),
+                }
+            else:
+                evidence["candidates_compile"] = dict(
+                    compile_result, candidate_origin="original_due_to_transform_block"
+                )
             raise _GateABlocked("cars_ui_transform_blocked")
+
         candidate_sources["cars_ui.py"] = result["candidate"]
         candidate_sources["usercustomize.py"] = usercustomize_source
         candidate_sources["avtoperedacha.py"] = avtoperedacha_source
         diff_text = generate_unified_diff(cars_ui_source, candidate_sources["cars_ui.py"])
         evidence["_diff_sha256"] = _sha256_bytes(diff_text.encode("utf-8"))
         evidence["_candidate_hashes"] = {k: _sha256_bytes(v.encode("utf-8")) for k, v in candidate_sources.items()}
-        evidence["_cars_ui_source"] = cars_ui_source
-        evidence["_usercustomize_source"] = usercustomize_source
-        evidence["_avtoperedacha_source"] = avtoperedacha_source
 
     def phase60():
         if state["blocked"]:
@@ -886,7 +975,16 @@ def orchestrate_gate_a(config, opener=None, clock=None):
         evidence["deterministic_repeat_all_transforms"] = check_deterministic_repeat_all_transforms({
             "cars_ui": (transform_cars_ui, cars_ui_source, ()),
         })
-        evidence["ua0009_not_public"] = check_ua0009_not_public(config["ua0009_url"], opener)
+
+        # Delegate the publication probe directly to the canonical
+        # no-redirect implementation with the injected opener -- no
+        # duplicated HTTP logic here.
+        publication_result = ua0009_publication_check.canonical_probe_ua0009(config["ua0009_url"], opener=opener)
+        evidence["ua0009_not_public"] = {
+            "status": "OK" if publication_result.status == "PASS" else "BLOCKED",
+            "reason": publication_result.reason,
+            "http_status": publication_result.status_code,
+        }
 
         required_here = [
             "admin_routes_text_only", "media_persistence_unchanged", "usercustomize_inert",
@@ -920,12 +1018,29 @@ def orchestrate_gate_a(config, opener=None, clock=None):
                 site_ok = False
                 changed_roots.append(root)
         evidence["site_inventory_unchanged"] = {"status": "OK"} if site_ok else {"status": "BLOCKED", "changed_roots": changed_roots}
-        evidence["ua0009_fingerprint_unchanged"] = {"status": "BLOCKED", "reason": "task_033_pending_real_fingerprint_evidence"}
+
+        # Canonical UA-0009 SQLite ownership evidence, collected again
+        # only after the entire workload (phases 20/40/60/80 have all
+        # run or been skipped/blocked). Compared through the canonical
+        # compare_ownership_evidence helper; missing, non-OK, or changed
+        # evidence always BLOCKS -- never fabricated as unchanged.
+        db_path = _find_input_path(config, "crm.db")
+        before_ev = sqlite_state["before"] or sqlite_ownership.OwnershipEvidence(
+            status="BLOCKED", reason="not_collected_before_block"
+        )
+        after_ev = _collect_ua0009_sqlite_evidence(config, db_path)
+        sqlite_state["before"] = before_ev
+        sqlite_state["after"] = after_ev
+        cmp_ok, cmp_reason = sqlite_ownership.compare_ownership_evidence(before_ev, after_ev)
+        evidence["ua0009_fingerprint_unchanged"] = {"status": "OK" if cmp_ok else "BLOCKED", "reason": cmp_reason}
+        evidence["_sqlite_ownership_before"] = before_ev.to_dict()
+        evidence["_sqlite_ownership_after"] = after_ev.to_dict()
+
         evidence["no_production_write"] = check_no_production_write(
             evidence.get("_fingerprints_before") or {}, fingerprints_after, site_before, site_after)
 
     try:
-        outcome = run_phase(20, "lock_preflight_backup_fingerprints", phase20)
+        outcome = run_phase(20, "lock_preflight_backup_fingerprints_sqlite_before", phase20)
         if outcome != "OK":
             state["blocked"] = True
         outcome = run_phase(40, "secure_source_reads_and_candidate_diff", phase40)
@@ -937,7 +1052,7 @@ def orchestrate_gate_a(config, opener=None, clock=None):
         outcome = run_phase(80, "structural_concurrency_sqlite_media_publication", phase80)
         if outcome != "OK":
             state["blocked"] = True
-        run_phase(100, "finalization_fingerprints_inventories_receipt", phase100)
+        run_phase(100, "finalization_fingerprints_inventories_sqlite_after_receipt", phase100)
 
         public_evidence = {k: v for k, v in evidence.items() if not k.startswith("_")}
         status, unmet = evaluate_gate_a(public_evidence)
@@ -953,6 +1068,11 @@ def orchestrate_gate_a(config, opener=None, clock=None):
             "package_hashes": evidence.get("_candidate_hashes", {}),
             "diff_sha256": evidence.get("_diff_sha256"),
             "site_inventories": {"before": site_before, "after": site_after},
+            "sqlite_ownership": {
+                "before": evidence.get("_sqlite_ownership_before"),
+                "after": evidence.get("_sqlite_ownership_after"),
+            },
+            "publication_result": public_evidence.get("ua0009_not_public"),
             "synthetic_latency": {"non_production": True, "value_ms": 0},
             "blockers": evidence.get("_blockers", []),
             "allowed_write_ledger": [],
@@ -962,6 +1082,7 @@ def orchestrate_gate_a(config, opener=None, clock=None):
                 "await_owner_gate_b_approval"
             ),
             "production_write": "NO",
+            "pii_emitted": "NO",
         }
 
         if run_dir is not None:
