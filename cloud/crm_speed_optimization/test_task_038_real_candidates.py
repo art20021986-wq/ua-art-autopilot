@@ -3,9 +3,19 @@ no-escaped-exception correction and real candidate-transform pipeline
 (candidate_transforms.py) plus its integration into
 crm_speed_gate_a.orchestrate_gate_a.
 
+TASK 041 correction applied to this file only as explicitly authorized:
+(1) the invalid string-substring assertion in
+    test_single_generator_binds_to_one_queue_no_spawn was replaced with
+    an AST call-site assertion (a FunctionDef string can never satisfy
+    an ast.Call check), and (2) AVTOPEREDACHA_SOURCE was updated to
+    contain both a real in-process call site and a literal stranica.py
+    process-spawn site for the same generator, since TASK 041 hardened
+    transform_avtoperedacha_rebuild to require actual call-graph proof
+    instead of function-name hints.
+
 No network access. No PythonAnywhere paths. No /home/Carix access. Only
 temporary directories, local threads/processes and a fake 404 HTTPS
-opener are used. Existing tests are never modified, skipped, or
+opener are used. No other existing tests are modified, skipped, or
 weakened.
 
 PRODUCTION_TOUCHED: NO
@@ -230,7 +240,7 @@ class LauncherSingletonTests(unittest.TestCase):
         self.assertEqual(result["status"], "BLOCKED")
 
     def test_multiple_main_anchors_block(self):
-        result = candidate_transforms.transform_launcher_singleton(STARTSAFE if False else STARTSAFEBAD if False else START_SAFE_BAD_TWO_MAIN, self.LOCK_PATH)
+        result = candidate_transforms.transform_launcher_singleton(START_SAFE_BAD_TWO_MAIN, self.LOCK_PATH)
         self.assertEqual(result["status"], "BLOCKED")
 
 
@@ -242,8 +252,10 @@ AVTOPEREDACHA_SOURCE = (
     "import subprocess\n\n"
     "def generate_stranica_page():\n"
     "    return 'page'\n\n"
+    "def call_generator_directly():\n"
+    "    return generate_stranica_page()\n\n"
     "def handle_update():\n"
-    "    subprocess.Popen(['python3', 'rebuild.py'])\n"
+    "    subprocess.Popen(['python3', 'stranica.py'])\n"
 )
 
 AVTOPEREDACHA_TWO_GENERATORS = (
@@ -265,8 +277,17 @@ class AvtoperedachaRebuildTests(unittest.TestCase):
         self.assertIn("_queue.enqueue()", result["candidate"])
         self.assertIn("RebuildQueue", result["candidate"])
         compile(result["candidate"], "<c>", "exec")
-        # The generator must never be executed during transform.
-        self.assertNotIn("generate_stranica_page()", result["candidate"].split("_queue =")[0])
+        # TASK 041: AST call-site assertion -- a FunctionDef string can
+        # never satisfy an ast.Call check, unlike the prior invalid
+        # substring assertion. Proves zero remaining direct calls to the
+        # generator outside the queue binding.
+        candidate_tree = ast.parse(result["candidate"])
+        direct_calls = [
+            n for n in ast.walk(candidate_tree)
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+            and n.func.id == "generate_stranica_page"
+        ]
+        self.assertEqual(direct_calls, [])
 
     def test_two_generator_candidates_block(self):
         result = candidate_transforms.transform_avtoperedacha_rebuild(AVTOPEREDACHA_TWO_GENERATORS)

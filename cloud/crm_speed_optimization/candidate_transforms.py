@@ -1,4 +1,4 @@
-"""candidate_transforms.py (TASK 038)
+"""candidate_transforms.py (TASK 041)
 
 One canonical, fail-closed, standard-library-only, AST/token-aware
 candidate-transform module for CRM-SPEED-001. Never imports or executes
@@ -23,6 +23,23 @@ names, counts and line numbers).
 cars_ui.py transforms remain the sole responsibility of
 cars_ui_transform.transform_cars_ui; this module never duplicates that
 logic.
+
+TASK 041 corrections over TASK 038:
+
+- transform_usercustomize now uses a POSITIVE harmless-import allowlist
+  (ALLOWED_HARMLESS_USERCUSTOMIZE_IMPORTS) in addition to the existing
+  forbidden-import removal set. Any import that is neither explicitly
+  forbidden (removed) nor explicitly allowed (kept) BLOCKS the whole
+  transform instead of silently passing through.
+- transform_launcher_singleton preserves the module docstring and every
+  leading `from __future__` import before injecting the runtime import,
+  and a duplicate start now writes one bounded diagnostic to stderr and
+  exits with the stable code 78 instead of 3.
+- transform_avtoperedacha_rebuild now requires structural call-graph
+  proof (a zero-argument in-module generator with at least one proven
+  in-process call site AND at least one proven, alias-resolved,
+  literal-matched process-spawn site for that same generator) instead of
+  function-name hints and a global spawn replacement.
 """
 from __future__ import annotations
 
@@ -38,10 +55,17 @@ CANDIDATE_FORBIDDEN_USERCUSTOMIZE_MODULES = {
     "threading", "multiprocessing", "subprocess",
 }
 
-GENERATOR_NAME_HINTS = ("stranica", "generate_page", "render_page", "build_page")
+# Positive allowlist: standard-library imports explicitly known to be
+# inert for usercustomize.py purposes. Anything not in this set and not
+# in the forbidden-removal set above BLOCKS the transform.
+ALLOWED_HARMLESS_USERCUSTOMIZE_IMPORTS = frozenset({"sys"})
 
-SPAWN_QUALNAMES_SUFFIXES = ("Popen", "system", "check_call", "check_output")
-SPAWN_QUALNAMES_EXACT = ("subprocess.call", "subprocess.run")
+SPAWN_MODULE_CANDIDATES = {"subprocess", "os", "multiprocessing"}
+SPAWN_ATTR_NAMES = {
+    "Popen", "system", "call", "run", "check_call", "check_output",
+    "spawnl", "spawnv", "posix_spawn",
+}
+SPAWN_DIRECT_IMPORT_NAMES = {"Popen", "system", "call", "run", "check_call", "check_output"}
 
 
 def _ok(candidate, reasons=None, metadata=None):
@@ -116,7 +140,8 @@ RUNTIME_SUPPORT_SOURCE = r'''"""crm_speed_runtime.py (generated candidate suppor
 Minimal canonical CrossProcessLock, SingletonGuard, and RebuildQueue
 runtime shared by generated launcher and rebuild candidates. Standard
 library only. Does not acquire any lock, start any thread, or perform
-any I/O at import time.
+any I/O at import time. Callback failures record only a bounded
+sanitized category ("CallbackError:<ExceptionClass>"), never str(exc).
 """
 from __future__ import annotations
 
@@ -427,7 +452,7 @@ class RebuildQueue:
                             self.runs += 1
                     except Exception as exc:
                         with self._cv:
-                            self.errors.append(str(exc)[:500])
+                            self.errors.append("CallbackError:" + type(exc).__name__)
                         if self._error_handler is not None:
                             try:
                                 self._error_handler(exc)
@@ -493,7 +518,10 @@ def transform_usercustomize(source, version):
                 if top in CANDIDATE_FORBIDDEN_USERCUSTOMIZE_MODULES:
                     reasons.append(f"removed_forbidden_import:{alias.name}")
                     continue
-                kept.append(alias)
+                if top in ALLOWED_HARMLESS_USERCUSTOMIZE_IMPORTS:
+                    kept.append(alias)
+                    continue
+                return _blocked(reasons + [f"unknown_import_blocked:{alias.name}"])
             if kept:
                 new_node = ast.Import(names=kept)
                 ast.copy_location(new_node, node)
@@ -504,8 +532,10 @@ def transform_usercustomize(source, version):
             if top in CANDIDATE_FORBIDDEN_USERCUSTOMIZE_MODULES:
                 reasons.append(f"removed_forbidden_import_from:{node.module}")
                 continue
-            new_body.append(node)
-            continue
+            if top in ALLOWED_HARMLESS_USERCUSTOMIZE_IMPORTS:
+                new_body.append(node)
+                continue
+            return _blocked(reasons + [f"unknown_import_from_blocked:{node.module}"])
         if isinstance(node, ast.Assign):
             if _is_pure_literal(node.value):
                 new_body.append(node)
@@ -547,17 +577,19 @@ def transform_usercustomize(source, version):
     except SyntaxError as exc:
         return _blocked(reasons + [f"candidate_compile_failed:{type(exc).__name__}"])
 
-    # Final static verification: no forbidden import name may survive.
+    # Final static verification: nothing outside the positive allowlist
+    # (plus __future__) may survive.
     post_tree = ast.parse(candidate)
     for node in ast.walk(post_tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name.split(".")[0] in CANDIDATE_FORBIDDEN_USERCUSTOMIZE_MODULES:
-                    return _blocked(reasons + ["post_transform_forbidden_import_survived"])
+                top = alias.name.split(".")[0]
+                if top not in ALLOWED_HARMLESS_USERCUSTOMIZE_IMPORTS:
+                    return _blocked(reasons + ["post_transform_unexpected_import_survived"])
         if isinstance(node, ast.ImportFrom):
             top = (node.module or "").split(".")[0]
-            if top in CANDIDATE_FORBIDDEN_USERCUSTOMIZE_MODULES:
-                return _blocked(reasons + ["post_transform_forbidden_import_from_survived"])
+            if top != "__future__" and top not in ALLOWED_HARMLESS_USERCUSTOMIZE_IMPORTS:
+                return _blocked(reasons + ["post_transform_unexpected_import_from_survived"])
 
     return _ok(candidate, reasons, {"version": version, "kept_statement_count": len(new_body)})
 
@@ -565,6 +597,16 @@ def transform_usercustomize(source, version):
 # ---------------------------------------------------------------------------
 # 2.2: start_safe.py / run_all.py singleton candidates
 # ---------------------------------------------------------------------------
+
+def _leading_docstring_and_future_offset(body):
+    offset = 0
+    if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant) \
+            and isinstance(body[0].value.value, str):
+        offset = 1
+    while offset < len(body) and isinstance(body[offset], ast.ImportFrom) and body[offset].module == "__future__":
+        offset += 1
+    return offset
+
 
 def transform_launcher_singleton(source, lock_path):
     try:
@@ -597,7 +639,10 @@ def transform_launcher_singleton(source, lock_path):
     setup = ast.parse(
         f"{guard_name} = SingletonGuard({lock_path!r})\n"
         f"if not {guard_name}.install():\n"
-        "    raise SystemExit(3)\n"
+        "    import sys as _crm_speed_diag_sys\n"
+        "    _crm_speed_diag_sys.stderr.write("
+        "'CRM-SPEED-001: duplicate launcher start blocked by singleton guard\\n')\n"
+        "    raise SystemExit(78)\n"
         "try:\n"
         "    pass\n"
         "finally:\n"
@@ -608,8 +653,10 @@ def transform_launcher_singleton(source, lock_path):
     main_node.body = setup[:-1] + [try_node]
 
     import_node = ast.ImportFrom(module=RUNTIME_MODULE_NAME, names=[ast.alias(name="SingletonGuard", asname=None)], level=0)
-    new_tree_body = [import_node] + tree.body
-    tree.body = new_tree_body
+
+    body = list(tree.body)
+    insert_at = _leading_docstring_and_future_offset(body)
+    tree.body = body[:insert_at] + [import_node] + body[insert_at:]
     ast.fix_missing_locations(tree)
 
     try:
@@ -621,22 +668,101 @@ def transform_launcher_singleton(source, lock_path):
     except SyntaxError as exc:
         return _blocked([f"candidate_compile_failed:{type(exc).__name__}"])
 
-    return _ok(candidate, [], {"lock_path": lock_path})
+    return _ok(candidate, [], {"lock_path": lock_path, "duplicate_exit_code": 78})
 
 
 # ---------------------------------------------------------------------------
-# 2.4: avtoperedacha.py rebuild-queue candidate
+# 2.4: avtoperedacha.py rebuild-queue candidate (TASK 041 call-graph proof)
 # ---------------------------------------------------------------------------
 
-def _is_spawn_call(node):
+def _collect_spawn_aliases(tree):
+    module_aliases = {}
+    direct_names = set()
+    for node in tree.body:
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                base = alias.name.split(".")[0]
+                if base in SPAWN_MODULE_CANDIDATES:
+                    module_aliases[alias.asname or alias.name] = base
+        elif isinstance(node, ast.ImportFrom):
+            if node.module in SPAWN_MODULE_CANDIDATES:
+                for alias in node.names:
+                    if alias.name in SPAWN_DIRECT_IMPORT_NAMES:
+                        direct_names.add(alias.asname or alias.name)
+    return module_aliases, direct_names
+
+
+def _is_spawn_call_resolved(node, module_aliases, direct_names):
     if not isinstance(node, ast.Call):
         return False
-    qual = _call_qualname(node)
-    if any(qual.endswith(suf) for suf in SPAWN_QUALNAMES_SUFFIXES):
+    func = node.func
+    if isinstance(func, ast.Name):
+        return func.id in direct_names
+    if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name):
+        return func.value.id in module_aliases and func.attr in SPAWN_ATTR_NAMES
+    return False
+
+
+def _literal_strings(node):
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return [node.value]
+    if isinstance(node, (ast.List, ast.Tuple)):
+        out = []
+        for e in node.elts:
+            out.extend(_literal_strings(e))
+        return out
+    return []
+
+
+def _spawn_matches_generator(call_node, generator_name):
+    strings = []
+    for a in call_node.args:
+        strings.extend(_literal_strings(a))
+    for kw in call_node.keywords:
+        strings.extend(_literal_strings(kw.value))
+    if not strings:
+        return False
+    joined = " ".join(strings).lower()
+    if "stranica.py" in joined:
         return True
-    if qual in SPAWN_QUALNAMES_EXACT:
+    if generator_name.lower() in joined:
         return True
     return False
+
+
+def _zero_arg_functions(tree):
+    names = []
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not node.decorator_list:
+            args = node.args
+            if not args.args and not args.vararg and not args.kwonlyargs and not args.kwarg \
+                    and not getattr(args, "posonlyargs", []):
+                names.append(node.name)
+    return names
+
+
+def _find_in_process_call_sites(tree, generator_name, generator_node):
+    sites = []
+    for node in tree.body:
+        if node is generator_node:
+            continue
+        for sub in ast.walk(node):
+            if isinstance(sub, ast.Call) and isinstance(sub.func, ast.Name) and sub.func.id == generator_name:
+                sites.append(sub)
+    return sites
+
+
+def _module_level_call_to(tree, generator_name):
+    for node in tree.body:
+        if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
+            call = node.value
+            if isinstance(call.func, ast.Name) and call.func.id == generator_name:
+                return True
+    return False
+
+
+def _is_leading_docstring(node):
+    return isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant) and isinstance(node.value.value, str)
 
 
 def transform_avtoperedacha_rebuild(source):
@@ -646,45 +772,94 @@ def transform_avtoperedacha_rebuild(source):
     except SyntaxError as exc:
         return _blocked([f"syntax_error:{type(exc).__name__}"])
 
-    func_names = [n.name for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-    generator_candidates = [n for n in func_names if any(h in n.lower() for h in GENERATOR_NAME_HINTS)]
-    if len(generator_candidates) != 1:
-        return _blocked([f"generator_candidate_count:{len(generator_candidates)}"])
-    generator_name = generator_candidates[0]
+    module_aliases, direct_names = _collect_spawn_aliases(tree)
+    zero_arg = _zero_arg_functions(tree)
+    if not zero_arg:
+        return _blocked(["no_zero_argument_generator_candidate_found"])
 
-    spawn_sites = [n for n in ast.walk(tree) if _is_spawn_call(n)]
-    if not spawn_sites:
-        return _blocked(["no_reachable_process_spawn_found"])
+    generator_nodes = {
+        n.name: n for n in tree.body
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name in zero_arg
+    }
+
+    all_spawn_calls = [n for n in ast.walk(tree) if _is_spawn_call_resolved(n, module_aliases, direct_names)]
+
+    full_candidates = []
+    for name in zero_arg:
+        gnode = generator_nodes[name]
+        in_process_sites = _find_in_process_call_sites(tree, name, gnode)
+        if not in_process_sites:
+            continue
+        matched_spawns = [c for c in all_spawn_calls if _spawn_matches_generator(c, name)]
+        if not matched_spawns:
+            continue
+        if _module_level_call_to(tree, name):
+            continue
+        full_candidates.append((name, in_process_sites, matched_spawns))
+
+    if len(full_candidates) != 1:
+        return _blocked([f"full_generator_candidate_count:{len(full_candidates)}"])
+
+    generator_name, in_process_sites, matched_spawns = full_candidates[0]
 
     class _Replacer(ast.NodeTransformer):
         def visit_Expr(self, node):
-            if _is_spawn_call(node.value):
-                new_call = ast.Call(
-                    func=ast.Attribute(value=ast.Name(id="_queue", ctx=ast.Load()), attr="enqueue", ctx=ast.Load()),
-                    args=[], keywords=[],
-                )
-                new_expr = ast.Expr(value=new_call)
-                ast.copy_location(new_expr, node)
-                ast.fix_missing_locations(new_expr)
-                return new_expr
+            value = node.value
+            if isinstance(value, ast.Call):
+                if isinstance(value.func, ast.Name) and value.func.id == generator_name:
+                    return self._make_enqueue(node)
+                if _is_spawn_call_resolved(value, module_aliases, direct_names) and \
+                        _spawn_matches_generator(value, generator_name):
+                    return self._make_enqueue(node)
             return self.generic_visit(node)
 
-    new_tree = copy.deepcopy(tree)
-    new_tree.body = [_Replacer().visit(n) for n in new_tree.body]
+        @staticmethod
+        def _make_enqueue(node):
+            new_call = ast.Call(
+                func=ast.Attribute(value=ast.Name(id="_queue", ctx=ast.Load()), attr="enqueue", ctx=ast.Load()),
+                args=[], keywords=[],
+            )
+            new_expr = ast.Expr(value=new_call)
+            ast.copy_location(new_expr, node)
+            ast.fix_missing_locations(new_expr)
+            return new_expr
 
-    remaining_subprocess_use = any(
-        isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id == "subprocess"
-        for node in ast.walk(new_tree)
+    new_tree = copy.deepcopy(tree)
+    new_body = [_Replacer().visit(n) for n in new_tree.body]
+    new_tree.body = new_body
+
+    remaining_spawn_use = any(
+        _is_spawn_call_resolved(n, module_aliases, direct_names) for n in ast.walk(new_tree)
     )
-    if not remaining_subprocess_use:
+    if not remaining_spawn_use:
+        used_module_names = set(module_aliases.keys())
+        remaining_module_name_refs = {
+            n.id for n in ast.walk(new_tree) if isinstance(n, ast.Name) and n.id in used_module_names
+        }
         new_tree.body = [
             n for n in new_tree.body
-            if not (isinstance(n, ast.Import) and any(a.name == "subprocess" for a in n.names))
+            if not (
+                isinstance(n, ast.Import)
+                and all((a.asname or a.name) in used_module_names for a in n.names)
+                and not remaining_module_name_refs
+            )
         ]
+
+    insert_idx = None
+    for i, n in enumerate(new_tree.body):
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == generator_name:
+            insert_idx = i + 1
+            break
+    if insert_idx is None:
+        return _blocked(["generator_definition_lost_during_transform"])
 
     import_node = ast.ImportFrom(module=RUNTIME_MODULE_NAME, names=[ast.alias(name="RebuildQueue", asname=None)], level=0)
     queue_assign = ast.parse(f"_queue = RebuildQueue({generator_name}, {lock_path!r})\n").body[0]
-    new_tree.body = [import_node] + new_tree.body + [queue_assign]
+
+    body = list(new_tree.body)
+    doc_offset = 1 if body and _is_leading_docstring(body[0]) else 0
+    final_body = body[:doc_offset] + [import_node] + body[doc_offset:insert_idx] + [queue_assign] + body[insert_idx:]
+    new_tree.body = final_body
     ast.fix_missing_locations(new_tree)
 
     try:
@@ -697,11 +872,40 @@ def transform_avtoperedacha_rebuild(source):
         return _blocked([f"candidate_compile_failed:{type(exc).__name__}"])
 
     post_tree = ast.parse(candidate)
-    remaining_spawn = any(_is_spawn_call(n) for n in ast.walk(post_tree))
+    post_module_aliases, post_direct_names = _collect_spawn_aliases(post_tree)
+    remaining_spawn = any(
+        _is_spawn_call_resolved(n, post_module_aliases, post_direct_names) for n in ast.walk(post_tree)
+    )
     if remaining_spawn:
         return _blocked(["spawn_still_reachable_after_transform"])
 
-    return _ok(candidate, [], {"generator": generator_name, "replaced_sites": len(spawn_sites)})
+    queue_line_found = False
+    remaining_direct_calls = 0
+    for n in ast.walk(post_tree):
+        if isinstance(n, ast.Assign) and isinstance(n.value, ast.Call) and \
+                isinstance(n.value.func, ast.Name) and n.value.func.id == "RebuildQueue":
+            queue_line_found = True
+            continue
+        if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == generator_name:
+            remaining_direct_calls += 1
+    if not queue_line_found:
+        return _blocked(["queue_binding_missing_after_transform"])
+    if remaining_direct_calls != 0:
+        return _blocked(["direct_generator_call_still_present_after_transform"])
+
+    queue_assigns = [
+        n for n in ast.walk(post_tree)
+        if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name)
+        and n.targets[0].id == "_queue"
+    ]
+    if len(queue_assigns) != 1:
+        return _blocked(["queue_assignment_count_invalid"])
+
+    return _ok(candidate, [], {
+        "generator": generator_name,
+        "in_process_sites": len(in_process_sites),
+        "spawn_sites": len(matched_spawns),
+    })
 
 
 # ---------------------------------------------------------------------------
@@ -728,7 +932,7 @@ def transform_sqlite_short_ownership(source, function_names=None):
     try:
         candidate = sqlite_ownership.transform_short_ownership(source, set(function_names))
     except sqlite_ownership.AnchorNotFoundError as exc:
-        return _blocked([f"anchor_not_found:{type(exc).__name__}"])
+        return _blocked([f"anchor_not_found:{exc}"])
     except Exception as exc:
         return _blocked([f"exception:{type(exc).__name__}"])
 

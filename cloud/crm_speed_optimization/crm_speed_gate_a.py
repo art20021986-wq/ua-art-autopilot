@@ -1,26 +1,29 @@
 """CRM-SPEED-001 Gate A orchestration (TASK 032/035 canonical
-integration, TASK 038 real candidate-transform integration).
+integration, TASK 038 real candidate-transform integration, TASK 041
+fail-closed correction).
 
 This module provides one canonical evidence-computation core plus two
 callers:
 
 - run_gate_a(fixture): historical compatibility adapter for in-memory
-  source fixtures (unit tests). Unchanged by TASK 038.
+  source fixtures (unit tests). Unchanged by TASK 038/041.
 
 - orchestrate_gate_a(config, opener=None, clock=None): the real public
-  orchestration entry point. TASK 038 extends phase40/60/80 to generate,
-  compile, and structurally verify real candidates for BOTH
+  orchestration entry point. TASK 038 extended phase40/60/80 to
+  generate, compile, and structurally verify real candidates for both
   usercustomize.py versions, start_safe.py, run_all.py, avtoperedacha.py,
-  samokontrol.py, and a generated crm_speed_runtime.py support module --
-  eight candidates total -- whenever the supplied config resolves all of
-  those sources unambiguously (two distinct usercustomize.py paths keyed
-  by their python3.10/python3.13 parent components, plus one each of
-  start_safe.py/run_all.py/samokontrol.py). When that full source set is
-  not resolvable (as in pre-TASK-038 fixtures that only exercise a
-  smaller/legacy input set), TASK 038 extended generation is reported
-  unavailable and the historical single-cars_ui/legacy-usercustomize
-  evidence path is preserved unchanged, so no pre-existing test is
-  weakened.
+  samokontrol.py, and a generated crm_speed_runtime.py support module.
+
+  TASK 041 correction: the real path now REQUIRES that extended
+  candidate generation succeed. If any of the seven source transforms
+  is missing/ambiguous/BLOCKED, phase40 immediately raises and the
+  overall status is BLOCKED -- there is no parallel legacy/original
+  fallback path that can continue to phase80/PASS. On success,
+  candidate_sources/extended candidate evidence contains exactly eight
+  keys (the seven transformed originals plus crm_speed_runtime.py; the
+  legacy original usercustomize.py key is never present), all eight are
+  compiled without import/execute, and all eight are written as
+  candidates+diffs through SafeWriter.
 
 Gate A is never executed against production by this repository. Every
 function here operates only on paths/strings explicitly supplied by the
@@ -523,13 +526,15 @@ def check_db_closed_before_slow_work(function_source):
 
 def check_deterministic_repeat_all_transforms(transform_map):
     failures = []
+    records = {}
     for name, (fn, source, args) in transform_map.items():
         measurement = measure_deterministic_repeat(fn, source, args=args, repeats=10)
+        records[name] = measurement
         if not measurement["deterministic"]:
             failures.append(name)
     if failures:
-        return {"status": "BLOCKED", "failures": failures}
-    return {"status": "OK", "checked": list(transform_map.keys())}
+        return {"status": "BLOCKED", "failures": failures, "records": records}
+    return {"status": "OK", "checked": list(transform_map.keys()), "records": records}
 
 
 def check_site_inventory_unchanged(root, allowed_names, max_files_per_root=DEFAULT_MAX_FILES_PER_ROOT):
@@ -780,6 +785,29 @@ def _resolve_two_usercustomize_paths(config):
     return matches_310[0], matches_313[0], None
 
 
+def _verify_launcher_candidate_structural(candidate_source, lock_path):
+    """AST-based structural verification (TASK 041) replacing substring
+    presence checks: proves the runtime SingletonGuard import exists and
+    a SingletonGuard(lock_path) call is bound to a name, using the
+    exact configured lock path literal."""
+    try:
+        tree = ast.parse(candidate_source)
+    except SyntaxError:
+        return False
+    has_import = any(
+        isinstance(n, ast.ImportFrom) and n.module == candidate_transforms.RUNTIME_MODULE_NAME
+        and any(a.name == "SingletonGuard" for a in n.names)
+        for n in tree.body
+    )
+    has_guard_assign = False
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Assign) and isinstance(n.value, ast.Call) and isinstance(n.value.func, ast.Name) \
+                and n.value.func.id == "SingletonGuard":
+            if n.value.args and isinstance(n.value.args[0], ast.Constant) and n.value.args[0].value == lock_path:
+                has_guard_assign = True
+    return has_import and has_guard_assign
+
+
 def _render_report(receipt):
     lines = []
     lines.append("# Gate A Report - " + str(receipt.get("task_id")))
@@ -798,7 +826,7 @@ def _render_report(receipt):
     for u in receipt.get("unmet_predicates", []) or []:
         lines.append("- " + str(u))
     lines.append("")
-    lines.append("## Extended (TASK 038) candidates")
+    lines.append("## Extended (TASK 038/041) candidates")
     ext = receipt.get("extended_candidates", {})
     lines.append("available: " + str(ext.get("available")))
     for r in ext.get("blocked_reasons", []) or []:
@@ -921,9 +949,8 @@ def orchestrate_gate_a(config, opener=None, clock=None):
         candidate_sources["avtoperedacha.py"] = avtoperedacha_source
         diff_text = generate_unified_diff(cars_ui_source, candidate_sources["cars_ui.py"])
         evidence["_diff_sha256"] = _sha256_bytes(diff_text.encode("utf-8"))
-        evidence["_candidate_hashes"] = {k: _sha256_bytes(v.encode("utf-8")) for k, v in candidate_sources.items()}
 
-        # -- TASK 038: extended real candidate generation --------------
+        # -- TASK 038/041: extended real candidate generation (required) --
         extended = {"available": False, "blocked_reasons": []}
         uc310_path, uc313_path, uc_err = _resolve_two_usercustomize_paths(config)
         if uc_err:
@@ -973,37 +1000,52 @@ def orchestrate_gate_a(config, opener=None, clock=None):
                 else:
                     extended_candidate_sources = {name: r["candidate"] for name, r in per_result.items()}
                     extended_candidate_sources["crm_speed_runtime.py"] = support_source
+                    extended_candidate_sources["cars_ui.py"] = candidate_sources["cars_ui.py"]
                     originals["crm_speed_runtime.py"] = ""
+                    originals["cars_ui.py"] = cars_ui_source
                     evidence["_extended_candidate_sources"] = extended_candidate_sources
                     evidence["_extended_originals"] = originals
 
-                    candidate_writer = SafeWriter(run_dir)
-                    for name, src in extended_candidate_sources.items():
-                        candidate_writer.write_text(os.path.join("candidates", name), src)
-                        diff_txt = generate_unified_diff(originals.get(name, ""), src)
-                        candidate_writer.write_text(os.path.join("diffs", name + ".diff"), diff_txt)
+                    if len(extended_candidate_sources) != 8:
+                        extended["blocked_reasons"].append("extended_candidate_count_invalid")
+                    else:
+                        candidate_writer = SafeWriter(run_dir)
+                        for name, src in extended_candidate_sources.items():
+                            candidate_writer.write_text(os.path.join("candidates", name), src)
+                            diff_txt = generate_unified_diff(originals.get(name, ""), src)
+                            candidate_writer.write_text(os.path.join("diffs", name + ".diff"), diff_txt)
 
-                    extended["available"] = True
-                    extended["support_module_sha256"] = _sha256_bytes(support_source.encode("utf-8"))
+                        extended["available"] = True
+                        extended["support_module_sha256"] = _sha256_bytes(support_source.encode("utf-8"))
             except Exception as exc:
                 extended["blocked_reasons"].append(f"exception:{type(exc).__name__}")
 
         evidence["_extended"] = extended
 
+        # TASK 041: no legacy/original fallback continues to phase80/PASS.
+        # If extended generation is not fully available, phase40 blocks
+        # immediately.
+        if not extended.get("available"):
+            raise _GateABlocked(
+                "extended_candidate_generation_unavailable:" + ";".join(extended.get("blocked_reasons", []))
+            )
+
     def phase60():
         if state["blocked"]:
             raise _GateABlocked("skipped_prior_block")
-        if not candidate_sources:
-            raise _GateABlocked("no_candidates_to_compile")
-        full_sources = dict(candidate_sources)
         extended = evidence.get("_extended", {})
         if extended.get("available"):
-            full_sources.update(evidence.get("_extended_candidate_sources", {}))
+            full_sources = dict(evidence.get("_extended_candidate_sources", {}))
+        else:
+            if not candidate_sources:
+                raise _GateABlocked("no_candidates_to_compile")
+            full_sources = dict(candidate_sources)
         result = check_candidates_compile(full_sources)
         if result.get("status") == "OK":
             result = dict(result)
             result["hashes"] = {k: _sha256_bytes(v.encode("utf-8")) for k, v in full_sources.items()}
         evidence["candidates_compile"] = result
+        evidence["_candidate_hashes"] = result.get("hashes", {})
         if result["status"] != "OK":
             raise _GateABlocked("compile_failed")
 
@@ -1046,11 +1088,8 @@ def orchestrate_gate_a(config, opener=None, clock=None):
             run_all_candidate = ext_sources.get("run_all.py", "")
             launcher_lock = evidence.get("_launcher_lock_path", "")
             static_ok = (
-                "SingletonGuard" in start_safe_candidate and "SingletonGuard" in run_all_candidate
-                and candidate_transforms.RUNTIME_MODULE_NAME in start_safe_candidate
-                and candidate_transforms.RUNTIME_MODULE_NAME in run_all_candidate
-                and launcher_lock in start_safe_candidate
-                and launcher_lock in run_all_candidate
+                _verify_launcher_candidate_structural(start_safe_candidate, launcher_lock)
+                and _verify_launcher_candidate_structural(run_all_candidate, launcher_lock)
             )
             behavioral = check_singleton_guard_present(run_dir)
             if static_ok and behavioral["status"] == "OK":
@@ -1089,7 +1128,7 @@ def orchestrate_gate_a(config, opener=None, clock=None):
             if det_result["status"] == "OK" and support_deterministic:
                 evidence["deterministic_repeat_all_transforms"] = {
                     "status": "OK", "checked": list(det_map.keys()) + ["support_module"],
-                    "support_module_sha256": support_hash,
+                    "support_module_sha256": support_hash, "records": det_result.get("records", {}),
                 }
             else:
                 evidence["deterministic_repeat_all_transforms"] = {
@@ -1213,7 +1252,7 @@ def orchestrate_gate_a(config, opener=None, clock=None):
             "blockers": evidence.get("_blockers", []),
             "allowed_write_ledger": [],
             "next_safe_action": (
-                "await_task_038_controller_review_then_owner_gate_b_review"
+                "await_task_041_controller_review_then_owner_gate_b_review"
                 if status == "BLOCKED" else
                 "await_owner_gate_b_approval"
             ),

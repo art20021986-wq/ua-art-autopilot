@@ -10,11 +10,19 @@ their own.
 TASK 031/032. TASK 038 corrected RebuildQueue._loop to enclose lock
 construction/acquisition/callback/release/state-cleanup in one complete
 exception boundary so that no exception can ever escape to
-threading.excepthook, with no retry/spin on failure. No production
-imports. No production-write capability. All writes are confined to
-explicitly supplied, already-existing local directories (temporary
-directories in tests, or a validated already-existing run directory
-created by crm_speed_gate_a.orchestrate_gate_a).
+threading.excepthook, with no retry/spin on failure.
+
+TASK 041: callback failures now record only a bounded sanitized category
+("CallbackError:<ExceptionClass>") instead of str(exc), which could leak
+PII, tokens, paths, or DB values into evidence/logs. The optional error
+handler still receives the raw exception object so callers may perform
+their own sanitized handling, but nothing persisted/returned/logged by
+RebuildQueue itself ever contains raw exception text.
+
+No production imports. No production-write capability. All writes are
+confined to explicitly supplied, already-existing local directories
+(temporary directories in tests, or a validated already-existing run
+directory created by crm_speed_gate_a.orchestrate_gate_a).
 """
 from __future__ import annotations
 
@@ -392,6 +400,12 @@ class RebuildQueue:
     recorded, running/pending state is cleared safely, waiters are
     notified, and that worker iteration terminates without retry or
     spin. No exception can reach threading.excepthook.
+
+    TASK 041 correction: callback failures now record only
+    "CallbackError:<ExceptionClass>" -- never str(exc), which could
+    contain PII, tokens, filesystem paths, or DB values. The optional
+    error_handler still receives the raw exception object for callers
+    that need it, but that raw text is never stored on this queue.
     """
 
     _ACK_TIMEOUT_SECONDS = 0.5
@@ -470,7 +484,7 @@ class RebuildQueue:
                         with self._cv:
                             self.runs += 1
                     except Exception as exc:
-                        sanitized = str(exc)[:500]
+                        sanitized = "CallbackError:" + type(exc).__name__
                         with self._cv:
                             self.errors.append(sanitized)
                         if self._error_handler is not None:

@@ -1,21 +1,36 @@
 """
-sqlite_ownership.py (TASK 034, preserved unchanged under TASK 038)
+sqlite_ownership.py (TASK 041 correction of the TASK 034 structural
+transform/verifier; the read-only UA-0009 evidence API in Section 2 is
+preserved unchanged.)
 
 Two independent capabilities live in this module:
 
-1. The original structural (AST-based) transformation and verifier
-   enforcing short SQLite ownership: SELECT rows are materialized into
-   ordinary immutable values and the cursor/connection are closed
+1. The structural (AST-based) transformation and verifier enforcing
+   short SQLite ownership: SELECT rows are materialized into ordinary
+   immutable values (tuple()) and the cursor/connection are closed
    BEFORE any slow-call category (formatting/hash/sleep/network/
-   filesystem/Telegram I/O). Preserved unchanged for compatibility and
-   reused directly (not duplicated) by candidate_transforms.py under
-   TASK 038.
+   filesystem/Telegram I/O). TASK 041 corrections:
+
+   - transform_short_ownership now requires exactly one local
+     sqlite3.connect assignment and at most one cursor derived only from
+     that connection, rejects any branch/loop/try/with inside the
+     ownership segment (straight-line only), rejects write SQL
+     (INSERT/UPDATE/DELETE/DROP/ALTER/CREATE/REPLACE/VACUUM/REINDEX),
+     commit()/rollback(), non-literal SQL text, and cursor escape via
+     return; it also materializes fetchall()/fetchmany() results into
+     tuple() immediately after the fetch call and closes the cursor
+     (when present) before the connection.
+   - verify_no_live_handle_across_slow_call now tracks each connection
+     name and each derived cursor name independently (per-name open/
+     closed state) instead of one global boolean, so an unrelated
+     `.close()` call on an unrelated object can never mark this
+     function's real handles as closed.
 
 2. A canonical, read-only, fail-closed SQLite evidence API used to
    prove UA-0009 row identity/ownership without ever emitting raw field
    values, names, phones, messages, blobs, or database pages. Only
    structural table/column identifiers, bounded row counts/identity
-   hashes, and SHA-256 digests are returned.
+   hashes, and SHA-256 digests are returned. Unchanged from TASK 034.
 
 No network access. No production paths. No writes. No migrations, WAL
 changes, VACUUM, REINDEX, or mutable PRAGMAs are ever issued.
@@ -35,9 +50,7 @@ from typing import List, Optional, Set
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # --------------------------------------------------------------------
-# Section 1: original AST-based short-ownership transform (unchanged
-# public interface: AnchorNotFoundError, find_db_handle_names,
-# verify_no_live_handle_across_slow_call, transform_short_ownership).
+# Section 1: AST-based short-ownership transform and verifier.
 # --------------------------------------------------------------------
 
 SLOW_CALL_NAMES = {
@@ -48,6 +61,11 @@ SLOW_CALL_NAMES = {
     "open", "write", "system", "run", "Popen", "call",
     "render", "generate", "build",
 }
+
+WRITE_SQL_KEYWORDS = (
+    "insert", "update", "delete", "drop", "alter", "create", "replace",
+    "vacuum", "reindex",
+)
 
 
 class AnchorNotFoundError(Exception):
@@ -84,42 +102,107 @@ def find_db_handle_names(func) -> Set[str]:
     return names
 
 
+def find_cursor_names(func, handle_names: Set[str]) -> Set[str]:
+    names: Set[str] = set()
+    for node in ast.walk(func):
+        if isinstance(node, ast.Assign) and isinstance(node.value, ast.Call):
+            qual = _call_qualname(node.value)
+            if qual.endswith("cursor") and isinstance(node.value.func, ast.Attribute):
+                owner = getattr(node.value.func.value, "id", None)
+                if owner in handle_names:
+                    for t in node.targets:
+                        if isinstance(t, ast.Name):
+                            names.add(t.id)
+    return names
+
+
+def _literal_sql_text(call_node: ast.Call) -> Optional[str]:
+    if call_node.args and isinstance(call_node.args[0], ast.Constant) and isinstance(call_node.args[0].value, str):
+        return call_node.args[0].value
+    return None
+
+
+def _is_write_sql(sql_text: str) -> bool:
+    lowered = sql_text.strip().lower()
+    return any(lowered.startswith(k) for k in WRITE_SQL_KEYWORDS)
+
+
+def _contains_write_sql_or_commit(stmts) -> Optional[str]:
+    for stmt in stmts:
+        for node in ast.walk(stmt):
+            if isinstance(node, ast.Call):
+                qual = _call_qualname(node)
+                if qual.endswith("execute") or qual.endswith("executemany"):
+                    sql = _literal_sql_text(node)
+                    if sql is None:
+                        return "non_literal_sql_rejected"
+                    if _is_write_sql(sql):
+                        return "write_sql_rejected"
+                    lowered = sql.strip().lower()
+                    if lowered.startswith("pragma") and "=" in lowered and "query_only" not in lowered:
+                        return "mutable_pragma_rejected"
+                if qual.endswith("commit") or qual.endswith("rollback"):
+                    return "commit_or_rollback_rejected"
+    return None
+
+
+def _contains_unsupported_control_flow(stmts) -> bool:
+    for stmt in stmts:
+        if isinstance(stmt, (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)):
+            return True
+    return False
+
+
+def _returns_name(func, name: str) -> bool:
+    for node in ast.walk(func):
+        if isinstance(node, ast.Return) and isinstance(node.value, ast.Name) and node.value.id == name:
+            return True
+    return False
+
+
 def verify_no_live_handle_across_slow_call(func) -> List[str]:
     """Walk the statements of `func` in execution order (including simple
-    nested blocks) and report violations where a DB handle name (or a
-    cursor derived from it) is still open -- i.e. not yet closed -- at
-    the point a slow call occurs. Conservative: anything that cannot be
-    proven safe is reported as a violation.
+    nested blocks) tracking each connection name and each derived cursor
+    name INDEPENDENTLY. A slow call is a violation only for the specific
+    names that are still open at that point; an unrelated `.close()`
+    call on an unrelated name can never mark this function's real
+    handles as closed. Conservative: anything not provably closed before
+    a slow call is reported.
     """
     handle_names = find_db_handle_names(func)
     if not handle_names:
         return []
     cursor_names: Set[str] = set()
-    state = {"closed": False}
+    open_names: Set[str] = set()
     violations: List[str] = []
 
     def walk_stmts(stmts):
         for stmt in stmts:
             if isinstance(stmt, ast.Assign) and isinstance(stmt.value, ast.Call):
                 qual = _call_qualname(stmt.value)
+                if qual.endswith("connect"):
+                    for t in stmt.targets:
+                        if isinstance(t, ast.Name) and t.id in handle_names:
+                            open_names.add(t.id)
                 if qual.endswith("cursor") and isinstance(stmt.value.func, ast.Attribute):
                     owner = getattr(stmt.value.func.value, "id", None)
                     if owner in handle_names:
                         for t in stmt.targets:
                             if isinstance(t, ast.Name):
                                 cursor_names.add(t.id)
+                                open_names.add(t.id)
             for node in ast.walk(stmt):
                 if isinstance(node, ast.Call):
                     qual = _call_qualname(node)
                     owner = qual.split(".")[0] if "." in qual else None
-                    if qual.endswith("close") and (owner in handle_names or owner in cursor_names):
-                        state["closed"] = True
-                    if any(qual == s or qual.endswith("." + s) or qual == s.split(".")[-1]
-                           for s in SLOW_CALL_NAMES):
-                        if not state["closed"]:
+                    if qual.endswith("close") and owner and (owner in handle_names or owner in cursor_names):
+                        open_names.discard(owner)
+                    elif any(qual == s or qual.endswith("." + s) or qual == s.split(".")[-1]
+                             for s in SLOW_CALL_NAMES):
+                        if open_names:
                             violations.append(
                                 f"line {getattr(node, 'lineno', '?')}: slow call "
-                                f"'{qual}' before DB handle close"
+                                f"'{qual}' before close of {sorted(open_names)}"
                             )
             if isinstance(stmt, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
                 for field in ("body", "orelse", "finalbody"):
@@ -149,11 +232,14 @@ def _ensure_short_timeout(func, handle_names: Set[str]) -> None:
 
 def transform_short_ownership(source: str, function_names: Set[str]) -> str:
     """Rewrite the named functions so the sqlite3 connection/cursor is
-    guaranteed closed (via try/finally) immediately after the last
-    statement referencing the DB handle, before any subsequent
-    formatting/slow work. Sets a short (2s) connect timeout if none is
-    given. Raises AnchorNotFoundError if a function or its DB handle
-    cannot be unambiguously identified.
+    guaranteed materialized-and-closed (via try/finally) before any
+    subsequent formatting/slow work. Supports only structurally proven
+    local ownership: exactly one local sqlite3.connect assignment, zero
+    or one cursor derived only from that connection, a straight-line
+    ownership segment (no branch/loop/try/with), literal read-only SQL
+    (no write keywords, commit, rollback, or mutable PRAGMA), and no
+    cursor escape via return. Raises AnchorNotFoundError on any
+    unsupported shape.
     """
     tree = ast.parse(source)
     found = list(_iter_functions(tree, function_names))
@@ -164,16 +250,24 @@ def transform_short_ownership(source: str, function_names: Set[str]) -> str:
 
     for func in found:
         handle_names = find_db_handle_names(func)
-        if not handle_names:
+        if len(handle_names) != 1:
             raise AnchorNotFoundError(
-                f"no sqlite3.connect anchor found in function {func.name}"
+                f"expected exactly one local connection in {func.name}, found {len(handle_names)}"
             )
+        cursor_names = find_cursor_names(func, handle_names)
+        if len(cursor_names) > 1:
+            raise AnchorNotFoundError(f"expected zero or one cursor in {func.name}")
+        for cname in cursor_names:
+            if _returns_name(func, cname):
+                raise AnchorNotFoundError(f"cursor escapes function {func.name}")
+
         _ensure_short_timeout(func, handle_names)
 
+        tracked_names = handle_names | cursor_names
         handle_stmt_indices = []
         for idx, stmt in enumerate(func.body):
             refs_handle = any(
-                isinstance(n, ast.Name) and n.id in handle_names
+                isinstance(n, ast.Name) and n.id in tracked_names
                 for n in ast.walk(stmt)
             )
             if refs_handle:
@@ -186,8 +280,38 @@ def transform_short_ownership(source: str, function_names: Set[str]) -> str:
         db_block = func.body[: last_db_idx + 1]
         rest_block = func.body[last_db_idx + 1:]
 
+        if _contains_unsupported_control_flow(db_block):
+            raise AnchorNotFoundError(
+                f"unsupported control flow in ownership segment of {func.name}"
+            )
+        write_reason = _contains_write_sql_or_commit(db_block)
+        if write_reason:
+            raise AnchorNotFoundError(f"{write_reason} in {func.name}")
+
+        # Materialize fetchall()/fetchmany() results into an immutable
+        # tuple immediately after the fetch, before any close/slow work.
+        materialized_block = []
+        for stmt in db_block:
+            materialized_block.append(stmt)
+            if isinstance(stmt, ast.Assign) and isinstance(stmt.value, ast.Call):
+                qual = _call_qualname(stmt.value)
+                if qual.endswith("fetchall") or qual.endswith("fetchmany"):
+                    for t in stmt.targets:
+                        if isinstance(t, ast.Name):
+                            materialize = ast.Assign(
+                                targets=[ast.Name(id=t.id, ctx=ast.Store())],
+                                value=ast.Call(
+                                    func=ast.Name(id="tuple", ctx=ast.Load()),
+                                    args=[ast.Name(id=t.id, ctx=ast.Load())],
+                                    keywords=[],
+                                ),
+                            )
+                            ast.copy_location(materialize, stmt)
+                            materialized_block.append(materialize)
+        db_block = materialized_block
+
         close_stmts = []
-        for name in sorted(handle_names):
+        for name in sorted(cursor_names) + sorted(handle_names):
             close_call = ast.Expr(
                 value=ast.Call(
                     func=ast.Attribute(value=ast.Name(id=name, ctx=ast.Load()),
@@ -206,9 +330,8 @@ def transform_short_ownership(source: str, function_names: Set[str]) -> str:
 
 # --------------------------------------------------------------------
 # Section 2: canonical read-only, fail-closed SQLite evidence API
-# (TASK 034). Standard library only. Never raises for expected
-# operational conditions (missing/locked/malformed/ambiguous/overflow);
-# always returns a structured OwnershipEvidence with status OK/BLOCKED.
+# (TASK 034, unchanged). Standard library only. Never raises for
+# expected operational conditions.
 # --------------------------------------------------------------------
 
 MAX_TABLES = 50
