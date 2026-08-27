@@ -76,11 +76,19 @@ class FerryGateATests(unittest.TestCase):
         receipt = gate_a_remote._run_gate_a(
             str(self.source), str(self.candidates), False
         )
-        self.assertEqual(receipt["status"], "PASS_NEEDS_GENERATOR_PATCH", receipt)
+        self.assertEqual(receipt["status"], "PASS_READY_FOR_GATE_B", receipt)
         self.assertTrue(any(
             item["path"] == "cars_ui.py" and item["classification"] == "USER_FACING"
             for item in receipt["python_sources"]
         ))
+        self.assertEqual(len(receipt["generator_candidates"]), 1)
+        candidate = self.candidates / "python" / "cars_ui.py"
+        self.assertEqual(candidate.read_text(encoding="utf-8"), 'STATUS_LABEL = "На пароме"\n')
+        self.assertEqual(receipt["generator_candidates"][0]["changes"], 1)
+        receipt["source_root"] = "/home/Carix"
+        receipt["candidate_root"] = gate_a_controller.REMOTE_ROOT + "/gate_a_candidates"
+        validated = gate_a_controller.GateAController.validate_receipt(receipt)
+        self.assertEqual(validated["status"], "PASS_READY_FOR_GATE_B")
 
     def test_ambiguous_generator_literal_blocks(self):
         (self.source / "cars_ui.py").write_text('x = "В море"\n', encoding="utf-8")
