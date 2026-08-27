@@ -1,55 +1,68 @@
-#!/usr/bin/env python3
-'''Build a review manifest (file list plus sha256) for the CRM-SPEED-001
-cloud deliverable package. This script only reads and writes files inside
-its own directory (cloud/crm_speed_optimization). It never touches
-production paths.
-'''
+"""
+build_manifest.py
+
+Deterministic manifest generation for a Gate A run directory, binding the
+receipt to the exact package code hashes and any produced artifacts.
+"""
+from __future__ import annotations
 
 import hashlib
 import json
 import os
-import sys
-import time
+from typing import Dict, List
 
 PACKAGE_DIR = os.path.dirname(os.path.abspath(__file__))
-MANIFEST_PATH = os.path.join(PACKAGE_DIR, 'MANIFEST.json')
-INCLUDE_EXTENSIONS = ('.py', '.md')
 
 
-def sha256_of(path):
+def _sha256_file(path: str) -> str:
     h = hashlib.sha256()
-    with open(path, 'rb') as fh:
-        for chunk in iter(lambda: fh.read(65536), b''):
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(65536), b""):
             h.update(chunk)
     return h.hexdigest()
 
 
-def build_manifest():
-    entries = []
-    for name in sorted(os.listdir(PACKAGE_DIR)):
-        full = os.path.join(PACKAGE_DIR, name)
-        if not os.path.isfile(full) or os.path.islink(full):
-            continue
-        if not name.endswith(INCLUDE_EXTENSIONS):
-            continue
-        st = os.stat(full)
-        entries.append({'file': name, 'size': st.st_size, 'sha256': sha256_of(full)})
+def hash_package_code(package_dir: str = PACKAGE_DIR) -> Dict[str, str]:
+    out: Dict[str, str] = {}
+    for name in sorted(os.listdir(package_dir)):
+        if name.endswith(".py"):
+            full = os.path.join(package_dir, name)
+            if os.path.isfile(full) and not os.path.islink(full):
+                out[name] = _sha256_file(full)
+    return out
+
+
+def build_run_manifest(run_dir: str) -> dict:
+    entries: List[dict] = []
+    for root, _dirs, files in os.walk(run_dir):
+        for fname in sorted(files):
+            full = os.path.join(root, fname)
+            if os.path.islink(full):
+                continue
+            rel = os.path.relpath(full, run_dir)
+            entries.append({"path": rel, "sha256": _sha256_file(full),
+                             "size": os.path.getsize(full)})
+    entries.sort(key=lambda e: e["path"])
+    combined = "\n".join(f"{e['path']}:{e['sha256']}" for e in entries)
+    manifest_sha256 = hashlib.sha256(combined.encode("utf-8")).hexdigest()
     return {
-        'task': 'CRM-SPEED-001',
-        'generated_at_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-        'production_write': 'NO',
-        'files': entries,
+        "run_dir": run_dir,
+        "entries": entries,
+        "manifest_sha256": manifest_sha256,
+        "package_code_hashes": hash_package_code(),
     }
 
 
-def main():
-    manifest = build_manifest()
-    with open(MANIFEST_PATH, 'w', encoding='utf-8') as fh:
+def write_manifest(run_dir: str, out_path: str) -> dict:
+    manifest = build_run_manifest(run_dir)
+    with open(out_path, "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2, sort_keys=True)
-        fh.write('\n')
-    print('Wrote manifest with ' + str(len(manifest['files'])) + ' entries to ' + MANIFEST_PATH)
-    return 0
+    return manifest
 
 
-if __name__ == '__main__':
-    sys.exit(main())
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 3:
+        print("usage: build_manifest.py <run_dir> <out_manifest_json>")
+        raise SystemExit(2)
+    write_manifest(sys.argv[1], sys.argv[2])

@@ -1,46 +1,66 @@
-# CRM-SPEED-001 Gate A operator instructions
+# OPERATOR_INSTRUCTIONS.md — CRM-SPEED-001 (Task 024 correction)
+
+CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+MEMORY_VERSION_READ: 4
 
 ## What this package is
 
-This package contains a candidate optimization for the administrative CRM (text-only admin routes, a debounce queue instead of subprocess rebuild storms, short-lived SQLite ownership, and singleton guards) plus a fail-closed Gate A analysis tool. It does not modify production. It only reads bounded production files and writes evidence beneath an isolated QA directory.
+A corrected, offline-authored candidate implementation plus a fail-closed
+Gate A runner for CRM-SPEED-001. Nothing in this package has been
+installed into production. `PRODUCTION_TOUCHED: NO`, `CRM_TOUCHED: NO`,
+`GATE_A_EXECUTED: NO`, `UA_0009_PUBLISHED: NO`.
 
-## What Gate A does
-
-Running the launcher performs, in order:
-
-1. Resolves eleven bounded required inputs under `/home/Carix` and rejects symlinks.
-2. Verifies the existing safety backup archive by SHA-256.
-3. Builds anchor-checked, AST-based patched candidate copies of usercustomize.py (both Python versions), start_safe.py, run_all.py, avtoperedacha.py, samokontrol.py, and cars_ui.py inside `/home/Carix/qa/crm_speed_task020/<run_id>/`.
-4. Compiles every candidate.
-5. Statically proves the four administrator media routes have no reachable automatic media-send call, proves the debounce queue collapses bursts, proves the singleton guard rejects a duplicate start, and proves the transform is deterministic across ten repetitions.
-6. Performs a bounded, read-only SQLite inspection (`PRAGMA query_only = ON`) to record non-PII UA-0009 evidence and confirms the database file is byte-identical before and after.
-7. Writes `receipt.json` and `REPORT.md` with `PRODUCTION_WRITE: NO`.
-
-Missing or ambiguous anchors leave that specific candidate file unmodified and the whole run is reported BLOCKED, never guessed.
-
-## How to run it
-
-On PythonAnywhere Bash, a single no-argument command:
+## Step 1 — run the offline behavioral test suite (recommended first)
 
 ```
-python3 /home/Carix/cloud_review/crm_speed_optimization/RUN_GATE_A_CRM_SPEED.py
+cd cloud/crm_speed_optimization
+python3 -m py_compile *.py
+python3 -m unittest -v test_crm_speed_gate_a.py
 ```
 
-(Place the package wherever it is copied for review; the launcher only reads the eleven fixed production paths listed in the specification and writes beneath `/home/Carix/qa/crm_speed_task020/`.)
+Repeat the unittest run at least 10 full times and confirm every run is
+all-green before proceeding. This step touches only temporary directories
+created by the OS `tempfile` module and independent `python3 -c` helper
+subprocesses; it never touches `/home/Carix`.
 
-The command can be repeated safely. Each run creates its own timestamped subdirectory and never deletes a previous run.
+## Step 2 — configure the UA-0009 fail-closed probe (required before Gate A)
 
-## What Gate A never does
+Gate A will BLOCK, not silently pass, if no canonical UA-0009 URL is
+configured. Set exactly one of:
 
-- It never edits any file under `/home/Carix` outside the QA directory.
-- It never touches `/home/Carix/crm.db`.
-- It never restarts the bot, web app, or any scheduled task.
-- It never writes into `/home/Carix/site`, `/home/Carix/video`, or `public_html`.
-- It never publishes UA-0009.
-- It never installs anything into production.
+* environment variable `UA0009_CANONICAL_URL=https://<real-canonical-url>`
+* a JSON file at `cloud/crm_speed_optimization/config/ua0009_endpoint.json`
+  with `{"ua0009_canonical_url": "https://<real-canonical-url>"}`
 
-## After Gate A
+Do not guess this value. Obtain it from the owner-approved task contract.
 
-If the run reports `GATE_A_PASS_AWAITING_PRODUCTION_APPROVAL`, that means the candidates compiled and passed the static/behavioral checks in isolation. It is not a production fix. Installing any candidate into production (Gate B) requires an independent review by ChatGPT and explicit owner approval, and is out of scope for this package.
+## Step 3 — run Gate A on PythonAnywhere (owner-authorized, read-only against production)
 
-If the run reports `BLOCKED`, read the `blockers` list in `receipt.json`; each blocker names the exact missing input, anchor mismatch, or failed check.
+```
+cd /home/Carix
+python3 cloud/crm_speed_optimization/RUN_GATE_A_CRM_SPEED.py
+```
+
+Gate A only reads the bounded input list from `/home/Carix` and writes
+exclusively beneath `/home/Carix/qa/crm_speed_task020/<run_id>/`. It never
+restarts any process, never writes to `/home/Carix` outside the QA root,
+and never publishes UA-0009.
+
+The process exits `0` only when `final_status` is
+`GATE_A_PASS_AWAITING_PRODUCTION_APPROVAL`; any `BLOCKED` outcome exits
+nonzero with exact reasons recorded in `receipt.json` under `blockers`.
+
+## Step 4 — independently verify the receipt
+
+```
+python3 cloud/crm_speed_optimization/verify_gate_a.py /home/Carix/qa/crm_speed_task020/<run_id>
+```
+
+## What a PASS means and does not mean
+
+A `GATE_A_PASS_AWAITING_PRODUCTION_APPROVAL` result means the *candidate
+copies* in the QA run directory satisfy every fail-closed proof. It does
+**not** mean production has been changed, the CRM bot has been restarted,
+or UA-0009 has been published. Installing the candidate into production is
+a separate Gate B decision requiring independent review and explicit
+owner approval.
