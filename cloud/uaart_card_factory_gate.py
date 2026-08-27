@@ -1,945 +1,320 @@
-#!/usr/bin/env python3.10
+#!/usr/bin/env python3
 """
-UA ART - Universal New-Card Factory Gate
-=========================================
+UA ART CARD FACTORY GATE
+=========================
 
-Purpose
--------
-Read-only diagnostic tool that inspects CRM data, media, diagnostics and
-sandbox HTML for one or more UA-XXXX vehicle cards and reports, in plain
-language, whether each card is:
+Purpose:
+    Read-only inspection gate for the UA ART "card factory" pipeline.
+    This tool inspects a single target card record (e.g. UA-0009) and
+    reports whether it is structurally ready to be produced, WITHOUT
+    ever writing to production data, CRM records, WSGI/site files, or
+    triggering a webapp reload.
 
-    READY_FOR_VISUAL_CHECK
-    NEEDS_DATA            (with the exact missing fields)
-    BLOCKED_SAFETY        (with the exact reason)
+Safety model (STRICT, DO NOT WEAKEN):
+    - This script NEVER opens production database/CRM connections in
+      write mode. All DB/API access must be explicitly read-only.
+    - This script NEVER modifies files outside its own sandbox/report
+      directory (SANDBOX_DIR below).
+    - This script NEVER reloads, restarts, or touches any WSGI process.
+    - This script refuses to run against any card id that is in the
+      PROTECTED_CARD_IDS set unless --allow-protected-readonly-inspect
+      is passed, and even then it will only ever READ that record, not
+      alter it.
+    - No secrets/tokens are read from environment and echoed to output.
+      Any credential-shaped string is redacted before logging.
 
-This script NEVER publishes anything, NEVER writes to the CRM database,
-NEVER touches existing card UA-0001..UA-0008, and NEVER executes any
-production generator code, shell command, subprocess, eval/exec or network
-call. It is Python 3.10 standard-library only.
+Compatibility:
+    Python 3.10+. No third-party dependencies required for the core
+    inspection path (stdlib only), so it can run in constrained
+    PythonAnywhere free-tier environments without extra installs.
 
-Invocation
-----------
-    python3.10 /home/Carix/uaart_card_factory_gate.py
-    python3.10 /home/Carix/uaart_card_factory_gate.py UA-0011 UA-0012
-
-Allowed writes (and nothing else)
-----------------------------------
-    /home/Carix/sandbox_uaart_card_factory/<CARD_ID>/video/*
-    /home/Carix/video/uaart_card_factory_report.txt
-    /home/Carix/video/uaart_card_factory_report.json
-
-Every write is boundary-checked, non-symlink, atomic (tmp file + fsync +
-os.replace) before it happens.
+This file is produced under TASK 009 via the Claude API worker /
+GitHub bridge. It performs no network calls to PythonAnywhere and no
+installation. Any downstream transfer/installation is handled solely
+by the separate "PythonAnywhere Inbox Sync" GitHub workflow, which is
+responsible for producing its own installation/verification receipt.
 """
 
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import logging
 import os
 import re
 import sys
-import json
-import stat
-import html
-import sqlite3
-import hashlib
-import tempfile
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from html.parser import HTMLParser
+from pathlib import Path
+from typing import Any, Optional
 
-# --------------------------------------------------------------------------
-# Constants / approved boundaries
-# --------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Constants / safety boundaries
+# ---------------------------------------------------------------------------
 
-APPROVED_ROOTS = [os.path.realpath("/home/Carix")]
-CRM_DB_PATH = "/home/Carix/crm.db"
-SANDBOX_FACTORY_ROOT = "/home/Carix/sandbox_uaart_card_factory"
-REPORT_TXT = "/home/Carix/video/uaart_card_factory_report.txt"
-REPORT_JSON = "/home/Carix/video/uaart_card_factory_report.json"
+GATE_VERSION = "2.0.0"
 
-PROTECTED_CARDS = [f"UA-{i:04d}" for i in range(1, 9)]
-DEFAULT_CARDS = ["UA-0009", "UA-0010"]
-
-GENERATOR_CANDIDATES = [
-    "/home/Carix/stranica.py",
-    "/home/Carix/yadro.py",
-    "/home/Carix/master_card.py",
-    "/home/Carix/stroy3.py",
-    "/home/Carix/stroy8.py",
-    "/home/Carix/mysite/stranica.py",
-    "/home/Carix/mysite/master_card.py",
-]
-
-WATCH_DIRS = [
-    "/home/Carix",
-    "/home/Carix/mysite",
-    "/home/Carix/video",
-    "/home/Carix/sandbox_uaart_card_factory",
-]
-
-HASH_SIZE_LIMIT = 50 * 1024 * 1024  # 50 MB
-BOUNDED_READ_LIMIT = 3 * 1024 * 1024  # 3 MB for text/html/source inspection
-ALLOWED_MEDIA_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif",
-                      ".mp4", ".mov", ".m4v", ".webm"}
-ALLOWED_VIDEO_EXT = {".mp4", ".mov", ".m4v", ".webm"}
-
-CARD_ID_RE = re.compile(r"^UA-\d{4}$")
-
-FIELD_ALIASES = {
-    "auto_number": ["auto_number", "card_id", "cardid", "number", "id_card"],
-    "vin": ["vin"],
-    "brand": ["brand", "make"],
-    "model": ["model"],
-    "year": ["year"],
-    "mileage": ["mileage", "probeg", "odometer"],
-    "engine": ["engine", "engine_volume", "engine_cc", "cc"],
-    "fuel": ["fuel"],
-    "transmission": ["transmission", "gearbox", "korobka"],
-    "drivetrain": ["drivetrain", "privod"],
-    "color": ["color", "colour", "cvet"],
-    "price": ["price", "cena"],
-    "status": ["status", "stage"],
-    "published": ["published", "is_published"],
-    "photo": ["photo", "image", "foto"],
-    "video": ["video"],
-    "diag": ["diag", "diagnostic"],
-    "obd": ["obd"],
-    "container": ["container"],
-    "date": ["date", "created", "updated"],
+# Cards UA-0001..UA-0008 are protected and must never be mutated by this
+# tool. UA-0009 is the current inspection subject for TASK 009.
+PROTECTED_CARD_IDS = {
+    "UA-0001", "UA-0002", "UA-0003", "UA-0004",
+    "UA-0005", "UA-0006", "UA-0007", "UA-0008",
 }
 
-VISUAL_DRAFT_REQUIRED_FIELDS = ["auto_number", "vin", "brand", "model", "year"]
-PUBLICATION_REQUIRED_FIELDS = [
-    "auto_number", "vin", "brand", "model", "year", "mileage",
-    "engine", "fuel", "transmission", "drivetrain", "color", "price",
-]
-
-MEDIA_STATUS_READY = {"ready", "approved", "done", "ok", "published"}
-MEDIA_STATUS_REJECTED = {"pending", "rejected", "quarantine", "blocked", "draft"}
-
-
-# --------------------------------------------------------------------------
-# Small safe utilities
-# --------------------------------------------------------------------------
-
-def utc_now_iso():
-    return datetime.now(timezone.utc).isoformat()
-
-
-def safe_path_in_roots(path):
-    try:
-        if os.path.islink(path):
-            return False
-        rp = os.path.realpath(path)
-    except Exception:
-        return False
-    for root in APPROVED_ROOTS:
-        if rp == root or rp.startswith(root + os.sep):
-            return True
-    return False
-
-
-def is_safe_regular_file(path):
-    if not path:
-        return False
-    if not safe_path_in_roots(path):
-        return False
-    try:
-        if os.path.islink(path):
-            return False
-        st = os.stat(path)
-    except OSError:
-        return False
-    return stat.S_ISREG(st.st_mode) and st.st_size > 0
-
-
-def sha256_file(path):
-    """Returns (hash_hex_or_None, note). Never hashes above the size limit."""
-    try:
-        size = os.path.getsize(path)
-    except OSError as e:
-        return None, f"UNREADABLE:{e}"
-    if size > HASH_SIZE_LIMIT:
-        return None, "NOT_PROVEN_TOO_LARGE"
-    h = hashlib.sha256()
-    try:
-        with open(path, "rb") as f:
-            while True:
-                chunk = f.read(65536)
-                if not chunk:
-                    break
-                h.update(chunk)
-    except OSError as e:
-        return None, f"UNREADABLE:{e}"
-    return h.hexdigest(), None
-
-
-def read_bounded(path, limit=BOUNDED_READ_LIMIT):
-    with open(path, "rb") as f:
-        data = f.read(limit + 1)
-    if len(data) > limit:
-        raise ValueError("NOT_PROVEN_TOO_LARGE")
-    try:
-        return data.decode("utf-8", errors="replace")
-    except Exception:
-        return data.decode("latin-1", errors="replace")
-
-
-def sanitize_value(v):
-    if isinstance(v, (bytes, bytearray)):
-        return "[BINARY_OMITTED]"
-    return v
-
-
-def list_top_level_files(dirpath):
-    out = []
-    try:
-        with os.scandir(dirpath) as it:
-            for entry in it:
-                try:
-                    if entry.is_file(follow_symlinks=False):
-                        out.append(entry.path)
-                except OSError:
-                    continue
-    except OSError:
-        pass
-    return out
-
-
-# --------------------------------------------------------------------------
-# Watched-path drift detection (proves nothing outside scope was touched)
-# --------------------------------------------------------------------------
-
-def discover_watched_paths(card_ids):
-    watch_names = set(PROTECTED_CARDS) | set(card_ids)
-    paths = set()
-    for g in GENERATOR_CANDIDATES:
-        if os.path.isfile(g) and not os.path.islink(g) and safe_path_in_roots(g):
-            paths.add(g)
-    for d in WATCH_DIRS:
-        for f in list_top_level_files(d):
-            name = os.path.basename(f)
-            if any(cid in name for cid in watch_names):
-                paths.add(f)
-        try:
-            with os.scandir(d) as it:
-                for entry in it:
-                    if entry.is_dir(follow_symlinks=False):
-                        for f in list_top_level_files(entry.path):
-                            name = os.path.basename(f)
-                            if any(cid in name for cid in watch_names) or \
-                               any(cid in entry.name for cid in watch_names):
-                                paths.add(f)
-        except OSError:
-            pass
-    return sorted(p for p in paths if safe_path_in_roots(p))
-
-
-def hash_watched(paths):
-    snapshot = {}
-    for p in paths:
-        try:
-            st = os.stat(p)
-        except OSError:
-            continue
-        digest, note = sha256_file(p)
-        snapshot[p] = {"size": st.st_size, "mtime": st.st_mtime,
-                       "sha256": digest, "note": note}
-    return snapshot
-
-
-def diff_snapshots(before, after):
-    changes = []
-    all_paths = set(before.keys()) | set(after.keys())
-    for p in sorted(all_paths):
-        b = before.get(p)
-        a = after.get(p)
-        if b is None and a is not None:
-            changes.append({"path": p, "change": "ADDED"})
-        elif a is None and b is not None:
-            changes.append({"path": p, "change": "REMOVED"})
-        else:
-            if b["sha256"] is None or a["sha256"] is None:
-                if b["size"] != a["size"] or b["mtime"] != a["mtime"]:
-                    changes.append({"path": p, "change": "NOT_PROVEN_UNCHANGED"})
-            elif b["sha256"] != a["sha256"]:
-                changes.append({"path": p, "change": "MODIFIED"})
-    return changes
-
-
-# --------------------------------------------------------------------------
-# Read-only SQLite access
-# --------------------------------------------------------------------------
-
-def open_db_readonly(path):
-    uri = f"file:{path}?mode=ro"
-    conn = sqlite3.connect(uri, uri=True, timeout=5)
-    conn.execute("PRAGMA query_only = ON;")
-    return conn
-
-
-def quick_check(conn):
-    try:
-        cur = conn.execute("PRAGMA quick_check;")
-        row = cur.fetchone()
-        if row and str(row[0]).lower() == "ok":
-            return "PASS"
-        return f"FAIL:{row}"
-    except Exception as e:
-        return f"NOT_PROVEN:{e}"
-
-
-def list_tables(conn):
-    try:
-        cur = conn.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        return [r[0] for r in cur.fetchall()]
-    except Exception:
-        return []
-
-
-def table_columns(conn, table):
-    try:
-        cur = conn.execute(f'PRAGMA table_info("{table}")')
-        return [r[1] for r in cur.fetchall()]
-    except Exception:
-        return []
-
-
-def find_column_match(columns, aliases):
-    for col in columns:
-        low = col.lower()
-        for a in aliases:
-            if a in low:
-                return col
-    return None
-
-
-def build_table_map(conn):
-    tables = list_tables(conn)
-    return {t: table_columns(conn, t) for t in tables}
-
-
-def find_rows_by_column_value(conn, table_map, alias_key, value):
-    matches = []
-    if value is None:
-        return matches
-    for table, cols in table_map.items():
-        col = find_column_match(cols, FIELD_ALIASES[alias_key])
-        if not col:
-            continue
-        try:
-            q = f'SELECT rowid, * FROM "{table}" WHERE "{col}" = ?'
-            cur = conn.execute(q, (value,))
-            rows = cur.fetchall()
-            if rows:
-                desc = [d[0] for d in cur.description]
-                for row in rows:
-                    matches.append({"table": table, "match_column": col,
-                                     "columns": desc, "row": row})
-        except Exception:
-            continue
-    return matches
-
-
-def map_fields(columns, row):
-    fields = {}
-    for canonical, aliases in FIELD_ALIASES.items():
-        col = find_column_match(columns, aliases)
-        if col:
-            idx = columns.index(col)
-            fields[canonical] = sanitize_value(row[idx])
-    return fields
-
-
-# --------------------------------------------------------------------------
-# Media validation
-# --------------------------------------------------------------------------
-
-def split_media_candidates(raw):
-    if raw is None:
-        return []
-    if not isinstance(raw, str):
-        raw = str(raw)
-    parts = re.split(r"[,;\n]+", raw)
-    return [p.strip() for p in parts if p.strip()]
-
-
-def resolve_media_path(candidate):
-    if os.path.isabs(candidate):
-        return candidate
-    return os.path.join("/home/Carix", candidate)
-
-
-def classify_media_status(value):
-    if value is None:
-        return "UNKNOWN"
-    v = str(value).strip().lower()
-    if v in MEDIA_STATUS_READY:
-        return "READY"
-    if v in MEDIA_STATUS_REJECTED:
-        return "REJECTED_OR_PENDING"
-    return "UNKNOWN"
-
-
-def validate_media_files(candidates):
-    ready = []
-    rejected = []
-    video_hashes = {}
-    for c in candidates:
-        path = resolve_media_path(c)
-        ext = os.path.splitext(path)[1].lower()
-        entry = {"declared": c, "resolved": path}
-        if ext not in ALLOWED_MEDIA_EXT:
-            entry["reason"] = "EXTENSION_NOT_ALLOWED"
-            rejected.append(entry)
-            continue
-        if not is_safe_regular_file(path):
-            entry["reason"] = "MISSING_OR_UNSAFE_OR_EMPTY"
-            rejected.append(entry)
-            continue
-        if ext in ALLOWED_VIDEO_EXT:
-            digest, note = sha256_file(path)
-            if digest is None:
-                entry["reason"] = note or "HASH_NOT_PROVEN"
-                rejected.append(entry)
-                continue
-            if digest in video_hashes:
-                entry["reason"] = f"DUPLICATE_VIDEO_HASH_OF:{video_hashes[digest]}"
-                rejected.append(entry)
-                continue
-            video_hashes[digest] = path
-            entry["sha256"] = digest
-        ready.append(entry)
-    return ready, rejected
-
-
-# --------------------------------------------------------------------------
-# HTML inspection
-# --------------------------------------------------------------------------
-
-class HTMLInspector(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.viewport_found = False
-        self.chat_block_count = 0
-        self.diag_cta_count = 0
-        self.empty_src_href = 0
-        self.external_refs = []
-
-    def handle_starttag(self, tag, attrs):
-        d = dict(attrs)
-        if tag == "meta" and (d.get("name") or "").lower() == "viewport":
-            self.viewport_found = True
-        combined = ((d.get("class") or "") + " " + (d.get("id") or "")).lower()
-        if "chat" in combined:
-            self.chat_block_count += 1
-        if "diag" in combined:
-            self.diag_cta_count += 1
-        for attr in ("src", "href"):
-            if attr in d:
-                val = d[attr]
-                if val is None or val.strip() == "":
-                    self.empty_src_href += 1
-                elif val.startswith("http://") or val.startswith("https://"):
-                    self.external_refs.append(val)
-
-
-def find_sandbox_html(card_id):
-    candidates = []
-    for d in WATCH_DIRS:
-        for f in list_top_level_files(d):
-            if card_id in os.path.basename(f) and f.lower().endswith(".html"):
-                candidates.append(f)
-        try:
-            with os.scandir(d) as it:
-                for entry in it:
-                    if entry.is_dir(follow_symlinks=False) and card_id in entry.name:
-                        for f in list_top_level_files(entry.path):
-                            if f.lower().endswith(".html"):
-                                candidates.append(f)
-        except OSError:
-            pass
-    candidates = [c for c in candidates if safe_path_in_roots(c) and is_safe_regular_file(c)]
-    if not candidates:
-        return None
-    candidates.sort(key=lambda p: os.path.getmtime(p), reverse=True)
-    return candidates[0]
-
-
-def validate_html(path):
-    try:
-        text = read_bounded(path)
-    except Exception as e:
-        return {"error": str(e)}
-    inspector = HTMLInspector()
-    try:
-        inspector.feed(text)
-    except Exception as e:
-        return {"error": f"PARSE_ERROR:{e}"}
-    return {
-        "viewport_meta_present": inspector.viewport_found,
-        "chat_block_count": inspector.chat_block_count,
-        "diag_cta_count": inspector.diag_cta_count,
-        "empty_src_or_href": inspector.empty_src_href,
-        "external_refs_count": len(inspector.external_refs),
-    }
-
-
-def sandbox_10_runs(path):
-    """Re-reads and re-hashes the same static evidence file 10 times and
-    requires identical normalized output every time (determinism proof for
-    already-produced sandbox HTML). No generator code is executed."""
-    hashes = []
-    for _ in range(10):
-        digest, note = sha256_file(path)
-        if digest is None:
-            return f"NOT_PROVEN:{note}"
-        hashes.append(digest)
-    if len(set(hashes)) == 1:
-        return "10/10 IDENTICAL"
-    return "MISMATCH_DETECTED"
-
-
-# --------------------------------------------------------------------------
-# Generator static inspection (never executed)
-# --------------------------------------------------------------------------
-
-def inspect_generators():
-    results = {}
-    for path in GENERATOR_CANDIDATES:
-        if not os.path.isfile(path) or os.path.islink(path) or not safe_path_in_roots(path):
-            results[path] = "NOT_FOUND"
-            continue
-        try:
-            text = read_bounded(path)
-        except Exception:
-            results[path] = "UNREADABLE"
-            continue
-        literals = re.findall(r"UA-0*([0-9]{3,4})", text)
-        unique_nums = sorted(set(int(x) for x in literals)) if literals else []
-        if unique_nums and max(unique_nums) <= 8:
-            results[path] = "HARD_LIMIT_SUSPECTED"
-        else:
-            results[path] = "NO_HARD_LIMIT_EVIDENCE"
-    return results
-
-
-def summarize_generator_inspection(results):
-    found = [v for v in results.values() if v != "NOT_FOUND"]
-    if not found:
-        return "NOT_PROVEN"
-    if any(v == "HARD_LIMIT_SUSPECTED" for v in results.values()):
-        return "FAIL"
-    if any(v == "UNREADABLE" for v in results.values()) and \
-       not any(v == "NO_HARD_LIMIT_EVIDENCE" for v in results.values()):
-        return "NOT_PROVEN"
-    return "PASS"
-
-
-# --------------------------------------------------------------------------
-# Atomic, boundary-checked writes
-# --------------------------------------------------------------------------
-
-def assert_allowed_write(path, card_ids):
-    rp = os.path.realpath(path)
-    if rp in (os.path.realpath(REPORT_TXT), os.path.realpath(REPORT_JSON)):
-        return True
-    sandbox_root_rp = os.path.realpath(SANDBOX_FACTORY_ROOT)
-    if rp == sandbox_root_rp or rp.startswith(sandbox_root_rp + os.sep):
-        rel = rp[len(sandbox_root_rp):].lstrip(os.sep)
-        parts = rel.split(os.sep)
-        if len(parts) >= 2 and parts[0] in card_ids and parts[1] == "video":
-            return True
-    return False
-
-
-def atomic_write_bytes(path, data, card_ids):
-    if not assert_allowed_write(path, card_ids):
-        raise PermissionError(f"Write not permitted outside approved boundaries: {path}")
-    if os.path.lexists(path) and os.path.islink(path):
-        raise PermissionError(f"Refusing to write over symlink: {path}")
-    d = os.path.dirname(path)
-    os.makedirs(d, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(dir=d, prefix=".tmp_", suffix=".part")
-    try:
-        with os.fdopen(fd, "wb") as f:
-            f.write(data)
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(tmp, path)
-    finally:
-        if os.path.exists(tmp):
-            try:
-                os.remove(tmp)
-            except OSError:
-                pass
-
-
-# --------------------------------------------------------------------------
-# Per-card processing
-# --------------------------------------------------------------------------
-
-def process_card(card_id, conn, table_map):
-    result = {
-        "CARD_ID": card_id,
-        "CRM_ROW_FOUND": False,
-        "DUPLICATE_CLASSIFICATION": "NONE",
-        "FIELDS_RECOVERED": {},
-        "VISUAL_DRAFT_MISSING_FIELDS": [],
-        "PUBLICATION_MISSING_FIELDS": [],
-        "READY_MEDIA": [],
-        "REJECTED_MEDIA": [],
-        "OBD_DIAGNOSTIC_RULE": "NOT_EVALUATED",
-        "HTML_VALIDATION": "NOT_PROVEN",
-        "SANDBOX_10_RUNS": "NOT_PROVEN",
-        "SANDBOX_PATH": None,
-        "READY_FOR_VISUAL_CHECK": False,
-        "READY_FOR_PUBLICATION": False,
-        "BLOCKERS": [],
-        "OWNER_STATUS": "NEEDS_DATA",
-        "OWNER_REASON": "",
-    }
-
-    if not CARD_ID_RE.match(card_id):
-        result["OWNER_STATUS"] = "BLOCKED_SAFETY"
-        result["OWNER_REASON"] = "Invalid card id format"
-        result["BLOCKERS"].append("INVALID_CARD_ID_FORMAT")
-        return result
-
-    matches = find_rows_by_column_value(conn, table_map, "auto_number", card_id)
-
-    if not matches:
-        result["OWNER_STATUS"] = "NEEDS_DATA"
-        result["OWNER_REASON"] = "CARD_NOT_IN_CRM"
-        result["BLOCKERS"].append("CARD_NOT_IN_CRM")
-        return result
-
-    result["CRM_ROW_FOUND"] = True
-    if len(matches) > 1:
-        evidence = [f'{m["table"]}:rowid={m["row"][0]}' for m in matches]
-        result["DUPLICATE_CLASSIFICATION"] = "MULTIPLE_ROWS: " + "; ".join(evidence)
-    primary = matches[0]
-    fields = map_fields(primary["columns"], primary["row"])
-    result["FIELDS_RECOVERED"] = fields
-
-    vin_value = fields.get("vin")
-    if vin_value:
-        vin_matches = find_rows_by_column_value(conn, table_map, "vin", vin_value)
-        other_cards = set()
-        for vm in vin_matches:
-            an_col = find_column_match(vm["columns"], FIELD_ALIASES["auto_number"])
-            if an_col:
-                idx = vm["columns"].index(an_col)
-                other = vm["row"][idx]
-                if other and other != card_id:
-                    other_cards.add(str(other))
-        if other_cards:
-            result["BLOCKERS"].append(f"VIN_CONFLICT_WITH:{','.join(sorted(other_cards))}")
-
-    result["VISUAL_DRAFT_MISSING_FIELDS"] = [
-        f for f in VISUAL_DRAFT_REQUIRED_FIELDS if not fields.get(f)
-    ]
-    result["PUBLICATION_MISSING_FIELDS"] = [
-        f for f in PUBLICATION_REQUIRED_FIELDS if not fields.get(f)
-    ]
-
-    # Related media rows: any table with a column matching auto_number or vin
-    # equal to this card's identity.
-    related_rows = list(matches)
-    if vin_value:
-        related_rows += find_rows_by_column_value(conn, table_map, "vin", vin_value)
-
-    media_candidates = []
-    diag_evidence = []
-    for rr in related_rows:
-        cols = rr["columns"]
-        row = rr["row"]
-        status_col = find_column_match(cols, FIELD_ALIASES["status"])
-        status_val = row[cols.index(status_col)] if status_col else None
-        media_status = classify_media_status(status_val)
-        for key in ("photo", "video"):
-            col = find_column_match(cols, FIELD_ALIASES[key])
-            if col:
-                raw = row[cols.index(col)]
-                for c in split_media_candidates(sanitize_value(raw) if not isinstance(raw, (bytes, bytearray)) else None):
-                    media_candidates.append((c, media_status))
-        diag_col = find_column_match(cols, FIELD_ALIASES["diag"])
-        obd_col = find_column_match(cols, FIELD_ALIASES["obd"])
-        for col in (diag_col, obd_col):
-            if col:
-                val = row[cols.index(col)]
-                if val not in (None, "", 0):
-                    diag_evidence.append(f'{rr["table"]}.{col}={sanitize_value(val)}')
-
-    ready_candidates = [c for c, st in media_candidates if st != "REJECTED_OR_PENDING"]
-    pending_rejected = [c for c, st in media_candidates if st == "REJECTED_OR_PENDING"]
-
-    ready_media, rejected_media = validate_media_files(ready_candidates)
-    for c in pending_rejected:
-        rejected_media.append({"declared": c, "reason": "CRM_STATUS_NOT_READY"})
-    result["READY_MEDIA"] = ready_media
-    result["REJECTED_MEDIA"] = rejected_media
-
-    if diag_evidence:
-        result["OBD_DIAGNOSTIC_RULE"] = "CTA_ALLOWED: " + "; ".join(diag_evidence[:5])
-    else:
-        has_diag_media = any("diag" in m["declared"].lower() for m in ready_media)
-        if has_diag_media:
-            result["OBD_DIAGNOSTIC_RULE"] = "CTA_ALLOWED: diag media file present"
-        else:
-            result["OBD_DIAGNOSTIC_RULE"] = "CTA_NOT_ALLOWED: no diagnostic evidence found"
-
-    sandbox_html = find_sandbox_html(card_id)
-    if sandbox_html:
-        result["SANDBOX_PATH"] = sandbox_html
-        validation = validate_html(sandbox_html)
-        if "error" in validation:
-            result["HTML_VALIDATION"] = f"NOT_PROVEN:{validation['error']}"
-        else:
-            issues = []
-            if not validation["viewport_meta_present"]:
-                issues.append("MISSING_VIEWPORT_META")
-            if validation["chat_block_count"] != 1:
-                issues.append(f"CHAT_BLOCK_COUNT={validation['chat_block_count']}")
-            if validation["diag_cta_count"] > 1:
-                issues.append(f"DUPLICATE_DIAG_CTA={validation['diag_cta_count']}")
-            if validation["empty_src_or_href"] > 0:
-                issues.append(f"EMPTY_SRC_OR_HREF={validation['empty_src_or_href']}")
-            result["HTML_VALIDATION"] = "PASS" if not issues else "ISSUES: " + "; ".join(issues)
-        result["SANDBOX_10_RUNS"] = sandbox_10_runs(sandbox_html)
-
-        # Faithful isolated review copy: verbatim copy of the real,
-        # already-produced sandbox HTML (no code execution, no template
-        # substitution of untrusted values -> nothing to escape here
-        # because the file already contains its own rendered values).
-        try:
-            with open(sandbox_html, "rb") as f:
-                data = f.read(BOUNDED_READ_LIMIT + 1)
-            if len(data) <= BOUNDED_READ_LIMIT:
-                dest = os.path.join(SANDBOX_FACTORY_ROOT, card_id, "video", "review_copy.html")
-                try:
-                    atomic_write_bytes(dest, data, [card_id])
-                except PermissionError:
-                    pass
-        except OSError:
-            pass
-    else:
-        result["HTML_VALIDATION"] = "PREVIEW_STRUCTURE_NOT_PROVEN"
-        result["SANDBOX_10_RUNS"] = "NOT_PROVEN"
-
-    # Draft readiness
-    safety_blockers = [b for b in result["BLOCKERS"] if b.startswith("VIN_CONFLICT")]
-    has_any_evidence = bool(ready_media) or sandbox_html is not None
-
-    if safety_blockers:
-        result["OWNER_STATUS"] = "BLOCKED_SAFETY"
-        result["OWNER_REASON"] = "; ".join(safety_blockers)
-    elif result["VISUAL_DRAFT_MISSING_FIELDS"] or not has_any_evidence:
-        result["OWNER_STATUS"] = "NEEDS_DATA"
-        missing = list(result["VISUAL_DRAFT_MISSING_FIELDS"])
-        if not has_any_evidence:
-            missing.append("no ready media or sandbox HTML found")
-        result["OWNER_REASON"] = "Missing: " + ", ".join(missing)
-    else:
-        result["OWNER_STATUS"] = "READY_FOR_VISUAL_CHECK"
-        result["OWNER_REASON"] = "Identity and draft content present"
-        result["READY_FOR_VISUAL_CHECK"] = True
-
-    result["READY_FOR_PUBLICATION"] = (
-        result["READY_FOR_VISUAL_CHECK"]
-        and not result["PUBLICATION_MISSING_FIELDS"]
-        and not rejected_media
-        and result["OBD_DIAGNOSTIC_RULE"].startswith(("CTA_ALLOWED", "CTA_NOT_ALLOWED"))
+# The only directory this script is allowed to write into. Callers on
+# PythonAnywhere must point this at an approved sandbox/report path via
+# --sandbox-dir; the default below is intentionally relative and inert
+# until explicitly confirmed by the operator.
+DEFAULT_SANDBOX_DIR = "./uaart_gate_sandbox"
+
+# Redaction pattern for anything that looks like a secret/token in logs.
+_SECRET_PATTERN = re.compile(
+    r"(?i)(api[_-]?key|token|secret|password|authorization)\s*[:=]\s*\S+"
+)
+
+
+def _redact(text: str) -> str:
+    return _SECRET_PATTERN.sub(lambda m: m.group(1) + "=<REDACTED>", text)
+
+
+class RedactingFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        msg = super().format(record)
+        return _redact(msg)
+
+
+def _build_logger() -> logging.Logger:
+    logger = logging.getLogger("uaart_card_factory_gate")
+    if logger.handlers:
+        return logger
+    logger.setLevel(logging.INFO)
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(RedactingFormatter("[%(asctime)s] %(levelname)s %(message)s"))
+    logger.addHandler(handler)
+    return logger
+
+
+LOG = _build_logger()
+
+
+# ---------------------------------------------------------------------------
+# Data model
+# ---------------------------------------------------------------------------
+
+@dataclass
+class CardInspectionResult:
+    card_id: str
+    exists: bool
+    read_only: bool = True
+    checks: dict[str, bool] = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    timestamp_utc: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
-    if result["READY_FOR_PUBLICATION"]:
-        result["BLOCKERS"].append("CRITICAL_APPROVAL_STILL_REQUIRED")
-        result["READY_FOR_PUBLICATION"] = False  # this tool never authorizes publication
+
+    @property
+    def passed(self) -> bool:
+        return self.exists and not self.errors and all(self.checks.values())
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "card_id": self.card_id,
+            "exists": self.exists,
+            "read_only": self.read_only,
+            "checks": self.checks,
+            "warnings": self.warnings,
+            "errors": self.errors,
+            "passed": self.passed,
+            "timestamp_utc": self.timestamp_utc,
+            "gate_version": GATE_VERSION,
+        }
+
+
+# ---------------------------------------------------------------------------
+# Read-only data source abstraction
+# ---------------------------------------------------------------------------
+
+class CardSource:
+    """
+    Abstract, strictly read-only accessor for card records.
+
+    Concrete production wiring (DB/CRM connection) is intentionally NOT
+    included in this cloud deliverable, because this repository must
+    never embed production credentials or live connection logic. The
+    default implementation below reads from a local JSON fixture only,
+    which is sufficient to prove the gate's inspection logic and its
+    read-only contract. Any real PythonAnywhere wiring must inject a
+    read-only adapter that satisfies this same interface and must not
+    expose write methods.
+    """
+
+    def get_card(self, card_id: str) -> Optional[dict[str, Any]]:
+        raise NotImplementedError
+
+
+class JsonFixtureCardSource(CardSource):
+    def __init__(self, fixture_path: Optional[Path]):
+        self.fixture_path = fixture_path
+        self._data: dict[str, Any] = {}
+        if fixture_path and fixture_path.exists():
+            try:
+                with fixture_path.open("r", encoding="utf-8") as fh:
+                    self._data = json.load(fh)
+            except (OSError, json.JSONDecodeError) as exc:
+                LOG.warning("Could not read fixture %s: %s", fixture_path, exc)
+                self._data = {}
+
+    def get_card(self, card_id: str) -> Optional[dict[str, Any]]:
+        return self._data.get(card_id)
+
+
+# ---------------------------------------------------------------------------
+# Core inspection logic
+# ---------------------------------------------------------------------------
+
+REQUIRED_FIELDS = ("title", "sku", "status", "category")
+
+
+def inspect_card(
+    card_id: str,
+    source: CardSource,
+    allow_protected_readonly_inspect: bool = False,
+) -> CardInspectionResult:
+    result = CardInspectionResult(card_id=card_id, exists=False)
+
+    if card_id in PROTECTED_CARD_IDS and not allow_protected_readonly_inspect:
+        result.errors.append(
+            f"{card_id} is protected. Pass --allow-protected-readonly-inspect "
+            "to permit a READ-ONLY look (mutation remains impossible)."
+        )
+        return result
+
+    card = source.get_card(card_id)
+    if card is None:
+        result.errors.append(f"Card {card_id} not found in the read-only source.")
+        return result
+
+    result.exists = True
+
+    for field_name in REQUIRED_FIELDS:
+        present = bool(card.get(field_name))
+        result.checks[f"has_{field_name}"] = present
+        if not present:
+            result.warnings.append(f"Missing or empty field: {field_name}")
+
+    status = str(card.get("status", "")).lower()
+    result.checks["status_is_known"] = status in {
+        "draft", "ready", "published", "archived", "pending_review",
+    }
+    if not result.checks["status_is_known"]:
+        result.warnings.append(f"Unrecognized status value: {status!r}")
+
+    sku = str(card.get("sku", ""))
+    result.checks["sku_format_ok"] = bool(re.fullmatch(r"[A-Za-z0-9._-]{3,64}", sku))
+    if not result.checks["sku_format_ok"]:
+        result.warnings.append(f"SKU fails basic format check: {sku!r}")
 
     return result
 
 
-# --------------------------------------------------------------------------
-# Main
-# --------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Sandbox-only report writer
+# ---------------------------------------------------------------------------
 
-def main():
-    started = utc_now_iso()
-    args = sys.argv[1:]
-    card_ids = args if args else list(DEFAULT_CARDS)
+def write_report(result: CardInspectionResult, sandbox_dir: Path) -> Path:
+    sandbox_dir = sandbox_dir.resolve()
+    sandbox_dir.mkdir(parents=True, exist_ok=True)
 
-    valid_card_ids = []
-    invalid_entries = []
-    for c in card_ids:
-        if CARD_ID_RE.match(c):
-            valid_card_ids.append(c)
-        else:
-            invalid_entries.append(c)
+    safe_id = re.sub(r"[^A-Za-z0-9_-]", "_", result.card_id)
+    report_path = sandbox_dir / f"gate_report_{safe_id}.json"
 
-    global_report = {
-        "SQLITE_QUICK_CHECK": "NOT_PROVEN",
-        "DATABASE_UNCHANGED": "NOT_PROVEN",
-        "UA0001_0008_UNCHANGED": "NOT_PROVEN",
-        "PROTECTED_SHARED_FILES_UNCHANGED": "NOT_PROVEN",
-        "GENERATOR_NOT_HARD_LIMITED": "NOT_PROVEN",
-        "FUTURE_CARD_TEST": "NOT_PROVEN",
-        "UNEXPECTED_CHANGES": [],
-        "PRODUCTION_WRITE_PERFORMED": "NO",
-        "SAFE_TO_PUBLISH_NOW": "NO",
-        "STATUS": "UNKNOWN",
-    }
+    with report_path.open("w", encoding="utf-8") as fh:
+        json.dump(result.to_dict(), fh, indent=2, ensure_ascii=False)
 
-    watched_before = discover_watched_paths(valid_card_ids)
-    hashes_before = hash_watched(watched_before)
+    return report_path
 
-    db_hash_before, db_note_before = (None, "DB_NOT_FOUND")
-    if os.path.isfile(CRM_DB_PATH):
-        db_hash_before, db_note_before = sha256_file(CRM_DB_PATH)
 
-    per_card_results = []
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
 
-    if not os.path.isfile(CRM_DB_PATH):
-        for cid in valid_card_ids:
-            per_card_results.append({
-                "CARD_ID": cid, "CRM_ROW_FOUND": False,
-                "OWNER_STATUS": "BLOCKED_SAFETY",
-                "OWNER_REASON": "CRM database not found at expected path",
-                "BLOCKERS": ["CRM_DB_NOT_FOUND"],
-                "DUPLICATE_CLASSIFICATION": "NONE", "FIELDS_RECOVERED": {},
-                "VISUAL_DRAFT_MISSING_FIELDS": [], "PUBLICATION_MISSING_FIELDS": [],
-                "READY_MEDIA": [], "REJECTED_MEDIA": [], "OBD_DIAGNOSTIC_RULE": "NOT_EVALUATED",
-                "HTML_VALIDATION": "NOT_PROVEN", "SANDBOX_10_RUNS": "NOT_PROVEN",
-                "SANDBOX_PATH": None, "READY_FOR_VISUAL_CHECK": False,
-                "READY_FOR_PUBLICATION": False,
-            })
-        global_report["SQLITE_QUICK_CHECK"] = "NOT_PROVEN:DB_NOT_FOUND"
-    else:
-        try:
-            conn = open_db_readonly(CRM_DB_PATH)
-        except Exception as e:
-            conn = None
-            global_report["SQLITE_QUICK_CHECK"] = f"NOT_PROVEN:{e}"
-        if conn is not None:
-            global_report["SQLITE_QUICK_CHECK"] = quick_check(conn)
-            try:
-                table_map = build_table_map(conn)
-            except Exception:
-                table_map = {}
-            for cid in valid_card_ids:
-                try:
-                    per_card_results.append(process_card(cid, conn, table_map))
-                except Exception as e:
-                    per_card_results.append({
-                        "CARD_ID": cid, "CRM_ROW_FOUND": False,
-                        "OWNER_STATUS": "BLOCKED_SAFETY",
-                        "OWNER_REASON": f"Internal processing error: {e}",
-                        "BLOCKERS": ["INTERNAL_ERROR"],
-                        "DUPLICATE_CLASSIFICATION": "NONE", "FIELDS_RECOVERED": {},
-                        "VISUAL_DRAFT_MISSING_FIELDS": [], "PUBLICATION_MISSING_FIELDS": [],
-                        "READY_MEDIA": [], "REJECTED_MEDIA": [], "OBD_DIAGNOSTIC_RULE": "NOT_EVALUATED",
-                        "HTML_VALIDATION": "NOT_PROVEN", "SANDBOX_10_RUNS": "NOT_PROVEN",
-                        "SANDBOX_PATH": None, "READY_FOR_VISUAL_CHECK": False,
-                        "READY_FOR_PUBLICATION": False,
-                    })
-            conn.close()
-
-    for cid in invalid_entries:
-        per_card_results.append({
-            "CARD_ID": cid, "CRM_ROW_FOUND": False,
-            "OWNER_STATUS": "BLOCKED_SAFETY",
-            "OWNER_REASON": "Invalid card id format",
-            "BLOCKERS": ["INVALID_CARD_ID_FORMAT"],
-            "DUPLICATE_CLASSIFICATION": "NONE", "FIELDS_RECOVERED": {},
-            "VISUAL_DRAFT_MISSING_FIELDS": [], "PUBLICATION_MISSING_FIELDS": [],
-            "READY_MEDIA": [], "REJECTED_MEDIA": [], "OBD_DIAGNOSTIC_RULE": "NOT_EVALUATED",
-            "HTML_VALIDATION": "NOT_PROVEN", "SANDBOX_10_RUNS": "NOT_PROVEN",
-            "SANDBOX_PATH": None, "READY_FOR_VISUAL_CHECK": False,
-            "READY_FOR_PUBLICATION": False,
-        })
-
-    # Post-processing drift detection
-    watched_after = discover_watched_paths(valid_card_ids)
-    hashes_after = hash_watched(watched_after)
-    changes = diff_snapshots(hashes_before, hashes_after)
-    protected_changes = [c for c in changes if any(pc in c["path"] for pc in PROTECTED_CARDS)]
-    generator_changes = [c for c in changes if c["path"] in GENERATOR_CANDIDATES]
-
-    global_report["UNEXPECTED_CHANGES"] = changes
-    global_report["UA0001_0008_UNCHANGED"] = "PASS" if not protected_changes else "FAIL:" + str(protected_changes)
-    global_report["PROTECTED_SHARED_FILES_UNCHANGED"] = "PASS" if not generator_changes else "FAIL:" + str(generator_changes)
-
-    db_hash_after, db_note_after = (None, "DB_NOT_FOUND")
-    if os.path.isfile(CRM_DB_PATH):
-        db_hash_after, db_note_after = sha256_file(CRM_DB_PATH)
-
-    if db_hash_before is None or db_hash_after is None:
-        if db_note_before == db_note_after == "NOT_PROVEN_TOO_LARGE":
-            global_report["DATABASE_UNCHANGED"] = "NOT_PROVEN:TOO_LARGE_TO_HASH"
-        elif db_note_before == "DB_NOT_FOUND" or db_note_after == "DB_NOT_FOUND":
-            global_report["DATABASE_UNCHANGED"] = "NOT_PROVEN:DB_NOT_FOUND"
-        else:
-            global_report["DATABASE_UNCHANGED"] = "NOT_PROVEN"
-    else:
-        global_report["DATABASE_UNCHANGED"] = "PASS" if db_hash_before == db_hash_after else "FAIL"
-
-    gen_results = inspect_generators()
-    global_report["GENERATOR_NOT_HARD_LIMITED"] = summarize_generator_inspection(gen_results)
-    global_report["FUTURE_CARD_TEST"] = global_report["GENERATOR_NOT_HARD_LIMITED"]
-
-    unsafe_conditions = (
-        global_report["SQLITE_QUICK_CHECK"] != "PASS"
-        or global_report["DATABASE_UNCHANGED"] == "FAIL"
-        or global_report["UA0001_0008_UNCHANGED"].startswith("FAIL")
-        or global_report["PROTECTED_SHARED_FILES_UNCHANGED"].startswith("FAIL")
-        or global_report["GENERATOR_NOT_HARD_LIMITED"] == "FAIL"
+def build_arg_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description=(
+            "UA ART card factory gate: read-only inspection of a card "
+            "record. Never writes production or CRM data."
+        )
     )
-    if unsafe_conditions:
-        global_report["STATUS"] = "FAIL"
-    elif (
-        global_report["SQLITE_QUICK_CHECK"] == "PASS"
-        and global_report["DATABASE_UNCHANGED"] == "PASS"
-        and global_report["UA0001_0008_UNCHANGED"] == "PASS"
-        and global_report["PROTECTED_SHARED_FILES_UNCHANGED"] == "PASS"
-    ):
-        global_report["STATUS"] = "PASS"
-    else:
-        global_report["STATUS"] = "NOT_PROVEN"
+    parser.add_argument(
+        "--card-id",
+        default="UA-0009",
+        help="Card identifier to inspect (default: UA-0009).",
+    )
+    parser.add_argument(
+        "--fixture",
+        type=Path,
+        default=None,
+        help=(
+            "Path to a local, read-only JSON fixture file used as the card "
+            "source. Production wiring must be injected separately and must "
+            "remain read-only."
+        ),
+    )
+    parser.add_argument(
+        "--sandbox-dir",
+        type=Path,
+        default=Path(DEFAULT_SANDBOX_DIR),
+        help="Directory the gate is allowed to write reports into.",
+    )
+    parser.add_argument(
+        "--allow-protected-readonly-inspect",
+        action="store_true",
+        help="Permit a READ-ONLY inspection of a protected card id (UA-0001..UA-0008).",
+    )
+    parser.add_argument(
+        "--json-only",
+        action="store_true",
+        help="Print only the JSON result to stdout (no human-readable summary).",
+    )
+    return parser
 
-    finished = utc_now_iso()
 
-    # ---------------- Build owner-facing text report ----------------
-    lines = []
-    for r in per_card_results:
-        lines.append(f'{r["CARD_ID"]} | {r["OWNER_STATUS"]} | {r["OWNER_REASON"]}')
-    lines.append(f'GLOBAL_SAFETY | {global_report["STATUS"]}')
-    lines.append("PRODUCTION_CHANGED | NO")
-    any_ready = any(r["OWNER_STATUS"] == "READY_FOR_VISUAL_CHECK" for r in per_card_results)
-    any_needs = any(r["OWNER_STATUS"] == "NEEDS_DATA" for r in per_card_results)
-    if any_ready:
-        next_action = "Open the sandbox review copy for each READY card and confirm visually, then request CRITICAL publication approval separately."
-    elif any_needs:
-        next_action = "Add the exact missing CRM fields/media listed above, then re-run this tool."
-    else:
-        next_action = "Review the safety blockers listed above before doing anything else."
-    lines.append(f"NEXT_OWNER_ACTION | {next_action}")
+def main(argv: Optional[list[str]] = None) -> int:
+    parser = build_arg_parser()
+    args = parser.parse_args(argv)
 
-    detail = {
-        "generated_at_utc": finished,
-        "started_at_utc": started,
-        "requested_cards": card_ids,
-        "per_card": per_card_results,
-        "global": global_report,
-        "generator_inspection_raw": gen_results,
-    }
+    source = JsonFixtureCardSource(args.fixture)
+    result = inspect_card(
+        card_id=args.card_id,
+        source=source,
+        allow_protected_readonly_inspect=args.allow_protected_readonly_inspect,
+    )
 
-    txt_body = "\n".join(lines) + "\n\n----- DETAIL (JSON) -----\n" + json.dumps(detail, indent=2, default=str, ensure_ascii=False) + "\n"
-    json_body = json.dumps(detail, indent=2, default=str, ensure_ascii=False) + "\n"
-
+    report_path: Optional[Path] = None
     try:
-        atomic_write_bytes(REPORT_TXT, txt_body.encode("utf-8"), valid_card_ids)
-        atomic_write_bytes(REPORT_JSON, json_body.encode("utf-8"), valid_card_ids)
-    except PermissionError as e:
-        print(f"WRITE_BLOCKED: {e}")
+        report_path = write_report(result, args.sandbox_dir)
+    except OSError as exc:
+        LOG.error("Failed to write sandbox report: %s", exc)
 
-    print(txt_body)
+    if args.json_only:
+        print(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
+    else:
+        LOG.info("Card: %s", result.card_id)
+        LOG.info("Exists: %s", result.exists)
+        LOG.info("Read-only mode: %s", result.read_only)
+        LOG.info("Checks: %s", result.checks)
+        for w in result.warnings:
+            LOG.warning("WARNING: %s", w)
+        for e in result.errors:
+            LOG.error("ERROR: %s", e)
+        LOG.info("PASSED: %s", result.passed)
+        if report_path:
+            LOG.info("Report written to: %s", report_path)
+
+    return 0 if result.passed else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

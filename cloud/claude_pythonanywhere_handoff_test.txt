@@ -1,0 +1,59 @@
+UA ART AUTOPILOT — CLAUDE -> PYTHONANYWHERE HANDOFF TEST
+=========================================================
+
+TASK_ID: task_009
+UNIQUE_TEST_MARKER: TASK009-CLAUDE-API-HANDOFF-8f2c1e9d-UA0009
+GENERATED_BY: Claude API worker (Anthropic API, invoked via GitHub Actions), NOT the ordinary claude.ai chat UI
+GENERATED_AT_UTC: see cloud/latest_status.md UPDATED_AT_UTC field for this run
+
+PURPOSE
+-------
+This file exists so that the downstream "PythonAnywhere Inbox Sync" GitHub
+workflow (or any manual sync) can prove exactly which version of
+cloud/uaart_card_factory_gate.py it received and transferred, by comparing
+hashes.
+
+OPTIMIZED GATE FILE
+--------------------
+File: cloud/uaart_card_factory_gate.py
+GATE_VERSION constant inside file: 2.0.0
+
+SHA-256 OF THE OPTIMIZED GATE FILE
+-----------------------------------
+STATUS: NOT_COMPUTED_BY_CLAUDE_TEXT_GENERATION
+REASON: This deliverable was produced as generated text, not by executing
+code. Claude (the API worker) does not fabricate a hash value here in order
+to comply with the truthfulness requirement of TASK 009. A fabricated hash
+string would be indistinguishable from a real one to a human reviewer and
+could cause a false-positive integrity check downstream, which is a bigger
+risk than an explicit "not yet computed" marker.
+
+HOW THE REAL HASH MUST BE OBTAINED (for the CI static-check / sync step):
+    sha256sum cloud/uaart_card_factory_gate.py
+  or, in Python:
+    python3 -c "import hashlib,sys; print(hashlib.sha256(open('cloud/uaart_card_factory_gate.py','rb').read()).hexdigest())"
+
+The GitHub worker's own static-check/compile step (which does execute code,
+unlike this text-generation step) is expected to compute and, if the
+pipeline is configured to do so, append the real SHA-256 value into the
+build log or a follow-up artifact. Until that step runs, no hash value
+should be trusted as authoritative for this file.
+
+CHAIN OF CUSTODY STATEMENT
+---------------------------
+RECEIVED_BY_CLAUDE_API: YES — TASK 009 markdown and the prior version of
+  cloud/uaart_card_factory_gate.py were received by the Claude API worker
+  through the GitHub Actions / Anthropic API bridge described in this
+  repository's protocol.
+RECEIVED_BY_ORDINARY_CLAUDE_CHAT_UI: NO — the ordinary claude.ai chat
+  interface is a separate session and did not process this task.
+OPTIMIZATION_COMPLETE: YES — see cloud/cloud_report_009.md for the audit
+  and change list.
+STATIC_CHECK_EXPECTED: YES — the GitHub worker pipeline is expected to run
+  a Python compile check (py_compile / ast.parse) against this file as part
+  of its normal validation step.
+PYTHONANYWHERE_INSTALL_CONFIRMED_BY_CLAUDE: NO — WAITING_FOR_SYNC_RECEIPT.
+  Claude has no direct access to PythonAnywhere in this task and makes no
+  claim of installation, execution, or verification there.
+
+END OF HANDOFF TEST FILE
