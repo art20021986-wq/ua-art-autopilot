@@ -56,6 +56,7 @@ LOCAL_FILES = {
 }
 EVIDENCE_PATH = HERE / "evidence" / "ferry_gate_a.json"
 REPORT_PATH = HERE / "FERRY_GATE_A_REPORT.md"
+PREVIEW_ROOT = HERE / "_gate_a_preview"
 
 MAX_RESPONSE_BYTES = 2_000_000
 MAX_RECEIPT_BYTES = 500_000
@@ -508,6 +509,33 @@ class GateAController:
             if temporary.exists():
                 temporary.unlink()
 
+    @staticmethod
+    def atomic_write_bytes(path: pathlib.Path, data: bytes) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        handle = tempfile.NamedTemporaryFile(
+            mode="wb", dir=path.parent, prefix="." + path.name + ".",
+            suffix=".tmp", delete=False,
+        )
+        temporary = pathlib.Path(handle.name)
+        try:
+            with handle:
+                handle.write(data)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, path)
+        finally:
+            if temporary.exists():
+                temporary.unlink()
+
+    @staticmethod
+    def preview_path(rel_path: str, *, generator: bool) -> pathlib.Path:
+        allowed = PYTHON_PATHS if generator else set(VIDEO_PATHS)
+        if rel_path not in allowed:
+            raise ControllerBlocked("local_preview_path_not_allowed")
+        prefix = pathlib.PurePosixPath("python") if generator else pathlib.PurePosixPath()
+        pure = prefix / pathlib.PurePosixPath(rel_path)
+        return PREVIEW_ROOT.joinpath(*pure.parts)
+
     def relay(self, receipt: dict) -> None:
         self.atomic_write(
             EVIDENCE_PATH,
@@ -595,6 +623,9 @@ changed. Gate B requires separate explicit owner approval.
                         raise ControllerBlocked("candidate_size_readback_mismatch")
                     if sha256_bytes(candidate) != item["candidate_sha256"]:
                         raise ControllerBlocked("candidate_hash_readback_mismatch")
+                    self.atomic_write_bytes(
+                        self.preview_path(item["path"], generator=False), candidate
+                    )
                 for item in receipt["generator_candidates"]:
                     candidate = self.api.read_file(item["candidate_path"])
                     if len(candidate) != item["candidate_size"]:
@@ -605,6 +636,9 @@ changed. Gate B requires separate explicit owner approval.
                         compile(candidate.decode("utf-8"), item["path"], "exec")
                     except (UnicodeDecodeError, SyntaxError) as exc:
                         raise ControllerBlocked("generator_candidate_compile_failed") from exc
+                    self.atomic_write_bytes(
+                        self.preview_path(item["path"], generator=True), candidate
+                    )
             self.relay(receipt)
             return receipt
         finally:

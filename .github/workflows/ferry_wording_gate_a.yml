@@ -86,6 +86,53 @@ jobs:
             sleep $((attempt * 3))
           done
 
+      - name: Render isolated visual previews
+        run: |
+          status="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('cloud/task_047_ferry_discovery/evidence/ferry_gate_a.json').read_text())['status'])
+          PY
+          )"
+          if [ "${status}" != 'PASS_READY_FOR_GATE_B' ] && [ "${status}" != 'PASS' ]; then
+            echo "No renderable preview for status ${status}"
+            exit 0
+          fi
+          preview='cloud/task_047_ferry_discovery/_gate_a_preview/video'
+          screenshots='cloud/task_047_ferry_discovery/_gate_a_screenshots'
+          test "$(find "${preview}" -maxdepth 1 -type f -name '*.html' | wc -l)" -eq 13
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "${browser}"
+          mkdir -p "${screenshots}"
+          for page in "${preview}"/*.html; do
+            name="$(basename "${page}" .html)"
+            "${browser}" --headless=new --disable-gpu --disable-javascript \
+              --disable-background-networking --hide-scrollbars \
+              --window-size=1440,2400 --virtual-time-budget=1500 \
+              --screenshot="${screenshots}/${name}.png" \
+              "file://$(realpath "${page}")"
+          done
+          test "$(find "${screenshots}" -maxdepth 1 -type f -name '*.png' | wc -l)" -eq 13
+          python3 - <<'PY'
+          from pathlib import Path
+          for path in Path('cloud/task_047_ferry_discovery/_gate_a_screenshots').glob('*.png'):
+              data = path.read_bytes()
+              if len(data) < 1000 or not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                  raise SystemExit('invalid screenshot: ' + str(path))
+          PY
+
+      - name: Upload isolated visual preview
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ferry-gate-a-preview-${{ github.run_id }}
+          path: |
+            cloud/task_047_ferry_discovery/_gate_a_screenshots
+            cloud/task_047_ferry_discovery/_gate_a_preview/video
+            cloud/task_047_ferry_discovery/evidence/ferry_gate_a.json
+            cloud/task_047_ferry_discovery/FERRY_GATE_A_REPORT.md
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Require a non-blocked Gate A result
         run: |
           python3 - <<'PY'
