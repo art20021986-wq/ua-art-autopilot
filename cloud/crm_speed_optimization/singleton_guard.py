@@ -1,20 +1,25 @@
 """
 singleton_guard.py
 
-Process singleton guard built on CrossProcessLock. A duplicate start
-exits quickly with a defined nonzero diagnostic code and never disturbs
-another process's lock. Release is guaranteed via CrossProcessLock's own
-atexit registration plus signal handling installed here.
+Thin compatibility wrapper delegating to the canonical CrossProcessLock /
+SingletonGuard implementation in canonical_modules.py. This module carries
+no divergent lock logic. A duplicate start exits quickly with a defined
+nonzero diagnostic code and never disturbs another process's lock.
 """
 from __future__ import annotations
 
-import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from cross_process_lock import CrossProcessLock  # noqa: E402
+from canonical_modules import CrossProcessLock, SingletonGuard
 
 DUPLICATE_START_EXIT_CODE = 78
+
+__all__ = [
+    "CrossProcessLock",
+    "SingletonGuard",
+    "acquire_singleton_or_exit",
+    "DUPLICATE_START_EXIT_CODE",
+]
 
 
 def acquire_singleton_or_exit(lock_path: str, label: str) -> CrossProcessLock:
