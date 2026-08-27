@@ -15,11 +15,14 @@ permissions:
 
 concurrency:
   group: claude-autopilot
-  cancel-in-progress: false
+  # A newer approved task supersedes an older run that has not committed outputs.
+  # This prevents a stalled API request from blocking the current owner priority.
+  cancel-in-progress: true
 
 jobs:
   run-claude:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
