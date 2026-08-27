@@ -93,10 +93,24 @@ OUTPUT_SCHEMA = {
 
 
 def latest_task() -> pathlib.Path:
-    files = sorted(TASKS.glob("task_*.md"))
+    files = list(TASKS.glob("task_*.md"))
     if not files:
         raise SystemExit("NO_TASK")
-    return files[-1]
+
+    def task_key(path: pathlib.Path) -> tuple[int, int, str]:
+        match = re.fullmatch(r"task_(\d+)(.*)\.md", path.name)
+        if not match:
+            return (-1, 0, path.name)
+        number = int(match.group(1))
+        # For the same number, prefer the canonical task_NNN.md over an older
+        # descriptive variant such as task_NNN_topic.md.
+        canonical = 1 if match.group(2) == "" else 0
+        return (number, canonical, path.name)
+
+    selected = max(files, key=task_key)
+    if task_key(selected)[0] < 0:
+        raise SystemExit("NO_VALID_TASK")
+    return selected
 
 
 def _canonical_json(value: object) -> str:
