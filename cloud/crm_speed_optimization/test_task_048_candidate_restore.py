@@ -1,8 +1,24 @@
-"""test_task_048_candidate_restore.py
+"""test_task_048_candidate_restore.py (corrected under TASK 053)
 
-Compact focused tests for the TASK 048 repair of candidate_transforms.py.
-Does not duplicate the older TASK 031/038/041 suites. Assumes
-sqlite_ownership.py already exists unchanged in this same package
+Compact focused tests for candidate_transforms.py. Corrections applied in
+this revision versus the original TASK 048 test file:
+
+- The module-level compatibility name list no longer asserts hasattr for
+  CrossProcessLock / SingletonGuard / RebuildQueue directly on the
+  `candidate_transforms` module -- those classes are not top-level names
+  of this module; they only exist inside the generated runtime support
+  source string and must be proven by executing
+  generate_runtime_support_source() (see TestGeneratedRuntimeSupport).
+- The brittle substring assertion that mistook `def gen():` for a call to
+  `gen()` is replaced by an AST walk that proves no direct ast.Call to the
+  generator survives outside its own function definition.
+- New class-definition-time test cases (class-body assignment, method
+  annotation/default/decorator, nested class surface) are added for the
+  TASK 053 launcher fail-open repair, plus a confirming ordinary
+  method-body-reference OK case and an application-import-relocation
+  check.
+
+Assumes sqlite_ownership.py already exists unchanged in this same package
 directory (delivered by an earlier task); this file does not modify or
 redeliver it.
 
@@ -11,6 +27,7 @@ used here are temporary directories created by the test itself.
 """
 from __future__ import annotations
 
+import ast
 import os
 import signal
 import sys
@@ -25,11 +42,37 @@ if THIS_DIR not in sys.path:
 import candidate_transforms as ct  # noqa: E402
 
 
+def _assert_no_surviving_generator_call(candidate_source, generator_name):
+    """AST-based proof (not a text substring check) that no ast.Call to
+    `generator_name` survives anywhere outside that generator's own
+    function definition."""
+    tree = ast.parse(candidate_source)
+    generator_node = next(
+        (
+            n for n in tree.body
+            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == generator_name
+        ),
+        None,
+    )
+
+    def _walk_excluding(node, excluded):
+        for child in ast.iter_child_nodes(node):
+            if child is excluded:
+                continue
+            yield child
+            yield from _walk_excluding(child, excluded)
+
+    for node in _walk_excluding(tree, generator_node):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == generator_name:
+            raise AssertionError(
+                f"generator call to {generator_name!r} survived outside its own definition"
+            )
+
+
 class TestCompatibilityNames(unittest.TestCase):
     def test_required_names_exist(self):
         names = [
-            "_ok", "_blocked", "CrossProcessLock", "SingletonGuard", "RebuildQueue",
-            "generate_runtime_support_source", "transform_usercustomize",
+            "_ok", "_blocked", "generate_runtime_support_source", "transform_usercustomize",
             "transform_launcher_singleton", "transform_avtoperedacha_rebuild",
             "transform_sqlite_short_ownership", "check_db_closed_before_slow_work_candidate",
         ]
@@ -50,6 +93,16 @@ class TestCompatibilityNames(unittest.TestCase):
         self.assertIsNone(blocked["candidate"])
 
 
+class TestGeneratedRuntimeSupport(unittest.TestCase):
+    def test_generated_runtime_defines_expected_classes(self):
+        src = ct.generate_runtime_support_source()
+        ns = {}
+        exec(compile(src, "<runtime>", "exec"), ns)
+        for name in ("CrossProcessLock", "SingletonGuard", "RebuildQueue"):
+            self.assertIn(name, ns)
+            self.assertTrue(isinstance(ns[name], type), f"{name} is not a class in generated runtime")
+
+
 class TestRebuildTransformPositives(unittest.TestCase):
     def test_expr_trigger_positive(self):
         src = (
@@ -66,7 +119,7 @@ class TestRebuildTransformPositives(unittest.TestCase):
         compile(result["candidate"], "<t>", "exec")
         self.assertIn("_queue = RebuildQueue(gen", result["candidate"])
         self.assertIn("_queue.enqueue()", result["candidate"])
-        self.assertNotIn("gen()", result["candidate"].replace("_queue.enqueue()", ""))
+        _assert_no_surviving_generator_call(result["candidate"], "gen")
 
     def test_return_trigger_positive(self):
         src = (
@@ -82,6 +135,7 @@ class TestRebuildTransformPositives(unittest.TestCase):
         self.assertEqual(result["status"], "OK", result["reasons"])
         compile(result["candidate"], "<t>", "exec")
         self.assertIn("return _queue.enqueue()", result["candidate"])
+        _assert_no_surviving_generator_call(result["candidate"], "gen")
 
     def test_aliased_subprocess_positive(self):
         src = (
@@ -95,6 +149,7 @@ class TestRebuildTransformPositives(unittest.TestCase):
         )
         result = ct.transform_avtoperedacha_rebuild(src)
         self.assertEqual(result["status"], "OK", result["reasons"])
+        _assert_no_surviving_generator_call(result["candidate"], "gen")
 
 
 class TestRebuildTransformNegatives(unittest.TestCase):
@@ -294,6 +349,114 @@ class TestLauncherTransform(unittest.TestCase):
         )
         result = ct.transform_launcher_singleton(src, "/tmp/x/launcher.lock")
         self.assertEqual(result["status"], "BLOCKED")
+
+    # --- TASK 053: class definition-time closure cases ---
+
+    def test_class_body_assignment_moved_alias_blocks(self):
+        src = (
+            '"""Doc."""\n'
+            "from __future__ import annotations\n\n"
+            "import fake_dep\n\n\n"
+            "class Holder:\n"
+            "    VALUE = fake_dep.CONSTANT\n\n\n"
+            "if __name__ == '__main__':\n"
+            "    pass\n"
+        )
+        result = ct.transform_launcher_singleton(src, "/tmp/x/launcher.lock")
+        self.assertEqual(result["status"], "BLOCKED")
+
+    def test_class_body_annassign_moved_alias_blocks(self):
+        src = (
+            '"""Doc."""\n'
+            "from __future__ import annotations\n\n"
+            "import fake_dep\n\n\n"
+            "class Holder:\n"
+            "    VALUE: fake_dep.Type = None\n\n\n"
+            "if __name__ == '__main__':\n"
+            "    pass\n"
+        )
+        result = ct.transform_launcher_singleton(src, "/tmp/x/launcher.lock")
+        self.assertEqual(result["status"], "BLOCKED")
+
+    def test_method_annotation_in_class_blocks(self):
+        src = (
+            '"""Doc."""\n'
+            "from __future__ import annotations\n\n"
+            "import fake_dep\n\n\n"
+            "class Holder:\n"
+            "    def method(self, x: fake_dep.Type) -> None:\n"
+            "        pass\n\n\n"
+            "if __name__ == '__main__':\n"
+            "    pass\n"
+        )
+        result = ct.transform_launcher_singleton(src, "/tmp/x/launcher.lock")
+        self.assertEqual(result["status"], "BLOCKED")
+
+    def test_method_default_in_class_blocks(self):
+        src = (
+            '"""Doc."""\n'
+            "from __future__ import annotations\n\n"
+            "import fake_dep\n\n\n"
+            "class Holder:\n"
+            "    def method(self, x=fake_dep.DEFAULT):\n"
+            "        pass\n\n\n"
+            "if __name__ == '__main__':\n"
+            "    pass\n"
+        )
+        result = ct.transform_launcher_singleton(src, "/tmp/x/launcher.lock")
+        self.assertEqual(result["status"], "BLOCKED")
+
+    def test_method_decorator_in_class_blocks(self):
+        src = (
+            '"""Doc."""\n'
+            "from __future__ import annotations\n\n"
+            "import fake_dep\n\n\n"
+            "class Holder:\n"
+            "    @fake_dep.register\n"
+            "    def method(self):\n"
+            "        pass\n\n\n"
+            "if __name__ == '__main__':\n"
+            "    pass\n"
+        )
+        result = ct.transform_launcher_singleton(src, "/tmp/x/launcher.lock")
+        self.assertEqual(result["status"], "BLOCKED")
+
+    def test_nested_class_definition_time_surface_blocks(self):
+        src = (
+            '"""Doc."""\n'
+            "from __future__ import annotations\n\n"
+            "import fake_dep\n\n\n"
+            "class Outer:\n"
+            "    class Inner:\n"
+            "        VALUE = fake_dep.CONSTANT\n\n\n"
+            "if __name__ == '__main__':\n"
+            "    pass\n"
+        )
+        result = ct.transform_launcher_singleton(src, "/tmp/x/launcher.lock")
+        self.assertEqual(result["status"], "BLOCKED")
+
+    def test_ordinary_method_body_reference_ok_and_import_relocated(self):
+        src = (
+            '"""Doc."""\n'
+            "from __future__ import annotations\n\n"
+            "import fake_dep\n\n\n"
+            "class Holder:\n"
+            "    def method(self):\n"
+            "        return fake_dep.run()\n\n\n"
+            "if __name__ == '__main__':\n"
+            "    Holder().method()\n"
+        )
+        result = ct.transform_launcher_singleton(src, "/tmp/x/launcher.lock")
+        self.assertEqual(result["status"], "OK", result["reasons"])
+        compile(result["candidate"], "<launcher>", "exec")
+        module_tree = ast.parse(result["candidate"])
+        top_level_import_names = set()
+        for n in module_tree.body:
+            if isinstance(n, ast.Import):
+                for a in n.names:
+                    top_level_import_names.add(a.asname or a.name)
+        self.assertNotIn("fake_dep", top_level_import_names)
+        self.assertIn("import fake_dep", result["candidate"])
 
 
 class TestRuntimeSignalCleanup(unittest.TestCase):

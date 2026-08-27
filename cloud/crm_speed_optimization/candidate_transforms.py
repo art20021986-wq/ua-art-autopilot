@@ -1,4 +1,4 @@
-"""candidate_transforms.py (TASK 041 baseline, restored and repaired under TASK 048)
+"""candidate_transforms.py (TASK 041 baseline, restored and repaired under TASK 048, launcher class-body closure repaired under TASK 053)
 
 One canonical, fail-closed, standard-library-only, AST/token-aware
 candidate-transform module for CRM-SPEED-001. Never imports or executes
@@ -69,6 +69,26 @@ not used as a baseline anywhere in this file):
   re-restore incorrectly. The generated per-signal wrapper now delegates
   through the guard's full cleanup() path before calling a callable
   previous handler.
+
+TASK 053 correction over TASK 048 (minimal, fail-closed extension only;
+no behavioral regression to any accepted TASK 048 transform):
+
+- transform_launcher_singleton's definition-time moved-alias check is
+  replaced by a dedicated definition-time AST visitor
+  (_DefinitionTimeAliasVisitor) that inspects every expression that
+  executes before the main guard runs: top-level and nested class
+  decorators/bases/keywords and every executed class-body statement
+  (assignments, annotated assignments, expressions, conditionals,
+  loops, nested class definitions), plus every function/method's
+  decorators, positional/keyword defaults, argument annotations and
+  return annotation defined anywhere in that definition-time surface.
+  The visitor explicitly stops at (never descends into) function and
+  lambda bodies, because those execute later, after the main guard has
+  already relocated and re-imported the moved aliases. This closes a
+  real fail-open gap where a class-body assignment such as
+  `VALUE = appmod.VALUE` or a method annotation such as
+  `def m(self, x: appmod.Type)` inside a class defined above the guard
+  was incorrectly accepted as OK.
 """
 from __future__ import annotations
 
@@ -168,6 +188,101 @@ def _is_main_guard(test):
                 (_is_main_const(left) and _is_name_dunder(right)):
             return True
     return False
+
+
+def _expr_references_any_name(expr, names):
+    if expr is None:
+        return False
+    for n in ast.walk(expr):
+        if isinstance(n, ast.Name) and n.id in names:
+            return True
+    return False
+
+
+class _DefinitionTimeAliasVisitor(ast.NodeVisitor):
+    """Detects moved-alias references in every expression that executes at
+    definition time (module scope, class-body scope, decorators, defaults
+    and annotations), while explicitly never descending into ordinary
+    function/method/lambda bodies (those execute later, after the main
+    guard has already relocated and re-imported the moved aliases).
+
+    TASK 053: this is the sole definition-time surface scanner used by
+    transform_launcher_singleton; it replaces the narrower TASK 048
+    ad-hoc top-level-only check that missed class-body assignments and
+    nested method annotations/defaults/decorators inside a class defined
+    above the main guard.
+    """
+
+    def __init__(self, moved_aliases):
+        self.moved_aliases = moved_aliases
+        self.found = False
+
+    def visit_Name(self, node):
+        if node.id in self.moved_aliases:
+            self.found = True
+
+    def _visit_function_definition_surface(self, node):
+        for dec in node.decorator_list:
+            self.visit(dec)
+        args = node.args
+        for d in list(args.defaults) + [d for d in args.kw_defaults if d is not None]:
+            self.visit(d)
+        all_args = (
+            list(getattr(args, "posonlyargs", []))
+            + list(args.args)
+            + list(args.kwonlyargs)
+            + ([args.vararg] if args.vararg else [])
+            + ([args.kwarg] if args.kwarg else [])
+        )
+        for a in all_args:
+            if a is not None and a.annotation is not None:
+                self.visit(a.annotation)
+        if node.returns is not None:
+            self.visit(node.returns)
+        # Intentionally do NOT descend into node.body: ordinary
+        # function/method body statements execute later, not at
+        # definition time.
+
+    def visit_FunctionDef(self, node):
+        self._visit_function_definition_surface(node)
+
+    def visit_AsyncFunctionDef(self, node):
+        self._visit_function_definition_surface(node)
+
+    def visit_Lambda(self, node):
+        args = node.args
+        for d in list(args.defaults) + [d for d in args.kw_defaults if d is not None]:
+            self.visit(d)
+        # Lambda body is deferred (executes only when called); do not
+        # descend into it.
+
+    def visit_ClassDef(self, node):
+        for dec in node.decorator_list:
+            self.visit(dec)
+        for base in node.bases:
+            self.visit(base)
+        for kw in node.keywords:
+            self.visit(kw.value)
+        # The class body executes immediately at class-definition time,
+        # so every statement in it is part of the definition-time
+        # surface (including nested class/function definitions, whose
+        # own definition-time surfaces are then handled recursively by
+        # the overrides above).
+        for stmt in node.body:
+            self.visit(stmt)
+
+
+def _definition_time_moved_alias_used(nodes, moved_aliases):
+    visitor = _DefinitionTimeAliasVisitor(moved_aliases)
+    for node in nodes:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            visitor.visit(node)
+        elif isinstance(node, ast.Assign):
+            # Only pure-literal top-level assigns are ever kept in
+            # kept_pre (enforced earlier), so no alias reference is
+            # possible here; nothing to check.
+            continue
+    return visitor.found
 
 
 # ---------------------------------------------------------------------------
@@ -662,15 +777,6 @@ def _leading_docstring_and_future_offset(body):
     return offset
 
 
-def _expr_references_any_name(expr, names):
-    if expr is None:
-        return False
-    for n in ast.walk(expr):
-        if isinstance(n, ast.Name) and n.id in names:
-            return True
-    return False
-
-
 def transform_launcher_singleton(source, lock_path):
     try:
         tree = ast.parse(source)
@@ -735,35 +841,14 @@ def transform_launcher_singleton(source, lock_path):
             continue
         return _blocked([f"import_time_side_effect:{type(node).__name__}:line{getattr(node,'lineno','?')}"])
 
-    # Definition-time moved-alias reference check on everything kept above
-    # the guard (decorators/bases/keywords/defaults/annotations execute at
-    # module-definition time, before the moved imports run).
-    for node in kept_pre:
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            for dec in node.decorator_list:
-                if _expr_references_any_name(dec, moved_aliases):
-                    return _blocked(["definition_time_moved_alias_reference_blocked"])
-            if isinstance(node, ast.ClassDef):
-                for base in node.bases:
-                    if _expr_references_any_name(base, moved_aliases):
-                        return _blocked(["definition_time_moved_alias_reference_blocked"])
-                for kw in node.keywords:
-                    if _expr_references_any_name(kw.value, moved_aliases):
-                        return _blocked(["definition_time_moved_alias_reference_blocked"])
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                args = node.args
-                defaults = list(args.defaults) + [d for d in args.kw_defaults if d is not None]
-                for d in defaults:
-                    if _expr_references_any_name(d, moved_aliases):
-                        return _blocked(["definition_time_moved_alias_reference_blocked"])
-                all_args = list(args.args) + list(args.kwonlyargs) + \
-                    ([args.vararg] if args.vararg else []) + ([args.kwarg] if args.kwarg else [])
-                for a in all_args:
-                    if a is not None and a.annotation is not None and \
-                            _expr_references_any_name(a.annotation, moved_aliases):
-                        return _blocked(["definition_time_moved_alias_reference_blocked"])
-                if node.returns is not None and _expr_references_any_name(node.returns, moved_aliases):
-                    return _blocked(["definition_time_moved_alias_reference_blocked"])
+    # TASK 053: definition-time moved-alias reference check on everything
+    # kept above the guard, using the dedicated definition-time visitor
+    # (decorators/bases/keywords/defaults/annotations/class-body
+    # statements execute at module- or class-definition time, before the
+    # moved imports run; ordinary function/method bodies execute later
+    # and are never scanned here).
+    if _definition_time_moved_alias_used(kept_pre, moved_aliases):
+        return _blocked(["definition_time_moved_alias_reference_blocked"])
 
     original_main_body = main_node.body
 

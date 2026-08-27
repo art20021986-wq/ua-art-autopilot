@@ -1,12 +1,12 @@
-TASK_ID: task_052
+TASK_ID: task_053
 ROUND: 1
 CLAUDE_STATUS: DONE
-CURRENT_ACTION: Re-authored transform.py and discover.py to restore TASK 047 structural/safe-read baseline and correct all 11 TASK 050 false-green audit findings; added regression tests for all five audit HTML examples plus expanded discover coverage.
-FILES_CREATED: cloud/task_047_ferry_discovery/transform.py, cloud/task_047_ferry_discovery/discover.py, cloud/task_047_ferry_discovery/tests/__init__.py, cloud/task_047_ferry_discovery/tests/test_transform.py, cloud/task_047_ferry_discovery/tests/test_discover.py, cloud/task_047_ferry_discovery/run_tests.py, cloud/task_047_ferry_discovery/TASK_052_REPORT.md
+CURRENT_ACTION: Repaired transform_launcher_singleton definition-time (class-body/method-annotation) fail-open via a dedicated AST visitor, corrected test_task_046_ast_sqlite.py to the canonical result["candidate"]/AnchorNotFoundError contract, and corrected two false assertions in test_task_048_candidate_restore.py, all under PARTIAL_TASK_053_LAUNCHER_TEST_CONTRACT_READY_FOR_CONTROLLER_AUDIT (not READY_FOR_GATE_A).
+FILES_CREATED: cloud/crm_speed_optimization/candidate_transforms.py, cloud/crm_speed_optimization/test_task_046_ast_sqlite.py, cloud/crm_speed_optimization/test_task_048_candidate_restore.py, cloud/crm_speed_optimization/TASK_053_REPORT.md
 PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Run `python3 run_tests.py` twice inside cloud/task_047_ferry_discovery/ (from another cwd too), confirm PASS and record the exact test count in canonical memory; this worker's environment had no code-execution tool so results were not actually run here, only manually traced against every audit example. CRM_TOUCHED: NO. CRM_DB_WRITTEN: NO. GATE_B_EXECUTED: NO. UA_0009_PUBLISHED: NO. CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c. MEMORY_VERSION_READ: 4.
-UPDATED_AT_UTC: 2026-08-27T21:49:14Z
-MEMORY_VERSION_READ: 4
+NEXT_FOR_CHATGPT: Have the controller independently re-run py_compile plus the full corrected test_task_046_ast_sqlite.py and test_task_048_candidate_restore.py suites (with the existing sqlite_ownership.py from the prior accepted task present unchanged), confirm the manual class-body/method-annotation probes now BLOCK, and record acceptance in canonical shared memory before any further orchestrator/Gate A work is considered.
 CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+MEMORY_VERSION_READ: 4
+UPDATED_AT_UTC: 2026-08-27T21:55:38Z

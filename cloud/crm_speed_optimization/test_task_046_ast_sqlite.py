@@ -1,7 +1,15 @@
 """
 TASK 046 focused offline test suite for the rebuild AST transformer and the
-SQLite ownership transform. Temporary-directory / in-memory only. No network,
-no PythonAnywhere, no Production or CRM access.
+SQLite ownership transform, corrected under TASK 053 to the canonical
+contract (candidate_transforms result schema uses result["candidate"] /
+result["reasons"], never result["code"]; sqlite_ownership uses the accepted
+names AnchorNotFoundError, transform_short_ownership, OwnershipEvidence,
+collect_ua0009_ownership_evidence and compare_ownership_evidence -- the
+rejected clean-room names transform_sqlite_ownership / OwnershipBlocked are
+not used anywhere in this file).
+
+Temporary-directory / in-memory only. No network, no PythonAnywhere, no
+Production or CRM access.
 
 PRODUCTION_TOUCHED: NO
 CRM_TOUCHED: NO
@@ -9,6 +17,7 @@ GATE_A_EXECUTED: NO
 UA_0009_PUBLISHED: NO
 """
 
+import ast
 import os
 import sys
 import textwrap
@@ -18,6 +27,33 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 import candidate_transforms as ct  # noqa: E402
 import sqlite_ownership as so  # noqa: E402
+
+
+def _assert_no_surviving_generator_call(candidate_source, generator_name):
+    """AST-based proof (not brittle text splitting/substrings) that no
+    ast.Call to `generator_name` survives anywhere outside that
+    generator's own function definition."""
+    tree = ast.parse(candidate_source)
+    generator_node = next(
+        (
+            n for n in tree.body
+            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == generator_name
+        ),
+        None,
+    )
+
+    def _walk_excluding(node, excluded):
+        for child in ast.iter_child_nodes(node):
+            if child is excluded:
+                continue
+            yield child
+            yield from _walk_excluding(child, excluded)
+
+    for node in _walk_excluding(tree, generator_node):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == generator_name:
+            raise AssertionError(
+                f"generator call to {generator_name!r} survived outside its own definition"
+            )
 
 
 class TestRebuildTransformPositive(unittest.TestCase):
@@ -35,11 +71,10 @@ class TestRebuildTransformPositive(unittest.TestCase):
                 subprocess.run(["python3", "stranica.py"])
         """)
         result = ct.transform_avtoperedacha_rebuild(src)
-        self.assertEqual(result["status"], "OK")
-        compile(result["code"], "<t>", "exec")
-        self.assertIn("_queue = RebuildQueue(generate_stranica_page,", result["code"])
-        tail = result["code"].split("def generate_stranica_page")[1].split("def trigger_one")[1]
-        self.assertNotIn("generate_stranica_page()", tail)
+        self.assertEqual(result["status"], "OK", result["reasons"])
+        compile(result["candidate"], "<t>", "exec")
+        self.assertIn("_queue = RebuildQueue(generate_stranica_page,", result["candidate"])
+        _assert_no_surviving_generator_call(result["candidate"], "generate_stranica_page")
 
     def test_return_call_positive(self):
         src = textwrap.dedent("""
@@ -55,14 +90,15 @@ class TestRebuildTransformPositive(unittest.TestCase):
                 subprocess.run(["python3", "stranica.py"])
         """)
         result = ct.transform_avtoperedacha_rebuild(src)
-        self.assertEqual(result["status"], "OK")
-        self.assertIn("return _queue.enqueue()", result["code"])
+        self.assertEqual(result["status"], "OK", result["reasons"])
+        self.assertIn("return _queue.enqueue()", result["candidate"])
+        _assert_no_surviving_generator_call(result["candidate"], "generate_stranica_page")
 
     def test_alias_spawn_positive(self):
+        """Alias-resolved subprocess callable (import subprocess as sp)
+        plus a literal 'stranica.py' command."""
         src = textwrap.dedent("""
-            import subprocess
-
-            SCRIPT = "stranica.py"
+            import subprocess as sp
 
             def generate_stranica_page():
                 return "ok"
@@ -71,11 +107,12 @@ class TestRebuildTransformPositive(unittest.TestCase):
                 generate_stranica_page()
 
             def trigger_two():
-                subprocess.run(["python3", SCRIPT])
+                sp.Popen(["python3", "stranica.py"])
         """)
         result = ct.transform_avtoperedacha_rebuild(src)
-        self.assertEqual(result["status"], "OK")
-        self.assertIn("_queue.enqueue()", result["code"])
+        self.assertEqual(result["status"], "OK", result["reasons"])
+        self.assertIn("_queue.enqueue()", result["candidate"])
+        _assert_no_surviving_generator_call(result["candidate"], "generate_stranica_page")
 
 
 class TestRebuildTransformNegative(unittest.TestCase):
@@ -186,8 +223,8 @@ class TestSqliteOwnershipStatic(unittest.TestCase):
                 cur = conn.execute("SELECT id FROM t")
                 return cur
         """)
-        result = so.transform_sqlite_ownership(src)
-        self.assertEqual(result["status"], "BLOCKED")
+        with self.assertRaises(so.AnchorNotFoundError):
+            so.transform_short_ownership(src, {"fetch_rows"})
 
     def test_conn_execute_cursor_discovery_positive(self):
         src = textwrap.dedent("""
@@ -201,11 +238,11 @@ class TestSqliteOwnershipStatic(unittest.TestCase):
                 conn.close()
                 return rows
         """)
-        result = so.transform_sqlite_ownership(src)
-        self.assertEqual(result["status"], "OK")
-        self.assertIn("timeout=2", result["code"])
-        self.assertIn("tuple(", result["code"])
-        self.assertIn("finally", result["code"])
+        candidate = so.transform_short_ownership(src, {"fetch_rows"})
+        compile(candidate, "<t>", "exec")
+        self.assertIn("timeout=2", candidate)
+        self.assertIn("tuple(", candidate)
+        self.assertIn("finally", candidate)
 
     def test_guarded_close_order_and_tuple_rows(self):
         src = textwrap.dedent("""
@@ -220,13 +257,24 @@ class TestSqliteOwnershipStatic(unittest.TestCase):
                 conn.close()
                 return rows
         """)
-        result = so.transform_sqlite_ownership(src)
-        self.assertEqual(result["status"], "OK")
-        code = result["code"]
-        cur_close_pos = code.index("cur.close()")
-        conn_close_pos = code.index("conn.close()")
+        candidate = so.transform_short_ownership(src, {"fetch_rows"})
+        cur_close_pos = candidate.index("cur.close()")
+        conn_close_pos = candidate.index("conn.close()")
         self.assertLess(cur_close_pos, conn_close_pos)
-        self.assertIn("is not None", code)
+        self.assertIn("is not None", candidate)
+
+    def test_cursor_escape_via_other_return_blocks(self):
+        src = textwrap.dedent("""
+            import sqlite3
+
+            def fetch_rows(path):
+                conn = sqlite3.connect(path)
+                cur = conn.cursor()
+                cur.execute("SELECT id FROM t")
+                return cur
+        """)
+        with self.assertRaises(so.AnchorNotFoundError):
+            so.transform_short_ownership(src, {"fetch_rows"})
 
 
 class TestSqliteOwnershipRuntime(unittest.TestCase):
@@ -243,9 +291,8 @@ class TestSqliteOwnershipRuntime(unittest.TestCase):
                 conn.close()
                 return rows
         """)
-        result = so.transform_sqlite_ownership(src)
-        self.assertEqual(result["status"], "OK")
-        code_no_import = result["code"].replace("import sqlite3\n", "")
+        candidate = so.transform_short_ownership(src, {"fetch_rows"})
+        code_no_import = candidate.replace("import sqlite3\n", "")
         namespace = {"sqlite3": type("FakeModule", (), {"connect": staticmethod(fake_connect)})}
         exec(compile(code_no_import, "<gen>", "exec"), namespace)
         return namespace["fetch_rows"]
@@ -350,8 +397,16 @@ class TestSqliteOwnershipRuntime(unittest.TestCase):
 class TestPublicApiPreserved(unittest.TestCase):
     def test_public_names_present(self):
         self.assertTrue(hasattr(ct, "transform_avtoperedacha_rebuild"))
-        self.assertTrue(hasattr(so, "transform_sqlite_ownership"))
-        self.assertTrue(hasattr(so, "OwnershipBlocked"))
+        for name in (
+            "AnchorNotFoundError",
+            "transform_short_ownership",
+            "OwnershipEvidence",
+            "collect_ua0009_ownership_evidence",
+            "compare_ownership_evidence",
+        ):
+            self.assertTrue(hasattr(so, name), f"missing required sqlite_ownership API: {name}")
+        self.assertFalse(hasattr(so, "transform_sqlite_ownership"))
+        self.assertFalse(hasattr(so, "OwnershipBlocked"))
 
 
 if __name__ == "__main__":
