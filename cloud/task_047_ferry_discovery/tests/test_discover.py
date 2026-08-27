@@ -149,6 +149,40 @@ class TestSecretRedaction(unittest.TestCase):
         self.assertFalse(discover.scan_for_secrets(s))
 
 
+class TestPythonLiteralContext(unittest.TestCase):
+    def test_structural_html_literal_is_user_facing_without_source_relay(self):
+        source = (
+            "PAGE = '<div class=\"status-pill\">В море</div>'\n"
+        )
+        items = discover._inventory_python_literals(source, "stranica.py")
+        self.assertEqual(len(items), 1)
+        item = items[0]
+        self.assertEqual(item["classification"], "USER_FACING")
+        self.assertEqual(item["assignment"], "PAGE")
+        self.assertEqual(item["structural_changes"], 1)
+        self.assertEqual(item["structural_ambiguous"], 0)
+        self.assertNotIn(source, json.dumps(item, ensure_ascii=False))
+        self.assertEqual(len(item["literal_sha256"]), 64)
+
+    def test_ambiguous_dictionary_value_reports_bounded_ast_context(self):
+        source = "MESSAGES = {'ru': 'В море'}\n"
+        items = discover._inventory_python_literals(source, "yadro.py")
+        self.assertEqual(len(items), 1)
+        item = items[0]
+        self.assertEqual(item["classification"], "AMBIGUOUS")
+        self.assertEqual(item["assignment"], "MESSAGES")
+        self.assertEqual(item["role"], "DICT_VALUE")
+        self.assertEqual(item["dict_key"], "ru")
+        self.assertEqual(item["structural_changes"], 0)
+        self.assertGreaterEqual(item["structural_ambiguous"], 1)
+
+    def test_legacy_input_map_remains_preserved(self):
+        source = "LEGACY_INPUT_MAP = {'В море': 'sea'}\n"
+        items = discover._inventory_python_literals(source, "yadro.py")
+        self.assertEqual(items[0]["classification"], "LEGACY_INPUT_ALIAS")
+        self.assertEqual(items[0]["role"], "DICT_KEY")
+
+
 class TestCLI(unittest.TestCase):
     def test_cli_emits_single_json_object(self):
         env = dict(os.environ)

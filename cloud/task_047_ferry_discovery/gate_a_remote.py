@@ -165,11 +165,28 @@ def _run_gate_a(source_root, candidate_root, enforce_fixed):
         for rel_path, result in sorted(discovery.get("python", {}).items()):
             for occurrence in result.get("occurrences", []):
                 receipt["python_sources"].append({
-                    "path": rel_path,
-                    "line": occurrence.get("line"),
-                    "before": occurrence.get("before"),
-                    "classification": occurrence.get("classification"),
-                    "action": occurrence.get("action"),
+                    key: value for key, value in {
+                        "path": rel_path,
+                        "source_sha256": result.get("sha256"),
+                        "line": occurrence.get("line"),
+                        "column": occurrence.get("column"),
+                        "end_line": occurrence.get("end_line"),
+                        "before": occurrence.get("before"),
+                        "classification": occurrence.get("classification"),
+                        "action": occurrence.get("action"),
+                        "literal_sha256": occurrence.get("literal_sha256"),
+                        "literal_length": occurrence.get("literal_length"),
+                        "assignment": occurrence.get("assignment"),
+                        "role": occurrence.get("role"),
+                        "dict_key": occurrence.get("dict_key"),
+                        "call": occurrence.get("call"),
+                        "keyword": occurrence.get("keyword"),
+                        "function": occurrence.get("function"),
+                        "class": occurrence.get("class"),
+                        "structural_changes": occurrence.get("structural_changes"),
+                        "structural_ambiguous": occurrence.get("structural_ambiguous"),
+                        "structural_contexts": occurrence.get("structural_contexts"),
+                    }.items()
                 })
 
         if discovery.get("status") != "OK":
