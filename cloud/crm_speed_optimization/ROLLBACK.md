@@ -1,23 +1,19 @@
-# ROLLBACK — CRM-SPEED-001 Gate A (round 2)
+# ROLLBACK — CRM-SPEED-001
 
-Gate A performs no production writes, so there is nothing to roll back
-from running it. Rollback only becomes relevant after a future, separate
-Gate B installation step — which this package does not perform.
+No production or CRM change has been made by any cloud/ task in this
+series, including this round. There is nothing to roll back yet.
 
-## If a future Gate B installation is ever authorized
+If Gate A is ever executed by the owner/controller on PythonAnywhere, it
+only writes inside `/home/Carix/qa/crm_speed_task020/<run_id>/`. Rollback
+for that case is simply deleting the specific run directory; production
+sources, `crm.db`, and the site/public trees are never touched by Gate A.
 
-1. Stop before installing if any Gate A evidence entry is not `passed:
-   true`.
-2. Keep the verified backup as the rollback source:
-   - `/home/Carix/backups/crm_speed_20260827_1038_crm.db`
-   - `/home/Carix/backups/crm_speed_20260827_1038_before.tar.gz`
-   - SHA-256: `b6e68a8382e5a6bbf0e7ffc957ac33d14c53db28b89a08cfd6e456e15a5a8913`
-3. Restore by extracting the tarball over the original paths and
-   replacing `crm.db` with the backed-up copy, only after stopping any
-   process that has the database open.
-4. Re-run Gate A's fingerprinting against the restored tree to confirm
-   it matches the pre-change fingerprints recorded in the corresponding
-   receipt.
+The existing safety backup remains the rollback point for any future,
+separately approved Gate B installation:
 
-This document remains a placeholder for the eventual Gate B rollback
-procedure; Gate A itself requires no rollback action.
+- `/home/Carix/backups/crm_speed_20260827_1038_crm.db`
+- `/home/Carix/backups/crm_speed_20260827_1038_before.tar.gz`
+- archive SHA-256: `b6e68a8382e5a6bbf0e7ffc957ac33d14c53db28b89a08cfd6e456e15a5a8913`
+
+Gate B, if ever authorized, must re-verify this archive's hash before any
+install action and must retain a documented one-command restore path.

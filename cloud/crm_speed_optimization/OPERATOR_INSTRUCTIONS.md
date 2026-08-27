@@ -1,60 +1,46 @@
-# OPERATOR_INSTRUCTIONS — CRM-SPEED-001 Gate A (round 2)
+# OPERATOR INSTRUCTIONS — CRM-SPEED-001 Gate A package (round 3)
 
 ## What this package is
 
-A fail-closed, read-mostly Gate A evaluator. It never installs anything
-and never writes outside its own QA run directory
-(`/home/Carix/qa/crm_speed_task020/run_*`).
+A reviewable, offline-testable Gate A candidate generator and evidence
+aggregator for CRM-SPEED-001. It has NOT been executed against production.
+Gate A itself has never run on PythonAnywhere from this package.
 
-## Before running anything
+## Before any execution
 
-1. Run the offline test suite first, on the exact Python version used in
-   production (3.10 and/or 3.13), from a throwaway checkout:
-   ```
-   python3 -m unittest cloud/crm_speed_optimization/test_crm_speed_gate_a.py -v
-   ```
-   Repeat at least 10 full times. Every run must show 0 failures/errors.
+1. Independently review every file under `cloud/crm_speed_optimization/`.
+2. Run `python3 -m py_compile *.py` on the target Python version(s)
+   (3.10 and 3.13).
+3. Run `python3 -m unittest test_crm_speed_gate_a -v` at least 10
+   consecutive times and require 100% pass on every run.
+4. Only after independent review and explicit owner approval may
+   `RUN_GATE_A_CRM_SPEED.py` be considered for execution on
+   PythonAnywhere. That execution is a separate, owner-approved action
+   outside the scope of this cloud/ delivery.
 
-2. Set the canonical UA-0009 URL explicitly — Gate A will BLOCK rather
-   than guess it:
-   ```
-   export UA0009_CANONICAL_URL="https://<exact-canonical-domain>/UA-0009.html"
-   ```
+## What Gate A will do when eventually executed (Gate B still required for install)
 
-## Running Gate A (read-mostly evaluation)
+- Read bounded, explicitly listed production inputs (never a recursive
+  scan) and reject any symlink among them.
+- Verify the existing backup archive hash before doing anything else.
+- Build candidate, text-only, non-executing transformations of
+  `cars_ui.py`, `usercustomize.py`, and `avtoperedacha.py` in memory /
+  inside an isolated QA run directory only.
+- Compile and statically re-scan every candidate; any dynamic dispatch,
+  aliasing, or unresolved callable in the four admin routes blocks the
+  whole run.
+- Probe the exact configured UA-0009 HTTPS URL and require a clean,
+  no-redirect 404/410; any network ambiguity blocks the run.
+- Compare bounded site/public inventories and protected file fingerprints
+  before and after; any unexpected change blocks the run.
+- Emit a JSON receipt and Markdown report inside the run directory only,
+  ending in `GATE_A_PASS_AWAITING_PRODUCTION_APPROVAL` or `BLOCKED`.
 
-```
-python3 cloud/crm_speed_optimization/RUN_GATE_A_CRM_SPEED.py
-```
+## What this package never does
 
-This creates a unique directory under
-`/home/Carix/qa/crm_speed_task020/run_<timestamp>_<pid>/` and writes
-`receipt.json` and `report.md` there only. It exits 0 only when every
-required evidence entry is `passed: true` and the final status is
-`GATE_A_PASS_AWAITING_PRODUCTION_APPROVAL`. Any BLOCKED evidence makes it
-exit nonzero.
-
-## Verifying a receipt independently
-
-```
-python3 cloud/crm_speed_optimization/verify_gate_a.py /home/Carix/qa/crm_speed_task020/run_.../receipt.json
-```
-
-## What Gate A does NOT do
-
-- It does not modify `/home/Carix/crm.db`.
-- It does not modify any file under `/home/Carix/site`,
-  `/home/Carix/video`, or `/home/Carix/public_html`.
-- It does not restart the bot, web app, or any scheduled task.
-- It does not publish UA-0009.
-- It does not install any candidate file into production. That is a
-  separate Gate B decision requiring independent review and explicit
-  owner approval.
-
-## If Gate A reports BLOCKED
-
-Read `report.md`/`receipt.json` for the exact evidence entry and reason.
-Do not attempt to force a pass by editing the receipt. Fix the underlying
-condition (e.g. restore a missing required input, resolve DNS/HTTP
-issues for the UA-0009 probe, or accept that a transform correctly
-BLOCKed on ambiguous real source) and re-run.
+- It never writes to `/home/Carix` outside the resolved QA run directory.
+- It never restarts the bot, web app, or any scheduled task.
+- It never publishes UA-0009.
+- It never installs anything into production. Installation is Gate B, a
+  fully separate, owner-approved action after independent review of Gate A
+  evidence.
