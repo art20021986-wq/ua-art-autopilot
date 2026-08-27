@@ -1,48 +1,38 @@
 #!/usr/bin/env python3
-"""pythonanywhere_discovery_controller.py -- TASK 039 GitHub-side controller.
+"""Run and relay one tightly bounded PythonAnywhere read-only discovery.
 
-Standard library only. This module is NOT executed by this Claude worker; it
-is prepared for a future GitHub Actions job to run the single, already-
-reviewed read-only PythonAnywhere discovery command described in TASK 037/039
-and relay its safe receipt back into this repository.
-
-Safety properties enforced here:
-  * Only PythonAnywhere account 'Carix' and host www.pythonanywhere.com or
-    eu.pythonanywhere.com are accepted.
-  * PYTHONANYWHERE_API_TOKEN is read from the environment and never printed
-    or written to any local file.
-  * Local discovery script + test files must compile and pass before any
-    remote action is attempted.
-  * The remote _sync_manifest.json must show status PASS,
-    executed_remote_code=false, production_touched=false, and must bind the
-    exact discovery-script SHA-256 this controller computed locally.
-  * Only the one exact, fixed, read-only command is ever requested to run.
-  * Any always-on-task / scheduled-task trigger created is deleted in
-    'finally', along with the one exact remote output file.
-  * The controller never calls any endpoint that would write/upload files,
-    restart a web app, run Gate B, or otherwise touch Production/CRM.
-  * The remote receipt JSON is parsed with duplicate-key rejection and
-    validated field-by-field. BLOCKED receipts are relayed as BLOCKED, never
-    silently upgraded to PASS.
+This is the GitHub-side controller for TASK 039. It validates local tests,
+the safe-inbox sync manifest and remote script bytes before creating one
+temporary trigger. The only remote file mutation is deletion/creation of the
+exact safe-inbox receipt path. Production files and crm.db are never written.
 """
+from __future__ import annotations
+
+import datetime as dt
 import hashlib
 import json
 import os
+import pathlib
+import re
 import subprocess
 import sys
+import tempfile
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 
 ALLOWED_USERNAME = "Carix"
 ALLOWED_HOSTS = ("www.pythonanywhere.com", "eu.pythonanywhere.com")
-
-BOT_LOGISTICS_DIR = os.path.dirname(os.path.abspath(__file__))
-DISCOVERY_SCRIPT_LOCAL = os.path.join(BOT_LOGISTICS_DIR, "bot_logistics_discovery.py")
-
-REMOTE_DISCOVERY_SCRIPT = "/home/Carix/autopilot_inbox/cloud/bot_logistics/bot_logistics_discovery.py"
-REMOTE_MANIFEST_PATH = "/home/Carix/autopilot_inbox/_sync_manifest.json"
-REMOTE_OUTPUT_PATH = "/home/Carix/autopilot_inbox/cloud/bot_logistics/task037_discovery_output.json"
+REMOTE_ROOT = "/home/Carix/autopilot_inbox"
+REMOTE_MANIFEST_PATH = REMOTE_ROOT + "/_sync_manifest.json"
+REMOTE_OUTPUT_PATH = (
+    REMOTE_ROOT + "/cloud/bot_logistics/task037_discovery_output.json"
+)
+REMOTE_DISCOVERY_SCRIPT = (
+    REMOTE_ROOT + "/cloud/bot_logistics/bot_logistics_discovery.py"
+)
 REMOTE_DB_PATH = "/home/Carix/crm.db"
-
 REMOTE_SOURCES = (
     "/home/Carix/cars_ui.py",
     "/home/Carix/team_bot.py",
@@ -52,249 +42,688 @@ REMOTE_SOURCES = (
     "/home/Carix/start_safe.py",
 )
 
-EXACT_COMMAND = (
-    "python3.10 {script} --db {db} "
-    "--source {s0} --source {s1} --source {s2} --source {s3} --source {s4} --source {s5}"
-).format(
-    script=REMOTE_DISCOVERY_SCRIPT,
-    db=REMOTE_DB_PATH,
-    s0=REMOTE_SOURCES[0], s1=REMOTE_SOURCES[1], s2=REMOTE_SOURCES[2],
-    s3=REMOTE_SOURCES[3], s4=REMOTE_SOURCES[4], s5=REMOTE_SOURCES[5],
+EXACT_DISCOVERY_COMMAND = (
+    "python3.10 "
+    + REMOTE_DISCOVERY_SCRIPT
+    + " --db "
+    + REMOTE_DB_PATH
+    + "".join(" --source " + path for path in REMOTE_SOURCES)
+)
+EXACT_EXECUTION_COMMAND = EXACT_DISCOVERY_COMMAND + " > " + REMOTE_OUTPUT_PATH
+
+BOT_LOGISTICS_DIR = pathlib.Path(__file__).resolve().parent
+REPOSITORY_ROOT = BOT_LOGISTICS_DIR.parents[1]
+LOCAL_ARTIFACTS = {
+    "cloud/bot_logistics/bot_logistics_discovery.py":
+        BOT_LOGISTICS_DIR / "bot_logistics_discovery.py",
+    "cloud/bot_logistics/test_bot_logistics.py":
+        BOT_LOGISTICS_DIR / "test_bot_logistics.py",
+    "cloud/bot_logistics/pythonanywhere_discovery_controller.py":
+        BOT_LOGISTICS_DIR / "pythonanywhere_discovery_controller.py",
+    "cloud/bot_logistics/test_discovery_controller.py":
+        BOT_LOGISTICS_DIR / "test_discovery_controller.py",
+}
+EVIDENCE_PATH_LOCAL = (
+    BOT_LOGISTICS_DIR / "evidence" / "task_037_discovery.json"
+)
+REPORT_PATH_LOCAL = (
+    BOT_LOGISTICS_DIR / "TASK_039_DISCOVERY_CONTROLLER_REPORT.md"
 )
 
-EVIDENCE_PATH_LOCAL = os.path.join(BOT_LOGISTICS_DIR, "evidence", "task_037_discovery.json")
-REPORT_PATH_LOCAL = os.path.join(BOT_LOGISTICS_DIR, "TASK_039_DISCOVERY_CONTROLLER_REPORT.md")
-
-MAX_RECEIPT_AGE_SECONDS = 900
+MAX_REMOTE_BYTES = 400_000
+MAX_MANIFEST_AGE_SECONDS = 3_600
+MAX_RECEIPT_BYTES = 300_000
 POLL_INTERVAL_SECONDS = 5
-POLL_TIMEOUT_SECONDS = 300
-
-# Method names that would constitute a production/CRM write if ever called.
-# The controller must never call any of these on the injected api object.
-FORBIDDEN_API_METHODS = (
-    "write_file", "upload_file", "reload_webapp", "restart_webapp",
-    "execute_console_command", "run_gate_b", "delete_crm_row", "update_crm_row",
+POLL_TIMEOUT_SECONDS = 600
+HEX64_RE = re.compile(r"^[0-9a-f]{64}$")
+SENSITIVE_RE = re.compile(
+    r"(?i)(?:secret|token|password|api[-_ ]?key|authorization|"
+    r"private[-_ ]?key|credential)"
 )
-
-SECRET_PATTERNS_SRC = (
-    "secret", "token", "password", "api_key", "apikey", "authorization",
-    "private_key", "credential",
+TOKEN_SHAPE_RE = re.compile(
+    r"(?<![A-Za-z0-9_-])(?:sk-[A-Za-z0-9_-]{16,}|"
+    r"gh[pousr]_[A-Za-z0-9]{20,}|"
+    r"eyJ[A-Za-z0-9_-]{20,}(?:\.[A-Za-z0-9_-]+){1,2}|"
+    r"[A-Za-z0-9_-]{40,})(?![A-Za-z0-9_-])"
 )
+EMAIL_RE = re.compile(r"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b")
+PHONE_RE = re.compile(r"(?<!\w)\+?\d[\d ()-]{7,}\d(?!\w)")
+VIN_RE = re.compile(r"\b[A-HJ-NPR-Z0-9]{17}\b", re.IGNORECASE)
+FORBIDDEN_RECEIPT_KEYS = {
+    "container_value",
+    "current_container",
+    "old_container",
+    "new_container",
+    "vin",
+    "phone",
+    "email",
+}
 
 
-class ControllerError(Exception):
-    pass
+class ControllerError(RuntimeError):
+    """A sanitized, fail-closed controller error."""
 
 
-def _now():
-    return time.time()
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
 
 
-def sha256_file(path):
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        h.update(f.read())
-    return h.hexdigest()
+def sha256_file(path: pathlib.Path | str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _no_duplicate_keys(pairs):
-    d = {}
-    for k, v in pairs:
-        if k in d:
-            raise ControllerError("duplicate_key_in_receipt:%s" % k)
-        d[k] = v
-    return d
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ControllerError("duplicate_json_key")
+        result[key] = value
+    return result
 
 
-def parse_strict_json(text):
+def parse_strict_json(text: str, label: str) -> dict:
     try:
-        return json.loads(text, object_pairs_hook=_no_duplicate_keys)
+        value = json.loads(text, object_pairs_hook=_no_duplicate_keys)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise ControllerError("invalid_json:" + label) from exc
+    if not isinstance(value, dict):
+        raise ControllerError("json_not_object:" + label)
+    return value
+
+
+def _parse_utc(value: object) -> dt.datetime:
+    if not isinstance(value, str):
+        raise ControllerError("manifest_time_missing")
+    try:
+        parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError as exc:
-        raise ControllerError("malformed_json:%s" % exc)
+        raise ControllerError("manifest_time_invalid") from exc
+    if parsed.tzinfo is None:
+        raise ControllerError("manifest_time_naive")
+    return parsed.astimezone(dt.timezone.utc)
 
 
-def contains_secret_shape(text):
-    lower = text.lower()
-    return any(p in lower for p in SECRET_PATTERNS_SRC)
+def _contains_sensitive(value: object, key: str | None = None) -> bool:
+    if isinstance(value, dict):
+        for item_key, item in value.items():
+            lowered = str(item_key).casefold()
+            if lowered in FORBIDDEN_RECEIPT_KEYS:
+                return True
+            if _contains_sensitive(item, lowered):
+                return True
+        return False
+    if isinstance(value, list):
+        return any(_contains_sensitive(item, key) for item in value)
+    if not isinstance(value, str):
+        return False
+    if key and "sha256" in key and HEX64_RE.fullmatch(value):
+        return False
+    if "ONEYSELGF1046602" in value.upper():
+        return True
+    return bool(
+        SENSITIVE_RE.search(value)
+        or TOKEN_SHAPE_RE.search(value)
+        or EMAIL_RE.search(value)
+        or PHONE_RE.search(value)
+        or VIN_RE.search(value)
+    )
 
 
-class GuardedAPI(object):
-    """Wraps an injected transport object and refuses to call any forbidden
-    (write-capable) method name, regardless of what the transport exposes."""
+class PythonAnywhereAPI:
+    """Minimal allowlisted PythonAnywhere REST transport."""
 
-    def __init__(self, transport):
-        self._transport = transport
-        self.calls = []
-
-    def __getattr__(self, name):
-        if name in FORBIDDEN_API_METHODS:
-            raise ControllerError("forbidden_api_method_blocked:%s" % name)
-        attr = getattr(self._transport, name)
-
-        def _wrapped(*args, **kwargs):
-            self.calls.append((name, args, kwargs))
-            return attr(*args, **kwargs)
-        return _wrapped
-
-
-class DiscoveryController(object):
-    def __init__(self, transport, env=None, sleep=time.sleep, now=_now,
-                 poll_interval=POLL_INTERVAL_SECONDS, timeout=POLL_TIMEOUT_SECONDS,
-                 subprocess_runner=None):
-        self.api = GuardedAPI(transport)
-        self.env = env if env is not None else os.environ
-        self.sleep = sleep
-        self.now = now
-        self.poll_interval = poll_interval
-        self.timeout = timeout
-        self._run_subprocess = subprocess_runner or self._default_subprocess_runner
-        self._trigger_created = False
-
-    @staticmethod
-    def _default_subprocess_runner(cmd):
-        proc = subprocess.run(cmd, capture_output=True, text=True)
-        return proc.returncode, proc.stdout, proc.stderr
-
-    def validate_environment(self):
-        username = self.env.get("PYTHONANYWHERE_USERNAME", ALLOWED_USERNAME)
-        host = self.env.get("PYTHONANYWHERE_HOST", ALLOWED_HOSTS[0])
+    def __init__(
+        self,
+        *,
+        username: str,
+        host: str,
+        token: str,
+        opener=urllib.request.urlopen,
+        timeout: int = 45,
+    ):
         if username != ALLOWED_USERNAME:
             raise ControllerError("invalid_username")
         if host not in ALLOWED_HOSTS:
             raise ControllerError("invalid_host")
-        token = self.env.get("PYTHONANYWHERE_API_TOKEN")
         if not token:
             raise ControllerError("missing_api_token")
-        return token  # never logged, never returned in any report
+        self.username = username
+        self.host = host
+        self._token = token
+        self._opener = opener
+        self.timeout = timeout
 
-    def verify_local_artifacts(self):
-        rc, out, err = self._run_subprocess(
-            [sys.executable, "-m", "py_compile",
-             os.path.join(BOT_LOGISTICS_DIR, "bot_logistics_discovery.py")]
+    @property
+    def base_url(self) -> str:
+        username = urllib.parse.quote(self.username, safe="")
+        return f"https://{self.host}/api/v0/user/{username}/"
+
+    def _request(
+        self,
+        method: str,
+        url: str,
+        *,
+        form: dict | None = None,
+        allowed_statuses=(200,),
+        operation: str,
+    ) -> tuple[int, bytes]:
+        data = None
+        headers = {
+            "Authorization": "Token " + self._token,
+            "User-Agent": "ua-art-bot-logistics-discovery/1",
+        }
+        if form is not None:
+            data = urllib.parse.urlencode(form).encode("utf-8")
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+        request = urllib.request.Request(
+            url, data=data, headers=headers, method=method
         )
-        if rc != 0:
+        try:
+            with self._opener(request, timeout=self.timeout) as response:
+                status = getattr(response, "status", response.getcode())
+                body = response.read(MAX_REMOTE_BYTES + 1)
+        except urllib.error.HTTPError as exc:
+            status = exc.code
+            body = exc.read(MAX_REMOTE_BYTES + 1)
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            raise ControllerError("network_error:" + operation) from exc
+        if len(body) > MAX_REMOTE_BYTES:
+            raise ControllerError("remote_response_too_large:" + operation)
+        if status not in allowed_statuses:
+            raise ControllerError(
+                "unexpected_http_status:%s:%s" % (operation, status)
+            )
+        return status, body
+
+    def _file_url(self, path: str) -> str:
+        allowed = {
+            REMOTE_MANIFEST_PATH,
+            REMOTE_OUTPUT_PATH,
+            *(REMOTE_ROOT + "/" + source for source in LOCAL_ARTIFACTS),
+        }
+        if path not in allowed:
+            raise ControllerError("remote_file_path_not_allowed")
+        return self.base_url + "files/path" + urllib.parse.quote(path, safe="/")
+
+    def read_file(self, path: str) -> str:
+        status, body = self._request(
+            "GET",
+            self._file_url(path),
+            allowed_statuses=(200, 404),
+            operation="read_file",
+        )
+        if status == 404:
+            raise FileNotFoundError(path)
+        try:
+            return body.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ControllerError("remote_file_not_utf8") from exc
+
+    def delete_output(self, path: str) -> None:
+        if path != REMOTE_OUTPUT_PATH:
+            raise ControllerError("delete_path_not_allowed")
+        self._request(
+            "DELETE",
+            self._file_url(path),
+            allowed_statuses=(204, 404),
+            operation="delete_output",
+        )
+
+    @staticmethod
+    def _task_id(body: bytes) -> int | None:
+        try:
+            value = json.loads(body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return None
+        task_id = value.get("id") if isinstance(value, dict) else None
+        return task_id if isinstance(task_id, int) and task_id > 0 else None
+
+    def create_always_on_task(self, command: str) -> tuple[str, int] | None:
+        if command != EXACT_EXECUTION_COMMAND:
+            raise ControllerError("execution_command_not_allowed")
+        status, body = self._request(
+            "POST",
+            self.base_url + "always_on/",
+            form={
+                "command": command,
+                "description": "UA ART task037 read-only discovery",
+                "enabled": "true",
+            },
+            allowed_statuses=(200, 201, 202, 400, 403, 404, 409),
+            operation="create_always_on",
+        )
+        if status not in (200, 201, 202):
+            return None
+        task_id = self._task_id(body)
+        return ("always_on", task_id) if task_id is not None else None
+
+    def create_scheduled_task(self, command: str) -> tuple[str, int] | None:
+        if command != EXACT_EXECUTION_COMMAND:
+            raise ControllerError("execution_command_not_allowed")
+        run_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=2)
+        status, body = self._request(
+            "POST",
+            self.base_url + "schedule/",
+            form={
+                "command": command,
+                "description": "UA ART task037 read-only discovery fallback",
+                "enabled": "true",
+                "interval": "daily",
+                "hour": run_at.hour,
+                "minute": run_at.minute,
+            },
+            allowed_statuses=(200, 201, 202, 400, 403, 404, 409),
+            operation="create_schedule",
+        )
+        if status not in (200, 201, 202):
+            return None
+        task_id = self._task_id(body)
+        return ("schedule", task_id) if task_id is not None else None
+
+    def delete_trigger(self, trigger: tuple[str, int]) -> None:
+        kind, task_id = trigger
+        if kind not in {"always_on", "schedule"}:
+            raise ControllerError("trigger_kind_not_allowed")
+        if not isinstance(task_id, int) or task_id <= 0:
+            raise ControllerError("trigger_id_invalid")
+        endpoint = "always_on" if kind == "always_on" else "schedule"
+        self._request(
+            "DELETE",
+            self.base_url + f"{endpoint}/{task_id}/",
+            allowed_statuses=(200, 202, 204, 404),
+            operation="delete_trigger",
+        )
+
+
+class DiscoveryController:
+    def __init__(
+        self,
+        api,
+        *,
+        env=None,
+        sleep=time.sleep,
+        monotonic=time.monotonic,
+        utc_now=lambda: dt.datetime.now(dt.timezone.utc),
+        subprocess_runner=None,
+        poll_interval=POLL_INTERVAL_SECONDS,
+        poll_timeout=POLL_TIMEOUT_SECONDS,
+    ):
+        self.api = api
+        self.env = os.environ if env is None else env
+        self.sleep = sleep
+        self.monotonic = monotonic
+        self.utc_now = utc_now
+        self.subprocess_runner = (
+            subprocess_runner or self._default_subprocess_runner
+        )
+        self.poll_interval = poll_interval
+        self.poll_timeout = poll_timeout
+
+    @staticmethod
+    def _default_subprocess_runner(command):
+        completed = subprocess.run(
+            command,
+            cwd=REPOSITORY_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=180,
+            check=False,
+        )
+        return completed.returncode
+
+    def validate_environment(self) -> None:
+        if self.env.get("PYTHONANYWHERE_USERNAME", ALLOWED_USERNAME) != ALLOWED_USERNAME:
+            raise ControllerError("invalid_username")
+        if self.env.get("PYTHONANYWHERE_HOST", ALLOWED_HOSTS[0]) not in ALLOWED_HOSTS:
+            raise ControllerError("invalid_host")
+        if not self.env.get("PYTHONANYWHERE_API_TOKEN"):
+            raise ControllerError("missing_api_token")
+
+    def verify_local_artifacts(self) -> dict[str, str]:
+        paths = [str(path) for path in LOCAL_ARTIFACTS.values()]
+        compile_command = [sys.executable, "-m", "py_compile", *paths]
+        if self.subprocess_runner(compile_command) != 0:
             raise ControllerError("local_compile_failed")
-        rc, out, err = self._run_subprocess(
-            [sys.executable, "-m", "unittest", "discover", "-s", BOT_LOGISTICS_DIR, "-p", "test*.py"]
-        )
-        if rc != 0:
+        test_command = [
+            sys.executable,
+            "-m",
+            "unittest",
+            "discover",
+            "-v",
+            "-s",
+            str(BOT_LOGISTICS_DIR),
+            "-p",
+            "test*.py",
+        ]
+        if self.subprocess_runner(test_command) != 0:
             raise ControllerError("local_tests_failed")
-        return sha256_file(DISCOVERY_SCRIPT_LOCAL)
+        return {
+            source: sha256_file(path)
+            for source, path in LOCAL_ARTIFACTS.items()
+        }
 
-    def verify_manifest(self, local_script_sha):
-        content = self.api.read_file(REMOTE_MANIFEST_PATH)
-        manifest = parse_strict_json(content)
+    def verify_manifest(self, local_hashes: dict[str, str]) -> dict:
+        manifest = parse_strict_json(
+            self.api.read_file(REMOTE_MANIFEST_PATH), "sync_manifest"
+        )
         if manifest.get("status") != "PASS":
             raise ControllerError("manifest_not_pass")
-        if manifest.get("executed_remote_code") is not False:
-            raise ControllerError("manifest_executed_remote_code_not_false")
-        if manifest.get("production_touched") is not False:
-            raise ControllerError("manifest_production_touched_not_false")
-        if manifest.get("discovery_script_sha256") != local_script_sha:
-            raise ControllerError("manifest_sha_mismatch")
-        generated_at = manifest.get("generated_at_epoch")
-        if generated_at is None or (self.now() - float(generated_at)) > MAX_RECEIPT_AGE_SECONDS:
+        if manifest.get("remote_root") != REMOTE_ROOT:
+            raise ControllerError("manifest_remote_root_invalid")
+        for field in (
+            "production_touched",
+            "crm_touched",
+            "executed_remote_code",
+            "webapp_reloaded",
+        ):
+            if manifest.get(field) is not False:
+                raise ControllerError("manifest_safety_field_invalid:" + field)
+
+        generated = _parse_utc(manifest.get("generated_at_utc"))
+        age = (self.utc_now() - generated).total_seconds()
+        if age < -300 or age > MAX_MANIFEST_AGE_SECONDS:
             raise ControllerError("manifest_stale")
+
+        entries = manifest.get("files")
+        if not isinstance(entries, list) or not 1 <= len(entries) <= 40:
+            raise ControllerError("manifest_file_list_invalid")
+        by_source = {}
+        for entry in entries:
+            if not isinstance(entry, dict):
+                raise ControllerError("manifest_entry_invalid")
+            source = entry.get("source")
+            if not isinstance(source, str) or source in by_source:
+                raise ControllerError("manifest_source_invalid")
+            by_source[source] = entry
+
+        for source, local_hash in local_hashes.items():
+            entry = by_source.get(source)
+            if entry is None:
+                raise ControllerError("manifest_required_source_missing")
+            expected_remote = REMOTE_ROOT + "/" + source
+            if entry.get("remote") != expected_remote:
+                raise ControllerError("manifest_remote_path_mismatch")
+            if entry.get("sha256") != local_hash:
+                raise ControllerError("manifest_hash_mismatch")
+            if entry.get("http_status") not in (200, 201):
+                raise ControllerError("manifest_upload_status_invalid")
+
+        remote_script = self.api.read_file(REMOTE_DISCOVERY_SCRIPT).encode(
+            "utf-8"
+        )
+        expected_script_hash = local_hashes[
+            "cloud/bot_logistics/bot_logistics_discovery.py"
+        ]
+        if sha256_bytes(remote_script) != expected_script_hash:
+            raise ControllerError("remote_script_hash_mismatch")
         return manifest
 
-    def _create_trigger(self):
-        self.api.create_always_on_task(command=EXACT_COMMAND, output_redirect=REMOTE_OUTPUT_PATH)
-        self._trigger_created = True
-        try:
-            self.api.create_scheduled_task_fallback(command=EXACT_COMMAND, output_redirect=REMOTE_OUTPUT_PATH)
-        except Exception:
-            pass  # fallback is best-effort; always-on task is primary
+    def _create_trigger(self) -> tuple[str, int]:
+        trigger = self.api.create_always_on_task(EXACT_EXECUTION_COMMAND)
+        if trigger is None:
+            trigger = self.api.create_scheduled_task(EXACT_EXECUTION_COMMAND)
+        if trigger is None:
+            raise ControllerError("no_remote_trigger_available")
+        return trigger
 
-    def _cleanup_trigger(self):
-        if self._trigger_created:
+    def _poll_receipt(self) -> dict:
+        deadline = self.monotonic() + self.poll_timeout
+        last_invalid = None
+        stable_invalid_reads = 0
+        while self.monotonic() < deadline:
             try:
-                self.api.delete_always_on_task()
-            except Exception:
-                pass
-            try:
-                self.api.delete_scheduled_task_fallback()
-            except Exception:
-                pass
-        try:
-            self.api.delete_file(REMOTE_OUTPUT_PATH)
-        except Exception:
-            pass
-
-    def _poll_output(self):
-        deadline = self.now() + self.timeout
-        while self.now() < deadline:
-            try:
-                content = self.api.read_file(REMOTE_OUTPUT_PATH)
-                if content:
-                    return content
+                raw = self.api.read_file(REMOTE_OUTPUT_PATH)
             except FileNotFoundError:
-                pass
-            except Exception:
-                pass
+                raw = ""
+            if raw:
+                if len(raw.encode("utf-8")) > MAX_RECEIPT_BYTES:
+                    raise ControllerError("receipt_too_large")
+                try:
+                    return parse_strict_json(raw, "discovery_receipt")
+                except ControllerError:
+                    if raw == last_invalid:
+                        stable_invalid_reads += 1
+                    else:
+                        last_invalid = raw
+                        stable_invalid_reads = 1
+                    if stable_invalid_reads >= 2:
+                        raise ControllerError("stable_malformed_receipt")
             self.sleep(self.poll_interval)
-        raise ControllerError("poll_timeout_no_output")
+        raise ControllerError("receipt_timeout")
 
-    def _validate_receipt(self, receipt):
-        required_bool_false = (
-            "production_write", "crm_write", "db_write", "ua0009_published",
-        )
+    @staticmethod
+    def _validate_source_entry(entry: object) -> str:
+        if not isinstance(entry, dict):
+            raise ControllerError("receipt_source_entry_invalid")
+        if set(entry) - {"path", "sha256", "size", "line_count", "anchors"}:
+            raise ControllerError("receipt_source_keys_invalid")
+        path = entry.get("path")
+        if path not in REMOTE_SOURCES:
+            raise ControllerError("receipt_source_path_invalid")
+        if not HEX64_RE.fullmatch(str(entry.get("sha256", ""))):
+            raise ControllerError("receipt_source_hash_invalid")
+        size = entry.get("size")
+        line_count = entry.get("line_count")
+        if not isinstance(size, int) or not 0 <= size <= 2_000_000:
+            raise ControllerError("receipt_source_size_invalid")
+        if not isinstance(line_count, int) or not 0 <= line_count <= 40_000:
+            raise ControllerError("receipt_source_lines_invalid")
+        anchors = entry.get("anchors")
+        if not isinstance(anchors, list) or len(anchors) > 80:
+            raise ControllerError("receipt_anchor_list_invalid")
+        for anchor in anchors:
+            if not isinstance(anchor, dict):
+                raise ControllerError("receipt_anchor_invalid")
+            if set(anchor) - {"line", "matches", "function", "snippet"}:
+                raise ControllerError("receipt_anchor_keys_invalid")
+            if not isinstance(anchor.get("line"), int):
+                raise ControllerError("receipt_anchor_line_invalid")
+            if not isinstance(anchor.get("matches"), list):
+                raise ControllerError("receipt_anchor_matches_invalid")
+            if len(str(anchor.get("snippet", ""))) > 1_200:
+                raise ControllerError("receipt_anchor_snippet_too_large")
+        return path
+
+    @classmethod
+    def validate_receipt(cls, receipt: dict) -> dict:
+        allowed_top = {
+            "task_id",
+            "mode",
+            "status",
+            "production_write",
+            "crm_write",
+            "db_write",
+            "ua0009_published",
+            "sources",
+            "db",
+            "errors",
+            "UA0006_CONTAINER_STATUS",
+        }
+        if set(receipt) - allowed_top:
+            raise ControllerError("receipt_top_level_keys_invalid")
         if receipt.get("task_id") != "task_037":
-            raise ControllerError("receipt_wrong_task_id")
+            raise ControllerError("receipt_task_invalid")
         if receipt.get("mode") != "READ_ONLY_DISCOVERY":
-            raise ControllerError("receipt_wrong_mode")
-        if receipt.get("status") not in ("PASS", "BLOCKED"):
-            raise ControllerError("receipt_invalid_status")
-        for field in required_bool_false:
+            raise ControllerError("receipt_mode_invalid")
+        status = receipt.get("status")
+        if status not in {"PASS", "BLOCKED"}:
+            raise ControllerError("receipt_status_invalid")
+        for field in (
+            "production_write",
+            "crm_write",
+            "db_write",
+            "ua0009_published",
+        ):
             if receipt.get(field) is not False:
-                raise ControllerError("receipt_unsafe_field:%s" % field)
-        sources = receipt.get("sources", [])
-        if not isinstance(sources, list) or len(sources) > 6:
-            raise ControllerError("receipt_sources_bound_violation")
-        errors = receipt.get("errors", [])
+                raise ControllerError("receipt_safety_field_invalid:" + field)
+
+        sources = receipt.get("sources")
+        if not isinstance(sources, list) or len(sources) > len(REMOTE_SOURCES):
+            raise ControllerError("receipt_sources_invalid")
+        source_paths = [cls._validate_source_entry(item) for item in sources]
+        if len(source_paths) != len(set(source_paths)):
+            raise ControllerError("receipt_source_duplicate")
+
+        errors = receipt.get("errors")
         if not isinstance(errors, list) or len(errors) > 50:
-            raise ControllerError("receipt_errors_bound_violation")
-        status_field = receipt.get("UA0006_CONTAINER_STATUS")
-        if status_field is not None and status_field not in ("ALREADY_CORRECT", "NEEDS_EXACT_UPDATE"):
-            raise ControllerError("receipt_invalid_container_status")
-        raw = json.dumps(receipt, sort_keys=True)
-        if contains_secret_shape(raw):
-            raise ControllerError("receipt_contains_secret_shape")
+            raise ControllerError("receipt_errors_invalid")
+        if any(not isinstance(item, str) or len(item) > 240 for item in errors):
+            raise ControllerError("receipt_error_entry_invalid")
+
+        database = receipt.get("db")
+        if not isinstance(database, dict):
+            raise ControllerError("receipt_db_invalid")
+        if len(json.dumps(database, ensure_ascii=False)) > 80_000:
+            raise ControllerError("receipt_db_too_large")
+
+        if status == "PASS":
+            if set(source_paths) != set(REMOTE_SOURCES):
+                raise ControllerError("receipt_sources_incomplete")
+            if errors:
+                raise ControllerError("pass_receipt_has_errors")
+            if receipt.get("UA0006_CONTAINER_STATUS") not in {
+                "ALREADY_CORRECT",
+                "NEEDS_EXACT_UPDATE",
+            }:
+                raise ControllerError("receipt_container_status_invalid")
+            if database.get("path") != REMOTE_DB_PATH:
+                raise ControllerError("receipt_db_path_invalid")
+            if database.get("quick_check_ok") is not True:
+                raise ControllerError("receipt_quick_check_invalid")
+            if database.get("identity_stable") is not True:
+                raise ControllerError("receipt_db_identity_invalid")
+            before = database.get("sha256_before")
+            after = database.get("sha256_after")
+            if (
+                not isinstance(before, str)
+                or not HEX64_RE.fullmatch(before)
+                or before != after
+            ):
+                raise ControllerError("receipt_db_hash_invalid")
+            if database.get("candidate_count") != 1:
+                raise ControllerError("receipt_candidate_count_invalid")
+            if database.get("ua0006_row_count") != 1:
+                raise ControllerError("receipt_row_count_invalid")
+            for field in (
+                "matched_table",
+                "matched_id_column",
+                "matched_container_column",
+            ):
+                value = database.get(field)
+                if not isinstance(value, str) or not value or len(value) > 120:
+                    raise ControllerError("receipt_match_metadata_invalid")
+        else:
+            if not errors:
+                raise ControllerError("blocked_receipt_without_error")
+            if "UA0006_CONTAINER_STATUS" in receipt:
+                raise ControllerError("blocked_receipt_has_container_status")
+
+        if _contains_sensitive(receipt):
+            raise ControllerError("receipt_sensitive_data_detected")
         return receipt
 
-    def run(self):
-        self.validate_environment()
-        local_sha = self.verify_local_artifacts()
-        self.verify_manifest(local_sha)
+    @staticmethod
+    def _atomic_text(path: pathlib.Path, text: str) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        handle = tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="",
+            dir=path.parent,
+            prefix="." + path.name + ".",
+            suffix=".tmp",
+            delete=False,
+        )
+        temp_path = pathlib.Path(handle.name)
         try:
-            self._create_trigger()
-            raw = self._poll_output()
-            receipt = parse_strict_json(raw)
-            validated = self._validate_receipt(receipt)
-            self._write_evidence(validated)
-            self._write_report(validated)
-            return validated
+            with handle:
+                handle.write(text)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temp_path, path)
         finally:
-            self._cleanup_trigger()
+            if temp_path.exists():
+                temp_path.unlink()
 
-    def _write_evidence(self, receipt):
-        os.makedirs(os.path.dirname(EVIDENCE_PATH_LOCAL), exist_ok=True)
-        with open(EVIDENCE_PATH_LOCAL, "w", encoding="utf-8") as f:
-            json.dump(receipt, f, ensure_ascii=False, sort_keys=True, indent=2)
+    def _write_relay(self, receipt: dict) -> None:
+        evidence = (
+            json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True)
+            + "\n"
+        )
+        self._atomic_text(EVIDENCE_PATH_LOCAL, evidence)
+        report = (
+            "# TASK 039 read-only discovery relay\n\n"
+            f"status: {receipt['status']}\n"
+            "production_write: false\n"
+            "crm_write: false\n"
+            "db_write: false\n"
+            "ua0009_published: false\n"
+            "container_status: %s\n"
+            "errors: %s\n"
+            % (
+                receipt.get("UA0006_CONTAINER_STATUS", "NONE"),
+                ",".join(receipt.get("errors", [])) or "NONE",
+            )
+        )
+        self._atomic_text(REPORT_PATH_LOCAL, report)
 
-    def _write_report(self, receipt):
-        with open(REPORT_PATH_LOCAL, "w", encoding="utf-8") as f:
-            f.write("# TASK 039 discovery controller relay report\n\n")
-            f.write("status: %s\n\n" % receipt.get("status"))
-            f.write("production_write: %s\n" % receipt.get("production_write"))
-            f.write("crm_write: %s\n" % receipt.get("crm_write"))
-            f.write("db_write: %s\n" % receipt.get("db_write"))
-            f.write("ua0009_published: %s\n" % receipt.get("ua0009_published"))
-            f.write("container_status: %s\n" % receipt.get("UA0006_CONTAINER_STATUS", "NONE"))
-            f.write("errors: %s\n" % receipt.get("errors", []))
+    def run(self) -> dict:
+        self.validate_environment()
+        local_hashes = self.verify_local_artifacts()
+        self.verify_manifest(local_hashes)
+        trigger = None
+        try:
+            self.api.delete_output(REMOTE_OUTPUT_PATH)
+            trigger = self._create_trigger()
+            receipt = self.validate_receipt(self._poll_receipt())
+            self._write_relay(receipt)
+            return receipt
+        finally:
+            if trigger is not None:
+                try:
+                    self.api.delete_trigger(trigger)
+                except Exception:
+                    pass
+            try:
+                self.api.delete_output(REMOTE_OUTPUT_PATH)
+            except Exception:
+                pass
 
 
-if __name__ == "__main__":  # pragma: no cover
-    raise SystemExit(
-        "This controller is prepared for GitHub Actions execution only; "
-        "it is not invoked directly by this Claude worker."
-    )
+def main() -> int:
+    env = os.environ
+    username = env.get("PYTHONANYWHERE_USERNAME", ALLOWED_USERNAME)
+    host = env.get("PYTHONANYWHERE_HOST", ALLOWED_HOSTS[0])
+    token = env.get("PYTHONANYWHERE_API_TOKEN", "")
+    try:
+        api = PythonAnywhereAPI(
+            username=username,
+            host=host,
+            token=token,
+        )
+        controller = DiscoveryController(api, env=env)
+        receipt = controller.run()
+        print(
+            json.dumps(
+                {
+                    "controller_status": "PASS",
+                    "remote_discovery_status": receipt["status"],
+                    "production_write": False,
+                    "crm_write": False,
+                    "db_write": False,
+                },
+                sort_keys=True,
+            )
+        )
+        return 0
+    except ControllerError as exc:
+        print("DISCOVERY_CONTROLLER_BLOCKED:" + str(exc), file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,182 +1,93 @@
-# TASK 039 REPORT — BOT-LOGISTICS-001 phase A2 repair (Round 3, 8-file response)
+# TASK 039 — independent Codex repair and controller audit
 
-## Scope of this round
+## Result
 
-Per the Round 3 instruction, this response returns exactly the eight required
-files. `bot_logistics_transform.py` and `bot_logistics_gate_b.py` (delivered
-under TASK 037) are neither modified nor echoed.
+The first generated TASK 039 package was not accepted. Independent execution
+found 5 failures and 8 skipped tests, and the proposed workflow contained a
+controller placeholder that always exited without contacting PythonAnywhere.
+No production, CRM or database action occurred during that failed audit.
 
-## 1. Test suite repair (`test_bot_logistics.py`)
+Codex repaired the package and reran it using only the standard library.
+The final result is 74 tests passed, with zero failures, errors, skips or
+resource warnings. All Python files compile.
 
-* Rewritten as pure `unittest` (standard library only). No pytest, no pip
-  install, no network. `python3 -m unittest discover -v -s cloud/bot_logistics
-  -p 'test*.py'` is the only required command.
-* The specific defect identified by the independent audit is fixed:
-  `test_rollback_on_ambiguous_row_never_reports_success` now builds a
-  **separate** temporary table (`cars_ambiguous`) with **no** uniqueness
-  constraint on `ua_id`, inserts exactly two `UA-0006` rows, captures the
-  full pre-call database bytes, calls the real
-  `update_single_container_row` through a signature-adaptive wrapper, and
-  asserts: (a) the call is refused, (b) database bytes are byte-identical
-  before/after, (c) both original row values (`ROWA`, `ROWB`) are
-  unchanged. Fixture setup can never raise `IntegrityError` because no
-  `PRIMARY KEY`/`UNIQUE` constraint exists on that table.
-* All other TASK 037 coverage areas are preserved as separate test classes:
-  discovery source-contract (exact set, duplicates, extras, path variants,
-  symlink/hardlink/oversize/identity), discovery DB-contract (no-match,
-  two-table ambiguity, two-column ambiguity, no-LIKE identity, DB identity
-  stability, no SQL write tokens in the discovery module source), discovery
-  CLI exit codes, and container-update behavioral tests (single-row
-  update/read-back, idempotence, missing/ambiguous rollback, field
-  preservation, other-rows-unchanged, 10-repeat determinism,
-  backup/tamper/rollback).
+## Repaired discovery
 
-### Known limitation (must be read before trusting a green run)
+bot_logistics_discovery.py now:
 
-This round's context bundle did not include the source of
-`bot_logistics_transform.py` / `bot_logistics_gate_b.py`. The
-`TestContainerUpdateLogic` class therefore imports those modules directly,
-introspects the real `update_single_container_row` signature via
-`inspect.signature`, and calls it with only the keyword arguments it
-actually declares (`_call_update` helper) rather than guessing a fixed
-signature. If those real modules expose different parameter names than the
-ones probed here (`db_path`, `ua_id`, `container`, `new_container`,
-`table`), the adapter will simply omit unmatched kwargs and the call may
-fail with a clear `TypeError`/assertion failure rather than a silent skip
-— the class carries `@unittest.skipIf(UPDATE_FN is None or GATE_B_REFUSED
-is None, ...)` only for the case where the symbols are entirely absent (an
-import-shape problem, not a behavioral one), not for behavioral mismatches.
-Codex should re-run this suite against the actual TASK 037 module files in
-the repository; if any `TestContainerUpdateLogic` test fails there, that is
-real, actionable evidence, not a suite defect.
+- accepts exactly the six approved /home/Carix source paths and exactly
+  /home/Carix/crm.db; an unapproved database path is rejected before reading;
+- uses no-follow, regular-file, single-link, size, inode/device, nanosecond
+  timestamp and SHA-256 checks;
+- opens SQLite with URI mode=ro and PRAGMA query_only=ON;
+- executes only traced SELECT and PRAGMA statements;
+- checks quick_check, data_version, file identity and SHA before and after;
+- checks every bounded table and candidate ID/container column combination
+  with parameterized exact identities, never wildcard UA matching;
+- blocks missing rows, multiple rows, multiple tables and multiple container
+  columns;
+- relays structural match metadata but never the current container value;
+- captures bounded menu/handler context for duplicate and canonical controls;
+- redacts secret-, token-, email-, phone-, VIN- and container-shaped lines;
+- emits exactly one strict JSON object for both PASS and BLOCKED.
 
-## 2. `bot_logistics_discovery.py` hardening
+## Repaired tests
 
-All nine gaps listed in the audit are addressed:
+The import shape now loads the real TASK 037 modules as a package, so the
+container update tests cannot silently skip. The ambiguous-row regression
+creates a deliberately non-unique table, requires the exact GateBRefused
+exception, proves no result was returned, proves byte-identical database
+state, and proves both values stayed unchanged.
 
-1. **Secret redaction is real**: every line is scanned against
-   secret/token/password/api-key/authorization/private-key/credential
-   patterns plus a token-shape regex (`[A-Za-z0-9_-]{32,}`) before it can
-   become an anchor snippet; the final JSON payload is scanned again before
-   printing, and a match forces a sanitized `BLOCKED` output.
-2. **Strict JSON, not repr**: output is exactly one
-   `json.dumps(..., ensure_ascii=False, sort_keys=True)` call.
-3. **TOCTOU-hardened reads**: `lstat` → regular-file/`nlink==1`/size-cap →
-   `open(..., O_NOFOLLOW)` → `fstat` identity check → bounded read →
-   `lstat` after → full identity tuple comparison (`ino`, `dev`, `size`,
-   `mtime`). Any mismatch blocks.
-4. **Exact six-source enforcement**: `validate_sources_arg` requires exact
-   count, no duplicates, and exact set equality against
-   `REQUIRED_SOURCES`.
-5. **No first-match stop**: `find_ua0006` scans every bounded
-   table/id-column/container-column combination and only then decides
-   PASS (exactly one match) vs BLOCKED (zero or >1 matches).
-6. **No LIKE**: identity lookups use parameterized `WHERE id_col = ?` with
-   the exact proven representations `UA-0006`, `UA0006`, `0006`, and the
-   integer `6`. No wildcard is used anywhere in the module.
-7. **Identifier quoting**: `quote_ident` canonically double-quotes and
-   escapes embedded quotes; used for every table/column reference derived
-   from `sqlite_master`/`PRAGMA table_info`.
-8. **Bounds**: `MAX_SOURCE_SIZE`, `MAX_LINES_READ`, `MAX_ANCHORS`,
-   `MAX_SNIPPET_CHARS`, `MAX_TABLES`, `MAX_COLUMNS` are all enforced.
-9. **Absolute path in the safe-inbox command**: the controller's
-   `EXACT_COMMAND` uses the fixed absolute path
-   `/home/Carix/autopilot_inbox/cloud/bot_logistics/bot_logistics_discovery.py`.
+The suite also proves:
 
-Current output never reveals the live container string — only
-`ALREADY_CORRECT` / `NEEDS_EXACT_UPDATE` is emitted, compared against the
-exact validated constant `ONEYSELGF1046602`.
+- exactly one centralized logistics entry in the main menu and card editor;
+- old duplicate labels are absent;
+- the hub exposes stage, container/date, days and back navigation;
+- callbacks fit Telegram limits;
+- ETA uses one canonical calculation;
+- ONEYSELGF1046602 is accepted exactly;
+- deterministic transforms and exact one-row container updates;
+- field preservation, rollback and other-row preservation;
+- exact source and DB whitelists, link/size/concurrent-change refusal,
+  strict JSON, redaction, exact IDs and read-only executed SQL.
 
-## 3. `pythonanywhere_discovery_controller.py`
+## Real PythonAnywhere controller
 
-Standard-library only (`hashlib`, `json`, `os`, `subprocess`, `sys`,
-`time`). Key properties:
+pythonanywhere_discovery_controller.py now contains a real standard-library
+PythonAnywhere REST transport. It is no longer a placeholder.
 
-* Rejects any username other than `Carix` and any host other than
-  `www.pythonanywhere.com`/`eu.pythonanywhere.com`.
-* Reads `PYTHONANYWHERE_API_TOKEN` from env; the token is never logged,
-  returned, or written to any file.
-* `verify_local_artifacts()` runs `py_compile` and the full `unittest`
-  suite via an injectable subprocess runner before touching any remote
-  state, and returns the local discovery-script SHA-256.
-* `verify_manifest()` requires `_sync_manifest.json` to show
-  `status=PASS`, `executed_remote_code=false`, `production_touched=false`,
-  a matching `discovery_script_sha256`, and a fresh timestamp (rejects
-  stale receipts older than `MAX_RECEIPT_AGE_SECONDS`).
-* `EXACT_COMMAND` is built once from fixed constants and is the only
-  command ever passed to `create_always_on_task`/scheduled-task fallback.
-* `GuardedAPI` wraps the injected transport and raises
-  `ControllerError` before ever forwarding a call to any name in
-  `FORBIDDEN_API_METHODS` (file writes, webapp reload/restart, console
-  exec, Gate B, CRM row mutation) — this is enforced at the wrapper level,
-  not just by convention.
-* Output JSON is parsed with a duplicate-key-rejecting `object_pairs_hook`.
-* `_validate_receipt` checks `task_id`, `mode`, `status`,
-  all four `*_write`/`ua0009_published` fields are exactly `False`, bounded
-  `sources`/`errors` lengths, an allowed `UA0006_CONTAINER_STATUS` value if
-  present, and a final secret-shape scan of the serialized receipt.
-* `run()` always executes trigger + output cleanup in `finally`, on both
-  success and every failure path (including timeout).
-* Writes only the two allowed local paths:
-  `cloud/bot_logistics/evidence/task_037_discovery.json` and
-  `cloud/bot_logistics/TASK_039_DISCOVERY_CONTROLLER_REPORT.md`.
+Before any trigger it:
 
-## 4. `test_discovery_controller.py`
+1. runs compile plus the complete offline test suite;
+2. computes hashes for the discovery script, both tests and controller;
+3. validates the real safe-inbox sync manifest and all safety flags;
+4. binds every local hash to its exact remote path;
+5. downloads the exact remote discovery script and verifies its bytes.
 
-Offline `unittest` suite with a `FakeTransport` (no network, no real
-PythonAnywhere API calls). Proves: PASS relay, BLOCKED relay (not
-upgraded), cleanup on both success and failure, stale-manifest rejection,
-wrong-SHA rejection, malformed-JSON rejection, duplicate-key rejection,
-secret-shaped output rejection, wrong username/host rejection, missing
-token rejection, poll timeout, `production_touched=true`/
-`executed_remote_code=true` manifest rejection, unsafe receipt field
-rejection, exact remote command equality, exact output path equality,
-forbidden-method blocking at the wrapper level, and zero forbidden calls
-during a normal successful run.
+It then deletes only the exact stale safe-inbox receipt, creates one temporary
+always-on task with a scheduled fallback using one fixed command, polls only
+that receipt, validates bounded strict JSON, relays PASS or BLOCKED without
+changing the status, and removes the trigger and receipt in finally.
 
-## 5. `task037_discovery_workflow.yml.example`
+The transport rejects arbitrary paths, arbitrary commands, other accounts,
+other hosts and unsafe receipt fields. It has no method for production file
+upload, web-app reload, bot restart, Gate B, or CRM mutation.
 
-Reviewed template, not installed. Triggers only on `workflow_dispatch` or a
-push to main that changes the *installed* workflow file itself; permissions
-limited to `contents: write`; `concurrency.cancel-in-progress: false`; full
-history checkout on `main`; Python 3.11; runs `py_compile` + `unittest`
-first; runs the controller with the PythonAnywhere secret and fixed env;
-stages and verifies only the two allowed evidence/report paths (aborts on
-any other staged path); fetch/rebase/push with five bounded retries and no
-force-push; static safety-marker comments for grep-based audit
-(`NO_GATE_B_EXECUTED`, `NO_PRODUCTION_WRITE`, `NO_WSGI_RELOAD`,
-`READ_ONLY_DISCOVERY_ONLY`). The controller-invocation step is intentionally
-a placeholder that exits non-zero until Codex wires and reviews the real
-transport, so this template cannot silently execute a real remote action.
+## Workflow
 
-## Compile status
+task037_discovery_workflow.yml.example parses as YAML and is ready to install
+as .github/workflows/task037_discovery.yml. It triggers only when that
+installed workflow changes or by manual dispatch, runs compile/tests first,
+runs the real controller, stages exactly two relay artifacts, and uses bounded
+non-destructive push retries.
 
-All four Python deliverables in this round are valid standard-library
-Python 3 source (`bot_logistics_discovery.py`,
-`test_bot_logistics.py`, `pythonanywhere_discovery_controller.py`,
-`test_discovery_controller.py`); no third-party imports are used anywhere.
+## Safety state
 
-## Safety markers
+- PRODUCTION_TOUCHED: NO
+- CRM_TOUCHED: NO
+- CRM_DB_WRITTEN: NO
+- GATE_B_EXECUTED: NO
+- UA_0009_PUBLISHED: NO
 
-```
-PRODUCTION_TOUCHED: NO
-CRM_TOUCHED: NO
-CRM_DB_WRITTEN: NO
-GATE_B_EXECUTED: NO
-UA_0009_PUBLISHED: NO
-```
-
-## Canonical shared-memory markers (verbatim, do not alter)
-
-```
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
-MEMORY_VERSION_READ: 4
-```
-
-## Finish status
-
-`READY_FOR_CODEX_CONTROLLER_AUDIT` — not discovery PASS, not Gate A PASS.
-Next step is for Codex to independently run the standard-library test
-suite, audit the controller and workflow template, wire a reviewed real
-transport, install the workflow, and monitor the single read-only
-PythonAnywhere discovery run.
+Terminal state: READY_FOR_SAFE_INBOX_SYNC_AND_READ_ONLY_DISCOVERY.

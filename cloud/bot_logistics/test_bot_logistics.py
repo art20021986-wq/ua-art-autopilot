@@ -16,8 +16,10 @@ introspect their real public API (they do not re-implement it) so that a
 real behavioral mismatch fails loudly instead of being silently skipped.
 See TASK_039_REPORT.md section 'Known limitation' for details.
 """
+import contextlib
 import importlib
 import inspect
+import io
 import json
 import os
 import shutil
@@ -25,22 +27,25 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from datetime import date
+from unittest import mock
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-if THIS_DIR not in sys.path:
-    sys.path.insert(0, THIS_DIR)
+CLOUD_DIR = os.path.dirname(THIS_DIR)
+if CLOUD_DIR not in sys.path:
+    sys.path.insert(0, CLOUD_DIR)
 
-import bot_logistics_discovery as discovery  # noqa: E402
+from bot_logistics import bot_logistics_discovery as discovery  # noqa: E402
 
 try:
-    transform = importlib.import_module("bot_logistics_transform")
+    transform = importlib.import_module("bot_logistics.bot_logistics_transform")
     TRANSFORM_ERROR = None
 except Exception as exc:  # pragma: no cover
     transform = None
     TRANSFORM_ERROR = exc
 
 try:
-    gate_b = importlib.import_module("bot_logistics_gate_b")
+    gate_b = importlib.import_module("bot_logistics.bot_logistics_gate_b")
     GATE_B_ERROR = None
 except Exception as exc:  # pragma: no cover
     gate_b = None
@@ -67,8 +72,14 @@ def _call_update(func, **kwargs):
     """Call the real update function using only the keyword arguments it
     actually declares, so the test adapts to the real signature instead of
     guessing blindly."""
+    defaults = {
+        "table": "cars",
+        "id_col": "ua_id",
+        "container_col": "container",
+    }
+    defaults.update(kwargs)
     sig = inspect.signature(func)
-    accepted = {k: v for k, v in kwargs.items() if k in sig.parameters}
+    accepted = {k: v for k, v in defaults.items() if k in sig.parameters}
     return func(**accepted)
 
 
@@ -87,6 +98,84 @@ class TestModuleImports(unittest.TestCase):
 
     def test_gate_b_refused_present(self):
         self.assertIsNotNone(GATE_B_REFUSED, "GateBRefused exception class not found in either module")
+
+
+class TestCanonicalHubLogic(unittest.TestCase):
+    def test_container_number_is_accepted_exactly(self):
+        self.assertEqual(
+            transform.normalize_container("  oneyselgf1046602  "),
+            "ONEYSELGF1046602",
+        )
+
+    def test_container_validation_rejects_unsafe_shapes(self):
+        for value in ("", "ABC 1234567", "ABC/1234567", "SHORT"):
+            with self.subTest(value=value):
+                with self.assertRaises(transform.ValidationError):
+                    transform.normalize_container(value)
+
+    def test_one_hub_entry_in_main_menu(self):
+        menu = transform.build_main_menu(["UA-0006"])
+        self.assertEqual(menu.count_button_text(transform.HUB_BUTTON_TEXT), 1)
+        self.assertFalse(menu.has_any(transform.OLD_STAGE_MENU_LABELS))
+        self.assertFalse(menu.has_any(transform.OLD_CARD_EDITOR_LABELS))
+
+    def test_one_hub_entry_in_card_editor(self):
+        menu = transform.build_card_editor_menu("UA-0006")
+        self.assertEqual(menu.count_button_text(transform.HUB_BUTTON_TEXT), 1)
+        self.assertFalse(menu.has_any(transform.OLD_STAGE_MENU_LABELS))
+        self.assertFalse(menu.has_any(transform.OLD_CARD_EDITOR_LABELS))
+
+    def test_hub_contains_all_centralized_controls_and_back(self):
+        record = transform.LogisticsRecord(
+            ua_id="UA-0006",
+            stage="В пути",
+            container="ONEYSELGF1046602",
+            departure_date=date(2026, 8, 27),
+            days_to_arrival=12,
+        )
+        menu = transform.build_hub_menu(record, "card")
+        self.assertEqual(
+            [button.text for button in menu.buttons],
+            ["Этап", "Контейнер и дата", "Дней до прибытия", "Назад"],
+        )
+        for button in menu.buttons:
+            transform.assert_callback_valid(button.callback_data)
+            self.assertIn("UA-0006", button.callback_data)
+
+    def test_eta_uses_one_canonical_calculation(self):
+        record = transform.LogisticsRecord(
+            ua_id="UA-0006",
+            departure_date=date(2026, 8, 27),
+            days_to_arrival=12,
+        )
+        self.assertEqual(record.eta(), date(2026, 9, 8))
+        self.assertIn("ETA: 2026-09-08", record.render_hub_text())
+
+    def test_candidate_transform_is_idempotent_ten_times(self):
+        source = (
+            "def build_menu():\n"
+            "    marker = True\n"
+            "    add_button('Срок доставки', 'old')\n"
+            "    add_button('Номер контейнера', 'old2')\n"
+        )
+        hashes, output = transform.apply_n_times_stable(
+            source,
+            transform.OLD_STAGE_MENU_LABELS
+            + transform.OLD_CARD_EDITOR_LABELS,
+            "marker = True",
+            n=10,
+        )
+        self.assertEqual(len(set(hashes)), 1)
+        self.assertEqual(output.count(transform.HUB_BUTTON_TEXT), 1)
+        for label in (
+            transform.OLD_STAGE_MENU_LABELS
+            + transform.OLD_CARD_EDITOR_LABELS
+        ):
+            self.assertNotIn(label, output)
+
+    def test_gate_b_remains_disabled_in_phase_a(self):
+        with self.assertRaises(gate_b.GateBRefused):
+            gate_b.run_gate_b()
 
 
 class DiscoveryTestBase(unittest.TestCase):
@@ -197,8 +286,8 @@ class TestDiscoverySourceContract(DiscoveryTestBase):
         link = real + ".link"
         try:
             os.symlink(real, link)
-        except (OSError, NotImplementedError):
-            self.skipTest("symlinks unsupported on this platform")
+        except (OSError, NotImplementedError) as exc:
+            self.fail("test platform must support symlinks: %r" % (exc,))
         variant = list(self.required_sources)
         variant[0] = link
         result = discovery.run_discovery(self.db_path, variant)
@@ -210,8 +299,8 @@ class TestDiscoverySourceContract(DiscoveryTestBase):
         link = real + ".hardlink"
         try:
             os.link(real, link)
-        except OSError:
-            self.skipTest("hardlinks unsupported on this platform")
+        except OSError as exc:
+            self.fail("test platform must support hardlinks: %r" % (exc,))
         # nlink on the original is now 2 -> must be rejected
         result = discovery.run_discovery(self.db_path, list(self.required_sources))
         self.assertEqual(result["status"], "BLOCKED")
@@ -235,6 +324,29 @@ class TestDiscoverySourceContract(DiscoveryTestBase):
             self.assertIn("sha256", entry)
             self.assertEqual(len(entry["sha256"]), 64)
 
+    def test_source_identity_change_blocked(self):
+        self._make_db()
+        target = self.required_sources[0]
+        real_read = discovery.os.read
+        changed = {"done": False}
+
+        def changing_read(fd, count):
+            data = real_read(fd, count)
+            if data and not changed["done"]:
+                changed["done"] = True
+                with open(target, "a", encoding="utf-8") as handle:
+                    handle.write("# concurrent change\n")
+            return data
+
+        with mock.patch.object(discovery.os, "read", side_effect=changing_read):
+            result = discovery.run_discovery(
+                self.db_path, list(self.required_sources)
+            )
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertTrue(
+            any("concurrent_change" in error for error in result["errors"])
+        )
+
     def test_secret_adjacent_anchor_redacted(self):
         secret_path = self.required_sources[3]  # db.py
         with open(secret_path, "a", encoding="utf-8") as f:
@@ -245,8 +357,35 @@ class TestDiscoverySourceContract(DiscoveryTestBase):
         payload = json.dumps(result)
         self.assertNotIn("abcdefghijklmnopqrstuvwxyz012345", payload)
 
+    def test_container_value_near_anchor_is_never_relayed(self):
+        target = self.required_sources[0]
+        with open(target, "a", encoding="utf-8") as handle:
+            handle.write(
+                "container = 'ONEYSELGF1046602'\n"
+                "button = 'Номер контейнера'\n"
+            )
+        self._make_db()
+        result = discovery.run_discovery(
+            self.db_path, list(self.required_sources)
+        )
+        payload = json.dumps(result, ensure_ascii=False)
+        self.assertNotIn("ONEYSELGF1046602", payload)
+        self.assertIn("[REDACTED]", payload)
+
 
 class TestDiscoveryDbContract(DiscoveryTestBase):
+    def test_unapproved_db_path_is_blocked_before_read(self):
+        self._make_db()
+        other = os.path.join(self.tmpdir, "other.db")
+        shutil.copyfile(self.db_path, other)
+        with mock.patch.object(discovery, "secure_digest") as digest:
+            result = discovery.run_discovery(
+                other, list(self.required_sources)
+            )
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["errors"], ["db_path_mismatch"])
+        digest.assert_not_called()
+
     def test_no_match_blocked_with_schema_hint(self):
         conn = sqlite3.connect(self.db_path)
         conn.execute("CREATE TABLE unrelated (id INTEGER, name TEXT)")
@@ -295,14 +434,36 @@ class TestDiscoveryDbContract(DiscoveryTestBase):
         self._make_db()
         result = discovery.run_discovery(self.db_path, list(self.required_sources))
         self.assertTrue(result["db"]["identity_stable"])
+        self.assertEqual(
+            result["db"]["sha256_before"], result["db"]["sha256_after"]
+        )
+        self.assertRegex(result["db"]["sha256_before"], r"^[0-9a-f]{64}$")
 
-    def test_no_sql_write_tokens_in_module_source(self):
-        with open(discovery.__file__, "r", encoding="utf-8") as f:
-            src = f.read()
-        forbidden = ["INSERT INTO", "UPDATE ", "DELETE FROM", "ATTACH ", "VACUUM", "DROP TABLE"]
-        upper_src = src.upper()
+    def test_executed_discovery_sql_is_read_only(self):
+        self._make_db()
+        statements = []
+        real_connect = sqlite3.connect
+
+        def traced_connect(*args, **kwargs):
+            connection = real_connect(*args, **kwargs)
+            connection.set_trace_callback(statements.append)
+            return connection
+
+        with mock.patch.object(
+            discovery.sqlite3, "connect", side_effect=traced_connect
+        ):
+            result = discovery.run_discovery(
+                self.db_path, list(self.required_sources)
+            )
+        self.assertEqual(result["status"], "PASS")
+        self.assertTrue(statements)
+        for statement in statements:
+            first = statement.lstrip().split(None, 1)[0].upper()
+            self.assertIn(first, {"SELECT", "PRAGMA"})
+        forbidden = ("INSERT", "UPDATE", "DELETE", "ATTACH", "VACUUM", "DROP")
+        joined = "\n".join(statements).upper()
         for token in forbidden:
-            self.assertNotIn(token.upper(), upper_src, "forbidden SQL write token found: %s" % token)
+            self.assertNotRegex(joined, r"\b%s\b" % token)
 
 
 class TestDiscoveryCli(DiscoveryTestBase):
@@ -311,19 +472,27 @@ class TestDiscoveryCli(DiscoveryTestBase):
         argv = ["--db", self.db_path]
         for s in self.required_sources:
             argv += ["--source", s]
-        rc = discovery.main(argv)
+        stream = io.StringIO()
+        with contextlib.redirect_stdout(stream):
+            rc = discovery.main(argv)
         self.assertEqual(rc, 0)
+        lines = stream.getvalue().splitlines()
+        self.assertEqual(len(lines), 1)
+        self.assertEqual(json.loads(lines[0])["status"], "PASS")
 
     def test_main_exit_code_blocked(self):
         argv = ["--db", self.db_path]
         for s in self.required_sources:
             argv += ["--source", s]
-        rc = discovery.main(argv)
+        stream = io.StringIO()
+        with contextlib.redirect_stdout(stream):
+            rc = discovery.main(argv)
         self.assertNotEqual(rc, 0)
+        lines = stream.getvalue().splitlines()
+        self.assertEqual(len(lines), 1)
+        self.assertEqual(json.loads(lines[0])["status"], "BLOCKED")
 
 
-@unittest.skipIf(UPDATE_FN is None or GATE_B_REFUSED is None,
-                 "update_single_container_row / GateBRefused not available in this context")
 class TestContainerUpdateLogic(unittest.TestCase):
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp(prefix="bl_update_")
@@ -400,23 +569,27 @@ class TestContainerUpdateLogic(unittest.TestCase):
         conn.commit()
         conn.close()
 
-        pre_bytes = open(amb_db, "rb").read()
+        with open(amb_db, "rb") as handle:
+            pre_bytes = handle.read()
 
-        raised = False
+        sentinel = object()
+        result = sentinel
         try:
-            _call_update(
+            result = _call_update(
                 UPDATE_FN, db_path=amb_db, table="cars_ambiguous", ua_id="UA-0006",
                 container=CORRECT_CONTAINER, new_container=CORRECT_CONTAINER,
             )
         except GATE_B_REFUSED:
-            raised = True
-        except Exception as exc:  # any other exception is also acceptable evidence
-            raised = True
-            self.assertIsInstance(exc, Exception)
+            pass
 
-        self.assertTrue(raised, "update_single_container_row must refuse on an ambiguous row")
+        self.assertIs(
+            result,
+            sentinel,
+            "ambiguous update must not return any success result",
+        )
 
-        post_bytes = open(amb_db, "rb").read()
+        with open(amb_db, "rb") as handle:
+            post_bytes = handle.read()
         self.assertEqual(pre_bytes, post_bytes, "database bytes must not change on a refused ambiguous update")
 
         conn = sqlite3.connect(amb_db)
