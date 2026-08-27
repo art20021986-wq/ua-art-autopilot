@@ -1,0 +1,46 @@
+# TASK 043 — reviewed GitHub Actions workflow TEMPLATE.
+# NOT installed under .github/workflows/. Codex must audit this file and
+# copy/enable it explicitly and only after owner approval for a real
+# PythonAnywhere run. This template never triggers Gate B, reload,
+# restart, or publish actions.
+
+name: task-043-ferry-wording-readonly (TEMPLATE - NOT ACTIVE)
+
+on:
+  workflow_dispatch: {}
+
+env:
+  ALLOW_PRODUCTION_WRITE: "false"
+  ALLOW_GATE_B: "false"
+  ALLOW_RELOAD: "false"
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run offline standard-library test suite
+        run: python3 cloud/task_043_ferry_wording/run_tests.py
+
+  # The job below is intentionally NOT wired to run automatically. It is a
+  # reviewed reference for a future, explicitly approved real run. It must
+  # only ever call discover.py (read-only) and gate_a.py (isolated writes
+  # under the three approved task-043 roots). It never calls a reload,
+  # restart, or Gate B endpoint.
+  #
+  # real-readonly-discovery:
+  #   needs: offline-tests
+  #   if: false  # disabled until Codex audit + owner approval
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Run real read-only discovery via controller
+  #       env:
+  #         PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+  #       run: |
+  #         python3 -c "\
+  #         import cloud.task_043_ferry_wording.controller as c; \
+  #         # real api_client wiring goes here after audit"
