@@ -53,8 +53,10 @@ OUTPUT_SCHEMA = {
             "type": "array",
             "description": (
                 "Complete UTF-8 deliverables. Every path must start with cloud/. "
-                "Use one object per file and include the full file content."
+                "Use exactly one object per unique path and include the full file "
+                "content. Never repeat a path in this array."
             ),
+            "uniqueItems": True,
             "items": {
                 "type": "object",
                 "properties": {
@@ -311,7 +313,7 @@ def _validate_result(result: object) -> dict:
         raise SystemExit(f"CLAUDE_TOO_MANY_FILES:{len(files)}")
 
     normalized_files = []
-    seen = set()
+    content_by_path: dict[str, str] = {}
     total_chars = 0
     for index, item in enumerate(files):
         if not isinstance(item, dict):
@@ -320,10 +322,14 @@ def _validate_result(result: object) -> dict:
         content = item.get("content")
         if not isinstance(path, str) or not isinstance(content, str):
             raise SystemExit(f"CLAUDE_FILE_ITEM_INVALID:{index}")
-        if path in seen:
-            raise SystemExit(f"CLAUDE_DUPLICATE_PATH:{path}")
-        seen.add(path)
         total_chars += len(content)
+        if path in content_by_path:
+            if content_by_path[path] != content:
+                raise SystemExit(f"CLAUDE_DUPLICATE_PATH_CONFLICT:{path}")
+            # An exact duplicate is semantically unambiguous; normalize it to
+            # one file while still counting its bytes against the output cap.
+            continue
+        content_by_path[path] = content
         normalized_files.append({"path": path, "content": content})
 
     if total_chars > MAX_TOTAL_FILE_CHARS:
@@ -570,7 +576,9 @@ def call_claude(system_text: str, task_text: str) -> dict:
         + "\n\nProduce the complete task deliverables as a structured response. "
         + "The files field is an array of objects with path and full content. "
         + "Every path must start with cloud/. Include every deliverable named in the task, "
-        + "including cloud/latest_status.md. Do not return patches, excerpts, placeholders, "
+        + "including cloud/latest_status.md. Return each path exactly once; merge the full "
+        + "content before responding and never emit duplicate file objects. Do not return "
+        + "patches, excerpts, placeholders, "
         + "or markdown fences around the outer response. Never propose or perform production "
         + "writes. Never include secrets, tokens, private keys, unrelated customer PII, or "
         + "database blobs/base64 payloads."
