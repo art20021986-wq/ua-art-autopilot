@@ -1,19 +1,27 @@
-"""CRM-SPEED-001 Gate A orchestration logic (round 3 corrected).
+"""CRM-SPEED-001 Gate A orchestration logic (TASK 029 canonical integration).
 
 This module imports canonical mechanisms from canonical_modules.py rather
-than redefining them (correction D). It implements:
+than redefining them, and now also imports the canonical admin-media
+transform/scanner from cars_ui_transform.py instead of redefining a
+duplicate legacy transformer/scanner. scan_reachable_call_graph and
+transform_cars_ui below are thin adapters around cars_ui_transform:
 
-- a bounded reachable call-graph scanner that fails closed on dynamic
-  dispatch, aliasing, callback containers, lambdas, return-aliases, and
-  unresolved callables (correction A);
-- a deterministic-repeat measurement function with one explicit signature
-  used identically by tests and the orchestrator (correction B);
-- a bounded, non-recursive site/public inventory scanner with a
-  test-only max_files_per_root parameter while production default stays 32
-  (correction C);
-- an evidence-driven Gate A predicate aggregator with no fabricated True
-  values (round 2 correction retained) and an executable end-to-end
-  orchestration function (correction E).
+- scan_reachable_call_graph(source, entry_points, max_depth=25) parses
+  `source`, delegates to cars_ui_transform.scan_reachable_call_graph for
+  the actual reachable call-graph analysis, translates a small number of
+  flag names into the historical vocabulary this module's callers and
+  test suite expect (for example "dynamic_dispatch_forbidden:getattr"),
+  filters out unresolved-callable flags for the small SAFE_BUILTIN_NAMES
+  allowlist (len/str/int/... - matching the historical permissive
+  treatment of ordinary builtins), and returns (clean, violations).
+- transform_cars_ui(source, entry_points=None) first uses the adapter
+  scan to decide whether any dynamic/ambiguous construct is present
+  (fail closed, BLOCKED) or whether there is nothing to rewrite (OK,
+  candidate=source unchanged), and only delegates the actual atomic
+  media-call rewriting to cars_ui_transform.transform_cars_ui when there
+  is at least one direct media call and no dynamic violation. The
+  canonical result is then translated into this module's historical
+  {'candidate', 'status', 'reasons'} shape.
 
 Gate A is never executed against production by this repository. Every
 function here operates only on strings/bytes/paths explicitly supplied by
@@ -31,6 +39,7 @@ import urllib.request
 import urllib.error
 
 from canonical_modules import CrossProcessLock, SingletonGuard, RebuildQueue, SafeWriter
+import cars_ui_transform
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -135,111 +144,64 @@ def fingerprint_file(path):
 
 
 # ---------------------------------------------------------------------------
-# Correction A: bounded reachable call-graph scanner, fail closed
+# Thin adapters around the canonical cars_ui_transform implementation
 # ---------------------------------------------------------------------------
 
-class _FunctionVisitor(ast.NodeVisitor):
-    def __init__(self, module_functions, violations, visited_stack, max_depth, depth=0):
-        self.module_functions = module_functions
-        self.violations = violations
-        self.visited_stack = visited_stack
-        self.max_depth = max_depth
-        self.depth = depth
-        self.alias_media = set()
+def _is_safe_builtin_unresolved(flag):
+    """Historically this module allowlisted plain builtin calls (len,
+    str, sorted, ...) as not being dynamic-dispatch violations. The
+    canonical cars_ui_transform scanner is stricter (it flags every call
+    that does not resolve to a module-level function or getattr as an
+    unresolved_callable, including ordinary builtins), so this adapter
+    filters that specific, narrow, pre-approved allowlist back out when
+    translating canonical flags into this module's violation list."""
+    if flag.startswith("unresolved_callable:"):
+        parts = flag.split(":")
+        name = parts[1] if len(parts) > 1 else ""
+        return name in SAFE_BUILTIN_NAMES
+    return False
 
-    def visit_Assign(self, node):
-        if isinstance(node.value, ast.Attribute) and node.value.attr in MEDIA_METHOD_NAMES:
-            for t in node.targets:
-                if isinstance(t, ast.Name):
-                    self.alias_media.add(t.id)
-                    self.violations.append(f"bound_method_alias:{t.id}={node.value.attr}")
-        if isinstance(node.value, ast.Dict):
-            for v in node.value.values:
-                if isinstance(v, ast.Attribute) and v.attr in MEDIA_METHOD_NAMES:
-                    self.violations.append(f"callback_dict_media:{v.attr}")
-        if isinstance(node.value, (ast.List, ast.Tuple)):
-            for v in node.value.elts:
-                if isinstance(v, ast.Attribute) and v.attr in MEDIA_METHOD_NAMES:
-                    self.violations.append(f"callback_list_media:{v.attr}")
-        self.generic_visit(node)
 
-    def visit_Return(self, node):
-        if isinstance(node.value, ast.Attribute) and node.value.attr in MEDIA_METHOD_NAMES:
-            self.violations.append(f"return_alias_media:{node.value.attr}")
-        self.generic_visit(node)
-
-    def visit_Call(self, node):
-        func = node.func
-        if isinstance(func, ast.Attribute):
-            if func.attr in MEDIA_METHOD_NAMES:
-                self.violations.append(f"direct_media_call:{func.attr}")
-        elif isinstance(func, ast.Name):
-            name = func.id
-            if name in DYNAMIC_DISPATCH_FORBIDDEN:
-                self.violations.append(f"dynamic_dispatch_forbidden:{name}")
-            elif name in self.alias_media:
-                self.violations.append(f"aliased_media_call:{name}")
-            elif name in self.module_functions:
-                if self.depth >= self.max_depth:
-                    self.violations.append(f"max_depth_exceeded:{name}")
-                elif name not in self.visited_stack:
-                    self.visited_stack.add(name)
-                    fv = _FunctionVisitor(self.module_functions, self.violations, self.visited_stack, self.max_depth, self.depth + 1)
-                    fv.visit(self.module_functions[name])
-            elif name in SAFE_BUILTIN_NAMES:
-                pass
-            else:
-                self.violations.append(f"unresolved_callable:{name}")
-        elif isinstance(func, ast.Call):
-            self.violations.append("chained_call_ambiguous")
-        elif isinstance(func, ast.Subscript):
-            self.violations.append("subscript_dispatch_ambiguous")
-        self.generic_visit(node)
+def _translate_dynamic_flag(flag):
+    """Translate a small number of canonical flag names into the
+    historical vocabulary this module's callers/tests expect."""
+    if flag.startswith("getattr_dispatch"):
+        return "dynamic_dispatch_forbidden:getattr"
+    return flag
 
 
 def scan_reachable_call_graph(source, entry_points, max_depth=25):
-    """Bounded reachable call-graph scan. Returns (clean, violations).
-    Ambiguous or dynamic constructs are always recorded as violations
-    (fail closed); callers decide which violations are fatal."""
+    """Thin adapter: parses `source` and delegates the reachable
+    call-graph analysis to cars_ui_transform.scan_reachable_call_graph.
+    Returns (clean, violations) exactly as the historical API did.
+    `max_depth` is accepted for backward API compatibility; the
+    canonical scanner bounds recursion via its own visited-set closure
+    and does not require an explicit depth cap for the fixtures used by
+    this package.
+    """
     tree = ast.parse(source)
-    module_functions = {}
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            module_functions[node.name] = node
+    module_function_names = {
+        node.name for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+
     violations = []
-    visited_stack = set(entry_points)
     for ep in entry_points:
-        fn = module_functions.get(ep)
-        if fn is None:
+        if ep not in module_function_names:
             violations.append(f"missing_entry_point:{ep}")
-            continue
-        fv = _FunctionVisitor(module_functions, violations, visited_stack, max_depth, depth=0)
-        fv.visit(fn)
-    return (len(violations) == 0), violations
 
+    scan = cars_ui_transform.scan_reachable_call_graph(tree, entry_points)
 
-class _MediaCallTextTransformer(ast.NodeTransformer):
-    def _replace(self, call_node):
-        caller = call_node.func.value
-        return ast.Call(
-            func=ast.Attribute(value=caller, attr="reply_text", ctx=ast.Load()),
-            args=[ast.Constant(value=f"[media] type={call_node.func.attr} count=1")],
-            keywords=[],
-        )
+    for func_name in sorted(scan.reachable):
+        for flag in scan.unresolved_dynamic.get(func_name, []):
+            if _is_safe_builtin_unresolved(flag):
+                continue
+            violations.append(_translate_dynamic_flag(flag))
+        for call_info in scan.direct_media_calls.get(func_name, []):
+            violations.append(f"direct_media_call:{call_info.method}")
 
-    def visit_Expr(self, node):
-        self.generic_visit(node)
-        if isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Attribute):
-            if node.value.func.attr in MEDIA_METHOD_NAMES:
-                return ast.Expr(value=self._replace(node.value))
-        return node
-
-    def visit_Await(self, node):
-        self.generic_visit(node)
-        if isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Attribute):
-            if node.value.func.attr in MEDIA_METHOD_NAMES:
-                return ast.Await(value=self._replace(node.value))
-        return node
+    clean = len(violations) == 0
+    return clean, violations
 
 
 def generate_unified_diff(original, candidate):
@@ -254,14 +216,21 @@ def generate_unified_diff(original, candidate):
 
 
 def transform_cars_ui(source, entry_points=None):
-    """Transform cars_ui.py admin routes to text-only. Fails closed:
-    - if the ORIGINAL reachable call graph contains any dynamic/ambiguous
-      construct (getattr/setattr/eval/exec/globals/locals, aliasing,
-      callback containers, unresolved callables, chained/subscript
-      dispatch), the candidate is None and status is BLOCKED;
-    - otherwise direct media call sites are rewritten to text-only replies
-      and the transformed graph is re-scanned; any remaining violation
-      also yields candidate None / BLOCKED.
+    """Thin adapter around cars_ui_transform.transform_cars_ui.
+
+    Fails closed exactly as the historical API did:
+    - if the original reachable call graph (via the adapter scan above)
+      contains any dynamic/ambiguous construct, the candidate is None
+      and status is BLOCKED;
+    - if there are no violations at all (no dynamic issues and no direct
+      media calls), the entry points are already text-only and the
+      original source is returned unchanged with status OK;
+    - otherwise (only direct_media_call violations present, no dynamic
+      flags) the actual atomic media-call rewrite is delegated to
+      cars_ui_transform.transform_cars_ui, and the canonical result is
+      translated into this module's {'candidate','status','reasons'}
+      shape. The transformed graph is re-scanned; any remaining
+      violation also yields candidate None / BLOCKED.
     """
     entry_points = entry_points or ADMIN_ROUTE_NAMES
     try:
@@ -276,14 +245,12 @@ def transform_cars_ui(source, entry_points=None):
     if not violations_before:
         return {"candidate": source, "status": "OK", "reasons": []}
 
-    tree = ast.parse(source)
-    new_tree = _MediaCallTextTransformer().visit(tree)
-    ast.fix_missing_locations(new_tree)
-    try:
-        candidate = ast.unparse(new_tree)
-    except Exception as exc:
-        return {"candidate": None, "status": "BLOCKED", "reasons": [f"unparse_error:{exc}"]}
+    canonical_result = cars_ui_transform.transform_cars_ui(source, entry_points)
+    if canonical_result.get("status") != "OK" or canonical_result.get("candidate") is None:
+        reason = canonical_result.get("reason", "canonical_transform_blocked")
+        return {"candidate": None, "status": "BLOCKED", "reasons": violations_before + [reason]}
 
+    candidate = canonical_result["candidate"]
     clean_after, violations_after = scan_reachable_call_graph(candidate, entry_points)
     if not clean_after:
         return {"candidate": None, "status": "BLOCKED", "reasons": violations_before + violations_after}

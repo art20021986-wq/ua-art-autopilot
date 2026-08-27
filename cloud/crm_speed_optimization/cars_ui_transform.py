@@ -26,6 +26,10 @@ unrewritten and blocked to avoid silently discarding side effects.
 Any open()/download() call located outside such a removed expression is
 still treated as a normal unresolved call and still blocks, exactly as
 before this correction.
+
+TASK 029: this module is the single canonical admin-media transform
+implementation for CRM-SPEED-001. crm_speed_gate_a.py delegates to this
+module via thin adapters instead of redefining transform/scan logic.
 '''
 
 import ast
@@ -356,8 +360,8 @@ def _protected_function_hashes(tree: ast.Module, exclude_names: Set[str]) -> Dic
     return hashes
 
 
-def transform_cars_ui(source: str, entry_points) -> Dict[str, object]:
-    entry_points = list(entry_points)
+def transform_cars_ui(source: str, entry_points=None) -> Dict[str, object]:
+    entry_points = list(entry_points) if entry_points is not None else list(DEFAULT_ADMIN_ENTRY_ROUTES)
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:
