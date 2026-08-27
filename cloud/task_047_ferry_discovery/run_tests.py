@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""TASK 053 test runner: compile, determinism and two full unittest runs."""
+"""FERRY-PHASE1 test runner: compile, determinism and two full test runs."""
 
 import os
 import py_compile
@@ -10,7 +10,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def compile_check():
-    for name in ("transform.py", "discover.py"):
+    for name in (
+        "transform.py", "discover.py", "gate_a_remote.py", "gate_a_controller.py",
+    ):
         py_compile.compile(os.path.join(HERE, name), doraise=True)
 
 
