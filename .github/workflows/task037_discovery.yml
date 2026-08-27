@@ -1,0 +1,91 @@
+name: task037-discovery-readonly
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task037_discovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task037-discovery-readonly
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile reviewed modules
+        run: python3 -m py_compile cloud/bot_logistics/*.py
+
+      - name: Run complete offline suite
+        run: >-
+          python3 -m unittest discover -v
+          -s cloud/bot_logistics -p 'test*.py'
+
+      - name: Execute one read-only PythonAnywhere discovery
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_USERNAME: Carix
+          PYTHONANYWHERE_HOST: www.pythonanywhere.com
+        run: >-
+          python3
+          cloud/bot_logistics/pythonanywhere_discovery_controller.py
+
+      - name: Validate exact relay paths
+        run: |
+          test -f cloud/bot_logistics/evidence/task_037_discovery.json
+          test -f cloud/bot_logistics/TASK_039_DISCOVERY_CONTROLLER_REPORT.md
+          git add -- \
+            cloud/bot_logistics/evidence/task_037_discovery.json \
+            cloud/bot_logistics/TASK_039_DISCOVERY_CONTROLLER_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          if [ "${#staged[@]}" -ne 2 ]; then
+            echo 'Expected exactly two staged relay files'
+            exit 1
+          fi
+          for path in "${staged[@]}"; do
+            case "${path}" in
+              cloud/bot_logistics/evidence/task_037_discovery.json|\
+              cloud/bot_logistics/TASK_039_DISCOVERY_CONTROLLER_REPORT.md) ;;
+              *)
+                echo "Unexpected staged path: ${path}"
+                exit 1
+                ;;
+            esac
+          done
+
+      - name: Commit read-only evidence with bounded retries
+        run: |
+          git config user.name 'task037-readonly-discovery'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_037: relay read-only logistics discovery'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            if [ "${attempt}" -lt 5 ]; then
+              sleep $((attempt * 3))
+            fi
+          done
+          exit 1
