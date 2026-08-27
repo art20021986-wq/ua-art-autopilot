@@ -1,0 +1,158 @@
+{
+  "candidate_root": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates",
+  "candidates": [],
+  "crm": {
+    "container_column": "sea_container",
+    "id_column": "auto_number",
+    "id_count": 9,
+    "sha256": "1750352a9519822a2911f70f458785efc39a862da49349d1871be5db14a3c162",
+    "status": "OK",
+    "table": "cars"
+  },
+  "crm_write": false,
+  "db_write": false,
+  "discovery_reasons": [
+    "AMBIGUOUS_TARGET"
+  ],
+  "errors": [
+    "discovery_blocked"
+  ],
+  "gate_b_executed": false,
+  "generated_at_utc": "2026-08-27T22:17:10Z",
+  "mode": "FERRY_GATE_A_READONLY_INPUTS_ISOLATED_CANDIDATES",
+  "production_sources_unchanged": false,
+  "production_write": false,
+  "python_sources": [
+    {
+      "action": "PRESERVE",
+      "before": "В море · Корея → Грузия",
+      "classification": "AMBIGUOUS",
+      "line": 124,
+      "path": "stranica.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 222,
+      "path": "stranica.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 918,
+      "path": "stranica.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 1059,
+      "path": "stranica.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 1481,
+      "path": "stranica.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 1495,
+      "path": "stranica.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 2059,
+      "path": "stranica.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 2647,
+      "path": "stranica.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "В море",
+      "classification": "AMBIGUOUS",
+      "line": 122,
+      "path": "yadro.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "У морі",
+      "classification": "AMBIGUOUS",
+      "line": 122,
+      "path": "yadro.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "В море",
+      "classification": "AMBIGUOUS",
+      "line": 379,
+      "path": "yadro.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "У морі",
+      "classification": "AMBIGUOUS",
+      "line": 379,
+      "path": "yadro.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "В море",
+      "classification": "AMBIGUOUS",
+      "line": 493,
+      "path": "yadro.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "У морі",
+      "classification": "AMBIGUOUS",
+      "line": 493,
+      "path": "yadro.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 1416,
+      "path": "yadro.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 1417,
+      "path": "yadro.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 1423,
+      "path": "yadro.py"
+    },
+    {
+      "action": "PRESERVE",
+      "before": "Море",
+      "classification": "AMBIGUOUS",
+      "line": 1423,
+      "path": "yadro.py"
+    }
+  ],
+  "service_reload": false,
+  "source_root": "/home/Carix",
+  "status": "BLOCKED",
+  "ua0009_published": false,
+  "unexpected_protected_changes": 0
+}
