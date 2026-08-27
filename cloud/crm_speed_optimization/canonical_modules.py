@@ -7,9 +7,10 @@ singleton_guard.py are thin re-export/compatibility modules kept only for
 backward-compatible imports; they contain no divergent lock logic of
 their own.
 
-TASK 031 phase A. No production imports. No production-write capability.
+TASK 031/032. No production imports. No production-write capability.
 All writes are confined to explicitly supplied, already-existing local
-directories (temporary directories in tests).
+directories (temporary directories in tests, or a validated already-
+existing run directory created by crm_speed_gate_a.orchestrate_gate_a).
 """
 from __future__ import annotations
 
@@ -370,13 +371,18 @@ class SingletonGuard(CrossProcessLock):
 class RebuildQueue:
     """Bounded, coalescing, truly asynchronous rebuild queue.
 
-    enqueue() returns promptly. At most one callback is active at a time,
-    executed on a single bounded background worker thread. At most one
-    pending follow-up is retained for a burst. The rebuild critical
-    section is protected by the canonical CrossProcessLock. Callback
-    failures are caught, sanitized (truncated) and recorded; there is no
-    infinite retry or recursive drain.
+    enqueue() returns promptly. It waits only for a short, bounded
+    worker/callback-entry acknowledgement (the worker has acquired the
+    rebuild lock and is about to invoke the callback) -- it never waits
+    for the callback itself to finish. At most one callback is active at
+    a time, executed on a single bounded background worker thread. At
+    most one pending follow-up is retained for a burst. The rebuild
+    critical section is protected by the canonical CrossProcessLock.
+    Callback failures are caught, sanitized (truncated) and recorded;
+    there is no infinite retry or recursive drain.
     """
+
+    _ACK_TIMEOUT_SECONDS = 0.5
 
     def __init__(self, callback, lock_path, error_handler=None):
         if callback is None or not callable(callback):
@@ -391,11 +397,13 @@ class RebuildQueue:
         self._running = False
         self._stopped = False
         self._worker = None
+        self._pending_ack_event = None
         self.runs = 0
         self.coalesced = 0
         self.errors = []
 
     def enqueue(self):
+        ack_event = None
         with self._cv:
             if self._stopped:
                 return "stopped"
@@ -405,11 +413,16 @@ class RebuildQueue:
                 self._cv.notify_all()
                 return "coalesced"
             self._pending = True
+            ack_event = threading.Event()
+            self._pending_ack_event = ack_event
             if self._worker is None or not self._worker.is_alive():
                 self._worker = threading.Thread(target=self._loop, daemon=True)
                 self._worker.start()
             self._cv.notify_all()
-            return "accepted"
+        # Bounded wait for a worker-start/callback-entry acknowledgement
+        # only. This never waits for the callback to complete.
+        ack_event.wait(timeout=self._ACK_TIMEOUT_SECONDS)
+        return "accepted"
 
     def _loop(self):
         while True:
@@ -420,10 +433,14 @@ class RebuildQueue:
                     return
                 self._pending = False
                 self._running = True
+                ack_event = self._pending_ack_event
+                self._pending_ack_event = None
             acquired = False
             lock = CrossProcessLock(self._lock_path)
             try:
                 acquired = lock.acquire()
+                if ack_event is not None:
+                    ack_event.set()
                 if acquired:
                     try:
                         self._callback()
