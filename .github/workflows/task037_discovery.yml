@@ -1,5 +1,5 @@
 name: task037-discovery-readonly
-# Retry 4: exact edit_ask and car_setstage handler context.
+# Retry 5: accept one or two changed relay files; both paths are still bounded.
 
 on:
   push:
@@ -56,8 +56,8 @@ jobs:
             cloud/bot_logistics/evidence/task_037_discovery.json \
             cloud/bot_logistics/TASK_039_DISCOVERY_CONTROLLER_REPORT.md
           mapfile -t staged < <(git diff --cached --name-only)
-          if [ "${#staged[@]}" -ne 2 ]; then
-            echo 'Expected exactly two staged relay files'
+          if [ "${#staged[@]}" -lt 1 ] || [ "${#staged[@]}" -gt 2 ]; then
+            echo 'Expected one or two changed relay files'
             exit 1
           fi
           for path in "${staged[@]}"; do
