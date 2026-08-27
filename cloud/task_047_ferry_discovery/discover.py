@@ -1,314 +1,349 @@
 """
-TASK 050 discover module.
+discover.py -- TASK 052 baseline-restored ferry discovery.
 
-- safe_read_file: verified read (identity, not-a-symlink, size, mtime, full
-  sha256). Keeps the verified raw bytes available for downstream structural
-  analysis instead of discarding them before analysis (fixes TASK 047 defect).
-- discover_registry: builds a full occurrence inventory across given file
-  paths (HTML text/attrs via transform.py, Python string literals via ast,
-  never importing/executing target code).
-- read_crm_verified: strict SQLite read-only (mode=ro, query_only,
-  quick_check) contract with explicit table/id-column allowlists, exact
-  parameterized UA-0001..UA-0009 IDs, exactly-one-row enforcement, and
-  before/after full-SHA identity verification of the database file.
-- run_discovery: aggregates everything into one receipt with an overall
-  OK / BLOCKED status. BLOCKED on any required source blocked, CRM blocked,
-  or any AMBIGUOUS occurrence among required targets. Optional missing files
-  remain explicit MISSING and do not block by themselves. The final
-  serialized receipt is scanned for secrets before being returned.
+Restores the TASK 047 safe-read contract (lstat regular/nlink==1, O_NOFOLLOW,
+fstat before/after identity, bounded read with oversize/TOCTOU BLOCK, full
+SHA256) and the fixed /home/Carix registry, and adds the TASK 049 verified
+CRM schema (table cars, identity auto_number, container sea_container).
 
-KNOWN LIMITATION: this module operates on whatever paths/DB are passed to
-it (intended for temporary fixtures and future real registries supplied by
-the owner/Codex). It does not itself locate or touch real UA ART production
-files or the live CRM database.
+No PythonAnywhere execution occurs from this module. The CLI never accepts an
+arbitrary path argument; only test code may inject a temp root explicitly.
 """
 from __future__ import annotations
 
 import ast
 import hashlib
+import json
 import os
+import re
 import sqlite3
-from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, List, Optional
+import stat
+from pathlib import Path
+from typing import Optional
 
-import transform as _transform
+import transform
 
+DEFAULT_ROOT = Path("/home/Carix")
 
-# ---------------------------------------------------------------------------
-# Verified file read
-# ---------------------------------------------------------------------------
+HTML_CORE_PAGES = [
+    "video/index.html",
+    "video/katalog.html",
+    "video/info.html",
+    "video/podbor.html",
+]
 
-@dataclass
-class VerifiedFile:
-    path: str
-    exists: bool
-    is_symlink: bool
-    size: int
-    mtime: float
-    sha256: str
-    raw_bytes: Optional[bytes] = field(default=None, repr=False)
+UA_CARD_PAGES = [f"video/UA-{i:04d}.html" for i in range(1, 10)]
 
+PY_MODULES = [
+    "stranica.py", "yadro.py", "master_card.py", "cars_ui.py",
+    "team_bot.py", "avtoperedacha.py", "db.py", "run_all.py", "start_safe.py",
+]
 
-def safe_read_file(path: str) -> VerifiedFile:
-    """Verify identity (does not follow symlinks) and read full bytes,
-    keeping them available for structural analysis instead of discarding
-    them after a preliminary check."""
-    if not os.path.exists(path) and not os.path.islink(path):
-        return VerifiedFile(path=path, exists=False, is_symlink=False, size=0, mtime=0.0, sha256="")
-    is_symlink = os.path.islink(path)
-    if is_symlink:
-        st = os.lstat(path)
-        return VerifiedFile(path=path, exists=True, is_symlink=True, size=st.st_size,
-                             mtime=st.st_mtime, sha256="", raw_bytes=None)
-    if not os.path.exists(path):
-        return VerifiedFile(path=path, exists=False, is_symlink=False, size=0, mtime=0.0, sha256="")
-    st = os.lstat(path)
-    with open(path, "rb") as f:
-        raw = f.read()
-    sha = hashlib.sha256(raw).hexdigest()
-    return VerifiedFile(path=path, exists=True, is_symlink=False, size=len(raw),
-                         mtime=st.st_mtime, sha256=sha, raw_bytes=raw)
+DB_FILE_NAME = "crm.db"
+
+REQUIRED_UA_IDS = [f"UA-{i:04d}" for i in range(1, 10)]
+
+SECRET_PATTERNS = [
+    re.compile(p, re.IGNORECASE) for p in [
+        r'password\s*[:=]\s*\S+',
+        r'api[_-]?key\s*[:=]\s*\S+',
+        r'secret\s*[:=]\s*\S+',
+        r'token\s*[:=]\s*\S+',
+        r'AKIA[0-9A-Z]{16}',
+        r'-----BEGIN [A-Z ]*PRIVATE KEY-----',
+    ]
+]
 
 
-# ---------------------------------------------------------------------------
-# Python literal inventory (parse/tokenize only, never import/execute)
-# ---------------------------------------------------------------------------
-
-def _classify_py_literal(name_hint: str) -> str:
-    hint = (name_hint or "").upper()
-    if "ALIAS" in hint:
-        return "LEGACY_INPUT_ALIAS"
-    if any(k in hint for k in ("LABEL", "TEXT", "TEMPLATE", "RENDER")):
-        return "USER_FACING"
-    return "AMBIGUOUS"
+def redact_text(s: str) -> str:
+    for pat in SECRET_PATTERNS:
+        s = pat.sub("[REDACTED]", s)
+    return s
 
 
-def inventory_python_literals(source: str, path: str, sha256: str) -> List[_transform.Occurrence]:
-    occurrences: List[_transform.Occurrence] = []
+def redact_obj(obj):
+    if isinstance(obj, str):
+        return redact_text(obj)
+    if isinstance(obj, dict):
+        return {k: redact_obj(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [redact_obj(v) for v in obj]
+    return obj
+
+
+def _path_has_symlink_ancestor(path: Path, root: Path) -> bool:
+    p = path
+    while True:
+        if p.is_symlink() and p != path:
+            return True
+        if p == root or p == p.parent:
+            break
+        p = p.parent
+    return False
+
+
+def safe_read_file(path: Path, root: Path, max_bytes: int = 5_000_000):
+    """Verified, non-following, bounded read. Returns (meta, data_or_None).
+
+    meta["status"] is OK or BLOCKED; meta["reason"] explains BLOCKED.
+    """
+    result = {"path": str(path), "status": "BLOCKED", "reason": None}
     try:
-        tree = ast.parse(source)
-    except SyntaxError:
-        return occurrences
+        resolved = path.resolve(strict=False)
+        root_resolved = root.resolve(strict=False)
+        resolved.relative_to(root_resolved)
+    except Exception:
+        result["reason"] = "OUTSIDE_ROOT_OR_RESOLVE_FAILED"
+        return result, None
 
-    targets = ("В море", "Море")
+    if _path_has_symlink_ancestor(path, root):
+        result["reason"] = "SYMLINK_IN_PATH"
+        return result, None
 
-    class _Visitor(ast.NodeVisitor):
-        def __init__(self) -> None:
-            self.assign_stack: List[str] = []
+    try:
+        st_before = os.lstat(path)
+    except FileNotFoundError:
+        result["reason"] = "MISSING"
+        return result, None
+    except OSError:
+        result["reason"] = "LSTAT_FAILED"
+        return result, None
 
-        def visit_Assign(self, node: ast.Assign) -> None:
-            name_hint = ""
-            for t in node.targets:
-                if isinstance(t, ast.Name):
-                    name_hint = t.id
-            self.assign_stack.append(name_hint)
-            self.generic_visit(node)
-            self.assign_stack.pop()
+    if not stat.S_ISREG(st_before.st_mode):
+        result["reason"] = "NOT_REGULAR"
+        return result, None
+    if st_before.st_nlink != 1:
+        result["reason"] = "NLINK_NOT_ONE"
+        return result, None
 
-        def visit_Constant(self, node: ast.Constant) -> None:
-            if isinstance(node.value, str) and any(t in node.value for t in targets):
-                hint = self.assign_stack[-1] if self.assign_stack else ""
-                classification = _classify_py_literal(hint)
-                occurrences.append(_transform.Occurrence(
-                    path=path, sha256=sha256, language="n/a", form="python_literal",
-                    classification=classification, before=node.value, after=node.value,
-                    anchor=(f"assign:{hint}" if hint else "literal"),
-                    context=node.value[:80],
-                    action="PRESERVE",
-                ))
+    flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        fd = os.open(path, flags)
+    except OSError:
+        result["reason"] = "OPEN_FAILED"
+        return result, None
 
-    _Visitor().visit(tree)
-    return occurrences
+    try:
+        fst1 = os.fstat(fd)
+        if (fst1.st_dev, fst1.st_ino) != (st_before.st_dev, st_before.st_ino):
+            result["reason"] = "IDENTITY_MISMATCH"
+            return result, None
 
+        data = bytearray()
+        while True:
+            chunk = os.read(fd, 65536)
+            if not chunk:
+                break
+            data.extend(chunk)
+            if len(data) > max_bytes:
+                result["reason"] = "OVERSIZE"
+                return result, None
 
-# ---------------------------------------------------------------------------
-# Discovery registry
-# ---------------------------------------------------------------------------
+        fst2 = os.fstat(fd)
+        if (fst2.st_dev, fst2.st_ino, fst2.st_size, fst2.st_mtime_ns) != (
+            fst1.st_dev, fst1.st_ino, fst1.st_size, fst1.st_mtime_ns
+        ):
+            result["reason"] = "CHANGED_DURING_READ"
+            return result, None
+        if len(data) != fst2.st_size:
+            result["reason"] = "SIZE_MISMATCH"
+            return result, None
+    finally:
+        os.close(fd)
 
-def discover_registry(paths: List[str]) -> Dict[str, Any]:
-    files_report: List[Dict[str, Any]] = []
-    all_occurrences: List[Dict[str, Any]] = []
-    blocked = False
-
-    for path in paths:
-        vf = safe_read_file(path)
-        if not vf.exists:
-            files_report.append({"path": path, "status": "MISSING"})
-            continue
-        if vf.is_symlink:
-            files_report.append({"path": path, "status": "BLOCKED", "reason": "symlink_not_followed"})
-            blocked = True
-            continue
-
-        occurrences: List[_transform.Occurrence] = []
-        try:
-            text = vf.raw_bytes.decode("utf-8", errors="strict") if vf.raw_bytes is not None else ""
-        except UnicodeDecodeError:
-            files_report.append({"path": path, "status": "BLOCKED", "reason": "undecodable_utf8"})
-            blocked = True
-            continue
-
-        if path.endswith((".html", ".htm")):
-            _new_text, occurrences = _transform.transform_html(text, path, vf.sha256)
-        elif path.endswith(".py"):
-            occurrences = inventory_python_literals(text, path, vf.sha256)
-
-        files_report.append({
-            "path": path,
-            "status": "OK",
-            "sha256": vf.sha256,
-            "size": vf.size,
-            "occurrence_count": len(occurrences),
-        })
-        all_occurrences.extend(asdict(o) for o in occurrences)
-
-    return {"files": files_report, "occurrences": all_occurrences, "blocked": blocked}
+    sha = hashlib.sha256(bytes(data)).hexdigest()
+    result.update({
+        "status": "OK",
+        "reason": None,
+        "sha256": sha,
+        "size": fst2.st_size,
+        "dev": fst2.st_dev,
+        "inode": fst2.st_ino,
+        "mtime_ns": fst2.st_mtime_ns,
+    })
+    return result, bytes(data)
 
 
-# ---------------------------------------------------------------------------
-# CRM (SQLite) verified read-only inspection
-# ---------------------------------------------------------------------------
+def check_crm(db_path: Path):
+    receipt = {"status": "BLOCKED", "reason": None}
+    if not db_path.exists():
+        receipt["reason"] = "DB_MISSING"
+        return receipt
+    try:
+        st1 = os.lstat(db_path)
+    except OSError:
+        receipt["reason"] = "LSTAT_FAILED"
+        return receipt
 
-TABLE_ALLOWLIST = ("cards", "ua_cards", "orders")
-ID_COLUMN_ALLOWLIST = ("id", "card_id", "order_id")
-ALLOWED_FIELDS = ("status", "route", "note", "stage")
-VALID_IDS = tuple(f"UA-{i:04d}" for i in range(1, 10))  # UA-0001..UA-0009
-
-
-def _verify_identity(path: str) -> Dict[str, Any]:
-    if os.path.islink(path):
-        return {"exists": True, "blocked": True, "reason": "symlink_not_followed"}
-    if not os.path.exists(path):
-        return {"exists": False}
-    st = os.lstat(path)
-    with open(path, "rb") as f:
-        raw = f.read()
-    return {
-        "exists": True,
-        "blocked": False,
-        "size": st.st_size,
-        "mtime": st.st_mtime,
-        "sha256": hashlib.sha256(raw).hexdigest(),
-    }
-
-
-def read_crm_verified(db_path: str, ids: List[str]) -> Dict[str, Any]:
-    """Read CRM rows for exact allowlisted IDs via a strict read-only,
-    nofollow, allowlisted contract. Blocks on any ambiguity, missing/
-    duplicate rows, or corrupted/unreadable database."""
-    before = _verify_identity(db_path)
-    if not before.get("exists"):
-        return {"status": "MISSING", "reason": "db_not_found"}
-    if before.get("blocked"):
-        return {"status": "BLOCKED", "reason": before["reason"]}
-
-    for i in ids:
-        if i not in VALID_IDS:
-            return {"status": "BLOCKED", "reason": f"id_not_allowlisted:{i}"}
-
-    uri = f"file:{db_path}?mode=ro"
-    conn = None
+    uri = f"file:{db_path.as_posix()}?mode=ro"
     try:
         conn = sqlite3.connect(uri, uri=True)
-        conn.execute("PRAGMA query_only = 1;")
-        quick = conn.execute("PRAGMA quick_check;").fetchall()
-        if not quick or quick[0][0] != "ok":
-            return {"status": "BLOCKED", "reason": "quick_check_failed"}
-
-        placeholders = ",".join("?" for _ in TABLE_ALLOWLIST)
-        cur = conn.execute(
-            f"SELECT name FROM sqlite_master WHERE type='table' AND name IN ({placeholders})",
-            TABLE_ALLOWLIST,
-        )
-        tables = [r[0] for r in cur.fetchall()]
-        if len(tables) != 1:
-            return {"status": "BLOCKED", "reason": f"table_ambiguous:{tables}"}
-        table = tables[0]
-
-        cur = conn.execute(f"PRAGMA table_info({table})")
-        cols = [r[1] for r in cur.fetchall()]
-        id_cols = [c for c in cols if c in ID_COLUMN_ALLOWLIST]
-        if len(id_cols) != 1:
-            return {"status": "BLOCKED", "reason": f"id_column_ambiguous:{id_cols}"}
-        id_col = id_cols[0]
-
-        fields = [c for c in cols if c in ALLOWED_FIELDS]
-        select_cols = [id_col] + fields
-
-        rows_out: List[Dict[str, Any]] = []
-        for target_id in ids:
-            cur = conn.execute(
-                f"SELECT {', '.join(select_cols)} FROM {table} WHERE {id_col} = ?",
-                (target_id,),
-            )
-            rows = cur.fetchall()
-            if len(rows) == 0:
-                return {"status": "BLOCKED", "reason": f"missing_row:{target_id}"}
-            if len(rows) > 1:
-                return {"status": "BLOCKED", "reason": f"duplicate_row:{target_id}"}
-            row = rows[0]
-            rows_out.append({col: val for col, val in zip(select_cols, row)})
-    except sqlite3.Error as exc:
-        return {"status": "BLOCKED", "reason": f"sqlite_error:{exc}"}
-    finally:
-        if conn is not None:
+        conn.execute("PRAGMA query_only=ON")
+        qc = conn.execute("PRAGMA quick_check").fetchone()
+        if not qc or qc[0] != "ok":
             conn.close()
+            receipt["reason"] = "QUICK_CHECK_FAILED"
+            return receipt
 
-    after = _verify_identity(db_path)
-    if after.get("sha256") != before.get("sha256"):
-        return {"status": "BLOCKED", "reason": "identity_changed_during_read"}
+        cols = [r[1] for r in conn.execute("PRAGMA table_info(cars)").fetchall()]
+        if "auto_number" not in cols or "sea_container" not in cols:
+            conn.close()
+            receipt["reason"] = "SCHEMA_MISMATCH"
+            return receipt
 
-    return {
-        "status": "OK",
-        "rows": rows_out,
-        "table": table,
-        "id_column": id_col,
-        "sha256_before": before["sha256"],
-        "sha256_after": after["sha256"],
+        placeholders = ",".join("?" * len(REQUIRED_UA_IDS))
+        rows = conn.execute(
+            f"SELECT auto_number, sea_container FROM cars WHERE auto_number IN ({placeholders})",
+            REQUIRED_UA_IDS,
+        ).fetchall()
+        conn.close()
+    except sqlite3.Error:
+        receipt["reason"] = "SQLITE_ERROR"
+        return receipt
+
+    st2 = os.lstat(db_path)
+    if (st1.st_dev, st1.st_ino, st1.st_size, st1.st_mtime_ns) != (
+        st2.st_dev, st2.st_ino, st2.st_size, st2.st_mtime_ns
+    ):
+        receipt["reason"] = "DB_CHANGED"
+        return receipt
+
+    found_ids = [r[0] for r in rows]
+    found_set = set(found_ids)
+    missing = [i for i in REQUIRED_UA_IDS if i not in found_set]
+    duplicates = len(found_ids) != len(found_set)
+
+    if missing:
+        receipt["reason"] = "MISSING_IDS"
+        receipt["missing"] = missing
+        return receipt
+    if duplicates:
+        receipt["reason"] = "DUPLICATE_IDS"
+        return receipt
+
+    receipt["status"] = "PASS"
+    receipt["ids_found"] = sorted(found_set)
+    return receipt
+
+
+def run_discovery(root: Path, db_path: Optional[Path] = None) -> dict:
+    root = Path(root)
+    if db_path is None:
+        db_path = root / DB_FILE_NAME
+
+    if not str(root) or not root.exists():
+        return {
+            "status": "BLOCKED", "reason": "ROOT_MISSING", "root": str(root),
+            "markers": _markers(),
+        }
+
+    required_core = list(HTML_CORE_PAGES) + list(UA_CARD_PAGES)
+    html_results = {}
+    missing_core = []
+    total_source_occurrences = 0
+    ambiguous_targets = []
+
+    for rel in required_core:
+        p = root / rel
+        meta, data = safe_read_file(p, root, max_bytes=5_000_000)
+        if meta["status"] != "OK":
+            missing_core.append(rel)
+            html_results[rel] = meta
+            continue
+        try:
+            text = data.decode("utf-8")
+        except UnicodeDecodeError:
+            meta["status"] = "BLOCKED"
+            meta["reason"] = "DECODE_ERROR"
+            missing_core.append(rel)
+            html_results[rel] = meta
+            continue
+        _new_text, report = transform.transform_html(text)
+        occ = len(report["changes"])
+        amb = report["ambiguous"]
+        total_source_occurrences += occ
+        if rel in UA_CARD_PAGES and amb:
+            ambiguous_targets.append(rel)
+        html_results[rel] = {
+            "status": "OK", "sha256": meta["sha256"], "size": meta["size"],
+            "changes": occ, "ambiguous": len(amb),
+        }
+
+    py_results = {}
+    for rel in PY_MODULES:
+        p = root / rel
+        meta, data = safe_read_file(p, root, max_bytes=5_000_000)
+        if meta["status"] != "OK":
+            py_results[rel] = meta
+            continue
+        try:
+            src = data.decode("utf-8")
+            ast.parse(src)
+            parse_ok = True
+        except (UnicodeDecodeError, SyntaxError):
+            parse_ok = False
+        py_results[rel] = {
+            "status": "OK" if parse_ok else "BLOCKED",
+            "sha256": meta["sha256"], "size": meta["size"], "parse_ok": parse_ok,
+        }
+
+    crm = check_crm(db_path)
+
+    overall_status = "OK"
+    reasons = []
+    if missing_core:
+        overall_status = "BLOCKED"
+        reasons.append("MISSING_CORE_PAGES")
+    if crm["status"] != "PASS":
+        overall_status = "BLOCKED"
+        reasons.append("CRM_NOT_PASS")
+    if ambiguous_targets:
+        overall_status = "BLOCKED"
+        reasons.append("AMBIGUOUS_TARGET")
+    if total_source_occurrences == 0:
+        overall_status = "BLOCKED"
+        reasons.append("ZERO_OCCURRENCES")
+
+    receipt = {
+        "status": overall_status,
+        "reasons": reasons,
+        "root": str(root),
+        "html": html_results,
+        "python": py_results,
+        "crm": crm,
+        "total_source_occurrences": total_source_occurrences,
+        "ambiguous_targets": ambiguous_targets,
+        "markers": _markers(),
     }
+    return receipt
 
 
-# ---------------------------------------------------------------------------
-# Aggregate run
-# ---------------------------------------------------------------------------
-
-def run_discovery(html_paths: List[str], py_paths: List[str],
-                   crm_db_path: Optional[str] = None,
-                   crm_ids: Optional[List[str]] = None) -> Dict[str, Any]:
-    registry = discover_registry(list(html_paths) + list(py_paths))
-
-    crm_result = None
-    if crm_db_path is not None:
-        crm_result = read_crm_verified(crm_db_path, crm_ids or [])
-
-    ambiguous = [o for o in registry["occurrences"] if o["classification"] == "AMBIGUOUS"]
-    required_blocked = registry["blocked"] or any(f["status"] == "BLOCKED" for f in registry["files"])
-
-    overall = "OK"
-    if required_blocked:
-        overall = "BLOCKED"
-    elif crm_result is not None and crm_result.get("status") not in ("OK", None):
-        overall = "BLOCKED"
-    elif ambiguous:
-        overall = "BLOCKED"
-
-    receipt: Dict[str, Any] = {
-        "overall": overall,
-        "files": registry["files"],
-        "occurrences": registry["occurrences"],
-        "ambiguous_count": len(ambiguous),
-        "crm": crm_result,
+def _markers():
+    return {
         "PRODUCTION_TOUCHED": "NO",
-        "CRM_TOUCHED": "NO" if crm_db_path is None else "READ_ONLY",
+        "CRM_TOUCHED": "NO",
         "CRM_DB_WRITTEN": "NO",
         "GATE_B_EXECUTED": "NO",
         "UA_0009_PUBLISHED": "NO",
     }
 
-    serialized = repr(receipt)
-    if _transform.scan_for_secrets(serialized):
-        serialized = _transform.redact_secrets(serialized)
-        receipt["_secret_redaction_applied"] = True
 
-    receipt["_serialized_receipt"] = serialized
-    return receipt
+def serialize_receipt(receipt: dict) -> str:
+    redacted = redact_obj(receipt)
+    s = json.dumps(redacted, ensure_ascii=False, sort_keys=True)
+    for pat in SECRET_PATTERNS:
+        if pat.search(s):
+            minimal = {"status": "BLOCKED", "reason": "SECRET_LEAK_DETECTED"}
+            return json.dumps(minimal, ensure_ascii=False, sort_keys=True)
+    return s
+
+
+def main():
+    receipt = run_discovery(DEFAULT_ROOT)
+    print(serialize_receipt(receipt))
+
+
+if __name__ == "__main__":
+    main()

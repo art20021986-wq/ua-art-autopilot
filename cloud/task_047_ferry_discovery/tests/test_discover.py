@@ -1,195 +1,186 @@
 import os
+import shutil
 import sqlite3
-import sys
 import tempfile
 import unittest
+from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import discover
 
-import discover  # noqa: E402
-import transform  # noqa: E402
-
-
-class TestSecretRedaction(unittest.TestCase):
-    def test_scan_detects_secret(self):
-        self.assertTrue(transform.scan_for_secrets('{"token": "abcdef123"}'))
-
-    def test_scan_ignores_safe_fields(self):
-        self.assertFalse(transform.scan_for_secrets('{"status": "ok", "sha256": "aabbcc"}'))
+RU_STATUS = "\u0412 \u043c\u043e\u0440\u0435"
 
 
-class TestDiscoveryInventory(unittest.TestCase):
-    def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
+def _write(path: Path, content: str):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
 
-    def tearDown(self):
-        self.tmp.cleanup()
 
-    def _write(self, name, content):
-        path = os.path.join(self.tmp.name, name)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(content)
-        return path
+def _build_valid_root(root: Path, ferry_text=True):
+    for rel in discover.HTML_CORE_PAGES:
+        _write(root / rel, "<html><body><p>ok</p></body></html>")
+    for i, rel in enumerate(discover.UA_CARD_PAGES, start=1):
+        body = f'<div class="chip">{RU_STATUS}</div>' if ferry_text else "<p>ok</p>"
+        _write(root / rel, f"<html><body>{body}</body></html>")
+    for rel in discover.PY_MODULES:
+        _write(root / rel, "def f():\n    return 1\n")
+    _build_valid_db(root / discover.DB_FILE_NAME)
 
-    def test_html_occurrence_inventory_chip(self):
-        path = self._write("card.html", '<div class="chip">В море · Корея → Грузия</div>')
-        report = discover.discover_registry([path])
-        self.assertEqual(len(report["occurrences"]), 1)
-        occ = report["occurrences"][0]
-        self.assertEqual(occ["form"], "chip")
-        self.assertEqual(occ["classification"], "TARGET")
-        self.assertIn("sha256", report["files"][0])
 
-    def test_html_occurrence_inventory_etap_tut(self):
-        path = self._write(
-            "card2.html",
-            '<div class="etap tut"><div class="krug">2</div>Море: Корея → Грузия</div>',
+def _build_valid_db(db_path: Path, n_ids=9):
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(db_path))
+    conn.execute("CREATE TABLE cars (auto_number TEXT, sea_container TEXT)")
+    for i in range(1, n_ids + 1):
+        conn.execute(
+            "INSERT INTO cars (auto_number, sea_container) VALUES (?, ?)",
+            (f"UA-{i:04d}", f"CONT{i:03d}"),
         )
-        report = discover.discover_registry([path])
-        forms = [o["form"] for o in report["occurrences"]]
-        self.assertIn("etap_tut", forms)
-
-    def test_python_legacy_alias_literal_preserved(self):
-        py_src = 'LEGACY_ROUTE_ALIAS = {"old": "Море"}\n'
-        path = self._write("aliases.py", py_src)
-        report = discover.discover_registry([path])
-        occs = [o for o in report["occurrences"] if o["form"] == "python_literal"]
-        self.assertEqual(len(occs), 1)
-        self.assertEqual(occs[0]["classification"], "LEGACY_INPUT_ALIAS")
-        self.assertEqual(occs[0]["action"], "PRESERVE")
-        with open(path, encoding="utf-8") as f:
-            self.assertEqual(f.read(), py_src)
-
-    def test_python_user_facing_literal(self):
-        py_src = 'ROUTE_LABEL_TEXT = "Море: Корея -> Грузия"\n'
-        path = self._write("labels.py", py_src)
-        report = discover.discover_registry([path])
-        occs = [o for o in report["occurrences"] if o["form"] == "python_literal"]
-        self.assertEqual(occs[0]["classification"], "USER_FACING")
-
-    def test_python_ambiguous_literal(self):
-        py_src = 'SOME_VALUE = "Море"\n'
-        path = self._write("misc.py", py_src)
-        report = discover.discover_registry([path])
-        occs = [o for o in report["occurrences"] if o["form"] == "python_literal"]
-        self.assertEqual(occs[0]["classification"], "AMBIGUOUS")
-
-    def test_missing_file_reported(self):
-        report = discover.discover_registry([os.path.join(self.tmp.name, "does_not_exist.html")])
-        self.assertEqual(report["files"][0]["status"], "MISSING")
-
-
-class TestOverallBlocked(unittest.TestCase):
-    def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
-
-    def tearDown(self):
-        self.tmp.cleanup()
-
-    def test_blocked_on_ambiguous(self):
-        path = os.path.join(self.tmp.name, "card.html")
-        with open(path, "w", encoding="utf-8") as f:
-            f.write("Черное Море является ориентиром")
-        report = discover.run_discovery([path], [])
-        self.assertEqual(report["overall"], "BLOCKED")
-        self.assertGreater(report["ambiguous_count"], 0)
-
-    def test_missing_optional_file_reported_but_visible(self):
-        report = discover.run_discovery([os.path.join(self.tmp.name, "missing.html")], [])
-        self.assertEqual(report["files"][0]["status"], "MISSING")
-
-    def test_ok_when_only_target_occurrences(self):
-        path = os.path.join(self.tmp.name, "card.html")
-        with open(path, "w", encoding="utf-8") as f:
-            f.write('<div class="chip">В море · Корея → Грузия</div>')
-        report = discover.run_discovery([path], [])
-        self.assertEqual(report["overall"], "OK")
-
-
-def _make_crm_db(path, table="cards", id_col="id", extra_table=None, dup_id=None):
-    conn = sqlite3.connect(path)
-    conn.execute(f"CREATE TABLE {table} ({id_col} TEXT, status TEXT, route TEXT)")
-    for i in range(1, 10):
-        conn.execute(f"INSERT INTO {table} VALUES (?, ?, ?)", (f"UA-{i:04d}", "active", "Korea-Georgia"))
-    if dup_id:
-        conn.execute(f"INSERT INTO {table} VALUES (?, ?, ?)", (dup_id, "active", "Korea-Georgia"))
-    if extra_table:
-        conn.execute(f"CREATE TABLE {extra_table} ({id_col} TEXT)")
     conn.commit()
     conn.close()
 
 
-class TestCRM(unittest.TestCase):
+class DiscoverTests(unittest.TestCase):
+
     def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
-        self.db_path = os.path.join(self.tmp.name, "crm.sqlite3")
+        self._tmp = tempfile.mkdtemp(prefix="task052_")
+        self.root = Path(self._tmp)
 
     def tearDown(self):
-        self.tmp.cleanup()
+        shutil.rmtree(self._tmp, ignore_errors=True)
 
-    def test_ok_single_row(self):
-        _make_crm_db(self.db_path)
-        result = discover.read_crm_verified(self.db_path, ["UA-0001"])
-        self.assertEqual(result["status"], "OK")
-        self.assertEqual(len(result["rows"]), 1)
-        self.assertEqual(result["sha256_before"], result["sha256_after"])
+    def test_missing_root_blocks(self):
+        receipt = discover.run_discovery(self.root / "does_not_exist")
+        self.assertEqual(receipt["status"], "BLOCKED")
 
-    def test_blocked_missing_db(self):
-        result = discover.read_crm_verified(os.path.join(self.tmp.name, "nope.sqlite3"), ["UA-0001"])
-        self.assertEqual(result["status"], "MISSING")
+    def test_missing_core_page_blocks(self):
+        _build_valid_root(self.root)
+        os.remove(self.root / "video/index.html")
+        receipt = discover.run_discovery(self.root)
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertIn("MISSING_CORE_PAGES", receipt["reasons"])
 
-    def test_blocked_multiple_tables(self):
-        _make_crm_db(self.db_path, extra_table="orders")
-        result = discover.read_crm_verified(self.db_path, ["UA-0001"])
-        self.assertEqual(result["status"], "BLOCKED")
-        self.assertIn("table_ambiguous", result["reason"])
+    def test_full_registry_ok(self):
+        _build_valid_root(self.root)
+        receipt = discover.run_discovery(self.root)
+        self.assertEqual(receipt["status"], "OK", receipt)
+        self.assertGreater(receipt["total_source_occurrences"], 0)
+        self.assertEqual(receipt["crm"]["status"], "PASS")
 
-    def test_blocked_multiple_id_columns(self):
-        conn = sqlite3.connect(self.db_path)
-        conn.execute("CREATE TABLE cards (id TEXT, card_id TEXT, status TEXT)")
-        conn.execute("INSERT INTO cards VALUES ('UA-0001', 'UA-0001', 'active')")
+    def test_zero_occurrences_blocks(self):
+        _build_valid_root(self.root, ferry_text=False)
+        receipt = discover.run_discovery(self.root)
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertIn("ZERO_OCCURRENCES", receipt["reasons"])
+
+    def test_ambiguous_target_blocks(self):
+        _build_valid_root(self.root)
+        _write(self.root / "video/UA-0001.html", "<html><body><div><span>\u041c\u043e\u0440\u0435</span></div></body></html>")
+        receipt = discover.run_discovery(self.root)
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertIn("AMBIGUOUS_TARGET", receipt["reasons"])
+
+    def test_missing_ua_ids_in_crm_blocks(self):
+        _build_valid_root(self.root)
+        _build_valid_db(self.root / discover.DB_FILE_NAME, n_ids=8)
+        receipt = discover.run_discovery(self.root)
+        self.assertEqual(receipt["status"], "BLOCKED")
+        self.assertEqual(receipt["crm"]["reason"], "MISSING_IDS")
+
+    def test_crm_schema_mismatch_blocks(self):
+        _build_valid_root(self.root)
+        db_path = self.root / discover.DB_FILE_NAME
+        os.remove(db_path)
+        conn = sqlite3.connect(str(db_path))
+        conn.execute("CREATE TABLE cars (id TEXT)")
         conn.commit()
         conn.close()
-        result = discover.read_crm_verified(self.db_path, ["UA-0001"])
-        self.assertEqual(result["status"], "BLOCKED")
-        self.assertIn("id_column_ambiguous", result["reason"])
+        receipt = discover.run_discovery(self.root)
+        self.assertEqual(receipt["crm"]["reason"], "SCHEMA_MISMATCH")
 
-    def test_blocked_duplicate_row(self):
-        _make_crm_db(self.db_path, dup_id="UA-0001")
-        result = discover.read_crm_verified(self.db_path, ["UA-0001"])
-        self.assertEqual(result["status"], "BLOCKED")
-        self.assertIn("duplicate_row", result["reason"])
+    def test_python_syntax_error_blocks_module(self):
+        _build_valid_root(self.root)
+        _write(self.root / "db.py", "def broken(:\n")
+        receipt = discover.run_discovery(self.root)
+        self.assertEqual(receipt["python"]["db.py"]["status"], "BLOCKED")
 
-    def test_blocked_missing_row(self):
-        conn = sqlite3.connect(self.db_path)
-        conn.execute("CREATE TABLE cards (id TEXT, status TEXT)")
-        conn.commit()
-        conn.close()
-        result = discover.read_crm_verified(self.db_path, ["UA-0001"])
-        self.assertEqual(result["status"], "BLOCKED")
-        self.assertIn("missing_row", result["reason"])
+    def test_safe_read_rejects_hardlink_nlink(self):
+        _build_valid_root(self.root)
+        target = self.root / "video/index.html"
+        extra_link = self.root / "video/index_link.html"
+        try:
+            os.link(target, extra_link)
+        except OSError:
+            self.skipTest("hardlinks not supported on this filesystem")
+            return
+        meta, data = discover.safe_read_file(target, self.root)
+        self.assertEqual(meta["status"], "BLOCKED")
+        self.assertEqual(meta["reason"], "NLINK_NOT_ONE")
 
-    def test_blocked_not_allowlisted_id(self):
-        _make_crm_db(self.db_path)
-        result = discover.read_crm_verified(self.db_path, ["UA-9999"])
-        self.assertEqual(result["status"], "BLOCKED")
+    def test_safe_read_rejects_symlink_target(self):
+        _build_valid_root(self.root)
+        real_file = self.root / "video/index.html"
+        link_path = self.root / "video/link.html"
+        try:
+            os.symlink(real_file, link_path)
+        except OSError:
+            self.skipTest("symlinks not supported on this filesystem")
+            return
+        meta, data = discover.safe_read_file(link_path, self.root)
+        self.assertEqual(meta["status"], "BLOCKED")
 
-    def test_blocked_corrupted_db_quick_check(self):
-        with open(self.db_path, "wb") as f:
-            f.write(b"not a real sqlite database at all, just garbage bytes")
-        result = discover.read_crm_verified(self.db_path, ["UA-0001"])
-        self.assertEqual(result["status"], "BLOCKED")
+    def test_safe_read_rejects_oversize(self):
+        _build_valid_root(self.root)
+        big = self.root / "video/big.html"
+        _write(big, "x" * 1000)
+        meta, data = discover.safe_read_file(big, self.root, max_bytes=10)
+        self.assertEqual(meta["status"], "BLOCKED")
+        self.assertEqual(meta["reason"], "OVERSIZE")
 
-    def test_run_discovery_blocked_when_crm_blocked(self):
-        _make_crm_db(self.db_path, extra_table="orders")
-        report = discover.run_discovery([], [], crm_db_path=self.db_path, crm_ids=["UA-0001"])
-        self.assertEqual(report["overall"], "BLOCKED")
+    def test_safe_read_missing_file(self):
+        _build_valid_root(self.root)
+        meta, data = discover.safe_read_file(self.root / "video/absent.html", self.root)
+        self.assertEqual(meta["status"], "BLOCKED")
+        self.assertEqual(meta["reason"], "MISSING")
 
+    def test_receipt_is_strict_json(self):
+        import json
+        _build_valid_root(self.root)
+        receipt = discover.run_discovery(self.root)
+        s = discover.serialize_receipt(receipt)
+        parsed = json.loads(s)
+        self.assertEqual(parsed["status"], receipt["status"])
 
-class TestReceiptSecretScan(unittest.TestCase):
-    def test_run_discovery_receipt_has_no_secrets(self):
-        report = discover.run_discovery([], [])
-        self.assertFalse(transform.scan_for_secrets(report["_serialized_receipt"]))
+    def test_secret_redaction_blocks_final_receipt(self):
+        fake_receipt = {"status": "OK", "note": "password: hunter2"}
+        s = discover.serialize_receipt(fake_receipt)
+        self.assertNotIn("hunter2", s)
+
+    def test_redact_obj_recursive(self):
+        obj = {"a": ["token: abc123", {"b": "secret: xyz"}]}
+        red = discover.redact_obj(obj)
+        self.assertNotIn("abc123", str(red))
+        self.assertNotIn("xyz", str(red))
+
+    def test_markers_present_and_no(self):
+        _build_valid_root(self.root)
+        receipt = discover.run_discovery(self.root)
+        m = receipt["markers"]
+        self.assertEqual(m["PRODUCTION_TOUCHED"], "NO")
+        self.assertEqual(m["CRM_DB_WRITTEN"], "NO")
+        self.assertEqual(m["GATE_B_EXECUTED"], "NO")
+        self.assertEqual(m["UA_0009_PUBLISHED"], "NO")
+
+    def test_run_twice_deterministic(self):
+        _build_valid_root(self.root)
+        r1 = discover.run_discovery(self.root)
+        r2 = discover.run_discovery(self.root)
+        self.assertEqual(discover.serialize_receipt(r1), discover.serialize_receipt(r2))
+
+    def test_db_missing_blocks_crm(self):
+        _build_valid_root(self.root)
+        os.remove(self.root / discover.DB_FILE_NAME)
+        receipt = discover.run_discovery(self.root)
+        self.assertEqual(receipt["crm"]["reason"], "DB_MISSING")
 
 
 if __name__ == "__main__":
