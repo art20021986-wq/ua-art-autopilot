@@ -8,6 +8,7 @@ import json
 import os
 import pathlib
 import re
+import socket
 import tempfile
 import time
 import urllib.error
@@ -21,7 +22,9 @@ CLOUD.mkdir(exist_ok=True)
 DEFAULT_MODEL = "claude-sonnet-5"
 DEFAULT_MAX_TOKENS = 64_000
 MAX_ALLOWED_TOKENS = 128_000
-DEFAULT_TIMEOUT_SECONDS = 900
+DEFAULT_TIMEOUT_SECONDS = 1_200
+DEFAULT_NETWORK_ATTEMPTS = 5
+MAX_NETWORK_ATTEMPTS = 8
 MAX_FILES = 20
 MAX_TOTAL_FILE_CHARS = 4_000_000
 STATUS_REL = "cloud/latest_status.md"
@@ -197,6 +200,12 @@ def call_claude(system_text: str, task_text: str) -> dict:
         minimum=60,
         maximum=3_600,
     )
+    network_attempts = _env_int(
+        "ANTHROPIC_NETWORK_ATTEMPTS",
+        DEFAULT_NETWORK_ATTEMPTS,
+        minimum=3,
+        maximum=MAX_NETWORK_ATTEMPTS,
+    )
 
     instruction = (
         task_text
@@ -231,7 +240,7 @@ def call_claude(system_text: str, task_text: str) -> dict:
     )
 
     transient_error = None
-    for attempt in range(1, 4):
+    for attempt in range(1, network_attempts + 1):
         try:
             with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
                 request_id = response.headers.get("request-id", "NONE")
@@ -239,25 +248,41 @@ def call_claude(system_text: str, task_text: str) -> dict:
             transient_error = None
             break
         except urllib.error.HTTPError as exc:
-            raise SystemExit(_http_error_message(exc)) from exc
+            error_message = _http_error_message(exc)
+            is_transient = exc.code in {408, 409, 425, 429} or 500 <= exc.code <= 599
+            if not is_transient or attempt >= network_attempts:
+                raise SystemExit(error_message) from exc
+            delay = min(60, 5 * (2 ** (attempt - 1)))
+            print(
+                f"ANTHROPIC_TRANSIENT_HTTP_RETRY "
+                f"attempt={attempt}/{network_attempts} "
+                f"delay_seconds={delay} "
+                f"error={_clean_log_value(error_message)}"
+            )
+            time.sleep(delay)
         except json.JSONDecodeError as exc:
             raise SystemExit("ANTHROPIC_RESPONSE_NOT_JSON") from exc
         except (
             urllib.error.URLError,
             TimeoutError,
+            socket.timeout,
             http.client.RemoteDisconnected,
+            http.client.IncompleteRead,
+            http.client.BadStatusLine,
             ConnectionResetError,
+            BrokenPipeError,
         ) as exc:
             transient_error = exc
-            if attempt >= 3:
+            if attempt >= network_attempts:
                 reason = getattr(exc, "reason", exc)
                 raise SystemExit(
                     f"ANTHROPIC_NETWORK_ERROR_AFTER_RETRIES:"
                     f"{_clean_log_value(reason)}"
                 ) from exc
-            delay = 2 ** attempt
+            delay = min(60, 5 * (2 ** (attempt - 1)))
             print(
-                f"ANTHROPIC_TRANSIENT_RETRY attempt={attempt}/3 "
+                f"ANTHROPIC_TRANSIENT_RETRY "
+                f"attempt={attempt}/{network_attempts} "
                 f"delay_seconds={delay} "
                 f"error={_clean_log_value(exc)}"
             )

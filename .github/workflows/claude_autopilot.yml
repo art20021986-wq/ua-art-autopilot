@@ -39,4 +39,23 @@ jobs:
           git config user.name 'ua-art-claude-worker'
           git config user.email 'actions@users.noreply.github.com'
           git commit -m 'Claude autopilot: process latest task'
-          git push origin HEAD:main
+
+          # Never force-push main. Rebase the generated cloud-only commit onto
+          # the newest main and retry if another safe automation advanced it.
+          for attempt in 1 2 3 4 5; do
+            echo "Push attempt ${attempt}/5"
+            git fetch origin main
+            if ! git rebase origin/main; then
+              echo 'Rebase conflict: refusing to overwrite main'
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            if [ "${attempt}" -lt 5 ]; then
+              sleep $((attempt * 3))
+            fi
+          done
+          echo 'Push failed after 5 safe retries'
+          exit 1
