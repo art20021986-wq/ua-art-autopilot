@@ -1,262 +1,205 @@
-"""TASK 047 — Ferry wording contextual transform engine.
-
-Deterministic, structural, target-span text transform for the exact
-RU/UA ferry-wording mapping described in TASK 047. No network, no file
-I/O, no execution of external code. Pure text-in/text-out.
 """
+TASK 050 transform module.
+
+Implements ONLY proven, exact mappings for real UA ART snippets:
+  - status chip: "В море" -> "На пароме"
+  - etap/tut route heading: "Море: X -> Y" -> "Паром: X -> Y" (nested krug preserved)
+  - four-stage progress sequence: Корея / Море / Грузия / Киев -> .../ Паром / ...
+  - exact route phrases observed in real cards (RU/UK)
+
+Anything else containing the word "Море" outside these proven contexts is
+NEVER rewritten. It is preserved byte-for-byte and reported as AMBIGUOUS so a
+human/owner can review it explicitly. This module never performs a blanket
+"Море" -> "Паром" replacement.
+
+Also provides secret scanning/redaction used before any report/receipt is
+returned or serialized, covering both plain (key=value) and JSON
+("key": "value") forms.
+
+KNOWN LIMITATION: HTML matching here is regex-based against the exact proven
+snippet shapes supplied by the owner/audit, not a full DOM parser. This is
+intentional for TASK 050 scope (correction of TASK 047), not a general HTML
+rewriter.
+"""
+from __future__ import annotations
 
 import re
-from typing import Dict, List, Optional, Set, Tuple
+from dataclasses import dataclass
+from typing import List, Tuple
 
-VOID_ELEMENTS = {
-    "area", "base", "br", "col", "embed", "hr", "img", "input",
-    "link", "meta", "param", "source", "track", "wbr",
+# ---------------------------------------------------------------------------
+# Secret scanning / redaction
+# ---------------------------------------------------------------------------
+
+_SECRET_KEY_RE = r'(?:token|api[-_]?key|password|secret)'
+_SECRET_PATTERN = re.compile(
+    r'(?i)"?\b(' + _SECRET_KEY_RE + r')\b"?\s*[:=]\s*"?([A-Za-z0-9_\-\./]{3,})"?'
+)
+
+_SAFE_KEYWORDS = {"status", "sha256", "sha", "container", "tracking", "id"}
+
+
+def scan_for_secrets(text: str) -> bool:
+    """Return True if text contains a plausible secret assignment, plain or
+    JSON form (token=..., "token": "...", api-key : ..., password ...).
+    Ordinary safe keys (status, sha256, container, tracking) never match."""
+    for m in _SECRET_PATTERN.finditer(text):
+        key = m.group(1).lower().replace("-", "").replace("_", "")
+        if key in {"token", "apikey", "password", "secret"}:
+            return True
+    return False
+
+
+def redact_secrets(text: str) -> str:
+    """Redact detected secret values in text, preserving key names."""
+
+    def _sub(m: "re.Match[str]") -> str:
+        full = m.group(0)
+        value = m.group(2)
+        key = m.group(1).lower().replace("-", "").replace("_", "")
+        if key not in {"token", "apikey", "password", "secret"}:
+            return full
+        return full.replace(value, "***REDACTED***")
+
+    return _SECRET_PATTERN.sub(_sub, text)
+
+
+# ---------------------------------------------------------------------------
+# Occurrence record
+# ---------------------------------------------------------------------------
+
+@dataclass
+class Occurrence:
+    path: str
+    sha256: str
+    language: str          # "ru" | "uk" | "unknown" | "n/a"
+    form: str              # chip | etap_tut | four_stage | route_phrase | plain_v_more | standalone | python_literal
+    classification: str    # TARGET | AMBIGUOUS | LEGACY_INPUT_ALIAS | USER_FACING
+    before: str
+    after: str
+    anchor: str
+    context: str
+    action: str             # REPLACE | PRESERVE
+
+
+# ---------------------------------------------------------------------------
+# Proven exact mappings (TASK 047 baseline + TASK 050 additions)
+# ---------------------------------------------------------------------------
+
+EXACT_PHRASE_MAP = {
+    "ru": {
+        "В море": "На пароме",
+        "Море: Корея → Грузия": "Паром: Корея → Грузия",
+        "Море Корея → Грузия — около 60 дней": "Паром Корея → Грузия — около 60 дней",
+    },
+    "uk": {
+        "В морі": "На поромі",
+        "Море: Корея → Грузія": "Пором: Корея → Грузія",
+        "Море Корея → Грузія — близько 60 днів": "Пором Корея → Грузія — близько 60 днів",
+    },
 }
-RAW_TEXT_ELEMENTS = {"script", "style"}
 
-RU_STATUS_OLD = "В море"
-RU_STATUS_NEW = "На пароме"
-UK_STATUS_OLD = "У морі"
-UK_STATUS_NEW = "На поромі"
-SHORT_OLD = "Море"
-RU_SHORT_NEW = "Паром"
-UK_SHORT_NEW = "Пором"
-
-SEPARATORS = (" ", "\u00b7", ":")  # space, middle dot (·), colon
-
-FORM_CLASSIFICATION = {
-    "status": "USER_FACING_STATUS",
-    "long": "USER_FACING_LONG",
-    "heading": "USER_FACING_HEADING",
-    "short": "USER_FACING_SHORT_STAGE",
-}
-
-TAG_RE = re.compile(r"<!--.*?-->|<!DOCTYPE[^>]*>|<[^>]+>", re.IGNORECASE | re.DOTALL)
-TAGNAME_RE = re.compile(r"^</?\s*([a-zA-Z][a-zA-Z0-9:_-]*)")
-CLASS_RE = re.compile(r"\bclass\s*=\s*\"([^\"]*)\"|\bclass\s*=\s*'([^']*)'", re.IGNORECASE)
-LANG_RE = re.compile(r"\blang\s*=\s*\"([^\"]*)\"|\blang\s*=\s*'([^']*)'", re.IGNORECASE)
-DATALANG_RE = re.compile(r"\bdata-lang\s*=\s*\"([^\"]*)\"|\bdata-lang\s*=\s*'([^']*)'", re.IGNORECASE)
-DATA_ATTR_RE = re.compile(r"(?i)(data-(?:ru|uk))\s*=\s*(\"|')(.*?)\2")
+CHIP_RE = re.compile(r'(<div class="chip">)В море(\s*·[^<]*</div>)')
+ETAP_TUT_RE = re.compile(
+    r'(<div class="etap tut"><div class="krug">\d+</div>)Море(:[^<]*</div>)'
+)
+FOUR_STAGE_RE = re.compile(r'(Корея\s*/\s*)Море(\s*/\s*Грузия\s*/\s*Киев)')
 
 
-def _form_to_classification(form: Optional[str]) -> str:
-    if form is None:
-        return "AMBIGUOUS"
-    return FORM_CLASSIFICATION.get(form, "AMBIGUOUS")
+def _bounded_context(s: str, start: int, end: int, radius: int = 40) -> str:
+    lo = max(0, start - radius)
+    hi = min(len(s), end + radius)
+    return s[lo:hi]
 
 
-def _prefix_transform(value: str, old: str, new: str) -> Tuple[str, bool]:
-    if value == old:
-        return new, True
-    if value.startswith(old):
-        rest = value[len(old):]
-        if rest and rest[0] in SEPARATORS:
-            return value.replace(old, new, 1), True
-    return value, False
+def transform_html(html: str, path: str, sha256: str) -> Tuple[str, List[Occurrence]]:
+    """Apply only proven mappings; anything else stays byte-identical and is
+    reported as AMBIGUOUS."""
+    occurrences: List[Occurrence] = []
+    result = html
 
+    def _chip_sub(m: "re.Match[str]") -> str:
+        before = m.group(0)
+        after = f'{m.group(1)}На пароме{m.group(2)}'
+        occurrences.append(Occurrence(
+            path=path, sha256=sha256, language="ru", form="chip",
+            classification="TARGET", before=before, after=after,
+            anchor="div.chip", context=_bounded_context(html, m.start(), m.end()),
+            action="REPLACE",
+        ))
+        return after
 
-def detect_form(value: str) -> Optional[str]:
-    """Auto-detect the ferry-wording form from an attribute value's content.
+    result = CHIP_RE.sub(_chip_sub, result)
 
-    Used only for data-ru/data-uk attributes, whose language is already
-    known from the attribute name itself.
-    """
-    stripped = value.strip()
-    for old in (RU_STATUS_OLD, UK_STATUS_OLD):
-        if stripped == old:
-            return "status"
-        if stripped.startswith(old):
-            rest = stripped[len(old):]
-            if rest[:1] == ":":
-                return "heading"
-            if rest[:1] in (" ", "\u00b7"):
-                return "long"
-    if stripped == SHORT_OLD:
-        return "short"
-    return None
+    def _etap_sub(m: "re.Match[str]") -> str:
+        before = m.group(0)
+        after = f'{m.group(1)}Паром{m.group(2)}'
+        occurrences.append(Occurrence(
+            path=path, sha256=sha256, language="ru", form="etap_tut",
+            classification="TARGET", before=before, after=after,
+            anchor="div.etap.tut>div.krug", context=_bounded_context(html, m.start(), m.end()),
+            action="REPLACE",
+        ))
+        return after
 
+    result = ETAP_TUT_RE.sub(_etap_sub, result)
 
-def transform_value(value: str, context: str, lang: Optional[str]) -> Tuple[str, str, Optional[str]]:
-    """Apply the ferry-wording mapping to a single string value.
+    def _stage_sub(m: "re.Match[str]") -> str:
+        before = m.group(0)
+        after = f'{m.group(1)}Паром{m.group(2)}'
+        occurrences.append(Occurrence(
+            path=path, sha256=sha256, language="ru", form="four_stage",
+            classification="TARGET", before=before, after=after,
+            anchor="progress-sequence", context=_bounded_context(html, m.start(), m.end()),
+            action="REPLACE",
+        ))
+        return after
 
-    Returns (new_value, action, resolved_lang) where action is one of
-    'applied', 'unchanged', 'ambiguous'.
-    """
-    stripped = value.strip()
-    if context in ("status", "long", "heading"):
-        new_ru, hit_ru = _prefix_transform(stripped, RU_STATUS_OLD, RU_STATUS_NEW)
-        if hit_ru:
-            return value.replace(stripped, new_ru, 1), "applied", "ru"
-        new_uk, hit_uk = _prefix_transform(stripped, UK_STATUS_OLD, UK_STATUS_NEW)
-        if hit_uk:
-            return value.replace(stripped, new_uk, 1), "applied", "uk"
-        return value, "unchanged", lang
-    if context == "short":
-        if stripped == SHORT_OLD:
-            if lang == "ru":
-                return value.replace(stripped, RU_SHORT_NEW, 1), "applied", "ru"
-            if lang == "uk":
-                return value.replace(stripped, UK_SHORT_NEW, 1), "applied", "uk"
-            return value, "ambiguous", None
-        return value, "unchanged", lang
-    return value, "unchanged", lang
+    result = FOUR_STAGE_RE.sub(_stage_sub, result)
 
-
-def classify_context(classes: Set[str]) -> Optional[str]:
-    for c in classes:
-        if "status" in c:
-            return "status"
-    for c in classes:
-        if "heading" in c:
-            return "heading"
-    for c in classes:
-        if "long" in c:
-            return "long"
-    for c in classes:
-        if c in ("timeline-legend", "stage-step", "short") or "stage-step" in c or "timeline-legend" in c:
-            return "short"
-    return None
-
-
-def parse_attrs_for_tag(tag_text: str) -> Tuple[Set[str], Optional[str]]:
-    classes: Set[str] = set()
-    m = CLASS_RE.search(tag_text)
-    if m:
-        val = m.group(1) if m.group(1) is not None else m.group(2)
-        classes = set(val.lower().split())
-    lang: Optional[str] = None
-    m2 = LANG_RE.search(tag_text)
-    if m2:
-        v = (m2.group(1) or m2.group(2) or "").lower()
-        if v in ("ru", "uk"):
-            lang = v
-    if lang is None:
-        m3 = DATALANG_RE.search(tag_text)
-        if m3:
-            v = (m3.group(1) or m3.group(2) or "").lower()
-            if v in ("ru", "uk"):
-                lang = v
-    if lang is None:
-        if "lang-ru" in classes:
-            lang = "ru"
-        elif "lang-uk" in classes:
-            lang = "uk"
-    return classes, lang
-
-
-def transform_document(text: str) -> Tuple[str, List[dict]]:
-    """Transform an HTML-like document and return (new_text, occurrences).
-
-    Each occurrence dict: language, form, context, before, after, anchor,
-    classification, action.
-    """
-    occurrences: List[dict] = []
-    tokens: List[Tuple[str, str]] = []
-    last_end = 0
-    for m in TAG_RE.finditer(text):
-        if m.start() > last_end:
-            tokens.append(("text", text[last_end:m.start()]))
-        tokens.append(("tag", m.group(0)))
-        last_end = m.end()
-    if last_end < len(text):
-        tokens.append(("text", text[last_end:]))
-
-    stack: List[Dict[str, Optional[str]]] = []
-
-    def in_raw_text() -> bool:
-        return any(f["tag"] in RAW_TEXT_ELEMENTS for f in stack)
-
-    def current_context_lang() -> Tuple[Optional[str], Optional[str]]:
-        ctx = None
-        lang = None
-        for frame in reversed(stack):
-            if ctx is None and frame.get("context"):
-                ctx = frame["context"]
-            if lang is None and frame.get("lang"):
-                lang = frame["lang"]
-            if ctx and lang:
-                break
-        return ctx, lang
-
-    out_parts: List[str] = []
-    idx = 0
-    for kind, chunk in tokens:
-        idx += 1
-        anchor = "token-%d" % idx
-        if kind == "text":
-            if in_raw_text() or not chunk.strip():
-                out_parts.append(chunk)
+    for lang, mapping in EXACT_PHRASE_MAP.items():
+        for src, dst in mapping.items():
+            if src in ("В море", "В морі"):
                 continue
-            ctx, lang = current_context_lang()
-            if ctx is None:
-                out_parts.append(chunk)
-                continue
-            new_val, action, resolved = transform_value(chunk, ctx, lang)
-            if action == "applied":
-                occurrences.append({
-                    "language": resolved, "form": ctx, "context": "TEXT_NODE",
-                    "before": chunk.strip(), "after": new_val.strip(),
-                    "anchor": anchor, "classification": _form_to_classification(ctx),
-                    "action": "APPLIED",
-                })
-                out_parts.append(new_val)
-            elif action == "ambiguous":
-                occurrences.append({
-                    "language": None, "form": ctx, "context": "TEXT_NODE",
-                    "before": chunk.strip(), "after": chunk.strip(),
-                    "anchor": anchor, "classification": "AMBIGUOUS",
-                    "action": "AMBIGUOUS",
-                })
-                out_parts.append(chunk)
-            else:
-                out_parts.append(chunk)
-            continue
-
-        # tag / comment / doctype token
-        if chunk.startswith("<!--") or chunk.upper().startswith("<!DOCTYPE"):
-            out_parts.append(chunk)
-            continue
-
-        is_end = chunk.startswith("</")
-        name_m = TAGNAME_RE.match(chunk)
-        tag_name = name_m.group(1).lower() if name_m else None
-        new_chunk = chunk
-
-        def _attr_repl(am: "re.Match", _anchor: str = anchor) -> str:
-            attr_name = am.group(1)
-            quote = am.group(2)
-            value = am.group(3)
-            lang_key = attr_name.lower().split("-")[1]
-            form = detect_form(value)
-            if form is None:
-                return am.group(0)
-            new_val, action, resolved = transform_value(value, form, lang_key)
-            if action == "applied":
-                occurrences.append({
-                    "language": lang_key, "form": form,
-                    "context": "ATTR_" + attr_name.upper(),
-                    "before": value, "after": new_val, "anchor": _anchor,
-                    "classification": _form_to_classification(form),
-                    "action": "APPLIED",
-                })
-                return attr_name + "=" + quote + new_val + quote
-            return am.group(0)
-
-        if not is_end:
-            new_chunk = DATA_ATTR_RE.sub(_attr_repl, chunk)
-        out_parts.append(new_chunk)
-
-        if is_end:
-            for i in range(len(stack) - 1, -1, -1):
-                if stack[i]["tag"] == tag_name:
-                    del stack[i:]
+            idx = 0
+            while True:
+                pos = result.find(src, idx)
+                if pos == -1:
                     break
-            continue
+                occurrences.append(Occurrence(
+                    path=path, sha256=sha256, language=lang, form="route_phrase",
+                    classification="TARGET", before=src, after=dst,
+                    anchor="text-or-attr", context=_bounded_context(result, pos, pos + len(src)),
+                    action="REPLACE",
+                ))
+                result = result[:pos] + dst + result[pos + len(src):]
+                idx = pos + len(dst)
 
-        self_closing = chunk.rstrip().endswith("/>")
-        if tag_name and tag_name not in VOID_ELEMENTS and not self_closing:
-            classes, lang = parse_attrs_for_tag(chunk)
-            context = classify_context(classes)
-            stack.append({"tag": tag_name, "context": context, "lang": lang})
+    idx = 0
+    while True:
+        pos = result.find("В море", idx)
+        if pos == -1:
+            break
+        occurrences.append(Occurrence(
+            path=path, sha256=sha256, language="ru", form="plain_v_more",
+            classification="TARGET", before="В море", after="На пароме",
+            anchor="text", context=_bounded_context(result, pos, pos + len("В море")),
+            action="REPLACE",
+        ))
+        result = result[:pos] + "На пароме" + result[pos + len("В море"):]
+        idx = pos + len("На пароме")
 
-    return "".join(out_parts), occurrences
+    idx = 0
+    while True:
+        pos = result.find("Море", idx)
+        if pos == -1:
+            break
+        occurrences.append(Occurrence(
+            path=path, sha256=sha256, language="unknown", form="standalone",
+            classification="AMBIGUOUS", before="Море", after="Море",
+            anchor="text", context=_bounded_context(result, pos, pos + len("Море")),
+            action="PRESERVE",
+        ))
+        idx = pos + len("Море")
+
+    return result, occurrences

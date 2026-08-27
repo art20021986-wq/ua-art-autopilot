@@ -1,12 +1,17 @@
-TASK_ID: task_049
+TASK_ID: task_050
 ROUND: 1
-CLAUDE_STATUS: BLOCKED
-CURRENT_ACTION: Prepared Gate A candidate-transform tool (cloud/tools/task_049_gate_a.py) for /home/Carix/cars_ui.py; UA-0006 container confirmed ALREADY_CORRECT (ONEYSELGF1046602), no DB write needed; actual Gate A execution against the real production file could not run in this round because this sandbox has no filesystem access to /home/Carix/cars_ui.py.
-FILES_CREATED: cloud/tools/task_049_gate_a.py, cloud/task_049_report.md, cloud/latest_status.md, cloud/owner_reply.md
+CLAUDE_STATUS: DONE
+CURRENT_ACTION: Corrected TASK 047 runner (importlib-based, no top_level_dir failure), fixed JSON/plain secret detection, added real UI coverage for chip/etap-tut/four-stage/route-phrase forms with AMBIGUOUS preservation for anything unproven, refactored verified read to keep bytes for structural analysis, added ast-based Python literal inventory, and implemented a strict allowlisted read-only CRM contract with full-SHA identity verification.
+FILES_CREATED: cloud/task_047_ferry_discovery/transform.py, cloud/task_047_ferry_discovery/discover.py, cloud/task_047_ferry_discovery/tests/__init__.py, cloud/task_047_ferry_discovery/tests/test_transform.py, cloud/task_047_ferry_discovery/tests/test_discover.py, cloud/task_047_ferry_discovery/run_tests.py, cloud/task_047_ferry_discovery/TASK_050_REPORT.md
 PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Пожалуйста, запустите cloud/tools/task_049_gate_a.py в среде PythonAnywhere (где реально доступен /home/Carix/cars_ui.py) и пришлите получившийся gate_a_receipt.json для аудита перед любым Gate B.
-NEXT_FOR_CHATGPT: Audit that the Gate A tool never writes outside /home/Carix/autopilot_inbox, never touches crm.db, and only proceeds past BLOCKED when SHA and anchors match exactly; once a real receipt is produced by an environment with access to the file, verify it and relay for owner APPROVE before any Gate B.
-UPDATED_AT_UTC: 2026-08-27T21:27:46Z
+CRM_TOUCHED: NO
+CRM_DB_WRITTEN: NO
+GATE_B_EXECUTED: NO
+UA_0009_PUBLISHED: NO
+OWNER_ACTION_REQUIRED: NO
+OWNER_QUESTION: NONE
+NEXT_FOR_CHATGPT: Independently execute python3 cloud/task_047_ferry_discovery/run_tests.py, confirm all tests pass including test_discover.TestSecretRedaction.test_scan_detects_secret, then decide on READY_FOR_CODEX_PHASE1_REAUDIT.
+UPDATED_AT_UTC: 2026-08-27T21:33:48Z
 CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
 MEMORY_VERSION_READ: 4
+UA0009_SAFE_TO_PUBLISH: NO
