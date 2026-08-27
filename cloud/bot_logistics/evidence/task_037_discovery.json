@@ -1,13 +1,311 @@
 {
   "crm_write": false,
-  "db": {},
+  "db": {
+    "candidate_count": 0,
+    "identity_stable": true,
+    "path": "/home/Carix/crm.db",
+    "quick_check_ok": true,
+    "schema_hint": [
+      {
+        "columns": [
+          "id",
+          "actor_id",
+          "action",
+          "entity_type",
+          "entity_id",
+          "field",
+          "old_value",
+          "new_value",
+          "created_at"
+        ],
+        "table": "audit"
+      },
+      {
+        "columns": [
+          "id",
+          "brand",
+          "model",
+          "year",
+          "vin",
+          "fuel",
+          "engine",
+          "color",
+          "mileage",
+          "trim",
+          "condition",
+          "accidents",
+          "auction_link",
+          "price_buy",
+          "price_extra",
+          "price_ship",
+          "price_customs",
+          "price_total",
+          "stage",
+          "photos",
+          "videos",
+          "docs",
+          "responsible",
+          "review_status",
+          "published",
+          "created_by",
+          "approved_by",
+          "created_at",
+          "updated_at",
+          "client_id",
+          "publish_pending",
+          "video_h",
+          "video_v",
+          "auto_number",
+          "engine_cc",
+          "gearbox",
+          "drive",
+          "mileage_km",
+          "condition_text",
+          "condition_photos",
+          "condition_videos",
+          "diag_report",
+          "diag_link",
+          "kr_buy_date",
+          "kr_parking",
+          "sea_container",
+          "sea_port_from",
+          "sea_date_out",
+          "ge_port",
+          "ge_arrived",
+          "ge_released",
+          "days_to_kyiv",
+          "ua_delivered",
+          "ua_handed",
+          "cost_purchase",
+          "cost_fees",
+          "cost_logistics",
+          "cost_total",
+          "price_uah",
+          "nbu_rate",
+          "status",
+          "owner_user",
+          "history",
+          "price_history",
+          "cover_photo",
+          "eta_manual",
+          "description",
+          "hidden_photos",
+          "diag_text",
+          "ge_to_kyiv_at"
+        ],
+        "table": "cars"
+      },
+      {
+        "columns": [
+          "id",
+          "name",
+          "phone",
+          "telegram",
+          "whatsapp",
+          "car_interest",
+          "budget",
+          "wishes",
+          "source",
+          "prepayment",
+          "stage",
+          "responsible",
+          "next_contact",
+          "review_status",
+          "created_by",
+          "approved_by",
+          "created_at",
+          "updated_at",
+          "tg_user_id"
+        ],
+        "table": "clients"
+      },
+      {
+        "columns": [
+          "id",
+          "entity_type",
+          "entity_id",
+          "author_id",
+          "text",
+          "file_id",
+          "created_at"
+        ],
+        "table": "comments"
+      },
+      {
+        "columns": [
+          "id",
+          "from_user_id",
+          "kind",
+          "text",
+          "file_id",
+          "media_group",
+          "tg_chat_id",
+          "tg_message_id",
+          "status",
+          "assigned_to",
+          "card_type",
+          "card_id",
+          "created_at",
+          "updated_at"
+        ],
+        "table": "inbox"
+      },
+      {
+        "columns": [
+          "code",
+          "role",
+          "created_by",
+          "created_at",
+          "used_by",
+          "used_at"
+        ],
+        "table": "invites"
+      },
+      {
+        "columns": [
+          "id",
+          "car_id",
+          "auto_number",
+          "vid",
+          "file_id",
+          "source_bot_id",
+          "razmer",
+          "mime",
+          "put",
+          "summa",
+          "status",
+          "tag",
+          "poryadok",
+          "kogda",
+          "kto",
+          "primechanie"
+        ],
+        "table": "media"
+      },
+      {
+        "columns": [
+          "nomer",
+          "file_id",
+          "msg_id"
+        ],
+        "table": "ns_video"
+      },
+      {
+        "columns": [
+          "user_id",
+          "full_name",
+          "username",
+          "role",
+          "active",
+          "added_by",
+          "added_at",
+          "note"
+        ],
+        "table": "staff"
+      }
+    ],
+    "sha256_after": "1750352a9519822a2911f70f458785efc39a862da49349d1871be5db14a3c162",
+    "sha256_before": "1750352a9519822a2911f70f458785efc39a862da49349d1871be5db14a3c162"
+  },
   "db_write": false,
   "errors": [
-    "too_many_source_anchors:/home/Carix/cars_ui.py"
+    "ua0006_no_match_found"
   ],
   "mode": "READ_ONLY_DISCOVERY",
   "production_write": false,
-  "sources": [],
+  "sources": [
+    {
+      "anchors": [
+        {
+          "function": "card_kb",
+          "line": 302,
+          "matches": [
+            "срок доставки"
+          ],
+          "snippet": "296:         [InlineKeyboardButton(\"Редактировать\", callback_data=\"car_edit:%d\" % cid),\n297:          InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n298:         [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid),\n299:          InlineKeyboardButton(\"Сменить этап\", callback_data=\"car_stage:%d\" % cid)],\n300:         [InlineKeyboardButton(\"Описание\",\n301:                               callback_data=\"car_setf:%d:condition_text\" % cid)],\n302:         [InlineKeyboardButton(\"Срок доставки\", callback_data=\"car_setf:%d:eta_days\" % cid)],\n303:     ]\n304:     if is_owner(staff):\n305:         rows.append([InlineKeyboardButton(\"Цена по этапам\",\n306:                                           callback_data=\"car_price:%d\" % cid)])\n307:     klient = client_of(card)\n308:     rows.append([InlineKeyboardButton("
+        },
+        {
+          "function": "cars_list",
+          "line": 403,
+          "matches": [
+            "срок доставки"
+          ],
+          "snippet": "397: \n398: LABELS_ALL = {\n399:     \"brand\": \"марка\", \"model\": \"модель\", \"year\": \"год\", \"vin\": \"VIN\",\n400:     \"fuel\": \"топливо\", \"engine_cc\": \"объём\", \"gearbox\": \"КПП\", \"drive\": \"привод\",\n401:     \"mileage_km\": \"пробег\", \"color\": \"цвет\", \"condition_text\": \"тех. состояние\",\n402:     \"price_uah\": \"цена\", \"sea_container\": \"контейнер\", \"diag_link\": \"ссылка на отчёт\",\n403:     \"eta_days\": \"срок доставки\", \"auto_number\": \"номер авто\",\n404:     \"diag_text\": \"описание диагностики\",\n405: }\n406: \n407: EDITABLE = [\n408:     (\"auto_number\", \"Номер авто\"), (\"brand\", \"Марка\"), (\"model\", \"Модель\"),\n409:     (\"year\", \"Год выпуска\"), (\"vin\", \"VIN\"), (\"fuel\", \"Топливо\"),"
+        },
+        {
+          "function": "cars_list",
+          "line": 414,
+          "matches": [
+            "дней до прибытия"
+          ],
+          "snippet": "408:     (\"auto_number\", \"Номер авто\"), (\"brand\", \"Марка\"), (\"model\", \"Модель\"),\n409:     (\"year\", \"Год выпуска\"), (\"vin\", \"VIN\"), (\"fuel\", \"Топливо\"),\n410:     (\"engine_cc\", \"Объём, см³\"), (\"gearbox\", \"КПП\"), (\"drive\", \"Привод\"),\n411:     (\"mileage_km\", \"Пробег\"), (\"color\", \"Цвет\"), (\"condition_text\", \"Описание\"),\n412:     (\"price_uah\", \"Цена продажи\"), (\"diag_link\", \"Ссылка на отчёт\"),\n413:     (\"diag_text\", \"Описание диагностики\"),\n414:     (\"eta_days\", \"Дней до прибытия\"),\n415:     (\"sea_container\", \"Номер контейнера\"),\n416: ]\n417: MONEY = {\"price_uah\", \"cost_total\", \"cost_purchase\", \"cost_fees\", \"cost_logistics\"}\n418: NUMERIC = {\"engine_cc\", \"mileage_km\", \"price_uah\"}\n419: \n420: "
+        },
+        {
+          "function": "cars_list",
+          "line": 415,
+          "matches": [
+            "номер контейнера"
+          ],
+          "snippet": "409:     (\"year\", \"Год выпуска\"), (\"vin\", \"VIN\"), (\"fuel\", \"Топливо\"),\n410:     (\"engine_cc\", \"Объём, см³\"), (\"gearbox\", \"КПП\"), (\"drive\", \"Привод\"),\n411:     (\"mileage_km\", \"Пробег\"), (\"color\", \"Цвет\"), (\"condition_text\", \"Описание\"),\n412:     (\"price_uah\", \"Цена продажи\"), (\"diag_link\", \"Ссылка на отчёт\"),\n413:     (\"diag_text\", \"Описание диагностики\"),\n414:     (\"eta_days\", \"Дней до прибытия\"),\n415:     (\"sea_container\", \"Номер контейнера\"),\n416: ]\n417: MONEY = {\"price_uah\", \"cost_total\", \"cost_purchase\", \"cost_fees\", \"cost_logistics\"}\n418: NUMERIC = {\"engine_cc\", \"mileage_km\", \"price_uah\"}\n419: \n420: \n421: async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "function": "stage_menu",
+          "line": 1003,
+          "matches": [
+            "дней до прибытия"
+          ],
+          "snippet": "997:         \"Где машина?\\nСейчас: %s\" % S.status_label(card.get(\"status\")),\n998:         reply_markup=InlineKeyboardMarkup(rows))\n999:     raise ApplicationHandlerStop\n1000: \n1001: \n1002: # Грузия → Украина: выезд отмечает владелец,\n1003: # и с этого дня отсчитывается ровно столько дней до прибытия.\n1004: DNEI_GRUZIA_UKRAINA = 15\n1005: \n1006: \n1007: async def stage_set(update: Update, context: ContextTypes.DEFAULT_TYPE):\n1008:     q = update.callback_query\n1009:     await q.answer()"
+        },
+        {
+          "function": "stage_set",
+          "line": 1066,
+          "matches": [
+            "срок доставки"
+          ],
+          "snippet": "1060:     lines.append(\"Сейчас: %s\" % S.money(_int(card.get(\"price_uah\"))))\n1061:     lines.append(\"Пришлите новую цену сообщением — или оставьте прежнюю.\")\n1062:     context.user_data[\"car_wait\"] = {\"card_id\": cid, \"field\": \"price_uah\"}\n1063:     rows.append([InlineKeyboardButton(\"Оставить прежнюю\",\n1064:                                       callback_data=\"car_keepprice:%d\" % cid)])\n1065:     if left is not None:\n1066:         rows.append([InlineKeyboardButton(\"Изменить срок доставки\",\n1067:                                           callback_data=\"car_setf:%d:eta_days\" % cid)])\n1068:     rows.append([InlineKeyboardButton(\"← Вернуться к карточке\",\n1069:                                       callback_data=\"car_open:%d\" % cid)])\n1070: \n1071:     await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n1072:                                reply_markup=InlineKeyboardMarkup(rows))"
+        }
+      ],
+      "line_count": 2756,
+      "path": "/home/Carix/cars_ui.py",
+      "sha256": "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7",
+      "size": 130378
+    },
+    {
+      "anchors": [],
+      "line_count": 1460,
+      "path": "/home/Carix/team_bot.py",
+      "sha256": "059e3e044a8bb3d4c1fe7ef4b43c40eacb491fb3614e9929e0c01dc7a9de9430",
+      "size": 65553
+    },
+    {
+      "anchors": [],
+      "line_count": 249,
+      "path": "/home/Carix/avtoperedacha.py",
+      "sha256": "e0e5e0d55672689dec25c1ac69488b86fc1af00570f0ec563fc8095a1858b7d1",
+      "size": 7638
+    },
+    {
+      "anchors": [],
+      "line_count": 742,
+      "path": "/home/Carix/db.py",
+      "sha256": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
+      "size": 29515
+    },
+    {
+      "anchors": [],
+      "line_count": 149,
+      "path": "/home/Carix/run_all.py",
+      "sha256": "7deb18698f792b61fd734b36451296343ec528e15ccd86798d6cbc4a7a75eca5",
+      "size": 5822
+    },
+    {
+      "anchors": [],
+      "line_count": 1472,
+      "path": "/home/Carix/start_safe.py",
+      "sha256": "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007",
+      "size": 60219
+    }
+  ],
   "status": "BLOCKED",
   "task_id": "task_037",
   "ua0009_published": false
