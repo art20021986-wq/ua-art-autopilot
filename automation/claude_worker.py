@@ -25,6 +25,7 @@ DEFAULT_TIMEOUT_SECONDS = 900
 MAX_FILES = 20
 MAX_TOTAL_FILE_CHARS = 4_000_000
 STATUS_REL = "cloud/latest_status.md"
+OWNER_REPLY_REL = "cloud/owner_reply.md"
 
 OUTPUT_SCHEMA = {
     "type": "object",
@@ -367,9 +368,9 @@ def required_output_paths(task_text: str) -> set[str]:
         task_text,
     )
     if not match:
-        return {STATUS_REL}
+        return {STATUS_REL, OWNER_REPLY_REL}
     paths = set(re.findall(r"`(cloud/[A-Za-z0-9._/-]+)`", match.group(1)))
-    paths.add(STATUS_REL)
+    paths.update({STATUS_REL, OWNER_REPLY_REL})
     return paths
 
 
@@ -408,6 +409,27 @@ def write_fallback_status(task_id: str, result: dict, written: list[str]) -> str
     return rel
 
 
+def normalize_status_timestamp() -> None:
+    path = _safe_destination(STATUS_REL)
+    if not path.exists():
+        return
+    content = path.read_text(encoding="utf-8")
+    updated_at = (
+        dt.datetime.now(dt.timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+    line = f"UPDATED_AT_UTC: {updated_at}"
+    if re.search(r"(?m)^UPDATED_AT_UTC:.*$", content):
+        content = re.sub(r"(?m)^UPDATED_AT_UTC:.*$", line, content)
+    else:
+        if content and not content.endswith("\n"):
+            content += "\n"
+        content += line + "\n"
+    _atomic_write(path, content)
+
+
 def main() -> None:
     task = latest_task()
     task_text = task.read_text(encoding="utf-8")
@@ -427,6 +449,7 @@ def main() -> None:
     written = safe_write(result["files"])
     if STATUS_REL not in written:
         written.append(write_fallback_status(task.stem, result, written))
+    normalize_status_timestamp()
 
     static_check_python(written)
     print(
