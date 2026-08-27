@@ -1,72 +1,50 @@
-# UA Cards Unified — Operator Instructions (Gate A only)
+# Operator Instructions — UA Cards Unified Gate A (TASK 021)
 
 ## Scope
 
-This package performs **Gate A** local validation of UA card data only.
-It never writes to production, never calls PythonAnywhere, and never
-performs Gate B (production application). Gate B requires a separate,
-explicit owner approval outside this repository/package.
+This package performs Gate A only: bounded read-only discovery of exact
+hardcoded candidate paths, an isolated preview transform written only
+under `/home/Carix/video/reports/ua_cards_unified/`, and a read-only
+CRM evidence check for UA-0009. It never writes to a live card,
+generator, or database, never reloads the web app, and never runs
+Production Gate B.
 
-## Layout
+## What this GitHub round did
 
-```
-cloud/ua_cards_unified/
-  common.py            shared constants/helpers (paths, banned IDs)
-  preflight.py          read-only audit (run first, or via launcher)
-  runner.py             Gate A validation of each card
-  manifest_builder.py   combines preflight + run results into manifest.json
-  launcher.py            no-argument restricted entrypoint (runs all 3 stages)
-  data/input_cards/      put real card *.json files here (NOT synthetic UA-0001..UA-0008)
-  output/                generated locally: preflight_report.json, run_log.json,
-                         manifest.json, cards/*.json
-  tests/test_pipeline.py unit tests using temp directories only
-```
+This round only authored and statically reviewed code inside this
+repository. No PythonAnywhere command was executed by this round. No
+preview was generated on the live filesystem. No claim is made about
+live HTTP reachability.
 
-## How to run
-
-1. Place real card JSON files (schema: `card_id`, `title`, `payload`) into
-   `cloud/ua_cards_unified/data/input_cards/`.
-2. From the `cloud/ua_cards_unified/` directory, run:
-
-   ```
-   python launcher.py
-   ```
-
-   The launcher takes **no arguments**. Passing any argument aborts
-   immediately (exit code 2) without running anything.
-
-3. Review the generated files under `output/`:
-   - `preflight_report.json` — read-only audit findings.
-   - `run_log.json` — per-card validation results and overall gate_status.
-   - `manifest.json` — final combined gate_status and blocking_reasons.
-
-## Gate semantics
-
-- `gate_status: BLOCKED` — at least one problem was found (missing/invalid
-  card, banned synthetic id, zero cards, preflight failure). No further
-  action is taken automatically.
-- `gate_status: AWAITING_GATE_B` — every discovered card passed Gate A
-  validation. This is a **status label only**; it does not trigger any
-  write to production or PythonAnywhere. Advancing to Gate B is a separate
-  manual step that requires explicit owner approval and is outside this
-  package's code.
-
-## Safety guarantees enforced in code
-
-- `BANNED_SYNTHETIC_IDS` in `common.py` = `UA-0001` .. `UA-0008`. Any card
-  using one of these IDs is rejected at both preflight and runner stages.
-- No file in this package makes network calls, imports `requests`/`urllib`
-  for outbound calls, or references PythonAnywhere credentials/URLs.
-- `preflight.py` never modifies input cards; it only reads them and writes
-  its own report file.
-- A single failing card blocks the **entire batch** — the pipeline never
-  reports partial success as AWAITING_GATE_B.
-
-## Running the tests
+## Exact one-line PythonAnywhere Bash command (documented only, NOT executed here)
 
 ```
-python -m unittest cloud/ua_cards_unified/tests/test_pipeline.py -v
+cd /home/Carix && python3 -m ua_cards_unified.launcher
 ```
 
-All tests operate on temporary directories only; they never touch
-`data/input_cards/` or any production system.
+This command must only be run manually by the owner/operator on
+PythonAnywhere after this package has been reviewed and after the
+owner explicitly authorizes a Gate A execution attempt. Running it:
+
+- performs discovery only against the exact hardcoded candidate paths
+  listed in `common.py`;
+- writes only under the two allowlisted report/preview roots;
+- never touches production cards, generators, the WSGI process, or
+  scheduled tasks;
+- produces a `gate_a_receipt.json` under the report root with hashes.
+
+## Preconditions before any real execution
+
+1. The full offline unittest suite must pass:
+   `python3 -m unittest discover -s cloud/ua_cards_unified/tests -t cloud`
+2. A manifest must be built via `manifest_builder.build_manifest(...)`
+   with real discovered input hashes recorded before execution.
+3. The owner must explicitly authorize the Gate A attempt.
+
+## What this package will never do
+
+- No `--apply`, arbitrary-root, arbitrary-output, production, reload,
+  or database-write flag exists.
+- No recursive filesystem scan of `/home/Carix`.
+- No synthetic substitution for UA-0001..UA-0008.
+- No publication of UA-0009 based on CRM presence alone.

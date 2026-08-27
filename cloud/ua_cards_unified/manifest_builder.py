@@ -1,98 +1,70 @@
-#!/usr/bin/env python3
-"""Manifest builder for the UA cards unified pipeline (Gate A only).
+"""
+Deterministic manifest builder for UA Cards Unified Gate A (TASK 021).
 
-Builds output/manifest.json summarizing the preflight + runner results.
-Refuses to mark the pipeline AWAITING_GATE_B unless:
-  - preflight report exists and status == PASS
-  - run_log exists, has at least 1 card, and zero failed cards
-  - runner itself already reported AWAITING_GATE_B
-This utility does not touch production or PythonAnywhere, and it never
-triggers Gate B (production application) by itself.
+Accepts no arbitrary paths from the command line. Only bounded values
+assembled by the caller (runner/launcher) may be included. No path in
+this module is derived from user-supplied CLI arguments.
 """
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import (  # noqa: E402
-    ensure_dirs,
-    GateStatus,
-    MANIFEST_PATH,
-    PREFLIGHT_REPORT_PATH,
-    RUN_LOG_PATH,
-    utc_now_iso,
-    write_json,
-)
+from . import common
+
+SELF_MODULE_NAMES = [
+    "runner.py", "preflight.py", "manifest_builder.py",
+    "launcher.py", "verifier.py", "common.py",
+]
 
 
-def _load(path: Path) -> Optional[Dict[str, Any]]:
-    if not path.exists():
-        return None
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+def _self_hashes(package_dir: Path) -> dict[str, str]:
+    hashes: dict[str, str] = {}
+    for name in SELF_MODULE_NAMES:
+        p = package_dir / name
+        if p.exists():
+            hashes[name] = common.sha256_file(p)
+    return hashes
 
 
-def build_manifest() -> Dict[str, Any]:
-    ensure_dirs()
-    preflight = _load(PREFLIGHT_REPORT_PATH)
-    run_log = _load(RUN_LOG_PATH)
-
-    blocking_reasons = []
-
-    if preflight is None:
-        blocking_reasons.append("preflight_report.json missing; run preflight.py first.")
-    elif preflight.get("status") != "PASS":
-        blocking_reasons.append("preflight status is not PASS.")
-
-    if run_log is None:
-        blocking_reasons.append("run_log.json missing; run runner.py first.")
-    else:
-        if run_log.get("total_cards", 0) == 0:
-            blocking_reasons.append("No cards were processed.")
-        if run_log.get("failed_cards", 0) > 0:
-            blocking_reasons.append(f"{run_log['failed_cards']} card(s) failed validation.")
-        if run_log.get("gate_status") != GateStatus.AWAITING_GATE_B:
-            blocking_reasons.append("runner did not report AWAITING_GATE_B.")
-
-    gate_status = GateStatus.BLOCKED if blocking_reasons else GateStatus.AWAITING_GATE_B
-
-    manifest = {
-        "generated_at_utc": utc_now_iso(),
-        "gate_status": gate_status,
-        "blocking_reasons": blocking_reasons,
-        "preflight_summary": {
-            "status": (preflight or {}).get("status"),
-            "cards_discovered": (preflight or {}).get("cards_discovered"),
-        },
-        "run_summary": {
-            "total_cards": (run_log or {}).get("total_cards"),
-            "passed_cards": (run_log or {}).get("passed_cards"),
-            "failed_cards": (run_log or {}).get("failed_cards"),
-        },
-        "production_touched": False,
-        "pythonanywhere_executed": False,
-        "note": (
-            "AWAITING_GATE_B here means the pipeline is ready for a SEPARATE, "
-            "OWNER-approved Gate B step. This manifest builder never triggers "
-            "Gate B itself and never writes to production."
-        ),
+def build_manifest(
+    task_id: str,
+    source_provenance: str,
+    discovered_inputs: dict[str, str],
+    protected_paths_before: dict[str, str],
+    write_roots: list[str],
+    planned_outputs: list[str],
+    package_dir: Path,
+) -> dict[str, Any]:
+    manifest: dict[str, Any] = {
+        "task_id": task_id,
+        "source_provenance": source_provenance,
+        "discovered_inputs": dict(sorted(discovered_inputs.items())),
+        "protected_paths_before": dict(sorted(protected_paths_before.items())),
+        "write_roots_allowlist": sorted(write_roots),
+        "planned_outputs": sorted(planned_outputs),
+        "code_hashes": _self_hashes(package_dir),
+        "target_mode": "GATE_A_REPORT_PREVIEW_ONLY",
+        "gate_a": True,
+        "gate_b": False,
     }
-
-    write_json(MANIFEST_PATH, manifest)
+    canonical = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
+    manifest["manifest_sha256"] = common.sha256_bytes(canonical.encode("utf-8"))
     return manifest
 
 
-def main() -> int:
-    manifest = build_manifest()
-    print(f"Manifest gate_status: {manifest['gate_status']}")
-    if manifest["blocking_reasons"]:
-        for reason in manifest["blocking_reasons"]:
-            print(f" - {reason}")
-    return 0 if manifest["gate_status"] == GateStatus.AWAITING_GATE_B else 1
+def serialize_manifest(manifest: dict[str, Any]) -> str:
+    return json.dumps(manifest, sort_keys=True, indent=2)
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+def manifest_content_hash(manifest: dict[str, Any]) -> str:
+    without_self_hash = {k: v for k, v in manifest.items() if k != "manifest_sha256"}
+    canonical = json.dumps(without_self_hash, sort_keys=True, separators=(",", ":"))
+    return common.sha256_bytes(canonical.encode("utf-8"))
+
+
+def verify_manifest_integrity(manifest: dict[str, Any]) -> bool:
+    expected = manifest.get("manifest_sha256")
+    actual = manifest_content_hash(manifest)
+    return expected == actual

@@ -1,128 +1,79 @@
-#!/usr/bin/env python3
-"""Read-only preflight/audit utility for the UA cards unified pipeline.
+"""
+Preflight policy checks for UA Cards Unified Gate A package.
 
-This utility performs NO writes to source/input card data and NO writes to
-production or PythonAnywhere. It inspects the local environment and the
-local input directory only, and writes its own report to a local output
-file (output/preflight_report.json), which is not production data.
+Design goal (TASK 021 mandatory fix over the rejected TASK 018 package):
 
-Exit codes:
-  0 -> preflight PASS (safe to proceed to runner.py)
-  1 -> preflight FAIL (do not run runner.py)
+- This module NEVER scans the runner's own source text for banned
+  field-name substrings (e.g. "api_url"). It only ever inspects
+  *discovered data identifiers* explicitly supplied by the caller.
+- It distinguishes real production identifiers (UA-0001..UA-0009) from
+  synthetic/demo placeholder identifiers, and NEVER treats the real
+  identifiers as banned.
 """
 from __future__ import annotations
 
-import json
-import os
-import sys
+import re
 from pathlib import Path
+from typing import Iterable
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import (  # noqa: E402
-    ensure_dirs,
-    load_json_cards,
-    is_banned_synthetic,
-    FORBIDDEN_ENV_MARKERS,
-    PREFLIGHT_REPORT_PATH,
-    REQUIRED_CARD_FIELDS,
-    utc_now_iso,
-    write_json,
-)
+from . import common
 
+SYNTHETIC_DEMO_PATTERNS = [
+    re.compile(r"^DEMO-", re.IGNORECASE),
+    re.compile(r"^TEST-", re.IGNORECASE),
+    re.compile(r"^FAKE-", re.IGNORECASE),
+    re.compile(r"^SAMPLE-", re.IGNORECASE),
+    re.compile(r"^SYNTH-", re.IGNORECASE),
+    re.compile(r"^PLACEHOLDER", re.IGNORECASE),
+]
 
-def check_env_markers():
-    findings = []
-    for marker in FORBIDDEN_ENV_MARKERS:
-        if os.environ.get(marker):
-            findings.append(f"Forbidden environment marker present: {marker}")
-    return findings
-
-
-def check_input_cards():
-    findings = []
-    cards = load_json_cards()
-    if not cards:
-        findings.append("No input cards found under data/input_cards/ (nothing to process).")
-        return findings, cards
-    seen_ids = set()
-    for card in cards:
-        source = card.get("_source_file", "unknown") if isinstance(card, dict) else "unknown"
-        if not isinstance(card, dict):
-            findings.append(f"Card file does not contain a JSON object: {source}")
-            continue
-        if "_load_error" in card:
-            findings.append(f"Card file failed to parse as JSON: {source} ({card['_load_error']})")
-            continue
-        card_id = card.get("card_id")
-        if not card_id:
-            findings.append(f"Card missing card_id: {source}")
-            continue
-        if is_banned_synthetic(card_id):
-            findings.append(
-                f"BANNED synthetic placeholder id detected ({card_id}) in {source}. "
-                "UA-0001..UA-0008 must never be processed."
-            )
-        if card_id in seen_ids:
-            findings.append(f"Duplicate card_id detected: {card_id} ({source})")
-        seen_ids.add(card_id)
-        for field in REQUIRED_CARD_FIELDS:
-            if field not in card:
-                findings.append(f"Card {card_id} missing required field '{field}' ({source})")
-    return findings, cards
+# Names of this package's own source files. Used only to refuse
+# self-scanning; never used to scan data.
+THIS_PACKAGE_FILES = {
+    "runner.py", "preflight.py", "manifest_builder.py", "launcher.py",
+    "verifier.py", "common.py",
+}
 
 
-def check_no_network_config():
-    """Scan this package's own source for accidental production/network wiring."""
-    findings = []
-    suspicious_names = ["api_url", "webhook", "production_url", "prod_endpoint"]
-    for path in Path(__file__).resolve().parent.rglob("*.py"):
-        try:
-            text = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            continue
-        lowered = text.lower()
-        for name in suspicious_names:
-            if name in lowered:
-                findings.append(
-                    f"Possible network/production reference '{name}' found in {path.name}; verify manually."
-                )
-    return findings
+def is_real_card_code(code: str) -> bool:
+    """UA-0001..UA-0009 are real production identifiers. Never banned."""
+    return code in common.ALL_CODES
 
 
-def run_preflight() -> dict:
-    ensure_dirs()
-    env_findings = check_env_markers()
-    card_findings, cards = check_input_cards()
-    network_findings = check_no_network_config()
-
-    all_findings = env_findings + card_findings + network_findings
-    blocking = list(env_findings) + list(network_findings) + [
-        f for f in card_findings
-        if ("BANNED" in f or "missing" in f or "failed to parse" in f
-            or "Duplicate" in f or "does not contain" in f)
-    ]
-
-    status = "FAIL" if blocking else "PASS"
-
-    report = {
-        "generated_at_utc": utc_now_iso(),
-        "status": status,
-        "cards_discovered": len(cards),
-        "findings": all_findings,
-        "blocking_findings": blocking,
-        "gate": "GATE_A_PREFLIGHT",
-        "production_touched": False,
-        "pythonanywhere_executed": False,
-    }
-    write_json(PREFLIGHT_REPORT_PATH, report)
-    return report
+def is_synthetic_placeholder(identifier: str) -> bool:
+    """Detect synthetic/demo placeholders in *discovered data*, never in
+    the package's own source code and never in the real UA-0001..UA-0009
+    identifiers."""
+    if is_real_card_code(identifier):
+        return False
+    for pattern in SYNTHETIC_DEMO_PATTERNS:
+        if pattern.search(identifier):
+            return True
+    return False
 
 
-def main() -> int:
-    report = run_preflight()
-    print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0 if report["status"] == "PASS" else 1
+def reject_if_package_self_scan(path: Path) -> None:
+    """Guard used by tests to prove the preflight never scans its own
+    module files for banned substrings. If a caller mistakenly passes
+    one of this package's own files, refuse to run pattern scanning on
+    it and raise, instead of producing a false positive."""
+    if path.name in THIS_PACKAGE_FILES:
+        raise common.GateAError(
+            f"Refusing to preflight-scan the package's own source file: {path}"
+        )
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+def scan_discovered_identifiers(identifiers: Iterable[str]) -> list[str]:
+    """Return the subset of *discovered data identifiers* flagged as
+    synthetic placeholders. Real UA-0001..UA-0009 codes are always
+    excluded from this result. This function never receives or scans
+    this package's own source code."""
+    return [i for i in identifiers if is_synthetic_placeholder(i)]
+
+
+def validate_required_real_codes(discovered_codes: Iterable[str]) -> list[str]:
+    """Return the list of required real codes UA-0001..UA-0008 that are
+    missing from discovered_codes. UA-0009 has a separate readiness
+    gate and is not required here."""
+    discovered = set(discovered_codes)
+    return [c for c in common.REAL_CODES if c not in discovered]
