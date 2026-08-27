@@ -3,7 +3,8 @@
 OWNER REQUEST: «Полная автоматическая замена текста “В море” на “На пароме” во всей системе UA ART. 9 карточек и все будущие».
 MODE: SANDBOX_GATE_A / AUTOMATIC_PIPELINE / NO_PRODUCTION_WRITE
 MAX_ROUNDS: 4
-PARENT_TASK: task_040 (queue-safe reissue; the original run was cancelled before checkout by GitHub pending-run replacement).\nDEPENDS_ON: task_041 must finish or reach a safe terminal state; the workflow queue must preserve task order.
+PARENT_TASK: task_040 (queue-safe reissue; the original run was cancelled before checkout by GitHub pending-run replacement).
+DEPENDS_ON: task_041 must finish or reach a safe terminal state; the workflow queue must preserve task order.
 PROJECT_SCOPE: UA-0001..UA-0009 and every future UA-XXXX card.
 MEMORY_PREFLIGHT: REQUIRED.
 
