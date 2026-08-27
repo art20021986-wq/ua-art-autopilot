@@ -56,7 +56,6 @@ OUTPUT_SCHEMA = {
                 "Use exactly one object per unique path and include the full file "
                 "content. Never repeat a path in this array."
             ),
-            "uniqueItems": True,
             "items": {
                 "type": "object",
                 "properties": {
