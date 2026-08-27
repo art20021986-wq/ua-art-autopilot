@@ -230,3 +230,8 @@ OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
 NEXT_FOR_CHATGPT: independently run standard-library tests, audit controller/workflow, install reviewed workflow, and monitor the one read-only PythonAnywhere discovery.
 ```
+
+
+## ROUND 2 — safe retry after infrastructure-only rebase conflict
+
+The first Claude generation completed with all requested files and Python static checks PASS, but its cloud-only commit was not pushed because concurrent TASK 038 changed only `cloud/latest_status.md` and `cloud/owner_reply.md`. No task output reached main and no production action occurred. The workflow has now been hardened to resolve only those two exact shared-status conflicts by keeping the newer task output, while every code conflict remains fail-closed. Regenerate the complete TASK 039 deliverables from current main and preserve all requirements above. Do not weaken or omit tests, controller validation, strict JSON, source/DB read-only boundaries, or the no-production markers.
