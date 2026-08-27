@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import http.client
 import json
 import os
@@ -23,12 +24,26 @@ DEFAULT_MODEL = "claude-sonnet-5"
 DEFAULT_MAX_TOKENS = 64_000
 MAX_ALLOWED_TOKENS = 128_000
 DEFAULT_TIMEOUT_SECONDS = 1_200
-DEFAULT_NETWORK_ATTEMPTS = 5
+DEFAULT_TOTAL_BUDGET_SECONDS = 1_500
+DEFAULT_NETWORK_ATTEMPTS = 4
 MAX_NETWORK_ATTEMPTS = 8
 MAX_FILES = 20
 MAX_TOTAL_FILE_CHARS = 4_000_000
 STATUS_REL = "cloud/latest_status.md"
 OWNER_REPLY_REL = "cloud/owner_reply.md"
+MEMORY_ROOT = CLOUD / "shared_memory"
+MAX_MEMORY_FILE_BYTES = 2_000_000
+MEMORY_AUTHORITY_LEVELS = [
+    "OWNER_DIRECTIVE",
+    "OWNER_APPROVAL",
+    "VERIFIED_PRODUCTION",
+    "VERIFIED_CRM",
+    "CANONICAL_GITHUB",
+    "AUTOMATED_EVIDENCE",
+    "AI_REPORT",
+    "HYPOTHESIS",
+]
+MEMORY_EXCLUSIVE_CLASSES = {"DECISION", "OWNER_DIRECTIVE", "APPROVAL", "FACT"}
 
 OUTPUT_SCHEMA = {
     "type": "object",
@@ -82,6 +97,153 @@ def latest_task() -> pathlib.Path:
     if not files:
         raise SystemExit("NO_TASK")
     return files[-1]
+
+
+def _canonical_json(value: object) -> str:
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+
+
+def _read_memory_file(memory_root: pathlib.Path, rel: str) -> bytes:
+    pure = pathlib.PurePosixPath(rel)
+    if pure.is_absolute() or not pure.parts or ".." in pure.parts:
+        raise SystemExit(f"SHARED_MEMORY_UNSAFE_PATH:{rel}")
+
+    root = memory_root.resolve(strict=True)
+    candidate = memory_root.joinpath(*pure.parts)
+    if candidate.is_symlink() or not candidate.is_file():
+        raise SystemExit(f"SHARED_MEMORY_NOT_REGULAR:{rel}")
+    resolved = candidate.resolve(strict=True)
+    if not resolved.is_relative_to(root):
+        raise SystemExit(f"SHARED_MEMORY_PATH_ESCAPE:{rel}")
+    size = candidate.stat().st_size
+    if size > MAX_MEMORY_FILE_BYTES:
+        raise SystemExit(f"SHARED_MEMORY_FILE_TOO_LARGE:{rel}:{size}")
+    return candidate.read_bytes()
+
+
+def load_shared_memory_context(memory_root: pathlib.Path = MEMORY_ROOT) -> dict:
+    """Verify canonical managed-file hashes, then build a deterministic context."""
+    if memory_root.is_symlink() or not memory_root.is_dir():
+        raise SystemExit("SHARED_MEMORY_ROOT_INVALID")
+
+    try:
+        manifest = json.loads(_read_memory_file(memory_root, "manifest.json"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SystemExit("SHARED_MEMORY_MANIFEST_INVALID") from exc
+    if not isinstance(manifest, dict):
+        raise SystemExit("SHARED_MEMORY_MANIFEST_NOT_OBJECT")
+
+    memory_version = manifest.get("memory_version")
+    managed = manifest.get("managed_files")
+    hashes = manifest.get("file_hashes")
+    if not isinstance(memory_version, int) or memory_version < 1:
+        raise SystemExit("SHARED_MEMORY_VERSION_INVALID")
+    if manifest.get("canonical_branch") != "main":
+        raise SystemExit("SHARED_MEMORY_BRANCH_INVALID")
+    if not isinstance(managed, list) or not managed or len(managed) != len(set(managed)):
+        raise SystemExit("SHARED_MEMORY_MANAGED_FILES_INVALID")
+    if not isinstance(hashes, dict):
+        raise SystemExit("SHARED_MEMORY_HASHES_INVALID")
+
+    required = {"records.jsonl", "state/current_status.json"}
+    if not required.issubset(set(managed)):
+        raise SystemExit("SHARED_MEMORY_REQUIRED_FILES_MISSING")
+
+    verified: dict[str, bytes] = {}
+    for rel in managed:
+        if not isinstance(rel, str):
+            raise SystemExit("SHARED_MEMORY_MANAGED_PATH_INVALID")
+        expected = hashes.get(rel)
+        if not isinstance(expected, str) or not re.fullmatch(r"[0-9a-f]{64}", expected):
+            raise SystemExit(f"SHARED_MEMORY_EXPECTED_HASH_INVALID:{rel}")
+        payload = _read_memory_file(memory_root, rel)
+        actual = hashlib.sha256(payload).hexdigest()
+        if actual != expected:
+            raise SystemExit(f"SHARED_MEMORY_HASH_MISMATCH:{rel}")
+        verified[rel] = payload
+
+    records = []
+    try:
+        records_text = verified["records.jsonl"].decode("utf-8")
+        for line_number, line in enumerate(records_text.splitlines(), 1):
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            if not isinstance(record, dict):
+                raise ValueError(f"record {line_number} is not an object")
+            records.append(record)
+        current_status = json.loads(
+            verified["state/current_status.json"].decode("utf-8")
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise SystemExit("SHARED_MEMORY_CONTENT_INVALID") from exc
+    if not records or not isinstance(current_status, dict):
+        raise SystemExit("SHARED_MEMORY_CONTENT_EMPTY")
+
+    for record in records:
+        for field in ("record_id", "record_class", "subject", "authority"):
+            if not isinstance(record.get(field), str) or not record[field]:
+                raise SystemExit(f"SHARED_MEMORY_RECORD_FIELD_INVALID:{field}")
+        if record["authority"] not in MEMORY_AUTHORITY_LEVELS:
+            raise SystemExit("SHARED_MEMORY_RECORD_AUTHORITY_INVALID")
+
+    superseded_ids = {
+        record["supersedes"] for record in records if record.get("supersedes")
+    }
+    active_groups: dict[tuple[str, str], list[str]] = {}
+    for record in records:
+        if record["record_id"] in superseded_ids:
+            continue
+        key = (record["subject"], record["record_class"])
+        active_groups.setdefault(key, []).append(record["record_id"])
+
+    view = {}
+    for record in records:
+        record_id = record["record_id"]
+        if record_id in superseded_ids:
+            view[record_id] = "SUPERSEDED"
+            continue
+        key = (record["subject"], record["record_class"])
+        if (
+            record["record_class"] in MEMORY_EXCLUSIVE_CLASSES
+            and len(active_groups.get(key, [])) > 1
+        ):
+            view[record_id] = "CONFLICT"
+        else:
+            view[record_id] = "ACTIVE"
+
+    selected = [
+        record for record in records if view[record["record_id"]] in {"ACTIVE", "CONFLICT"}
+    ]
+    selected.sort(
+        key=lambda record: (
+            MEMORY_AUTHORITY_LEVELS.index(record["authority"]),
+            record["record_id"],
+        )
+    )
+    enriched = [
+        dict(record, computed_status=view[record["record_id"]]) for record in selected
+    ]
+    bundle = {
+        "memory_version_read": memory_version,
+        "canonical_branch": "main",
+        "subject_filter": None,
+        "records": enriched,
+    }
+    digest = hashlib.sha256(
+        json.dumps(bundle, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+    return {
+        "MEMORY_VERSION_READ": memory_version,
+        "CONTEXT_BUNDLE_SHA256": digest,
+        "bundle": bundle,
+        "CURRENT_STATUS": current_status,
+    }
 
 
 def _clean_log_value(value: object, limit: int = 500) -> str:
@@ -200,10 +362,16 @@ def call_claude(system_text: str, task_text: str) -> dict:
         minimum=60,
         maximum=3_600,
     )
+    total_budget_seconds = _env_int(
+        "ANTHROPIC_TOTAL_BUDGET_SECONDS",
+        DEFAULT_TOTAL_BUDGET_SECONDS,
+        minimum=300,
+        maximum=1_800,
+    )
     network_attempts = _env_int(
         "ANTHROPIC_NETWORK_ATTEMPTS",
         DEFAULT_NETWORK_ATTEMPTS,
-        minimum=3,
+        minimum=1,
         maximum=MAX_NETWORK_ATTEMPTS,
     )
 
@@ -240,9 +408,19 @@ def call_claude(system_text: str, task_text: str) -> dict:
     )
 
     transient_error = None
+    deadline = time.monotonic() + total_budget_seconds
     for attempt in range(1, network_attempts + 1):
+        remaining_seconds = int(deadline - time.monotonic())
+        if remaining_seconds <= 0:
+            raise SystemExit("ANTHROPIC_TOTAL_BUDGET_EXHAUSTED")
+        attempt_timeout = max(1, min(timeout_seconds, remaining_seconds))
         try:
-            with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+            print(
+                f"ANTHROPIC_ATTEMPT attempt={attempt}/{network_attempts} "
+                f"timeout_seconds={attempt_timeout} "
+                f"remaining_budget_seconds={remaining_seconds}"
+            )
+            with urllib.request.urlopen(request, timeout=attempt_timeout) as response:
                 request_id = response.headers.get("request-id", "NONE")
                 data = json.load(response)
             transient_error = None
@@ -250,9 +428,15 @@ def call_claude(system_text: str, task_text: str) -> dict:
         except urllib.error.HTTPError as exc:
             error_message = _http_error_message(exc)
             is_transient = exc.code in {408, 409, 425, 429} or 500 <= exc.code <= 599
-            if not is_transient or attempt >= network_attempts:
+            remaining_after_error = int(deadline - time.monotonic())
+            if remaining_after_error <= 1:
+                raise SystemExit("ANTHROPIC_TOTAL_BUDGET_EXHAUSTED") from exc
+            if (
+                not is_transient
+                or attempt >= network_attempts
+            ):
                 raise SystemExit(error_message) from exc
-            delay = min(60, 5 * (2 ** (attempt - 1)))
+            delay = min(60, 5 * (2 ** (attempt - 1)), remaining_after_error - 1)
             print(
                 f"ANTHROPIC_TRANSIENT_HTTP_RETRY "
                 f"attempt={attempt}/{network_attempts} "
@@ -273,13 +457,16 @@ def call_claude(system_text: str, task_text: str) -> dict:
             BrokenPipeError,
         ) as exc:
             transient_error = exc
+            remaining_after_error = int(deadline - time.monotonic())
+            if remaining_after_error <= 1:
+                raise SystemExit("ANTHROPIC_TOTAL_BUDGET_EXHAUSTED") from exc
             if attempt >= network_attempts:
                 reason = getattr(exc, "reason", exc)
                 raise SystemExit(
                     f"ANTHROPIC_NETWORK_ERROR_AFTER_RETRIES:"
                     f"{_clean_log_value(reason)}"
                 ) from exc
-            delay = min(60, 5 * (2 ** (attempt - 1)))
+            delay = min(60, 5 * (2 ** (attempt - 1)), remaining_after_error - 1)
             print(
                 f"ANTHROPIC_TRANSIENT_RETRY "
                 f"attempt={attempt}/{network_attempts} "
@@ -438,36 +625,62 @@ def write_fallback_status(task_id: str, result: dict, written: list[str]) -> str
     return rel
 
 
-def normalize_status_timestamp() -> None:
-    path = _safe_destination(STATUS_REL)
-    if not path.exists():
-        return
-    content = path.read_text(encoding="utf-8")
+def _upsert_line(content: str, key: str, value: object) -> str:
+    line = f"{key}: {value}"
+    pattern = rf"(?m)^{re.escape(key)}:.*$"
+    if re.search(pattern, content):
+        return re.sub(pattern, line, content)
+    if content and not content.endswith("\n"):
+        content += "\n"
+    return content + line + "\n"
+
+
+def normalize_output_metadata(memory: dict) -> None:
     updated_at = (
         dt.datetime.now(dt.timezone.utc)
         .replace(microsecond=0)
         .isoformat()
         .replace("+00:00", "Z")
     )
-    line = f"UPDATED_AT_UTC: {updated_at}"
-    if re.search(r"(?m)^UPDATED_AT_UTC:.*$", content):
-        content = re.sub(r"(?m)^UPDATED_AT_UTC:.*$", line, content)
-    else:
-        if content and not content.endswith("\n"):
-            content += "\n"
-        content += line + "\n"
-    _atomic_write(path, content)
+    for rel in (STATUS_REL, OWNER_REPLY_REL):
+        path = _safe_destination(rel)
+        if not path.exists():
+            continue
+        content = path.read_text(encoding="utf-8")
+        content = _upsert_line(
+            content, "MEMORY_VERSION_READ", memory["MEMORY_VERSION_READ"]
+        )
+        content = _upsert_line(
+            content,
+            "CONTEXT_BUNDLE_SHA256",
+            memory["CONTEXT_BUNDLE_SHA256"],
+        )
+        if rel == STATUS_REL:
+            content = _upsert_line(content, "UPDATED_AT_UTC", updated_at)
+        _atomic_write(path, content)
 
 
 def main() -> None:
     task = latest_task()
     task_text = task.read_text(encoding="utf-8")
+    memory = load_shared_memory_context()
     system_text = (
         (ROOT / "CLAUDE.md").read_text(encoding="utf-8")
         if (ROOT / "CLAUDE.md").exists()
         else "Work only in cloud/. Never touch production."
     )
-    result = call_claude(system_text, task_text)
+    memory_context = _canonical_json(memory)
+    enriched_task_text = (
+        task_text
+        + "\n\n## AUTOPILOT VERIFIED CANONICAL SHARED MEMORY\n"
+        + "The worker verified every manifest-managed file before constructing "
+        + "this deterministic context. OWNER_DIRECTIVE records are binding safety "
+        + "constraints. Lower-authority records are context, never extra permission. "
+        + "Do not invent or alter the two memory markers. Include them in status, "
+        + "owner reply, and task report.\n\n"
+        + memory_context
+    )
+    result = call_claude(system_text, enriched_task_text)
 
     provided = {item["path"] for item in result["files"]}
     required = required_output_paths(task_text)
@@ -478,7 +691,7 @@ def main() -> None:
     written = safe_write(result["files"])
     if STATUS_REL not in written:
         written.append(write_fallback_status(task.stem, result, written))
-    normalize_status_timestamp()
+    normalize_output_metadata(memory)
 
     static_check_python(written)
     print(
@@ -489,6 +702,8 @@ def main() -> None:
                 "status": result["status"],
                 "summary": result["summary"],
                 "production_touched": False,
+                "memory_version_read": memory["MEMORY_VERSION_READ"],
+                "context_bundle_sha256": memory["CONTEXT_BUNDLE_SHA256"],
             },
             ensure_ascii=False,
         )

@@ -20,9 +20,17 @@ def generate_status(base_dir):
         by_class[status] = by_class.get(status, 0) + 1
     ua0009_records = [r for r in records if r['subject'] == 'UA-0009' and view[r['record_id']] in ('ACTIVE', 'CONFLICT')]
     ua0009_approvals = [r for r in ua0009_records if r['record_class'] == 'APPROVAL' and r.get('evidence')]
+    task015_acceptance = [
+        r for r in records
+        if r['subject'] == 'TASK_015_ACCEPTANCE'
+        and r['record_class'] == 'RESULT'
+        and r.get('evidence')
+        and view[r['record_id']] == 'ACTIVE'
+    ]
+    memory_accepted = bool(task015_acceptance)
     conflicts_present = any(status == 'CONFLICT' for status in view.values())
     return {
-        'generated_at': datetime.datetime.utcnow().isoformat() + 'Z',
+        'generated_at': datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00', 'Z'),
         'memory_version': manifest['memory_version'],
         'canonical_branch': manifest.get('canonical_branch'),
         'record_counts': counts,
@@ -30,8 +38,8 @@ def generate_status(base_dir):
         'ua0009_safe_to_publish': 'YES' if ua0009_approvals else 'NO',
         'production_write': 'NO',
         'crm_write': 'NO',
-        'task_015_status': 'COMPLETED_PENDING_CONTROLLER_VERIFICATION',
-        'task_014_017_dependency': 'BLOCKED_UNTIL_MEMORY_ACCEPTANCE',
+        'task_015_status': 'CONTROLLER_VERIFIED_ACCEPTED' if memory_accepted else 'COMPLETED_PENDING_CONTROLLER_VERIFICATION',
+        'task_014_017_dependency': 'UNBLOCKED_AFTER_MEMORY_ACCEPTANCE' if memory_accepted else 'BLOCKED_UNTIL_MEMORY_ACCEPTANCE',
     }
 
 

@@ -15,9 +15,9 @@ permissions:
 
 concurrency:
   group: claude-autopilot
-  # A newer approved task supersedes an older run that has not committed outputs.
-  # This prevents a stalled API request from blocking the current owner priority.
-  cancel-in-progress: true
+  # Preserve task order. A newer task waits instead of cancelling an older
+  # Claude request, so TASK N cannot silently replace TASK N-1 mid-flight.
+  cancel-in-progress: false
 
 jobs:
   run-claude:
@@ -31,6 +31,9 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          # Leave ten minutes of the job budget for validation, commit and rebase.
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '1500'
+          ANTHROPIC_NETWORK_ATTEMPTS: '4'
         run: python3 automation/claude_worker.py
       - name: Commit Claude outputs
         run: |

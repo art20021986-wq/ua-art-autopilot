@@ -62,6 +62,6 @@ python memory_healthcheck.py
 
 None of these commands touch production, CRM, or PythonAnywhere. There is no network code, no subprocess, no filesystem access outside this directory tree.
 
-## Known limitation disclosed honestly
+## Controller acceptance
 
-The shipped `manifest.json` ships with `file_hashes` set to `null` and `hashes_status: NOT_COMPUTED_RUN_MEMORY_BOOTSTRAP` because Claude did not execute Python in this authoring environment and will not fabricate SHA-256 values by hand. Running `memory_bootstrap.py` once computes and persists the real hashes deterministically. `memory_healthcheck.py` only hash-compares when a hash is already recorded, so it fails closed rather than silently trusting an unverified value.
+The controller executed the full acceptance suite after delivery: 15 of 15 tests passed, bootstrap populated every managed-file hash, the full managed-file healthcheck passed, and deterministic context construction passed. The acceptance is recorded append-only in canonical memory; it releases the TASK 014/017 ordering dependency but grants no Production or CRM write authority.
