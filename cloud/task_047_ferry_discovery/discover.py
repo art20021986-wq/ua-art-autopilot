@@ -10,12 +10,14 @@ through function parameters; environment variables cannot retarget the CLI.
 
 import ast
 import hashlib
+import io
 import json
 import os
 import re
 import sqlite3
 import stat
 import sys
+import tokenize
 from typing import Dict, List, Optional, Tuple
 
 import transform
@@ -322,6 +324,24 @@ def _markers() -> dict:
 
 SAFE_AST_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}$")
 SAFE_AST_KEY_RE = re.compile(r"^[A-Za-z0-9_-]{1,32}$")
+USER_FACING_ASSIGNMENTS = {
+    "ETAP_KOROTKO", "ETAPY_GLAVNOY", "FILTRY", "SROKI", "POTOK",
+}
+USER_FACING_FUNCTIONS = {
+    "etap_dlinno", "blok_pribytiya", "sobrat_kartochku", "sobrat_katalog",
+    "sobrat_info",
+}
+PYTHON_TEXT_REPLACEMENTS = (
+    ("В море · Корея → Грузия", "На пароме · Корея → Грузия"),
+    ("У морі · Корея → Грузія", "На поромі · Корея → Грузія"),
+    ("В море", "На пароме"),
+    ("У морі", "На поромі"),
+    ("Море", "Паром"),
+)
+
+
+class PythonTransformBlocked(RuntimeError):
+    pass
 
 
 def _safe_ast_name(value: object) -> str:
@@ -458,6 +478,7 @@ def _inventory_python_literals(source: str, rel_path: str) -> List[dict]:
             if matched is None:
                 return
             hint = (self.hints[-1] if self.hints else "").upper()
+            function = self.functions[-1] if self.functions else ""
             _preview, structural = transform.transform_document(node.value)
             structural_changes = sum(
                 item.get("action") == "APPLIED" for item in structural
@@ -469,6 +490,12 @@ def _inventory_python_literals(source: str, rel_path: str) -> List[dict]:
                 classification = "LEGACY_INPUT_ALIAS"
             elif structural_changes and not structural_ambiguous:
                 classification = "USER_FACING"
+            elif hint in USER_FACING_ASSIGNMENTS or (
+                function in USER_FACING_FUNCTIONS
+                and (self.roles[-1] if self.roles else "OTHER")
+                not in {"DICT_KEY", "COMPARISON"}
+            ):
+                classification = "USER_FACING"
             elif any(word in hint for word in ("LABEL", "TEXT", "STATUS", "STAGE", "HTML", "TEMPLATE")):
                 classification = "USER_FACING"
             else:
@@ -477,6 +504,7 @@ def _inventory_python_literals(source: str, rel_path: str) -> List[dict]:
                 "path": rel_path, "line": getattr(node, "lineno", None),
                 "column": getattr(node, "col_offset", None),
                 "end_line": getattr(node, "end_lineno", None),
+                "end_column": getattr(node, "end_col_offset", None),
                 "before": matched, "classification": classification,
                 "action": "PRESERVE",
                 "literal_sha256": hashlib.sha256(node.value.encode("utf-8")).hexdigest(),
@@ -497,6 +525,130 @@ def _inventory_python_literals(source: str, rel_path: str) -> List[dict]:
 
     Visitor().visit(tree)
     return occurrences
+
+
+def _ast_byte_column_to_character(line: str, byte_column: int) -> int:
+    if not isinstance(byte_column, int) or byte_column < 0:
+        raise PythonTransformBlocked("invalid_ast_column")
+    encoded = line.encode("utf-8")
+    if byte_column > len(encoded):
+        raise PythonTransformBlocked("ast_column_out_of_bounds")
+    try:
+        return len(encoded[:byte_column].decode("utf-8"))
+    except UnicodeDecodeError as exc:
+        raise PythonTransformBlocked("ast_column_not_character_boundary") from exc
+
+
+def _mapped_python_text(value: str) -> Tuple[str, int]:
+    mapped = value
+    changes = 0
+    for before, after in PYTHON_TEXT_REPLACEMENTS:
+        count = mapped.count(before)
+        if count:
+            mapped = mapped.replace(before, after)
+            changes += count
+    return mapped, changes
+
+
+def transform_python_source(source: str, rel_path: str) -> Tuple[str, List[dict]]:
+    """Patch only approved string tokens; preserve every other source character."""
+    compile(source, rel_path, "exec")
+    inventory = _inventory_python_literals(source, rel_path)
+    ambiguous = [item for item in inventory if item["classification"] == "AMBIGUOUS"]
+    if ambiguous:
+        raise PythonTransformBlocked("ambiguous_python_literal")
+    approved = [item for item in inventory if item["classification"] == "USER_FACING"]
+    if not approved:
+        return source, []
+
+    lines = source.splitlines(keepends=True)
+    logical_lines = source.splitlines()
+    if source.endswith(("\n", "\r")):
+        logical_lines.append("")
+    starts = []
+    cursor = 0
+    for line in lines:
+        starts.append(cursor)
+        cursor += len(line)
+    if not lines or (source and not source.endswith(("\n", "\r"))):
+        if len(starts) < len(logical_lines):
+            starts.append(cursor)
+
+    tokens = [
+        token for token in tokenize.generate_tokens(io.StringIO(source).readline)
+        if token.type == tokenize.STRING
+    ]
+    by_position = {(token.start[0], token.start[1], token.end[0], token.end[1]): token for token in tokens}
+    replacements = []
+    records = []
+    seen_positions = set()
+    for item in approved:
+        line_number = item["line"]
+        end_line = item["end_line"]
+        if not 1 <= line_number <= len(logical_lines) or not 1 <= end_line <= len(logical_lines):
+            raise PythonTransformBlocked("literal_line_out_of_bounds")
+        start_character = _ast_byte_column_to_character(
+            logical_lines[line_number - 1], item["column"]
+        )
+        end_character = _ast_byte_column_to_character(
+            logical_lines[end_line - 1], item["end_column"]
+        )
+        position = (line_number, start_character, end_line, end_character)
+        if position in seen_positions:
+            raise PythonTransformBlocked("duplicate_literal_position")
+        seen_positions.add(position)
+        token = by_position.get(position)
+        if token is None:
+            raise PythonTransformBlocked("literal_not_single_string_token")
+        try:
+            value = ast.literal_eval(token.string)
+        except (SyntaxError, ValueError) as exc:
+            raise PythonTransformBlocked("literal_not_static_string_token") from exc
+        if not isinstance(value, str):
+            raise PythonTransformBlocked("literal_not_text")
+        if hashlib.sha256(value.encode("utf-8")).hexdigest() != item["literal_sha256"]:
+            raise PythonTransformBlocked("literal_hash_mismatch")
+        mapped, change_count = _mapped_python_text(value)
+        if change_count < 1 or mapped == value:
+            raise PythonTransformBlocked("approved_literal_not_changed")
+        token_text = token.string
+        mapped_token_text = token_text
+        direct_changes = 0
+        for before, after in PYTHON_TEXT_REPLACEMENTS:
+            count = mapped_token_text.count(before)
+            if count:
+                mapped_token_text = mapped_token_text.replace(before, after)
+                direct_changes += count
+        if direct_changes != change_count:
+            raise PythonTransformBlocked("literal_requires_escape_rewrite")
+        try:
+            evaluated = ast.literal_eval(mapped_token_text)
+        except (SyntaxError, ValueError) as exc:
+            raise PythonTransformBlocked("mapped_literal_invalid") from exc
+        if evaluated != mapped:
+            raise PythonTransformBlocked("mapped_literal_value_mismatch")
+        start_offset = starts[token.start[0] - 1] + token.start[1]
+        end_offset = starts[token.end[0] - 1] + token.end[1]
+        if source[start_offset:end_offset] != token_text:
+            raise PythonTransformBlocked("token_offset_mismatch")
+        replacements.append((start_offset, end_offset, mapped_token_text))
+        records.append({
+            "line": line_number,
+            "before": item["before"],
+            "after": dict(PYTHON_TEXT_REPLACEMENTS)[item["before"]],
+            "replacements": change_count,
+            "literal_sha256_before": item["literal_sha256"],
+            "literal_sha256_after": hashlib.sha256(mapped.encode("utf-8")).hexdigest(),
+        })
+
+    candidate = source
+    for start_offset, end_offset, replacement in sorted(replacements, reverse=True):
+        candidate = candidate[:start_offset] + replacement + candidate[end_offset:]
+    compile(candidate, rel_path, "exec")
+    remaining = _inventory_python_literals(candidate, rel_path)
+    if any(item["classification"] in {"USER_FACING", "AMBIGUOUS"} for item in remaining):
+        raise PythonTransformBlocked("target_remains_after_python_transform")
+    return candidate, records
 
 
 def run_discovery(base_dir: str = BASE_DIR) -> dict:

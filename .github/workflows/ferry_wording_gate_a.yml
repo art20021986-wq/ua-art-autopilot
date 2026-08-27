@@ -92,7 +92,7 @@ jobs:
           import json
           from pathlib import Path
           receipt = json.loads(Path('cloud/task_047_ferry_discovery/evidence/ferry_gate_a.json').read_text())
-          if receipt.get('status') not in {'PASS', 'PASS_NEEDS_GENERATOR_PATCH'}:
+          if receipt.get('status') not in {'PASS', 'PASS_READY_FOR_GATE_B'}:
               raise SystemExit('FERRY_GATE_A_BLOCKED:' + str(receipt.get('errors')))
           print('FERRY_GATE_A_ACCEPTED:' + receipt['status'])
           PY

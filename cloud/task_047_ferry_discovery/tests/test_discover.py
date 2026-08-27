@@ -182,6 +182,58 @@ class TestPythonLiteralContext(unittest.TestCase):
         self.assertEqual(items[0]["classification"], "LEGACY_INPUT_ALIAS")
         self.assertEqual(items[0]["role"], "DICT_KEY")
 
+    def test_live_ui_context_allowlists_are_user_facing(self):
+        source = '''ETAP_KOROTKO = ["В море", "У морі"]
+ETAPY_GLAVNOY = ["🌊 В море", "🌊 У морі"]
+FILTRY = ["В море", "У морі"]
+SROKI = ["Море: 30 дней"]
+POTOK = ["Корея", "Море", "Грузия"]
+def blok_pribytiya():
+    return list(enumerate(("Корея", "Море", "Грузия", "Киев")))
+def sobrat_katalog(c):
+    c.append("<span title='Море'>этап</span>")
+'''
+        items = discover._inventory_python_literals(source, "yadro.py")
+        self.assertGreaterEqual(len(items), 8)
+        self.assertTrue(all(item["classification"] == "USER_FACING" for item in items))
+
+    def test_python_transform_changes_only_approved_string_tokens(self):
+        source = '''# formatting must stay exact
+ETAP_KOROTKO = ["В море", 'У морі']
+POTOK=("Корея","Море","Грузия","Киев")
+def sobrat_katalog(c):
+    c.append("<span title='Море'>этап</span>")
+'''
+        candidate, changes = discover.transform_python_source(source, "yadro.py")
+        self.assertIn('# formatting must stay exact', candidate)
+        self.assertIn('["На пароме", \'На поромі\']', candidate)
+        self.assertIn('POTOK=("Корея","Паром","Грузия","Киев")', candidate)
+        self.assertIn("title='Паром'", candidate)
+        self.assertEqual(sum(item["replacements"] for item in changes), 4)
+        second, second_changes = discover.transform_python_source(candidate, "yadro.py")
+        self.assertEqual(second, candidate)
+        self.assertEqual(second_changes, [])
+
+    def test_python_transform_blocks_unapproved_literal(self):
+        with self.assertRaises(discover.PythonTransformBlocked):
+            discover.transform_python_source('x = "В море"\n', "yadro.py")
+
+    def test_python_transform_handles_utf8_column_offsets(self):
+        source = 'ETAP_KOROTKO = ["тест", "В море"]\n'
+        candidate, changes = discover.transform_python_source(source, "yadro.py")
+        self.assertEqual(candidate, 'ETAP_KOROTKO = ["тест", "На пароме"]\n')
+        self.assertEqual(sum(item["replacements"] for item in changes), 1)
+
+    def test_python_transform_preserves_multiline_token_layout(self):
+        source = '''def sobrat_info(c):
+    c.append("""<p>
+Море: Корея → Грузия
+</p>""")
+'''
+        candidate, changes = discover.transform_python_source(source, "stranica.py")
+        self.assertEqual(candidate, source.replace("Море:", "Паром:"))
+        self.assertEqual(sum(item["replacements"] for item in changes), 1)
+
 
 class TestCLI(unittest.TestCase):
     def test_cli_emits_single_json_object(self):
