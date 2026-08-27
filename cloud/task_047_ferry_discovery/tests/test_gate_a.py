@@ -135,6 +135,18 @@ class FerryGateATests(unittest.TestCase):
         with self.assertRaises(gate_a_controller.ControllerBlocked):
             api._file_url("/home/Carix/video/UA-0001.html")
 
+    def test_local_preview_path_allowlist(self):
+        self.assertEqual(
+            gate_a_controller.GateAController.preview_path(
+                "video/UA-0001.html", generator=False
+            ),
+            gate_a_controller.PREVIEW_ROOT / "video" / "UA-0001.html",
+        )
+        with self.assertRaises(gate_a_controller.ControllerBlocked):
+            gate_a_controller.GateAController.preview_path(
+                "../../video/UA-0001.html", generator=False
+            )
+
     def test_controller_full_fake_relay(self):
         receipt = gate_a_remote._run_gate_a(
             str(self.source), str(self.candidates), False
@@ -182,6 +194,8 @@ class FerryGateATests(unittest.TestCase):
         report = Path(self.temp) / "report.md"
         with mock.patch.object(gate_a_controller, "EVIDENCE_PATH", evidence), mock.patch.object(
             gate_a_controller, "REPORT_PATH", report
+        ), mock.patch.object(
+            gate_a_controller, "PREVIEW_ROOT", Path(self.temp) / "preview"
         ):
             result = gate_a_controller.GateAController(
                 api, sleep=lambda _seconds: None, monotonic=lambda: 0,
@@ -192,6 +206,9 @@ class FerryGateATests(unittest.TestCase):
         self.assertTrue(evidence.is_file())
         self.assertTrue(report.is_file())
         self.assertIn("production_write: false", report.read_text(encoding="utf-8"))
+        self.assertEqual(
+            len(list((Path(self.temp) / "preview" / "video").glob("*.html"))), 13
+        )
 
 
 if __name__ == "__main__":
