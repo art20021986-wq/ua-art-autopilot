@@ -26,6 +26,7 @@ MAX_ALLOWED_TOKENS = 128_000
 DEFAULT_TIMEOUT_SECONDS = 1_200
 DEFAULT_TOTAL_BUDGET_SECONDS = 1_500
 DEFAULT_NETWORK_ATTEMPTS = 4
+DEFAULT_STREAM_IDLE_TIMEOUT_SECONDS = 120
 MAX_NETWORK_ATTEMPTS = 8
 MAX_FILES = 20
 MAX_TOTAL_FILE_CHARS = 4_000_000
@@ -354,6 +355,175 @@ def _validate_result(result: object) -> dict:
     }
 
 
+class _AnthropicStreamError(Exception):
+    def __init__(self, message: str, *, transient: bool) -> None:
+        super().__init__(message)
+        self.transient = transient
+
+
+def _consume_anthropic_stream(response, deadline: float) -> tuple[dict, str]:
+    """Accumulate Anthropic SSE events into a normal Messages response."""
+    request_id = response.headers.get("request-id", "NONE")
+    message: dict | None = None
+    blocks: dict[int, dict] = {}
+    saw_message_stop = False
+    event_name = ""
+    data_lines: list[str] = []
+    text_chars = 0
+    next_progress_log = 16_384
+
+    def handle_event(name: str, raw_data: str) -> None:
+        nonlocal message, saw_message_stop, text_chars, next_progress_log
+        try:
+            event = json.loads(raw_data)
+        except json.JSONDecodeError as exc:
+            raise _AnthropicStreamError(
+                "ANTHROPIC_STREAM_EVENT_NOT_JSON", transient=True
+            ) from exc
+        if not isinstance(event, dict):
+            raise _AnthropicStreamError(
+                "ANTHROPIC_STREAM_EVENT_INVALID", transient=True
+            )
+
+        event_type = str(event.get("type") or name or "unknown")
+        if event_type == "error":
+            error = event.get("error", {})
+            if not isinstance(error, dict):
+                error = {}
+            error_type = str(error.get("type", "unknown"))
+            error_message = str(error.get("message", "stream error"))
+            transient = error_type in {
+                "api_error",
+                "internal_server_error",
+                "overloaded_error",
+                "rate_limit_error",
+            }
+            raise _AnthropicStreamError(
+                "ANTHROPIC_STREAM_ERROR "
+                f"type={_clean_log_value(error_type, 120)} "
+                f"message={_clean_log_value(error_message)}",
+                transient=transient,
+            )
+
+        if event_type == "message_start":
+            started = event.get("message", {})
+            if not isinstance(started, dict):
+                raise _AnthropicStreamError(
+                    "ANTHROPIC_STREAM_MESSAGE_START_INVALID", transient=True
+                )
+            message = dict(started)
+            message["content"] = []
+            print(
+                "ANTHROPIC_STREAM_STARTED "
+                f"request_id={_clean_log_value(request_id, 120)}",
+                flush=True,
+            )
+            return
+
+        if event_type == "content_block_start":
+            index = event.get("index")
+            block = event.get("content_block")
+            if not isinstance(index, int) or not isinstance(block, dict):
+                raise _AnthropicStreamError(
+                    "ANTHROPIC_STREAM_BLOCK_START_INVALID", transient=True
+                )
+            blocks[index] = dict(block)
+            return
+
+        if event_type == "content_block_delta":
+            index = event.get("index")
+            delta = event.get("delta")
+            if not isinstance(index, int) or not isinstance(delta, dict):
+                raise _AnthropicStreamError(
+                    "ANTHROPIC_STREAM_BLOCK_DELTA_INVALID", transient=True
+                )
+            block = blocks.setdefault(index, {"type": "text", "text": ""})
+            delta_type = delta.get("type")
+            if delta_type == "text_delta":
+                addition = delta.get("text", "")
+                if not isinstance(addition, str):
+                    raise _AnthropicStreamError(
+                        "ANTHROPIC_STREAM_TEXT_DELTA_INVALID", transient=True
+                    )
+                block["text"] = str(block.get("text", "")) + addition
+                text_chars += len(addition)
+                if text_chars >= next_progress_log:
+                    print(
+                        f"ANTHROPIC_STREAM_PROGRESS text_chars={text_chars}",
+                        flush=True,
+                    )
+                    next_progress_log += 16_384
+            elif delta_type == "thinking_delta":
+                addition = delta.get("thinking", "")
+                if isinstance(addition, str):
+                    block["thinking"] = str(block.get("thinking", "")) + addition
+            elif delta_type == "signature_delta":
+                signature = delta.get("signature")
+                if isinstance(signature, str):
+                    block["signature"] = signature
+            elif delta_type == "input_json_delta":
+                addition = delta.get("partial_json", "")
+                if isinstance(addition, str):
+                    block["partial_json"] = (
+                        str(block.get("partial_json", "")) + addition
+                    )
+            return
+
+        if event_type == "message_delta":
+            if message is None:
+                raise _AnthropicStreamError(
+                    "ANTHROPIC_STREAM_MESSAGE_DELTA_BEFORE_START", transient=True
+                )
+            delta = event.get("delta", {})
+            if isinstance(delta, dict):
+                for field in ("stop_reason", "stop_sequence"):
+                    if field in delta:
+                        message[field] = delta[field]
+            usage = event.get("usage")
+            if isinstance(usage, dict):
+                existing = message.get("usage", {})
+                if not isinstance(existing, dict):
+                    existing = {}
+                message["usage"] = {**existing, **usage}
+            return
+
+        if event_type == "message_stop":
+            saw_message_stop = True
+
+    for raw_line in response:
+        if time.monotonic() >= deadline:
+            raise TimeoutError("total response budget exhausted")
+        try:
+            line = raw_line.decode("utf-8").rstrip("\r\n")
+        except UnicodeDecodeError as exc:
+            raise _AnthropicStreamError(
+                "ANTHROPIC_STREAM_NOT_UTF8", transient=True
+            ) from exc
+        if not line:
+            if data_lines:
+                handle_event(event_name, "\n".join(data_lines))
+            event_name = ""
+            data_lines = []
+            continue
+        if line.startswith(":"):
+            continue
+        field, separator, value = line.partition(":")
+        if not separator:
+            continue
+        value = value.lstrip(" ")
+        if field == "event":
+            event_name = value
+        elif field == "data":
+            data_lines.append(value)
+
+    if data_lines:
+        handle_event(event_name, "\n".join(data_lines))
+    if message is None or not saw_message_stop:
+        raise _AnthropicStreamError("ANTHROPIC_STREAM_INCOMPLETE", transient=True)
+    message["content"] = [blocks[index] for index in sorted(blocks)]
+    return message, request_id
+
+
 def call_claude(system_text: str, task_text: str) -> dict:
     key = (os.environ.get("ANTHROPIC_API_KEY") or "").strip()
     if not key:
@@ -388,6 +558,12 @@ def call_claude(system_text: str, task_text: str) -> dict:
         minimum=1,
         maximum=MAX_NETWORK_ATTEMPTS,
     )
+    stream_idle_timeout_seconds = _env_int(
+        "ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS",
+        DEFAULT_STREAM_IDLE_TIMEOUT_SECONDS,
+        minimum=30,
+        maximum=600,
+    )
 
     instruction = (
         task_text
@@ -408,6 +584,7 @@ def call_claude(system_text: str, task_text: str) -> dict:
             "effort": effort,
             "format": {"type": "json_schema", "schema": OUTPUT_SCHEMA},
         },
+        "stream": True,
     }
     request = urllib.request.Request(
         "https://api.anthropic.com/v1/messages",
@@ -427,16 +604,19 @@ def call_claude(system_text: str, task_text: str) -> dict:
         remaining_seconds = int(deadline - time.monotonic())
         if remaining_seconds <= 0:
             raise SystemExit("ANTHROPIC_TOTAL_BUDGET_EXHAUSTED")
-        attempt_timeout = max(1, min(timeout_seconds, remaining_seconds))
+        attempt_timeout = max(
+            1,
+            min(timeout_seconds, stream_idle_timeout_seconds, remaining_seconds),
+        )
         try:
             print(
                 f"ANTHROPIC_ATTEMPT attempt={attempt}/{network_attempts} "
                 f"timeout_seconds={attempt_timeout} "
-                f"remaining_budget_seconds={remaining_seconds}"
+                f"remaining_budget_seconds={remaining_seconds}",
+                flush=True,
             )
             with urllib.request.urlopen(request, timeout=attempt_timeout) as response:
-                request_id = response.headers.get("request-id", "NONE")
-                data = json.load(response)
+                data, request_id = _consume_anthropic_stream(response, deadline)
             transient_error = None
             break
         except urllib.error.HTTPError as exc:
@@ -455,11 +635,26 @@ def call_claude(system_text: str, task_text: str) -> dict:
                 f"ANTHROPIC_TRANSIENT_HTTP_RETRY "
                 f"attempt={attempt}/{network_attempts} "
                 f"delay_seconds={delay} "
-                f"error={_clean_log_value(error_message)}"
+                f"error={_clean_log_value(error_message)}",
+                flush=True,
             )
             time.sleep(delay)
-        except json.JSONDecodeError as exc:
-            raise SystemExit("ANTHROPIC_RESPONSE_NOT_JSON") from exc
+        except _AnthropicStreamError as exc:
+            transient_error = exc
+            remaining_after_error = int(deadline - time.monotonic())
+            if remaining_after_error <= 1:
+                raise SystemExit("ANTHROPIC_TOTAL_BUDGET_EXHAUSTED") from exc
+            if not exc.transient or attempt >= network_attempts:
+                raise SystemExit(_clean_log_value(exc)) from exc
+            delay = min(60, 5 * (2 ** (attempt - 1)), remaining_after_error - 1)
+            print(
+                f"ANTHROPIC_TRANSIENT_STREAM_RETRY "
+                f"attempt={attempt}/{network_attempts} "
+                f"delay_seconds={delay} "
+                f"error={_clean_log_value(exc)}",
+                flush=True,
+            )
+            time.sleep(delay)
         except (
             urllib.error.URLError,
             TimeoutError,
@@ -485,7 +680,8 @@ def call_claude(system_text: str, task_text: str) -> dict:
                 f"ANTHROPIC_TRANSIENT_RETRY "
                 f"attempt={attempt}/{network_attempts} "
                 f"delay_seconds={delay} "
-                f"error={_clean_log_value(exc)}"
+                f"error={_clean_log_value(exc)}",
+                flush=True,
             )
             time.sleep(delay)
     if transient_error is not None:
