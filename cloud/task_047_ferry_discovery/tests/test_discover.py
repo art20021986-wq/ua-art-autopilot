@@ -234,6 +234,23 @@ def sobrat_katalog(c):
         self.assertEqual(candidate, source.replace("Море:", "Паром:"))
         self.assertEqual(sum(item["replacements"] for item in changes), 1)
 
+    def test_python_transform_preserves_implicit_concatenation(self):
+        source = '''def sobrat_katalog(c):
+    c.append("<span>"  "Море"  "</span>")
+'''
+        candidate, changes = discover.transform_python_source(source, "stranica.py")
+        self.assertEqual(candidate, source.replace('"Море"', '"Паром"'))
+        self.assertEqual(sum(item["replacements"] for item in changes), 1)
+
+    def test_python_transform_blocks_target_split_across_tokens(self):
+        source = '''def sobrat_katalog(c):
+    c.append("В " "море")
+'''
+        with self.assertRaisesRegex(
+            discover.PythonTransformBlocked, "literal_target_crosses_tokens"
+        ):
+            discover.transform_python_source(source, "stranica.py")
+
 
 class TestCLI(unittest.TestCase):
     def test_cli_emits_single_json_object(self):
