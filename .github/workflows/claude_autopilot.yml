@@ -34,6 +34,9 @@ jobs:
           # Leave ten minutes of the job budget for validation, commit and rebase.
           ANTHROPIC_TOTAL_BUDGET_SECONDS: '1500'
           ANTHROPIC_NETWORK_ATTEMPTS: '4'
+          # Sonnet 5 adaptive thinking counts toward max_tokens; TASK 021 reached
+          # the former 64k ceiling before completing its structured deliverables.
+          ANTHROPIC_MAX_TOKENS: '128000'
           # Streaming emits heartbeats during long structured generations; retry
           # only when the stream itself is silent for two minutes.
           ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
