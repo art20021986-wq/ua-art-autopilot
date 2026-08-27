@@ -31,6 +31,10 @@ REMOTE_OUTPUT = REMOTE_ROOT + "/ferry_gate_a_receipt.json"
 VIDEO_PATHS = [
     "video/index.html", "video/katalog.html", "video/info.html", "video/podbor.html",
 ] + ["video/UA-%04d.html" % number for number in range(1, 10)]
+PYTHON_PATHS = {
+    "stranica.py", "yadro.py", "master_card.py", "cars_ui.py", "team_bot.py",
+    "avtoperedacha.py", "db.py", "run_all.py", "start_safe.py",
+}
 REMOTE_CANDIDATES = {
     rel_path: REMOTE_ROOT + "/gate_a_candidates/" + rel_path
     for rel_path in VIDEO_PATHS
@@ -54,6 +58,13 @@ MAX_RECEIPT_BYTES = 500_000
 POLL_INTERVAL_SECONDS = 5
 POLL_TIMEOUT_SECONDS = 600
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
+SAFE_CONTEXT_TEXT = re.compile(r"^[A-Za-z0-9_.-]{0,128}$")
+PYTHON_ENTRY_KEYS = {
+    "path", "source_sha256", "line", "column", "end_line", "before",
+    "classification", "action", "literal_sha256", "literal_length",
+    "assignment", "role", "dict_key", "call", "keyword", "function", "class",
+    "structural_changes", "structural_ambiguous", "structural_contexts",
+}
 
 
 class ControllerBlocked(RuntimeError):
@@ -296,6 +307,59 @@ class GateAController:
             raise ControllerBlocked("receipt_errors_invalid")
         if not isinstance(receipt.get("python_sources"), list):
             raise ControllerBlocked("receipt_python_sources_invalid")
+        if len(receipt["python_sources"]) > 500:
+            raise ControllerBlocked("receipt_python_sources_too_many")
+        for item in receipt["python_sources"]:
+            if not isinstance(item, dict) or set(item) != PYTHON_ENTRY_KEYS:
+                raise ControllerBlocked("receipt_python_entry_invalid")
+            if item.get("path") not in PYTHON_PATHS:
+                raise ControllerBlocked("receipt_python_path_invalid")
+            if not isinstance(item.get("source_sha256"), str) or not HEX64.fullmatch(
+                item["source_sha256"]
+            ):
+                raise ControllerBlocked("receipt_python_source_hash_invalid")
+            if not isinstance(item.get("literal_sha256"), str) or not HEX64.fullmatch(
+                item["literal_sha256"]
+            ):
+                raise ControllerBlocked("receipt_python_literal_hash_invalid")
+            if not isinstance(item.get("line"), int) or not 1 <= item["line"] <= 10_000_000:
+                raise ControllerBlocked("receipt_python_line_invalid")
+            if not isinstance(item.get("column"), int) or not 0 <= item["column"] <= 1_000_000:
+                raise ControllerBlocked("receipt_python_column_invalid")
+            if not isinstance(item.get("end_line"), int) or not item["line"] <= item["end_line"] <= 10_000_000:
+                raise ControllerBlocked("receipt_python_end_line_invalid")
+            if item.get("before") not in {
+                "В море · Корея → Грузия", "У морі · Корея → Грузія",
+                "В море", "У морі", "Море",
+            }:
+                raise ControllerBlocked("receipt_python_target_invalid")
+            if item.get("classification") not in {
+                "USER_FACING", "LEGACY_INPUT_ALIAS", "AMBIGUOUS",
+            } or item.get("action") != "PRESERVE":
+                raise ControllerBlocked("receipt_python_classification_invalid")
+            if not isinstance(item.get("literal_length"), int) or not 1 <= item["literal_length"] <= 20 * 1024 * 1024:
+                raise ControllerBlocked("receipt_python_literal_length_invalid")
+            if item.get("role") not in {
+                "OTHER", "DICT_KEY", "DICT_VALUE", "CALL_ARG", "CALL_KEYWORD",
+                "RETURN", "COLLECTION_ITEM", "COMPARISON",
+            }:
+                raise ControllerBlocked("receipt_python_role_invalid")
+            for field in ("assignment", "dict_key", "call", "keyword", "function", "class"):
+                value = item.get(field)
+                if not isinstance(value, str) or not SAFE_CONTEXT_TEXT.fullmatch(value):
+                    raise ControllerBlocked("receipt_python_context_invalid:" + field)
+            for field in ("structural_changes", "structural_ambiguous"):
+                value = item.get(field)
+                if not isinstance(value, int) or not 0 <= value <= 10_000:
+                    raise ControllerBlocked("receipt_python_count_invalid:" + field)
+            contexts = item.get("structural_contexts")
+            if not isinstance(contexts, list) or len(contexts) > 100:
+                raise ControllerBlocked("receipt_python_contexts_invalid")
+            if any(
+                not isinstance(value, str) or not SAFE_CONTEXT_TEXT.fullmatch(value)
+                for value in contexts
+            ):
+                raise ControllerBlocked("receipt_python_contexts_invalid")
         if status == "BLOCKED":
             if not receipt["errors"]:
                 raise ControllerBlocked("blocked_receipt_without_error")
@@ -399,6 +463,16 @@ class GateAController:
             )
             for item in candidates
         ) or "- No candidate files were accepted."
+        python_rows = "\n".join(
+            "- `%s:%s`: %s `%s`; role=%s; assignment=%s; key=%s; function=%s; "
+            "structural=%s/%s; contexts=%s" % (
+                item["path"], item["line"], item["classification"], item["before"],
+                item["role"], item["assignment"] or "-", item["dict_key"] or "-",
+                item["function"] or "-", item["structural_changes"],
+                item["structural_ambiguous"], ",".join(item["structural_contexts"]) or "-",
+            )
+            for item in receipt.get("python_sources", []) if isinstance(item, dict)
+        ) or "- No target-like Python literals were found."
         report = f'''# Ferry wording Gate A report
 
 status: {receipt["status"]}
@@ -419,6 +493,10 @@ ua0009_published: false
 ## Isolated HTML candidates
 
 {rows}
+
+## Bounded Python generator context
+
+{python_rows}
 
 Candidates exist only under `autopilot_inbox`. No live card or generator was
 changed. Gate B requires separate explicit owner approval.
