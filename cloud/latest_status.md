@@ -1,10 +1,10 @@
-TASK_ID: task_016
+TASK_ID: task_018
 ROUND: 1
-CLAUDE_STATUS: BLOCKED
-CURRENT_ACTION: Regenerated corrected TASK_014 Gate A code/docs as TASK_016 against current main; cannot self-execute on PythonAnywhere from this worker.
-FILES_CREATED: cloud/ua_cards_unified/START_UA_CARDS_UNIFIED.py, cloud/ua_cards_unified/build_gate_a_manifest.py, cloud/ua_cards_unified/RUN_GATE_A_TASK016.py, cloud/ua_cards_unified/UNIFIED_CARDS_SPEC.md, cloud/ua_cards_unified/LEGACY_CONFLICT_AUDIT.md, cloud/ua_cards_unified/PRODUCTION_PATCH_PLAN.md, cloud/ua_cards_unified/TEST_MATRIX.md, cloud/ua_cards_unified/OWNER_NEXT_STEP.md, cloud/ua_cards_unified/BLOCKED.md, cloud/ua_cards_unified/cloud_report_016.md, cloud/latest_status.md, cloud/owner_reply.md
+CLAUDE_STATUS: WAITING_OWNER
+CURRENT_ACTION: Patched cloud/ua_cards_unified/ with corrected runner.py, manifest_builder.py, launcher.py, new preflight.py, tests, and operator instructions per TASK 017 spec.
+FILES_CREATED: cloud/ua_cards_unified/common.py, cloud/ua_cards_unified/preflight.py, cloud/ua_cards_unified/runner.py, cloud/ua_cards_unified/manifest_builder.py, cloud/ua_cards_unified/launcher.py, cloud/ua_cards_unified/tests/test_pipeline.py, cloud/ua_cards_unified/data/input_cards/.gitkeep, cloud/ua_cards_unified/output/.gitkeep, cloud/ua_cards_unified/OPERATOR_INSTRUCTIONS.md, cloud/ua_cards_unified/TASK_018_REPORT.md
 PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: NO
-OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Trigger the existing GitHub -> /home/Carix/autopilot_inbox/ delivery for cloud/ua_cards_unified/, then run RUN_GATE_A_TASK016.py with no arguments via the already-authorized PythonAnywhere console/task step, then feed back gate_a_receipt.json, progress.json and latest_status.html for verification in the next round.
-UPDATED_AT_UTC: 2026-08-27T10:32:16Z
+OWNER_ACTION_REQUIRED: YES
+OWNER_QUESTION: Please confirm the pipeline is ready to receive real UA card JSON files into data/input_cards/ for a Gate A dry run; no Gate B (production) action will occur without your separate explicit approval.
+NEXT_FOR_CHATGPT: Verify with git status --short that cloud/ua_cards_unified/ contains real file changes (new preflight.py, rewritten runner.py/manifest_builder.py/launcher.py, tests). Confirm no banned UA-0001..UA-0008 ids appear anywhere in the repo diff. Then relay owner_question to the owner.
+UPDATED_AT_UTC: 2026-08-27T10:59:28Z
