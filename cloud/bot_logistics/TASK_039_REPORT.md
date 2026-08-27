@@ -8,7 +8,7 @@ controller placeholder that always exited without contacting PythonAnywhere.
 No production, CRM or database action occurred during that failed audit.
 
 Codex repaired the package and reran it using only the standard library.
-The final result is 74 tests passed, with zero failures, errors, skips or
+The final result is 75 tests passed, with zero failures, errors, skips or
 resource warnings. All Python files compile.
 
 ## Repaired discovery
@@ -91,3 +91,9 @@ non-destructive push retries.
 - UA_0009_PUBLISHED: NO
 
 Terminal state: READY_FOR_SAFE_INBOX_SYNC_AND_READ_ONLY_DISCOVERY.
+
+The first real read-only receipt safely returned BLOCKED because a generic
+container anchor exceeded the bounded result limit in cars_ui.py. The retry
+removes that generic anchor, keeps exact UI labels and logistics identifiers,
+and adds a regression with 200 irrelevant container references. It remains
+read-only and does not weaken any file, database or receipt bound.

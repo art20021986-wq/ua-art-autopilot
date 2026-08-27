@@ -59,12 +59,16 @@ ANCHOR_PATTERNS = (
     "дней до прибытия",
     "номер контейнера",
     "этапы и доставка",
-    "container",
+    "container_number",
+    "container_date",
+    "container_handler",
+    "ua0006_container",
     "days_to_arrival",
     "delivery_days",
     "departure_date",
-    "callback_data",
-    "callback_query_handler",
+    "logistics_hub",
+    "edit_container",
+    "set_container",
     "change_stage",
     "set_stage",
 )
@@ -246,8 +250,8 @@ def scan_source(path: str) -> dict:
             continue
         if len(anchors) >= MAX_ANCHORS_PER_SOURCE:
             raise DiscoveryError("too_many_source_anchors:" + path)
-        start = max(0, index - 3)
-        end = min(len(lines), index + 4)
+        start = max(0, index - 6)
+        end = min(len(lines), index + 7)
         context = "\n".join(
             f"{line_no + 1}: {redact_line(lines[line_no])[:240]}"
             for line_no in range(start, end)
@@ -407,7 +411,8 @@ def run_discovery(
 
     try:
         exact_sources = validate_sources_arg(sources, required_sources)
-        result["sources"] = [scan_source(path) for path in exact_sources]
+        for path in exact_sources:
+            result["sources"].append(scan_source(path))
     except (DiscoveryError, OSError) as exc:
         errors.append(
             str(exc) if isinstance(exc, DiscoveryError) else "source_os_error"

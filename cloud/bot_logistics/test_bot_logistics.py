@@ -372,6 +372,26 @@ class TestDiscoverySourceContract(DiscoveryTestBase):
         self.assertNotIn("ONEYSELGF1046602", payload)
         self.assertIn("[REDACTED]", payload)
 
+    def test_generic_container_noise_does_not_exhaust_anchor_budget(self):
+        target = self.required_sources[0]
+        with open(target, "a", encoding="utf-8") as handle:
+            for index in range(200):
+                handle.write("value_%d = container.get('field')\n" % index)
+            handle.write("button = 'Номер контейнера'\n")
+        self._make_db()
+        result = discovery.run_discovery(
+            self.db_path, list(self.required_sources)
+        )
+        self.assertEqual(result["status"], "PASS")
+        anchors = result["sources"][0]["anchors"]
+        exact = [
+            anchor
+            for anchor in anchors
+            if "номер контейнера" in anchor["matches"]
+        ]
+        self.assertEqual(len(exact), 1)
+        self.assertLessEqual(len(anchors), 2)
+
 
 class TestDiscoveryDbContract(DiscoveryTestBase):
     def test_unapproved_db_path_is_blocked_before_read(self):
