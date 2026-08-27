@@ -73,6 +73,34 @@ The launcher filename and path are contractual. The post-sync controller will in
 `python3.10 /home/Carix/autopilot_inbox/cloud/ua_cards_unified/gate_a_task020_launcher.py`
 with no arguments.
 
+## Exact remote output contract
+
+The automatic controller accepts results only at these exact paths:
+
+- `/home/Carix/ua_cards_unified_gate_a_receipt/task_020_gate_a_receipt.json`
+- `/home/Carix/video/reports/ua_cards_unified/task_020_manifest.json`
+- `/home/Carix/video/reports/ua_cards_unified/task_020_results.json`
+- `/home/Carix/video/reports/ua_cards_unified/task_020_protected_hashes.json`
+- `/home/Carix/video/reports/ua_cards_unified/progress.json`
+- `/home/Carix/video/reports/ua_cards_unified/latest_status.html`
+- `/home/Carix/video/reports/ua_cards_unified/preview/index.html`
+
+The receipt must include at minimum:
+
+- `task_id: task_020`
+- `mode: GATE_A_REAL_INPUTS_READ_ONLY`
+- `gate_status: BLOCKED` or `AWAITING_GATE_B`
+- `production_write: false`
+- `crm_write: false`
+- `gate_b_executed: false`
+- `wsgi_reloaded: false`
+- `ua0009_published: false`
+- `unexpected_protected_changes: 0`
+- exact manifest SHA-256, runner SHA-256, input hashes and output hashes
+- per-card UA-0001…UA-0009 status and exact blockers
+
+Write the receipt atomically and only after protected before/after hashes have been compared. A missing/malformed field is a hard controller failure.
+
 ## Required final status fields
 
 `cloud/latest_status.md` must state:
