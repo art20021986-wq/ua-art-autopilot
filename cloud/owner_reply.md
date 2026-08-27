@@ -1,9 +1,9 @@
 # Ответ Claude владельцу
 СТАТУС: ЖДЁТ
-ЗАДАЧА: Запустить в работу ТЗ CRM-SPEED-001 (ускорение BOT CRM UA ART) согласно tasks/task_020_crm_speed.md и подготовить пакет cloud/crm_speed_optimization/ для будущего независимого аудита.
-ЧТО СДЕЛАНО: Полный текст файла tasks/task_020_crm_speed.md (с разделом Deliverables и списком проверок) не был передан в этом запуске — доступны только инструкции-обёртка task_022 и общая память проекта. Без реального текста ТЗ Claude не может честно и без домыслов создать код ускорения CRM, поэтому реализация не производилась. Это сделано намеренно, чтобы не подставить владельца и аудит под непроверенные предположения.
-СОЗДАННЫЕ ФАЙЛЫ: cloud/crm_speed_optimization/cloud_report_020.md, cloud/latest_status.md, cloud/owner_reply.md
-ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: Попросить ChatGPT/Codex приложить полное содержимое tasks/task_020_crm_speed.md к следующему запуску задачи — тогда работа по CRM-SPEED-001 будет выполнена полностью.
-БЕЗОПАСНОСТЬ: Production, CRM, база данных, боевые файлы, сайт и медиа не затронуты. Gate A не выполнялся. UA-0009 не публиковался.
-MEMORY_VERSION_READ: 4
+ЗАДАЧА: Продолжение TASK 020/022 (CRM-SPEED-001) - ускорение административной Telegram CRM: убрать автоматическую отправку фото/видео машин администратору, убрать зависания из-за долгих блокировок SQLite и запуска дублирующихся процессов.
+ЧТО СДЕЛАНО: Claude полностью написал кандидат-пакет для независимой проверки в папке cloud/crm_speed_optimization: инструмент Gate A (безопасный, только для чтения ограниченного набора файлов), автоматические AST-преобразования для usercustomize.py, start_safe.py, run_all.py, avtoperedacha.py, samokontrol.py и cars_ui.py, офлайн-тесты на синтетических данных, инструкции оператора и план отката. Все преобразования срабатывают только при точном совпадении ожидаемых мест в коде (anchors); если что-то не совпадает - конкретный файл остаётся без изменений, и весь запуск помечается BLOCKED. Production, CRM, база данных, сайт, медиа и UA-0009 не изменялись и не запускались.
+СОЗДАННЫЕ ФАЙЛЫ: cloud/crm_speed_optimization/RUN_GATE_A_CRM_SPEED.py, cloud/crm_speed_optimization/crm_speed_gate_a.py, cloud/crm_speed_optimization/build_manifest.py, cloud/crm_speed_optimization/verify_gate_a.py, cloud/crm_speed_optimization/test_crm_speed_gate_a.py, cloud/crm_speed_optimization/TEST_MATRIX.md, cloud/crm_speed_optimization/OPERATOR_INSTRUCTIONS.md, cloud/crm_speed_optimization/ROLLBACK.md, cloud/crm_speed_optimization/cloud_report_020.md
+ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: Ничего срочного сейчас. Когда ChatGPT независимо проверит пакет, потребуется отдельное явное разрешение владельца на запуск Gate A на реальном PythonAnywhere и, отдельно, на установку в Production (Gate B) - это разные шаги, и оба ещё не выполнялись.
+БЕЗОПАСНОСТЬ: Production, CRM, база данных crm.db, сайт, боты и процессы PythonAnywhere не менялись и не перезапускались. UA-0009 не публиковался. PRODUCTION_TOUCHED: NO, CRM_TOUCHED: NO, GATE_A_EXECUTED: NO, UA_0009_PUBLISHED: NO.
 CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+MEMORY_VERSION_READ: 4
