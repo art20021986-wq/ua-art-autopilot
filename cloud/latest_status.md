@@ -1,10 +1,15 @@
-TASK_ID: task_049
-ROUND: 2
-CLAUDE_STATUS: WAITING_OWNER
-CURRENT_ACTION: Gate A PASS: exact-source candidate compiled and all centralized-menu invariants passed; waiting for separate owner approval before production installation.
-FILES_CREATED: cloud/bot_logistics/task049_transform.py, cloud/bot_logistics/task049_gate_a.py, cloud/bot_logistics/task049_gate_a_controller.py, cloud/bot_logistics/test_task049.py, cloud/bot_logistics/test_task049_controller.py, cloud/bot_logistics/evidence/task_049_gate_a.json, cloud/bot_logistics/TASK_049_GATE_A_REPORT.md, .github/workflows/task049_gate_a.yml, tasks/task_049.md
+TASK_ID: task_048
+ROUND: 1
+CLAUDE_STATUS: DONE
+CURRENT_ACTION: Restored candidate_transforms.py from the exact embedded TASK 041 accepted baseline (not the rejected TASK 046 reconstruction), applied bounded targeted fixes (Return-context + module-level-enqueue proof in the rebuild transform; real import relocation + definition-time alias-ambiguity blocking in the launcher transform; signal-handler recording/restore in the generated runtime SingletonGuard.cleanup()), and added a compact new focused test file. Status is PARTIAL_TASK_048_CANDIDATE_RESTORED_READY_FOR_CONTROLLER_AUDIT, not READY_FOR_GATE_A.
+FILES_CREATED: cloud/crm_speed_optimization/candidate_transforms.py, cloud/crm_speed_optimization/test_task_048_candidate_restore.py, cloud/crm_speed_optimization/TASK_048_REPORT.md
 PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Подтверждаете установку проверенного меню в работающий бот? Ответьте APPROVE или CANCEL.
-NEXT_FOR_CHATGPT: Execute Gate B only after exact APPROVE; otherwise do not modify production.
-UPDATED_AT_UTC: 2026-08-27T21:24:22Z
+OWNER_ACTION_REQUIRED: NO
+OWNER_QUESTION: NONE
+NEXT_FOR_CHATGPT: Independently compile the whole crm_speed_optimization package, run the existing candidate-related tests plus test_task_048_candidate_restore.py, and confirm the rebuild/launcher/runtime fixes hold before considering any further step toward Gate A. sqlite_ownership.py state and orchestrator closure remain pending and out of scope here.
+UPDATED_AT_UTC: 2026-08-27T21:26:03Z
+CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+MEMORY_VERSION_READ: 4
+CRM_TOUCHED: NO
+GATE_A_EXECUTED: NO
+UA_0009_PUBLISHED: NO
