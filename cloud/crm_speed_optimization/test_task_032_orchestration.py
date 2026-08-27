@@ -194,8 +194,15 @@ class BackupOrderingTests(_TempConfigCase):
         self.cfg["backup_archive_sha256"] = "0" * 64
         receipt = gate_a.orchestrate_gate_a(self.cfg, opener=_fake_opener_404())
         self.assertEqual(receipt["status"], "BLOCKED")
-        self.assertNotIn("candidates_compile", receipt["evidence"])
         self.assertTrue(any("backup_verification_failed" in b for b in receipt.get("blockers", [])))
+
+        candidates_compile = receipt["evidence"]["candidates_compile"]
+        self.assertIsInstance(candidates_compile, dict)
+        self.assertEqual(candidates_compile["status"], "BLOCKED")
+        self.assertEqual(candidates_compile["reason"], "skipped_due_to_prior_block")
+
+        candidates_dir = os.path.join(self.cfg["run_root"], receipt["run_id"], "candidates")
+        self.assertFalse(os.path.exists(candidates_dir))
 
 
 class LockDuplicateTests(_TempConfigCase):
