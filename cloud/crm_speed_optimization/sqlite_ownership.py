@@ -1,23 +1,42 @@
 """
-sqlite_ownership.py
+sqlite_ownership.py (TASK 034)
 
-Structural (AST-based) transformation and verifier enforcing short SQLite
-ownership: SELECT rows are materialized into ordinary immutable values
-and the cursor/connection are closed BEFORE any slow-call category
-(formatting/hash/sleep/network/filesystem/Telegram I/O).
+Two independent capabilities live in this module:
 
-Only exact, unambiguous anchors are transformed. Anything ambiguous
-raises AnchorNotFoundError so the caller can BLOCK and leave the
-candidate file unmodified.
+1. The original structural (AST-based) transformation and verifier
+   enforcing short SQLite ownership: SELECT rows are materialized into
+   ordinary immutable values and the cursor/connection are closed
+   BEFORE any slow-call category (formatting/hash/sleep/network/
+   filesystem/Telegram I/O). Preserved unchanged for compatibility.
+
+2. A new canonical, read-only, fail-closed SQLite evidence API used to
+   prove UA-0009 row identity/ownership without ever emitting raw field
+   values, names, phones, messages, blobs, or database pages. Only
+   structural table/column identifiers, bounded row counts/identity
+   hashes, and SHA-256 digests are returned.
+
+No network access. No production paths. No writes. No migrations, WAL
+changes, VACUUM, REINDEX, or mutable PRAGMAs are ever issued.
 """
 from __future__ import annotations
 
 import ast
+import hashlib
 import os
+import sqlite3
+import stat
 import sys
-from typing import List, Set
+import urllib.parse
+from dataclasses import dataclass, asdict
+from typing import List, Optional, Set
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# --------------------------------------------------------------------
+# Section 1: original AST-based short-ownership transform (unchanged
+# public interface: AnchorNotFoundError, find_db_handle_names,
+# verify_no_live_handle_across_slow_call, transform_short_ownership).
+# --------------------------------------------------------------------
 
 SLOW_CALL_NAMES = {
     "sleep", "time.sleep",
@@ -181,3 +200,191 @@ def transform_short_ownership(source: str, function_names: Set[str]) -> str:
         ast.fix_missing_locations(func)
 
     return ast.unparse(tree)
+
+
+# --------------------------------------------------------------------
+# Section 2: canonical read-only, fail-closed SQLite evidence API
+# (TASK 034). Standard library only. Never raises for expected
+# operational conditions (missing/locked/malformed/ambiguous/overflow);
+# always returns a structured OwnershipEvidence with status OK/BLOCKED.
+# --------------------------------------------------------------------
+
+MAX_TABLES = 50
+MAX_COLUMNS = 50
+MAX_ROWS = 1000
+MAX_SERIALIZED_BYTES = 1_000_000
+
+
+@dataclass
+class OwnershipEvidence:
+    status: str  # "OK" or "BLOCKED"
+    reason: str
+    quick_check: Optional[str] = None
+    query_only: Optional[int] = None
+    table: Optional[str] = None
+    row_count: Optional[int] = None
+    rows_sha256: Optional[str] = None
+    evidence_sha256: Optional[str] = None
+
+    def to_dict(self):
+        return asdict(self)
+
+
+def _sanitize(exc: BaseException) -> str:
+    # Only the exception class name is ever surfaced -- never the
+    # message, which could embed a path or a fragment of data.
+    return type(exc).__name__
+
+
+def _validate_db_path(path: str):
+    """Validate the database path with lstat: must be a regular,
+    non-symlink file with a stable identity (nlink == 1). Fails closed
+    on any hard-link surprise."""
+    try:
+        st = os.lstat(path)
+    except OSError as exc:
+        return False, f"path_stat_failed:{_sanitize(exc)}"
+    if stat.S_ISLNK(st.st_mode):
+        return False, "path_is_symlink"
+    if not stat.S_ISREG(st.st_mode):
+        return False, "path_not_regular_file"
+    if st.st_nlink != 1:
+        return False, "path_hard_linked"
+    return True, "ok"
+
+
+def _quote_ident(name: str) -> str:
+    return '"' + str(name).replace('"', '""') + '"'
+
+
+def collect_ua0009_ownership_evidence(
+    db_path: str,
+    table: str,
+    id_column: str,
+    id_value: str = "UA-0009",
+    timeout: float = 2.0,
+    max_tables: int = MAX_TABLES,
+    max_columns: int = MAX_COLUMNS,
+    max_rows: int = MAX_ROWS,
+    max_serialized_bytes: int = MAX_SERIALIZED_BYTES,
+) -> OwnershipEvidence:
+    """Read-only, fail-closed evidence collection selecting exactly one
+    row identified by the configured exact identifier-column rule
+    (table/id_column/id_value). The cursor and connection are always
+    closed BEFORE any hashing/serialization occurs. Never raises for
+    expected operational conditions."""
+    valid, reason = _validate_db_path(db_path)
+    if not valid:
+        return OwnershipEvidence(status="BLOCKED", reason=reason)
+
+    uri = "file:" + urllib.parse.quote(os.path.abspath(db_path)) + "?mode=ro"
+    quick_check_val = None
+    query_only_val = None
+
+    try:
+        conn = sqlite3.connect(uri, uri=True, timeout=timeout)
+    except sqlite3.Error as exc:
+        return OwnershipEvidence(status="BLOCKED", reason=f"open_failed:{_sanitize(exc)}")
+
+    rows = None
+    try:
+        try:
+            cur = conn.cursor()
+            try:
+                cur.execute("PRAGMA query_only=ON")
+                row = cur.execute("PRAGMA query_only").fetchone()
+                query_only_val = row[0] if row else None
+
+                row = cur.execute("PRAGMA quick_check").fetchone()
+                quick_check_val = row[0] if row else None
+                if quick_check_val != "ok":
+                    return OwnershipEvidence(
+                        status="BLOCKED", reason="quick_check_not_ok",
+                        quick_check=quick_check_val, query_only=query_only_val,
+                    )
+
+                tables = cur.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table' LIMIT ?",
+                    (max_tables + 1,),
+                ).fetchall()
+                if len(tables) > max_tables:
+                    return OwnershipEvidence(
+                        status="BLOCKED", reason="table_overflow",
+                        quick_check=quick_check_val, query_only=query_only_val,
+                    )
+                table_names = {r[0] for r in tables}
+                if table not in table_names:
+                    return OwnershipEvidence(
+                        status="BLOCKED", reason="missing_table",
+                        quick_check=quick_check_val, query_only=query_only_val,
+                    )
+
+                columns = cur.execute(f"PRAGMA table_info({_quote_ident(table)})").fetchall()
+                if len(columns) > max_columns:
+                    return OwnershipEvidence(
+                        status="BLOCKED", reason="column_overflow",
+                        quick_check=quick_check_val, query_only=query_only_val, table=table,
+                    )
+                column_names = {c[1] for c in columns}
+                if id_column not in column_names:
+                    return OwnershipEvidence(
+                        status="BLOCKED", reason="missing_column",
+                        quick_check=quick_check_val, query_only=query_only_val, table=table,
+                    )
+
+                select_sql = (
+                    f"SELECT rowid, * FROM {_quote_ident(table)} "
+                    f"WHERE {_quote_ident(id_column)} = ? LIMIT ?"
+                )
+                rows = cur.execute(select_sql, (id_value, max_rows + 1)).fetchall()
+            finally:
+                cur.close()
+        finally:
+            conn.close()
+    except sqlite3.Error as exc:
+        return OwnershipEvidence(
+            status="BLOCKED", reason=f"sqlite_error:{_sanitize(exc)}",
+            quick_check=quick_check_val, query_only=query_only_val,
+        )
+
+    # Cursor and connection are now closed. Only materialized, immutable
+    # values remain; hashing/serialization happens strictly below.
+    if not rows:
+        return OwnershipEvidence(
+            status="BLOCKED", reason="missing_row",
+            quick_check=quick_check_val, query_only=query_only_val, table=table,
+        )
+    if len(rows) > 1:
+        return OwnershipEvidence(
+            status="BLOCKED", reason="ambiguous_row",
+            quick_check=quick_check_val, query_only=query_only_val, table=table,
+        )
+
+    serialized = repr(rows[0]).encode("utf-8")
+    if len(serialized) > max_serialized_bytes:
+        return OwnershipEvidence(
+            status="BLOCKED", reason="serialized_overflow",
+            quick_check=quick_check_val, query_only=query_only_val, table=table,
+        )
+    row_hash = hashlib.sha256(serialized).hexdigest()
+    combined = hashlib.sha256(
+        f"{quick_check_val}|{query_only_val}|{table}|{id_column}|{row_hash}".encode("utf-8")
+    ).hexdigest()
+
+    return OwnershipEvidence(
+        status="OK", reason="ok", quick_check=quick_check_val, query_only=query_only_val,
+        table=table, row_count=1, rows_sha256=row_hash, evidence_sha256=combined,
+    )
+
+
+def compare_ownership_evidence(before: OwnershipEvidence, after: OwnershipEvidence):
+    """Pure comparison helper for before/after UA-0009 evidence. OK only
+    when both evidence objects are complete (status OK) and their
+    evidence_sha256 hashes match exactly."""
+    if before.status != "OK" or after.status != "OK":
+        return False, "incomplete_evidence"
+    if not before.evidence_sha256 or not after.evidence_sha256:
+        return False, "incomplete_evidence"
+    if before.evidence_sha256 != after.evidence_sha256:
+        return False, "hash_mismatch"
+    return True, "ok"
