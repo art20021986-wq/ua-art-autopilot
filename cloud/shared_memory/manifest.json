@@ -1,22 +1,22 @@
 {
-  "schema_version": "1.0.0",
-  "memory_version": 1,
+  "applied_proposals": [],
   "canonical_branch": "main",
-  "previous_version": null,
+  "file_hashes": {
+    "records.jsonl": "e684b8c1f022aa995dc791b6cfcfbd63524370ec76e1a81a730a85f7daa43eb9",
+    "schemas/proposal.schema.json": "854b857c4ebfdb3b82182737e19fa9447a1e04788856e3fa702a1232d01c626a",
+    "schemas/record.schema.json": "eab8cc855bfa1b7590822b1c7bd3d8f6bb17907f24225b470a3e5e0409086ae5",
+    "state/current_status.json": "ea57c866fd31c388118be653b9ba7d4a2da69c4eb94e0aed18095bf84fee1981"
+  },
+  "hashes_status": "COMPUTED",
   "managed_files": [
     "records.jsonl",
     "schemas/record.schema.json",
     "schemas/proposal.schema.json",
     "state/current_status.json"
   ],
-  "file_hashes": {
-    "records.jsonl": null,
-    "schemas/record.schema.json": null,
-    "schemas/proposal.schema.json": null,
-    "state/current_status.json": null
-  },
-  "hashes_status": "NOT_COMPUTED_RUN_MEMORY_BOOTSTRAP",
-  "applied_proposals": [],
-  "status": "SEEDED",
-  "notes": "Run memory_bootstrap.py once to compute and persist real file hashes before relying on healthcheck hash comparison. This manifest was authored statically and never executed."
+  "memory_version": 1,
+  "notes": "All managed-file hashes are present. Run memory_bootstrap.py after an authorized canonical managed-file update, then run memory_healthcheck.py.",
+  "previous_version": null,
+  "schema_version": "1.0.0",
+  "status": "BOOTSTRAPPED"
 }
