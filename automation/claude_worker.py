@@ -394,7 +394,11 @@ def required_output_paths(task_text: str) -> set[str]:
     )
     if not match:
         return {STATUS_REL, OWNER_REPLY_REL}
-    paths = set(re.findall(r"`(cloud/[A-Za-z0-9._/-]+)`", match.group(1)))
+    discovered = set(re.findall(r"`(cloud/[A-Za-z0-9._/-]+)`", match.group(1)))
+    # A task may name an output directory (for example `cloud/package/`).
+    # Directories are scope declarations, not file deliverables; requiring Claude
+    # to return a file whose path ends in `/` makes every otherwise-valid run fail.
+    paths = {candidate for candidate in discovered if not candidate.endswith("/")}
     paths.update({STATUS_REL, OWNER_REPLY_REL})
     return paths
 
