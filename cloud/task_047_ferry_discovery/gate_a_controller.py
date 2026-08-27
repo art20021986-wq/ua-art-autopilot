@@ -39,6 +39,10 @@ REMOTE_CANDIDATES = {
     rel_path: REMOTE_ROOT + "/gate_a_candidates/" + rel_path
     for rel_path in VIDEO_PATHS
 }
+REMOTE_GENERATOR_CANDIDATES = {
+    rel_path: REMOTE_ROOT + "/gate_a_candidates/python/" + rel_path
+    for rel_path in PYTHON_PATHS
+}
 EXACT_COMMAND = (
     "cd " + REMOTE_ROOT
     + " && python3.10 gate_a_remote.py > " + REMOTE_OUTPUT
@@ -60,7 +64,7 @@ POLL_TIMEOUT_SECONDS = 600
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 SAFE_CONTEXT_TEXT = re.compile(r"^[A-Za-z0-9_.-]{0,128}$")
 PYTHON_ENTRY_KEYS = {
-    "path", "source_sha256", "line", "column", "end_line", "before",
+    "path", "source_sha256", "line", "column", "end_line", "end_column", "before",
     "classification", "action", "literal_sha256", "literal_length",
     "assignment", "role", "dict_key", "call", "keyword", "function", "class",
     "structural_changes", "structural_ambiguous", "structural_contexts",
@@ -150,7 +154,10 @@ class PythonAnywhereAPI:
         return status, body
 
     def _file_url(self, path: str) -> str:
-        allowed = set(LOCAL_FILES) | {REMOTE_OUTPUT} | set(REMOTE_CANDIDATES.values())
+        allowed = (
+            set(LOCAL_FILES) | {REMOTE_OUTPUT} | set(REMOTE_CANDIDATES.values())
+            | set(REMOTE_GENERATOR_CANDIDATES.values())
+        )
         if path not in allowed:
             raise ControllerBlocked("remote_file_path_not_allowed")
         return self.base + "files/path" + urllib.parse.quote(path, safe="/")
@@ -278,7 +285,7 @@ class GateAController:
             "production_write", "crm_write", "db_write", "service_reload",
             "gate_b_executed", "ua0009_published", "unexpected_protected_changes",
             "production_sources_unchanged", "discovery_reasons", "candidates",
-            "python_sources", "crm", "errors",
+            "generator_candidates", "python_sources", "crm", "errors",
         }
         if set(receipt) - allowed:
             raise ControllerBlocked("receipt_unknown_key")
@@ -297,7 +304,7 @@ class GateAController:
         if receipt.get("candidate_root") != REMOTE_ROOT + "/gate_a_candidates":
             raise ControllerBlocked("receipt_candidate_root_invalid")
         status = receipt.get("status")
-        if status not in {"PASS", "PASS_NEEDS_GENERATOR_PATCH", "BLOCKED"}:
+        if status not in {"PASS", "PASS_READY_FOR_GATE_B", "BLOCKED"}:
             raise ControllerBlocked("receipt_status_invalid")
         if not isinstance(receipt.get("generated_at_utc"), str):
             raise ControllerBlocked("receipt_timestamp_invalid")
@@ -307,6 +314,8 @@ class GateAController:
             raise ControllerBlocked("receipt_errors_invalid")
         if not isinstance(receipt.get("python_sources"), list):
             raise ControllerBlocked("receipt_python_sources_invalid")
+        if not isinstance(receipt.get("generator_candidates"), list):
+            raise ControllerBlocked("receipt_generator_candidates_invalid")
         if len(receipt["python_sources"]) > 500:
             raise ControllerBlocked("receipt_python_sources_too_many")
         for item in receipt["python_sources"]:
@@ -328,6 +337,8 @@ class GateAController:
                 raise ControllerBlocked("receipt_python_column_invalid")
             if not isinstance(item.get("end_line"), int) or not item["line"] <= item["end_line"] <= 10_000_000:
                 raise ControllerBlocked("receipt_python_end_line_invalid")
+            if not isinstance(item.get("end_column"), int) or not 0 <= item["end_column"] <= 1_000_000:
+                raise ControllerBlocked("receipt_python_end_column_invalid")
             if item.get("before") not in {
                 "В море · Корея → Грузия", "У морі · Корея → Грузія",
                 "В море", "У морі", "Море",
@@ -419,9 +430,63 @@ class GateAController:
             item for item in receipt["python_sources"]
             if isinstance(item, dict) and item.get("classification") == "USER_FACING"
         ]
-        if status == "PASS_NEEDS_GENERATOR_PATCH" and not user_facing:
+        expected_generator_paths = {item["path"] for item in user_facing}
+        generator_by_path = {}
+        for item in receipt["generator_candidates"]:
+            if not isinstance(item, dict) or set(item) != {
+                "path", "candidate_path", "source_sha256", "candidate_sha256",
+                "source_size", "candidate_size", "changes", "occurrences",
+            }:
+                raise ControllerBlocked("receipt_generator_candidate_entry_invalid")
+            rel_path = item.get("path")
+            if rel_path in generator_by_path or rel_path not in REMOTE_GENERATOR_CANDIDATES:
+                raise ControllerBlocked("receipt_generator_candidate_path_invalid")
+            if item.get("candidate_path") != REMOTE_GENERATOR_CANDIDATES[rel_path]:
+                raise ControllerBlocked("receipt_generator_candidate_remote_path_invalid")
+            for hash_key in ("source_sha256", "candidate_sha256"):
+                digest = item.get(hash_key)
+                if not isinstance(digest, str) or not HEX64.fullmatch(digest):
+                    raise ControllerBlocked("receipt_generator_candidate_hash_invalid")
+            for size_key in ("source_size", "candidate_size"):
+                size = item.get(size_key)
+                if not isinstance(size, int) or not 0 < size <= 20 * 1024 * 1024:
+                    raise ControllerBlocked("receipt_generator_candidate_size_invalid")
+            if not isinstance(item.get("changes"), int) or item["changes"] < 1:
+                raise ControllerBlocked("receipt_generator_candidate_change_count_invalid")
+            occurrences = item.get("occurrences")
+            if not isinstance(occurrences, list) or not occurrences:
+                raise ControllerBlocked("receipt_generator_candidate_occurrences_invalid")
+            occurrence_changes = 0
+            for occurrence in occurrences:
+                if not isinstance(occurrence, dict) or set(occurrence) != {
+                    "line", "before", "after", "replacements",
+                    "literal_sha256_before", "literal_sha256_after",
+                }:
+                    raise ControllerBlocked("receipt_generator_occurrence_invalid")
+                if not isinstance(occurrence.get("line"), int) or occurrence["line"] < 1:
+                    raise ControllerBlocked("receipt_generator_occurrence_line_invalid")
+                mapping = {
+                    "В море · Корея → Грузия": "На пароме · Корея → Грузия",
+                    "У морі · Корея → Грузія": "На поромі · Корея → Грузія",
+                    "В море": "На пароме", "У морі": "На поромі", "Море": "Паром",
+                }
+                if mapping.get(occurrence.get("before")) != occurrence.get("after"):
+                    raise ControllerBlocked("receipt_generator_occurrence_mapping_invalid")
+                if not isinstance(occurrence.get("replacements"), int) or occurrence["replacements"] < 1:
+                    raise ControllerBlocked("receipt_generator_occurrence_count_invalid")
+                occurrence_changes += occurrence["replacements"]
+                for hash_key in ("literal_sha256_before", "literal_sha256_after"):
+                    digest = occurrence.get(hash_key)
+                    if not isinstance(digest, str) or not HEX64.fullmatch(digest):
+                        raise ControllerBlocked("receipt_generator_occurrence_hash_invalid")
+            if occurrence_changes != item["changes"]:
+                raise ControllerBlocked("receipt_generator_candidate_change_sum_invalid")
+            generator_by_path[rel_path] = item
+        if set(generator_by_path) != expected_generator_paths:
+            raise ControllerBlocked("receipt_generator_candidate_set_invalid")
+        if status == "PASS_READY_FOR_GATE_B" and not user_facing:
             raise ControllerBlocked("receipt_generator_status_invalid")
-        if status == "PASS" and user_facing:
+        if status == "PASS" and (user_facing or generator_by_path):
             raise ControllerBlocked("receipt_generator_status_invalid")
         return receipt
 
@@ -456,6 +521,7 @@ class GateAController:
             item for item in receipt.get("python_sources", [])
             if isinstance(item, dict) and item.get("classification") == "USER_FACING"
         ]
+        generator_candidates = receipt.get("generator_candidates", [])
         rows = "\n".join(
             "- `%s`: %s changes; `%s` → `%s`" % (
                 item["path"], item["changes"], item["source_sha256"],
@@ -473,6 +539,13 @@ class GateAController:
             )
             for item in receipt.get("python_sources", []) if isinstance(item, dict)
         ) or "- No target-like Python literals were found."
+        generator_rows = "\n".join(
+            "- `%s`: %s changes; `%s` → `%s`" % (
+                item["path"], item["changes"], item["source_sha256"],
+                item["candidate_sha256"],
+            )
+            for item in generator_candidates
+        ) or "- No generator candidate files were required."
         report = f'''# Ferry wording Gate A report
 
 status: {receipt["status"]}
@@ -480,6 +553,7 @@ generated_at_utc: {receipt["generated_at_utc"]}
 candidate_files: {len(candidates)}
 total_html_changes: {total_changes}
 generator_literals_requiring_patch: {len(generator_items)}
+generator_candidate_files: {len(generator_candidates)}
 crm_table: {receipt.get("crm", {}).get("table")}
 crm_id_column: {receipt.get("crm", {}).get("id_column")}
 crm_container_column: {receipt.get("crm", {}).get("container_column")}
@@ -497,6 +571,10 @@ ua0009_published: false
 ## Bounded Python generator context
 
 {python_rows}
+
+## Isolated Python generator candidates
+
+{generator_rows}
 
 Candidates exist only under `autopilot_inbox`. No live card or generator was
 changed. Gate B requires separate explicit owner approval.
@@ -517,6 +595,16 @@ changed. Gate B requires separate explicit owner approval.
                         raise ControllerBlocked("candidate_size_readback_mismatch")
                     if sha256_bytes(candidate) != item["candidate_sha256"]:
                         raise ControllerBlocked("candidate_hash_readback_mismatch")
+                for item in receipt["generator_candidates"]:
+                    candidate = self.api.read_file(item["candidate_path"])
+                    if len(candidate) != item["candidate_size"]:
+                        raise ControllerBlocked("generator_candidate_size_readback_mismatch")
+                    if sha256_bytes(candidate) != item["candidate_sha256"]:
+                        raise ControllerBlocked("generator_candidate_hash_readback_mismatch")
+                    try:
+                        compile(candidate.decode("utf-8"), item["path"], "exec")
+                    except (UnicodeDecodeError, SyntaxError) as exc:
+                        raise ControllerBlocked("generator_candidate_compile_failed") from exc
             self.relay(receipt)
             return receipt
         finally:
