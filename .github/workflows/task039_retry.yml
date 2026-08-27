@@ -1,0 +1,75 @@
+name: Task 039 Safe Retry
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task039_retry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task-039-safe-retry
+  cancel-in-progress: false
+
+jobs:
+  run-task-039:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - name: Generate reviewed Task 039 outputs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '1500'
+          ANTHROPIC_NETWORK_ATTEMPTS: '4'
+          ANTHROPIC_MAX_TOKENS: '128000'
+          ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
+        run: python3 automation/claude_worker.py
+      - name: Commit only cloud outputs with bounded conflict handling
+        run: |
+          grep -q '^TASK_ID: task_039$' cloud/latest_status.md
+          git add -A -- cloud/
+          if git diff --cached --quiet -- cloud/; then
+            echo 'No Task 039 cloud changes'
+            exit 1
+          fi
+          git config user.name 'ua-art-claude-worker'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'Claude autopilot: process task 039 retry'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              if [ "${#conflicts[@]}" -eq 0 ]; then
+                git rebase --abort || true
+                exit 1
+              fi
+              for path in "${conflicts[@]}"; do
+                case "${path}" in
+                  cloud/latest_status.md|cloud/owner_reply.md) ;;
+                  *)
+                    echo "Unsafe rebase conflict: ${path}"
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              for path in "${conflicts[@]}"; do
+                git checkout --theirs -- "${path}"
+                git add -- "${path}"
+              done
+              GIT_EDITOR=true git rebase --continue || { git rebase --abort || true; exit 1; }
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            if [ "${attempt}" -lt 5 ]; then sleep $((attempt * 3)); fi
+          done
+          exit 1
