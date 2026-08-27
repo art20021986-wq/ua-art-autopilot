@@ -58,9 +58,35 @@ jobs:
             echo "Push attempt ${attempt}/5"
             git fetch origin main
             if ! git rebase origin/main; then
-              echo 'Rebase conflict: refusing to overwrite main'
-              git rebase --abort || true
-              exit 1
+              # Concurrent tasks are allowed to update the two shared status
+              # files. During a rebase, keep the status produced by the task
+              # commit being applied ("theirs"). Any code/content conflict
+              # outside these two exact paths still aborts fail-closed.
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              if [ "${#conflicts[@]}" -eq 0 ]; then
+                echo 'Rebase failed without resolvable conflicts'
+                git rebase --abort || true
+                exit 1
+              fi
+              for path in "${conflicts[@]}"; do
+                case "${path}" in
+                  cloud/latest_status.md|cloud/owner_reply.md) ;;
+                  *)
+                    echo "Rebase conflict outside shared status files: ${path}"
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              for path in "${conflicts[@]}"; do
+                git checkout --theirs -- "${path}"
+                git add -- "${path}"
+              done
+              if ! GIT_EDITOR=true git rebase --continue; then
+                echo 'Rebase continuation failed after bounded status resolution'
+                git rebase --abort || true
+                exit 1
+              fi
             fi
             if git push origin HEAD:main; then
               exit 0
