@@ -7,10 +7,14 @@ singleton_guard.py are thin re-export/compatibility modules kept only for
 backward-compatible imports; they contain no divergent lock logic of
 their own.
 
-TASK 031/032. No production imports. No production-write capability.
-All writes are confined to explicitly supplied, already-existing local
-directories (temporary directories in tests, or a validated already-
-existing run directory created by crm_speed_gate_a.orchestrate_gate_a).
+TASK 031/032. TASK 038 corrected RebuildQueue._loop to enclose lock
+construction/acquisition/callback/release/state-cleanup in one complete
+exception boundary so that no exception can ever escape to
+threading.excepthook, with no retry/spin on failure. No production
+imports. No production-write capability. All writes are confined to
+explicitly supplied, already-existing local directories (temporary
+directories in tests, or a validated already-existing run directory
+created by crm_speed_gate_a.orchestrate_gate_a).
 """
 from __future__ import annotations
 
@@ -372,14 +376,22 @@ class RebuildQueue:
     """Bounded, coalescing, truly asynchronous rebuild queue.
 
     enqueue() returns promptly. It waits only for a short, bounded
-    worker/callback-entry acknowledgement (the worker has acquired the
-    rebuild lock and is about to invoke the callback) -- it never waits
-    for the callback itself to finish. At most one callback is active at
-    a time, executed on a single bounded background worker thread. At
-    most one pending follow-up is retained for a burst. The rebuild
-    critical section is protected by the canonical CrossProcessLock.
-    Callback failures are caught, sanitized (truncated) and recorded;
-    there is no infinite retry or recursive drain.
+    worker/callback-entry acknowledgement (the worker has attempted to
+    acquire the rebuild lock and is about to invoke the callback, or has
+    failed to do so cleanly) -- it never waits for the callback itself to
+    finish. At most one callback is active at a time, executed on a
+    single bounded background worker thread. At most one pending
+    follow-up is retained for a burst. The rebuild critical section is
+    protected by the canonical CrossProcessLock.
+
+    TASK 038 correction: lock construction, acquisition, callback
+    invocation, release, and worker-state cleanup are now enclosed in one
+    complete exception boundary. If the lock parent disappears or lock
+    construction/acquisition fails, the pending acknowledgement event is
+    still set, one bounded sanitized error (exception class name only) is
+    recorded, running/pending state is cleared safely, waiters are
+    notified, and that worker iteration terminates without retry or
+    spin. No exception can reach threading.excepthook.
     """
 
     _ACK_TIMEOUT_SECONDS = 0.5
@@ -436,11 +448,22 @@ class RebuildQueue:
                 ack_event = self._pending_ack_event
                 self._pending_ack_event = None
             acquired = False
-            lock = CrossProcessLock(self._lock_path)
+            lock = None
             try:
-                acquired = lock.acquire()
-                if ack_event is not None:
-                    ack_event.set()
+                try:
+                    lock = CrossProcessLock(self._lock_path)
+                    acquired = lock.acquire()
+                except Exception as exc:
+                    sanitized = type(exc).__name__
+                    with self._cv:
+                        self.errors.append(sanitized)
+                    acquired = False
+                finally:
+                    # The worker-entry acknowledgement fires whether or
+                    # not the lock could be constructed/acquired, so
+                    # enqueue() never waits past this point.
+                    if ack_event is not None:
+                        ack_event.set()
                 if acquired:
                     try:
                         self._callback()
@@ -455,8 +478,14 @@ class RebuildQueue:
                                 self._error_handler(exc)
                             except Exception:
                                 pass
+            except Exception as exc:
+                # Absolute fail-safe boundary. Nothing below this may
+                # ever escape to threading.excepthook.
+                sanitized = type(exc).__name__
+                with self._cv:
+                    self.errors.append(sanitized)
             finally:
-                if acquired:
+                if acquired and lock is not None:
                     try:
                         lock.release()
                     except Exception:

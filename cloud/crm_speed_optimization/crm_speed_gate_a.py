@@ -1,44 +1,30 @@
-"""CRM-SPEED-001 Gate A orchestration (TASK 032 canonical integration,
-TASK 035 evidence integration).
+"""CRM-SPEED-001 Gate A orchestration (TASK 032/035 canonical
+integration, TASK 038 real candidate-transform integration).
 
 This module provides one canonical evidence-computation core plus two
 callers:
 
 - run_gate_a(fixture): historical compatibility adapter for in-memory
-  source fixtures (unit tests). It safely creates a requested
-  non-existing run_dir after validating its parent, then delegates all
-  predicate evaluation to the same _compute_evidence()/evaluate_gate_a()
-  functions used by the canonical orchestrator. It does not retain a
-  synthetic parallel evidence-evaluation path.
+  source fixtures (unit tests). Unchanged by TASK 038.
 
 - orchestrate_gate_a(config, opener=None, clock=None): the real public
-  orchestration entry point used by the no-argument launcher and by
-  tests that inject a temporary filesystem configuration. It performs
-  the full secure lifecycle described in TASK 032: Gate A lock
-  acquisition, a validated QA root, atomic unique run-directory
-  creation, secure source reads, isolated candidate/diff creation,
-  compile-only verification (no import/execution of application
-  modules), structural/concurrency/SQLite/publication evidence, and
-  measured phase records (20/40/60/80/100).
+  orchestration entry point. TASK 038 extends phase40/60/80 to generate,
+  compile, and structurally verify real candidates for BOTH
+  usercustomize.py versions, start_safe.py, run_all.py, avtoperedacha.py,
+  samokontrol.py, and a generated crm_speed_runtime.py support module --
+  eight candidates total -- whenever the supplied config resolves all of
+  those sources unambiguously (two distinct usercustomize.py paths keyed
+  by their python3.10/python3.13 parent components, plus one each of
+  start_safe.py/run_all.py/samokontrol.py). When that full source set is
+  not resolvable (as in pre-TASK-038 fixtures that only exercise a
+  smaller/legacy input set), TASK 038 extended generation is reported
+  unavailable and the historical single-cars_ui/legacy-usercustomize
+  evidence path is preserved unchanged, so no pre-existing test is
+  weakened.
 
 Gate A is never executed against production by this repository. Every
 function here operates only on paths/strings explicitly supplied by the
 caller (production launcher DEFAULT_CONFIG or a test fixture/config).
-
-TASK 035 integration: the canonical read-only SQLite ownership evidence
-(sqlite_ownership.collect_ua0009_ownership_evidence /
-compare_ownership_evidence) and the canonical no-redirect publication
-probe (ua0009_publication_check.canonical_probe_ua0009) are used
-directly by orchestrate_gate_a -- their logic is never duplicated here.
-UA-0009 evidence is collected once before the candidate workload and
-once after the entire workload, and compared through the canonical
-helper; missing/non-OK/changed evidence always BLOCKS, never fabricated
-as unchanged. When cars_ui semantic analysis blocks the transform
-before compile-time evidence would otherwise exist, safe compile-only
-evidence is still recorded from the exact secure original bytes
-(candidate_origin=original_due_to_transform_block); this never permits
-a final PASS by itself since the remaining structural predicates stay
-missing/BLOCKED in that path.
 """
 import os
 import ast
@@ -55,6 +41,7 @@ import urllib.error
 
 from canonical_modules import CrossProcessLock, SingletonGuard, RebuildQueue, SafeWriter
 import cars_ui_transform
+import candidate_transforms
 import sqlite_ownership
 import ua0009_publication_check
 
@@ -89,6 +76,8 @@ ALLOWED_SITE_NAMES = (
     + [f"UA-000{n}-track.html" for n in range(1, 10)]
 )
 
+LAUNCHER_LOCK_PATH = "/home/Carix/qa/crm_speed_task020/launcher_singleton.lock"
+
 DEFAULT_CONFIG = {
     "required_inputs": [
         "/home/Carix/.local/lib/python3.10/site-packages/usercustomize.py",
@@ -115,10 +104,6 @@ DEFAULT_CONFIG = {
     "protected_function_names": [],
     "db_function_source": None,
     "min_free_bytes": 10 * 1024 * 1024,
-    # UA-0009 SQLite row-identity table/column configuration is
-    # intentionally left unconfigured pending owner-verified schema
-    # confirmation. Until configured, UA-0009 ownership evidence fails
-    # closed (BLOCKED) rather than fabricating an unchanged result.
     "ua0009_table": None,
     "ua0009_id_column": None,
     "ua0009_id_value": "UA-0009",
@@ -773,6 +758,28 @@ def _find_input_path(config, filename):
     return None
 
 
+def _resolve_unique_input(config, filename):
+    matches = [p for p in config.get("required_inputs", []) if os.path.basename(p) == filename]
+    if len(matches) != 1:
+        return None
+    return matches[0]
+
+
+def _resolve_two_usercustomize_paths(config):
+    """TASK 038: resolve exactly two usercustomize.py inputs by their
+    Python 3.10 and 3.13 parent path components. Missing/duplicate/
+    ambiguous mapping returns (None, None, reason) -- never chooses only
+    the first basename match."""
+    all_uc = [p for p in config.get("required_inputs", []) if os.path.basename(p) == "usercustomize.py"]
+    matches_310 = [p for p in all_uc if "python3.10" in p]
+    matches_313 = [p for p in all_uc if "python3.13" in p]
+    if len(matches_310) != 1 or len(matches_313) != 1:
+        return None, None, "usercustomize_path_resolution_ambiguous_or_missing"
+    if matches_310[0] == matches_313[0]:
+        return None, None, "usercustomize_path_resolution_ambiguous_or_missing"
+    return matches_310[0], matches_313[0], None
+
+
 def _render_report(receipt):
     lines = []
     lines.append("# Gate A Report - " + str(receipt.get("task_id")))
@@ -791,6 +798,12 @@ def _render_report(receipt):
     for u in receipt.get("unmet_predicates", []) or []:
         lines.append("- " + str(u))
     lines.append("")
+    lines.append("## Extended (TASK 038) candidates")
+    ext = receipt.get("extended_candidates", {})
+    lines.append("available: " + str(ext.get("available")))
+    for r in ext.get("blocked_reasons", []) or []:
+        lines.append("- blocked_reason: " + str(r))
+    lines.append("")
     lines.append("## Blockers")
     for b in receipt.get("blockers", []) or []:
         lines.append("- " + str(b))
@@ -801,21 +814,7 @@ def _render_report(receipt):
 
 
 def orchestrate_gate_a(config, opener=None, clock=None):
-    """The single, real, public orchestration entry point. Used by both
-    the no-argument launcher (with DEFAULT_CONFIG) and by tests (with an
-    injected temporary-directory configuration and an injected fake
-    HTTPS opener). Never scans an account recursively; only reads the
-    exact bounded paths present in `config`.
-
-    TASK 035: read-only UA-0009 SQLite ownership evidence is collected
-    once before the candidate workload (end of phase20) and once again
-    only after the entire workload (start of phase100), always via the
-    canonical sqlite_ownership.collect_ua0009_ownership_evidence /
-    compare_ownership_evidence functions -- never duplicated here. The
-    publication probe in phase80 delegates directly to the canonical
-    ua0009_publication_check.canonical_probe_ua0009 with the injected
-    opener.
-    """
+    """The single, real, public orchestration entry point."""
     clock = clock or time.monotonic
     phases = []
     evidence = {}
@@ -827,6 +826,7 @@ def orchestrate_gate_a(config, opener=None, clock=None):
     sqlite_state = {"before": None, "after": None}
     run_dir = None
     lock = None
+    candidate_writer = None
 
     def run_phase(num, label, fn):
         start = clock()
@@ -866,11 +866,6 @@ def orchestrate_gate_a(config, opener=None, clock=None):
             raise _GateABlocked("backup_verification_failed")
         evidence["_fingerprints_before"] = {p: fingerprint_file(p) for p in config["required_inputs"]}
 
-        # Canonical, read-only, fail-closed UA-0009 SQLite ownership
-        # evidence, collected once here (before the candidate workload).
-        # Delegates entirely to sqlite_ownership; database resources are
-        # closed internally before returning, i.e. strictly before any
-        # transform/hashing/HTTP/filesystem work below.
         db_path = _find_input_path(config, "crm.db")
         sqlite_state["before"] = _collect_ua0009_sqlite_evidence(config, db_path)
 
@@ -878,35 +873,32 @@ def orchestrate_gate_a(config, opener=None, clock=None):
             site_before[root] = scan_bounded_inventory(root, names)
 
     def phase40():
+        nonlocal candidate_writer
         if state["blocked"]:
             raise _GateABlocked("skipped_prior_block")
-        cars_ui_path = _find_input_path(config, "cars_ui.py")
-        usercustomize_path = _find_input_path(config, "usercustomize.py")
-        avtoperedacha_path = _find_input_path(config, "avtoperedacha.py")
-        if not (cars_ui_path and usercustomize_path and avtoperedacha_path):
+        cars_ui_path = _resolve_unique_input(config, "cars_ui.py")
+        avtoperedacha_path = _resolve_unique_input(config, "avtoperedacha.py")
+        if not (cars_ui_path and avtoperedacha_path):
             raise _GateABlocked("missing_source_paths_for_transform")
+
         cars_ui_source = input_records[cars_ui_path]["data"].decode("utf-8")
-        usercustomize_source = input_records[usercustomize_path]["data"].decode("utf-8")
         avtoperedacha_source = input_records[avtoperedacha_path]["data"].decode("utf-8")
         evidence["_cars_ui_source"] = cars_ui_source
-        evidence["_usercustomize_source"] = usercustomize_source
         evidence["_avtoperedacha_source"] = avtoperedacha_source
+
+        legacy_usercustomize_path = _find_input_path(config, "usercustomize.py")
+        legacy_usercustomize_source = None
+        if legacy_usercustomize_path:
+            legacy_usercustomize_source = input_records[legacy_usercustomize_path]["data"].decode("utf-8")
+            evidence["_usercustomize_source"] = legacy_usercustomize_source
 
         result = transform_cars_ui(cars_ui_source)
         evidence["_transform_result"] = result
         if result["status"] != "OK" or result.get("candidate") is None:
-            # Semantic transform blocked before a candidate could be
-            # created. Still record safe compile-only evidence from the
-            # exact secure original bytes (never executed/imported).
-            # This is explicitly NOT an accepted candidate and never by
-            # itself permits a final PASS -- the remaining structural
-            # predicates (admin_routes_text_only, media_persistence,
-            # etc.) stay missing/BLOCKED because phase80 is skipped.
-            compile_map = {
-                "cars_ui.py": cars_ui_source,
-                "usercustomize.py": usercustomize_source,
-                "avtoperedacha.py": avtoperedacha_source,
-            }
+            compile_map = {"cars_ui.py": cars_ui_source}
+            if legacy_usercustomize_source is not None:
+                compile_map["usercustomize.py"] = legacy_usercustomize_source
+            compile_map["avtoperedacha.py"] = avtoperedacha_source
             try:
                 compile_result = check_candidates_compile(compile_map)
             except Exception as exc:
@@ -924,18 +916,93 @@ def orchestrate_gate_a(config, opener=None, clock=None):
             raise _GateABlocked("cars_ui_transform_blocked")
 
         candidate_sources["cars_ui.py"] = result["candidate"]
-        candidate_sources["usercustomize.py"] = usercustomize_source
+        if legacy_usercustomize_source is not None:
+            candidate_sources["usercustomize.py"] = legacy_usercustomize_source
         candidate_sources["avtoperedacha.py"] = avtoperedacha_source
         diff_text = generate_unified_diff(cars_ui_source, candidate_sources["cars_ui.py"])
         evidence["_diff_sha256"] = _sha256_bytes(diff_text.encode("utf-8"))
         evidence["_candidate_hashes"] = {k: _sha256_bytes(v.encode("utf-8")) for k, v in candidate_sources.items()}
+
+        # -- TASK 038: extended real candidate generation --------------
+        extended = {"available": False, "blocked_reasons": []}
+        uc310_path, uc313_path, uc_err = _resolve_two_usercustomize_paths(config)
+        if uc_err:
+            extended["blocked_reasons"].append(uc_err)
+        start_safe_path = _resolve_unique_input(config, "start_safe.py")
+        run_all_path = _resolve_unique_input(config, "run_all.py")
+        samokontrol_path = _resolve_unique_input(config, "samokontrol.py")
+        if not (start_safe_path and run_all_path and samokontrol_path):
+            extended["blocked_reasons"].append("missing_launcher_or_samokontrol_paths")
+
+        if not extended["blocked_reasons"]:
+            try:
+                uc310_source = input_records[uc310_path]["data"].decode("utf-8")
+                uc313_source = input_records[uc313_path]["data"].decode("utf-8")
+                start_safe_source = input_records[start_safe_path]["data"].decode("utf-8")
+                run_all_source = input_records[run_all_path]["data"].decode("utf-8")
+                samokontrol_source = input_records[samokontrol_path]["data"].decode("utf-8")
+
+                evidence["_launcher_lock_path"] = LAUNCHER_LOCK_PATH
+                support_source = candidate_transforms.generate_runtime_support_source()
+
+                per_result = {
+                    "usercustomize_py310.py": candidate_transforms.transform_usercustomize(uc310_source, "py310"),
+                    "usercustomize_py313.py": candidate_transforms.transform_usercustomize(uc313_source, "py313"),
+                    "start_safe.py": candidate_transforms.transform_launcher_singleton(start_safe_source, LAUNCHER_LOCK_PATH),
+                    "run_all.py": candidate_transforms.transform_launcher_singleton(run_all_source, LAUNCHER_LOCK_PATH),
+                    "avtoperedacha.py": candidate_transforms.transform_avtoperedacha_rebuild(avtoperedacha_source),
+                    "samokontrol.py": candidate_transforms.transform_sqlite_short_ownership(samokontrol_source),
+                }
+                originals = {
+                    "usercustomize_py310.py": uc310_source,
+                    "usercustomize_py313.py": uc313_source,
+                    "start_safe.py": start_safe_source,
+                    "run_all.py": run_all_source,
+                    "avtoperedacha.py": avtoperedacha_source,
+                    "samokontrol.py": samokontrol_source,
+                }
+
+                evidence["_extended_per_result"] = {
+                    name: {"status": r["status"], "reasons": r.get("reasons", []), "metadata": r.get("metadata", {})}
+                    for name, r in per_result.items()
+                }
+
+                blocked_names = [n for n, r in per_result.items() if r["status"] != "OK" or r.get("candidate") is None]
+                if blocked_names:
+                    extended["blocked_reasons"].append("transform_blocked:" + ",".join(sorted(blocked_names)))
+                else:
+                    extended_candidate_sources = {name: r["candidate"] for name, r in per_result.items()}
+                    extended_candidate_sources["crm_speed_runtime.py"] = support_source
+                    originals["crm_speed_runtime.py"] = ""
+                    evidence["_extended_candidate_sources"] = extended_candidate_sources
+                    evidence["_extended_originals"] = originals
+
+                    candidate_writer = SafeWriter(run_dir)
+                    for name, src in extended_candidate_sources.items():
+                        candidate_writer.write_text(os.path.join("candidates", name), src)
+                        diff_txt = generate_unified_diff(originals.get(name, ""), src)
+                        candidate_writer.write_text(os.path.join("diffs", name + ".diff"), diff_txt)
+
+                    extended["available"] = True
+                    extended["support_module_sha256"] = _sha256_bytes(support_source.encode("utf-8"))
+            except Exception as exc:
+                extended["blocked_reasons"].append(f"exception:{type(exc).__name__}")
+
+        evidence["_extended"] = extended
 
     def phase60():
         if state["blocked"]:
             raise _GateABlocked("skipped_prior_block")
         if not candidate_sources:
             raise _GateABlocked("no_candidates_to_compile")
-        result = check_candidates_compile(candidate_sources)
+        full_sources = dict(candidate_sources)
+        extended = evidence.get("_extended", {})
+        if extended.get("available"):
+            full_sources.update(evidence.get("_extended_candidate_sources", {}))
+        result = check_candidates_compile(full_sources)
+        if result.get("status") == "OK":
+            result = dict(result)
+            result["hashes"] = {k: _sha256_bytes(v.encode("utf-8")) for k, v in full_sources.items()}
         evidence["candidates_compile"] = result
         if result["status"] != "OK":
             raise _GateABlocked("compile_failed")
@@ -945,8 +1012,8 @@ def orchestrate_gate_a(config, opener=None, clock=None):
             raise _GateABlocked("skipped_prior_block")
         cars_ui_source = evidence.get("_cars_ui_source")
         candidate = candidate_sources.get("cars_ui.py")
-        usercustomize_source = evidence.get("_usercustomize_source")
         avtoperedacha_source = evidence.get("_avtoperedacha_source")
+        extended = evidence.get("_extended", {})
 
         evidence["admin_routes_text_only"] = check_admin_routes_text_only(cars_ui_source)
 
@@ -956,29 +1023,91 @@ def orchestrate_gate_a(config, opener=None, clock=None):
         else:
             evidence["media_persistence_unchanged"] = check_media_persistence_unchanged(cars_ui_source, candidate, protected_names)
 
-        evidence["usercustomize_inert"] = check_usercustomize_inert(usercustomize_source)
-        evidence["singleton_guard_present"] = check_singleton_guard_present(run_dir)
-        evidence["rebuild_queue_bound_no_process_spawn"] = check_rebuild_queue_bound_no_process_spawn(avtoperedacha_source)
-
         db_path = _find_input_path(config, "crm.db")
         if db_path:
             evidence["sqlite_readonly_quickcheck_ok"] = check_sqlite_readonly_quickcheck_ok(db_path)
         else:
             evidence["sqlite_readonly_quickcheck_ok"] = {"status": "BLOCKED", "reason": "db_path_not_configured"}
 
-        db_function_source = config.get("db_function_source")
-        if db_function_source:
-            evidence["db_closed_before_slow_work"] = check_db_closed_before_slow_work(db_function_source)
+        if extended.get("available"):
+            ext_sources = evidence.get("_extended_candidate_sources", {})
+            ext_originals = evidence.get("_extended_originals", {})
+
+            uc310 = ext_sources.get("usercustomize_py310.py", "")
+            uc313 = ext_sources.get("usercustomize_py313.py", "")
+            inert310 = check_usercustomize_inert(uc310)
+            inert313 = check_usercustomize_inert(uc313)
+            if inert310["status"] == "OK" and inert313["status"] == "OK":
+                evidence["usercustomize_inert"] = {"status": "OK", "py310": inert310, "py313": inert313}
+            else:
+                evidence["usercustomize_inert"] = {"status": "BLOCKED", "py310": inert310, "py313": inert313}
+
+            start_safe_candidate = ext_sources.get("start_safe.py", "")
+            run_all_candidate = ext_sources.get("run_all.py", "")
+            launcher_lock = evidence.get("_launcher_lock_path", "")
+            static_ok = (
+                "SingletonGuard" in start_safe_candidate and "SingletonGuard" in run_all_candidate
+                and candidate_transforms.RUNTIME_MODULE_NAME in start_safe_candidate
+                and candidate_transforms.RUNTIME_MODULE_NAME in run_all_candidate
+                and launcher_lock in start_safe_candidate
+                and launcher_lock in run_all_candidate
+            )
+            behavioral = check_singleton_guard_present(run_dir)
+            if static_ok and behavioral["status"] == "OK":
+                evidence["singleton_guard_present"] = {"status": "OK"}
+            else:
+                evidence["singleton_guard_present"] = {"status": "BLOCKED", "static_ok": static_ok, "behavioral": behavioral}
+
+            avto_candidate = ext_sources.get("avtoperedacha.py", "")
+            evidence["rebuild_queue_bound_no_process_spawn"] = check_rebuild_queue_bound_no_process_spawn(avto_candidate)
+
+            samokontrol_candidate = ext_sources.get("samokontrol.py", "")
+            db_check_avto = candidate_transforms.check_db_closed_before_slow_work_candidate(avto_candidate)
+            db_check_samo = candidate_transforms.check_db_closed_before_slow_work_candidate(samokontrol_candidate)
+            if db_check_avto["status"] == "OK" and db_check_samo["status"] == "OK":
+                evidence["db_closed_before_slow_work"] = {"status": "OK"}
+            else:
+                evidence["db_closed_before_slow_work"] = {
+                    "status": "BLOCKED", "avtoperedacha": db_check_avto, "samokontrol": db_check_samo,
+                }
+
+            det_map = {
+                "cars_ui": (transform_cars_ui, cars_ui_source, ()),
+                "usercustomize_py310": (candidate_transforms.transform_usercustomize, ext_originals.get("usercustomize_py310.py", ""), ("py310",)),
+                "usercustomize_py313": (candidate_transforms.transform_usercustomize, ext_originals.get("usercustomize_py313.py", ""), ("py313",)),
+                "start_safe": (candidate_transforms.transform_launcher_singleton, ext_originals.get("start_safe.py", ""), (launcher_lock,)),
+                "run_all": (candidate_transforms.transform_launcher_singleton, ext_originals.get("run_all.py", ""), (launcher_lock,)),
+                "avtoperedacha": (candidate_transforms.transform_avtoperedacha_rebuild, ext_originals.get("avtoperedacha.py", ""), ()),
+                "samokontrol": (candidate_transforms.transform_sqlite_short_ownership, ext_originals.get("samokontrol.py", ""), ()),
+            }
+            det_result = check_deterministic_repeat_all_transforms(det_map)
+            support_hash = _sha256_bytes(candidate_transforms.generate_runtime_support_source().encode("utf-8"))
+            support_deterministic = all(
+                _sha256_bytes(candidate_transforms.generate_runtime_support_source().encode("utf-8")) == support_hash
+                for _ in range(10)
+            )
+            if det_result["status"] == "OK" and support_deterministic:
+                evidence["deterministic_repeat_all_transforms"] = {
+                    "status": "OK", "checked": list(det_map.keys()) + ["support_module"],
+                    "support_module_sha256": support_hash,
+                }
+            else:
+                evidence["deterministic_repeat_all_transforms"] = {
+                    "status": "BLOCKED", "det_result": det_result, "support_deterministic": support_deterministic,
+                }
         else:
-            evidence["db_closed_before_slow_work"] = {"status": "BLOCKED", "reason": "db_function_source_not_configured"}
+            evidence["usercustomize_inert"] = check_usercustomize_inert(evidence.get("_usercustomize_source", "") or "")
+            evidence["singleton_guard_present"] = check_singleton_guard_present(run_dir)
+            evidence["rebuild_queue_bound_no_process_spawn"] = check_rebuild_queue_bound_no_process_spawn(avtoperedacha_source)
+            db_function_source = config.get("db_function_source")
+            if db_function_source:
+                evidence["db_closed_before_slow_work"] = check_db_closed_before_slow_work(db_function_source)
+            else:
+                evidence["db_closed_before_slow_work"] = {"status": "BLOCKED", "reason": "db_function_source_not_configured"}
+            evidence["deterministic_repeat_all_transforms"] = check_deterministic_repeat_all_transforms({
+                "cars_ui": (transform_cars_ui, cars_ui_source, ()),
+            })
 
-        evidence["deterministic_repeat_all_transforms"] = check_deterministic_repeat_all_transforms({
-            "cars_ui": (transform_cars_ui, cars_ui_source, ()),
-        })
-
-        # Delegate the publication probe directly to the canonical
-        # no-redirect implementation with the injected opener -- no
-        # duplicated HTTP logic here.
         publication_result = ua0009_publication_check.canonical_probe_ua0009(config["ua0009_url"], opener=opener)
         evidence["ua0009_not_public"] = {
             "status": "OK" if publication_result.status == "PASS" else "BLOCKED",
@@ -1019,11 +1148,6 @@ def orchestrate_gate_a(config, opener=None, clock=None):
                 changed_roots.append(root)
         evidence["site_inventory_unchanged"] = {"status": "OK"} if site_ok else {"status": "BLOCKED", "changed_roots": changed_roots}
 
-        # Canonical UA-0009 SQLite ownership evidence, collected again
-        # only after the entire workload (phases 20/40/60/80 have all
-        # run or been skipped/blocked). Compared through the canonical
-        # compare_ownership_evidence helper; missing, non-OK, or changed
-        # evidence always BLOCKS -- never fabricated as unchanged.
         db_path = _find_input_path(config, "crm.db")
         before_ev = sqlite_state["before"] or sqlite_ownership.OwnershipEvidence(
             status="BLOCKED", reason="not_collected_before_block"
@@ -1057,6 +1181,7 @@ def orchestrate_gate_a(config, opener=None, clock=None):
         public_evidence = {k: v for k, v in evidence.items() if not k.startswith("_")}
         status, unmet = evaluate_gate_a(public_evidence)
 
+        extended_info = evidence.get("_extended", {})
         receipt = {
             "task_id": "CRM-SPEED-001",
             "run_id": os.path.basename(run_dir) if run_dir else None,
@@ -1073,11 +1198,22 @@ def orchestrate_gate_a(config, opener=None, clock=None):
                 "after": evidence.get("_sqlite_ownership_after"),
             },
             "publication_result": public_evidence.get("ua0009_not_public"),
+            "extended_candidates": {
+                "available": extended_info.get("available", False),
+                "blocked_reasons": extended_info.get("blocked_reasons", []),
+                "per_candidate": evidence.get("_extended_per_result", {}),
+                "support_module_sha256": extended_info.get("support_module_sha256"),
+                "candidate_hashes": {
+                    k: _sha256_bytes(v.encode("utf-8"))
+                    for k, v in evidence.get("_extended_candidate_sources", {}).items()
+                },
+                "support_module_install_target": "crm_speed_runtime.py",
+            },
             "synthetic_latency": {"non_production": True, "value_ms": 0},
             "blockers": evidence.get("_blockers", []),
             "allowed_write_ledger": [],
             "next_safe_action": (
-                "await_task_033_real_evidence_then_owner_gate_b_review"
+                "await_task_038_controller_review_then_owner_gate_b_review"
                 if status == "BLOCKED" else
                 "await_owner_gate_b_approval"
             ),
@@ -1087,11 +1223,13 @@ def orchestrate_gate_a(config, opener=None, clock=None):
 
         if run_dir is not None:
             try:
-                writer = SafeWriter(run_dir)
-                writer.write_text("receipt.json", json.dumps(receipt, indent=2, default=str))
-                writer.write_text("report.md", _render_report(receipt))
-                receipt["allowed_write_ledger"] = writer.ledger
-                writer.write_text("receipt.json", json.dumps(receipt, indent=2, default=str))
+                final_writer = SafeWriter(run_dir)
+                final_writer.write_text("receipt.json", json.dumps(receipt, indent=2, default=str))
+                final_writer.write_text("report.md", _render_report(receipt))
+                combined_ledger = list(candidate_writer.ledger) if candidate_writer is not None else []
+                combined_ledger.extend(final_writer.ledger)
+                receipt["allowed_write_ledger"] = combined_ledger
+                final_writer.write_text("receipt.json", json.dumps(receipt, indent=2, default=str))
             except Exception as exc:
                 receipt.setdefault("blockers", []).append(f"receipt_write_failed:{type(exc).__name__}")
         return receipt

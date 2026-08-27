@@ -1,5 +1,5 @@
 """
-sqlite_ownership.py (TASK 034)
+sqlite_ownership.py (TASK 034, preserved unchanged under TASK 038)
 
 Two independent capabilities live in this module:
 
@@ -7,9 +7,11 @@ Two independent capabilities live in this module:
    enforcing short SQLite ownership: SELECT rows are materialized into
    ordinary immutable values and the cursor/connection are closed
    BEFORE any slow-call category (formatting/hash/sleep/network/
-   filesystem/Telegram I/O). Preserved unchanged for compatibility.
+   filesystem/Telegram I/O). Preserved unchanged for compatibility and
+   reused directly (not duplicated) by candidate_transforms.py under
+   TASK 038.
 
-2. A new canonical, read-only, fail-closed SQLite evidence API used to
+2. A canonical, read-only, fail-closed SQLite evidence API used to
    prove UA-0009 row identity/ownership without ever emitting raw field
    values, names, phones, messages, blobs, or database pages. Only
    structural table/column identifiers, bounded row counts/identity
