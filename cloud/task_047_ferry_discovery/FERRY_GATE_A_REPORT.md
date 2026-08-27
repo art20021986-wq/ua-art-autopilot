@@ -1,7 +1,7 @@
 # Ferry wording Gate A report
 
 status: PASS_READY_FOR_GATE_B
-generated_at_utc: 2026-08-27T22:40:10Z
+generated_at_utc: 2026-08-27T22:46:09Z
 candidate_files: 13
 total_html_changes: 36
 generator_literals_requiring_patch: 18
