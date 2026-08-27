@@ -36,6 +36,8 @@ def build_manifest(
     write_roots: list[str],
     planned_outputs: list[str],
     package_dir: Path,
+    execution_id: str = "",
+    final_output_root: str = "",
 ) -> dict[str, Any]:
     manifest: dict[str, Any] = {
         "task_id": task_id,
@@ -49,6 +51,10 @@ def build_manifest(
         "gate_a": True,
         "gate_b": False,
     }
+    if execution_id:
+        manifest["execution_id"] = execution_id
+    if final_output_root:
+        manifest["final_output_root"] = final_output_root
     canonical = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
     manifest["manifest_sha256"] = common.sha256_bytes(canonical.encode("utf-8"))
     return manifest

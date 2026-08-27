@@ -10,12 +10,14 @@ touched, imported, or required to exist.
 from __future__ import annotations
 
 import os
+import json
 import shutil
 import sqlite3
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]  # cloud/
 if str(PACKAGE_ROOT) not in sys.path:
@@ -131,10 +133,32 @@ class TestDiagTrackInsertion(unittest.TestCase):
         self.assertIn("Some real card content for UA-0003.", transformed)
         self.assertIn('href="#buy"', transformed)
 
+    def test_script_decoy_does_not_move_structural_insertion(self):
+        decoy = '<a class="dejstvie kn_kupit" href="#buy">'
+        html = (
+            f"<html><script>const decoy = {decoy!r};</script><body>"
+            f"{decoy}Купить</a></body></html>"
+        )
+        transformed, errors = runner.process_card_html("UA-0003", html)
+        self.assertEqual(errors, [])
+        self.assertGreater(
+            transformed.index("UA-0003-diag.html"),
+            transformed.index("</script>"),
+        )
+
 
 class TestTrackingCompanionState(unittest.TestCase):
     def test_truthful_empty_tracking_state_constant(self):
         self.assertIn("уточняются", common.TRACKING_EMPTY_TEXT)
+
+    def test_empty_and_real_tracking_pages_are_truthful(self):
+        empty = common.build_tracking_page("UA-0001", {})
+        self.assertIn(common.TRACKING_EMPTY_TEXT, empty)
+        linked = common.build_tracking_page(
+            "UA-0001", {"carrier_url": "https://carrier.example/track/1"}
+        )
+        self.assertIn("https://carrier.example/track/1", linked)
+        self.assertNotIn(common.TRACKING_EMPTY_TEXT, linked)
 
 
 class TestBoundedDiscovery(unittest.TestCase):
@@ -171,6 +195,16 @@ class TestBoundedDiscovery(unittest.TestCase):
         src = runner.discover_card_source(base2, "UA-0005")
         self.assertIsNone(src)
 
+    def test_symlinked_candidate_parent_escape_is_rejected(self):
+        base = self.tmp / "symlink_base"
+        outside = self.tmp / "outside_cards"
+        base.mkdir()
+        outside.mkdir()
+        (outside / "UA-0001.html").write_text("outside", encoding="utf-8")
+        os.symlink(outside, base / "video")
+        with self.assertRaises(common.PathEscapeError):
+            runner.discover_card_source(base, "UA-0001")
+
 
 class TestSqliteReadOnly(unittest.TestCase):
     def setUp(self):
@@ -187,7 +221,8 @@ class TestSqliteReadOnly(unittest.TestCase):
     def test_ua0009_evidence_fingerprint_unchanged(self):
         crm_path = self.base / "crm.db"
         before = common.sha256_file(crm_path)
-        _ = runner._load_ua0009_evidence(crm_path)
+        evidence = runner._load_card_evidence(crm_path)
+        self.assertIsInstance(evidence, dict)
         after = common.sha256_file(crm_path)
         self.assertEqual(before, after)
 
@@ -227,6 +262,12 @@ class TestFullPipeline(unittest.TestCase):
         self.assertEqual(result.cards[common.UA0009]["status"], "BLOCKED")
         self.assertEqual(result.overall_status, "BLOCKED")
         self.assertEqual(result.production_write, "NO")
+        for code in common.REAL_CODES:
+            card = result.cards[code]
+            preview = Path(card["output_path"])
+            self.assertTrue(preview.is_file())
+            self.assertTrue((preview.parent / card["diag_href"]).is_file())
+            self.assertTrue((preview.parent / card["track_href"]).is_file())
 
     def test_missing_one_real_card_forces_blocked(self):
         codes_present = [c for c in common.REAL_CODES if c != "UA-0004"]
@@ -245,6 +286,24 @@ class TestFullPipeline(unittest.TestCase):
             return transformed.encode("utf-8")
 
         self.assertTrue(verifier.verify_deterministic_repeat(build, times=10))
+
+    def test_full_preview_bundle_byte_identical_10_runs(self):
+        bundles = []
+        for index in range(10):
+            report_root = self.tmp / f"repeat-{index}"
+            result = runner.run_gate_a(self.base, report_root, self.package_dir)
+            bundle = {}
+            for code in common.REAL_CODES:
+                card = result.cards[code]
+                preview = Path(card["output_path"])
+                for name in (
+                    f"{code}.html",
+                    card["diag_href"],
+                    card["track_href"],
+                ):
+                    bundle[name] = (preview.parent / name).read_bytes()
+            bundles.append(bundle)
+        self.assertTrue(all(bundle == bundles[0] for bundle in bundles[1:]))
 
     def test_protected_hashes_unchanged_after_run(self):
         result = runner.run_gate_a(self.base, self.report_root, self.package_dir)
@@ -271,6 +330,7 @@ class TestSafeWriterBoundaries(unittest.TestCase):
         outside = self.tmp / "outside" / "out.html"
         with self.assertRaises(common.PathEscapeError):
             self.writer.write_text(outside, "hello")
+        self.assertFalse(outside.parent.exists())
 
     def test_traversal_rejected(self):
         traversal = self.allowed / ".." / "escape.html"
@@ -293,6 +353,18 @@ class TestSafeWriterBoundaries(unittest.TestCase):
             self.skipTest("mkfifo not supported in this environment")
         with self.assertRaises(common.NotRegularFileError):
             self.writer.write_text(fifo_path, "data")
+
+    def test_pre_existing_hard_link_rejected(self):
+        original = self.tmp / "original.html"
+        original.write_text("protected", encoding="utf-8")
+        linked = self.allowed / "linked.html"
+        try:
+            os.link(original, linked)
+        except OSError:
+            self.skipTest("hard links not supported in this environment")
+        with self.assertRaises(common.NotRegularFileError):
+            self.writer.write_text(linked, "changed")
+        self.assertEqual(original.read_text(encoding="utf-8"), "protected")
 
 
 class TestManifestAndTamperDetection(unittest.TestCase):
@@ -340,7 +412,7 @@ class TestManifestAndTamperDetection(unittest.TestCase):
         )
         target.write_text("tampered", encoding="utf-8")
         with self.assertRaises(launcher.LauncherError):
-            launcher.verify_input_hashes(manifest)
+            launcher.verify_input_hashes(manifest, self.tmp)
 
     def test_code_hash_tamper_detected_by_launcher(self):
         manifest = manifest_builder.build_manifest(
@@ -373,10 +445,53 @@ class TestNoNetworkNoMutationOnImport(unittest.TestCase):
 
 
 class TestNoProductionCapability(unittest.TestCase):
-    def test_launcher_has_no_apply_or_production_flags(self):
-        src = Path(launcher.__file__).read_text(encoding="utf-8")
-        for forbidden in ("--apply", "os.system", "subprocess", "wsgi", "reload_webapp"):
-            self.assertNotIn(forbidden, src)
+    def test_launcher_rejects_cli_arguments_before_side_effects(self):
+        with tempfile.TemporaryDirectory() as td:
+            report_root = Path(td) / "reports"
+            with mock.patch.object(sys, "argv", ["launcher", "--apply"]):
+                with self.assertRaises(launcher.LauncherError):
+                    launcher.run()
+                self.assertFalse(report_root.exists())
+                self.assertEqual(launcher.main(), 2)
+
+    def test_no_argument_entrypoint_executes_bound_gate_a_once(self):
+        with tempfile.TemporaryDirectory() as td:
+            base = make_fixture_root(Path(td) / "home_carix")
+            report_root = base / common.REPORT_SUBDIR
+            package_dir = Path(launcher.__file__).resolve().parent
+            before = {
+                str(path): common.sha256_file(path)
+                for path in base.rglob("*")
+                if path.is_file()
+            }
+            with mock.patch.multiple(
+                launcher,
+                BASE_ROOT=base,
+                REPORT_ROOT=report_root,
+                PACKAGE_DIR=package_dir,
+            ), mock.patch.object(sys, "argv", ["launcher"]), mock.patch("builtins.print"):
+                self.assertEqual(launcher.main(), 0)
+            receipts = list((report_root / "runs").glob("*/gate_a_receipt.json"))
+            self.assertEqual(len(receipts), 1)
+            receipt = json.loads(receipts[0].read_text(encoding="utf-8"))
+            self.assertEqual(receipt["production_write"], "NO")
+            self.assertIn("manifest_sha256", receipt)
+            self.assertIn("code_hashes", receipt)
+            self.assertIn("output_hashes", receipt)
+            self.assertIn("protected_before", receipt)
+            self.assertIn("protected_after", receipt)
+            after = {path: common.sha256_file(Path(path)) for path in before}
+            self.assertEqual(before, after)
+
+    def test_launcher_exports_no_mutating_control_functions(self):
+        exported = set(vars(launcher))
+        for forbidden_name in (
+            "apply",
+            "reload_webapp",
+            "write_crm",
+            "write_production",
+        ):
+            self.assertNotIn(forbidden_name, exported)
 
 
 if __name__ == "__main__":

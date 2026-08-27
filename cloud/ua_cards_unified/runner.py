@@ -29,6 +29,8 @@ class CardResult:
     output_sha256: Optional[str] = None
     diag_href: Optional[str] = None
     track_href: Optional[str] = None
+    diag_sha256: Optional[str] = None
+    track_sha256: Optional[str] = None
 
 
 @dataclass
@@ -51,14 +53,16 @@ def _emit(cb: CheckpointCallback, pct: int, msg: str) -> None:
 
 def discover_card_source(base_root: Path, code: str) -> Optional[Path]:
     candidates = common.candidate_card_paths(base_root, code)
-    return common.find_existing_regular(candidates)
+    return common.find_existing_regular(candidates, [base_root])
 
 
 def discover_generators(base_root: Path) -> dict[str, str]:
     found: dict[str, str] = {}
     for name in common.GENERATOR_CANDIDATE_NAMES:
         for p in (base_root / name, base_root / "generators" / name):
-            if p.exists() and not p.is_symlink() and p.is_file():
+            if p.exists():
+                common.require_within_roots(p, [base_root])
+                common.require_regular_non_symlink(p)
                 found[name] = str(common.canonical_resolve(p))
                 break
     return found
@@ -66,21 +70,22 @@ def discover_generators(base_root: Path) -> dict[str, str]:
 
 def discover_crm(base_root: Path) -> Optional[Path]:
     for p in common.candidate_crm_paths(base_root):
-        if p.exists() and not p.is_symlink() and p.is_file():
+        if p.exists():
+            common.require_within_roots(p, [base_root])
+            common.require_regular_non_symlink(p)
             return p
     return None
 
 
-def _load_ua0009_evidence(crm_path: Optional[Path]) -> dict:
-    """Read-only, non-mutating, allowlisted-column read of UA-0009
-    evidence. Never performs DDL/DML/PRAGMA-write/VACUUM/REINDEX."""
+def _load_card_evidence(crm_path: Optional[Path]) -> dict[str, dict]:
+    """Read-only, bounded evidence for the exact UA-0001..UA-0009 IDs."""
     if crm_path is None:
         return {}
     allowlist = {"id", "code", "vin", "status", "carrier_url", "container", "diag_notes"}
     try:
         conn = common.open_crm_readonly(crm_path)
-    except common.GateAError:
-        return {}
+    except (common.GateAError, sqlite3.Error) as exc:
+        raise common.GateAError(f"CRM read-only open/check failed: {exc}") from exc
     try:
         cur = conn.execute("PRAGMA table_info(cards);")
         cols = [row[1] for row in cur.fetchall()]
@@ -88,15 +93,20 @@ def _load_ua0009_evidence(crm_path: Optional[Path]) -> dict:
         if not selected_cols or "code" not in cols:
             return {}
         col_list = ", ".join(selected_cols)
+        placeholders = ",".join("?" for _ in common.ALL_CODES)
         cur = conn.execute(
-            f"SELECT {col_list} FROM cards WHERE code = ?;", (common.UA0009,)
+            f"SELECT {col_list} FROM cards WHERE code IN ({placeholders});",
+            tuple(common.ALL_CODES),
         )
-        row = cur.fetchone()
-        if row is None:
-            return {}
-        return dict(zip(selected_cols, row))
-    except sqlite3.Error:
-        return {}
+        evidence: dict[str, dict] = {}
+        for row in cur.fetchall():
+            item = dict(zip(selected_cols, row))
+            code = item.get("code")
+            if code in common.ALL_CODES:
+                evidence[str(code)] = item
+        return evidence
+    except sqlite3.Error as exc:
+        raise common.GateAError(f"CRM bounded evidence query failed: {exc}") from exc
     finally:
         conn.close()
 
@@ -105,17 +115,14 @@ def process_card_html(code: str, raw_html: str) -> tuple[str, list[str]]:
     """Return (transformed_html, errors). Never falls back to </body> or
     a guessed insertion point."""
     errors: list[str] = []
-    matches = common.find_purchase_anchor_matches(raw_html)
+    stripped = common.strip_legacy_blocks(raw_html)
+    matches = common.find_purchase_anchor_spans(stripped)
     if len(matches) != 1:
         errors.append(f"expected exactly one purchase anchor, found {len(matches)}")
         return raw_html, errors
-    anchor_text = matches[0]
-    stripped = common.strip_legacy_blocks(raw_html)
-    if anchor_text not in stripped:
-        errors.append("purchase anchor lost during legacy block removal")
-        return raw_html, errors
+    anchor_start, _, _ = matches[0]
     snippet = common.build_diag_tracking_snippet(code)
-    transformed = common.insert_before_anchor(stripped, anchor_text, snippet)
+    transformed = common.insert_at_offset(stripped, anchor_start, snippet)
     return transformed, errors
 
 
@@ -139,21 +146,37 @@ def run_gate_a(
     report_root: Path,
     package_dir: Path,
     checkpoint_cb: CheckpointCallback = None,
+    output_root: Optional[Path] = None,
 ) -> GateAResult:
     result = GateAResult(overall_status="BLOCKED")
-    write_roots = [report_root, report_root / "preview"]
-    writer = common.AtomicWriter(write_roots)
+    staging_root = output_root or (
+        report_root / "preview" / f".staging-{int(time.time_ns())}"
+    )
+    common.require_within_roots(staging_root, [report_root])
+    writer = common.AtomicWriter([report_root])
 
     # Checkpoint 20: bounded discovery only. No recursive scanning.
     _emit(checkpoint_cb, 20, "discovery started")
     card_sources: dict[str, Optional[Path]] = {}
     for code in common.ALL_CODES:
-        card_sources[code] = discover_card_source(base_root, code)
+        try:
+            card_sources[code] = discover_card_source(base_root, code)
+        except common.GateAError as exc:
+            card_sources[code] = None
+            result.errors.append(f"unsafe card candidate for {code}: {exc}")
         if card_sources[code] is not None:
             result.discovered_inputs[code] = str(common.canonical_resolve(card_sources[code]))
-    generators = discover_generators(base_root)
+    try:
+        generators = discover_generators(base_root)
+    except common.GateAError as exc:
+        generators = {}
+        result.errors.append(f"unsafe generator candidate: {exc}")
     result.discovered_inputs.update(generators)
-    crm_path = discover_crm(base_root)
+    try:
+        crm_path = discover_crm(base_root)
+    except common.GateAError as exc:
+        crm_path = None
+        result.errors.append(f"unsafe CRM candidate: {exc}")
     if crm_path is not None:
         result.discovered_inputs["crm.db"] = str(common.canonical_resolve(crm_path))
     _emit(checkpoint_cb, 20, "discovery complete")
@@ -165,14 +188,17 @@ def run_gate_a(
         except common.GateAError as exc:
             result.errors.append(f"fingerprint before failed for {name}: {exc}")
 
-    # Checkpoint 40: read-only CRM evidence for UA-0009 only.
+    # Checkpoint 40: read-only CRM evidence for exact UA-0001..UA-0009 only.
     _emit(checkpoint_cb, 40, "crm evidence read")
-    ua0009_evidence = _load_ua0009_evidence(crm_path)
+    try:
+        card_evidence = _load_card_evidence(crm_path)
+    except common.GateAError as exc:
+        card_evidence = {}
+        result.errors.append(str(exc))
     _emit(checkpoint_cb, 40, "crm evidence complete")
 
     # Checkpoint 60: per-card structural transform, staged writes only.
     _emit(checkpoint_cb, 60, "per-card transform started")
-    staging_root = report_root / "preview" / f".staging-{int(time.time_ns())}"
     cards: dict[str, CardResult] = {}
     for code in common.REAL_CODES:
         src = card_sources.get(code)
@@ -197,8 +223,18 @@ def run_gate_a(
             )
             continue
         out_path = staging_root / f"{code}.html"
+        diag_path = staging_root / f"{code}-diag.html"
+        track_path = staging_root / f"{code}-track.html"
         try:
             writer.write_text(out_path, transformed)
+            writer.write_text(
+                diag_path,
+                common.build_diagnostics_page(code, card_evidence.get(code)),
+            )
+            writer.write_text(
+                track_path,
+                common.build_tracking_page(code, card_evidence.get(code)),
+            )
         except common.GateAError as exc:
             cards[code] = CardResult(code=code, status="BLOCKED", reason=str(exc))
             continue
@@ -210,12 +246,14 @@ def run_gate_a(
             output_sha256=common.sha256_file(out_path),
             diag_href=f"{code}-diag.html",
             track_href=f"{code}-track.html",
+            diag_sha256=common.sha256_file(diag_path),
+            track_sha256=common.sha256_file(track_path),
         )
 
     # UA-0009 readiness: only from real CRM/generator evidence, never
     # synthetic; owner directive requires real Gate A evidence which is
     # not established by CRM row presence alone.
-    if ua0009_evidence:
+    if card_evidence.get(common.UA0009):
         cards[common.UA0009] = CardResult(
             code=common.UA0009, status="BLOCKED",
             reason="UA-0009 CRM evidence present but full live Gate A card "

@@ -1,14 +1,15 @@
 {
   "applied_proposals": [
     "bf64bf52e6aa641d74e58ddaba006fac58f13f50d608f8bb9f12fbdf1be789b1",
-    "f00234d8b5539f71c16ed39807a9661bac334349820effa743bbc6b5e576c31d"
+    "f00234d8b5539f71c16ed39807a9661bac334349820effa743bbc6b5e576c31d",
+    "e914ece5a1d99ee6ea97fe71e86d0f8452b157a39e9d896ab2f982179b5e8faf"
   ],
   "canonical_branch": "main",
   "file_hashes": {
-    "records.jsonl": "900b1938c790841b78a2628e2443b1b76dfbf6910caf04dab04b7757e5b6eeaf",
+    "records.jsonl": "0deed99423b22604769e6c5b363c8efdb67efcf2750c563955d9d7fb091c407d",
     "schemas/proposal.schema.json": "854b857c4ebfdb3b82182737e19fa9447a1e04788856e3fa702a1232d01c626a",
     "schemas/record.schema.json": "eab8cc855bfa1b7590822b1c7bd3d8f6bb17907f24225b470a3e5e0409086ae5",
-    "state/current_status.json": "72d04cc0ef1ddabd3f025bb41c9a4ec1e696f84ff85a98f3a0c66257a7212411"
+    "state/current_status.json": "ba572e4f04387c21fabde43e76d97368965a51cae48c52429c34cf8752f7e643"
   },
   "hashes_status": "COMPUTED",
   "managed_files": [
@@ -17,9 +18,9 @@
     "schemas/proposal.schema.json",
     "state/current_status.json"
   ],
-  "memory_version": 3,
+  "memory_version": 4,
   "notes": "All managed-file hashes are present. Run memory_bootstrap.py after an authorized canonical managed-file update, then run memory_healthcheck.py.",
-  "previous_version": 2,
+  "previous_version": 3,
   "schema_version": "1.0.0",
   "status": "OK"
 }

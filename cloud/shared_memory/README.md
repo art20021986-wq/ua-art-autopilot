@@ -1,6 +1,6 @@
 # UA ART Shared Memory (canonical, versioned)
 
-Status: TASK 019 (ordered retry / completion of TASK 015). NON_PRODUCTION. No production or CRM write capability exists anywhere in this package.
+Status: memory version 4; TASK 015 accepted and corrected TASK 014/017 Gate A package independently verified. NON_PRODUCTION. No production or CRM write capability exists anywhere in this package.
 
 ## Purpose
 
@@ -65,3 +65,7 @@ None of these commands touch production, CRM, or PythonAnywhere. There is no net
 ## Controller acceptance
 
 The controller executed the full acceptance suite after delivery: 15 of 15 tests passed, bootstrap populated every managed-file hash, the full managed-file healthcheck passed, and deterministic context construction passed. The acceptance is recorded append-only in canonical memory; it releases the TASK 014/017 ordering dependency but grants no Production or CRM write authority.
+
+## TASK 021 Gate A package acceptance
+
+The controller corrected the generated package and independently executed its complete offline suite ten times: 41 of 41 tests passed in every run (410 total), all Python files compiled, the no-argument entrypoint completed against temporary fixtures, protected inputs stayed byte-identical, and all writes stayed inside the temporary report namespace. REC-0013 records `READY_FOR_GATE_A_EXECUTION` only. Gate A has not been run on PythonAnywhere, Gate B is not authorized, Production/CRM remain unchanged, and UA-0009 remains `SAFE_TO_PUBLISH: NO`.

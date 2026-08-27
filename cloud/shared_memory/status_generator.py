@@ -27,7 +27,15 @@ def generate_status(base_dir):
         and r.get('evidence')
         and view[r['record_id']] == 'ACTIVE'
     ]
+    task021_acceptance = [
+        r for r in records
+        if r['subject'] == 'TASK_014_017_GATE_A_PACKAGE'
+        and r['record_class'] == 'RESULT'
+        and r.get('evidence')
+        and view[r['record_id']] == 'ACTIVE'
+    ]
     memory_accepted = bool(task015_acceptance)
+    gate_a_package_ready = bool(task021_acceptance)
     conflicts_present = any(status == 'CONFLICT' for status in view.values())
     return {
         'generated_at': datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00', 'Z'),
@@ -40,6 +48,8 @@ def generate_status(base_dir):
         'crm_write': 'NO',
         'task_015_status': 'CONTROLLER_VERIFIED_ACCEPTED' if memory_accepted else 'COMPLETED_PENDING_CONTROLLER_VERIFICATION',
         'task_014_017_dependency': 'UNBLOCKED_AFTER_MEMORY_ACCEPTANCE' if memory_accepted else 'BLOCKED_UNTIL_MEMORY_ACCEPTANCE',
+        'task_014_017_status': 'READY_FOR_GATE_A_EXECUTION' if gate_a_package_ready else 'PACKAGE_PENDING_CONTROLLER_VERIFICATION',
+        'gate_a_executed': 'NO',
     }
 
 

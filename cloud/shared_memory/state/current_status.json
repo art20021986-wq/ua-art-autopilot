@@ -2,8 +2,9 @@
   "canonical_branch": "main",
   "conflicts_present": false,
   "crm_write": "NO",
-  "generated_at": "2026-08-27T11:37:02.249598Z",
-  "memory_version": 3,
+  "gate_a_executed": "NO",
+  "generated_at": "2026-08-27T13:48:35.479735Z",
+  "memory_version": 4,
   "production_write": "NO",
   "record_counts": {
     "HYPOTHESIS": {
@@ -13,7 +14,7 @@
       "ACTIVE": 5
     },
     "RESULT": {
-      "ACTIVE": 4
+      "ACTIVE": 5
     },
     "TASK": {
       "ACTIVE": 1
@@ -23,6 +24,7 @@
     }
   },
   "task_014_017_dependency": "UNBLOCKED_AFTER_MEMORY_ACCEPTANCE",
+  "task_014_017_status": "READY_FOR_GATE_A_EXECUTION",
   "task_015_status": "CONTROLLER_VERIFIED_ACCEPTED",
   "ua0009_safe_to_publish": "NO"
 }
