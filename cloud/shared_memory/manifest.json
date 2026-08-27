@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "memory_version": 1,
+  "canonical_branch": "main",
+  "previous_version": null,
+  "managed_files": [
+    "records.jsonl",
+    "schemas/record.schema.json",
+    "schemas/proposal.schema.json",
+    "state/current_status.json"
+  ],
+  "file_hashes": {
+    "records.jsonl": null,
+    "schemas/record.schema.json": null,
+    "schemas/proposal.schema.json": null,
+    "state/current_status.json": null
+  },
+  "hashes_status": "NOT_COMPUTED_RUN_MEMORY_BOOTSTRAP",
+  "applied_proposals": [],
+  "status": "SEEDED",
+  "notes": "Run memory_bootstrap.py once to compute and persist real file hashes before relying on healthcheck hash comparison. This manifest was authored statically and never executed."
+}

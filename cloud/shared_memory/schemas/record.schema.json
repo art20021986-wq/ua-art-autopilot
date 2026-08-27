@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UA ART Shared Memory Record",
+  "type": "object",
+  "required": ["record_id", "record_class", "subject", "body", "authority", "created_at", "author", "immutable"],
+  "properties": {
+    "record_id": {"type": "string", "pattern": "^REC-[0-9]{4,}$"},
+    "record_class": {"type": "string", "enum": ["FACT", "OWNER_DIRECTIVE", "DECISION", "HYPOTHESIS", "INCIDENT", "TASK", "RESULT", "WARNING", "APPROVAL"]},
+    "subject": {"type": "string", "minLength": 1},
+    "body": {"type": "string", "minLength": 1},
+    "authority": {"type": "string", "enum": ["OWNER_DIRECTIVE", "OWNER_APPROVAL", "VERIFIED_PRODUCTION", "VERIFIED_CRM", "CANONICAL_GITHUB", "AUTOMATED_EVIDENCE", "AI_REPORT", "HYPOTHESIS"]},
+    "created_at": {"type": "string"},
+    "author": {"type": "string", "minLength": 1},
+    "immutable": {"type": "boolean"},
+    "supersedes": {"type": ["string", "null"]},
+    "task_ref": {"type": ["string", "null"]},
+    "evidence": {
+      "type": ["object", "null"],
+      "properties": {
+        "source": {"type": "string"},
+        "verified_at": {"type": "string"}
+      },
+      "required": ["source", "verified_at"]
+    }
+  },
+  "additionalProperties": true
+}
