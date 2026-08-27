@@ -5,6 +5,7 @@ The next controller must run them independently and report real pass/fail result
 '''
 
 import os
+import json
 import shutil
 import tempfile
 import unittest
@@ -35,8 +36,13 @@ class SharedMemoryAcceptanceTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
         shutil.copy(os.path.join(BASE_DIR, 'manifest.json'), os.path.join(self.tmp, 'manifest.json'))
-        shutil.copy(os.path.join(BASE_DIR, 'records.jsonl'), os.path.join(self.tmp, 'records.jsonl'))
-        os.makedirs(os.path.join(self.tmp, 'state'), exist_ok=True)
+        with open(os.path.join(BASE_DIR, 'manifest.json'), 'r', encoding='utf-8') as handle:
+            seed_manifest = json.load(handle)
+        for relative_path in seed_manifest['managed_files']:
+            source = os.path.join(BASE_DIR, relative_path)
+            destination = os.path.join(self.tmp, relative_path)
+            os.makedirs(os.path.dirname(destination), exist_ok=True)
+            shutil.copy(source, destination)
         memory_bootstrap.bootstrap(self.tmp)
 
     def tearDown(self):
@@ -199,6 +205,18 @@ class SharedMemoryAcceptanceTests(unittest.TestCase):
     def test_healthcheck_passes_on_clean_state(self):
         result = memory_healthcheck.run_healthcheck(self.tmp)
         self.assertEqual(result['MEMORY_HEALTH'], 'PASS')
+
+    def test_every_managed_file_hash_is_verified(self):
+        manifest = guard.load_manifest(os.path.join(self.tmp, 'manifest.json'))
+        self.assertEqual(set(manifest['managed_files']), set(manifest['file_hashes']))
+        for relative_path in manifest['managed_files']:
+            self.assertRegex(manifest['file_hashes'][relative_path], r'^[0-9a-f]{64}$')
+        schema_path = os.path.join(self.tmp, 'schemas', 'record.schema.json')
+        with open(schema_path, 'a', encoding='utf-8') as handle:
+            handle.write(' ')
+        result = memory_healthcheck.run_healthcheck(self.tmp)
+        self.assertEqual(result['MEMORY_HEALTH'], 'FAIL')
+        self.assertIn('MANAGED_FILE_HASH_MISMATCH:schemas/record.schema.json', result['issues'])
 
     def test_no_network_or_write_capability_in_source(self):
         forbidden = ['requests.', 'urllib.request', 'socket.socket', 'smtplib', 'ftplib', 'subprocess.', 'os.system(', 'os.popen(']
