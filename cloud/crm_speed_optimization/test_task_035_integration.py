@@ -278,8 +278,11 @@ class DelegationIdentityTests(unittest.TestCase):
             cfg["ua0009_id_value"] = "1"
             db_path = [p for p in cfg["required_inputs"] if p.endswith("crm.db")][0]
             conn = sqlite3.connect(db_path)
-            conn.execute("ALTER TABLE t ADD COLUMN id TEXT")
-            conn.execute("INSERT INTO t (id) VALUES ('1')")
+            # The temporary fixture already creates table t with column id
+            # INTEGER (see _make_temp_config). Reuse that existing column
+            # instead of duplicating it, and insert one deterministic row
+            # whose id is compatible with cfg["ua0009_id_value"] == "1".
+            conn.execute("INSERT INTO t (id) VALUES (1)")
             conn.commit()
             conn.close()
 
