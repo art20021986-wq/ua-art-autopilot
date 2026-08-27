@@ -1,0 +1,36 @@
+name: PythonAnywhere Inbox Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cloud/**'
+      - 'automation/pythonanywhere_sync.py'
+      - '.github/workflows/pythonanywhere_sync.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pythonanywhere-inbox-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Static check uploader
+        run: python3 -m py_compile automation/pythonanywhere_sync.py
+      - name: Sync Claude outputs to PythonAnywhere safe inbox
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_USERNAME: Carix
+          PYTHONANYWHERE_HOST: www.pythonanywhere.com
+          PYTHONANYWHERE_REMOTE_ROOT: /home/Carix/autopilot_inbox
+        run: python3 automation/pythonanywhere_sync.py
