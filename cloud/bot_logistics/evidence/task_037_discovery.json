@@ -1,234 +1,105 @@
 {
+  "UA0006_CONTAINER_STATUS": "ALREADY_CORRECT",
   "crm_write": false,
   "db": {
-    "candidate_count": 0,
+    "candidate_count": 1,
     "identity_stable": true,
+    "matched_container_column": "sea_container",
+    "matched_id_column": "auto_number",
+    "matched_table": "cars",
     "path": "/home/Carix/crm.db",
     "quick_check_ok": true,
-    "schema_hint": [
-      {
-        "columns": [
-          "id",
-          "actor_id",
-          "action",
-          "entity_type",
-          "entity_id",
-          "field",
-          "old_value",
-          "new_value",
-          "created_at"
-        ],
-        "table": "audit"
-      },
-      {
-        "columns": [
-          "id",
-          "brand",
-          "model",
-          "year",
-          "vin",
-          "fuel",
-          "engine",
-          "color",
-          "mileage",
-          "trim",
-          "condition",
-          "accidents",
-          "auction_link",
-          "price_buy",
-          "price_extra",
-          "price_ship",
-          "price_customs",
-          "price_total",
-          "stage",
-          "photos",
-          "videos",
-          "docs",
-          "responsible",
-          "review_status",
-          "published",
-          "created_by",
-          "approved_by",
-          "created_at",
-          "updated_at",
-          "client_id",
-          "publish_pending",
-          "video_h",
-          "video_v",
-          "auto_number",
-          "engine_cc",
-          "gearbox",
-          "drive",
-          "mileage_km",
-          "condition_text",
-          "condition_photos",
-          "condition_videos",
-          "diag_report",
-          "diag_link",
-          "kr_buy_date",
-          "kr_parking",
-          "sea_container",
-          "sea_port_from",
-          "sea_date_out",
-          "ge_port",
-          "ge_arrived",
-          "ge_released",
-          "days_to_kyiv",
-          "ua_delivered",
-          "ua_handed",
-          "cost_purchase",
-          "cost_fees",
-          "cost_logistics",
-          "cost_total",
-          "price_uah",
-          "nbu_rate",
-          "status",
-          "owner_user",
-          "history",
-          "price_history",
-          "cover_photo",
-          "eta_manual",
-          "description",
-          "hidden_photos",
-          "diag_text",
-          "ge_to_kyiv_at"
-        ],
-        "table": "cars"
-      },
-      {
-        "columns": [
-          "id",
-          "name",
-          "phone",
-          "telegram",
-          "whatsapp",
-          "car_interest",
-          "budget",
-          "wishes",
-          "source",
-          "prepayment",
-          "stage",
-          "responsible",
-          "next_contact",
-          "review_status",
-          "created_by",
-          "approved_by",
-          "created_at",
-          "updated_at",
-          "tg_user_id"
-        ],
-        "table": "clients"
-      },
-      {
-        "columns": [
-          "id",
-          "entity_type",
-          "entity_id",
-          "author_id",
-          "text",
-          "file_id",
-          "created_at"
-        ],
-        "table": "comments"
-      },
-      {
-        "columns": [
-          "id",
-          "from_user_id",
-          "kind",
-          "text",
-          "file_id",
-          "media_group",
-          "tg_chat_id",
-          "tg_message_id",
-          "status",
-          "assigned_to",
-          "card_type",
-          "card_id",
-          "created_at",
-          "updated_at"
-        ],
-        "table": "inbox"
-      },
-      {
-        "columns": [
-          "code",
-          "role",
-          "created_by",
-          "created_at",
-          "used_by",
-          "used_at"
-        ],
-        "table": "invites"
-      },
-      {
-        "columns": [
-          "id",
-          "car_id",
-          "auto_number",
-          "vid",
-          "file_id",
-          "source_bot_id",
-          "razmer",
-          "mime",
-          "put",
-          "summa",
-          "status",
-          "tag",
-          "poryadok",
-          "kogda",
-          "kto",
-          "primechanie"
-        ],
-        "table": "media"
-      },
-      {
-        "columns": [
-          "nomer",
-          "file_id",
-          "msg_id"
-        ],
-        "table": "ns_video"
-      },
-      {
-        "columns": [
-          "user_id",
-          "full_name",
-          "username",
-          "role",
-          "active",
-          "added_by",
-          "added_at",
-          "note"
-        ],
-        "table": "staff"
-      }
-    ],
     "sha256_after": "1750352a9519822a2911f70f458785efc39a862da49349d1871be5db14a3c162",
-    "sha256_before": "1750352a9519822a2911f70f458785efc39a862da49349d1871be5db14a3c162"
+    "sha256_before": "1750352a9519822a2911f70f458785efc39a862da49349d1871be5db14a3c162",
+    "ua0006_row_count": 1
   },
   "db_write": false,
-  "errors": [
-    "ua0006_no_match_found"
-  ],
+  "errors": [],
   "mode": "READ_ONLY_DISCOVERY",
   "production_write": false,
   "sources": [
     {
       "anchors": [
         {
+          "function": "drop_wait",
+          "line": 158,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "152:     db.update_card_field(\"cars\", int(card_id), field, value, actor_id)\n153: \n154: \n155: def drop_wait(context):\n156:     \"\"\"Открыли другой экран — прежний запрос значения отменяется.\"\"\"\n157:     try:\n158:         context.user_data.pop(\"car_wait\", None)\n159:         context.user_data.pop(\"car_media_wait\", None)\n160:     except Exception:\n161:         pass\n162: \n163: \n164: def is_owner(staff):"
+        },
+        {
+          "function": "render",
+          "line": 227,
+          "matches": [
+            "sea_container"
+          ],
+          "snippet": "221:     L.append(\"<b>ЛОГИСТИКА · ЭТАП %d ИЗ 4</b>\" % (stage or 1))\n222:     for n, name in S.STAGES:\n223:         mark = \"пройден\" if n < stage else (\"сейчас\" if n == stage else \"—\")\n224:         L.append(\"%d. %s: <b>%s</b>\" % (n, name, mark))\n225:     if card.get(\"status\"):\n226:         L.append(\"Статус: %s\" % S.status_label(card.get(\"status\")))\n227:     if card.get(\"sea_container\"):\n228:         L.append(\"Контейнер: <b>%s</b>\" % card[\"sea_container\"])\n229: \n230:     left, eta = eta_of(card)\n231:     # Подпись зависит от того, где машина сейчас.\n232:     # На море счёт идёт до Грузии, до Киева — только когда она уже в Грузии.\n233:     podpis = {2: \"ДО ПОТИ/БАТУМИ\", 3: \"ДО КИЕВА\"}.get(stage)"
+        },
+        {
+          "function": "render",
+          "line": 228,
+          "matches": [
+            "sea_container"
+          ],
+          "snippet": "222:     for n, name in S.STAGES:\n223:         mark = \"пройден\" if n < stage else (\"сейчас\" if n == stage else \"—\")\n224:         L.append(\"%d. %s: <b>%s</b>\" % (n, name, mark))\n225:     if card.get(\"status\"):\n226:         L.append(\"Статус: %s\" % S.status_label(card.get(\"status\")))\n227:     if card.get(\"sea_container\"):\n228:         L.append(\"Контейнер: <b>%s</b>\" % card[\"sea_container\"])\n229: \n230:     left, eta = eta_of(card)\n231:     # Подпись зависит от того, где машина сейчас.\n232:     # На море счёт идёт до Грузии, до Киева — только когда она уже в Грузии.\n233:     podpis = {2: \"ДО ПОТИ/БАТУМИ\", 3: \"ДО КИЕВА\"}.get(stage)\n234:     if left is not None and podpis:"
+        },
+        {
+          "function": "eta_of",
+          "line": 276,
+          "matches": [
+            "days_to_kyiv"
+          ],
+          "snippet": "270:     if manual:\n271:         try:\n272:             eta = _dt.strptime(str(manual)[:10], \"%Y-%m-%d\").date()\n273:             return max((eta - _date.today()).days, 0), eta\n274:         except Exception:\n275:             pass\n276:     return S.days_to_kyiv(card)\n277: \n278: \n279: def _int(v):\n280:     try:\n281:         return int(str(v).replace(\" \", \"\").replace(\"км\", \"\").strip())\n282:     except Exception:"
+        },
+        {
+          "function": "card_kb",
+          "line": 293,
+          "matches": [
+            "def card_kb"
+          ],
+          "snippet": "287:     try:\n288:         return int(str(card.get(\"year\"))[:4])\n289:     except Exception:\n290:         return None\n291: \n292: \n293: def card_kb(card, staff):\n294:     cid = card[\"id\"]\n295:     rows = [\n296:         [InlineKeyboardButton(\"Редактировать\", callback_data=\"car_edit:%d\" % cid),\n297:          InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n298:         [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid),\n299:          InlineKeyboardButton(\"Сменить этап\", callback_data=\"car_stage:%d\" % cid)],"
+        },
+        {
+          "function": "card_kb",
+          "line": 299,
+          "matches": [
+            "car_stage:"
+          ],
+          "snippet": "293: def card_kb(card, staff):\n294:     cid = card[\"id\"]\n295:     rows = [\n296:         [InlineKeyboardButton(\"Редактировать\", callback_data=\"car_edit:%d\" % cid),\n297:          InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n298:         [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid),\n299:          InlineKeyboardButton(\"Сменить этап\", callback_data=\"car_stage:%d\" % cid)],\n300:         [InlineKeyboardButton(\"Описание\",\n301:                               callback_data=\"car_setf:%d:condition_text\" % cid)],\n302:         [InlineKeyboardButton(\"Срок доставки\", callback_data=\"car_setf:%d:eta_days\" % cid)],\n303:     ]\n304:     if is_owner(staff):\n305:         rows.append([InlineKeyboardButton(\"Цена по этапам\","
+        },
+        {
+          "function": "card_kb",
+          "line": 301,
+          "matches": [
+            "car_setf:"
+          ],
+          "snippet": "295:     rows = [\n296:         [InlineKeyboardButton(\"Редактировать\", callback_data=\"car_edit:%d\" % cid),\n297:          InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n298:         [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid),\n299:          InlineKeyboardButton(\"Сменить этап\", callback_data=\"car_stage:%d\" % cid)],\n300:         [InlineKeyboardButton(\"Описание\",\n301:                               callback_data=\"car_setf:%d:condition_text\" % cid)],\n302:         [InlineKeyboardButton(\"Срок доставки\", callback_data=\"car_setf:%d:eta_days\" % cid)],\n303:     ]\n304:     if is_owner(staff):\n305:         rows.append([InlineKeyboardButton(\"Цена по этапам\",\n306:                                           callback_data=\"car_price:%d\" % cid)])\n307:     klient = client_of(card)"
+        },
+        {
           "function": "card_kb",
           "line": 302,
           "matches": [
-            "срок доставки"
+            "срок доставки",
+            "car_setf:",
+            "eta_days"
           ],
           "snippet": "296:         [InlineKeyboardButton(\"Редактировать\", callback_data=\"car_edit:%d\" % cid),\n297:          InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n298:         [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid),\n299:          InlineKeyboardButton(\"Сменить этап\", callback_data=\"car_stage:%d\" % cid)],\n300:         [InlineKeyboardButton(\"Описание\",\n301:                               callback_data=\"car_setf:%d:condition_text\" % cid)],\n302:         [InlineKeyboardButton(\"Срок доставки\", callback_data=\"car_setf:%d:eta_days\" % cid)],\n303:     ]\n304:     if is_owner(staff):\n305:         rows.append([InlineKeyboardButton(\"Цена по этапам\",\n306:                                           callback_data=\"car_price:%d\" % cid)])\n307:     klient = client_of(card)\n308:     rows.append([InlineKeyboardButton("
         },
         {
           "function": "cars_list",
+          "line": 402,
+          "matches": [
+            "sea_container"
+          ],
+          "snippet": "396: # ─────────────────────────────────────────────────────────────\n397: \n398: LABELS_ALL = {\n399:     \"brand\": \"марка\", \"model\": \"модель\", \"year\": \"год\", \"vin\": \"VIN\",\n400:     \"fuel\": \"топливо\", \"engine_cc\": \"объём\", \"gearbox\": \"КПП\", \"drive\": \"привод\",\n401:     \"mileage_km\": \"пробег\", \"color\": \"цвет\", \"condition_text\": \"тех. состояние\",\n402:     \"price_uah\": \"цена\", \"sea_container\": \"контейнер\", \"diag_link\": \"ссылка на отчёт\",\n403:     \"eta_days\": \"срок доставки\", \"auto_number\": \"номер авто\",\n404:     \"diag_text\": \"описание диагностики\",\n405: }\n406: \n407: EDITABLE = [\n408:     (\"auto_number\", \"Номер авто\"), (\"brand\", \"Марка\"), (\"model\", \"Модель\"),"
+        },
+        {
+          "function": "cars_list",
           "line": 403,
           "matches": [
-            "срок доставки"
+            "срок доставки",
+            "eta_days"
           ],
           "snippet": "397: \n398: LABELS_ALL = {\n399:     \"brand\": \"марка\", \"model\": \"модель\", \"year\": \"год\", \"vin\": \"VIN\",\n400:     \"fuel\": \"топливо\", \"engine_cc\": \"объём\", \"gearbox\": \"КПП\", \"drive\": \"привод\",\n401:     \"mileage_km\": \"пробег\", \"color\": \"цвет\", \"condition_text\": \"тех. состояние\",\n402:     \"price_uah\": \"цена\", \"sea_container\": \"контейнер\", \"diag_link\": \"ссылка на отчёт\",\n403:     \"eta_days\": \"срок доставки\", \"auto_number\": \"номер авто\",\n404:     \"diag_text\": \"описание диагностики\",\n405: }\n406: \n407: EDITABLE = [\n408:     (\"auto_number\", \"Номер авто\"), (\"brand\", \"Марка\"), (\"model\", \"Модель\"),\n409:     (\"year\", \"Год выпуска\"), (\"vin\", \"VIN\"), (\"fuel\", \"Топливо\"),"
         },
@@ -236,7 +107,8 @@
           "function": "cars_list",
           "line": 414,
           "matches": [
-            "дней до прибытия"
+            "дней до прибытия",
+            "eta_days"
           ],
           "snippet": "408:     (\"auto_number\", \"Номер авто\"), (\"brand\", \"Марка\"), (\"model\", \"Модель\"),\n409:     (\"year\", \"Год выпуска\"), (\"vin\", \"VIN\"), (\"fuel\", \"Топливо\"),\n410:     (\"engine_cc\", \"Объём, см³\"), (\"gearbox\", \"КПП\"), (\"drive\", \"Привод\"),\n411:     (\"mileage_km\", \"Пробег\"), (\"color\", \"Цвет\"), (\"condition_text\", \"Описание\"),\n412:     (\"price_uah\", \"Цена продажи\"), (\"diag_link\", \"Ссылка на отчёт\"),\n413:     (\"diag_text\", \"Описание диагностики\"),\n414:     (\"eta_days\", \"Дней до прибытия\"),\n415:     (\"sea_container\", \"Номер контейнера\"),\n416: ]\n417: MONEY = {\"price_uah\", \"cost_total\", \"cost_purchase\", \"cost_fees\", \"cost_logistics\"}\n418: NUMERIC = {\"engine_cc\", \"mileage_km\", \"price_uah\"}\n419: \n420: "
         },
@@ -244,9 +116,90 @@
           "function": "cars_list",
           "line": 415,
           "matches": [
-            "номер контейнера"
+            "номер контейнера",
+            "sea_container"
           ],
           "snippet": "409:     (\"year\", \"Год выпуска\"), (\"vin\", \"VIN\"), (\"fuel\", \"Топливо\"),\n410:     (\"engine_cc\", \"Объём, см³\"), (\"gearbox\", \"КПП\"), (\"drive\", \"Привод\"),\n411:     (\"mileage_km\", \"Пробег\"), (\"color\", \"Цвет\"), (\"condition_text\", \"Описание\"),\n412:     (\"price_uah\", \"Цена продажи\"), (\"diag_link\", \"Ссылка на отчёт\"),\n413:     (\"diag_text\", \"Описание диагностики\"),\n414:     (\"eta_days\", \"Дней до прибытия\"),\n415:     (\"sea_container\", \"Номер контейнера\"),\n416: ]\n417: MONEY = {\"price_uah\", \"cost_total\", \"cost_purchase\", \"cost_fees\", \"cost_logistics\"}\n418: NUMERIC = {\"engine_cc\", \"mileage_km\", \"price_uah\"}\n419: \n420: \n421: async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "function": "edit_menu",
+          "line": 421,
+          "matches": [
+            "def edit_menu"
+          ],
+          "snippet": "415:     (\"sea_container\", \"Номер контейнера\"),\n416: ]\n417: MONEY = {\"price_uah\", \"cost_total\", \"cost_purchase\", \"cost_fees\", \"cost_logistics\"}\n418: NUMERIC = {\"engine_cc\", \"mileage_km\", \"price_uah\"}\n419: \n420: \n421: async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n422:     q = update.callback_query\n423:     await q.answer()\n424:     drop_wait(context)\n425:     cid = int(q.data.split(\":\")[-1])\n426:     card = card_of(cid)\n427:     rows, buf = [], []"
+        },
+        {
+          "function": "edit_menu",
+          "line": 429,
+          "matches": [
+            "car_setf:"
+          ],
+          "snippet": "423:     await q.answer()\n424:     drop_wait(context)\n425:     cid = int(q.data.split(\":\")[-1])\n426:     card = card_of(cid)\n427:     rows, buf = [], []\n428:     for key, label in EDITABLE:\n429:         buf.append(InlineKeyboardButton(label, callback_data=\"car_setf:%d:%s\" % (cid, key)))\n430:         if len(buf) == 2:\n431:             rows.append(buf)\n432:             buf = []\n433:     if buf:\n434:         rows.append(buf)\n435:     rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])"
+        },
+        {
+          "function": "edit_ask",
+          "line": 460,
+          "matches": [
+            "eta_days"
+          ],
+          "snippet": "454:     elif field == \"condition_text\":\n455:         hint = (\"\\n\\nЧтобы изменить — пришлите новый текст. \"\n456:                 \"Он полностью заменит нынешний. \"\n457:                 \"Каждый пункт с новой строки.\")\n458:     elif field == \"vin\":\n459:         hint = \"\\n17 знаков.\"\n460:     elif field == \"eta_days\":\n461:         hint = (\"\\nСколько дней осталось до прибытия в Киев. \"\n462:                 \"Дата пересчитается сама, дальше счётчик пойдёт вниз каждый день.\")\n463:     context.user_data[\"car_wait\"] = {\"card_id\": int(cid), \"field\": field}\n464:     await q.message.reply_text(\n465:         \"<b>%s</b>\\nСейчас: %s%s\\n\\nПришлите новое значение текстом или голосом.\"\n466:         % (label, now if now else \"—\", hint),"
+        },
+        {
+          "function": "edit_ask",
+          "line": 463,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "457:                 \"Каждый пункт с новой строки.\")\n458:     elif field == \"vin\":\n459:         hint = \"\\n17 знаков.\"\n460:     elif field == \"eta_days\":\n461:         hint = (\"\\nСколько дней осталось до прибытия в Киев. \"\n462:                 \"Дата пересчитается сама, дальше счётчик пойдёт вниз каждый день.\")\n463:     context.user_data[\"car_wait\"] = {\"card_id\": int(cid), \"field\": field}\n464:     await q.message.reply_text(\n465:         \"<b>%s</b>\\nСейчас: %s%s\\n\\nПришлите новое значение текстом или голосом.\"\n466:         % (label, now if now else \"—\", hint),\n467:         parse_mode=\"HTML\",\n468:         reply_markup=InlineKeyboardMarkup([[\n469:             InlineKeyboardButton(\"← Отмена\", callback_data=\"car_open:%s\" % cid)]"
+        },
+        {
+          "function": "clear_field",
+          "line": 501,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "495:     try:\n496:         db.update_card_field(\"cars\", int(cid), field, \"\",\n497:                              q.from_user.id)\n498:     except Exception as e:\n499:         await q.message.reply_text(\"Не удалось очистить: %r\" % (e,))\n500:         raise ApplicationHandlerStop\n501:     context.user_data.pop(\"car_wait\", None)\n502:     await q.message.reply_text(\n503:         \"Описание очищено. Стёрто знаков: %d.\\n\"\n504:         \"Пришлите новый текст кнопкой «Описание».\"\n505:         % bylo_znakov,\n506:         reply_markup=InlineKeyboardMarkup([[\n507:             InlineKeyboardButton(\"← К машине\","
+        },
+        {
+          "function": "apply_value",
+          "line": 585,
+          "matches": [
+            "eta_days"
+          ],
+          "snippet": "579: def apply_value(card_id, field, raw, actor_id):\n580:     \"\"\"Возвращает (ок, сообщение). Ничего не додумывает.\"\"\"\n581:     value = (raw or \"\").strip()\n582:     if not value:\n583:         return False, \"Пустое значение не записываю.\"\n584: \n585:     if field == \"eta_days\":\n586:         digits = \"\".join(ch for ch in value if ch.isdigit())\n587:         if not digits:\n588:             return False, \"Пришлите число дней, например 45.\"\n589:         n = int(digits)\n590:         if n > 400:\n591:             return False, \"Слишком большой срок. Пришлите число дней.\""
+        },
+        {
+          "function": "apply_value",
+          "line": 594,
+          "matches": [
+            "days_to_kyiv"
+          ],
+          "snippet": "588:             return False, \"Пришлите число дней, например 45.\"\n589:         n = int(digits)\n590:         if n > 400:\n591:             return False, \"Слишком большой срок. Пришлите число дней.\"\n592:         eta = _date.today() + _td(days=n)\n593:         set_field(card_id, \"eta_manual\", eta.isoformat(), actor_id)\n594:         set_field(card_id, \"days_to_kyiv\", n, actor_id)\n595:         return True, \"До прибытия %d дней · %s\" % (n, eta.strftime(\"%d.%m.%Y\"))\n596: \n597:     if field in NUMERIC:\n598:         digits = value.lower().replace(\" \", \"\").replace(\"\\u00a0\", \"\")\n599:         for lishnee in (\"цена\", \"стоимость\", \"$\", \"usd\", \"долларов\", \"долл\"):\n600:             digits = digits.replace(lishnee, \"\")"
+        },
+        {
+          "function": "condition_screen",
+          "line": 946,
+          "matches": [
+            "car_setf:"
+          ],
+          "snippet": "940:             \"Видео проверки: %d из 10\"\n941:             % len(jload(card.get(\"condition_videos\"))),\n942:             \"\",\n943:             \"Ссылка OBD: %s\" % (card.get(\"diag_link\") or \"нет\")]\n944:     rows = [\n945:         [InlineKeyboardButton(\"Описание\",\n946:                               callback_data=\"car_setf:%d:diag_text\" % cid)],\n947:         # UA-V100 · посмотреть, что уже загружено в проверку\n948:         [InlineKeyboardButton(\"Показать фото проверки\",\n949:                               callback_data=\"car_dgal:%d\" % cid),\n950:          InlineKeyboardButton(\"Показать видео проверки\",\n951:                               callback_data=\"car_dvid:%d\" % cid)],\n952:         [InlineKeyboardButton(\"Добавить фото\","
+        },
+        {
+          "function": "condition_screen",
+          "line": 957,
+          "matches": [
+            "car_setf:"
+          ],
+          "snippet": "951:                               callback_data=\"car_dvid:%d\" % cid)],\n952:         [InlineKeyboardButton(\"Добавить фото\",\n953:                               callback_data=\"car_add:%d:condition_photos\" % cid),\n954:          InlineKeyboardButton(\"Добавить видео\",\n955:                               callback_data=\"car_add:%d:condition_videos\" % cid)],\n956:         [InlineKeyboardButton(\"Ссылка OBD\",\n957:                               callback_data=\"car_setf:%d:diag_link\" % cid)],\n958:     ]\n959:     # UA-V103 — кнопки удаления проверки стоят всегда, каждая с подтверждением\n960:     rows.append([InlineKeyboardButton(\n961:         \"Удалить все фото проверки\",\n962:         callback_data=\"diag_ask:%d:condition_photos\" % cid)])\n963:     rows.append([InlineKeyboardButton("
+        },
+        {
+          "function": "stage_menu",
+          "line": 979,
+          "matches": [
+            "def stage_menu"
+          ],
+          "snippet": "973: \n974: \n975: # ─────────────────────────────────────────────────────────────\n976: # ЭТАПЫ\n977: # ─────────────────────────────────────────────────────────────\n978: \n979: async def stage_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n980:     q = update.callback_query\n981:     await q.answer()\n982:     drop_wait(context)\n983:     cid = int(q.data.split(\":\")[-1])\n984:     card = card_of(cid)\n985:     rows = []"
         },
         {
           "function": "stage_menu",
@@ -258,11 +211,164 @@
         },
         {
           "function": "stage_set",
+          "line": 1007,
+          "matches": [
+            "def stage_set"
+          ],
+          "snippet": "1001: \n1002: # Грузия → Украина: выезд отмечает владелец,\n1003: # и с этого дня отсчитывается ровно столько дней до прибытия.\n1004: DNEI_GRUZIA_UKRAINA = 15\n1005: \n1006: \n1007: async def stage_set(update: Update, context: ContextTypes.DEFAULT_TYPE):\n1008:     q = update.callback_query\n1009:     await q.answer()\n1010:     drop_wait(context)\n1011:     _, cid, code = q.data.split(\":\")\n1012:     cid = int(cid)\n1013:     staff = db.get_staff(q.from_user.id)"
+        },
+        {
+          "function": "stage_set",
+          "line": 1022,
+          "matches": [
+            "days_to_kyiv"
+          ],
+          "snippet": "1016:     set_field(cid, \"status\", code, q.from_user.id)\n1017:     if code == \"ge_waiting\":\n1018:         set_field(cid, \"ge_arrived\", _date.today().isoformat(), q.from_user.id)\n1019:         # Срок, заданный на море, был до Грузии — на этот этап он не переносится\n1020:         try:\n1021:             db.update_card_field(\"cars\", cid, \"eta_manual\", \"\", q.from_user.id)\n1022:             db.update_card_field(\"cars\", cid, \"days_to_kyiv\", \"\", q.from_user.id)\n1023:         except Exception as e:\n1024:             log.warning(\"не смог сбросить прежний срок: %s\", e)\n1025:     if code == \"ge_to_kyiv\":\n1026:         # Выезд отмечает владелец — отсчёт идёт от этого дня, прежний срок не в счёт\n1027:         set_field(cid, \"ge_released\", _date.today().isoformat(), q.from_user.id)\n1028:         eta = _date.today() + _td(days=DNEI_GRUZIA_UKRAINA)"
+        },
+        {
+          "function": "stage_set",
+          "line": 1032,
+          "matches": [
+            "days_to_kyiv"
+          ],
+          "snippet": "1026:         # Выезд отмечает владелец — отсчёт идёт от этого дня, прежний срок не в счёт\n1027:         set_field(cid, \"ge_released\", _date.today().isoformat(), q.from_user.id)\n1028:         eta = _date.today() + _td(days=DNEI_GRUZIA_UKRAINA)\n1029:         try:\n1030:             db.update_card_field(\"cars\", cid, \"eta_manual\",\n1031:                                  eta.isoformat(), q.from_user.id)\n1032:             db.update_card_field(\"cars\", cid, \"days_to_kyiv\",\n1033:                                  DNEI_GRUZIA_UKRAINA, q.from_user.id)\n1034:         except Exception as e:\n1035:             log.warning(\"не смог поставить срок до Украины: %s\", e)\n1036: \n1037:     card = card_of(cid)\n1038:     zapisano = card.get(\"status\")"
+        },
+        {
+          "function": "stage_set",
+          "line": 1062,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "1056:     rows = []\n1057:     # этап и цена — вместе: сразу просим цену для нового этапа\n1058:     lines.append(\"\")\n1059:     lines.append(\"💵 <b>ЦЕНА НА ЭТОМ ЭТАПЕ</b>\")\n1060:     lines.append(\"Сейчас: %s\" % S.money(_int(card.get(\"price_uah\"))))\n1061:     lines.append(\"Пришлите новую цену сообщением — или оставьте прежнюю.\")\n1062:     context.user_data[\"car_wait\"] = {\"card_id\": cid, \"field\": \"price_uah\"}\n1063:     rows.append([InlineKeyboardButton(\"Оставить прежнюю\",\n1064:                                       callback_data=\"car_keepprice:%d\" % cid)])\n1065:     if left is not None:\n1066:         rows.append([InlineKeyboardButton(\"Изменить срок доставки\",\n1067:                                           callback_data=\"car_setf:%d:eta_days\" % cid)])\n1068:     rows.append([InlineKeyboardButton(\"← Вернуться к карточке\","
+        },
+        {
+          "function": "stage_set",
           "line": 1066,
           "matches": [
             "срок доставки"
           ],
           "snippet": "1060:     lines.append(\"Сейчас: %s\" % S.money(_int(card.get(\"price_uah\"))))\n1061:     lines.append(\"Пришлите новую цену сообщением — или оставьте прежнюю.\")\n1062:     context.user_data[\"car_wait\"] = {\"card_id\": cid, \"field\": \"price_uah\"}\n1063:     rows.append([InlineKeyboardButton(\"Оставить прежнюю\",\n1064:                                       callback_data=\"car_keepprice:%d\" % cid)])\n1065:     if left is not None:\n1066:         rows.append([InlineKeyboardButton(\"Изменить срок доставки\",\n1067:                                           callback_data=\"car_setf:%d:eta_days\" % cid)])\n1068:     rows.append([InlineKeyboardButton(\"← Вернуться к карточке\",\n1069:                                       callback_data=\"car_open:%d\" % cid)])\n1070: \n1071:     await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n1072:                                reply_markup=InlineKeyboardMarkup(rows))"
+        },
+        {
+          "function": "stage_set",
+          "line": 1067,
+          "matches": [
+            "car_setf:",
+            "eta_days"
+          ],
+          "snippet": "1061:     lines.append(\"Пришлите новую цену сообщением — или оставьте прежнюю.\")\n1062:     context.user_data[\"car_wait\"] = {\"card_id\": cid, \"field\": \"price_uah\"}\n1063:     rows.append([InlineKeyboardButton(\"Оставить прежнюю\",\n1064:                                       callback_data=\"car_keepprice:%d\" % cid)])\n1065:     if left is not None:\n1066:         rows.append([InlineKeyboardButton(\"Изменить срок доставки\",\n1067:                                           callback_data=\"car_setf:%d:eta_days\" % cid)])\n1068:     rows.append([InlineKeyboardButton(\"← Вернуться к карточке\",\n1069:                                       callback_data=\"car_open:%d\" % cid)])\n1070: \n1071:     await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n1072:                                reply_markup=InlineKeyboardMarkup(rows))\n1073:     raise ApplicationHandlerStop"
+        },
+        {
+          "function": "price_screen",
+          "line": 1100,
+          "matches": [
+            "car_setf:"
+          ],
+          "snippet": "1094:         lines.append(\"%d · %s: <b>%s</b>\" % (n, name, S.money(_int(val)) if val else \"не задана\"))\n1095:     lines.append(\"\")\n1096:     lines.append(\"Текущая цена: <b>%s</b>\" % S.money(_int(card.get(\"price_uah\"))))\n1097:     lines.append(\"В договоре цена фиксируется в гривне, оплата по курсу НБУ \"\n1098:                  \"на день платежа.\")\n1099:     rows = [[InlineKeyboardButton(\"Задать цену этапа\",\n1100:                                   callback_data=\"car_setf:%d:price_uah\" % cid)],\n1101:             [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]\n1102:     await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n1103:                                reply_markup=InlineKeyboardMarkup(rows))\n1104:     raise ApplicationHandlerStop\n1105: \n1106: "
+        },
+        {
+          "function": "remember_price",
+          "line": 1168,
+          "matches": [
+            "eta_days"
+          ],
+          "snippet": "1162:     (_re.compile(r\"(?:цена|стоимость|ціна)\\D{0,6}(\\d[\\d\\s]{2,11})\", _re.I), \"price_uah\"),\n1163:     (_re.compile(r\"цвет\\s+([а-яёa-z\\-]{3,15})\", _re.I), \"color\"),\n1164:     (_re.compile(r\"(?:кпп|коробк\\w*)\\s+([а-яёa-z]{3,12})\", _re.I), \"gearbox\"),\n1165:     (_re.compile(r\"привод\\s+([а-яёa-z]{5,12})\", _re.I), \"drive\"),\n1166:     (_re.compile(r\"\\b(бензин|дизель|гибрид|электро)\\b\", _re.I), \"fuel\"),\n1167:     (_re.compile(r\"(?:до\\s+киева|осталось|прибыти\\w*|доставк\\w*)\\D{0,10}(\\d{1,3})\\s*\"\n1168:                  r\"(?:дн|дней|дня)\", _re.I), \"eta_days\"),\n1169: ]\n1170: \n1171: \n1172: def _orient(video):\n1173:     \"\"\"Горизонтальное или вертикальное — по размерам файла.\n1174:     Используется, когда видео присылают после нажатия кнопки.\"\"\""
+        },
+        {
+          "function": "auto_catch",
+          "line": 1226,
+          "matches": [
+            "sea_container"
+          ],
+          "snippet": "1220:         import assistant\n1221:         if assistant.is_write(text):\n1222:             polya = assistant.extract(text, card)\n1223:             zapisano = []\n1224:             for field, value in (polya or {}).items():\n1225:                 if field not in dict(EDITABLE) and field not in (\n1226:                         \"brand\", \"model\", \"condition_text\", \"sea_container\",\n1227:                         \"diag_link\", \"fuel\"):\n1228:                     continue\n1229:                 ok, _ = apply_value(cid, field, str(value), actor_id)\n1230:                 if ok:\n1231:                     zapisano.append(LABELS_ALL.get(field, field))\n1232:             if zapisano:"
+        },
+        {
+          "function": "client_ask",
+          "line": 1364,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "1358:     q = update.callback_query\n1359:     await q.answer()\n1360:     _, cid, field = q.data.split(\":\")\n1361:     card = card_of(cid)\n1362:     klient = client_of(card) or {}\n1363:     label = dict(CLIENT_FIELDS).get(field, field)\n1364:     context.user_data[\"car_wait\"] = {\"card_id\": int(cid), \"field\": field,\n1365:                                      \"client\": True}\n1366:     await q.message.reply_text(\n1367:         \"<b>%s</b>\\nСейчас: %s\\n\\nПришлите новое значение.\"\n1368:         % (label, klient.get(field) or \"—\"),\n1369:         parse_mode=\"HTML\",\n1370:         reply_markup=InlineKeyboardMarkup([["
+        },
+        {
+          "function": "preview",
+          "line": 1743,
+          "matches": [
+            "sea_container"
+          ],
+          "snippet": "1737:     if prodana:\n1738:         knopki_klienta.append([InlineKeyboardButton(\"Хочу такую же под заказ\",\n1739:                                                     callback_data=\"car_demo:%d\" % cid)])\n1740:     elif etap >= 3:\n1741:         knopki_klienta.append([InlineKeyboardButton(\"Забронировать за 500 $\",\n1742:                                                     callback_data=\"car_demo:%d\" % cid)])\n1743:     elif card.get(\"sea_container\"):\n1744:         knopki_klienta.append([InlineKeyboardButton(\"Отследить контейнер\",\n1745:                                                     callback_data=\"car_demo:%d\" % cid)])\n1746: \n1747:     knopki_klienta.append([InlineKeyboardButton(\"Задать вопрос по этой машине\",\n1748:                                                 callback_data=\"car_demo:%d\" % cid)])\n1749:     if card.get(\"vin\"):"
+        },
+        {
+          "function": "catch_message",
+          "line": 2051,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "2045:             raise ApplicationHandlerStop\n2046:         if msg.text and target == \"diag_report\":\n2047:             pass  # ссылку принимаем отдельным полем\n2048:         return\n2049: \n2050:     # ── без нажатия кнопок: всё падает в открытую карточку ──\n2051:     if not context.user_data.get(\"car_wait\"):\n2052:         cid = context.user_data.get(\"car_last\")\n2053:         card = card_of(cid) if cid else None\n2054:         if card:\n2055:             done = await auto_catch(msg, card, user_id, context)\n2056:             if done:\n2057:                 raise ApplicationHandlerStop"
+        },
+        {
+          "function": "catch_message",
+          "line": 2059,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "2053:         card = card_of(cid) if cid else None\n2054:         if card:\n2055:             done = await auto_catch(msg, card, user_id, context)\n2056:             if done:\n2057:                 raise ApplicationHandlerStop\n2058: \n2059:     wait = context.user_data.get(\"car_wait\")\n2060:     if wait and msg.text and wait.get(\"client\"):\n2061:         context.user_data.pop(\"car_wait\", None)\n2062:         card = card_of(wait[\"card_id\"])\n2063:         klient = client_of(card)\n2064:         if klient:\n2065:             db.update_card_field(\"clients\", klient[\"id\"], wait[\"field\"],"
+        },
+        {
+          "function": "catch_message",
+          "line": 2061,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "2055:             done = await auto_catch(msg, card, user_id, context)\n2056:             if done:\n2057:                 raise ApplicationHandlerStop\n2058: \n2059:     wait = context.user_data.get(\"car_wait\")\n2060:     if wait and msg.text and wait.get(\"client\"):\n2061:         context.user_data.pop(\"car_wait\", None)\n2062:         card = card_of(wait[\"card_id\"])\n2063:         klient = client_of(card)\n2064:         if klient:\n2065:             db.update_card_field(\"clients\", klient[\"id\"], wait[\"field\"],\n2066:                                  msg.text.strip(), user_id)\n2067:         await msg.reply_text("
+        },
+        {
+          "function": "catch_message",
+          "line": 2076,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "2070:                 \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n2071:                 [InlineKeyboardButton(\"← К карточке авто\",\n2072:                                       callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n2073:         raise ApplicationHandlerStop\n2074: \n2075:     if wait and msg.text:\n2076:         context.user_data.pop(\"car_wait\", None)\n2077:         field = wait[\"field\"]\n2078:         nizhny = msg.text.lower()\n2079:         # человек прислал цену, хотя бот ждал другое — не спорим\n2080:         # UA-V77 — тексты про машину не перехватываем: слова\n2081:         # «цена» и «$» в них встречаются всегда.\n2082:         if field not in (\"price_uah\", \"condition_text\","
+        },
+        {
+          "function": null,
+          "line": 2087,
+          "matches": [
+            "eta_days"
+          ],
+          "snippet": "2081:         # «цена» и «$» в них встречаются всегда.\n2082:         if field not in (\"price_uah\", \"condition_text\",\n2083:                          \"diag_text\", \"diag_link\") \\\n2084:                 and (\"$\" in nizhny or \"цена\" in nizhny\n2085:                      or \"стоимость\" in nizhny):\n2086:             field = \"price_uah\"\n2087:         elif field == \"eta_days\" and _re.search(r\"\\d{4,}\", nizhny):\n2088:             field = \"price_uah\"\n2089:         ok, answer = apply_value(wait[\"card_id\"], field, msg.text, user_id)\n2090:         card = card_of(wait[\"card_id\"])\n2091:         if ok and field == \"price_uah\" and card:\n2092:             remember_price(card, user_id)\n2093:             answer = \"%s · цена этапа «%s»: %s\" % ("
+        },
+        {
+          "function": null,
+          "line": 2106,
+          "matches": [
+            "car_setf:"
+          ],
+          "snippet": "2100:             zapisano = (msg.text or \"\").strip()\n2101:             punktov = len([s for s in zapisano.split(\"\\n\") if s.strip()])\n2102:             answer = (\"Описание сохранено · %d пунктов, %d знаков\\n\\n%s\"\n2103:                       % (punktov, len(zapisano), zapisano))\n2104:             rows.insert(0, [InlineKeyboardButton(\n2105:                 \"Изменить снова\",\n2106:                 callback_data=\"car_setf:%d:condition_text\" % wait[\"card_id\"])])\n2107:         if not ok:\n2108:             wait[\"field\"] = field\n2109:             context.user_data[\"car_wait\"] = wait\n2110:             rows.insert(0, [InlineKeyboardButton(\n2111:                 \"Отмена\", callback_data=\"car_open:%d\" % wait[\"card_id\"])])\n2112:         await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))"
+        },
+        {
+          "function": null,
+          "line": 2109,
+          "matches": [
+            "car_wait"
+          ],
+          "snippet": "2103:                       % (punktov, len(zapisano), zapisano))\n2104:             rows.insert(0, [InlineKeyboardButton(\n2105:                 \"Изменить снова\",\n2106:                 callback_data=\"car_setf:%d:condition_text\" % wait[\"card_id\"])])\n2107:         if not ok:\n2108:             wait[\"field\"] = field\n2109:             context.user_data[\"car_wait\"] = wait\n2110:             rows.insert(0, [InlineKeyboardButton(\n2111:                 \"Отмена\", callback_data=\"car_open:%d\" % wait[\"card_id\"])])\n2112:         await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n2113:         raise ApplicationHandlerStop\n2114: \n2115: "
+        },
+        {
+          "function": "register",
+          "line": 2438,
+          "matches": [
+            "car_setf:"
+          ],
+          "snippet": "2432:     app.add_handler(CallbackQueryHandler(open_card, pattern=r\"^car_open:\"), group=g)\n2433:     app.add_handler(CallbackQueryHandler(clear_field, pattern=r\"^car_clr:\"), group=g)\n2434:     app.add_handler(CallbackQueryHandler(diag_clear, pattern=r\"^diag_clr:\"), group=g)\n2435:     app.add_handler(CallbackQueryHandler(cars_list, pattern=r\"^cards_cars$\"), group=g)\n2436:     app.add_handler(CallbackQueryHandler(cars_list, pattern=r\"^cars_cards$\"), group=g)\n2437:     app.add_handler(CallbackQueryHandler(edit_menu, pattern=r\"^car_edit:\"), group=g)\n2438:     app.add_handler(CallbackQueryHandler(edit_ask, pattern=r\"^car_setf:\"), group=g)\n2439:     app.add_handler(CallbackQueryHandler(media_screen, pattern=r\"^car_media:\"), group=g)\n2440:     app.add_handler(CallbackQueryHandler(video_remove_all, pattern=r\"^car_vidvseok:\"), group=g)\n2441:     app.add_handler(CallbackQueryHandler(video_remove_all_ask, pattern=r\"^car_vidvse:\"), group=g)\n2442:     app.add_handler(CallbackQueryHandler(diag_photo_show, pattern=r\"^car_dgal:\"), group=g)\n2443:     app.add_handler(CallbackQueryHandler(diag_video_show, pattern=r\"^car_dvid:\"), group=g)\n2444:     app.add_handler(CallbackQueryHandler(gallery, pattern"
+        },
+        {
+          "function": "register",
+          "line": 2455,
+          "matches": [
+            "car_stage:"
+          ],
+          "snippet": "2449:         photo_remove_all_ask, pattern=r\"^car_rmvse:\"), group=g)\n2450:     app.add_handler(CallbackQueryHandler(\n2451:         photo_remove_all, pattern=r\"^car_rmvse2:\"), group=g)\n2452:     app.add_handler(CallbackQueryHandler(add_media_start, pattern=r\"^car_add:\"), group=g)\n2453:     app.add_handler(CallbackQueryHandler(condition_screen, pattern=r\"^car_cond:\"), group=g)\n2454:     app.add_handler(CallbackQueryHandler(diag_clear_ask, pattern=r\"^diag_ask:\"), group=g)\n2455:     app.add_handler(CallbackQueryHandler(stage_menu, pattern=r\"^car_stage:\"), group=g)\n2456:     app.add_handler(CallbackQueryHandler(stage_set, pattern=r\"^car_setstage:\"), group=g)\n2457:     app.add_handler(CallbackQueryHandler(price_screen, pattern=r\"^car_price:\"), group=g)\n2458:     app.add_handler(CallbackQueryHandler(keep_price, pattern=r\"^car_keepprice:\"), group=g)\n2459:     app.add_handler(CallbackQueryHandler(save_ai_text, pattern=r\"^car_saveai:\"), group=g)\n2460:     app.add_handler(CallbackQueryHandler(preview, pattern=r\"^car_preview:\"), group=g)\n2461:     app.add_handler(CallbackQueryHandler(preview_demo, pattern=r\"^car_demo:\"), group=g)"
         }
       ],
       "line_count": 2756,
@@ -278,7 +384,16 @@
       "size": 65553
     },
     {
-      "anchors": [],
+      "anchors": [
+        {
+          "function": null,
+          "line": 30,
+          "matches": [
+            "eta_days"
+          ],
+          "snippet": "24: MEZHDU = 30\n25: \n26: POLYA = [\"auto_number\", \"code\", \"id\", \"brand\", \"model\", \"year\",\n27:          \"price_uah\", \"status\", \"condition_text\", \"description\",\n28:          \"diag_text\", \"diag_link\", \"photos\", \"videos\",\n29:          \"hidden_photos\", \"cover_photo\", \"condition_photos\",\n30:          \"condition_videos\", \"eta_manual\", \"eta_days\", \"published\",\n31:          \"mileage_km\", \"engine_cc\", \"fuel\", \"gearbox\", \"drive\",\n32:          \"color\", \"vin\"]\n33: \n34: \n35: def log(stroka):\n36:     try:"
+        }
+      ],
       "line_count": 249,
       "path": "/home/Carix/avtoperedacha.py",
       "sha256": "e0e5e0d55672689dec25c1ac69488b86fc1af00570f0ec563fc8095a1858b7d1",
@@ -299,14 +414,39 @@
       "size": 5822
     },
     {
-      "anchors": [],
+      "anchors": [
+        {
+          "function": "db_clean_split",
+          "line": 653,
+          "matches": [
+            "sea_container"
+          ],
+          "snippet": "647: PREPAY = \"500 $\"\n648: DAYS_AFTER_PAY = 14\n649: \n650: CAR_FIELDS = (\n651:     \"auto_number\", \"brand\", \"model\", \"year\", \"vin\", \"fuel\", \"engine_cc\",\n652:     \"gearbox\", \"drive\", \"mileage_km\", \"color\", \"condition_text\", \"diag_link\",\n653:     \"status\", \"sea_container\", \"price_uah\", \"published\", \"eta_manual\",\n654:     \"photos\", \"videos\", \"hidden_photos\",\n655: )\n656: \n657: \n658: def _rows(query, params=()):\n659:     db = os.path.join(BASE, \"crm.db\")"
+        },
+        {
+          "function": "client_text",
+          "line": 748,
+          "matches": [
+            "sea_container"
+          ],
+          "snippet": "742:         lines.append(\"\")\n743:         lines.append(\"ОПИСАНИЕ\")\n744:         lines.append(str(car[\"condition_text\"]).strip())\n745:     lines.append(\"\")\n746:     lines.append(\"СТАТУС\")\n747:     lines.append(_dash(status))\n748:     if not in_georgia and car.get(\"sea_container\"):\n749:         lines.append(\"Контейнер: %s\" % car[\"sea_container\"])\n750:     lines.append(\"\")\n751:     lines.append(\"ЦЕНА\")\n752:     lines.append(_money(car.get(\"price_uah\")))\n753:     lines.append(\"\")\n754:     lines.append(\"УСЛОВИЯ\")"
+        },
+        {
+          "function": "client_text",
+          "line": 749,
+          "matches": [
+            "sea_container"
+          ],
+          "snippet": "743:         lines.append(\"ОПИСАНИЕ\")\n744:         lines.append(str(car[\"condition_text\"]).strip())\n745:     lines.append(\"\")\n746:     lines.append(\"СТАТУС\")\n747:     lines.append(_dash(status))\n748:     if not in_georgia and car.get(\"sea_container\"):\n749:         lines.append(\"Контейнер: %s\" % car[\"sea_container\"])\n750:     lines.append(\"\")\n751:     lines.append(\"ЦЕНА\")\n752:     lines.append(_money(car.get(\"price_uah\")))\n753:     lines.append(\"\")\n754:     lines.append(\"УСЛОВИЯ\")\n755:     lines.append(\"Доставка, растаможка и сертификация включены в стоимость.\")"
+        }
+      ],
       "line_count": 1472,
       "path": "/home/Carix/start_safe.py",
       "sha256": "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007",
       "size": 60219
     }
   ],
-  "status": "BLOCKED",
+  "status": "PASS",
   "task_id": "task_037",
   "ua0009_published": false
 }
