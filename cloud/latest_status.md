@@ -1,12 +1,13 @@
-TASK_ID: task_053
+TASK_ID: task_054
 ROUND: 1
 CLAUDE_STATUS: DONE
-CURRENT_ACTION: Repaired transform_launcher_singleton definition-time (class-body/method-annotation) fail-open via a dedicated AST visitor, corrected test_task_046_ast_sqlite.py to the canonical result["candidate"]/AnchorNotFoundError contract, and corrected two false assertions in test_task_048_candidate_restore.py, all under PARTIAL_TASK_053_LAUNCHER_TEST_CONTRACT_READY_FOR_CONTROLLER_AUDIT (not READY_FOR_GATE_A).
-FILES_CREATED: cloud/crm_speed_optimization/candidate_transforms.py, cloud/crm_speed_optimization/test_task_046_ast_sqlite.py, cloud/crm_speed_optimization/test_task_048_candidate_restore.py, cloud/crm_speed_optimization/TASK_053_REPORT.md
+CURRENT_ACTION: Fixed the two bounded non-orchestrator leftovers: (1) sqlite_ownership.transform_short_ownership now emits a deterministic two-step fetch materialization (tuple(rows) then tuple(tuple(row) for row in rows)) before close, preserving both the legacy literal-tuple assertion and the stronger TASK 051 immutability guarantee; (2) test_crm_speed_gate_a.RebuildQueueTests.test_burst_coalesces_to_one_followup now always calls q.shutdown(timeout=5) in a finally block with a bounded deterministic poll wait, before its TemporaryDirectory is cleaned up, eliminating the nondeterministic cleanup race.
+FILES_CREATED: cloud/crm_speed_optimization/sqlite_ownership.py, cloud/crm_speed_optimization/test_crm_speed_gate_a.py, cloud/crm_speed_optimization/TASK_054_REPORT.md
 PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Have the controller independently re-run py_compile plus the full corrected test_task_046_ast_sqlite.py and test_task_048_candidate_restore.py suites (with the existing sqlite_ownership.py from the prior accepted task present unchanged), confirm the manual class-body/method-annotation probes now BLOCK, and record acceptance in canonical shared memory before any further orchestrator/Gate A work is considered.
+NEXT_FOR_CHATGPT: Independently run full discovery plus targeted suites (compile all package files; TASK 034/038/041/051 SQLite tests; test_crm_speed_gate_a.RebuildQueueTests repeatedly; test_task_031_concurrency.TestCrossProcessLockSafety after test_crm_speed_gate_a in the same process) and confirm 0 ERROR, no background thread exceptions, and only the known orchestrator failures remain, per TASK 054 acceptance criteria.
+UPDATED_AT_UTC: 2026-08-27T22:05:07Z
 CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
 MEMORY_VERSION_READ: 4
-UPDATED_AT_UTC: 2026-08-27T21:55:38Z
+STATUS_LABEL: PARTIAL_TASK_054_NON_ORCHESTRATOR_GREEN_READY_FOR_CONTROLLER_AUDIT

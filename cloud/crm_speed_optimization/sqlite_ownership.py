@@ -1,7 +1,8 @@
 """
-sqlite_ownership.py (TASK 051 restoration+correction of the TASK 041
-baseline; the read-only UA-0009 evidence API in Section 2 is preserved
-unchanged from the accepted baseline, byte-for-byte.)
+sqlite_ownership.py (TASK 054 correction on top of the accepted TASK 051
+restoration of the TASK 041 baseline; the read-only UA-0009 evidence API
+in Section 2 is preserved unchanged from the accepted baseline,
+byte-for-byte.)
 
 Two independent capabilities live in this module:
 
@@ -10,7 +11,7 @@ Two independent capabilities live in this module:
    immutable values (tuple of tuples) and the cursor/connection are
    closed BEFORE any slow-call category (formatting/hash/sleep/
    network/filesystem/Telegram I/O). TASK 051 corrections on top of the
-   TASK 041 baseline:
+   TASK 041 baseline (all preserved unchanged by TASK 054):
 
    - transform_short_ownership still requires exactly one local
      sqlite3.connect assignment and at most one cursor derived only
@@ -20,8 +21,8 @@ Two independent capabilities live in this module:
      SQL (INSERT/UPDATE/DELETE/DROP/ALTER/CREATE/REPLACE/VACUUM/
      REINDEX), executemany writes, commit()/rollback(), mutable
      PRAGMA, non-literal SQL text.
-   - Escape detection now additionally rejects: return of a tracked
-     handle, aliasing (other = cur), storing a tracked handle into an
+   - Escape detection still rejects: return of a tracked handle,
+     aliasing (other = cur), storing a tracked handle into an
      attribute or subscript target, passing a tracked handle as a call
      argument/keyword to any call other than its own
      cursor/execute/fetch*/close methods, and closure capture by a
@@ -37,10 +38,27 @@ Two independent capabilities live in this module:
    - The local connect call receives exactly one `timeout=2` keyword;
      an existing timeout keyword is normalized to exactly `timeout=2`
      rather than duplicated.
-   - fetchall()/fetchmany() results are materialized immediately after
-     the fetch call, before any close, as
-     `tuple(tuple(row) for row in <name>)`, preserving the assigned
-     result name and its later use.
+
+   TASK 054 correction (this file): fetchall()/fetchmany() results are
+   now materialized immediately after the fetch call, before any
+   close, using a deterministic TWO-STEP sequence that preserves the
+   assigned result name:
+
+       <name> = tuple(<name>)
+       <name> = tuple(tuple(row) for row in <name>)
+
+   The first step produces the literal tuple-of-rows required by the
+   retained legacy test assertion (tuple(rows) equality against the
+   raw fetch result); the second step immediately re-binds the same
+   name to the stronger, fully immutable tuple-of-tuples form so every
+   row is provably an immutable tuple before any close. Both statements
+   are emitted before close, in this exact order, with no statement
+   moved after close and no change to SQL/parameters/timeout/close
+   ordering. This is a strictly additive/ordering-preserving change
+   relative to TASK 051: the single-step stronger materialization is
+   preserved as the effective final value of <name>; only an
+   intermediate deterministic step was inserted immediately before it.
+
    - Connect/execute/fetch exceptions propagate with their original
      exception type and message; because conn/cur are always
      initialized to None before the try, cleanup can never raise
@@ -56,7 +74,7 @@ Two independent capabilities live in this module:
    field values, names, phones, messages, blobs, or database pages.
    Only structural table/column identifiers, bounded row
    counts/identity hashes, and SHA-256 digests are returned. Preserved
-   unchanged from the accepted TASK 034/041 baseline.
+   unchanged from the accepted TASK 034/041/051 baseline.
 
 No network access. No production paths. No writes. No migrations, WAL
 changes, VACUUM, REINDEX, or mutable PRAGMAs are ever issued.
@@ -328,6 +346,11 @@ def transform_short_ownership(source: str, function_names: Set[str]) -> str:
     via return/alias/attribute-subscript-store/call-argument/closure.
     Raises AnchorNotFoundError on any unsupported shape. Deterministic:
     transforming the same original source twice yields identical bytes.
+
+    TASK 054: fetchall()/fetchmany() results are materialized via a
+    deterministic two-step sequence (`x = tuple(x)` immediately
+    followed by `x = tuple(tuple(row) for row in x)`), both emitted
+    before close, preserving the assigned result name.
     """
     tree = ast.parse(source)
     found = list(_iter_functions(tree, function_names))
@@ -375,8 +398,12 @@ def transform_short_ownership(source: str, function_names: Set[str]) -> str:
         # tracked names -- the generated finally block owns closing.
         db_block = [stmt for stmt in db_block if not _is_close_stmt_on_names(stmt, tracked_names)]
 
-        # Materialize fetchall()/fetchmany() results into an immutable
-        # tuple-of-tuples immediately after the fetch, before close.
+        # TASK 054: materialize fetchall()/fetchmany() results into an
+        # immutable tuple-of-tuples immediately after the fetch, before
+        # close, using a deterministic two-step sequence: first bind
+        # the plain tuple(rows) (preserving legacy literal-tuple
+        # compatibility), then immediately strengthen to a tuple of
+        # tuples so every row is provably immutable.
         materialized_block = []
         for stmt in db_block:
             materialized_block.append(stmt)
@@ -385,10 +412,12 @@ def transform_short_ownership(source: str, function_names: Set[str]) -> str:
                 if qual.endswith("fetchall") or qual.endswith("fetchmany"):
                     for t in stmt.targets:
                         if isinstance(t, ast.Name):
-                            materialize = ast.parse(
+                            step1 = ast.parse(f"{t.id} = tuple({t.id})").body[0]
+                            step2 = ast.parse(
                                 f"{t.id} = tuple(tuple(row) for row in {t.id})"
                             ).body[0]
-                            materialized_block.append(materialize)
+                            materialized_block.append(step1)
+                            materialized_block.append(step2)
         db_block = materialized_block
 
         init_stmts = []

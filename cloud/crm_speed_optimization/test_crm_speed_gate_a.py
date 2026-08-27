@@ -1,8 +1,15 @@
-"""Offline test suite for CRM-SPEED-001 Gate A package (round 3 corrections).
+"""Offline test suite for CRM-SPEED-001 Gate A package (TASK 054 correction).
 
 Run with: python -m unittest test_crm_speed_gate_a -v
 from inside cloud/crm_speed_optimization/. This suite never touches
 production, /home/Carix, or PythonAnywhere.
+
+TASK 054 change: RebuildQueueTests.test_burst_coalesces_to_one_followup
+now always shuts down its RebuildQueue worker (bounded, deterministic
+wait) in a finally block before the enclosing TemporaryDirectory is
+cleaned up, eliminating the nondeterministic "Directory not empty"
+cleanup race and its occasional perturbation of the following lock
+test. No other test in this file was modified.
 """
 import os
 import sys
@@ -463,12 +470,27 @@ class CrossProcessLockStressTests(unittest.TestCase):
 
 class RebuildQueueTests(unittest.TestCase):
     def test_burst_coalesces_to_one_followup(self):
+        """TASK 054: the daemon worker owned by RebuildQueue must never
+        remain alive when the TemporaryDirectory is cleaned up. The
+        queue is always shut down (bounded timeout) in a finally block,
+        and completion of at least one callback is awaited with a
+        bounded, deterministic poll loop instead of a fixed sleep, so
+        the test is neither flaky nor racy against directory cleanup.
+        """
         with tempfile.TemporaryDirectory() as tmp:
             calls = []
             q = RebuildQueue(lambda: calls.append(1), os.path.join(tmp, "rebuild.lock"))
-            statuses = [q.enqueue() for _ in range(5)]
-            self.assertIn("accepted", statuses)
-            self.assertGreaterEqual(len(calls), 1)
+            try:
+                statuses = [q.enqueue() for _ in range(5)]
+                self.assertIn("accepted", statuses)
+
+                deadline = time.time() + 5.0
+                while not calls and time.time() < deadline:
+                    time.sleep(0.01)
+
+                self.assertGreaterEqual(len(calls), 1)
+            finally:
+                q.shutdown(timeout=5)
 
     def test_requires_bound_callback(self):
         with self.assertRaises(ValueError):
