@@ -87,7 +87,7 @@ class TestMappings(unittest.TestCase):
         self.assertEqual(len(occ), 1)
 
 
-class TestTask053RealContexts(unittest.TestCase):
+class TestFerryPhase1RealContexts(unittest.TestCase):
     def test_audit_mixed_case_prose_is_unchanged(self):
         html = '<p>Автомобиль В море уже 20 дней</p>'
         out, occ = transform.transform_document(html)

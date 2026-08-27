@@ -1,4 +1,4 @@
-# TASK 053 — Ferry wording Phase 1 correction
+# FERRY-PHASE1 — Safe wording transform and discovery
 
 Status: READY_FOR_GATE_A_DISCOVERY. This package does not write production,
 CRM, cards, generators, schedules, or PythonAnywhere files.
@@ -19,7 +19,8 @@ CRM, cards, generators, schedules, or PythonAnywhere files.
 
 Command: `python3 run_tests.py`
 
-- 75 tests per run, two deterministic runs: PASS.
+- 83 tests per run, two deterministic runs: PASS (75 transform/discovery and
+  8 isolated Gate A/controller checks).
 - Repeated from another current working directory: PASS.
 - Exact nine-card sandbox audit: 18 approved replacements, zero ambiguous
   occurrences, every card idempotent, zero changes on a second pass.
