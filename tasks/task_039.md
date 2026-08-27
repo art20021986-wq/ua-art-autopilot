@@ -235,3 +235,19 @@ NEXT_FOR_CHATGPT: independently run standard-library tests, audit controller/wor
 ## ROUND 2 — safe retry after infrastructure-only rebase conflict
 
 The first Claude generation completed with all requested files and Python static checks PASS, but its cloud-only commit was not pushed because concurrent TASK 038 changed only `cloud/latest_status.md` and `cloud/owner_reply.md`. No task output reached main and no production action occurred. The workflow has now been hardened to resolve only those two exact shared-status conflicts by keeping the newer task output, while every code conflict remains fail-closed. Regenerate the complete TASK 039 deliverables from current main and preserve all requirements above. Do not weaken or omit tests, controller validation, strict JSON, source/DB read-only boundaries, or the no-production markers.
+
+
+## ROUND 3 — strict eight-file response after parser safety stop
+
+Round 2 performed no write and stopped with `CLAUDE_TOO_MANY_FILES:25`. For this round, return COMPLETE CONTENTS for exactly these eight paths and no other file blocks, headings interpreted as files, alternates, duplicates, excerpts, or unchanged-file echoes:
+
+1. `cloud/bot_logistics/bot_logistics_discovery.py`
+2. `cloud/bot_logistics/test_bot_logistics.py`
+3. `cloud/bot_logistics/pythonanywhere_discovery_controller.py`
+4. `cloud/bot_logistics/test_discovery_controller.py`
+5. `cloud/bot_logistics/task037_discovery_workflow.yml.example`
+6. `cloud/bot_logistics/TASK_039_REPORT.md`
+7. `cloud/latest_status.md`
+8. `cloud/owner_reply.md`
+
+Do not return, rewrite, or echo `bot_logistics_transform.py`, `bot_logistics_gate_b.py`, any CRM-SPEED file, task file, workflow under `.github`, or any additional file. If an untouched module prevents the required tests from being written honestly, report BLOCKED within the same eight-file limit instead of modifying that module. The report must summarize; it must not embed complete source copies or pseudo-file blocks. Preserve every safety, controller, strict JSON, standard-library test, exact-source, exact-command and no-production requirement above.
