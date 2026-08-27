@@ -1,0 +1,28 @@
+# Security Policy (proposed — place at repository root as SECURITY.md after review)
+
+## Scope
+This repository (`ua-art-autopilot`) is the private communication and control-plane bridge between ChatGPT/Codex, the Claude Autopilot worker, and the PythonAnywhere execution environment for the UA ART production site. It is not itself the production site.
+
+## Reporting a vulnerability
+If you discover a vulnerability affecting this repository's automation, the PythonAnywhere quarantine transport, or the public site `uaart.com.ua`, do not open a public issue. Contact the repository owner directly through the existing private channel used for this project.
+
+## Supported surface
+- GitHub Actions workflows in this repository (control plane only).
+- Files under `cloud/` produced by the Claude Autopilot worker.
+- The quarantine/inbox transport to PythonAnywhere.
+
+## Out of scope for this repository's security process
+- The live production UA ART CRM/database content itself (handled separately, on PythonAnywhere, under Gate A/Gate B approval).
+- Third-party services UA ART integrates with.
+
+## Handling of secrets
+- No token, password, private key, or credential is ever committed to this repository.
+- All secrets are stored as encrypted GitHub Actions secrets or PythonAnywhere-side environment configuration, never in plaintext files.
+- Security audit and backup tooling in `cloud/security/` never prints or stores secret values; only non-reversible fingerprints and file paths are reported.
+
+## Approval gates
+- **Gate A**: owner approval required before any PythonAnywhere read-only execution (audit, backup, verification), bound to exact TASK_ID + manifest SHA + file SHA.
+- **Gate B**: separate owner approval required before any production file change is applied.
+
+## Disclosure timeline
+As a private, single-owner operational repository, there is no public disclosure program. Findings are addressed directly with the owner as soon as identified.

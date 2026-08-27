@@ -1,0 +1,43 @@
+# Security-hardening .gitignore additions (proposed — review before merging into root .gitignore)
+# Databases and backups
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+*.bak
+*.backup
+*.dump
+*.sql
+security_backups/
+*_backup_*/
+
+# Secrets, tokens, credentials
+*.env
+.env.*
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+id_rsa*
+id_ed25519*
+*token*.txt
+*token*.json
+*secret*.txt
+*secret*.json
+credentials.json
+service-account*.json
+
+# Customer exports / PII
+*customers_export*
+*clients_export*
+*orders_export*.csv
+*orders_export*.xlsx
+
+# Local editor/OS noise that sometimes leaks paths
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

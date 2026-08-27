@@ -1,0 +1,36 @@
+{
+  "manifest_type": "GATE_A_EXAMPLE_ONLY",
+  "task_id": "task_012",
+  "description": "Example manifest shape for a future Gate A approval. Values below are placeholders, not a live approval.",
+  "files": [
+    {
+      "path": "cloud/security/uaart_security_audit.py",
+      "sha256": "REPLACE_WITH_ACTUAL_FILE_SHA256"
+    },
+    {
+      "path": "cloud/security/uaart_backup_gate.py",
+      "sha256": "REPLACE_WITH_ACTUAL_FILE_SHA256"
+    },
+    {
+      "path": "cloud/security/uaart_public_security_check.py",
+      "sha256": "REPLACE_WITH_ACTUAL_FILE_SHA256"
+    }
+  ],
+  "allowed_actions": [
+    "READ_ONLY_FILESYSTEM_AUDIT",
+    "CONSISTENT_SQLITE_BACKUP",
+    "EXTERNAL_HTTPS_HEADER_CHECK"
+  ],
+  "forbidden_actions": [
+    "PRODUCTION_FILE_WRITE",
+    "CRM_MODIFICATION",
+    "WSGI_RELOAD",
+    "DNS_CHANGE",
+    "SECRET_ROTATION",
+    "HSTS_ENFORCEMENT",
+    "CSP_ENFORCEMENT"
+  ],
+  "gate": "A",
+  "requires_separate_gate_b_for_production_change": true,
+  "owner_approval_signature_field": "REPLACE_WITH_OWNER_APPROVAL_TOKEN_AT_APPROVAL_TIME"
+}
