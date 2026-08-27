@@ -320,6 +320,47 @@ def _markers() -> dict:
     }
 
 
+SAFE_AST_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}$")
+SAFE_AST_KEY_RE = re.compile(r"^[A-Za-z0-9_-]{1,32}$")
+
+
+def _safe_ast_name(value: object) -> str:
+    return value if isinstance(value, str) and SAFE_AST_NAME_RE.fullmatch(value) else ""
+
+
+def _safe_ast_key(node: ast.AST) -> str:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value if SAFE_AST_KEY_RE.fullmatch(node.value) else ""
+    return ""
+
+
+def _target_hint(node: ast.AST) -> str:
+    """Return identifiers only; never relay executable source or literal values."""
+    if isinstance(node, ast.Name):
+        return _safe_ast_name(node.id)
+    if isinstance(node, ast.Attribute):
+        left = _target_hint(node.value)
+        right = _safe_ast_name(node.attr)
+        return ".".join(part for part in (left, right) if part)
+    if isinstance(node, ast.Subscript):
+        left = _target_hint(node.value)
+        key = _safe_ast_key(node.slice)
+        return ".".join(part for part in (left, key) if part)
+    if isinstance(node, (ast.Tuple, ast.List)):
+        return ".".join(filter(None, (_target_hint(item) for item in node.elts)))
+    return ""
+
+
+def _call_hint(node: ast.AST) -> str:
+    if isinstance(node, ast.Name):
+        return _safe_ast_name(node.id)
+    if isinstance(node, ast.Attribute):
+        left = _call_hint(node.value)
+        right = _safe_ast_name(node.attr)
+        return ".".join(part for part in (left, right) if part)
+    return ""
+
+
 def _inventory_python_literals(source: str, rel_path: str) -> List[dict]:
     occurrences: List[dict] = []
     tree = ast.parse(source)
@@ -331,19 +372,84 @@ def _inventory_python_literals(source: str, rel_path: str) -> List[dict]:
     class Visitor(ast.NodeVisitor):
         def __init__(self) -> None:
             self.hints: List[str] = []
+            self.roles: List[str] = []
+            self.dict_keys: List[str] = []
+            self.calls: List[str] = []
+            self.keywords: List[str] = []
+            self.functions: List[str] = []
+            self.classes: List[str] = []
+
+        def _push_visit(self, stack: List[str], value: str, node: ast.AST) -> None:
+            stack.append(value)
+            self.visit(node)
+            stack.pop()
+
+        def visit_ClassDef(self, node: ast.ClassDef) -> None:
+            self.classes.append(_safe_ast_name(node.name))
+            self.generic_visit(node)
+            self.classes.pop()
+
+        def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+            self.functions.append(_safe_ast_name(node.name))
+            self.generic_visit(node)
+            self.functions.pop()
+
+        visit_AsyncFunctionDef = visit_FunctionDef
 
         def visit_Assign(self, node: ast.Assign) -> None:
-            hints = [target.id for target in node.targets if isinstance(target, ast.Name)]
-            self.hints.append(hints[-1] if hints else "")
+            hints = [_target_hint(target) for target in node.targets]
+            self.hints.append(".".join(filter(None, hints)))
             self.visit(node.value)
             self.hints.pop()
 
         def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
-            hint = node.target.id if isinstance(node.target, ast.Name) else ""
+            hint = _target_hint(node.target)
             self.hints.append(hint)
             if node.value is not None:
                 self.visit(node.value)
             self.hints.pop()
+
+        def visit_NamedExpr(self, node: ast.NamedExpr) -> None:
+            self.hints.append(_target_hint(node.target))
+            self.visit(node.value)
+            self.hints.pop()
+
+        def visit_Dict(self, node: ast.Dict) -> None:
+            for key, value in zip(node.keys, node.values):
+                key_hint = _safe_ast_key(key) if key is not None else ""
+                if key is not None:
+                    self._push_visit(self.roles, "DICT_KEY", key)
+                self.dict_keys.append(key_hint)
+                self._push_visit(self.roles, "DICT_VALUE", value)
+                self.dict_keys.pop()
+
+        def visit_Call(self, node: ast.Call) -> None:
+            call = _call_hint(node.func)
+            self.calls.append(call)
+            for argument in node.args:
+                self._push_visit(self.roles, "CALL_ARG", argument)
+            for keyword in node.keywords:
+                self.keywords.append(_safe_ast_name(keyword.arg))
+                self._push_visit(self.roles, "CALL_KEYWORD", keyword.value)
+                self.keywords.pop()
+            self.calls.pop()
+
+        def visit_Return(self, node: ast.Return) -> None:
+            if node.value is not None:
+                self._push_visit(self.roles, "RETURN", node.value)
+
+        def _visit_collection(self, node: ast.AST) -> None:
+            for item in node.elts:
+                self._push_visit(self.roles, "COLLECTION_ITEM", item)
+
+        visit_List = _visit_collection
+        visit_Tuple = _visit_collection
+        visit_Set = _visit_collection
+
+        def visit_Compare(self, node: ast.Compare) -> None:
+            self._push_visit(self.roles, "COMPARISON", node.left)
+            for comparator in node.comparators:
+                self._push_visit(self.roles, "COMPARISON", comparator)
 
         def visit_Constant(self, node: ast.Constant) -> None:
             if not isinstance(node.value, str):
@@ -352,16 +458,41 @@ def _inventory_python_literals(source: str, rel_path: str) -> List[dict]:
             if matched is None:
                 return
             hint = (self.hints[-1] if self.hints else "").upper()
+            _preview, structural = transform.transform_document(node.value)
+            structural_changes = sum(
+                item.get("action") == "APPLIED" for item in structural
+            )
+            structural_ambiguous = sum(
+                item.get("classification") == "AMBIGUOUS" for item in structural
+            )
             if any(word in hint for word in ("ALIAS", "LEGACY", "INPUT_MAP")):
                 classification = "LEGACY_INPUT_ALIAS"
+            elif structural_changes and not structural_ambiguous:
+                classification = "USER_FACING"
             elif any(word in hint for word in ("LABEL", "TEXT", "STATUS", "STAGE", "HTML", "TEMPLATE")):
                 classification = "USER_FACING"
             else:
                 classification = "AMBIGUOUS"
             occurrences.append({
                 "path": rel_path, "line": getattr(node, "lineno", None),
+                "column": getattr(node, "col_offset", None),
+                "end_line": getattr(node, "end_lineno", None),
                 "before": matched, "classification": classification,
                 "action": "PRESERVE",
+                "literal_sha256": hashlib.sha256(node.value.encode("utf-8")).hexdigest(),
+                "literal_length": len(node.value),
+                "assignment": self.hints[-1] if self.hints else "",
+                "role": self.roles[-1] if self.roles else "OTHER",
+                "dict_key": self.dict_keys[-1] if self.dict_keys else "",
+                "call": self.calls[-1] if self.calls else "",
+                "keyword": self.keywords[-1] if self.keywords else "",
+                "function": self.functions[-1] if self.functions else "",
+                "class": self.classes[-1] if self.classes else "",
+                "structural_changes": structural_changes,
+                "structural_ambiguous": structural_ambiguous,
+                "structural_contexts": sorted({
+                    str(item.get("context")) for item in structural if item.get("context")
+                }),
             })
 
     Visitor().visit(tree)
