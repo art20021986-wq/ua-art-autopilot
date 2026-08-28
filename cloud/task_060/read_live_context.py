@@ -41,7 +41,7 @@ def function_records(source, filename):
         segment = "\n".join(lines[node.lineno - 1:node.end_lineno])
         low = segment.lower()
         wanted = (
-            node.name in {"run_ai_draft", "ai_save", "parse_image", "parse_message", "clean", "render"}
+            node.name in {"run_ai_draft", "ai_save", "parse_image", "parse_message", "_post_json", "anthropic_key", "clean", "render", "flatten"}
             or any(n in low for n in NEEDLES)
         )
         if not wanted:
@@ -69,10 +69,33 @@ def allowed_record(source):
                 except Exception:
                     return {"kind": "nonliteral"}
                 if isinstance(value, dict):
-                    return {"kind": "dict", "keys": sorted(map(str, value.keys()))}
+                    return {"kind": "dict", "keys": sorted(map(str, value.keys())), "mapping": value}
                 if isinstance(value, (set, list, tuple)):
                     return {"kind": type(value).__name__, "keys": sorted(map(str, value))}
     return {"kind": "missing"}
+
+def scalar_globals(source):
+    tree = ast.parse(source, "ai.py")
+    result = {}
+    for node in tree.body:
+        if not isinstance(node, (ast.Assign, ast.AnnAssign)):
+            continue
+        targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+        names = [t.id for t in targets if isinstance(t, ast.Name)]
+        for name in names:
+            if name not in {"MODEL", "MAX_TOKENS", "IMAGE_PROMPT", "SYSTEM_PROMPT"}:
+                continue
+            try:
+                value = ast.literal_eval(node.value)
+            except Exception:
+                result[name] = {"kind": "nonliteral"}
+                continue
+            if name in {"IMAGE_PROMPT", "SYSTEM_PROMPT"}:
+                raw = str(value).encode()
+                result[name] = {"length": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+            else:
+                result[name] = value
+    return result
 
 def main():
     evidence = {"task_id": "task_060", "mode": "READ_ONLY_SOURCE_CONTEXT", "production_touched": False, "files": {}}
@@ -87,6 +110,8 @@ def main():
         }
         if label == "ai_filter.py":
             evidence["allowed"] = allowed_record(source)
+        if label == "ai.py":
+            evidence["ai_globals"] = scalar_globals(source)
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({"status": "PASS", "production_touched": False}))
