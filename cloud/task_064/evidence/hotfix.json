@@ -1,19 +1,17 @@
 {
   "bot_restarted": true,
   "contract_id": "CRM-DB-LOCK-EMERGENCY-001",
-  "errors": [
-    "ControllerError:POSTCHECK_FAILED:RuntimeError:BOT_SERVICE_NOT_RUNNING"
-  ],
+  "errors": [],
   "install": {
     "already_applied": false,
-    "backup_path": "/home/Carix/backups/task_064/20260828T171311Z/db.py",
+    "backup_path": "/home/Carix/backups/task_064/20260828T172111Z/db.py",
     "backup_sha256": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
     "contract_id": "CRM-DB-LOCK-EMERGENCY-001",
     "crm_db_write": false,
     "db_py_sha256_after": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
     "db_py_sha256_before": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
     "errors": [],
-    "finished_at_utc": "2026-08-28T17:13:11Z",
+    "finished_at_utc": "2026-08-28T17:21:11Z",
     "llm_tokens": 0,
     "mode": "ATOMIC_DB_LAYER_HOTFIX",
     "readonly_after": {
@@ -29,7 +27,7 @@
       "ua0009_sha256": "f2093ee2295b18a45ecc7a81feb5d764436bf2a6d04ff984a05254292005d3be"
     },
     "site_write": false,
-    "started_at_utc": "2026-08-28T17:13:11Z",
+    "started_at_utc": "2026-08-28T17:21:10Z",
     "status": "PASS",
     "task_id": "task_064"
   },
@@ -52,24 +50,87 @@
       "tokens_distinct": true
     },
     "contract_id": "CRM-DB-LOCK-EMERGENCY-001",
-    "errors": [
-      "RuntimeError:BOT_SERVICE_NOT_RUNNING"
-    ],
+    "errors": [],
+    "journal_present_after": false,
     "llm_tokens": 0,
+    "operations": 40,
+    "readonly_after": {
+      "cars_count": 11,
+      "quick_check": "ok",
+      "ua0009_rows": 1,
+      "ua0009_sha256": "f2093ee2295b18a45ecc7a81feb5d764436bf2a6d04ff984a05254292005d3be"
+    },
+    "readonly_before": {
+      "cars_count": 11,
+      "quick_check": "ok",
+      "ua0009_rows": 1,
+      "ua0009_sha256": "f2093ee2295b18a45ecc7a81feb5d764436bf2a6d04ff984a05254292005d3be"
+    },
+    "runtime_contract": {
+      "checks": {
+        "both_apps_started": true,
+        "client_builder": true,
+        "client_catalog_button": true,
+        "crm_builder": true,
+        "stable_launcher": true
+      },
+      "files": {
+        "client": {
+          "compiled": true,
+          "sha256": "118573df42b51db49f7c2ebd9b830f78ebd1e62b71846760f62fa2f0590ffc0c"
+        },
+        "crm": {
+          "compiled": true,
+          "sha256": "4e0ede93c744e49c2a634fa5e7f195bdda27208d7575c3cd9a0e4ce419913918"
+        },
+        "launcher": {
+          "compiled": true,
+          "sha256": "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007"
+        },
+        "orchestrator": {
+          "compiled": true,
+          "sha256": "7deb18698f792b61fd734b36451296343ec528e15ccd86798d6cbc4a7a75eca5"
+        }
+      },
+      "ok": true
+    },
     "service_process": {
       "matching_processes": 0,
       "running": false
     },
-    "status": "FAIL",
+    "status": "PASS",
     "task_id": "task_064",
+    "workers": [
+      {
+        "pass_marker": true,
+        "returncode": 0,
+        "stderr_tail": ""
+      },
+      {
+        "pass_marker": true,
+        "returncode": 0,
+        "stderr_tail": ""
+      },
+      {
+        "pass_marker": true,
+        "returncode": 0,
+        "stderr_tail": ""
+      },
+      {
+        "pass_marker": true,
+        "returncode": 0,
+        "stderr_tail": ""
+      }
+    ],
     "write_probe": "UPDATE_WHERE_FALSE_ONLY"
   },
-  "rollback": {
-    "errors": [],
-    "restored_sha256": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
-    "status": "PASS",
-    "task_id": "task_064"
+  "rollback": null,
+  "service_contract": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "configured": true,
+    "enabled": true,
+    "restart_accepted": true
   },
-  "status": "FAIL",
+  "status": "PASS",
   "task_id": "task_064"
 }
