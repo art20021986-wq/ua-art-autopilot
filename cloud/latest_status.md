@@ -1,13 +1,15 @@
-# Последний статус
-
-TASK 064: **DONE**
-
-- Комплексная диагностика восстановлена на 10 карточках.
-- Публично проверено: 20 страниц, все HTTP 200 и совпали по SHA-256.
-- На каждой карточке ровно одна кнопка диагностики.
-- Пустые карточки показывают постоянную страницу «Материалы пока не добавлены».
-- Генератор закреплён для всех будущих UA-XXXX; *-diag.html защищены от перезаписи карточкой.
-- UA-0009: PASS.
-- CRM/DB write: false. Service reload: false.
-- Резервная копия: `/home/Carix/autopilot_inbox/cloud/task_064_diagnostics/backups/20260828T170058Z-530b345caf`.
-- Проверено: 2026-08-28T17:01:17Z.
+TASK_ID: task_068
+ROUND: 2
+CLAUDE_STATUS: DONE
+CURRENT_ACTION: SEO rehabilitation candidate is live in isolated GitHub Preview; diagnostics recurrence is auto-repaired in candidate and blocked fail-closed on mismatch
+FILES_CREATED: src/seo_rehab.js, cloud/seo_rehab_guard/*, tasks/task_068.md, .github/workflows/seo-rehab-guard.yml
+PRODUCTION_TOUCHED: NO
+OWNER_ACTION_REQUIRED: YES
+OWNER_QUESTION: Утвердить визуальный GitHub Preview после зелёных проверок или вернуть замечания
+NEXT_FOR_CHATGPT: Await owner visual review; do not merge or deploy without a separate owner command
+GITHUB_ACTIONS: PASS
+PREVIEW_HTML: 14/14 PASS
+PREVIEW_DIAGNOSTICS: 10/10 PASS
+LOCAL_TESTS: 14/14 PASS
+REPEATABILITY: 10 runs, 1 SHA-256
+UPDATED_AT_UTC: 2026-08-28T20:47:00Z
