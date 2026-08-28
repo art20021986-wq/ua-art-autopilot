@@ -1,0 +1,142 @@
+name: SEO Rehab Guard 068 production
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'cloud/seo_rehab_guard_068/**'
+      - '.github/workflows/seo-rehab-068-production.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'cloud/seo_rehab_guard_068/**'
+      - '.github/workflows/seo-rehab-068-production.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-rehab-guard-068-production
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile and test local contract
+        run: |
+          python3 -m py_compile \
+            cloud/seo_rehab_guard_068/repair_remote.py \
+            cloud/seo_rehab_guard_068/live_verify.py \
+            cloud/seo_rehab_guard_068/controller.py
+          python3 cloud/seo_rehab_guard_068/repair_remote.py --self-test
+
+      - name: Ten-run remote dry-run and service inventory
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/seo_rehab_guard_068/controller.py --dry-run-only
+
+      - name: Assert zero-write preflight
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('cloud/seo_rehab_guard_068/evidence/controller.json').read_text())
+          assert value['contract'] == 'SEO-REHAB-GUARD-068'
+          assert value['status'] == 'PASS' and value['mode'] == 'dry-run-only'
+          assert value['production_write_authorized'] is False
+          assert value['dry_run']['production_write'] is False
+          assert value['dry_run']['repeatability'] == {
+              'runs': 10,
+              'tree_sha256': value['dry_run']['repeatability']['tree_sha256'],
+              'unique_sha256': 1,
+          }
+          assert value['dry_run']['candidate_files'] == 36
+          assert value['dry_run']['card_ids'] == [f'UA-{number:04d}' for number in range(1, 11)]
+          assert value['service_preflight']['read_only_probe'] is True
+          PY
+
+      - name: Upload preflight evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seo-rehab-068-preflight-${{ github.run_id }}-${{ github.run_attempt }}
+          path: cloud/seo_rehab_guard_068/evidence
+          if-no-files-found: warn
+          retention-days: 30
+
+  production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact main commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile exact release candidate
+        run: |
+          python3 -m py_compile \
+            cloud/seo_rehab_guard_068/repair_remote.py \
+            cloud/seo_rehab_guard_068/live_verify.py \
+            cloud/seo_rehab_guard_068/controller.py
+          python3 cloud/seo_rehab_guard_068/repair_remote.py --self-test
+
+      - name: Backup, source guard, canary, publish and delayed verify
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/seo_rehab_guard_068/controller.py
+
+      - name: Independent final public verification
+        run: python3 cloud/seo_rehab_guard_068/live_verify.py
+
+      - name: Assert production evidence and unused rollback
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('cloud/seo_rehab_guard_068/evidence')
+          deploy = json.loads((root / 'controller.json').read_text())
+          live = json.loads((root / 'live.json').read_text())
+          assert deploy['contract'] == 'SEO-REHAB-GUARD-068'
+          assert deploy['status'] == 'PASS' and deploy['mode'] == 'production-release'
+          assert deploy['llm_tokens'] == 0
+          assert deploy['source_install']['status'] == 'PASS'
+          assert deploy['source_install']['phase'] == 'sources'
+          assert deploy['content_install']['status'] == 'PASS'
+          assert deploy['content_install']['phase'] == 'content'
+          assert deploy['content_install']['canary']['id'] == 'UA-0010'
+          assert deploy['content_install']['canary']['public']['status'] == 200
+          assert deploy['source_install']['backup_root']
+          assert deploy['content_install']['backup_root']
+          assert deploy['public_immediate']['status'] == 'PASS'
+          assert deploy['public_delayed']['status'] == 'PASS'
+          assert deploy['rollback'] == {'content': None, 'sources': None}
+          assert live['status'] == 'PASS' and live['page_count'] == 27
+          assert len(live['cards']) == 10 and len(live['diagnostics']) == 10
+          assert all(card['primary_cta'] == ['Задаток 500 $'] for card in live['cards'])
+          PY
+
+      - name: Upload release and rollback evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seo-rehab-068-production-${{ github.run_id }}-${{ github.run_attempt }}
+          path: cloud/seo_rehab_guard_068/evidence
+          if-no-files-found: warn
+          retention-days: 30
