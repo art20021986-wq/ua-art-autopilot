@@ -1,0 +1,1554 @@
+{
+  "contract_id": "CRM-DB-SPEED-LOCK-070-v1.2",
+  "crm_db_write": false,
+  "database": {
+    "cars_count": 11,
+    "quick_check": "ok",
+    "schema": [
+      {
+        "name": "idx_audit_entity",
+        "sql": "CREATE INDEX idx_audit_entity ON audit(entity_type, entity_id)",
+        "table": "audit",
+        "type": "index"
+      },
+      {
+        "name": "idx_cars_review",
+        "sql": "CREATE INDEX idx_cars_review ON cars(review_status)",
+        "table": "cars",
+        "type": "index"
+      },
+      {
+        "name": "idx_cars_vin",
+        "sql": "CREATE INDEX idx_cars_vin ON cars(vin)",
+        "table": "cars",
+        "type": "index"
+      },
+      {
+        "name": "idx_clients_phone",
+        "sql": "CREATE INDEX idx_clients_phone ON clients(phone)",
+        "table": "clients",
+        "type": "index"
+      },
+      {
+        "name": "idx_inbox_status",
+        "sql": "CREATE INDEX idx_inbox_status ON inbox(status)",
+        "table": "inbox",
+        "type": "index"
+      },
+      {
+        "name": "media_odna",
+        "sql": "CREATE UNIQUE INDEX media_odna ON media(car_id, vid, file_id)",
+        "table": "media",
+        "type": "index"
+      },
+      {
+        "name": "media_po_mashine",
+        "sql": "CREATE INDEX media_po_mashine ON media(car_id,vid,status)",
+        "table": "media",
+        "type": "index"
+      },
+      {
+        "name": "media_po_statusu",
+        "sql": "CREATE INDEX media_po_statusu ON media(status)",
+        "table": "media",
+        "type": "index"
+      },
+      {
+        "name": "sqlite_autoindex_invites_1",
+        "sql": null,
+        "table": "invites",
+        "type": "index"
+      },
+      {
+        "name": "sqlite_autoindex_ns_video_1",
+        "sql": null,
+        "table": "ns_video",
+        "type": "index"
+      },
+      {
+        "name": "audit",
+        "sql": "CREATE TABLE audit (\n            id           INTEGER PRIMARY KEY AUTOINCREMENT,\n            actor_id     INTEGER,\n            action       TEXT NOT NULL,\n            entity_type  TEXT,\n            entity_id    INTEGER,\n            field        TEXT,\n            old_value    TEXT,\n            new_value    TEXT,\n            created_at   TEXT NOT NULL\n        )",
+        "table": "audit",
+        "type": "table"
+      },
+      {
+        "name": "cars",
+        "sql": "CREATE TABLE cars (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            brand         TEXT,\n            model         TEXT,\n            year          TEXT,\n            vin           TEXT,\n            fuel          TEXT,\n            engine        TEXT,\n            color         TEXT,\n            mileage       TEXT,\n            trim          TEXT,\n            condition     TEXT,\n            accidents     TEXT,\n            auction_link  TEXT,\n            price_buy     TEXT,\n            price_extra   TEXT,\n            price_ship    TEXT,\n            price_customs TEXT,\n            price_total   TEXT,\n            stage         TEXT,               -- этап доставки\n            photos        TEXT,               -- JSON-список file_id\n            videos        TEXT,\n            docs          TEXT,\n            responsible   INTEGER,\n            review_status TEXT NOT NULL,      -- статус согласования\n            published     INTEGER NOT NULL DEFAULT 0,  -- виден ли в клиентском боте\n            created_by    INTEGER,\n            approved_by   INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        , client_id INTEGER, publish_pending INTEGER DEFAULT 0, video_h TEXT, video_v TEXT, auto_number TEXT, engine_cc INTEGER, gearbox TEXT, drive TEXT, mileage_km INTEGER, condition_text TEXT, condition_photos TEXT, condition_videos TEXT, diag_report TEXT, diag_link TEXT, kr_buy_date TEXT, kr_parking TEXT, sea_container TEXT, sea_port_from TEXT, sea_date_out TEXT, ge_port TEXT, ge_arrived TEXT, ge_released TEXT, days_to_kyiv TEXT, ua_delivered TEXT, ua_handed TEXT, cost_purchase INTEGER, cost_fees INTEGER, cost_logistics INTEGER, cost_total TEXT, price_uah INTEGER, nbu_rate TEXT, status TEXT, owner_user TEXT, history TEXT, price_history TEXT, cover_photo TEXT, eta_manual TEXT, description TEXT, hidden_photos TEXT, diag_text TEXT, ge_to_kyiv_at TEXT)",
+        "table": "cars",
+        "type": "table"
+      },
+      {
+        "name": "clients",
+        "sql": "CREATE TABLE clients (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            name          TEXT,\n            phone         TEXT,\n            telegram      TEXT,\n            whatsapp      TEXT,\n            car_interest  TEXT,\n            budget        TEXT,\n            wishes        TEXT,\n            source        TEXT,\n            prepayment    TEXT,\n            stage         TEXT,\n            responsible   INTEGER,\n            next_contact  TEXT,\n            review_status TEXT NOT NULL,\n            created_by    INTEGER,\n            approved_by   INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        , tg_user_id INTEGER)",
+        "table": "clients",
+        "type": "table"
+      },
+      {
+        "name": "comments",
+        "sql": "CREATE TABLE comments (\n            id           INTEGER PRIMARY KEY AUTOINCREMENT,\n            entity_type  TEXT NOT NULL,       -- inbox/car/client\n            entity_id    INTEGER NOT NULL,\n            author_id    INTEGER NOT NULL,\n            text         TEXT,\n            file_id      TEXT,\n            created_at   TEXT NOT NULL\n        )",
+        "table": "comments",
+        "type": "table"
+      },
+      {
+        "name": "inbox",
+        "sql": "CREATE TABLE inbox (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            from_user_id  INTEGER NOT NULL,\n            kind          TEXT NOT NULL,      -- text/photo/video/voice/document/contact/other\n            text          TEXT,\n            file_id       TEXT,\n            media_group   TEXT,               -- альбом: несколько файлов одним сообщением\n            tg_chat_id    INTEGER,\n            tg_message_id INTEGER,\n            status        TEXT NOT NULL,\n            assigned_to   INTEGER,\n            card_type     TEXT,               -- car/client, если из записи создали карточку\n            card_id       INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        )",
+        "table": "inbox",
+        "type": "table"
+      },
+      {
+        "name": "invites",
+        "sql": "CREATE TABLE invites (\n            code        TEXT PRIMARY KEY,\n            role        TEXT NOT NULL,\n            created_by  INTEGER NOT NULL,\n            created_at  TEXT NOT NULL,\n            used_by     INTEGER,\n            used_at     TEXT\n        )",
+        "table": "invites",
+        "type": "table"
+      },
+      {
+        "name": "media",
+        "sql": "CREATE TABLE media (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            car_id        INTEGER NOT NULL,\n            auto_number   TEXT,\n            vid           TEXT NOT NULL,\n            file_id       TEXT NOT NULL,\n            source_bot_id TEXT,\n            razmer        INTEGER,\n            mime          TEXT,\n            put           TEXT,\n            summa         TEXT,\n            status        TEXT NOT NULL DEFAULT 'pending',\n            tag           TEXT,\n            poryadok      INTEGER,\n            kogda         TEXT,\n            kto           TEXT,\n            primechanie   TEXT\n        )",
+        "table": "media",
+        "type": "table"
+      },
+      {
+        "name": "ns_video",
+        "sql": "CREATE TABLE ns_video (nomer TEXT, file_id TEXT, msg_id INTEGER, PRIMARY KEY (nomer, file_id))",
+        "table": "ns_video",
+        "type": "table"
+      },
+      {
+        "name": "sqlite_sequence",
+        "sql": "CREATE TABLE sqlite_sequence(name,seq)",
+        "table": "sqlite_sequence",
+        "type": "table"
+      },
+      {
+        "name": "staff",
+        "sql": "CREATE TABLE staff (\n            user_id     INTEGER PRIMARY KEY,\n            full_name   TEXT,\n            username    TEXT,\n            role        TEXT NOT NULL,\n            active      INTEGER NOT NULL DEFAULT 1,\n            added_by    INTEGER,\n            added_at    TEXT NOT NULL,\n            note        TEXT\n        )",
+        "table": "staff",
+        "type": "table"
+      },
+      {
+        "name": "media_mash",
+        "sql": "CREATE TRIGGER media_mash BEFORE INSERT ON media WHEN (SELECT COUNT(*) FROM cars WHERE id=NEW.car_id)=0 BEGIN SELECT RAISE(ABORT,'нет такой машины'); END",
+        "table": "media",
+        "type": "trigger"
+      },
+      {
+        "name": "media_st_p",
+        "sql": "CREATE TRIGGER media_st_p BEFORE UPDATE ON media WHEN NEW.status NOT IN ('pending','ready','rejected','quarantine') BEGIN SELECT RAISE(ABORT,'недопустимый статус'); END",
+        "table": "media",
+        "type": "trigger"
+      },
+      {
+        "name": "media_st_v",
+        "sql": "CREATE TRIGGER media_st_v BEFORE INSERT ON media WHEN NEW.status NOT IN ('pending','ready','rejected','quarantine') BEGIN SELECT RAISE(ABORT,'недопустимый статус'); END",
+        "table": "media",
+        "type": "trigger"
+      },
+      {
+        "name": "media_vid_v",
+        "sql": "CREATE TRIGGER media_vid_v BEFORE INSERT ON media WHEN NEW.vid NOT IN ('foto','video','diag_foto','diag_video','diag_dok') BEGIN SELECT RAISE(ABORT,'недопустимый вид'); END",
+        "table": "media",
+        "type": "trigger"
+      }
+    ],
+    "sha256": "3de51c658cade4843163a83f1383b43cd37f73980f4dc0f0dd63f1ede989b950",
+    "size": 2658304,
+    "tables": {
+      "audit": {
+        "columns": [
+          {
+            "cid": 0,
+            "dflt_value": null,
+            "name": "id",
+            "notnull": 0,
+            "pk": 1,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 1,
+            "dflt_value": null,
+            "name": "actor_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 2,
+            "dflt_value": null,
+            "name": "action",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 3,
+            "dflt_value": null,
+            "name": "entity_type",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 4,
+            "dflt_value": null,
+            "name": "entity_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 5,
+            "dflt_value": null,
+            "name": "field",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 6,
+            "dflt_value": null,
+            "name": "old_value",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 7,
+            "dflt_value": null,
+            "name": "new_value",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 8,
+            "dflt_value": null,
+            "name": "created_at",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          }
+        ]
+      },
+      "cars": {
+        "columns": [
+          {
+            "cid": 0,
+            "dflt_value": null,
+            "name": "id",
+            "notnull": 0,
+            "pk": 1,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 1,
+            "dflt_value": null,
+            "name": "brand",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 2,
+            "dflt_value": null,
+            "name": "model",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 3,
+            "dflt_value": null,
+            "name": "year",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 4,
+            "dflt_value": null,
+            "name": "vin",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 5,
+            "dflt_value": null,
+            "name": "fuel",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 6,
+            "dflt_value": null,
+            "name": "engine",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 7,
+            "dflt_value": null,
+            "name": "color",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 8,
+            "dflt_value": null,
+            "name": "mileage",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 9,
+            "dflt_value": null,
+            "name": "trim",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 10,
+            "dflt_value": null,
+            "name": "condition",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 11,
+            "dflt_value": null,
+            "name": "accidents",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 12,
+            "dflt_value": null,
+            "name": "auction_link",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 13,
+            "dflt_value": null,
+            "name": "price_buy",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 14,
+            "dflt_value": null,
+            "name": "price_extra",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 15,
+            "dflt_value": null,
+            "name": "price_ship",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 16,
+            "dflt_value": null,
+            "name": "price_customs",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 17,
+            "dflt_value": null,
+            "name": "price_total",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 18,
+            "dflt_value": null,
+            "name": "stage",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 19,
+            "dflt_value": null,
+            "name": "photos",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 20,
+            "dflt_value": null,
+            "name": "videos",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 21,
+            "dflt_value": null,
+            "name": "docs",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 22,
+            "dflt_value": null,
+            "name": "responsible",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 23,
+            "dflt_value": null,
+            "name": "review_status",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 24,
+            "dflt_value": "0",
+            "name": "published",
+            "notnull": 1,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 25,
+            "dflt_value": null,
+            "name": "created_by",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 26,
+            "dflt_value": null,
+            "name": "approved_by",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 27,
+            "dflt_value": null,
+            "name": "created_at",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 28,
+            "dflt_value": null,
+            "name": "updated_at",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 29,
+            "dflt_value": null,
+            "name": "client_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 30,
+            "dflt_value": "0",
+            "name": "publish_pending",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 31,
+            "dflt_value": null,
+            "name": "video_h",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 32,
+            "dflt_value": null,
+            "name": "video_v",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 33,
+            "dflt_value": null,
+            "name": "auto_number",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 34,
+            "dflt_value": null,
+            "name": "engine_cc",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 35,
+            "dflt_value": null,
+            "name": "gearbox",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 36,
+            "dflt_value": null,
+            "name": "drive",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 37,
+            "dflt_value": null,
+            "name": "mileage_km",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 38,
+            "dflt_value": null,
+            "name": "condition_text",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 39,
+            "dflt_value": null,
+            "name": "condition_photos",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 40,
+            "dflt_value": null,
+            "name": "condition_videos",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 41,
+            "dflt_value": null,
+            "name": "diag_report",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 42,
+            "dflt_value": null,
+            "name": "diag_link",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 43,
+            "dflt_value": null,
+            "name": "kr_buy_date",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 44,
+            "dflt_value": null,
+            "name": "kr_parking",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 45,
+            "dflt_value": null,
+            "name": "sea_container",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 46,
+            "dflt_value": null,
+            "name": "sea_port_from",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 47,
+            "dflt_value": null,
+            "name": "sea_date_out",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 48,
+            "dflt_value": null,
+            "name": "ge_port",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 49,
+            "dflt_value": null,
+            "name": "ge_arrived",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 50,
+            "dflt_value": null,
+            "name": "ge_released",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 51,
+            "dflt_value": null,
+            "name": "days_to_kyiv",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 52,
+            "dflt_value": null,
+            "name": "ua_delivered",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 53,
+            "dflt_value": null,
+            "name": "ua_handed",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 54,
+            "dflt_value": null,
+            "name": "cost_purchase",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 55,
+            "dflt_value": null,
+            "name": "cost_fees",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 56,
+            "dflt_value": null,
+            "name": "cost_logistics",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 57,
+            "dflt_value": null,
+            "name": "cost_total",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 58,
+            "dflt_value": null,
+            "name": "price_uah",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 59,
+            "dflt_value": null,
+            "name": "nbu_rate",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 60,
+            "dflt_value": null,
+            "name": "status",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 61,
+            "dflt_value": null,
+            "name": "owner_user",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 62,
+            "dflt_value": null,
+            "name": "history",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 63,
+            "dflt_value": null,
+            "name": "price_history",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 64,
+            "dflt_value": null,
+            "name": "cover_photo",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 65,
+            "dflt_value": null,
+            "name": "eta_manual",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 66,
+            "dflt_value": null,
+            "name": "description",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 67,
+            "dflt_value": null,
+            "name": "hidden_photos",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 68,
+            "dflt_value": null,
+            "name": "diag_text",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 69,
+            "dflt_value": null,
+            "name": "ge_to_kyiv_at",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          }
+        ]
+      },
+      "clients": {
+        "columns": [
+          {
+            "cid": 0,
+            "dflt_value": null,
+            "name": "id",
+            "notnull": 0,
+            "pk": 1,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 1,
+            "dflt_value": null,
+            "name": "name",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 2,
+            "dflt_value": null,
+            "name": "phone",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 3,
+            "dflt_value": null,
+            "name": "telegram",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 4,
+            "dflt_value": null,
+            "name": "whatsapp",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 5,
+            "dflt_value": null,
+            "name": "car_interest",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 6,
+            "dflt_value": null,
+            "name": "budget",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 7,
+            "dflt_value": null,
+            "name": "wishes",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 8,
+            "dflt_value": null,
+            "name": "source",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 9,
+            "dflt_value": null,
+            "name": "prepayment",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 10,
+            "dflt_value": null,
+            "name": "stage",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 11,
+            "dflt_value": null,
+            "name": "responsible",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 12,
+            "dflt_value": null,
+            "name": "next_contact",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 13,
+            "dflt_value": null,
+            "name": "review_status",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 14,
+            "dflt_value": null,
+            "name": "created_by",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 15,
+            "dflt_value": null,
+            "name": "approved_by",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 16,
+            "dflt_value": null,
+            "name": "created_at",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 17,
+            "dflt_value": null,
+            "name": "updated_at",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 18,
+            "dflt_value": null,
+            "name": "tg_user_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          }
+        ]
+      },
+      "comments": {
+        "columns": [
+          {
+            "cid": 0,
+            "dflt_value": null,
+            "name": "id",
+            "notnull": 0,
+            "pk": 1,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 1,
+            "dflt_value": null,
+            "name": "entity_type",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 2,
+            "dflt_value": null,
+            "name": "entity_id",
+            "notnull": 1,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 3,
+            "dflt_value": null,
+            "name": "author_id",
+            "notnull": 1,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 4,
+            "dflt_value": null,
+            "name": "text",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 5,
+            "dflt_value": null,
+            "name": "file_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 6,
+            "dflt_value": null,
+            "name": "created_at",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          }
+        ]
+      },
+      "inbox": {
+        "columns": [
+          {
+            "cid": 0,
+            "dflt_value": null,
+            "name": "id",
+            "notnull": 0,
+            "pk": 1,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 1,
+            "dflt_value": null,
+            "name": "from_user_id",
+            "notnull": 1,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 2,
+            "dflt_value": null,
+            "name": "kind",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 3,
+            "dflt_value": null,
+            "name": "text",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 4,
+            "dflt_value": null,
+            "name": "file_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 5,
+            "dflt_value": null,
+            "name": "media_group",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 6,
+            "dflt_value": null,
+            "name": "tg_chat_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 7,
+            "dflt_value": null,
+            "name": "tg_message_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 8,
+            "dflt_value": null,
+            "name": "status",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 9,
+            "dflt_value": null,
+            "name": "assigned_to",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 10,
+            "dflt_value": null,
+            "name": "card_type",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 11,
+            "dflt_value": null,
+            "name": "card_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 12,
+            "dflt_value": null,
+            "name": "created_at",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 13,
+            "dflt_value": null,
+            "name": "updated_at",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          }
+        ]
+      },
+      "invites": {
+        "columns": [
+          {
+            "cid": 0,
+            "dflt_value": null,
+            "name": "code",
+            "notnull": 0,
+            "pk": 1,
+            "type": "TEXT"
+          },
+          {
+            "cid": 1,
+            "dflt_value": null,
+            "name": "role",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 2,
+            "dflt_value": null,
+            "name": "created_by",
+            "notnull": 1,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 3,
+            "dflt_value": null,
+            "name": "created_at",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 4,
+            "dflt_value": null,
+            "name": "used_by",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 5,
+            "dflt_value": null,
+            "name": "used_at",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          }
+        ]
+      },
+      "media": {
+        "columns": [
+          {
+            "cid": 0,
+            "dflt_value": null,
+            "name": "id",
+            "notnull": 0,
+            "pk": 1,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 1,
+            "dflt_value": null,
+            "name": "car_id",
+            "notnull": 1,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 2,
+            "dflt_value": null,
+            "name": "auto_number",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 3,
+            "dflt_value": null,
+            "name": "vid",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 4,
+            "dflt_value": null,
+            "name": "file_id",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 5,
+            "dflt_value": null,
+            "name": "source_bot_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 6,
+            "dflt_value": null,
+            "name": "razmer",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 7,
+            "dflt_value": null,
+            "name": "mime",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 8,
+            "dflt_value": null,
+            "name": "put",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 9,
+            "dflt_value": null,
+            "name": "summa",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 10,
+            "dflt_value": "'pending'",
+            "name": "status",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 11,
+            "dflt_value": null,
+            "name": "tag",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 12,
+            "dflt_value": null,
+            "name": "poryadok",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 13,
+            "dflt_value": null,
+            "name": "kogda",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 14,
+            "dflt_value": null,
+            "name": "kto",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 15,
+            "dflt_value": null,
+            "name": "primechanie",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          }
+        ]
+      },
+      "ns_video": {
+        "columns": [
+          {
+            "cid": 0,
+            "dflt_value": null,
+            "name": "nomer",
+            "notnull": 0,
+            "pk": 1,
+            "type": "TEXT"
+          },
+          {
+            "cid": 1,
+            "dflt_value": null,
+            "name": "file_id",
+            "notnull": 0,
+            "pk": 2,
+            "type": "TEXT"
+          },
+          {
+            "cid": 2,
+            "dflt_value": null,
+            "name": "msg_id",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          }
+        ]
+      },
+      "staff": {
+        "columns": [
+          {
+            "cid": 0,
+            "dflt_value": null,
+            "name": "user_id",
+            "notnull": 0,
+            "pk": 1,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 1,
+            "dflt_value": null,
+            "name": "full_name",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 2,
+            "dflt_value": null,
+            "name": "username",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 3,
+            "dflt_value": null,
+            "name": "role",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 4,
+            "dflt_value": "1",
+            "name": "active",
+            "notnull": 1,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 5,
+            "dflt_value": null,
+            "name": "added_by",
+            "notnull": 0,
+            "pk": 0,
+            "type": "INTEGER"
+          },
+          {
+            "cid": 6,
+            "dflt_value": null,
+            "name": "added_at",
+            "notnull": 1,
+            "pk": 0,
+            "type": "TEXT"
+          },
+          {
+            "cid": 7,
+            "dflt_value": null,
+            "name": "note",
+            "notnull": 0,
+            "pk": 0,
+            "type": "TEXT"
+          }
+        ]
+      }
+    },
+    "ua0009_rows": 1,
+    "ua0009_sha256": "f2093ee2295b18a45ecc7a81feb5d764436bf2a6d04ff984a05254292005d3be"
+  },
+  "mode": "READ_ONLY_REAL_CONTEXT",
+  "production_touched": false,
+  "remote_http_methods": [
+    "GET"
+  ],
+  "site_write": false,
+  "sources": {
+    "cars_ui.py": {
+      "definitions": [
+        {
+          "end_lineno": 152,
+          "kind": "FunctionDef",
+          "lineno": 148,
+          "name": "set_field",
+          "sha256": "8f6ea6455a0f950573e4433f3bc273471c617b679d37ae96b803cfbf492440e8",
+          "source": "def set_field(card_id, field, value, actor_id):\n    \"\"\"Пустое значение в карточку не пишем — данные не теряются.\"\"\"\n    if value in (None, \"\", []):\n        return\n    db.update_card_field(\"cars\", int(card_id), field, value, actor_id)"
+        },
+        {
+          "end_lineno": 627,
+          "kind": "FunctionDef",
+          "lineno": 577,
+          "name": "apply_value",
+          "sha256": "18c8dfc9f7cb6f5d4cf4e41a0fe02dbd07be9b21f142a072e90bfac602f7388b",
+          "source": "def apply_value(card_id, field, raw, actor_id):\n    \"\"\"Возвращает (ок, сообщение). Ничего не додумывает.\"\"\"\n    value = (raw or \"\").strip()\n    if not value:\n        return False, \"Пустое значение не записываю.\"\n\n    if field == \"eta_days\":\n        digits = \"\".join(ch for ch in value if ch.isdigit())\n        if not digits:\n            return False, \"Пришлите число дней, например 45.\"\n        n = int(digits)\n        if n > 400:\n            return False, \"Слишком большой срок. Пришлите число дней.\"\n        eta = _date.today() + _td(days=n)\n        set_field(card_id, \"eta_manual\", eta.isoformat(), actor_id)\n        set_field(card_id, \"days_to_kyiv\", n, actor_id)\n        return True, \"До прибытия %d дней · %s\" % (n, eta.strftime(\"%d.%m.%Y\"))\n\n    if field in NUMERIC:\n        digits = value.lower().replace(\" \", \"\").replace(\"\\u00a0\", \"\")\n        for lishnee in (\"цена\", \"стоимость\", \"$\", \"usd\", \"долларов\", \"долл\"):\n            digits = digits.replace(lishnee, \"\")\n        for word, mult in ((\"тысяч\", 1000), (\"тыс\", 1000), (\"к\", 1000)):\n            if word in digits.lower():\n                digits = digits.lower().split(word)[0]\n                try:\n                    num = int(float(digits.replace(\",\", \".\")) * mult)\n                except ValueError:\n                    return False, \"Не разобрал число. Пришлите цифрами.\"\n                break\n        else:\n            digits = \"\".join(ch for ch in digits if ch.isdigit())\n            if not digits:\n                return False, \"Не разобрал число. Пришлите цифрами.\"\n            num = int(digits)\n        if field == \"engine_cc\" and num < 100:\n            return False, (\"Похоже, это литры. Объём нужен в кубических сантиметрах — \"\n                           \"например, 1598.\")\n        set_field(card_id, field, num, actor_id)\n        return True, \"Записано: %s\" % S.num(num)\n\n    if field == \"vin\":\n        vin = value.upper().replace(\" \", \"\")\n        ok, msg = S.check_vin(vin)\n        if not ok:\n            return False, \"VIN не принят: %s\" % msg\n        set_field(card_id, field, vin, actor_id)\n        return True, \"Записано: %s\" % vin\n\n    set_field(card_id, field, value, actor_id)\n    return True, \"Записано.\""
+        },
+        {
+          "end_lineno": 1178,
+          "kind": "FunctionDef",
+          "lineno": 1173,
+          "name": "remember_price",
+          "sha256": "0702c97d9efbfe65dd4750dcc00191d72e0f0d314cfe1804edb2fb439424a988",
+          "source": "def remember_price(card, actor_id):\n    \"\"\"Фиксирует цену за текущим этапом.\"\"\"\n    stage = S.stage_of(card.get(\"status\")) or 1\n    hist = price_history(card)\n    hist[str(stage)] = card.get(\"price_uah\")\n    set_field(card[\"id\"], \"price_history\", jdump(hist), actor_id)"
+        },
+        {
+          "end_lineno": 2875,
+          "kind": "AsyncFunctionDef",
+          "lineno": 2568,
+          "name": "catch_message",
+          "sha256": "2b02ec1cf0cc649618f88de40fbb3a8e37d325828b4e925c9b15dc75859a850c",
+          "source": "async def catch_message(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"CRM-VOICE-FILL-001: voice fills only the explicitly open card.\"\"\"\n    import asyncio\n    import time\n    import ai\n    import ai_fast_schema as fast\n    import ai_filter\n    import local_ocr\n\n    msg = update.effective_message\n    if not msg:\n        return\n    user_id = update.effective_user.id\n\n    wait = context.user_data.get(\"car_media_wait\")\n    if wait:\n        target = wait[\"target\"]\n        tag = \"\"\n        file_id = None\n        if msg.photo:\n            file_id = msg.photo[-1].file_id\n            if target in (\"photos\", \"condition_photos\"):\n                unique_id = getattr(msg.photo[-1], \"file_unique_id\", None) or file_id\n                _v166_result = _v165_spool_enqueue(\n                    wait[\"card_id\"], target, file_id, user_id, tag,\n                    unique_id=unique_id, message_id=msg.message_id)\n                _v166_session_ids = wait.setdefault(\"_fast_session_ids\", [])\n                state = _v166_result.get(\"state\")\n                if state == \"accepted\" and file_id not in _v166_session_ids:\n                    _v166_session_ids.append(file_id)\n                elif str(state).startswith(\"duplicate\"):\n                    wait[\"_fast_session_duplicates\"] = int(\n                        wait.get(\"_fast_session_duplicates\") or 0) + 1\n                elif state == \"limit\":\n                    wait[\"_fast_session_rejected\"] = int(\n                        wait.get(\"_fast_session_rejected\") or 0) + 1\n                _v165_schedule_progress(\n                    context, msg, wait[\"card_id\"], target, _v166_session_ids,\n                    wait.get(\"_fast_session_duplicates\", 0),\n                    wait.get(\"_fast_session_rejected\", 0))\n                raise ApplicationHandlerStop\n        elif msg.video:\n            file_id = msg.video.file_id\n            if target in (\"videos\", \"video_h\", \"video_v\"):\n                target = \"videos\"\n                slot = _orient(msg.video)\n                tag = {\"video_h\": \"гориз\", \"video_v\": \"вертик\"}.get(slot, \"\")\n        elif msg.video_note:\n            file_id = msg.video_note.file_id\n        elif msg.document:\n            file_id = msg.document.file_id\n        card = card_of(wait[\"card_id\"])\n        if not card:\n            context.user_data.pop(\"car_media_wait\", None)\n            return\n        if file_id:\n            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)\n            if answer:\n                await msg.reply_text(answer)\n            raise ApplicationHandlerStop\n        if msg.text and target == \"diag_report\":\n            pass\n        return\n\n    voice_object = msg.voice or msg.audio or msg.video_note\n    input_text = (msg.text or \"\").strip()\n    wait = context.user_data.get(\"car_wait\")\n    thinking = None\n    voice_elapsed = None\n\n    if voice_object:\n        active_id = wait.get(\"card_id\") if wait else context.user_data.get(\"car_voice_active\")\n        active_card = card_of(active_id) if active_id else None\n        if not active_card:\n            context.user_data.pop(\"car_last\", None)\n            context.user_data.pop(\"car_voice_active\", None)\n            await msg.reply_text(\n                \"Откройте нужную карточку автомобиля и повторите голосовое. \"\n                \"Новая карточка автоматически не создаётся.\"\n            )\n            raise ApplicationHandlerStop\n\n        chat_id = getattr(msg, \"chat_id\", None) or update.effective_chat.id\n        marker = \"%s:%s\" % (chat_id, msg.message_id)\n        seen = context.chat_data.get(\"crm_voice_seen\")\n        if not isinstance(seen, list):\n            seen = []\n            context.chat_data[\"crm_voice_seen\"] = seen\n        if marker in seen:\n            await msg.reply_text(\"Это голосовое уже обработано.\")\n            raise ApplicationHandlerStop\n        seen.append(marker)\n        del seen[:-20]\n        context.user_data.pop(\"voice_undo\", None)\n\n        started = time.monotonic()\n        hard_deadline = started + 4.65\n        thinking = await msg.reply_text(\"🎤 Распознаю, до 5 секунд...\")\n        if not ai.voice_enabled():\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\"Расшифровка голоса не настроена. Карточка не изменена.\")\n            raise ApplicationHandlerStop\n        try:\n            import crm_online_guard as _v168_guard\n            if not _v168_guard.circuit_allows(\"stt\"):\n                if marker in seen:\n                    seen.remove(marker)\n                await thinking.edit_text(\n                    \"Сервис распознавания восстанавливается. Карточка не изменена; повторите через 15 секунд.\")\n                raise ApplicationHandlerStop\n        except ApplicationHandlerStop:\n            raise\n        except Exception:\n            pass\n\n        if msg.voice:\n            file_id, filename = msg.voice.file_id, \"voice.ogg\"\n        elif msg.audio:\n            file_id, filename = msg.audio.file_id, \"audio.mp3\"\n        else:\n            file_id, filename = msg.video_note.file_id, \"video_note.mp4\"\n\n        async def download_voice(fid):\n            tg_file = await context.bot.get_file(fid)\n            return bytes(await tg_file.download_as_bytearray())\n\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio_bytes = await asyncio.wait_for(\n                download_voice(file_id), timeout=min(1.1, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            input_text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio_bytes, filename),\n                timeout=remaining,\n            )\n            input_text = (input_text or \"\").strip()\n        except asyncio.TimeoutError:\n            input_text = \"\"\n            log.warning(\"CRM voice timeout card=%s\", active_id)\n        except Exception as e:\n            input_text = \"\"\n            log.warning(\"CRM voice recognition failed card=%s error=%s\", active_id, e)\n        voice_elapsed = time.monotonic() - started\n        try:\n            import crm_online_guard as _v168_guard\n            _v168_guard.circuit_result(\"stt\", bool(input_text))\n            _v168_guard.record_timing(\n                \"crm_voice\", voice_elapsed, \"ok\" if input_text else \"empty\",\n                card_id=active_id)\n        except Exception:\n            pass\n        if not input_text:\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\n                \"Голос не распознан за 5 секунд. Карточка не изменена; повторите короче.\"\n            )\n            raise ApplicationHandlerStop\n\n    if not wait:\n        cid = (context.user_data.get(\"car_voice_active\") if voice_object\n               else context.user_data.get(\"car_last\"))\n        card = card_of(cid) if cid else None\n        if card and voice_object:\n            schema_allowed = set(fast.car_fields(ai_filter))\n            card = card_of(card[\"id\"]) or card\n            correction = _v168_is_correction(input_text)\n            if correction:\n                allowed = _v168_named_fields(input_text, schema_allowed)\n            else:\n                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}\n            data = {}\n            if allowed:\n                data.update(local_ocr.fields_from_text(input_text, allowed))\n                data.update(fast.fast_text_data(input_text, ai_filter))\n                if data:\n                    data = fast.clean_car(fast.parsed_from_data(data), ai_filter, \"\")\n                data = {key: value for key, value in (data or {}).items()\n                        if key in allowed and value not in (None, \"\", [])}\n                data.update(_v167_voice_explicit_fields(input_text, allowed))\n            changes, skipped = voice_change_plan(card, data, allowed, correction)\n            applied = []\n            for field, old, new in changes:\n                try:\n                    ok, reason = _v168_cas_write(\n                        card[\"id\"], field, old, new, user_id, correction)\n                    if ok:\n                        applied.append((field, old, new))\n                    elif reason in (\"filled\", \"conflict\"):\n                        skipped.append(field)\n                except Exception as e:\n                    log.warning(\"CRM voice write failed card=%s field=%s error=%s\",\n                                card[\"id\"], field, e)\n\n            number = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n            if applied:\n                token = str(msg.message_id)\n                context.user_data[\"voice_undo\"] = {\n                    \"card_id\": card[\"id\"], \"token\": token,\n                    \"changes\": [{\"field\": f, \"old\": old, \"new\": new}\n                                for f, old, new in applied],\n                }\n                value_names = {\n                    \"fwd\": \"передний\", \"rwd\": \"задний\", \"4wd\": \"полный\",\n                    \"automatic\": \"автомат\", \"manual\": \"механика\",\n                    \"gasoline\": \"бензин\", \"diesel\": \"дизель\",\n                    \"hybrid\": \"гибрид\", \"electric\": \"электро\", \"LPG\": \"газ\",\n                }\n                lines = []\n                for field, _, value in applied:\n                    shown = value_names.get(str(value), str(value))\n                    lines.append(\"• %s — %s\" % (LABELS_ALL.get(field, field), shown))\n                await thinking.edit_text(\n                    \"✅ %s дополнена:\\n%s\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\"\n                    % (number, \"\\n\".join(lines), voice_elapsed or 0.0),\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"↩️ Отменить изменение\",\n                                              callback_data=\"car_vundo:%d:%s\" % (\n                                                  card[\"id\"], token))],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % card[\"id\"])],\n                    ]),\n                )\n            elif data and skipped and not override:\n                await thinking.edit_text(\n                    \"%s: распознанные поля уже заполнены. \"\n                    \"Для замены скажите: «измени …». Новая карточка не создана.\" % number\n                )\n            elif data:\n                await thinking.edit_text(\"%s: новых значений нет. Карточка не изменена.\" % number)\n            else:\n                await thinking.edit_text(\n                    \"Не распознал поле CRM. Назовите поле и значение, например: \"\n                    \"«привод передний». Карточка не изменена.\"\n                )\n            raise ApplicationHandlerStop\n\n        if card:\n            done = await auto_catch(msg, card, user_id, context)\n            if done:\n                raise ApplicationHandlerStop\n\n    wait = context.user_data.get(\"car_wait\")\n    if wait and input_text and wait.get(\"client\"):\n        context.user_data.pop(\"car_wait\", None)\n        card = card_of(wait[\"card_id\"])\n        klient = client_of(card)\n        if klient:\n            db.update_card_field(\"clients\", klient[\"id\"], wait[\"field\"],\n                                 input_text, user_id)\n        answer = \"Записано.\"\n        if voice_object:\n            answer += \" · %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if thinking:\n            await thinking.edit_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        else:\n            await msg.reply_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        raise ApplicationHandlerStop\n\n    if wait and input_text:\n        context.user_data.pop(\"car_wait\", None)\n        field = wait[\"field\"]\n        nizhny = input_text.lower()\n        if field not in (\"price_uah\", \"condition_text\", \"diag_text\", \"diag_link\") \\\n                and (\"$\" in nizhny or \"цена\" in nizhny or \"стоимость\" in nizhny):\n            field = \"price_uah\"\n        elif field == \"eta_days\" and _re.search(r\"\\d{4,}\", nizhny):\n            field = \"price_uah\"\n        ok, answer = apply_value(wait[\"card_id\"], field, input_text, user_id)\n        card = card_of(wait[\"card_id\"])\n        if ok and field == \"price_uah\" and card:\n            remember_price(card, user_id)\n            answer = \"%s · цена этапа «%s»: %s\" % (\n                card.get(\"auto_number\") or \"\", S.status_label(card.get(\"status\")),\n                S.money(_int(card.get(\"price_uah\"))))\n        rows = [[InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % wait[\"card_id\"])]]\n        if ok and field in (\"condition_text\", \"diag_text\"):\n            zapisano = input_text\n            punktov = len([s for s in zapisano.split(\"\\n\") if s.strip()])\n            answer = (\"Описание сохранено · %d пунктов, %d знаков\\n\\n%s\"\n                      % (punktov, len(zapisano), zapisano))\n            rows.insert(0, [InlineKeyboardButton(\n                \"Изменить снова\",\n                callback_data=\"car_setf:%d:condition_text\" % wait[\"card_id\"])])\n        if voice_object:\n            answer += \"\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if not ok:\n            wait[\"field\"] = field\n            context.user_data[\"car_wait\"] = wait\n            rows.insert(0, [InlineKeyboardButton(\n                \"Отмена\", callback_data=\"car_open:%d\" % wait[\"card_id\"])])\n        if thinking:\n            await thinking.edit_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        else:\n            await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        raise ApplicationHandlerStop"
+        }
+      ],
+      "path": "/home/Carix/cars_ui.py",
+      "sha256": "862baea2ca0794f5e0d83bc04169f6d2fdec401f86f384ef4376e373c02a776b",
+      "size": 164431
+    },
+    "db.py": {
+      "definitions": [
+        {
+          "end_lineno": 94,
+          "kind": "FunctionDef",
+          "lineno": 86,
+          "name": "_ua_lock3_connect",
+          "sha256": "ae4460327802937cf7ad1e631bcb84f15ee68eec1aa328e9fde83f914dbfcd92",
+          "source": "    def _ua_lock3_connect(*a, **kw):\n        if len(a) < 2 and \"timeout\" not in kw:\n            kw[\"timeout\"] = 30.0\n        con = _ua_lock3_original_connect(*a, **kw)\n        try:\n            con.execute(\"PRAGMA busy_timeout=30000\")\n        except Exception:\n            pass\n        return con"
+        },
+        {
+          "end_lineno": 311,
+          "kind": "ClassDef",
+          "lineno": 189,
+          "name": "Soedinenie",
+          "sha256": "8f2ea10d7ef423768646706a07ec14c9b793e74d070e6cab85179e5bbc225823",
+          "source": "class Soedinenie(sqlite3.Connection):\n    \"\"\"Own the process queue only while a write transaction is active.\"\"\"\n\n    def _pered_zapisyu(self, sql):\n        if not _ua_sql_pishet(sql) or getattr(self, \"_ua_zapis_v_ocheredi\", False):\n            return False\n        vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)\n        if not vzyata:\n            raise sqlite3.OperationalError(\"CRM thread queue timeout\")\n        self._ochered_vzyata = True\n        try:\n            _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)\n            self._fayl_zaregistrirovan = True\n            self._ua_zapis_v_ocheredi = True\n            return True\n        except Exception:\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n            raise\n\n    def _otpustit(self):\n        self._ua_zapis_v_ocheredi = False\n        if getattr(self, \"_fayl_zaregistrirovan\", False):\n            self._fayl_zaregistrirovan = False\n            try:\n                _ua_fayl_otpustit()\n            except Exception:\n                pass\n        if getattr(self, \"_ochered_vzyata\", False):\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n\n    def cursor(self, factory=None):\n        return sqlite3.Connection.cursor(self, factory or _UaKursor)\n\n    def execute(self, sql, parameters=()):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.execute(self, sql, parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executemany(self, sql, seq_of_parameters):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.executemany(self, sql, seq_of_parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executescript(self, sql_script):\n        novaya = self._pered_zapisyu(sql_script)\n        try:\n            return sqlite3.Connection.executescript(self, sql_script)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def _commit_s_povtorom(self):\n        import time as _ua_time\n\n        for attempt in range(5):\n            try:\n                sqlite3.Connection.commit(self)\n                return\n            except sqlite3.OperationalError as exc:\n                text = str(exc).casefold()\n                if \"locked\" not in text and \"busy\" not in text:\n                    raise\n                if attempt == 4:\n                    raise\n                _ua_time.sleep(0.15 * (2 ** attempt))\n\n    def commit(self):\n        try:\n            self._commit_s_povtorom()\n        except Exception:\n            try:\n                sqlite3.Connection.rollback(self)\n            finally:\n                self._otpustit()\n            raise\n        self._otpustit()\n\n    def rollback(self):\n        try:\n            return sqlite3.Connection.rollback(self)\n        finally:\n            self._otpustit()\n\n    def close(self):\n        try:\n            if self.in_transaction:\n                sqlite3.Connection.rollback(self)\n            sqlite3.Connection.close(self)\n        finally:\n            self._otpustit()\n\n    def __exit__(self, tip, znachenie, sled):\n        try:\n            if tip is None:\n                self.commit()\n            else:\n                self.rollback()\n        finally:\n            try:\n                self.close()\n            except Exception:\n                self._otpustit()\n        return False\n\n    def __del__(self):\n        self._otpustit()"
+        },
+        {
+          "end_lineno": 327,
+          "kind": "FunctionDef",
+          "lineno": 315,
+          "name": "connect",
+          "sha256": "3257e05c559e7c2d6d39ba0ca1b66818f6283909a411bba695d21517b29afe15",
+          "source": "def connect():\n    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)\n    conn.row_factory = sqlite3.Row\n    # Setup pragmas must not hold the transaction queue for a long-lived reader.\n    try:\n        sqlite3.Connection.execute(conn, \"PRAGMA journal_mode=DELETE\")\n    except Exception:\n        pass\n    sqlite3.Connection.execute(\n        conn, \"PRAGMA busy_timeout=%d\" % (ZAMOK_OZHIDANIE * 1000)\n    )\n    sqlite3.Connection.execute(conn, \"PRAGMA foreign_keys=ON\")\n    return conn"
+        },
+        {
+          "end_lineno": 497,
+          "kind": "FunctionDef",
+          "lineno": 486,
+          "name": "log_action",
+          "sha256": "a3df565d695dbd57cd2462030e503c42dc64b671482b731d8ae1c02f769d7af3",
+          "source": "def log_action(actor_id, action, entity_type=None, entity_id=None,\n               field=None, old_value=None, new_value=None):\n    \"\"\"Пишем каждое значимое действие. Историю задним числом не восстановить,\n    поэтому журнал ведётся с первого дня.\"\"\"\n    with connect() as c:\n        c.execute(\n            \"INSERT INTO audit (actor_id, action, entity_type, entity_id, field,\"\n            \" old_value, new_value, created_at) VALUES (?,?,?,?,?,?,?,?)\",\n            (actor_id, action, entity_type, entity_id, field,\n             str(old_value) if old_value is not None else None,\n             str(new_value) if new_value is not None else None, now()),\n        )"
+        },
+        {
+          "end_lineno": 742,
+          "kind": "FunctionDef",
+          "lineno": 735,
+          "name": "update_card_field",
+          "sha256": "1749f0eef8fc799ed5b08bd6a4482fad3126199d8c40207b76143b263349a1b1",
+          "source": "def update_card_field(table: str, card_id: int, field: str, value, actor_id: int):\n    \"\"\"Каждая правка поля попадает в журнал со старым и новым значением.\"\"\"\n    old = get_card(table, card_id)\n    old_value = old.get(field) if old else None\n    with connect() as c:\n        c.execute(f\"UPDATE {table} SET {field}=?, updated_at=? WHERE id=?\",\n                  (value, now(), card_id))\n    log_action(actor_id, \"card_edit\", table, card_id, field, old_value, value)"
+        }
+      ],
+      "path": "/home/Carix/db.py",
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "size": 34721
+    },
+    "trace_zhurnal.py": {
+      "definitions": [
+        {
+          "end_lineno": 293,
+          "kind": "ClassDef",
+          "lineno": 254,
+          "name": "_UaSoedinenie",
+          "sha256": "fe87dae1c69dd5a27d78f10276e8b56a4e0ecc822825618932fe1de13149dc95",
+          "source": "    class _UaSoedinenie(sqlite3.Connection):\n        def __init__(self, *a, **kw):\n            sqlite3.Connection.__init__(self, *a, **kw)\n            self._ua_baza = os.path.basename(str(a[0] if a else kw.get(\"database\", \"?\")))\n            self._ua_svoya = CEL in self._ua_baza\n            self._ua_id = _novyy_id()\n            self._ua_t0 = time.time()\n            self._ua_kto = _kto(3)\n            if self._ua_svoya:\n                _dobavit(self._ua_id, self._ua_kto, self._ua_baza, self)\n                _zapis(\"OPEN \" + self._ua_id, 0.0, self._ua_baza + \" | \" + self._ua_kto)\n\n        def commit(self):\n            t0 = time.time()\n            busy = \"?\"\n            if self._ua_svoya:\n                try:\n                    busy = self.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n                except Exception:\n                    pass\n            try:\n                sqlite3.Connection.commit(self)\n            except Exception as e:\n                d = time.time() - t0\n                _zapis(\"COMMIT_FAIL\", d, self._ua_baza + \" | \" + self._ua_kto + \" | \" + repr(e))\n                if self._ua_svoya:\n                    otchet_o_sboe(d, e, self._ua_kto, busy)\n                raise\n            d = time.time() - t0\n            if self._ua_svoya:\n                _zapis(\"COMMIT_OK \" + self._ua_id, d, self._ua_kto)\n\n        def close(self):\n            try:\n                if self._ua_svoya:\n                    _ubrat(self._ua_id)\n                    _zapis(\"CLOSE \" + self._ua_id, time.time() - self._ua_t0, self._ua_kto)\n            except Exception:\n                pass\n            sqlite3.Connection.close(self)"
+        },
+        {
+          "end_lineno": 304,
+          "kind": "FunctionDef",
+          "lineno": 295,
+          "name": "_ua_connect",
+          "sha256": "068a1c1bba0712d11fdcecd753ad234b4391f120f28761be294c7fd668db0fe9",
+          "source": "    def _ua_connect(*a, **kw):\n        if len(a) < 2 and \"timeout\" not in kw:\n            kw[\"timeout\"] = 30.0\n        kw.setdefault(\"factory\", _UaSoedinenie)\n        con = _originalnyy_connect(*a, **kw)\n        try:\n            con.execute(\"PRAGMA busy_timeout=30000\")\n        except Exception:\n            pass\n        return con"
+        },
+        {
+          "end_lineno": 362,
+          "kind": "ClassDef",
+          "lineno": 320,
+          "name": "_Obertka",
+          "sha256": "266ae6101db9477640bf61a8145e437bc8079eff2db016fbefd46a2f02fb5d66",
+          "source": "class _Obertka(object):\n    def __init__(self, vnutri, kto):\n        object.__setattr__(self, \"_ua_vnutri\", vnutri)\n        object.__setattr__(self, \"_ua_kto\", kto)\n        object.__setattr__(self, \"_ua_id\", _novyy_id())\n        object.__setattr__(self, \"_ua_t0\", time.time())\n        object.__setattr__(self, \"_ua_busy\", \"?\")\n        _dobavit(self._ua_id, kto, \"db.connect\")\n        _zapis(\"OPEN \" + self._ua_id, 0.0, \"db.connect | \" + kto)\n\n    def __enter__(self):\n        c = self._ua_vnutri.__enter__()\n        try:\n            _privyazat(self._ua_id, c)\n            bylo = c.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n            if int(bylo) < 30000:\n                c.execute(\"PRAGMA busy_timeout=30000\")\n                _zapis(\"BUSY_ISPRAVLEN\", 0.0, str(bylo) + \" -> 30000 | \" + self._ua_kto)\n            stalo = c.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n            object.__setattr__(self, \"_ua_busy\", stalo)\n        except Exception:\n            pass\n        return c\n\n    def __exit__(self, *a):\n        t0 = time.time()\n        _zapis(\"COMMIT_START \" + self._ua_id, 0.0, \"busy_timeout=\" + str(self._ua_busy) + \" | \" + self._ua_kto)\n        try:\n            r = self._ua_vnutri.__exit__(*a)\n        except Exception as e:\n            d = time.time() - t0\n            _ubrat(self._ua_id)\n            _zapis(\"COMMIT_FAIL\", d, \"db.connect | \" + self._ua_kto + \" | \" + repr(e))\n            otchet_o_sboe(d, e, self._ua_kto, self._ua_busy)\n            raise\n        d = time.time() - t0\n        _ubrat(self._ua_id)\n        _zapis(\"COMMIT_OK \" + self._ua_id, d, self._ua_kto)\n        _zapis(\"CLOSE \" + self._ua_id, time.time() - self._ua_t0, self._ua_kto)\n        return r\n\n    def __getattr__(self, imya):\n        return getattr(object.__getattribute__(self, \"_ua_vnutri\"), imya)"
+        },
+        {
+          "end_lineno": 381,
+          "kind": "FunctionDef",
+          "lineno": 365,
+          "name": "podklyuchit",
+          "sha256": "645119fb99099676eaad124f5f3f9860cedf3a1d23ee67e72bfd65eb2a36d183",
+          "source": "def podklyuchit(g):\n    try:\n        ishodnyy = g.get(\"connect\")\n        if not callable(ishodnyy) or getattr(ishodnyy, \"_ua_trace\", False):\n            return False\n\n        def connect_s_trassoy(*a, **kw):\n            return _Obertka(ishodnyy(*a, **kw), _kto(3))\n\n        connect_s_trassoy._ua_trace = True\n        connect_s_trassoy._ua_ishodnyy = ishodnyy\n        g[\"connect\"] = connect_s_trassoy\n        _zapis(\"PODKLYUCHEN\", 0.0, \"db.connect обёрнут (V2)\")\n        return True\n    except Exception as e:\n        _zapis(\"PODKLYUCHENIE_FAIL\", 0.0, repr(e))\n        return False"
+        },
+        {
+          "end_lineno": 372,
+          "kind": "FunctionDef",
+          "lineno": 371,
+          "name": "connect_s_trassoy",
+          "sha256": "56a8031ca910a6df0d6d101182c133e40eeed5584d8634b9f4df926aaa39e3de",
+          "source": "        def connect_s_trassoy(*a, **kw):\n            return _Obertka(ishodnyy(*a, **kw), _kto(3))"
+        }
+      ],
+      "path": "/home/Carix/trace_zhurnal.py",
+      "sha256": "fc4b95fc749f3d9b785ce69bfce2705b11ade95a560d6fbd901b50de1423d086",
+      "size": 14871
+    }
+  },
+  "task_id": "task_070"
+}
