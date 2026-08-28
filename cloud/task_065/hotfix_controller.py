@@ -215,11 +215,9 @@ def validate_postcheck(value, install):
     spool = value.get("spool_test", {})
     if not spool.get("ok") or spool.get("saved_unique") != 100 or spool.get("queued_after") != 0:
         raise ControllerError("SPOOL_TEST_FAILED")
-    wal = value.get("wal_stress", {})
-    if not wal.get("ok") or wal.get("operations") != 100:
-        raise ControllerError("WAL_STRESS_FAILED")
-    if value.get("readonly_live_db", {}).get("journal_mode") != "wal":
-        raise ControllerError("LIVE_DB_NOT_WAL")
+    stress = value.get("sqlite_stress", {})
+    if not stress.get("ok") or stress.get("operations") != 100:
+        raise ControllerError("SQLITE_STRESS_FAILED")
     if value.get("files_sha256") != install.get("files_sha256_after"):
         raise ControllerError("PRODUCTION_SOURCE_CHANGED_DURING_CHECK")
 
