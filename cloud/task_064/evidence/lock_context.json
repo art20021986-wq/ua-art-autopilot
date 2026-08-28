@@ -16,20 +16,20 @@
       "context": {
         "definitions": [
           {
-            "end_lineno": 138,
+            "end_lineno": 311,
             "kind": "ClassDef",
-            "lineno": 104,
+            "lineno": 189,
             "name": "Soedinenie",
-            "sha256": "591ef89051b168efe9f122e917e8c54eaff7ba88058ac59977801747d3484b5e",
-            "source": "class Soedinenie(sqlite3.Connection):\n    \"\"\"Берёт очередь при открытии, отпускает при закрытии.\n\n    Выход из with: commit или rollback, затем обязательный close.\n    \"\"\"\n\n    def _otpustit(self):\n        if getattr(self, \"_ochered_vzyata\", False):\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n\n    def close(self):\n        try:\n            sqlite3.Connection.close(self)\n        finally:\n            self._otpustit()\n\n    def __exit__(self, tip, znachenie, sled):\n        try:\n            if tip is None:\n                self.commit()\n            else:\n                self.rollback()\n        finally:\n            try:\n                self.close()\n            except Exception:\n                self._otpustit()\n        return False\n\n    def __del__(self):\n        self._otpustit()"
+            "sha256": "8f2ea10d7ef423768646706a07ec14c9b793e74d070e6cab85179e5bbc225823",
+            "source": "class Soedinenie(sqlite3.Connection):\n    \"\"\"Own the process queue only while a write transaction is active.\"\"\"\n\n    def _pered_zapisyu(self, sql):\n        if not _ua_sql_pishet(sql) or getattr(self, \"_ua_zapis_v_ocheredi\", False):\n            return False\n        vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)\n        if not vzyata:\n            raise sqlite3.OperationalError(\"CRM thread queue timeout\")\n        self._ochered_vzyata = True\n        try:\n            _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)\n            self._fayl_zaregistrirovan = True\n            self._ua_zapis_v_ocheredi = True\n            return True\n        except Exception:\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n            raise\n\n    def _otpustit(self):\n        self._ua_zapis_v_ocheredi = False\n        if getattr(self, \"_fayl_zaregistrirovan\", False):\n            self._fayl_zaregistrirovan = False\n            try:\n                _ua_fayl_otpustit()\n            except Exception:\n                pass\n        if getattr(self, \"_ochered_vzyata\", False):\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n\n    def cursor(self, factory=None):\n        return sqlite3.Connection.cursor(self, factory or _UaKursor)\n\n    def execute(self, sql, parameters=()):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.execute(self, sql, parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executemany(self, sql, seq_of_parameters):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.executemany(self, sql, seq_of_parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executescript(self, sql_script):\n        novaya = self._pered_zapisyu(sql_script)\n        try:\n            return sqlite3.Connection.executescript(self, sql_script)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def _commit_s_povtorom(self):\n        import time as _ua_time\n\n        for attempt in range(5):\n            try:\n                sqlite3.Connection.commit(self)\n                return\n            except sqlite3.OperationalError as exc:\n                text = str(exc).casefold()\n                if \"locked\" not in text and \"busy\" not in text:\n                    raise\n                if attempt == 4:\n                    raise\n                _ua_time.sleep(0.15 * (2 ** attempt))\n\n    def commit(self):\n        try:\n            self._commit_s_povtorom()\n        except Exception:\n            try:\n                sqlite3.Connection.rollback(self)\n            finally:\n                self._otpustit()\n            raise\n        self._otpustit()\n\n    def rollback(self):\n        try:\n            return sqlite3.Connection.rollback(self)\n        finally:\n            self._otpustit()\n\n    def close(self):\n        try:\n            if self.in_transaction:\n                sqlite3.Connection.rollback(self)\n            sqlite3.Connection.close(self)\n        finally:\n            self._otpustit()\n\n    def __exit__(self, tip, znachenie, sled):\n        try:\n            if tip is None:\n                self.commit()\n            else:\n                self.rollback()\n        finally:\n            try:\n                self.close()\n            except Exception:\n                self._otpustit()\n        return False\n\n    def __del__(self):\n        self._otpustit()"
           },
           {
-            "end_lineno": 164,
+            "end_lineno": 327,
             "kind": "FunctionDef",
-            "lineno": 141,
+            "lineno": 315,
             "name": "connect",
-            "sha256": "40daadeb50ac5ffdb79918c4c64b0fcabcf91ec2d657e2a47d46c41e3eb2c3a8",
-            "source": "def connect():\n    vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)\n    try:\n        conn = sqlite3.connect(DB_FILE, timeout=OZHIDANIE_SEK, factory=Soedinenie)\n    except Exception:\n        if vzyata:\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n        raise\n    conn._ochered_vzyata = vzyata\n    conn.row_factory = sqlite3.Row\n    # WAL на сетевом диске PythonAnywhere ломает блокировки - только DELETE\n    try:\n        conn.execute(\"PRAGMA journal_mode=DELETE\")\n    except Exception:\n        pass\n    try:\n        conn.execute(\"PRAGMA busy_timeout=%d\" % (OZHIDANIE_SEK * 1000))\n    except Exception:\n        pass\n    conn.execute(\"PRAGMA foreign_keys=ON\")\n    return conn"
+            "sha256": "3257e05c559e7c2d6d39ba0ca1b66818f6283909a411bba695d21517b29afe15",
+            "source": "def connect():\n    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)\n    conn.row_factory = sqlite3.Row\n    # Setup pragmas must not hold the transaction queue for a long-lived reader.\n    try:\n        sqlite3.Connection.execute(conn, \"PRAGMA journal_mode=DELETE\")\n    except Exception:\n        pass\n    sqlite3.Connection.execute(\n        conn, \"PRAGMA busy_timeout=%d\" % (ZAMOK_OZHIDANIE * 1000)\n    )\n    sqlite3.Connection.execute(conn, \"PRAGMA foreign_keys=ON\")\n    return conn"
           }
         ],
         "globals": [
@@ -52,8 +52,8 @@
         ]
       },
       "path": "/home/Carix/db.py",
-      "sha256": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
-      "size": 29515
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "size": 34721
     },
     "run_all.py": {
       "context": [
@@ -69,12 +69,12 @@
           "kind": "AsyncFunctionDef",
           "lineno": 75,
           "name": "run_bots",
-          "source": "async def run_bots():\n    db.init_db()\n    _v144_zhurnal(\"база готова, собираем ботов\")\n\n    # UA-V144 · обработчик диагностики живёт внутри этого процесса\n    try:\n        import kadry_diagnostiki as _kd144\n        _v144_zhurnal(\"обработчик диагностики: поднят\" if _kd144.zapustit_iz_run_all()\n                      else \"обработчик диагностики: уже работает в другом процессе\")\n    except Exception as _e144:\n        _v144_zhurnal(\"обработчик диагностики НЕ поднят: %r\" % _e144)\n\n    apps = []\n\n    # --- Клиентский бот ---\n    try:\n        import lead_bot\n        client_app = lead_bot.build_application()\n        if client_app:\n            apps.append((\"клиентский\", client_app))\n    except Exception as e:\n        logging.error(f\"Клиентский бот не собрался: {e}\", exc_info=True)\n\n    # --- Внутренний бот ---\n    try:\n        import team_bot\n        team_app = team_bot.build_application()\n        if team_app:\n            apps.append((\"внутренний\", team_app))\n    except Exception as e:\n        logging.error(f\"Внутренний бот не собрался: {e}\", exc_info=True)\n\n    if not apps:\n        logging.error(\"Ни один бот не запустился. Проверьте файлы с токенами.\")\n        return\n\n    for name, app in apps:\n        await app.initialize()\n        await app.start()\n        await app.updater.start_polling(drop_pending_updates=True)\n        logging.info(f\"Запущен бот: {name}\")\n        _v144_zhurnal(\"запущен бот: %s\" % name)\n\n    logging.info(f\"Всего работает ботов: {len(apps)}\")\n    _v144_zhurnal(\"всего работает ботов: %d — вход в ожидание\" % len(apps))\n\n    try:\n        # Держим процесс живым\n        while True:\n            await asyncio.sleep(3600)\n    finally:\n        _v144_zhurnal(\"ВЫХОД из ожидания — боты останавливаются\")\n        for name, app in apps:\n            try:\n                await app.updater.stop()\n                await app.stop()\n                await app.shutdown()\n                logging.info(f\"Остановлен бот: {name}\")\n            except Exception as e:\n                logging.warning(f\"Ошибка остановки {name}: {e}\")"
+          "source": "async def run_bots():\n    db.init_db()\n    _v144_zhurnal(\"база готова, собираем ботов\")\n\n    # UA-V144 · обработчик диагностики живёт внутри этого процесса\n    try:\n        import kadry_diagnostiki as _kd144\n        _v144_zhurnal(\"обработчик диагностики: поднят\" if _kd144.zapustit_iz_run_all()\n                      else \"обработчик диагностики: уже работает в другом процессе\")\n    except Exception as _e144:\n        _v144_zhurnal(\"обработчик диагностики НЕ поднят: %r\" % _e144)\n\n    apps = []\n\n    # --- Клиентский бот ---\n    try:\n        import lead_bot\n        client_app = lead_bot.build_application()\n        if client_app:\n            apps.append((\"клиентский\", client_app))\n    except Exception as e:\n        logging.error(f\"Клиентский бот не собрался: {e}\", exc_info=True)\n\n    # --- Внутренний бот ---\n    try:\n        import team_bot\n        team_app = team_bot.build_application()\n        if team_app:\n            apps.append((\"внутренний\", team_app))\n    except Exception as e:\n        logging.error(f\"Внутренний бот не собрался: {e}\", exc_info=True)\n\n    if not apps:\n        logging.error(\"Ни один бот не запустился. Проверьте файлы с токенами.\")\n        return\n\n    for name, app in apps:\n        await app.initialize()\n        await app.start()\n        await app.updater.start_polling(drop_pending_updates=False)\n        logging.info(f\"Запущен бот: {name}\")\n        _v144_zhurnal(\"запущен бот: %s\" % name)\n\n    logging.info(f\"Всего работает ботов: {len(apps)}\")\n    _v144_zhurnal(\"всего работает ботов: %d — вход в ожидание\" % len(apps))\n\n    try:\n        # Держим процесс живым\n        while True:\n            await asyncio.sleep(3600)\n    finally:\n        _v144_zhurnal(\"ВЫХОД из ожидания — боты останавливаются\")\n        for name, app in apps:\n            try:\n                await app.updater.stop()\n                await app.stop()\n                await app.shutdown()\n                logging.info(f\"Остановлен бот: {name}\")\n            except Exception as e:\n                logging.warning(f\"Ошибка остановки {name}: {e}\")"
         }
       ],
       "path": "/home/Carix/run_all.py",
-      "sha256": "7deb18698f792b61fd734b36451296343ec528e15ccd86798d6cbc4a7a75eca5",
-      "size": 5822
+      "sha256": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+      "size": 5823
     },
     "start_safe.py": {
       "context": [
@@ -191,34 +191,6 @@
   },
   "mode": "READ_ONLY_LOCK_CONTEXT",
   "production_touched": false,
-  "schedules": [
-    {
-      "command": "python3.10 /home/Carix/avto.py",
-      "description": "",
-      "enabled": true,
-      "hour": null,
-      "id_sha256": "f670917b5e16efe7c7ad16caceeea29e10bb423aa64ff0d88f865f06243f441b",
-      "interval": "hourly",
-      "minute": 10
-    },
-    {
-      "command": "/home/Carix/cikl2.py",
-      "description": "",
-      "enabled": true,
-      "hour": null,
-      "id_sha256": "bc058a2a4f753be3c5176052259b637a2f1c63ad4f238e56516a39a1a23681d6",
-      "interval": "hourly",
-      "minute": 35
-    },
-    {
-      "command": "python3.10 /home/Carix/poryadok.py",
-      "description": "",
-      "enabled": true,
-      "hour": null,
-      "id_sha256": "00d07dd67494b8be7834ba938440797c5bc3364f21346c2c13d5ff9cc6f09c63",
-      "interval": "hourly",
-      "minute": 50
-    }
-  ],
+  "schedules": [],
   "task_id": "task_064"
 }
