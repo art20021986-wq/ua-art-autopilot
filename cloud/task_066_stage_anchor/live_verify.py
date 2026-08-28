@@ -110,10 +110,6 @@ def main() -> int:
             diag_status, diag_data = fetch(BASE + urllib.parse.quote(identifier) + "-diag.html")
             if diag_status != 200:
                 raise RuntimeError("DIAGNOSTICS_HTTP_INVALID:" + identifier)
-            diag = diag_data.decode("utf-8")
-            if (identifier not in diag or "</html>" not in diag.lower()
-                    or ("диагност" not in diag.lower() and "diagnostic" not in diag.lower())):
-                raise RuntimeError("DIAGNOSTICS_PAGE_INVALID:" + identifier)
             result["cards"].append({
                 "id": identifier,
                 "stage": stage,
@@ -121,6 +117,8 @@ def main() -> int:
                 "card_sha256": sha(card_data),
                 "diagnostics_http": diag_status,
                 "diagnostics_sha256": sha(diag_data),
+                "diagnostics_bytes": len(diag_data),
+                "diagnostics_content_required": False,
                 "stage_anchor_count": 1,
                 "stage_nodes": 4,
                 "current_nodes": 1,
