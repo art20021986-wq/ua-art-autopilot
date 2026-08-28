@@ -1,0 +1,98 @@
+name: task061-crm-ai-card
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task061_crm_ai_card.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task061-crm-ai-card
+  cancel-in-progress: false
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Verify CRM-AI-CARD-001 contract
+        shell: bash
+        run: |
+          python3 -m py_compile \
+            cloud/task_061/local_ocr.py \
+            cloud/task_061/patch_payload.py \
+            cloud/task_061/patch_installer.py \
+            cloud/task_061/install_controller.py \
+            cloud/task_061/test_contract.py
+          PYTHONPATH=cloud/task_061 python3 cloud/task_061/test_contract.py
+          python3 - <<'PY'
+          from cloud.task_061 import local_ocr, patch_payload
+          source = patch_payload.RUN_AI_DRAFT_SOURCE
+          assert 'hard_deadline = started + 15.0' in source
+          assert 'Новая карточка открыта' in source
+          assert 'Сохранить карточку' in source
+          assert 'ai.parse_image' not in source
+          assert 'ai.parse_message' not in source
+          assert 'сотруднику' not in source.casefold()
+          assert 'передал менеджеру' not in source.casefold()
+          assert local_ocr.DEFAULT_PHOTO_SECONDS == 13.5
+          print('CRM_AI_CARD_001_CONTRACT_PASS')
+          PY
+
+      - name: Install and restart production CRM bot
+        id: deploy
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_061/install_controller.py
+
+      - name: Commit bounded installation evidence
+        shell: bash
+        run: |
+          python3 -m json.tool cloud/task_061/evidence/install.json >/dev/null
+          git add -- \
+            cloud/task_061/evidence/install.json \
+            cloud/task_061/INSTALL_REPORT.md \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          git config user.name 'task061-crm-ai-card'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_061: record CRM-AI-CARD-001 installation'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              for path in "${conflicts[@]}"; do
+                case "$path" in
+                  cloud/latest_status.md|cloud/owner_reply.md)
+                    git checkout --theirs -- "$path"
+                    git add -- "$path"
+                    ;;
+                  *)
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              GIT_EDITOR=true git rebase --continue || exit 1
+            fi
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 3))
+          done
+
+      - name: Enforce installation result
+        if: steps.deploy.outcome != 'success'
+        run: exit 1
