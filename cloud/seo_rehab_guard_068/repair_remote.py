@@ -39,6 +39,7 @@ DRY_RUN_RECEIPT_PATH = SAFE_ROOT + "/dry_run_receipt.json"
 ROLLBACK_RECEIPT_PATH = SAFE_ROOT + "/rollback_receipt.json"
 SOURCE_ROLLBACK_RECEIPT_PATH = SAFE_ROOT + "/source_rollback_receipt.json"
 LOCK_PATH = ROOT + "/.seo_rehab_guard_068.lock"
+TASK068_LOCK_PATH = ROOT + "/.task068_ferry_vin.lock"
 MAX_BYTES = 24 * 1024 * 1024
 ORIGIN = "https://www.uaart.com.ua"
 REQUIRED_CTA = "Задаток 500 $"
@@ -932,7 +933,11 @@ def main() -> int:
         self_test()
         return 0
     os.makedirs(SAFE_ROOT, mode=0o700, exist_ok=True)
-    with open(LOCK_PATH, "a+b") as lock:
+    # Serialize every read/write phase against the approved card-generator
+    # rehabilitation.  That workflow owns TASK068_LOCK_PATH; taking it first
+    # prevents a mixed source inventory without changing or stopping its run.
+    with open(TASK068_LOCK_PATH, "a+b") as task068_lock, open(LOCK_PATH, "a+b") as lock:
+        fcntl.flock(task068_lock, fcntl.LOCK_EX)
         fcntl.flock(lock, fcntl.LOCK_EX)
         if args.dry_run:
             try:
