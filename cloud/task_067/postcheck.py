@@ -356,6 +356,13 @@ def source_checks():
                             and "PRAGMA busy_timeout=450" in sources["db.py"]),
         "db_field_durable_queue": ("enqueue_field_update" in sources["db.py"]
                                    and "FIELD_SPOOL_PATH" in sources["crm_online_guard.py"]),
+        "guard_latency_percentiles": ("latency_seconds" in sources["crm_online_guard.py"]
+                                      and '"p95"' in sources["crm_online_guard.py"]
+                                      and '"p99"' in sources["crm_online_guard.py"]),
+        "event_loop_autorecovery": ("restart_stalled_event_loop" in
+                                    sources["crm_online_guard.py"]
+                                    and "_restart_budget_available" in
+                                    sources["crm_online_guard.py"]),
     }
     check(all(checks.values()), "SOURCE_CONTRACT:" + json.dumps(checks))
     for name, source in sources.items():

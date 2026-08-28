@@ -40,6 +40,7 @@ _LOCK = threading.RLock()
 _ACTIVE: dict[str, dict] = {}
 _HEARTBEATS: dict[str, float] = {}
 _LAST: dict[str, object] = {}
+_SAMPLES: dict[str, list[float]] = {}
 _CIRCUITS: dict[str, dict] = {}
 _THREAD: threading.Thread | None = None
 _STOP = threading.Event()
@@ -104,6 +105,19 @@ def _status_snapshot() -> dict:
             for key, value in _HEARTBEATS.items()
         }
         last = dict(_LAST)
+        latency = {}
+        for action, raw_samples in _SAMPLES.items():
+            samples = sorted(float(value) for value in raw_samples)
+            if not samples:
+                continue
+            def percentile(fraction):
+                index = min(len(samples) - 1, max(0, int(round((len(samples) - 1) * fraction))))
+                return round(samples[index], 3)
+            latency[action] = {
+                "count": len(samples), "p50": percentile(0.50),
+                "p95": percentile(0.95), "p99": percentile(0.99),
+                "max": round(samples[-1], 3),
+            }
     return {
         "contract_id": CONTRACT_ID,
         "generated_at_utc": _utc(),
@@ -112,7 +126,15 @@ def _status_snapshot() -> dict:
         "active": active,
         "heartbeat_age_seconds": heartbeats,
         "last": last,
+        "latency_seconds": latency,
     }
+
+
+def _add_sample(action: str, elapsed: float) -> None:
+    with _LOCK:
+        values = _SAMPLES.setdefault(str(action), [])
+        values.append(max(0.0, float(elapsed)))
+        del values[:-500]
 
 
 def _write_status(extra: dict | None = None) -> None:
@@ -145,6 +167,7 @@ def finish_operation(token: str, status: str = "ok", detail: str = "") -> float:
     if not item:
         return 0.0
     elapsed = max(0.0, finished - item["started"])
+    _add_sample(item["action"], elapsed)
     bounded_detail = str(detail or "")[:160]
     _safe_event(
         "operation",
@@ -165,6 +188,7 @@ def record_timing(action: str, elapsed_seconds: float, status: str = "ok",
                   card_id=None, detail: str = "") -> None:
     """Record bounded operational telemetry without retaining user content."""
     elapsed = max(0.0, float(elapsed_seconds or 0.0))
+    _add_sample(str(action), elapsed)
     _safe_event(
         "timing", action=str(action), card_id=card_id, status=str(status),
         elapsed_seconds=round(elapsed, 3),
@@ -559,6 +583,7 @@ def _supervisor_loop() -> None:
                 for name, stamp in _HEARTBEATS.items()
                 if name in {"crm_bot", "client_bot"} and now - stamp > 7.0
             }
+            active_count = len(_ACTIVE)
         for _key, action, card_id, age in overdue:
             _safe_event("p0_deadline", action=action, card_id=card_id,
                         elapsed_seconds=round(age, 3))
@@ -567,6 +592,14 @@ def _supervisor_loop() -> None:
                 last_stale_report[component] = now
                 _safe_event("p0_heartbeat", component=component,
                             elapsed_seconds=age, status="stale")
+        if (set(stale_heartbeats) == {"crm_bot", "client_bot"}
+                and min(stale_heartbeats.values()) > 15.0 and active_count == 0
+                and _restart_budget_available()):
+            _safe_event("autorecovery", action="restart_stalled_event_loop",
+                        status="restart", elapsed_seconds=min(stale_heartbeats.values()))
+            _write_status({"recovery": {"action": "restart_stalled_event_loop",
+                                        "status": "restart"}})
+            os._exit(75)
         spool = _spool_state()
         recovery = {"attempted": False}
         if spool["oldest_age_seconds"] > 5 and now - last_recovery > 2:

@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-v1-3-deploy
-# deploy-revision: 3-bounded-db-final
+# deploy-revision: 4-bounded-db-final
 
 on:
   push:
@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: task067-crm-online-guard-v1-3-deploy
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -130,6 +130,8 @@ jobs:
           assert final['field_queue']['queue'] == 0
           assert final['source_checks']['db_wait_bounded'] is True
           assert final['source_checks']['db_field_durable_queue'] is True
+          assert final['source_checks']['guard_latency_percentiles'] is True
+          assert final['source_checks']['event_loop_autorecovery'] is True
           assert final['bots']['tokens_distinct'] is True
           assert final['bots']['bots']['client']['ok'] is True
           assert final['bots']['bots']['crm']['ok'] is True

@@ -202,10 +202,11 @@ DB_UPDATE_FIELD = r'''def update_card_field(table: str, card_id: int, field: str
     the rollback journal lock.
     """
     import time as _ua_time
-    old = get_card(table, card_id)
-    old_value = old.get(field) if old else None
     started = _ua_time.monotonic()
+    old_value = None
     try:
+        old = get_card(table, card_id)
+        old_value = old.get(field) if old else None
         with connect() as c:
             c.execute(f"UPDATE {table} SET {field}=?, updated_at=? WHERE id=?",
                       (value, now(), card_id))
