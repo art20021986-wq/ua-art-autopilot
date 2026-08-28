@@ -24,9 +24,11 @@ FILES = {
     "task066_stage_postcheck.py": HERE / "postcheck_remote.py",
 }
 INSTALL_RECEIPT = STATE_ROOT + "/install_receipt.json"
+SOURCE_RECEIPT = STATE_ROOT + "/source_install_receipt.json"
 POSTCHECK_RECEIPT = STATE_ROOT + "/postcheck_receipt.json"
 ROLLBACK_RECEIPT = STATE_ROOT + "/rollback_receipt.json"
 INSTALL_COMMAND = "cd %s && python3.10 task066_stage_repair.py" % REMOTE
+SOURCE_COMMAND = "cd %s && python3.10 task066_stage_repair.py --sources-only" % REMOTE
 POSTCHECK_COMMAND = "cd %s && python3.10 task066_stage_postcheck.py" % REMOTE
 ROLLBACK_COMMAND = "cd %s && python3.10 task066_stage_repair.py --rollback" % REMOTE
 EVIDENCE = HERE / "evidence" / "deploy.json"
@@ -222,9 +224,33 @@ class API:
         }
 
 
+def validate_source_install(value: dict) -> None:
+    if value.get("contract_id") != CONTRACT or value.get("status") != "PASS":
+        raise ControllerError("SOURCE_INSTALL_FAILED:" + ";".join(value.get("errors", [])))
+    if value.get("sources_only") is not True or value.get("llm_tokens") != 0:
+        raise ControllerError("SOURCE_INSTALL_SCOPE_INVALID")
+    for key in ("crm_write", "db_write", "media_write"):
+        if value.get(key) is not False:
+            raise ControllerError("SOURCE_INSTALL_WRITE_SCOPE_INVALID:" + key)
+    expected = {"stranica.py", "yadro.py", "master_card.py", "cars_ui.py"}
+    if set(value.get("source_sha256_after") or {}) != expected:
+        raise ControllerError("SOURCE_INSTALL_SET_INVALID")
+    changed = set(value.get("changed_paths") or [])
+    if not changed.issubset(expected):
+        raise ControllerError("SOURCE_INSTALL_CHANGED_PATH_INVALID")
+    if value.get("production_files_changed") != len(changed):
+        raise ControllerError("SOURCE_INSTALL_CHANGED_COUNT_INVALID")
+    if value.get("master_final_fixtures") != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
+        raise ControllerError("SOURCE_INSTALL_MASTER_FIXTURES_INVALID")
+    if not value.get("backup_root", "").startswith(STATE_ROOT + "/backups/"):
+        raise ControllerError("SOURCE_INSTALL_BACKUP_INVALID")
+
+
 def validate_install(value: dict) -> None:
     if value.get("contract_id") != CONTRACT or value.get("status") != "PASS":
         raise ControllerError("INSTALL_FAILED:" + ";".join(value.get("errors", [])))
+    if value.get("sources_only") is not False:
+        raise ControllerError("INSTALL_PHASE_INVALID")
     if value.get("llm_tokens") != 0:
         raise ControllerError("INSTALL_LLM_SCOPE_INVALID")
     for key in ("crm_write", "db_write", "media_write"):
@@ -305,9 +331,16 @@ def main() -> int:
             if api.read(REMOTE + "/" + name) != data:
                 raise ControllerError("UPLOAD_READBACK_MISMATCH:" + name)
 
-        # Release a stale SQLite transaction held by the long-lived bot before
-        # the read-only production snapshot.  This uses the already configured
-        # always-on task and does not alter its command or enabled state.
+        # Phase 1 changes only generator/filter sources.  The long-lived bot is
+        # then restarted so every concurrent writer has the new final filter in
+        # memory before phase 2 touches any published card.
+        source_install = api.run_remote(
+            SOURCE_COMMAND,
+            "task066 install final card writer sources only",
+            SOURCE_RECEIPT,
+        )
+        evidence["source_install"] = source_install
+        validate_source_install(source_install)
         evidence["preinstall_service_contract"] = api.restart_bot()
         evidence["preinstall_bot_restarted"] = True
         time.sleep(12)
@@ -371,7 +404,7 @@ def main() -> int:
         "- Stage coverage: %s" % json.dumps(post.get("stage_distribution", {}), sort_keys=True),
         "- UA-0009: %s" % ("PASS" if post.get("ua0009") else "NOT VERIFIED"),
         "- Both bots: %s" % ("PASS" if post.get("bot_health") else "NOT VERIFIED"),
-        "- Pre-install lock release restart: %s" % ("PASS" if evidence.get("preinstall_bot_restarted") else "NOT RUN"),
+        "- Two-phase source reload before card writes: %s" % ("PASS" if evidence.get("preinstall_bot_restarted") else "NOT RUN"),
         "- Delayed permanence check: %s" % ("PASS" if delayed.get("status") == "PASS" else "NOT VERIFIED"),
         "- CRM write: false; media write: false; LLM tokens: 0",
         "- Changed production files: %s" % install_value.get("production_files_changed", 0),
