@@ -1,7 +1,7 @@
 {
   "task_id": "task_072",
   "gate": "A_V2_REAL_CONTEXT",
-  "status": "BLOCKED",
+  "status": "PASS",
   "remote_http_methods": [
     "GET"
   ],
@@ -15,7 +15,7 @@
       "trace_zhurnal.py": "fc4b95fc749f3d9b785ce69bfce2705b11ade95a560d6fbd901b50de1423d086"
     },
     "patched_cars_ui_sha256": "1f5368ea3caeeecb2d55b18b41cb414092495ef2185f7e881767015f53d8634b",
-    "candidate_writer_sha256": "c800807e67299cda05c3cf58817823b78ad4c7600dac96960b0a173739875599",
+    "candidate_writer_sha256": "f85c9a332ad69ac5834d0bf78a23d86a28ea361fba4b9eeef695197784551623",
     "baseline_wait_pop_before_write_confirmed": true,
     "baseline_db_multi_connection_path_confirmed": true,
     "patched_wait_pop_after_confirmed_save": true,
@@ -66,7 +66,7 @@
     "baseline_locked_write_loses_car_wait": true,
     "patched_button_text_readback_and_audit": true,
     "patched_lock_keeps_car_wait": true,
-    "patched_lock_seconds": 0.4606,
+    "patched_lock_seconds": 0.4562,
     "queued_reply_never_claims_success": true,
     "direct_commands_tested": 3,
     "direct_commands_use_zero_llm_calls": true,
@@ -75,7 +75,7 @@
   },
   "queue_tests": {
     "locked_path_status": "queued",
-    "locked_path_seconds": 0.4599,
+    "locked_path_seconds": 0.4585,
     "locked_path_under_one_second": true,
     "durable_queue_applied_after_unlock": true,
     "stable_operation_id_idempotent": true,
@@ -86,5 +86,17 @@
     "multiprocess_operations": 20,
     "multiprocess_no_loss_or_duplicates": true
   },
-  "error_type": "OperationalError"
+  "performance": {
+    "samples": 100,
+    "sequential_operations": 100,
+    "concurrent_operations": 100,
+    "concurrent_applied_operations": 2,
+    "concurrent_no_loss_or_duplicates": true,
+    "concurrent_last_intended_wins": true,
+    "median_seconds": 0.004141,
+    "p95_seconds": 0.004738,
+    "p99_seconds": 0.008697,
+    "max_seconds": 0.020831
+  },
+  "live_download_unchanged_after_tests": true
 }
