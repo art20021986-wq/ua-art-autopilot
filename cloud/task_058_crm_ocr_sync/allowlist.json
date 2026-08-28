@@ -1,0 +1,16 @@
+{
+  "_comment": "TASK_058 candidate allowlist template. Every path below MUST be confirmed to actually exist under /home/Carix as a regular, non-symlink file before any live run. Unconfirmed or non-existent paths are safely skipped by live_discovery.py and reported in the notes field, never assumed. Do not add wildcards, directories, or paths outside /home/Carix.",
+  "source_paths": [
+    "/home/Carix/mysite/team_bot.py",
+    "/home/Carix/mysite/db.py",
+    "/home/Carix/mysite/cars_ui.py",
+    "/home/Carix/mysite/avtoperedacha.py",
+    "/home/Carix/mysite/run_all.py",
+    "/home/Carix/mysite/start_safe.py"
+  ],
+  "db_paths": [
+    "/home/Carix/mysite/crm.db"
+  ],
+  "site_paths": [],
+  "log_paths": []
+}
