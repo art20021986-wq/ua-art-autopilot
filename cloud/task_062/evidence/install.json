@@ -1,0 +1,77 @@
+{
+  "contract_id": "CRM-VOICE-FILL-001",
+  "controller": {
+    "bot_restarted": true,
+    "bot_task_id_sha256": "ddab74aff3b2a90095923bf1b6e2880ceb8d82e217b930565eb778dfdbfd7b60",
+    "status": "PASS"
+  },
+  "installer": {
+    "already_applied": false,
+    "automatic_new_card": false,
+    "backup_path": "/home/Carix/backups/task_062/20260828T065018Z",
+    "card_count_unchanged": true,
+    "contract_id": "CRM-VOICE-FILL-001",
+    "crm_db_sha256_after": "1f2b7739aa82f8f18f6e6a0c408f26b461dd54e8b848883e74ae59087a013d1d",
+    "crm_db_sha256_before": "1f2b7739aa82f8f18f6e6a0c408f26b461dd54e8b848883e74ae59087a013d1d",
+    "crm_db_write": false,
+    "deduplication": true,
+    "errors": [],
+    "explicit_override_supported": true,
+    "files": {
+      "/home/Carix/cars_ui.py": {
+        "after": "721e21f43787832b325c1fc806a64f332cb14a26bd63b297cb738c9fbb687563",
+        "before": "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7"
+      },
+      "/home/Carix/team_bot.py": {
+        "after": "4e0ede93c744e49c2a634fa5e7f195bdda27208d7575c3cd9a0e4ce419913918",
+        "before": "0dddd71ceb64d0397cf94faad994f85494032173cc025adf3e1634da0652abd0"
+      }
+    },
+    "fill_empty_only": true,
+    "finished_at_utc": "2026-08-28T06:50:19Z",
+    "llm_tokens_per_voice": 0,
+    "mode": "OWNER_APPROVED_INSTALL",
+    "production_write": true,
+    "readonly_after": {
+      "cars_count": 10,
+      "quick_check": "ok",
+      "ua0009_rows": 1,
+      "ua0009_state_sha256": "f2093ee2295b18a45ecc7a81feb5d764436bf2a6d04ff984a05254292005d3be"
+    },
+    "readonly_before": {
+      "cars_count": 10,
+      "quick_check": "ok",
+      "ua0009_rows": 1,
+      "ua0009_state_sha256": "f2093ee2295b18a45ecc7a81feb5d764436bf2a6d04ff984a05254292005d3be"
+    },
+    "rollback_performed": false,
+    "service_restarted": false,
+    "site_state_sha256_after": "70c043b1d635019511414683b96f8184876c0595dd4f466e00019fffdd8207bb",
+    "site_state_sha256_before": "70c043b1d635019511414683b96f8184876c0595dd4f466e00019fffdd8207bb",
+    "site_write": false,
+    "started_at_utc": "2026-08-28T06:50:16Z",
+    "status": "PASS",
+    "stt_calls_max_per_voice": 1,
+    "task_id": "task_062",
+    "ua0009_unchanged": true,
+    "undo": true,
+    "voice_deadline_seconds": 15
+  },
+  "post_restart": {
+    "card_count_unchanged": true,
+    "code_readback": true,
+    "contract_id": "CRM-VOICE-FILL-001",
+    "crm_db_write": false,
+    "db_hash_unchanged": true,
+    "db_quick_check": "ok",
+    "mode": "READ_ONLY_POST_RESTART",
+    "production_write": false,
+    "site_unchanged": true,
+    "site_write": false,
+    "status": "PASS",
+    "task_id": "task_062",
+    "ua0009_rows": 1,
+    "ua0009_unchanged": true
+  },
+  "task_id": "task_062"
+}
