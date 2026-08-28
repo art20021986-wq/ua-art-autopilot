@@ -3,32 +3,12 @@
   "bot_task_id_sha256": "ddab74aff3b2a90095923bf1b6e2880ceb8d82e217b930565eb778dfdbfd7b60",
   "contract_id": "CRM-DB-LOCK-EMERGENCY-001",
   "crm_db_write": false,
-  "legacy_schedules_removed": [
-    {
-      "command": "python3.10 /home/Carix/avto.py",
-      "enabled": true,
-      "hour": null,
-      "id_sha256": "f670917b5e16efe7c7ad16caceeea29e10bb423aa64ff0d88f865f06243f441b",
-      "interval": "hourly",
-      "minute": 10
-    },
-    {
-      "command": "/home/Carix/cikl2.py",
-      "enabled": true,
-      "hour": null,
-      "id_sha256": "bc058a2a4f753be3c5176052259b637a2f1c63ad4f238e56516a39a1a23681d6",
-      "interval": "hourly",
-      "minute": 35
-    },
-    {
-      "command": "python3.10 /home/Carix/poryadok.py",
-      "enabled": true,
-      "hour": null,
-      "id_sha256": "00d07dd67494b8be7834ba938440797c5bc3364f21346c2c13d5ff9cc6f09c63",
-      "interval": "hourly",
-      "minute": 50
-    }
+  "legacy_schedules_already_absent": [
+    "/home/Carix/cikl2.py",
+    "python3.10 /home/Carix/avto.py",
+    "python3.10 /home/Carix/poryadok.py"
   ],
+  "legacy_schedules_removed": [],
   "llm_tokens": 0,
   "production_write": true,
   "remaining_conflicts": [],
