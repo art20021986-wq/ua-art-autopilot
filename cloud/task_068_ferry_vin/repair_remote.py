@@ -2341,6 +2341,11 @@ def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -
                 continue
             data = _read(path)
             assert data is not None
+            # Recovery/forensic fragments may deliberately be HTML snippets,
+            # not complete public documents.  They are not card surfaces and
+            # must stay byte-for-byte untouched by this contract.
+            if b"</html>" not in data[-1200:].lower():
+                continue
             source = data.decode("utf-8")
             if name == "katalog.html":
                 source = ensure_catalog(source, row_map)
