@@ -69,6 +69,15 @@ EXPECTED_SHA = {
     START_SAFE_PATH: "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007",
 }
 
+# Hashes produced by the first source-only phase of this same approved
+# contract.  They are accepted only for the bounded v1.1 in-place upgrade
+# that adds mixed/legacy catalog support; unknown source edits still block.
+TASK068_INITIAL_SOURCE_SHA = {
+    STRANICA_PATH: "001620f8f582c3ecbd638d0a1a557de085d019ea85fe17f5e4948f74c114931a",
+    YADRO_PATH: "c95b0ef03d1d52423e48b127aefb75d22f00d17f531c0402daf178523707bb79",
+    MASTER_CARD_PATH: "438559b3caf31ee66a4774e865ee52796c7e06a3f3e0785b54f96d4064e5b270",
+}
+
 EXPECTED_FUNCTION_SHA = {
     (STRANICA_PATH, "sobrat_kartochku"): "3d36b990a831078386477131afcaa74a40bccaa15e524c1ea2db2139673a13a8",
     (STRANICA_PATH, "sobrat_katalog"): "10d9505d2c65ec58ef5d83f928da123dcddd92d86080cfc14bedb96e262a4eea",
@@ -2127,8 +2136,22 @@ def katalog_html(spisok, foto_po_nomeru, video_po_nomeru=None):
 
 def _append_task068(source: str, original_sha: str, path: str, wrapper: str) -> str:
     if FERRY_VIN_SOURCE_MARKER in source:
-        _validate_task068_source(source, path)
-        return source
+        if ("def _ua068_catalog_fallback" in source
+                and "_UA068_FALLBACK_START" in source
+                and "UA068_CATALOG_INSERTION_POINT_MISSING" in source):
+            _validate_task068_source(source, path)
+            return source
+        if source.count(FERRY_VIN_SOURCE_MARKER) != 1:
+            raise RepairBlocked("task068_upgrade_marker_count_invalid:" + os.path.basename(path))
+        if original_sha != TASK068_INITIAL_SOURCE_SHA[path]:
+            raise RepairBlocked("task068_existing_source_changed:" + os.path.basename(path))
+        start = source.find(FERRY_VIN_SOURCE_MARKER)
+        base = source[:start].rstrip()
+        if not base:
+            raise RepairBlocked("task068_upgrade_base_missing:" + os.path.basename(path))
+        candidate = base + "\n\n" + FERRY_VIN_COMMON_SOURCE + "\n\n" + wrapper + "\n"
+        _validate_task068_source(candidate, path)
+        return candidate
     if original_sha != EXPECTED_SHA[path]:
         raise RepairBlocked("task068_source_sha_changed:" + os.path.basename(path))
     candidate = source.rstrip() + "\n\n" + FERRY_VIN_COMMON_SOURCE + "\n\n" + wrapper + "\n"
@@ -2579,10 +2602,13 @@ def run_install(*, sources_only: bool = False) -> dict[str, Any]:
     return receipt
 
 
-def rollback_from_receipt() -> dict[str, Any]:
-    result = {"contract_id": CONTRACT, "status": "BLOCKED", "restored": [], "errors": []}
+def rollback_from_receipt(receipt_path: str = RECEIPT_PATH) -> dict[str, Any]:
+    result = {"contract_id": CONTRACT, "status": "BLOCKED", "restored": [],
+              "receipt": os.path.basename(receipt_path), "errors": []}
     try:
-        receipt = json.loads(_read(RECEIPT_PATH).decode("utf-8"))
+        if receipt_path not in (RECEIPT_PATH, SOURCE_RECEIPT_PATH):
+            raise RepairBlocked("rollback_receipt_path_invalid")
+        receipt = json.loads(_read(receipt_path).decode("utf-8"))
         backup_root = str(receipt.get("backup_root") or "")
         if os.path.commonpath((os.path.realpath(BACKUP_PARENT), os.path.realpath(backup_root))) != os.path.realpath(BACKUP_PARENT):
             raise RepairBlocked("rollback_backup_path_invalid")
@@ -2680,8 +2706,10 @@ def main() -> int:
                 "errors": ["concurrent_repair_run"], "llm_tokens": 0,
             }
         else:
-            if "--rollback" in sys.argv:
-                result = rollback_from_receipt()
+            if "--rollback-source" in sys.argv:
+                result = rollback_from_receipt(SOURCE_RECEIPT_PATH)
+            elif "--rollback" in sys.argv:
+                result = rollback_from_receipt(RECEIPT_PATH)
             else:
                 retry_history = []
                 for attempt in range(1, 6):
@@ -2711,7 +2739,7 @@ def main() -> int:
                 result["retry_history"] = retry_history
     finally:
         os.close(descriptor)
-    if "--rollback" in sys.argv:
+    if "--rollback" in sys.argv or "--rollback-source" in sys.argv:
         path = ROLLBACK_RECEIPT_PATH
     elif sources_only:
         path = SOURCE_RECEIPT_PATH
