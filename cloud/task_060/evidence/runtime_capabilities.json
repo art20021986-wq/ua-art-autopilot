@@ -1,0 +1,20 @@
+{
+  "binaries": {
+    "ffmpeg": "/usr/bin/ffmpeg",
+    "tesseract": "/usr/bin/tesseract"
+  },
+  "mode": "READ_ONLY_RUNTIME_CAPABILITIES",
+  "modules": {
+    "PIL": true,
+    "cv2": true,
+    "easyocr": false,
+    "onnxruntime": false,
+    "pytesseract": true,
+    "rapidocr_onnxruntime": false,
+    "torch": true
+  },
+  "production_touched": false,
+  "python": "3.10.12",
+  "recorded_at_utc": "2026-08-28T05:49:40.703548+00:00",
+  "task_id": "task_060"
+}
