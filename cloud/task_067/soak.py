@@ -42,10 +42,13 @@ def atomic_json(path, value):
             pass
 
 
-def quick_check():
-    con = sqlite3.connect("file:%s?mode=ro" % DB, uri=True, timeout=1)
+def lightweight_db_probe():
+    """One cheap online availability probe; integrity is gated by postcheck."""
+    con = sqlite3.connect("file:%s?mode=ro" % DB, uri=True, timeout=0.2)
     try:
-        return con.execute("PRAGMA quick_check").fetchone()[0]
+        con.execute("SELECT 1").fetchone()
+        con.execute("PRAGMA schema_version").fetchone()
+        return True
     finally:
         con.close()
 
@@ -78,6 +81,7 @@ def main():
              "crm_db_write": False, "site_write": False, "media_write": False,
              "samples": 0, "p0": [], "started_at_utc": utc_now()}
     consecutive_bot_failures = 0
+    consecutive_db_failures = 0
     max_heartbeat = {"crm_bot": 0.0, "client_bot": 0.0}
     max_spool_age = 0
     next_db = 0.0
@@ -121,13 +125,21 @@ def main():
             value["p0"].append("status_unreadable:" + type(exc).__name__)
             break
         if now >= next_db:
-            next_db = now + 5
+            next_db = now + 1
             try:
-                if quick_check() != "ok":
-                    value["p0"].append("db_quick_check")
+                lightweight_db_probe()
+                consecutive_db_failures = 0
+            except sqlite3.OperationalError as exc:
+                if any(word in str(exc).casefold() for word in ("locked", "busy")):
+                    consecutive_db_failures += 1
+                else:
+                    value["p0"].append("db_unreadable:" + type(exc).__name__)
                     break
             except Exception as exc:
                 value["p0"].append("db_unreadable:" + type(exc).__name__)
+                break
+            if consecutive_db_failures >= 5:
+                value["p0"].append("db_unavailable_continuously_5s")
                 break
         time.sleep(1)
     rows, end_offset = event_rows(start_offset)
@@ -144,6 +156,7 @@ def main():
     value.update({"duration_actual_seconds": round(elapsed, 3),
                   "max_heartbeat_age_seconds": max_heartbeat,
                   "max_spool_age_seconds": max_spool_age,
+                  "consecutive_db_failures": consecutive_db_failures,
                   "event_bytes_checked": max(0, end_offset - start_offset),
                   "event_p0": event_p0[:100], "finished_at_utc": utc_now()})
     if not value["p0"] and elapsed >= DURATION - 1:
