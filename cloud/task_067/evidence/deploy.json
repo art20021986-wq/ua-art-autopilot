@@ -1,12 +1,12 @@
 {
   "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
   "errors": [
-    "ControllerError:POSTCHECK_INITIAL_FAIL:[\"CheckError:SOURCE_CONTRACT:{\\\"marker_all_core\\\": true, \\\"callback_safety\\\": true, \\\"cas_no_overwrite\\\": true, \\\"voice_five_seconds\\\": true, \\\"voice_restore_semantic\\\": false, \\\"stt_last_known_good_ru\\\": true, \\\"media_receipts\\\": true, \\\"client_fast_tail\\\": true, \\\"updates_preserved\\\": true, \\\"delivery_route\\\": true, \\\"condition_route\\\": true, \\\"db_wait_bounded\\\": true, \\\"db_no_hot_journal_switch\\\": true, \\\"db_field_durable_queue\\\": true, \\\"guard_latency_percentiles\\\": true, \\\"event_loop_autore"
+    "ControllerError:POSTCHECK_INITIAL_FAIL:[\"CheckError:TEXT_GEARBOX\"]"
   ],
-  "finished_at_utc": "2026-08-28T21:28:30Z",
+  "finished_at_utc": "2026-08-28T21:41:25Z",
   "install": {
     "already_applied": false,
-    "backup_dir": "/home/Carix/backups/task_067/20260828T212409Z",
+    "backup_dir": "/home/Carix/backups/task_067/20260828T213611Z",
     "changed_files": [
       "cars_ui.py",
       "ai.py",
@@ -18,20 +18,20 @@
     "crm_db_write": false,
     "db_after": {
       "mode": "metadata_only_no_sqlite_connection",
-      "mtime_ns": 1787951342398675682,
+      "mtime_ns": 1787952384112434636,
       "quick_check": "deferred_to_post_restart_postcheck",
       "size_bytes": 2658304
     },
     "db_before": {
       "mode": "metadata_only_no_sqlite_connection",
-      "mtime_ns": 1787951342398675682,
+      "mtime_ns": 1787952384112434636,
       "quick_check": "deferred_to_post_restart_postcheck",
       "size_bytes": 2658304
     },
     "errors": [],
     "files_after": {
       "ai.py": "62c10d4554e934e47edc9a9fadb13a2b931917afea586472e769d80b3708385f",
-      "cars_ui.py": "7627f18bb47d6a999b10b1ed028e37fbfe1993a302b9ae519cf0d3224f5ff2ca",
+      "cars_ui.py": "e4ad8c938aa53444fef679ba5b91165d03ce52445b1ce7dc1846f6c9ae64c0a9",
       "client_ui.py": "97ff4b717e123ae45b12bc966e2d2be5c680370111cf16d4f285c9464a511d4a",
       "crm_online_guard.py": "1c794c3de1b06968f292930eed15b6c48d86748005a40a7160954a2b9c9f25e3",
       "db.py": "1ccc35abb10fa15b06bc432c4b9d11b252e4b379ac482265fdc762ce59a86728",
@@ -40,31 +40,105 @@
       "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
       "team_bot.py": "bbd644eaf2c25802984df930459da6a36f137ef2b1519642b3d006ab57388a48"
     },
-    "finished_at_utc": "2026-08-28T21:24:10Z",
+    "finished_at_utc": "2026-08-28T21:36:12Z",
     "llm_tokens": 0,
     "media_write": false,
     "mode": "ATOMIC_PRODUCTION_INSTALL",
     "site_write": false,
-    "started_at_utc": "2026-08-28T21:24:07Z",
+    "started_at_utc": "2026-08-28T21:36:09Z",
     "status": "PASS",
     "task_id": "task_067"
   },
   "llm_tokens": 0,
   "mode": "ATOMIC_DEPLOY_AND_60M_SOAK",
   "postcheck_initial": {
+    "callbacks": {
+      "condition": {
+        "elapsed_seconds": 0.018,
+        "expired_ack_continued": true,
+        "status": "PASS"
+      },
+      "delivery": {
+        "elapsed_seconds": 0.022,
+        "expired_ack_continued": true,
+        "status": "PASS"
+      }
+    },
+    "container": {
+      "direct": true,
+      "expired_ack_continued": true,
+      "queued": true,
+      "status": "PASS"
+    },
     "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
     "crm_db_write": false,
+    "database": {
+      "card_count": 11,
+      "quick_check": "ok"
+    },
     "errors": [
-      "CheckError:SOURCE_CONTRACT:{\"marker_all_core\": true, \"callback_safety\": true, \"cas_no_overwrite\": true, \"voice_five_seconds\": true, \"voice_restore_semantic\": false, \"stt_last_known_good_ru\": true, \"media_receipts\": true, \"client_fast_tail\": true, \"updates_preserved\": true, \"delivery_route\": true, \"condition_route\": true, \"db_wait_bounded\": true, \"db_no_hot_journal_switch\": true, \"db_field_durable_queue\": true, \"guard_latency_percentiles\": true, \"event_loop_autorecovery\": true, \"selected_field_route\": true, \"container_durable_route\": true, \"crm_ferry_vocabulary\": true, \"media_extract_missing_only\": true}"
+      "CheckError:TEXT_GEARBOX"
     ],
-    "finished_at_utc": "2026-08-28T21:26:10Z",
+    "finished_at_utc": "2026-08-28T21:39:12Z",
     "llm_tokens": 0,
+    "media": {
+      "accepted": 100,
+      "duplicates_rejected": 3,
+      "limit_101_rejected": true,
+      "order_exact": true,
+      "queue": 0,
+      "saved": 100,
+      "status": "PASS",
+      "workers": 6
+    },
     "media_write": false,
     "mode": "POST_RESTART_ACCEPTANCE",
+    "selected_field": {
+      "ferry_vocabulary": true,
+      "mileage_cases": 3,
+      "status": "PASS"
+    },
     "site_write": false,
-    "started_at_utc": "2026-08-28T21:26:10Z",
+    "source_checks": {
+      "callback_safety": true,
+      "cas_no_overwrite": true,
+      "client_fast_tail": true,
+      "condition_route": true,
+      "container_durable_route": true,
+      "crm_ferry_vocabulary": true,
+      "db_field_durable_queue": true,
+      "db_no_hot_journal_switch": true,
+      "db_wait_bounded": true,
+      "delivery_route": true,
+      "event_loop_autorecovery": true,
+      "guard_latency_percentiles": true,
+      "marker_all_core": true,
+      "media_extract_missing_only": true,
+      "media_receipts": true,
+      "selected_field_route": true,
+      "stt_last_known_good_ru": true,
+      "universal_text_missing_only": true,
+      "updates_preserved": true,
+      "voice_five_seconds": true,
+      "voice_restore_semantic": true
+    },
+    "started_at_utc": "2026-08-28T21:39:10Z",
     "status": "FAIL",
-    "task_id": "task_067"
+    "task_id": "task_067",
+    "universal_media_route": {
+      "ack_seconds": 0.0,
+      "caption_fields": 4,
+      "llm_tokens": 0,
+      "scheduled": 1,
+      "status": "PASS"
+    },
+    "voice_golden": {
+      "cases": 200,
+      "failures": 0,
+      "normal_overwrites": 0,
+      "status": "PASS",
+      "unexpected_new_cards": 0
+    }
   },
   "restart": {
     "command": "python3.10 /home/Carix/start_safe.py",
@@ -72,9 +146,9 @@
     "status": "accepted"
   },
   "rollback": {
-    "backup_dir": "/home/Carix/backups/task_067/20260828T212409Z",
+    "backup_dir": "/home/Carix/backups/task_067/20260828T213611Z",
     "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
-    "finished_at_utc": "2026-08-28T21:28:11Z",
+    "finished_at_utc": "2026-08-28T21:41:10Z",
     "mode": "ROLLBACK",
     "status": "PASS",
     "task_id": "task_067"
@@ -87,7 +161,7 @@
   "shadow": {
     "candidate_sha256": {
       "ai.py": "62c10d4554e934e47edc9a9fadb13a2b931917afea586472e769d80b3708385f",
-      "cars_ui.py": "7627f18bb47d6a999b10b1ed028e37fbfe1993a302b9ae519cf0d3224f5ff2ca",
+      "cars_ui.py": "e4ad8c938aa53444fef679ba5b91165d03ce52445b1ce7dc1846f6c9ae64c0a9",
       "client_ui.py": "97ff4b717e123ae45b12bc966e2d2be5c680370111cf16d4f285c9464a511d4a",
       "crm_online_guard.py": "1c794c3de1b06968f292930eed15b6c48d86748005a40a7160954a2b9c9f25e3",
       "db.py": "1ccc35abb10fa15b06bc432c4b9d11b252e4b379ac482265fdc762ce59a86728",
@@ -100,28 +174,33 @@
     "crm_db_write": false,
     "db_after": {
       "mode": "metadata_only_no_sqlite_connection",
-      "mtime_ns": 1787951342398675682,
+      "mtime_ns": 1787952384112434636,
       "quick_check": "deferred_to_post_restart_postcheck",
       "size_bytes": 2658304
     },
     "db_before": {
       "mode": "metadata_only_no_sqlite_connection",
-      "mtime_ns": 1787951342398675682,
+      "mtime_ns": 1787952384112434636,
       "quick_check": "deferred_to_post_restart_postcheck",
       "size_bytes": 2658304
     },
     "errors": [],
-    "finished_at_utc": "2026-08-28T21:22:13Z",
+    "finished_at_utc": "2026-08-28T21:34:10Z",
     "llm_tokens": 0,
     "media_write": false,
     "mode": "SHADOW_COMPILE_NO_PRODUCTION_WRITE",
     "site_write": false,
-    "started_at_utc": "2026-08-28T21:22:11Z",
+    "started_at_utc": "2026-08-28T21:34:08Z",
     "status": "PASS",
     "task_id": "task_067"
   },
-  "stale_triggers_removed": [],
-  "started_at_utc": "2026-08-28T21:20:26Z",
+  "stale_triggers_removed": [
+    {
+      "id": 1502222,
+      "kind": "schedule"
+    }
+  ],
+  "started_at_utc": "2026-08-28T21:32:25Z",
   "status": "FAIL",
   "task_id": "task_067",
   "uploaded": [
