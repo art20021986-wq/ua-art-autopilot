@@ -1,0 +1,61 @@
+name: SEO Rehab Guard 068
+
+on:
+  push:
+    branches: [seo/rehab-guard-068]
+    paths:
+      - src/seo_rehab.js
+      - cloud/seo_rehab_guard/**
+      - tasks/task_068.md
+      - package.json
+      - wrangler.jsonc
+      - .github/workflows/seo-rehab-guard.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - src/seo_rehab.js
+      - cloud/seo_rehab_guard/**
+      - tasks/task_068.md
+      - package.json
+      - wrangler.jsonc
+      - .github/workflows/seo-rehab-guard.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-rehab-guard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fail-closed-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax and regression tests
+        run: |
+          node --check src/seo_rehab.js
+          npm run test:rehab
+
+      - name: Read-only live baseline and ten deterministic candidates
+        run: node cloud/seo_rehab_guard/audit.mjs --output "$RUNNER_TEMP/GATE-REPORT.json"
+
+      - name: Publish concise job summary
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/GATE-REPORT.json"; then
+            jq '{status,mode,productionWrite,discoveredVehicleIds,repeatability,liveBlockerEvidence}' \
+              "$RUNNER_TEMP/GATE-REPORT.json" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload machine evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-rehab-guard-${{ github.run_id }}
+          path: ${{ runner.temp }}/GATE-REPORT.json
+          if-no-files-found: error
+          retention-days: 14
