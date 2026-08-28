@@ -1,0 +1,224 @@
+{
+  "always_on": [
+    {
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "description": "",
+      "enabled": true,
+      "hour": null,
+      "id_sha256": "ddab74aff3b2a90095923bf1b6e2880ceb8d82e217b930565eb778dfdbfd7b60",
+      "interval": null,
+      "minute": null
+    }
+  ],
+  "contract_id": "CRM-DB-LOCK-EMERGENCY-001",
+  "files": {
+    "db.py": {
+      "context": {
+        "definitions": [
+          {
+            "end_lineno": 138,
+            "kind": "ClassDef",
+            "lineno": 104,
+            "name": "Soedinenie",
+            "sha256": "591ef89051b168efe9f122e917e8c54eaff7ba88058ac59977801747d3484b5e",
+            "source": "class Soedinenie(sqlite3.Connection):\n    \"\"\"Берёт очередь при открытии, отпускает при закрытии.\n\n    Выход из with: commit или rollback, затем обязательный close.\n    \"\"\"\n\n    def _otpustit(self):\n        if getattr(self, \"_ochered_vzyata\", False):\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n\n    def close(self):\n        try:\n            sqlite3.Connection.close(self)\n        finally:\n            self._otpustit()\n\n    def __exit__(self, tip, znachenie, sled):\n        try:\n            if tip is None:\n                self.commit()\n            else:\n                self.rollback()\n        finally:\n            try:\n                self.close()\n            except Exception:\n                self._otpustit()\n        return False\n\n    def __del__(self):\n        self._otpustit()"
+          },
+          {
+            "end_lineno": 164,
+            "kind": "FunctionDef",
+            "lineno": 141,
+            "name": "connect",
+            "sha256": "40daadeb50ac5ffdb79918c4c64b0fcabcf91ec2d657e2a47d46c41e3eb2c3a8",
+            "source": "def connect():\n    vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)\n    try:\n        conn = sqlite3.connect(DB_FILE, timeout=OZHIDANIE_SEK, factory=Soedinenie)\n    except Exception:\n        if vzyata:\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n        raise\n    conn._ochered_vzyata = vzyata\n    conn.row_factory = sqlite3.Row\n    # WAL на сетевом диске PythonAnywhere ломает блокировки - только DELETE\n    try:\n        conn.execute(\"PRAGMA journal_mode=DELETE\")\n    except Exception:\n        pass\n    try:\n        conn.execute(\"PRAGMA busy_timeout=%d\" % (OZHIDANIE_SEK * 1000))\n    except Exception:\n        pass\n    conn.execute(\"PRAGMA foreign_keys=ON\")\n    return conn"
+          }
+        ],
+        "globals": [
+          {
+            "lineno": 20,
+            "source": "DB_FILE = os.path.join(BASE_DIR, \"crm.db\")"
+          },
+          {
+            "lineno": 64,
+            "source": "OZHIDANIE_SEK = 3          # сколько ждём занятую базу (было 60)"
+          },
+          {
+            "lineno": 100,
+            "source": "ZAMOK = _potoki.RLock()"
+          },
+          {
+            "lineno": 101,
+            "source": "ZAMOK_OZHIDANIE = 20        # сколько ждём своей очереди, сек"
+          }
+        ]
+      },
+      "path": "/home/Carix/db.py",
+      "sha256": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
+      "size": 29515
+    },
+    "run_all.py": {
+      "context": [
+        {
+          "end_lineno": 22,
+          "kind": "FunctionDef",
+          "lineno": 16,
+          "name": "_v144_zhurnal",
+          "source": "def _v144_zhurnal(stroka):\n    try:\n        with open(_V144_LOG, \"a\", encoding=\"utf-8\") as _f:\n            _f.write(\"%s  pid %d  %s\\n\"\n                     % (_tm144.strftime(\"%Y-%m-%d %H:%M:%S\"), _os144.getpid(), stroka))\n    except Exception:\n        pass"
+        },
+        {
+          "end_lineno": 134,
+          "kind": "AsyncFunctionDef",
+          "lineno": 75,
+          "name": "run_bots",
+          "source": "async def run_bots():\n    db.init_db()\n    _v144_zhurnal(\"база готова, собираем ботов\")\n\n    # UA-V144 · обработчик диагностики живёт внутри этого процесса\n    try:\n        import kadry_diagnostiki as _kd144\n        _v144_zhurnal(\"обработчик диагностики: поднят\" if _kd144.zapustit_iz_run_all()\n                      else \"обработчик диагностики: уже работает в другом процессе\")\n    except Exception as _e144:\n        _v144_zhurnal(\"обработчик диагностики НЕ поднят: %r\" % _e144)\n\n    apps = []\n\n    # --- Клиентский бот ---\n    try:\n        import lead_bot\n        client_app = lead_bot.build_application()\n        if client_app:\n            apps.append((\"клиентский\", client_app))\n    except Exception as e:\n        logging.error(f\"Клиентский бот не собрался: {e}\", exc_info=True)\n\n    # --- Внутренний бот ---\n    try:\n        import team_bot\n        team_app = team_bot.build_application()\n        if team_app:\n            apps.append((\"внутренний\", team_app))\n    except Exception as e:\n        logging.error(f\"Внутренний бот не собрался: {e}\", exc_info=True)\n\n    if not apps:\n        logging.error(\"Ни один бот не запустился. Проверьте файлы с токенами.\")\n        return\n\n    for name, app in apps:\n        await app.initialize()\n        await app.start()\n        await app.updater.start_polling(drop_pending_updates=True)\n        logging.info(f\"Запущен бот: {name}\")\n        _v144_zhurnal(\"запущен бот: %s\" % name)\n\n    logging.info(f\"Всего работает ботов: {len(apps)}\")\n    _v144_zhurnal(\"всего работает ботов: %d — вход в ожидание\" % len(apps))\n\n    try:\n        # Держим процесс живым\n        while True:\n            await asyncio.sleep(3600)\n    finally:\n        _v144_zhurnal(\"ВЫХОД из ожидания — боты останавливаются\")\n        for name, app in apps:\n            try:\n                await app.updater.stop()\n                await app.stop()\n                await app.shutdown()\n                logging.info(f\"Остановлен бот: {name}\")\n            except Exception as e:\n                logging.warning(f\"Ошибка остановки {name}: {e}\")"
+        }
+      ],
+      "path": "/home/Carix/run_all.py",
+      "sha256": "7deb18698f792b61fd734b36451296343ec528e15ccd86798d6cbc4a7a75eca5",
+      "size": 5822
+    },
+    "start_safe.py": {
+      "context": [
+        {
+          "end_lineno": 231,
+          "kind": "AsyncFunctionDef",
+          "lineno": 192,
+          "name": "_videos_after_html",
+          "source": "async def _videos_after_html(bot, message):\n    \"\"\"HTML собирается только с фото — видео досылаем следом в чат.\"\"\"\n    try:\n        doc = getattr(message, \"document\", None)\n        name = getattr(doc, \"file_name\", \"\") or \"\"\n        found = re.search(r\"(UA-\\d+)\\.html$\", name, re.IGNORECASE)\n        if not found:\n            return\n        number = found.group(1)\n\n        cols = set(_car_columns())\n        if \"videos\" not in cols or \"auto_number\" not in cols:\n            return\n        rows = _rows(\n            \"SELECT videos FROM cars WHERE auto_number = ? LIMIT 1\", (number,)\n        )\n        if not rows:\n            return\n        videos = _ids(rows[0].get(\"videos\"))\n        if not videos:\n            log.info(\"у карточки %s видео нет\", number)\n            return\n        if time.time() - VIDEO_V_ALBOME.get(number, 0) < 120:\n            log.info(\"видео по %s уже внутри карточки — не дублируем\", number)\n            return\n\n        from telegram import InputMediaVideo\n\n        chat_id = message.chat_id\n        await bot.send_message(chat_id, \"Видео по карточке %s — %d шт.\" % (number, len(videos)))\n        for i in range(0, len(videos), 10):\n            chunk = videos[i:i + 10]\n            if len(chunk) == 1:\n                await bot.send_video(chat_id, chunk[0])\n            else:\n                await bot.send_media_group(chat_id, [InputMediaVideo(v) for v in chunk])\n            await asyncio.sleep(ALBUM_PAUSE)\n        log.info(\"досланы видео по карточке %s: %d\", number, len(videos))\n    except Exception as e:\n        log.warning(\"не удалось дослать видео: %r\", e)"
+        },
+        {
+          "end_lineno": 495,
+          "kind": "FunctionDef",
+          "lineno": 461,
+          "name": "patch_bot_methods",
+          "source": "def patch_bot_methods():\n    \"\"\"Повторы отправки при обрыве связи.\"\"\"\n    from telegram import Bot\n    from telegram.error import TimedOut, NetworkError, RetryAfter\n\n    errors = (TimedOut, NetworkError, RetryAfter)\n\n    # ВАЖНО: ExtBot наследуется от Bot. Если обернуть оба класса,\n    # повторы вкладываются друг в друга: 4 попытки превращаются в 16.\n    # Поэтому Bot трогаем только там, где ExtBot своего метода не имеет.\n    ext = None\n    try:\n        from telegram.ext import ExtBot\n        ext = ExtBot\n    except Exception:\n        ext = None\n\n    n = 0\n    for name in TEXT_METHODS + MEDIA_METHODS + SILENT_METHODS:\n        target = None\n        if ext is not None and name in ext.__dict__:\n            target = ext\n        elif name in Bot.__dict__:\n            target = Bot\n        if target is None:\n            continue\n        orig = target.__dict__.get(name)\n        if orig is None or getattr(orig, \"_ns_wrapped\", False):\n            continue\n        if name in SILENT_METHODS:\n            setattr(target, name, _wrap_silent(orig))\n        else:\n            setattr(target, name, _wrap_send(orig, name in MEDIA_METHODS, errors))\n        n += 1\n    log.info(\"защищено методов отправки: %d\", n)"
+        },
+        {
+          "end_lineno": 530,
+          "kind": "FunctionDef",
+          "lineno": 498,
+          "name": "patch_error_handlers",
+          "source": "def patch_error_handlers():\n    \"\"\"Сетевые таймауты не уходят владельцу как «Сбой во внутреннем боте».\"\"\"\n    from telegram.ext import Application\n    from telegram.error import TimedOut, NetworkError\n\n    orig = Application.add_error_handler\n    if getattr(orig, \"_ns_wrapped\", False):\n        return\n\n    def filtered(callback):\n        @functools.wraps(callback)\n        async def inner(update, context):\n            err = getattr(context, \"error\", None)\n            if isinstance(err, (TimedOut, NetworkError)):\n                log.warning(\"сетевая ошибка не показана владельцу: %r\", err)\n                return\n            return await callback(update, context)\n\n        inner._ns_filtered = True\n        return inner\n\n    @functools.wraps(orig)\n    def inner(self, callback, block=True, *args, **kwargs):\n        if not getattr(callback, \"_ns_filtered\", False):\n            callback = filtered(callback)\n        try:\n            return orig(self, callback, block, *args, **kwargs)\n        except TypeError:\n            return orig(self, callback)\n\n    inner._ns_wrapped = True\n    Application.add_error_handler = inner\n    log.info(\"фильтр сетевых ошибок включён\")"
+        },
+        {
+          "end_lineno": 794,
+          "kind": "AsyncFunctionDef",
+          "lineno": 766,
+          "name": "_send_client_card",
+          "source": "async def _send_client_card(bot, chat_id, car):\n    from telegram import InputMediaPhoto, InputMediaVideo\n    from telegram import InlineKeyboardButton, InlineKeyboardMarkup\n\n    hidden = set(_ids(car.get(\"hidden_photos\")))\n    photos = [p for p in _ids(car.get(\"photos\")) if p not in hidden]\n    videos = _ids(car.get(\"videos\"))\n\n    for i in range(0, len(photos), 10):\n        chunk = photos[i:i + 10]\n        if len(chunk) == 1:\n            await bot.send_photo(chat_id, chunk[0])\n        else:\n            await bot.send_media_group(chat_id, [InputMediaPhoto(p) for p in chunk])\n        await asyncio.sleep(ALBUM_PAUSE)\n\n    keyboard = InlineKeyboardMarkup([[\n        InlineKeyboardButton(\"WhatsApp\", url=WHATSAPP),\n        InlineKeyboardButton(\"Карта\", url=MAPS),\n    ]])\n    await bot.send_message(chat_id, client_text(car), reply_markup=keyboard)\n\n    for i in range(0, len(videos), 10):\n        chunk = videos[i:i + 10]\n        if len(chunk) == 1:\n            await bot.send_video(chat_id, chunk[0])\n        else:\n            await bot.send_media_group(chat_id, [InputMediaVideo(v) for v in chunk])\n        await asyncio.sleep(ALBUM_PAUSE)"
+        },
+        {
+          "end_lineno": 1101,
+          "kind": "FunctionDef",
+          "lineno": 797,
+          "name": "register_pokaz",
+          "source": "def register_pokaz(app):\n    \"\"\"Вешает /pokaz на CRM-бота.\"\"\"\n    from telegram.ext import CommandHandler, CallbackQueryHandler\n    from telegram import InlineKeyboardButton, InlineKeyboardMarkup\n\n    if getattr(app, \"_ns_pokaz\", False):\n        return\n    app._ns_pokaz = True\n\n    cols = set(_car_columns())\n    have = [c for c in CAR_FIELDS if c in cols]\n\n    async def cmd(update, context):\n        rows = _rows(\n            \"SELECT rowid, %s FROM cars ORDER BY rowid DESC LIMIT 30\" % \", \".join(have)\n        )\n        if not rows:\n            await update.message.reply_text(\"Карточек пока нет.\")\n            return\n        buttons = []\n        for car in rows:\n            name = \" \".join(\n                str(x) for x in [car.get(\"auto_number\"), car.get(\"brand\"), car.get(\"model\")] if x\n            ) or (\"Карточка %s\" % car[\"rowid\"])\n            buttons.append([InlineKeyboardButton(name[:60], callback_data=\"nspokaz:%d\" % car[\"rowid\"])])\n        await update.message.reply_text(\n            \"Как видит покупатель — выбери карточку:\",\n            reply_markup=InlineKeyboardMarkup(buttons),\n        )\n\n    async def press(update, context):\n        q = update.callback_query\n        await q.answer()\n        rowid = int(q.data.split(\":\")[1])\n        rows = _rows(\n            \"SELECT rowid, %s FROM cars WHERE rowid = ?\" % \", \".join(have), (rowid,)\n        )\n        if not rows:\n            await q.message.reply_text(\"Карточка не найдена.\")\n            return\n        await _send_client_card(context.bot, q.message.chat_id, rows[0])\n\n    async def sostoyanie(update, context):\n        stroki = [\"СОСТОЯНИЕ СИСТЕМЫ\", \"\"]\n\n        def est(fname, priznak, podpis):\n            try:\n                with open(os.path.join(BASE, fname), \"r\", encoding=\"utf-8\") as fh:\n                    ok = priznak in fh.read()\n            except Exception:\n                ok = None\n            znak = \"—\" if ok is None else (\"да\" if ok else \"НЕТ\")\n            stroki.append(\"%s: %s\" % (podpis, znak))\n\n        est(\"card_html.py\", \"PARALLEL\", \"Быстрая сборка страницы\")\n        est(\"card_html.py\", \"VIDEO_BUDGET = 0\", \"Видео отдельно от файла\")\n        stroki.append(\"Ускорение связи: да\")\n\n        try:\n            n = len(os.listdir(CACHE_DIR))\n            ves = sum(os.path.getsize(os.path.join(CACHE_DIR, f))\n                      for f in os.listdir(CACHE_DIR))\n            stroki.append(\"Кэш кадров: %d шт, %.1f МБ\" % (n, ves / 1024.0 / 1024))\n        except Exception:\n            stroki.append(\"Кэш кадров: пусто\")\n\n        probely = [f for f in os.listdir(BASE) if \" \" in f and f.endswith(\".py\")]\n        stroki.append(\"Файлы с пробелом: %s\" % (\", \".join(probely) if probely else \"нет\"))\n\n        try:\n            stroki.append(\"В архиве staroe: %d файлов\" % len(os.listdir(STAROE)))\n        except Exception:\n            stroki.append(\"В архиве staroe: 0 файлов\")\n\n        stroki.append(\"\")\n        try:\n            rows = _rows(\"SELECT %s FROM cars ORDER BY rowid DESC LIMIT 5\" % \", \".join(have))\n            for car in rows:\n                hidden = set(_ids(car.get(\"hidden_photos\")))\n                foto = len([p for p in _ids(car.get(\"photos\")) if p not in hidden])\n                stroki.append(\"%s — фото %d, видео %d, %s\" % (\n                    car.get(\"auto_number\") or \"?\", foto,\n                    len(_ids(car.get(\"videos\"))), (car.get(\"status\") or \"\")[:20]))\n        except Exception as e:\n            stroki.append(\"База не прочиталась: %r\" % e)\n\n        await update.message.reply_text(\"\\n\".join(stroki))\n\n    async def kanal(update, context):\n        put = os.path.join(BASE, \"video_kanal.txt\")\n        argument = (context.args[0].strip() if getattr(context, \"args\", None) else \"\")\n\n        if not argument:\n            try:\n                with open(put, \"r\", encoding=\"utf-8\") as fh:\n                    est = fh.read().strip()\n            except Exception:\n                est = \"\"\n            if est:\n                await update.message.reply_text(\n                    \"Служебный канал для видео: %s\\n\\n\"\n                    \"Сменить: /kanal @novoe_imya\" % est)\n            else:\n                await update.message.reply_text(\n                    \"Служебный канал не задан.\\n\\n\"\n                    \"1. Создай публичный канал в Telegram\\n\"\n                    \"2. Добавь меня туда администратором\\n\"\n                    \"3. Напиши сюда: /kanal @imya_kanala\")\n            return\n\n        if not argument.startswith(\"@\"):\n            await update.message.reply_text(\"Имя канала начинается с @. Пример: /kanal @uaart_video\")\n            return\n\n        # проверяем, что бот там админ и может публиковать\n        try:\n            await context.bot.get_chat(argument)\n        except Exception as e:\n            await update.message.reply_text(\n                \"Не вижу канал %s. Проверь, что он публичный \"\n                \"и я добавлен администратором.\\n\\n(%s)\" % (argument, e))\n            return\n\n        try:\n            with open(put, \"w\", encoding=\"utf-8\") as fh:\n                fh.write(argument + \"\\n\")\n        except Exception as e:\n            await update.message.reply_text(\"Не смог записать настройку: %r\" % e)\n            return\n\n        await update.message.reply_text(\n            \"Готово. Ролики карточек буду публиковать в %s, \"\n            \"и они будут играть прямо в странице покупателя.\\n\\n\"\n            \"Дальше ничего делать не нужно: присылаешь видео по кнопке \"\n            \"в карточке — остальное само.\" % argument)\n\n    async def pro_video(update, context):\n        \"\"\"Подсказка по весу присланного ролика.\"\"\"\n        try:\n            v = update.message.video or update.message.animation\n            if not v:\n                return\n            ves = int(getattr(v, \"file_size\", 0) or 0)\n            sek = int(getattr(v, \"duration\", 0) or 0)\n            mb = ves / 1024.0 / 1024\n            minuty = \"%d:%02d\" % (sek // 60, sek % 60) if sek else \"—\"\n\n            if ves and ves <= 20 * 1024 * 1024:\n                await update.message.reply_text(\n                    \"Ролик %.1f МБ, %s — попадёт прямо в страницу покупателя \"\n                    \"и будет играть под фото.\" % (mb, minuty))\n            elif ves:\n                await update.message.reply_text(\n                    \"Ролик %.1f МБ, %s — тяжеловат.\\n\\n\"\n                    \"В страницу помещаются ролики до 20 МБ. Пришлите этот же \"\n                    \"ролик ещё раз и перед отправкой нажмите значок качества \"\n                    \"над видео — выберите 720p. Станет 10–15 МБ, и видео будет \"\n                    \"играть прямо в карточке.\\n\\n\"\n                    \"Если оставить как есть — в карточке Telegram ролик будет, \"\n                    \"а в странице встанет плитка с кнопкой.\" % (mb, minuty))\n        except Exception as e:\n            log.warning(\"не разобрал видео: %r\", e)\n\n    try:\n        from telegram.ext import MessageHandler, filters\n        app.add_handler(\n            MessageHandler(filters.VIDEO | filters.ANIMATION, pro_video), group=7)\n    except Exception as e:\n        log.warning(\"подсказка по видео не подключилась: %r\", e)\n\n    async def video_master(update, context):\n        \"\"\"Настройка помощника, который забирает видео любого веса.\"\"\"\n        try:\n            sys.path.insert(0, BASE)\n            import video_helper as VH\n        except Exception:\n            await update.message.reply_text(\n                \"Помощник не установлен. Загрузите video_helper.py в /home/Carix/ \"\n                \"и запустите ustanovka_telethon.py кнопкой «Run this file».\")\n            return\n\n        argument = \" \".join(getattr(context, \"args\", []) or []).strip()\n\n        if VH.gotov() and not argument:\n            await update.message.reply_text(\n                \"Помощник настроен и работает.\\n\\n\"\n                \"Ролики любого веса и качества сами попадают в страницу \"\n                \"покупателя. Ничего делать не нужно.\\n\\n\"\n                \"Сбросить настройку: /video sbros\")\n            return\n\n        if argument == \"sbros\":\n            for f in (VH.KLYUCHI, VH.SESSIYA + \".session\"):\n                try:\n                    os.remove(f)\n                except Exception:\n                    pass\n            NASTROYKA.pop(update.effective_chat.id, None)\n            await update.message.reply_text(\"Настройка сброшена. Начать заново: /video\")\n            return\n\n        if not VH.klyuchi_est():\n            NASTROYKA[update.effective_chat.id] = \"klyuchi\"\n            await update.message.reply_text(\n                \"Настройка помощника — три шага, пять минут.\\n\\n\"\n                \"ШАГ 1. Открой на телефоне my.telegram.org, войди по своему \"\n                \"номеру, зайди в «API development tools» и создай приложение \"\n                \"(название любое, например uaart).\\n\\n\"\n                \"Оттуда пришли мне сюда две строки одним сообщением:\\n\"\n                \"api_id\\napi_hash\")\n            return\n\n        NASTROYKA[update.effective_chat.id] = \"telefon\"\n        await update.message.reply_text(\n            \"ШАГ 2. Пришли номер телефона аккаунта Telegram \"\n            \"в виде +380XXXXXXXXX\")\n\n    async def video_otvet(update, context):\n        \"\"\"Ловит ответы владельца во время настройки помощника.\"\"\"\n        shag = NASTROYKA.get(update.effective_chat.id)\n        if not shag:\n            return\n        try:\n            sys.path.insert(0, BASE)\n            import video_helper as VH\n        except Exception:\n            return\n\n        text = (update.message.text or \"\").strip()\n\n        try:\n            if shag == \"klyuchi\":\n                chasti = [c for c in text.replace(\"\\n\", \" \").split() if c]\n                if len(chasti) < 2 or not chasti[0].isdigit():\n                    await update.message.reply_text(\n                        \"Нужны две части: сначала api_id (только цифры), \"\n                        \"потом api_hash. Пришли одним сообщением.\")\n                    return\n                VH.zapisat_klyuchi(chasti[0], chasti[1])\n                NASTROYKA[update.effective_chat.id] = \"telefon\"\n                await update.message.reply_text(\n                    \"Принял.\\n\\nШАГ 2. Пришли номер телефона аккаунта \"\n                    \"в виде +380XXXXXXXXX\")\n                return\n\n            if shag == \"telefon\":\n                itog = await VH.nachat_vhod(text)\n                if itog == \"uzhe\":\n                    NASTROYKA.pop(update.effective_chat.id, None)\n                    await update.message.reply_text(\"Вход уже выполнен, всё готово.\")\n                    return\n                NASTROYKA[update.effective_chat.id] = \"kod\"\n                await update.message.reply_text(\n                    \"ШАГ 3. Telegram прислал код в чат «Telegram».\\n\\n\"\n                    \"Пришли его сюда с пробелами между цифрами — например 1 2 3 4 5. \"\n                    \"Так Telegram не посчитает код использованным.\")\n                return\n\n            if shag == \"kod\":\n                kod = \"\".join(c for c in text if c.isdigit())\n                itog = await VH.vvesti_kod(kod)\n                if itog == \"parol\":\n                    NASTROYKA[update.effective_chat.id] = \"parol\"\n                    await update.message.reply_text(\n                        \"Нужен пароль двухэтапной проверки. Пришли его сюда — \"\n                        \"я запишу только сессию, сам пароль не сохраняется.\")\n                    return\n                if itog == \"gotovo\":\n                    NASTROYKA.pop(update.effective_chat.id, None)\n                    await update.message.reply_text(\n                        \"Готово. Помощник работает.\\n\\n\"\n                        \"Теперь ролики любого веса и качества сами попадают \"\n                        \"в страницу покупателя и играют под фото. \"\n                        \"Первый раз ролик появится через минуту-две после \"\n                        \"открытия карточки — он качается и ужимается в фоне.\")\n                    return\n                await update.message.reply_text(\n                    \"Код не подошёл. Начнём заново: /video\")\n                NASTROYKA.pop(update.effective_chat.id, None)\n                return\n\n            if shag == \"parol\":\n                itog = await VH.vvesti_parol(text)\n                NASTROYKA.pop(update.effective_chat.id, None)\n                await update.message.reply_text(\n                    \"Готово, помощник работает.\" if itog == \"gotovo\"\n                    else \"Пароль не подошёл. Начнём заново: /video\")\n                return\n        except Exception as e:\n            NASTROYKA.pop(update.effective_chat.id, None)\n            await update.message.reply_text(\"Сбой настройки: %r\\n\\nНачать заново: /video\" % e)\n\n    app.add_handler(CommandHandler(\"video\", video_master))\n    try:\n        from telegram.ext import MessageHandler, filters\n        app.add_handler(\n            MessageHandler(filters.TEXT & ~filters.COMMAND, video_otvet), group=8)\n    except Exception as e:\n        log.warning(\"мастер настройки не подключился: %r\", e)\n\n    app.add_handler(CommandHandler(\"kanal\", kanal))\n    app.add_handler(CommandHandler([\"sostoyanie\", \"proverka\"], sostoyanie))\n    app.add_handler(CommandHandler([\"pokaz\", \"pokazat\"], cmd))\n    app.add_handler(CallbackQueryHandler(press, pattern=r\"^nspokaz:\\d+$\"))\n    log.info(\"команда /pokaz подключена\")"
+        },
+        {
+          "end_lineno": 1211,
+          "kind": "FunctionDef",
+          "lineno": 1104,
+          "name": "register_token",
+          "source": "def register_token(app):\n    \"\"\"Команда /token — записывает новый токен бота без захода в редактор.\n\n    Работает в обоих ботах: если один бот «умер» после отзыва токена,\n    новый токен для него присылаешь во второй.\n    \"\"\"\n    from telegram.ext import CommandHandler\n\n    if getattr(app, \"_ns_token\", False):\n        return\n    app._ns_token = True\n\n    VLADELEC = os.path.join(BASE, \"vladelec.txt\")\n    OBRAZEC = re.compile(r\"^\\d{6,}:[A-Za-z0-9_\\-]{30,}$\")\n    FAYLY = {\n        \"client\": (\"bot_token.txt\", \"клиентского бота\"),\n        \"crm\": (\"team_token.txt\", \"CRM-бота\"),\n    }\n\n    def vladelec():\n        try:\n            with open(VLADELEC, \"r\", encoding=\"utf-8\") as fh:\n                return int(fh.read().strip())\n        except Exception:\n            return None\n\n    async def token(update, context):\n        kto = update.effective_user.id\n        hozyain = vladelec()\n\n        # первый, кто воспользовался командой, становится владельцем\n        if hozyain is None:\n            try:\n                with open(VLADELEC, \"w\", encoding=\"utf-8\") as fh:\n                    fh.write(str(kto))\n                hozyain = kto\n            except Exception as e:\n                await update.message.reply_text(\"Не смог запомнить владельца: %r\" % e)\n                return\n        if kto != hozyain:\n            return\n\n        args = getattr(context, \"args\", None) or []\n\n        def chey(znachenie):\n            \"\"\"Определяет по номеру бота, в какой файл писать.\"\"\"\n            nomer = znachenie.split(\":\")[0]\n            for vid, (imya, _) in FAYLY.items():\n                try:\n                    with open(os.path.join(BASE, imya), \"r\", encoding=\"utf-8\") as fh:\n                        if fh.read().strip().split(\":\")[0] == nomer:\n                            return vid\n                except Exception:\n                    continue\n            return None\n\n        if len(args) == 1 and OBRAZEC.match(args[0].strip()):\n            znachenie = args[0].strip()\n            vid = chey(znachenie)\n            if vid is None:\n                await update.message.reply_text(\n                    \"Не понял, чей это токен. Уточни:\\n\"\n                    \"/token client ТОКЕН — клиентский\\n\"\n                    \"/token crm ТОКЕН — CRM\")\n                return\n        elif len(args) >= 2 and args[0].lower() in FAYLY:\n            vid = args[0].lower()\n            znachenie = args[1].strip()\n            if not OBRAZEC.match(znachenie):\n                await update.message.reply_text(\n                    \"Это не похоже на токен. Он выглядит так:\\n\"\n                    \"1234567890:AAH... (цифры, двоеточие, длинная часть)\")\n                return\n        else:\n            await update.message.reply_text(\n                \"Смена токена без захода в редактор.\\n\\n\"\n                \"Просто пришли токен:\\n/token НОВЫЙ_ТОКЕН\\n\"\n                \"Я сам пойму, чей он.\\n\\n\"\n                \"Если не понял — уточни:\\n\"\n                \"/token client ТОКЕН\\n/token crm ТОКЕН\\n\\n\"\n                \"После записи нажми Tasks → Restart.\")\n            return\n\n        imya, opisanie = FAYLY[vid]\n        put = os.path.join(BASE, imya)\n        try:\n            if os.path.exists(put):\n                shutil.copy2(put, put + \".staryy\")\n            with open(put, \"w\", encoding=\"utf-8\") as fh:\n                fh.write(znachenie + \"\\n\")\n        except Exception as e:\n            await update.message.reply_text(\"Не смог записать: %r\" % e)\n            return\n\n        await update.message.reply_text(\n            \"Новый токен %s записан.\\n\\n\"\n            \"Перезапускаюсь сам — через полминуты всё поднимется. \"\n            \"Нажимать ничего не нужно.\\n\"\n            \"Прежний токен сохранён рядом как %s.staryy\" % (opisanie, imya))\n\n        # завершаемся: always-on задача поднимет процесс заново уже с новым токеном\n        try:\n            asyncio.get_event_loop().call_later(2, os._exit, 0)\n        except Exception:\n            os._exit(0)\n\n    app.add_handler(CommandHandler(\"token\", token))\n    log.info(\"команда /token подключена\")"
+        },
+        {
+          "end_lineno": 1244,
+          "kind": "FunctionDef",
+          "lineno": 1214,
+          "name": "patch_register_hook",
+          "source": "def patch_register_hook():\n    \"\"\"Регистрируем /pokaz на том приложении, где токен CRM-бота.\"\"\"\n    from telegram.ext import Application\n\n    team_token = \"<redacted>\"\n    path = os.path.join(BASE, \"team_token.txt\")\n    if os.path.exists(path):\n        try:\n            with open(path, \"r\", encoding=\"utf-8\") as fh:\n                team_token = fh.read().strip()\n        except Exception:\n            team_token = \"<redacted>\"\n\n    orig = Application.initialize\n    if getattr(orig, \"_ns_wrapped\", False):\n        return\n\n    @functools.wraps(orig)\n    async def inner(self, *args, **kwargs):\n        result = await orig(self, *args, **kwargs)\n        try:\n            register_token(self)          # смена токена работает в обоих ботах\n            token = getattr(getattr(self, \"bot\", None), \"token\", \"\")\n            if not team_token or token == team_token:\n                register_pokaz(self)\n        except Exception as e:\n            log.warning(\"не удалось подключить /pokaz: %r\", e)\n        return result\n\n    inner._ns_wrapped = True\n    Application.initialize = inner"
+        },
+        {
+          "end_lineno": 1352,
+          "kind": "FunctionDef",
+          "lineno": 1337,
+          "name": "apply_all",
+          "source": "def apply_all():\n    ok = True\n    for func in (\n        patch_request_timeouts,\n        patch_bot_methods,\n        patch_error_handlers,\n        patch_register_hook,\n        patch_card_html_budget,\n        patch_download_cache,\n    ):\n        try:\n            func()\n        except Exception as e:\n            ok = False\n            log.warning(\"не удалось применить %s: %r\", func.__name__, e)\n    return ok"
+        },
+        {
+          "end_lineno": 1369,
+          "kind": "FunctionDef",
+          "lineno": 1357,
+          "name": "_zhivoy_token",
+          "source": "def _zhivoy_token(znachenie):\n    \"\"\"Проверяет токен у Telegram. Ничего не отправляет, только спрашивает.\"\"\"\n    if not znachenie:\n        return False\n    try:\n        import urllib.request\n        import json as _json\n        adres = \"https://api.telegram.org/bot%s/getMe\" % znachenie\n        with urllib.request.urlopen(adres, timeout=20) as otvet:\n            return bool(_json.loads(otvet.read().decode(\"utf-8\")).get(\"ok\"))\n    except Exception as e:\n        log.warning(\"токен не проверился: %r\", e)\n        return None          # непонятно — считаем, что жив"
+        },
+        {
+          "end_lineno": 1405,
+          "kind": "FunctionDef",
+          "lineno": 1380,
+          "name": "avariynyy_rezhim",
+          "source": "def avariynyy_rezhim(zhivoy, slomannyy_fayl):\n    \"\"\"Один токен негоден — поднимаем только рабочего бота ради /token.\"\"\"\n    from telegram.ext import ApplicationBuilder\n\n    log.warning(\"АВАРИЙНЫЙ РЕЖИМ: %s содержит негодный токен\", slomannyy_fayl)\n    app = ApplicationBuilder().token(zhivoy).build()\n    register_token(app)\n\n    async def pri_starte(application):\n        try:\n            hozyain = None\n            put = os.path.join(BASE, \"vladelec.txt\")\n            if os.path.exists(put):\n                with open(put, \"r\", encoding=\"utf-8\") as fh:\n                    hozyain = int(fh.read().strip())\n            if hozyain:\n                await application.bot.send_message(\n                    hozyain,\n                    \"Один из ботов не поднялся: в файле %s негодный токен.\\n\\n\"\n                    \"Пришли новый сюда одной командой:\\n/token НОВЫЙ_ТОКЕН\\n\\n\"\n                    \"Я сам пойму, чей он. Потом Tasks → Restart.\" % slomannyy_fayl)\n        except Exception as e:\n            log.warning(\"не предупредил владельца: %r\", e)\n\n    app.post_init = pri_starte\n    app.run_polling(drop_pending_updates=True)"
+        },
+        {
+          "end_lineno": 1468,
+          "kind": "FunctionDef",
+          "lineno": 1408,
+          "name": "main",
+          "source": "def main():\n    if not os.path.exists(TARGET):\n        log.error(\"не найден %s — проверь имя файла\", TARGET)\n        raise SystemExit(1)\n\n    os.chdir(BASE)\n    if BASE not in sys.path:\n        sys.path.insert(0, BASE)\n\n    novye = pochinit_imena()\n    ubrat_musor()\n    if novye:\n        log.warning(\"обновились файлы: %s — если что-то ведёт себя странно, \"\n                    \"нажми Restart ещё раз\", \", \".join(novye))\n\n    apply_all()\n    db_clean_split()\n\n    # проверяем токены до запуска: один битый больше не роняет обоих\n    klient = _token_iz(\"bot_token.txt\")\n    krm = _token_iz(\"team_token.txt\")\n    ok_klient = _zhivoy_token(klient)\n    ok_krm = _zhivoy_token(krm)\n\n    if ok_krm is False and ok_klient is not False:\n        avariynyy_rezhim(klient, \"team_token.txt\")\n        return\n    if ok_klient is False and ok_krm is not False:\n        avariynyy_rezhim(krm, \"bot_token.txt\")\n        return\n    if ok_klient is False and ok_krm is False:\n        log.error(\"оба токена негодны — впиши их в bot_token.txt и team_token.txt\")\n\n    log.info(\"защита включена, запускаю run_all.py\")\n\n    while True:\n        try:\n            runpy.run_path(TARGET, run_name=\"__main__\")\n            log.warning(\"run_all.py завершился сам, перезапуск через 10 c\")\n        except SystemExit:\n            raise\n        except KeyboardInterrupt:\n            raise\n        except Exception as e:\n            tekst = \"%r\" % e\n            if \"InvalidToken\" in tekst or \"Unauthorized\" in tekst:\n                # какой именно токен отвергли — видно в тексте ошибки\n                klient = _token_iz(\"bot_token.txt\")\n                krm = _token_iz(\"team_token.txt\")\n                if klient and klient in tekst and krm and krm not in tekst:\n                    avariynyy_rezhim(krm, \"bot_token.txt\")\n                    return\n                if krm and krm in tekst and klient and klient not in tekst:\n                    avariynyy_rezhim(klient, \"team_token.txt\")\n                    return\n                log.error(\"Оба токена не приняты. Впиши действующие в \"\n                          \"bot_token.txt и team_token.txt через редактор.\")\n                time.sleep(60)\n                continue\n            log.exception(\"run_all.py упал: %r — перезапуск через 10 c\", e)\n        time.sleep(10)"
+        }
+      ],
+      "path": "/home/Carix/start_safe.py",
+      "sha256": "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007",
+      "size": 60219
+    },
+    "trace_zhurnal.py": {
+      "context": [
+        {
+          "end_lineno": 26,
+          "kind": "FunctionDef",
+          "lineno": 17,
+          "name": "_zapis",
+          "source": "def _zapis(tip, sek, info):\n    try:\n        if os.path.exists(ZHURNAL) and os.path.getsize(ZHURNAL) > PREDEL and tip not in (\"COMMIT_FAIL\", \"ZAPUSK\"):\n            return\n        with open(ZHURNAL, \"a\", encoding=\"utf-8\") as f:\n            f.write(time.strftime(\"%Y-%m-%d %H:%M:%S\") + \"\\t\" + str(tip).ljust(14) + \"\\t\"\n                    + (\"%8.2f\" % sek) + \"\\tPID\" + str(os.getpid()) + \"\\t\"\n                    + threading.current_thread().name + \"\\t\" + str(info) + \"\\n\")\n    except Exception:\n        pass"
+        },
+        {
+          "end_lineno": 52,
+          "kind": "FunctionDef",
+          "lineno": 49,
+          "name": "_novyy_id",
+          "source": "def _novyy_id():\n    with _zamok:\n        _nomer[0] += 1\n        return str(os.getpid()) + \"-\" + str(_nomer[0])"
+        },
+        {
+          "end_lineno": 248,
+          "kind": "FunctionDef",
+          "lineno": 149,
+          "name": "otchet_o_sboe",
+          "source": "def otchet_o_sboe(dlitelnost, oshibka, kto, busy):\n    try:\n        teper = time.time()\n        nachalo = teper - max(dlitelnost, 1.0)\n        s = []\n        s.append(\"=\" * 70)\n        s.append(\"UA-TRACE-V2 — СНИМОК В МОМЕНТ ПАДЕНИЯ COMMIT\")\n        s.append(\"время: \" + time.strftime(\"%Y-%m-%d %H:%M:%S\"))\n        s.append(\"=\" * 70)\n        s.append(\"\")\n        s.append(\"BOT COMMIT FAIL DURATION : %.2f сек\" % dlitelnost)\n        s.append(\"ACTUAL BUSY_TIMEOUT      : \" + str(busy))\n        s.append(\"ОШИБКА                   : \" + repr(oshibka))\n        s.append(\"ПАДАЛ                    : \" + str(kto))\n        s.append(\"\")\n\n        sost = _sostoyanie()\n        moy_potok = threading.current_thread().name\n        s.append(\"ACTIVE TRANSACTIONS AT FAILURE\")\n        s.append(\"  %-10s %-16s %-9s %-9s %s\" % (\"conn_id\", \"in_transaction\", \"tranz_age\", \"otkryto\", \"стек\"))\n        for z in sorted(sost, key=lambda i: -i[\"otkryto\"]):\n            svoy = \" <== это падающий поток\" if z[\"potok\"] == moy_potok else \"\"\n            s.append(\"  %-10s %-16s %-9s %-9s %s%s\" % (\n                z[\"id\"],\n                (\"YES\" if z[\"tranz\"] else (\"NO\" if z[\"tranz\"] is False else \"?\")),\n                (\"%.1f сек\" % z[\"vozrast\"]),\n                (\"%.1f сек\" % z[\"otkryto\"]),\n                z[\"kto\"][:100], svoy))\n        if not sost:\n            s.append(\"  соединений нет\")\n\n        # окно ожидания по снимкам\n        okno = [x for x in _snimki if x[0] >= nachalo - 1]\n        pervye10 = [x for x in okno if x[0] <= nachalo + 10]\n        s.append(\"\")\n        s.append(\"-- ПЕРВЫЕ 10 СЕКУНД ОЖИДАНИЯ --\")\n        for x in pervye10:\n            s.append(\"  \" + x[1] + \"  соединений \" + str(x[2]) + \"  \" + x[4] + \"  \" + x[3][:150])\n        if not pervye10:\n            s.append(\"  снимков нет\")\n\n        bylo_tranz_v_pervye10 = any(\"ТРАНЗ\" in x[3] for x in pervye10)\n        journal_v_pervye10 = any(\"journal \" in x[4] and \"нет\" not in x[4] for x in pervye10)\n        if bylo_tranz_v_pervye10:\n            pervyy = \"в этом процессе была активная транзакция — см. список выше\"\n        elif journal_v_pervye10:\n            pervyy = \"ЧУЖОЙ ПРОЦЕСС: есть crm.db-journal, а своих транзакций нет\"\n        else:\n            pervyy = \"не виден: своих транзакций нет и journal-файла нет\"\n\n        def est_tranz(imya):\n            for z in sost:\n                if imya in z[\"kto\"] and z[\"tranz\"]:\n                    return \"YES (возраст %.1f сек)\" % z[\"vozrast\"]\n            for z in sost:\n                if imya in z[\"kto\"]:\n                    return \"NO (соединение открыто %.1f сек, транзакции нет)\" % z[\"otkryto\"]\n            return \"соединения нет\"\n\n        vneshniy = \"YES\" if (not bylo_tranz_v_pervye10) else \"NO\"\n        celevoy = None\n        for z in sorted(sost, key=lambda i: -i[\"vozrast\"]):\n            if z[\"tranz\"] and z[\"potok\"] != moy_potok and z[\"vozrast\"] >= 2:\n                celevoy = z\n                break\n\n        def prikladnoy(kto_polnyy):\n            \"\"\"Пропускаем кадры db.py и обёрток — нужен прикладной файл.\"\"\"\n            try:\n                for kadr in kto_polnyy.split(\" < \"):\n                    imya = kadr.split(\":\")[0]\n                    if imya not in (\"db.py\", \"trace_zhurnal.py\", \"lock4_zhurnal.py\", \"sqlite3.py\"):\n                        return kadr\n                return kto_polnyy.split(\" < \")[0]\n            except Exception:\n                return kto_polnyy\n\n        s.append(\"\")\n        s.append(\"FIRST 10 SEC HOLDER                  : \" + pervyy)\n        s.append(\"AVTOPEREDACHA IN_TRANSACTION AT FAIL : \" + est_tranz(\"avtoperedacha\"))\n        s.append(\"SAMOKONTROL IN_TRANSACTION AT FAIL   : \" + est_tranz(\"samokontrol\"))\n        s.append(\"EXTERNAL HOLDER STILL UNSEEN         : \" + vneshniy)\n        s.append(\"TARGETED FIX POSSIBLE                : \" + (\n            \"YES — \" + prikladnoy(celevoy[\"kto\"]) if celevoy else \"NO — конкретной длинной транзакции не видно\"))\n        s.append(\"PARTIAL UA-0009                      : \" + _proverit_0009())\n\n        s.append(\"\")\n        s.append(\"-- ВСЁ ОКНО ОЖИДАНИЯ (снимки раз в секунду) --\")\n        for x in okno[-40:]:\n            s.append(\"  \" + x[1] + \"  соединений \" + str(x[2]) + \"  \" + x[4] + \"  \" + x[3][:150])\n\n        try:\n            os.makedirs(os.path.dirname(OTCHET), exist_ok=True)\n        except Exception:\n            pass\n        with open(OTCHET, \"w\", encoding=\"utf-8\") as f:\n            f.write(\"\\n\".join(s))\n        _zapis(\"OTCHET\", 0.0, OTCHET)\n    except Exception as e:\n        _zapis(\"OTCHET_FAIL\", 0.0, repr(e))"
+        }
+      ],
+      "path": "/home/Carix/trace_zhurnal.py",
+      "sha256": "fc4b95fc749f3d9b785ce69bfce2705b11ade95a560d6fbd901b50de1423d086",
+      "size": 14871
+    }
+  },
+  "mode": "READ_ONLY_LOCK_CONTEXT",
+  "production_touched": false,
+  "schedules": [
+    {
+      "command": "python3.10 /home/Carix/avto.py",
+      "description": "",
+      "enabled": true,
+      "hour": null,
+      "id_sha256": "f670917b5e16efe7c7ad16caceeea29e10bb423aa64ff0d88f865f06243f441b",
+      "interval": "hourly",
+      "minute": 10
+    },
+    {
+      "command": "/home/Carix/cikl2.py",
+      "description": "",
+      "enabled": true,
+      "hour": null,
+      "id_sha256": "bc058a2a4f753be3c5176052259b637a2f1c63ad4f238e56516a39a1a23681d6",
+      "interval": "hourly",
+      "minute": 35
+    },
+    {
+      "command": "python3.10 /home/Carix/poryadok.py",
+      "description": "",
+      "enabled": true,
+      "hour": null,
+      "id_sha256": "00d07dd67494b8be7834ba938440797c5bc3364f21346c2c13d5ff9cc6f09c63",
+      "interval": "hourly",
+      "minute": 50
+    }
+  ],
+  "task_id": "task_064"
+}
