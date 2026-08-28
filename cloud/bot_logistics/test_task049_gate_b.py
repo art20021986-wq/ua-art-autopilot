@@ -101,6 +101,18 @@ class GateBInstallerTests(unittest.TestCase):
     def tearDown(self):
         self.fx.close()
 
+    def test_production_hash_bindings_are_exact_sha256_values(self):
+        self.assertEqual(
+            G.EXPECTED_SOURCE_SHA,
+            "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7",
+        )
+        self.assertEqual(
+            G.EXPECTED_CANDIDATE_SHA,
+            "3c6f12227e45a3ba936d48d4a12435378045e879fea481def04f3378f6a0f12f",
+        )
+        self.assertEqual(len(G.EXPECTED_SOURCE_SHA), 64)
+        self.assertEqual(len(G.EXPECTED_CANDIDATE_SHA), 64)
+
     def test_success_replaces_only_source_and_preserves_database_bytes(self):
         db_before = self.fx.database.read_bytes()
         with self.fx.patched():

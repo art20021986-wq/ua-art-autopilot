@@ -26,7 +26,7 @@ CANDIDATE_PATH = SAFE_ROOT / "task049_cars_ui.py.candidate"
 APPROVAL_PATH = SAFE_ROOT / "task_049_owner_approval.marker"
 BACKUP_PATH = SAFE_ROOT / "task049_cars_ui.py.before_gate_b.20260828T045145Z"
 EXPECTED_SOURCE_SHA = (
-    "06e7da916ea36c4ffaf01c85f59a0574f06d3cdda24aa1f8c242175de726b7"
+    "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7"
 )
 EXPECTED_CANDIDATE_SHA = (
     "3c6f12227e45a3ba936d48d4a12435378045e879fea481def04f3378f6a0f12f"
