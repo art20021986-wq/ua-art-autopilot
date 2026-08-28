@@ -1,0 +1,104 @@
+name: task058-crm-ocr-readonly
+
+on:
+  workflow_run:
+    workflows: ['PythonAnywhere Inbox Sync']
+    types: [completed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task058-crm-ocr-readonly
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Confirm task 058 is current
+        id: current
+        shell: bash
+        run: |
+          if grep -qx 'TASK_ID: task_058' cloud/latest_status.md; then
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python 3.11
+        if: steps.current.outputs.run == 'true'
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile and run task 058 tests ten times
+        if: steps.current.outputs.run == 'true'
+        shell: bash
+        run: |
+          python3 -m py_compile cloud/task_058_crm_ocr_sync/*.py cloud/task_058_crm_ocr_sync/tests/*.py
+          for run in $(seq 1 10); do
+            python3 cloud/task_058_crm_ocr_sync/run_tests.py
+          done
+
+      - name: Execute bounded read-only discovery
+        if: steps.current.outputs.run == 'true'
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_USERNAME: Carix
+          PYTHONANYWHERE_HOST: www.pythonanywhere.com
+        run: python3 cloud/task_058_crm_ocr_sync/task058_readonly_controller.py
+
+      - name: Validate bounded evidence paths
+        if: steps.current.outputs.run == 'true'
+        shell: bash
+        run: |
+          test -f cloud/task_058_crm_ocr_sync/evidence/task_058_live_discovery.json
+          test -f cloud/task_058_crm_ocr_sync/TASK_058_CONTROLLER_REPORT.md
+          git add -- \
+            cloud/task_058_crm_ocr_sync/evidence/task_058_live_discovery.json \
+            cloud/task_058_crm_ocr_sync/TASK_058_CONTROLLER_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          if [ "${#staged[@]}" -lt 1 ] || [ "${#staged[@]}" -gt 2 ]; then
+            echo 'Expected one or two bounded evidence files'
+            exit 1
+          fi
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_058_crm_ocr_sync/evidence/task_058_live_discovery.json|\
+              cloud/task_058_crm_ocr_sync/TASK_058_CONTROLLER_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+
+      - name: Commit read-only evidence
+        if: steps.current.outputs.run == 'true'
+        shell: bash
+        run: |
+          git config user.name 'task058-readonly-discovery'
+          git config user.email 'actions@users.noreply.github.com'
+          if git diff --cached --quiet; then
+            echo 'No evidence changes'
+            exit 0
+          fi
+          git commit -m 'task_058: relay read-only CRM OCR discovery'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then sleep $((attempt * 3)); fi
+          done
+          exit 1
