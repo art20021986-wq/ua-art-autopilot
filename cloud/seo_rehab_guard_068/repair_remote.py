@@ -39,14 +39,18 @@ DRY_RUN_RECEIPT_PATH = SAFE_ROOT + "/dry_run_receipt.json"
 ROLLBACK_RECEIPT_PATH = SAFE_ROOT + "/rollback_receipt.json"
 SOURCE_ROLLBACK_RECEIPT_PATH = SAFE_ROOT + "/source_rollback_receipt.json"
 LOCK_PATH = ROOT + "/.seo_rehab_guard_068.lock"
+TASK068_LOCK_PATH = ROOT + "/.task068_ferry_vin.lock"
 MAX_BYTES = 24 * 1024 * 1024
 ORIGIN = "https://www.uaart.com.ua"
 REQUIRED_CTA = "Задаток 500 $"
 CORE_FILES = ("index.html", "katalog.html", "info.html", "podbor.html")
 EXPECTED_SOURCE_SHA = {
-    ROOT + "/stranica.py": "001620f8f582c3ecbd638d0a1a557de085d019ea85fe17f5e4948f74c114931a",
-    ROOT + "/yadro.py": "c95b0ef03d1d52423e48b127aefb75d22f00d17f531c0402daf178523707bb79",
-    ROOT + "/master_card.py": "438559b3caf31ee66a4774e865ee52796c7e06a3f3e0785b54f96d4064e5b270",
+    # Exact zero-write inventory captured under the task068 production lock by
+    # recovery preflight run 33215497426. Keep this fail-closed: any later
+    # generator mutation requires a new locked inventory and review.
+    ROOT + "/stranica.py": "1a0ce2cf0f17126e1e64e41faf4ec72a703d4b3cbbb839d5f9f26f2a6357443f",
+    ROOT + "/yadro.py": "6503df36a54b36030ac7326c545e428c3b204143440841f9907ad031d8c36ec1",
+    ROOT + "/master_card.py": "4b652087b2ac090fe1ca91b238c5e024cf16ab377cb00f77feb5c439180e8f59",
     WSGI_PATH: "5cd015061758cb105832ed17d3934b6570d7e18d58de366273bdfbb5cf7818c8",
 }
 
@@ -932,7 +936,11 @@ def main() -> int:
         self_test()
         return 0
     os.makedirs(SAFE_ROOT, mode=0o700, exist_ok=True)
-    with open(LOCK_PATH, "a+b") as lock:
+    # Serialize every read/write phase against the approved card-generator
+    # rehabilitation.  That workflow owns TASK068_LOCK_PATH; taking it first
+    # prevents a mixed source inventory without changing or stopping its run.
+    with open(TASK068_LOCK_PATH, "a+b") as task068_lock, open(LOCK_PATH, "a+b") as lock:
+        fcntl.flock(task068_lock, fcntl.LOCK_EX)
         fcntl.flock(lock, fcntl.LOCK_EX)
         if args.dry_run:
             try:
