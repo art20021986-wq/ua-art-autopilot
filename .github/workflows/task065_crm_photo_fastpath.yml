@@ -1,0 +1,64 @@
+name: task065-crm-photo-fastpath
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task065_crm_photo_fastpath.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task065-crm-photo-fastpath
+  cancel-in-progress: false
+
+jobs:
+  hotfix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate controller sources
+        run: >-
+          python3 -m py_compile
+          cloud/task_065/photo_fastpath_installer.py
+          cloud/task_065/photo_fastpath_postcheck.py
+          cloud/task_065/hotfix_controller.py
+      - name: Install and verify production fast-path
+        id: execute
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          set +e
+          python3 cloud/task_065/hotfix_controller.py
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Commit evidence
+        run: |
+          python3 -m json.tool cloud/task_065/evidence/hotfix.json >/dev/null
+          git add -- cloud/task_065/evidence/hotfix.json cloud/task_065/HOTFIX_REPORT.md
+          git config user.name 'task065-photo-fastpath'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_065: record CRM photo fast-path result'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || exit 1
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 2))
+          done
+      - name: Require PASS
+        run: |
+          test "${{ steps.execute.outputs.exit_code }}" = "0"
+          python3 - <<'PY'
+          import json
+          value = json.load(open('cloud/task_065/evidence/hotfix.json', encoding='utf-8'))
+          assert value['status'] == 'PASS', value.get('errors')
+          assert value['postcheck']['spool_test']['saved_unique'] == 100
+          assert value['postcheck']['spool_test']['queued_after'] == 0
+          PY
