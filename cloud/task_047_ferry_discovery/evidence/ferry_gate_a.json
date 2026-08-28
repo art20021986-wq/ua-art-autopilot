@@ -1,69 +1,1186 @@
 {
-  "task_ref": "task_063",
-  "canonical_parents": ["task_047", "task_050", "task_052"],
-  "owner_label_mapping": "conversational TASK 15 (ferry wording) -> this chain; canonical task_015 (Shared Memory) untouched",
-  "memory_version_read": 4,
-  "context_bundle_sha256": "2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c",
-  "mode": "SMALL_CORRECTION_AUTOMATED_ISOLATED_GATE_A",
-  "verified_current_catalog_count": 10,
-  "discovered_ids": [
-    "UA-0001", "UA-0002", "UA-0003", "UA-0004", "UA-0005",
-    "UA-0006", "UA-0007", "UA-0008", "UA-0009", "UA-0010"
-  ],
-  "candidate_count_source": "dynamic_discovery_of_sea_stage_cards",
-  "candidate_output_path": "/home/Carix/autopilot_inbox",
-  "transform": {
-    "scope": "catalog_card_route_block_only",
-    "applies_when": "internal_stage == sea",
-    "ru_two_line": "На пароме\nМаршрут: Корея → Грузия",
-    "uk_two_line": "На поромі\nМаршрут: Корея → Грузія",
-    "line_break": "encoded + white-space: pre-line",
-    "contextual_wording_preserved": {
-      "ru_status_filter_chip": "На пароме",
-      "uk_status_filter_chip": "На поромі",
-      "ru_short_stage": "Паром",
-      "uk_short_stage": "Пором"
+  "candidate_root": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates",
+  "candidates": [
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/index.html",
+      "candidate_sha256": "545bae287315336804a01cb0467abb376298c8463e16a8ae05d916757cde42ba",
+      "candidate_size": 30750,
+      "changes": 2,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "На пароме: Корея → Грузия",
+          "before": "В море: Корея → Грузия",
+          "classification": "USER_FACING_HEADING",
+          "context": "ATTR_DATA-RU",
+          "form": "heading",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На поромі: Корея → Грузія",
+          "before": "У морі: Корея → Грузія",
+          "classification": "USER_FACING_HEADING",
+          "context": "ATTR_DATA-UK",
+          "form": "heading",
+          "language": "uk"
+        }
+      ],
+      "path": "video/index.html",
+      "source_sha256": "f8c64fec851d025f37f3efb35d539aaf1c361be7f6a2102d2b2ac5dbd4649985",
+      "source_size": 30738
     },
-    "global_substring_replacement_used": false,
-    "applied_via": "canonical_generator_template",
-    "future_card_inheritance": true
-  },
-  "protected_values_unchanged": [
-    "sea", "data-stage=sea", "stage=sea", "?f=sea",
-    "crm_sqlite_enums", "ids", "urls", "analytics_keys",
-    "container_data", "prices", "specifications", "photos",
-    "diagnostics", "card_links", "scripts", "styles", "comments",
-    "legacy_input_aliases", "historical_reports"
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/katalog.html",
+      "candidate_sha256": "6711e2b02f269680b0c3ecc76371b9aa79830f9a0466b7e51b517ef547627899",
+      "candidate_size": 29540,
+      "changes": 16,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "На пароме · 4",
+          "before": "В море · 4",
+          "classification": "USER_FACING_LONG",
+          "context": "ATTR_DATA-RU",
+          "form": "long",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На поромі · 4",
+          "before": "У морі · 4",
+          "classification": "USER_FACING_LONG",
+          "context": "ATTR_DATA-UK",
+          "form": "long",
+          "language": "uk"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме · 4",
+          "before": "В море · 4",
+          "classification": "USER_FACING_STATUS",
+          "context": "TEXT_NODE",
+          "form": "sea_filter",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Показано: 10",
+          "before": "Показано: 8",
+          "classification": "USER_FACING_CATALOG_COUNT",
+          "context": "TEXT_NODE",
+          "form": "catalog_result",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "ATTR_DATA-RU",
+          "form": "catalog_sea_status",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На поромі&#10;Маршрут: Корея → Грузія",
+          "before": "У морі · Корея → Грузія",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "ATTR_DATA-UK",
+          "form": "catalog_sea_status",
+          "language": "uk"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "TEXT_NODE",
+          "form": "catalog_sea_status",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "ATTR_DATA-RU",
+          "form": "catalog_sea_status",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На поромі&#10;Маршрут: Корея → Грузія",
+          "before": "У морі · Корея → Грузія",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "ATTR_DATA-UK",
+          "form": "catalog_sea_status",
+          "language": "uk"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "TEXT_NODE",
+          "form": "catalog_sea_status",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "ATTR_DATA-RU",
+          "form": "catalog_sea_status",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На поромі&#10;Маршрут: Корея → Грузія",
+          "before": "У морі · Корея → Грузія",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "ATTR_DATA-UK",
+          "form": "catalog_sea_status",
+          "language": "uk"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "TEXT_NODE",
+          "form": "catalog_sea_status",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "ATTR_DATA-RU",
+          "form": "catalog_sea_status",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На поромі&#10;Маршрут: Корея → Грузія",
+          "before": "У морі · Корея → Грузія",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "ATTR_DATA-UK",
+          "form": "catalog_sea_status",
+          "language": "uk"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "TEXT_NODE",
+          "form": "catalog_sea_status",
+          "language": "ru"
+        }
+      ],
+      "path": "video/katalog.html",
+      "source_sha256": "743ce2a2d0bd35f475006cb0991f52982b6540670d62544654d2caf4d387c61a",
+      "source_size": 29129
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/info.html",
+      "candidate_sha256": "dbd759eb4aca9ee413d72c88d32dac9c3c626b657587479f6ab55c167fef600f",
+      "candidate_size": 24173,
+      "changes": 2,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром Корея → Грузия — около 60 дней",
+          "before": "Море Корея → Грузия — около 60 дней",
+          "classification": "USER_FACING_INFO",
+          "context": "TEXT_NODE",
+          "form": "info",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/info.html",
+      "source_sha256": "d7e2589542991a1628835df919ce60ef0c7a29a8130cbf3915553517e62559a1",
+      "source_size": 24169
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/podbor.html",
+      "candidate_sha256": "00d4f473812bcebef1d760465e0a2ed18cc010b152ea1eae340773e0527324a5",
+      "candidate_size": 33310,
+      "changes": 0,
+      "occurrences": [],
+      "path": "video/podbor.html",
+      "source_sha256": "00d4f473812bcebef1d760465e0a2ed18cc010b152ea1eae340773e0527324a5",
+      "source_size": 33310
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0001.html",
+      "candidate_sha256": "48d66ed286aa88a494322971d99e93b933af8bc7560961e6f3e32188475748b1",
+      "candidate_size": 37506,
+      "changes": 2,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0001.html",
+      "source_sha256": "2c1f40123210389453c192098f893b5fafb4bd53aeea92855f35456f7a982a09",
+      "source_size": 37502
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0002.html",
+      "candidate_sha256": "f020306b5487b281f5ab56c279e41bfcf6fe49598e70b9b40231257a426bb220",
+      "candidate_size": 38733,
+      "changes": 2,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0002.html",
+      "source_sha256": "85438938624cb2cb1e39d994542236d740eb418a738603ed2290149aa1c3a0f0",
+      "source_size": 38729
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0003.html",
+      "candidate_sha256": "e9d4c91f1ed17472f968a1280fe04c5a75ac92144ca61ce6946ef98d45608466",
+      "candidate_size": 36354,
+      "changes": 2,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0003.html",
+      "source_sha256": "3513b36bd1a823e64b478ea082153d928f85194b5723e0f789ad8203b412dec7",
+      "source_size": 36350
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0004.html",
+      "candidate_sha256": "a4095c1b4e1cda025b2e9ca59000e896c6cfe03ca6443ec993ef03161e8142e0",
+      "candidate_size": 36684,
+      "changes": 2,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0004.html",
+      "source_sha256": "30c705dca405f88dc09549b7408b256d105a879d7ef4e4183279e54c117a9865",
+      "source_size": 36680
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0005.html",
+      "candidate_sha256": "b30174921834a714f33278bb90a4708a89eab9b72f3f8a55e0be85dea62f8923",
+      "candidate_size": 35622,
+      "changes": 3,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме · Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_LONG",
+          "context": "TEXT_NODE",
+          "form": "long",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0005.html",
+      "source_sha256": "5fb42943ddb7f1fe681d08927e1c2c17cd48e6284abf1543ecbb0e90c9e13fbc",
+      "source_size": 35612
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0006.html",
+      "candidate_sha256": "62d267321d0b75bc9b6f9027748b25cd16bfea2897a6e641f9ab0cd40c139165",
+      "candidate_size": 40565,
+      "changes": 3,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме · Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_LONG",
+          "context": "TEXT_NODE",
+          "form": "long",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0006.html",
+      "source_sha256": "1afd8295f78a45bb26a1df1f50b67c8d996ec26b828891c63caf88e08683a9f8",
+      "source_size": 40555
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0007.html",
+      "candidate_sha256": "23d2f4bfe481f6e9bbb4371598b58e06304455112ad904d8bdf2f8c37c037c51",
+      "candidate_size": 37328,
+      "changes": 2,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0007.html",
+      "source_sha256": "35b27dafe0ac62e909d033074a1d7bfcf3d56f10db2ded7b4d10aa9854f7805f",
+      "source_size": 37324
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0008.html",
+      "candidate_sha256": "f3192e949b0c86f1274e1ff34c426d33c17ab089a9f66a487ec562d71f28a736",
+      "candidate_size": 38373,
+      "changes": 2,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0008.html",
+      "source_sha256": "d3df03714bd0dc2a420eef88c16eb89f530d7dc38ec5dfb7e325dd3199659d9e",
+      "source_size": 38369
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0009.html",
+      "candidate_sha256": "03b83759f304706e4b6a61070616348493a24b1e21134bdee9589c4f527fb48d",
+      "candidate_size": 35918,
+      "changes": 3,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме · Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_LONG",
+          "context": "TEXT_NODE",
+          "form": "long",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0009.html",
+      "source_sha256": "c00fe8edaad664b605abe05271b72d08f5fac6ad507bdf51e22c98fdc46a103a",
+      "source_size": 35908
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0010.html",
+      "candidate_sha256": "fb2d459583df51ef3ae8ddd0d5a4fd26d70f8f0d020591c16826b62bc14488b9",
+      "candidate_size": 36917,
+      "changes": 3,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме · Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_LONG",
+          "context": "TEXT_NODE",
+          "form": "long",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0010.html",
+      "source_sha256": "236b2934c0f404fd9d1ef5ae8f851d3625b7f303e7746a3f4ac886edccbb9951",
+      "source_size": 36907
+    }
   ],
-  "tests": {
-    "exact_ru_two_line": "PASS",
-    "exact_uk_two_line": "PASS",
-    "one_line_to_two_line_conversion": "PASS",
-    "all_sea_cards_use_new_structure": "PASS",
-    "all_10_cars_preserved_linked_unchanged": "PASS",
-    "future_ua_xxxx_card_inherits_template": "PASS",
-    "non_sea_cards_byte_equivalent": "PASS",
-    "filters_counters_routes_links_functional": "PASS",
-    "scripts_styles_comments_prose_unchanged": "PASS",
-    "internal_sea_markers_crm_values_unchanged": "PASS",
-    "transform_deterministic_idempotent": "PASS",
-    "full_ferry_regression_suite": "PASS",
-    "skipped_tests": 0,
-    "compile_check": "PASS"
+  "crm": {
+    "container_column": "sea_container",
+    "id_column": "auto_number",
+    "id_count": 10,
+    "sha256": "065a7b53f6e5d97e8b43690306750e33fac3534dccbf713fe66b464eeb824b0f",
+    "status": "OK",
+    "table": "cars"
   },
-  "gate_result": {
-    "VERIFIED_CURRENT_CATALOG_COUNT": 10,
-    "CURRENT_CARDS_PRESERVED": "10/10",
-    "FUTURE_CARD_TEMPLATE_CHECK": "PASS",
-    "TWO_LINE_RU": "PASS",
-    "TWO_LINE_UK": "PASS",
-    "INTERNAL_SEA_MARKERS_UNCHANGED": "PASS",
-    "CRM_WRITE": "NO",
-    "PRODUCTION_WRITE": "NO",
-    "UA0009_SAFE_TO_PUBLISH": "NO",
-    "UNEXPECTED_PROTECTED_CHANGES": 0,
-    "OVERALL_STATUS": "PASS_READY_FOR_GATE_B"
-  },
-  "note": "Gate B (production install, service reload, CRM/database write, publication) was not executed and requires separate owner authorization after screenshot approval.",
-  "generated_at_utc": "2026-08-27T13:48:35Z"
+  "crm_write": false,
+  "db_write": false,
+  "discovery_reasons": [],
+  "errors": [],
+  "gate_b_executed": false,
+  "generated_at_utc": "2026-08-28T07:42:13Z",
+  "generator_candidates": [
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/python/stranica.py",
+      "candidate_sha256": "1522350ae821ffcde9393d10ac9707830a4592c2adcdf4ad0f666841f14b3656",
+      "candidate_size": 136789,
+      "changes": 8,
+      "occurrences": [
+        {
+          "after": "На пароме · Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "line": 124,
+          "literal_sha256_after": "8125c82434d8d67d17e145137acbc1677e504aaf1216d132061ffbab69190eed",
+          "literal_sha256_before": "7b3aeb0db64f36878ce5e67aac4588efd1a2a64da240d4d9f49f104d09b4a85a",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 222,
+          "literal_sha256_after": "42e27e280c23dbc0e3a52406937cc26f94421c885c5b4b69a4498ae77f28eba7",
+          "literal_sha256_before": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 918,
+          "literal_sha256_after": "b40f7932937c02949aae064c844792f363a9afeb2313fd3803aa9560031ccb5f",
+          "literal_sha256_before": "dfc2cf191271a2a79b6f5f0dc84d7f1bac53b216e77fc3887953b0b9a49254a1",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 1059,
+          "literal_sha256_after": "993764ad9b29b46af247ae2f74ac2e2d7d0175a860056a495e670ffc7c63fe96",
+          "literal_sha256_before": "b90681101eed727de5b91b246fe76509344c16c4bfa8c81bb96117e4198a1fc1",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 1481,
+          "literal_sha256_after": "3c36dad4312940b0c3bfed70a37d6668a4bcbddcf24f9e663e48250b5e3e7779",
+          "literal_sha256_before": "a252b15e81050adeacd040fad5d329063b7b9a0e449e74eb7d072b3df72c13f7",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 1495,
+          "literal_sha256_after": "b40f7932937c02949aae064c844792f363a9afeb2313fd3803aa9560031ccb5f",
+          "literal_sha256_before": "dfc2cf191271a2a79b6f5f0dc84d7f1bac53b216e77fc3887953b0b9a49254a1",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 2059,
+          "literal_sha256_after": "42e27e280c23dbc0e3a52406937cc26f94421c885c5b4b69a4498ae77f28eba7",
+          "literal_sha256_before": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 2647,
+          "literal_sha256_after": "42e27e280c23dbc0e3a52406937cc26f94421c885c5b4b69a4498ae77f28eba7",
+          "literal_sha256_before": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+          "replacements": 1
+        }
+      ],
+      "path": "stranica.py",
+      "source_sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "source_size": 136769
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/python/yadro.py",
+      "candidate_sha256": "71d981508c157dad7d683430d8d0965af8d3b5946331cbda06b2a0179a7a657c",
+      "candidate_size": 84974,
+      "changes": 10,
+      "occurrences": [
+        {
+          "after": "На пароме",
+          "before": "В море",
+          "line": 122,
+          "literal_sha256_after": "5c2986bc0544d5aa1536f7642388133e3cffb6d50f12739192b6045d8b08055c",
+          "literal_sha256_before": "5f9062dce84201ca8816e5a69f44e1b86a4ea91ddd06247b9940006455f2f565",
+          "replacements": 1
+        },
+        {
+          "after": "На поромі",
+          "before": "У морі",
+          "line": 122,
+          "literal_sha256_after": "c0e01b01dfc6729addce365cfec6797aef435fd5012d2f892dc1d898ed3ae3b9",
+          "literal_sha256_before": "a043b0c46bb3ce42b3141bddafd00f41f2db7116cc7092bfb6cce25db97b4777",
+          "replacements": 1
+        },
+        {
+          "after": "На пароме",
+          "before": "В море",
+          "line": 379,
+          "literal_sha256_after": "01d440087a1fb2b4707b69a0d3e557f3bcf5b50bd4fd8d1728a941287f44ae13",
+          "literal_sha256_before": "0576b47ed34c9fa3c96a496ed3f5b2c2bcb123d3d3bde4a65bd8d50ea74644b7",
+          "replacements": 1
+        },
+        {
+          "after": "На поромі",
+          "before": "У морі",
+          "line": 379,
+          "literal_sha256_after": "d009cdc6d0916b3158632e118a065c5f0afa660c488389e9a25190bc2f1e6e1e",
+          "literal_sha256_before": "ebb445c4a0ba1116e7724e8d1583d921044e2801b11da1a416df96f276660e06",
+          "replacements": 1
+        },
+        {
+          "after": "На пароме",
+          "before": "В море",
+          "line": 493,
+          "literal_sha256_after": "5c2986bc0544d5aa1536f7642388133e3cffb6d50f12739192b6045d8b08055c",
+          "literal_sha256_before": "5f9062dce84201ca8816e5a69f44e1b86a4ea91ddd06247b9940006455f2f565",
+          "replacements": 1
+        },
+        {
+          "after": "На поромі",
+          "before": "У морі",
+          "line": 493,
+          "literal_sha256_after": "c0e01b01dfc6729addce365cfec6797aef435fd5012d2f892dc1d898ed3ae3b9",
+          "literal_sha256_before": "a043b0c46bb3ce42b3141bddafd00f41f2db7116cc7092bfb6cce25db97b4777",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 1416,
+          "literal_sha256_after": "e482d0e48f881903171e84323630c0498346ad41ad48f9c036bfbbd814fbf7b9",
+          "literal_sha256_before": "af7a87370a2d29fb1e49ed177d6b3e74132c619eb97fd3f7fd001b91a68e51c8",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 1417,
+          "literal_sha256_after": "b8c408d91e34a59111ee2789c6fee886b4983626ec821f7ece0d01af2f32b6f8",
+          "literal_sha256_before": "63cf9a5a442aaa0c72f607c38e90da81fb922227238669ea69a04c4239b6c039",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 1423,
+          "literal_sha256_after": "42e27e280c23dbc0e3a52406937cc26f94421c885c5b4b69a4498ae77f28eba7",
+          "literal_sha256_before": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+          "replacements": 1
+        },
+        {
+          "after": "Паром",
+          "before": "Море",
+          "line": 1423,
+          "literal_sha256_after": "42e27e280c23dbc0e3a52406937cc26f94421c885c5b4b69a4498ae77f28eba7",
+          "literal_sha256_before": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+          "replacements": 1
+        }
+      ],
+      "path": "yadro.py",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "source_size": 84930
+    }
+  ],
+  "mode": "FERRY_GATE_A_READONLY_INPUTS_ISOLATED_CANDIDATES",
+  "production_sources_unchanged": true,
+  "production_write": false,
+  "python_sources": [
+    {
+      "action": "PRESERVE",
+      "assignment": "",
+      "before": "В море · Корея → Грузия",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 15,
+      "dict_key": "",
+      "end_column": 59,
+      "end_line": 124,
+      "function": "etap_dlinno",
+      "keyword": "",
+      "line": 124,
+      "literal_length": 23,
+      "literal_sha256": "7b3aeb0db64f36878ce5e67aac4588efd1a2a64da240d4d9f49f104d09b4a85a",
+      "path": "stranica.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "structural_ambiguous": 0,
+      "structural_changes": 1,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "",
+      "before": "Море",
+      "call": "enumerate",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 44,
+      "dict_key": "",
+      "end_column": 54,
+      "end_line": 222,
+      "function": "blok_pribytiya",
+      "keyword": "",
+      "line": 222,
+      "literal_length": 4,
+      "literal_sha256": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+      "path": "stranica.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "structural_ambiguous": 1,
+      "structural_changes": 0,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "",
+      "before": "Море",
+      "call": "enumerate",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 82,
+      "dict_key": "",
+      "end_column": 121,
+      "end_line": 918,
+      "function": "sobrat_kartochku",
+      "keyword": "",
+      "line": 918,
+      "literal_length": 20,
+      "literal_sha256": "dfc2cf191271a2a79b6f5f0dc84d7f1bac53b216e77fc3887953b0b9a49254a1",
+      "path": "stranica.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "structural_ambiguous": 0,
+      "structural_changes": 1,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "",
+      "before": "Море",
+      "call": "c.append",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 13,
+      "dict_key": "",
+      "end_column": 98,
+      "end_line": 1069,
+      "function": "sobrat_katalog",
+      "keyword": "",
+      "line": 1059,
+      "literal_length": 504,
+      "literal_sha256": "b90681101eed727de5b91b246fe76509344c16c4bfa8c81bb96117e4198a1fc1",
+      "path": "stranica.py",
+      "role": "CALL_ARG",
+      "source_sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "structural_ambiguous": 0,
+      "structural_changes": 0,
+      "structural_contexts": []
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "",
+      "before": "Море",
+      "call": "c.append",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 13,
+      "dict_key": "",
+      "end_column": 135,
+      "end_line": 1481,
+      "function": "sobrat_info",
+      "keyword": "",
+      "line": 1481,
+      "literal_length": 92,
+      "literal_sha256": "a252b15e81050adeacd040fad5d329063b7b9a0e449e74eb7d072b3df72c13f7",
+      "path": "stranica.py",
+      "role": "CALL_ARG",
+      "source_sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "structural_ambiguous": 0,
+      "structural_changes": 1,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "",
+      "before": "Море",
+      "call": "enumerate",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 12,
+      "dict_key": "",
+      "end_column": 51,
+      "end_line": 1495,
+      "function": "sobrat_info",
+      "keyword": "",
+      "line": 1495,
+      "literal_length": 20,
+      "literal_sha256": "dfc2cf191271a2a79b6f5f0dc84d7f1bac53b216e77fc3887953b0b9a49254a1",
+      "path": "stranica.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "structural_ambiguous": 0,
+      "structural_changes": 1,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "",
+      "before": "Море",
+      "call": "enumerate",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 44,
+      "dict_key": "",
+      "end_column": 54,
+      "end_line": 2059,
+      "function": "blok_pribytiya",
+      "keyword": "",
+      "line": 2059,
+      "literal_length": 4,
+      "literal_sha256": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+      "path": "stranica.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "structural_ambiguous": 1,
+      "structural_changes": 0,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "",
+      "before": "Море",
+      "call": "enumerate",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 44,
+      "dict_key": "",
+      "end_column": 54,
+      "end_line": 2647,
+      "function": "blok_pribytiya",
+      "keyword": "",
+      "line": 2647,
+      "literal_length": 4,
+      "literal_sha256": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+      "path": "stranica.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "structural_ambiguous": 1,
+      "structural_changes": 0,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "ETAP_KOROTKO",
+      "before": "В море",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 59,
+      "dict_key": "",
+      "end_column": 72,
+      "end_line": 122,
+      "function": "",
+      "keyword": "",
+      "line": 122,
+      "literal_length": 6,
+      "literal_sha256": "5f9062dce84201ca8816e5a69f44e1b86a4ea91ddd06247b9940006455f2f565",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 1,
+      "structural_changes": 0,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "ETAP_KOROTKO",
+      "before": "У морі",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 74,
+      "dict_key": "",
+      "end_column": 87,
+      "end_line": 122,
+      "function": "",
+      "keyword": "",
+      "line": 122,
+      "literal_length": 6,
+      "literal_sha256": "a043b0c46bb3ce42b3141bddafd00f41f2db7116cc7092bfb6cce25db97b4777",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 1,
+      "structural_changes": 0,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "ETAPY_GLAVNOY",
+      "before": "В море",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 9,
+      "dict_key": "",
+      "end_column": 51,
+      "end_line": 379,
+      "function": "",
+      "keyword": "",
+      "line": 379,
+      "literal_length": 22,
+      "literal_sha256": "0576b47ed34c9fa3c96a496ed3f5b2c2bcb123d3d3bde4a65bd8d50ea74644b7",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 0,
+      "structural_changes": 0,
+      "structural_contexts": []
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "ETAPY_GLAVNOY",
+      "before": "У морі",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 53,
+      "dict_key": "",
+      "end_column": 95,
+      "end_line": 379,
+      "function": "",
+      "keyword": "",
+      "line": 379,
+      "literal_length": 22,
+      "literal_sha256": "ebb445c4a0ba1116e7724e8d1583d921044e2801b11da1a416df96f276660e06",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 0,
+      "structural_changes": 0,
+      "structural_contexts": []
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "FILTRY",
+      "before": "В море",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 75,
+      "dict_key": "",
+      "end_column": 88,
+      "end_line": 493,
+      "function": "",
+      "keyword": "",
+      "line": 493,
+      "literal_length": 6,
+      "literal_sha256": "5f9062dce84201ca8816e5a69f44e1b86a4ea91ddd06247b9940006455f2f565",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 1,
+      "structural_changes": 0,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "FILTRY",
+      "before": "У морі",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 90,
+      "dict_key": "",
+      "end_column": 103,
+      "end_line": 493,
+      "function": "",
+      "keyword": "",
+      "line": 493,
+      "literal_length": 6,
+      "literal_sha256": "a043b0c46bb3ce42b3141bddafd00f41f2db7116cc7092bfb6cce25db97b4777",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 1,
+      "structural_changes": 0,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "SROKI",
+      "before": "Море",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 10,
+      "dict_key": "",
+      "end_column": 76,
+      "end_line": 1416,
+      "function": "",
+      "keyword": "",
+      "line": 1416,
+      "literal_length": 36,
+      "literal_sha256": "af7a87370a2d29fb1e49ed177d6b3e74132c619eb97fd3f7fd001b91a68e51c8",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 0,
+      "structural_changes": 0,
+      "structural_contexts": []
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "SROKI",
+      "before": "Море",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 10,
+      "dict_key": "",
+      "end_column": 80,
+      "end_line": 1417,
+      "function": "",
+      "keyword": "",
+      "line": 1417,
+      "literal_length": 38,
+      "literal_sha256": "63cf9a5a442aaa0c72f607c38e90da81fb922227238669ea69a04c4239b6c039",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 0,
+      "structural_changes": 0,
+      "structural_contexts": []
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "POTOK",
+      "before": "Море",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 10,
+      "dict_key": "",
+      "end_column": 20,
+      "end_line": 1423,
+      "function": "",
+      "keyword": "",
+      "line": 1423,
+      "literal_length": 4,
+      "literal_sha256": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 1,
+      "structural_changes": 0,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    },
+    {
+      "action": "PRESERVE",
+      "assignment": "POTOK",
+      "before": "Море",
+      "call": "",
+      "class": "",
+      "classification": "USER_FACING",
+      "column": 22,
+      "dict_key": "",
+      "end_column": 32,
+      "end_line": 1423,
+      "function": "",
+      "keyword": "",
+      "line": 1423,
+      "literal_length": 4,
+      "literal_sha256": "fa8e72e051df4115b51cbc7ba6ca62fd3a3b310a45580f3b8ffe732d792dfe82",
+      "path": "yadro.py",
+      "role": "COLLECTION_ITEM",
+      "source_sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "structural_ambiguous": 1,
+      "structural_changes": 0,
+      "structural_contexts": [
+        "TEXT_NODE"
+      ]
+    }
+  ],
+  "service_reload": false,
+  "source_root": "/home/Carix",
+  "status": "PASS_READY_FOR_GATE_B",
+  "ua0009_published": false,
+  "unexpected_protected_changes": 0
 }
