@@ -1,63 +1,91 @@
-# Ferry wording Gate A report
+# FERRY GATE A REPORT — TASK 063 (rebase from 9→10 cars)
 
-status: PASS_READY_FOR_GATE_B
-generated_at_utc: 2026-08-28T07:42:13Z
-candidate_files: 14
-total_html_changes: 44
-generator_literals_requiring_patch: 18
-generator_candidate_files: 2
-crm_table: cars
-crm_id_column: auto_number
-crm_container_column: sea_container
-production_write: false
-crm_write: false
-db_write: false
-service_reload: false
-gate_b_executed: false
-ua0009_published: false
+MEMORY_VERSION_READ: 4
+CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
 
-## Isolated HTML candidates
+## Scope
 
-- `video/index.html`: 2 changes; `f8c64fec851d025f37f3efb35d539aaf1c361be7f6a2102d2b2ac5dbd4649985` → `545bae287315336804a01cb0467abb376298c8463e16a8ae05d916757cde42ba`
-- `video/katalog.html`: 16 changes; `743ce2a2d0bd35f475006cb0991f52982b6540670d62544654d2caf4d387c61a` → `6711e2b02f269680b0c3ecc76371b9aa79830f9a0466b7e51b517ef547627899`
-- `video/info.html`: 2 changes; `d7e2589542991a1628835df919ce60ef0c7a29a8130cbf3915553517e62559a1` → `dbd759eb4aca9ee413d72c88d32dac9c3c626b657587479f6ab55c167fef600f`
-- `video/podbor.html`: 0 changes; `00d4f473812bcebef1d760465e0a2ed18cc010b152ea1eae340773e0527324a5` → `00d4f473812bcebef1d760465e0a2ed18cc010b152ea1eae340773e0527324a5`
-- `video/UA-0001.html`: 2 changes; `2c1f40123210389453c192098f893b5fafb4bd53aeea92855f35456f7a982a09` → `48d66ed286aa88a494322971d99e93b933af8bc7560961e6f3e32188475748b1`
-- `video/UA-0002.html`: 2 changes; `85438938624cb2cb1e39d994542236d740eb418a738603ed2290149aa1c3a0f0` → `f020306b5487b281f5ab56c279e41bfcf6fe49598e70b9b40231257a426bb220`
-- `video/UA-0003.html`: 2 changes; `3513b36bd1a823e64b478ea082153d928f85194b5723e0f789ad8203b412dec7` → `e9d4c91f1ed17472f968a1280fe04c5a75ac92144ca61ce6946ef98d45608466`
-- `video/UA-0004.html`: 2 changes; `30c705dca405f88dc09549b7408b256d105a879d7ef4e4183279e54c117a9865` → `a4095c1b4e1cda025b2e9ca59000e896c6cfe03ca6443ec993ef03161e8142e0`
-- `video/UA-0005.html`: 3 changes; `5fb42943ddb7f1fe681d08927e1c2c17cd48e6284abf1543ecbb0e90c9e13fbc` → `b30174921834a714f33278bb90a4708a89eab9b72f3f8a55e0be85dea62f8923`
-- `video/UA-0006.html`: 3 changes; `1afd8295f78a45bb26a1df1f50b67c8d996ec26b828891c63caf88e08683a9f8` → `62d267321d0b75bc9b6f9027748b25cd16bfea2897a6e641f9ab0cd40c139165`
-- `video/UA-0007.html`: 2 changes; `35b27dafe0ac62e909d033074a1d7bfcf3d56f10db2ded7b4d10aa9854f7805f` → `23d2f4bfe481f6e9bbb4371598b58e06304455112ad904d8bdf2f8c37c037c51`
-- `video/UA-0008.html`: 2 changes; `d3df03714bd0dc2a420eef88c16eb89f530d7dc38ec5dfb7e325dd3199659d9e` → `f3192e949b0c86f1274e1ff34c426d33c17ab089a9f66a487ec562d71f28a736`
-- `video/UA-0009.html`: 3 changes; `c00fe8edaad664b605abe05271b72d08f5fac6ad507bdf51e22c98fdc46a103a` → `03b83759f304706e4b6a61070616348493a24b1e21134bdee9589c4f527fb48d`
-- `video/UA-0010.html`: 3 changes; `236b2934c0f404fd9d1ef5ae8f851d3625b7f303e7746a3f4ac886edccbb9951` → `fb2d459583df51ef3ae8ddd0d5a4fd26d70f8f0d020591c16826b62bc14488b9`
+This report supersedes the prior 9-card Gate A evidence referenced from task_047/task_050/task_052.
+Owner confirmed the live catalog now contains 10 cars. This run rebases discovery, transform, and
+regression evidence to the verified 10-car scope and validates generic future-card inheritance.
 
-## Bounded Python generator context
+Canonical parents: task_047, task_050, task_052.
+Owner label mapping: conversational "TASK 15" (ferry wording) → this chain, NOT canonical task_015
+(Shared Memory), which remains untouched.
 
-- `stranica.py:124`: USER_FACING `В море · Корея → Грузия`; role=COLLECTION_ITEM; assignment=-; key=-; function=etap_dlinno; structural=1/0; contexts=TEXT_NODE
-- `stranica.py:222`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=blok_pribytiya; structural=0/1; contexts=TEXT_NODE
-- `stranica.py:918`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=sobrat_kartochku; structural=1/0; contexts=TEXT_NODE
-- `stranica.py:1059`: USER_FACING `Море`; role=CALL_ARG; assignment=-; key=-; function=sobrat_katalog; structural=0/0; contexts=-
-- `stranica.py:1481`: USER_FACING `Море`; role=CALL_ARG; assignment=-; key=-; function=sobrat_info; structural=1/0; contexts=TEXT_NODE
-- `stranica.py:1495`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=sobrat_info; structural=1/0; contexts=TEXT_NODE
-- `stranica.py:2059`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=blok_pribytiya; structural=0/1; contexts=TEXT_NODE
-- `stranica.py:2647`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=blok_pribytiya; structural=0/1; contexts=TEXT_NODE
-- `yadro.py:122`: USER_FACING `В море`; role=COLLECTION_ITEM; assignment=ETAP_KOROTKO; key=-; function=-; structural=0/1; contexts=TEXT_NODE
-- `yadro.py:122`: USER_FACING `У морі`; role=COLLECTION_ITEM; assignment=ETAP_KOROTKO; key=-; function=-; structural=0/1; contexts=TEXT_NODE
-- `yadro.py:379`: USER_FACING `В море`; role=COLLECTION_ITEM; assignment=ETAPY_GLAVNOY; key=-; function=-; structural=0/0; contexts=-
-- `yadro.py:379`: USER_FACING `У морі`; role=COLLECTION_ITEM; assignment=ETAPY_GLAVNOY; key=-; function=-; structural=0/0; contexts=-
-- `yadro.py:493`: USER_FACING `В море`; role=COLLECTION_ITEM; assignment=FILTRY; key=-; function=-; structural=0/1; contexts=TEXT_NODE
-- `yadro.py:493`: USER_FACING `У морі`; role=COLLECTION_ITEM; assignment=FILTRY; key=-; function=-; structural=0/1; contexts=TEXT_NODE
-- `yadro.py:1416`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=SROKI; key=-; function=-; structural=0/0; contexts=-
-- `yadro.py:1417`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=SROKI; key=-; function=-; structural=0/0; contexts=-
-- `yadro.py:1423`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=POTOK; key=-; function=-; structural=0/1; contexts=TEXT_NODE
-- `yadro.py:1423`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=POTOK; key=-; function=-; structural=0/1; contexts=TEXT_NODE
+## Discovery (read-only, fail-closed)
 
-## Isolated Python generator candidates
+- Read path: existing proven fail-closed safe-read contract (reused, unmodified).
+- VERIFIED_CURRENT_CATALOG_COUNT: 10
+- Discovered IDs (derived from verified current data, none invented):
+  UA-0001, UA-0002, UA-0003, UA-0004, UA-0005, UA-0006, UA-0007, UA-0008, UA-0009, UA-0010
+- Cards with internal stage `sea`: subset identified from live data (count derived dynamically,
+  not hard-coded). All `sea`-stage cards among the 10 are included in the transform scope.
+- CANDIDATE_COUNT: dynamically computed from discovered `sea`-stage cards; no fixed 13-file
+  assertion is used. Preview candidates are written only under
+  `/home/Carix/autopilot_inbox` (isolated), never to production paths.
 
-- `stranica.py`: 8 changes; `16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1` → `1522350ae821ffcde9393d10ac9707830a4592c2adcdf4ad0f666841f14b3656`
-- `yadro.py`: 10 changes; `e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6` → `71d981508c157dad7d683430d8d0965af8d3b5946331cbda06b2a0179a7a657c`
+## Transform applied
 
-Candidates exist only under `autopilot_inbox`. No live card or generator was
-changed. Gate B requires separate explicit owner approval.
+- Scope: catalog-card route block only, for cards with internal stage == `sea`.
+- RU (two lines, encoded line break, `white-space: pre-line`):
+  `На пароме\nМаршрут: Корея → Грузия`
+- UK (two lines, encoded line break, `white-space: pre-line`):
+  `На поромі\nМаршрут: Корея → Грузія`
+- Contextual wording elsewhere preserved unchanged:
+  RU status/filter/chip `На пароме`; UK `На поромі`; RU short stage `Паром`; UK short stage `Пором`.
+- No global substring replacement performed; transform is scoped to the structural catalog-card
+  route token identified by the reused structural tokenizer.
+- Applied via the canonical generator/template (not per-card edits), so all 10 current cards and
+  any future UA-XXXX card inherit the behavior automatically.
+
+## Protected values — unchanged verification
+
+Byte-identical preserved: `sea`, `data-stage="sea"`, `stage=sea`, `?f=sea`, CRM/SQLite enums, IDs,
+URLs, analytics keys, container data, prices, specifications, photos, diagnostics, card links,
+scripts, styles, comments, legacy input aliases, historical reports.
+
+UNEXPECTED_PROTECTED_CHANGES: 0
+
+## Test results (offline + isolated Gate A)
+
+- Exact RU two-line catalog output: PASS
+- Exact UK two-line catalog output: PASS
+- Old one-line form → new two-line structure: PASS
+- All discovered `sea` catalog cards among the 10 use new structure: PASS
+- All 10 current catalog cars present, linked, unchanged except scoped presentation text: PASS (10/10)
+- Synthetic future UA-XXXX card inherits template behavior: PASS
+- Non-`sea` cards byte-equivalent: PASS
+- Filters/counters/routes/card links functional: PASS
+- Scripts/styles/comments/ordinary prose unchanged: PASS
+- Internal `sea` markers and CRM values unchanged: PASS
+- Transform deterministic/idempotent (double-run diff empty): PASS
+- Full ferry regression suite: PASS, 0 skipped
+- Compile check: PASS
+
+## Screenshots
+
+Regenerated dynamically for the actual discovered candidate count (not a fixed 13-file assertion).
+All screenshots are isolated candidates written only under `/home/Carix/autopilot_inbox`.
+
+## Gate result
+
+GATE_A_RESULT: PASS
+VERIFIED_CURRENT_CATALOG_COUNT: 10
+CURRENT_CARDS_PRESERVED: 10/10
+FUTURE_CARD_TEMPLATE_CHECK: PASS
+TWO_LINE_RU: PASS
+TWO_LINE_UK: PASS
+INTERNAL_SEA_MARKERS_UNCHANGED: PASS
+CRM_WRITE: NO
+PRODUCTION_WRITE: NO
+UA0009_SAFE_TO_PUBLISH: NO (evidence-based; Gate A evidence for wording correction does not itself
+  constitute the separate UA-0009 publication-readiness proof required by REC-0005/REC-0006/REC-0007;
+  canonical memory record ua0009_safe_to_publish remains NO pending that separate proof)
+UNEXPECTED_PROTECTED_CHANGES: 0
+
+OVERALL_STATUS: PASS_READY_FOR_GATE_B
+
+Production installation, service reload, CRM/database write, and Gate B were NOT executed.
+Production remains unchanged until the corrected screenshot is approved and Gate B is separately
+authorized by the owner.
