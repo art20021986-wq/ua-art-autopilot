@@ -23,6 +23,7 @@ import sqlite3
 import stat
 import sys
 import tempfile
+import time
 from typing import Any
 
 
@@ -1340,7 +1341,34 @@ def main() -> int:
                 "errors": ["concurrent_repair_run"], "llm_tokens": 0,
             }
         else:
-            result = rollback_from_receipt() if "--rollback" in sys.argv else run_install()
+            if "--rollback" in sys.argv:
+                result = rollback_from_receipt()
+            else:
+                retry_history = []
+                for attempt in range(1, 6):
+                    result = run_install()
+                    result["attempt_count"] = attempt
+                    errors = [str(value) for value in result.get("errors", [])]
+                    retryable = (
+                        result.get("status") != "PASS"
+                        and not result.get("production_write")
+                        and not result.get("rollback_attempted")
+                        and bool(errors)
+                        and all(
+                            value.startswith("concurrent_file_change:")
+                            or value == "crm_rows_changed_before_install"
+                            for value in errors
+                        )
+                    )
+                    if not retryable or attempt == 5:
+                        break
+                    retry_history.append({
+                        "attempt": attempt,
+                        "errors": errors,
+                        "backup_root": result.get("backup_root", ""),
+                    })
+                    time.sleep(min(2 ** (attempt - 1), 8))
+                result["retry_history"] = retry_history
     finally:
         os.close(descriptor)
     path = ROLLBACK_RECEIPT_PATH if "--rollback" in sys.argv else RECEIPT_PATH
