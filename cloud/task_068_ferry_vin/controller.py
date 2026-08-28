@@ -31,6 +31,7 @@ INSTALL_COMMAND = "cd %s && python3.10 task068_ferry_vin_repair.py" % REMOTE
 SOURCE_COMMAND = "cd %s && python3.10 task068_ferry_vin_repair.py --sources-only" % REMOTE
 POSTCHECK_COMMAND = "cd %s && python3.10 task068_ferry_vin_postcheck.py" % REMOTE
 ROLLBACK_COMMAND = "cd %s && python3.10 task068_ferry_vin_repair.py --rollback" % REMOTE
+SOURCE_ROLLBACK_COMMAND = "cd %s && python3.10 task068_ferry_vin_repair.py --rollback-source" % REMOTE
 EVIDENCE = HERE / "evidence" / "deploy.json"
 REPORT = HERE / "TASK_068_REPORT.md"
 CONTRACT = "UA-CARDS-FERRY-VIN-001-V1.1"
@@ -328,10 +329,12 @@ def main() -> int:
         "bot_restarted": False,
         "preinstall_bot_restarted": False,
         "rollback": None,
+        "source_rollback": None,
         "errors": [],
     }
     api = None
     install = None
+    source_install = None
     try:
         api = API()
         for name, local in FILES.items():
@@ -401,6 +404,23 @@ def main() -> int:
             except Exception as rollback_exc:
                 evidence["errors"].append(
                     "ROLLBACK_" + type(rollback_exc).__name__ + ":" + str(rollback_exc)
+                )
+        if (api is not None and source_install
+                and source_install.get("status") == "PASS"
+                and source_install.get("changed_paths")):
+            try:
+                source_rollback = api.run_remote(
+                    SOURCE_ROLLBACK_COMMAND,
+                    "task068 rollback source phase after failed deployment",
+                    ROLLBACK_RECEIPT,
+                )
+                evidence["source_rollback"] = source_rollback
+                if source_rollback.get("status") != "PASS":
+                    raise ControllerError("SOURCE_ROLLBACK_FAILED")
+                api.restart_bot()
+            except Exception as rollback_exc:
+                evidence["errors"].append(
+                    "SOURCE_ROLLBACK_" + type(rollback_exc).__name__ + ":" + str(rollback_exc)
                 )
 
     atomic_text(EVIDENCE, json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
