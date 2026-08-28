@@ -1,0 +1,91 @@
+name: task060-install-token-free-ocr
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task060_install_token_free_ocr.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task060-install-token-free-ocr
+  cancel-in-progress: false
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Compile and verify exact contract
+        shell: bash
+        run: |
+          python3 -m py_compile             cloud/task_060/local_ocr.py             cloud/task_060/patch_payload.py             cloud/task_060/patch_installer.py             cloud/task_060/install_controller.py
+          python3 - <<'PY'
+          import ast
+          from cloud.task_060 import local_ocr, patch_payload
+          allowed={'brand','model','year','vin','mileage_km','fuel','gearbox','engine_cc'}
+          text='Kia K5 2018 198 tuc. km LPG 2.0 l automatic KNAGU416BKA324445'
+          data=local_ocr.fields_from_text(text,allowed)
+          assert set(data)==allowed, data
+          assert data['vin']=='KNAGU416BKA324445'
+          assert data['engine_cc']==2000
+          assert 'notify_managers' not in patch_payload.INTAKE_SOURCE
+          assert 'ai.parse_image' not in patch_payload.RUN_AI_DRAFT_SOURCE
+          assert 'ai.parse_message' not in patch_payload.RUN_AI_DRAFT_SOURCE
+          for expected,source in (
+              ('show_menu',patch_payload.SHOW_MENU_SOURCE),
+              ('intake',patch_payload.INTAKE_SOURCE),
+              ('run_ai_draft',patch_payload.RUN_AI_DRAFT_SOURCE)):
+              tree=ast.parse(source)
+              assert len(tree.body)==1 and tree.body[0].name==expected
+          print('TASK060_CONTRACT_PASS')
+          PY
+      - name: Install and restart production bot
+        id: deploy
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_060/install_controller.py
+      - name: Commit bounded installation evidence
+        shell: bash
+        run: |
+          python3 -m json.tool cloud/task_060/evidence/install.json >/dev/null
+          git add --             cloud/task_060/evidence/install.json             cloud/task_060/INSTALL_REPORT.md             cloud/latest_status.md             cloud/owner_reply.md
+          git config user.name 'task060-token-free-ocr'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_060: record token-free OCR installation'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              for path in "${conflicts[@]}"; do
+                case "$path" in
+                  cloud/latest_status.md|cloud/owner_reply.md)
+                    git checkout --theirs -- "$path"
+                    git add -- "$path"
+                    ;;
+                  *)
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              GIT_EDITOR=true git rebase --continue || exit 1
+            fi
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 3))
+          done
+      - name: Enforce installation result
+        if: steps.deploy.outcome != 'success'
+        run: exit 1
