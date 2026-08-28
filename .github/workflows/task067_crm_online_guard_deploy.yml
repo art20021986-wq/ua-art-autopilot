@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-v1-3-deploy
-# deploy-revision: 4-bounded-db-final
+# deploy-revision: 6-input-db-container-p0
 
 on:
   push:
@@ -48,7 +48,10 @@ jobs:
           for name in (
               'CARS_HELPERS', 'CONDITION_SCREEN', 'STAGE_MENU', 'MEDIA_KEY',
               'MEDIA_ENQUEUE', 'MEDIA_DRAIN', 'MEDIA_STATUS', 'MEDIA_PROGRESS',
-              'MEDIA_SCHEDULE', 'VOICE_FIELDS', 'TRANSCRIBE', 'CLIENT_HELPERS',
+              'MEDIA_SCHEDULE', 'VOICE_FIELDS', 'TRANSCRIBE',
+              'TRANSCRIBE_RESTORE', 'VOICE_RESTORE_HELPERS', 'CLIENT_HELPERS',
+              'SET_FIELD_RESTORE', 'APPLY_VALUE_RESTORE', 'STAGE_SET_RESTORE',
+              'CONTAINER_HELPERS', 'CONTAINER_WRITE', 'CONTAINER_ACCEPT',
               'CLIENT_CATALOG_CARS', 'CLIENT_CATALOG', 'CLIENT_CAR_SCREEN',
               'DB_CONNECT', 'DB_UPDATE_FIELD'):
               compile(getattr(module, name), name, 'exec')
@@ -65,6 +68,25 @@ jobs:
           for text, expected in fixtures.items():
               actual = parser(text, {'fuel', 'engine_cc', 'color'})
               assert all(actual.get(key) == value for key, value in expected.items()), (text, actual)
+          voice = {}
+          exec(module.VOICE_RESTORE_HELPERS, voice)
+          class Stage:
+              STATUSES = {
+                  'kr': (1, 'В Корее'), 'sea': (2, 'На пароме'),
+                  'ge': (3, 'В Грузии'), 'kyiv': (4, 'В Киеве'),
+              }
+          voice['S'] = Stage
+          natural = {
+              'пробег 145 тысяч': ('mileage_km', 145000),
+              'цена продажи 12 500 долларов': ('price_uah', 12500),
+              'описание автомобиль обслужен': ('condition_text', 'автомобиль обслужен'),
+              'поставь статус на пароме': ('status', 'sea'),
+          }
+          for text, (field, expected) in natural.items():
+              actual = voice['_v169_extra_fields'](text, set(name for name, _ in natural.values()))
+              assert actual.get(field) == expected, (text, actual)
+          for raw in ('163400', '163 400 км', 'сто шестьдесят три тысячи четыреста'):
+              assert voice['_v169_parse_number'](raw) == 163400, raw
           print('TASK067_LOCAL_SHADOW_PASS')
           PY
 
@@ -120,18 +142,28 @@ jobs:
           assert value['soak']['duration_actual_seconds'] >= 3599
           final = value['postcheck_final']
           assert final['status'] == 'PASS'
-          assert final['voice_golden']['cases'] == 150
+          assert final['voice_golden']['cases'] == 200
           assert final['voice_golden']['failures'] == 0
           assert final['media']['accepted'] == 100
           assert final['media']['saved'] == 100
           assert final['media']['queue'] == 0
           assert final['field_queue']['status'] == 'PASS'
-          assert final['field_queue']['processed'] == 3
+          assert final['field_queue']['processed'] == 4
           assert final['field_queue']['queue'] == 0
+          assert final['field_queue']['database_locked_queued'] is True
+          assert final['selected_field']['mileage_cases'] == 3
+          assert final['selected_field']['ferry_vocabulary'] is True
+          assert final['container']['direct'] is True
+          assert final['container']['queued'] is True
+          assert final['container']['expired_ack_continued'] is True
           assert final['source_checks']['db_wait_bounded'] is True
+          assert final['source_checks']['db_no_hot_journal_switch'] is True
           assert final['source_checks']['db_field_durable_queue'] is True
           assert final['source_checks']['guard_latency_percentiles'] is True
           assert final['source_checks']['event_loop_autorecovery'] is True
+          assert final['source_checks']['selected_field_route'] is True
+          assert final['source_checks']['container_durable_route'] is True
+          assert final['source_checks']['crm_ferry_vocabulary'] is True
           assert final['bots']['tokens_distinct'] is True
           assert final['bots']['bots']['client']['ok'] is True
           assert final['bots']['bots']['crm']['ok'] is True
