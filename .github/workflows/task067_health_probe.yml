@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 19
+# probe-revision: 20-container-and-field-routes
 
 on:
   push:
@@ -169,6 +169,10 @@ jobs:
                              'apply_value', 'stage_set'},
               'ai_filter.py': {'clean'},
               'assistant.py': {'is_write', 'extract', 'ask'},
+              # The container menu is visible but its child buttons currently
+              # do not acknowledge.  Audit every bounded function in this
+              # small module so the repair can preserve its exact DB contract.
+              'konteyner.py': None,
           }
           for filename, selected_names in requested.items():
               module_source = get(root + '/' + filename, limit=2_000_000).decode('utf-8')
@@ -179,7 +183,7 @@ jobs:
               selected_hashes = {}
               for node in module_tree.body:
                   if (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-                          and node.name in selected_names):
+                          and (selected_names is None or node.name in selected_names)):
                       value = ast.get_source_segment(module_source, node) or ''
                       value = re.sub(r'\b\d{8,}:[A-Za-z0-9_-]{20,}\b', '<redacted-token>', value)
                       selected_sources[node.name] = value
