@@ -21,17 +21,34 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Fetch both public catalog variants
+      - name: Fetch both production catalog sources read-only
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
         run: |
           mkdir -p evidence
-          curl --fail --silent --show-error --location \
-            --retry 4 --retry-all-errors --max-time 60 \
-            'https://www.uaart.com.ua/katalog.html?task068_probe=1' \
-            -o evidence/site-katalog.html
-          curl --fail --silent --show-error --location \
-            --retry 4 --retry-all-errors --max-time 60 \
-            'https://www.uaart.com.ua/video/katalog.html?task068_probe=1' \
-            -o evidence/video-katalog.html
+          python3 - <<'PY'
+          import os
+          import urllib.parse
+          import urllib.request
+          from pathlib import Path
+
+          token = os.environ['PYTHONANYWHERE_API_TOKEN']
+          base = 'https://www.pythonanywhere.com/api/v0/user/Carix/files/path'
+          for label, remote in {
+              'site': '/home/Carix/site/katalog.html',
+              'video': '/home/Carix/video/katalog.html',
+          }.items():
+              request = urllib.request.Request(
+                  base + urllib.parse.quote(remote, safe='/'),
+                  headers={'Authorization': 'Token ' + token,
+                           'User-Agent': 'ua-art-task068-read-only-probe/1'},
+              )
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  payload = response.read(2_000_001)
+              if len(payload) > 2_000_000:
+                  raise SystemExit('CATALOG_TOO_LARGE:' + label)
+              Path('evidence/' + label + '-katalog.html').write_bytes(payload)
+          PY
 
       - name: Record bounded HTML structure evidence
         run: |
