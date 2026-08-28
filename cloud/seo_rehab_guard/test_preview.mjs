@@ -32,3 +32,25 @@ test("preview health proves isolation and no bindings", async () => {
     spec: "SEO-REHAB-GUARD-068",
   });
 });
+
+test("preview blocks a card when its diagnostic source is unavailable", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (input) => {
+    const url = String(input);
+    if (url.endsWith("/video/UA-0003.html")) {
+      return new Response('<html><body><a class="kn_kupit">Купить авто</a></body></html>', {
+        status: 200,
+        headers: { "content-type": "text/html;charset=UTF-8" },
+      });
+    }
+    if (url.endsWith("/video/UA-0003-diag.html")) return new Response("missing", { status: 404 });
+    throw new Error(`unexpected fetch: ${url}`);
+  };
+  try {
+    const response = await previewWorker.fetch(new Request("https://preview.example/video/UA-0003.html"));
+    assert.equal(response.status, 502);
+    assert.match(await response.text(), /preview blocked/i);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
