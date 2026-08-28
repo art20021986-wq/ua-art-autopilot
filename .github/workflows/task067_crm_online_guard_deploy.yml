@@ -1,0 +1,141 @@
+name: task067-crm-online-guard-v1-3-deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task067_crm_online_guard_deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task067-crm-online-guard-v1-3-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile release and inspect zero-token contracts
+        run: |
+          python3 -m py_compile \
+            cloud/task_067/installer.py \
+            cloud/task_067/crm_online_guard.py \
+            cloud/task_067/postcheck.py \
+            cloud/task_067/soak.py \
+            cloud/task_067/controller.py
+          python3 - <<'PY'
+          import importlib.util
+          path = 'cloud/task_067/installer.py'
+          spec = importlib.util.spec_from_file_location('task067_installer', path)
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          for name in (
+              'CARS_HELPERS', 'CONDITION_SCREEN', 'STAGE_MENU', 'MEDIA_KEY',
+              'MEDIA_ENQUEUE', 'MEDIA_DRAIN', 'MEDIA_STATUS', 'MEDIA_PROGRESS',
+              'MEDIA_SCHEDULE', 'VOICE_FIELDS', 'TRANSCRIBE', 'CLIENT_HELPERS',
+              'CLIENT_CATALOG_CARS', 'CLIENT_CATALOG', 'CLIENT_CAR_SCREEN'):
+              compile(getattr(module, name), name, 'exec')
+          namespace = {}
+          exec(module.VOICE_FIELDS, namespace)
+          parser = namespace['_v167_voice_explicit_fields']
+          fixtures = {
+              'тип топлива LPI': {'fuel': 'LPI'},
+              "об'єм двигуна 2.0": {'engine_cc': 2000},
+              'колір білий': {'color': 'белый'},
+              'fuel diesel': {'fuel': 'diesel'},
+              'white color': {'color': 'белый'},
+          }
+          for text, expected in fixtures.items():
+              actual = parser(text, {'fuel', 'engine_cc', 'color'})
+              assert all(actual.get(key) == value for key, value in expected.items()), (text, actual)
+          print('TASK067_LOCAL_SHADOW_PASS')
+          PY
+
+      - name: Shadow, atomically deploy, verify and soak production
+        id: deploy
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          set +e
+          python3 cloud/task_067/controller.py
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit bounded machine evidence
+        if: always()
+        run: |
+          test -f cloud/task_067/evidence/deploy.json
+          test -f cloud/task_067/FINAL_REPORT.md
+          git add -- cloud/task_067/evidence/deploy.json cloud/task_067/FINAL_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "${path}" in
+              cloud/task_067/evidence/deploy.json|cloud/task_067/FINAL_REPORT.md) ;;
+              *) echo "Unexpected staged path: ${path}"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task067-crm-online-guard'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task_067: record CRM online guard deployment'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main || exit 1
+              if git push origin HEAD:main; then break; fi
+              test "${attempt}" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Require full v1.3 acceptance PASS
+        if: always()
+        run: |
+          test "${{ steps.deploy.outputs.exit_code }}" = "0"
+          python3 - <<'PY'
+          import json
+          value = json.load(open('cloud/task_067/evidence/deploy.json', encoding='utf-8'))
+          assert value['status'] == 'PASS', value.get('errors')
+          assert value['shadow']['status'] == 'PASS'
+          assert value['install']['status'] == 'PASS'
+          assert value['postcheck_initial']['status'] == 'PASS'
+          assert value['soak']['status'] == 'PASS'
+          assert value['soak']['duration_actual_seconds'] >= 3599
+          final = value['postcheck_final']
+          assert final['status'] == 'PASS'
+          assert final['voice_golden']['cases'] == 150
+          assert final['voice_golden']['failures'] == 0
+          assert final['media']['accepted'] == 100
+          assert final['media']['saved'] == 100
+          assert final['media']['queue'] == 0
+          assert final['bots']['tokens_distinct'] is True
+          assert final['bots']['bots']['client']['ok'] is True
+          assert final['bots']['bots']['crm']['ok'] is True
+          assert value['llm_tokens'] == 0
+          PY
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task067-crm-online-guard-${{ github.run_id }}
+          path: |
+            cloud/task_067/evidence/deploy.json
+            cloud/task_067/FINAL_REPORT.md
+          if-no-files-found: warn
+          retention-days: 30
