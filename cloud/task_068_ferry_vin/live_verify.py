@@ -188,6 +188,7 @@ def main() -> int:
                 "engine_cc": root_contract["engine_cc"],
                 "video_count": root_contract["video_count"],
                 "forbidden_sea_terms": 0,
+                "legacy_duplicate_ui": 0,
             })
         catalog_status, catalog_data = fetch(BASE + "katalog.html")
         if catalog_status != 200:
