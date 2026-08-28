@@ -1,7 +1,7 @@
 {
   "task_id": "task_072",
   "gate": "A_V2_REAL_CONTEXT",
-  "status": "PASS",
+  "status": "BLOCKED",
   "remote_http_methods": [
     "GET"
   ],
@@ -14,20 +14,27 @@
       "cars_ui.py": "862baea2ca0794f5e0d83bc04169f6d2fdec401f86f384ef4376e373c02a776b",
       "trace_zhurnal.py": "fc4b95fc749f3d9b785ce69bfce2705b11ade95a560d6fbd901b50de1423d086"
     },
-    "patched_cars_ui_sha256": "3bc70a64687755db54a14f81791a17748040b48335de32ebbb197403a2c0e6c1",
-    "candidate_writer_sha256": "d32cab27b79dfd5d67723f0f5d0a7940926d9eb57078eef4490d9a6add9b2c7e",
+    "patched_cars_ui_sha256": "1f5368ea3caeeecb2d55b18b41cb414092495ef2185f7e881767015f53d8634b",
+    "candidate_writer_sha256": "c800807e67299cda05c3cf58817823b78ad4c7600dac96960b0a173739875599",
     "baseline_wait_pop_before_write_confirmed": true,
     "baseline_db_multi_connection_path_confirmed": true,
     "patched_wait_pop_after_confirmed_save": true,
     "dynamic_wait_card_id_route": true,
     "legacy_description_aliases_to_condition_text": true,
     "diagnostic_route_separate": true,
+    "dynamic_description_button_present": true,
+    "direct_description_commands_present": true,
+    "no_open_card_never_creates": true,
     "telegram_confirmation_is_bounded": true
   },
   "live_database": {
     "sha256": "8b62c7b4fb3676c42fc50b88e41a99114db75f9587cc4edfd9e65c3a81764ec3",
     "size_bytes": 2658304,
     "cards_count": 11,
+    "cards_count_after_gate": 11,
+    "ua0009_rows": 1,
+    "ua0009_sha256": "b31572a4d321e40a8f8d07b7b127db4751f1cdaa8a1aa2369e27754f178dfbf7",
+    "ua0009_integrity": true,
     "quick_check": "ok",
     "copy_only": true
   },
@@ -47,26 +54,37 @@
     "canonical_field_exact_readback": true,
     "protected_description_unchanged": true,
     "protected_diag_text_unchanged": true,
+    "all_other_existing_card_fields_unchanged": true,
+    "legacy_alias_to_canonical_tested": true,
+    "empty_nul_unknown_and_diag_rejected": true,
     "unicode_linebreak_dollar_vin_emoji": true,
     "length_1_to_12000_enforced": true,
     "one_transaction_update_and_audit": true,
     "no_cross_card_writes": true
   },
+  "call_path_tests": {
+    "baseline_locked_write_loses_car_wait": true,
+    "patched_button_text_readback_and_audit": true,
+    "patched_lock_keeps_car_wait": true,
+    "patched_lock_seconds": 0.4606,
+    "queued_reply_never_claims_success": true,
+    "direct_commands_tested": 3,
+    "direct_commands_use_zero_llm_calls": true,
+    "no_open_card_prompt_and_no_insert": true,
+    "confirmation_under_900_characters": true
+  },
   "queue_tests": {
     "locked_path_status": "queued",
-    "locked_path_seconds": 0.4595,
+    "locked_path_seconds": 0.4599,
     "locked_path_under_one_second": true,
     "durable_queue_applied_after_unlock": true,
     "stable_operation_id_idempotent": true,
     "crash_after_commit_no_duplicate_audit": true,
-    "last_intended_wins": true
+    "last_intended_wins": true,
+    "restart_drain": true,
+    "multiprocess_drain_workers": 4,
+    "multiprocess_operations": 20,
+    "multiprocess_no_loss_or_duplicates": true
   },
-  "performance": {
-    "samples": 60,
-    "median_seconds": 0.004525,
-    "p95_seconds": 0.005237,
-    "p99_seconds": 0.010425,
-    "max_seconds": 0.010425
-  },
-  "live_download_unchanged_after_tests": true
+  "error_type": "OperationalError"
 }
