@@ -1,0 +1,78 @@
+{
+  "bot_restarted": true,
+  "contract_id": "CRM-DB-LOCK-EMERGENCY-001",
+  "errors": [
+    "ControllerError:POSTCHECK_FAILED:RuntimeError:CONCURRENCY_PROBE_FAILED"
+  ],
+  "install": {
+    "already_applied": false,
+    "backup_path": "/home/Carix/backups/task_064/20260828T165613Z/db.py",
+    "backup_sha256": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
+    "contract_id": "CRM-DB-LOCK-EMERGENCY-001",
+    "crm_db_write": false,
+    "db_py_sha256_after": "cbebc6c7591f5088d769bdb9e49de51be54ef14ef9869a61633447b2ba2a98f3",
+    "db_py_sha256_before": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
+    "errors": [],
+    "finished_at_utc": "2026-08-28T16:56:14Z",
+    "llm_tokens": 0,
+    "mode": "ATOMIC_DB_LAYER_HOTFIX",
+    "readonly_after": {
+      "cars_count": 11,
+      "quick_check": "ok",
+      "ua0009_rows": 1,
+      "ua0009_sha256": "f2093ee2295b18a45ecc7a81feb5d764436bf2a6d04ff984a05254292005d3be"
+    },
+    "readonly_before": {
+      "cars_count": 11,
+      "quick_check": "ok",
+      "ua0009_rows": 1,
+      "ua0009_sha256": "f2093ee2295b18a45ecc7a81feb5d764436bf2a6d04ff984a05254292005d3be"
+    },
+    "site_write": false,
+    "started_at_utc": "2026-08-28T16:56:13Z",
+    "status": "PASS",
+    "task_id": "task_064"
+  },
+  "legacy_schedules_active": [],
+  "llm_tokens": 0,
+  "postcheck": {
+    "contract_id": "CRM-DB-LOCK-EMERGENCY-001",
+    "errors": [
+      "RuntimeError:CONCURRENCY_PROBE_FAILED"
+    ],
+    "llm_tokens": 0,
+    "status": "FAIL",
+    "task_id": "task_064",
+    "workers": [
+      {
+        "pass_marker": true,
+        "returncode": 0,
+        "stderr_tail": ""
+      },
+      {
+        "pass_marker": false,
+        "returncode": 1,
+        "stderr_tail": "e exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<string>\", line 5, in <module>\n  File \"/home/Carix/trace_zhurnal.py\", line 372, in connect_s_trassoy\n    return _Obertka(ishodnyy(*a, **kw), _kto(3))\n  File \"/home/Carix/db.py\", line 218, in connect\n    _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)\n  File \"/home/Carix/db.py\", line 129, in _ua_fayl_zahvatit\n    raise sqlite3.OperationalError(\"CRM database queue timeout\")\nsqlite3.OperationalError: CRM database queue timeout\n"
+      },
+      {
+        "pass_marker": false,
+        "returncode": 1,
+        "stderr_tail": "e exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<string>\", line 5, in <module>\n  File \"/home/Carix/trace_zhurnal.py\", line 372, in connect_s_trassoy\n    return _Obertka(ishodnyy(*a, **kw), _kto(3))\n  File \"/home/Carix/db.py\", line 218, in connect\n    _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)\n  File \"/home/Carix/db.py\", line 129, in _ua_fayl_zahvatit\n    raise sqlite3.OperationalError(\"CRM database queue timeout\")\nsqlite3.OperationalError: CRM database queue timeout\n"
+      },
+      {
+        "pass_marker": false,
+        "returncode": 1,
+        "stderr_tail": "e exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<string>\", line 5, in <module>\n  File \"/home/Carix/trace_zhurnal.py\", line 372, in connect_s_trassoy\n    return _Obertka(ishodnyy(*a, **kw), _kto(3))\n  File \"/home/Carix/db.py\", line 218, in connect\n    _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)\n  File \"/home/Carix/db.py\", line 129, in _ua_fayl_zahvatit\n    raise sqlite3.OperationalError(\"CRM database queue timeout\")\nsqlite3.OperationalError: CRM database queue timeout\n"
+      }
+    ],
+    "write_probe": "UPDATE_WHERE_FALSE_ONLY"
+  },
+  "rollback": {
+    "errors": [],
+    "restored_sha256": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
+    "status": "PASS",
+    "task_id": "task_064"
+  },
+  "status": "FAIL",
+  "task_id": "task_064"
+}
