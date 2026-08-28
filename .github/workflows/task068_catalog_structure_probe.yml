@@ -71,7 +71,7 @@ jobs:
               result[path.name] = {
                   'bytes': len(source.encode()),
                   'article_open': len(re.findall(r'<article\\b', source, re.I)),
-                  'card_class': len(re.findall(r'class=["\\'][^"\\']*card', source, re.I)),
+                  'card_class': len(re.findall(r"class=['\"][^'\"]*card", source, re.I)),
                   'cards': cards,
               }
           Path('evidence/structure.json').write_text(
