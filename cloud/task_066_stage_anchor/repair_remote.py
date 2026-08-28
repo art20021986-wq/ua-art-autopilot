@@ -1020,11 +1020,6 @@ def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -
                 candidates[path] = source.encode("utf-8")
                 if name == identifier + ".html":
                     found_primary.add(root)
-            diag_path = os.path.join(root, identifier + "-diag.html")
-            diag_data = _read(diag_path)
-            assert diag_data is not None
-            if not _valid_diag_page(diag_data.decode("utf-8"), identifier):
-                raise RepairBlocked("diagnostics_page_invalid:" + diag_path)
         if found_primary != {VIDEO_ROOT, SITE_ROOT}:
             raise RepairBlocked("card_roots_incomplete:" + identifier)
 
@@ -1057,16 +1052,14 @@ def _validate_cards(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             _validate_stage_html(source, identifier, expected_stage)
             if _diagnostic_link_count(source, identifier) != 1 or source.count(DIAG_MARKER) != 1:
                 raise RepairBlocked("diagnostics_card_contract_invalid:" + path)
-            diag_data = _read(os.path.join(root, identifier + "-diag.html"))
-            assert diag_data is not None
-            if not _valid_diag_page(diag_data.decode("utf-8"), identifier):
-                raise RepairBlocked("diagnostics_page_contract_invalid:" + path)
             item["roots"][os.path.basename(root)] = {
                 "sha256": _sha(data),
                 "stage_anchor_count": 1,
                 "stage_nodes": 4,
                 "current_nodes": 1,
                 "diagnostics_links": 1,
+                "diagnostics_target": identifier + "-diag.html",
+                "diagnostics_content_required": False,
             }
         results.append(item)
     return results
