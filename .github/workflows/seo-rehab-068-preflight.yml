@@ -1,0 +1,57 @@
+name: SEO Rehab 068 production preflight
+
+on:
+  push:
+    branches: [release/seo-rehab-guard-068]
+    paths:
+      - cloud/seo_rehab_guard_068/preflight_remote.py
+      - .github/workflows/seo-rehab-068-preflight.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-rehab-068-production-preflight
+  cancel-in-progress: true
+
+jobs:
+  read-only-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: release/seo-rehab-guard-068
+          fetch-depth: 1
+
+      - name: Compile preflight
+        run: python3 -m py_compile cloud/seo_rehab_guard_068/preflight_remote.py
+
+      - name: Inspect exact production sources with GET only
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/seo_rehab_guard_068/preflight_remote.py
+
+      - name: Assert non-mutating scope
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('cloud/seo_rehab_guard_068/evidence/preflight.json').read_text())
+          assert value['contract'] == 'SEO-REHAB-GUARD-068'
+          assert value['mode'] == 'read-only-preflight'
+          assert value['production_write'] is False
+          assert not value['errors']
+          assert len(value['sources']) == 3
+          assert value['html']
+          print('SEO_REHAB_068_PREFLIGHT_EVIDENCE_PASS')
+          PY
+
+      - name: Upload bounded preflight evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seo-rehab-068-preflight-${{ github.run_id }}
+          path: cloud/seo_rehab_guard_068/evidence/preflight.json
+          if-no-files-found: error
+          retention-days: 14
