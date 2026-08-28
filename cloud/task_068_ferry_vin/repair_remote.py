@@ -52,6 +52,7 @@ END_MARKER = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:END -->"
 DIAG_MARKER = "<!--ua-art-diagnostics-permanent-v1-->"
 MASTER_FINAL_SOURCE_MARKER = "# UA-CARDS-STAGE-ANCHOR-001-V1.1-MASTER-FINAL"
 FERRY_VIN_SOURCE_MARKER = "# UA-CARDS-FERRY-VIN-001-V1.1-PERMANENT"
+SEO_REHAB_SOURCE_MARKER = "# SEO-REHAB-GUARD-068-PRODUCTION-V1"
 VIN_START_MARKER = "<!-- UA-ART-VIN-GUARD-LITE-V1:START -->"
 VIN_END_MARKER = "<!-- UA-ART-VIN-GUARD-LITE-V1:END -->"
 CATALOG_VIN_START = "<!-- UA-ART-CATALOG-VIN-V1:START -->"
@@ -76,6 +77,15 @@ TASK068_INITIAL_SOURCE_SHA = {
     STRANICA_PATH: "001620f8f582c3ecbd638d0a1a557de085d019ea85fe17f5e4948f74c114931a",
     YADRO_PATH: "c95b0ef03d1d52423e48b127aefb75d22f00d17f531c0402daf178523707bb79",
     MASTER_CARD_PATH: "438559b3caf31ee66a4774e865ee52796c7e06a3f3e0785b54f96d4064e5b270",
+}
+
+# Exact source layer produced by approved SEO-REHAB-GUARD-068 production run
+# 33216597557.  The rebasing path is allowed only for these three byte hashes;
+# it preserves the SEO layer and moves this contract to the final boundary.
+SEO_LAYERED_SOURCE_SHA = {
+    STRANICA_PATH: "14d3f2f4a53468f9e82aaea3299bd6276b75485fd7dd65b289f3acd3ebc6a8bf",
+    YADRO_PATH: "59fcce35b34bde3ab38603a5812310eb7157374289a951b91fc437d299b56f12",
+    MASTER_CARD_PATH: "0b7cb65313bb116e85646d3e82966ea21e84bb910c133f208796fa3dc2000079",
 }
 
 EXPECTED_FUNCTION_SHA = {
@@ -2206,8 +2216,73 @@ def _inject_task068(base: str, wrapper: str) -> str:
             + base[position:].lstrip())
 
 
+def _detach_main_guard(source: str) -> tuple[str, str]:
+    """Remove the single top-level script guard so wrappers can precede it."""
+    lines = source.splitlines(keepends=True)
+    guards = []
+    for node in ast.parse(source).body:
+        if not isinstance(node, ast.If):
+            continue
+        first = lines[node.lineno - 1] if 0 < node.lineno <= len(lines) else ""
+        if re.search(r'^\s*if\s+__name__\s*==\s*["\']__main__["\']\s*:', first):
+            guards.append(node)
+    if not guards:
+        return source.rstrip(), ""
+    if len(guards) != 1:
+        raise RepairBlocked("task068_main_guard_count_invalid")
+    node = guards[0]
+    guard = "".join(lines[node.lineno - 1:node.end_lineno]).strip()
+    del lines[node.lineno - 1:node.end_lineno]
+    return "".join(lines).rstrip(), guard
+
+
+def _rebase_task068_after_seo(source: str, original_sha: str,
+                              path: str, wrapper: str) -> str:
+    """Preserve the approved SEO layer and restore task068 as final filter."""
+    name = os.path.basename(path)
+    if original_sha != SEO_LAYERED_SOURCE_SHA[path]:
+        raise RepairBlocked("task068_seo_layer_hash_changed:" + name)
+    if source.count(FERRY_VIN_SOURCE_MARKER) != 1:
+        raise RepairBlocked("task068_seo_task_marker_count_invalid:" + name)
+    if source.count(SEO_REHAB_SOURCE_MARKER) != 1:
+        raise RepairBlocked("task068_seo_marker_count_invalid:" + name)
+
+    body, guard = _detach_main_guard(source)
+    task_position = body.find(FERRY_VIN_SOURCE_MARKER)
+    seo_position = body.find(SEO_REHAB_SOURCE_MARKER)
+    if not 0 < task_position < seo_position:
+        raise RepairBlocked("task068_seo_layer_order_invalid:" + name)
+    old_task_layer = body[task_position:seo_position]
+    required_binding = {
+        STRANICA_PATH: "_ua068_stranica_card_original",
+        YADRO_PATH: "_ua068_yadro_card_original",
+        MASTER_CARD_PATH: "_ua068_master_card_original",
+    }[path]
+    if required_binding not in old_task_layer:
+        raise RepairBlocked("task068_seo_old_layer_invalid:" + name)
+
+    base = body[:task_position].rstrip()
+    seo_layer = body[seo_position:].strip()
+    candidate = (base + "\n\n" + seo_layer + "\n\n"
+                 + FERRY_VIN_COMMON_SOURCE + "\n\n" + wrapper + "\n")
+    if guard:
+        candidate = candidate.rstrip() + "\n\n" + guard + "\n"
+    _validate_task068_source(candidate, path)
+    if not candidate.find(SEO_REHAB_SOURCE_MARKER) < candidate.find(FERRY_VIN_SOURCE_MARKER):
+        raise RepairBlocked("task068_not_after_seo:" + name)
+    final_guard = candidate.rfind("if __name__")
+    if final_guard >= 0 and candidate.find(FERRY_VIN_SOURCE_MARKER) > final_guard:
+        raise RepairBlocked("task068_not_before_main_after_seo:" + name)
+    return candidate
+
+
 def _append_task068(source: str, original_sha: str, path: str, wrapper: str) -> str:
     if FERRY_VIN_SOURCE_MARKER in source:
+        if SEO_REHAB_SOURCE_MARKER in source:
+            if source.find(SEO_REHAB_SOURCE_MARKER) < source.find(FERRY_VIN_SOURCE_MARKER):
+                _validate_task068_source(source, path)
+                return source
+            return _rebase_task068_after_seo(source, original_sha, path, wrapper)
         if ("def _ua068_catalog_fallback" in source
                 and "_UA068_FALLBACK_START" in source
                 and "UA068_CATALOG_INSERTION_POINT_MISSING" in source):
@@ -2268,6 +2343,11 @@ def _validate_task068_source(source: str, path: str) -> None:
             raise RepairBlocked("task068_contract_missing:%s:%s" % (os.path.basename(path), value))
     if source.count(FERRY_VIN_SOURCE_MARKER) != 1:
         raise RepairBlocked("task068_marker_count_invalid:" + os.path.basename(path))
+    if SEO_REHAB_SOURCE_MARKER in source:
+        if source.count(SEO_REHAB_SOURCE_MARKER) != 1:
+            raise RepairBlocked("task068_seo_marker_count_invalid:" + os.path.basename(path))
+        if source.find(SEO_REHAB_SOURCE_MARKER) > source.find(FERRY_VIN_SOURCE_MARKER):
+            raise RepairBlocked("task068_final_filter_before_seo:" + os.path.basename(path))
     guards = list(re.finditer(
         r'(?m)^if\s+__name__\s*==\s*["\']__main__["\']\s*:', source
     ))
@@ -2744,6 +2824,35 @@ def self_test() -> int:
     if not (injected_fixture.find(FERRY_VIN_SOURCE_MARKER)
             < injected_fixture.rfind("if __name__ == '__main__'")):
         raise SystemExit("TASK068_FILTER_ORDER_FAIL")
+    layered_base = (
+        "def nomer(m):\n    return m.get('auto_number', 'UA-9999')\n\n"
+        "def sobrat_kartochku(m, kadry, sredn=None):\n    return '<html></html>'\n\n"
+        "def sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru=None):\n"
+        "    return '<html></html>'\n\n"
+        "def main():\n    return 0\n\nif __name__ == '__main__':\n    main()\n"
+    )
+    layered = _inject_task068(layered_base, STRANICA_FERRY_VIN_WRAPPER)
+    layered += ("\n" + SEO_REHAB_SOURCE_MARKER + "\n"
+                "_ua_seo_card_original = sobrat_kartochku\n"
+                "def sobrat_kartochku(m, kadry, sredn=None):\n"
+                "    return _ua_seo_card_original(m, kadry, sredn)\n"
+                "_ua_seo_catalog_original = sobrat_katalog\n"
+                "def sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru=None):\n"
+                "    return _ua_seo_catalog_original(spisok, kadry_po_nomeru, legkie_po_nomeru)\n")
+    previous_layered_sha = SEO_LAYERED_SOURCE_SHA[STRANICA_PATH]
+    try:
+        SEO_LAYERED_SOURCE_SHA[STRANICA_PATH] = _sha(layered.encode("utf-8"))
+        rebased = _rebase_task068_after_seo(
+            layered, SEO_LAYERED_SOURCE_SHA[STRANICA_PATH],
+            STRANICA_PATH, STRANICA_FERRY_VIN_WRAPPER,
+        )
+    finally:
+        SEO_LAYERED_SOURCE_SHA[STRANICA_PATH] = previous_layered_sha
+    if not (rebased.find(SEO_REHAB_SOURCE_MARKER)
+            < rebased.find(FERRY_VIN_SOURCE_MARKER)
+            < rebased.rfind("if __name__ == '__main__'")):
+        raise SystemExit("TASK068_SEO_REBASE_ORDER_FAIL")
+    _validate_task068_source(rebased, STRANICA_PATH)
     fixtures = _fixture_contract()
     if fixtures != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
         raise SystemExit("TASK068_FIXTURE_CONTRACT_FAIL")
