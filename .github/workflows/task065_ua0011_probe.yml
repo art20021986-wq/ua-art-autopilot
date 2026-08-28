@@ -1,0 +1,38 @@
+name: task065-ua0011-photo-reconciliation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task065_ua0011_probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Read UA-0011 counters
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_065/read_ua0011_counts.py
+      - name: Commit redacted evidence
+        run: |
+          python3 -m json.tool cloud/task_065/evidence/ua0011_counts.json >/dev/null
+          git add -- cloud/task_065/evidence/ua0011_counts.json
+          git config user.name 'task065-ua0011-read'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_065: reconcile UA-0011 photo counts'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || exit 1
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 2))
+          done
