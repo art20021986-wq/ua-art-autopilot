@@ -104,6 +104,10 @@ def main() -> int:
                 "sha256_after": sha(candidate.encode("utf-8")),
                 "changed": candidate != source,
                 "marker_before_main": guard < 0 or marker < guard,
+                "seo_before_task068": (
+                    candidate.find("# SEO-REHAB-GUARD-068-PRODUCTION-V1")
+                    < candidate.find(repair.FERRY_VIN_SOURCE_MARKER)
+                ),
                 "patch_evaluated": True,
             })
 
