@@ -13,10 +13,11 @@ SERVICE_RELOAD: NO
 - Home and catalog expose `noindex,nofollow` and canonical under `/video/preview/v4/`.
 - `/robots.txt` and `/sitemap.xml` redirect to HTML home.
 - UA-0002, UA-0007 and UA-0008 still show `Купить авто` instead of `Задаток 500 $`.
+- The diagnostics CTA disappeared again from UA-0003, UA-0004, UA-0005, UA-0006, UA-0007, UA-0009 and UA-0010 after an earlier successful check.
 
 ## Required rehabilitation
 
-Build a bounded GitHub Preview candidate from public GET-only inputs. Enforce self-canonical, indexable HTML, real robots/sitemap resources, exact unified CTA, existing diagnostics, dynamically discovered current cards and a synthetic future `UA-9999` regression fixture. Preserve VIN, prices, stages, photos, IDs, destinations and all other business content.
+Build a bounded GitHub Preview candidate from public GET-only inputs. Enforce self-canonical, indexable HTML, real robots/sitemap resources, exact unified CTA, diagnostics rehabilitation after confirming the same-ID diagnostic page is HTTP 200, dynamically discovered current cards and a synthetic future `UA-9999` regression fixture. Preserve VIN, prices, stages, photos, IDs, destinations and all other business content.
 
 ## Acceptance
 
