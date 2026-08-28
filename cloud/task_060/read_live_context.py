@@ -111,7 +111,12 @@ def scalar_globals(source):
 def main():
     evidence = {"task_id": "task_060", "mode": "READ_ONLY_SOURCE_CONTEXT", "production_touched": False, "files": {}}
     always = read_api_json("always_on/")
-    tasks = always.get("tasks") or always.get("objects") or always.get("results") or always if isinstance(always, list) else []
+    if isinstance(always, dict):
+        tasks = always.get("tasks") or always.get("objects") or always.get("results") or []
+    elif isinstance(always, list):
+        tasks = always
+    else:
+        tasks = []
     evidence["always_on"] = []
     if isinstance(tasks, list):
         for item in tasks:
