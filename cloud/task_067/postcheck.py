@@ -66,15 +66,27 @@ def check(condition, label):
 
 
 def db_check():
-    con = sqlite3.connect("file:%s?mode=ro" % DB, uri=True, timeout=3)
-    con.row_factory = sqlite3.Row
-    try:
-        quick = con.execute("PRAGMA quick_check").fetchone()[0]
-        row = con.execute("SELECT * FROM cars ORDER BY id DESC LIMIT 1").fetchone()
-        return {"quick_check": quick, "card_count": con.execute("SELECT COUNT(*) FROM cars").fetchone()[0],
-                "latest_card": dict(row) if row else None}
-    finally:
-        con.close()
+    deadline = time.monotonic() + 4.5
+    last = None
+    while time.monotonic() < deadline:
+        con = None
+        try:
+            con = sqlite3.connect("file:%s?mode=ro" % DB, uri=True, timeout=0.35)
+            con.row_factory = sqlite3.Row
+            quick = con.execute("PRAGMA quick_check").fetchone()[0]
+            row = con.execute("SELECT * FROM cars ORDER BY id DESC LIMIT 1").fetchone()
+            return {"quick_check": quick,
+                    "card_count": con.execute("SELECT COUNT(*) FROM cars").fetchone()[0],
+                    "latest_card": dict(row) if row else None}
+        except sqlite3.OperationalError as exc:
+            last = exc
+            if not any(word in str(exc).casefold() for word in ("locked", "busy")):
+                raise
+            time.sleep(0.15)
+        finally:
+            if con is not None:
+                con.close()
+    raise last or CheckError("DB_READ_TIMEOUT")
 
 
 def telegram_health():
