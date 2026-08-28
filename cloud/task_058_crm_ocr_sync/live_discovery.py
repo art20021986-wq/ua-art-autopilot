@@ -515,6 +515,75 @@ def sqlite_probe(db_path: pathlib.Path) -> dict:
                 result["ua0009_published_count"] = result["candidate_cards"]["UA-0009"]["published_count"]
                 result["ua0010_row_count"] = result["candidate_cards"]["UA-0010"]["row_count"]
                 result["ua0010_published_count"] = result["candidate_cards"]["UA-0010"]["published_count"]
+
+        result["inbox_columns"] = []
+        result["recent_image_candidates"] = []
+        inbox_table = next((name for name in tables if name.casefold() == "inbox"), None)
+        if inbox_table is not None:
+            safe_inbox = '"' + inbox_table.replace('"', '""') + '"'
+            inbox_columns = [
+                str(row[1])
+                for row in connection.execute(
+                    "PRAGMA table_info(" + safe_inbox + ")"
+                ).fetchall()
+            ]
+            result["inbox_columns"] = inbox_columns
+            id_col = next((name for name in inbox_columns if name.casefold() == "id"), None)
+            kind_col = next((name for name in inbox_columns if name.casefold() == "kind"), None)
+            file_col = next(
+                (
+                    name
+                    for name in inbox_columns
+                    if name.casefold() in {"file_id", "telegram_file_id", "media_file_id"}
+                ),
+                None,
+            )
+            created_col = next(
+                (
+                    name
+                    for name in inbox_columns
+                    if name.casefold() in {"created_at", "received_at", "timestamp"}
+                ),
+                None,
+            )
+            if id_col and kind_col and file_col:
+                quote = lambda name: '"' + name.replace('"', '""') + '"'
+                selected = [quote(id_col), quote(kind_col), quote(file_col)]
+                selected.append(quote(created_col) if created_col else "NULL")
+                rows = connection.execute(
+                    "SELECT "
+                    + ",".join(selected)
+                    + " FROM "
+                    + safe_inbox
+                    + " WHERE LOWER(CAST("
+                    + quote(kind_col)
+                    + " AS TEXT)) IN ('photo','document')"
+                    + " AND "
+                    + quote(file_col)
+                    + " IS NOT NULL ORDER BY "
+                    + quote(id_col)
+                    + " DESC LIMIT 5"
+                ).fetchall()
+                for row_id, kind, file_id, created_at in rows:
+                    file_text = str(file_id)
+                    created_text = (
+                        str(created_at).replace(" ", "T")[:40]
+                        if created_at is not None
+                        else None
+                    )
+                    if created_text and not re.fullmatch(r"[0-9T:Z+.-]{1,40}", created_text):
+                        created_text = None
+                    result["recent_image_candidates"].append(
+                        {
+                            "inbox_id": int(row_id),
+                            "kind": str(kind).casefold()[:20],
+                            "created_at": created_text,
+                            "file_id_sha256": hashlib.sha256(
+                                file_text.encode("utf-8")
+                            ).hexdigest(),
+                            "file_id_present": bool(file_text),
+                        }
+                    )
     finally:
         connection.close()
     result["sha256_after"] = sha256_file(db_path)

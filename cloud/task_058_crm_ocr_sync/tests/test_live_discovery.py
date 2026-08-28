@@ -120,6 +120,13 @@ def create_inputs(base: pathlib.Path) -> None:
         "CREATE TABLE cars (id INTEGER PRIMARY KEY, auto_number TEXT, published INTEGER)"
     )
     connection.execute("INSERT INTO cars(auto_number, published) VALUES ('UA-0008', 1)")
+    connection.execute(
+        "CREATE TABLE inbox (id INTEGER PRIMARY KEY, kind TEXT, file_id TEXT, created_at TEXT)"
+    )
+    connection.execute(
+        "INSERT INTO inbox(kind, file_id, created_at) VALUES (?, ?, ?)",
+        ("photo", "telegram-file-id-must-never-leave-production", "2026-08-28 10:30:00"),
+    )
     connection.commit()
     connection.close()
 
@@ -223,6 +230,14 @@ class DiscoveryTests(unittest.TestCase):
                 self.assertEqual(report["database"]["query_only_value"], 1)
                 self.assertEqual(
                     report["database"]["candidate_cards"]["UA-0010"]["row_count"], 0
+                )
+                candidates = report["database"]["recent_image_candidates"]
+                self.assertEqual(len(candidates), 1)
+                self.assertEqual(candidates[0]["inbox_id"], 1)
+                self.assertRegex(candidates[0]["file_id_sha256"], r"^[0-9a-f]{64}$")
+                self.assertNotIn(
+                    "telegram-file-id-must-never-leave-production",
+                    json.dumps(report, ensure_ascii=False),
                 )
                 self.assertFalse(report["production_write"])
                 self.assertFalse(report["site_rebuilt"])

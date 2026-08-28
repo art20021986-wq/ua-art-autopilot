@@ -604,7 +604,11 @@ class ReadOnlyController:
                 }:
                     raise ControllerError("SOURCE_EXCERPT_ENTRY_INVALID")
                 name = excerpt.get("name")
-                if not isinstance(name, str) or not name or name in excerpt_names:
+                # Nested helpers can legitimately reuse a short function name in
+                # separate production functions.  Names are used only as a
+                # completeness set; duplicate excerpts remain bounded by the
+                # list-size and source-size limits above.
+                if not isinstance(name, str) or not name:
                     raise ControllerError("SOURCE_EXCERPT_NAME_INVALID")
                 excerpt_names.add(name)
                 if not isinstance(excerpt.get("line"), int) or not isinstance(
