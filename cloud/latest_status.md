@@ -1,25 +1,13 @@
-TASK_ID: task_063
-ROUND: 2
-STATUS: PASS_READY_FOR_GATE_B
-CURRENT_ACTION: Isolated Gate A completed against current read-only PythonAnywhere and CRM inputs
-VERIFIED_CURRENT_CATALOG_COUNT: 10
-CURRENT_CARDS_PRESERVED: 10/10
-CURRENT_SEA_CARDS: 4/4
-TWO_LINE_RU: PASS
-TWO_LINE_UK: PASS
-FUTURE_CARD_TEMPLATE_CHECK: PASS
-FILTER_AND_VISIBLE_COUNT: PASS
-OFFLINE_TESTS: PASS (100 tests, two runs)
-GATE_A_CANDIDATES: 14
-GATE_A_HTML_CHANGES: 44
-PRODUCTION_TOUCHED: NO
-CRM_TOUCHED: NO
-DB_WRITE: NO
-SERVICE_RELOAD: NO
-UNEXPECTED_PROTECTED_CHANGES: 0
-OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Approve the corrected Gate A screenshot before a separately authorized Gate B production installation.
-GITHUB_RUN: 33152339846
-IMPLEMENTATION_COMMIT: 040b2a6c7631e746ebb756d9c8be4a7f762a5d52
-UPDATED_AT_UTC: 2026-08-28T07:43:05Z
+# Последний статус
 
+TASK 063 / TAX 15: **DONE**
+
+- Production Gate B: PASS.
+- Каталог: 10 автомобилей.
+- На пароме: 4 автомобиля; подпись и маршрут выведены в две строки.
+- Публично проверено: 14 HTML-страниц по точным SHA-256.
+- Изменено production-файлов: 15.
+- CRM/DB write: false.
+- Service reload: false.
+- Резервная копия: `/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_b_backups/task063-33154416701-1`.
+- Проверено: 2026-08-28T08:14:35Z.
