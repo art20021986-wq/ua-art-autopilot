@@ -1,6 +1,6 @@
 # TASK 063 — FERRY WORDING: 10 CURRENT CARS + TWO-LINE CATALOG ROUTE
 
-STATUS: OWNER_APPROVED / IN_WORK
+STATUS: GATE_A_PASS / WAIT_OWNER_APPROVAL
 OWNER_REQUEST: «Сейчас у нас уже в каталоге 10 машин. Поднять историю, внести корректировки и в работу по TASK 15».
 OWNER_LABEL: TASK/TAX 15 — «В море» → «На пароме»
 CANONICAL_PARENTS: task_047, task_050, task_052
@@ -40,8 +40,8 @@ the owner confirms that the live catalog contains 10 cars and requests a catalog
    ```
 
 4. Replace the current one-line catalog form such as
-   `На пароме · Корея → Грузия` only in the catalog-card route block. Use structural block/span
-   elements so the two lines remain separate on desktop and mobile; do not rely on wrapping width.
+   `На пароме · Корея → Грузия` only in the catalog-card route block. Use an explicit encoded
+   line break plus `white-space: pre-line`, so desktop and mobile do not depend on wrapping width.
 5. Apply through the canonical generator/template, not by editing only the currently affected cards.
    Existing 10 cards and every future card must inherit it automatically.
 6. Outside the catalog-card route block, preserve the accepted contextual wording:
@@ -85,7 +85,7 @@ Do not create a clean-room replacement and do not delete prior regression covera
 
 1. Perform MEMORY PREFLIGHT and audit current ferry artifacts.
 2. Read current PythonAnywhere inputs only through the proven fail-closed read path.
-3. Rebase discovery from 9 to the verified 10 current cars without a fixed future upper limit.
+3. Rebase the verified current discovery scope from 9 to 10 cars; keep the catalog-card transform generic for future UA-XXXX cards.
 4. Produce isolated candidates only under `/home/Carix/autopilot_inbox`.
 5. Run offline tests, then the existing automated isolated Gate A.
 6. Regenerate screenshots for the actual candidate count dynamically; no fixed 13-file assertion.
@@ -117,5 +117,6 @@ PASS requires:
 - UA0009_SAFE_TO_PUBLISH: evidence-based YES/NO
 - UNEXPECTED_PROTECTED_CHANGES: 0
 
-No production installation, service reload, CRM/database write or Gate B in this task.
-Production remains unchanged until a new corrected Gate A report is audited and separately approved.
+Gate A passed in run `33152339846`; production installation, service reload, CRM/database write and Gate B were not executed.
+Production remains unchanged until the corrected screenshot is approved and Gate B is separately authorized.
+

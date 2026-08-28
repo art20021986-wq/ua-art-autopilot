@@ -1,12 +1,25 @@
 TASK_ID: task_063
-ROUND: 1
-CLAUDE_STATUS: BLOCKED
-CURRENT_ACTION: Attempted 10-car ferry wording correction; blocked on missing live read-only PythonAnywhere/CRM discovery access and missing visibility into existing cloud/task_047_ferry_discovery/ artifact contents needed for a safe bounded edit
-FILES_CREATED: cloud/task_047_ferry_discovery/TASK_063_REPORT.md
+ROUND: 2
+STATUS: PASS_READY_FOR_GATE_B
+CURRENT_ACTION: Isolated Gate A completed against current read-only PythonAnywhere and CRM inputs
+VERIFIED_CURRENT_CATALOG_COUNT: 10
+CURRENT_CARDS_PRESERVED: 10/10
+CURRENT_SEA_CARDS: 4/4
+TWO_LINE_RU: PASS
+TWO_LINE_UK: PASS
+FUTURE_CARD_TEMPLATE_CHECK: PASS
+FILTER_AND_VISIBLE_COUNT: PASS
+OFFLINE_TESTS: PASS (100 tests, two runs)
+GATE_A_CANDIDATES: 14
+GATE_A_HTML_CHANGES: 44
 PRODUCTION_TOUCHED: NO
+CRM_TOUCHED: NO
+DB_WRITE: NO
+SERVICE_RELOAD: NO
+UNEXPECTED_PROTECTED_CHANGES: 0
 OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Please have the controller run the existing task_047 discovery tool against current live data (10 cars) and provide that snapshot plus current file contents of task_047_ferry_discovery/ so the bounded two-line-route edit and Gate A rerun can be executed safely.
-NEXT_FOR_CHATGPT: Route the discovery snapshot + existing artifact contents to the worker, or have the controller execute discovery/edit itself per the REC-0013 pattern used for task_021.
-UPDATED_AT_UTC: 2026-08-28T07:18:22Z
-MEMORY_VERSION_READ: 4
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+OWNER_QUESTION: Approve the corrected Gate A screenshot before a separately authorized Gate B production installation.
+GITHUB_RUN: 33152339846
+IMPLEMENTATION_COMMIT: 040b2a6c7631e746ebb756d9c8be4a7f762a5d52
+UPDATED_AT_UTC: 2026-08-28T07:43:05Z
+
