@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 13
+# probe-revision: 14
 
 on:
   push:
@@ -92,12 +92,16 @@ jobs:
                       except Exception as exc:
                           detail = dict(item)
                           detail['detail_error'] = type(exc).__name__
-                  log_path = str(detail.get('logfile') or detail.get('log_file') or
-                                 item.get('logfile') or item.get('log_file') or '')
+                  log_url = str(detail.get('logfile') or detail.get('log_file') or
+                                item.get('logfile') or item.get('log_file') or '')
+                  log_path = log_url
+                  marker = '/files/var/log/'
+                  if marker in log_url:
+                      log_path = '/var/log/' + log_url.split(marker, 1)[1]
                   selected.append({
                       'id': task_id, 'command': command,
                       'description': description, 'enabled': item.get('enabled'),
-                      'status': detail.get('status'),
+                      'status': detail.get('status'), 'state': detail.get('state'),
                       'running': detail.get('running'), 'pid': detail.get('pid'),
                       'last_run': detail.get('last_run'),
                       'last_start': detail.get('last_start'),
@@ -160,7 +164,8 @@ jobs:
               for line in events_raw.decode('utf-8', errors='replace').splitlines()[-40:]:
                   try:
                       item = json.loads(line)
-                      events.append({key: item.get(key) for key in ('at', 'event', 'component', 'error')
+                      events.append({key: item.get(key) for key in
+                                     ('at', 'kind', 'action', 'status', 'component', 'detail')
                                      if item.get(key) is not None})
                   except Exception:
                       pass
