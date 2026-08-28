@@ -1464,6 +1464,8 @@ _UA068_VIN_START = "<!-- UA-ART-VIN-GUARD-LITE-V1:START -->"
 _UA068_VIN_END = "<!-- UA-ART-VIN-GUARD-LITE-V1:END -->"
 _UA068_CAT_START = "<!-- UA-ART-CATALOG-VIN-V1:START -->"
 _UA068_CAT_END = "<!-- UA-ART-CATALOG-VIN-V1:END -->"
+_UA068_FALLBACK_START = "<!-- UA-ART-CATALOG-CARD-FALLBACK-V1:START -->"
+_UA068_FALLBACK_END = "<!-- UA-ART-CATALOG-CARD-FALLBACK-V1:END -->"
 _UA068_STAGE_START = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START -->"
 _UA068_STAGE_END = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:END -->"
 _UA068_DIAG = "<!--ua-art-diagnostics-permanent-v1-->"
@@ -1835,6 +1837,32 @@ def _ua068_catalog_block(kod, row):
             + _UA068_CAT_END)
 
 
+def _ua068_catalog_fallback(kod, row):
+    stage = _ua068_stage(row)
+    title = " ".join(str((row or {}).get(key) or "").strip()
+                     for key in ("brand", "model", "year")).strip()
+    labels_ru = {
+        1: "В Корее · подготовка к ближайшему парому",
+        2: "На пароме · Корея → Грузия",
+        3: "В Грузии · 15 дней до Киева после предоплаты",
+        4: "В Киеве · можно посмотреть",
+    }
+    labels_uk = {
+        1: "У Кореї · підготовка до найближчого порома",
+        2: "На поромі · Корея → Грузія",
+        3: "У Грузії · 15 днів до Києва після передоплати",
+        4: "У Києві · можна оглянути",
+    }
+    return (_UA068_FALLBACK_START
+            + '<a class="ua-cat-fallback-v1" href="%s.html?v=%s" data-ua-fallback-card="%s" data-ua-stage-tile="%d">' % (_ua068_e(kod), _UA068_VERSION, _ua068_e(kod), stage)
+            + '<span class="ua-cat-fallback-v1-kicker">%s · ЕТАП %d ИЗ 4</span>' % (_ua068_e(kod), stage)
+            + '<strong class="ua-cat-fallback-v1-title">%s</strong>' % (_ua068_e(title) or _ua068_e(kod))
+            + '<span class="ua-cat-fallback-v1-stage"><span class="ua068-ru">%s</span><span class="ua068-uk">%s</span></span>' % (_ua068_e(labels_ru[stage]), _ua068_e(labels_uk[stage]))
+            + _ua068_catalog_block(kod, row)
+            + '<span class="ua-cat-fallback-v1-open"><span class="ua068-ru">Открыть карточку →</span><span class="ua068-uk">Відкрити картку →</span></span></a>'
+            + _UA068_FALLBACK_END)
+
+
 def _ua068_catalog_item(block, rows):
     match = _ua068_re.search(r"UA-[0-9]{4,}", block, _ua068_re.I)
     if not match:
@@ -1864,21 +1892,86 @@ def _ua068_ensure_catalog(source, rows):
     rows = {str(k).upper(): dict(v or {}) for k, v in (rows or {}).items()}
     source = _ua068_terms(source)
     source = _ua068_cache_meta(source)
+    source = _ua068_replace_marked(source, _UA068_FALLBACK_START, _UA068_FALLBACK_END)
     source = _ua068_replace_marked(source, _UA068_CAT_START, _UA068_CAT_END)
+    # Catalogs currently exist in two layouts: modern <article> cards and
+    # legacy standalone <a> tiles.  A page may also contain both layouts
+    # (or a second link to one car).  Insert exactly one canonical block per
+    # identifier instead of choosing one page-wide parser branch.
+    seen = set()
+
+    def render_once(match):
+        block = match.group(0)
+        found = _ua068_re.search(r"UA-[0-9]{4,}", block, _ua068_re.I)
+        if not found:
+            return _ua068_terms(block)
+        identifier = found.group(0).upper()
+        if identifier not in rows or identifier in seen:
+            return _ua068_terms(block)
+        rendered = _ua068_catalog_item(block, rows)
+        if 'data-ua-card="%s"' % identifier in rendered:
+            seen.add(identifier)
+        return rendered
+
     article = _ua068_re.compile(
         r'<article\b[^>]*>.*?</article\s*>', _ua068_re.I | _ua068_re.S)
-    if article.search(source):
-        source = article.sub(lambda match: _ua068_catalog_item(match.group(0), rows), source)
-    else:
-        anchor = _ua068_re.compile(
-            r'<a\b(?=[^>]*href=["\'][^"\']*UA-[0-9]{4,}\.html(?:\?[^"\']*)?["\'])[^>]*>.*?</a\s*>',
-            _ua068_re.I | _ua068_re.S)
-        source = anchor.sub(lambda match: _ua068_catalog_item(match.group(0), rows), source)
+    source = article.sub(render_once, source)
+    anchor = _ua068_re.compile(
+        r'<a\b(?=[^>]*href=["\'][^"\']*UA-[0-9]{4,}\.html(?:\?[^"\']*)?["\'])[^>]*>.*?</a\s*>',
+        _ua068_re.I | _ua068_re.S)
+    source = anchor.sub(render_once, source)
+
+    missing = [identifier for identifier in rows if identifier not in seen]
+    if missing:
+        fallback = "".join(_ua068_catalog_fallback(identifier, rows[identifier])
+                           for identifier in missing)
+        position = -1
+        modern = _ua068_re.search(r'<div\b[^>]*class=["\'][^"\']*\bempty-assist\b',
+                                  source, _ua068_re.I)
+        if modern:
+            position = modern.start()
+        if position < 0:
+            legacy = _ua068_re.search(
+                r'<a\b(?=[^>]*class=["\'][^"\']*\bvtoraya\b)(?=[^>]*href=["\'][^"\']*podbor\.html)',
+                source, _ua068_re.I)
+            if legacy:
+                position = legacy.start()
+        if position < 0:
+            position = source.lower().rfind("</main>")
+        if position < 0:
+            position = source.lower().rfind("</body>")
+        if position < 0:
+            raise RuntimeError("UA068_CATALOG_INSERTION_POINT_MISSING")
+        source = source[:position] + fallback + source[position:]
+        seen.update(missing)
+
+    total = len(rows)
+    source = _ua068_re.sub(
+        r'(<div\b[^>]*class=["\']schet["\'][^>]*>)\s*\d+\s+в подборке',
+        lambda match: match.group(1) + str(total) + " в подборке", source,
+        flags=_ua068_re.I)
+    counts = {stage: sum(1 for row in rows.values() if _ua068_stage(row) == stage)
+              for stage in (1, 2, 3, 4)}
+    count_labels = (
+        (r"Все\s*·\s*\d+", "Все · %d" % total),
+        (r"Усі\s*·\s*\d+", "Усі · %d" % total),
+        (r"В Киеве\s*·\s*\d+", "В Киеве · %d" % counts[4]),
+        (r"У Києві\s*·\s*\d+", "У Києві · %d" % counts[4]),
+        (r"В Грузии\s*·\s*\d+", "В Грузии · %d" % counts[3]),
+        (r"У Грузії\s*·\s*\d+", "У Грузії · %d" % counts[3]),
+        (r"На пароме\s*·\s*\d+", "На пароме · %d" % counts[2]),
+        (r"На поромі\s*·\s*\d+", "На поромі · %d" % counts[2]),
+        (r"В Корее\s*·\s*\d+", "В Корее · %d" % counts[1]),
+        (r"У Кореї\s*·\s*\d+", "У Кореї · %d" % counts[1]),
+        (r"Показано:\s*\d+", "Показано: %d" % total),
+    )
+    for pattern, replacement in count_labels:
+        source = _ua068_re.sub(pattern, replacement, source, flags=_ua068_re.I)
     source = _ua068_re.sub(
         r'href=(["\'])([^"\']*UA-[0-9]{4,}\.html)(?:\?[^"\']*)?\1',
         lambda match: 'href=%s%s?v=%s%s' % (match.group(1), match.group(2), _UA068_VERSION, match.group(1)),
         source, flags=_ua068_re.I)
-    css = """<style id="ua-cat-vin-v1-style">.ua-cat-vin-v1{margin:12px 0 2px;padding:11px 12px;border-radius:13px;background:linear-gradient(145deg,rgba(240,166,60,.10),rgba(20,36,55,.72));border:1px solid rgba(240,166,60,.32);color:#cbd8e6;font-size:12px;line-height:1.42}.ua-cat-vin-v1-top{display:flex;align-items:center;gap:8px}.ua-cat-vin-v1-top span{min-width:0;overflow-wrap:anywhere}.ua-cat-vin-v1-top b{font:800 11px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#f3f6fa;letter-spacing:.03em}.ua-cat-vin-v1-top i{margin-left:auto;font-style:normal;font-size:8px;font-weight:900;letter-spacing:.06em;padding:4px 6px;border-radius:999px;white-space:nowrap}.ua-cat-vin-v1-top i.ok{color:#72dfa5;border:1px solid rgba(64,190,125,.42)}.ua-cat-vin-v1-top i.warn{color:#ffd180;border:1px solid rgba(240,166,60,.45)}.ua-cat-vin-v1-top i.error{color:#ff9898;border:1px solid rgba(235,80,80,.4)}.ua-cat-vin-v1-spec{margin-top:5px;color:#aabbd0}.ua-cat-vin-v1-copy{margin-top:5px;color:#aabbd0}.ua068-uk{display:none}html:lang(uk) .ua068-ru{display:none}html:lang(uk) .ua068-uk{display:inline}</style>"""
+    css = """<style id="ua-cat-vin-v1-style">.ua-cat-vin-v1{margin:12px 0 2px;padding:11px 12px;border-radius:13px;background:linear-gradient(145deg,rgba(240,166,60,.10),rgba(20,36,55,.72));border:1px solid rgba(240,166,60,.32);color:#cbd8e6;font-size:12px;line-height:1.42}.ua-cat-vin-v1-top{display:flex;align-items:center;gap:8px}.ua-cat-vin-v1-top span{min-width:0;overflow-wrap:anywhere}.ua-cat-vin-v1-top b{font:800 11px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#f3f6fa;letter-spacing:.03em}.ua-cat-vin-v1-top i{margin-left:auto;font-style:normal;font-size:8px;font-weight:900;letter-spacing:.06em;padding:4px 6px;border-radius:999px;white-space:nowrap}.ua-cat-vin-v1-top i.ok{color:#72dfa5;border:1px solid rgba(64,190,125,.42)}.ua-cat-vin-v1-top i.warn{color:#ffd180;border:1px solid rgba(240,166,60,.45)}.ua-cat-vin-v1-top i.error{color:#ff9898;border:1px solid rgba(235,80,80,.4)}.ua-cat-vin-v1-spec{margin-top:5px;color:#aabbd0}.ua-cat-vin-v1-copy{margin-top:5px;color:#aabbd0}.ua-cat-fallback-v1{display:block;margin:14px 0;padding:17px;border:1px solid rgba(240,166,60,.46);border-radius:18px;background:linear-gradient(145deg,#172a40,#102033);color:#edf3fb;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.2)}.ua-cat-fallback-v1-kicker{display:block;color:#f0a63c;font-size:10px;font-weight:900;letter-spacing:.11em}.ua-cat-fallback-v1-title{display:block;margin-top:7px;font-size:20px;line-height:1.25}.ua-cat-fallback-v1-stage{display:block;margin-top:7px;color:#aebed0;font-size:13px}.ua-cat-fallback-v1-open{display:block;margin-top:11px;color:#f4b65c;font-size:13px;font-weight:850}.ua068-uk{display:none}html:lang(uk) .ua068-ru{display:none}html:lang(uk) .ua068-uk{display:inline}</style>"""
     source = _ua068_re.sub(r'<style\b[^>]*id=["\']ua-cat-vin-v1-style["\'][^>]*>.*?</style\s*>', "", source,
                            flags=_ua068_re.I | _ua068_re.S)
     head_end = source.lower().find("</head>")
@@ -2557,6 +2650,15 @@ def self_test() -> int:
                "<a href='UA-9999.html'>UA-9999 · 1 800 см³ · В море</a></article></body></html>")
     catalog = runtime["_ua068_ensure_catalog"](catalog, {"UA-9999": row})
     _task068_validate_catalog(catalog, [row], runtime, "fixture/katalog.html")
+    mixed_catalog = ("<html><head></head><body>"
+                     "<article><a href='UA-8888.html'>UA-8888</a></article>"
+                     "<a class='legacy-card' href='UA-9999.html'>UA-9999 · 1 800 см³ · В море</a>"
+                     "<a class='secondary-link' href='UA-9999.html'>UA-9999</a>"
+                     "</body></html>")
+    mixed_catalog = runtime["_ua068_ensure_catalog"](mixed_catalog, {"UA-9999": row})
+    _task068_validate_catalog(mixed_catalog, [row], runtime, "fixture/mixed-katalog.html")
+    if mixed_catalog.count('data-ua-card="UA-9999"') != 1:
+        raise SystemExit("TASK068_MIXED_CATALOG_DEDUP_FAIL")
     placeholder = runtime["_ua068_diag_placeholder"]("UA-9999", row)
     if not _valid_diag_page(placeholder, "UA-9999") or "ДИАГНОСТИКА ОЖИДАЕТ ДАННЫХ" not in placeholder:
         raise SystemExit("TASK068_DIAGNOSTICS_FAIL")
