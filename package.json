@@ -1,0 +1,11 @@
+{
+  "name": "ua-art-seo-watch",
+  "private": true,
+  "scripts": {
+    "check": "node --check src/worker.js",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
