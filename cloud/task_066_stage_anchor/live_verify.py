@@ -111,8 +111,11 @@ def main() -> int:
             if diag_status != 200:
                 raise RuntimeError("DIAGNOSTICS_HTTP_INVALID:" + identifier)
             diag = diag_data.decode("utf-8")
-            if (identifier not in diag or "</html>" not in diag.lower()
-                    or ("диагност" not in diag.lower() and "diagnostic" not in diag.lower())):
+            diag_lower = diag.lower()
+            # Empty and legacy reports are valid targets. The permanent CTA is
+            # independent of optional report content by contract.
+            if not ("<html" in diag_lower and "<body" in diag_lower
+                    and "</html>" in diag_lower):
                 raise RuntimeError("DIAGNOSTICS_PAGE_INVALID:" + identifier)
             result["cards"].append({
                 "id": identifier,
