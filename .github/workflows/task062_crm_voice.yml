@@ -1,0 +1,99 @@
+name: task062-crm-voice
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task062_crm_voice.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task062-crm-voice
+  cancel-in-progress: false
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Verify CRM-VOICE-FILL-001 contract
+        shell: bash
+        run: |
+          python3 -m py_compile \
+            cloud/task_062/patch_payload.py \
+            cloud/task_062/patch_installer.py \
+            cloud/task_062/postcheck.py \
+            cloud/task_062/install_controller.py \
+            cloud/task_062/test_contract.py
+          TASK062_LOCAL_OCR=cloud/task_061/local_ocr.py \
+            PYTHONPATH=cloud/task_062 \
+            python3 cloud/task_062/test_contract.py
+          python3 - <<'PY'
+          from cloud.task_062 import patch_payload
+          source = patch_payload.CATCH_MESSAGE_SOURCE
+          assert source.count('ai.transcribe') == 1
+          assert 'hard_deadline = started + 15.0' in source
+          assert 'create_card' not in source
+          assert 'run_ai_draft' not in source
+          assert 'ai.parse' not in source
+          assert '0 LLM-токенов' in source
+          assert 'car_voice_active' in source
+          print('CRM_VOICE_FILL_001_CONTRACT_PASS')
+          PY
+
+      - name: Install, restart, and verify production CRM bot
+        id: deploy
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_062/install_controller.py
+
+      - name: Commit bounded installation evidence
+        shell: bash
+        run: |
+          python3 -m json.tool cloud/task_062/evidence/install.json >/dev/null
+          git add -- \
+            cloud/task_062/evidence/install.json \
+            cloud/task_062/INSTALL_REPORT.md \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          git config user.name 'task062-crm-voice'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_062: record CRM-VOICE-FILL-001 installation'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              for path in "${conflicts[@]}"; do
+                case "$path" in
+                  cloud/latest_status.md|cloud/owner_reply.md)
+                    git checkout --theirs -- "$path"
+                    git add -- "$path"
+                    ;;
+                  *)
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              GIT_EDITOR=true git rebase --continue || exit 1
+            fi
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 3))
+          done
+
+      - name: Enforce installation result
+        if: steps.deploy.outcome != 'success'
+        run: exit 1
