@@ -8,13 +8,19 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   probe:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
       - name: Fetch both public catalog variants
         run: |
           mkdir -p evidence
@@ -55,6 +61,22 @@ jobs:
               json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
           )
           PY
+
+      - name: Commit bounded structure report
+        run: |
+          mkdir -p cloud/task_068_ferry_vin/evidence
+          cp evidence/structure.json cloud/task_068_ferry_vin/evidence/catalog_structure_probe.json
+          git add -- cloud/task_068_ferry_vin/evidence/catalog_structure_probe.json
+          git config user.name 'task068-catalog-probe'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task068: record catalog structure probe'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then break; fi
+            if [ "${attempt}" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 2))
+          done
 
       - name: Upload structure evidence
         if: always()
