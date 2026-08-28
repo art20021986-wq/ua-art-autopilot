@@ -1,12 +1,12 @@
 {
   "completeness": {
     "anchor_counts": {
-      "database_write": 428,
-      "lock_resource": 60,
+      "database_write": 453,
+      "lock_resource": 68,
       "ocr_vision": 7,
       "rebuild_publish": 40,
-      "retry_timeout": 61,
-      "telegram_media": 104
+      "retry_timeout": 64,
+      "telegram_media": 108
     },
     "database_readonly_verified": true,
     "logs_scanned": false,
@@ -14,7 +14,8 @@
     "rebuild_failure_message_found": false,
     "required_site_found": true,
     "required_sources_found": true,
-    "root_cause_confirmed": false
+    "root_cause_confirmed": false,
+    "target_functions_found": true
   },
   "crm_write": false,
   "database": {
@@ -104,12 +105,65 @@
     "cars_table_found": true,
     "cars_total": 9,
     "identity_stable": true,
+    "inbox_columns": [
+      "id",
+      "from_user_id",
+      "kind",
+      "text",
+      "file_id",
+      "media_group",
+      "tg_chat_id",
+      "tg_message_id",
+      "status",
+      "assigned_to",
+      "card_type",
+      "card_id",
+      "created_at",
+      "updated_at"
+    ],
     "journal_mode": "delete",
     "open_uri_mode": "ro",
     "path": "/home/Carix/crm.db",
     "query_only_requested": true,
     "query_only_value": 1,
     "quick_check": "ok",
+    "recent_image_candidates": [
+      {
+        "created_at": "2026-08-28T03:30:33",
+        "file_id_present": true,
+        "file_id_sha256": "65e5ee0751f300d51e947762d6c5c9bb672ca290decf68ad7baefb0489621296",
+        "inbox_id": 123,
+        "kind": "photo"
+      },
+      {
+        "created_at": "2026-08-25T10:59:29",
+        "file_id_present": true,
+        "file_id_sha256": "6325142b06712a28e7836b236f5a1cf365b45832185db2aaed8db96d1cac642e",
+        "inbox_id": 119,
+        "kind": "photo"
+      },
+      {
+        "created_at": "2026-08-22T14:10:44",
+        "file_id_present": true,
+        "file_id_sha256": "e1859f60a61c28e6fd69d6dc3421a4df3d93d5f0f3030e218d0b805c59efecbb",
+        "inbox_id": 115,
+        "kind": "photo"
+      },
+      {
+        "created_at": "2026-08-22T11:28:12",
+        "file_id_present": true,
+        "file_id_sha256": "6149ecb818e88ec8113e6d46db674e73ace1e53210ee9e7dc6a4225c0b11da71",
+        "inbox_id": 112,
+        "kind": "photo"
+      },
+      {
+        "created_at": "2026-08-21T15:36:54",
+        "file_id_present": true,
+        "file_id_sha256": "031e74aaceea01585ad2f23e848e7e0c17796210062db7cf4f6c3cbc850f8ae3",
+        "inbox_id": 110,
+        "kind": "photo"
+      }
+    ],
     "sha256_after": "6df24561d6e6c6742081765b85a107a61ccc63efb2d324a05854e26dda166a13",
     "sha256_before": "6df24561d6e6c6742081765b85a107a61ccc63efb2d324a05854e26dda166a13",
     "sidecars_after": {
@@ -142,7 +196,7 @@
   "db_write": false,
   "errors": [],
   "gate_b_executed": false,
-  "generated_at_utc": "2026-08-28T04:10:22Z",
+  "generated_at_utc": "2026-08-28T04:22:13Z",
   "logs": {
     "counts": {
       "database_is_locked": 0,
@@ -210,7 +264,7 @@
       "size": 22979
     },
     "/home/Carix/site/katalog.html": {
-      "mtime_ns": 1787886617857777914,
+      "mtime_ns": 1787890224788619139,
       "sha256": "0fb0ab35262c72f1bbba5cba4c9bce613df0142e221de4420ca5305876ae81bd",
       "size": 29604
     },
@@ -266,7 +320,7 @@
       "size": 30735
     },
     "/home/Carix/video/katalog.html": {
-      "mtime_ns": 1787886617825777679,
+      "mtime_ns": 1787890224748618840,
       "sha256": "ecd404ffec7d21abaea4258f93489b23e8032cd18e2340cd45a23c6daa351993",
       "size": 27974
     }
@@ -324,7 +378,7 @@
       "size": 22979
     },
     "/home/Carix/site/katalog.html": {
-      "mtime_ns": 1787886617857777914,
+      "mtime_ns": 1787890224788619139,
       "sha256": "0fb0ab35262c72f1bbba5cba4c9bce613df0142e221de4420ca5305876ae81bd",
       "size": 29604
     },
@@ -380,7 +434,7 @@
       "size": 30735
     },
     "/home/Carix/video/katalog.html": {
-      "mtime_ns": 1787886617825777679,
+      "mtime_ns": 1787890224748618840,
       "sha256": "ecd404ffec7d21abaea4258f93489b23e8032cd18e2340cd45a23c6daa351993",
       "size": 27974
     }
@@ -388,10 +442,12 @@
   "site_identity_stable": true,
   "site_rebuilt": false,
   "source_hashes_after": {
+    "/home/Carix/ai_filter.py": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
     "/home/Carix/avtoperedacha.py": "e0e5e0d55672689dec25c1ac69488b86fc1af00570f0ec563fc8095a1858b7d1",
     "/home/Carix/cars_ui.py": "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7",
     "/home/Carix/db.py": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
     "/home/Carix/konteyner.py": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d",
+    "/home/Carix/lock4_zhurnal.py": "c6896603d492a874531e13b43c16f74b2afb0dae04b18e3408f36d2edcc6749f",
     "/home/Carix/run_all.py": "7deb18698f792b61fd734b36451296343ec528e15ccd86798d6cbc4a7a75eca5",
     "/home/Carix/start_safe.py": "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007",
     "/home/Carix/stranica.py": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
@@ -1219,7 +1275,227 @@
           "snippet": "\"включена\" if ai.voice_enabled() else \"выключена (нет openai_key.txt)\")"
         }
       ],
-      "log_path_literals": [],
+      "function_excerpts": [
+        {
+          "calls": [],
+          "end_line": 267,
+          "line": 249,
+          "name": "detect_kind",
+          "source": "def detect_kind(msg) -> tuple:\n    \"\"\"Определяем тип вложения и достаём file_id.\"\"\"\n    if msg.photo:\n        return \"photo\", msg.photo[-1].file_id\n    if msg.video:\n        return \"video\", msg.video.file_id\n    if msg.voice:\n        return \"voice\", msg.voice.file_id\n    if msg.audio:\n        return \"audio\", msg.audio.file_id\n    if msg.document:\n        return \"document\", msg.document.file_id\n    if msg.video_note:\n        return \"video_note\", msg.video_note.file_id\n    if msg.contact:\n        return \"contact\", None\n    if msg.location:\n        return \"location\", None\n    return \"text\", None"
+        },
+        {
+          "calls": [
+            "InlineKeyboardButton",
+            "InlineKeyboardMarkup",
+            "bool",
+            "context.chat_data.get",
+            "context.user_data.get",
+            "db.add_inbox",
+            "detect_kind",
+            "do_search",
+            "is_owner",
+            "msg.reply_text",
+            "notify_managers",
+            "run_ai_draft",
+            "try_invite_code",
+            "who"
+          ],
+          "end_line": 327,
+          "line": 270,
+          "name": "intake",
+          "source": "async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Всё, что владелец шлёт в свободной форме, попадает сюда.\"\"\"\n    staff = who(update)\n    msg = update.message\n\n    if not staff:\n        if msg.text and await try_invite_code(update, context):\n            return\n        await msg.reply_text(\n            \"Нет доступа. Отправьте код приглашения или обратитесь к руководителю.\"\n        )\n        return\n\n    # Менеджер/админ пишут текст — трактуем как поиск, а не как входящую запись\n    if not is_owner(staff) and msg.text:\n        await do_search(update, context, msg.text)\n        return\n\n    if not is_owner(staff):\n        await msg.reply_text(\"Входящую информацию в систему добавляет владелец.\")\n        return\n\n    kind, file_id = detect_kind(msg)\n    text = msg.text or msg.caption\n    if msg.contact:\n        text = f\"Контакт: {msg.contact.first_name} {msg.contact.phone_number}\"\n\n    inbox_id = db.add_inbox(\n        from_user_id=staff[\"user_id\"],\n        kind=kind,\n        text=text,\n        file_id=file_id,\n        media_group=msg.media_group_id,\n        tg_chat_id=msg.chat_id,\n        tg_message_id=msg.message_id,\n    )\n\n    # Альбом из нескольких фото приходит отдельными сообщениями —\n    # подтверждаем только на первом, чтобы не спамить владельцу.\n    # Карточка открыта — владелец работает с ней, а не шлёт входящее.\n    # Запись в журнал остаётся, но лишних сообщений не показываем.\n    karta_otkryta = bool(context.user_data.get(\"car_last\"))\n\n    if not karta_otkryta and (\n            not msg.media_group_id\n            or not context.chat_data.get(f\"mg_{msg.media_group_id}\")):\n        if msg.media_group_id:\n            context.chat_data[f\"mg_{msg.media_group_id}\"] = True\n        await msg.reply_text(\n            f\"✅ Принято, запись #{inbox_id}. Передал менеджеру.\",\n            reply_markup=InlineKeyboardMarkup([[\n                InlineKeyboardButton(\"📥 Посмотреть необработанное\", callback_data=\"inbox_list\")\n            ]]),\n        )\n\n    if not karta_otkryta:\n        await notify_managers(context, inbox_id, kind, text)\n    await run_ai_draft(update, context, inbox_id, kind, text, file_id)"
+        },
+        {
+          "calls": [
+            "InlineKeyboardButton",
+            "InlineKeyboardMarkup",
+            "_pomoshnik",
+            "ai.enabled",
+            "ai.is_stopped",
+            "ai.parse_image",
+            "ai.parse_message",
+            "ai.review",
+            "ai.transcribe",
+            "ai.validate",
+            "ai.voice_enabled",
+            "ai_filter.autosave",
+            "ai_filter.render_from",
+            "bytes",
+            "c.execute",
+            "context.bot.get_file",
+            "context.chat_data.get",
+            "db.connect",
+            "db.log_action",
+            "logging.error",
+            "mime.startswith",
+            "msg.reply_text",
+            "note.edit_text",
+            "parsed.get",
+            "rows.append",
+            "strip",
+            "tg_file.download_as_bytearray",
+            "thinking.edit_text",
+            "vvodnye_text"
+          ],
+          "end_line": 465,
+          "line": 333,
+          "name": "run_ai_draft",
+          "source": "async def run_ai_draft(update, context, inbox_id, kind, text, file_id):\n    \"\"\"Разбирает сообщение и показывает владельцу черновик.\n    Ничего не сохраняет в карточки без его подтверждения.\"\"\"\n    if not ai.enabled():\n        return\n\n    msg = update.message\n\n    # Ручной режим: ИИ новых действий не выполняет, запись просто лежит\n    if ai.is_stopped():\n        await msg.reply_text(\n            \"🛑 ИИ остановлен. Запись сохранена в «Необработанное» \"\n            \"и ждёт ручной обработки.\\n\\n\"\n            \"Включить обратно — кнопка в главном меню.\"\n        )\n        return\n\n    # Голосовое сначала расшифровываем. Оригинал остаётся в записи.\n    if kind in (\"voice\", \"audio\", \"video_note\") and file_id:\n        if not ai.voice_enabled():\n            await msg.reply_text(\n                \"🎤 Голосовое сохранено. Расшифровка не настроена — \"\n                \"нужен ключ OpenAI в файле openai_key.txt.\"\n            )\n            return\n        note = await msg.reply_text(\"🎤 Расшифровываю...\")\n        try:\n            tg_file = await context.bot.get_file(file_id)\n            audio = bytes(await tg_file.download_as_bytearray())\n            text = ai.transcribe(audio)\n        except Exception as e:\n            logging.error(f\"Не скачал голосовое: {e}\")\n            text = \"\"\n        if not text:\n            await note.edit_text(\"🎤 Голосовое сохранено, но расшифровать не удалось.\")\n            return\n        # Расшифровка дополняет запись, оригинал не трогаем\n        with db.connect() as c:\n            c.execute(\"UPDATE inbox SET text=? WHERE id=?\",\n                      (f\"[расшифровка] {text}\", inbox_id))\n        db.log_action(update.effective_user.id, \"transcribe\", \"inbox\", inbox_id,\n                      \"text\", None, text[:100])\n        await note.edit_text(f\"🎤 Расшифровка:\\n\\n<i>{text}</i>\", parse_mode=\"HTML\")\n\n    # Фото, скриншоты и снимки документов — разбираем как изображение\n    parsed = None\n    thinking = None\n    if kind in (\"photo\", \"document\") and file_id:\n        mime = \"image/jpeg\"\n        if kind == \"document\":\n            mime = (msg.document.mime_type or \"\") if msg.document else \"\"\n            if not mime.startswith(\"image/\"):\n                await msg.reply_text(\n                    \"📎 Документ сохранён в записи. Разбор PDF и файлов \"\n                    \"пока не подключён — пришлите скриншот или напишите текстом.\"\n                )\n                return\n\n        # Альбом приходит несколькими сообщениями — разбираем только первое,\n        # иначе на десять фото получим десять карточек и десять оплат.\n        if msg.media_group_id:\n            if context.chat_data.get(f\"ai_mg_{msg.media_group_id}\"):\n                return\n            context.chat_data[f\"ai_mg_{msg.media_group_id}\"] = True\n\n        thinking = await msg.reply_text(\"🖼 Читаю изображение...\")\n        try:\n            tg_file = await context.bot.get_file(file_id)\n            kartinka = bytes(await tg_file.download_as_bytearray())\n        except Exception as e:\n            logging.error(f\"Не скачал изображение: {e}\")\n            await thinking.edit_text(\"🖼 Изображение сохранено, но скачать его не удалось.\")\n            return\n\n        parsed = ai.parse_image(kartinka, caption=text, mime=mime)\n        if not parsed:\n            await thinking.edit_text(\n                \"🖼 Изображение сохранено, но разобрать его не получилось. \"\n                \"Опишите машину текстом или голосом.\"\n            )\n            return\n\n        # Для проверки нужен исходный текст — у картинки его нет\n        text = (text or \"\") + f\"\\n[распознано с изображения] {parsed.get('summary', '')}\"\n\n    if parsed is None and not (text or \"\").strip():\n        return\n\n    if thinking is None:\n        thinking = await msg.reply_text(\"🧠 Разбираю...\")\n    if parsed is None:\n        parsed = ai.parse_message(text)\n    if not parsed:\n        if await _pomoshnik(update, context, thinking, text):\n            return\n        if await _pomoshnik(update, context, thinking, text):\n            return\n        if await _pomoshnik(update, context, thinking, text):\n            return\n        # По существу ответить не вышло — не молчим, а даём вводные\n        await thinking.edit_text(\n            \"Не смог разобрать это сообщение — запись сохранена как есть.\\n\"\n            \"Пока напомню вводные, по которым работаем:\\n\\n\" + vvodnye_text(),\n            parse_mode=\"HTML\")\n        return\n\n    issues = ai.validate(parsed)\n\n    # ИИ-управляющий сверяет карточку с исходным сообщением\n    await thinking.edit_text(ai_filter.render_from(parsed, issues), parse_mode=\"HTML\")\n    proverka = ai.review(text, parsed)\n\n    context.user_data[\"ai_draft\"] = {\n        \"inbox_id\": inbox_id, \"parsed\": parsed, \"source_text\": text,\n        \"review\": proverka,\n    }\n\n    if await ai_filter.autosave(update, context, thinking, inbox_id, parsed):\n        return\n\n    rows = []\n    if parsed.get(\"type\") in (\"car\", \"client\"):\n        rows.append([InlineKeyboardButton(\"✅ Сохранить\", callback_data=\"ai_ok\")])\n    rows.append([\n        InlineKeyboardButton(\"✏️ Поправить\", callback_data=\"ai_edit\"),\n        InlineKeyboardButton(\"❌ Не то\", callback_data=\"ai_no\"),\n    ])\n\n    await thinking.edit_text(\n        ai_filter.render_from(parsed, issues),\n        parse_mode=\"HTML\",\n        reply_markup=InlineKeyboardMarkup(rows),\n    )"
+        },
+        {
+          "calls": [
+            "ai.to_card_data",
+            "collect_media",
+            "context.user_data.get",
+            "context.user_data.pop",
+            "db.add_comment",
+            "db.card_title",
+            "db.create_card",
+            "db.get_card",
+            "db.link_inbox_card",
+            "db.set_card_review",
+            "db.set_inbox_status",
+            "draft.get",
+            "i.get",
+            "join",
+            "json.dumps",
+            "logging.getLogger",
+            "main_menu",
+            "parsed.get",
+            "photo_hide.archive",
+            "proverka.get",
+            "query.answer",
+            "query.message.edit_reply_markup",
+            "query.message.reply_text",
+            "warning",
+            "who"
+          ],
+          "end_line": 598,
+          "line": 543,
+          "name": "ai_save",
+          "source": "async def ai_save(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    query = update.callback_query\n    await query.answer()\n    staff = who(update)\n    draft = context.user_data.get(\"ai_draft\")\n    if not draft or not staff:\n        await query.message.reply_text(\"Черновик потерялся. Отправьте сообщение заново.\")\n        return\n\n    parsed = draft[\"parsed\"]\n    table = \"cars\" if parsed.get(\"type\") == \"car\" else \"clients\"\n    data = ai.to_card_data(parsed)\n\n    # Фото и видео из записи переносим в карточку — без них машина\n    # в клиентском каталоге выглядит пустой\n    foto, video = [], []\n    if table == \"cars\":\n        foto, video = collect_media(draft[\"inbox_id\"])\n        if foto:\n            data[\"photos\"] = json.dumps(foto)\n        if video:\n            data[\"videos\"] = json.dumps(video)\n\n    card_id = db.create_card(table, data, staff[\"user_id\"])\n    if table == \"cars\" and foto:\n        try:\n            import photo_hide\n            photo_hide.archive(card_id, foto, staff[\"user_id\"])\n        except Exception as e:\n            logging.getLogger(__name__).warning(\"Архив служебных фото: %s\", e)\n    db.link_inbox_card(draft[\"inbox_id\"], table, card_id, staff[\"user_id\"])\n\n    # Владелец сам всё проверил — карточка сразу подтверждена,\n    # лишний круг согласования ему не нужен.\n    publish = True if table == \"cars\" else None\n    db.set_card_review(table, card_id, db.ST_APPROVED_OWNER, staff[\"user_id\"], publish=publish)\n    db.set_inbox_status(draft[\"inbox_id\"], db.ST_APPROVED_OWNER, staff[\"user_id\"])\n    db.add_comment(table, card_id, staff[\"user_id\"],\n                   f\"Создано ИИ-разбором из: {draft['source_text'][:300]}\")\n    proverka = draft.get(\"review\")\n    if proverka:\n        zamechaniya = \"; \".join(i.get(\"text\", \"\") for i in proverka.get(\"issues\", []))\n        db.add_comment(\n            table, card_id, staff[\"user_id\"],\n            f\"Проверка ИИ: {proverka.get('verdict')}\"\n            + (f\" — {zamechaniya}\" if zamechaniya else \" — расхождений нет\"),\n        )\n\n    card = db.get_card(table, card_id)\n    note = \"\\nОпубликовано в клиентском каталоге.\" if table == \"cars\" else \"\"\n    await query.message.edit_reply_markup(reply_markup=None)\n    await query.message.reply_text(\n        f\"✅ Сохранено: {db.card_title(table, card)}{note}\",\n        reply_markup=main_menu(staff),\n    )\n    context.user_data.pop(\"ai_draft\", None)"
+        }
+      ],
+      "imports": [
+        {
+          "as": null,
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "logging",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "traceback",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "datetime",
+          "name": "datetime"
+        },
+        {
+          "as": null,
+          "module": "datetime",
+          "name": "timedelta"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "Update"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardButton"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardMarkup"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "BotCommand"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ApplicationBuilder"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "CommandHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "CallbackQueryHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "MessageHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ContextTypes"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ConversationHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "filters"
+        },
+        {
+          "as": null,
+          "module": "db",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "ai",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "cars_ui",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "ai_filter",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "assistant",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "photo_hide",
+          "name": null
+        }
+      ],
+      "log_path_literals": [
+        "team_token.txt"
+      ],
       "message_locations": [
         {
           "function": "run_ai_draft",
@@ -1793,6 +2069,77 @@
           "function": null,
           "line": 737,
           "snippet": "_ua_sys.path.insert(0, \"/home/Carix\")"
+        }
+      ],
+      "function_excerpts": [
+        {
+          "calls": [
+            "ZAMOK.acquire",
+            "ZAMOK.release",
+            "conn.execute",
+            "sqlite3.connect"
+          ],
+          "end_line": 164,
+          "line": 141,
+          "name": "connect",
+          "source": "def connect():\n    vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)\n    try:\n        conn = sqlite3.connect(DB_FILE, timeout=OZHIDANIE_SEK, factory=Soedinenie)\n    except Exception:\n        if vzyata:\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n        raise\n    conn._ochered_vzyata = vzyata\n    conn.row_factory = sqlite3.Row\n    # WAL на сетевом диске PythonAnywhere ломает блокировки - только DELETE\n    try:\n        conn.execute(\"PRAGMA journal_mode=DELETE\")\n    except Exception:\n        pass\n    try:\n        conn.execute(\"PRAGMA busy_timeout=%d\" % (OZHIDANIE_SEK * 1000))\n    except Exception:\n        pass\n    conn.execute(\"PRAGMA foreign_keys=ON\")\n    return conn"
+        }
+      ],
+      "imports": [
+        {
+          "as": null,
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "sqlite3",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "secrets",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "logging",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "datetime",
+          "name": "datetime"
+        },
+        {
+          "as": "_potoki",
+          "module": "threading",
+          "name": null
+        },
+        {
+          "as": "_ua_sqlite3",
+          "module": "sqlite3",
+          "name": null
+        },
+        {
+          "as": "_ua_sys",
+          "module": "sys",
+          "name": null
+        },
+        {
+          "as": "_ua_lock4_zhurnal",
+          "module": "lock4_zhurnal",
+          "name": null
+        },
+        {
+          "as": "_ua_trace",
+          "module": "trace_zhurnal",
+          "name": null
         }
       ],
       "log_path_literals": [],
@@ -2766,7 +3113,274 @@
           "snippet": "file_id = msg.document.file_id"
         }
       ],
-      "log_path_literals": [],
+      "function_excerpts": [
+        {
+          "calls": [
+            "InlineKeyboardButton",
+            "InlineKeyboardMarkup",
+            "_peresobrat_stranicy",
+            "_ubrat_fayly_foto",
+            "_v142_vernut_foto",
+            "_v142_zapas_foto",
+            "card.get",
+            "card_of",
+            "db.update_card_field",
+            "int",
+            "jdump",
+            "len",
+            "log.warning",
+            "photos_of",
+            "q.answer",
+            "q.data.split",
+            "q.message.reply_text",
+            "str",
+            "upper"
+          ],
+          "end_line": 867,
+          "line": 822,
+          "name": "photo_remove_all",
+          "source": "async def photo_remove_all(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Удаляем все кадры разом и убираем устаревшую страницу покупателя.\"\"\"\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    bylo = len(photos_of(card))\n\n    # UA-V142 · сначала запасная копия и файлы, база — только при успехе\n    _v142_kuda, _v142_skolko = _v142_zapas_foto(str(card.get(\"auto_number\") or \"\").upper())\n    try:\n        _ubrano_s_diska = _ubrat_fayly_foto(card.get(\"auto_number\"))   # UA-V100\n    except Exception as _e142:\n        _v142_vernut_foto(str(card.get(\"auto_number\") or \"\").upper(), _v142_kuda)\n        log.warning(\"Файлы фото не убраны, вернул из копии: %s\", _e142)\n        await q.message.reply_text(\n            \"Фото убрать не вышло — карточка осталась без изменений.\",\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"\\u2190 К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n    db.update_card_field(\"cars\", cid, \"photos\", jdump([]), q.from_user.id)\n    if card.get(\"cover_photo\"):\n        db.update_card_field(\"cars\", cid, \"cover_photo\", None, q.from_user.id)\n    try:\n        db.update_card_field(\"cars\", cid, \"hidden_photos\", jdump([]), q.from_user.id)\n    except Exception:\n        pass\n\n    # UA-V140 · страницу машины НЕ трогаем, только пересобираем\n    ubrano = \"\"\n    nomer = str(card.get(\"auto_number\") or \"\").upper()\n    if nomer:\n        try:\n            if _peresobrat_stranicy():\n                ubrano = \"\\nСтраница покупателя пересобрана.\"\n            else:\n                ubrano = \"\\nСтраницу пересобрать не вышло — она осталась прежней.\"\n        except Exception as e:\n            log.warning(\"Пересборка после удаления фото: %s\", e)\n\n    await q.message.reply_text(\n        \"Удалено фото: %d.%s\\n\\nТеперь пришлите новые кадры одним альбомом.\"\n        % (bylo, ubrano),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop"
+        },
+        {
+          "calls": [
+            "_i.reload",
+            "_s.path.insert",
+            "_st.main",
+            "hasattr",
+            "log.warning"
+          ],
+          "end_line": 2192,
+          "line": 2178,
+          "name": "_peresobrat_stranicy",
+          "source": "def _peresobrat_stranicy():\n    \"\"\"Страницы сайта после удаления — иначе там останется старое.\"\"\"\n    try:\n        import sys as _s\n        if \"/home/Carix\" not in _s.path:\n            _s.path.insert(0, \"/home/Carix\")\n        import importlib as _i\n        import stranica as _st\n        _i.reload(_st)\n        if hasattr(_st, \"main\"):\n            _st.main()\n            return True\n    except Exception as e:\n        log.warning(\"Пересборка страниц: %s\", e)\n    return False"
+        }
+      ],
+      "imports": [
+        {
+          "as": null,
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "logging",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardButton"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardMarkup"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "Update"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ApplicationHandlerStop"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "CallbackQueryHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ContextTypes"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "MessageHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "filters"
+        },
+        {
+          "as": "S",
+          "module": "cars_schema",
+          "name": null
+        },
+        {
+          "as": "CR",
+          "module": "card_render",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "db",
+          "name": null
+        },
+        {
+          "as": "_date",
+          "module": "datetime",
+          "name": "date"
+        },
+        {
+          "as": "_dt",
+          "module": "datetime",
+          "name": "datetime"
+        },
+        {
+          "as": "_td",
+          "module": "datetime",
+          "name": "timedelta"
+        },
+        {
+          "as": null,
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": "_re",
+          "module": "re",
+          "name": null
+        },
+        {
+          "as": "_t140",
+          "module": "time",
+          "name": null
+        },
+        {
+          "as": "_j140",
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": "_u140",
+          "module": "urllib.request",
+          "name": null
+        },
+        {
+          "as": "_ue140",
+          "module": "urllib.error",
+          "name": null
+        },
+        {
+          "as": "_g142",
+          "module": "glob",
+          "name": null
+        },
+        {
+          "as": "_sh142",
+          "module": "shutil",
+          "name": null
+        },
+        {
+          "as": "_tm142",
+          "module": "time",
+          "name": null
+        },
+        {
+          "as": "_s152",
+          "module": "sqlite3",
+          "name": null
+        },
+        {
+          "as": "_s163",
+          "module": "sqlite3",
+          "name": null
+        },
+        {
+          "as": "_g",
+          "module": "glob",
+          "name": null
+        },
+        {
+          "as": "_j",
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": "_glob",
+          "module": "glob",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InputMediaPhoto"
+        },
+        {
+          "as": null,
+          "module": "assistant",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "visits",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "ai",
+          "name": null
+        },
+        {
+          "as": "_CU",
+          "module": "client_ui",
+          "name": null
+        },
+        {
+          "as": "_aio_rem2",
+          "module": "asyncio",
+          "name": null
+        },
+        {
+          "as": "_pub_rem2",
+          "module": "publikaciya",
+          "name": null
+        },
+        {
+          "as": "_s",
+          "module": "sys",
+          "name": null
+        },
+        {
+          "as": "_i",
+          "module": "importlib",
+          "name": null
+        },
+        {
+          "as": "_st",
+          "module": "stranica",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "ai_filter",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "photo_hide",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "konteyner",
+          "name": null
+        },
+        {
+          "as": "_j163",
+          "module": "json",
+          "name": null
+        }
+      ],
+      "log_path_literals": [
+        "/home/Carix/media_log.txt",
+        "/home/Carix/team_token.txt"
+      ],
       "message_locations": [],
       "mtime_ns": 1787487179998855779,
       "path": "/home/Carix/cars_ui.py",
@@ -3605,7 +4219,182 @@
           "snippet": "time.sleep(10)"
         }
       ],
-      "log_path_literals": [],
+      "function_excerpts": [],
+      "imports": [
+        {
+          "as": null,
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "sys",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "time",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "asyncio",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "functools",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "logging",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "runpy",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "shutil",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "hashlib",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "re",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "sqlite3",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "telegram.request",
+          "name": "HTTPXRequest"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "File"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "Bot"
+        },
+        {
+          "as": null,
+          "module": "telegram.error",
+          "name": "TimedOut"
+        },
+        {
+          "as": null,
+          "module": "telegram.error",
+          "name": "NetworkError"
+        },
+        {
+          "as": null,
+          "module": "telegram.error",
+          "name": "RetryAfter"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "Application"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InputMediaPhoto"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InputMediaVideo"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardButton"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardMarkup"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "CommandHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "CallbackQueryHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ApplicationBuilder"
+        },
+        {
+          "as": null,
+          "module": "card_html",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ExtBot"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "MessageHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "filters"
+        },
+        {
+          "as": null,
+          "module": "urllib.request",
+          "name": null
+        },
+        {
+          "as": "_json",
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": "VH",
+          "module": "video_helper",
+          "name": null
+        }
+      ],
+      "log_path_literals": [
+        "video_kanal.txt",
+        "vladelec.txt",
+        "bot_token.txt",
+        "team_token.txt",
+        "team_bot.txt",
+        "оба токена негодны — впиши их в bot_token.txt и team_token.txt"
+      ],
       "message_locations": [],
       "mtime_ns": 1786710100867532949,
       "path": "/home/Carix/start_safe.py",
@@ -4066,7 +4855,286 @@
           "snippet": "errors=\"replace\") as _f:"
         }
       ],
-      "log_path_literals": [],
+      "function_excerpts": [
+        {
+          "calls": [
+            "_sh_imya.replace",
+            "_sh_zh.write",
+            "celi.append",
+            "f.write",
+            "glob.glob",
+            "io.open",
+            "len",
+            "lower",
+            "os.makedirs",
+            "os.path.basename",
+            "os.path.join",
+            "set",
+            "str",
+            "strip",
+            "time.strftime"
+          ],
+          "end_line": 1556,
+          "line": 1530,
+          "name": "zapisat",
+          "source": "def zapisat(imya_bez, soderzhimoe):\n    \"\"\"Пишем во все копии: обе папки, все адреса с хэшем.\"\"\"\n    # UA-SHCHIT-V3: общие страницы сайта ведёт только новый сборщик\n    try:\n        _sh_imya = os.path.basename(str(imya_bez)).strip().lower()\n        if _sh_imya.replace(\".html\", \"\") in (\"index\", \"katalog\", \"podbor\", \"info\"):\n            try:\n                with io.open(\"/home/Carix/shchit_log.txt\", \"a\", encoding=\"utf-8\") as _sh_zh:\n                    _sh_zh.write(\"%s  запрет zapisat: %s\\n\"\n                                 % (time.strftime(\"%Y-%m-%d %H:%M:%S\"), imya_bez))\n            except Exception:\n                pass\n            return True\n    except Exception:\n        pass\n    celi = []\n    for papka in (PAPKA_VID, PAPKA_SITE):\n        os.makedirs(papka, exist_ok=True)\n        celi.append(os.path.join(papka, imya_bez + \".html\"))\n        celi += glob.glob(os.path.join(papka, imya_bez + \"-*.html\"))\n    for put in set(celi):\n        try:\n            with io.open(put, \"w\", encoding=\"utf-8\") as f:\n                f.write(soderzhimoe)\n        except Exception:\n            continue\n    return len(set(celi))"
+        },
+        {
+          "calls": [
+            "cena",
+            "est_diagnostika",
+            "etap_korotko",
+            "int",
+            "join",
+            "kadry_diagnostiki",
+            "kadry_mashiny",
+            "legkie",
+            "len",
+            "m.get",
+            "mashiny",
+            "max",
+            "nomer",
+            "obnovit_etalon",
+            "os.path.exists",
+            "os.path.join",
+            "otklyuchit_staroe",
+            "print",
+            "sajt",
+            "sbor",
+            "sobrat_diagnostiku",
+            "sobrat_glavnuyu",
+            "sobrat_kartochku",
+            "sobrat_katalog",
+            "strip",
+            "time.strftime",
+            "time.time",
+            "traceback.format_exc",
+            "ves",
+            "zapisat"
+          ],
+          "end_line": 1715,
+          "line": 1629,
+          "name": "main",
+          "source": "def main():\n    print(\"СБОРКА СТРАНИЦ UA ART — %s\" % time.strftime(\"%d.%m.%Y %H:%M\"))\n    print()\n    staroe = otklyuchit_staroe()\n    if staroe:\n        print(\"выключено: %s\" % \", \".join(staroe))\n        print()\n    try:\n        spisok = mashiny()\n    except Exception:\n        print(\"Не читается база:\")\n        print(traceback.format_exc(limit=2))\n        return\n\n    try:\n        from PIL import Image  # noqa\n        szhatie = True\n    except Exception:\n        szhatie = False\n        print(\"ВНИМАНИЕ: библиотека Pillow недоступна — фото пойдут в полном размере,\")\n        print(\"страницы будут грузиться медленно. Поставьте её один раз в консоли:\")\n        print(\"  pip3.10 install --user Pillow\")\n        print()\n\n    kadry_po_nomeru = {}\n    legkie_po_nomeru = {}\n    bylo_vsego = stalo_vsego = 0\n    for m in spisok:\n        nom = nomer(m)\n        kadry = kadry_mashiny(m)\n        kadry_po_nomeru[nom] = kadry\n        if kadry:\n            sredn, mal = legkie(kadry)\n            legkie_po_nomeru[nom] = (sredn, mal)\n            bylo_vsego += ves(kadry)\n            stalo_vsego += ves(sredn)\n        else:\n            sredn = []\n            print(\"  %s — без фотографий, страница собрана с одним текстом\" % nom)\n        html = sobrat_kartochku(m, kadry, sredn)\n        skolko = zapisat(nom, html)\n        v_zamke = obnovit_etalon(nom, html)\n        if est_diagnostika(m):\n            diag = sobrat_diagnostiku(m)\n            zapisat(nom + \"-diag\", diag)\n            obnovit_etalon(nom + \"-diag\", diag)\n            df, dv = kadry_diagnostiki(m)\n            print(\"  %s — диагностика: фото %d · видео %d · отчёт %s\"\n                  % (nom, len(df), len(dv), \"есть\" if (m.get(\"diag_link\") or \"\").strip() else \"нет\"))\n        video = \"есть\" if os.path.exists(os.path.join(PAPKA_VID, nom + \".mp4\")) else \"нет\"\n        print(\"  %s — %s · фото %d · видео %s · %s · копий %d%s\"\n              % (nom, cena(m), len(kadry), video, etap_korotko(m), skolko,\n                 (\" · в замке %d\" % v_zamke) if v_zamke else \"\"))\n\n    katalog = sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru)\n    skolko = zapisat(\"katalog\", katalog)\n    obnovit_etalon(\"katalog\", katalog)\n    print(\"  каталог — машин %d · копий %d\" % (len(spisok), skolko))\n\n    glavnaya = sobrat_glavnuyu(spisok, kadry_po_nomeru, legkie_po_nomeru)\n    zapisat(\"index\", glavnaya)\n    obnovit_etalon(\"index\", glavnaya)\n    print(\"  главная — собрана\")\n\n    for imya, sbor in ((\"podbor\", sobrat_podbor), (\"info\", sobrat_info)):\n        stranica = sbor()\n        zapisat(imya, stranica)\n        obnovit_etalon(imya, stranica)\n    print(\"  подбор и условия — собраны\")\n\n    if bylo_vsego and szhatie:\n        print()\n        print(\"  фото облегчены: %d МБ → %d МБ (в %.0f раз легче)\"\n              % (bylo_vsego // 1048576, max(stalo_vsego // 1048576, 1),\n                 bylo_vsego / max(stalo_vsego, 1)))\n\n    print()\n    print(\"ССЫЛКИ\")\n    metka = int(time.time())\n    print(\"  ГЛАВНАЯ:  %s/index.html?v=%d\" % (sajt(), metka))\n    print(\"  каталог:  %s/katalog.html?v=%d\" % (sajt(), metka))\n    print(\"  подбор:   %s/podbor.html?v=%d\" % (sajt(), metka))\n    print(\"  условия:  %s/info.html?v=%d\" % (sajt(), metka))\n    for m in spisok:\n        print(\"  карточка: %s/%s.html?v=%d\" % (sajt(), nomer(m), metka))\n    print()\n    print(\"Готово. Перезапускать бота не нужно — страницы уже обновлены.\")"
+        },
+        {
+          "calls": [
+            "_f.write",
+            "_snimok.items",
+            "_v135_main_ishodnyy",
+            "_v135_proverka",
+            "_v135_snimok",
+            "io.open",
+            "os.path.join",
+            "print",
+            "time.strftime"
+          ],
+          "end_line": 1830,
+          "line": 1807,
+          "name": "main",
+          "source": "def main(*a, **k):\n    _snimok = _v135_snimok()\n    _itog = _v135_main_ishodnyy(*a, **k)\n    _horosho, _slovo = _v135_proverka()\n    try:\n        with io.open(os.path.join(BAZA_DIR, \"publikaciya_log.txt\"), \"a\",\n                     encoding=\"utf-8\") as _f:\n            _f.write(\"%s  %s  %s\\n\" % (time.strftime(\"%Y-%m-%d %H:%M:%S\"),\n                                       \"PASS\" if _horosho else \"FAIL\", _slovo))\n    except Exception:\n        pass\n    if _horosho:\n        print(\"  публикация проверена: %s\" % _slovo)\n    else:\n        print(\"  ПУБЛИКАЦИЯ ОТМЕНЕНА: %s\" % _slovo)\n        for _put, _tekst in _snimok.items():\n            try:\n                with io.open(_put, \"w\", encoding=\"utf-8\") as _f:\n                    _f.write(_tekst)\n            except Exception:\n                pass\n        if _snimok:\n            print(\"  рабочие страницы возвращены в прежний вид\")\n    return _itog"
+        },
+        {
+          "calls": [
+            "_f.write",
+            "_v157_main_do",
+            "_v157_net_fajlov",
+            "io.open",
+            "join",
+            "len",
+            "os.path.join",
+            "print",
+            "time.strftime"
+          ],
+          "end_line": 1878,
+          "line": 1861,
+          "name": "main",
+          "source": "def main(*a, **k):\n    _bedy = _v157_net_fajlov()\n    if _bedy:\n        _stroka = (\"%s  ОТМЕНА СБОРКИ  нет файлов для записей ready: %d · %s\"\n                   % (time.strftime(\"%Y-%m-%d %H:%M:%S\"), len(_bedy),\n                      \"; \".join(_bedy[:5])))\n        try:\n            with io.open(os.path.join(BAZA_DIR, \"publikaciya_log.txt\"), \"a\",\n                         encoding=\"utf-8\") as _f:\n                _f.write(_stroka + \"\\n\")\n        except Exception:\n            pass\n        print(\"  СБОРКА ОТМЕНЕНА: не хватает файлов — %d\" % len(_bedy))\n        for _s in _bedy[:10]:\n            print(\"     \" + _s)\n        print(\"  рабочие страницы оставлены как есть, запустите v155.py для восстановления\")\n        return None\n    return _v157_main_do(*a, **k)"
+        },
+        {
+          "calls": [
+            "_f.read",
+            "_ish",
+            "_v172_zapis_v_zhurnal",
+            "bool",
+            "io.open",
+            "join",
+            "os.path.basename",
+            "os.path.isfile",
+            "re.match",
+            "str"
+          ],
+          "end_line": 2473,
+          "line": 2453,
+          "name": "zapisat",
+          "source": "    def zapisat(put, text, *ostalnye, **imenovannye):\n        _ish = _v172_zapisat_ishodnaya\n        try:\n            imya = os.path.basename(str(put))\n            karta = bool(re.match(r\"^UA-[A-Za-z0-9\\-]+\\.html$\", imya)) \\\n                and \"-diag\" not in imya\n            if karta and text:\n                propalo = [x for x in V172_OBYAZATELNO if x not in text]\n                if propalo and os.path.isfile(put):\n                    with io.open(put, \"r\", encoding=\"utf-8\",\n                                 errors=\"replace\") as _f:\n                        staraya = _f.read()\n                    bylo = [x for x in propalo if x in staraya]\n                    if bylo:\n                        _v172_zapis_v_zhurnal(\n                            \"ОТКАЗ · %s · в новой странице пропало: %s · \"\n                            \"рабочая оставлена\" % (imya, \", \".join(bylo)))\n                        return None\n        except Exception:\n            pass\n        return _ish(put, text, *ostalnye, **imenovannye)"
+        },
+        {
+          "calls": [
+            "_f.read",
+            "_ish",
+            "_z.write",
+            "bool",
+            "io.open",
+            "os.path.basename",
+            "os.path.isfile",
+            "re.match",
+            "staraya.count",
+            "str",
+            "text.count",
+            "time.strftime"
+          ],
+          "end_line": 2687,
+          "line": 2663,
+          "name": "zapisat",
+          "source": "    def zapisat(put, text, *ostalnye, **imenovannye):\n        _ish = _v173_zapisat_ishodnaya\n        try:\n            imya = os.path.basename(str(put))\n            karta = bool(re.match(r\"^UA-[A-Za-z0-9\\-]+\\.html$\", imya)) \\\n                and \"-diag\" not in imya\n            if karta and text and os.path.isfile(put):\n                with io.open(put, \"r\", encoding=\"utf-8\", errors=\"replace\") as _f:\n                    staraya = _f.read()\n                bylo = staraya.count(\"<img\")\n                stalo = text.count(\"<img\")\n                if bylo >= 5 and stalo < bylo * 0.8:\n                    try:\n                        with io.open(\"/home/Carix/publikaciya_log.txt\", \"a\",\n                                     encoding=\"utf-8\") as _z:\n                            _z.write(\"%s · ОТКАЗ · %s · фото было %d, стало %d · \"\n                                     \"рабочая оставлена\\n\"\n                                     % (time.strftime(\"%Y-%m-%d %H:%M:%S\"),\n                                        imya, bylo, stalo))\n                    except Exception:\n                        pass\n                    return None\n        except Exception:\n            pass\n        return _ish(put, text, *ostalnye, **imenovannye)"
+        },
+        {
+          "calls": [
+            "_f.read",
+            "_ish",
+            "_v174_proverit",
+            "_v174_zapis",
+            "bool",
+            "io.open",
+            "join",
+            "os.path.basename",
+            "os.path.isfile",
+            "re.match",
+            "str"
+          ],
+          "end_line": 2778,
+          "line": 2756,
+          "name": "zapisat",
+          "source": "    def zapisat(put, text, *ostalnye, **imenovannye):\n        _ish = _v174_zapisat_ishodnaya\n        try:\n            imya = os.path.basename(str(put))\n            karta = bool(re.match(r\"^UA-[A-Za-z0-9\\-]+\\.html$\", imya)) \\\n                and \"-diag\" not in imya\n            if karta and text:\n                staraya = \"\"\n                if os.path.isfile(put):\n                    with io.open(put, \"r\", encoding=\"utf-8\",\n                                 errors=\"replace\") as _f:\n                        staraya = _f.read()\n                bedy = _v174_proverit(imya, text, staraya)\n                if bedy and staraya:\n                    _v174_zapis(\"ОТКАЗ · %s · %s · рабочая страница оставлена\"\n                                % (imya, \"; \".join(bedy)))\n                    return None\n                if bedy and not staraya:\n                    _v174_zapis(\"ВНИМАНИЕ · %s · %s · рабочей копии не было, \"\n                                \"страница записана\" % (imya, \"; \".join(bedy)))\n        except Exception:\n            pass\n        return _ish(put, text, *ostalnye, **imenovannye)"
+        },
+        {
+          "calls": [
+            "_MCF.obrabotat_kartochku",
+            "_MCF.obrabotat_obshuyu",
+            "_mcf_ishodnaya_zapisat",
+            "_mcf_os.path.basename",
+            "_mcf_re.search",
+            "imya.startswith",
+            "isinstance",
+            "m.group"
+          ],
+          "end_line": 2846,
+          "line": 2836,
+          "name": "zapisat",
+          "source": "    def zapisat(put, text, *ost, **imen):\n        try:\n            imya = _mcf_os.path.basename(\"%s\" % put)\n            m = _mcf_re.search(r\"(UA-\\d{4})\", imya)\n            if m and \"-diag\" not in imya and isinstance(text, str):\n                text = _MCF.obrabotat_kartochku(text, m.group(1))\n            elif imya.startswith((\"index\", \"katalog\")) and isinstance(text, str):\n                text = _MCF.obrabotat_obshuyu(text)\n        except Exception:\n            pass\n        return _mcf_ishodnaya_zapisat(put, text, *ost, **imen)"
+        },
+        {
+          "calls": [
+            "_ve_modul.log",
+            "_ve_modul.pravilo",
+            "_ve_staryy_zapisat",
+            "isinstance",
+            "join"
+          ],
+          "end_line": 2869,
+          "line": 2858,
+          "name": "zapisat",
+          "source": "    def zapisat(imya_bez, soderzhimoe):\n        try:\n            if isinstance(soderzhimoe, str) and \"<video\" in soderzhimoe:\n                soderzhimoe, _ve_pravki = _ve_modul.pravilo(soderzhimoe, imya_bez)\n                if _ve_pravki:\n                    _ve_modul.log(\"%s: %s\" % (imya_bez, \"; \".join(_ve_pravki)))\n        except Exception as _ve_e:\n            try:\n                _ve_modul.log(\"правило не применено к %s: %r\" % (imya_bez, _ve_e))\n            except Exception:\n                pass\n        return _ve_staryy_zapisat(imya_bez, soderzhimoe)"
+        }
+      ],
+      "imports": [
+        {
+          "as": null,
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "io",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "re",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "glob",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "time",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "base64",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "sqlite3",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "traceback",
+          "name": null
+        },
+        {
+          "as": "_s157",
+          "module": "sqlite3",
+          "name": null
+        },
+        {
+          "as": "_v171_url",
+          "module": "urllib.parse",
+          "name": null
+        },
+        {
+          "as": "_mcf_os",
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": "_mcf_re",
+          "module": "re",
+          "name": null
+        },
+        {
+          "as": "_MCF",
+          "module": "master_card",
+          "name": null
+        },
+        {
+          "as": "_ve_modul",
+          "module": "video_edino",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "urllib.request",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "PIL",
+          "name": "Image"
+        }
+      ],
+      "log_path_literals": [
+        "video_sayt.txt",
+        "karta_ssylka.txt",
+        "bot_imya.txt",
+        "bot_token.txt",
+        "/home/Carix/shchit_log.txt",
+        "publikaciya_log.txt",
+        "/home/Carix/publikaciya_log.txt",
+        "/home/Carix/shablon_log.txt"
+      ],
       "message_locations": [],
       "mtime_ns": 1787636524678097517,
       "path": "/home/Carix/stranica.py",
@@ -4245,7 +5313,114 @@
           "snippet": "time.sleep(PAUZA)"
         }
       ],
-      "log_path_literals": [],
+      "function_excerpts": [
+        {
+          "calls": [
+            "hasattr",
+            "log",
+            "repr",
+            "stranica.main",
+            "sys.path.insert"
+          ],
+          "end_line": 154,
+          "line": 140,
+          "name": "sobrat_svoimi_rukami",
+          "source": "def sobrat_svoimi_rukami():\n    \"\"\"UA-V122: сборка прямо здесь, когда отдельный процесс не поднялся.\"\"\"\n    try:\n        if BAZA not in sys.path:\n            sys.path.insert(0, BAZA)\n        import stranica\n        if not hasattr(stranica, \"main\"):\n            log(\"в stranica.py нет main()\")\n            return False\n        stranica.main()\n        log(\"сборка выполнена внутри автопередачи\")\n        return True\n    except Exception as e:\n        log(\"сборка не прошла: \" + repr(e))\n        return False"
+        },
+        {
+          "calls": [
+            "log",
+            "os.path.exists",
+            "repr",
+            "sobrat_svoimi_rukami",
+            "str",
+            "subprocess.run"
+          ],
+          "end_line": 181,
+          "line": 157,
+          "name": "sobrat",
+          "source": "def sobrat():\n    \"\"\"UA-V122: отдельный процесс зовёт main() ЯВНО, а если процесс\n    не поднялся - собираем своими руками.\n\n    Раньше запускался сам файл stranica.py. В нём нет строки\n    if __name__ == \"__main__\", поэтому такой запуск просто ничего\n    не делал и возвращал ноль - автопередача считала, что собрала.\n    \"\"\"\n    if not os.path.exists(SBORSHCHIK):\n        log(\"stranica.py не найдена\")\n        return False\n    prikaz = (\"import sys; sys.path.insert(0, %r); \"\n              \"import stranica; stranica.main()\" % BAZA)\n    try:\n        itog = subprocess.run(\n            [sys.executable, \"-c\", prikaz],\n            cwd=BAZA, capture_output=True, text=True, timeout=600)\n        if itog.returncode == 0:\n            log(\"сборка выполнена отдельным процессом\")\n            return True\n        log(\"сборщик вернул код \" + str(itog.returncode) + \": \"\n            + (itog.stderr or \"\")[-200:])\n    except Exception as e:\n        log(\"отдельным процессом не вышло: \" + repr(e))\n    return sobrat_svoimi_rukami()"
+        },
+        {
+          "calls": [
+            "dannye.get",
+            "dannye.pop",
+            "float",
+            "log",
+            "os.path.exists",
+            "otpechatok",
+            "prochest",
+            "sobrat",
+            "time.time",
+            "zapisat"
+          ],
+          "end_line": 221,
+          "line": 184,
+          "name": "shag",
+          "source": "def shag():\n    if os.path.exists(STOP):\n        return\n\n    teper = otpechatok()\n    if teper is None:\n        return\n\n    dannye = prochest()\n    poslednij = dannye.get(\"otpechatok\")\n    zhdem_s = dannye.get(\"izmenilos_v\")\n    sobrali_v = float(dannye.get(\"sobrali_v\") or 0)\n\n    if teper == poslednij and not zhdem_s:\n        return\n\n    if teper != poslednij:\n        dannye[\"otpechatok\"] = teper\n        dannye[\"izmenilos_v\"] = time.time()\n        zapisat(dannye)\n        return\n\n    if time.time() - float(zhdem_s) < POKOY:\n        return\n\n    if time.time() - sobrali_v < MEZHDU:\n        return\n\n    # UA-V122: отметку об изменении снимаем только при успешной сборке,\n    # иначе повторяем на следующем круге, а не ждём новой правки\n    log(\"витрина изменилась - пересобираю страницы\")\n    dannye[\"sobrali_v\"] = time.time()\n    zapisat(dannye)\n    if sobrat():\n        dannye.pop(\"izmenilos_v\", None)\n        zapisat(dannye)\n    else:\n        log(\"сборка не удалась - повторю на следующем круге\")"
+        }
+      ],
+      "imports": [
+        {
+          "as": null,
+          "module": "hashlib",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "sqlite3",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "subprocess",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "sys",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "threading",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "time",
+          "name": null
+        },
+        {
+          "as": "_metka",
+          "module": "uuid",
+          "name": null
+        },
+        {
+          "as": "_sled",
+          "module": "traceback",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "stranica",
+          "name": null
+        }
+      ],
+      "log_path_literals": [
+        "avtoperedacha_stop.txt",
+        "avtoperedacha_log.txt"
+      ],
       "message_locations": [],
       "mtime_ns": 1786872083142396661,
       "path": "/home/Carix/avtoperedacha.py",
@@ -4268,7 +5443,72 @@
           "snippet": "await asyncio.sleep(3600)"
         }
       ],
-      "log_path_literals": [],
+      "function_excerpts": [],
+      "imports": [
+        {
+          "as": "_os144",
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": "_s144",
+          "module": "sys",
+          "name": null
+        },
+        {
+          "as": "_tm144",
+          "module": "time",
+          "name": null
+        },
+        {
+          "as": "_at144",
+          "module": "atexit",
+          "name": null
+        },
+        {
+          "as": "_tb144",
+          "module": "traceback",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "asyncio",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "logging",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "traceback",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "db",
+          "name": null
+        },
+        {
+          "as": "_kd144",
+          "module": "kadry_diagnostiki",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "lead_bot",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "team_bot",
+          "name": null
+        }
+      ],
+      "log_path_literals": [
+        "/home/Carix/run_all_log.txt"
+      ],
       "message_locations": [],
       "mtime_ns": 1786969314931171903,
       "path": "/home/Carix/run_all.py",
@@ -4403,6 +5643,44 @@
           "function": "zapisat_atomarno",
           "line": 1578,
           "snippet": "os.replace(vremenno, put)"
+        }
+      ],
+      "function_excerpts": [],
+      "imports": [
+        {
+          "as": null,
+          "module": "io",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "re",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "time",
+          "name": null
+        },
+        {
+          "as": "_html",
+          "module": "html",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "urllib.parse",
+          "name": "quote"
         }
       ],
       "log_path_literals": [],
@@ -4698,6 +5976,134 @@
           "snippet": "\"Дата выезда %s заменена на %s. Страница пересобирается.\""
         }
       ],
+      "function_excerpts": [
+        {
+          "calls": [
+            "log.warning",
+            "subprocess.Popen"
+          ],
+          "end_line": 119,
+          "line": 109,
+          "name": "_peresobrat",
+          "source": "def _peresobrat():\n    \"\"\"Пересборка отдельным процессом — всегда свежим кодом.\"\"\"\n    try:\n        subprocess.Popen(\n            [\"python3.10\", \"-c\",\n             \"import sys; sys.path.insert(0, '/home/Carix'); \"\n             \"import stranica; stranica.main()\"],\n            cwd=\"/home/Carix\",\n            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n    except Exception as e:\n        log.warning(\"konteyner: пересборка не запущена: %s\", e)"
+        },
+        {
+          "calls": [
+            "getattr",
+            "importlib.reload",
+            "ishodnaya",
+            "log.info",
+            "log.warning",
+            "setattr"
+          ],
+          "end_line": 425,
+          "line": 402,
+          "name": "_svezhiy_sborshchik",
+          "source": "def _svezhiy_sborshchik():\n    \"\"\"Пересборка из бота обязана брать свежий stranica.py, а не копию\n    из памяти процесса — иначе старый код затирает новые страницы.\"\"\"\n    try:\n        import cars_ui\n    except Exception as e:\n        log.warning(\"konteyner: cars_ui не импортирован: %s\", e)\n        return\n    imya = \"_peresobrat_stranicy\"\n    ishodnaya = getattr(cars_ui, imya, None)\n    if ishodnaya is None or getattr(ishodnaya, \"_v172\", False):\n        return\n\n    def obertka(*a, **k):\n        try:\n            import stranica\n            importlib.reload(stranica)\n        except Exception as e:\n            log.warning(\"konteyner: stranica не перезагружена: %s\", e)\n        return ishodnaya(*a, **k)\n\n    obertka._v172 = True\n    setattr(cars_ui, imya, obertka)\n    log.info(\"konteyner: пересборка из бота переведена на свежий stranica.py\")"
+        }
+      ],
+      "imports": [
+        {
+          "as": null,
+          "module": "re",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "time",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "logging",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "importlib",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "subprocess",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "Update"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardButton"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardMarkup"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ContextTypes"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "CallbackQueryHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "MessageHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "filters"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ApplicationHandlerStop"
+        },
+        {
+          "as": null,
+          "module": "db",
+          "name": null
+        },
+        {
+          "as": "_j173",
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": "_o173",
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": "S",
+          "module": "cars_schema",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "cars_ui",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "CommandHandler"
+        },
+        {
+          "as": null,
+          "module": "stranica",
+          "name": null
+        }
+      ],
       "log_path_literals": [],
       "message_locations": [],
       "mtime_ns": 1787315947603590612,
@@ -4705,9 +6111,435 @@
       "sha256": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d",
       "size": 24533,
       "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 25,
+          "snippet": "from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update"
+        },
+        {
+          "category": "database_write",
+          "function": "_norm",
+          "line": 81,
+          "snippet": "return str(key).strip().lower().replace(\" \", \"_\").replace(\"-\", \"_\").replace(\".\", \"\")"
+        },
+        {
+          "category": "database_write",
+          "function": "_cc",
+          "line": 150,
+          "snippet": "txt = str(value).lower().replace(\",\", \".\")"
+        },
+        {
+          "category": "database_write",
+          "function": "_km",
+          "line": 165,
+          "snippet": "txt = str(value).lower().replace(\"\\u00a0\", \" \")"
+        },
+        {
+          "category": "database_write",
+          "function": "_km",
+          "line": 166,
+          "snippet": "digits = \"\".join(ch for ch in txt.replace(\" \", \"\") if ch.isdigit())"
+        },
+        {
+          "category": "database_write",
+          "function": "_log_parsed",
+          "line": 200,
+          "snippet": "old.insert(0, {"
+        },
+        {
+          "category": "database_write",
+          "function": "clean",
+          "line": 252,
+          "snippet": "vin = str(raw).upper().replace(\" \", \"\").replace(\"-\", \"\")"
+        },
+        {
+          "category": "database_write",
+          "function": "find_by_vin",
+          "line": 269,
+          "snippet": "row = c.execute(\"SELECT * FROM cars WHERE UPPER(vin)=? ORDER BY id DESC LIMIT 1\","
+        },
+        {
+          "category": "database_write",
+          "function": "autosave",
+          "line": 437,
+          "snippet": "async def autosave(update, context, thinking, inbox_id, parsed):"
+        },
+        {
+          "category": "database_write",
+          "function": "autosave",
+          "line": 442,
+          "snippet": "user = update.effective_user"
+        },
+        {
+          "category": "database_write",
+          "function": "autosave",
+          "line": 510,
+          "snippet": "await update.effective_message.reply_text(text, parse_mode=\"HTML\","
+        },
+        {
+          "category": "database_write",
+          "function": "save",
+          "line": 516,
+          "snippet": "async def save(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "save",
+          "line": 517,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "save",
+          "line": 565,
+          "snippet": "have = json.loads(card.get(\"photos\") or \"[]\")"
+        },
+        {
+          "category": "telegram_media",
+          "function": "save",
+          "line": 572,
+          "snippet": "db.update_card_field(\"cars\", card_id, \"photos\","
+        },
+        {
+          "category": "telegram_media",
+          "function": "save",
+          "line": 575,
+          "snippet": "import photo_hide"
+        },
+        {
+          "category": "telegram_media",
+          "function": "save",
+          "line": 576,
+          "snippet": "photo_hide.archive(card_id, foto, actor)"
+        }
+      ],
+      "function_excerpts": [
+        {
+          "calls": [
+            "InlineKeyboardButton",
+            "InlineKeyboardMarkup",
+            "assistant.ask",
+            "assistant.clean_html",
+            "assistant.is_request",
+            "clean",
+            "context.user_data.get",
+            "context.user_data.pop",
+            "data.get",
+            "db.get_card",
+            "db.get_staff",
+            "db.list_cards",
+            "isinstance",
+            "kb.append",
+            "log.warning",
+            "parsed.get",
+            "posledn.get",
+            "render",
+            "source_text",
+            "store",
+            "thinking.edit_text",
+            "update.effective_message.reply_text"
+          ],
+          "end_line": 514,
+          "line": 437,
+          "name": "autosave",
+          "source": "async def autosave(update, context, thinking, inbox_id, parsed):\n    \"\"\"Сохраняет авто сразу, без кнопки подтверждения.\n    Возвращает True, если карточка записана.\"\"\"\n    if not isinstance(parsed, dict) or parsed.get(\"type\") != \"car\":\n        return False\n    user = update.effective_user\n    staff = db.get_staff(user.id) if user else None\n    if not staff:\n        return False\n    text_prosby = source_text(inbox_id)\n    try:\n        import assistant\n        if assistant.is_request(text_prosby):\n            card = None\n            posl = context.user_data.get(\"car_last\")\n            if posl:\n                card = db.get_card(\"cars\", posl)\n            otvet = assistant.ask(text_prosby, card)\n            if otvet:\n                await thinking.edit_text(assistant.clean_html(otvet)[:3800],\n                                         parse_mode=\"HTML\")\n                context.user_data.pop(\"ai_draft\", None)\n                return True\n    except Exception as e:\n        log.warning(\"Помощник: %s\", e)\n\n    data = clean(parsed, source_text(inbox_id))\n    if not data:\n        return False\n\n    otkrytaya = context.user_data.get(\"car_last\")\n    try:\n        card_id, number, novaya = store(data, staff[\"user_id\"], inbox_id,\n                                        card_id=None if data.get(\"vin\") else otkrytaya)\n    except Exception as e:\n        log.warning(\"Автосохранение не прошло: %s\", e)\n        return False\n\n    if not card_id:\n        # VIN не найден и открытой карточки нет — новую не заводим\n        kb = []\n        posledn = None\n        try:\n            spisok = db.list_cards(\"cars\", limit=1)\n            posledn = spisok[0] if spisok else None\n        except Exception:\n            pass\n        if posledn:\n            kb.append([InlineKeyboardButton(\n                \"Записать в %s\" % (posledn.get(\"auto_number\") or \"последнюю\"),\n                callback_data=\"car_open:%d\" % posledn[\"id\"])])\n        kb.append([InlineKeyboardButton(\"Список автомобилей\",\n                                        callback_data=\"cars_cards\")])\n        try:\n            await thinking.edit_text(\n                \"Новую карточку завожу только по VIN — его в сообщении нет.\\n\"\n                \"Пришлите VIN или откройте нужную карточку.\",\n                reply_markup=InlineKeyboardMarkup(kb))\n        except Exception:\n            pass\n        return True\n\n    head = (\"Открыл новую карточку %s\" % number if novaya\n            else \"Дополнил карточку %s — заполненное не тронул\" % number)\n    text = head + \"\\n\\n\" + render(data)\n    kb = InlineKeyboardMarkup([\n        [InlineKeyboardButton(\"← Открыть карточку\", callback_data=\"car_open:%d\" % card_id)],\n        [InlineKeyboardButton(\"Редактировать\", callback_data=\"car_edit:%d\" % card_id),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % card_id)],\n    ])\n    try:\n        await thinking.edit_text(text, parse_mode=\"HTML\", reply_markup=kb)\n    except Exception:\n        await update.effective_message.reply_text(text, parse_mode=\"HTML\",\n                                                  reply_markup=kb)\n    context.user_data.pop(\"ai_draft\", None)\n    context.user_data[\"car_last\"] = card_id\n    return True"
+        }
+      ],
+      "imports": [
+        {
+          "as": null,
+          "module": "json",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "logging",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "re",
+          "name": null
+        },
+        {
+          "as": "_re",
+          "module": "re",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "datetime",
+          "name": "date"
+        },
+        {
+          "as": null,
+          "module": "datetime",
+          "name": "datetime"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardButton"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "InlineKeyboardMarkup"
+        },
+        {
+          "as": null,
+          "module": "telegram",
+          "name": "Update"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ApplicationHandlerStop"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "CallbackQueryHandler"
+        },
+        {
+          "as": null,
+          "module": "telegram.ext",
+          "name": "ContextTypes"
+        },
+        {
+          "as": "S",
+          "module": "cars_schema",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "db",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "ai",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "assistant",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "team_bot",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "photo_hide",
+          "name": null
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [],
+      "mtime_ns": 1786235658137707642,
+      "path": "/home/Carix/ai_filter.py",
+      "sha256": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
+      "size": 26858,
+      "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 2,
+          "snippet": "# UA-LOCK4-V3 — полный журнал по боевой базе + отметка ZAPUSK в каждом процессе."
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 3,
+          "snippet": "import os, sys, time, sqlite3, threading, traceback"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 5,
+          "snippet": "ZHURNAL = \"/home/Carix/lock4_log.txt\""
+        },
+        {
+          "category": "lock_resource",
+          "function": "_kto",
+          "line": 31,
+          "snippet": "if imya in (\"lock4_zhurnal.py\", \"threading.py\", \"traceback.py\"):"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 39,
+          "snippet": "if not getattr(sqlite3, \"_ua_lock4_v3\", False):"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 39,
+          "snippet": "if not getattr(sqlite3, \"_ua_lock4_v3\", False):"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 40,
+          "snippet": "_ua_original_connect = sqlite3.connect"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 42,
+          "snippet": "class _UaSoedinenie(sqlite3.Connection):"
+        },
+        {
+          "category": "database_write",
+          "function": "__init__",
+          "line": 44,
+          "snippet": "sqlite3.Connection.__init__(self, *a, **kw)"
+        },
+        {
+          "category": "database_write",
+          "function": "commit",
+          "line": 57,
+          "snippet": "sqlite3.Connection.commit(self)"
+        },
+        {
+          "category": "database_write",
+          "function": "close",
+          "line": 74,
+          "snippet": "sqlite3.Connection.close(self)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_ua_connect",
+          "line": 77,
+          "snippet": "if len(a) < 2 and \"timeout\" not in kw:"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_ua_connect",
+          "line": 78,
+          "snippet": "kw[\"timeout\"] = 30.0"
+        },
+        {
+          "category": "database_write",
+          "function": "_ua_connect",
+          "line": 82,
+          "snippet": "con.execute(\"PRAGMA busy_timeout=30000\")"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_ua_connect",
+          "line": 82,
+          "snippet": "con.execute(\"PRAGMA busy_timeout=30000\")"
+        },
+        {
+          "category": "lock_resource",
+          "function": "_ua_connect",
+          "line": 82,
+          "snippet": "con.execute(\"PRAGMA busy_timeout=30000\")"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 87,
+          "snippet": "sqlite3.connect = _ua_connect"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 88,
+          "snippet": "sqlite3._ua_lock4 = True"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 88,
+          "snippet": "sqlite3._ua_lock4 = True"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 89,
+          "snippet": "sqlite3._ua_lock4_v2 = True"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 89,
+          "snippet": "sqlite3._ua_lock4_v2 = True"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 90,
+          "snippet": "sqlite3._ua_lock4_v3 = True"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 90,
+          "snippet": "sqlite3._ua_lock4_v3 = True"
+        }
+      ],
+      "function_excerpts": [],
+      "imports": [
+        {
+          "as": null,
+          "module": "os",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "sys",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "time",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "sqlite3",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "threading",
+          "name": null
+        },
+        {
+          "as": null,
+          "module": "traceback",
+          "name": null
+        }
+      ],
+      "log_path_literals": [
+        "/home/Carix/lock4_log.txt"
+      ],
+      "message_locations": [],
+      "mtime_ns": 1787650250452224008,
+      "path": "/home/Carix/lock4_zhurnal.py",
+      "sha256": "c6896603d492a874531e13b43c16f74b2afb0dae04b18e3408f36d2edcc6749f",
+      "size": 3457,
+      "syntax": "PASS"
     }
   ],
-  "started_at_utc": "2026-08-28T04:10:20Z",
+  "started_at_utc": "2026-08-28T04:22:11Z",
   "status": "PASS",
   "task_id": "task_058",
   "ua0009_evidence": {
