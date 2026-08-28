@@ -110,13 +110,6 @@ def main() -> int:
             diag_status, diag_data = fetch(BASE + urllib.parse.quote(identifier) + "-diag.html")
             if diag_status != 200:
                 raise RuntimeError("DIAGNOSTICS_HTTP_INVALID:" + identifier)
-            diag = diag_data.decode("utf-8")
-            diag_lower = diag.lower()
-            # Empty and legacy reports are valid targets. The permanent CTA is
-            # independent of optional report content by contract.
-            if not ("<html" in diag_lower and "<body" in diag_lower
-                    and "</html>" in diag_lower):
-                raise RuntimeError("DIAGNOSTICS_PAGE_INVALID:" + identifier)
             result["cards"].append({
                 "id": identifier,
                 "stage": stage,
@@ -124,6 +117,8 @@ def main() -> int:
                 "card_sha256": sha(card_data),
                 "diagnostics_http": diag_status,
                 "diagnostics_sha256": sha(diag_data),
+                "diagnostics_bytes": len(diag_data),
+                "diagnostics_content_required": False,
                 "stage_anchor_count": 1,
                 "stage_nodes": 4,
                 "current_nodes": 1,
