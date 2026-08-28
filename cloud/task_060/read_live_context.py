@@ -125,14 +125,27 @@ def main():
             command = str(item.get("command", ""))
             if "start_safe.py" not in command and "run_all.py" not in command:
                 continue
+            log_ref = item.get("logfile") or item.get("log_file") or item.get("log_path")
             evidence["always_on"].append({
                 "id_sha256": hashlib.sha256(str(item.get("id")).encode()).hexdigest(),
                 "keys": sorted(item.keys()),
                 "enabled": item.get("enabled"),
                 "status": item.get("status"),
                 "command": redact(command),
-                "logfile": item.get("logfile") or item.get("log_file") or item.get("log_path"),
+                "logfile": log_ref,
             })
+            if isinstance(log_ref, str):
+                log_path = log_ref.replace("/user/Carix/files", "", 1)
+                try:
+                    raw_log = read_remote(log_path)[-100000:].decode("utf-8", "replace")
+                    selected = []
+                    for line in raw_log.splitlines():
+                        low = line.lower()
+                        if any(mark in low for mark in ("inbox=126", "разбор изображения", "не распознал изображение", "ai photo hard timeout", "anthropic")):
+                            selected.append(redact(line)[-1000:])
+                    evidence["recent_ai_log"] = selected[-100:]
+                except Exception as exc:
+                    evidence["recent_ai_log_error"] = type(exc).__name__
     for label, path in PATHS.items():
         data = read_remote(path)
         source = data.decode("utf-8")
