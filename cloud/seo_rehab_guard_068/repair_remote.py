@@ -678,7 +678,10 @@ def build_candidates(*, include_sources: bool = True, include_content: bool = Tr
 def tree_hash(candidates: dict[str, bytes]) -> str:
     digest = hashlib.sha256()
     for path in sorted(candidates):
-        digest.update(path.encode()).update(b"\0").update(candidates[path]).update(b"\0")
+        digest.update(path.encode())
+        digest.update(b"\0")
+        digest.update(candidates[path])
+        digest.update(b"\0")
     return digest.hexdigest()
 
 
@@ -904,6 +907,9 @@ def self_test() -> None:
     compile("application = lambda environ, start_response: []\n\n" + WSGI_WRAPPER, "wsgi-fixture.py", "exec")
     for wrappers in (STRANICA_WRAPPERS, YADRO_WRAPPERS, MASTER_WRAPPERS):
         compile(COMMON_SOURCE + "\n\n" + wrappers, "generator-fixture.py", "exec")
+    digest = tree_hash({"/home/Carix/a": b"a", "/home/Carix/b": b"b"})
+    if len(digest) != 64 or digest != tree_hash({"/home/Carix/b": b"b", "/home/Carix/a": b"a"}):
+        raise RepairBlocked("self_test_tree_hash")
     print("SEO_REHAB_068_SELF_TEST_PASS")
 
 
