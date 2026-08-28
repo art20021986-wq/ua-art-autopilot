@@ -88,6 +88,14 @@ SEO_LAYERED_SOURCE_SHA = {
     MASTER_CARD_PATH: "0b7cb65313bb116e85646d3e82966ea21e84bb910c133f208796fa3dc2000079",
 }
 
+# Exact hashes after the first SEO-preserving rebase (run 33217822333).  They
+# permit the one bounded upgrade that relocates the canonical stage block.
+SEO_FINAL_V1_SOURCE_SHA = {
+    STRANICA_PATH: "b8fb7f418baa6a6a1ea586c8ef20a4d8e7e82ae1a41b5ee0f419f45882f80e49",
+    YADRO_PATH: "3a44ae496ed65b769fa704cc3689add6f52c1ef1efc0f24be16fe20aa8b706f1",
+    MASTER_CARD_PATH: "fe1bc2c317e303b799e4e50690c51e2ff4dd5a29612129b2cb5932b1c71def94",
+}
+
 EXPECTED_FUNCTION_SHA = {
     (STRANICA_PATH, "sobrat_kartochku"): "3d36b990a831078386477131afcaa74a40bccaa15e524c1ea2db2139673a13a8",
     (STRANICA_PATH, "sobrat_katalog"): "10d9505d2c65ec58ef5d83f928da123dcddd92d86080cfc14bedb96e262a4eea",
@@ -1806,8 +1814,66 @@ def _ua068_strip_legacy_blocks(source):
     return source
 
 
+def _ua068_native_stage_span(source):
+    heading = _ua068_re.search(
+        r'<div\b(?=[^>]*\bclass=["\'][^"\']*\bzag\b[^"\']*["\'])[^>]*>\s*'
+        r'(?:Где\s+(?:машина|автомобиль)\s+сейчас|'
+        r'Де\s+(?:машина|автомобіль|авто)\s+зараз)\s*</div\s*>',
+        source,
+        _ua068_re.I,
+    )
+    if heading is None:
+        return None
+    candidates = list(_ua068_re.finditer(
+        r'<div\b(?=[^>]*\bclass=["\'][^"\']*\b(?:blok|krt)\b[^"\']*["\'])[^>]*>',
+        source[:heading.start()],
+        _ua068_re.I,
+    ))
+    for match in reversed(candidates):
+        end = _ua068_balanced_div_end(source, match.start())
+        if end >= heading.end():
+            return match.start(), end
+    return None
+
+
+def _ua068_reposition_stage(source, row):
+    """Replace the old route block in-place; never append a second route."""
+    slot = "<!-- UA-ART-DELIVERY-STAGE-SLOT-V1 -->"
+    if slot in source:
+        raise RuntimeError("UA068_STAGE_SLOT_ALREADY_PRESENT")
+    native = _ua068_native_stage_span(source)
+    if native is not None:
+        source = source[:native[0]] + slot + source[native[1]:]
+        source = _ua068_replace_marked(source, _UA068_STAGE_START, _UA068_STAGE_END)
+    elif source.count(_UA068_STAGE_START) == 1 and source.count(_UA068_STAGE_END) == 1:
+        start = source.index(_UA068_STAGE_START)
+        end = source.index(_UA068_STAGE_END, start) + len(_UA068_STAGE_END)
+        source = source[:start] + slot + source[end:]
+    else:
+        source = _ua068_replace_marked(source, _UA068_STAGE_START, _UA068_STAGE_END)
+        position = source.find(_UA068_DIAG)
+        if position < 0:
+            purchase = _ua068_re.search(
+                r'<a\b(?=[^>]*\bclass=["\'][^"\']*(?:kn_kupit|dejstvie|knp\s+zol)'
+                r'[^"\']*["\'])[^>]*>',
+                source,
+                _ua068_re.I,
+            )
+            position = purchase.start() if purchase is not None else source.lower().rfind("</body>")
+        if position < 0:
+            raise RuntimeError("UA068_STAGE_INSERTION_POINT_MISSING")
+        source = source[:position] + slot + source[position:]
+    if source.count(slot) != 1:
+        raise RuntimeError("UA068_STAGE_SLOT_COUNT_INVALID")
+    renderer = globals().get("_ua_delivery_stage_anchor")
+    if not callable(renderer):
+        raise RuntimeError("UA068_STAGE_RENDERER_MISSING")
+    return source.replace(slot, renderer(row), 1)
+
+
 def _ua068_ensure_stage_diag(source, kod, row):
     source = _ua068_strip_legacy_blocks(source)
+    source = _ua068_reposition_stage(source, row)
     master_stage = globals().get("_ua_master_ensure_stage")
     master_diag = globals().get("_ua_master_ensure_diag")
     if callable(master_stage):
@@ -2076,6 +2142,8 @@ def _ua068_card_errors(source, kod, row):
             r'class=["\'][^"\']*\b(?:mcf-etap|mcf-track|mcf-diag-off)\b[^"\']*["\']',
             source, _ua068_re.I):
         errors.append("legacy duplicate UI remains")
+    if _ua068_native_stage_span(source) is not None:
+        errors.append("native stage duplicate remains")
     vin = str((row or {}).get("vin") or "").strip().upper()
     if not vin or vin not in source:
         errors.append("VIN missing")
@@ -2276,10 +2344,41 @@ def _rebase_task068_after_seo(source: str, original_sha: str,
     return candidate
 
 
+def _upgrade_task068_after_seo(source: str, original_sha: str,
+                               path: str, wrapper: str) -> str:
+    """Replace only the final task068 layer on the approved rebased hashes."""
+    name = os.path.basename(path)
+    if original_sha != SEO_FINAL_V1_SOURCE_SHA[path]:
+        raise RepairBlocked("task068_final_layer_hash_changed:" + name)
+    if source.count(FERRY_VIN_SOURCE_MARKER) != 1 or source.count(SEO_REHAB_SOURCE_MARKER) != 1:
+        raise RepairBlocked("task068_final_layer_marker_count_invalid:" + name)
+    body, guard = _detach_main_guard(source)
+    seo_position = body.find(SEO_REHAB_SOURCE_MARKER)
+    task_position = body.find(FERRY_VIN_SOURCE_MARKER)
+    if not 0 < seo_position < task_position:
+        raise RepairBlocked("task068_final_layer_order_invalid:" + name)
+    old_task_layer = body[task_position:]
+    required_binding = {
+        STRANICA_PATH: "_ua068_stranica_card_original",
+        YADRO_PATH: "_ua068_yadro_card_original",
+        MASTER_CARD_PATH: "_ua068_master_card_original",
+    }[path]
+    if required_binding not in old_task_layer:
+        raise RepairBlocked("task068_final_old_layer_invalid:" + name)
+    candidate = (body[:task_position].rstrip() + "\n\n"
+                 + FERRY_VIN_COMMON_SOURCE + "\n\n" + wrapper + "\n")
+    if guard:
+        candidate = candidate.rstrip() + "\n\n" + guard + "\n"
+    _validate_task068_source(candidate, path)
+    return candidate
+
+
 def _append_task068(source: str, original_sha: str, path: str, wrapper: str) -> str:
     if FERRY_VIN_SOURCE_MARKER in source:
         if SEO_REHAB_SOURCE_MARKER in source:
             if source.find(SEO_REHAB_SOURCE_MARKER) < source.find(FERRY_VIN_SOURCE_MARKER):
+                if "def _ua068_reposition_stage" not in source:
+                    return _upgrade_task068_after_seo(source, original_sha, path, wrapper)
                 _validate_task068_source(source, path)
                 return source
             return _rebase_task068_after_seo(source, original_sha, path, wrapper)
@@ -2522,6 +2621,7 @@ def _validate_cards(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "vin_guard_count": 1,
                 "vin_button_count": 1, "forbidden_sea_terms": 0,
                 "legacy_duplicate_ui": 0,
+                "native_stage_duplicate_ui": 0,
                 "engine_cc": int(row.get("engine_cc") or 0), "vin": row.get("vin"),
                 "video_count": runtime["_ua068_video_count"](identifier, row, source),
             }
@@ -2545,6 +2645,8 @@ def _fixture_contract() -> dict[str, int]:
     for row in runtime["_ua068_rows"].values():
         identifier = str(row["auto_number"])
         old = ("<html><head></head><body><div>%s</div><div>В море</div>"
+               "<div class='blok'><div class='zag'>Где машина сейчас</div>"
+               "<div class='etap tut'><div class='krug'>2</div>Море</div></div>"
                "<div class='mcf-etap mcf-kiev'><div>Старый этап</div></div>"
                "<div class='mcf-diag-off'><span>Диагностика готовится</span></div>"
                "<h2>Комплексная диагностика</h2>"
@@ -2853,6 +2955,17 @@ def self_test() -> int:
             < rebased.rfind("if __name__ == '__main__'")):
         raise SystemExit("TASK068_SEO_REBASE_ORDER_FAIL")
     _validate_task068_source(rebased, STRANICA_PATH)
+    previous_final_sha = SEO_FINAL_V1_SOURCE_SHA[STRANICA_PATH]
+    try:
+        SEO_FINAL_V1_SOURCE_SHA[STRANICA_PATH] = _sha(rebased.encode("utf-8"))
+        upgraded_final = _upgrade_task068_after_seo(
+            rebased, SEO_FINAL_V1_SOURCE_SHA[STRANICA_PATH],
+            STRANICA_PATH, STRANICA_FERRY_VIN_WRAPPER,
+        )
+    finally:
+        SEO_FINAL_V1_SOURCE_SHA[STRANICA_PATH] = previous_final_sha
+    if upgraded_final != rebased:
+        raise SystemExit("TASK068_FINAL_LAYER_UPGRADE_NOT_IDEMPOTENT")
     fixtures = _fixture_contract()
     if fixtures != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
         raise SystemExit("TASK068_FIXTURE_CONTRACT_FAIL")
