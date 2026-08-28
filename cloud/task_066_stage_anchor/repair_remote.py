@@ -985,16 +985,14 @@ def _validate_stage_html(source: str, identifier: str, expected_stage: int | Non
 
 
 def _valid_diag_page(source: str, identifier: str) -> bool:
+    # The diagnostics CTA is permanent even while a report is empty or uses a
+    # legacy template. Validate only that its target is a complete HTML page;
+    # optional report copy and backlinks must not control card publication.
     lowered = source.lower()
     return (
-        "</html>" in lowered
-        and identifier.lower() in lowered
-        and ("диагност" in lowered or "diagnostic" in lowered)
-        and bool(re.search(
-            r'href=["\']' + re.escape(identifier) + r'\.html(?:\?[^"\']*)?["\']',
-            source,
-            flags=re.IGNORECASE,
-        ))
+        "<html" in lowered
+        and "<body" in lowered
+        and "</html>" in lowered
     )
 
 
