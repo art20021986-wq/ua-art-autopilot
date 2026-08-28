@@ -243,6 +243,16 @@ def validate_postcheck(value):
         raise ControllerError("POSTCHECK_DB_CHECK_FAILED")
     if any(item.get("returncode") != 0 for item in value.get("workers", [])):
         raise ControllerError("POSTCHECK_WORKER_FAILED")
+    bot_health = value.get("bot_health", {})
+    bots = bot_health.get("bots", {})
+    if not bot_health.get("tokens_distinct") or any(
+        not bots.get(name, {}).get("ok") for name in ("client", "crm")
+    ):
+        raise ControllerError("POSTCHECK_BOT_HEALTH_FAILED")
+    if not value.get("service_process", {}).get("running"):
+        raise ControllerError("POSTCHECK_BOT_SERVICE_NOT_RUNNING")
+    if not value.get("runtime_contract", {}).get("ok"):
+        raise ControllerError("POSTCHECK_BOT_RUNTIME_CONTRACT_FAILED")
 
 
 def main() -> int:
