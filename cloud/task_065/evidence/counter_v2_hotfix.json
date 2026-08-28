@@ -1,0 +1,227 @@
+{
+  "bot_restarted": true,
+  "contract_id": "CRM-PHOTO-COUNTER-002",
+  "contract_ids": [
+    "CRM-PHOTO-COUNTER-002",
+    "CRM-VOICE-FIELDS-003"
+  ],
+  "errors": [],
+  "field_repair": {
+    "after": {
+      "auto_number": "UA-0011",
+      "color": "белый",
+      "engine_cc": 2000,
+      "fuel": "LPI",
+      "id": 18,
+      "protected_sha256": "ef5208df7b3b703dd10ea1691ec69dff3693a8186f61cd84e57ffd8df6461b24",
+      "updated_at": "2026-08-28T18:35:15"
+    },
+    "before": {
+      "auto_number": "UA-0011",
+      "color": null,
+      "engine_cc": null,
+      "fuel": null,
+      "id": 18,
+      "protected_sha256": "ef5208df7b3b703dd10ea1691ec69dff3693a8186f61cd84e57ffd8df6461b24",
+      "updated_at": "2026-08-28T18:11:59"
+    },
+    "changed": true,
+    "columns_changed": [
+      "color",
+      "engine_cc",
+      "fuel"
+    ],
+    "contract_id": "CRM-VOICE-FIELDS-003",
+    "desired": {
+      "color": "белый",
+      "engine_cc": 2000,
+      "fuel": "LPI"
+    },
+    "errors": [],
+    "finished_at_utc": "2026-08-28T18:35:15Z",
+    "llm_tokens": 0,
+    "mode": "UA0011_EXPLICIT_OWNER_VALUES",
+    "quick_check": "ok",
+    "site_write": false,
+    "started_at_utc": "2026-08-28T18:35:15Z",
+    "status": "PASS",
+    "task_id": "task_065"
+  },
+  "install": {
+    "already_applied": false,
+    "backup_path": "/home/Carix/backups/task_065_counter_v2/20260828T183040Z/cars_ui.py",
+    "cars_ui_sha256_after": "734f61a314b9f5391f999664d5267448a7f1e372245a7840057cf7fb7e599f9c",
+    "contract_id": "CRM-PHOTO-COUNTER-002",
+    "contract_ids": [
+      "CRM-PHOTO-COUNTER-002",
+      "CRM-VOICE-FIELDS-003"
+    ],
+    "crm_db_write": false,
+    "errors": [],
+    "finished_at_utc": "2026-08-28T18:30:41Z",
+    "llm_tokens": 0,
+    "readonly_after": {
+      "cars_count": 11,
+      "protected_sha256": "8e2c5446a7a1ada9a35db7e72d9e8b2eefc3fe54345dd7d12045a3111eea9959",
+      "quick_check": "ok"
+    },
+    "readonly_before": {
+      "cars_count": 11,
+      "protected_sha256": "8e2c5446a7a1ada9a35db7e72d9e8b2eefc3fe54345dd7d12045a3111eea9959",
+      "quick_check": "ok"
+    },
+    "site_write": false,
+    "started_at_utc": "2026-08-28T18:30:38Z",
+    "status": "PASS",
+    "task_id": "task_065"
+  },
+  "llm_tokens": 0,
+  "postcheck": {
+    "bot_health": {
+      "client_ok": true,
+      "crm_ok": true,
+      "tokens_distinct": true
+    },
+    "cars_ui_sha256": "734f61a314b9f5391f999664d5267448a7f1e372245a7840057cf7fb7e599f9c",
+    "concurrency_test": {
+      "batch_17": {
+        "ok": true,
+        "order_exact": true,
+        "queued": 0,
+        "saved_total": 22,
+        "saved_unique": 22,
+        "session_saved": 17,
+        "workers": [
+          {
+            "busy": true,
+            "error": "",
+            "processed": 0,
+            "remaining": 17
+          },
+          {
+            "busy": true,
+            "error": "",
+            "processed": 0,
+            "remaining": 17
+          },
+          {
+            "busy": true,
+            "error": "",
+            "processed": 0,
+            "remaining": 17
+          },
+          {
+            "busy": false,
+            "error": "",
+            "processed": 17,
+            "remaining": 0
+          }
+        ]
+      },
+      "capacity_100": {
+        "ok": true,
+        "order_exact": true,
+        "queued": 0,
+        "saved_total": 100,
+        "saved_unique": 100,
+        "session_saved": 100,
+        "workers": [
+          {
+            "busy": true,
+            "error": "",
+            "processed": 0,
+            "remaining": 100
+          },
+          {
+            "busy": true,
+            "error": "",
+            "processed": 0,
+            "remaining": 100
+          },
+          {
+            "busy": true,
+            "error": "",
+            "processed": 0,
+            "remaining": 100
+          },
+          {
+            "busy": true,
+            "error": "",
+            "processed": 0,
+            "remaining": 100
+          },
+          {
+            "busy": true,
+            "error": "",
+            "processed": 0,
+            "remaining": 100
+          },
+          {
+            "busy": false,
+            "error": "",
+            "processed": 100,
+            "remaining": 0
+          }
+        ]
+      },
+      "ok": true
+    },
+    "contract_id": "CRM-PHOTO-COUNTER-002",
+    "contract_ids": [
+      "CRM-PHOTO-COUNTER-002",
+      "CRM-VOICE-FIELDS-003"
+    ],
+    "errors": [],
+    "live_ua0011": {
+      "duplicate_count": 0,
+      "photos_total": 22,
+      "photos_unique": 22,
+      "queued": 0,
+      "quick_check": "ok"
+    },
+    "llm_tokens": 0,
+    "static_contract": {
+      "checks": {
+        "clear_labels": true,
+        "drain_lock": true,
+        "marker": true,
+        "one_owned_drain": true,
+        "progress_does_not_drain": true,
+        "session_counter": true,
+        "session_in_wait": true,
+        "voice_marker": true,
+        "voice_updates_open_card": true
+      },
+      "ok": true
+    },
+    "status": "PASS",
+    "task_id": "task_065",
+    "voice_regression": {
+      "automatic_override": true,
+      "changes": {
+        "color": "белый",
+        "engine_cc": 2000,
+        "fuel": "LPI"
+      },
+      "llm_tokens": 0,
+      "new_card_created": false,
+      "ok": true,
+      "open_card_only": true,
+      "parsed": {
+        "color": "белый",
+        "engine_cc": 2000,
+        "fuel": "LPI"
+      },
+      "phrase": "тип топлива LPI, объем двигателя 2000, цвет белый",
+      "skipped": []
+    }
+  },
+  "rollback": null,
+  "service_contract": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "enabled": true,
+    "restart_accepted": true
+  },
+  "status": "PASS",
+  "task_id": "task_065"
+}
