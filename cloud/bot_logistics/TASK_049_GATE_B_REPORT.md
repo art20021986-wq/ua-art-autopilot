@@ -23,4 +23,4 @@ website_write: false
 crm_write: false
 db_write: false
 rollback: false
-errors: approval_field_invalid:SOURCE_SHA256,install_not_pass
+errors: ua0006_sea_date_changed,install_not_pass
