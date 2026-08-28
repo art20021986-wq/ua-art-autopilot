@@ -6,6 +6,11 @@ on:
     paths:
       - cloud/seo_rehab_guard_068/preflight_remote.py
       - .github/workflows/seo-rehab-068-preflight.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - cloud/seo_rehab_guard_068/preflight_remote.py
+      - .github/workflows/seo-rehab-068-preflight.yml
   workflow_dispatch:
 
 permissions:
