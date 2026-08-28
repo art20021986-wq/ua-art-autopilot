@@ -9,6 +9,8 @@ import os
 import pathlib
 import re
 import sqlite3
+import tempfile
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -25,7 +27,7 @@ MAX_FILE = 1_500_000
 DB = "/home/Carix/crm.db"
 
 
-def read_remote(path: str) -> bytes:
+def read_remote(path: str, *, limit=MAX_FILE, missing=False) -> bytes | None:
     request = urllib.request.Request(
         API + "files/path" + urllib.parse.quote(path, safe="/"),
         headers={
@@ -33,9 +35,14 @@ def read_remote(path: str) -> bytes:
             "User-Agent": "ua-art-task065-voice-read/1",
         },
     )
-    with urllib.request.urlopen(request, timeout=60) as response:
-        data = response.read(MAX_FILE + 1)
-    if len(data) > MAX_FILE:
+    try:
+        with urllib.request.urlopen(request, timeout=90) as response:
+            data = response.read(limit + 1)
+    except urllib.error.HTTPError as exc:
+        if missing and exc.code == 404:
+            return None
+        raise
+    if len(data) > limit:
         raise RuntimeError("REMOTE_FILE_TOO_LARGE")
     return data
 
@@ -75,24 +82,30 @@ def snippets(source: str, patterns: tuple[str, ...], radius: int = 18):
 
 
 def db_state():
-    con = sqlite3.connect("file:%s?mode=ro" % DB, uri=True, timeout=30)
-    con.row_factory = sqlite3.Row
-    try:
-        quick = con.execute("PRAGMA quick_check").fetchone()[0]
-        columns = [row[1] for row in con.execute("PRAGMA table_info(cars)")]
-        wanted = [name for name in columns if name.casefold() in {
-            "id", "auto_number", "fuel", "fuel_type", "engine", "engine_cc",
-            "engine_volume", "volume", "color", "colour", "updated_at"
-        }]
-        row = con.execute(
-            "SELECT %s FROM cars WHERE auto_number=?" % ",".join(
-                '"%s"' % value.replace('"', '""') for value in wanted),
-            ("UA-0011",),
-        ).fetchone()
-        return {"quick_check": quick, "columns": columns,
-                "ua0011": dict(row) if row else None}
-    finally:
-        con.close()
+    with tempfile.TemporaryDirectory(prefix="task065-voice-") as directory:
+        local = pathlib.Path(directory) / "crm.db"
+        local.write_bytes(read_remote(DB, limit=80_000_000))
+        wal = read_remote(DB + "-wal", limit=80_000_000, missing=True)
+        if wal:
+            pathlib.Path(str(local) + "-wal").write_bytes(wal)
+        con = sqlite3.connect("file:%s?mode=ro" % local, uri=True, timeout=30)
+        con.row_factory = sqlite3.Row
+        try:
+            quick = con.execute("PRAGMA quick_check").fetchone()[0]
+            columns = [row[1] for row in con.execute("PRAGMA table_info(cars)")]
+            wanted = [name for name in columns if name.casefold() in {
+                "id", "auto_number", "fuel", "fuel_type", "engine", "engine_cc",
+                "engine_volume", "volume", "color", "colour", "updated_at"
+            }]
+            row = con.execute(
+                "SELECT %s FROM cars WHERE auto_number=?" % ",".join(
+                    '"%s"' % value.replace('"', '""') for value in wanted),
+                ("UA-0011",),
+            ).fetchone()
+            return {"quick_check": quick, "columns": columns,
+                    "ua0011": dict(row) if row else None}
+        finally:
+            con.close()
 
 
 def main():
