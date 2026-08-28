@@ -10,12 +10,12 @@
     "bots": {
       "client": {
         "identity_sha256": "62f6339b925eda20540b16b1ba07db879c8f90fcfca5115bb0d275abfd8d60bb",
-        "latency_seconds": 0.308,
+        "latency_seconds": 0.457,
         "ok": true
       },
       "crm": {
         "identity_sha256": "a154fbe5ef59df6162adec0ae993c6a9ba0dd05a60c3ca9e5c0baa40e6a7c8ed",
-        "latency_seconds": 0.265,
+        "latency_seconds": 0.411,
         "ok": true
       }
     },
@@ -567,7 +567,7 @@
     "quick_check": "ok",
     "rows_sha256": "bce0dc2304a88a6a3ef3158d0a6402d0397ba66b911c1067bb30a954ea586840"
   },
-  "elapsed_seconds": 7.681,
+  "elapsed_seconds": 10.876,
   "errors": [],
   "files": {
     "ai.py": {
@@ -1189,6 +1189,309 @@
       "path": "/home/Carix/db.py",
       "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
     },
+    "lead_bot.py": {
+      "bytes": 100313,
+      "definitions": [
+        {
+          "end_lineno": 225,
+          "kind": "FunctionDef",
+          "lineno": 218,
+          "name": "manager_button",
+          "sha256": "d1c00bbc67250ad4e31dfe0c955dd58f4142ace69dd10dc52141a694ce7117d6",
+          "source": "def manager_button() -> InlineKeyboardButton:\n    \"\"\"Если юзернейм менеджера заполнен — кнопка открывает личный чат сразу.\n    Если нет — идём через бота: менеджеру придёт уведомление.\"\"\"\n    if MANAGER_USERNAME:\n        return InlineKeyboardButton(\n            MANAGER_BTN_TEXT, url=f\"https://t.me/{MANAGER_USERNAME.lstrip('@')}\"\n        )\n    return InlineKeyboardButton(MANAGER_BTN_TEXT, callback_data=\"contact_manager\")"
+        },
+        {
+          "end_lineno": 242,
+          "kind": "FunctionDef",
+          "lineno": 228,
+          "name": "lead_cta_markup",
+          "sha256": "552e233de3c485d978f1d4a31c13e05f799ab64b6af3ec4007471802bce8bed6",
+          "source": "def lead_cta_markup(with_catalog=True, with_terms=False, with_manager=True):\n    \"\"\"Кнопки под каждым информационным блоком, чтобы человеку\n    не приходилось искать, куда нажать.\"\"\"\n    rows = [[InlineKeyboardButton(\"📝 Оставить заявку\", callback_data=\"lead_start\")]]\n    if with_catalog:\n        rows.append([InlineKeyboardButton(CATALOG_BTN_TEXT, callback_data=\"show_cars\")])\n    # Второстепенные кнопки — в один ряд, чтобы не растягивать экран\n    bottom = []\n    if with_terms:\n        bottom.append(InlineKeyboardButton(TERMS_BTN_TEXT, callback_data=\"show_terms\"))\n    if with_manager:\n        bottom.append(manager_button())\n    if bottom:\n        rows.append(bottom)\n    return InlineKeyboardMarkup(rows)"
+        },
+        {
+          "end_lineno": 257,
+          "kind": "FunctionDef",
+          "lineno": 245,
+          "name": "main_menu_markup",
+          "sha256": "1b3252594ae49a16ddfc89ded6fd595da74a3469a88b1f62410c510b6a0c7948",
+          "source": "def main_menu_markup():\n    \"\"\"Два основных сценария в верхнем ряду, служебное — внизу.\"\"\"\n    return InlineKeyboardMarkup([\n        [\n            InlineKeyboardButton(CATALOG_BTN_TEXT, callback_data=\"show_cars\"),\n            InlineKeyboardButton(ORDER_BTN_TEXT, callback_data=\"custom_order\"),\n        ],\n        [InlineKeyboardButton(transit_btn_label(), callback_data=\"show_transit\")],\n        [\n            InlineKeyboardButton(TERMS_BTN_TEXT, callback_data=\"show_terms\"),\n            manager_button(),\n        ],\n    ])"
+        },
+        {
+          "end_lineno": 293,
+          "kind": "FunctionDef",
+          "lineno": 285,
+          "name": "_load_json",
+          "sha256": "e63f7f05fdcc916ce02fc4d5fc2be885ef95df08df796a6e5deed66ad96207ba",
+          "source": "def _load_json(path, default):\n    if not os.path.exists(path):\n        return default\n    try:\n        with open(path, \"r\", encoding=\"utf-8\") as f:\n            return json.load(f)\n    except (json.JSONDecodeError, OSError) as e:\n        logging.error(f\"Не удалось прочитать {path}: {e}. Использую пустое значение.\")\n        return default"
+        },
+        {
+          "end_lineno": 305,
+          "kind": "FunctionDef",
+          "lineno": 296,
+          "name": "_save_json",
+          "sha256": "ef3880656bbfadd23cb728b321d6ab15d7166bceca1698969fd10bba3fec546a",
+          "source": "def _save_json(path, data):\n    \"\"\"Пишем через временный файл: если процесс упадёт в момент записи,\n    основной файл с базой останется целым.\"\"\"\n    tmp = path + \".tmp\"\n    try:\n        with open(tmp, \"w\", encoding=\"utf-8\") as f:\n            json.dump(data, f, ensure_ascii=False, indent=2)\n        os.replace(tmp, path)\n    except OSError as e:\n        logging.error(f\"Не удалось записать {path}: {e}\")"
+        },
+        {
+          "end_lineno": 358,
+          "kind": "FunctionDef",
+          "lineno": 316,
+          "name": "_crm_to_catalog",
+          "sha256": "b725065a4ea5b55e3cfdb2997bfedc0b95b9039d0ae0cec4a549867d194144d8",
+          "source": "def _crm_to_catalog(row: dict) -> dict:\n    \"\"\"Карточка из crm.db в том виде, в каком её ждёт клиентский каталог.\n    Без этого перевода подтверждённые машины до клиентов не доходили.\"\"\"\n    nazvanie = \" \".join(\n        str(x) for x in (row.get(\"brand\"), row.get(\"model\"), row.get(\"year\")) if x\n    ) or \"Автомобиль\"\n\n    # Характеристики собираем из отдельных полей CRM\n    chasti = []\n    for pole, podpis in (\n        (\"mileage\", \"пробег\"), (\"color\", \"цвет\"), (\"engine\", \"двигатель\"),\n        (\"fuel\", \"топливо\"), (\"trim\", \"комплектация\"), (\"condition\", \"состояние\"),\n        (\"accidents\", \"ДТП\"),\n    ):\n        znachenie = row.get(pole)\n        if znachenie:\n            chasti.append(f\"{podpis}: {znachenie}\")\n\n    def _spisok(raw):\n        if not raw:\n            return []\n        try:\n            data = json.loads(raw) if isinstance(raw, str) else raw\n            return data if isinstance(data, list) else []\n        except (json.JSONDecodeError, TypeError):\n            return []\n\n    return {\n        \"id\": CRM_ID_OFFSET + row[\"id\"],\n        \"crm_id\": row[\"id\"],\n        \"model\": nazvanie,\n        \"specs\": \", \".join(chasti),\n        \"price\": row.get(\"price_total\") or row.get(\"price_buy\") or \"уточняйте у менеджера\",\n        \"status\": row.get(\"stage\") or \"purchased\",\n        \"vin\": row.get(\"vin\"),\n        \"photo_file_ids\": _spisok(row.get(\"photos\")),\n        \"video_file_ids\": _spisok(row.get(\"videos\")),\n        \"tech_report_desc\": row.get(\"condition\"),\n        \"created_at\": row.get(\"created_at\"),\n        \"status_changed_at\": row.get(\"updated_at\") or row.get(\"created_at\"),\n        \"viewers\": [],\n        \"buyers\": [],\n    }"
+        },
+        {
+          "end_lineno": 372,
+          "kind": "FunctionDef",
+          "lineno": 361,
+          "name": "load_cars",
+          "sha256": "c64cafef1c31cefc2382e8cc8376f982d69bc187fcf3e0ccd3354dc15c0f43f6",
+          "source": "def load_cars():\n    \"\"\"Каталог = машины, заведённые в клиентском боте, плюс подтверждённые\n    карточки из CRM. Раньше вторые никуда не попадали.\"\"\"\n    cars = _load_json(CARS_DB_FILE, [])\n    try:\n        import db as crm_db\n        for row in crm_db.published_cars():\n            cars.append(_crm_to_catalog(row))\n    except Exception as e:\n        # CRM недоступна — каталог всё равно должен работать\n        logging.warning(f\"Не удалось прочитать машины из CRM: {e}\")\n    return cars"
+        },
+        {
+          "end_lineno": 413,
+          "kind": "FunctionDef",
+          "lineno": 412,
+          "name": "vin_check_link",
+          "sha256": "a2e0a24cdfc676a10cb54ca81df57561ae03215f801c290dc59f57d9c86d3b85",
+          "source": "def vin_check_link(vin: str) -> str:\n    return f\"{VIN_CHECK_BASE_URL}{vin}\""
+        },
+        {
+          "end_lineno": 432,
+          "kind": "FunctionDef",
+          "lineno": 416,
+          "name": "remaining_days_text",
+          "sha256": "3c29c9532267500e05e920ca57b830f7bb6f6e0bad686c9d292e3c95a1749650",
+          "source": "def remaining_days_text(car: dict) -> str:\n    status = car.get(\"status\")\n    duration = STATUS_DURATIONS_DAYS.get(status)\n    if not duration:\n        return \"\"\n    base_iso = car.get(\"ship_date\") or car.get(\"status_changed_at\") or car.get(\"created_at\")\n    if not base_iso:\n        return f\"⏳ Ориентировочно ~{duration} дней на этом этапе\"\n    try:\n        base_date = datetime.fromisoformat(base_iso)\n    except ValueError:\n        return f\"⏳ Ориентировочно ~{duration} дней на этом этапе\"\n    target = base_date + timedelta(days=duration)\n    remaining = (target - datetime.now()).days\n    if remaining > 0:\n        return f\"⏳ Осталось ~{remaining} дней\"\n    return \"⏳ Со дня на день\""
+        },
+        {
+          "end_lineno": 461,
+          "kind": "FunctionDef",
+          "lineno": 443,
+          "name": "arrival_date_text",
+          "sha256": "6a5fd593e8859ab22eafb45ef960c332300f3b13fae4332e05d4f3f9576e0967",
+          "source": "def arrival_date_text(car: dict) -> str:\n    \"\"\"Конкретная дата убеждает сильнее, чем «осталось N дней».\"\"\"\n    status = car.get(\"status\")\n    if status == \"in_ukraine\":\n        return \"📍 Уже в Украине — можно забирать\"\n    days_left = DAYS_TO_UKRAINE.get(status)\n    if not days_left:\n        return \"\"\n    base_iso = car.get(\"ship_date\") or car.get(\"status_changed_at\") or car.get(\"created_at\")\n    if not base_iso:\n        return \"\"\n    try:\n        base_date = datetime.fromisoformat(base_iso)\n    except ValueError:\n        return \"\"\n    arrival = base_date + timedelta(days=days_left)\n    if arrival < datetime.now():\n        return \"📅 Ожидаем в Украине со дня на день\"\n    return f\"📅 Ожидаем в Украине: ~{arrival.strftime('%d.%m.%Y')}\""
+        },
+        {
+          "end_lineno": 669,
+          "kind": "AsyncFunctionDef",
+          "lineno": 654,
+          "name": "send_to_manager",
+          "sha256": "9e38e43f44f6134f231fe94e8320d0ba0cdf4d1517efd3284bcf2f15db1be96b",
+          "source": "async def send_to_manager(context: ContextTypes.DEFAULT_TYPE, text: str, lead_id=None) -> bool:\n    \"\"\"Единая точка отправки менеджеру. Все ошибки ловим — падение отправки\n    не должно ломать диалог с клиентом.\"\"\"\n    try:\n        await context.bot.send_message(\n            chat_id=MANAGER_CHAT_ID,\n            text=text,\n            parse_mode=\"HTML\",\n            reply_markup=taken_markup(lead_id) if lead_id else None,\n        )\n        if lead_id:\n            mark_lead_delivered(lead_id)\n        return True\n    except Exception as e:\n        logging.error(f\"НЕ ОТПРАВЛЕНО МЕНЕДЖЕРУ (lead_id={lead_id}): {e}\")\n        return False"
+        },
+        {
+          "end_lineno": 743,
+          "kind": "AsyncFunctionDef",
+          "lineno": 711,
+          "name": "manager_reminder_job",
+          "sha256": "288b8e6dcb299a6d034008c3386faf5cc9965294da6f8dc10d5698c8aa4f4e65",
+          "source": "async def manager_reminder_job(context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Заявка без отметки «Взял в работу» дольше часа — напоминаем.\n    Один раз, чтобы не превращать чат в спам.\"\"\"\n    leads = _load_json(LEADS_DB_FILE, [])\n    now = datetime.now()\n    for l in leads:\n        if l.get(\"taken\") or l.get(\"reminded\"):\n            continue\n        try:\n            created = datetime.fromisoformat(l.get(\"created_at\", \"\"))\n        except ValueError:\n            continue\n        if (now - created) < timedelta(minutes=REMINDER_AFTER_MINUTES):\n            continue\n        mins = int((now - created).total_seconds() // 60)\n        who = f\"@{l['username']}\" if l.get(\"username\") else l.get(\"full_name\", \"клиент\")\n        phone = f\"\\n📱 {l['phone']}\" if l.get(\"phone\") else \"\"\n        detail = l.get(\"car_model\") or l.get(\"model\") or (l.get(\"message\", \"\") or \"\")[:60]\n        try:\n            await context.bot.send_message(\n                chat_id=MANAGER_CHAT_ID,\n                text=(\n                    f\"⏰ <b>Заявка #{l.get('id')} висит без ответа {mins} мин.</b>\\n\\n\"\n                    f\"{who}{phone}\\n\"\n                    f\"{detail}\\n\\n\"\n                    f\"<a href=\\\"tg://user?id={l.get('user_id')}\\\">Написать клиенту</a>\"\n                ),\n                parse_mode=\"HTML\",\n                reply_markup=taken_markup(l.get(\"id\")),\n            )\n            mark_lead_reminded(l.get(\"id\"))\n        except Exception as e:\n            logging.warning(f\"Не удалось напомнить по лиду {l.get('id')}: {e}\")"
+        },
+        {
+          "end_lineno": 788,
+          "kind": "AsyncFunctionDef",
+          "lineno": 751,
+          "name": "warmup_job",
+          "sha256": "f5718a0f6d1de121ebff12bf27ee9036a3fe3c7504b61a724163c4916ff8ee0f",
+          "source": "async def warmup_job(context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Прогрев: человек посмотрел машины и пропал — через 2 дня\n    напоминаем о себе. Отправляется один раз на пользователя.\"\"\"\n    users = load_users()\n    now = datetime.now()\n    changed = False\n    for uid, data in users.items():\n        if data.get(\"warmed\"):\n            continue\n        if not data.get(\"cars_viewed\"):\n            continue\n        if user_has_lead(uid):  # уже оставил заявку — прогревать незачем\n            continue\n        try:\n            last_seen = datetime.fromisoformat(data.get(\"last_seen\", \"\"))\n        except ValueError:\n            continue\n        if (now - last_seen) < timedelta(days=WARMUP_AFTER_DAYS):\n            continue\n        try:\n            await context.bot.send_message(\n                chat_id=int(uid),\n                text=(\n                    \"👋 Здравствуйте! Это UA Art Company LLC.\\n\\n\"\n                    \"Вы смотрели у нас автомобили — актуален ли ещё поиск?\\n\\n\"\n                    \"Если не нашли подходящий вариант, напишите марку и бюджет — \"\n                    \"подберём под ваш запрос и выкупим в Корее.\"\n                ),\n                reply_markup=lead_cta_markup(with_terms=True),\n            )\n            data[\"warmed\"] = True\n            changed = True\n        except Exception as e:\n            logging.warning(f\"Прогрев не доставлен {uid}: {e}\")\n            data[\"warmed\"] = True  # чтобы не долбиться в заблокировавших\n            changed = True\n    if changed:\n        save_users(users)"
+        },
+        {
+          "end_lineno": 858,
+          "kind": "AsyncFunctionDef",
+          "lineno": 846,
+          "name": "start",
+          "sha256": "18ae19944f4e5a54a505a245d691912e0b60c8107ddd850d04c8d2577ea5f481",
+          "source": "async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    await _stats_header(update, context)\n    # Метка источника: ссылка вида t.me/ваш_бот?start=insta\n    source = context.args[0] if context.args else None\n    track_user(update.effective_user, source=source)\n    context.user_data.clear()\n\n    await update.message.reply_text(\n        \"Здравствуйте! Помогу подобрать корейский автомобиль. 🚗\\n\\n\"\n        \"Выберите, что вас интересует:\",\n        reply_markup=main_menu_markup(),\n    )\n    return CAR_TYPE"
+        },
+        {
+          "end_lineno": 877,
+          "kind": "AsyncFunctionDef",
+          "lineno": 861,
+          "name": "lead_start_from_button",
+          "sha256": "9ff15b3ca63797e21554f370a9df191f01f6bf30e74e6d3194d6bd8d4626b020",
+          "source": "async def lead_start_from_button(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Вход в анкету по кнопке «Оставить заявку» из любого места бота.\"\"\"\n    query = update.callback_query\n    await query.answer()\n    track_user(update.effective_user)\n    context.user_data.clear()\n\n    keyboard = [\n        [InlineKeyboardButton(\"🚗 Готовое авто в Украине\", callback_data=\"ready\")],\n        [InlineKeyboardButton(\"📦 Под заказ из Кореи\", callback_data=\"custom_order\")],\n    ]\n    await query.message.reply_text(\n        \"Отлично! Пара коротких вопросов — это займёт меньше минуты.\\n\\n\"\n        \"Что вас интересует?\",\n        reply_markup=InlineKeyboardMarkup(keyboard),\n    )\n    return CAR_TYPE"
+        },
+        {
+          "end_lineno": 990,
+          "kind": "AsyncFunctionDef",
+          "lineno": 984,
+          "name": "wrong_type_in_survey",
+          "sha256": "5db4752b892c08568281d4d18041a43467f613dc5c5b154a09a222de7552a7ee",
+          "source": "async def wrong_type_in_survey(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Раньше присланное фото/голосовое посреди анкеты вешало диалог наглухо.\"\"\"\n    await update.message.reply_text(\n        \"Пожалуйста, ответьте текстом 🙂\\n\\n\"\n        \"Если хотите начать заново — /start\"\n    )\n    return None  # остаёмся в текущем состоянии"
+        },
+        {
+          "end_lineno": 1035,
+          "kind": "AsyncFunctionDef",
+          "lineno": 993,
+          "name": "finalize_lead",
+          "sha256": "8c61eb29eea1b6cfde80ace2aa93e9256b410d158e37b41349436911bfef0193",
+          "source": "async def finalize_lead(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    user = update.effective_user\n    data = context.user_data\n\n    lead = {\n        \"type\": \"Анкета\",\n        \"user_id\": user.id,\n        \"username\": user.username,\n        \"full_name\": user.full_name,\n        \"car_type\": data.get(\"car_type\"),\n        \"model\": data.get(\"model\"),\n        \"budget\": data.get(\"budget\"),\n        \"timing\": data.get(\"timing\"),\n        \"contact_text\": data.get(\"contact_text\"),\n        \"phone\": data.get(\"phone\"),\n        \"source\": get_user_source(user.id),\n    }\n    lead_id = save_lead(lead)  # сначала на диск, потом уже отправка\n\n    timing_line = f\"<b>Когда планирует покупку:</b> {data.get('timing')}\\n\" if data.get(\"timing\") else \"\"\n    phone_line = f\"<b>📱 Телефон:</b> <code>{data.get('phone')}</code>\\n\" if data.get(\"phone\") else \"\"\n\n    text = (\n        f\"🔔 <b>Новый лид #{lead_id}</b>\\n\\n\"\n        f\"<b>Тип:</b> {data.get('car_type', '-')}\\n\"\n        f\"<b>Модель:</b> {data.get('model', '-')}\\n\"\n        f\"<b>Бюджет:</b> {data.get('budget', '-')}\\n\"\n        f\"{timing_line}\"\n        f\"{phone_line}\"\n        f\"<b>Контакт (как написал):</b> {data.get('contact_text', '-')}\\n\\n\"\n        + user_block(user)\n    )\n    await send_to_manager(context, text, lead_id=lead_id)\n\n    await update.message.reply_text(\n        \"Спасибо! ✅ Ваша заявка передана менеджеру, он свяжется с вами в ближайшее время.\",\n        reply_markup=ReplyKeyboardRemove(),\n    )\n    await update.message.reply_text(\n        MANAGER_INTRO_TEXT,\n        reply_markup=lead_cta_markup(with_catalog=True, with_terms=True),\n    )\n    context.user_data.clear()"
+        },
+        {
+          "end_lineno": 1044,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1038,
+          "name": "cancel",
+          "sha256": "5e317e60a22403f9391d981be4128f0514a22133f9083e76289be1d038be1930",
+          "source": "async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    context.user_data.clear()\n    await update.message.reply_text(\n        \"Диалог отменён. Напишите /start, чтобы начать заново.\",\n        reply_markup=ReplyKeyboardRemove(),\n    )\n    return ConversationHandler.END"
+        },
+        {
+          "end_lineno": 1150,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1145,
+          "name": "show_terms_cb",
+          "sha256": "640b5d9a2c4bb0209a3a0dca7a0100335d209241471f637a12a0874343f4c73c",
+          "source": "async def show_terms_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    query = update.callback_query\n    await query.answer()\n    await query.message.reply_text(\n        TERMS_TEXT, parse_mode=\"HTML\", reply_markup=lead_cta_markup(with_catalog=True)\n    )"
+        },
+        {
+          "end_lineno": 1216,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1174,
+          "name": "_render_catalog",
+          "sha256": "18e0e72d8e97534d00e5ed7ca3d9bb4e126fc5c206642cf2832aea4ad63883b5",
+          "source": "async def _render_catalog(chat_id, user, context):\n    \"\"\"«Авто в Украине» — только те, что уже здесь. Машины в пути\n    показывает отдельная кнопка, чтобы списки не дублировались.\"\"\"\n    cars = [c for c in visible_cars_for(user.id) if c[\"status\"] in (\"in_ukraine\", \"reserved\")]\n    if not cars:\n        transit_count = len([c for c in load_cars() if c.get(\"status\") in IN_TRANSIT_STATUSES])\n        hint = (\n            f\"\\n\\nСейчас в пути {transit_count} авто — посмотрите их.\"\n            if transit_count else \"\"\n        )\n        await context.bot.send_message(\n            chat_id=chat_id,\n            text=(\n                \"🇺🇦 <b>Авто в Украине</b>\\n\\n\"\n                \"Сейчас в наличии ничего нет.\\n\\n\"\n                \"Мы возим авто под заказ из Кореи под ваш бюджет — \"\n                \"оставьте заявку, и менеджер подберёт варианты лично для вас.\"\n                + hint\n            ),\n            parse_mode=\"HTML\",\n            reply_markup=InlineKeyboardMarkup([\n                [InlineKeyboardButton(\"📝 Оставить заявку\", callback_data=\"lead_start\")],\n                [InlineKeyboardButton(transit_btn_label(), callback_data=\"show_transit\")],\n                [\n                    InlineKeyboardButton(TERMS_BTN_TEXT, callback_data=\"show_terms\"),\n                    manager_button(),\n                ],\n            ]),\n        )\n        return\n    await context.bot.send_message(\n        chat_id=chat_id,\n        text=f\"🇺🇦 <b>Авто в Украине — {len(cars)} шт.</b>\",\n        parse_mode=\"HTML\",\n    )\n    for car in cars:\n        track_view(user, car[\"id\"])\n        await send_car_card(chat_id, context, car, user.id)\n    await context.bot.send_message(\n        chat_id=chat_id,\n        text=\"Не нашли подходящее? Оставьте заявку — подберём под ваш бюджет.\",\n        reply_markup=lead_cta_markup(with_catalog=False, with_terms=True),\n    )"
+        },
+        {
+          "end_lineno": 1220,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1219,
+          "name": "cars_list",
+          "sha256": "c43e8b7ed864c8e1c4d66e2af29ed9645e0bd30767c06c1fef6dc90fddb70f3c",
+          "source": "async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    await _render_catalog(update.effective_chat.id, update.effective_user, context)"
+        },
+        {
+          "end_lineno": 1226,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1223,
+          "name": "show_cars_cb",
+          "sha256": "3de71cf42299b1836dad9bd5de2d1c029ecbecd52d4cab3ddcfa58ee84c93340",
+          "source": "async def show_cars_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    query = update.callback_query\n    await query.answer()\n    await _render_catalog(query.message.chat_id, update.effective_user, context)"
+        },
+        {
+          "end_lineno": 1266,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1229,
+          "name": "show_transit_cb",
+          "sha256": "967de62bc2797cb92923fa5afde0e76d6b3d83dc6f0a320a42c54cfc386bf681",
+          "source": "async def show_transit_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Машины, которые ещё едут — этапы 1–3 из условий доставки.\"\"\"\n    query = update.callback_query\n    await query.answer()\n    user = update.effective_user\n    chat_id = query.message.chat_id\n\n    cars = [c for c in visible_cars_for(user.id) if c[\"status\"] in IN_TRANSIT_STATUSES]\n    if not cars:\n        await context.bot.send_message(\n            chat_id=chat_id,\n            text=(\n                \"🚢 <b>Машины в пути</b>\\n\\n\"\n                \"Сейчас в дороге ничего нет.\\n\\n\"\n                \"Оставьте заявку — сообщим, как только выкупим авто под ваш запрос.\"\n            ),\n            parse_mode=\"HTML\",\n            reply_markup=lead_cta_markup(with_terms=True),\n        )\n        return\n\n    await context.bot.send_message(\n        chat_id=chat_id,\n        text=(\n            f\"🚢 <b>Машины в пути — {len(cars)} шт.</b>\\n\\n\"\n            \"Эти авто уже выкуплены и едут. Их можно забронировать до прибытия — \"\n            \"цена фиксируется договором.\"\n        ),\n        parse_mode=\"HTML\",\n    )\n    for car in cars:\n        track_view(user, car[\"id\"])\n        await send_car_card(chat_id, context, car, user.id)\n    await context.bot.send_message(\n        chat_id=chat_id,\n        text=\"Хотите забронировать одну из них? Оставьте заявку — менеджер расскажет детали.\",\n        reply_markup=lead_cta_markup(with_catalog=True, with_terms=True),\n    )"
+        },
+        {
+          "end_lineno": 1337,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1281,
+          "name": "send_car_card",
+          "sha256": "82bc4885c228c7eaf802a11a46cea3a1b9b2326fc3f65edd8a8195e21fc5a103",
+          "source": "async def send_car_card(chat_id, context: ContextTypes.DEFAULT_TYPE, car: dict, viewer_id: int):\n    days_line = remaining_days_text(car)\n    arrival_line = arrival_date_text(car)\n    tech = car.get(\"tech_report_desc\")\n    tech_line = f\"\\n<b>Техотчёт:</b> {tech}\" if tech else \"\"\n\n    caption = (\n        f\"<b>{car['model']}</b>\\n\"\n        f\"{car.get('specs', '')}\\n\\n\"\n        f\"<b>Цена:</b> {car.get('price', 'уточняйте у менеджера')}\\n\"\n        f\"<b>Статус:</b> {STATUS_LABELS.get(car['status'], car['status'])}\\n\"\n        f\"{days_line}\\n\"\n        f\"{arrival_line}\"\n        f\"{tech_line}\"\n    )\n\n    buttons = []\n    if car.get(\"container\"):\n        buttons.append([InlineKeyboardButton(\n            \"📍 Отследить контейнер\", url=container_tracking_link(car[\"container\"])\n        )])\n    if car.get(\"vin\"):\n        buttons.append([InlineKeyboardButton(\"🔎 Проверить VIN\", url=vin_check_link(car[\"vin\"]))])\n    if car[\"status\"] not in (\"reserved\",) or car.get(\"reserved_by\") == viewer_id:\n        buttons.append([InlineKeyboardButton(buy_button_label(car), callback_data=f\"buycar:{car['id']}\")])\n    markup = InlineKeyboardMarkup(buttons)\n\n    photos = car.get(\"photo_file_ids\") or ([car[\"photo_file_id\"]] if car.get(\"photo_file_id\") else [])\n    try:\n        if photos:\n            for i, photo_id in enumerate(photos):\n                if i == 0:\n                    await context.bot.send_photo(\n                        chat_id=chat_id, photo=photo_id, caption=caption,\n                        parse_mode=\"HTML\", reply_markup=markup,\n                    )\n                else:\n                    await context.bot.send_photo(chat_id=chat_id, photo=photo_id)\n        else:\n            await context.bot.send_message(\n                chat_id=chat_id, text=caption, parse_mode=\"HTML\", reply_markup=markup\n            )\n\n        videos = car.get(\"video_file_ids\") or ([car[\"video_file_id\"]] if car.get(\"video_file_id\") else [])\n        for video_id in videos:\n            await context.bot.send_video(chat_id=chat_id, video=video_id)\n\n        for p in car.get(\"tech_report_photos\", []):\n            await context.bot.send_photo(chat_id=chat_id, photo=p, caption=\"📋 Техотчёт: фото\")\n        for v in car.get(\"tech_report_videos\", []):\n            await context.bot.send_video(chat_id=chat_id, video=v, caption=\"📋 Техотчёт: видео\")\n    except Exception as e:\n        # Например, устаревший file_id — карточка не должна ронять весь каталог\n        logging.error(f\"Ошибка показа машины #{car.get('id')}: {e}\")\n        await context.bot.send_message(\n            chat_id=chat_id, text=caption, parse_mode=\"HTML\", reply_markup=markup\n        )"
+        },
+        {
+          "end_lineno": 1393,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1346,
+          "name": "quick_lead_from_car",
+          "sha256": "92bcd813329b814ff3153859930df4936edd16f409958c1efa36e2cd1b01ddbf",
+          "source": "async def quick_lead_from_car(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    query = update.callback_query\n    await query.answer()\n    car_id = int(query.data.split(\":\")[1])\n    car = get_car(car_id)\n    if not car:\n        await query.message.reply_text(\"Эта машина больше не доступна.\")\n        return ConversationHandler.END\n\n    user = update.effective_user\n    track_buy(user, car_id)\n    try:\n        visits.lead(user, \"каталог · %s\" % car.get(\"model\", \"\"), car.get(\"price\", \"\"))\n    except Exception:\n        pass\n    context.user_data[\"buy_car_id\"] = car_id\n\n    # Менеджеру сообщаем сразу — не дожидаясь телефона.\n    # Если клиент бросит на этом шаге, лид всё равно зафиксирован.\n    lead_id = save_lead({\n        \"type\": \"Интерес к машине из каталога\",\n        \"user_id\": user.id,\n        \"username\": user.username,\n        \"full_name\": user.full_name,\n        \"car_id\": car_id,\n        \"car_model\": car[\"model\"],\n        \"price\": car.get(\"price\"),\n        \"source\": get_user_source(user.id),\n    })\n    context.user_data[\"buy_lead_id\"] = lead_id\n\n    await send_to_manager(\n        context,\n        f\"🔔 <b>Лид #{lead_id} — интерес к машине из каталога</b>\\n\\n\"\n        f\"<b>Машина:</b> {car['model']} (id {car['id']})\\n\"\n        f\"<b>Цена:</b> {car.get('price', '-')}\\n\"\n        f\"<b>Статус:</b> {STATUS_LABELS.get(car['status'], car['status'])}\\n\"\n        f\"<i>Телефон пока не оставил — ждём</i>\\n\\n\" + user_block(user),\n        lead_id=lead_id,\n    )\n\n    await query.message.reply_text(\n        f\"Отличный выбор! 🚗 {car['model']}\\n\\n\"\n        \"Оставьте номер — менеджер свяжется и расскажет детали \"\n        \"(комплектация, состояние, сроки).\",\n        reply_markup=contact_request_markup(),\n    )\n    return BUY_CONTACT"
+        },
+        {
+          "end_lineno": 1434,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1396,
+          "name": "buy_contact_received",
+          "sha256": "90887d9223148866779035c500433c6786e311029bf484746864984141b9daff",
+          "source": "async def buy_contact_received(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    msg = update.message\n    user = update.effective_user\n    car_id = context.user_data.get(\"buy_car_id\")\n    car = get_car(car_id) if car_id else None\n\n    if msg.contact:\n        phone = msg.contact.phone_number\n    else:\n        found = PHONE_RE.search(msg.text or \"\")\n        phone = found.group(0).strip() if found else (msg.text or \"\").strip()\n\n    lead_id = save_lead({\n        \"type\": \"Телефон по машине из каталога\",\n        \"user_id\": user.id,\n        \"username\": user.username,\n        \"full_name\": user.full_name,\n        \"car_id\": car_id,\n        \"car_model\": car[\"model\"] if car else None,\n        \"phone\": phone,\n        \"source\": get_user_source(user.id),\n    })\n\n    await send_to_manager(\n        context,\n        f\"📱 <b>Лид #{lead_id} — ТЕЛЕФОН получен</b>\\n\\n\"\n        f\"<b>Машина:</b> {car['model'] if car else '-'}\\n\"\n        f\"<b>📱 Телефон:</b> <code>{phone}</code>\\n\\n\" + user_block(user),\n        lead_id=lead_id,\n    )\n\n    await msg.reply_text(\n        \"Спасибо! ✅ Менеджер свяжется с вами в ближайшее время.\",\n        reply_markup=ReplyKeyboardRemove(),\n    )\n    await msg.reply_text(MANAGER_INTRO_TEXT, reply_markup=lead_cta_markup())\n    context.user_data.pop(\"buy_car_id\", None)\n    context.user_data.pop(\"buy_lead_id\", None)\n    return ConversationHandler.END"
+        },
+        {
+          "end_lineno": 1496,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1449,
+          "name": "leads_cmd",
+          "sha256": "e349923e7cfa1e5acf2ae221c00f3502bff6b235cf1e48d035455d4226d55f59",
+          "source": "async def leads_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    msg = await _ack(update)\n    if not is_admin(update.effective_user.id):\n        return\n    leads = _load_json(LEADS_DB_FILE, [])\n    if not leads:\n        await msg.reply_text(\"Заявок пока нет.\", reply_markup=admin_menu_markup())\n        return\n\n    undelivered = [l for l in leads if not l.get(\"delivered_to_manager\")]\n    lines = [f\"📊 Всего заявок: <b>{len(leads)}</b>\"]\n    untaken = [l for l in leads if not l.get(\"taken\")]\n    if untaken:\n        lines.append(f\"🔴 Не взято в работу: <b>{len(untaken)}</b>\")\n    if undelivered:\n        lines.append(f\"⚠️ Не дошло до чата менеджера: <b>{len(undelivered)}</b>\")\n    lines.append(\"\\n<b>Последние 10:</b>\")\n\n    for l in leads[-10:][::-1]:\n        when = l.get(\"created_at\", \"\")[:16].replace(\"T\", \" \")\n        who = f\"@{l['username']}\" if l.get(\"username\") else l.get(\"full_name\", \"?\")\n        phone = f\" 📱{l['phone']}\" if l.get(\"phone\") else \"\"\n        detail = l.get(\"car_model\") or l.get(\"model\") or l.get(\"message\", \"\")[:40] or \"-\"\n        mark = \"✅\" if l.get(\"taken\") else \"🔴\"\n        lines.append(f\"{mark} #{l.get('id')} {when} — {who}{phone} — {detail}\")\n\n    await msg.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\", reply_markup=admin_menu_markup())\n\n    # Выгрузка в CSV — открывается в Excel и Google Таблицах\n    try:\n        csv_path = os.path.join(BASE_DIR, \"leads_export.csv\")\n        fields = [\"id\", \"created_at\", \"type\", \"full_name\", \"username\", \"phone\",\n                  \"car_type\", \"model\", \"car_model\", \"budget\", \"timing\",\n                  \"contact_text\", \"message\", \"source\", \"user_id\", \"taken\", \"taken_at\"]\n        with open(csv_path, \"w\", encoding=\"utf-8-sig\", newline=\"\") as f:\n            writer = csv.DictWriter(f, fieldnames=fields, extrasaction=\"ignore\")\n            writer.writeheader()\n            for l in leads:\n                writer.writerow(l)\n        with open(csv_path, \"rb\") as f:\n            await context.bot.send_document(\n                chat_id=update.effective_chat.id,\n                document=f,\n                filename=\"leads_export.csv\",\n                caption=\"Все заявки одним файлом (открывается в Excel).\",\n            )\n    except Exception as e:\n        logging.error(f\"Не удалось выгрузить CSV: {e}\")"
+        },
+        {
+          "end_lineno": 1538,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1527,
+          "name": "addcar_start",
+          "sha256": "be9ad59382cc8c3cb6b636b7847420ad177beb04c213e96f6ece157a09b6e958",
+          "source": "async def addcar_start(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    msg = await _ack(update)\n    if not is_admin(update.effective_user.id):\n        await msg.reply_text(\"Эта команда доступна только администратору.\")\n        return ConversationHandler.END\n    context.user_data[\"new_car\"] = {\"photo_file_ids\": [], \"video_file_ids\": []}\n    await msg.reply_text(\n        \"Добавляем новую машину 🚗\\n\\n\"\n        \"Шаг 1/7 — пришлите фото (можно несколько подряд). \"\n        \"Когда закончите — отправьте /done. Если фото нет — /skip.\"\n    )\n    return AC_PHOTO"
+        },
+        {
+          "end_lineno": 1684,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1669,
+          "name": "editstatus_start",
+          "sha256": "b59463177de33297fd99ab2d4c014ace99a2c3f4ced3b28b354d6ec744595882",
+          "source": "async def editstatus_start(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    msg = await _ack(update)\n    if not is_admin(update.effective_user.id):\n        await msg.reply_text(\"Эта команда доступна только администратору.\")\n        return ConversationHandler.END\n    cars = [c for c in load_cars() if c[\"status\"] not in (\"sold\", \"issued\")]\n    if not cars:\n        await msg.reply_text(\"Нет активных машин в каталоге.\")\n        return ConversationHandler.END\n\n    buttons = [\n        [InlineKeyboardButton(f\"#{c['id']} {c['model']}\", callback_data=f\"es_pick:{c['id']}\")]\n        for c in cars\n    ]\n    await msg.reply_text(\"Какую машину обновить?\", reply_markup=InlineKeyboardMarkup(buttons))\n    return ES_PICK_CAR"
+        },
+        {
+          "end_lineno": 1750,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1722,
+          "name": "editstatus_ship_date",
+          "sha256": "da145b3ef70ded21febc3194bec28746fd6a410baaaab3d50e155086b382d894",
+          "source": "async def editstatus_ship_date(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    text = update.message.text.strip()\n    try:\n        ship_date = datetime.strptime(text, \"%d.%m.%Y\")\n    except ValueError:\n        await update.message.reply_text(\"Не получилось распознать дату. Формат: ДД.ММ.ГГГГ, попробуйте ещё раз.\")\n        return ES_SHIP_DATE\n\n    car_id = context.user_data[\"edit_car_id\"]\n    update_car(\n        car_id,\n        status=\"korea_georgia\",\n        container=context.user_data.get(\"edit_container\"),\n        ship_date=ship_date.isoformat(),\n        status_changed_at=datetime.now().isoformat(),\n    )\n    arrival = ship_date + timedelta(days=STATUS_DURATIONS_DAYS[\"korea_georgia\"])\n    await update.message.reply_text(\n        f\"✅ Статус обновлён: {STATUS_LABELS['korea_georgia']}\\n\"\n        f\"Ожидаемое прибытие в Грузию: ~{arrival.strftime('%d.%m.%Y')}\"\n    )\n    car = get_car(car_id)\n    await notify_car_watchers(\n        context, car,\n        f\"🚢 Ваш автомобиль {car['model']} отправлен! Ожидаемое прибытие в Грузию: ~{arrival.strftime('%d.%m.%Y')}.\"\n    )\n    for key in (\"edit_car_id\", \"edit_new_status\", \"edit_container\"):\n        context.user_data.pop(key, None)\n    return ConversationHandler.END"
+        },
+        {
+          "end_lineno": 1805,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1789,
+          "name": "reserve_start",
+          "sha256": "bccbd773eb5ff6684bf4508c7ce73e27f413cda6aefe0b0569160451e7e2414e",
+          "source": "async def reserve_start(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    msg = await _ack(update)\n    if not is_admin(update.effective_user.id):\n        await msg.reply_text(\"Эта команда доступна только администратору.\")\n        return ConversationHandler.END\n    cars = [c for c in load_cars() if c[\"status\"] not in (\"sold\", \"issued\", \"reserved\")]\n    if not cars:\n        await msg.reply_text(\"Нет доступных для резерва машин.\")\n        return ConversationHandler.END\n    buttons = [\n        [InlineKeyboardButton(f\"#{c['id']} {c['model']}\", callback_data=f\"rs_pick:{c['id']}\")]\n        for c in cars\n    ]\n    await msg.reply_text(\n        \"Какую машину закрепить за покупателем?\", reply_markup=InlineKeyboardMarkup(buttons)\n    )\n    return RS_PICK_CAR"
+        },
+        {
+          "end_lineno": 1842,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1821,
+          "name": "reserve_buyer_id",
+          "sha256": "7762867b45d48675c9c45be011b7a74bcc66e6a52a28f5453fdeff6057006b5d",
+          "source": "async def reserve_buyer_id(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    text = update.message.text.strip()\n    if not text.lstrip(\"-\").isdigit():\n        await update.message.reply_text(\"Это должно быть число (Telegram ID). Попробуйте ещё раз.\")\n        return RS_BUYER_ID\n    buyer_id = int(text)\n    car_id = context.user_data[\"reserve_car_id\"]\n    update_car(car_id, status=\"reserved\", reserved_by=buyer_id, status_changed_at=datetime.now().isoformat())\n    car = get_car(car_id)\n    await update.message.reply_text(f\"🔒 Машина #{car_id} закреплена за {buyer_id}. Скрыта из общего каталога.\")\n    try:\n        await context.bot.send_message(\n            chat_id=buyer_id,\n            text=f\"🔒 Машина {car['model']} закреплена за вами. Посмотреть — /mycar\",\n        )\n    except Exception as e:\n        logging.warning(f\"Не удалось уведомить покупателя {buyer_id}: {e}\")\n        await update.message.reply_text(\n            \"⚠️ Клиенту не удалось отправить уведомление — возможно, он не запускал бота.\"\n        )\n    context.user_data.pop(\"reserve_car_id\", None)\n    return ConversationHandler.END"
+        },
+        {
+          "end_lineno": 1931,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1920,
+          "name": "error_handler",
+          "sha256": "6589ecfd661d1a34fcaab4e398fe0e31dcc4f129509b8d4c58752aa3c4cc7e62",
+          "source": "async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Раньше ошибка просто уходила в лог, и вы о ней не узнавали.\"\"\"\n    logging.error(\"Ошибка при обработке обновления:\", exc_info=context.error)\n    tb = \"\".join(traceback.format_exception(None, context.error, context.error.__traceback__))\n    try:\n        await context.bot.send_message(\n            chat_id=MANAGER_CHAT_ID,\n            text=f\"⚠️ <b>Ошибка в боте</b>\\n\\n<code>{tb[-1200:]}</code>\",\n            parse_mode=\"HTML\",\n        )\n    except Exception:\n        pass"
+        },
+        {
+          "end_lineno": 1963,
+          "kind": "AsyncFunctionDef",
+          "lineno": 1934,
+          "name": "post_init",
+          "sha256": "f841da4a12374362ee4d159c22cb7b9a98166fc138356cccebaee4557ecab82f",
+          "source": "async def post_init(application):\n    \"\"\"Меню команд в интерфейсе Telegram — клиент видит список, а не гадает.\"\"\"\n    await application.bot.set_my_commands([\n        BotCommand(\"start\", \"Главное меню\"),\n        BotCommand(\"cars\", \"Авто в Украине\"),\n        BotCommand(\"mycar\", \"Моя зарезервированная машина\"),\n        BotCommand(\"terms\", \"Условия оплаты и доставки\"),\n        BotCommand(\"help\", \"Помощь\"),\n    ])\n    # У администратора своё меню — клиенты этих команд не видят\n    for admin_id in ADMIN_IDS:\n        try:\n            await application.bot.set_my_commands(\n                [\n                    BotCommand(\"admin\", \"🛠 Панель администратора\"),\n                    BotCommand(\"leads\", \"Заявки и выгрузка в Excel\"),\n                    BotCommand(\"addcar\", \"Добавить машину\"),\n                    BotCommand(\"editstatus\", \"Сменить статус машины\"),\n                    BotCommand(\"reserve\", \"Закрепить за покупателем\"),\n                    BotCommand(\"mycars\", \"Активные машины\"),\n                    BotCommand(\"sold\", \"Пометить проданной\"),\n                    BotCommand(\"archive\", \"Архив\"),\n                    BotCommand(\"cars\", \"Авто в Украине\"),\n                    BotCommand(\"start\", \"Главное меню\"),\n                ],\n                scope=BotCommandScopeChat(chat_id=admin_id),\n            )\n        except Exception as e:\n            logging.warning(f\"Не удалось задать меню админа {admin_id}: {e}\")\n    logging.info(\"Меню команд установлено.\")"
+        },
+        {
+          "end_lineno": 2195,
+          "kind": "FunctionDef",
+          "lineno": 1969,
+          "name": "build_application",
+          "sha256": "d8a4b0c35681f2c04367b622bec52555370b0705010a86d4d122819dcb4e9dc6",
+          "source": "def build_application():\n    \"\"\"Собирает приложение, но не запускает — нужно, чтобы run_all.py мог\n    поднять клиентский и внутренний ботов в одном процессе.\"\"\"\n    if not BOT_TOKEN:\n        logging.error(\n            f\"Токен клиентского бота не найден. Создайте {TOKEN_FILE} \"\n            f\"и вставьте туда токен от BotFather.\"\n        )\n        return None\n\n    app = ApplicationBuilder().token(BOT_TOKEN).post_init(post_init).build()\n\n    # --- Анкета (лид) ---\n    lead_conv = ConversationHandler(\n        entry_points=[\n            CommandHandler(\"start\", start),\n            CallbackQueryHandler(lead_start_from_button, pattern=r\"^lead_start$\"),\n        ],\n        states={\n            CAR_TYPE: [CallbackQueryHandler(car_type_chosen, pattern=r\"^(ready|custom_order)$\")],\n            MODEL: [\n                MessageHandler(filters.TEXT & ~filters.COMMAND, model_received),\n                MessageHandler(~filters.TEXT & ~filters.COMMAND, wrong_type_in_survey),\n            ],\n            BUDGET: [\n                MessageHandler(filters.TEXT & ~filters.COMMAND, budget_received),\n                MessageHandler(~filters.TEXT & ~filters.COMMAND, wrong_type_in_survey),\n            ],\n            TIMING: [\n                MessageHandler(filters.TEXT & ~filters.COMMAND, timing_received),\n                MessageHandler(~filters.TEXT & ~filters.COMMAND, wrong_type_in_survey),\n            ],\n            CONTACT: [\n                MessageHandler(filters.CONTACT, contact_received),\n                MessageHandler(filters.TEXT & ~filters.COMMAND, contact_received),\n                MessageHandler(~filters.TEXT & ~filters.CONTACT & ~filters.COMMAND, contact_wrong_type),\n            ],\n        },\n        fallbacks=[\n            CommandHandler(\"cancel\", cancel),\n            CommandHandler(\"start\", start),  # выход из зависшей анкеты\n        ],\n        allow_reentry=True,  # клиент может перезапустить анкету в любой момент\n    )\n    app.add_handler(lead_conv)\n    try:   # UA-ANALIT-V1\n        import analitika_bot; analitika_bot.register(app)\n    except Exception as _e_ana:\n        print('analitika_bot:', _e_ana)\n\n    # --- Быстрый лид из каталога с запросом телефона ---\n    buy_conv = ConversationHandler(\n        entry_points=[CallbackQueryHandler(quick_lead_from_car, pattern=r\"^buycar:\")],\n        states={\n            BUY_CONTACT: [\n                MessageHandler(filters.CONTACT, buy_contact_received),\n                MessageHandler(filters.TEXT & ~filters.COMMAND, buy_contact_received),\n            ],\n        },\n        fallbacks=[\n            CommandHandler(\"cancel\", buy_contact_skip),\n            CommandHandler(\"start\", start),\n        ],\n        allow_reentry=True,\n    )\n    app.add_handler(buy_conv)\n\n    # --- Команды ---\n    app.add_handler(CommandHandler(\"terms\", terms))\n    app.add_handler(CallbackQueryHandler(stats_full_cb, pattern=\"^stats_full$\"))\n    app.add_handler(CallbackQueryHandler(stats_week_cb, pattern=\"^stats_week$\"))\n    app.add_handler(CommandHandler(\"stats\", stats_cmd))\n\n    app.add_handler(CommandHandler(\"help\", help_cmd))\n    app.add_handler(CommandHandler(\"cars\", cars_list))\n    app.add_handler(CommandHandler(\"mycar\", mycar))\n    app.add_handler(CommandHandler(\"leads\", leads_cmd))\n\n    # --- Кнопки общего назначения ---\n    app.add_handler(CallbackQueryHandler(show_cars_cb, pattern=r\"^show_cars$\"))\n    app.add_handler(CallbackQueryHandler(show_transit_cb, pattern=r\"^show_transit$\"))\n    app.add_handler(CallbackQueryHandler(show_terms_cb, pattern=r\"^show_terms$\"))\n    app.add_handler(CallbackQueryHandler(contact_manager_cb, pattern=r\"^contact_manager$\"))\n    app.add_handler(CallbackQueryHandler(lead_taken_cb, pattern=r\"^lead_taken:\"))\n\n    # --- Панель администратора ---\n    app.add_handler(CommandHandler(\"admin\", admin_panel))\n    app.add_handler(CallbackQueryHandler(admin_panel, pattern=r\"^adm_panel$\"))\n    app.add_handler(CallbackQueryHandler(mycars, pattern=r\"^adm_mycars$\"))\n    app.add_handler(CallbackQueryHandler(archive_list, pattern=r\"^adm_archive$\"))\n    app.add_handler(CallbackQueryHandler(sold_cmd, pattern=r\"^adm_sold$\"))\n    app.add_handler(CallbackQueryHandler(leads_cmd, pattern=r\"^adm_leads$\"))\n\n    # --- Админские диалоги ---\n    addcar_conv = ConversationHandler(\n        entry_points=[\n            CommandHandler(\"addcar\", addcar_start),\n            CallbackQueryHandler(addcar_start, pattern=r\"^adm_addcar$\"),\n        ],\n        states={\n            AC_PHOTO: [\n                MessageHandler(filters.PHOTO, addcar_photo),\n                CommandHandler(\"done\", addcar_photo_done),\n                CommandHandler(\"skip\", addcar_photo_skip),\n            ],\n            AC_VIDEO: [\n                MessageHandler(filters.VIDEO, addcar_video),\n                CommandHandler(\"done\", addcar_video_done),\n                CommandHandler(\"skip\", addcar_video_skip),\n            ],\n            AC_MODEL: [MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_model)],\n            AC_SPECS: [MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_specs)],\n            AC_PRICE: [MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_price)],\n            AC_VIN: [\n                MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_vin),\n                CommandHandler(\"skip\", addcar_vin_skip),\n            ],\n            AC_TECH: [\n                MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_tech),\n                CommandHandler(\"skip\", addcar_tech_skip),\n            ],\n        },\n        fallbacks=[CommandHandler(\"cancel\", addcar_cancel)],\n        allow_reentry=True,\n    )\n    app.add_handler(addcar_conv)\n\n    app.add_handler(CommandHandler(\"mycars\", mycars))\n\n    editstatus_conv = ConversationHandler(\n        entry_points=[\n            CommandHandler(\"editstatus\", editstatus_start),\n            CallbackQueryHandler(editstatus_start, pattern=r\"^adm_editstatus$\"),\n        ],\n        states={\n            ES_PICK_CAR: [CallbackQueryHandler(editstatus_pick_car, pattern=r\"^es_pick:\")],\n            ES_PICK_STATUS: [CallbackQueryHandler(editstatus_pick_status, pattern=r\"^es_status:\")],\n            ES_CONTAINER: [MessageHandler(filters.TEXT & ~filters.COMMAND, editstatus_container)],\n            ES_SHIP_DATE: [MessageHandler(filters.TEXT & ~filters.COMMAND, editstatus_ship_date)],\n        },\n        fallbacks=[CommandHandler(\"cancel\", editstatus_cancel)],\n        allow_reentry=True,\n    )\n    app.add_handler(editstatus_conv)\n\n    reserve_conv = ConversationHandler(\n        entry_points=[\n            CommandHandler(\"reserve\", reserve_start),\n            CallbackQueryHandler(reserve_start, pattern=r\"^adm_reserve$\"),\n        ],\n        states={\n            RS_PICK_CAR: [CallbackQueryHandler(reserve_pick_car, pattern=r\"^rs_pick:\")],\n            RS_BUYER_ID: [MessageHandler(filters.TEXT & ~filters.COMMAND, reserve_buyer_id)],\n        },\n        fallbacks=[CommandHandler(\"cancel\", reserve_cancel)],\n        allow_reentry=True,\n    )\n    app.add_handler(reserve_conv)\n\n    app.add_handler(CommandHandler(\"archive\", archive_list))\n    app.add_handler(CallbackQueryHandler(mark_issued, pattern=r\"^issue:\"))\n    app.add_handler(CommandHandler(\"sold\", sold_cmd))\n    app.add_handler(CallbackQueryHandler(mark_sold, pattern=r\"^sold:\"))\n\n    # --- ЛОВУШКА ДЛЯ ВСЕГО ОСТАЛЬНОГО (обязательно последней) ---\n    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, free_text_handler))\n    app.add_handler(MessageHandler(\n        (filters.PHOTO | filters.VIDEO | filters.VOICE | filters.Sticker.ALL\n         | filters.Document.ALL | filters.AUDIO),\n        non_text_handler,\n    ))\n\n    app.add_error_handler(error_handler)\n\n    if app.job_queue:\n        app.job_queue.run_repeating(\n            weekly_reminder_job, interval=timedelta(days=7), first=timedelta(days=7)\n        )\n        # Напоминание менеджеру о непринятых заявках — проверка каждые 15 минут\n        app.job_queue.run_repeating(\n            manager_reminder_job, interval=timedelta(minutes=15), first=timedelta(minutes=5)\n        )\n        # Прогрев остывших клиентов — проверка 4 раза в сутки\n        app.job_queue.run_repeating(\n            warmup_job, interval=timedelta(hours=6), first=timedelta(minutes=10)\n        )\n    else:\n        logging.warning(\"job-queue не установлен — напоминания и прогрев отключены.\")\n\n    # v27-pustoy — клиентский бот пуст. Всё, что было собрано выше,\n    # снимается. Ни витрина, ни старые экраны, ни учёт не подключены.\n    # Здесь подключается новая платформа: одна строка вида\n    #     novaya_platforma.register(app)\n    try:\n        app.handlers.clear()\n        logging.info(\"Клиентский бот очищен: обработчиков нет.\")\n    except Exception as e:\n        logging.error(\"Не удалось очистить обработчиков: %s\", e)\n\n    try:\n        from telegram.ext import CommandHandler as _CommandHandler\n\n        async def _zaglushka(update, context):\n            try:\n                await update.effective_message.reply_text('Здравствуйте! Бот обновляется — напишите нам в WhatsApp: +380 99 222 20 02')\n            except Exception:\n                pass\n\n        app.add_handler(_CommandHandler(\"start\", _zaglushka))\n        logging.info(\"Заглушка на /start подключена.\")\n    except Exception as e:\n        logging.error(\"Заглушка не подключена: %s\", e)\n\n    # --- витрина UA ART: подключение клиентских экранов ---\n    try:\n        import client_ui as _vitrina\n        _vitrina.register(app, globals().get('MANAGER_CHAT_ID'))\n        print('[vitrina] client_ui подключена')\n    except TypeError:\n        try:\n            _vitrina.register(app)\n            print('[vitrina] client_ui подключена (без chat_id)')\n        except Exception as _e:\n            print('[vitrina] НЕ подключена:', _e)\n    except Exception as _e:\n        print('[vitrina] НЕ подключена:', _e)\n    return app"
+        },
+        {
+          "end_lineno": 2255,
+          "kind": "AsyncFunctionDef",
+          "lineno": 2237,
+          "name": "_setup_menu",
+          "sha256": "55fa49edb862292c322bf8c743e142de484d337916930e0a8c7764acbcb80ad5",
+          "source": "async def _setup_menu(application):\n    from telegram import BotCommand, BotCommandScopeChat, BotCommandScopeDefault\n    klientu = [\n        BotCommand(\"start\", \"Главное меню\"),\n        BotCommand(\"cars\", \"Авто в наличии и в пути\"),\n        BotCommand(\"terms\", \"Условия и гарантии\"),\n    ]\n    vladelcu = klientu + [\n        BotCommand(\"stats\", \"Статистика бота\"),\n        BotCommand(\"leads\", \"Заявки и выгрузка\"),\n        BotCommand(\"archive\", \"Архив машин\"),\n    ]\n    try:\n        await application.bot.set_my_commands(klientu, scope=BotCommandScopeDefault())\n        for admin_id in ADMIN_IDS:\n            await application.bot.set_my_commands(\n                vladelcu, scope=BotCommandScopeChat(chat_id=admin_id))\n    except Exception as e:\n        print(\"Меню команд не обновилось:\", e)"
+        },
+        {
+          "end_lineno": 2266,
+          "kind": "FunctionDef",
+          "lineno": 2258,
+          "name": "main",
+          "sha256": "b1a989f7fdd136ffdf0934407231ab0f75b1747353125f37d3ad93c8b0d7e0e5",
+          "source": "def main():\n    logging.basicConfig(\n        format=\"%(asctime)s [%(levelname)s] %(message)s\", level=logging.INFO\n    )\n    app = build_application()\n    if not app:\n        return\n    print(\"Бот запущен.\")\n    app.run_polling(drop_pending_updates=True)"
+        }
+      ],
+      "path": "/home/Carix/lead_bot.py",
+      "sha256": "118573df42b51db49f7c2ebd9b830f78ebd1e62b71846760f62fa2f0590ffc0c"
+    },
     "local_ocr.py": {
       "bytes": 8690,
       "definitions": [
@@ -1235,6 +1538,21 @@
       ],
       "path": "/home/Carix/local_ocr.py",
       "sha256": "7eb4de0597fb6064c8e5f7b56c00d673e8d964630481b3fe5511bb20363770b5"
+    },
+    "run_all.py": {
+      "bytes": 5822,
+      "definitions": [
+        {
+          "end_lineno": 134,
+          "kind": "AsyncFunctionDef",
+          "lineno": 75,
+          "name": "run_bots",
+          "sha256": "2d5d5317145192dd0c2a736de3839f1d5257556f38b8fa0a5f637ddc14547575",
+          "source": "async def run_bots():\n    db.init_db()\n    _v144_zhurnal(\"база готова, собираем ботов\")\n\n    # UA-V144 · обработчик диагностики живёт внутри этого процесса\n    try:\n        import kadry_diagnostiki as _kd144\n        _v144_zhurnal(\"обработчик диагностики: поднят\" if _kd144.zapustit_iz_run_all()\n                      else \"обработчик диагностики: уже работает в другом процессе\")\n    except Exception as _e144:\n        _v144_zhurnal(\"обработчик диагностики НЕ поднят: %r\" % _e144)\n\n    apps = []\n\n    # --- Клиентский бот ---\n    try:\n        import lead_bot\n        client_app = lead_bot.build_application()\n        if client_app:\n            apps.append((\"клиентский\", client_app))\n    except Exception as e:\n        logging.error(f\"Клиентский бот не собрался: {e}\", exc_info=True)\n\n    # --- Внутренний бот ---\n    try:\n        import team_bot\n        team_app = team_bot.build_application()\n        if team_app:\n            apps.append((\"внутренний\", team_app))\n    except Exception as e:\n        logging.error(f\"Внутренний бот не собрался: {e}\", exc_info=True)\n\n    if not apps:\n        logging.error(\"Ни один бот не запустился. Проверьте файлы с токенами.\")\n        return\n\n    for name, app in apps:\n        await app.initialize()\n        await app.start()\n        await app.updater.start_polling(drop_pending_updates=True)\n        logging.info(f\"Запущен бот: {name}\")\n        _v144_zhurnal(\"запущен бот: %s\" % name)\n\n    logging.info(f\"Всего работает ботов: {len(apps)}\")\n    _v144_zhurnal(\"всего работает ботов: %d — вход в ожидание\" % len(apps))\n\n    try:\n        # Держим процесс живым\n        while True:\n            await asyncio.sleep(3600)\n    finally:\n        _v144_zhurnal(\"ВЫХОД из ожидания — боты останавливаются\")\n        for name, app in apps:\n            try:\n                await app.updater.stop()\n                await app.stop()\n                await app.shutdown()\n                logging.info(f\"Остановлен бот: {name}\")\n            except Exception as e:\n                logging.warning(f\"Ошибка остановки {name}: {e}\")"
+        }
+      ],
+      "path": "/home/Carix/run_all.py",
+      "sha256": "7deb18698f792b61fd734b36451296343ec528e15ccd86798d6cbc4a7a75eca5"
     },
     "start_safe.py": {
       "bytes": 60219,
@@ -1312,6 +1630,14 @@
           "source": "def _money(value):\n    try:\n        n = int(float(value))\n    except (TypeError, ValueError):\n        return \"—\"\n    return \"{:,}\".format(n).replace(\",\", \" \") + \" $\""
         },
         {
+          "end_lineno": 794,
+          "kind": "AsyncFunctionDef",
+          "lineno": 766,
+          "name": "_send_client_card",
+          "sha256": "1c54b99fefda8329a586401e9a32c5289fa56263eb7e29e077599b9b7b9c5dee",
+          "source": "async def _send_client_card(bot, chat_id, car):\n    from telegram import InputMediaPhoto, InputMediaVideo\n    from telegram import InlineKeyboardButton, InlineKeyboardMarkup\n\n    hidden = set(_ids(car.get(\"hidden_photos\")))\n    photos = [p for p in _ids(car.get(\"photos\")) if p not in hidden]\n    videos = _ids(car.get(\"videos\"))\n\n    for i in range(0, len(photos), 10):\n        chunk = photos[i:i + 10]\n        if len(chunk) == 1:\n            await bot.send_photo(chat_id, chunk[0])\n        else:\n            await bot.send_media_group(chat_id, [InputMediaPhoto(p) for p in chunk])\n        await asyncio.sleep(ALBUM_PAUSE)\n\n    keyboard = InlineKeyboardMarkup([[\n        InlineKeyboardButton(\"WhatsApp\", url=WHATSAPP),\n        InlineKeyboardButton(\"Карта\", url=MAPS),\n    ]])\n    await bot.send_message(chat_id, client_text(car), reply_markup=keyboard)\n\n    for i in range(0, len(videos), 10):\n        chunk = videos[i:i + 10]\n        if len(chunk) == 1:\n            await bot.send_video(chat_id, chunk[0])\n        else:\n            await bot.send_media_group(chat_id, [InputMediaVideo(v) for v in chunk])\n        await asyncio.sleep(ALBUM_PAUSE)"
+        },
+        {
           "end_lineno": 1101,
           "kind": "FunctionDef",
           "lineno": 797,
@@ -1350,6 +1676,14 @@
           "name": "apply_all",
           "sha256": "27b9c20e0236fd3cecda5c610b2b0796e2b025694406cd89050a33502c40dda6",
           "source": "def apply_all():\n    ok = True\n    for func in (\n        patch_request_timeouts,\n        patch_bot_methods,\n        patch_error_handlers,\n        patch_register_hook,\n        patch_card_html_budget,\n        patch_download_cache,\n    ):\n        try:\n            func()\n        except Exception as e:\n            ok = False\n            log.warning(\"не удалось применить %s: %r\", func.__name__, e)\n    return ok"
+        },
+        {
+          "end_lineno": 1369,
+          "kind": "FunctionDef",
+          "lineno": 1357,
+          "name": "_zhivoy_token",
+          "sha256": "7bc3af7e10ff3b18b25de2f82391892a6d4469af96009f8f7fd6aafc4654748f",
+          "source": "def _zhivoy_token(znachenie):\n    \"\"\"Проверяет токен у Telegram. Ничего не отправляет, только спрашивает.\"\"\"\n    if not znachenie:\n        return False\n    try:\n        import urllib.request\n        import json as _json\n        adres = \"https://api.telegram.org/bot%s/getMe\" % znachenie\n        with urllib.request.urlopen(adres, timeout=20) as otvet:\n            return bool(_json.loads(otvet.read().decode(\"utf-8\")).get(\"ok\"))\n    except Exception as e:\n        log.warning(\"токен не проверился: %r\", e)\n        return None          # непонятно — считаем, что жив"
         },
         {
           "end_lineno": 1405,
@@ -1407,6 +1741,14 @@
           "source": "async def run_ai_draft(update, context, inbox_id, kind, text, file_id):\n    \"\"\"Open a schema-closed CRM draft from photo, text, or voice.\"\"\"\n    import asyncio\n    import time\n    import ai_fast_schema as fast\n    import local_ocr\n\n    msg = update.message\n    if ai.is_stopped():\n        await msg.reply_text(\"🛑 ИИ остановлен. Включите ИИ в главном меню.\")\n        return\n\n    started = time.monotonic()\n    hard_deadline = started + 15.0\n    data = {}\n    thinking = None\n    allowed = fast.car_fields(ai_filter)\n\n    async def download_bytes(fid):\n        tg_file = await context.bot.get_file(fid)\n        return bytes(await tg_file.download_as_bytearray())\n\n    if kind in (\"voice\", \"audio\", \"video_note\") and file_id:\n        thinking = await msg.reply_text(\"🎤 ИИ распознаёт, до 15 секунд...\")\n        if not ai.voice_enabled():\n            await thinking.edit_text(\"🎤 Расшифровка голоса не настроена.\")\n            return\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio = await asyncio.wait_for(download_bytes(file_id), timeout=min(3.0, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio), timeout=remaining\n            )\n        except asyncio.TimeoutError:\n            text = \"\"\n            logging.warning(\"AI voice hard timeout inbox=%s\", inbox_id)\n        except Exception as exc:\n            text = \"\"\n            logging.error(\"Voice recognition failed inbox=%s error=%s\", inbox_id, exc)\n        if text:\n            data.update(local_ocr.fields_from_text(text, allowed))\n            data.update(fast.fast_text_data(text, ai_filter))\n\n    elif kind in (\"photo\", \"document\") and file_id:\n        if kind == \"document\":\n            mime = (msg.document.mime_type or \"\") if msg.document else \"\"\n            if not mime.startswith(\"image/\"):\n                await msg.reply_text(\"📎 Нужен файл-изображение.\")\n                return\n        if msg.media_group_id:\n            marker = \"ai_mg_%s\" % msg.media_group_id\n            if context.chat_data.get(marker):\n                return\n            context.chat_data[marker] = True\n        thinking = await msg.reply_text(\"🖼 ИИ распознаёт, до 15 секунд...\")\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            image = await asyncio.wait_for(download_bytes(file_id), timeout=remaining)\n            remaining = max(0.5, hard_deadline - time.monotonic())\n            image_data = await asyncio.wait_for(\n                asyncio.to_thread(local_ocr.fields_from_image, image, allowed, remaining),\n                timeout=remaining,\n            )\n            data.update(image_data)\n            # A caption is explicit owner input and wins over an OCR ambiguity.\n            if (text or \"\").strip():\n                data.update(local_ocr.fields_from_text(text, allowed))\n                data.update(fast.fast_text_data(text, ai_filter))\n        except asyncio.TimeoutError:\n            data = {}\n            logging.warning(\"Local OCR hard timeout inbox=%s\", inbox_id)\n        except Exception as exc:\n            data = {}\n            logging.error(\"Local OCR failed inbox=%s error=%s\", inbox_id, exc)\n\n    elif (text or \"\").strip():\n        thinking = await msg.reply_text(\"🧠 ИИ распознаёт, до 15 секунд...\")\n        data.update(local_ocr.fields_from_text(text, allowed))\n        data.update(fast.fast_text_data(text, ai_filter))\n\n    if data:\n        parsed = fast.parsed_from_data(data)\n        data = fast.clean_car(parsed, ai_filter, \"\")\n    if data:\n        parsed = fast.parsed_from_data(data)\n        context.user_data[\"ai_draft\"] = {\n            \"inbox_id\": inbox_id,\n            \"parsed\": parsed,\n            \"clean_data\": data,\n            \"source_text\": \"\",\n            \"review\": None,\n        }\n        rows = [[InlineKeyboardButton(\"✅ Сохранить карточку\", callback_data=\"ai_ok\")], [\n            InlineKeyboardButton(\"✏️ Дополнить\", callback_data=\"ai_edit\"),\n            InlineKeyboardButton(\"❌ Отменить\", callback_data=\"ai_no\"),\n        ]]\n        elapsed = time.monotonic() - started\n        if thinking is None:\n            thinking = await msg.reply_text(\"🧠 ИИ распознаёт, до 15 секунд...\")\n        await thinking.edit_text(\n            \"✅ Новая карточка открыта\\n\\n\" + ai_filter.render(data)\n            + \"\\n\\n⏱ %.1f с · локально · 0 AI-токенов\" % elapsed,\n            parse_mode=\"HTML\",\n            reply_markup=InlineKeyboardMarkup(rows),\n        )\n        return\n\n    if thinking is None:\n        thinking = await msg.reply_text(\"🧠 ИИ распознаёт, до 15 секунд...\")\n    await thinking.edit_text(\n        \"Поля CRM не распознаны. Пришлите более чёткое фото, текст или голос.\"\n    )"
         },
         {
+          "end_lineno": 553,
+          "kind": "AsyncFunctionDef",
+          "lineno": 505,
+          "name": "ai_save",
+          "sha256": "48de4347817944587cbc63efc4df66f9f315cf857da68062efa77717001bf447",
+          "source": "async def ai_save(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    import ai_fast_schema as fast\n\n    query = update.callback_query\n    await query.answer()\n    staff = who(update)\n    draft = context.user_data.get(\"ai_draft\")\n    if not draft or not staff:\n        await query.message.reply_text(\"Черновик потерялся. Отправьте сообщение заново.\")\n        return\n\n    parsed = draft.get(\"parsed\") or {}\n    table = \"cars\" if parsed.get(\"type\") == \"car\" else \"clients\"\n    actor = staff[\"user_id\"]\n    if table == \"cars\":\n        data = {\n            key: value for key, value in (draft.get(\"clean_data\") or {}).items()\n            if key in fast.car_fields(ai_filter)\n        }\n        if not data:\n            await query.message.reply_text(\"Нет полей автомобиля для сохранения.\")\n            return\n        card_id, number, new_card = ai_filter.store(\n            data, actor, draft.get(\"inbox_id\"), card_id=None\n        )\n        if not card_id:\n            await query.message.reply_text(\"Для новой карточки нужен VIN.\")\n            return\n        db.set_card_review(\"cars\", card_id, db.ST_APPROVED_OWNER, actor, publish=True)\n        db.add_comment(\n            \"cars\", card_id, actor,\n            \"Создано распознаванием из входящего #%s; сохранены только поля CRM.\"\n            % draft.get(\"inbox_id\"),\n        )\n    else:\n        allowed = set(getattr(db, \"CLIENT_FIELDS\", ()))\n        data = {key: value for key, value in (draft.get(\"clean_data\") or {}).items() if key in allowed}\n        card_id = db.create_card(\"clients\", data, actor)\n        db.link_inbox_card(draft.get(\"inbox_id\"), \"clients\", card_id, actor)\n        db.set_inbox_status(draft.get(\"inbox_id\"), db.ST_APPROVED_OWNER, actor)\n\n    card = db.get_card(table, card_id)\n    note = \"\\nОпубликовано в клиентском каталоге.\" if table == \"cars\" else \"\"\n    await query.message.edit_reply_markup(reply_markup=None)\n    await query.message.reply_text(\n        \"✅ Сохранено: %s%s\" % (db.card_title(table, card), note),\n        reply_markup=main_menu(staff),\n    )\n    context.user_data.pop(\"ai_draft\", None)"
+        },
+        {
           "end_lineno": 570,
           "kind": "AsyncFunctionDef",
           "lineno": 560,
@@ -1421,6 +1763,22 @@
           "name": "mk_card_start",
           "sha256": "e03a2fe93ef5b472dfd54d8a87e265fda2fd519062849cc54d1f49782d1ee2a1",
           "source": "async def mk_card_start(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    query = update.callback_query\n    await query.answer()\n    staff = who(update)\n    if not staff:\n        return ConversationHandler.END\n    kind, inbox_id = query.data.split(\":\")\n    inbox_id = int(inbox_id)\n    table = \"cars\" if kind == \"mk_car\" else \"clients\"\n    steps = CAR_STEPS if table == \"cars\" else CLIENT_STEPS\n\n    context.user_data[\"card\"] = {\n        \"table\": table, \"inbox_id\": inbox_id, \"step\": 0, \"data\": {}, \"steps\": steps,\n    }\n    db.set_inbox_status(inbox_id, db.ST_IN_WORK, staff[\"user_id\"])\n\n    title = \"🚗 Новая карточка авто\" if table == \"cars\" else \"👤 Новая карточка клиента\"\n    await query.message.reply_text(\n        f\"{title}\\n\\nШаг 1 из {len(steps)} — {steps[0][1]}\\n\\n\"\n        f\"Отправьте /cancel, чтобы отменить.\"\n    )\n    return CARD_STEP"
+        },
+        {
+          "end_lineno": 907,
+          "kind": "FunctionDef",
+          "lineno": 896,
+          "name": "render_card",
+          "sha256": "564eba97614b04bbe1bd192464ac11557ee520d01b99f734b07d2693fe366bb5",
+          "source": "def render_card(table, card) -> str:\n    labels = CAR_LABELS if table == \"cars\" else CLIENT_LABELS\n    lines = [f\"<b>{db.card_title(table, card)}</b>\",\n             f\"Статус: {db.STATUS_LABELS.get(card['review_status'], card['review_status'])}\"]\n    if table == \"cars\":\n        lines.append(\"Публикация в каталоге: \" + (\"да\" if card.get(\"published\") else \"нет\"))\n    lines.append(\"\")\n    for f, lab in labels.items():\n        v = card.get(f)\n        if v:\n            lines.append(f\"<b>{lab}:</b> {v}\")\n    return \"\\n\".join(lines)"
+        },
+        {
+          "end_lineno": 982,
+          "kind": "AsyncFunctionDef",
+          "lineno": 938,
+          "name": "card_review_action",
+          "sha256": "202da28b27b658ac6d2c7a2bd7ee5ef0d174d88e22bcfc6d96d4385825eb59ad",
+          "source": "async def card_review_action(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    query = update.callback_query\n    staff = who(update)\n    if not is_admin_or_owner(staff):\n        await query.answer(\"Недостаточно прав\", show_alert=True)\n        return\n    action, table, card_id = query.data.split(\":\")\n    card_id = int(card_id)\n    card = db.get_card(table, card_id)\n\n    if action == \"card_ok\":\n        status = db.ST_APPROVED_OWNER if is_owner(staff) else db.ST_APPROVED_ADMIN\n        publish = True if table == \"cars\" else None\n        db.set_card_review(table, card_id, status, staff[\"user_id\"], publish=publish)\n        await query.answer(\"Подтверждено\")\n        note = \"\\nКарточка опубликована в клиентском каталоге.\" if table == \"cars\" else \"\"\n        await query.message.reply_text(\n            f\"✅ {db.card_title(table, card)} — подтверждено.{note}\"\n        )\n        target = card.get(\"created_by\")\n    elif action == \"card_back\":\n        db.set_card_review(table, card_id, db.ST_RETURNED, staff[\"user_id\"], publish=False)\n        await query.answer(\"Возвращено\")\n        await query.message.reply_text(\n            f\"↩️ {db.card_title(table, card)} возвращена менеджеру на доработку.\"\n        )\n        target = card.get(\"created_by\")\n    else:\n        db.set_card_review(table, card_id, db.ST_REJECTED, staff[\"user_id\"], publish=False)\n        await query.answer(\"Отклонено\")\n        await query.message.reply_text(f\"❌ {db.card_title(table, card)} отклонена.\")\n        target = card.get(\"created_by\")\n\n    if target:\n        try:\n            await context.bot.send_message(\n                target,\n                f\"{db.STATUS_LABELS[db.get_card(table, card_id)['review_status']]}\\n\"\n                f\"{db.card_title(table, card)}\",\n                reply_markup=InlineKeyboardMarkup([[\n                    InlineKeyboardButton(\"Открыть\", callback_data=f\"card_open:{table}:{card_id}\")\n                ]]),\n            )\n        except Exception:\n            pass"
         },
         {
           "end_lineno": 1105,
