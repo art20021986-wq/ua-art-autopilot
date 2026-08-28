@@ -1,5 +1,5 @@
 name: task068-ferry-vin-v1-1-deploy
-# deploy-revision: 13-layered-source-readonly-inventory
+# deploy-revision: 14-seo-preserving-final-card-boundary
 
 on:
   push:
@@ -161,6 +161,7 @@ jobs:
           assert shadow['read_only'] is True and shadow['production_write'] is False
           assert set(shadow['files']) == {'stranica.py', 'yadro.py', 'master_card.py'}
           assert all(item['marker_before_main'] for item in shadow['files'].values())
+          assert all(item['seo_before_task068'] for item in shadow['files'].values())
           source_install = deploy['source_install']
           install = deploy['install']
           post = deploy['postcheck']
