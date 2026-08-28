@@ -1,5 +1,6 @@
 import {
   PRODUCTION_ORIGIN,
+  cardIdFromPath,
   extractVehicleIds,
   indexablePaths,
   previewRobots,
@@ -42,6 +43,16 @@ async function currentPaths() {
   return indexablePaths(ids.length ? ids : FALLBACK_IDS);
 }
 
+async function diagnosticReady(id) {
+  const response = await fetch(`${PRODUCTION_ORIGIN}/video/${id}-diag.html`, {
+    method: "GET",
+    redirect: "manual",
+    headers: { "user-agent": "UA-ART-SEO-Rehab-Preview/1.0 (read-only)" },
+  });
+  if (response.status !== 200 || !(response.headers.get("content-type") || "").includes("text/html")) return false;
+  return /диагност|Материалы пока не добавлены/iu.test(await response.text());
+}
+
 async function proxyGet(url, method) {
   const target = upstreamUrl(url);
   if (!target) return previewResponse("Not found\n", { status: 404, headers: { "content-type": "text/plain;charset=UTF-8" } });
@@ -55,7 +66,15 @@ async function proxyGet(url, method) {
   }
   const contentType = upstream.headers.get("content-type") || "application/octet-stream";
   if (contentType.includes("text/html")) {
-    const candidate = transformCandidateHtml(url.pathname, await upstream.text());
+    const source = await upstream.text();
+    const vehicleId = cardIdFromPath(url.pathname);
+    if (vehicleId && !(await diagnosticReady(vehicleId))) {
+      return previewResponse("Diagnostic source is not ready; preview blocked\n", {
+        status: 502,
+        headers: { "content-type": "text/plain;charset=UTF-8" },
+      });
+    }
+    const candidate = transformCandidateHtml(url.pathname, source);
     const guarded = previewSafeHtml(candidate);
     return previewResponse(method === "HEAD" ? null : guarded, {
       status: upstream.status,
