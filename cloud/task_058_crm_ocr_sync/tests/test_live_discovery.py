@@ -287,11 +287,13 @@ class DiscoveryTests(unittest.TestCase):
     def test_redaction_covers_secret_email_phone_and_vin(self):
         value = (
             "sk-ABCDEFGHIJKLMNOPQRSTUVWXYZ123456 owner@example.com "
-            "+380 67 123 45 67 KNAGU416BKA324445"
+            "+380 67 123 45 67 KNAGU416BKA324445 "
+            "API_KEY='this-is-a-hardcoded-provider-secret'"
         )
         redacted = ld.redact(value)
         for fragment in ("sk-ABC", "owner@example.com", "+380", "KNAGU416BKA324445"):
             self.assertNotIn(fragment, redacted)
+        self.assertNotIn("hardcoded-provider-secret", redacted)
 
 
 if __name__ == "__main__":

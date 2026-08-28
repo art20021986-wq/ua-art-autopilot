@@ -77,8 +77,16 @@ SECRET_VALUE_PATTERNS = (
     re.compile(r"sk-ant-[A-Za-z0-9_-]{16,}"),
     re.compile(r"sk-[A-Za-z0-9_-]{20,}"),
     re.compile(r"gh[pousr]_[A-Za-z0-9]{20,}"),
+    re.compile(r"AIza[0-9A-Za-z_-]{30,}"),
+    re.compile(r"xox[baprs]-[0-9A-Za-z-]{20,}"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"eyJ[A-Za-z0-9_-]{20,}(?:\.[A-Za-z0-9_-]{10,}){1,2}"),
     re.compile(r"\b\d{8,12}:[A-Za-z0-9_-]{20,}\b"),
     re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+)
+GENERIC_SECRET_ASSIGNMENT_RE = re.compile(
+    r"(?i)\b(api[_-]?key|token|secret|password|authorization)\b"
+    r"\s*[:=]\s*(['\"])([^'\"\r\n]{8,})\2"
 )
 VIN_RE = re.compile(r"\b[A-HJ-NPR-Z0-9]{17}\b", re.I)
 EMAIL_RE = re.compile(r"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b")
@@ -106,7 +114,9 @@ def sha256_file(path: pathlib.Path) -> str:
 
 
 def redact(text: str) -> str:
-    result = text
+    result = GENERIC_SECRET_ASSIGNMENT_RE.sub(
+        lambda match: match.group(1) + "=[REDACTED_SECRET]", text
+    )
     for pattern in SECRET_VALUE_PATTERNS:
         result = pattern.sub("[REDACTED_SECRET]", result)
     result = VIN_RE.sub("[REDACTED_VIN]", result)

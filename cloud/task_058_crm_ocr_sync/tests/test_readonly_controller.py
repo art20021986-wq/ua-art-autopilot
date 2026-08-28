@@ -233,6 +233,7 @@ class ReceiptValidationTests(unittest.TestCase):
             "owner@example.com",
             "+380 67 123 45 67",
             "KNAGU416BKA324445",
+            "API_KEY='this-is-a-hardcoded-provider-secret'",
         )
         for value in values:
             receipt = pass_receipt()

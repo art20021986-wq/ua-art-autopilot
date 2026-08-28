@@ -63,7 +63,13 @@ PHONE_RE = re.compile(
 SECRET_VALUE_RE = re.compile(
     r"(?:sk-ant-[A-Za-z0-9_-]{16,}|sk-[A-Za-z0-9_-]{20,}|"
     r"gh[pousr]_[A-Za-z0-9]{20,}|\b\d{8,12}:[A-Za-z0-9_-]{20,}\b|"
+    r"AIza[0-9A-Za-z_-]{30,}|xox[baprs]-[0-9A-Za-z-]{20,}|"
+    r"AKIA[0-9A-Z]{16}|eyJ[A-Za-z0-9_-]{20,}(?:\.[A-Za-z0-9_-]{10,}){1,2}|"
     r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)"
+)
+GENERIC_SECRET_ASSIGNMENT_RE = re.compile(
+    r"(?i)\b(?:api[_-]?key|token|secret|password|authorization)\b"
+    r"\s*[:=]\s*['\"][^'\"\r\n]{8,}['\"]"
 )
 
 REQUIRED_SOURCE_PATHS = {
@@ -186,6 +192,7 @@ def _sensitive_value(value: object) -> bool:
     if isinstance(value, str):
         return bool(
             SECRET_VALUE_RE.search(value)
+            or GENERIC_SECRET_ASSIGNMENT_RE.search(value)
             or EMAIL_RE.search(value)
             or PHONE_RE.search(value)
             or VIN_RE.search(value)
