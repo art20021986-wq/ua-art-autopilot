@@ -1,0 +1,162 @@
+name: ferry-wording-approved-gate-b
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ferry_wording_gate_b.yml'
+      - 'cloud/task_047_ferry_discovery/gate_b_remote.py'
+      - 'cloud/task_047_ferry_discovery/gate_b_controller.py'
+      - 'cloud/task_047_ferry_discovery/gate_b_live_verify.py'
+      - 'cloud/task_047_ferry_discovery/gate_b_tests.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ferry-wording-task-063-approved-gate-b
+  cancel-in-progress: false
+
+jobs:
+  gate-b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Run complete offline ferry suite
+        run: |
+          python3 cloud/task_047_ferry_discovery/run_tests.py
+          python3 cloud/task_047_ferry_discovery/gate_b_tests.py
+
+      - name: Install only the owner-approved Gate A artifact
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_USERNAME: Carix
+          PYTHONANYWHERE_HOST: www.pythonanywhere.com
+        run: python3 cloud/task_047_ferry_discovery/gate_b_controller.py
+
+      - name: Verify all public HTML pages and the 10-car catalog
+        run: python3 cloud/task_047_ferry_discovery/gate_b_live_verify.py
+
+      - name: Capture the live production catalog
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "${browser}"
+          mkdir -p cloud/task_047_ferry_discovery/_gate_b_screenshots
+          "${browser}" --headless=new --disable-gpu --disable-background-networking \
+            --hide-scrollbars --window-size=1440,2400 --virtual-time-budget=3000 \
+            --screenshot=cloud/task_047_ferry_discovery/_gate_b_screenshots/katalog-live.png \
+            "https://www.uaart.com.ua/video/katalog.html?task063_gate_b_screenshot=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('cloud/task_047_ferry_discovery/_gate_b_screenshots/katalog-live.png')
+          data = path.read_bytes()
+          if len(data) < 1000 or not data.startswith(b'\x89PNG\r\n\x1a\n'):
+              raise SystemExit('invalid live catalog screenshot')
+          print('LIVE_SCREENSHOT_OK', len(data))
+          PY
+
+      - name: Write bounded completion status
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('cloud/task_047_ferry_discovery')
+          gate_b = json.loads((root / 'evidence/ferry_gate_b.json').read_text())
+          live = json.loads((root / 'evidence/ferry_gate_b_live.json').read_text())
+          if gate_b['status'] != 'PASS' or live['status'] != 'PASS':
+              raise SystemExit('TASK_063_NOT_COMPLETE')
+          status = "\n".join([
+              "# Последний статус", "", "TASK 063 / TAX 15: **DONE**", "",
+              "- Production Gate B: PASS.",
+              "- Каталог: 10 автомобилей.",
+              "- На пароме: 4 автомобиля; подпись и маршрут выведены в две строки.",
+              f"- Публично проверено: {live['page_count']} HTML-страниц по точным SHA-256.",
+              f"- Изменено production-файлов: {gate_b['production_files_changed']}.",
+              "- CRM/DB write: false.",
+              "- Service reload: false.",
+              f"- Резервная копия: `{gate_b['backup_root']}`.",
+              f"- Проверено: {live['generated_at_utc']}.", "",
+          ])
+          owner = "\n".join([
+              "# Ответ владельцу", "",
+              "Готово. TASK 063 / TAX 15 введён в production: в каталоге 10 машин, "
+              "у 4 машин этап «На пароме» и маршрут отображаются в две строки. "
+              f"Все {live['page_count']} публичных HTML-страниц совпали с утверждёнными "
+              "версиями. CRM и база не изменялись, перезапуск сервиса не потребовался.", "",
+          ])
+          (Path('cloud/latest_status.md')).write_text(status, encoding='utf-8')
+          (Path('cloud/owner_reply.md')).write_text(owner, encoding='utf-8')
+          PY
+
+      - name: Validate and commit only Gate B evidence
+        run: |
+          git add -- \
+            cloud/task_047_ferry_discovery/evidence/ferry_gate_b.json \
+            cloud/task_047_ferry_discovery/evidence/ferry_gate_b_live.json \
+            cloud/task_047_ferry_discovery/FERRY_GATE_B_REPORT.md \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          if [ "${#staged[@]}" -gt 5 ]; then
+            echo 'Too many staged Gate B evidence files'
+            exit 1
+          fi
+          for path in "${staged[@]}"; do
+            case "${path}" in
+              cloud/task_047_ferry_discovery/evidence/ferry_gate_b.json|\
+              cloud/task_047_ferry_discovery/evidence/ferry_gate_b_live.json|\
+              cloud/task_047_ferry_discovery/FERRY_GATE_B_REPORT.md|\
+              cloud/latest_status.md|\
+              cloud/owner_reply.md) ;;
+              *) echo "Unexpected staged path: ${path}"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then
+            echo 'Gate B evidence already current'
+            exit 0
+          fi
+          git config user.name 'ferry-gate-b'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'ferry: record approved Gate B production evidence'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              break
+            fi
+            if [ "${attempt}" -eq 5 ]; then
+              exit 1
+            fi
+            sleep $((attempt * 3))
+          done
+
+      - name: Upload Gate B production evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ferry-gate-b-production-${{ github.run_id }}
+          path: |
+            cloud/task_047_ferry_discovery/_gate_b_screenshots
+            cloud/task_047_ferry_discovery/evidence/ferry_gate_b.json
+            cloud/task_047_ferry_discovery/evidence/ferry_gate_b_live.json
+            cloud/task_047_ferry_discovery/FERRY_GATE_B_REPORT.md
+            cloud/latest_status.md
+            cloud/owner_reply.md
+          if-no-files-found: warn
+          retention-days: 14
