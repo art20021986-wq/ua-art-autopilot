@@ -1,0 +1,66 @@
+name: task068-catalog-structure-probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task068_catalog_structure_probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch both public catalog variants
+        run: |
+          mkdir -p evidence
+          curl --fail --silent --show-error --location \
+            --retry 4 --retry-all-errors --max-time 60 \
+            'https://www.uaart.com.ua/katalog.html?task068_probe=1' \
+            -o evidence/site-katalog.html
+          curl --fail --silent --show-error --location \
+            --retry 4 --retry-all-errors --max-time 60 \
+            'https://www.uaart.com.ua/video/katalog.html?task068_probe=1' \
+            -o evidence/video-katalog.html
+
+      - name: Record bounded HTML structure evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          result = {}
+          for path in sorted(Path('evidence').glob('*-katalog.html')):
+              source = path.read_text(encoding='utf-8', errors='replace')
+              cards = {}
+              for number in range(1, 11):
+                  identifier = f'UA-{number:04d}'
+                  positions = [match.start() for match in re.finditer(identifier, source, re.I)]
+                  cards[identifier] = {
+                      'count': len(positions),
+                      'contexts': [source[max(0, pos - 600):pos + 900] for pos in positions[:3]],
+                  }
+              result[path.name] = {
+                  'bytes': len(source.encode()),
+                  'article_open': len(re.findall(r'<article\\b', source, re.I)),
+                  'card_class': len(re.findall(r'class=["\\'][^"\\']*card', source, re.I)),
+                  'cards': cards,
+              }
+          Path('evidence/structure.json').write_text(
+              json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
+          )
+          PY
+
+      - name: Upload structure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task068-catalog-structure-${{ github.run_id }}
+          path: evidence
+          if-no-files-found: error
+          retention-days: 3
