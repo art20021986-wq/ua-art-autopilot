@@ -1,42 +1,49 @@
 #!/usr/bin/env python3
-"""Compile TASK 058 and require ten consecutive clean offline runs."""
+"""Compile every .py file in this package and run the full offline test suite
+10 consecutive times. Exits non-zero on the first failure/error/nondeterminism.
+"""
 from __future__ import annotations
 
-import pathlib
 import py_compile
+import subprocess
 import sys
-import unittest
+from pathlib import Path
 
-
-PACKAGE_DIR = pathlib.Path(__file__).resolve().parent
+PACKAGE_ROOT = Path(__file__).resolve().parent
 RUNS = 10
 
 
 def compile_all() -> None:
-    for path in sorted(PACKAGE_DIR.rglob("*.py")):
-        if "__pycache__" not in path.parts:
-            py_compile.compile(str(path), doraise=True)
+    py_files = sorted(PACKAGE_ROOT.rglob("*.py"))
+    for f in py_files:
+        try:
+            py_compile.compile(str(f), doraise=True)
+        except py_compile.PyCompileError as exc:
+            print(f"COMPILE_FAILED: {f}: {exc}", file=sys.stderr)
+            sys.exit(1)
+    print(f"COMPILE_OK: {len(py_files)} files")
 
 
-def run_once() -> unittest.result.TestResult:
-    suite = unittest.defaultTestLoader.discover(
-        str(PACKAGE_DIR / "tests"), pattern="test_*.py", top_level_dir=str(PACKAGE_DIR)
+def run_suite_once(run_index: int) -> None:
+    result = subprocess.run(
+        [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py", "-v"],
+        cwd=str(PACKAGE_ROOT),
+        capture_output=True,
+        text=True,
     )
-    return unittest.TextTestRunner(verbosity=1).run(suite)
+    sys.stdout.write(result.stdout)
+    sys.stderr.write(result.stderr)
+    if result.returncode != 0:
+        print(f"TEST_RUN_FAILED at iteration {run_index}", file=sys.stderr)
+        sys.exit(result.returncode)
 
 
 def main() -> int:
-    sys.path.insert(0, str(PACKAGE_DIR))
     compile_all()
-    for run in range(1, RUNS + 1):
-        result = run_once()
-        print(
-            f"TASK058 RUN {run}/{RUNS}: tests={result.testsRun} "
-            f"errors={len(result.errors)} failures={len(result.failures)}"
-        )
-        if not result.wasSuccessful():
-            return 1
-    print("TASK058: 10/10 CONSECUTIVE RUNS PASS")
+    for i in range(1, RUNS + 1):
+        print(f"--- run {i}/{RUNS} ---")
+        run_suite_once(i)
+    print(f"ALL_{RUNS}_RUNS_PASSED")
     return 0
 
 

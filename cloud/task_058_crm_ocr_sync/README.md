@@ -1,77 +1,80 @@
-# TASK 058 — CRM/OCR and CRM→site incident: live read-only discovery
+# TASK 058 — CRM-OCR-SYNC-001 Round 1: Read-Only Discovery Package
 
-Status: `READY_FOR_LIVE_READONLY_CONTROLLER_TASK_058`
+STATUS MARKER: READY_FOR_LIVE_READONLY_CONTROLLER_TASK_058
 
-This corrected package investigates two exact bot failures without changing
-production:
+CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+MEMORY_VERSION_READ: 4
 
-- `Изображение сохранено, но разобрать его не получилось...`
-- `CRM: страницы сайта отстали от базы, и пересобрать их не получилось.`
+## Purpose
 
-The first generated package was rejected by Codex audit because it used the
-wrong `/home/Carix/mysite` root, contained a self-comparison fixture test, and
-had no real PythonAnywhere transport or executable `main()`. Those defects are
-removed here.
+This package is a fail-closed, read-only discovery tool intended to be synced to the
+PythonAnywhere safe inbox at
+`/home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/` and executed exactly once
+by an isolated controller. It never writes production, CRM, crm.db, website pages,
+bot sources, generators, WSGI files, schedules, services, or UA-0009. It never
+reloads or restarts anything and never triggers a rebuild.
 
-## Scope and owner authorization
+No live execution has occurred yet. Everything under `evidence/` is a NOT_RUN
+placeholder until a controller actually runs this against production and relays a
+sanitized receipt back into this repository.
 
-The owner approved read-only diagnosis and subsequently authorized creation
-and launch of the attached Kia K5 as **UA-0010**. This package records and
-checks that authorization but deliberately does not publish UA-0010. A live
-write/rebuild is permitted only in the later, isolated publication task after
-this receipt proves the exact production paths and current database/site
-state. UA-0009 is checked at the same time under the standing safety rule.
+## Files
 
-## Exact vehicle fixture contract
+- `live_discovery.py` — stdlib-only, read-only. Computes SHA-256/size/mtime for an
+  allowlisted set of source/db/site/log paths, scans bounded recent log lines for
+  the four required counters, opens the CRM sqlite database strictly in
+  `mode=ro` with `PRAGMA query_only=ON`, performs a `PRAGMA quick_check`, hashes
+  the DB before/after, and emits sanitized JSON with no secrets, PII, tokens, or
+  raw image bytes.
+- `task058_readonly_controller.py` — validates a sync manifest (path + sha256 for
+  every file that must exist in the safe inbox before remote execution), builds
+  exactly one remote command (python3.10 + explicit allowlist args + exact
+  receipt redirect path), polls for exactly one receipt file, relays the
+  sanitized JSON, and deletes the temporary trigger and receipt in a `finally`
+  block on success, failure, or timeout.
+- `tests/` — offline unit tests using only temporary fixtures and the two
+  committed JPEG fixtures under `tasks/fixtures/task_058/`.
+- `run_tests.py` — compiles every `.py` file in this package and runs the full
+  test suite 10 consecutive times, failing loudly on any error or nondeterminism
+  beyond timestamps.
+- `evidence/task_058_live_discovery.json` — placeholder, `status: NOT_RUN`.
+- `TASK_058_CONTROLLER_REPORT.md` — placeholder, `status: NOT_RUN`.
 
-- Kia K5, 2018, II покоління (FL)
-- USD 11,400; UAH 510,720
-- 198,000 km; LPG/gas; 2.0 L
-- VIN is tested only through SHA-256 in evidence
-- transmission and location are cropped and must stay null/unknown
+## Safety invariants enforced by design
 
-The two committed JPEG fixtures are mandatory. Tests verify their independent
-known SHA-256, exact byte size, and dimensions; missing fixtures fail rather
-than skip.
+- `live_discovery.py` contains zero write, DDL, PRAGMA-write, INSERT/UPDATE/DELETE,
+  reload, restart, or rebuild-invoking code paths. It only reads.
+- All allowlisted paths must resolve under `/home/Carix`, must be regular files
+  (no symlinks, no hardlink surprises via `st_nlink` check), must not exceed a
+  hard size ceiling, and must not escape the allowlist root via `..` or absolute
+  path tricks.
+- The sqlite connection string is always
+  `file:<path>?mode=ro` opened with `uri=True`, followed immediately by
+  `PRAGMA query_only=ON;`. Any attempt to execute a mutating statement against
+  that connection raises `sqlite3.OperationalError: attempt to write a readonly
+  database` — verified by tests.
+- The controller never issues `sudo`, shell globs, `find -exec`, or any command
+  other than the one exact allowlisted invocation. It never redirects into any
+  path other than the single expected receipt path under the safe inbox.
+- The controller does not treat safe-inbox sync permission as production-write
+  permission (OWNER_DIRECTIVE REC-0003). It performs no CRM or Production write
+  of any kind.
+- UA-0009 remains `NOT_SAFE_TO_PUBLISH`/`UNKNOWN` — this package never sets or
+  claims otherwise, and never publishes anything.
 
-## Components
+## What Round 1 does NOT do
 
-- `live_discovery.py`: Python 3.10 standard-library-only live reader. It reads
-  only exact regular, non-symlink, non-hardlink allowlisted files under
-  `/home/Carix`; opens `/home/Carix/crm.db` with SQLite `mode=ro` plus
-  `PRAGMA query_only=ON`; snapshots source/database/site identity before and
-  after; and writes only one bounded receipt inside the task safe inbox.
-- `allowlist.json`: exact production scope. Primary pages are under
-  `/home/Carix/video` and `/home/Carix/site`; `/mysite` is forbidden. Existing
-  UA-0001…UA-0008 pages are required, while UA-0009 and UA-0010 are optional
-  candidates whose absence/presence is evidence.
-- `task058_readonly_controller.py`: real PythonAnywhere REST transport. It
-  validates the fresh safe-inbox manifest and exact remote bytes, creates one
-  temporary allowlisted trigger, polls one receipt, validates it fail-closed,
-  relays bounded evidence, then deletes both trigger and receipt in `finally`.
-- `tests/`: 29 offline tests covering fixture drift, path attacks, incomplete
-  inventory, read-only database identity, receipt sensitivity/staleness,
-  false-green prevention, UA-0010 scope, transport allowlists and cleanup.
-- `run_tests.py`: compiles the entire package and requires 10 consecutive full
-  passes.
+- It does not fix the OCR failure message.
+- It does not fix the stale-page/rebuild failure.
+- It does not execute against PythonAnywhere from this environment (no network
+  access here). A human/controller with SSH access to PythonAnywhere must run
+  `task058_readonly_controller.py` and commit the resulting sanitized receipt.
+- It does not install any Round 2 candidate. Round 2 candidates are designed
+  conceptually in `TASK_058_REPORT.md` but not implemented or synced.
 
-## Exact remote command
+## Mandatory markers
 
-```text
-python3.10 /home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/live_discovery.py --allowlist-file /home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/allowlist.json --output /home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/task_058_live_discovery_receipt.json
 ```
-
-No shell wildcard, `sudo`, production redirect, import of production modules,
-database write, rebuild, service reload, or page publication exists in this
-round.
-
-## Verified offline result
-
-`29 tests × 10 consecutive runs = 290 assertions-suite executions`, all PASS.
-
-Safety markers:
-
-```text
 PRODUCTION_TOUCHED: NO
 CRM_TOUCHED: NO
 CRM_DB_WRITTEN: NO
@@ -80,5 +83,4 @@ SERVICE_RELOADED: NO
 OCR_FIX_INSTALLED: NO
 GATE_B_EXECUTED: NO
 UA_0009_PUBLISHED: NO
-UA_0010_PUBLISHED: NO
 ```

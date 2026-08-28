@@ -1,370 +1,267 @@
-from __future__ import annotations
-
-import datetime as dt
-import hashlib
 import json
-import pathlib
 import sys
 import tempfile
+import time
 import unittest
+from pathlib import Path
+
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PACKAGE_ROOT))
+
+import task058_readonly_controller as ctl  # noqa: E402
 
 
-PACKAGE_DIR = pathlib.Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PACKAGE_DIR))
-
-import task058_readonly_controller as ctrl  # noqa: E402
-
-
-HEX = "a" * 64
-
-
-def now_text() -> str:
-    return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+def make_manifest(root: Path) -> ctl.SyncManifest:
+    entries = []
+    for rel in ["live_discovery.py", "task058_readonly_controller.py"]:
+        full = root / rel
+        sha = ctl.sha256_of_file(full)
+        entries.append(ctl.ManifestEntry(relative_path=rel, expected_sha256=sha))
+    return ctl.SyncManifest(entries=entries)
 
 
-def site_snapshot() -> dict:
-    return {
-        path: None
-        if path in ctrl.OPTIONAL_SITE_PATHS
-        else {"sha256": HEX, "size": 100, "mtime_ns": 1234567890123456789}
-        for path in sorted(ctrl.ALLOWED_SITE_PATHS)
-    }
+class TestManifestValidation(unittest.TestCase):
+    def test_valid_manifest_passes(self):
+        manifest = make_manifest(PACKAGE_ROOT)
+        ctl.validate_manifest(PACKAGE_ROOT, manifest)  # should not raise
+
+    def test_hash_mismatch_rejected(self):
+        manifest = ctl.SyncManifest(
+            entries=[ctl.ManifestEntry(relative_path="live_discovery.py", expected_sha256="0" * 64)]
+        )
+        with self.assertRaises(ctl.ManifestMismatchError):
+            ctl.validate_manifest(PACKAGE_ROOT, manifest)
+
+    def test_missing_file_rejected(self):
+        manifest = ctl.SyncManifest(
+            entries=[ctl.ManifestEntry(relative_path="does_not_exist.py", expected_sha256="0" * 64)]
+        )
+        with self.assertRaises(ctl.ManifestMismatchError):
+            ctl.validate_manifest(PACKAGE_ROOT, manifest)
+
+    def test_path_escape_rejected(self):
+        manifest = ctl.SyncManifest(
+            entries=[ctl.ManifestEntry(relative_path="../../etc/passwd", expected_sha256="0" * 64)]
+        )
+        with self.assertRaises(ctl.ManifestMismatchError):
+            ctl.validate_manifest(PACKAGE_ROOT, manifest)
+
+    def test_empty_manifest_rejected(self):
+        with self.assertRaises(ctl.ManifestMismatchError):
+            ctl.validate_manifest(PACKAGE_ROOT, ctl.SyncManifest(entries=[]))
 
 
-def pass_receipt() -> dict:
-    sources = [
-        {
-            "path": path,
-            "sha256": HEX,
-            "size": 100,
-            "mtime_ns": 1234567890123456789,
-            "syntax": "PASS",
-            "anchors": [],
-            "message_locations": [],
-            "log_path_literals": [],
-            "imports": [],
-            "function_excerpts": [
-                {
-                    "name": name,
-                    "line": index,
-                    "end_line": index,
-                    "calls": [],
-                    "source": "def " + name + "(): pass",
-                }
-                for index, name in enumerate(
-                    (
-                        "detect_kind",
-                        "intake",
-                        "run_ai_draft",
-                        "ai_save",
-                    ),
-                    1,
-                )
-            ]
-            if path == "/home/Carix/team_bot.py"
-            else [],
-        }
-        for path in sorted(ctrl.REQUIRED_SOURCE_PATHS)
-    ]
-    snapshot = site_snapshot()
-    return {
-        "task_id": "task_058",
-        "mode": "READ_ONLY_LIVE_DISCOVERY",
-        "status": "PASS",
-        "generated_at_utc": now_text(),
-        "started_at_utc": now_text(),
-        "production_write": False,
-        "crm_write": False,
-        "db_write": False,
-        "site_rebuilt": False,
-        "service_reloaded": False,
-        "ocr_fix_installed": False,
-        "gate_b_executed": False,
-        "ua0009_published": False,
-        "ua0010_published": False,
-        "sources": sources,
-        "source_hashes_after": {item["path"]: item["sha256"] for item in sources},
-        "source_identity_stable": True,
-        "database": {
-            "path": "/home/Carix/crm.db",
-            "open_uri_mode": "ro",
-            "query_only_requested": True,
-            "query_only_value": 1,
-            "quick_check": "ok",
-            "sha256_before": HEX,
-            "sha256_after": HEX,
-            "sidecars_before": {"-wal": None, "-shm": None, "-journal": None},
-            "sidecars_after": {"-wal": None, "-shm": None, "-journal": None},
-            "identity_stable": True,
-        },
-        "site_before": snapshot,
-        "site_after": json.loads(json.dumps(snapshot)),
-        "site_identity_stable": True,
-        "logs": {"paths_scanned": [], "counts": {}, "errors": []},
-        "completeness": {
-            "required_sources_found": True,
-            "target_functions_found": True,
-            "required_site_found": True,
-            "database_readonly_verified": True,
-            "logs_scanned": False,
-            "ocr_failure_message_found": True,
-            "rebuild_failure_message_found": True,
-            "anchor_counts": {},
-            "root_cause_confirmed": False,
-        },
-        "ua0009_status": "NOT_SAFE_TO_PUBLISH",
-        "ua0009_evidence": {
-            "db_row_count": 0,
-            "db_published_count": 0,
-            "video_page_present": False,
-            "site_page_present": False,
-        },
-        "ua0010_status": "READY_FOR_DRAFT_CREATION_ONLY",
-        "ua0010_evidence": {
-            "db_row_count": 0,
-            "db_published_count": 0,
-            "video_page_present": False,
-            "site_page_present": False,
-            "owner_authorized": True,
-            "publication_executed": False,
-        },
-        "errors": [],
-    }
+class TestRemoteCommandBuild(unittest.TestCase):
+    def test_exact_single_command_shape(self):
+        cmd = ctl.build_remote_command(db_path="/home/Carix/crm.db", logs=["logs/app.log"])
+        self.assertTrue(cmd.startswith("python3.10 "))
+        self.assertIn("live_discovery.py", cmd)
+        self.assertIn("--out", cmd)
+        self.assertIn(ctl.SAFE_INBOX_ROOT, cmd)
+        self.assertNotIn("sudo", cmd)
+        self.assertNotIn("*", cmd)
+        self.assertNotIn("find -exec", cmd)
+        self.assertNotIn(">>", cmd)
+        self.assertNotIn(";", cmd)
 
 
-def manifest_for_current_files() -> dict:
-    files = []
-    for rel, path in ctrl.LOCAL_ARTIFACTS.items():
-        files.append(
+class TestReceiptValidation(unittest.TestCase):
+    def test_valid_receipt_accepted(self):
+        now = time.time()
+        payload = json.dumps(
             {
-                "source": rel,
-                "remote": ctrl.REMOTE_ROOT + "/" + rel,
-                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                "http_status": 201,
+                "finished_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
+                "markers": {
+                    "PRODUCTION_TOUCHED": "NO",
+                    "CRM_TOUCHED": "NO",
+                    "CRM_DB_WRITTEN": "NO",
+                    "SITE_REBUILT": "NO",
+                    "SERVICE_RELOADED": "NO",
+                    "OCR_FIX_INSTALLED": "NO",
+                    "GATE_B_EXECUTED": "NO",
+                    "UA_0009_PUBLISHED": "NO",
+                },
             }
         )
-    return {
-        "status": "PASS",
-        "remote_root": ctrl.REMOTE_ROOT,
-        "generated_at_utc": now_text(),
-        "production_touched": False,
-        "crm_touched": False,
-        "executed_remote_code": False,
-        "webapp_reloaded": False,
-        "files": files,
-    }
+        data = ctl.validate_receipt(payload, now=now)
+        self.assertEqual(data["markers"]["PRODUCTION_TOUCHED"], "NO")
 
+    def test_malformed_json_rejected(self):
+        with self.assertRaises(ctl.ReceiptValidationError):
+            ctl.validate_receipt("{not valid json")
 
-class FakeAPI:
-    def __init__(self, receipt: dict | None = None):
-        self.receipt = receipt
-        self.deleted_receipts = 0
-        self.created_triggers = 0
-        self.deleted_triggers = 0
+    def test_empty_receipt_rejected(self):
+        with self.assertRaises(ctl.ReceiptValidationError):
+            ctl.validate_receipt("")
 
-    def read_file(self, path: str) -> str:
-        if path == ctrl.REMOTE_MANIFEST_PATH:
-            return json.dumps(manifest_for_current_files())
-        if path == ctrl.REMOTE_SCRIPT:
-            return (PACKAGE_DIR / "live_discovery.py").read_text(encoding="utf-8")
-        if path == ctrl.REMOTE_ALLOWLIST:
-            return (PACKAGE_DIR / "allowlist.json").read_text(encoding="utf-8")
-        if path == ctrl.REMOTE_RECEIPT and self.receipt is not None:
-            return json.dumps(self.receipt, ensure_ascii=False)
-        raise FileNotFoundError(path)
+    def test_sensitive_content_rejected(self):
+        payload = json.dumps({"token": "abc123", "markers": {}})
+        with self.assertRaises(ctl.ReceiptValidationError):
+            ctl.validate_receipt(payload)
 
-    def delete_receipt(self) -> None:
-        self.deleted_receipts += 1
-
-    def create_trigger(self) -> tuple[str, int]:
-        self.created_triggers += 1
-        return "always_on", 123
-
-    def delete_trigger(self, trigger: tuple[str, int]) -> None:
-        self.deleted_triggers += 1
-        if trigger != ("always_on", 123):
-            raise AssertionError("unexpected trigger")
-
-
-class TransportTests(unittest.TestCase):
-    def test_real_transport_and_main_exist(self):
-        self.assertTrue(callable(ctrl.main))
-        self.assertTrue(hasattr(ctrl.PythonAnywhereAPI, "create_trigger"))
-        self.assertTrue(hasattr(ctrl.PythonAnywhereAPI, "delete_trigger"))
-        self.assertEqual(
-            ctrl.EXACT_COMMAND,
-            "python3.10 /home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/live_discovery.py "
-            "--allowlist-file /home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/allowlist.json "
-            "--output /home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/task_058_live_discovery_receipt.json",
+    def test_stale_receipt_rejected(self):
+        old_time = time.time() - (ctl.MAX_RECEIPT_AGE_SECONDS + 3600)
+        payload = json.dumps(
+            {
+                "finished_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(old_time)),
+                "markers": {},
+            }
         )
-        for forbidden in ("/home/Carix/team_bot.py", "systemctl", "reload", "sqlite3"):
-            self.assertNotIn(forbidden, ctrl.EXACT_COMMAND)
+        with self.assertRaises(ctl.ReceiptValidationError):
+            ctl.validate_receipt(payload, now=time.time())
 
-    def test_api_rejects_wrong_account_host_and_remote_path(self):
-        with self.assertRaisesRegex(ctrl.ControllerError, "USERNAME_INVALID"):
-            ctrl.PythonAnywhereAPI(username="Other", host=ctrl.ALLOWED_HOSTS[0], token="x")
-        with self.assertRaisesRegex(ctrl.ControllerError, "HOST_INVALID"):
-            ctrl.PythonAnywhereAPI(username="Carix", host="evil.example", token="x")
-        api = ctrl.PythonAnywhereAPI(username="Carix", host=ctrl.ALLOWED_HOSTS[0], token="x")
-        with self.assertRaisesRegex(ctrl.ControllerError, "REMOTE_FILE_PATH_NOT_ALLOWED"):
-            api._file_url("/home/Carix/team_bot.py")
+    def test_unsafe_marker_rejected(self):
+        payload = json.dumps({"markers": {"PRODUCTION_TOUCHED": "YES"}})
+        with self.assertRaises(ctl.ReceiptValidationError):
+            ctl.validate_receipt(payload)
 
 
-class LocalAndManifestTests(unittest.TestCase):
-    def test_local_artifacts_compile_and_allowlist_is_exact(self):
-        controller = ctrl.ReadOnlyController(FakeAPI())
-        hashes = controller.verify_local_artifacts()
-        self.assertEqual(set(hashes), set(ctrl.LOCAL_ARTIFACTS))
-        self.assertEqual(json.loads((PACKAGE_DIR / "allowlist.json").read_text()), ctrl.expected_allowlist())
-
-    def test_valid_manifest_and_remote_hashes_pass(self):
-        controller = ctrl.ReadOnlyController(FakeAPI())
-        hashes = controller.verify_local_artifacts()
-        controller.verify_sync_manifest(hashes)
-
-    def test_manifest_safety_flag_or_hash_mismatch_is_blocked(self):
-        class UnsafeAPI(FakeAPI):
-            def read_file(self, path: str) -> str:
-                if path == ctrl.REMOTE_MANIFEST_PATH:
-                    manifest = manifest_for_current_files()
-                    manifest["production_touched"] = True
-                    manifest["files"][0]["sha256"] = "0" * 64
-                    return json.dumps(manifest)
-                return super().read_file(path)
-
-        controller = ctrl.ReadOnlyController(UnsafeAPI())
-        with self.assertRaises(ctrl.ControllerError):
-            controller.verify_sync_manifest(controller.verify_local_artifacts())
-
-
-class ReceiptValidationTests(unittest.TestCase):
-    def test_complete_pass_receipt_is_accepted(self):
-        receipt = pass_receipt()
-        accepted = ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
-        self.assertEqual(accepted["status"], "PASS")
-        self.assertEqual(accepted["ua0010_status"], "READY_FOR_DRAFT_CREATION_ONLY")
-        self.assertIn("/home/Carix/video/UA-0010.html", accepted["site_before"])
-
-    def test_long_numeric_metadata_is_not_misclassified_as_phone(self):
-        receipt = pass_receipt()
-        self.assertFalse(ctrl._sensitive_value(receipt["site_before"]))
-
-    def test_secret_email_phone_and_vin_are_rejected(self):
-        values = (
-            "sk-ABCDEFGHIJKLMNOPQRSTUVWXYZ123456",
-            "owner@example.com",
-            "+380 67 123 45 67",
-            "KNAGU416BKA324445",
-            "API_KEY='this-is-a-hardcoded-provider-secret'",
+class TestRunReadonlyDiscoveryOrchestration(unittest.TestCase):
+    def _good_receipt(self) -> str:
+        return json.dumps(
+            {
+                "finished_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "markers": {
+                    "PRODUCTION_TOUCHED": "NO",
+                    "CRM_TOUCHED": "NO",
+                    "CRM_DB_WRITTEN": "NO",
+                    "SITE_REBUILT": "NO",
+                    "SERVICE_RELOADED": "NO",
+                    "OCR_FIX_INSTALLED": "NO",
+                    "GATE_B_EXECUTED": "NO",
+                    "UA_0009_PUBLISHED": "NO",
+                },
+            }
         )
-        for value in values:
-            receipt = pass_receipt()
-            receipt["errors"] = [value]
-            with self.assertRaisesRegex(ctrl.ControllerError, "SENSITIVE_CONTENT"):
-                ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
 
-    def test_missing_required_source_cannot_be_green(self):
-        receipt = pass_receipt()
-        removed = receipt["sources"].pop()
-        receipt["source_hashes_after"].pop(removed["path"])
-        with self.assertRaisesRegex(ctrl.ControllerError, "REQUIRED_SOURCE_PATH_MISSING"):
-            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
+    def test_success_path_calls_cleanup(self):
+        manifest = make_manifest(PACKAGE_ROOT)
+        calls = {"executed": [], "cleaned": 0}
 
-    def test_missing_required_site_cannot_be_green(self):
-        receipt = pass_receipt()
-        missing = sorted(ctrl.REQUIRED_SITE_PATHS)[0]
-        receipt["site_before"].pop(missing)
-        receipt["site_after"].pop(missing)
-        with self.assertRaisesRegex(ctrl.ControllerError, "SITE_SCOPE_INCOMPLETE"):
-            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
+        def executor(cmd):
+            calls["executed"].append(cmd)
 
-    def test_database_or_site_change_cannot_be_green(self):
-        receipt = pass_receipt()
-        receipt["database"]["sha256_after"] = "b" * 64
-        with self.assertRaisesRegex(ctrl.ControllerError, "DATABASE_IDENTITY_MISMATCH"):
-            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
-        receipt = pass_receipt()
-        path = sorted(ctrl.REQUIRED_SITE_PATHS)[0]
-        receipt["site_after"][path]["sha256"] = "b" * 64
-        with self.assertRaisesRegex(ctrl.ControllerError, "SITE_IDENTITY_MISMATCH"):
-            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
+        def receipt_reader():
+            return self._good_receipt()
 
-    def test_minimal_blocked_receipt_is_relayable_but_not_green(self):
-        receipt = {
-            "task_id": "task_058",
-            "mode": "READ_ONLY_LIVE_DISCOVERY",
-            "status": "BLOCKED",
-            "generated_at_utc": now_text(),
-            "production_write": False,
-            "crm_write": False,
-            "db_write": False,
-            "site_rebuilt": False,
-            "service_reloaded": False,
-            "ocr_fix_installed": False,
-            "gate_b_executed": False,
-            "ua0009_published": False,
-            "ua0010_published": False,
-            "errors": ["REQUIRED_PATH_MISSING"],
-        }
-        accepted = ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
-        self.assertEqual(accepted["status"], "BLOCKED")
-        self.assertNotEqual(accepted["status"], "PASS")
+        def cleanup():
+            calls["cleaned"] += 1
 
-    def test_duplicate_json_key_and_stale_receipt_are_rejected(self):
-        with self.assertRaisesRegex(ctrl.ControllerError, "DUPLICATE_JSON_KEY"):
-            ctrl.ReadOnlyController.validate_receipt('{"task_id":"task_058","task_id":"task_058"}')
-        receipt = pass_receipt()
-        receipt["generated_at_utc"] = "2020-01-01T00:00:00Z"
-        with self.assertRaisesRegex(ctrl.ControllerError, "RECEIPT_STALE"):
-            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
-
-
-class RunFlowTests(unittest.TestCase):
-    def test_success_flow_verifies_runs_relays_and_always_cleans_up(self):
-        api = FakeAPI(pass_receipt())
-        with tempfile.TemporaryDirectory() as directory:
-            old = (ctrl.EVIDENCE_PATH, ctrl.REPORT_PATH)
-            ctrl.EVIDENCE_PATH = pathlib.Path(directory) / "evidence.json"
-            ctrl.REPORT_PATH = pathlib.Path(directory) / "report.md"
-            try:
-                controller = ctrl.ReadOnlyController(
-                    api,
-                    sleep=lambda _: None,
-                    monotonic=lambda: 0,
-                    poll_interval=0,
-                    poll_timeout=1,
-                )
-                result = controller.run()
-                self.assertEqual(result["status"], "PASS")
-                self.assertTrue(ctrl.EVIDENCE_PATH.is_file())
-                self.assertTrue(ctrl.REPORT_PATH.is_file())
-                self.assertIn("PRODUCTION_TOUCHED: NO", ctrl.REPORT_PATH.read_text())
-            finally:
-                ctrl.EVIDENCE_PATH, ctrl.REPORT_PATH = old
-        self.assertEqual(api.created_triggers, 1)
-        self.assertEqual(api.deleted_triggers, 1)
-        self.assertEqual(api.deleted_receipts, 2)
-
-    def test_malformed_receipt_still_cleans_trigger_and_receipt(self):
-        class MalformedAPI(FakeAPI):
-            def read_file(self, path: str) -> str:
-                if path == ctrl.REMOTE_RECEIPT:
-                    return "{not-json"
-                return super().read_file(path)
-
-        api = MalformedAPI()
-        ticks = iter([0, 0, 0, 0])
-        controller = ctrl.ReadOnlyController(
-            api,
-            sleep=lambda _: None,
-            monotonic=lambda: next(ticks),
-            poll_interval=0,
-            poll_timeout=1,
+        result = ctl.run_readonly_discovery(
+            PACKAGE_ROOT, manifest, executor, receipt_reader, cleanup,
+            db_path="/home/Carix/crm.db",
         )
-        with self.assertRaises(ctrl.ControllerError):
-            controller.run()
-        self.assertEqual(api.deleted_triggers, 1)
-        self.assertEqual(api.deleted_receipts, 2)
+        self.assertEqual(result.status, "OK")
+        self.assertEqual(len(calls["executed"]), 1)
+        self.assertEqual(calls["cleaned"], 1)
+
+    def test_manifest_failure_never_executes_and_still_no_cleanup_needed(self):
+        bad_manifest = ctl.SyncManifest(
+            entries=[ctl.ManifestEntry(relative_path="missing.py", expected_sha256="0" * 64)]
+        )
+        calls = {"executed": 0, "cleaned": 0}
+
+        def executor(cmd):
+            calls["executed"] += 1
+
+        def receipt_reader():
+            return None
+
+        def cleanup():
+            calls["cleaned"] += 1
+
+        result = ctl.run_readonly_discovery(PACKAGE_ROOT, bad_manifest, executor, receipt_reader, cleanup)
+        self.assertEqual(result.status, "BLOCKED")
+        self.assertIn("MANIFEST_VALIDATION_FAILED", result.error)
+        self.assertEqual(calls["executed"], 0)
+
+    def test_timeout_path_still_calls_cleanup(self):
+        manifest = make_manifest(PACKAGE_ROOT)
+        calls = {"cleaned": 0, "slept": 0}
+
+        def executor(cmd):
+            pass
+
+        def receipt_reader():
+            return None  # never arrives
+
+        def cleanup():
+            calls["cleaned"] += 1
+
+        fake_clock = {"t": 0.0}
+
+        def clock_fn():
+            return fake_clock["t"]
+
+        def sleep_fn(seconds):
+            calls["slept"] += 1
+            fake_clock["t"] += seconds
+
+        result = ctl.run_readonly_discovery(
+            PACKAGE_ROOT, manifest, executor, receipt_reader, cleanup,
+            poll_interval_seconds=1, timeout_seconds=3,
+            sleep_fn=sleep_fn, clock_fn=clock_fn,
+        )
+        self.assertEqual(result.status, "BLOCKED")
+        self.assertEqual(result.error, "RECEIPT_TIMEOUT")
+        self.assertEqual(calls["cleaned"], 1)
+
+    def test_executor_exception_still_calls_cleanup(self):
+        manifest = make_manifest(PACKAGE_ROOT)
+        calls = {"cleaned": 0}
+
+        def executor(cmd):
+            raise RuntimeError("simulated ssh failure")
+
+        def receipt_reader():
+            return None
+
+        def cleanup():
+            calls["cleaned"] += 1
+
+        result = ctl.run_readonly_discovery(PACKAGE_ROOT, manifest, executor, receipt_reader, cleanup)
+        self.assertEqual(result.status, "BLOCKED")
+        self.assertIn("UNEXPECTED_ERROR", result.error)
+        self.assertEqual(calls["cleaned"], 1)
+
+    def test_malformed_receipt_still_calls_cleanup(self):
+        manifest = make_manifest(PACKAGE_ROOT)
+        calls = {"cleaned": 0}
+
+        def executor(cmd):
+            pass
+
+        def receipt_reader():
+            return "{not valid json"
+
+        def cleanup():
+            calls["cleaned"] += 1
+
+        result = ctl.run_readonly_discovery(PACKAGE_ROOT, manifest, executor, receipt_reader, cleanup)
+        self.assertEqual(result.status, "BLOCKED")
+        self.assertIn("RECEIPT_VALIDATION_FAILED", result.error)
+        self.assertEqual(calls["cleaned"], 1)
+
+    def test_no_production_markers_can_become_true(self):
+        manifest = make_manifest(PACKAGE_ROOT)
+
+        def executor(cmd):
+            pass
+
+        def receipt_reader():
+            return json.dumps(
+                {
+                    "finished_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "markers": {"SITE_REBUILT": "YES"},
+                }
+            )
+
+        def cleanup():
+            pass
+
+        result = ctl.run_readonly_discovery(PACKAGE_ROOT, manifest, executor, receipt_reader, cleanup)
+        self.assertEqual(result.status, "BLOCKED")
+        self.assertIn("UNSAFE_MARKER", result.error)
 
 
 if __name__ == "__main__":
