@@ -17,6 +17,7 @@ API = "https://www.pythonanywhere.com/api/v0/user/Carix/"
 ROOT = "/home/Carix"
 REMOTE = {
     "cars_ui.py": ROOT + "/cars_ui.py",
+    "master_card.py": ROOT + "/master_card.py",
     "team_bot.py": ROOT + "/team_bot.py",
     "stranica.py": ROOT + "/stranica.py",
     "yadro.py": ROOT + "/yadro.py",
@@ -34,6 +35,7 @@ WANTED_DEFINITIONS = {
         "preview", "register", "catch_message", "save_media",
     },
     "team_bot.py": {"start", "intake", "build_application"},
+    "master_card.py": {"obrabotat_kartochku", "obrabotat_obshuyu"},
     "stranica.py": {"karta", "karta_html", "render", "zapisat", "main"},
     "yadro.py": {"karta", "karta_html", "render", "zapisat", "main"},
     "db.py": {"connect", "update_card_field"},
@@ -159,7 +161,7 @@ def inspect_python(filename: str, path: str) -> dict:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             segment = source_segment(source, node)
             wanted = node.name in WANTED_DEFINITIONS.get(filename, set())
-            if filename in {"stranica.py", "yadro.py"} and any(
+            if filename in {"stranica.py", "yadro.py", "master_card.py"} and any(
                 term in segment.casefold() for term in STAGE_TERMS
             ):
                 wanted = True
