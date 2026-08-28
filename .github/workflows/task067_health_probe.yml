@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 18
+# probe-revision: 19
 
 on:
   push:
@@ -165,7 +165,8 @@ jobs:
               'ai_fast_schema.py': {'car_fields', 'fast_text_data', 'parsed_from_data', 'clean_car'},
               'local_ocr.py': {'fields_from_text'},
               'cars_ui.py': {'voice_change_plan', '_v167_voice_explicit_fields',
-                             'auto_catch', 'catch_message', 'render'},
+                             'auto_catch', 'catch_message', 'render',
+                             'apply_value', 'stage_set'},
               'ai_filter.py': {'clean'},
               'assistant.py': {'is_write', 'extract', 'ask'},
           }
@@ -184,8 +185,9 @@ jobs:
                       selected_sources[node.name] = value
                       selected_hashes[node.name] = hashlib.sha256(value.encode()).hexdigest()
               constants = {}
-              wanted_constants = {'MODEL', 'MAX_TOKENS', 'SYSTEM_PROMPT', 'ALLOWED',
-                                  'EDITABLE', 'LABELS_ALL', 'PHRASES'}
+              wanted_constants = {'MODEL', 'MAX_TOKENS', 'SYSTEM_PROMPT',
+                                  'EXTRACT_SYSTEM', 'ALLOWED', 'EDITABLE',
+                                  'LABELS_ALL', 'PHRASES'}
               for node in module_tree.body:
                   if isinstance(node, (ast.Assign, ast.AnnAssign)):
                       targets = node.targets if isinstance(node, ast.Assign) else [node.target]
