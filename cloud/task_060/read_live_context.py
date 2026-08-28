@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""TASK 060 bounded read-only production context probe."""
+from __future__ import annotations
+import ast, hashlib, json, os, pathlib, re, urllib.parse, urllib.request
+
+BASE = "https://www.pythonanywhere.com/api/v0/user/Carix/"
+PATHS = {
+    "team_bot.py": "/home/Carix/team_bot.py",
+    "ai_fast_schema.py": "/home/Carix/ai_fast_schema.py",
+    "ai.py": "/home/Carix/ai.py",
+    "ai_filter.py": "/home/Carix/ai_filter.py",
+}
+OUT = pathlib.Path("cloud/task_060/evidence/live_context.json")
+MAX = 1_000_000
+NEEDLES = ("менедж", "manager", "передал", "run_ai_draft")
+
+def read_remote(path):
+    url = BASE + "files/path" + urllib.parse.quote(path, safe="/")
+    req = urllib.request.Request(url, headers={
+        "Authorization": "Token " + os.environ["PYTHONANYWHERE_API_TOKEN"],
+        "User-Agent": "ua-art-task060-read/1",
+    })
+    with urllib.request.urlopen(req, timeout=60) as response:
+        data = response.read(MAX + 1)
+    if len(data) > MAX:
+        raise RuntimeError("SOURCE_TOO_LARGE")
+    return data
+
+def redact(text):
+    text = re.sub(r'(?i)((?:token|api[_-]?key|secret|password)\s*=\s*)("[^"]*"|\'[^\']*\')', r'\1"<redacted>"', text)
+    text = re.sub(r'(?i)(bearer\s+)[A-Za-z0-9._-]{16,}', r'\1<redacted>', text)
+    return text
+
+def function_records(source, filename):
+    tree = ast.parse(source, filename)
+    lines = source.splitlines()
+    rows = []
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        segment = "\n".join(lines[node.lineno - 1:node.end_lineno])
+        low = segment.lower()
+        wanted = (
+            node.name in {"run_ai_draft", "ai_save", "parse_image", "parse_message", "clean", "render"}
+            or any(n in low for n in NEEDLES)
+        )
+        if not wanted:
+            continue
+        if len(segment) > 30000:
+            segment = segment[:30000] + "\n<TRUNCATED>"
+        rows.append({
+            "name": node.name,
+            "lineno": node.lineno,
+            "end_lineno": node.end_lineno,
+            "sha256": hashlib.sha256(segment.encode()).hexdigest(),
+            "source": redact(segment),
+        })
+    rows.sort(key=lambda x: (x["lineno"], x["name"]))
+    return rows
+
+def allowed_record(source):
+    tree = ast.parse(source, "ai_filter.py")
+    for node in tree.body:
+        if isinstance(node, (ast.Assign, ast.AnnAssign)):
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            if any(isinstance(t, ast.Name) and t.id == "ALLOWED" for t in targets):
+                try:
+                    value = ast.literal_eval(node.value)
+                except Exception:
+                    return {"kind": "nonliteral"}
+                if isinstance(value, dict):
+                    return {"kind": "dict", "keys": sorted(map(str, value.keys()))}
+                if isinstance(value, (set, list, tuple)):
+                    return {"kind": type(value).__name__, "keys": sorted(map(str, value))}
+    return {"kind": "missing"}
+
+def main():
+    evidence = {"task_id": "task_060", "mode": "READ_ONLY_SOURCE_CONTEXT", "production_touched": False, "files": {}}
+    for label, path in PATHS.items():
+        data = read_remote(path)
+        source = data.decode("utf-8")
+        evidence["files"][label] = {
+            "path": path,
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "size": len(data),
+            "functions": function_records(source, label),
+        }
+        if label == "ai_filter.py":
+            evidence["allowed"] = allowed_record(source)
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps({"status": "PASS", "production_touched": False}))
+if __name__ == "__main__":
+    main()
