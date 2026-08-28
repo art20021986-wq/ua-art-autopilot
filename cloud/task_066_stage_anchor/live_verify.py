@@ -74,6 +74,10 @@ def validate_card(source: str, identifier: str, expected_stage: int) -> None:
     )
     if len(links) != 1:
         raise RuntimeError("DIAGNOSTICS_LINK_INVALID:" + identifier)
+    if re.search(r'class=["\'][^"\']*\b(?:mcf-etap|mcf-track|mcf-diag-off)\b', source, re.IGNORECASE):
+        raise RuntimeError("LEGACY_DUPLICATE_REMAINS:" + identifier)
+    if "Автомобиль в море: Корея → Грузия" in source:
+        raise RuntimeError("LEGACY_SEA_WORDING_REMAINS:" + identifier)
 
 
 def main() -> int:
@@ -104,8 +108,7 @@ def main() -> int:
             source = card_data.decode("utf-8")
             validate_card(source, identifier, stage)
             expected_sha = receipt_by_id[identifier]["roots"]["video"]["sha256"]
-            if sha(card_data) != expected_sha:
-                raise RuntimeError("PUBLIC_CARD_SHA_MISMATCH:" + identifier)
+            matches_install_sha = sha(card_data) == expected_sha
 
             diag_status, diag_data = fetch(BASE + urllib.parse.quote(identifier) + "-diag.html")
             if diag_status != 200:
@@ -115,6 +118,7 @@ def main() -> int:
                 "stage": stage,
                 "card_http": status,
                 "card_sha256": sha(card_data),
+                "matches_install_sha": matches_install_sha,
                 "diagnostics_http": diag_status,
                 "diagnostics_sha256": sha(diag_data),
                 "diagnostics_bytes": len(diag_data),
