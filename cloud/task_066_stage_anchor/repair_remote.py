@@ -53,9 +53,9 @@ CARD_ID = re.compile(r"^UA-[0-9]{4,}$")
 EXPECTED_SHA = {
     STRANICA_PATH: "530b345caf2534fe4c38dc0d3fc3ab69e01b4a540cf67fe012a6a7678a786453",
     YADRO_PATH: "71d981508c157dad7d683430d8d0965af8d3b5946331cbda06b2a0179a7a657c",
-    CARS_UI_PATH: "721e21f43787832b325c1fc806a64f332cb14a26bd63b297cb738c9fbb687563",
+    CARS_UI_PATH: "a7da33f7a653a0cef697aad784e5c29bc2600639eb48b272793d61f1ac0e2af5",
     DB_PATH: "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
-    TEAM_BOT_PATH: "4e0ede93c744e49c2a634fa5e7f195bdda27208d7575c3cd9a0e4ce419913918",
+    TEAM_BOT_PATH: "70b349cdbe72a0cf5f674a1341a493de7759b5263859ce73d86fb292db3b5ad2",
     START_SAFE_PATH: "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007",
 }
 
@@ -68,8 +68,10 @@ EXPECTED_FUNCTION_SHA = {
 }
 
 PRESERVE_FUNCTIONS = {
-    "catch_message": "83200aff264a8dd45645af963d3693bca7375efef257171c400016d0263839bc",
-    "save_media": "a76a6f11173b757a0f6329fcad4fca079bca1e218bf09f418480220f7673e72a",
+    # CRM-PHOTO-FASTPATH-001 is the current production baseline.  The stage
+    # anchor must retain its spool enqueue/worker path byte-for-byte.
+    "catch_message": "e8d274e671f7cea58f82d463e301f784e457c5981e89a59ec1f3a25f52255e4a",
+    "save_media": "6be0c1a9e8c6b94063262e330a3cb3dd4026b7d1d008b9e100dc3160249b747f",
 }
 
 
