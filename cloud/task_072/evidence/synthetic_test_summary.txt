@@ -1,0 +1,34 @@
+TASK_072 SYNTHETIC OFFLINE TEST SUMMARY (NOT REAL PRODUCTION EVIDENCE)
+
+Scope: cloud/task_072/tests/test_writer.py, test_queue.py, test_call_path_stub.py
+Run against: in-memory/temp synthetic SQLite fixtures mirroring confirmed schema facts
+(cars_count=11, UA-0001..UA-0011, single UA-0009 row placeholder, condition_text /
+description / diag_text coexisting). No real production values used.
+
+Covered by these synthetic tests:
+  - legacy description->condition_text alias on write                         PASS (synthetic)
+  - diag_text write attempt rejected                                         PASS (synthetic)
+  - unknown field rejected                                                    PASS (synthetic)
+  - empty text rejected                                                       PASS (synthetic)
+  - 12001 chars rejected, 12000 chars accepted (boundary)                     PASS (synthetic)
+  - NUL bytes stripped                                                        PASS (synthetic)
+  - no new card created for unknown card_id                                   PASS (synthetic)
+  - future card (UA-9912) uses identical path once card row exists            PASS (synthetic)
+  - all 11 existing synthetic cards: isolated save/read-back, no cross-card   PASS (synthetic)
+  - read-back verified before reporting success                              PASS (synthetic)
+  - confirmation message <= 900 chars while DB keeps full text               PASS (synthetic)
+  - safe error message contains no traceback/paths/'locked'                  PASS (synthetic)
+  - queue: replay same chat_id:message_id is idempotent                      PASS (synthetic)
+  - queue: last-intended-wins across two ops for same card                   PASS (synthetic)
+  - queue: crash-after-CRM-commit-before-ack is idempotent on drain          PASS (synthetic)
+  - queue: 100 sequential ops, last wins, no loss                            PASS (synthetic)
+  - queue: 50 concurrent enqueues (5 threads x10) then drain, no duplicates  PASS (synthetic)
+  - baseline reference reproduces car_wait loss on simulated lock            PASS (synthetic, confirms defect model)
+  - patched stub call path: button -> long text -> exact read-back, 1 audit PASS (synthetic)
+  - patched stub call path: lock does not lose car_wait; retry succeeds     PASS (synthetic)
+  - patched stub call path: no open card -> no card created, asks to select PASS (synthetic)
+
+NOTE: "(synthetic)" means these tests validate the LOGIC of writer.py/queue_sidecar.py
+and the call-path pattern against a fixture database, not against the real live
+db.py/cars_ui.py/trace_zhurnal.py/crm.db, which were not accessible to this worker.
+This is not Gate A PASS in the sense required by TASK 072 (real live copies).
