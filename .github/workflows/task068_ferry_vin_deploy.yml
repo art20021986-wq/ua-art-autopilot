@@ -36,8 +36,14 @@ jobs:
             cloud/task_068_ferry_vin/repair_remote.py \
             cloud/task_068_ferry_vin/postcheck_remote.py \
             cloud/task_068_ferry_vin/controller.py \
+            cloud/task_068_ferry_vin/source_shadow.py \
             cloud/task_068_ferry_vin/live_verify.py
           python3 cloud/task_068_ferry_vin/repair_remote.py --self-test
+
+      - name: Shadow exact production sources read-only
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_068_ferry_vin/source_shadow.py
 
       - name: Install, restart and verify production
         env:
@@ -97,8 +103,12 @@ jobs:
           root = Path('cloud/task_068_ferry_vin')
           deploy = json.loads((root / 'evidence/deploy.json').read_text())
           live = json.loads((root / 'evidence/live.json').read_text())
-          if deploy['status'] != 'PASS' or live['status'] != 'PASS':
+          shadow = json.loads((root / 'evidence/source_shadow.json').read_text())
+          if shadow['status'] != 'PASS' or deploy['status'] != 'PASS' or live['status'] != 'PASS':
               raise SystemExit('TASK068_NOT_COMPLETE')
+          assert shadow['read_only'] is True and shadow['production_write'] is False
+          assert set(shadow['files']) == {'stranica.py', 'yadro.py', 'master_card.py'}
+          assert all(item['marker_before_main'] for item in shadow['files'].values())
           source_install = deploy['source_install']
           install = deploy['install']
           post = deploy['postcheck']
