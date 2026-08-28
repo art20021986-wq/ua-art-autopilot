@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 16
+# probe-revision: 17
 
 on:
   push:
@@ -167,6 +167,7 @@ jobs:
               'cars_ui.py': {'voice_change_plan', '_v167_voice_explicit_fields',
                              'auto_catch'},
               'ai_filter.py': {'clean'},
+              'assistant.py': {'is_write', 'extract', 'ask'},
           }
           for filename, selected_names in requested.items():
               module_source = get(root + '/' + filename, limit=2_000_000).decode('utf-8')
@@ -180,8 +181,18 @@ jobs:
                       value = ast.get_source_segment(module_source, node) or ''
                       value = re.sub(r'\b\d{8,}:[A-Za-z0-9_-]{20,}\b', '<redacted-token>', value)
                       selected_sources[node.name] = value
+              constants = {}
+              wanted_constants = {'MODEL', 'MAX_TOKENS', 'SYSTEM_PROMPT', 'ALLOWED'}
+              for node in module_tree.body:
+                  if isinstance(node, (ast.Assign, ast.AnnAssign)):
+                      targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                      for target in targets:
+                          if isinstance(target, ast.Name) and target.id in wanted_constants:
+                              value = ast.get_source_segment(module_source, node) or ''
+                              constants[target.id] = value[:12000]
               code_audit[filename] = {'functions': function_names,
-                                      'selected': selected_sources}
+                                      'selected': selected_sources,
+                                      'constants': constants}
           result['voice_code_audit'] = code_audit
           events_raw = get(root + '/.crm_guard_events.jsonl', missing=True, limit=2_000_000)
           if events_raw:
