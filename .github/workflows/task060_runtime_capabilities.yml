@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/task060_runtime_capabilities.yml'
+      - 'cloud/task_060/probe_runtime.py'
   workflow_dispatch:
 
 permissions:
