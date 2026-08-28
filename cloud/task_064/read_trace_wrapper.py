@@ -15,7 +15,7 @@ import urllib.request
 BASE = "https://www.pythonanywhere.com/api/v0/user/Carix/"
 REMOTE = "/home/Carix/trace_zhurnal.py"
 OUT = pathlib.Path("cloud/task_064/evidence/trace_wrapper.json")
-LINE_START = 300
+LINE_START = 250
 LINE_END = 390
 
 
@@ -24,7 +24,7 @@ def read_remote() -> bytes:
         BASE + "files/path" + urllib.parse.quote(REMOTE, safe="/"),
         headers={
             "Authorization": "Token " + os.environ["PYTHONANYWHERE_API_TOKEN"],
-            "User-Agent": "ua-art-task064-trace-read/1",
+            "User-Agent": "ua-art-task064-trace-read/2",
         },
     )
     with urllib.request.urlopen(request, timeout=60) as response:
@@ -51,7 +51,7 @@ def main() -> None:
     for node in ast.walk(tree):
         if (
             isinstance(node, (ast.ClassDef, ast.FunctionDef))
-            and ("obert" in node.name.casefold() or node.name == "connect_s_trassoy")
+            and ("obert" in node.name.casefold() or "connect" in node.name.casefold())
         ):
             segment = "\n".join(lines[node.lineno - 1:node.end_lineno])
             definitions.append({
