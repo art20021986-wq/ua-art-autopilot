@@ -293,5 +293,10 @@
   },
   "mode": "READ_ONLY_SOURCE_CONTEXT",
   "production_touched": false,
+  "recent_ai_log": [
+    "Aug 28 04:26:22 2026-08-28 04:26:22,405 ERROR root: Разбор изображения, Anthropic 400: {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.\"},\"request_id\":\"req_011CeUWh7p27GfzM8Rp5m8Vo\"}",
+    "Aug 28 04:32:41 2026-08-28 04:32:41,642 ERROR root: Разбор изображения, Anthropic 400: {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.\"},\"request_id\":\"req_011CeUXB5DmtfUSaeXMr8cpv\"}",
+    "Aug 28 05:30:56 2026-08-28 05:30:56,472 ERROR root: Разбор изображения, Anthropic 400: {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.\"},\"request_id\":\"req_011CeUbch6whjbmWnT8Ch7Qu\"}"
+  ],
   "task_id": "task_060"
 }
