@@ -1,0 +1,167 @@
+{
+  "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
+  "errors": [
+    "ControllerError:POSTCHECK_INITIAL_FAIL:[\"CheckError:GUARD_NOT_HEALTHY:{}\"]"
+  ],
+  "finished_at_utc": "2026-08-28T19:54:14Z",
+  "install": {
+    "already_applied": false,
+    "backup_dir": "/home/Carix/backups/task_067/20260828T194817Z",
+    "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
+    "crm_db_write": false,
+    "db_after": {
+      "cars": 11,
+      "clients": 4,
+      "quick_check": "ok"
+    },
+    "db_before": {
+      "cars": 11,
+      "clients": 4,
+      "quick_check": "ok"
+    },
+    "errors": [],
+    "files_after": {
+      "ai.py": "5037fe26fb917875002ec4bc7ebc4362298d991a885b8e8536e4e0df25f8a41b",
+      "cars_ui.py": "862baea2ca0794f5e0d83bc04169f6d2fdec401f86f384ef4376e373c02a776b",
+      "client_ui.py": "97ff4b717e123ae45b12bc966e2d2be5c680370111cf16d4f285c9464a511d4a",
+      "crm_online_guard.py": "bcbde472f9750ae3719e4af1059c5f4005366f7959cba7d522984f1bf9be2f5b",
+      "lead_bot.py": "27270e38f1b7ed913140127231149b6d862876f3b3a02a58c4a852b40ce8a3f8",
+      "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+      "team_bot.py": "bbd644eaf2c25802984df930459da6a36f137ef2b1519642b3d006ab57388a48"
+    },
+    "finished_at_utc": "2026-08-28T19:48:17Z",
+    "llm_tokens": 0,
+    "media_write": false,
+    "mode": "ATOMIC_PRODUCTION_INSTALL",
+    "site_write": false,
+    "started_at_utc": "2026-08-28T19:48:14Z",
+    "status": "PASS",
+    "task_id": "task_067"
+  },
+  "llm_tokens": 0,
+  "mode": "ATOMIC_DEPLOY_AND_60M_SOAK",
+  "postcheck_initial": {
+    "callbacks": {
+      "condition": {
+        "elapsed_seconds": 0.018,
+        "expired_ack_continued": true,
+        "status": "PASS"
+      },
+      "delivery": {
+        "elapsed_seconds": 0.036,
+        "expired_ack_continued": true,
+        "status": "PASS"
+      }
+    },
+    "client_catalog": {
+      "cars": 10,
+      "elapsed_seconds": 0.022,
+      "status": "PASS"
+    },
+    "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
+    "crm_db_write": false,
+    "database": {
+      "card_count": 11,
+      "quick_check": "ok"
+    },
+    "errors": [
+      "CheckError:GUARD_NOT_HEALTHY:{}"
+    ],
+    "finished_at_utc": "2026-08-28T19:51:01Z",
+    "llm_tokens": 0,
+    "media": {
+      "accepted": 100,
+      "duplicates_rejected": 3,
+      "limit_101_rejected": true,
+      "order_exact": true,
+      "queue": 0,
+      "saved": 100,
+      "status": "PASS",
+      "workers": 6
+    },
+    "media_write": false,
+    "mode": "POST_RESTART_ACCEPTANCE",
+    "site_write": false,
+    "source_checks": {
+      "callback_safety": true,
+      "cas_no_overwrite": true,
+      "client_fast_tail": true,
+      "condition_route": true,
+      "delivery_route": true,
+      "marker_all_core": true,
+      "media_receipts": true,
+      "stt_auto_language": true,
+      "updates_preserved": true,
+      "voice_five_seconds": true
+    },
+    "started_at_utc": "2026-08-28T19:50:14Z",
+    "status": "FAIL",
+    "task_id": "task_067",
+    "voice_golden": {
+      "cases": 150,
+      "failures": 0,
+      "normal_overwrites": 0,
+      "status": "PASS",
+      "unexpected_new_cards": 0
+    }
+  },
+  "restart": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "launcher_id": 266084,
+    "status": "accepted"
+  },
+  "rollback": {
+    "backup_dir": "/home/Carix/backups/task_067/20260828T194817Z",
+    "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
+    "finished_at_utc": "2026-08-28T19:53:11Z",
+    "mode": "ROLLBACK",
+    "status": "PASS",
+    "task_id": "task_067"
+  },
+  "rollback_restart": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "launcher_id": 266084,
+    "status": "accepted"
+  },
+  "shadow": {
+    "candidate_sha256": {
+      "ai.py": "5037fe26fb917875002ec4bc7ebc4362298d991a885b8e8536e4e0df25f8a41b",
+      "cars_ui.py": "862baea2ca0794f5e0d83bc04169f6d2fdec401f86f384ef4376e373c02a776b",
+      "client_ui.py": "97ff4b717e123ae45b12bc966e2d2be5c680370111cf16d4f285c9464a511d4a",
+      "crm_online_guard.py": "bcbde472f9750ae3719e4af1059c5f4005366f7959cba7d522984f1bf9be2f5b",
+      "lead_bot.py": "27270e38f1b7ed913140127231149b6d862876f3b3a02a58c4a852b40ce8a3f8",
+      "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+      "team_bot.py": "bbd644eaf2c25802984df930459da6a36f137ef2b1519642b3d006ab57388a48"
+    },
+    "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
+    "crm_db_write": false,
+    "db_after": {
+      "cars": 11,
+      "clients": 4,
+      "quick_check": "ok"
+    },
+    "db_before": {
+      "cars": 11,
+      "clients": 4,
+      "quick_check": "ok"
+    },
+    "errors": [],
+    "finished_at_utc": "2026-08-28T19:46:11Z",
+    "llm_tokens": 0,
+    "media_write": false,
+    "mode": "SHADOW_COMPILE_NO_PRODUCTION_WRITE",
+    "site_write": false,
+    "started_at_utc": "2026-08-28T19:46:09Z",
+    "status": "PASS",
+    "task_id": "task_067"
+  },
+  "started_at_utc": "2026-08-28T19:44:20Z",
+  "status": "FAIL",
+  "task_id": "task_067",
+  "uploaded": [
+    "crm_online_guard.py",
+    "installer.py",
+    "postcheck.py",
+    "soak.py"
+  ]
+}
