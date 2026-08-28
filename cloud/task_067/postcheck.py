@@ -93,24 +93,33 @@ def telegram_health():
     return {"bots": result, "tokens_distinct": hashes.get("client") != hashes.get("crm")}
 
 
-def wait_guard(seconds=45):
+def wait_guard(seconds=420):
+    """Wait for the live process, not merely for an accepted restart request.
+
+    PythonAnywhere may acknowledge an Always-On restart several minutes before
+    the replacement process actually starts.  User-operation SLOs remain five
+    seconds; this longer window applies only to the one-time deployment gate.
+    """
     deadline = time.monotonic() + seconds
     last = {}
     while time.monotonic() < deadline:
         try:
             last = json.loads(STATUS.read_text(encoding="utf-8"))
+            status_age = max(0.0, time.time() - STATUS.stat().st_mtime)
         except Exception:
             time.sleep(1)
             continue
         ages = last.get("heartbeat_age_seconds") or {}
         bots = last.get("bots") or {}
         if (last.get("contract_id") == CONTRACT
+                and status_age < 3.0
                 and ages.get("crm_bot", 999) < 3
                 and ages.get("client_bot", 999) < 3
                 and bots.get("crm", {}).get("ok")
                 and bots.get("client", {}).get("ok")
                 and bots.get("tokens_distinct")):
             return last
+        last["_status_file_age_seconds"] = round(status_age, 3)
         time.sleep(1)
     raise CheckError("GUARD_NOT_HEALTHY:" + json.dumps(last, ensure_ascii=False)[:500])
 
