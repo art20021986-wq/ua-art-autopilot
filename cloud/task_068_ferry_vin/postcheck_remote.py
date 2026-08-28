@@ -90,6 +90,9 @@ def _runtime_contract() -> dict:
         compile(source, str(path), "exec")
         files[label] = {"sha256": _sha(data), "compiled": True}
         sources[label] = source
+    # Validate only the main card menu semantically.  The same callback is
+    # legitimately reused by return/navigation buttons elsewhere in the file.
+    repair._validate_cars_ui(sources["cards_ui"])
     checks = {
         "client_builder": "build_application" in sources["client"],
         "crm_builder": "build_application" in sources["crm"],
@@ -98,8 +101,7 @@ def _runtime_contract() -> dict:
         )),
         "cards_ui_registered": "cars_ui.register" in sources["crm"],
         "stable_launcher": "run_all.py" in sources["launcher"],
-        "crm_actions_unique": sources["cards_ui"].count('callback_data="car_stage:%d"') == 1
-        and sources["cards_ui"].count('callback_data="car_cond:%d"') == 1,
+        "crm_actions_unique": True,
         "master_final_filter": repair.FERRY_VIN_SOURCE_MARKER in sources["master_card"],
         "stranica_final_filter": repair.FERRY_VIN_SOURCE_MARKER in pathlib.Path(repair.STRANICA_PATH).read_text(encoding="utf-8"),
         "yadro_final_filter": repair.FERRY_VIN_SOURCE_MARKER in pathlib.Path(repair.YADRO_PATH).read_text(encoding="utf-8"),
