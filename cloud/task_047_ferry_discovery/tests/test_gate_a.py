@@ -37,7 +37,7 @@ class FerryGateATests(unittest.TestCase):
         conn.execute(
             "CREATE TABLE cars (auto_number TEXT, sea_container TEXT, status TEXT)"
         )
-        for number in range(1, 10):
+        for number in range(1, 11):
             conn.execute(
                 "INSERT INTO cars VALUES (?,?,?)",
                 ("UA-%04d" % number, "CONT%03d" % number, "sea"),
@@ -58,8 +58,8 @@ class FerryGateATests(unittest.TestCase):
         )
         self.assertEqual(receipt["status"], "PASS", receipt)
         self.assertTrue(receipt["production_sources_unchanged"])
-        self.assertEqual(len(receipt["candidates"]), 13)
-        self.assertEqual(sum(item["changes"] for item in receipt["candidates"]), 13)
+        self.assertEqual(len(receipt["candidates"]), 14)
+        self.assertEqual(sum(item["changes"] for item in receipt["candidates"]), 14)
         self.assertEqual(self._source_hashes(), before)
         self.assertFalse(receipt["production_write"])
         self.assertFalse(receipt["crm_write"])
@@ -207,7 +207,7 @@ class FerryGateATests(unittest.TestCase):
         self.assertTrue(report.is_file())
         self.assertIn("production_write: false", report.read_text(encoding="utf-8"))
         self.assertEqual(
-            len(list((Path(self.temp) / "preview" / "video").glob("*.html"))), 13
+            len(list((Path(self.temp) / "preview" / "video").glob("*.html"))), 14
         )
 
 

@@ -27,18 +27,18 @@ BASE_DIR = "/home/Carix"
 MAX_SIZE = 20 * 1024 * 1024  # 20 MiB bound for a single file read
 MAX_DB_SIZE = 512 * 1024 * 1024
 
-UA_IDS = tuple("UA-%04d" % i for i in range(1, 10))
+UA_IDS = tuple("UA-%04d" % i for i in range(1, 11))
 
 REGISTRY: Dict[str, List[str]] = {
     "video_pages": [
         "video/index.html", "video/katalog.html", "video/info.html", "video/podbor.html",
-    ] + ["video/UA-%04d.html" % i for i in range(1, 10)],
+    ] + ["video/UA-%04d.html" % i for i in range(1, 11)],
     "site_pages": [
         "site/index.html", "site/katalog.html", "site/info.html", "site/podbor.html",
-    ] + ["site/UA-%04d.html" % i for i in range(1, 10)],
+    ] + ["site/UA-%04d.html" % i for i in range(1, 11)],
     "diag_track_candidates": (
-        ["video/UA-%04d-diag.html" % i for i in range(1, 10)]
-        + ["video/UA-%04d-track.html" % i for i in range(1, 10)]
+        ["video/UA-%04d-diag.html" % i for i in range(1, 11)]
+        + ["video/UA-%04d-track.html" % i for i in range(1, 11)]
     ),
     "python_modules": [
         "stranica.py", "yadro.py", "master_card.py", "cars_ui.py", "team_bot.py",

@@ -46,6 +46,44 @@ jobs:
           PYTHONANYWHERE_HOST: www.pythonanywhere.com
         run: python3 cloud/task_047_ferry_discovery/gate_a_controller.py
 
+      - name: Validate TASK 063 catalog contract
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('cloud/task_047_ferry_discovery/_gate_a_preview/video/katalog.html')
+          html = path.read_text(encoding='utf-8')
+
+          def require(condition, label):
+              if not condition:
+                  raise SystemExit('TASK_063_CATALOG_BLOCKED:' + label)
+
+          require(html.count('class="catalog-card"') == 10, 'catalog_card_count')
+          require(html.count('class="catalog-card" data-stage="sea"') == 4, 'sea_card_count')
+          require(
+              html.count('data-ru="На пароме&#10;Маршрут: Корея → Грузия"') == 4,
+              'ru_two_line_route_count',
+          )
+          require(
+              html.count('data-uk="На поромі&#10;Маршрут: Корея → Грузія"') == 4,
+              'uk_two_line_route_count',
+          )
+          require(
+              html.count('>На пароме&#10;Маршрут: Корея → Грузия</div>') == 4,
+              'visible_two_line_route_count',
+          )
+          require(html.count('white-space:pre-line') >= 4, 'line_break_style')
+          require('>В море · 4<' not in html, 'legacy_filter_visible')
+          require('>На пароме · 4<' in html, 'ferry_filter_visible')
+          require('>Показано: 10<' in html, 'visible_catalog_count')
+          for number in range(1, 11):
+              require(
+                  'href="UA-%04d.html"' % number in html,
+                  'missing_UA_%04d' % number,
+              )
+          print('TASK_063_CATALOG_ACCEPTED:10 cars, 4 ferry cards')
+          PY
+
       - name: Validate bounded Gate A evidence
         run: |
           test -f cloud/task_047_ferry_discovery/evidence/ferry_gate_a.json
@@ -100,7 +138,14 @@ jobs:
           fi
           preview='cloud/task_047_ferry_discovery/_gate_a_preview/video'
           screenshots='cloud/task_047_ferry_discovery/_gate_a_screenshots'
-          test "$(find "${preview}" -maxdepth 1 -type f -name '*.html' | wc -l)" -eq 13
+          expected="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('cloud/task_047_ferry_discovery/evidence/ferry_gate_a.json').read_text())
+          print(len(receipt['candidates']))
+          PY
+          )"
+          test "$(find "${preview}" -maxdepth 1 -type f -name '*.html' | wc -l)" -eq "${expected}"
           browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
           test -n "${browser}"
           mkdir -p "${screenshots}"
@@ -112,7 +157,7 @@ jobs:
               --screenshot="${screenshots}/${name}.png" \
               "file://$(realpath "${page}")"
           done
-          test "$(find "${screenshots}" -maxdepth 1 -type f -name '*.png' | wc -l)" -eq 13
+          test "$(find "${screenshots}" -maxdepth 1 -type f -name '*.png' | wc -l)" -eq "${expected}"
           python3 - <<'PY'
           from pathlib import Path
           for path in Path('cloud/task_047_ferry_discovery/_gate_a_screenshots').glob('*.png'):
@@ -144,3 +189,4 @@ jobs:
               raise SystemExit('FERRY_GATE_A_BLOCKED:' + str(receipt.get('errors')))
           print('FERRY_GATE_A_ACCEPTED:' + receipt['status'])
           PY
+

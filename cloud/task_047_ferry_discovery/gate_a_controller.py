@@ -30,7 +30,7 @@ REMOTE_GATE_A = REMOTE_ROOT + "/gate_a_remote.py"
 REMOTE_OUTPUT = REMOTE_ROOT + "/ferry_gate_a_receipt.json"
 VIDEO_PATHS = [
     "video/index.html", "video/katalog.html", "video/info.html", "video/podbor.html",
-] + ["video/UA-%04d.html" % number for number in range(1, 10)]
+] + ["video/UA-%04d.html" % number for number in range(1, 11)]
 PYTHON_PATHS = {
     "stranica.py", "yadro.py", "master_card.py", "cars_ui.py", "team_bot.py",
     "avtoperedacha.py", "db.py", "run_all.py", "start_safe.py",
@@ -390,7 +390,7 @@ class GateAController:
             crm.get("status") != "OK" or crm.get("table") != "cars"
             or crm.get("id_column") != "auto_number"
             or crm.get("container_column") != "sea_container"
-            or crm.get("id_count") != 9
+            or crm.get("id_count") != 10
             or not isinstance(crm.get("sha256"), str)
             or not HEX64.fullmatch(crm["sha256"])
         ):

@@ -277,7 +277,7 @@ class TestCRM(TempDirCase):
         cur = conn.cursor()
         if with_valid_table:
             cur.execute("CREATE TABLE cars (ua_id TEXT, stage TEXT, container TEXT, tracking TEXT)")
-            for i in range(1, 10):
+            for i in range(1, 11):
                 cur.execute("INSERT INTO cars VALUES (?,?,?,?)",
                             ("UA-%04d" % i, "sea", "CNT%d" % i, "TRK%d" % i))
         else:
@@ -290,13 +290,13 @@ class TestCRM(TempDirCase):
         res = discover.crm_readonly_summary(os.path.join(self.tmp, "nope.db"))
         self.assertEqual(res["status"], "MISSING")
 
-    def test_exact_nine_and_quick_check(self):
+    def test_exact_ten_and_quick_check(self):
         path = os.path.join(self.tmp, "crm.db")
         self._make_db(path, with_valid_table=True)
         res = discover.crm_readonly_summary(path)
         self.assertEqual(res["status"], "OK")
         self.assertTrue(res["quick_check"])
-        self.assertEqual(len(res["results"]), 9)
+        self.assertEqual(len(res["results"]), 10)
         for ua in discover.UA_IDS:
             self.assertIn(ua, res["results"])
             self.assertIsNotNone(res["results"][ua])
@@ -326,7 +326,7 @@ class TestFerryPhase1Discovery(TempDirCase):
         conn.execute(
             "CREATE TABLE cars (auto_number TEXT, sea_container TEXT, status TEXT)"
         )
-        for i in range(1, 10):
+        for i in range(1, 11):
             conn.execute(
                 "INSERT INTO cars VALUES (?,?,?)",
                 ("UA-%04d" % i, "CONT%03d" % i, "sea"),
@@ -357,7 +357,7 @@ class TestFerryPhase1Discovery(TempDirCase):
         self.assertEqual(result["table"], "cars")
         self.assertEqual(result["id_column"], "auto_number")
         self.assertEqual(result["container_column"], "sea_container")
-        self.assertEqual(len(result["results"]), 9)
+        self.assertEqual(len(result["results"]), 10)
 
     def test_duplicate_real_id_blocks(self):
         path = self._make_real_db(duplicate=True)
@@ -398,12 +398,12 @@ class TestFerryPhase1Discovery(TempDirCase):
         receipt = discover.run_discovery(self.tmp)
         self.assertEqual(receipt["status"], "OK", receipt)
         self.assertEqual(receipt["crm"]["status"], "OK")
-        self.assertEqual(receipt["total_source_occurrences"], 13)
+        self.assertEqual(receipt["total_source_occurrences"], 14)
         self.assertNotIn("_raw_bytes", json.dumps(receipt, ensure_ascii=False))
 
     def test_missing_required_card_blocks(self):
         self._make_full_root(ferry=True)
-        os.remove(os.path.join(self.tmp, "video", "UA-0009.html"))
+        os.remove(os.path.join(self.tmp, "video", "UA-0010.html"))
         receipt = discover.run_discovery(self.tmp)
         self.assertEqual(receipt["status"], "BLOCKED")
         self.assertIn("MISSING_CORE_PAGES", receipt["reasons"])

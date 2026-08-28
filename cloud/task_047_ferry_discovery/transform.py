@@ -32,6 +32,9 @@ FORM_CLASSIFICATION = {
     "route_stage": "USER_FACING_ROUTE_STAGE",
     "route_heading": "USER_FACING_ROUTE_HEADING",
     "info": "USER_FACING_INFO",
+    "catalog_sea_status": "USER_FACING_CATALOG_ROUTE",
+    "sea_filter": "USER_FACING_STATUS",
+    "catalog_result": "USER_FACING_CATALOG_COUNT",
 }
 
 TAG_RE = re.compile(r"<!--.*?-->|<!DOCTYPE[^>]*>|<[^>]+>", re.IGNORECASE | re.DOTALL)
@@ -40,6 +43,17 @@ CLASS_RE = re.compile(r"\bclass\s*=\s*\"([^\"]*)\"|\bclass\s*=\s*'([^']*)'", re.
 LANG_RE = re.compile(r"\blang\s*=\s*\"([^\"]*)\"|\blang\s*=\s*'([^']*)'", re.IGNORECASE)
 DATALANG_RE = re.compile(r"\bdata-lang\s*=\s*\"([^\"]*)\"|\bdata-lang\s*=\s*'([^']*)'", re.IGNORECASE)
 DATA_ATTR_RE = re.compile(r"(?i)(data-(?:ru|uk))\s*=\s*(\"|')(.*?)\2")
+DATA_STAGE_RE = re.compile(r"\bdata-stage\s*=\s*(\"|')(.*?)\1", re.IGNORECASE)
+DATA_FILTER_RE = re.compile(r"\bdata-f\s*=\s*(\"|')(.*?)\1", re.IGNORECASE)
+STYLE_RE = re.compile(r"(\bstyle\s*=\s*)(\"|')(.*?)\2", re.IGNORECASE | re.DOTALL)
+RU_CATALOG_ROUTE_NEW = "На пароме&#10;Маршрут: Корея → Грузия"
+UK_CATALOG_ROUTE_NEW = "На поромі&#10;Маршрут: Корея → Грузія"
+CATALOG_ROUTE_MAP = {
+    "В море · Корея → Грузия": (RU_CATALOG_ROUTE_NEW, "ru"),
+    "На пароме · Корея → Грузия": (RU_CATALOG_ROUTE_NEW, "ru"),
+    "У морі · Корея → Грузія": (UK_CATALOG_ROUTE_NEW, "uk"),
+    "На поромі · Корея → Грузія": (UK_CATALOG_ROUTE_NEW, "uk"),
+}
 EXACT_TEXT_MAP = {
     "В море · Корея → Грузия": ("На пароме · Корея → Грузия", "ru", "long"),
     "У морі · Корея → Грузія": ("На поромі · Корея → Грузія", "uk", "long"),
@@ -102,11 +116,15 @@ def transform_value(value: str, context: str, lang: Optional[str]) -> Tuple[str,
     'applied', 'unchanged', 'ambiguous'.
     """
     stripped = value.strip()
+    if context == "catalog_sea_status" and stripped in CATALOG_ROUTE_MAP:
+        mapped, mapped_lang = CATALOG_ROUTE_MAP[stripped]
+        if lang is None or lang == mapped_lang:
+            return value.replace(stripped, mapped, 1), "applied", mapped_lang
     if stripped in EXACT_TEXT_MAP:
         mapped, mapped_lang, _form = EXACT_TEXT_MAP[stripped]
         if lang is None or lang == mapped_lang:
             return value.replace(stripped, mapped, 1), "applied", mapped_lang
-    if context in ("status", "long", "heading", "route_stage"):
+    if context in ("status", "long", "heading", "route_stage", "sea_filter"):
         new_ru, hit_ru = _prefix_transform(stripped, RU_STATUS_OLD, RU_STATUS_NEW)
         if hit_ru:
             return value.replace(stripped, new_ru, 1), "applied", "ru"
@@ -275,6 +293,31 @@ def parse_attrs_for_tag(tag_text: str) -> Tuple[Set[str], Optional[str]]:
     return classes, lang
 
 
+def _attribute_value(pattern: "re.Pattern", tag_text: str) -> Optional[str]:
+    match = pattern.search(tag_text)
+    return match.group(2).lower() if match else None
+
+
+def _ensure_pre_line_style(tag_text: str) -> str:
+    """Make an encoded line break visible without changing shared CSS."""
+    style_match = STYLE_RE.search(tag_text)
+    if style_match:
+        value = style_match.group(3)
+        if re.search(r"(?:^|;)\s*white-space\s*:\s*(?:pre-line|pre-wrap)\s*(?:;|$)", value, re.I):
+            return tag_text
+        separator = "" if not value or value.rstrip().endswith(";") else ";"
+        replacement = (
+            style_match.group(1) + style_match.group(2) + value
+            + separator + "white-space:pre-line" + style_match.group(2)
+        )
+        return tag_text[:style_match.start()] + replacement + tag_text[style_match.end():]
+    close = "/>" if tag_text.rstrip().endswith("/>") else ">"
+    position = tag_text.rfind(close)
+    if position < 0:
+        return tag_text
+    return tag_text[:position] + ' style="white-space:pre-line"' + tag_text[position:]
+
+
 def transform_document(text: str) -> Tuple[str, List[dict]]:
     """Transform an HTML-like document and return (new_text, occurrences).
 
@@ -282,6 +325,16 @@ def transform_document(text: str) -> Tuple[str, List[dict]]:
     classification, action.
     """
     text, occurrences = _transform_four_span_sequences(text)
+    catalog_card_count = 0
+    for tag_match in TAG_RE.finditer(text):
+        tag_text = tag_match.group(0)
+        name_match = TAGNAME_RE.match(tag_text)
+        if (
+            name_match and not tag_text.startswith("</")
+            and name_match.group(1).lower() == "article"
+            and "catalog-card" in parse_attrs_for_tag(tag_text)[0]
+        ):
+            catalog_card_count += 1
     pending_ambiguous: List[dict] = []
     tokens: List[Tuple[str, str]] = []
     last_end = 0
@@ -293,7 +346,7 @@ def transform_document(text: str) -> Tuple[str, List[dict]]:
     if last_end < len(text):
         tokens.append(("text", text[last_end:]))
 
-    stack: List[Dict[str, Optional[str]]] = []
+    stack: List[Dict[str, object]] = []
 
     def in_raw_text() -> bool:
         return any(f["tag"] in RAW_TEXT_ELEMENTS for f in stack)
@@ -321,6 +374,31 @@ def transform_document(text: str) -> Tuple[str, List[dict]]:
                 continue
             ctx, lang = current_context_lang()
             stripped = chunk.strip()
+            if ctx == "catalog_result" and catalog_card_count:
+                count_match = re.fullmatch(r"(Показано|Показуємо)\s*:\s*\d+", stripped)
+                if count_match:
+                    mapped = "%s: %d" % (count_match.group(1), catalog_card_count)
+                    if mapped != stripped:
+                        new_val = chunk.replace(stripped, mapped, 1)
+                        occurrences.append({
+                            "language": lang or "ru", "form": ctx,
+                            "context": "TEXT_NODE", "before": stripped,
+                            "after": mapped, "anchor": anchor,
+                            "classification": _form_to_classification(ctx),
+                            "action": "APPLIED",
+                        })
+                        out_parts.append(new_val)
+                        continue
+            if ctx in ("catalog_sea_status", "sea_filter"):
+                new_val, action, resolved = transform_value(chunk, ctx, lang)
+                if action == "applied":
+                    occurrences.append({
+                        "language": resolved, "form": ctx, "context": "TEXT_NODE",
+                        "before": stripped, "after": new_val.strip(), "anchor": anchor,
+                        "classification": _form_to_classification(ctx), "action": "APPLIED",
+                    })
+                    out_parts.append(new_val)
+                    continue
             if stripped in EXACT_TEXT_MAP:
                 mapped, mapped_lang, form = EXACT_TEXT_MAP[stripped]
                 new_val = chunk.replace(stripped, mapped, 1)
@@ -377,13 +455,28 @@ def transform_document(text: str) -> Tuple[str, List[dict]]:
         name_m = TAGNAME_RE.match(chunk)
         tag_name = name_m.group(1).lower() if name_m else None
         new_chunk = chunk
+        classes: Set[str] = set()
+        lang: Optional[str] = None
+        catalog_sea = False
+        special_catalog_status = False
+        sea_filter = False
+        if not is_end:
+            classes, lang = parse_attrs_for_tag(chunk)
+            inherited_catalog_sea = any(bool(frame.get("catalog_sea")) for frame in stack)
+            catalog_sea = inherited_catalog_sea or (
+                tag_name == "article"
+                and "catalog-card" in classes
+                and _attribute_value(DATA_STAGE_RE, chunk) == "sea"
+            )
+            special_catalog_status = catalog_sea and "status-pill" in classes
+            sea_filter = _attribute_value(DATA_FILTER_RE, chunk) == "sea"
 
         def _attr_repl(am: "re.Match", _anchor: str = anchor) -> str:
             attr_name = am.group(1)
             quote = am.group(2)
             value = am.group(3)
             lang_key = attr_name.lower().split("-")[1]
-            form = detect_form(value)
+            form = "catalog_sea_status" if special_catalog_status else detect_form(value)
             if form is None:
                 return am.group(0)
             new_val, action, resolved = transform_value(value, form, lang_key)
@@ -400,6 +493,8 @@ def transform_document(text: str) -> Tuple[str, List[dict]]:
 
         if not is_end:
             new_chunk = DATA_ATTR_RE.sub(_attr_repl, chunk)
+            if special_catalog_status:
+                new_chunk = _ensure_pre_line_style(new_chunk)
         out_parts.append(new_chunk)
 
         if is_end:
@@ -411,9 +506,18 @@ def transform_document(text: str) -> Tuple[str, List[dict]]:
 
         self_closing = chunk.rstrip().endswith("/>")
         if tag_name and tag_name not in VOID_ELEMENTS and not self_closing:
-            classes, lang = parse_attrs_for_tag(chunk)
-            context = classify_context(classes)
-            stack.append({"tag": tag_name, "context": context, "lang": lang})
+            if special_catalog_status:
+                context = "catalog_sea_status"
+            elif sea_filter:
+                context = "sea_filter"
+            elif "catalog-result" in classes:
+                context = "catalog_result"
+            else:
+                context = classify_context(classes)
+            stack.append({
+                "tag": tag_name, "context": context, "lang": lang,
+                "catalog_sea": catalog_sea,
+            })
 
     occurrences.extend(pending_ambiguous)
     return "".join(out_parts), occurrences

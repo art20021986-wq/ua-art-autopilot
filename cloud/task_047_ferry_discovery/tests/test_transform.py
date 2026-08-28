@@ -219,6 +219,84 @@ class TestFerryPhase1RealContexts(unittest.TestCase):
         self.assertEqual(second_occ, [])
 
 
+class TestCatalogSeaTwoLine(unittest.TestCase):
+    def test_sea_card_route_is_two_lines_in_both_languages(self):
+        html = (
+            '<article class="catalog-card" data-stage="sea">'
+            '<div class="status-pill" data-ru="В море · Корея → Грузия" '
+            'data-uk="У морі · Корея → Грузія">В море · Корея → Грузия</div>'
+            '</article>'
+        )
+        out, occ = transform.transform_document(html)
+        self.assertIn('data-ru="На пароме&#10;Маршрут: Корея → Грузия"', out)
+        self.assertIn('data-uk="На поромі&#10;Маршрут: Корея → Грузія"', out)
+        self.assertIn('>На пароме&#10;Маршрут: Корея → Грузия</div>', out)
+        self.assertIn('style="white-space:pre-line"', out)
+        self.assertEqual(len(occ), 3)
+        self.assertTrue(all(
+            item["classification"] == "USER_FACING_CATALOG_ROUTE" for item in occ
+        ))
+
+    def test_accepted_one_line_candidate_advances_to_two_lines(self):
+        html = (
+            '<article class="catalog-card" data-stage="sea">'
+            '<div class="status-pill" data-ru="На пароме · Корея → Грузия" '
+            'data-uk="На поромі · Корея → Грузія">На пароме · Корея → Грузия</div>'
+            '</article>'
+        )
+        out, _ = transform.transform_document(html)
+        self.assertEqual(out.count("&#10;Маршрут:"), 3)
+
+    def test_non_sea_card_keeps_single_line_contract(self):
+        html = (
+            '<article class="catalog-card" data-stage="kiev">'
+            '<div class="status-pill">В море · Корея → Грузия</div>'
+            '</article>'
+        )
+        out, _ = transform.transform_document(html)
+        self.assertIn('>На пароме · Корея → Грузия</div>', out)
+        self.assertNotIn("&#10;Маршрут:", out)
+        self.assertNotIn("white-space:pre-line", out)
+
+    def test_sea_filter_visible_counter_is_updated(self):
+        html = (
+            '<button data-f="sea" data-ru="В море · 4" '
+            'data-uk="У морі · 4">В море · 4</button>'
+        )
+        out, occ = transform.transform_document(html)
+        self.assertEqual(
+            out,
+            '<button data-f="sea" data-ru="На пароме · 4" '
+            'data-uk="На поромі · 4">На пароме · 4</button>',
+        )
+        self.assertEqual(len(occ), 3)
+
+    def test_future_sea_card_and_style_are_idempotent(self):
+        html = (
+            '<article class="catalog-card" data-stage="sea"><span>UA-0042</span>'
+            '<div class="status-pill" style="color:#fff" '
+            'data-ru="В море · Корея → Грузия" '
+            'data-uk="У морі · Корея → Грузія">В море · Корея → Грузия</div>'
+            '</article>'
+        )
+        once, _ = transform.transform_document(html)
+        twice, second_occ = transform.transform_document(once)
+        self.assertIn('style="color:#fff;white-space:pre-line"', once)
+        self.assertEqual(once, twice)
+        self.assertEqual(second_occ, [])
+
+    def test_static_catalog_result_uses_actual_card_count(self):
+        cards = "".join(
+            '<article class="catalog-card" data-stage="kiev">UA-%04d</article>' % number
+            for number in range(1, 11)
+        )
+        html = '<p class="catalog-result">Показано: 8</p>' + cards
+        out, occ = transform.transform_document(html)
+        self.assertIn('<p class="catalog-result">Показано: 10</p>', out)
+        self.assertEqual(len(occ), 1)
+        self.assertEqual(occ[0]["classification"], "USER_FACING_CATALOG_COUNT")
+
+
 class TestOrdinaryProseUnchanged(unittest.TestCase):
     def test_prose_car_in_sea(self):
         html = '<p>Автомобиль в море уже 20 дней</p>'
