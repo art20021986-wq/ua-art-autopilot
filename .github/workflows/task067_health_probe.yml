@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 3
+# probe-revision: 4
 
 on:
   push:
@@ -21,21 +21,29 @@ jobs:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
         run: |
           python3 - <<'PY'
-          import hashlib, json, os, urllib.error, urllib.parse, urllib.request
+          import hashlib, json, os, re, urllib.error, urllib.parse, urllib.request
           root = '/home/Carix'
           state = root + '/autopilot_inbox/cloud/task_067'
           base = 'https://www.pythonanywhere.com/api/v0/user/Carix/'
           headers = {'Authorization': 'Token ' + os.environ['PYTHONANYWHERE_API_TOKEN'],
                      'User-Agent': 'task067-bounded-health-probe'}
-          def get(path, missing=False):
-              url = base + 'files/path' + urllib.parse.quote(path, safe='/')
+          def request(endpoint, missing=False, limit=5_000_000):
+              url = base + endpoint
               try:
                   with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=20) as response:
-                      return response.read(5_000_001)
+                      data = response.read(limit + 1)
+                      if len(data) > limit:
+                          raise RuntimeError('RESPONSE_TOO_LARGE')
+                      return data
               except urllib.error.HTTPError as exc:
                   if missing and exc.code == 404:
                       return None
                   raise
+          def get(path, missing=False, limit=5_000_000):
+              return request('files/path' + urllib.parse.quote(path, safe='/'), missing, limit)
+          def redacted(line):
+              line = re.sub(r'\b\d{8,}:[A-Za-z0-9_-]{20,}\b', '<redacted-token>', line)
+              return re.sub(r'(?i)(token\s*[=:]\s*)[^\s,;]+', r'\1<redacted>', line)[-700:]
           result = {'task_id': 'task_067', 'receipts': {}}
           for name in ('shadow', 'install', 'postcheck', 'soak', 'rollback'):
               raw = get(state + '/' + name + '_receipt.json', missing=True)
@@ -62,5 +70,53 @@ jobs:
                   'spool': status.get('spool'), 'bots': status.get('bots'),
                   'llm_tokens': status.get('llm_tokens'),
               }
+          raw_tasks = request('always_on/')
+          tasks = json.loads(raw_tasks.decode('utf-8'))
+          if isinstance(tasks, dict):
+              tasks = tasks.get('tasks') or tasks.get('objects') or tasks.get('results') or []
+          selected = []
+          for item in tasks if isinstance(tasks, list) else []:
+              if not isinstance(item, dict):
+                  continue
+              command = str(item.get('command') or '').strip()
+              description = str(item.get('description') or '')
+              if command == 'python3.10 /home/Carix/start_safe.py' or description.startswith('task067'):
+                  selected.append({
+                      'id': item.get('id'), 'command': command,
+                      'description': description, 'enabled': item.get('enabled'),
+                      'status': item.get('status'),
+                      'logfile': str(item.get('logfile') or item.get('log_file') or '').rsplit('/', 1)[-1],
+                  })
+          result['always_on'] = selected
+          tree_raw = request('files/tree/?' + urllib.parse.urlencode({'path': root + '/'}), limit=2_000_000)
+          tree = json.loads(tree_raw.decode('utf-8'))
+          if isinstance(tree, dict):
+              tree = tree.get('files') or tree.get('paths') or tree.get('objects') or []
+          log_paths = sorted(str(path) for path in tree if isinstance(path, str)
+                             and path.startswith(root + '/') and path.endswith('.log')
+                             and '/backups/' not in path and '/.local/' not in path)[:20]
+          signal = re.compile(r'Traceback|Error|Exception|database is locked|timed?\s*out|crm[_ -]?guard', re.I)
+          log_signals = {}
+          for path in log_paths:
+              raw = get(path, missing=True, limit=2_000_000)
+              if not raw:
+                  continue
+              lines = raw.decode('utf-8', errors='replace').splitlines()[-1200:]
+              hits = [redacted(line) for line in lines if signal.search(line)]
+              if hits:
+                  log_signals[path.rsplit('/', 1)[-1]] = hits[-80:]
+          result['runtime_logs'] = {'paths': [p.rsplit('/', 1)[-1] for p in log_paths],
+                                    'signals': log_signals}
+          events_raw = get(root + '/.crm_guard_events.jsonl', missing=True, limit=2_000_000)
+          if events_raw:
+              events = []
+              for line in events_raw.decode('utf-8', errors='replace').splitlines()[-40:]:
+                  try:
+                      item = json.loads(line)
+                      events.append({key: item.get(key) for key in ('at', 'event', 'component', 'error')
+                                     if item.get(key) is not None})
+                  except Exception:
+                      pass
+              result['guard_events'] = events[-20:]
           print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
           PY
