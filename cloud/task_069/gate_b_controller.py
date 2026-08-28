@@ -347,8 +347,8 @@ def report_markdown(value: dict) -> str:
             "PASS" if final.get("candidate", {}).get("button_label_occurrences") == 2 else "NOT VERIFIED"
         ),
         "- UA-0009 and all current cards protected: %s (count: %s)" % (
-            "PASS" if final.get("all_cards_protected") else "NOT VERIFIED"
-            , len(final.get("database", {}).get("card_ids") or [])
+            "PASS" if final.get("all_cards_protected") else "NOT VERIFIED",
+            len(final.get("database", {}).get("card_ids") or []),
         ),
         "- SQLite quick_check: `%s`" % final.get("database", {}).get("quick_check", "—"),
         "- Backup: `%s`" % install.get("backup_root", ""),
