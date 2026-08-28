@@ -36,6 +36,7 @@ RUNTIME_FILES = {
     "client": pathlib.Path("/home/Carix/lead_bot.py"),
     "crm": pathlib.Path("/home/Carix/team_bot.py"),
     "cards_ui": pathlib.Path("/home/Carix/cars_ui.py"),
+    "master_card": pathlib.Path("/home/Carix/master_card.py"),
     "db": pathlib.Path("/home/Carix/db.py"),
 }
 
@@ -98,6 +99,7 @@ def _runtime_contract() -> dict:
         "stable_launcher": "run_all.py" in sources["launcher"],
         "sqlite_lock_preserved": "CRM-DB-LOCK-EMERGENCY-001" in sources["db"],
         "stage_contract_loaded": repair.CONTRACT in sources["cards_ui"],
+        "master_final_filter": repair.MASTER_FINAL_SOURCE_MARKER in sources["master_card"],
     }
     process = subprocess.run(
         ["ps", "-eo", "pid=,args="],
@@ -137,12 +139,14 @@ def main() -> int:
 
         repair._validate_stranica(pathlib.Path(repair.STRANICA_PATH).read_text(encoding="utf-8"))
         repair._validate_yadro(pathlib.Path(repair.YADRO_PATH).read_text(encoding="utf-8"))
+        repair._validate_master_card(pathlib.Path(repair.MASTER_CARD_PATH).read_text(encoding="utf-8"))
         repair._validate_cars_ui(pathlib.Path(repair.CARS_UI_PATH).read_text(encoding="utf-8"))
         rows, db_state = repair._db_snapshot()
         identifiers = [str(row["auto_number"]) for row in rows]
         media_state = repair._media_inventory(identifiers)
         cards = repair._validate_cards(rows)
         fixtures = repair._fixture_contract()
+        master_final_fixtures = repair._master_final_fixture_contract()
         if db_state["published_rows_sha256"] != install["db_after"]["published_rows_sha256"]:
             raise RuntimeError("CRM_ROWS_CHANGED_AFTER_RESTART")
         if media_state != install["media_after"]:
@@ -175,6 +179,7 @@ def main() -> int:
             "card_count": len(cards),
             "stage_distribution": stage_distribution,
             "fixtures": fixtures,
+            "master_final_fixtures": master_final_fixtures,
             "ua0009": ua0009,
             "bot_health": bot_health,
             "runtime": runtime,
