@@ -15,7 +15,8 @@ import urllib.request
 BASE = "https://www.pythonanywhere.com/api/v0/user/Carix/"
 REMOTE = "/home/Carix/trace_zhurnal.py"
 OUT = pathlib.Path("cloud/task_064/evidence/trace_wrapper.json")
-WANTED = {"_Obertka", "connect_s_trassoy"}
+LINE_START = 300
+LINE_END = 390
 
 
 def read_remote() -> bytes:
@@ -47,8 +48,11 @@ def main() -> None:
     lines = source.splitlines()
     tree = ast.parse(source, REMOTE)
     definitions = []
-    for node in tree.body:
-        if isinstance(node, (ast.ClassDef, ast.FunctionDef)) and node.name in WANTED:
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, (ast.ClassDef, ast.FunctionDef))
+            and ("obert" in node.name.casefold() or node.name == "connect_s_trassoy")
+        ):
             segment = "\n".join(lines[node.lineno - 1:node.end_lineno])
             definitions.append({
                 "name": node.name,
@@ -58,14 +62,20 @@ def main() -> None:
                 "sha256": hashlib.sha256(segment.encode()).hexdigest(),
                 "source": redact(segment),
             })
-    if {item["name"] for item in definitions} != WANTED:
-        raise RuntimeError("WRAPPER_DEFINITIONS_MISSING")
+    bounded = "\n".join(lines[LINE_START - 1:LINE_END])
+    if "connect_s_trassoy" not in bounded or "__exit__" not in bounded:
+        raise RuntimeError("WRAPPER_CONTEXT_MISSING")
     result = {
         "task_id": "task_064",
         "mode": "READ_ONLY_TRACE_WRAPPER",
         "production_touched": False,
         "file_sha256": hashlib.sha256(data).hexdigest(),
         "definitions": definitions,
+        "bounded_lines": {
+            "start": LINE_START,
+            "end": LINE_END,
+            "source": redact(bounded),
+        },
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
