@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-v1-3-deploy
-# deploy-revision: 12-universal-media-input
+# deploy-revision: 13-universal-long-text-input
 
 on:
   push:
@@ -50,7 +50,7 @@ jobs:
               'MEDIA_ENQUEUE', 'MEDIA_DRAIN', 'MEDIA_STATUS', 'MEDIA_PROGRESS',
               'MEDIA_SCHEDULE', 'VOICE_FIELDS', 'TRANSCRIBE',
               'TRANSCRIBE_RESTORE', 'VOICE_RESTORE_HELPERS',
-              'MEDIA_EXTRACT_HELPERS', 'CLIENT_HELPERS',
+              'MEDIA_EXTRACT_HELPERS', 'UNIVERSAL_TEXT_HELPERS', 'CLIENT_HELPERS',
               'SET_FIELD_RESTORE', 'APPLY_VALUE_RESTORE', 'STAGE_SET_RESTORE',
               'CONTAINER_HELPERS', 'CONTAINER_WRITE', 'CONTAINER_ACCEPT',
               'CLIENT_CATALOG_CARS', 'CLIENT_CATALOG', 'CLIENT_CAR_SCREEN',
@@ -152,6 +152,12 @@ jobs:
           assert final['universal_media_route']['scheduled'] == 1
           assert final['universal_media_route']['caption_fields'] >= 4
           assert final['universal_media_route']['llm_tokens'] == 0
+          assert final['universal_text_route']['status'] == 'PASS'
+          assert final['universal_text_route']['fields_written'] >= 8
+          assert final['universal_text_route']['repeat_writes'] == 0
+          assert final['universal_text_route']['deposit_ignored'] is True
+          assert final['universal_text_route']['new_card_created'] is False
+          assert final['universal_text_route']['llm_tokens'] == 0
           assert final['field_queue']['status'] == 'PASS'
           assert final['field_queue']['processed'] == 4
           assert final['field_queue']['queue'] == 0
@@ -170,6 +176,7 @@ jobs:
           assert final['source_checks']['container_durable_route'] is True
           assert final['source_checks']['crm_ferry_vocabulary'] is True
           assert final['source_checks']['media_extract_missing_only'] is True
+          assert final['source_checks']['universal_text_missing_only'] is True
           assert final['bots']['tokens_distinct'] is True
           assert final['bots']['bots']['client']['ok'] is True
           assert final['bots']['bots']['crm']['ok'] is True
