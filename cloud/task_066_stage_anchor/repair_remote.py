@@ -37,6 +37,7 @@ CRM_PATH = ROOT + "/crm.db"
 STRANICA_PATH = ROOT + "/stranica.py"
 YADRO_PATH = ROOT + "/yadro.py"
 CARS_UI_PATH = ROOT + "/cars_ui.py"
+MASTER_CARD_PATH = ROOT + "/master_card.py"
 DB_PATH = ROOT + "/db.py"
 TEAM_BOT_PATH = ROOT + "/team_bot.py"
 START_SAFE_PATH = ROOT + "/start_safe.py"
@@ -48,6 +49,7 @@ LOCK_PATH = ROOT + "/.task066_stage_anchor.lock"
 START_MARKER = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START -->"
 END_MARKER = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:END -->"
 DIAG_MARKER = "<!--ua-art-diagnostics-permanent-v1-->"
+MASTER_FINAL_SOURCE_MARKER = "# UA-CARDS-STAGE-ANCHOR-001-V1.1-MASTER-FINAL"
 MAX_FILE_BYTES = 24 * 1024 * 1024
 CARD_ID = re.compile(r"^UA-[0-9]{4,}$")
 
@@ -55,6 +57,7 @@ EXPECTED_SHA = {
     STRANICA_PATH: "530b345caf2534fe4c38dc0d3fc3ab69e01b4a540cf67fe012a6a7678a786453",
     YADRO_PATH: "71d981508c157dad7d683430d8d0965af8d3b5946331cbda06b2a0179a7a657c",
     CARS_UI_PATH: "a7da33f7a653a0cef697aad784e5c29bc2600639eb48b272793d61f1ac0e2af5",
+    MASTER_CARD_PATH: "7a51e8e0dcf32e55038138941ba85150001d5229cfd4374c52c0d3a83909b672",
     DB_PATH: "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
     TEAM_BOT_PATH: "70b349cdbe72a0cf5f674a1341a493de7759b5263859ce73d86fb292db3b5ad2",
     START_SAFE_PATH: "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007",
@@ -66,6 +69,8 @@ EXPECTED_FUNCTION_SHA = {
     (CARS_UI_PATH, "card_kb"): "8fd0c67de08f7bbc55518aa941748f383a8744a1d0557be6316c0ca141123251",
     (CARS_UI_PATH, "stage_menu"): "30c655140f878647b24bcd59fca05ca1825760adc5f35e664b5aac2598747194",
     (CARS_UI_PATH, "stage_set"): "c71f05a3b314b5fe9b64d9e3d3e2146bb51a20ae710b804ebb8bdab1f97ca9aa",
+    (MASTER_CARD_PATH, "obrabotat_kartochku:last"): "83bd1e60538f33c3366feab79b21a78306dbfef1b0752c2f8780a52c66a15ac6",
+    (MASTER_CARD_PATH, "proverit:last"): "5cdaac858ee8f9f66245ebd1ba010aee6a1c248dca2dd372a20ce5aa22583af7",
 }
 
 PRESERVE_FUNCTIONS = {
@@ -398,6 +403,239 @@ def _ua_delivery_stage_anchor(m):
 '''.strip()
 
 
+# Installed at the absolute end of master_card.py.  That module is the last
+# filter used by the CRM/background writer, so this wrapper is the canonical
+# persistence boundary: legacy filters may run first, but they cannot be the
+# final HTML returned to a writer.
+MASTER_CARD_FINAL_SOURCE = r'''
+# UA-CARDS-STAGE-ANCHOR-001-V1.1-MASTER-FINAL
+_UA_MASTER_DIAG_MARKER = "<!--ua-art-diagnostics-permanent-v1-->"
+
+
+def _ua_master_balanced_div_end(source, start):
+    pattern = re.compile(r"<div\b[^>]*>|</div\s*>", re.IGNORECASE)
+    depth = 0
+    first = True
+    for match in pattern.finditer(source, start):
+        token = match.group(0).lower()
+        if first:
+            if match.start() != start or token.startswith("</"):
+                raise RuntimeError("UA_STAGE_DIV_START_INVALID")
+            first = False
+        if token.startswith("</"):
+            depth -= 1
+            if depth == 0:
+                return match.end()
+        else:
+            depth += 1
+    raise RuntimeError("UA_STAGE_DIV_UNBALANCED")
+
+
+def _ua_master_remove_class_divs(source, class_names):
+    terms = "|".join(re.escape(value) for value in class_names)
+    pattern = re.compile(
+        r'<div\b[^>]*\bclass=["\'][^"\']*\b(?:' + terms
+        + r')\b[^"\']*["\'][^>]*>',
+        re.IGNORECASE,
+    )
+    while True:
+        match = pattern.search(source)
+        if match is None:
+            return source
+        end = _ua_master_balanced_div_end(source, match.start())
+        source = source[:match.start()] + source[end:]
+
+
+def _ua_master_stage_span(source):
+    start_count = source.count(_UA_STAGE_START)
+    end_count = source.count(_UA_STAGE_END)
+    if start_count or end_count:
+        if start_count != 1 or end_count != 1:
+            raise RuntimeError("UA_STAGE_MARKER_COUNT_INVALID")
+        start = source.index(_UA_STAGE_START)
+        end = source.index(_UA_STAGE_END, start) + len(_UA_STAGE_END)
+        return start, end
+
+    positions = []
+    for phrase in ("Где машина сейчас", "Де машина зараз", "<!--ua-art-karta-v177-->"):
+        position = source.find(phrase)
+        if position >= 0:
+            positions.append(position)
+    if not positions:
+        return None
+    position = min(positions)
+    candidates = list(re.finditer(
+        r'<div\b[^>]*\bclass=["\'][^"\']*(?:blok|krt)[^"\']*["\'][^>]*>',
+        source[:position],
+        re.IGNORECASE,
+    ))
+    for match in reversed(candidates):
+        end = _ua_master_balanced_div_end(source, match.start())
+        if end > position:
+            return match.start(), end
+    return None
+
+
+def _ua_master_stage_errors(source, row):
+    errors = []
+    if source.count(_UA_STAGE_START) != 1 or source.count(_UA_STAGE_END) != 1:
+        return ["постоянных блоков этапов не ровно один"]
+    start = source.index(_UA_STAGE_START)
+    end = source.index(_UA_STAGE_END, start) + len(_UA_STAGE_END)
+    region = source[start:end]
+    if re.findall(r'data-ua-stage="([1-4])"', region) != ["1", "2", "3", "4"]:
+        errors.append("этапы Корея/Паром/Грузия/Киев повреждены")
+    if region.count('data-ua-state="current"') != 1 or region.count("СЕЙЧАС") != 1:
+        errors.append("текущий этап не единственный")
+    expected = _ua_stage_number(row)
+    current = re.search(r'data-ua-stage-current="([1-4])"', region)
+    if current is None or int(current.group(1)) != expected:
+        errors.append("текущий этап не совпадает с CRM")
+    for label in _UA_STAGE_LABELS:
+        if region.count('data-ua-stage-label="%s"' % label) != 1:
+            errors.append("пропала метка этапа %s" % label)
+    if re.search(r'class=["\'][^"\']*\bmcf-etap\b', source, re.IGNORECASE):
+        errors.append("остался дублирующий старый блок этапа")
+    if re.search(r'class=["\'][^"\']*\bmcf-track\b', source, re.IGNORECASE):
+        errors.append("осталась дублирующая старая кнопка контейнера")
+    if "Автомобиль в море: Корея → Грузия" in source:
+        errors.append("осталась старая формулировка «в море»")
+    return errors
+
+
+def _ua_master_ensure_stage(source, kod, row):
+    if not source or "</html>" not in source.lower():
+        raise RuntimeError("UA_STAGE_INVALID_CARD:%s" % kod)
+    source = _ua_master_remove_class_divs(source, ("mcf-etap", "mcf-track"))
+    span = _ua_master_stage_span(source)
+    block = _ua_delivery_stage_anchor(row)
+    if span is not None:
+        source = source[:span[0]] + block + source[span[1]:]
+    else:
+        position = -1
+        for needle in (_UA_MASTER_DIAG_MARKER, "Комплексная диагностика", "Купить авто"):
+            position = source.find(needle)
+            if position >= 0:
+                tag = source.rfind("<", 0, position)
+                if tag >= 0:
+                    position = tag
+                break
+        if position < 0:
+            position = source.lower().rfind("</body>")
+        if position < 0:
+            raise RuntimeError("UA_STAGE_INSERTION_POINT_MISSING:%s" % kod)
+        source = source[:position] + block + source[position:]
+    errors = _ua_master_stage_errors(source, row)
+    if errors:
+        raise RuntimeError("UA_STAGE_FINAL_INVALID:%s:%s" % (kod, ";".join(errors)))
+    return source
+
+
+def _ua_master_diag_anchor(kod):
+    return (
+        _UA_MASTER_DIAG_MARKER
+        + '<a class="mcf-diag-cta" href="%s-diag.html" '
+          'style="display:flex;align-items:center;gap:12px;margin:14px 0;'
+          'padding:15px 16px;border-radius:14px;text-decoration:none;'
+          'background:linear-gradient(180deg,rgba(212,175,55,.20),'
+          'rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);'
+          'color:#f4e3ae"><span style="font-size:22px;line-height:1">🔧</span>'
+          '<span style="flex:1"><span style="display:block;font-weight:800;'
+          'font-size:16px">Открыть комплексную диагностику →</span>'
+          '<span style="display:block;font-size:13px;opacity:.85;margin-top:3px">'
+          'ЛКП · OBD · ходовая · фото · видео</span></span>'
+          '<span style="font-size:20px;opacity:.8">›</span></a>' % kod
+    )
+
+
+def _ua_master_diag_errors(source, kod):
+    errors = []
+    if source.count(_UA_MASTER_DIAG_MARKER) != 1:
+        errors.append("постоянных меток диагностики не ровно одна")
+    links = re.findall(
+        r'href=["\']' + re.escape(kod) + r'-diag\.html(?:\?[^"\']*)?["\']',
+        source,
+        re.IGNORECASE,
+    )
+    if len(links) != 1:
+        errors.append("ссылок комплексной диагностики не ровно одна")
+    if re.search(r'class=["\'][^"\']*\bmcf-diag-off\b', source, re.IGNORECASE):
+        errors.append("диагностика ошибочно зависит от наличия материалов")
+    return errors
+
+
+def _ua_master_ensure_diag(source, kod):
+    anchor_pattern = re.compile(
+        r'<a\b(?=[^>]*(?:\bclass=["\'][^"\']*\bmcf-diag-cta\b[^"\']*["\']'
+        r'|\bhref=["\'](?:[^"\']*/)?' + re.escape(kod)
+        + r'-diag\.html(?:\?[^"\']*)?["\']))[^>]*>.*?</a\s*>',
+        re.IGNORECASE | re.DOTALL,
+    )
+    source = anchor_pattern.sub("", source).replace(_UA_MASTER_DIAG_MARKER, "")
+    source = _ua_master_remove_class_divs(source, ("mcf-diag-cta",))
+    purchase = re.search(
+        r'<a\b(?=[^>]*\bclass=["\'][^"\']*(?:kn_kupit|dejstvie|knp\s+zol)'
+        r'[^"\']*["\'])[^>]*>',
+        source,
+        re.IGNORECASE,
+    )
+    if purchase is None:
+        purchase = re.search(
+            r'<a\b[^>]*href=["\']katalog\.html(?:\?[^"\']*)?["\'][^>]*>',
+            source,
+            re.IGNORECASE,
+        )
+    position = purchase.start() if purchase is not None else source.lower().rfind("</body>")
+    if position < 0:
+        raise RuntimeError("UA_DIAGNOSTICS_INSERTION_POINT_MISSING:%s" % kod)
+    source = source[:position] + _ua_master_diag_anchor(kod) + source[position:]
+    errors = _ua_master_diag_errors(source, kod)
+    if errors:
+        raise RuntimeError("UA_DIAGNOSTICS_FINAL_INVALID:%s:%s" % (kod, ";".join(errors)))
+    return source
+
+
+# Even direct callers of the old helper can no longer receive a disabled CTA.
+def cta_diagnostiki(kod, m=None):
+    return _ua_master_diag_anchor(kod)
+
+
+_ua_master_original_card = obrabotat_kartochku
+
+
+def obrabotat_kartochku(html, kod):
+    html = _ua_master_original_card(html, kod)
+    if not html:
+        return html
+    kod = "%s" % kod
+    row = dict(dannye(kod) or {})
+    row.setdefault("auto_number", kod)
+    html = _ua_master_ensure_stage(html, kod, row)
+    html = _ua_master_ensure_diag(html, kod)
+    errors = _ua_master_stage_errors(html, row) + _ua_master_diag_errors(html, kod)
+    if errors:
+        raise RuntimeError("UA_MASTER_FINAL_CONTRACT:%s:%s" % (kod, ";".join(errors)))
+    return html
+
+
+_ua_master_original_validate = proverit
+
+
+def proverit(html, kod=""):
+    errors = list(_ua_master_original_validate(html, kod) or [])
+    if kod:
+        row = dict(dannye(kod) or {})
+        row.setdefault("auto_number", kod)
+        errors.extend(_ua_master_stage_errors(html, row))
+        errors.extend(_ua_master_diag_errors(html, kod))
+    result = []
+    for error in errors:
+        if error not in result:
+            result.append(error)
+    return result
+'''.strip()
+
+
 OLD_STRANICA_STAGE = '''    tekushchij = nomer_etapa(m)
     c.append("<div class='blok'><div class='zag'>Где машина сейчас</div>")
     for i, nazv in enumerate(("Выкуплена, стоянка в Корее", "Паром: Корея → Грузия",
@@ -701,6 +939,56 @@ def _validate_yadro(source: str) -> None:
             raise RepairBlocked("yadro_contract_missing:" + value)
 
 
+def _patch_master_card(source: str, original_sha: str) -> str:
+    if MASTER_FINAL_SOURCE_MARKER in source:
+        _validate_master_card(source)
+        return source
+    if original_sha != EXPECTED_SHA[MASTER_CARD_PATH]:
+        raise RepairBlocked("master_card_sha_changed")
+    if _function_sha(source, "obrabotat_kartochku", last=True) != EXPECTED_FUNCTION_SHA[
+        (MASTER_CARD_PATH, "obrabotat_kartochku:last")
+    ]:
+        raise RepairBlocked("master_card_final_writer_changed")
+    if _function_sha(source, "proverit", last=True) != EXPECTED_FUNCTION_SHA[
+        (MASTER_CARD_PATH, "proverit:last")
+    ]:
+        raise RepairBlocked("master_card_final_validator_changed")
+    source = source.rstrip() + "\n\n" + STAGE_HELPER_SOURCE + "\n\n" + MASTER_CARD_FINAL_SOURCE + "\n"
+    _validate_master_card(source)
+    return source
+
+
+def _validate_master_card(source: str) -> None:
+    compile(source, MASTER_CARD_PATH, "exec")
+    required = (
+        MASTER_FINAL_SOURCE_MARKER,
+        "def _ua_delivery_stage_anchor(m):",
+        "def _ua_master_ensure_stage(source, kod, row):",
+        "def _ua_master_ensure_diag(source, kod):",
+        "def cta_diagnostiki(kod, m=None):",
+        "html = _ua_master_ensure_stage(html, kod, row)",
+        "html = _ua_master_ensure_diag(html, kod)",
+        START_MARKER,
+        END_MARKER,
+        DIAG_MARKER,
+    )
+    for value in required:
+        if value not in source:
+            raise RepairBlocked("master_card_contract_missing:" + value)
+    if source.count(MASTER_FINAL_SOURCE_MARKER) != 1:
+        raise RepairBlocked("master_card_final_marker_count_invalid")
+    card_nodes = _function_nodes(source, "obrabotat_kartochku")
+    validate_nodes = _function_nodes(source, "proverit")
+    if len(card_nodes) < 3 or len(validate_nodes) < 3:
+        raise RepairBlocked("master_card_final_wrapper_missing")
+    final_card = _source_segment(source, card_nodes[-1])
+    final_validate = _source_segment(source, validate_nodes[-1])
+    if "_ua_master_original_card" not in final_card or "_ua_master_ensure_stage" not in final_card:
+        raise RepairBlocked("master_card_final_writer_not_last")
+    if "_ua_master_stage_errors" not in final_validate or "_ua_master_diag_errors" not in final_validate:
+        raise RepairBlocked("master_card_final_validator_not_last")
+
+
 def _patch_cars_ui(source: str, original_sha: str) -> str:
     if CONTRACT in source:
         _validate_cars_ui(source)
@@ -881,6 +1169,21 @@ def _find_balanced_div(source: str, start: int) -> int:
     raise RepairBlocked("stage_div_unbalanced")
 
 
+def _remove_class_divs(source: str, class_names: tuple[str, ...]) -> str:
+    terms = "|".join(re.escape(value) for value in class_names)
+    pattern = re.compile(
+        r'<div\b[^>]*\bclass=["\'][^"\']*\b(?:' + terms
+        + r')\b[^"\']*["\'][^>]*>',
+        re.IGNORECASE,
+    )
+    while True:
+        match = pattern.search(source)
+        if match is None:
+            return source
+        end = _find_balanced_div(source, match.start())
+        source = source[:match.start()] + source[end:]
+
+
 def _find_stage_span(source: str, identifier: str) -> tuple[int, int]:
     start_count = source.count(START_MARKER)
     end_count = source.count(END_MARKER)
@@ -908,6 +1211,7 @@ def _find_stage_span(source: str, identifier: str) -> tuple[int, int]:
 def _ensure_stage_anchor(source: str, identifier: str, row: dict[str, Any], render: Any) -> str:
     if identifier not in source or "</html>" not in source.lower():
         raise RepairBlocked("invalid_card_html:" + identifier)
+    source = _remove_class_divs(source, ("mcf-etap", "mcf-track"))
     start, end = _find_stage_span(source, identifier)
     candidate = source[:start] + render(row) + source[end:]
     _validate_stage_html(candidate, identifier, int(render.__globals__["_ua_stage_number"](row)))
@@ -947,6 +1251,7 @@ def _ensure_diag_anchor(source: str, identifier: str) -> str:
         flags=re.IGNORECASE | re.DOTALL,
     )
     cleaned = pattern.sub("", source).replace(DIAG_MARKER, "")
+    cleaned = _remove_class_divs(cleaned, ("mcf-diag-cta",))
     purchase = re.search(
         r'<a\b(?=[^>]*\bclass=["\'][^"\']*(?:kn_kupit|dejstvie|knp\s+zol)'
         r'[^"\']*["\'])[^>]*>',
@@ -962,7 +1267,9 @@ def _ensure_diag_anchor(source: str, identifier: str) -> str:
     if purchase is None:
         raise RepairBlocked("diagnostics_anchor_point_missing:" + identifier)
     candidate = cleaned[:purchase.start()] + _diagnostic_anchor(identifier) + cleaned[purchase.start():]
-    if _diagnostic_link_count(candidate, identifier) != 1 or candidate.count(DIAG_MARKER) != 1:
+    if (_diagnostic_link_count(candidate, identifier) != 1
+            or candidate.count(DIAG_MARKER) != 1
+            or "mcf-diag-off" in candidate):
         raise RepairBlocked("diagnostics_anchor_invalid:" + identifier)
     return candidate
 
@@ -983,6 +1290,10 @@ def _validate_stage_html(source: str, identifier: str, expected_stage: int | Non
         match = re.search(r'data-ua-stage-current="([1-4])"', region)
         if not match or int(match.group(1)) != expected_stage:
             raise RepairBlocked("stage_number_invalid:" + identifier)
+    if re.search(r'class=["\'][^"\']*\b(?:mcf-etap|mcf-track)\b', source, re.IGNORECASE):
+        raise RepairBlocked("legacy_stage_duplicate_remains:" + identifier)
+    if "Автомобиль в море: Корея → Грузия" in source:
+        raise RepairBlocked("legacy_sea_wording_remains:" + identifier)
 
 
 def _valid_diag_page(source: str, identifier: str) -> bool:
@@ -1051,7 +1362,9 @@ def _validate_cards(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             assert data is not None
             source = data.decode("utf-8")
             _validate_stage_html(source, identifier, expected_stage)
-            if _diagnostic_link_count(source, identifier) != 1 or source.count(DIAG_MARKER) != 1:
+            if (_diagnostic_link_count(source, identifier) != 1
+                    or source.count(DIAG_MARKER) != 1
+                    or "mcf-diag-off" in source):
                 raise RepairBlocked("diagnostics_card_contract_invalid:" + path)
             item["roots"][os.path.basename(root)] = {
                 "sha256": _sha(data),
@@ -1083,6 +1396,56 @@ def _fixture_contract() -> dict[str, int]:
     return result
 
 
+def _master_final_fixture_contract() -> dict[str, int]:
+    state: dict[str, Any] = {"row": {}}
+    namespace: dict[str, Any] = {
+        "__name__": "task066_master_final_fixture",
+        "re": re,
+        "dannye": lambda _kod: dict(state["row"]),
+        "obrabotat_kartochku": lambda source, _kod: source,
+        "proverit": lambda _source, _kod="": [],
+    }
+    installed = STAGE_HELPER_SOURCE + "\n\n" + MASTER_CARD_FINAL_SOURCE
+    exec(compile(installed, "<task066-master-final-fixture>", "exec"), namespace)
+    fixtures = {
+        "korea": {"auto_number": "UA-9101", "status": "kr_bought"},
+        "ferry": {"auto_number": "UA-9102", "status": "sea_loaded"},
+        "georgia": {"auto_number": "UA-9103", "status": "ge_waiting"},
+        "kyiv": {"auto_number": "UA-9104", "status": "ua_ready"},
+    }
+    expected_by_name = {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}
+    result: dict[str, int] = {}
+    for name, row in fixtures.items():
+        state["row"] = row
+        identifier = str(row["auto_number"])
+        old = (
+            "<html><body><header>UA ART</header><div>%s</div>"
+            "<div class='blok'><div class='zag'>Где машина сейчас</div>"
+            "<div class='etap tut'><div class='krug'>2</div>Море</div></div>"
+            "<div class='mcf-etap mcf-sea'><div>Автомобиль в море: Корея → Грузия</div></div>"
+            "<h2>Комплексная диагностика</h2>"
+            "<div class='mcf-diag-cta mcf-diag-off'><span>Диагностика готовится</span></div>"
+            "<a class='dejstvie kn_kupit' href='#'>Купить авто</a></body></html>"
+        ) % identifier
+        upgraded = namespace["obrabotat_kartochku"](old, identifier)
+        upgraded_twice = namespace["obrabotat_kartochku"](upgraded, identifier)
+        if upgraded != upgraded_twice:
+            raise RepairBlocked("master_card_final_not_idempotent:" + identifier)
+        expected = expected_by_name[name]
+        _validate_stage_html(upgraded, identifier, expected)
+        if _diagnostic_link_count(upgraded, identifier) != 1 or upgraded.count(DIAG_MARKER) != 1:
+            raise RepairBlocked("master_card_final_diagnostics_invalid:" + identifier)
+        if "mcf-diag-off" in upgraded or "mcf-etap" in upgraded or "Автомобиль в море:" in upgraded:
+            raise RepairBlocked("master_card_final_legacy_content_remains:" + identifier)
+        if namespace["proverit"](upgraded, identifier):
+            raise RepairBlocked("master_card_final_validator_rejected:" + identifier)
+        direct_cta = namespace["cta_diagnostiki"](identifier, {})
+        if DIAG_MARKER not in direct_cta or (identifier + "-diag.html") not in direct_cta:
+            raise RepairBlocked("master_card_direct_diagnostics_not_permanent:" + identifier)
+        result[name] = expected
+    return result
+
+
 def _validate_untouched() -> dict[str, str]:
     values = {}
     for path in (DB_PATH, TEAM_BOT_PATH, START_SAFE_PATH):
@@ -1102,6 +1465,7 @@ def _build_sources() -> tuple[dict[str, bytes], dict[str, str]]:
     for path, patcher in (
         (STRANICA_PATH, _patch_stranica),
         (YADRO_PATH, _patch_yadro),
+        (MASTER_CARD_PATH, _patch_master_card),
         (CARS_UI_PATH, _patch_cars_ui),
     ):
         data = _read(path)
@@ -1139,6 +1503,7 @@ def run_install() -> dict[str, Any]:
         "card_ids": [],
         "cards": [],
         "fixtures": {},
+        "master_final_fixtures": {},
         "changed_paths": [],
         "errors": [],
         "llm_tokens": 0,
@@ -1158,6 +1523,7 @@ def run_install() -> dict[str, Any]:
         receipt["source_sha256_before"] = before_hashes
         candidates = _collect_candidates(rows, source_candidates)
         receipt["fixtures"] = _fixture_contract()
+        receipt["master_final_fixtures"] = _master_final_fixture_contract()
 
         for path, data in candidates.items():
             if not data or len(data) > MAX_FILE_BYTES:
@@ -1213,6 +1579,7 @@ def run_install() -> dict[str, Any]:
 
         _validate_stranica(_read(STRANICA_PATH).decode("utf-8"))
         _validate_yadro(_read(YADRO_PATH).decode("utf-8"))
+        _validate_master_card(_read(MASTER_CARD_PATH).decode("utf-8"))
         _validate_cars_ui(_read(CARS_UI_PATH).decode("utf-8"))
         receipt["cards"] = _validate_cards(rows)
         rows_after, db_after = _db_snapshot()
@@ -1227,7 +1594,7 @@ def run_install() -> dict[str, Any]:
             raise RepairBlocked("media_inventory_changed_during_install")
         receipt["source_sha256_after"] = {
             os.path.basename(path): _sha(_read(path))
-            for path in (STRANICA_PATH, YADRO_PATH, CARS_UI_PATH)
+            for path in (STRANICA_PATH, YADRO_PATH, MASTER_CARD_PATH, CARS_UI_PATH)
         }
         receipt["changed_paths"] = [os.path.relpath(path, ROOT) for path in changed]
         receipt["status"] = "PASS"
@@ -1298,6 +1665,9 @@ def self_test() -> int:
     fixtures = _fixture_contract()
     if fixtures != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
         raise SystemExit("TASK066_FIXTURE_CONTRACT_FAIL")
+    master_fixtures = _master_final_fixture_contract()
+    if master_fixtures != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
+        raise SystemExit("TASK066_MASTER_FINAL_FIXTURE_CONTRACT_FAIL")
     render = _renderer()
     row = {
         "auto_number": "UA-9999", "status": "sea_loaded",
