@@ -27,6 +27,8 @@ STALE_OPERATION_SECONDS = 45.0
 
 _THREAD_GUARD = threading.Lock()
 _WORKERS: set[str] = set()
+_QUEUE_INIT_GUARD = threading.Lock()
+_INITIALIZED_QUEUES: set[str] = set()
 
 
 class DescriptionError(RuntimeError):
@@ -266,23 +268,35 @@ def _read_description(db_path: str, card_id: int) -> str | None:
 
 
 def _open_queue(queue_path: str) -> sqlite3.Connection:
-    parent = os.path.dirname(os.path.abspath(queue_path))
+    absolute = os.path.abspath(queue_path)
+    parent = os.path.dirname(absolute)
     if parent:
         os.makedirs(parent, exist_ok=True)
-    conn = sqlite3.connect(
-        queue_path,
-        timeout=QUEUE_TIMEOUT_SECONDS,
-        isolation_level=None,
-    )
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA busy_timeout=%d" % int(QUEUE_TIMEOUT_SECONDS * 1000))
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.executescript(QUEUE_SCHEMA)
-    try:
-        os.chmod(queue_path, 0o600)
-    except OSError:
-        pass
-    return conn
+    deadline = time.monotonic() + QUEUE_TIMEOUT_SECONDS
+    while True:
+        conn = sqlite3.connect(
+            absolute,
+            timeout=QUEUE_TIMEOUT_SECONDS,
+            isolation_level=None,
+        )
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA busy_timeout=%d" % int(QUEUE_TIMEOUT_SECONDS * 1000))
+        try:
+            with _QUEUE_INIT_GUARD:
+                if absolute not in _INITIALIZED_QUEUES:
+                    conn.execute("PRAGMA journal_mode=WAL")
+                    conn.executescript(QUEUE_SCHEMA)
+                    _INITIALIZED_QUEUES.add(absolute)
+            try:
+                os.chmod(absolute, 0o600)
+            except OSError:
+                pass
+            return conn
+        except sqlite3.OperationalError as exc:
+            conn.close()
+            if not _is_busy(exc) or time.monotonic() >= deadline:
+                raise
+            time.sleep(0.02)
 
 
 def _begin(conn: sqlite3.Connection) -> None:
