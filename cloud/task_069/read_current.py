@@ -156,12 +156,19 @@ def inspect_db() -> dict:
                 "code" if "code" in columns else None
             )
             target = None
+            container_owners = []
             if identity:
                 row = connection.execute(
                     "SELECT %s FROM cars WHERE %s=?" % (",".join(safe), identity),
                     ("UA-0011",),
                 ).fetchone()
                 target = dict(row) if row else None
+                if "sea_container" in columns:
+                    container_owners = [dict(row) for row in connection.execute(
+                        "SELECT id,%s,sea_container FROM cars "
+                        "WHERE UPPER(TRIM(COALESCE(sea_container,'')))=? ORDER BY id" % identity,
+                        ("ONEYSELGF1046602",),
+                    )]
             card_ids = []
             if identity:
                 card_ids = [str(row[0]) for row in connection.execute(
@@ -178,6 +185,7 @@ def inspect_db() -> dict:
         "quick_check": quick,
         "columns": columns,
         "ua_0011": target,
+        "target_container_owners": container_owners,
         "card_ids": card_ids,
     }
 
