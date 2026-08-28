@@ -1,15 +1,4731 @@
 {
-  "status": "NOT_RUN",
-  "reason": "Round 1 built and offline-tested the read-only discovery package only. No live PythonAnywhere execution has occurred yet. This placeholder must only be replaced by a real, verified receipt relayed by task058_readonly_controller.py after an actual controller-run against the live host.",
-  "context_bundle_sha256": "2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c",
-  "memory_version_read": 4,
-  "production_touched": "NO",
-  "crm_touched": "NO",
-  "crm_db_written": "NO",
-  "site_rebuilt": "NO",
-  "service_reloaded": "NO",
-  "ocr_fix_installed": "NO",
-  "gate_b_executed": "NO",
-  "ua_0009_published": "NO",
-  "ua_0009_status": "UNKNOWN"
+  "completeness": {
+    "anchor_counts": {
+      "database_write": 428,
+      "lock_resource": 60,
+      "ocr_vision": 7,
+      "rebuild_publish": 40,
+      "retry_timeout": 61,
+      "telegram_media": 104
+    },
+    "database_readonly_verified": true,
+    "logs_scanned": false,
+    "ocr_failure_message_found": true,
+    "rebuild_failure_message_found": false,
+    "required_site_found": true,
+    "required_sources_found": true,
+    "root_cause_confirmed": false
+  },
+  "crm_write": false,
+  "database": {
+    "busy_timeout_ms": 30000,
+    "candidate_cards": {
+      "UA-0009": {
+        "published_count": 1,
+        "row_count": 1
+      },
+      "UA-0010": {
+        "published_count": 0,
+        "row_count": 0
+      }
+    },
+    "cars_columns": [
+      "id",
+      "brand",
+      "model",
+      "year",
+      "vin",
+      "fuel",
+      "engine",
+      "color",
+      "mileage",
+      "trim",
+      "condition",
+      "accidents",
+      "auction_link",
+      "price_buy",
+      "price_extra",
+      "price_ship",
+      "price_customs",
+      "price_total",
+      "stage",
+      "photos",
+      "videos",
+      "docs",
+      "responsible",
+      "review_status",
+      "published",
+      "created_by",
+      "approved_by",
+      "created_at",
+      "updated_at",
+      "client_id",
+      "publish_pending",
+      "video_h",
+      "video_v",
+      "auto_number",
+      "engine_cc",
+      "gearbox",
+      "drive",
+      "mileage_km",
+      "condition_text",
+      "condition_photos",
+      "condition_videos",
+      "diag_report",
+      "diag_link",
+      "kr_buy_date",
+      "kr_parking",
+      "sea_container",
+      "sea_port_from",
+      "sea_date_out",
+      "ge_port",
+      "ge_arrived",
+      "ge_released",
+      "days_to_kyiv",
+      "ua_delivered",
+      "ua_handed",
+      "cost_purchase",
+      "cost_fees",
+      "cost_logistics",
+      "cost_total",
+      "price_uah",
+      "nbu_rate",
+      "status",
+      "owner_user",
+      "history",
+      "price_history",
+      "cover_photo",
+      "eta_manual",
+      "description",
+      "hidden_photos",
+      "diag_text",
+      "ge_to_kyiv_at"
+    ],
+    "cars_table_found": true,
+    "cars_total": 9,
+    "identity_stable": true,
+    "journal_mode": "delete",
+    "open_uri_mode": "ro",
+    "path": "/home/Carix/crm.db",
+    "query_only_requested": true,
+    "query_only_value": 1,
+    "quick_check": "ok",
+    "sha256_after": "6df24561d6e6c6742081765b85a107a61ccc63efb2d324a05854e26dda166a13",
+    "sha256_before": "6df24561d6e6c6742081765b85a107a61ccc63efb2d324a05854e26dda166a13",
+    "sidecars_after": {
+      "-journal": null,
+      "-shm": null,
+      "-wal": null
+    },
+    "sidecars_before": {
+      "-journal": null,
+      "-shm": null,
+      "-wal": null
+    },
+    "table_names": [
+      "audit",
+      "cars",
+      "clients",
+      "comments",
+      "inbox",
+      "invites",
+      "media",
+      "ns_video",
+      "sqlite_sequence",
+      "staff"
+    ],
+    "ua0009_published_count": 1,
+    "ua0009_row_count": 1,
+    "ua0010_published_count": 0,
+    "ua0010_row_count": 0
+  },
+  "db_write": false,
+  "errors": [],
+  "gate_b_executed": false,
+  "generated_at_utc": "2026-08-28T04:07:13Z",
+  "logs": {
+    "counts": {
+      "database_is_locked": 0,
+      "ocr_failure": 0,
+      "rebuild_failure": 0,
+      "resource_temporarily_unavailable": 0
+    },
+    "errors": [],
+    "paths_scanned": []
+  },
+  "mode": "READ_ONLY_LIVE_DISCOVERY",
+  "ocr_fix_installed": false,
+  "production_write": false,
+  "service_reloaded": false,
+  "site_after": {
+    "/home/Carix/site/UA-0001.html": {
+      "mtime_ns": 1787888037856311037,
+      "sha256": "11fa4c00bd44c9baa0e230a6403cf3afc725aaee1a8eebd02922dd0dbd601544",
+      "size": 35764
+    },
+    "/home/Carix/site/UA-0002.html": {
+      "mtime_ns": 1787888038028312311,
+      "sha256": "0b87792dc0cd5115ccac4055d9f5572b05cc732b5e5faa04aff1618dc34f7544",
+      "size": 35808
+    },
+    "/home/Carix/site/UA-0003.html": {
+      "mtime_ns": 1787888038096312815,
+      "sha256": "7d411ddfe3e6643446b89f78cc53129f2210b5be767252468c181daa2d5158ff",
+      "size": 35267
+    },
+    "/home/Carix/site/UA-0004.html": {
+      "mtime_ns": 1787888038216313703,
+      "sha256": "6ff5b393e19c5c60248edaf1d7f38f9e6c0f252c8f070f7b8e6d98522a1215a8",
+      "size": 35597
+    },
+    "/home/Carix/site/UA-0005.html": {
+      "mtime_ns": 1787888038316314444,
+      "sha256": "d0b597c22f262cd4d67af2e35dadf58e35281b953eb5d9c9289e120d28a6a2e5",
+      "size": 34033
+    },
+    "/home/Carix/site/UA-0006.html": {
+      "mtime_ns": 1787888038424315243,
+      "sha256": "903699de31e22c04339ec504b53e12e06de4ceb3d04a99f8f1d43c98faa83f6a",
+      "size": 38976
+    },
+    "/home/Carix/site/UA-0007.html": {
+      "mtime_ns": 1787888038544316132,
+      "sha256": "b06c020ac236faa583fcec3b467fbaf30b897509e4fc7fab2e7840028a993d24",
+      "size": 35056
+    },
+    "/home/Carix/site/UA-0008.html": {
+      "mtime_ns": 1787888038628316754,
+      "sha256": "5a14a5f5800c41aea113b91dc8cd64db24a08dcda89c67f08bf919c43f80135e",
+      "size": 35448
+    },
+    "/home/Carix/site/UA-0009.html": {
+      "mtime_ns": 1787888038728317495,
+      "sha256": "46998c693dcf92420978ac63c3d69c794fbe07074c7be3e47170c50ae5e38093",
+      "size": 34307
+    },
+    "/home/Carix/site/UA-0010.html": null,
+    "/home/Carix/site/index.html": {
+      "mtime_ns": 1787541918574309188,
+      "sha256": "1e5818555a0243e772b6bb8f88aa5e84c7ec886c61c03235887a40cf89ccbf31",
+      "size": 22979
+    },
+    "/home/Carix/site/katalog.html": {
+      "mtime_ns": 1787886617857777914,
+      "sha256": "0fb0ab35262c72f1bbba5cba4c9bce613df0142e221de4420ca5305876ae81bd",
+      "size": 29604
+    },
+    "/home/Carix/video/UA-0001.html": {
+      "mtime_ns": 1787888037900311364,
+      "sha256": "11fa4c00bd44c9baa0e230a6403cf3afc725aaee1a8eebd02922dd0dbd601544",
+      "size": 35764
+    },
+    "/home/Carix/video/UA-0002.html": {
+      "mtime_ns": 1787888038004312133,
+      "sha256": "0b87792dc0cd5115ccac4055d9f5572b05cc732b5e5faa04aff1618dc34f7544",
+      "size": 35808
+    },
+    "/home/Carix/video/UA-0003.html": {
+      "mtime_ns": 1787888038120312992,
+      "sha256": "7d411ddfe3e6643446b89f78cc53129f2210b5be767252468c181daa2d5158ff",
+      "size": 35267
+    },
+    "/home/Carix/video/UA-0004.html": {
+      "mtime_ns": 1787888038192313526,
+      "sha256": "6ff5b393e19c5c60248edaf1d7f38f9e6c0f252c8f070f7b8e6d98522a1215a8",
+      "size": 35597
+    },
+    "/home/Carix/video/UA-0005.html": {
+      "mtime_ns": 1787888038336314592,
+      "sha256": "d0b597c22f262cd4d67af2e35dadf58e35281b953eb5d9c9289e120d28a6a2e5",
+      "size": 34033
+    },
+    "/home/Carix/video/UA-0006.html": {
+      "mtime_ns": 1787888038436315333,
+      "sha256": "903699de31e22c04339ec504b53e12e06de4ceb3d04a99f8f1d43c98faa83f6a",
+      "size": 38976
+    },
+    "/home/Carix/video/UA-0007.html": {
+      "mtime_ns": 1787888038524315984,
+      "sha256": "b06c020ac236faa583fcec3b467fbaf30b897509e4fc7fab2e7840028a993d24",
+      "size": 35056
+    },
+    "/home/Carix/video/UA-0008.html": {
+      "mtime_ns": 1787888038632316784,
+      "sha256": "5a14a5f5800c41aea113b91dc8cd64db24a08dcda89c67f08bf919c43f80135e",
+      "size": 35448
+    },
+    "/home/Carix/video/UA-0009.html": {
+      "mtime_ns": 1787888038716317406,
+      "sha256": "46998c693dcf92420978ac63c3d69c794fbe07074c7be3e47170c50ae5e38093",
+      "size": 34307
+    },
+    "/home/Carix/video/UA-0010.html": null,
+    "/home/Carix/video/index.html": {
+      "mtime_ns": 1787857816258540216,
+      "sha256": "38d327e4113ee4c5bb1950b58877b279f04623ffb8cf3d8b93d39acf8b593c32",
+      "size": 30735
+    },
+    "/home/Carix/video/katalog.html": {
+      "mtime_ns": 1787886617825777679,
+      "sha256": "ecd404ffec7d21abaea4258f93489b23e8032cd18e2340cd45a23c6daa351993",
+      "size": 27974
+    }
+  },
+  "site_before": {
+    "/home/Carix/site/UA-0001.html": {
+      "mtime_ns": 1787888037856311037,
+      "sha256": "11fa4c00bd44c9baa0e230a6403cf3afc725aaee1a8eebd02922dd0dbd601544",
+      "size": 35764
+    },
+    "/home/Carix/site/UA-0002.html": {
+      "mtime_ns": 1787888038028312311,
+      "sha256": "0b87792dc0cd5115ccac4055d9f5572b05cc732b5e5faa04aff1618dc34f7544",
+      "size": 35808
+    },
+    "/home/Carix/site/UA-0003.html": {
+      "mtime_ns": 1787888038096312815,
+      "sha256": "7d411ddfe3e6643446b89f78cc53129f2210b5be767252468c181daa2d5158ff",
+      "size": 35267
+    },
+    "/home/Carix/site/UA-0004.html": {
+      "mtime_ns": 1787888038216313703,
+      "sha256": "6ff5b393e19c5c60248edaf1d7f38f9e6c0f252c8f070f7b8e6d98522a1215a8",
+      "size": 35597
+    },
+    "/home/Carix/site/UA-0005.html": {
+      "mtime_ns": 1787888038316314444,
+      "sha256": "d0b597c22f262cd4d67af2e35dadf58e35281b953eb5d9c9289e120d28a6a2e5",
+      "size": 34033
+    },
+    "/home/Carix/site/UA-0006.html": {
+      "mtime_ns": 1787888038424315243,
+      "sha256": "903699de31e22c04339ec504b53e12e06de4ceb3d04a99f8f1d43c98faa83f6a",
+      "size": 38976
+    },
+    "/home/Carix/site/UA-0007.html": {
+      "mtime_ns": 1787888038544316132,
+      "sha256": "b06c020ac236faa583fcec3b467fbaf30b897509e4fc7fab2e7840028a993d24",
+      "size": 35056
+    },
+    "/home/Carix/site/UA-0008.html": {
+      "mtime_ns": 1787888038628316754,
+      "sha256": "5a14a5f5800c41aea113b91dc8cd64db24a08dcda89c67f08bf919c43f80135e",
+      "size": 35448
+    },
+    "/home/Carix/site/UA-0009.html": {
+      "mtime_ns": 1787888038728317495,
+      "sha256": "46998c693dcf92420978ac63c3d69c794fbe07074c7be3e47170c50ae5e38093",
+      "size": 34307
+    },
+    "/home/Carix/site/UA-0010.html": null,
+    "/home/Carix/site/index.html": {
+      "mtime_ns": 1787541918574309188,
+      "sha256": "1e5818555a0243e772b6bb8f88aa5e84c7ec886c61c03235887a40cf89ccbf31",
+      "size": 22979
+    },
+    "/home/Carix/site/katalog.html": {
+      "mtime_ns": 1787886617857777914,
+      "sha256": "0fb0ab35262c72f1bbba5cba4c9bce613df0142e221de4420ca5305876ae81bd",
+      "size": 29604
+    },
+    "/home/Carix/video/UA-0001.html": {
+      "mtime_ns": 1787888037900311364,
+      "sha256": "11fa4c00bd44c9baa0e230a6403cf3afc725aaee1a8eebd02922dd0dbd601544",
+      "size": 35764
+    },
+    "/home/Carix/video/UA-0002.html": {
+      "mtime_ns": 1787888038004312133,
+      "sha256": "0b87792dc0cd5115ccac4055d9f5572b05cc732b5e5faa04aff1618dc34f7544",
+      "size": 35808
+    },
+    "/home/Carix/video/UA-0003.html": {
+      "mtime_ns": 1787888038120312992,
+      "sha256": "7d411ddfe3e6643446b89f78cc53129f2210b5be767252468c181daa2d5158ff",
+      "size": 35267
+    },
+    "/home/Carix/video/UA-0004.html": {
+      "mtime_ns": 1787888038192313526,
+      "sha256": "6ff5b393e19c5c60248edaf1d7f38f9e6c0f252c8f070f7b8e6d98522a1215a8",
+      "size": 35597
+    },
+    "/home/Carix/video/UA-0005.html": {
+      "mtime_ns": 1787888038336314592,
+      "sha256": "d0b597c22f262cd4d67af2e35dadf58e35281b953eb5d9c9289e120d28a6a2e5",
+      "size": 34033
+    },
+    "/home/Carix/video/UA-0006.html": {
+      "mtime_ns": 1787888038436315333,
+      "sha256": "903699de31e22c04339ec504b53e12e06de4ceb3d04a99f8f1d43c98faa83f6a",
+      "size": 38976
+    },
+    "/home/Carix/video/UA-0007.html": {
+      "mtime_ns": 1787888038524315984,
+      "sha256": "b06c020ac236faa583fcec3b467fbaf30b897509e4fc7fab2e7840028a993d24",
+      "size": 35056
+    },
+    "/home/Carix/video/UA-0008.html": {
+      "mtime_ns": 1787888038632316784,
+      "sha256": "5a14a5f5800c41aea113b91dc8cd64db24a08dcda89c67f08bf919c43f80135e",
+      "size": 35448
+    },
+    "/home/Carix/video/UA-0009.html": {
+      "mtime_ns": 1787888038716317406,
+      "sha256": "46998c693dcf92420978ac63c3d69c794fbe07074c7be3e47170c50ae5e38093",
+      "size": 34307
+    },
+    "/home/Carix/video/UA-0010.html": null,
+    "/home/Carix/video/index.html": {
+      "mtime_ns": 1787857816258540216,
+      "sha256": "38d327e4113ee4c5bb1950b58877b279f04623ffb8cf3d8b93d39acf8b593c32",
+      "size": 30735
+    },
+    "/home/Carix/video/katalog.html": {
+      "mtime_ns": 1787886617825777679,
+      "sha256": "ecd404ffec7d21abaea4258f93489b23e8032cd18e2340cd45a23c6daa351993",
+      "size": 27974
+    }
+  },
+  "site_identity_stable": true,
+  "site_rebuilt": false,
+  "source_hashes_after": {
+    "/home/Carix/avtoperedacha.py": "e0e5e0d55672689dec25c1ac69488b86fc1af00570f0ec563fc8095a1858b7d1",
+    "/home/Carix/cars_ui.py": "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7",
+    "/home/Carix/db.py": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
+    "/home/Carix/konteyner.py": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d",
+    "/home/Carix/run_all.py": "7deb18698f792b61fd734b36451296343ec528e15ccd86798d6cbc4a7a75eca5",
+    "/home/Carix/start_safe.py": "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007",
+    "/home/Carix/stranica.py": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+    "/home/Carix/team_bot.py": "059e3e044a8bb3d4c1fe7ef4b43c40eacb491fb3614e9929e0c01dc7a9de9430",
+    "/home/Carix/yadro.py": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6"
+  },
+  "source_identity_stable": true,
+  "sources": [
+    {
+      "anchors": [
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 29,
+          "snippet": "Update,"
+        },
+        {
+          "category": "database_write",
+          "function": "who",
+          "line": 74,
+          "snippet": "def who(update: Update):"
+        },
+        {
+          "category": "database_write",
+          "function": "who",
+          "line": 76,
+          "snippet": "user = update.effective_user"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_stop_cb",
+          "line": 137,
+          "snippet": "async def ai_stop_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_stop_cb",
+          "line": 139,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_stop_cb",
+          "line": 140,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_resume_cb",
+          "line": 171,
+          "snippet": "async def ai_resume_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_resume_cb",
+          "line": 172,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_resume_cb",
+          "line": 173,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "show_menu",
+          "line": 190,
+          "snippet": "async def show_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, staff, text=None):"
+        },
+        {
+          "category": "database_write",
+          "function": "show_menu",
+          "line": 191,
+          "snippet": "msg = update.effective_message"
+        },
+        {
+          "category": "database_write",
+          "function": "start",
+          "line": 206,
+          "snippet": "async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "start",
+          "line": 207,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "start",
+          "line": 209,
+          "snippet": "await show_menu(update, context, staff)"
+        },
+        {
+          "category": "database_write",
+          "function": "start",
+          "line": 211,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "try_invite_code",
+          "line": 218,
+          "snippet": "async def try_invite_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:"
+        },
+        {
+          "category": "database_write",
+          "function": "try_invite_code",
+          "line": 220,
+          "snippet": "user = update.effective_user"
+        },
+        {
+          "category": "database_write",
+          "function": "try_invite_code",
+          "line": 221,
+          "snippet": "text = (update.message.text or \"\").strip()"
+        },
+        {
+          "category": "database_write",
+          "function": "try_invite_code",
+          "line": 228,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "try_invite_code",
+          "line": 231,
+          "snippet": "await show_menu(update, context, staff)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "detect_kind",
+          "line": 251,
+          "snippet": "if msg.photo:"
+        },
+        {
+          "category": "telegram_media",
+          "function": "detect_kind",
+          "line": 252,
+          "snippet": "return \"photo\", msg.photo[-1].file_id"
+        },
+        {
+          "category": "telegram_media",
+          "function": "detect_kind",
+          "line": 259,
+          "snippet": "if msg.document:"
+        },
+        {
+          "category": "telegram_media",
+          "function": "detect_kind",
+          "line": 260,
+          "snippet": "return \"document\", msg.document.file_id"
+        },
+        {
+          "category": "database_write",
+          "function": "intake",
+          "line": 270,
+          "snippet": "async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "intake",
+          "line": 272,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "intake",
+          "line": 273,
+          "snippet": "msg = update.message"
+        },
+        {
+          "category": "database_write",
+          "function": "intake",
+          "line": 276,
+          "snippet": "if msg.text and await try_invite_code(update, context):"
+        },
+        {
+          "category": "database_write",
+          "function": "intake",
+          "line": 285,
+          "snippet": "await do_search(update, context, msg.text)"
+        },
+        {
+          "category": "database_write",
+          "function": "intake",
+          "line": 327,
+          "snippet": "await run_ai_draft(update, context, inbox_id, kind, text, file_id)"
+        },
+        {
+          "category": "database_write",
+          "function": "run_ai_draft",
+          "line": 333,
+          "snippet": "async def run_ai_draft(update, context, inbox_id, kind, text, file_id):"
+        },
+        {
+          "category": "database_write",
+          "function": "run_ai_draft",
+          "line": 339,
+          "snippet": "msg = update.message"
+        },
+        {
+          "category": "ocr_vision",
+          "function": "run_ai_draft",
+          "line": 355,
+          "snippet": "\"нужен ключ OpenAI в файле openai_key.txt.\""
+        },
+        {
+          "category": "telegram_media",
+          "function": "run_ai_draft",
+          "line": 360,
+          "snippet": "tg_file = await context.bot.get_file(file_id)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "run_ai_draft",
+          "line": 361,
+          "snippet": "audio = bytes(await tg_file.download_as_bytearray())"
+        },
+        {
+          "category": "database_write",
+          "function": "run_ai_draft",
+          "line": 371,
+          "snippet": "c.execute(\"UPDATE inbox SET text=? WHERE id=?\","
+        },
+        {
+          "category": "database_write",
+          "function": "run_ai_draft",
+          "line": 373,
+          "snippet": "db.log_action(update.effective_user.id, \"transcribe\", \"inbox\", inbox_id,"
+        },
+        {
+          "category": "telegram_media",
+          "function": "run_ai_draft",
+          "line": 380,
+          "snippet": "if kind in (\"photo\", \"document\") and file_id:"
+        },
+        {
+          "category": "telegram_media",
+          "function": "run_ai_draft",
+          "line": 383,
+          "snippet": "mime = (msg.document.mime_type or \"\") if msg.document else \"\""
+        },
+        {
+          "category": "telegram_media",
+          "function": "run_ai_draft",
+          "line": 400,
+          "snippet": "tg_file = await context.bot.get_file(file_id)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "run_ai_draft",
+          "line": 401,
+          "snippet": "kartinka = bytes(await tg_file.download_as_bytearray())"
+        },
+        {
+          "category": "database_write",
+          "function": "run_ai_draft",
+          "line": 426,
+          "snippet": "if await _pomoshnik(update, context, thinking, text):"
+        },
+        {
+          "category": "database_write",
+          "function": "run_ai_draft",
+          "line": 428,
+          "snippet": "if await _pomoshnik(update, context, thinking, text):"
+        },
+        {
+          "category": "database_write",
+          "function": "run_ai_draft",
+          "line": 430,
+          "snippet": "if await _pomoshnik(update, context, thinking, text):"
+        },
+        {
+          "category": "database_write",
+          "function": "run_ai_draft",
+          "line": 450,
+          "snippet": "if await ai_filter.autosave(update, context, thinking, inbox_id, parsed):"
+        },
+        {
+          "category": "database_write",
+          "function": "_pomoshnik",
+          "line": 472,
+          "snippet": "async def _pomoshnik(update, context, thinking, text):"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_dobavit",
+          "line": 523,
+          "snippet": "if row[\"kind\"] == \"photo\" and row[\"file_id\"] not in foto:"
+        },
+        {
+          "category": "database_write",
+          "function": "collect_media",
+          "line": 533,
+          "snippet": "rows = c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "ai_save",
+          "line": 543,
+          "snippet": "async def ai_save(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_save",
+          "line": 544,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_save",
+          "line": 546,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "ai_save",
+          "line": 562,
+          "snippet": "data[\"photos\"] = json.dumps(foto)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "ai_save",
+          "line": 569,
+          "snippet": "import photo_hide"
+        },
+        {
+          "category": "telegram_media",
+          "function": "ai_save",
+          "line": 570,
+          "snippet": "photo_hide.archive(card_id, foto, staff[\"user_id\"])"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_edit_start",
+          "line": 604,
+          "snippet": "async def ai_edit_start(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_edit_start",
+          "line": 605,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_edit_apply",
+          "line": 617,
+          "snippet": "async def ai_edit_apply(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_edit_apply",
+          "line": 621,
+          "snippet": "correction = update.message.text"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_edit_apply",
+          "line": 622,
+          "snippet": "thinking = await update.message.reply_text(\"🧠 Исправляю...\")"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_edit_apply",
+          "line": 637,
+          "snippet": "if await ai_filter.autosave(update, context, thinking, draft[\"inbox_id\"], parsed):"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_edit_cancel",
+          "line": 654,
+          "snippet": "async def ai_edit_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_edit_cancel",
+          "line": 655,
+          "snippet": "await update.message.reply_text(\"Исправление отменено.\")"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_reject",
+          "line": 659,
+          "snippet": "async def ai_reject(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_reject",
+          "line": 660,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "ai_reject",
+          "line": 662,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_list",
+          "line": 706,
+          "snippet": "async def inbox_list(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_list",
+          "line": 707,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_list",
+          "line": 709,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_open",
+          "line": 732,
+          "snippet": "async def inbox_open(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_open",
+          "line": 733,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_open",
+          "line": 735,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "inbox_open",
+          "line": 754,
+          "snippet": "\"photo\": context.bot.send_photo,"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_open",
+          "line": 766,
+          "snippet": "when = (item[\"created_at\"] or \"\")[:16].replace(\"T\", \" \")"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_dup",
+          "line": 787,
+          "snippet": "async def inbox_dup(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_dup",
+          "line": 788,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_dup",
+          "line": 790,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_skip",
+          "line": 797,
+          "snippet": "async def inbox_skip(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_skip",
+          "line": 798,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_skip",
+          "line": 800,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_start",
+          "line": 835,
+          "snippet": "async def mk_card_start(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_start",
+          "line": 836,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_start",
+          "line": 838,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_step",
+          "line": 859,
+          "snippet": "async def mk_card_step(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_step",
+          "line": 863,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_step",
+          "line": 864,
+          "snippet": "value = (update.message.text or \"\").strip()"
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_step",
+          "line": 871,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_step",
+          "line": 883,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_cancel",
+          "line": 894,
+          "snippet": "async def mk_card_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_cancel",
+          "line": 896,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "mk_card_cancel",
+          "line": 897,
+          "snippet": "await update.message.reply_text(\"Создание карточки отменено.\","
+        },
+        {
+          "category": "database_write",
+          "function": "card_open",
+          "line": 954,
+          "snippet": "async def card_open(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "card_open",
+          "line": 955,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "card_open",
+          "line": 957,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "card_review_action",
+          "line": 982,
+          "snippet": "async def card_review_action(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "card_review_action",
+          "line": 983,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "card_review_action",
+          "line": 984,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "card_log",
+          "line": 1029,
+          "snippet": "async def card_log(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "card_log",
+          "line": 1030,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "card_log",
+          "line": 1039,
+          "snippet": "when = (e[\"created_at\"] or \"\")[:16].replace(\"T\", \" \")"
+        },
+        {
+          "category": "database_write",
+          "function": "cards_list",
+          "line": 1051,
+          "snippet": "async def cards_list(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "cards_list",
+          "line": 1052,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "cards_list",
+          "line": 1054,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "review_list",
+          "line": 1072,
+          "snippet": "async def review_list(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "review_list",
+          "line": 1073,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "review_list",
+          "line": 1075,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "staff_list",
+          "line": 1098,
+          "snippet": "async def staff_list(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "staff_list",
+          "line": 1099,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "staff_list",
+          "line": 1101,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "invite_create",
+          "line": 1133,
+          "snippet": "async def invite_create(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "invite_create",
+          "line": 1134,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "invite_create",
+          "line": 1136,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "staff_toggle",
+          "line": 1152,
+          "snippet": "async def staff_toggle(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "staff_toggle",
+          "line": 1153,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "staff_toggle",
+          "line": 1154,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "search_start",
+          "line": 1174,
+          "snippet": "async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "search_start",
+          "line": 1175,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "do_search",
+          "line": 1182,
+          "snippet": "async def do_search(update: Update, context: ContextTypes.DEFAULT_TYPE, text: str):"
+        },
+        {
+          "category": "database_write",
+          "function": "do_search",
+          "line": 1183,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "do_search",
+          "line": 1197,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "do_search",
+          "line": 1203,
+          "snippet": "await update.message.reply_text(\"\\n\".join(lines),"
+        },
+        {
+          "category": "database_write",
+          "function": "stats",
+          "line": 1207,
+          "snippet": "async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "stats",
+          "line": 1208,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "stats",
+          "line": 1210,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "audit_list",
+          "line": 1226,
+          "snippet": "async def audit_list(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "audit_list",
+          "line": 1227,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "audit_list",
+          "line": 1229,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "menu_cb",
+          "line": 1250,
+          "snippet": "async def menu_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "menu_cb",
+          "line": 1251,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "menu_cb",
+          "line": 1253,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "menu_cb",
+          "line": 1255,
+          "snippet": "await show_menu(update, context, staff)"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_ask",
+          "line": 1258,
+          "snippet": "async def inbox_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_ask",
+          "line": 1260,
+          "snippet": "query = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "inbox_ask",
+          "line": 1262,
+          "snippet": "staff = who(update)"
+        },
+        {
+          "category": "database_write",
+          "function": "error_handler",
+          "line": 1279,
+          "snippet": "async def error_handler(update, context):"
+        },
+        {
+          "category": "ocr_vision",
+          "function": "post_init",
+          "line": 1362,
+          "snippet": "\"включён\" if ai.enabled() else \"ВЫКЛЮЧЕН (нет anthropic_key.txt)\","
+        },
+        {
+          "category": "ocr_vision",
+          "function": "post_init",
+          "line": 1363,
+          "snippet": "\"включена\" if ai.voice_enabled() else \"выключена (нет openai_key.txt)\")"
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [
+        {
+          "function": "run_ai_draft",
+          "kind": "ocr_failure",
+          "line": 410,
+          "snippet": "        if not parsed:\n            await thinking.edit_text(\n                \"🖼 Изображение сохранено, но разобрать его не получилось. \"\n                \"Опишите машину текстом или голосом.\"\n            )"
+        }
+      ],
+      "mtime_ns": 1786235658149707737,
+      "path": "/home/Carix/team_bot.py",
+      "sha256": "059e3e044a8bb3d4c1fe7ef4b43c40eacb491fb3614e9929e0c01dc7a9de9430",
+      "size": 65553,
+      "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 14,
+          "snippet": "import sqlite3"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 70,
+          "snippet": "# --- UA-LOCK3-V1: ожидание освобождения базы вместо мгновенной ошибки ---"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 71,
+          "snippet": "import sqlite3 as _ua_sqlite3"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 73,
+          "snippet": "# --- UA-LOCK4-V1: журнал держателей базы ---"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 77,
+          "snippet": "_ua_sys.path.insert(0, '/home/Carix')"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 78,
+          "snippet": "import lock4_zhurnal as _ua_lock4_zhurnal"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 81,
+          "snippet": "# --- конец UA-LOCK4-V1 ---"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 83,
+          "snippet": "if not getattr(_ua_sqlite3, \"_ua_lock3\", False):"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 83,
+          "snippet": "if not getattr(_ua_sqlite3, \"_ua_lock3\", False):"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 84,
+          "snippet": "_ua_lock3_original_connect = _ua_sqlite3.connect"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 84,
+          "snippet": "_ua_lock3_original_connect = _ua_sqlite3.connect"
+        },
+        {
+          "category": "lock_resource",
+          "function": "_ua_lock3_connect",
+          "line": 86,
+          "snippet": "def _ua_lock3_connect(*a, **kw):"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_ua_lock3_connect",
+          "line": 87,
+          "snippet": "if len(a) < 2 and \"timeout\" not in kw:"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_ua_lock3_connect",
+          "line": 88,
+          "snippet": "kw[\"timeout\"] = 30.0"
+        },
+        {
+          "category": "lock_resource",
+          "function": "_ua_lock3_connect",
+          "line": 89,
+          "snippet": "con = _ua_lock3_original_connect(*a, **kw)"
+        },
+        {
+          "category": "database_write",
+          "function": "_ua_lock3_connect",
+          "line": 91,
+          "snippet": "con.execute(\"PRAGMA busy_timeout=30000\")"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_ua_lock3_connect",
+          "line": 91,
+          "snippet": "con.execute(\"PRAGMA busy_timeout=30000\")"
+        },
+        {
+          "category": "lock_resource",
+          "function": "_ua_lock3_connect",
+          "line": 91,
+          "snippet": "con.execute(\"PRAGMA busy_timeout=30000\")"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 96,
+          "snippet": "_ua_sqlite3.connect = _ua_lock3_connect"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 96,
+          "snippet": "_ua_sqlite3.connect = _ua_lock3_connect"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 97,
+          "snippet": "_ua_sqlite3._ua_lock3 = True"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 97,
+          "snippet": "_ua_sqlite3._ua_lock3 = True"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 98,
+          "snippet": "# --- конец UA-LOCK3-V1 ---"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 100,
+          "snippet": "ZAMOK = _potoki.RLock()"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 104,
+          "snippet": "class Soedinenie(sqlite3.Connection):"
+        },
+        {
+          "category": "database_write",
+          "function": "close",
+          "line": 120,
+          "snippet": "sqlite3.Connection.close(self)"
+        },
+        {
+          "category": "database_write",
+          "function": "__exit__",
+          "line": 127,
+          "snippet": "self.commit()"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "connect",
+          "line": 142,
+          "snippet": "vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)"
+        },
+        {
+          "category": "database_write",
+          "function": "connect",
+          "line": 144,
+          "snippet": "conn = sqlite3.connect(DB_FILE, timeout=OZHIDANIE_SEK, factory=Soedinenie)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "connect",
+          "line": 144,
+          "snippet": "conn = sqlite3.connect(DB_FILE, timeout=OZHIDANIE_SEK, factory=Soedinenie)"
+        },
+        {
+          "category": "database_write",
+          "function": "connect",
+          "line": 153,
+          "snippet": "conn.row_factory = sqlite3.Row"
+        },
+        {
+          "category": "database_write",
+          "function": "connect",
+          "line": 154,
+          "snippet": "# WAL на сетевом диске PythonAnywhere ломает блокировки - только DELETE"
+        },
+        {
+          "category": "database_write",
+          "function": "connect",
+          "line": 156,
+          "snippet": "conn.execute(\"PRAGMA journal_mode=DELETE\")"
+        },
+        {
+          "category": "lock_resource",
+          "function": "connect",
+          "line": 156,
+          "snippet": "conn.execute(\"PRAGMA journal_mode=DELETE\")"
+        },
+        {
+          "category": "database_write",
+          "function": "connect",
+          "line": 160,
+          "snippet": "conn.execute(\"PRAGMA busy_timeout=%d\" % (OZHIDANIE_SEK * 1000))"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "connect",
+          "line": 160,
+          "snippet": "conn.execute(\"PRAGMA busy_timeout=%d\" % (OZHIDANIE_SEK * 1000))"
+        },
+        {
+          "category": "lock_resource",
+          "function": "connect",
+          "line": 160,
+          "snippet": "conn.execute(\"PRAGMA busy_timeout=%d\" % (OZHIDANIE_SEK * 1000))"
+        },
+        {
+          "category": "database_write",
+          "function": "connect",
+          "line": 163,
+          "snippet": "conn.execute(\"PRAGMA foreign_keys=ON\")"
+        },
+        {
+          "category": "telegram_media",
+          "function": "init_db",
+          "line": 195,
+          "snippet": "kind          TEXT NOT NULL,      -- text/photo/video/voice/document/contact/other"
+        },
+        {
+          "category": "telegram_media",
+          "function": "init_db",
+          "line": 229,
+          "snippet": "photos        TEXT,               -- JSON-список file_id"
+        },
+        {
+          "category": "database_write",
+          "function": "migrate",
+          "line": 306,
+          "snippet": "est = {r[\"name\"] for r in c.execute(f\"PRAGMA table_info({tablica})\").fetchall()}"
+        },
+        {
+          "category": "database_write",
+          "function": "migrate",
+          "line": 309,
+          "snippet": "c.execute(f\"ALTER TABLE {tablica} ADD COLUMN {kolonka} {tip}\")"
+        },
+        {
+          "category": "database_write",
+          "function": "migrate",
+          "line": 311,
+          "snippet": "except sqlite3.OperationalError as e:"
+        },
+        {
+          "category": "database_write",
+          "function": "log_action",
+          "line": 327,
+          "snippet": "c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "log_action",
+          "line": 328,
+          "snippet": "\"INSERT INTO audit (actor_id, action, entity_type, entity_id, field,\""
+        },
+        {
+          "category": "database_write",
+          "function": "get_audit",
+          "line": 348,
+          "snippet": "return [dict(r) for r in c.execute(q, params).fetchall()]"
+        },
+        {
+          "category": "database_write",
+          "function": "ensure_owner",
+          "line": 358,
+          "snippet": "row = c.execute(\"SELECT * FROM staff WHERE user_id=?\", (user_id,)).fetchone()"
+        },
+        {
+          "category": "database_write",
+          "function": "ensure_owner",
+          "line": 361,
+          "snippet": "c.execute(\"UPDATE staff SET role=? WHERE user_id=?\", (ROLE_OWNER, user_id))"
+        },
+        {
+          "category": "database_write",
+          "function": "ensure_owner",
+          "line": 363,
+          "snippet": "c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "ensure_owner",
+          "line": 364,
+          "snippet": "\"INSERT INTO staff (user_id, full_name, username, role, active, added_at)\""
+        },
+        {
+          "category": "database_write",
+          "function": "get_staff",
+          "line": 372,
+          "snippet": "row = c.execute(\"SELECT * FROM staff WHERE user_id=?\", (user_id,)).fetchone()"
+        },
+        {
+          "category": "database_write",
+          "function": "list_staff",
+          "line": 382,
+          "snippet": "return [dict(r) for r in c.execute(q).fetchall()]"
+        },
+        {
+          "category": "database_write",
+          "function": "staff_ids_by_role",
+          "line": 387,
+          "snippet": "return [r[\"user_id\"] for r in c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "set_staff_active",
+          "line": 395,
+          "snippet": "c.execute(\"UPDATE staff SET active=? WHERE user_id=?\", (1 if active else 0, user_id))"
+        },
+        {
+          "category": "lock_resource",
+          "function": "set_staff_active",
+          "line": 396,
+          "snippet": "log_action(actor_id, \"staff_block\" if not active else \"staff_unblock\","
+        },
+        {
+          "category": "database_write",
+          "function": "set_staff_role",
+          "line": 403,
+          "snippet": "c.execute(\"UPDATE staff SET role=? WHERE user_id=?\", (role, user_id))"
+        },
+        {
+          "category": "database_write",
+          "function": "create_invite",
+          "line": 416,
+          "snippet": "c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "create_invite",
+          "line": 417,
+          "snippet": "\"INSERT INTO invites (code, role, created_by, created_at) VALUES (?,?,?,?)\","
+        },
+        {
+          "category": "database_write",
+          "function": "use_invite",
+          "line": 428,
+          "snippet": "row = c.execute(\"SELECT * FROM invites WHERE code=?\", (code,)).fetchone()"
+        },
+        {
+          "category": "database_write",
+          "function": "use_invite",
+          "line": 431,
+          "snippet": "c.execute(\"UPDATE invites SET used_by=?, used_at=? WHERE code=?\","
+        },
+        {
+          "category": "database_write",
+          "function": "use_invite",
+          "line": 433,
+          "snippet": "existing = c.execute(\"SELECT 1 FROM staff WHERE user_id=?\", (user_id,)).fetchone()"
+        },
+        {
+          "category": "database_write",
+          "function": "use_invite",
+          "line": 435,
+          "snippet": "c.execute(\"UPDATE staff SET role=?, active=1, full_name=?, username=? WHERE user_id=?\","
+        },
+        {
+          "category": "database_write",
+          "function": "use_invite",
+          "line": 438,
+          "snippet": "c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "use_invite",
+          "line": 439,
+          "snippet": "\"INSERT INTO staff (user_id, full_name, username, role, active, added_by, added_at)\""
+        },
+        {
+          "category": "database_write",
+          "function": "list_open_invites",
+          "line": 449,
+          "snippet": "return [dict(r) for r in c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "add_inbox",
+          "line": 460,
+          "snippet": "cur = c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "add_inbox",
+          "line": 461,
+          "snippet": "\"INSERT INTO inbox (from_user_id, kind, text, file_id, media_group,\""
+        },
+        {
+          "category": "database_write",
+          "function": "get_inbox",
+          "line": 474,
+          "snippet": "row = c.execute(\"SELECT * FROM inbox WHERE id=?\", (inbox_id,)).fetchone()"
+        },
+        {
+          "category": "database_write",
+          "function": "list_inbox",
+          "line": 491,
+          "snippet": "return [dict(r) for r in c.execute(q, params).fetchall()]"
+        },
+        {
+          "category": "database_write",
+          "function": "count_inbox",
+          "line": 497,
+          "snippet": "row = c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "set_inbox_status",
+          "line": 508,
+          "snippet": "c.execute(\"UPDATE inbox SET status=?, assigned_to=?, updated_at=? WHERE id=?\","
+        },
+        {
+          "category": "database_write",
+          "function": "set_inbox_status",
+          "line": 511,
+          "snippet": "c.execute(\"UPDATE inbox SET status=?, updated_at=? WHERE id=?\","
+        },
+        {
+          "category": "database_write",
+          "function": "link_inbox_card",
+          "line": 519,
+          "snippet": "c.execute(\"UPDATE inbox SET card_type=?, card_id=?, updated_at=? WHERE id=?\","
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 531,
+          "snippet": "\"photos\", \"videos\", \"docs\", \"responsible\"]"
+        },
+        {
+          "category": "database_write",
+          "function": "create_card",
+          "line": 543,
+          "snippet": "cur = c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "create_card",
+          "line": 544,
+          "snippet": "f\"INSERT INTO {table} ({','.join(cols)}) VALUES ({','.join('?' * len(cols))})\","
+        },
+        {
+          "category": "database_write",
+          "function": "get_card",
+          "line": 554,
+          "snippet": "row = c.execute(f\"SELECT * FROM {table} WHERE id=?\", (card_id,)).fetchone()"
+        },
+        {
+          "category": "database_write",
+          "function": "list_cards",
+          "line": 568,
+          "snippet": "return [dict(r) for r in c.execute(q, params).fetchall()]"
+        },
+        {
+          "category": "database_write",
+          "function": "update_card_field",
+          "line": 576,
+          "snippet": "c.execute(f\"UPDATE {table} SET {field}=?, updated_at=? WHERE id=?\","
+        },
+        {
+          "category": "database_write",
+          "function": "set_card_review",
+          "line": 585,
+          "snippet": "c.execute(f\"UPDATE {table} SET review_status=?, approved_by=?, published=?,\""
+        },
+        {
+          "category": "database_write",
+          "function": "set_card_review",
+          "line": 589,
+          "snippet": "c.execute(f\"UPDATE {table} SET review_status=?, approved_by=?, updated_at=?\""
+        },
+        {
+          "category": "database_write",
+          "function": "add_comment",
+          "line": 610,
+          "snippet": "cur = c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "add_comment",
+          "line": 611,
+          "snippet": "\"INSERT INTO comments (entity_type, entity_id, author_id, text, file_id, created_at)\""
+        },
+        {
+          "category": "database_write",
+          "function": "list_comments",
+          "line": 622,
+          "snippet": "return [dict(r) for r in c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "search",
+          "line": 636,
+          "snippet": "results[\"cars\"] = [dict(r) for r in c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "search",
+          "line": 641,
+          "snippet": "results[\"clients\"] = [dict(r) for r in c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "one",
+          "line": 655,
+          "snippet": "return c.execute(q, params).fetchone()[0]"
+        },
+        {
+          "category": "database_write",
+          "function": "published_cars",
+          "line": 671,
+          "snippet": "return [dict(r) for r in c.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "make_backup",
+          "line": 696,
+          "snippet": "src = sqlite3.connect(DB_FILE, timeout=30.0)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "make_backup",
+          "line": 696,
+          "snippet": "src = sqlite3.connect(DB_FILE, timeout=30.0)"
+        },
+        {
+          "category": "database_write",
+          "function": "make_backup",
+          "line": 697,
+          "snippet": "dst = sqlite3.connect(put, timeout=30.0)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "make_backup",
+          "line": 697,
+          "snippet": "dst = sqlite3.connect(put, timeout=30.0)"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 737,
+          "snippet": "_ua_sys.path.insert(0, \"/home/Carix\")"
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [],
+      "mtime_ns": 1787651244353970551,
+      "path": "/home/Carix/db.py",
+      "sha256": "b5089b54646d72cf76f00a0e8cc454d2192d34764469e4f183eee502b9c8b600",
+      "size": 29515,
+      "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 33,
+          "snippet": "from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update"
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 51,
+          "snippet": "PHOTO_PAGE = 12          # сколько превью показываем за раз"
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 54,
+          "snippet": "S.CONDITION_PHOTO_LIMIT = 50"
+        },
+        {
+          "category": "telegram_media",
+          "function": "ensure_columns",
+          "line": 71,
+          "snippet": "extra = [(\"price_history\", \"TEXT\"), (\"cover_photo\", \"TEXT\"),"
+        },
+        {
+          "category": "database_write",
+          "function": "ensure_columns",
+          "line": 74,
+          "snippet": "have = {r[\"name\"] for r in c.execute(\"PRAGMA table_info(cars)\").fetchall()}"
+        },
+        {
+          "category": "database_write",
+          "function": "ensure_columns",
+          "line": 78,
+          "snippet": "c.execute(\"ALTER TABLE cars ADD COLUMN %s %s\" % (name, decl))"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photos_of",
+          "line": 109,
+          "snippet": "def photos_of(card):"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photos_of",
+          "line": 111,
+          "snippet": "raw = jload(card.get(\"photos\"))"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photos_of",
+          "line": 118,
+          "snippet": "cover = card.get(\"cover_photo\")"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photos_of",
+          "line": 122,
+          "snippet": "return S.order_photos(items)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "render",
+          "line": 184,
+          "snippet": "photos = photos_of(card)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "render",
+          "line": 187,
+          "snippet": "len(photos), S.PHOTO_LIMIT, len(vids), VIDEO_LIMIT))"
+        },
+        {
+          "category": "telegram_media",
+          "function": "render",
+          "line": 212,
+          "snippet": "len(jload(card.get(\"condition_photos\"))), S.CONDITION_PHOTO_LIMIT,"
+        },
+        {
+          "category": "database_write",
+          "function": "_int",
+          "line": 281,
+          "snippet": "return int(str(v).replace(\" \", \"\").replace(\"км\", \"\").strip())"
+        },
+        {
+          "category": "database_write",
+          "function": "open_card",
+          "line": 331,
+          "snippet": "async def open_card(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "open_card",
+          "line": 332,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "open_card",
+          "line": 342,
+          "snippet": "await CR.send_photos(q.message, card)"
+        },
+        {
+          "category": "database_write",
+          "function": "cars_list",
+          "line": 357,
+          "snippet": "async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "cars_list",
+          "line": 358,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "edit_menu",
+          "line": 421,
+          "snippet": "async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "edit_menu",
+          "line": 422,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "edit_ask",
+          "line": 442,
+          "snippet": "async def edit_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "edit_ask",
+          "line": 443,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "clear_field",
+          "line": 476,
+          "snippet": "async def clear_field(update: Update,"
+        },
+        {
+          "category": "database_write",
+          "function": "clear_field",
+          "line": 479,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "diag_clear",
+          "line": 512,
+          "snippet": "async def diag_clear(update: Update,"
+        },
+        {
+          "category": "database_write",
+          "function": "diag_clear",
+          "line": 515,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "diag_clear",
+          "line": 521,
+          "snippet": "if pole not in (\"condition_photos\", \"condition_videos\"):"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "diag_clear",
+          "line": 566,
+          "snippet": "_peresobrat_stranicy()          # UA-V103"
+        },
+        {
+          "category": "telegram_media",
+          "function": "diag_clear",
+          "line": 567,
+          "snippet": "chto = \"Фото\" if pole == \"condition_photos\" else \"Видео\""
+        },
+        {
+          "category": "database_write",
+          "function": "apply_value",
+          "line": 598,
+          "snippet": "digits = value.lower().replace(\" \", \"\").replace(\"\\u00a0\", \"\")"
+        },
+        {
+          "category": "database_write",
+          "function": "apply_value",
+          "line": 600,
+          "snippet": "digits = digits.replace(lishnee, \"\")"
+        },
+        {
+          "category": "database_write",
+          "function": "apply_value",
+          "line": 605,
+          "snippet": "num = int(float(digits.replace(\",\", \".\")) * mult)"
+        },
+        {
+          "category": "database_write",
+          "function": "apply_value",
+          "line": 621,
+          "snippet": "vin = value.upper().replace(\" \", \"\")"
+        },
+        {
+          "category": "database_write",
+          "function": "media_screen",
+          "line": 636,
+          "snippet": "async def media_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "media_screen",
+          "line": 637,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "media_screen",
+          "line": 642,
+          "snippet": "photos = photos_of(card)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "media_screen",
+          "line": 649,
+          "snippet": "\"Фото: %d из %d\" % (len(photos), S.PHOTO_LIMIT),"
+        },
+        {
+          "category": "telegram_media",
+          "function": "media_screen",
+          "line": 658,
+          "snippet": "[InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),"
+        },
+        {
+          "category": "database_write",
+          "function": "video_gallery",
+          "line": 672,
+          "snippet": "async def video_gallery(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "video_gallery",
+          "line": 673,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "gallery",
+          "line": 707,
+          "snippet": "async def gallery(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "gallery",
+          "line": 708,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 713,
+          "snippet": "photos = photos_of(card)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 714,
+          "snippet": "if not photos:"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 717,
+          "snippet": "chunk = photos[page * PHOTO_PAGE:(page + 1) * PHOTO_PAGE]"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 719,
+          "snippet": "from telegram import InputMediaPhoto"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 721,
+          "snippet": "[InputMediaPhoto(p[\"file_id\"]) for p in chunk])"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 726,
+          "snippet": "await q.message.reply_photo(p[\"file_id\"])"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 729,
+          "snippet": "total_pages = (len(photos) - 1) // PHOTO_PAGE + 1"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 738,
+          "snippet": "\"Фото %d–%d из %d\" % (page * PHOTO_PAGE + 1,"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 739,
+          "snippet": "min((page + 1) * PHOTO_PAGE, len(photos)), len(photos)),"
+        },
+        {
+          "category": "telegram_media",
+          "function": "gallery",
+          "line": 743,
+          "snippet": "callback_data=\"car_rmphoto:%d\" % cid)],"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_menu",
+          "line": 748,
+          "snippet": "async def photo_remove_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "photo_remove_menu",
+          "line": 748,
+          "snippet": "async def photo_remove_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "photo_remove_menu",
+          "line": 750,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_menu",
+          "line": 754,
+          "snippet": "photos = photos_of(card)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_menu",
+          "line": 755,
+          "snippet": "if not photos:"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_menu",
+          "line": 759,
+          "snippet": "for i in range(len(photos)):"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 777,
+          "snippet": "async def photo_remove(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "photo_remove",
+          "line": 777,
+          "snippet": "async def photo_remove(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "photo_remove",
+          "line": 778,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 783,
+          "snippet": "photos = photos_of(card)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 784,
+          "snippet": "if 0 <= idx < len(photos):"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 785,
+          "snippet": "ubrat = photos[idx].get(\"file_id\")"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 786,
+          "snippet": "ostalos = [p for p in photos if p.get(\"file_id\") != ubrat]"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 787,
+          "snippet": "db.update_card_field(\"cars\", cid, \"photos\", jdump(ostalos), q.from_user.id)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 788,
+          "snippet": "if card.get(\"cover_photo\") == ubrat:"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 789,
+          "snippet": "db.update_card_field(\"cars\", cid, \"cover_photo\", None, q.from_user.id)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 792,
+          "snippet": "\"Убрал. Осталось фото: %d\" % len(photos_of(card)),"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove",
+          "line": 794,
+          "snippet": "[InlineKeyboardButton(\"Убрать ещё\", callback_data=\"car_rmphoto:%d\" % cid)],"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_all_ask",
+          "line": 799,
+          "snippet": "async def photo_remove_all_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "photo_remove_all_ask",
+          "line": 799,
+          "snippet": "async def photo_remove_all_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "photo_remove_all_ask",
+          "line": 801,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_all_ask",
+          "line": 805,
+          "snippet": "skolko = len(photos_of(card))"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_all",
+          "line": 822,
+          "snippet": "async def photo_remove_all(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "photo_remove_all",
+          "line": 822,
+          "snippet": "async def photo_remove_all(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "photo_remove_all",
+          "line": 824,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_all",
+          "line": 828,
+          "snippet": "bylo = len(photos_of(card))"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_all",
+          "line": 842,
+          "snippet": "db.update_card_field(\"cars\", cid, \"photos\", jdump([]), q.from_user.id)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_all",
+          "line": 843,
+          "snippet": "if card.get(\"cover_photo\"):"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_all",
+          "line": 844,
+          "snippet": "db.update_card_field(\"cars\", cid, \"cover_photo\", None, q.from_user.id)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "photo_remove_all",
+          "line": 846,
+          "snippet": "db.update_card_field(\"cars\", cid, \"hidden_photos\", jdump([]), q.from_user.id)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "photo_remove_all",
+          "line": 850,
+          "snippet": "# UA-V140 · страницу машины НЕ трогаем, только пересобираем"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "photo_remove_all",
+          "line": 855,
+          "snippet": "if _peresobrat_stranicy():"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "photo_remove_all",
+          "line": 856,
+          "snippet": "ubrano = \"\\nСтраница покупателя пересобрана.\""
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "photo_remove_all",
+          "line": 858,
+          "snippet": "ubrano = \"\\nСтраницу пересобрать не вышло — она осталась прежней.\""
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 871,
+          "snippet": "\"photos\": \"фото авто\","
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 875,
+          "snippet": "\"condition_photos\": \"фото технического состояния\","
+        },
+        {
+          "category": "database_write",
+          "function": "add_media_start",
+          "line": 881,
+          "snippet": "async def add_media_start(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "add_media_start",
+          "line": 882,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_save_media_bazovoe",
+          "line": 904,
+          "snippet": "limit = {\"photos\": S.PHOTO_LIMIT,"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_save_media_bazovoe",
+          "line": 906,
+          "snippet": "\"condition_photos\": S.CONDITION_PHOTO_LIMIT,"
+        },
+        {
+          "category": "database_write",
+          "function": "condition_screen",
+          "line": 925,
+          "snippet": "async def condition_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "condition_screen",
+          "line": 926,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "condition_screen",
+          "line": 939,
+          "snippet": "% len(jload(card.get(\"condition_photos\"))),"
+        },
+        {
+          "category": "telegram_media",
+          "function": "condition_screen",
+          "line": 953,
+          "snippet": "callback_data=\"car_add:%d:condition_photos\" % cid),"
+        },
+        {
+          "category": "telegram_media",
+          "function": "condition_screen",
+          "line": 962,
+          "snippet": "callback_data=\"diag_ask:%d:condition_photos\" % cid)])"
+        },
+        {
+          "category": "database_write",
+          "function": "stage_menu",
+          "line": 979,
+          "snippet": "async def stage_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "stage_menu",
+          "line": 980,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "stage_set",
+          "line": 1007,
+          "snippet": "async def stage_set(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "stage_set",
+          "line": 1008,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "price_screen",
+          "line": 1080,
+          "snippet": "async def price_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "price_screen",
+          "line": 1081,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "save_ai_text",
+          "line": 1107,
+          "snippet": "async def save_ai_text(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "save_ai_text",
+          "line": 1109,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "keep_price",
+          "line": 1125,
+          "snippet": "async def keep_price(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "keep_price",
+          "line": 1127,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "auto_catch",
+          "line": 1191,
+          "snippet": "if msg.photo or msg.video or msg.video_note or msg.document:"
+        },
+        {
+          "category": "database_write",
+          "function": "auto_catch",
+          "line": 1212,
+          "snippet": "\"%s · цена: %s\" % (number, answer.replace(\"Записано: \", \"\")),"
+        },
+        {
+          "category": "database_write",
+          "function": "auto_catch",
+          "line": 1269,
+          "snippet": "if int(raw.replace(\" \", \"\")) < 1000:"
+        },
+        {
+          "category": "database_write",
+          "function": "auto_catch",
+          "line": 1270,
+          "snippet": "raw = str(int(raw.replace(\" \", \"\")) * 1000)"
+        },
+        {
+          "category": "database_write",
+          "function": "client_screen",
+          "line": 1310,
+          "snippet": "async def client_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "client_screen",
+          "line": 1311,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "client_ask",
+          "line": 1357,
+          "snippet": "async def client_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "client_ask",
+          "line": 1358,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "client_unlink",
+          "line": 1375,
+          "snippet": "async def client_unlink(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "client_unlink",
+          "line": 1376,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "toggle_publish",
+          "line": 1391,
+          "snippet": "async def toggle_publish(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "toggle_publish",
+          "line": 1392,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "mark_sold",
+          "line": 1428,
+          "snippet": "async def mark_sold(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "mark_sold",
+          "line": 1429,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "mark_sold",
+          "line": 1436,
+          "snippet": "rows.insert(0, [InlineKeyboardButton(\"Сначала оформить за клиентом\","
+        },
+        {
+          "category": "database_write",
+          "function": "mark_sold_ok",
+          "line": 1446,
+          "snippet": "async def mark_sold_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "mark_sold_ok",
+          "line": 1447,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "delete_ask",
+          "line": 1459,
+          "snippet": "async def delete_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "delete_ask",
+          "line": 1460,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "delete_ok",
+          "line": 1476,
+          "snippet": "async def delete_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "delete_ok",
+          "line": 1477,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "delete_ok",
+          "line": 1484,
+          "snippet": "c.execute(\"DELETE FROM cars WHERE id=?\", (cid,))"
+        },
+        {
+          "category": "database_write",
+          "function": "more_screen",
+          "line": 1587,
+          "snippet": "async def more_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "more_screen",
+          "line": 1589,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "clients_screen",
+          "line": 1605,
+          "snippet": "async def clients_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "clients_screen",
+          "line": 1607,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "crm_leads",
+          "line": 1635,
+          "snippet": "async def crm_leads(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "crm_leads",
+          "line": 1637,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "crm_stats",
+          "line": 1666,
+          "snippet": "async def crm_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "crm_stats",
+          "line": 1667,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "crm_stats_week",
+          "line": 1683,
+          "snippet": "async def crm_stats_week(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "crm_stats_week",
+          "line": 1684,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "preview",
+          "line": 1710,
+          "snippet": "async def preview(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "preview",
+          "line": 1712,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "preview",
+          "line": 1716,
+          "snippet": "await CR.send_photos(q.message, card)"
+        },
+        {
+          "category": "database_write",
+          "function": "preview_demo",
+          "line": 1783,
+          "snippet": "async def preview_demo(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "preview_demo",
+          "line": 1785,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "ad_screen",
+          "line": 1833,
+          "snippet": "async def ad_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ad_screen",
+          "line": 1835,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "telegram_media",
+          "function": "collect_svodka",
+          "line": 1895,
+          "snippet": "if not photos_of(c):"
+        },
+        {
+          "category": "database_write",
+          "function": "optimize_screen",
+          "line": 1953,
+          "snippet": "async def optimize_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "optimize_screen",
+          "line": 1955,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "ocr_vision",
+          "function": "optimize_screen",
+          "line": 1968,
+          "snippet": "\"Нет ключа для помощника — файл anthropic_key.txt не найден.\")"
+        },
+        {
+          "category": "database_write",
+          "function": "svodka_screen",
+          "line": 1990,
+          "snippet": "async def svodka_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "svodka_screen",
+          "line": 1991,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "catch_message",
+          "line": 2006,
+          "snippet": "async def catch_message(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "catch_message",
+          "line": 2009,
+          "snippet": "msg = update.effective_message"
+        },
+        {
+          "category": "database_write",
+          "function": "catch_message",
+          "line": 2012,
+          "snippet": "user_id = update.effective_user.id"
+        },
+        {
+          "category": "telegram_media",
+          "function": "catch_message",
+          "line": 2023,
+          "snippet": "if msg.photo:"
+        },
+        {
+          "category": "telegram_media",
+          "function": "catch_message",
+          "line": 2024,
+          "snippet": "file_id = msg.photo[-1].file_id"
+        },
+        {
+          "category": "telegram_media",
+          "function": "catch_message",
+          "line": 2033,
+          "snippet": "elif msg.document:"
+        },
+        {
+          "category": "telegram_media",
+          "function": "catch_message",
+          "line": 2034,
+          "snippet": "file_id = msg.document.file_id"
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [],
+      "mtime_ns": 1787487179998855779,
+      "path": "/home/Carix/cars_ui.py",
+      "sha256": "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7",
+      "size": 130378,
+      "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "retry_timeout",
+          "function": null,
+          "line": 43,
+          "snippet": "READ_TIMEOUT = 60"
+        },
+        {
+          "category": "retry_timeout",
+          "function": null,
+          "line": 44,
+          "snippet": "WRITE_TIMEOUT_TEXT = 60"
+        },
+        {
+          "category": "retry_timeout",
+          "function": null,
+          "line": 45,
+          "snippet": "WRITE_TIMEOUT_MEDIA = 180"
+        },
+        {
+          "category": "retry_timeout",
+          "function": null,
+          "line": 46,
+          "snippet": "CONNECT_TIMEOUT = 30"
+        },
+        {
+          "category": "retry_timeout",
+          "function": null,
+          "line": 47,
+          "snippet": "POOL_TIMEOUT = 15"
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 65,
+          "snippet": "\"send_photo\","
+        },
+        {
+          "category": "retry_timeout",
+          "function": "patch_request_timeouts",
+          "line": 84,
+          "snippet": "def patch_request_timeouts():"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 103,
+          "snippet": "kwargs[\"read_timeout\"] = _bump(kwargs.get(\"read_timeout\", 5), READ_TIMEOUT)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 104,
+          "snippet": "kwargs[\"write_timeout\"] = _bump(kwargs.get(\"write_timeout\", 5), WRITE_TIMEOUT_TEXT)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 105,
+          "snippet": "kwargs[\"connect_timeout\"] = _bump(kwargs.get(\"connect_timeout\", 5), CONNECT_TIMEOUT)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 106,
+          "snippet": "kwargs[\"pool_timeout\"] = _bump(kwargs.get(\"pool_timeout\", 1), POOL_TIMEOUT)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 112,
+          "snippet": "\"read_timeout\", \"write_timeout\", \"connect_timeout\","
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 113,
+          "snippet": "\"pool_timeout\", \"connection_pool_size\","
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_wrap_send",
+          "line": 124,
+          "snippet": "TimedOut, NetworkError, RetryAfter = errors"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 131,
+          "snippet": "kwargs.setdefault(\"read_timeout\", READ_TIMEOUT)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 132,
+          "snippet": "kwargs.setdefault(\"connect_timeout\", CONNECT_TIMEOUT)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 134,
+          "snippet": "\"write_timeout\", WRITE_TIMEOUT_MEDIA if is_media else WRITE_TIMEOUT_TEXT"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 138,
+          "snippet": "for attempt in range(1, RETRIES + 1):"
+        },
+        {
+          "category": "telegram_media",
+          "function": "inner",
+          "line": 162,
+          "snippet": "_cache_put(sent_id, result.document.file_id.encode(\"utf-8\"))"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 167,
+          "snippet": "except RetryAfter as e:"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 169,
+          "snippet": "wait = float(getattr(e, \"retry_after\", 3)) + 1"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 171,
+          "snippet": "await asyncio.sleep(wait)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 174,
+          "snippet": "if attempt == RETRIES:"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 176,
+          "snippet": "wait = PAUSE * attempt"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 179,
+          "snippet": "orig.__name__, attempt, RETRIES, wait,"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 181,
+          "snippet": "await asyncio.sleep(wait)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 183,
+          "snippet": "for k in (\"read_timeout\", \"write_timeout\", \"connect_timeout\"):"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_videos_after_html",
+          "line": 228,
+          "snippet": "await asyncio.sleep(ALBUM_PAUSE)"
+        },
+        {
+          "category": "telegram_media",
+          "function": "patch_download_cache",
+          "line": 270,
+          "snippet": "for name in (\"download_as_bytearray\", \"download_to_memory\"):"
+        },
+        {
+          "category": "telegram_media",
+          "function": "inner",
+          "line": 280,
+          "snippet": "if __name == \"download_as_bytearray\":"
+        },
+        {
+          "category": "telegram_media",
+          "function": "inner",
+          "line": 288,
+          "snippet": "# download_to_memory(out) — пишем в переданный буфер"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_karty",
+          "line": 337,
+          "snippet": "nuzhno = [c for c in (\"auto_number\", \"photos\", \"videos\", \"hidden_photos\")"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_karty",
+          "line": 339,
+          "snippet": "if \"photos\" not in nuzhno or \"videos\" not in nuzhno:"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_karty",
+          "line": 344,
+          "snippet": "hidden = set(_ids(d.get(\"hidden_photos\")))"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_karty",
+          "line": 345,
+          "snippet": "foto = [p for p in _ids(d.get(\"photos\")) if p not in hidden]"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_dopisat_video",
+          "line": 375,
+          "snippet": "if not isinstance(fid, str) or tip not in (\"photo\", \"\"):"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 412,
+          "snippet": "kwargs.setdefault(\"read_timeout\", 10)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 413,
+          "snippet": "kwargs.setdefault(\"write_timeout\", 10)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 414,
+          "snippet": "kwargs.setdefault(\"connect_timeout\", 10)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 415,
+          "snippet": "kwargs.setdefault(\"pool_timeout\", 10)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "inner",
+          "line": 419,
+          "snippet": "for k in (\"read_timeout\", \"write_timeout\", \"connect_timeout\", \"pool_timeout\"):"
+        },
+        {
+          "category": "database_write",
+          "function": "patch_card_html_budget",
+          "line": 439,
+          "snippet": "sys.path.insert(0, BASE)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "patch_bot_methods",
+          "line": 464,
+          "snippet": "from telegram.error import TimedOut, NetworkError, RetryAfter"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "patch_bot_methods",
+          "line": 466,
+          "snippet": "errors = (TimedOut, NetworkError, RetryAfter)"
+        },
+        {
+          "category": "database_write",
+          "function": "inner",
+          "line": 509,
+          "snippet": "async def inner(update, context):"
+        },
+        {
+          "category": "database_write",
+          "function": "inner",
+          "line": 514,
+          "snippet": "return await callback(update, context)"
+        },
+        {
+          "category": "lock_resource",
+          "function": "inner",
+          "line": 520,
+          "snippet": "def inner(self, callback, block=True, *args, **kwargs):"
+        },
+        {
+          "category": "lock_resource",
+          "function": "inner",
+          "line": 524,
+          "snippet": "return orig(self, callback, block, *args, **kwargs)"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 539,
+          "snippet": "import sqlite3"
+        },
+        {
+          "category": "database_write",
+          "function": "db_clean_split",
+          "line": 592,
+          "snippet": "con = sqlite3.connect(db)"
+        },
+        {
+          "category": "database_write",
+          "function": "db_clean_split",
+          "line": 594,
+          "snippet": "cols = [r[1] for r in cur.execute(\"PRAGMA table_info(cars)\").fetchall()]"
+        },
+        {
+          "category": "database_write",
+          "function": "db_clean_split",
+          "line": 603,
+          "snippet": "rows = cur.execute(\"SELECT %s FROM cars\" % \", \".join(keys)).fetchall()"
+        },
+        {
+          "category": "database_write",
+          "function": "db_clean_split",
+          "line": 625,
+          "snippet": "cur.executemany("
+        },
+        {
+          "category": "database_write",
+          "function": "db_clean_split",
+          "line": 626,
+          "snippet": "\"UPDATE cars SET condition_text = ? WHERE rowid = ?\", changed"
+        },
+        {
+          "category": "database_write",
+          "function": "db_clean_split",
+          "line": 628,
+          "snippet": "con.commit()"
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 654,
+          "snippet": "\"photos\", \"videos\", \"hidden_photos\","
+        },
+        {
+          "category": "database_write",
+          "function": "_rows",
+          "line": 660,
+          "snippet": "con = sqlite3.connect(db)"
+        },
+        {
+          "category": "database_write",
+          "function": "_rows",
+          "line": 661,
+          "snippet": "con.row_factory = sqlite3.Row"
+        },
+        {
+          "category": "database_write",
+          "function": "_rows",
+          "line": 663,
+          "snippet": "return [dict(r) for r in con.execute(query, params).fetchall()]"
+        },
+        {
+          "category": "database_write",
+          "function": "_car_columns",
+          "line": 670,
+          "snippet": "con = sqlite3.connect(db)"
+        },
+        {
+          "category": "database_write",
+          "function": "_car_columns",
+          "line": 672,
+          "snippet": "return [r[1] for r in con.execute(\"PRAGMA table_info(cars)\").fetchall()]"
+        },
+        {
+          "category": "database_write",
+          "function": "_money",
+          "line": 711,
+          "snippet": "return \"{:,}\".format(n).replace(\",\", \" \") + \" $\""
+        },
+        {
+          "category": "telegram_media",
+          "function": "_send_client_card",
+          "line": 767,
+          "snippet": "from telegram import InputMediaPhoto, InputMediaVideo"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_send_client_card",
+          "line": 770,
+          "snippet": "hidden = set(_ids(car.get(\"hidden_photos\")))"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_send_client_card",
+          "line": 771,
+          "snippet": "photos = [p for p in _ids(car.get(\"photos\")) if p not in hidden]"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_send_client_card",
+          "line": 774,
+          "snippet": "for i in range(0, len(photos), 10):"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_send_client_card",
+          "line": 775,
+          "snippet": "chunk = photos[i:i + 10]"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_send_client_card",
+          "line": 777,
+          "snippet": "await bot.send_photo(chat_id, chunk[0])"
+        },
+        {
+          "category": "telegram_media",
+          "function": "_send_client_card",
+          "line": 779,
+          "snippet": "await bot.send_media_group(chat_id, [InputMediaPhoto(p) for p in chunk])"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_send_client_card",
+          "line": 780,
+          "snippet": "await asyncio.sleep(ALBUM_PAUSE)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_send_client_card",
+          "line": 794,
+          "snippet": "await asyncio.sleep(ALBUM_PAUSE)"
+        },
+        {
+          "category": "database_write",
+          "function": "cmd",
+          "line": 809,
+          "snippet": "async def cmd(update, context):"
+        },
+        {
+          "category": "database_write",
+          "function": "cmd",
+          "line": 814,
+          "snippet": "await update.message.reply_text(\"Карточек пока нет.\")"
+        },
+        {
+          "category": "database_write",
+          "function": "cmd",
+          "line": 822,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "press",
+          "line": 827,
+          "snippet": "async def press(update, context):"
+        },
+        {
+          "category": "database_write",
+          "function": "press",
+          "line": 828,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "sostoyanie",
+          "line": 839,
+          "snippet": "async def sostoyanie(update, context):"
+        },
+        {
+          "category": "telegram_media",
+          "function": "sostoyanie",
+          "line": 875,
+          "snippet": "hidden = set(_ids(car.get(\"hidden_photos\")))"
+        },
+        {
+          "category": "telegram_media",
+          "function": "sostoyanie",
+          "line": 876,
+          "snippet": "foto = len([p for p in _ids(car.get(\"photos\")) if p not in hidden])"
+        },
+        {
+          "category": "database_write",
+          "function": "sostoyanie",
+          "line": 883,
+          "snippet": "await update.message.reply_text(\"\\n\".join(stroki))"
+        },
+        {
+          "category": "database_write",
+          "function": "kanal",
+          "line": 885,
+          "snippet": "async def kanal(update, context):"
+        },
+        {
+          "category": "database_write",
+          "function": "kanal",
+          "line": 896,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "kanal",
+          "line": 900,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "kanal",
+          "line": 908,
+          "snippet": "await update.message.reply_text(\"Имя канала начинается с @. Пример: /kanal @uaart_video\")"
+        },
+        {
+          "category": "database_write",
+          "function": "kanal",
+          "line": 915,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "kanal",
+          "line": 924,
+          "snippet": "await update.message.reply_text(\"Не смог записать настройку: %r\" % e)"
+        },
+        {
+          "category": "database_write",
+          "function": "kanal",
+          "line": 927,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "pro_video",
+          "line": 933,
+          "snippet": "async def pro_video(update, context):"
+        },
+        {
+          "category": "database_write",
+          "function": "pro_video",
+          "line": 936,
+          "snippet": "v = update.message.video or update.message.animation"
+        },
+        {
+          "category": "database_write",
+          "function": "pro_video",
+          "line": 945,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "pro_video",
+          "line": 949,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 967,
+          "snippet": "async def video_master(update, context):"
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 970,
+          "snippet": "sys.path.insert(0, BASE)"
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 973,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 981,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 994,
+          "snippet": "NASTROYKA.pop(update.effective_chat.id, None)"
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 995,
+          "snippet": "await update.message.reply_text(\"Настройка сброшена. Начать заново: /video\")"
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 999,
+          "snippet": "NASTROYKA[update.effective_chat.id] = \"klyuchi\""
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 1000,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 1009,
+          "snippet": "NASTROYKA[update.effective_chat.id] = \"telefon\""
+        },
+        {
+          "category": "database_write",
+          "function": "video_master",
+          "line": 1010,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1014,
+          "snippet": "async def video_otvet(update, context):"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1016,
+          "snippet": "shag = NASTROYKA.get(update.effective_chat.id)"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1020,
+          "snippet": "sys.path.insert(0, BASE)"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1025,
+          "snippet": "text = (update.message.text or \"\").strip()"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1029,
+          "snippet": "chasti = [c for c in text.replace(\"\\n\", \" \").split() if c]"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1031,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1036,
+          "snippet": "NASTROYKA[update.effective_chat.id] = \"telefon\""
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1037,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1045,
+          "snippet": "NASTROYKA.pop(update.effective_chat.id, None)"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1046,
+          "snippet": "await update.message.reply_text(\"Вход уже выполнен, всё готово.\")"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1048,
+          "snippet": "NASTROYKA[update.effective_chat.id] = \"kod\""
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1049,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1059,
+          "snippet": "NASTROYKA[update.effective_chat.id] = \"parol\""
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1060,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1065,
+          "snippet": "NASTROYKA.pop(update.effective_chat.id, None)"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1066,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1073,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1075,
+          "snippet": "NASTROYKA.pop(update.effective_chat.id, None)"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1080,
+          "snippet": "NASTROYKA.pop(update.effective_chat.id, None)"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1081,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1086,
+          "snippet": "NASTROYKA.pop(update.effective_chat.id, None)"
+        },
+        {
+          "category": "database_write",
+          "function": "video_otvet",
+          "line": 1087,
+          "snippet": "await update.message.reply_text(\"Сбой настройки: %r\\n\\nНачать заново: /video\" % e)"
+        },
+        {
+          "category": "database_write",
+          "function": "token",
+          "line": 1130,
+          "snippet": "async def token(update, context):"
+        },
+        {
+          "category": "database_write",
+          "function": "token",
+          "line": 1131,
+          "snippet": "kto = update.effective_user.id"
+        },
+        {
+          "category": "database_write",
+          "function": "token",
+          "line": 1141,
+          "snippet": "await update.message.reply_text(\"Не смог запомнить владельца: %r\" % e)"
+        },
+        {
+          "category": "database_write",
+          "function": "token",
+          "line": 1164,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "token",
+          "line": 1173,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "token",
+          "line": 1178,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "database_write",
+          "function": "token",
+          "line": 1195,
+          "snippet": "await update.message.reply_text(\"Не смог записать: %r\" % e)"
+        },
+        {
+          "category": "database_write",
+          "function": "token",
+          "line": 1198,
+          "snippet": "await update.message.reply_text("
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 1264,
+          "snippet": "\"photo_hide.py\", \"visits.py\", \"voice.py\", \"proverka.py\", \"crm.db\","
+        },
+        {
+          "category": "database_write",
+          "function": "pochinit_imena",
+          "line": 1294,
+          "snippet": "pravilno = name.replace(\" \", \"_\")"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "apply_all",
+          "line": 1340,
+          "snippet": "patch_request_timeouts,"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_zhivoy_token",
+          "line": 1365,
+          "snippet": "with urllib.request.urlopen(adres, timeout=20) as otvet:"
+        },
+        {
+          "category": "database_write",
+          "function": "main",
+          "line": 1415,
+          "snippet": "sys.path.insert(0, BASE)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "main",
+          "line": 1465,
+          "snippet": "time.sleep(60)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "main",
+          "line": 1468,
+          "snippet": "time.sleep(10)"
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [],
+      "mtime_ns": 1786710100867532949,
+      "path": "/home/Carix/start_safe.py",
+      "sha256": "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007",
+      "size": 60219,
+      "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "rebuild_publish",
+          "function": null,
+          "line": 5,
+          "snippet": "# stranica.py — ОДИН ФАЙЛ. СОБИРАЕТ СТРАНИЦУ ПОКУПАТЕЛЯ И КАТАЛОГ."
+        },
+        {
+          "category": "rebuild_publish",
+          "function": null,
+          "line": 8,
+          "snippet": "# Запустил \"Run this file\" — страницы пересобраны, ссылки напечатаны. Всё."
+        },
+        {
+          "category": "ocr_vision",
+          "function": null,
+          "line": 13,
+          "snippet": "import os, io, re, json, glob, time, base64, sqlite3, traceback"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 13,
+          "snippet": "import os, io, re, json, glob, time, base64, sqlite3, traceback"
+        },
+        {
+          "category": "database_write",
+          "function": "ekran",
+          "line": 55,
+          "snippet": "return str(s or \"\").replace(\"&\", \"&amp;\").replace(\"<\", \"&lt;\").replace(\">\", \"&gt;\")"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "imya_bota",
+          "line": 76,
+          "snippet": "with urllib.request.urlopen(\"https://api.telegram.org/bot%s/getMe\" % tok, timeout=15) as r:"
+        },
+        {
+          "category": "database_write",
+          "function": "mashiny",
+          "line": 94,
+          "snippet": "con = sqlite3.connect(\"file:%s?mode=ro\" % os.path.join(BAZA_DIR, \"crm.db\"), uri=True)"
+        },
+        {
+          "category": "database_write",
+          "function": "mashiny",
+          "line": 95,
+          "snippet": "con.row_factory = sqlite3.Row"
+        },
+        {
+          "category": "database_write",
+          "function": "mashiny",
+          "line": 97,
+          "snippet": "return [dict(r) for r in con.execute(\"SELECT * FROM cars WHERE published=1 ORDER BY id\")]"
+        },
+        {
+          "category": "database_write",
+          "function": "cena",
+          "line": 114,
+          "snippet": "return (\"{:,}\".format(c).replace(\",\", \" \") + (\" $\" if VALYUTA == \"USD\" else \" ₴\"))"
+        },
+        {
+          "category": "ocr_vision",
+          "function": "dostat_iz_stranic",
+          "line": 348,
+          "snippet": "r\"data:image/(?:jpeg|jpg|png);base64,([A-Za-z0-9+/=]{2000,})\", chitat(put))"
+        },
+        {
+          "category": "ocr_vision",
+          "function": "dostat_iz_stranic",
+          "line": 358,
+          "snippet": "f.write(base64.b64decode(kusok + \"=\" * (-len(kusok) % 4)))"
+        },
+        {
+          "category": "telegram_media",
+          "function": "kadry_mashiny",
+          "line": 375,
+          "snippet": "if not m.get(\"cover_photo\"):"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 411,
+          "snippet": ".kadr img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#0B1524}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 419,
+          "snippet": ".chip{display:inline-block;border:1px solid #2c5a41;color:var(--zel);border-radius:20px;"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 423,
+          "snippet": "video{width:calc(100% - 32px);margin:6px 16px 0;border-radius:14px;background:#000;display:block}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 435,
+          "snippet": ".dejstvie{display:block;margin:12px 16px;padding:17px;border-radius:14px;background:var(--zoloto);"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 437,
+          "snippet": ".vtoraya{display:block;margin:10px 16px;padding:15px;border-radius:14px;border:1px solid #2b405a;"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 439,
+          "snippet": ".zvonok{display:block;margin:10px 16px;padding:16px;border-radius:14px;"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 445,
+          "snippet": ".plitka{display:block;background:var(--karta);margin:12px 16px;border-radius:16px;overflow:hidden}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 446,
+          "snippet": ".plitka img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#0B1524}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 472,
+          "snippet": ".mini b{display:block;color:var(--zoloto);font-size:19px;margin-bottom:3px}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 484,
+          "snippet": ".vopros b{display:block;margin-bottom:5px;font-size:15px}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 511,
+          "snippet": "#uspeh .zakr{display:block;padding:14px;border-radius:12px;border:1px solid #2b405a;color:#dce7f3}"
+        },
+        {
+          "category": "retry_timeout",
+          "function": null,
+          "line": 561,
+          "snippet": "if(tg.close){ setTimeout(function(){ tg.close(); }, 120); }"
+        },
+        {
+          "category": "retry_timeout",
+          "function": null,
+          "line": 605,
+          "snippet": "setTimeout(function(){ knopka.textContent = 'Скопировать номер'; }, 2500);"
+        },
+        {
+          "category": "retry_timeout",
+          "function": null,
+          "line": 643,
+          "snippet": "if(tg.close){ setTimeout(function(){ tg.close(); }, 120); }"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 658,
+          "snippet": "#nomerok a,#nomerok button{display:block;width:100%;padding:14px;border-radius:12px;"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 667,
+          "snippet": ".diag{display:block;margin-top:14px;padding:15px;border-radius:12px;"
+        },
+        {
+          "category": "database_write",
+          "function": "svyaz_blok",
+          "line": 683,
+          "snippet": "TELEFON.replace(\" \", \"\"), TELEFON, WA_SSYLKA, karta_url()))"
+        },
+        {
+          "category": "database_write",
+          "function": "sobrat_diagnostiku",
+          "line": 748,
+          "snippet": "stroki = [s.strip() for s in tekst.replace(\"\\r\", \"\").split(\"\\n\")]"
+        },
+        {
+          "category": "lock_resource",
+          "function": "sobrat_diagnostiku",
+          "line": 809,
+          "snippet": "sloj.style.display='flex';sch.style.display='block';sch.textContent=(tek+1)+' / '+kadry.length;"
+        },
+        {
+          "category": "lock_resource",
+          "function": "sobrat_kartochku",
+          "line": 875,
+          "snippet": "\" style='width:100%%;height:auto;display:block;border-radius:14px'>\""
+        },
+        {
+          "category": "database_write",
+          "function": "sobrat_kartochku",
+          "line": 899,
+          "snippet": "pary.append((\"Пробег\", \"{:,} км\".format(int(m[\"mileage_km\"])).replace(\",\", \" \")))"
+        },
+        {
+          "category": "database_write",
+          "function": "blok_teksta",
+          "line": 929,
+          "snippet": "stroki = [s.strip() for s in tekst.replace(\"\\r\", \"\").split(\"\\n\")]"
+        },
+        {
+          "category": "lock_resource",
+          "function": "sobrat_kartochku",
+          "line": 952,
+          "snippet": "c.append('<a class=\"mcf-diag-cta\" href=\"%s-diag.html\" style=\"display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,17"
+        },
+        {
+          "category": "lock_resource",
+          "function": "sobrat_kartochku",
+          "line": 996,
+          "snippet": "sloj.style.display='flex';sch.style.display='block';sch.textContent=(tek+1)+' / '+kadry.length;"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 1208,
+          "snippet": "h+='<button type=\"button\" class=\"ua_m\" data-t=\"'+M[k][i]+'\" style=\"display:block;width:100%;text-align:left;font-size:16px;line-height:1.3;color:#e6ecf5;background:transparent;border:1px solid #2c3a52;border-radius:14px;padding:14px 15px;ma"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 1274,
+          "snippet": ".p_send{display:block;width:100%;text-align:center;font-size:17px;font-weight:700;padding:19px 14px;border-radius:16px;margin-top:20px;background:#dfa952;border:none;color:#16202f;font-family:inherit}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 1282,
+          "snippet": ".p_karta a,.p_karta button{display:block;width:100%;text-align:center;font-size:16px;padding:16px 12px;border-radius:14px;margin-bottom:10px;text-decoration:none;font-family:inherit}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 1303,
+          "snippet": "bloki[i].style.display=(bloki[i].getAttribute('data-s')===kod)?'block':'none';"
+        },
+        {
+          "category": "lock_resource",
+          "function": "sobrat_podbor",
+          "line": 1421,
+          "snippet": "vidno = \"block\" if kod == \"korea\" else \"none\""
+        },
+        {
+          "category": "database_write",
+          "function": "zapisat",
+          "line": 1535,
+          "snippet": "if _sh_imya.replace(\".html\", \"\") in (\"index\", \"katalog\", \"podbor\", \"info\"):"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "main",
+          "line": 1694,
+          "snippet": "stranica = sbor()"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "main",
+          "line": 1695,
+          "snippet": "zapisat(imya, stranica)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "main",
+          "line": 1696,
+          "snippet": "obnovit_etalon(imya, stranica)"
+        },
+        {
+          "category": "database_write",
+          "function": "_v135_snimok",
+          "line": 1750,
+          "snippet": "with io.open(_put, \"r\", encoding=\"utf-8\", errors=\"replace\") as _f:"
+        },
+        {
+          "category": "database_write",
+          "function": "_v135_proverka",
+          "line": 1771,
+          "snippet": "with io.open(_ind, \"r\", encoding=\"utf-8\", errors=\"replace\") as _f:"
+        },
+        {
+          "category": "database_write",
+          "function": "_v135_proverka",
+          "line": 1791,
+          "snippet": "with io.open(_kat, \"r\", encoding=\"utf-8\", errors=\"replace\") as _f:"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 1836,
+          "snippet": "import sqlite3 as _s157"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_v157_net_fajlov",
+          "line": 1845,
+          "snippet": "con = _s157.connect(os.path.join(BAZA_DIR, \"crm.db\"), timeout=20)"
+        },
+        {
+          "category": "database_write",
+          "function": "_v157_net_fajlov",
+          "line": 1847,
+          "snippet": "for r in con.execute(\"SELECT auto_number, vid, poryadok, put FROM media\""
+        },
+        {
+          "category": "lock_resource",
+          "function": "_v167_zapasnaya",
+          "line": 1902,
+          "snippet": "\"a{display:block;margin-top:20px;padding:14px;border-radius:12px;\""
+        },
+        {
+          "category": "database_write",
+          "function": "sobrat_diagnostiku",
+          "line": 1925,
+          "snippet": "html = html.replace(\"</body>\", vstavka + \"</body>\", 1)"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 2100,
+          "snippet": ".v170_punkt{display:block;width:100%;box-sizing:border-box;text-align:center;"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 2108,
+          "snippet": ".v170_toast.v170_vidno{display:block}"
+        },
+        {
+          "category": "retry_timeout",
+          "function": null,
+          "line": 2128,
+          "snippet": "setTimeout(function(){ toast.classList.remove(\"v170_vidno\"); }, 2200);"
+        },
+        {
+          "category": "database_write",
+          "function": "_v170_ekran",
+          "line": 2168,
+          "snippet": "t = t.replace(a, b)"
+        },
+        {
+          "category": "database_write",
+          "function": "_v170_cena",
+          "line": 2179,
+          "snippet": "return \"{:,}\".format(z).replace(\",\", \" \") + \" $\""
+        },
+        {
+          "category": "database_write",
+          "function": "sobrat_kartochku",
+          "line": 2233,
+          "snippet": "html = html.replace(\"</head>\", meta + \"</head>\", 1)"
+        },
+        {
+          "category": "database_write",
+          "function": "sobrat_kartochku",
+          "line": 2238,
+          "snippet": "knopka = V170_KNOPKA.replace(\"V170_DANNYE\", dannye)"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 2294,
+          "snippet": ".v171_punkt{display:block;width:100%;box-sizing:border-box;text-align:center;"
+        },
+        {
+          "category": "database_write",
+          "function": "_v171_ekran",
+          "line": 2315,
+          "snippet": "t = t.replace(a, b)"
+        },
+        {
+          "category": "database_write",
+          "function": "_v171_js",
+          "line": 2322,
+          "snippet": "t = t.replace(\"\\\\\", \"\\\\\\\\\").replace(\"'\", \"\\\\'\")"
+        },
+        {
+          "category": "database_write",
+          "function": "_v171_js",
+          "line": 2323,
+          "snippet": "t = t.replace(\"&\", \"&amp;\").replace('\"', \"&quot;\")"
+        },
+        {
+          "category": "database_write",
+          "function": "_v171_js",
+          "line": 2324,
+          "snippet": "t = t.replace(\"<\", \"&lt;\").replace(\">\", \"&gt;\")"
+        },
+        {
+          "category": "database_write",
+          "function": "_v171_knopka",
+          "line": 2348,
+          "snippet": "cena_t = \"{:,}\".format(z).replace(\",\", \" \") + \" $\""
+        },
+        {
+          "category": "lock_resource",
+          "function": "_v171_knopka",
+          "line": 2374,
+          "snippet": "\"t.style.display='block';\""
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_v171_knopka",
+          "line": 2375,
+          "snippet": "\"setTimeout(function(){t.style.display='none';},2200);\""
+        },
+        {
+          "category": "database_write",
+          "function": "zapisat",
+          "line": 2463,
+          "snippet": "errors=\"replace\") as _f:"
+        },
+        {
+          "category": "database_write",
+          "function": "_v173_pamyat_pisat",
+          "line": 2509,
+          "snippet": "os.replace(vremenno, V173_PAMYAT)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "_v173_pamyat_pisat",
+          "line": 2509,
+          "snippet": "os.replace(vremenno, V173_PAMYAT)"
+        },
+        {
+          "category": "database_write",
+          "function": "zapisat",
+          "line": 2670,
+          "snippet": "with io.open(put, \"r\", encoding=\"utf-8\", errors=\"replace\") as _f:"
+        },
+        {
+          "category": "lock_resource",
+          "function": "_v174_proverit",
+          "line": 2718,
+          "snippet": "if not opis.get(\"CARD_TEMPLATE_LOCKED\"):"
+        },
+        {
+          "category": "database_write",
+          "function": "zapisat",
+          "line": 2766,
+          "snippet": "errors=\"replace\") as _f:"
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [],
+      "mtime_ns": 1787636524678097517,
+      "path": "/home/Carix/stranica.py",
+      "sha256": "16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1",
+      "size": 136769,
+      "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 9,
+          "snippet": "import sqlite3"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": null,
+          "line": 10,
+          "snippet": "import subprocess"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": null,
+          "line": 17,
+          "snippet": "SBORSHCHIK = os.path.join(BAZA, \"stranica.py\")"
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 28,
+          "snippet": "\"diag_text\", \"diag_link\", \"photos\", \"videos\","
+        },
+        {
+          "category": "telegram_media",
+          "function": null,
+          "line": 29,
+          "snippet": "\"hidden_photos\", \"cover_photo\", \"condition_photos\","
+        },
+        {
+          "category": "database_write",
+          "function": "kolonki_cars",
+          "line": 46,
+          "snippet": "soed = sqlite3.connect(BD, timeout=20)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "kolonki_cars",
+          "line": 46,
+          "snippet": "soed = sqlite3.connect(BD, timeout=20)"
+        },
+        {
+          "category": "database_write",
+          "function": "kolonki_cars",
+          "line": 47,
+          "snippet": "est = [r[1] for r in soed.execute(\"PRAGMA table_info(cars)\")]"
+        },
+        {
+          "category": "database_write",
+          "function": "otpechatok",
+          "line": 87,
+          "snippet": "soed = sqlite3.connect(BD, timeout=20)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "otpechatok",
+          "line": 87,
+          "snippet": "soed = sqlite3.connect(BD, timeout=20)"
+        },
+        {
+          "category": "database_write",
+          "function": "otpechatok",
+          "line": 88,
+          "snippet": "soed.row_factory = sqlite3.Row"
+        },
+        {
+          "category": "database_write",
+          "function": "otpechatok",
+          "line": 89,
+          "snippet": "ryady = soed.execute("
+        },
+        {
+          "category": "database_write",
+          "function": "zapisat",
+          "line": 126,
+          "snippet": "os.replace(vremenno, SOSTOYANIE)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "zapisat",
+          "line": 126,
+          "snippet": "os.replace(vremenno, SOSTOYANIE)"
+        },
+        {
+          "category": "database_write",
+          "function": "sobrat_svoimi_rukami",
+          "line": 144,
+          "snippet": "sys.path.insert(0, BAZA)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "sobrat_svoimi_rukami",
+          "line": 145,
+          "snippet": "import stranica"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "sobrat_svoimi_rukami",
+          "line": 146,
+          "snippet": "if not hasattr(stranica, \"main\"):"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "sobrat_svoimi_rukami",
+          "line": 147,
+          "snippet": "log(\"в stranica.py нет main()\")"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "sobrat_svoimi_rukami",
+          "line": 149,
+          "snippet": "stranica.main()"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "sobrat",
+          "line": 161,
+          "snippet": "Раньше запускался сам файл stranica.py. В нём нет строки"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "sobrat",
+          "line": 166,
+          "snippet": "log(\"stranica.py не найдена\")"
+        },
+        {
+          "category": "database_write",
+          "function": "sobrat",
+          "line": 168,
+          "snippet": "prikaz = (\"import sys; sys.path.insert(0, %r); \""
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "sobrat",
+          "line": 169,
+          "snippet": "\"import stranica; stranica.main()\" % BAZA)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "sobrat",
+          "line": 171,
+          "snippet": "itog = subprocess.run("
+        },
+        {
+          "category": "retry_timeout",
+          "function": "sobrat",
+          "line": 173,
+          "snippet": "cwd=BAZA, capture_output=True, text=True, timeout=600)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "shag",
+          "line": 214,
+          "snippet": "log(\"витрина изменилась - пересобираю страницы\")"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_cikl",
+          "line": 225,
+          "snippet": "time.sleep(30)"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "_cikl",
+          "line": 231,
+          "snippet": "time.sleep(PAUZA)"
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [],
+      "mtime_ns": 1786872083142396661,
+      "path": "/home/Carix/avtoperedacha.py",
+      "sha256": "e0e5e0d55672689dec25c1ac69488b86fc1af00570f0ec563fc8095a1858b7d1",
+      "size": 7638,
+      "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 11,
+          "snippet": "_s144.path.insert(0, \"/home/Carix\")"
+        },
+        {
+          "category": "retry_timeout",
+          "function": "run_bots",
+          "line": 124,
+          "snippet": "await asyncio.sleep(3600)"
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [],
+      "mtime_ns": 1786969314931171903,
+      "path": "/home/Carix/run_all.py",
+      "sha256": "7deb18698f792b61fd734b36451296343ec528e15ccd86798d6cbc4a7a75eca5",
+      "size": 5822,
+      "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "database_write",
+          "function": "dengi",
+          "line": 99,
+          "snippet": "return \"{:,}\".format(n).replace(\",\", \" \") + \" $\" if n > 0 else \"\""
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 139,
+          "snippet": "img{max-width:100%;display:block}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 154,
+          "snippet": ".brnd b{display:block;color:var(--zoloto);font-weight:800;letter-spacing:.07em;"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 156,
+          "snippet": ".brnd i{display:block;font-style:normal;color:var(--seryj);font-size:8.5px;"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 220,
+          "snippet": ".etp .tl b{display:block;font-size:15px;font-weight:700;line-height:1.25}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 221,
+          "snippet": ".etp .tl i{display:block;font-style:normal;color:var(--seryj);font-size:12px;margin-top:3px}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 222,
+          "snippet": ".etp .tl u{display:block;text-decoration:none;font-size:12.5px;margin-top:5px}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 607,
+          "snippet": ".tochki i{width:6px;height:6px;border-radius:50%;background:#2b405a;display:block}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 609,
+          "snippet": ".nomerok{display:inline-block;border:1px solid var(--zoloto);color:var(--zoloto);"
+        },
+        {
+          "category": "database_write",
+          "function": "_js_str",
+          "line": 673,
+          "snippet": "z = z.replace(\"\\\\\", \"\\\\\\\\\").replace(\"'\", \"\\\\'\")"
+        },
+        {
+          "category": "database_write",
+          "function": "_js_str",
+          "line": 674,
+          "snippet": "z = z.replace(\"&\", \"&amp;\").replace('\"', \"&quot;\")"
+        },
+        {
+          "category": "database_write",
+          "function": "_js_str",
+          "line": 675,
+          "snippet": "return \"'\" + z.replace(\"<\", \"&lt;\").replace(\">\", \"&gt;\") + \"'\""
+        },
+        {
+          "category": "lock_resource",
+          "function": "blok_share",
+          "line": 699,
+          "snippet": "\"var w=document.getElementById('tst');w.style.display='block';\""
+        },
+        {
+          "category": "retry_timeout",
+          "function": "blok_share",
+          "line": 700,
+          "snippet": "\"setTimeout(function(){w.style.display='none';},2200);\""
+        },
+        {
+          "category": "lock_resource",
+          "function": "karta_html",
+          "line": 934,
+          "snippet": "kadry[i].scrollIntoView({block:'nearest',inline:'center'});"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 1183,
+          "snippet": ".tip span{display:block;font-size:21px;margin-bottom:6px;line-height:1}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 1190,
+          "snippet": ".zagr b{display:block;font-size:15.5px;margin-bottom:8px}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 1368,
+          "snippet": ".faq.on .o{display:block}"
+        },
+        {
+          "category": "lock_resource",
+          "function": null,
+          "line": 1376,
+          "snippet": ".kntk b{color:var(--zoloto);font-size:15px;display:block;margin-bottom:6px}"
+        },
+        {
+          "category": "database_write",
+          "function": "zapisat_atomarno",
+          "line": 1578,
+          "snippet": "os.replace(vremenno, put)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "zapisat_atomarno",
+          "line": 1578,
+          "snippet": "os.replace(vremenno, put)"
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [],
+      "mtime_ns": 1787070370379273832,
+      "path": "/home/Carix/yadro.py",
+      "sha256": "e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6",
+      "size": 84930,
+      "syntax": "PASS"
+    },
+    {
+      "anchors": [
+        {
+          "category": "rebuild_publish",
+          "function": null,
+          "line": 12,
+          "snippet": "import subprocess"
+        },
+        {
+          "category": "database_write",
+          "function": null,
+          "line": 14,
+          "snippet": "from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup"
+        },
+        {
+          "category": "database_write",
+          "function": "_v_iso",
+          "line": 75,
+          "snippet": "t = (text or \"\").strip().replace(\"/\", \".\").replace(\" \", \"\")"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "_peresobrat",
+          "line": 109,
+          "snippet": "def _peresobrat():"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "_peresobrat",
+          "line": 112,
+          "snippet": "subprocess.Popen("
+        },
+        {
+          "category": "database_write",
+          "function": "_peresobrat",
+          "line": 114,
+          "snippet": "\"import sys; sys.path.insert(0, '/home/Carix'); \""
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "_peresobrat",
+          "line": 115,
+          "snippet": "\"import stranica; stranica.main()\"],"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "_peresobrat",
+          "line": 117,
+          "snippet": "stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)"
+        },
+        {
+          "category": "database_write",
+          "function": "gde_mashina",
+          "line": 124,
+          "snippet": "async def gde_mashina(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "gde_mashina",
+          "line": 125,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "menu",
+          "line": 193,
+          "snippet": "async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "menu",
+          "line": 194,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "sprosit_nomer",
+          "line": 213,
+          "snippet": "async def sprosit_nomer(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "sprosit_nomer",
+          "line": 214,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "sprosit_datu",
+          "line": 226,
+          "snippet": "async def sprosit_datu(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "sprosit_datu",
+          "line": 227,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "sprosit_dni",
+          "line": 239,
+          "snippet": "async def sprosit_dni(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "sprosit_dni",
+          "line": 240,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "ochistit_vopros",
+          "line": 253,
+          "snippet": "async def ochistit_vopros(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ochistit_vopros",
+          "line": 254,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "ochistit",
+          "line": 266,
+          "snippet": "async def ochistit(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "ochistit",
+          "line": 267,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "database_write",
+          "function": "ochistit",
+          "line": 270,
+          "snippet": "kto = update.effective_user.id"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "ochistit",
+          "line": 276,
+          "snippet": "_peresobrat()"
+        },
+        {
+          "category": "database_write",
+          "function": "prinyat",
+          "line": 284,
+          "snippet": "async def prinyat(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "prinyat",
+          "line": 288,
+          "snippet": "msg = update.effective_message"
+        },
+        {
+          "category": "database_write",
+          "function": "prinyat",
+          "line": 293,
+          "snippet": "kto = update.effective_user.id"
+        },
+        {
+          "category": "database_write",
+          "function": "prinyat",
+          "line": 317,
+          "snippet": "chistoe = syroe.replace(\" \", \"\")"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "prinyat",
+          "line": 363,
+          "snippet": "_peresobrat()"
+        },
+        {
+          "category": "database_write",
+          "function": "posle_statusa",
+          "line": 371,
+          "snippet": "async def posle_statusa(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "posle_statusa",
+          "line": 372,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "_svezhiy_sborshchik",
+          "line": 403,
+          "snippet": "\"\"\"Пересборка из бота обязана брать свежий stranica.py, а не копию"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "_svezhiy_sborshchik",
+          "line": 410,
+          "snippet": "imya = \"_peresobrat_stranicy\""
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "obertka",
+          "line": 417,
+          "snippet": "import stranica"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "obertka",
+          "line": 418,
+          "snippet": "importlib.reload(stranica)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "obertka",
+          "line": 420,
+          "snippet": "log.warning(\"konteyner: stranica не перезагружена: %s\", e)"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "_svezhiy_sborshchik",
+          "line": 425,
+          "snippet": "log.info(\"konteyner: пересборка из бота переведена на свежий stranica.py\")"
+        },
+        {
+          "category": "database_write",
+          "function": "_v173_pisat",
+          "line": 470,
+          "snippet": "_o173.replace(vremenno, V173_PAMYAT)"
+        },
+        {
+          "category": "database_write",
+          "function": "vyezd_iz_gruzii",
+          "line": 493,
+          "snippet": "async def vyezd_iz_gruzii(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "vyezd_iz_gruzii",
+          "line": 495,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "vyezd_iz_gruzii",
+          "line": 511,
+          "snippet": "_peresobrat()"
+        },
+        {
+          "category": "database_write",
+          "function": "srok_komanda",
+          "line": 526,
+          "snippet": "async def srok_komanda(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "srok_komanda",
+          "line": 528,
+          "snippet": "msg = update.effective_message"
+        },
+        {
+          "category": "database_write",
+          "function": "srok_podtverdit",
+          "line": 562,
+          "snippet": "async def srok_podtverdit(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+        },
+        {
+          "category": "database_write",
+          "function": "srok_podtverdit",
+          "line": 563,
+          "snippet": "q = update.callback_query"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "srok_podtverdit",
+          "line": 574,
+          "snippet": "_peresobrat()"
+        },
+        {
+          "category": "rebuild_publish",
+          "function": "srok_podtverdit",
+          "line": 576,
+          "snippet": "\"Дата выезда %s заменена на %s. Страница пересобирается.\""
+        }
+      ],
+      "log_path_literals": [],
+      "message_locations": [],
+      "mtime_ns": 1787315947603590612,
+      "path": "/home/Carix/konteyner.py",
+      "sha256": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d",
+      "size": 24533,
+      "syntax": "PASS"
+    }
+  ],
+  "started_at_utc": "2026-08-28T04:07:12Z",
+  "status": "PASS",
+  "task_id": "task_058",
+  "ua0009_evidence": {
+    "db_published_count": 1,
+    "db_row_count": 1,
+    "site_page_present": true,
+    "video_page_present": true
+  },
+  "ua0009_published": false,
+  "ua0009_status": "UNKNOWN",
+  "ua0010_evidence": {
+    "db_published_count": 0,
+    "db_row_count": 0,
+    "owner_authorized": true,
+    "publication_executed": false,
+    "site_page_present": false,
+    "video_page_present": false
+  },
+  "ua0010_published": false,
+  "ua0010_status": "READY_FOR_DRAFT_CREATION_ONLY"
 }
