@@ -1,3 +1,4 @@
+// Token-free, read-only public SEO monitor.
 const BASE = "https://www.uaart.com.ua";
 const PATHS = [
   "/", "/robots.txt", "/sitemap.xml", "/video/index.html",
