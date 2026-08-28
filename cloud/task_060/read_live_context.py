@@ -14,6 +14,17 @@ OUT = pathlib.Path("cloud/task_060/evidence/live_context.json")
 MAX = 1_000_000
 NEEDLES = ("менедж", "manager", "передал", "run_ai_draft")
 
+def read_api_json(endpoint):
+    req = urllib.request.Request(BASE + endpoint, headers={
+        "Authorization": "Token " + os.environ["PYTHONANYWHERE_API_TOKEN"],
+        "User-Agent": "ua-art-task060-read/1",
+    })
+    with urllib.request.urlopen(req, timeout=60) as response:
+        data = response.read(MAX + 1)
+    if len(data) > MAX:
+        raise RuntimeError("API_RESPONSE_TOO_LARGE")
+    return json.loads(data.decode("utf-8"))
+
 def read_remote(path):
     url = BASE + "files/path" + urllib.parse.quote(path, safe="/")
     req = urllib.request.Request(url, headers={
@@ -99,6 +110,24 @@ def scalar_globals(source):
 
 def main():
     evidence = {"task_id": "task_060", "mode": "READ_ONLY_SOURCE_CONTEXT", "production_touched": False, "files": {}}
+    always = read_api_json("always_on/")
+    tasks = always.get("tasks") or always.get("objects") or always.get("results") or always if isinstance(always, list) else []
+    evidence["always_on"] = []
+    if isinstance(tasks, list):
+        for item in tasks:
+            if not isinstance(item, dict):
+                continue
+            command = str(item.get("command", ""))
+            if "start_safe.py" not in command and "run_all.py" not in command:
+                continue
+            evidence["always_on"].append({
+                "id_sha256": hashlib.sha256(str(item.get("id")).encode()).hexdigest(),
+                "keys": sorted(item.keys()),
+                "enabled": item.get("enabled"),
+                "status": item.get("status"),
+                "command": redact(command),
+                "logfile": item.get("logfile") or item.get("log_file") or item.get("log_path"),
+            })
     for label, path in PATHS.items():
         data = read_remote(path)
         source = data.decode("utf-8")
