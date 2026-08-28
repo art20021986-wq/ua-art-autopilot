@@ -38,13 +38,22 @@ class API:
         self.request("DELETE",self.file_url(RECEIPT),allowed=(204,404))
     def create(self):
         form=urllib.parse.urlencode({"command":COMMAND,"description":"TASK 060 OCR runtime probe","enabled":"true"}).encode()
-        status,body=self.request("POST",BASE+"always_on/",form,allowed=(200,201,202))
-        value=json.loads(body.decode())
+        status,body=self.request("POST",BASE+"always_on/",form,allowed=(200,201,202,400,403,404,409))
+        value=json.loads(body.decode()) if status in (200,201,202) and body else {}
+        ident=value.get("id")
+        if isinstance(ident,int): return ("always_on",ident)
+        run_at=dt.datetime.now(dt.timezone.utc)+dt.timedelta(minutes=2)
+        form=urllib.parse.urlencode({"command":COMMAND,"description":"TASK 060 OCR runtime probe fallback",
+                                    "enabled":"true","interval":"daily","hour":run_at.hour,"minute":run_at.minute}).encode()
+        status,body=self.request("POST",BASE+"schedule/",form,allowed=(200,201,202,400,403,404,409))
+        value=json.loads(body.decode()) if status in (200,201,202) and body else {}
         ident=value.get("id")
         if not isinstance(ident,int): raise RuntimeError("TRIGGER_ID_MISSING")
-        return ident
-    def delete(self,ident):
-        self.request("DELETE",BASE+"always_on/%d/"%ident,allowed=(200,202,204,404))
+        return ("schedule",ident)
+    def delete(self,trigger):
+        kind,ident=trigger
+        endpoint="always_on" if kind=="always_on" else "schedule"
+        self.request("DELETE",BASE+endpoint+"/%d/"%ident,allowed=(200,202,204,404))
 
 def main():
     api=API(); trigger=None
