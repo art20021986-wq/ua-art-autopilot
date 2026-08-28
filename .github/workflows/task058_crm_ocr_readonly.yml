@@ -40,7 +40,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Compile and run 28 tests ten consecutive times
+      - name: Compile and run full suite ten consecutive times
         if: steps.current.outputs.run == 'true'
         shell: bash
         run: python3 cloud/task_058_crm_ocr_sync/run_tests.py

@@ -84,6 +84,8 @@ OPTIONAL_SOURCE_PATHS = {
     "/home/Carix/run_all.py",
     "/home/Carix/yadro.py",
     "/home/Carix/konteyner.py",
+    "/home/Carix/ai_filter.py",
+    "/home/Carix/lock4_zhurnal.py",
 }
 ALLOWED_SOURCE_PATHS = REQUIRED_SOURCE_PATHS | OPTIONAL_SOURCE_PATHS
 REQUIRED_SITE_PATHS = {
@@ -119,6 +121,8 @@ def expected_allowlist() -> dict:
             "/home/Carix/run_all.py",
             "/home/Carix/yadro.py",
             "/home/Carix/konteyner.py",
+            "/home/Carix/ai_filter.py",
+            "/home/Carix/lock4_zhurnal.py",
         ],
         "db_path": "/home/Carix/crm.db",
         "required_site_paths": [
@@ -577,6 +581,46 @@ class ReadOnlyController:
                 raise ControllerError("SOURCE_ANCHORS_INVALID")
             if not isinstance(messages, list) or len(messages) > 20:
                 raise ControllerError("SOURCE_MESSAGES_INVALID")
+            imports = entry.get("imports")
+            excerpts = entry.get("function_excerpts")
+            if not isinstance(imports, list) or len(imports) > 120:
+                raise ControllerError("SOURCE_IMPORTS_INVALID")
+            for imported in imports:
+                if not isinstance(imported, dict) or set(imported) != {
+                    "module", "name", "as"
+                }:
+                    raise ControllerError("SOURCE_IMPORT_ENTRY_INVALID")
+                for value in imported.values():
+                    if value is not None and (
+                        not isinstance(value, str) or len(value) > 200
+                    ):
+                        raise ControllerError("SOURCE_IMPORT_VALUE_INVALID")
+            if not isinstance(excerpts, list) or len(excerpts) > 15:
+                raise ControllerError("SOURCE_EXCERPTS_INVALID")
+            excerpt_names = set()
+            for excerpt in excerpts:
+                if not isinstance(excerpt, dict) or set(excerpt) != {
+                    "name", "line", "end_line", "calls", "source"
+                }:
+                    raise ControllerError("SOURCE_EXCERPT_ENTRY_INVALID")
+                name = excerpt.get("name")
+                if not isinstance(name, str) or not name or name in excerpt_names:
+                    raise ControllerError("SOURCE_EXCERPT_NAME_INVALID")
+                excerpt_names.add(name)
+                if not isinstance(excerpt.get("line"), int) or not isinstance(
+                    excerpt.get("end_line"), int
+                ):
+                    raise ControllerError("SOURCE_EXCERPT_LINES_INVALID")
+                calls = excerpt.get("calls")
+                source = excerpt.get("source")
+                if not isinstance(calls, list) or len(calls) > 200:
+                    raise ControllerError("SOURCE_EXCERPT_CALLS_INVALID")
+                if not isinstance(source, str) or len(source) > 30_000:
+                    raise ControllerError("SOURCE_EXCERPT_SOURCE_INVALID")
+            if path == "/home/Carix/team_bot.py" and not {
+                "detect_kind", "intake", "run_ai_draft", "ai_save"
+            }.issubset(excerpt_names):
+                raise ControllerError("TEAM_BOT_TARGET_EXCERPTS_INCOMPLETE")
         if not REQUIRED_SOURCE_PATHS.issubset(seen):
             raise ControllerError("REQUIRED_SOURCE_PATH_MISSING")
         hashes_after = receipt.get("source_hashes_after")
@@ -614,6 +658,7 @@ class ReadOnlyController:
             raise ControllerError("COMPLETENESS_INVALID")
         for key in (
             "required_sources_found",
+            "target_functions_found",
             "required_site_found",
             "database_readonly_verified",
         ):
@@ -663,6 +708,7 @@ class ReadOnlyController:
             f"DISCOVERY_STATUS: {receipt.get('status')}\n"
             f"ROOT_CAUSE_CONFIRMED: {str(bool(completeness.get('root_cause_confirmed'))).upper()}\n"
             f"REQUIRED_SOURCES_FOUND: {completeness.get('required_sources_found')}\n"
+            f"TARGET_FUNCTIONS_FOUND: {completeness.get('target_functions_found')}\n"
             f"REQUIRED_SITE_FOUND: {completeness.get('required_site_found')}\n"
             f"DATABASE_READONLY_VERIFIED: {completeness.get('database_readonly_verified')}\n"
             f"LOGS_SCANNED: {completeness.get('logs_scanned')}\n"

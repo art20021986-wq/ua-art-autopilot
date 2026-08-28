@@ -17,7 +17,7 @@ owner's later authorization for UA-0010 as a separately gated candidate.
 ## Offline evidence
 
 - Python compilation: PASS
-- Test count per run: 28
+- Test count per run: 29
 - Consecutive runs: 10/10 PASS
 - Test failures/errors: 0/0
 - Original JPEG SHA/size/dimensions: PASS
@@ -29,6 +29,7 @@ owner's later authorization for UA-0010 as a separately gated candidate.
 - Missing UA inventory cannot claim green: PASS
 - Temporary trigger/receipt cleanup on success and malformed receipt: PASS
 - UA-0009 and UA-0010 read-only inventory scope: PASS
+- Sanitized imports and exact target-function excerpts: PASS
 
 ## What remains unknown until the live receipt
 

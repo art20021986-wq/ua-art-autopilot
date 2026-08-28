@@ -33,6 +33,18 @@ MAX_LOG_BYTES = 5_000_000
 MAX_LOG_LINES = 4_000
 MAX_ANCHORS_PER_FILE = 160
 MAX_SNIPPET_CHARS = 360
+MAX_EXCERPT_CHARS = 30_000
+MAX_IMPORTS_PER_FILE = 120
+
+TARGET_FUNCTIONS = {
+    "team_bot.py": {"detect_kind", "intake", "run_ai_draft", "ai_save"},
+    "ai_filter.py": {"autosave"},
+    "db.py": {"connect"},
+    "cars_ui.py": {"_peresobrat_stranicy", "photo_remove_all"},
+    "avtoperedacha.py": {"sobrat", "sobrat_svoimi_rukami", "shag"},
+    "stranica.py": {"main", "zapisat", "zapisat_atomarno"},
+    "konteyner.py": {"_peresobrat", "_svezhiy_sborshchik"},
+}
 
 ERROR_FRAGMENTS = {
     "ocr_failure": "Изображение сохранено, но разобрать его не получилось",
@@ -61,7 +73,9 @@ FEATURE_PATTERNS = {
         r"(?i)(database is locked|busy_timeout|journal_mode|blockingioerror|"
         r"resource temporarily unavailable|filelock|flock|lock)"
     ),
-    "log_path": re.compile(r"(?i)(?:['\"])([^'\"]{1,180}\.log)(?:['\"])")
+    "log_path": re.compile(
+        r"(?i)(?:['\"])([^'\"]{1,180}\.(?:log|jsonl|txt))(?:['\"])"
+    )
 }
 
 LOG_PATTERNS = {
@@ -236,6 +250,8 @@ def hardcoded_paths() -> set[str]:
         "stranica.py",
         "yadro.py",
         "konteyner.py",
+        "ai_filter.py",
+        "lock4_zhurnal.py",
     )
     paths = {str(BASE_DIR / name) for name in source_names}
     paths.add(str(BASE_DIR / "crm.db"))
@@ -266,6 +282,66 @@ def _function_for_line(ranges: Iterable[tuple[int, int, str]], line: int) -> str
     return min(matches, key=lambda item: item[1] - item[0])[2]
 
 
+def _call_name(node: ast.AST) -> str | None:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        parent = _call_name(node.value)
+        return (parent + "." if parent else "") + node.attr
+    return None
+
+
+def _imports(tree: ast.AST) -> list[dict]:
+    result = []
+    seen = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            entries = [(alias.name, None, alias.asname) for alias in node.names]
+        elif isinstance(node, ast.ImportFrom):
+            entries = [(node.module or "", alias.name, alias.asname) for alias in node.names]
+        else:
+            continue
+        for module, name, alias in entries:
+            key = (module, name, alias)
+            if key not in seen and len(result) < MAX_IMPORTS_PER_FILE:
+                seen.add(key)
+                result.append({"module": module, "name": name, "as": alias})
+    return result
+
+
+def _target_excerpts(
+    tree: ast.AST, lines: list[str], filename: str
+) -> list[dict]:
+    wanted = TARGET_FUNCTIONS.get(filename, set())
+    result = []
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        if node.name not in wanted:
+            continue
+        end = int(getattr(node, "end_lineno", node.lineno))
+        source = redact("\n".join(lines[node.lineno - 1 : end]))[:MAX_EXCERPT_CHARS]
+        calls = sorted(
+            {
+                name
+                for call in ast.walk(node)
+                if isinstance(call, ast.Call)
+                for name in [_call_name(call.func)]
+                if name
+            }
+        )[:200]
+        result.append(
+            {
+                "name": node.name,
+                "line": node.lineno,
+                "end_line": end,
+                "calls": calls,
+                "source": source,
+            }
+        )
+    return sorted(result, key=lambda item: (item["line"], item["name"]))
+
+
 def scan_source(path: pathlib.Path) -> dict:
     raw = path.read_text(encoding="utf-8", errors="replace")
     lines = raw.splitlines()
@@ -274,6 +350,7 @@ def scan_source(path: pathlib.Path) -> dict:
         ranges = _function_ranges(tree)
         syntax = "PASS"
     except SyntaxError:
+        tree = None
         ranges = []
         syntax = "FAIL"
     anchors = []
@@ -315,6 +392,10 @@ def scan_source(path: pathlib.Path) -> dict:
         "anchors": anchors,
         "message_locations": message_locations,
         "log_path_literals": log_literals[:20],
+        "imports": _imports(tree) if tree is not None else [],
+        "function_excerpts": (
+            _target_excerpts(tree, lines, path.name) if tree is not None else []
+        ),
     }
 
 
@@ -563,6 +644,15 @@ def build_report(config: dict) -> dict:
 
     found_paths = {entry["path"] for entry in sources}
     required_sources_found = set(config["required_source_paths"]).issubset(found_paths)
+    team_source = next(
+        (entry for entry in sources if entry["path"] == str(BASE_DIR / "team_bot.py")),
+        None,
+    )
+    required_team_functions = TARGET_FUNCTIONS["team_bot.py"]
+    found_team_functions = {
+        item["name"] for item in (team_source or {}).get("function_excerpts", [])
+    }
+    target_functions_found = required_team_functions.issubset(found_team_functions)
     required_site_found = all(site_before.get(path) is not None for path in config["required_site_paths"])
     database_ok = bool(
         db_result
@@ -572,6 +662,8 @@ def build_report(config: dict) -> dict:
     )
     if not required_sources_found:
         errors.append("REQUIRED_SOURCES_INCOMPLETE")
+    if not target_functions_found:
+        errors.append("TARGET_FUNCTION_EXCERPTS_INCOMPLETE")
     if not required_site_found:
         errors.append("REQUIRED_SITE_INVENTORY_INCOMPLETE")
     if not database_ok:
@@ -628,6 +720,7 @@ def build_report(config: dict) -> dict:
         "logs": logs,
         "completeness": {
             "required_sources_found": required_sources_found,
+            "target_functions_found": target_functions_found,
             "required_site_found": required_site_found,
             "database_readonly_verified": database_ok,
             "logs_scanned": bool(logs["paths_scanned"]),

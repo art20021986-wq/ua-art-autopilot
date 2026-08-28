@@ -42,6 +42,27 @@ def pass_receipt() -> dict:
             "anchors": [],
             "message_locations": [],
             "log_path_literals": [],
+            "imports": [],
+            "function_excerpts": [
+                {
+                    "name": name,
+                    "line": index,
+                    "end_line": index,
+                    "calls": [],
+                    "source": "def " + name + "(): pass",
+                }
+                for index, name in enumerate(
+                    (
+                        "detect_kind",
+                        "intake",
+                        "run_ai_draft",
+                        "ai_save",
+                    ),
+                    1,
+                )
+            ]
+            if path == "/home/Carix/team_bot.py"
+            else [],
         }
         for path in sorted(ctrl.REQUIRED_SOURCE_PATHS)
     ]
@@ -82,6 +103,7 @@ def pass_receipt() -> dict:
         "logs": {"paths_scanned": [], "counts": {}, "errors": []},
         "completeness": {
             "required_sources_found": True,
+            "target_functions_found": True,
             "required_site_found": True,
             "database_readonly_verified": True,
             "logs_scanned": False,

@@ -106,10 +106,13 @@ def create_inputs(base: pathlib.Path) -> None:
     (base / "video").mkdir()
     (base / "video" / "index.html").write_text("<html>catalog</html>\n", encoding="utf-8")
     (base / "team_bot.py").write_text(
-        "def photo(update):\n"
+        "def detect_kind(msg): return ('photo', msg.photo[-1].file_id)\n"
+        "async def intake(update, context): return await run_ai_draft(update)\n"
+        "async def run_ai_draft(update):\n"
         "    try_ocr(update.photo)\n"
         "    reply('Изображение сохранено, но разобрать его не получилось')\n"
-        "    reply('CRM: страницы сайта отстали от базы')\n",
+        "    reply('CRM: страницы сайта отстали от базы')\n"
+        "async def ai_save(update, context): return True\n",
         encoding="utf-8",
     )
     connection = sqlite3.connect(base / "crm.db")
@@ -259,6 +262,33 @@ class DiscoveryTests(unittest.TestCase):
             self.assertEqual({item["kind"] for item in result["message_locations"]}, {"ocr_failure", "rebuild_failure"})
             self.assertNotIn("KNAGU416BKA324445", dumped)
             self.assertIn("[REDACTED_VIN]", dumped)
+
+    def test_target_function_excerpts_and_imports_are_bounded_and_redacted(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = pathlib.Path(directory) / "team_bot.py"
+            source.write_text(
+                "import ai_runtime as ai\n"
+                "def detect_kind(msg): return msg.photo[-1].file_id\n"
+                "async def intake(update, context): return await run_ai_draft(update)\n"
+                "async def run_ai_draft(update):\n"
+                "    API_KEY='this-is-a-hardcoded-provider-secret'\n"
+                "    parsed = ai.image(b'bytes')\n"
+                "    return parsed\n"
+                "async def ai_save(update, context): return True\n",
+                encoding="utf-8",
+            )
+            result = ld.scan_source(source)
+            self.assertIn(
+                {"module": "ai_runtime", "name": None, "as": "ai"},
+                result["imports"],
+            )
+            self.assertEqual(
+                {item["name"] for item in result["function_excerpts"]},
+                {"detect_kind", "intake", "run_ai_draft", "ai_save"},
+            )
+            excerpt = json.dumps(result["function_excerpts"])
+            self.assertIn("ai.image", excerpt)
+            self.assertNotIn("hardcoded-provider-secret", excerpt)
 
     def test_symlink_and_hardlink_are_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

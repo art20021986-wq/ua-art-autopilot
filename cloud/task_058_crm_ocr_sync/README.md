@@ -49,7 +49,7 @@ than skip.
   validates the fresh safe-inbox manifest and exact remote bytes, creates one
   temporary allowlisted trigger, polls one receipt, validates it fail-closed,
   relays bounded evidence, then deletes both trigger and receipt in `finally`.
-- `tests/`: 28 offline tests covering fixture drift, path attacks, incomplete
+- `tests/`: 29 offline tests covering fixture drift, path attacks, incomplete
   inventory, read-only database identity, receipt sensitivity/staleness,
   false-green prevention, UA-0010 scope, transport allowlists and cleanup.
 - `run_tests.py`: compiles the entire package and requires 10 consecutive full
@@ -67,7 +67,7 @@ round.
 
 ## Verified offline result
 
-`28 tests × 10 consecutive runs = 280 assertions-suite executions`, all PASS.
+`29 tests × 10 consecutive runs = 290 assertions-suite executions`, all PASS.
 
 Safety markers:
 
