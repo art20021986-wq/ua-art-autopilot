@@ -8,6 +8,7 @@ write set automatically.
 from __future__ import annotations
 
 import argparse
+import ast
 import datetime as dt
 import fcntl
 import hashlib
@@ -69,6 +70,12 @@ CTA_RE = re.compile(
     re.I,
 )
 CARD_RE = re.compile(r'^UA-[0-9]{4,}\.html$', re.I)
+SOURCE_TARGETS = {
+    ROOT + "/stranica.py": {"sobrat_kartochku", "sobrat_katalog"},
+    ROOT + "/yadro.py": {"karta_html", "katalog_html"},
+    ROOT + "/master_card.py": {"obrabotat_kartochku", "obrabotat_obshuyu", "proverit"},
+    WSGI_PATH: set(),
+}
 
 
 class RepairBlocked(RuntimeError):
@@ -573,6 +580,47 @@ def patch_source(path: str, payload: bytes) -> bytes:
     return candidate
 
 
+def source_inventory() -> list[dict]:
+    records = []
+    for path in SOURCE_PATHS:
+        payload = read_file(path)
+        source = payload.decode("utf-8")
+        tree = ast.parse(source, filename=path)
+        targets = SOURCE_TARGETS[path]
+        counts: dict[str, int] = {}
+        functions = []
+        for node in ast.iter_child_nodes(tree):
+            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) or node.name not in targets:
+                continue
+            counts[node.name] = counts.get(node.name, 0) + 1
+            args = [item.arg for item in node.args.posonlyargs + node.args.args]
+            if node.args.vararg:
+                args.append("*" + node.args.vararg.arg)
+            args.extend(item.arg for item in node.args.kwonlyargs)
+            if node.args.kwarg:
+                args.append("**" + node.args.kwarg.arg)
+            lines = source.splitlines()
+            segment = "\n".join(lines[node.lineno - 1:node.end_lineno])
+            functions.append({
+                "name": node.name,
+                "ordinal": counts[node.name],
+                "args": args,
+                "async": isinstance(node, ast.AsyncFunctionDef),
+                "line_start": node.lineno,
+                "line_end": node.end_lineno,
+                "sha256": sha(segment.encode("utf-8")),
+            })
+        records.append({
+            "path": path,
+            "bytes": len(payload),
+            "sha256": sha(payload),
+            "seo068_marker_count": source.count(MARKER),
+            "functions": functions,
+            "wsgi_application_assignment": bool(re.search(r'(?m)^\s*application\s*=', source)) if path == WSGI_PATH else None,
+        })
+    return records
+
+
 def card_ids() -> list[str]:
     result = sorted({
         pathlib.PurePosixPath(path).stem.upper()
@@ -717,6 +765,7 @@ def public_canary(identifier: str) -> dict:
 
 
 def dry_run() -> dict:
+    inventory = source_inventory()
     hashes = []
     identifiers = []
     count = 0
@@ -734,6 +783,7 @@ def dry_run() -> dict:
         "production_write": False,
         "candidate_files": count,
         "card_ids": identifiers,
+        "source_inventory": inventory,
         "repeatability": {"runs": 10, "unique_sha256": 1, "tree_sha256": hashes[0]},
         "generated_at_utc": utc_now(),
     }
@@ -890,6 +940,10 @@ def main() -> int:
                     "errors": [type(exc).__name__ + ":" + str(exc)],
                     "generated_at_utc": utc_now(),
                 }
+                try:
+                    value["source_inventory"] = source_inventory()
+                except Exception as inventory_exc:
+                    value["inventory_error"] = type(inventory_exc).__name__ + ":" + str(inventory_exc)
             atomic_json(DRY_RUN_RECEIPT_PATH, value)
         elif args.sources_only:
             value = install("sources")
