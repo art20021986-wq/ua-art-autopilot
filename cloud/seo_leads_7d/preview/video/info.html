@@ -1,0 +1,278 @@
+<!doctype html><html lang='ru'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><script src='https://telegram.org/js/telegram-web-app.js'></script><title>Условия и гарантии — UA ART COMPANY</title><style>
+:root{--fon:#0d1826;--karta:#152437;--zoloto:#e8a33d;--tekst:#eaf0f7;--seryj:#9fb0c4;--zel:#6ee7a0}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--fon);color:var(--tekst);font-size:16px;line-height:1.5;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+a{color:inherit;text-decoration:none}
+.shapka{position:sticky;top:0;z-index:9;background:rgba(10,20,33,.97);padding:14px 16px;
+ border-bottom:1px solid #1e3149;backdrop-filter:blur(8px)}
+.logo{display:flex;align-items:center;gap:10px}
+.znak{width:34px;height:34px;border-radius:9px;background:var(--zoloto);color:#10202f;
+ font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.imya{color:var(--zoloto);font-weight:800;letter-spacing:.08em;font-size:15px}
+.pod{color:var(--seryj);font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px}
+.svyaz{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.svyaz a{flex:1 1 0;padding:12px 8px;border-radius:12px;border:1px solid #2b405a;
+ font-size:14px;text-align:center;white-space:nowrap}
+.svyaz a.pozvonit{flex:1 1 100%;border:1.5px solid var(--zoloto);color:var(--zoloto);
+ font-weight:700;font-size:16px;padding:14px 8px}
+.svyaz a.wa{border-color:#2c5a41;color:var(--zel)}
+.svyaz a.karta{color:#dce7f3}
+.svyaz.polya{padding:0 16px;margin-top:14px}
+.lenta{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px 16px 6px;
+ -webkit-overflow-scrolling:touch}
+.lenta::-webkit-scrollbar{display:none}
+.kadr{flex:0 0 86%;scroll-snap-align:center;background:#0B1524;border-radius:14px;overflow:hidden}
+.kadr img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#0B1524}
+.podpis_kadra{color:var(--seryj);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+ padding:6px 12px 8px}
+.schet{color:var(--seryj);font-size:13px;padding:0 16px 6px}
+.blok{background:var(--karta);margin:12px 16px;padding:16px;border-radius:16px}
+.zag{color:var(--seryj);font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px}
+h1{font-size:22px;margin:2px 0 8px;line-height:1.2}
+.nom{color:var(--seryj);font-size:12px;letter-spacing:.16em}
+.chip{display:inline-block;border:1px solid #2c5a41;color:var(--zel);border-radius:20px;
+ padding:5px 12px;font-size:13px}
+.cena{font-size:30px;color:var(--zoloto);font-weight:800;letter-spacing:-.5px}
+.tihо{color:var(--seryj);font-size:13px}
+video{width:calc(100% - 32px);margin:6px 16px 0;border-radius:14px;background:#000;display:block}
+table.kratko{width:100%;border-collapse:collapse}
+table.kratko td{padding:8px 0;border-bottom:1px solid #1e3149;font-size:15px}
+table.kratko td.k{color:var(--seryj);width:42%}
+table.kratko tr:last-child td{border-bottom:none}
+.etap{display:flex;gap:10px;padding:7px 0;font-size:14px;align-items:center}
+.etap .krug{width:22px;height:22px;border-radius:50%;border:1px solid #2b405a;color:var(--seryj);
+ font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 22px}
+.etap.proshel{color:var(--seryj)}
+.etap.proshel .krug{background:#22364e;color:#dce7f3;border-color:#22364e}
+.etap.tut{color:var(--zoloto);font-weight:700}
+.etap.tut .krug{background:var(--zoloto);color:#10202f;border-color:var(--zoloto)}
+.dejstvie{display:block;margin:12px 16px;padding:17px;border-radius:14px;background:var(--zoloto);
+ color:#10202f;text-align:center;font-weight:800;font-size:16px}
+.vtoraya{display:block;margin:10px 16px;padding:15px;border-radius:14px;border:1px solid #2b405a;
+ color:#dce7f3;text-align:center;font-size:15px}
+.zvonok{display:block;margin:10px 16px;padding:16px;border-radius:14px;
+ border:1.5px solid var(--zoloto);color:var(--zoloto);text-align:center;
+ font-size:16px;font-weight:700}
+.zvonok span{opacity:.75;font-weight:400;font-size:14px}
+.podval{color:#5f7186;padding:20px 16px 40px;text-align:center;font-size:12px;line-height:1.7}
+.avtor{color:var(--zoloto);opacity:.7;font-size:10px;margin-top:10px}
+.plitka{display:block;background:var(--karta);margin:12px 16px;border-radius:16px;overflow:hidden}
+.plitka img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#0B1524}
+.plitka .telo{padding:14px}
+.plitka .stroka{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.plitka .nazv{font-size:17px;font-weight:700;line-height:1.25}
+.plitka .cn{color:var(--zoloto);font-weight:800;font-size:19px;white-space:nowrap}
+.plitka .niz{color:var(--seryj);font-size:13px;margin-top:7px}
+.plitka .ramka{position:relative}
+.znak_video{position:absolute;right:10px;bottom:10px;background:rgba(10,20,33,.82);
+ color:var(--tekst);font-size:12px;padding:5px 10px;border-radius:20px;
+ display:flex;align-items:center;gap:5px}
+.znak_video b{color:var(--zoloto);font-size:11px}
+.mini_lenta{display:flex;gap:5px;padding:8px 14px 0}
+.mini_lenta img{flex:1;aspect-ratio:4/3;object-fit:cover;border-radius:7px;background:#0B1524;
+ min-width:0}
+.mini_lenta .eshche{flex:1;aspect-ratio:4/3;border-radius:7px;background:#1b2c42;color:var(--seryj);
+ font-size:12px;display:flex;align-items:center;justify-content:center}
+.zagolovok{padding:20px 16px 2px;font-size:22px;font-weight:800}
+.geroj{position:relative;min-height:74vh;display:flex;flex-direction:column;justify-content:flex-end;
+ padding:24px 20px 26px;overflow:hidden}
+.geroj .fon{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.42)}
+.geroj .tuman{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,24,38,.55) 0%,rgba(13,24,38,.25) 40%,var(--fon) 100%)}
+.geroj .telo{position:relative}
+.geroj h1{font-size:34px;line-height:1.1;font-weight:800;letter-spacing:-.5px;margin:14px 0 10px}
+.geroj .pod2{color:#c8d6e6;font-size:16px;line-height:1.5;max-width:520px}
+.mini{display:flex;gap:10px;padding:16px;flex-wrap:wrap}
+.mini div{flex:1 1 30%;background:var(--karta);border-radius:14px;padding:14px 12px;text-align:center}
+.mini b{display:block;color:var(--zoloto);font-size:19px;margin-bottom:3px}
+.mini span{color:var(--seryj);font-size:12px;line-height:1.35}
+.shag{display:flex;gap:12px;padding:8px 0;font-size:15px;align-items:flex-start}
+.shag .n{flex:0 0 24px;height:24px;border-radius:50%;background:#22364e;color:#dce7f3;font-size:12px;
+ display:flex;align-items:center;justify-content:center;margin-top:1px}
+.vybor{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.vybor button{flex:1 1 46%;background:#1b2c42;border:1px solid #2b405a;color:var(--tekst);
+ padding:13px 10px;border-radius:12px;font-size:14px;font-family:inherit}
+.vybor button.vzyat{background:var(--zoloto);border-color:var(--zoloto);color:#10202f;font-weight:700}
+.itog{color:var(--seryj);font-size:14px;padding:0 16px 6px}
+.vopros{border-bottom:1px solid #1e3149;padding:12px 0}
+.vopros:last-child{border-bottom:none}
+.vopros b{display:block;margin-bottom:5px;font-size:15px}
+.vopros span{color:var(--seryj);font-size:14px;line-height:1.55}
+.vhodit{display:flex;gap:10px;padding:7px 0;font-size:15px;align-items:flex-start}
+.vhodit .g{color:var(--zel);flex:0 0 18px}
+.tehstr{display:flex;gap:10px;padding:6px 0;font-size:15px;line-height:1.5;align-items:flex-start}
+.tehstr .m{color:var(--zoloto);flex:0 0 12px;font-size:15px;line-height:1.5}
+.tehtekst{font-size:15px;line-height:1.6}
+.chat{position:fixed;right:16px;bottom:18px;z-index:90;display:flex;align-items:center;gap:8px;
+ background:#1f7a4d;color:#fff;padding:13px 18px;border-radius:30px;font-size:15px;font-weight:600;
+ box-shadow:0 6px 20px rgba(0,0,0,.45);text-decoration:none}
+.chat svg{width:20px;height:20px;fill:#fff;flex:0 0 20px}
+body{padding-bottom:76px}
+#lupa{position:fixed;inset:0;background:#000;z-index:99;display:none;align-items:center;justify-content:center}
+#lupa img{max-width:100%;max-height:86vh;object-fit:contain}
+#lupaschet{position:fixed;top:16px;left:0;right:0;text-align:center;color:#fff;font-size:15px;
+ z-index:100;display:none}
+
+#uspeh{position:fixed;inset:0;background:rgba(10,20,33,.97);z-index:120;display:none;
+ align-items:center;justify-content:center;padding:24px;text-align:center}
+#uspeh .karta{background:var(--karta);border-radius:20px;padding:28px 22px;max-width:420px}
+#uspeh .galka{width:64px;height:64px;border-radius:50%;background:var(--zoloto);color:#10202f;
+ font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+#uspeh h2{font-size:22px;margin:0 0 10px}
+#uspeh p{color:var(--seryj);font-size:15px;line-height:1.6;margin:0 0 18px}
+#uspeh .zakr{display:block;padding:14px;border-radius:12px;border:1px solid #2b405a;color:#dce7f3}
+
+#nomerok{position:fixed;inset:0;background:rgba(10,20,33,.97);z-index:130;display:none;
+ align-items:center;justify-content:center;padding:24px;text-align:center}
+#nomerok .karta{background:var(--karta);border-radius:20px;padding:26px 22px;max-width:420px;width:100%}
+#nomerok .cif{color:var(--zoloto);font-size:26px;font-weight:800;margin-bottom:8px}
+#nomerok p{color:var(--seryj);font-size:14px;line-height:1.6;margin:0 0 16px}
+#nomerok a,#nomerok button{display:block;width:100%;padding:14px;border-radius:12px;
+ font-size:15px;font-family:inherit;margin-top:9px;border:1px solid #2b405a;
+ background:transparent;color:#dce7f3}
+#nomerok button.glav{background:var(--zoloto);border-color:var(--zoloto);color:#10202f;font-weight:700}
+#nomerok a.wa2{border-color:#2c5a41;color:var(--zel)}
+
+.diag{display:block;margin-top:14px;padding:15px;border-radius:12px;
+ border:1px solid #3A5A7A;background:#16283C;color:#dce7f3;text-align:center;
+ font-size:15px;font-weight:600}
+.diag_pod{color:var(--seryj);font-size:12px;text-align:center;margin-top:7px}
+</style><style id="mcf-chat-css">
+/* Desktop не меняем */
+a.mcf-chat,.mcf-chat{position:fixed!important;right:16px!important;left:auto!important;
+bottom:calc(16px + env(safe-area-inset-bottom))!important;z-index:9990!important;
+display:inline-flex!important;align-items:center!important;gap:8px!important;
+width:auto!important;padding:11px 16px!important;border-radius:999px!important;
+font-size:15px!important;line-height:1!important;white-space:nowrap!important}
+/* Телефон: маленький кружок, не закрывает автомобиль, стрелку и текст.
+   Правило ловит кнопку по ссылке на WhatsApp и слову chat в классе,
+   поэтому работает даже если наш класс не проставился. */
+@media (max-width:900px){
+body a.mcf-chat,
+body a[href*="wa.me"][class*="chat"],
+body a[href*="wa.me"][id*="chat"]{
+width:44px!important;min-width:44px!important;max-width:44px!important;
+height:44px!important;padding:0!important;border-radius:50%!important;
+display:flex!important;align-items:center!important;justify-content:center!important;
+right:10px!important;left:auto!important;
+bottom:calc(78px + env(safe-area-inset-bottom))!important;
+font-size:0!important;line-height:0!important;gap:0!important;overflow:hidden!important;
+opacity:.94!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important}
+body a.mcf-chat svg,
+body a[href*="wa.me"][class*="chat"] svg{width:22px!important;height:22px!important;
+flex:0 0 auto!important;display:block!important}
+body a.mcf-chat > *:not(svg),
+body a[href*="wa.me"][class*="chat"] > *:not(svg){display:none!important}
+body a.mcf-chat::after,body a[href*="wa.me"][class*="chat"]::after{content:""!important}
+}
+</style>
+<link rel="canonical" href="https://www.uaart.com.ua/video/info.html">
+<meta name="description" content="Умови купівлі та доставки авто з Кореї в Україну з UA ART: етапи, оплата й супровід.">
+<base href="https://www.uaart.com.ua/video/">
+<style id="seo-preview-guard">body::before{content:"GITHUB PREVIEW · PRODUCTION WRITE NO";position:fixed;z-index:2147483647;top:0;left:0;right:0;padding:7px 12px;text-align:center;font:700 12px system-ui;background:#7c3aed;color:#fff;pointer-events:none}</style>
+<script id="seo-preview-guard-script">addEventListener("click",function(e){if(e.target.closest("a,button,[onclick]")){e.preventDefault();e.stopImmediatePropagation();}},true);addEventListener("submit",function(e){e.preventDefault();e.stopImmediatePropagation();},true);</script>
+</head><body><div onclick="location.href='index.html'" style='cursor:pointer' title='На главную'><div class='shapka'><div class='logo'><div class='znak'>UA</div><div><div class='imya'>UA ART COMPANY</div><div class='pod'>автомобили из Кореи</div></div></div><div class='svyaz'><a class='pozvonit' href='tel:+380992222002'>Позвонить +380 99 222 20 02</a><a class='wa' href='https://wa.me/380992222002?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%B8%D1%88%D1%83%20%D1%81%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20UA%20ART%20COMPANY'>WhatsApp</a><a class='karta' href='https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA'>Офис на карте</a></div></div></div><div class='zagolovok'>Условия и гарантии</div><div class='blok'><div class='zag'>Цена</div><div class='vhodit'><div class='g'>✓</div><div>Цена в объявлении — итоговая, под ключ в Киеве</div></div><div class='vhodit'><div class='g'>✓</div><div>Фиксируется в договоре на этапе выкупа и дальше не меняется</div></div><div class='vhodit'><div class='g'>✓</div><div>Курс, подорожание доставки или пошлин на вас не переносится</div></div><div class='vhodit'><div class='g'>✓</div><div>Предоплата 500 $ входит в стоимость автомобиля</div></div></div><div class='blok'><div class='zag'>Что входит</div><div class='vhodit'><div class='g'>✓</div><div>Выкуп на аукционе Кореи</div></div><div class='vhodit'><div class='g'>✓</div><div>Отчёт аукциона и проверка истории</div></div><div class='vhodit'><div class='g'>✓</div><div>Стоянка и погрузка в порту</div></div><div class='vhodit'><div class='g'>✓</div><div>Морская доставка Корея → Грузия</div></div><div class='vhodit'><div class='g'>✓</div><div>Оформление в Поти/Батуми</div></div><div class='vhodit'><div class='g'>✓</div><div>Доставка в Киев</div></div><div class='vhodit'><div class='g'>✓</div><div>Растаможка и все платежи</div></div><div class='vhodit'><div class='g'>✓</div><div>Сертификация</div></div></div><div class='blok'><div class='zag'>Сроки</div><div class='shag'><div class='n'>1</div><div>Подбор и выкуп — от 3 до 10 дней</div></div><div class='shag'><div class='n'>2</div><div>Паром Корея → Грузия — около 60 дней</div></div><div class='shag'><div class='n'>3</div><div>Оформление в порту — 1 день</div></div><div class='shag'><div class='n'>4</div><div>Грузия → Киев, растаможка и выдача — 15 дней</div></div><div class='itog' style='padding:10px 0 0'>Для машин, которые уже в пути, срок в карточке считается автоматически.</div></div><div class='blok'><div class='zag'>Как мы работаем</div><div class='shag'><div class='n'>1</div><div>Подбираем варианты под ваш бюджет</div></div><div class='shag'><div class='n'>2</div><div>Заключаем официальный договор. Предоплата — 500 $, она входит в общую стоимость автомобиля. Цена автомобиля фиксируется в договоре по курсу НБУ на дату его заключения.</div></div><div class='shag'><div class='n'>3</div><div>Проверяем историю и отчёт аукциона перед покупкой</div></div><div class='shag'><div class='n'>4</div><div>Стоянка в Корее, ждём погрузку</div></div><div class='shag'><div class='n'>5</div><div>Паром: Корея → Грузия</div></div><div class='shag'><div class='n'>6</div><div>Поти/Батуми: оформление</div></div><div class='shag'><div class='n'>7</div><div>Киев: растаможка, сертификат, выдача</div></div></div><div class='blok'><div class='zag'>Частые вопросы</div><div class='vopros'><b>Можно ли посмотреть машину перед покупкой?</b><span>Да. Пока авто в пути — фото, видео и отчёт аукциона в карточке. В Киеве — очный осмотр в офисе на Победы 20.</span></div><div class='vopros'><b>Что если машина не понравится по приезде?</b><span>Все данные, фото и отчёт вы видите до оплаты. Состояние в карточке соответствует машине — расхождения решаем в вашу пользу.</span></div><div class='vopros'><b>Как оплачивается?</b><span>Предоплата 500 $ при бронировании — входит в цену. Остальное по договору, до выдачи в Киеве.</span></div><div class='vopros'><b>Есть ли гарантия на автомобиль?</b><span>Мы даём гарантию на юридическую чистоту, документы и соответствие состояния карточке. Техническая гарантия — по договорённости для конкретной машины.</span></div><div class='vopros'><b>Работаете ли по всей Украине?</b><span>Да. Выдача в Киеве, доставку в другой город организуем отдельно.</span></div></div><div class='blok'><div class='zag'>Компания</div><div style='font-size:15px;line-height:1.8'>UA ART COMPANY LLC<br>ул. Победы 20, Киев<br>+380 99 222 20 02</div></div><a class='dejstvie' href='katalog.html?v=1787408664'>Смотреть авто в наличии</a><a class='vtoraya' href='podbor.html?v=1787408664'>Подобрать под заказ</a><a class='vtoraya' href='index.html?v=1787408664'>← На главную</a><div style='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0 6px'><a class='vtoraya' href='#' style='margin:0' onclick="if(history.length>1){history.back();}else{location.href='index.html';}return false;">← Назад</a><a class='vtoraya' href='index.html' style='margin:0'>На главную</a></div><div class='podval'>ул. Победы 20, Киев · +380 99 222 20 02<br>UA ART COMPANY LLC<br>обновлено 22.08.2026 14:24<div class='avtor'>𝓑𝓐 | 𝓒𝓻𝓮𝓪𝓽𝓮𝓭 𝓫𝔂 𝓐𝓻𝓽𝓮𝓶 𝓑𝓸𝓻𝓸𝓿𝓲𝓷𝓼𝓴𝔂</div></div><div id='nomerok'><div class='karta'><div class='cif'>+380 99 222 20 02</div><p>Telegram не даёт набрать номер прямо из приложения. Нажмите «Скопировать номер» и вставьте его в телефон — или напишите нам в WhatsApp, ответим сразу.</p><button class='glav' id='kopirovat'>Скопировать номер</button><a class='wa2' href="https://wa.me/380992222002?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%B8%D1%88%D1%83%20%D1%81%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20UA%20ART%20COMPANY">Написать в WhatsApp</a><button onclick="document.getElementById('nomerok').style.display='none'">Закрыть</button></div></div><script>
+(function(){
+ var tg = window.Telegram && window.Telegram.WebApp;
+ if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
+
+ // Перехватываем ТОЛЬКО ссылки на самого бота — их браузер открыть не может.
+ // Телефон, WhatsApp и карта работают обычным нажатием, без вмешательства.
+ document.addEventListener('click', function(e){
+   var a = e.target.closest && e.target.closest('a');
+   if(!a){ return; }
+   var ssylka = a.getAttribute('href') || '';
+   if(!/^https?:\/\/t\.me\//.test(ssylka)){ return; }
+   if(!tg || !tg.openTelegramLink){ return; }
+   e.preventDefault();
+   try{
+     tg.openTelegramLink(ssylka);
+     if(tg.close){ setTimeout(function(){ tg.close(); }, 120); }
+   }catch(err){ window.location.href = ssylka; }
+ }, false);
+
+ // Телефон. В обычном браузере ссылку tel: не трогаем — она работает сама.
+ // Внутри Telegram переход заблокирован, поэтому показываем окно с номером.
+ var v_telegram = !!(tg && tg.platform && tg.platform !== 'unknown');
+ document.addEventListener('click', function(e){
+   var a = e.target.closest && e.target.closest('a');
+   if(!a || !v_telegram){ return; }
+   var ssylka = a.getAttribute('href') || '';
+   if(ssylka.indexOf('tel:') !== 0){ return; }
+   var okno = document.getElementById('nomerok');
+   if(!okno){ return; }
+   e.preventDefault();
+   okno.style.display = 'flex';
+ }, false);
+
+ // UA-V61 · отчёт диагностики: внутри Telegram — через openLink.
+ document.addEventListener('click', function(e){
+   var a = e.target.closest && e.target.closest('a.diag');
+   if(!a || !tg || !tg.openLink){ return; }
+   e.preventDefault();
+   try{ tg.openLink(a.getAttribute('href')); }
+   catch(err){ window.location.href = a.getAttribute('href'); }
+ }, false);
+
+ // UA-V63 · отчёт OBD: внутри Telegram открываем через openLink.
+ document.addEventListener('click', function(e){
+   var a = e.target.closest && e.target.closest('a.diag');
+   if(!a || !tg || !tg.openLink){ return; }
+   e.preventDefault();
+   try{ tg.openLink(a.getAttribute('href')); }
+   catch(err){ window.location.href = a.getAttribute('href'); }
+ }, false);
+
+ // Кнопка «Скопировать номер» в этом окне.
+ document.addEventListener('click', function(e){
+   var knopka = e.target;
+   if(!knopka || knopka.id !== 'kopirovat'){ return; }
+   var uzel = document.querySelector('#nomerok .cif');
+   var nomer = uzel ? uzel.textContent : '';
+   function gotovo(){
+     knopka.textContent = 'Номер скопирован';
+     setTimeout(function(){ knopka.textContent = 'Скопировать номер'; }, 2500);
+   }
+   function zapas(){
+     var pole = document.createElement('textarea');
+     pole.value = nomer;
+     document.body.appendChild(pole);
+     pole.select();
+     try{ document.execCommand('copy'); gotovo(); }catch(err){}
+     document.body.removeChild(pole);
+   }
+   if(navigator.clipboard && navigator.clipboard.writeText){
+     navigator.clipboard.writeText(nomer).then(gotovo, zapas);
+   }else{
+     zapas();
+   }
+ }, false);
+})();
+
+function pokazat_uspeh(zag, tekst){
+  var s = document.getElementById('uspeh');
+  if(!s){ return false; }
+  document.getElementById('uspeh_zag').textContent = zag;
+  document.getElementById('uspeh_tekst').textContent = tekst;
+  s.style.display = 'flex';
+  return true;
+}
+
+function otpravit_zayavku(dannye, zag, tekst, zapasnaya_ssylka){
+  var tg = window.Telegram && window.Telegram.WebApp;
+  if(tg && typeof tg.sendData === 'function'){
+    try{
+      tg.sendData(JSON.stringify(dannye));
+      pokazat_uspeh(zag, tekst);
+      return true;
+    }catch(e){}
+  }
+  if(tg && tg.openTelegramLink && zapasnaya_ssylka){
+    tg.openTelegramLink(zapasnaya_ssylka);
+    if(tg.close){ setTimeout(function(){ tg.close(); }, 120); }
+    return true;
+  }
+  if(zapasnaya_ssylka){ window.location.href = zapasnaya_ssylka; }
+  return false;
+}
+</script><script src='/ua/a.js?v=1' defer></script><!--UA-ANALIT-V1--><a class="mcf-chat" href="https://wa.me/380992222002" target="_blank" rel="noopener" aria-label="Написать в WhatsApp" style="background:#25D366;color:#08210f;text-decoration:none;font-weight:700"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.7 15l-1.2 4.4 4.5-1.2A10 10 0 1 0 12 2zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.2-.8-2.7-1.1-4.4-3.9-4.5-4-.1-.2-1-1.4-1-2.7 0-1.3.7-1.9.9-2.2.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.5.3.1.2.1.7-.1 1.2z"/></svg><span>Чат online</span></a></body></html>

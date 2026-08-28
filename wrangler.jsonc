@@ -4,5 +4,12 @@
   "main": "src/worker.js",
   "compatibility_date": "2026-08-28",
   "observability": { "enabled": true },
-  "triggers": { "crons": ["15 * * * *"] }
+  "assets": {
+    "directory": "./cloud/seo_leads_7d/preview",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "404-page",
+    "html_handling": "none"
+  }
 }
+
