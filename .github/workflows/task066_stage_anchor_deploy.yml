@@ -102,6 +102,9 @@ jobs:
               raise SystemExit('TASK066_NOT_COMPLETE')
           post = deploy['postcheck']
           delayed = deploy['postcheck_delayed']
+          source_install = deploy['source_install']
+          assert source_install['status'] == 'PASS' and source_install['sources_only'] is True
+          assert 'master_card.py' in source_install['source_sha256_after']
           assert post['card_count'] == 10
           assert post['stage_distribution'].keys() == {'1', '2', '3', '4'}
           assert all(value > 0 for value in post['stage_distribution'].values())
@@ -188,4 +191,4 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-# retry: final-writer-preinstall-restart-20260828-v9
+# retry: final-writer-two-phase-reload-20260828-v10
