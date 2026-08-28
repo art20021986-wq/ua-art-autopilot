@@ -160,13 +160,12 @@ def spool_test(source: str):
                 "drain": drained, "status": status}
 
 
-def wal_stress():
-    with tempfile.TemporaryDirectory(prefix="task065-wal-") as directory:
+def sqlite_stress():
+    with tempfile.TemporaryDirectory(prefix="task065-sqlite-") as directory:
         copy = pathlib.Path(directory) / "crm-copy.db"
         shutil.copy2(CRM_DB, copy)
         setup = sqlite3.connect(copy, timeout=30)
-        setup.execute("PRAGMA journal_mode=WAL")
-        setup.execute("PRAGMA synchronous=NORMAL")
+        setup.execute("PRAGMA journal_mode=DELETE")
         setup.close()
         errors = []
         lock = threading.Lock()
@@ -204,7 +203,8 @@ def static_contract(cars: str, team: str, db_source: str):
     fast_index = check.find('target in ("photos", "condition_photos")')
     get_file_index = check.find("_v140_sprosit(file_id)")
     checks = {
-        "markers": all(MARKER in text for text in (cars, team, db_source)),
+        "markers": (MARKER in cars and MARKER in team
+                    and "CRM-DB-LOCK-EMERGENCY-001" in db_source),
         "photo_skips_getfile": 0 <= fast_index < get_file_index,
         "durable_before_db": "_v165_spool_enqueue" in media,
         "photo_stops_before_ai": "raise ApplicationHandlerStop" in media,
@@ -213,8 +213,9 @@ def static_contract(cars: str, team: str, db_source: str):
         "raw_media_connection_removed": '_s152.connect("/home/Carix/crm.db"' not in save,
         "queued_db_connection": "with db.connect() as con" in save,
         "background_worker": "cars_ui.media_spool_worker_job" in team,
-        "wal": "PRAGMA journal_mode=WAL" in db_source
-               and "PRAGMA journal_mode=DELETE" not in db_source,
+        "transaction_queue": ("factory=Soedinenie" in db_source
+                              and "_ua_fayl_zahvatit" in db_source
+                              and "_commit_s_povtorom" in db_source),
     }
     return {"ok": all(checks.values()), "checks": checks}
 
@@ -234,19 +235,17 @@ def main() -> int:
         evidence["static_contract"] = static_contract(
             sources["cars_ui.py"], sources["team_bot.py"], sources["db.py"])
         evidence["spool_test"] = spool_test(sources["cars_ui.py"])
-        evidence["wal_stress"] = wal_stress()
+        evidence["sqlite_stress"] = sqlite_stress()
         evidence["readonly_live_db"] = live_db()
         evidence["bot_health"] = bot_health()
         if not evidence["static_contract"]["ok"]:
             raise RuntimeError("STATIC_CONTRACT_FAILED")
         if not evidence["spool_test"]["ok"]:
             raise RuntimeError("SPOOL_100_TEST_FAILED")
-        if not evidence["wal_stress"]["ok"]:
-            raise RuntimeError("WAL_STRESS_FAILED")
+        if not evidence["sqlite_stress"]["ok"]:
+            raise RuntimeError("SQLITE_STRESS_FAILED")
         if evidence["readonly_live_db"]["quick_check"] != "ok":
             raise RuntimeError("LIVE_DB_CHECK_FAILED")
-        if evidence["readonly_live_db"]["journal_mode"] != "wal":
-            raise RuntimeError("LIVE_DB_NOT_WAL")
         health = evidence["bot_health"]
         if not health["tokens_distinct"] or not all(
                 item["ok"] for item in health["bots"].values()):
