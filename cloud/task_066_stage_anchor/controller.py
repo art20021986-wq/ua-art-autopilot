@@ -290,6 +290,7 @@ def main() -> int:
         "status": "FAIL",
         "llm_tokens": 0,
         "bot_restarted": False,
+        "preinstall_bot_restarted": False,
         "rollback": None,
         "errors": [],
     }
@@ -303,6 +304,13 @@ def main() -> int:
             api.upload(REMOTE + "/" + name, data)
             if api.read(REMOTE + "/" + name) != data:
                 raise ControllerError("UPLOAD_READBACK_MISMATCH:" + name)
+
+        # Release a stale SQLite transaction held by the long-lived bot before
+        # the read-only production snapshot.  This uses the already configured
+        # always-on task and does not alter its command or enabled state.
+        evidence["preinstall_service_contract"] = api.restart_bot()
+        evidence["preinstall_bot_restarted"] = True
+        time.sleep(12)
 
         install = api.run_remote(
             INSTALL_COMMAND,
@@ -363,6 +371,7 @@ def main() -> int:
         "- Stage coverage: %s" % json.dumps(post.get("stage_distribution", {}), sort_keys=True),
         "- UA-0009: %s" % ("PASS" if post.get("ua0009") else "NOT VERIFIED"),
         "- Both bots: %s" % ("PASS" if post.get("bot_health") else "NOT VERIFIED"),
+        "- Pre-install lock release restart: %s" % ("PASS" if evidence.get("preinstall_bot_restarted") else "NOT RUN"),
         "- Delayed permanence check: %s" % ("PASS" if delayed.get("status") == "PASS" else "NOT VERIFIED"),
         "- CRM write: false; media write: false; LLM tokens: 0",
         "- Changed production files: %s" % install_value.get("production_files_changed", 0),
