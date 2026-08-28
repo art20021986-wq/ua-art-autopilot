@@ -1,0 +1,9 @@
+# sha256 of isolated candidate files produced in TASK 069
+# (computed conceptually at authoring time; recompute locally with:
+#   sha256sum cloud/task_069/candidate/*.py cloud/task_069/tests/*.py
+# before/after values for real production files (cars_ui.py, konteyner.py,
+# db.py, crm.db) are NOT AVAILABLE — those files were not supplied to this
+# worker and no production access exists from this environment.
+
+container_module.py        <compute with sha256sum after checkout>
+menu_patch_snippet.py      <compute with sha256sum after checkout>
