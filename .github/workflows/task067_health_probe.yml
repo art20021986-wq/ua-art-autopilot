@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 20-container-and-field-routes
+# probe-revision: 21-container-field-state
 
 on:
   push:
@@ -166,7 +166,8 @@ jobs:
               'local_ocr.py': {'fields_from_text'},
               'cars_ui.py': {'voice_change_plan', '_v167_voice_explicit_fields',
                              'auto_catch', 'catch_message', 'render',
-                             'apply_value', 'stage_set'},
+                             'apply_value', 'edit_ask', 'drop_wait', 'set_field',
+                             'register', 'stage_set'},
               'ai_filter.py': {'clean'},
               'assistant.py': {'is_write', 'extract', 'ask'},
               # The container menu is visible but its child buttons currently
