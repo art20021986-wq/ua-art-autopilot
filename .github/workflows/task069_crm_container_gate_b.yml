@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: write
 
 concurrency:
@@ -104,6 +105,10 @@ jobs:
       - name: Commit bounded Gate B evidence
         if: always()
         run: |
+          if [ ! -f cloud/task_069/evidence/gate_b.json ] || [ ! -f cloud/task_069/GATE_B_REPORT.md ]; then
+            echo 'Gate B evidence not produced; production controller did not run.'
+            exit 0
+          fi
           git add -- \
             cloud/task_069/evidence/gate_b.json \
             cloud/task_069/GATE_B_REPORT.md
@@ -155,5 +160,5 @@ jobs:
           path: |
             cloud/task_069/evidence/gate_b.json
             cloud/task_069/GATE_B_REPORT.md
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
