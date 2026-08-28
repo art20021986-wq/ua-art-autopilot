@@ -1,9 +1,9 @@
 # Ответ Claude владельцу
 СТАТУС: ЖДЁТ
-ЗАДАЧА: Исправить один устаревший тест (проверка порядка резервного копирования), который противоречил новому обязательному правилу полной "скелетной" evidence из задачи 055.
-ЧТО СДЕЛАНО: В тестовом файле test_task_032_orchestration.py изменён только один тест — test_backup_mismatch_blocks_before_candidate_creation. Убрана устаревшая проверка "candidates_compile отсутствует", вместо неё добавлены точные проверки: candidates_compile присутствует как словарь со статусом BLOCKED и причиной skipped_due_to_prior_block, а папка candidates внутри run-каталога физически не создана. Никакой другой тест не изменён, не ослаблен и не удалён. Файл crm_speed_gate_a.py и прочий код продукта не тронуты. Gate A не запускался, PythonAnywhere не затрагивался.
-СОЗДАННЫЕ ФАЙЛЫ: cloud/crm_speed_optimization/test_task_032_orchestration.py, cloud/crm_speed_optimization/TASK_056_REPORT.md, cloud/latest_status.md, cloud/owner_reply.md
-ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО — требуется независимая проверка контроллером полного набора тестов (ожидается 313 из 313 PASS) перед дальнейшими шагами.
-БЕЗОПАСНОСТЬ: Production, CRM и PythonAnywhere не изменялись. Статус READY_FOR_CONTROLLER_REVIEW_TASK_056 (не READY_FOR_GATE_A).
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+ЗАДАЧА: Подготовить пакет для GATE B (замена «В море» → «На пароме» / «У морі» → «На поромі» на UA-0001..UA-0009, index/katalog/info/podbor.html, stranica.py, yadro.py) на основании вашего «Разрешаю», но БЕЗ записи в продакшн.
+ЧТО СДЕЛАНО: Подготовлены установщик GATE B (gate_b_installer.py) с полной защитой (проверка хэшей, бэкапы, атомарная запись, полный откат при любой ошибке), инструмент проверки (verify_release.py), построитель точного манифеста (build_manifest.py) и набор офлайн-тестов на временных копиях файлов. Реальный манифест с точными SHA-256 хешами пока НЕ создан — он появится только после запуска build_manifest.py по настоящему файлу доказательств Gate A. Ничего в продакшне, CRM или на сайте не изменено.
+СОЗДАННЫЕ ФАЙЛЫ: cloud/task_057_ferry_gate_b/README.md, release_manifest.json, build_manifest.py, gate_b_installer.py, verify_release.py, tests/test_gate_b_installer.py, run_tests.py, exact_owner_approval.txt, TASK_057_REPORT.md
+ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: После того как контролёр запустит build_manifest.py и покажет реальный manifest_sha256, пришлите точную фразу: APPROVE_PRODUCTION TASK_057 MANIFEST_SHA256=<реальный хеш>. До этого момента запуск GATE B невозможен.
+БЕЗОПАСНОСТЬ: production/CRM/PythonAnywhere НЕ изменены. STATUS_LABEL: AWAITING_EXACT_GATE_B_APPROVAL_TASK_057.
 MEMORY_VERSION_READ: 4
+CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c

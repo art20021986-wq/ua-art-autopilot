@@ -1,0 +1,42 @@
+{
+  "task_id": "task_057",
+  "gate": "GATE_B",
+  "status": "NOT_YET_GENERATED",
+  "note": "This is a template. Real hashes must be produced by running build_manifest.py against the verified Gate A evidence file. Fabricating hashes here would violate the fail-closed requirement of task_057.",
+  "source_evidence_path": "cloud/task_047_ferry_discovery/evidence/ferry_gate_a.json",
+  "source_report_path": "cloud/task_047_ferry_discovery/FERRY_GATE_A_REPORT.md",
+  "required_gate_a_fields": {
+    "status": "PASS_READY_FOR_GATE_B",
+    "generated_at_utc": "2026-08-27T22:46:09Z",
+    "isolated_html_candidates": 13,
+    "html_wording_changes": 36,
+    "generator_candidates": 2,
+    "stranica_py_changes": 8,
+    "yadro_py_changes": 10,
+    "production_write": false,
+    "crm_write": false,
+    "db_write": false,
+    "service_reload": false,
+    "gate_b_executed": false,
+    "ua0009_published": false
+  },
+  "allowlist": [
+    "video/index.html",
+    "video/katalog.html",
+    "video/info.html",
+    "video/podbor.html",
+    "video/UA-0001.html",
+    "video/UA-0002.html",
+    "video/UA-0003.html",
+    "video/UA-0004.html",
+    "video/UA-0005.html",
+    "video/UA-0006.html",
+    "video/UA-0007.html",
+    "video/UA-0008.html",
+    "video/UA-0009.html",
+    "stranica.py",
+    "yadro.py"
+  ],
+  "targets": [],
+  "manifest_sha256": null
+}
