@@ -1,0 +1,38 @@
+name: task065-voice-path-probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task065_voice_path_probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Read voice path
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_065/read_voice_path.py
+      - name: Commit evidence
+        run: |
+          python3 -m json.tool cloud/task_065/evidence/voice_path.json >/dev/null
+          git add -- cloud/task_065/evidence/voice_path.json
+          git config user.name 'task065-voice-probe'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_065: record CRM voice path'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || exit 1
+            if git push origin HEAD:main; then break; fi
+            test "$attempt" -lt 5 || exit 1
+            sleep $((attempt * 2))
+          done
