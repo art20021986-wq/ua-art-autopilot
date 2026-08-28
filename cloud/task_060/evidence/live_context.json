@@ -105,6 +105,30 @@
       ]
     }
   },
+  "always_on": [
+    {
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "enabled": true,
+      "id_sha256": "ddab74aff3b2a90095923bf1b6e2880ceb8d82e217b930565eb778dfdbfd7b60",
+      "keys": [
+        "can_delete",
+        "can_disable",
+        "can_edit",
+        "can_enable",
+        "can_restart",
+        "command",
+        "description",
+        "enabled",
+        "id",
+        "logfile",
+        "state",
+        "url",
+        "user"
+      ],
+      "logfile": "/user/Carix/files/var/log/alwayson-log-266084.log",
+      "status": null
+    }
+  ],
   "files": {
     "ai.py": {
       "functions": [
