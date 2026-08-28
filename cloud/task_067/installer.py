@@ -2006,7 +2006,7 @@ def main():
                         atomic_write(backup_dir / name, data, mode)
                 atomic_json(backup_dir / "manifest.json", manifest)
                 for name in ("crm_online_guard.py", "db.py", "ai.py", "client_ui.py", "cars_ui.py",
-                             "run_all.py", "team_bot.py", "lead_bot.py"):
+                             "konteyner.py", "run_all.py", "team_bot.py", "lead_bot.py"):
                     atomic_write(PATHS[name], candidates[name].encode("utf-8"), 0o644)
                 installed = True
             after_db = db_state()
