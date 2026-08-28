@@ -174,6 +174,28 @@ class API:
         self.request("DELETE", BASE + "%s/%d/" % (endpoint, identifier),
                      allowed=(200, 202, 204, 404))
 
+    def cleanup_stale_triggers(self):
+        """Remove only abandoned task067 one-shot runners from older releases."""
+        removed = []
+        allowed_commands = set(COMMANDS.values())
+        for kind, endpoint in (("always_on", "always_on"), ("schedule", "schedule")):
+            status, body = self.request(
+                "GET", BASE + endpoint + "/", allowed=(200, 404))
+            if status == 404:
+                continue
+            for item in self.objects(body):
+                if not isinstance(item, dict):
+                    continue
+                description = str(item.get("description") or "")
+                command = str(item.get("command") or "").strip()
+                identifier = item.get("id")
+                if (description.startswith("task067 ")
+                        and command in allowed_commands
+                        and isinstance(identifier, int)):
+                    self.delete_trigger((kind, identifier))
+                    removed.append({"kind": kind, "id": identifier})
+        return removed
+
     def run_remote(self, key, timeout):
         receipt = RECEIPTS[key]
         self.delete_file(receipt)
@@ -242,6 +264,7 @@ def main():
     installed = False
     try:
         api = API()
+        result["stale_triggers_removed"] = api.cleanup_stale_triggers()
         for remote_name, local_path in FILES.items():
             api.upload(STAGING + "/" + remote_name, local_path.read_bytes())
         result["uploaded"] = sorted(FILES)
