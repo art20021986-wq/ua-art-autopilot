@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 14
+# probe-revision: 15
 
 on:
   push:
@@ -158,6 +158,28 @@ jobs:
                   if name in wanted:
                       db_selected[name] = ast.get_source_segment(db_source, node)
           result['db_lock_contract'] = db_selected
+          code_audit = {}
+          requested = {
+              'ai.py': {'transcribe', 'openai_key'},
+              'ai_fast_schema.py': {'car_fields', 'fast_text_data', 'parsed_from_data', 'clean_car'},
+              'local_ocr.py': {'fields_from_text'},
+              'cars_ui.py': {'voice_change_plan', '_v167_voice_explicit_fields'},
+          }
+          for filename, selected_names in requested.items():
+              module_source = get(root + '/' + filename, limit=2_000_000).decode('utf-8')
+              module_tree = ast.parse(module_source)
+              function_names = [node.name for node in module_tree.body
+                                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))]
+              selected_sources = {}
+              for node in module_tree.body:
+                  if (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                          and node.name in selected_names):
+                      value = ast.get_source_segment(module_source, node) or ''
+                      value = re.sub(r'\b\d{8,}:[A-Za-z0-9_-]{20,}\b', '<redacted-token>', value)
+                      selected_sources[node.name] = value
+              code_audit[filename] = {'functions': function_names,
+                                      'selected': selected_sources}
+          result['voice_code_audit'] = code_audit
           events_raw = get(root + '/.crm_guard_events.jsonl', missing=True, limit=2_000_000)
           if events_raw:
               events = []
