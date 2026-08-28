@@ -494,6 +494,91 @@ async def universal_media_route_synthetic(cars_ui):
         cars_ui._v171_schedule_media_extract = original_schedule
 
 
+async def universal_text_route_synthetic(cars_ui):
+    """The reported long advertisement fills every missing technical field."""
+    original_card_of = cars_ui.card_of
+    original_cas = cars_ui._v168_cas_write
+    state = {
+        "id": 9904, "auto_number": "TEST-9904", "price_uah": 777777,
+        "brand": "", "model": "", "year": "", "fuel": "",
+        "engine_cc": "", "gearbox": "", "drive": "",
+        "mileage_km": "", "color": "", "condition_text": "",
+    }
+    writes, replies = [], []
+    reported_text = (
+        "Hyundai Sonata 2018 · 2.0 LPI\n"
+        "Характеристики:\n"
+        "• экономичный двигатель 2.0 LPI\n"
+        "• автоматическая коробка передач\n"
+        "• передний привод\n"
+        "• пробег — 163 400 км\n"
+        "• белый цвет\n\n"
+        "Почему выгодно бронировать автомобиль в пути:\n"
+        "задаток — всего 500 $; задаток входит в общую стоимость автомобиля."
+    )
+
+    class Message:
+        photo = None
+        video = None
+        video_note = None
+        document = None
+        caption = None
+        message_id = 502
+        chat_id = 77
+        text = reported_text
+
+        async def reply_text(self, text, **kwargs):
+            replies.append({"text": str(text), "kwargs": kwargs})
+
+    def fake_cas(card_id, field, expected_old, new_value, actor_id,
+                 correction=False, _queue_on_busy=True):
+        check(card_id == state["id"], "TEXT_ROUTE_WRONG_CARD")
+        if not cars_ui._v168_empty(state.get(field)):
+            return False, "filled"
+        state[field] = new_value
+        writes.append((field, new_value))
+        return True, "applied"
+
+    try:
+        cars_ui.card_of = lambda _card_id: dict(state)
+        cars_ui._v168_cas_write = fake_cas
+        parsed = cars_ui._v172_text_candidates(
+            reported_text,
+            {"brand", "model", "year", "fuel", "engine_cc", "gearbox",
+             "drive", "mileage_km", "color", "price_uah", "condition_text"})
+        check("price_uah" not in parsed, "TEXT_DEPOSIT_BECAME_PRICE")
+        started = time.monotonic()
+        accepted = await cars_ui.auto_catch(
+            Message(), dict(state), 7, SimpleNamespace())
+        elapsed = time.monotonic() - started
+        check(accepted and replies, "UNIVERSAL_TEXT_NO_ACK")
+        check(elapsed <= 5.0, "UNIVERSAL_TEXT_OVER_5S")
+        check(str(state.get("brand", "")).casefold() == "hyundai", "TEXT_BRAND")
+        check(str(state.get("model", "")).casefold() == "sonata", "TEXT_MODEL")
+        check(int(state.get("year") or 0) == 2018, "TEXT_YEAR")
+        check(state.get("fuel") == "LPI", "TEXT_FUEL")
+        check(int(state.get("engine_cc") or 0) == 2000, "TEXT_ENGINE")
+        check(state.get("gearbox") == "automatic", "TEXT_GEARBOX")
+        check(state.get("drive") == "fwd", "TEXT_DRIVE")
+        check(int(state.get("mileage_km") or 0) == 163400, "TEXT_MILEAGE")
+        check(state.get("color") == "белый", "TEXT_COLOR")
+        check(state.get("price_uah") == 777777, "TEXT_PRICE_OVERWRITE")
+        first_write_count = len(writes)
+        second = await cars_ui.auto_catch(
+            Message(), dict(state), 7, SimpleNamespace())
+        check(second, "UNIVERSAL_TEXT_REPEAT_NOT_HANDLED")
+        check(len(writes) == first_write_count, "UNIVERSAL_TEXT_REPEAT_OVERWROTE")
+        check("повторно не записывал" in replies[-1]["text"],
+              "UNIVERSAL_TEXT_REPEAT_REPLY")
+        return {"status": "PASS", "ack_seconds": round(elapsed, 3),
+                "fields_written": first_write_count, "repeat_writes": 0,
+                "deposit_ignored": True, "new_card_created": False,
+                "llm_tokens": 0}
+    finally:
+        cars_ui.card_of = original_card_of
+        cars_ui._v168_cas_write = original_cas
+
+
 def field_queue_synthetic(cars_ui, guard, db_module):
     guard_original = {name: getattr(guard, name) for name in
                       ("FIELD_SPOOL_PATH", "FIELD_SPOOL_LOCK")}
@@ -632,6 +717,11 @@ def source_checks():
             "CRM-MEDIA-EXTRACT-03-V1.3.3" in sources["cars_ui.py"]
             and "_v171_schedule_media_extract" in sources["cars_ui.py"]
             and "allowed_now" in sources["cars_ui.py"]),
+        "universal_text_missing_only": (
+            "CRM-UNIVERSAL-TEXT-04-V1.3.4" in sources["cars_ui.py"]
+            and "_v172_apply_open_text" in sources["cars_ui.py"]
+            and "_v172_queue_cas" in sources["cars_ui.py"]
+            and "повторно не записывал" in sources["cars_ui.py"]),
     }
     check(all(checks.values()), "SOURCE_CONTRACT:" + json.dumps(checks))
     for name, source in sources.items():
@@ -664,6 +754,8 @@ def main():
         result["media"] = media_synthetic(cars_ui, guard)
         result["universal_media_route"] = asyncio.run(
             universal_media_route_synthetic(cars_ui))
+        result["universal_text_route"] = asyncio.run(
+            universal_text_route_synthetic(cars_ui))
         result["field_queue"] = field_queue_synthetic(cars_ui, guard, db_module)
         check(float(db_module.ZAMOK_OZHIDANIE) <= 2.0, "DB_QUEUE_WAIT_OVER_2S")
         started = time.monotonic()
