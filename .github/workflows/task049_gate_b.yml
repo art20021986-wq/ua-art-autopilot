@@ -1,0 +1,157 @@
+name: task049-logistics-hub-gate-b
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task049_gate_b.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task049-logistics-hub-gate-b
+  cancel-in-progress: false
+
+jobs:
+  gate-b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile and run complete logistics suite
+        run: |
+          python3 -m py_compile cloud/bot_logistics/*.py
+          python3 -m unittest discover -v -s cloud/bot_logistics -p 'test*.py'
+
+      - name: Execute approved atomic Gate B
+        id: gate_b
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_USERNAME: Carix
+          PYTHONANYWHERE_HOST: www.pythonanywhere.com
+        run: python3 cloud/bot_logistics/task049_gate_b_controller.py
+
+      - name: Validate and stage bounded Gate B evidence
+        run: |
+          test -f cloud/bot_logistics/evidence/task_049_gate_b.json
+          test -f cloud/bot_logistics/TASK_049_GATE_B_REPORT.md
+          test "$(wc -c < cloud/bot_logistics/evidence/task_049_gate_b.json)" -le 80000
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("cloud/bot_logistics/evidence/task_049_gate_b.json")
+          value = json.loads(path.read_text(encoding="utf-8"))
+          if not isinstance(value, dict) or value.get("task_id") != "task_049":
+              raise SystemExit("invalid Gate B evidence identity")
+          if value.get("controller_status") not in {"PASS", "BLOCKED", "ROLLED_BACK"}:
+              raise SystemExit("invalid Gate B evidence status")
+          forbidden = {"token", "authorization", "password", "secret", "command"}
+          def walk(item):
+              if isinstance(item, dict):
+                  for key, child in item.items():
+                      if str(key).lower() in forbidden:
+                          raise SystemExit("forbidden evidence key")
+                      walk(child)
+              elif isinstance(item, list):
+                  for child in item:
+                      walk(child)
+          walk(value)
+          PY
+          git add -- \
+            cloud/bot_logistics/evidence/task_049_gate_b.json \
+            cloud/bot_logistics/TASK_049_GATE_B_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          if [ "${#staged[@]}" -gt 2 ]; then
+            echo 'Unexpected number of staged paths'
+            exit 1
+          fi
+          for path in "${staged[@]}"; do
+            case "${path}" in
+              cloud/bot_logistics/evidence/task_049_gate_b.json|\
+              cloud/bot_logistics/TASK_049_GATE_B_REPORT.md) ;;
+              *)
+                echo "Unexpected staged path: ${path}"
+                exit 1
+                ;;
+            esac
+          done
+
+      - name: Commit Gate B evidence with bounded retries
+        run: |
+          if git diff --cached --quiet; then
+            echo 'Gate B evidence is unchanged'
+            exit 0
+          fi
+          git config user.name 'task049-gate-b'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_049: relay approved Gate B result'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            if [ "${attempt}" -lt 5 ]; then
+              sleep $((attempt * 3))
+            fi
+          done
+          exit 1
+
+      - name: Require successful install and restart
+        env:
+          GATE_B_STEP_OUTCOME: ${{ steps.gate_b.outcome }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          value = json.loads(Path(
+              "cloud/bot_logistics/evidence/task_049_gate_b.json"
+          ).read_text(encoding="utf-8"))
+          exact = {
+              "controller_status": "PASS",
+              "status": "PASS",
+              "source_sha256_before": "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7",
+              "source_sha256_after": "3c6f12227e45a3ba936d48d4a12435378045e879fea481def04f3378f6a0f12f",
+              "backup_sha256": "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7",
+              "ua0006_container": "ONEYSELGF1046602",
+              "ua0006_sea_date_out": "2026-01-24",
+              "target_always_on_id": 266084,
+          }
+          for key, expected in exact.items():
+              if value.get(key) != expected:
+                  raise SystemExit(f"Gate B final invariant failed: {key}")
+          for key in (
+              "production_write", "service_restart", "restart_accepted",
+              "ua0006_container_preserved", "ua0006_sea_date_preserved",
+          ):
+              if value.get(key) is not True:
+                  raise SystemExit(f"Gate B final marker failed: {key}")
+          for key in ("crm_write", "db_write", "website_write", "rollback"):
+              if value.get(key) is not False:
+                  raise SystemExit(f"Gate B safety marker failed: {key}")
+          if value.get("db_sha256_before") != value.get("db_sha256_after"):
+              raise SystemExit("Gate B database hash changed")
+          if value.get("errors") != []:
+              raise SystemExit("Gate B evidence contains errors")
+          if os.environ.get("GATE_B_STEP_OUTCOME") != "success":
+              raise SystemExit("Gate B controller step did not succeed")
+          PY
