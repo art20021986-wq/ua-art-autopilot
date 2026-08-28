@@ -1,0 +1,37 @@
+{
+  "controller": {
+    "bot_restarted": true,
+    "bot_task_id_sha256": "ddab74aff3b2a90095923bf1b6e2880ceb8d82e217b930565eb778dfdbfd7b60",
+    "status": "PASS",
+    "ua0010_published": false
+  },
+  "installer": {
+    "already_applied": false,
+    "backup_path": "/home/Carix/backups/task_059_ai_fast_schema/20260828T050127Z",
+    "crm_db_write": false,
+    "db_sha256_after": "6819f5191dbdb94a679d7978d1870ad393ce6419df1caa7c3c7aecb760ec9ce8",
+    "db_sha256_before": "6819f5191dbdb94a679d7978d1870ad393ce6419df1caa7c3c7aecb760ec9ce8",
+    "errors": [],
+    "files": {
+      "/home/Carix/ai_fast_schema.py": {
+        "after": "d2ac2104b2293e3c5cb38930fac6f4de87b9d1d3f35783b1b4e892433fcfd64e",
+        "before": null
+      },
+      "/home/Carix/team_bot.py": {
+        "after": "6f34c77e288946503bed97739e2c77143fdce79e86d0e21dae889c933b00ab78",
+        "before": "059e3e044a8bb3d4c1fe7ef4b43c40eacb491fb3614e9929e0c01dc7a9de9430"
+      }
+    },
+    "finished_at_utc": "2026-08-28T05:01:27Z",
+    "mode": "P0_AI_FAST_SCHEMA_INSTALL",
+    "production_write": true,
+    "rollback_performed": false,
+    "service_restarted": false,
+    "site_hashes_unchanged": true,
+    "site_write": false,
+    "started_at_utc": "2026-08-28T05:01:27Z",
+    "status": "PASS",
+    "task_id": "task_059",
+    "ua0010_published": false
+  }
+}
