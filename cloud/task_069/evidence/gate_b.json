@@ -1,0 +1,98 @@
+{
+  "conflict_guard_before_shadow": {
+    "active_conflicts": 0,
+    "status": "PASS"
+  },
+  "contract_id": "CRM-CONTAINER-KYIV-DAYS-001-V1.0",
+  "errors": [
+    "ControllerError:PARALLEL_PRODUCTION_GATE:[{\"id\": 33213826168, \"name\": \"SEO Rehab Guard 068 production\", \"status\": \"in_progress\"}]"
+  ],
+  "finished_at_utc": "2026-08-28T21:44:49Z",
+  "mode": "APPROVED_PRODUCTION_GATE_B",
+  "owner_approval": "УТВЕРЖДАЮ CRM-CONTAINER-KYIV-DAYS-001 v1.0. РАЗРЕШАЮ PRODUCTION GATE B",
+  "rollback": null,
+  "runtime_llm_tokens": 0,
+  "shadow": {
+    "candidate": {
+      "already_applied": false,
+      "button_label_occurrences": 2,
+      "candidate_sha256": "a916266016d4ff0551e99bd74b5eb295e3c69babe2f6b7eec7f218d69a0de64b",
+      "changed_functions": [
+        "_ekran",
+        "posle_statusa",
+        "prinyat"
+      ],
+      "handler_synthetic": {
+        "durable_queue_preserved": true,
+        "idempotent": true,
+        "invalid_rejected": true,
+        "llm_tokens": 0,
+        "readback_failure_keeps_wait": true,
+        "valid_normalized": true
+      },
+      "protected_source_sha256": {
+        "cars_ui.py": "862baea2ca0794f5e0d83bc04169f6d2fdec401f86f384ef4376e373c02a776b",
+        "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
+      },
+      "route_checks": {
+        "callback_registered": true,
+        "eta_days_branch": true,
+        "eta_prompt": true,
+        "manual_eta_priority": true,
+        "range_0_400": true,
+        "stores_days_to_kyiv": true,
+        "stores_eta_manual": true
+      },
+      "source_sha256": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d"
+    },
+    "contract_id": "CRM-CONTAINER-KYIV-DAYS-001-V1.0",
+    "crm_db_write": false,
+    "database": {
+      "card_ids": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011"
+      ],
+      "container_owners": [
+        {
+          "auto_number": "UA-0005",
+          "id": 11
+        },
+        {
+          "auto_number": "UA-0006",
+          "id": 12
+        },
+        {
+          "auto_number": "UA-0010",
+          "id": 16
+        }
+      ],
+      "protected_rows_sha256": "5961a0883fa6da48bfbc1ccbb1a5b668291f1328886b18169bf8356880dea165",
+      "quick_check": "ok",
+      "row_count": 11,
+      "rows_sha256": "8140f721394e096fa3160f2139914f8b7a0395e4336b38448220ff8c71295dda",
+      "target": {
+        "auto_number": "UA-0011",
+        "id": 18,
+        "sea_container": null,
+        "updated_at": "2026-08-28T21:09:02"
+      }
+    },
+    "mode": "SHADOW",
+    "production_write": false,
+    "runtime_llm_tokens": 0,
+    "service_reload": false,
+    "status": "PASS",
+    "target_container": "ONEYSELGF1046602"
+  },
+  "started_at_utc": "2026-08-28T21:42:37Z",
+  "status": "FAIL"
+}
