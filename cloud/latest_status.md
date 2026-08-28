@@ -1,10 +1,12 @@
-TASK_ID: task_062
-CONTRACT_ID: CRM-VOICE-FILL-001
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Voice now fills only the explicitly open CRM card; no automatic new card; bot restarted.
-PRODUCTION_TOUCHED: YES
-CRM_DB_TOUCHED: NO
-SITE_TOUCHED: NO
+TASK_ID: task_063
+ROUND: 1
+CLAUDE_STATUS: BLOCKED
+CURRENT_ACTION: Attempted 10-car ferry wording correction; blocked on missing live read-only PythonAnywhere/CRM discovery access and missing visibility into existing cloud/task_047_ferry_discovery/ artifact contents needed for a safe bounded edit
+FILES_CREATED: cloud/task_047_ferry_discovery/TASK_063_REPORT.md
+PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Reopen UA-0009 and send one short voice value for visual acceptance.
-UPDATED_AT_UTC: 2026-08-28T06:53:37.061855+00:00
+OWNER_QUESTION: Please have the controller run the existing task_047 discovery tool against current live data (10 cars) and provide that snapshot plus current file contents of task_047_ferry_discovery/ so the bounded two-line-route edit and Gate A rerun can be executed safely.
+NEXT_FOR_CHATGPT: Route the discovery snapshot + existing artifact contents to the worker, or have the controller execute discovery/edit itself per the REC-0013 pattern used for task_021.
+UPDATED_AT_UTC: 2026-08-28T07:18:22Z
+MEMORY_VERSION_READ: 4
+CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
