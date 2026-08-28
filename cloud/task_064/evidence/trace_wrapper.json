@@ -1,0 +1,29 @@
+{
+  "bounded_lines": {
+    "end": 390,
+    "source": "        try:\n            con.execute(\"PRAGMA busy_timeout=30000\")\n        except Exception:\n            pass\n        return con\n\n    sqlite3.connect = _ua_connect\n    sqlite3._ua_trace = True\n    sqlite3._ua_trace2 = True\n    try:\n        threading.Thread(target=_sborshchik, daemon=True).start()\n    except Exception:\n        pass\n    try:\n        _zapis(\"ZAPUSK\", 0.0, \"python\" + str(sys.version_info[0]) + \".\" + str(sys.version_info[1])\n               + \" | \" + \" \".join(str(x) for x in sys.argv[:3])[:150])\n    except Exception:\n        pass\n\n\nclass _Obertka(object):\n    def __init__(self, vnutri, kto):\n        object.__setattr__(self, \"_ua_vnutri\", vnutri)\n        object.__setattr__(self, \"_ua_kto\", kto)\n        object.__setattr__(self, \"_ua_id\", _novyy_id())\n        object.__setattr__(self, \"_ua_t0\", time.time())\n        object.__setattr__(self, \"_ua_busy\", \"?\")\n        _dobavit(self._ua_id, kto, \"db.connect\")\n        _zapis(\"OPEN \" + self._ua_id, 0.0, \"db.connect | \" + kto)\n\n    def __enter__(self):\n        c = self._ua_vnutri.__enter__()\n        try:\n            _privyazat(self._ua_id, c)\n            bylo = c.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n            if int(bylo) < 30000:\n                c.execute(\"PRAGMA busy_timeout=30000\")\n                _zapis(\"BUSY_ISPRAVLEN\", 0.0, str(bylo) + \" -> 30000 | \" + self._ua_kto)\n            stalo = c.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n            object.__setattr__(self, \"_ua_busy\", stalo)\n        except Exception:\n            pass\n        return c\n\n    def __exit__(self, *a):\n        t0 = time.time()\n        _zapis(\"COMMIT_START \" + self._ua_id, 0.0, \"busy_timeout=\" + str(self._ua_busy) + \" | \" + self._ua_kto)\n        try:\n            r = self._ua_vnutri.__exit__(*a)\n        except Exception as e:\n            d = time.time() - t0\n            _ubrat(self._ua_id)\n            _zapis(\"COMMIT_FAIL\", d, \"db.connect | \" + self._ua_kto + \" | \" + repr(e))\n            otchet_o_sboe(d, e, self._ua_kto, self._ua_busy)\n            raise\n        d = time.time() - t0\n        _ubrat(self._ua_id)\n        _zapis(\"COMMIT_OK \" + self._ua_id, d, self._ua_kto)\n        _zapis(\"CLOSE \" + self._ua_id, time.time() - self._ua_t0, self._ua_kto)\n        return r\n\n    def __getattr__(self, imya):\n        return getattr(object.__getattribute__(self, \"_ua_vnutri\"), imya)\n\n\ndef podklyuchit(g):\n    try:\n        ishodnyy = g.get(\"connect\")\n        if not callable(ishodnyy) or getattr(ishodnyy, \"_ua_trace\", False):\n            return False\n\n        def connect_s_trassoy(*a, **kw):\n            return _Obertka(ishodnyy(*a, **kw), _kto(3))\n\n        connect_s_trassoy._ua_trace = True\n        connect_s_trassoy._ua_ishodnyy = ishodnyy\n        g[\"connect\"] = connect_s_trassoy\n        _zapis(\"PODKLYUCHEN\", 0.0, \"db.connect обёрнут (V2)\")\n        return True\n    except Exception as e:\n        _zapis(\"PODKLYUCHENIE_FAIL\", 0.0, repr(e))\n        return False",
+    "start": 300
+  },
+  "definitions": [
+    {
+      "end_lineno": 362,
+      "kind": "ClassDef",
+      "lineno": 320,
+      "name": "_Obertka",
+      "sha256": "266ae6101db9477640bf61a8145e437bc8079eff2db016fbefd46a2f02fb5d66",
+      "source": "class _Obertka(object):\n    def __init__(self, vnutri, kto):\n        object.__setattr__(self, \"_ua_vnutri\", vnutri)\n        object.__setattr__(self, \"_ua_kto\", kto)\n        object.__setattr__(self, \"_ua_id\", _novyy_id())\n        object.__setattr__(self, \"_ua_t0\", time.time())\n        object.__setattr__(self, \"_ua_busy\", \"?\")\n        _dobavit(self._ua_id, kto, \"db.connect\")\n        _zapis(\"OPEN \" + self._ua_id, 0.0, \"db.connect | \" + kto)\n\n    def __enter__(self):\n        c = self._ua_vnutri.__enter__()\n        try:\n            _privyazat(self._ua_id, c)\n            bylo = c.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n            if int(bylo) < 30000:\n                c.execute(\"PRAGMA busy_timeout=30000\")\n                _zapis(\"BUSY_ISPRAVLEN\", 0.0, str(bylo) + \" -> 30000 | \" + self._ua_kto)\n            stalo = c.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n            object.__setattr__(self, \"_ua_busy\", stalo)\n        except Exception:\n            pass\n        return c\n\n    def __exit__(self, *a):\n        t0 = time.time()\n        _zapis(\"COMMIT_START \" + self._ua_id, 0.0, \"busy_timeout=\" + str(self._ua_busy) + \" | \" + self._ua_kto)\n        try:\n            r = self._ua_vnutri.__exit__(*a)\n        except Exception as e:\n            d = time.time() - t0\n            _ubrat(self._ua_id)\n            _zapis(\"COMMIT_FAIL\", d, \"db.connect | \" + self._ua_kto + \" | \" + repr(e))\n            otchet_o_sboe(d, e, self._ua_kto, self._ua_busy)\n            raise\n        d = time.time() - t0\n        _ubrat(self._ua_id)\n        _zapis(\"COMMIT_OK \" + self._ua_id, d, self._ua_kto)\n        _zapis(\"CLOSE \" + self._ua_id, time.time() - self._ua_t0, self._ua_kto)\n        return r\n\n    def __getattr__(self, imya):\n        return getattr(object.__getattribute__(self, \"_ua_vnutri\"), imya)"
+    },
+    {
+      "end_lineno": 372,
+      "kind": "FunctionDef",
+      "lineno": 371,
+      "name": "connect_s_trassoy",
+      "sha256": "56a8031ca910a6df0d6d101182c133e40eeed5584d8634b9f4df926aaa39e3de",
+      "source": "        def connect_s_trassoy(*a, **kw):\n            return _Obertka(ishodnyy(*a, **kw), _kto(3))"
+    }
+  ],
+  "file_sha256": "fc4b95fc749f3d9b785ce69bfce2705b11ade95a560d6fbd901b50de1423d086",
+  "mode": "READ_ONLY_TRACE_WRAPPER",
+  "production_touched": false,
+  "task_id": "task_064"
+}
