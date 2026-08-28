@@ -29,6 +29,8 @@ EVENT_PATH = ROOT / ".crm_guard_events.jsonl"
 EVENT_LOCK_PATH = ROOT / ".crm_guard_events.lock"
 MEDIA_LEDGER_PATH = ROOT / ".crm_media_receipts.jsonl"
 MEDIA_LEDGER_LOCK = ROOT / ".crm_media_receipts.lock"
+FIELD_SPOOL_PATH = ROOT / ".crm_field_spool.jsonl"
+FIELD_SPOOL_LOCK = ROOT / ".crm_field_spool.lock"
 RESTART_PATH = ROOT / ".crm_guard_restarts.json"
 SPOOL_PATH = ROOT / ".crm_media_spool.jsonl"
 DB_PATH = ROOT / "crm.db"
@@ -281,6 +283,159 @@ def media_mark(key: str, card_id, target) -> None:
         pass
 
 
+def _safe_json_value(value):
+    try:
+        json.dumps(value, ensure_ascii=False)
+        return value
+    except Exception:
+        return str(value)
+
+
+def _field_rows_unlocked() -> list[dict]:
+    try:
+        lines = FIELD_SPOOL_PATH.read_text(encoding="utf-8").splitlines()
+    except FileNotFoundError:
+        return []
+    rows = []
+    for line in lines:
+        try:
+            item = json.loads(line)
+            if isinstance(item, dict) and item.get("key"):
+                rows.append(item)
+        except Exception:
+            pass
+    return rows
+
+
+def _field_rows() -> list[dict]:
+    try:
+        with open(FIELD_SPOOL_LOCK, "a+", encoding="utf-8") as guard:
+            fcntl.flock(guard.fileno(), fcntl.LOCK_SH)
+            try:
+                return _field_rows_unlocked()
+            finally:
+                fcntl.flock(guard.fileno(), fcntl.LOCK_UN)
+    except Exception:
+        return []
+
+
+def enqueue_field_update(table, card_id, field, new_value, actor_id,
+                         expected_old=None, correction=False, mode="set") -> dict:
+    """Durably accept one scalar CRM write without spending LLM tokens."""
+    table = str(table or "")
+    field = str(field or "")
+    mode = str(mode) if str(mode) in {"set", "cas", "audit"} else "set"
+    plain_field = field.replace("_", "")
+    if (table not in {"cars", "clients"} or not field
+            or not (field[0].isalpha() or field[0] == "_")
+            or not plain_field.isalnum()):
+        raise ValueError("invalid field queue target")
+    row = {
+        "table": table, "card_id": int(card_id), "field": field,
+        "new_value": _safe_json_value(new_value),
+        "expected_old": _safe_json_value(expected_old),
+        "actor_id": int(actor_id), "correction": bool(correction),
+        "mode": mode, "accepted_at": int(time.time()),
+    }
+    identity = json.dumps(
+        {key: value for key, value in row.items() if key != "accepted_at"},
+        ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    row["key"] = hashlib.sha256(identity.encode("utf-8")).hexdigest()
+    with open(FIELD_SPOOL_LOCK, "a+", encoding="utf-8") as guard:
+        fcntl.flock(guard.fileno(), fcntl.LOCK_EX)
+        try:
+            if row["key"] in {item.get("key") for item in _field_rows_unlocked()}:
+                return {"state": "duplicate", "key": row["key"]}
+            descriptor = os.open(
+                FIELD_SPOOL_PATH, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+            try:
+                data = (json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n").encode()
+                os.write(descriptor, data)
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
+        finally:
+            fcntl.flock(guard.fileno(), fcntl.LOCK_UN)
+    _safe_event("field_queued", table=table, card_id=int(card_id), field=field, mode=mode)
+    return {"state": "accepted", "key": row["key"]}
+
+
+def _field_spool_state() -> dict:
+    rows = _field_rows()
+    now = int(time.time())
+    ages = [max(0, now - int(row.get("accepted_at") or now)) for row in rows]
+    return {"queued": len(rows), "oldest_age_seconds": max(ages) if ages else 0}
+
+
+def _field_remove(keys) -> None:
+    done = {str(key) for key in keys}
+    if not done:
+        return
+    with open(FIELD_SPOOL_LOCK, "a+", encoding="utf-8") as guard:
+        fcntl.flock(guard.fileno(), fcntl.LOCK_EX)
+        try:
+            rows = [row for row in _field_rows_unlocked() if str(row.get("key")) not in done]
+            temporary = FIELD_SPOOL_PATH.with_name(".%s.%s.tmp" % (
+                FIELD_SPOOL_PATH.name, uuid.uuid4().hex))
+            descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            try:
+                for row in rows:
+                    os.write(descriptor, (json.dumps(
+                        row, ensure_ascii=False, separators=(",", ":")) + "\n").encode())
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
+            os.replace(temporary, FIELD_SPOOL_PATH)
+        finally:
+            fcntl.flock(guard.fileno(), fcntl.LOCK_UN)
+
+
+def _attempt_field_recovery(state: dict) -> dict:
+    if state.get("queued", 0) <= 0:
+        return {"attempted": False}
+    done = []
+    terminal = {"same", "filled", "conflict", "missing_card", "unknown", "invalid", "empty"}
+    try:
+        import db
+        import cars_ui
+        for row in _field_rows()[:25]:
+            try:
+                if row.get("mode") == "cas":
+                    ok, reason = cars_ui._v168_cas_write(
+                        row["card_id"], row["field"], row.get("expected_old"),
+                        row.get("new_value"), row["actor_id"],
+                        bool(row.get("correction")), _queue_on_busy=False)
+                    if ok or reason in terminal:
+                        done.append(row["key"])
+                    elif reason == "busy":
+                        break
+                elif row.get("mode") == "audit":
+                    db.log_action(
+                        row["actor_id"], "card_edit", row["table"], row["card_id"],
+                        row["field"], row.get("expected_old"), row.get("new_value"))
+                    done.append(row["key"])
+                else:
+                    db.update_card_field(
+                        row["table"], row["card_id"], row["field"],
+                        row.get("new_value"), row["actor_id"], _queue_on_busy=False)
+                    done.append(row["key"])
+            except Exception as exc:
+                lowered = str(exc).casefold()
+                if any(word in lowered for word in ("locked", "busy", "queue timeout")):
+                    break
+                _safe_event("field_recovery", status="error", card_id=row.get("card_id"),
+                            field=row.get("field"), detail=type(exc).__name__)
+                break
+        _field_remove(done)
+        if done:
+            _safe_event("field_recovery", status="ok", processed=len(done))
+        return {"attempted": True, "processed": len(done),
+                "remaining": _field_spool_state().get("queued", 0)}
+    except Exception as exc:
+        _safe_event("field_recovery", status="error", detail=type(exc).__name__)
+        return {"attempted": True, "processed": len(done), "error": type(exc).__name__}
+
+
 def _spool_state() -> dict:
     rows = []
     bad = 0
@@ -385,6 +540,7 @@ def _supervisor_loop() -> None:
     last_db = 0.0
     last_tokens = 0.0
     last_recovery = 0.0
+    last_field_recovery = 0.0
     token_state = {}
     db_state = {}
     last_stale_report = {}
@@ -417,6 +573,12 @@ def _supervisor_loop() -> None:
             last_recovery = now
             recovery = _attempt_spool_recovery(spool)
             spool = _spool_state()
+        field_spool = _field_spool_state()
+        field_recovery = {"attempted": False}
+        if field_spool["queued"] > 0 and now - last_field_recovery > 1:
+            last_field_recovery = now
+            field_recovery = _attempt_field_recovery(field_spool)
+            field_spool = _field_spool_state()
         if now - last_db >= 5:
             last_db = now
             db_state = _db_state()
@@ -433,8 +595,9 @@ def _supervisor_loop() -> None:
             disk_free = disk.free
         except Exception:
             disk_free = None
-        extra = {"db": db_state, "spool": spool, "bots": token_state,
-                 "disk_free_bytes": disk_free, "last_recovery": recovery}
+        extra = {"db": db_state, "spool": spool, "field_spool": field_spool,
+                 "bots": token_state, "disk_free_bytes": disk_free,
+                 "last_recovery": recovery, "last_field_recovery": field_recovery}
         _write_status(extra)
 
 

@@ -29,6 +29,7 @@ FILES = {
     "cars_ui.py": ROOT / "cars_ui.py", "ai.py": ROOT / "ai.py",
     "run_all.py": ROOT / "run_all.py", "client_ui.py": ROOT / "client_ui.py",
     "team_bot.py": ROOT / "team_bot.py", "lead_bot.py": ROOT / "lead_bot.py",
+    "db.py": ROOT / "db.py",
     "crm_online_guard.py": ROOT / "crm_online_guard.py",
 }
 
@@ -275,6 +276,66 @@ def media_synthetic(cars_ui, guard):
                 setattr(guard, name, value)
 
 
+def field_queue_synthetic(cars_ui, guard, db_module):
+    guard_original = {name: getattr(guard, name) for name in
+                      ("FIELD_SPOOL_PATH", "FIELD_SPOOL_LOCK")}
+    db_update = db_module.update_card_field
+    db_log = db_module.log_action
+    cars_cas = cars_ui._v168_cas_write
+    with tempfile.TemporaryDirectory(prefix="task067-fields-") as directory:
+        root = pathlib.Path(directory)
+        applied = []
+        try:
+            guard.FIELD_SPOOL_PATH = root / "fields.jsonl"
+            guard.FIELD_SPOOL_LOCK = root / "fields.lock"
+
+            def fake_update(table, card_id, field, value, actor_id, _queue_on_busy=False):
+                applied.append(("set", table, card_id, field, value, actor_id))
+                return {"queued": False}
+
+            def fake_cas(card_id, field, expected, value, actor_id,
+                         correction=False, _queue_on_busy=False):
+                applied.append(("cas", "cars", card_id, field, value, actor_id))
+                return True, "applied"
+
+            def fake_log(actor_id, action, table, card_id, field, old, new):
+                applied.append(("audit", table, card_id, field, new, actor_id))
+
+            db_module.update_card_field = fake_update
+            db_module.log_action = fake_log
+            cars_ui._v168_cas_write = fake_cas
+            first = guard.enqueue_field_update(
+                "clients", 44, "name", "Test", 7, mode="set")
+            duplicate = guard.enqueue_field_update(
+                "clients", 44, "name", "Test", 7, mode="set")
+            second = guard.enqueue_field_update(
+                "cars", 55, "fuel", "LPI", 7,
+                expected_old=None, correction=False, mode="cas")
+            third = guard.enqueue_field_update(
+                "cars", 55, "fuel", "LPI", 7,
+                expected_old=None, mode="audit")
+            check(first["state"] == "accepted", "FIELD_QUEUE_ACCEPT")
+            check(duplicate["state"] == "duplicate", "FIELD_QUEUE_DUPLICATE")
+            check(second["state"] == "accepted", "FIELD_QUEUE_CAS_ACCEPT")
+            check(third["state"] == "accepted", "FIELD_QUEUE_AUDIT_ACCEPT")
+            before = guard._field_spool_state()
+            check(before["queued"] == 3, "FIELD_QUEUE_COUNT")
+            recovery = guard._attempt_field_recovery(before)
+            after = guard._field_spool_state()
+            check(recovery.get("processed") == 3 and after["queued"] == 0,
+                  "FIELD_QUEUE_DRAIN")
+            check([item[0] for item in applied] == ["set", "cas", "audit"],
+                  "FIELD_QUEUE_ORDER")
+            return {"status": "PASS", "accepted": 3, "duplicates_rejected": 1,
+                    "processed": 3, "queue": 0, "order_exact": True}
+        finally:
+            db_module.update_card_field = db_update
+            db_module.log_action = db_log
+            cars_ui._v168_cas_write = cars_cas
+            for name, value in guard_original.items():
+                setattr(guard, name, value)
+
+
 def source_checks():
     sources = {name: path.read_text(encoding="utf-8") for name, path in FILES.items()}
     checks = {
@@ -290,6 +351,11 @@ def source_checks():
                                  for name in ("run_all.py", "team_bot.py", "lead_bot.py")),
         "delivery_route": 'pattern=r"^car_stage:"' in sources["cars_ui.py"],
         "condition_route": 'pattern=r"^car_cond:"' in sources["cars_ui.py"],
+        "db_wait_bounded": ("CRM-DB-BOUNDED-QUEUE-001" in sources["db.py"]
+                            and "ZAMOK_OZHIDANIE = 2.0" in sources["db.py"]
+                            and "PRAGMA busy_timeout=450" in sources["db.py"]),
+        "db_field_durable_queue": ("enqueue_field_update" in sources["db.py"]
+                                   and "FIELD_SPOOL_PATH" in sources["crm_online_guard.py"]),
     }
     check(all(checks.values()), "SOURCE_CONTRACT:" + json.dumps(checks))
     for name, source in sources.items():
@@ -313,9 +379,12 @@ def main():
         import cars_ui
         import client_ui
         import crm_online_guard as guard
+        import db as db_module
         result["callbacks"] = asyncio.run(callback_routes(cars_ui, state["latest_card"]))
         result["voice_golden"] = voice_golden(cars_ui)
         result["media"] = media_synthetic(cars_ui, guard)
+        result["field_queue"] = field_queue_synthetic(cars_ui, guard, db_module)
+        check(float(db_module.ZAMOK_OZHIDANIE) <= 2.0, "DB_QUEUE_WAIT_OVER_2S")
         started = time.monotonic()
         catalog = client_ui.catalog_cars()
         elapsed = time.monotonic() - started

@@ -215,6 +215,7 @@ def report_markdown(value):
     post = value.get("postcheck_final") or value.get("postcheck_initial") or {}
     voice = post.get("voice_golden") or {}
     media = post.get("media") or {}
+    fields = post.get("field_queue") or {}
     soak = value.get("soak") or {}
     lines = ["# CRM-ONLINE-GUARD-001 v1.3 — финальный отчёт", "",
              "Статус: **%s**" % ("PASS" if ok else "FAIL"), "",
@@ -223,6 +224,8 @@ def report_markdown(value):
              "- Критические callback-маршруты ≤5 с: %s" % ("PASS" if post.get("callbacks") else "FAIL"),
              "- RU/UA/EN golden: %s/%s" % (voice.get("cases", 0) - voice.get("failures", 0), voice.get("cases", 0)),
              "- Медиа: %s принято, %s сохранено, очередь %s" % (media.get("accepted", 0), media.get("saved", 0), media.get("queue", "?")),
+             "- SQLite ≤2 с + durable field queue: %s (очередь %s)" % (
+                 fields.get("status", "—"), fields.get("queue", "?")),
              "- 60-минутный soak: %s (%s с)" % (soak.get("status", "—"), soak.get("duration_actual_seconds", 0)),
              "- LLM-токены guard/детерминированных тестов: 0", "",
              "Существующие карточки, сайт и медиа установщиком не изменялись.", ""]

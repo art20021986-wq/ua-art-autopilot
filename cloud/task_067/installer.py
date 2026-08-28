@@ -18,6 +18,7 @@ import tempfile
 
 CONTRACT = "CRM-ONLINE-GUARD-001-V1.3"
 MARKER = "CRM-ONLINE-GUARD-001-V1.3"
+DB_MARKER = "CRM-DB-BOUNDED-QUEUE-001"
 ROOT = pathlib.Path("/home/Carix")
 STAGING = ROOT / "autopilot_inbox" / "cloud" / "task_047_ferry_discovery"
 SAFE = ROOT / "autopilot_inbox" / "cloud" / "task_067"
@@ -36,6 +37,7 @@ PATHS = {
     "client_ui.py": ROOT / "client_ui.py",
     "team_bot.py": ROOT / "team_bot.py",
     "lead_bot.py": ROOT / "lead_bot.py",
+    "db.py": ROOT / "db.py",
     "crm_online_guard.py": ROOT / "crm_online_guard.py",
 }
 EXPECTED = {
@@ -45,6 +47,7 @@ EXPECTED = {
     "client_ui.py": "e3b3964644fc8f18e28916ee665685e42c139d47a6276d2f2bb4eaddd62891d3",
     "team_bot.py": "70b349cdbe72a0cf5f674a1341a493de7759b5263859ce73d86fb292db3b5ad2",
     "lead_bot.py": "118573df42b51db49f7c2ebd9b830f78ebd1e62b71846760f62fa2f0590ffc0c",
+    "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
 }
 EXPECTED_DEFS = {
     "condition_screen": "cbc01d25a2cdf803bb35c168c99a7b7507e627640f83102746487f0bd6ed35c7",
@@ -63,6 +66,9 @@ EXPECTED_DEFS = {
     "client_catalog": "daef37a3dd03a99efd47eaf20cf656ef76b2020b48d00a9fbc5c8785ebef7e80",
     "client_car_screen": "9ba521882a07dedeec59c7e0826fe942a3f1f4a90f6dbe441b866b44827e82b0",
     "client_register": "1a937b7e96cb9127941ba2db24cf1cd69b232c94da7475feae49a13e8a67b29e",
+    "db_connection_class": "8f2ea10d7ef423768646706a07ec14c9b793e74d070e6cab85179e5bbc225823",
+    "db_connect": "3257e05c559e7c2d6d39ba0ca1b66818f6283909a411bba695d21517b29afe15",
+    "db_update_card_field": "1749f0eef8fc799ed5b08bd6a4482fad3126199d8c40207b76143b263349a1b1",
 }
 
 
@@ -123,7 +129,9 @@ def safe_read(path: pathlib.Path, required=True) -> bytes | None:
 
 def source_node(source: str, name: str):
     tree = ast.parse(source)
-    nodes = [node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name]
+    nodes = [node for node in tree.body
+             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+             and node.name == name]
     if len(nodes) != 1:
         raise InstallError("TARGET_COUNT:%s:%d" % (name, len(nodes)))
     return nodes[0]
@@ -169,6 +177,75 @@ def db_state():
         con.close()
 
 
+DB_CONNECT = r'''def connect():
+    # CRM-DB-BOUNDED-QUEUE-001: a user operation never waits 20 seconds.
+    conn = sqlite3.connect(DB_FILE, timeout=2.0, factory=Soedinenie)
+    conn.row_factory = sqlite3.Row
+    # Keep rollback-journal mode: the home directory may be on shared storage,
+    # where SQLite WAL shared memory is not a safe assumption.
+    try:
+        sqlite3.Connection.execute(conn, "PRAGMA journal_mode=DELETE")
+    except Exception:
+        pass
+    sqlite3.Connection.execute(conn, "PRAGMA busy_timeout=450")
+    sqlite3.Connection.execute(conn, "PRAGMA foreign_keys=ON")
+    return conn
+'''
+
+
+DB_UPDATE_FIELD = r'''def update_card_field(table: str, card_id: int, field: str, value,
+                      actor_id: int, _queue_on_busy: bool = True):
+    """Commit quickly or durably queue a scalar field update.
+
+    Media fields retain their dedicated ordered media spool.  Scalar fields are
+    safe to accept into the guard queue when a foreign reader temporarily holds
+    the rollback journal lock.
+    """
+    import time as _ua_time
+    old = get_card(table, card_id)
+    old_value = old.get(field) if old else None
+    started = _ua_time.monotonic()
+    try:
+        with connect() as c:
+            c.execute(f"UPDATE {table} SET {field}=?, updated_at=? WHERE id=?",
+                      (value, now(), card_id))
+    except sqlite3.OperationalError as exc:
+        lowered = str(exc).casefold()
+        busy = any(word in lowered for word in ("locked", "busy", "queue timeout"))
+        media_fields = {
+            "photos", "videos", "condition_photos", "condition_videos",
+            "video_h", "video_v", "diag_photos", "diag_videos",
+        }
+        if (not busy or not _queue_on_busy or str(field) in media_fields
+                or str(table) not in {"cars", "clients"}):
+            raise
+        import crm_online_guard as _ua_guard
+        _ua_guard.enqueue_field_update(
+            table, card_id, field, value, actor_id,
+            expected_old=old_value, mode="set")
+        _ua_guard.record_timing(
+            "db_field_queued", _ua_time.monotonic() - started,
+            "queued", card_id=card_id, detail=str(field))
+        return {"queued": True}
+    try:
+        log_action(actor_id, "card_edit", table, card_id, field, old_value, value)
+    except sqlite3.OperationalError as exc:
+        lowered = str(exc).casefold()
+        if _queue_on_busy and any(word in lowered for word in (
+                "locked", "busy", "queue timeout")):
+            import crm_online_guard as _ua_guard
+            _ua_guard.enqueue_field_update(
+                table, card_id, field, value, actor_id,
+                expected_old=old_value, mode="audit")
+            _ua_guard.record_timing(
+                "db_audit_queued", _ua_time.monotonic() - started,
+                "queued", card_id=card_id, detail=str(field))
+        else:
+            raise
+    return {"queued": False}
+'''
+
+
 CARS_HELPERS = r'''# CRM-ONLINE-GUARD-001-V1.3: bounded callbacks, missing-only writes and CAS.
 def _v168_empty(value):
     return value in (None, "", 0, [], {})
@@ -205,33 +282,50 @@ def _v168_named_fields(text, allowed):
             if field in permitted and _v168_re.search(pattern, value)}
 
 
-def _v168_cas_write(card_id, field, expected_old, new_value, actor_id, correction=False):
+def _v168_cas_write(card_id, field, expected_old, new_value, actor_id,
+                    correction=False, _queue_on_busy=True):
     import re as _v168_re
     if not _v168_re.fullmatch(r"[a-z_][a-z0-9_]*", str(field or "")):
         return False, "invalid"
     if _v168_empty(new_value):
         return False, "empty"
-    with db.connect() as _v168_con:
-        columns = {row[1] for row in _v168_con.execute("PRAGMA table_info(cars)")}
-        if field not in columns:
-            return False, "unknown"
-        row = _v168_con.execute(
-            "SELECT %s FROM cars WHERE id=?" % field, (int(card_id),)).fetchone()
-        if row is None:
-            return False, "missing_card"
-        current = row[0]
-        if str(current or "") == str(new_value):
-            return False, "same"
-        if correction:
-            if str(current or "") != str(expected_old or ""):
+    try:
+        with db.connect() as _v168_con:
+            columns = {row[1] for row in _v168_con.execute("PRAGMA table_info(cars)")}
+            if field not in columns:
+                return False, "unknown"
+            row = _v168_con.execute(
+                "SELECT %s FROM cars WHERE id=?" % field, (int(card_id),)).fetchone()
+            if row is None:
+                return False, "missing_card"
+            current = row[0]
+            if str(current or "") == str(new_value):
+                return False, "same"
+            if correction:
+                if str(current or "") != str(expected_old or ""):
+                    return False, "conflict"
+            elif not _v168_empty(current):
+                return False, "filled"
+            cursor = _v168_con.execute(
+                "UPDATE cars SET %s=?,updated_at=? WHERE id=? AND %s IS ?" % (field, field),
+                (new_value, db.now(), int(card_id), current))
+            if cursor.rowcount != 1:
                 return False, "conflict"
-        elif not _v168_empty(current):
-            return False, "filled"
-        cursor = _v168_con.execute(
-            "UPDATE cars SET %s=?,updated_at=? WHERE id=? AND %s IS ?" % (field, field),
-            (new_value, db.now(), int(card_id), current))
-        if cursor.rowcount != 1:
-            return False, "conflict"
+    except Exception as _v168_exc:
+        lowered = str(_v168_exc).casefold()
+        if (_queue_on_busy
+                and any(word in lowered for word in ("locked", "busy", "queue timeout"))):
+            try:
+                import crm_online_guard as _v168_guard
+                _v168_guard.enqueue_field_update(
+                    "cars", card_id, field, new_value, actor_id,
+                    expected_old=expected_old, correction=correction, mode="cas")
+                return True, "queued"
+            except Exception:
+                pass
+        if any(word in lowered for word in ("locked", "busy", "queue timeout")):
+            return False, "busy"
+        raise
     try:
         db.log_action(actor_id, "card_edit", "cars", int(card_id),
                       field, current, new_value)
@@ -1027,6 +1121,37 @@ def build_client(source: str) -> str:
     return source
 
 
+def build_db(source: str) -> str:
+    if DB_MARKER in source:
+        return source
+    if sha(source.encode()) != EXPECTED["db.py"]:
+        raise InstallError("SOURCE_SHA:db.py")
+    source = replace_once(
+        source, "ZAMOK_OZHIDANIE = 20",
+        "ZAMOK_OZHIDANIE = 2.0  # CRM-DB-BOUNDED-QUEUE-001",
+        "db_queue_deadline")
+    connection = segment(source, "Soedinenie")
+    if sha(connection.encode()) != EXPECTED_DEFS["db_connection_class"]:
+        raise InstallError("TARGET_SHA:Soedinenie")
+    connection = replace_once(
+        connection, "for attempt in range(5):", "for attempt in range(4):",
+        "db_commit_attempts")
+    connection = replace_once(
+        connection, "if attempt == 4:", "if attempt == 3:",
+        "db_commit_last_attempt")
+    connection = replace_once(
+        connection, "_ua_time.sleep(0.15 * (2 ** attempt))",
+        "_ua_time.sleep(0.08 * (2 ** attempt))", "db_commit_backoff")
+    source = replace_definition(
+        source, "Soedinenie", connection, EXPECTED_DEFS["db_connection_class"])
+    source = replace_definition(
+        source, "connect", DB_CONNECT, EXPECTED_DEFS["db_connect"])
+    source = replace_definition(
+        source, "update_card_field", DB_UPDATE_FIELD,
+        EXPECTED_DEFS["db_update_card_field"])
+    return source
+
+
 def validate_candidates(candidates):
     cars = candidates["cars_ui.py"]
     required = (
@@ -1048,6 +1173,15 @@ def validate_candidates(candidates):
         raise InstallError("UNSAFE_CLIENT_ACK_PRESENT")
     if '"language": "ru"' in candidates["ai.py"]:
         raise InstallError("HARDCODED_STT_LANGUAGE")
+    db_source = candidates["db.py"]
+    if any(value not in db_source for value in (
+            DB_MARKER, "ZAMOK_OZHIDANIE = 2.0", "PRAGMA busy_timeout=450",
+            "_queue_on_busy", "enqueue_field_update")):
+        raise InstallError("DB_BOUNDED_QUEUE_CONTRACT")
+    guard_source = candidates["crm_online_guard.py"]
+    if any(value not in guard_source for value in (
+            "enqueue_field_update", "field_spool", "FIELD_SPOOL_PATH")):
+        raise InstallError("FIELD_SPOOL_CONTRACT")
     for name in ("run_all.py", "team_bot.py", "lead_bot.py"):
         if "drop_pending_updates=True" in candidates[name]:
             raise InstallError("DROP_PENDING_PRESENT:" + name)
@@ -1075,6 +1209,8 @@ def build_all(original):
                 raise InstallError("DROP_PENDING_BASELINE:" + name)
             candidates[name] = candidates[name].replace(
                 "drop_pending_updates=True", "drop_pending_updates=False")
+    if DB_MARKER not in candidates["db.py"]:
+        candidates["db.py"] = build_db(sources["db.py"])
     guard = safe_read(GUARD_STAGED).decode("utf-8")
     if MARKER not in guard:
         raise InstallError("GUARD_MARKER_MISSING")
@@ -1155,8 +1291,11 @@ def main():
             original = {name: safe_read(path, required=(name != "crm_online_guard.py"))
                         for name, path in PATHS.items()}
             candidates = build_all(original)
-            already = MARKER in original["cars_ui.py"].decode("utf-8")
+            changed = [name for name, source in candidates.items()
+                       if original.get(name) != source.encode("utf-8")]
+            already = not changed
             receipt["already_applied"] = already
+            receipt["changed_files"] = changed
             if not already:
                 stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
                 backup_dir = BACKUPS / stamp
@@ -1171,7 +1310,7 @@ def main():
                     if existed:
                         atomic_write(backup_dir / name, data, mode)
                 atomic_json(backup_dir / "manifest.json", manifest)
-                for name in ("crm_online_guard.py", "ai.py", "client_ui.py", "cars_ui.py",
+                for name in ("crm_online_guard.py", "db.py", "ai.py", "client_ui.py", "cars_ui.py",
                              "run_all.py", "team_bot.py", "lead_bot.py"):
                     atomic_write(PATHS[name], candidates[name].encode("utf-8"), 0o644)
                 installed = True

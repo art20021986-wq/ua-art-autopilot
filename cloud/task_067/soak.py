@@ -104,6 +104,12 @@ def main():
             if spool_age > 8:
                 value["p0"].append("stale_spool:%d" % spool_age)
                 break
+            field_spool = status.get("field_spool") or {}
+            field_age = int(field_spool.get("oldest_age_seconds", 0) or 0)
+            max_spool_age = max(max_spool_age, field_age)
+            if field_age > 8:
+                value["p0"].append("stale_field_spool:%d" % field_age)
+                break
             bots = status.get("bots") or {}
             bot_ok = (bots.get("crm", {}).get("ok") and bots.get("client", {}).get("ok")
                       and bots.get("tokens_distinct"))
