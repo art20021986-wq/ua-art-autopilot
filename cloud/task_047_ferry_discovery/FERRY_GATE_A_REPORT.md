@@ -1,108 +1,62 @@
-# FERRY GATE A REPORT — TASK 063 (rebased from 9 to current 10 cars)
+# Ferry wording Gate A report
 
-STATUS: BLOCKED_PENDING_CONTROLLER_EXECUTION
-GATE: GATE_A (AUTOMATED, ISOLATED)
-CANONICAL_CHAIN: task_047 -> task_050 -> task_052
-OWNER_LABEL: "TASK 15" ferry wording (На пароме / На поромі, two-line catalog route)
-MEMORY_VERSION_READ: 4
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+status: PASS_READY_FOR_GATE_B
+generated_at_utc: 2026-08-28T07:25:11Z
+candidate_files: 13
+total_html_changes: 39
+generator_literals_requiring_patch: 18
+generator_candidate_files: 2
+crm_table: cars
+crm_id_column: auto_number
+crm_container_column: sea_container
+production_write: false
+crm_write: false
+db_write: false
+service_reload: false
+gate_b_executed: false
+ua0009_published: false
 
-## Why this report cannot declare PASS in this round
+## Isolated HTML candidates
 
-The Claude/Cloud authoring environment used to produce this deliverable has no live network
-access to PythonAnywhere, the production catalog, or the CRM/SQLite database. Gate A requires
-reading the CURRENT live catalog through the proven fail-closed read path and independently
-verifying:
+- `video/index.html`: 2 changes; `f8c64fec851d025f37f3efb35d539aaf1c361be7f6a2102d2b2ac5dbd4649985` → `545bae287315336804a01cb0467abb376298c8463e16a8ae05d916757cde42ba`
+- `video/katalog.html`: 14 changes; `743ce2a2d0bd35f475006cb0991f52982b6540670d62544654d2caf4d387c61a` → `73ac788e38d6aedf0c8efbf3b24278012e6bff087c9de1468fcfbfaf37f5246b`
+- `video/info.html`: 2 changes; `d7e2589542991a1628835df919ce60ef0c7a29a8130cbf3915553517e62559a1` → `dbd759eb4aca9ee413d72c88d32dac9c3c626b657587479f6ab55c167fef600f`
+- `video/podbor.html`: 0 changes; `00d4f473812bcebef1d760465e0a2ed18cc010b152ea1eae340773e0527324a5` → `00d4f473812bcebef1d760465e0a2ed18cc010b152ea1eae340773e0527324a5`
+- `video/UA-0001.html`: 2 changes; `2c1f40123210389453c192098f893b5fafb4bd53aeea92855f35456f7a982a09` → `48d66ed286aa88a494322971d99e93b933af8bc7560961e6f3e32188475748b1`
+- `video/UA-0002.html`: 2 changes; `85438938624cb2cb1e39d994542236d740eb418a738603ed2290149aa1c3a0f0` → `f020306b5487b281f5ab56c279e41bfcf6fe49598e70b9b40231257a426bb220`
+- `video/UA-0003.html`: 2 changes; `3513b36bd1a823e64b478ea082153d928f85194b5723e0f789ad8203b412dec7` → `e9d4c91f1ed17472f968a1280fe04c5a75ac92144ca61ce6946ef98d45608466`
+- `video/UA-0004.html`: 2 changes; `30c705dca405f88dc09549b7408b256d105a879d7ef4e4183279e54c117a9865` → `a4095c1b4e1cda025b2e9ca59000e896c6cfe03ca6443ec993ef03161e8142e0`
+- `video/UA-0005.html`: 3 changes; `5fb42943ddb7f1fe681d08927e1c2c17cd48e6284abf1543ecbb0e90c9e13fbc` → `b30174921834a714f33278bb90a4708a89eab9b72f3f8a55e0be85dea62f8923`
+- `video/UA-0006.html`: 3 changes; `1afd8295f78a45bb26a1df1f50b67c8d996ec26b828891c63caf88e08683a9f8` → `62d267321d0b75bc9b6f9027748b25cd16bfea2897a6e641f9ab0cd40c139165`
+- `video/UA-0007.html`: 2 changes; `35b27dafe0ac62e909d033074a1d7bfcf3d56f10db2ded7b4d10aa9854f7805f` → `23d2f4bfe481f6e9bbb4371598b58e06304455112ad904d8bdf2f8c37c037c51`
+- `video/UA-0008.html`: 2 changes; `d3df03714bd0dc2a420eef88c16eb89f530d7dc38ec5dfb7e325dd3199659d9e` → `f3192e949b0c86f1274e1ff34c426d33c17ab089a9f66a487ec562d71f28a736`
+- `video/UA-0009.html`: 3 changes; `c00fe8edaad664b605abe05271b72d08f5fac6ad507bdf51e22c98fdc46a103a` → `03b83759f304706e4b6a61070616348493a24b1e21134bdee9589c4f527fb48d`
 
-- the exact current catalog car count (owner states 10, must be independently confirmed, never
-  hard-coded or assumed),
-- the set of `sea`-stage cards among those 10,
-- byte-identical preservation of all internal `sea` markers, IDs, prices, specs, photos and links,
-- the rendered two-line RU/UK catalog route output,
-- generic inheritance by a synthetic future UA-XXXX card,
-- non-`sea` cards remaining byte-equivalent,
-- dynamic (non-fixed) screenshot/candidate counts.
+## Bounded Python generator context
 
-None of this can be honestly asserted without an actual controller-executed run against live or
-faithfully mirrored current data. Per protocol, results are never fabricated. The prior Gate A
-evidence (9 cards, 13 fixed HTML candidates) is explicitly stale per this task and is NOT reused
-as approval evidence.
+- `stranica.py:124`: USER_FACING `В море · Корея → Грузия`; role=COLLECTION_ITEM; assignment=-; key=-; function=etap_dlinno; structural=1/0; contexts=TEXT_NODE
+- `stranica.py:222`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=blok_pribytiya; structural=0/1; contexts=TEXT_NODE
+- `stranica.py:918`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=sobrat_kartochku; structural=1/0; contexts=TEXT_NODE
+- `stranica.py:1059`: USER_FACING `Море`; role=CALL_ARG; assignment=-; key=-; function=sobrat_katalog; structural=0/0; contexts=-
+- `stranica.py:1481`: USER_FACING `Море`; role=CALL_ARG; assignment=-; key=-; function=sobrat_info; structural=1/0; contexts=TEXT_NODE
+- `stranica.py:1495`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=sobrat_info; structural=1/0; contexts=TEXT_NODE
+- `stranica.py:2059`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=blok_pribytiya; structural=0/1; contexts=TEXT_NODE
+- `stranica.py:2647`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=-; key=-; function=blok_pribytiya; structural=0/1; contexts=TEXT_NODE
+- `yadro.py:122`: USER_FACING `В море`; role=COLLECTION_ITEM; assignment=ETAP_KOROTKO; key=-; function=-; structural=0/1; contexts=TEXT_NODE
+- `yadro.py:122`: USER_FACING `У морі`; role=COLLECTION_ITEM; assignment=ETAP_KOROTKO; key=-; function=-; structural=0/1; contexts=TEXT_NODE
+- `yadro.py:379`: USER_FACING `В море`; role=COLLECTION_ITEM; assignment=ETAPY_GLAVNOY; key=-; function=-; structural=0/0; contexts=-
+- `yadro.py:379`: USER_FACING `У морі`; role=COLLECTION_ITEM; assignment=ETAPY_GLAVNOY; key=-; function=-; structural=0/0; contexts=-
+- `yadro.py:493`: USER_FACING `В море`; role=COLLECTION_ITEM; assignment=FILTRY; key=-; function=-; structural=0/1; contexts=TEXT_NODE
+- `yadro.py:493`: USER_FACING `У морі`; role=COLLECTION_ITEM; assignment=FILTRY; key=-; function=-; structural=0/1; contexts=TEXT_NODE
+- `yadro.py:1416`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=SROKI; key=-; function=-; structural=0/0; contexts=-
+- `yadro.py:1417`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=SROKI; key=-; function=-; structural=0/0; contexts=-
+- `yadro.py:1423`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=POTOK; key=-; function=-; structural=0/1; contexts=TEXT_NODE
+- `yadro.py:1423`: USER_FACING `Море`; role=COLLECTION_ITEM; assignment=POTOK; key=-; function=-; structural=0/1; contexts=TEXT_NODE
 
-## What was prepared in this round (code-level, offline)
+## Isolated Python generator candidates
 
-Within `cloud/task_047_ferry_discovery/`, the reused structural tokenizer, safe read contract,
-contextual transform, and regression suite were extended (bounded, non-clean-room) so that:
+- `stranica.py`: 8 changes; `16b3432f2bc0d703a5f33eeb2303077cfcf054f28ded4ccd3268e76c188530e1` → `1522350ae821ffcde9393d10ac9707830a4592c2adcdf4ad0f666841f14b3656`
+- `yadro.py`: 10 changes; `e25befedb73683e6c045e3cdbd624097ccfa8276c615cf1ac9297efcd67360f6` → `71d981508c157dad7d683430d8d0965af8d3b5946331cbda06b2a0179a7a657c`
 
-1. Catalog discovery derives the car count dynamically from whatever the safe read path returns;
-   no fixed "9" or "10" constant is embedded in business logic or UI. UA-0010 is included only if
-   and when the read path verifies it exists; no ID is invented.
-2. The catalog-card route block for any card whose internal stage is `sea` renders two separate
-   structural lines instead of the old single-line `На пароме · Корея → Грузия` form:
-
-   RU:
-   ```html
-   <span class="route-line route-line--stage">На пароме</span>
-   <span class="route-line route-line--path">Маршрут: Корея → Грузия</span>
-   ```
-
-   UK:
-   ```html
-   <span class="route-line route-line--stage">На поромі</span>
-   <span class="route-line route-line--path">Маршрут: Корея → Грузія</span>
-   ```
-
-   Implemented as block/span structural elements (not text wrapping), so the split is guaranteed
-   on desktop and mobile regardless of viewport width.
-3. The transform is applied only inside the catalog-card route block via the canonical
-   generator/template partial, so all existing and all future `UA-XXXX` cards inherit it
-   automatically without per-card edits.
-4. Outside that specific block, contextual wording is untouched: status/filter/chip stays
-   `На пароме` / `На поромі`; short stage stays `Паром` / `Пором`.
-5. All internal values are preserved byte-identically: `sea`, `data-stage="sea"`, `stage=sea`,
-   `?f=sea`, CRM/SQLite enum values, IDs, URLs, analytics keys, container data, prices,
-   specifications, photo references, diagnostics and card links. No global substring replacement
-   was used; only the scoped structural route-block transform.
-6. Candidate generation and screenshot capture in the isolated pipeline
-   (`/home/Carix/autopilot_inbox`) were changed to count candidates dynamically from the actual
-   discovery result set instead of a fixed "13" assertion.
-
-## Offline test coverage prepared (to be run by the controller)
-
-- exact RU two-line catalog output equality test
-- exact UK two-line catalog output equality test
-- transform of legacy one-line form into the new two-line structure
-- all discovered `sea` catalog cards use the new structure (parametrized over actual discovery
-  results, not a fixed count)
-- all current catalog cars remain present, linked and unchanged except for the scoped route text
-- synthetic future `UA-XXXX` card inherits identical template behavior
-- non-`sea` cards remain byte-equivalent (hash comparison before/after)
-- filters, counters, routes and card links remain functional (existing regression suite reused)
-- scripts/styles/comments/ordinary prose diffed as unchanged outside the scoped block
-- internal `sea` markers/CRM values diffed as unchanged
-- transform determinism/idempotency (run twice, compare output)
-- full existing ferry regression suite re-run with zero skips
-
-## Gate A acceptance fields (this round)
-
-- VERIFIED_CURRENT_CATALOG_COUNT: NOT_VERIFIED (owner-stated 10, pending live read)
-- CURRENT_CARDS_PRESERVED: NOT_VERIFIED
-- FUTURE_CARD_TEMPLATE_CHECK: NOT_EXECUTED (code prepared, test not run live)
-- TWO_LINE_RU: NOT_EXECUTED (code prepared, test not run live)
-- TWO_LINE_UK: NOT_EXECUTED (code prepared, test not run live)
-- INTERNAL_SEA_MARKERS_UNCHANGED: NOT_VERIFIED
-- CRM_WRITE: NO
-- PRODUCTION_WRITE: NO
-- UA0009_SAFE_TO_PUBLISH: NO (unchanged from canonical memory REC-0007/HYPOTHESIS REC-0006; no new evidence overrides this)
-- UNEXPECTED_PROTECTED_CHANGES: NOT_MEASURED
-
-## Overall conclusion
-
-BLOCKED — not a rejection of the approach, but an honest statement that live Gate A execution
-against the current 10-car catalog did not happen inside this authoring round. The bounded code
-changes are READY_FOR_GATE_A_EXECUTION by the same independent automated controller used for
-TASK 015 and TASK 021. Production remains completely untouched. No Gate B action is requested or
-implied by this report.
-
-NEXT STEP: the automated controller should run the offline suite plus the isolated Gate A
-controller against the real current catalog, then replace this report and `ferry_gate_a.json`
-with genuine PASS/FAIL evidence and fresh source hashes (old 9-card hashes are invalid).
+Candidates exist only under `autopilot_inbox`. No live card or generator was
+changed. Gate B requires separate explicit owner approval.
