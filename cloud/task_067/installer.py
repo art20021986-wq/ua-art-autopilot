@@ -298,6 +298,14 @@ def apply_value(card_id, field, raw, actor_id):
         num = _v169_parse_number(value)
         if num is None:
             return False, "Не разобрал число. Пришлите цифрами или словами."
+        if field == "engine_cc" and int(num) < 20:
+            import re as _v170_re
+            liters = _v170_re.search(r"(?<!\d)(\d+(?:[.,]\d+)?)(?!\d)", value)
+            if liters:
+                try:
+                    num = int(round(float(liters.group(1).replace(",", ".")) * 1000))
+                except Exception:
+                    pass
         limits = {
             "year": (1900, 2100), "engine_cc": (400, 12000),
             "mileage_km": (0, 2_000_000), "price_uah": (0, 100_000_000),
