@@ -40,14 +40,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Compile and run task 058 tests ten times
+      - name: Compile and run 28 tests ten consecutive times
         if: steps.current.outputs.run == 'true'
         shell: bash
-        run: |
-          python3 -m py_compile cloud/task_058_crm_ocr_sync/*.py cloud/task_058_crm_ocr_sync/tests/*.py
-          for run in $(seq 1 10); do
-            python3 cloud/task_058_crm_ocr_sync/run_tests.py
-          done
+        run: python3 cloud/task_058_crm_ocr_sync/run_tests.py
 
       - name: Execute bounded read-only discovery
         if: steps.current.outputs.run == 'true'

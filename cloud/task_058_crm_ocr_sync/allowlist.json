@@ -1,16 +1,46 @@
 {
-  "_comment": "TASK_058 candidate allowlist template. Every path below MUST be confirmed to actually exist under /home/Carix as a regular, non-symlink file before any live run. Unconfirmed or non-existent paths are safely skipped by live_discovery.py and reported in the notes field, never assumed. Do not add wildcards, directories, or paths outside /home/Carix.",
-  "source_paths": [
-    "/home/Carix/mysite/team_bot.py",
-    "/home/Carix/mysite/db.py",
-    "/home/Carix/mysite/cars_ui.py",
-    "/home/Carix/mysite/avtoperedacha.py",
-    "/home/Carix/mysite/run_all.py",
-    "/home/Carix/mysite/start_safe.py"
+  "task_id": "task_058",
+  "required_source_paths": [
+    "/home/Carix/team_bot.py",
+    "/home/Carix/db.py",
+    "/home/Carix/cars_ui.py",
+    "/home/Carix/start_safe.py",
+    "/home/Carix/stranica.py"
   ],
-  "db_paths": [
-    "/home/Carix/mysite/crm.db"
+  "optional_source_paths": [
+    "/home/Carix/avtoperedacha.py",
+    "/home/Carix/run_all.py",
+    "/home/Carix/yadro.py",
+    "/home/Carix/konteyner.py"
   ],
-  "site_paths": [],
+  "db_path": "/home/Carix/crm.db",
+  "required_site_paths": [
+    "/home/Carix/video/index.html",
+    "/home/Carix/video/katalog.html",
+    "/home/Carix/video/UA-0001.html",
+    "/home/Carix/video/UA-0002.html",
+    "/home/Carix/video/UA-0003.html",
+    "/home/Carix/video/UA-0004.html",
+    "/home/Carix/video/UA-0005.html",
+    "/home/Carix/video/UA-0006.html",
+    "/home/Carix/video/UA-0007.html",
+    "/home/Carix/video/UA-0008.html",
+    "/home/Carix/site/index.html",
+    "/home/Carix/site/katalog.html",
+    "/home/Carix/site/UA-0001.html",
+    "/home/Carix/site/UA-0002.html",
+    "/home/Carix/site/UA-0003.html",
+    "/home/Carix/site/UA-0004.html",
+    "/home/Carix/site/UA-0005.html",
+    "/home/Carix/site/UA-0006.html",
+    "/home/Carix/site/UA-0007.html",
+    "/home/Carix/site/UA-0008.html"
+  ],
+  "optional_site_paths": [
+    "/home/Carix/video/UA-0009.html",
+    "/home/Carix/video/UA-0010.html",
+    "/home/Carix/site/UA-0009.html",
+    "/home/Carix/site/UA-0010.html"
+  ],
   "log_paths": []
 }

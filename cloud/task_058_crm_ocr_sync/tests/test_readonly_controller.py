@@ -1,227 +1,347 @@
+from __future__ import annotations
+
+import datetime as dt
 import hashlib
 import json
+import pathlib
 import sys
 import tempfile
-import time
 import unittest
-from pathlib import Path
 
-PKG_DIR = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PKG_DIR))
+
+PACKAGE_DIR = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PACKAGE_DIR))
 
 import task058_readonly_controller as ctrl  # noqa: E402
 
 
-def make_manifest(tmpdir):
-    entries = []
-    for name, content in (("live_discovery.py", "print('x')\n"), ("allowlist.json", "{}\n")):
-        p = Path(tmpdir) / name
-        p.write_text(content)
-        entries.append({
-            "local_path": str(p),
-            "expected_sha256": hashlib.sha256(content.encode()).hexdigest(),
-        })
-    return entries
+HEX = "a" * 64
 
 
-class ManifestValidationTests(unittest.TestCase):
-    def test_valid_manifest_passes(self):
-        with tempfile.TemporaryDirectory() as d:
-            manifest = make_manifest(d)
-            cfg = ctrl.ControllerConfig(
-                manifest=manifest,
-                allowlist_file_remote=f"{ctrl.SAFE_INBOX_DIR}/allowlist.json",
-                receipt_local_path=str(Path(d) / "out.json"),
-            )
-            c = ctrl.ReadOnlyController(cfg, lambda m: None, lambda cmd: None, lambda: None, lambda: None)
-            c.validate_manifest()  # should not raise
-
-    def test_hash_mismatch_rejected(self):
-        with tempfile.TemporaryDirectory() as d:
-            manifest = make_manifest(d)
-            manifest[0]["expected_sha256"] = "0" * 64
-            cfg = ctrl.ControllerConfig(manifest=manifest, allowlist_file_remote="x", receipt_local_path=str(Path(d) / "o.json"))
-            c = ctrl.ReadOnlyController(cfg, lambda m: None, lambda cmd: None, lambda: None, lambda: None)
-            with self.assertRaises(ctrl.ControllerError):
-                c.validate_manifest()
-
-    def test_missing_file_rejected(self):
-        with tempfile.TemporaryDirectory() as d:
-            manifest = [{"local_path": str(Path(d) / "nope.py"), "expected_sha256": "0" * 64}]
-            cfg = ctrl.ControllerConfig(manifest=manifest, allowlist_file_remote="x", receipt_local_path=str(Path(d) / "o.json"))
-            c = ctrl.ReadOnlyController(cfg, lambda m: None, lambda cmd: None, lambda: None, lambda: None)
-            with self.assertRaises(ctrl.ControllerError):
-                c.validate_manifest()
+def now_text() -> str:
+    return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-class RemoteCommandSafetyTests(unittest.TestCase):
-    def _controller(self, d):
-        manifest = make_manifest(d)
-        cfg = ctrl.ControllerConfig(
-            manifest=manifest,
-            allowlist_file_remote=f"{ctrl.SAFE_INBOX_DIR}/allowlist.json",
-            receipt_local_path=str(Path(d) / "out.json"),
+def site_snapshot() -> dict:
+    return {
+        path: None
+        if path in ctrl.OPTIONAL_SITE_PATHS
+        else {"sha256": HEX, "size": 100, "mtime_ns": 1234567890123456789}
+        for path in sorted(ctrl.ALLOWED_SITE_PATHS)
+    }
+
+
+def pass_receipt() -> dict:
+    sources = [
+        {
+            "path": path,
+            "sha256": HEX,
+            "size": 100,
+            "mtime_ns": 1234567890123456789,
+            "syntax": "PASS",
+            "anchors": [],
+            "message_locations": [],
+            "log_path_literals": [],
+        }
+        for path in sorted(ctrl.REQUIRED_SOURCE_PATHS)
+    ]
+    snapshot = site_snapshot()
+    return {
+        "task_id": "task_058",
+        "mode": "READ_ONLY_LIVE_DISCOVERY",
+        "status": "PASS",
+        "generated_at_utc": now_text(),
+        "started_at_utc": now_text(),
+        "production_write": False,
+        "crm_write": False,
+        "db_write": False,
+        "site_rebuilt": False,
+        "service_reloaded": False,
+        "ocr_fix_installed": False,
+        "gate_b_executed": False,
+        "ua0009_published": False,
+        "ua0010_published": False,
+        "sources": sources,
+        "source_hashes_after": {item["path"]: item["sha256"] for item in sources},
+        "source_identity_stable": True,
+        "database": {
+            "path": "/home/Carix/crm.db",
+            "open_uri_mode": "ro",
+            "query_only_requested": True,
+            "query_only_value": 1,
+            "quick_check": "ok",
+            "sha256_before": HEX,
+            "sha256_after": HEX,
+            "sidecars_before": {"-wal": None, "-shm": None, "-journal": None},
+            "sidecars_after": {"-wal": None, "-shm": None, "-journal": None},
+            "identity_stable": True,
+        },
+        "site_before": snapshot,
+        "site_after": json.loads(json.dumps(snapshot)),
+        "site_identity_stable": True,
+        "logs": {"paths_scanned": [], "counts": {}, "errors": []},
+        "completeness": {
+            "required_sources_found": True,
+            "required_site_found": True,
+            "database_readonly_verified": True,
+            "logs_scanned": False,
+            "ocr_failure_message_found": True,
+            "rebuild_failure_message_found": True,
+            "anchor_counts": {},
+            "root_cause_confirmed": False,
+        },
+        "ua0009_status": "NOT_SAFE_TO_PUBLISH",
+        "ua0009_evidence": {
+            "db_row_count": 0,
+            "db_published_count": 0,
+            "video_page_present": False,
+            "site_page_present": False,
+        },
+        "ua0010_status": "READY_FOR_DRAFT_CREATION_ONLY",
+        "ua0010_evidence": {
+            "db_row_count": 0,
+            "db_published_count": 0,
+            "video_page_present": False,
+            "site_page_present": False,
+            "owner_authorized": True,
+            "publication_executed": False,
+        },
+        "errors": [],
+    }
+
+
+def manifest_for_current_files() -> dict:
+    files = []
+    for rel, path in ctrl.LOCAL_ARTIFACTS.items():
+        files.append(
+            {
+                "source": rel,
+                "remote": ctrl.REMOTE_ROOT + "/" + rel,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "http_status": 201,
+            }
         )
-        return ctrl.ReadOnlyController(cfg, lambda m: None, lambda cmd: None, lambda: None, lambda: None)
+    return {
+        "status": "PASS",
+        "remote_root": ctrl.REMOTE_ROOT,
+        "generated_at_utc": now_text(),
+        "production_touched": False,
+        "crm_touched": False,
+        "executed_remote_code": False,
+        "webapp_reloaded": False,
+        "files": files,
+    }
 
-    def test_command_has_no_forbidden_tokens(self):
-        with tempfile.TemporaryDirectory() as d:
-            c = self._controller(d)
-            cmd = c.build_remote_command()
-            for tok in ctrl.FORBIDDEN_COMMAND_TOKENS:
-                self.assertNotIn(tok, cmd)
-            self.assertIn("python3.10", cmd)
-            self.assertIn(ctrl.SAFE_INBOX_DIR, cmd)
+
+class FakeAPI:
+    def __init__(self, receipt: dict | None = None):
+        self.receipt = receipt
+        self.deleted_receipts = 0
+        self.created_triggers = 0
+        self.deleted_triggers = 0
+
+    def read_file(self, path: str) -> str:
+        if path == ctrl.REMOTE_MANIFEST_PATH:
+            return json.dumps(manifest_for_current_files())
+        if path == ctrl.REMOTE_SCRIPT:
+            return (PACKAGE_DIR / "live_discovery.py").read_text(encoding="utf-8")
+        if path == ctrl.REMOTE_ALLOWLIST:
+            return (PACKAGE_DIR / "allowlist.json").read_text(encoding="utf-8")
+        if path == ctrl.REMOTE_RECEIPT and self.receipt is not None:
+            return json.dumps(self.receipt, ensure_ascii=False)
+        raise FileNotFoundError(path)
+
+    def delete_receipt(self) -> None:
+        self.deleted_receipts += 1
+
+    def create_trigger(self) -> tuple[str, int]:
+        self.created_triggers += 1
+        return "always_on", 123
+
+    def delete_trigger(self, trigger: tuple[str, int]) -> None:
+        self.deleted_triggers += 1
+        if trigger != ("always_on", 123):
+            raise AssertionError("unexpected trigger")
+
+
+class TransportTests(unittest.TestCase):
+    def test_real_transport_and_main_exist(self):
+        self.assertTrue(callable(ctrl.main))
+        self.assertTrue(hasattr(ctrl.PythonAnywhereAPI, "create_trigger"))
+        self.assertTrue(hasattr(ctrl.PythonAnywhereAPI, "delete_trigger"))
+        self.assertEqual(
+            ctrl.EXACT_COMMAND,
+            "python3.10 /home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/live_discovery.py "
+            "--allowlist-file /home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/allowlist.json "
+            "--output /home/Carix/autopilot_inbox/cloud/task_058_crm_ocr_sync/task_058_live_discovery_receipt.json",
+        )
+        for forbidden in ("/home/Carix/team_bot.py", "systemctl", "reload", "sqlite3"):
+            self.assertNotIn(forbidden, ctrl.EXACT_COMMAND)
+
+    def test_api_rejects_wrong_account_host_and_remote_path(self):
+        with self.assertRaisesRegex(ctrl.ControllerError, "USERNAME_INVALID"):
+            ctrl.PythonAnywhereAPI(username="Other", host=ctrl.ALLOWED_HOSTS[0], token="x")
+        with self.assertRaisesRegex(ctrl.ControllerError, "HOST_INVALID"):
+            ctrl.PythonAnywhereAPI(username="Carix", host="evil.example", token="x")
+        api = ctrl.PythonAnywhereAPI(username="Carix", host=ctrl.ALLOWED_HOSTS[0], token="x")
+        with self.assertRaisesRegex(ctrl.ControllerError, "REMOTE_FILE_PATH_NOT_ALLOWED"):
+            api._file_url("/home/Carix/team_bot.py")
+
+
+class LocalAndManifestTests(unittest.TestCase):
+    def test_local_artifacts_compile_and_allowlist_is_exact(self):
+        controller = ctrl.ReadOnlyController(FakeAPI())
+        hashes = controller.verify_local_artifacts()
+        self.assertEqual(set(hashes), set(ctrl.LOCAL_ARTIFACTS))
+        self.assertEqual(json.loads((PACKAGE_DIR / "allowlist.json").read_text()), ctrl.expected_allowlist())
+
+    def test_valid_manifest_and_remote_hashes_pass(self):
+        controller = ctrl.ReadOnlyController(FakeAPI())
+        hashes = controller.verify_local_artifacts()
+        controller.verify_sync_manifest(hashes)
+
+    def test_manifest_safety_flag_or_hash_mismatch_is_blocked(self):
+        class UnsafeAPI(FakeAPI):
+            def read_file(self, path: str) -> str:
+                if path == ctrl.REMOTE_MANIFEST_PATH:
+                    manifest = manifest_for_current_files()
+                    manifest["production_touched"] = True
+                    manifest["files"][0]["sha256"] = "0" * 64
+                    return json.dumps(manifest)
+                return super().read_file(path)
+
+        controller = ctrl.ReadOnlyController(UnsafeAPI())
+        with self.assertRaises(ctrl.ControllerError):
+            controller.verify_sync_manifest(controller.verify_local_artifacts())
 
 
 class ReceiptValidationTests(unittest.TestCase):
-    def _controller(self, d):
-        manifest = make_manifest(d)
-        cfg = ctrl.ControllerConfig(manifest=manifest, allowlist_file_remote="x", receipt_local_path=str(Path(d) / "out.json"))
-        return ctrl.ReadOnlyController(cfg, lambda m: None, lambda cmd: None, lambda: None, lambda: None)
+    def test_complete_pass_receipt_is_accepted(self):
+        receipt = pass_receipt()
+        accepted = ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
+        self.assertEqual(accepted["status"], "PASS")
+        self.assertEqual(accepted["ua0010_status"], "READY_FOR_DRAFT_CREATION_ONLY")
+        self.assertIn("/home/Carix/video/UA-0010.html", accepted["site_before"])
 
-    def test_valid_receipt_accepted(self):
-        with tempfile.TemporaryDirectory() as d:
-            c = self._controller(d)
-            raw = json.dumps({"generated_at": time.time(), "status": "OK"})
-            data = c.validate_receipt(raw)
-            self.assertEqual(data["status"], "OK")
+    def test_long_numeric_metadata_is_not_misclassified_as_phone(self):
+        receipt = pass_receipt()
+        self.assertFalse(ctrl._sensitive_value(receipt["site_before"]))
 
-    def test_sensitive_content_rejected(self):
-        with tempfile.TemporaryDirectory() as d:
-            c = self._controller(d)
-            raw = json.dumps({"generated_at": time.time(), "token": "abc123"})
-            with self.assertRaises(ctrl.ControllerError):
-                c.validate_receipt(raw)
+    def test_secret_email_phone_and_vin_are_rejected(self):
+        values = (
+            "sk-ABCDEFGHIJKLMNOPQRSTUVWXYZ123456",
+            "owner@example.com",
+            "+380 67 123 45 67",
+            "KNAGU416BKA324445",
+        )
+        for value in values:
+            receipt = pass_receipt()
+            receipt["errors"] = [value]
+            with self.assertRaisesRegex(ctrl.ControllerError, "SENSITIVE_CONTENT"):
+                ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
 
-    def test_malformed_json_rejected(self):
-        with tempfile.TemporaryDirectory() as d:
-            c = self._controller(d)
-            with self.assertRaises(ctrl.ControllerError):
-                c.validate_receipt("{not json")
+    def test_missing_required_source_cannot_be_green(self):
+        receipt = pass_receipt()
+        removed = receipt["sources"].pop()
+        receipt["source_hashes_after"].pop(removed["path"])
+        with self.assertRaisesRegex(ctrl.ControllerError, "REQUIRED_SOURCE_PATH_MISSING"):
+            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
 
-    def test_stale_receipt_rejected(self):
-        with tempfile.TemporaryDirectory() as d:
-            c = self._controller(d)
-            raw = json.dumps({"generated_at": time.time() - 10000, "status": "OK"})
-            with self.assertRaises(ctrl.ControllerError):
-                c.validate_receipt(raw)
+    def test_missing_required_site_cannot_be_green(self):
+        receipt = pass_receipt()
+        missing = sorted(ctrl.REQUIRED_SITE_PATHS)[0]
+        receipt["site_before"].pop(missing)
+        receipt["site_after"].pop(missing)
+        with self.assertRaisesRegex(ctrl.ControllerError, "SITE_SCOPE_INCOMPLETE"):
+            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
 
-    def test_missing_timestamp_rejected(self):
-        with tempfile.TemporaryDirectory() as d:
-            c = self._controller(d)
-            raw = json.dumps({"status": "OK"})
-            with self.assertRaises(ctrl.ControllerError):
-                c.validate_receipt(raw)
+    def test_database_or_site_change_cannot_be_green(self):
+        receipt = pass_receipt()
+        receipt["database"]["sha256_after"] = "b" * 64
+        with self.assertRaisesRegex(ctrl.ControllerError, "DATABASE_IDENTITY_MISMATCH"):
+            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
+        receipt = pass_receipt()
+        path = sorted(ctrl.REQUIRED_SITE_PATHS)[0]
+        receipt["site_after"][path]["sha256"] = "b" * 64
+        with self.assertRaisesRegex(ctrl.ControllerError, "SITE_IDENTITY_MISMATCH"):
+            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
 
-    def test_oversized_receipt_rejected(self):
-        with tempfile.TemporaryDirectory() as d:
-            c = self._controller(d)
-            raw = json.dumps({"generated_at": time.time(), "blob": "x" * (ctrl.MAX_RECEIPT_BYTES + 10)})
-            with self.assertRaises(ctrl.ControllerError):
-                c.validate_receipt(raw)
+    def test_minimal_blocked_receipt_is_relayable_but_not_green(self):
+        receipt = {
+            "task_id": "task_058",
+            "mode": "READ_ONLY_LIVE_DISCOVERY",
+            "status": "BLOCKED",
+            "generated_at_utc": now_text(),
+            "production_write": False,
+            "crm_write": False,
+            "db_write": False,
+            "site_rebuilt": False,
+            "service_reloaded": False,
+            "ocr_fix_installed": False,
+            "gate_b_executed": False,
+            "ua0009_published": False,
+            "ua0010_published": False,
+            "errors": ["REQUIRED_PATH_MISSING"],
+        }
+        accepted = ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
+        self.assertEqual(accepted["status"], "BLOCKED")
+        self.assertNotEqual(accepted["status"], "PASS")
+
+    def test_duplicate_json_key_and_stale_receipt_are_rejected(self):
+        with self.assertRaisesRegex(ctrl.ControllerError, "DUPLICATE_JSON_KEY"):
+            ctrl.ReadOnlyController.validate_receipt('{"task_id":"task_058","task_id":"task_058"}')
+        receipt = pass_receipt()
+        receipt["generated_at_utc"] = "2020-01-01T00:00:00Z"
+        with self.assertRaisesRegex(ctrl.ControllerError, "RECEIPT_STALE"):
+            ctrl.ReadOnlyController.validate_receipt(json.dumps(receipt))
 
 
 class RunFlowTests(unittest.TestCase):
-    def test_success_flow_cleans_up_and_relays(self):
-        with tempfile.TemporaryDirectory() as d:
-            manifest = make_manifest(d)
-            cfg = ctrl.ControllerConfig(
-                manifest=manifest,
-                allowlist_file_remote=f"{ctrl.SAFE_INBOX_DIR}/allowlist.json",
-                receipt_local_path=str(Path(d) / "out.json"),
-                poll_timeout_seconds=5,
-                poll_interval_seconds=0.01,
-            )
-            calls = {"sync": 0, "run": 0, "poll": 0, "cleanup": 0}
-            good_receipt = json.dumps({"generated_at": time.time(), "status": "OK"})
+    def test_success_flow_verifies_runs_relays_and_always_cleans_up(self):
+        api = FakeAPI(pass_receipt())
+        with tempfile.TemporaryDirectory() as directory:
+            old = (ctrl.EVIDENCE_PATH, ctrl.REPORT_PATH)
+            ctrl.EVIDENCE_PATH = pathlib.Path(directory) / "evidence.json"
+            ctrl.REPORT_PATH = pathlib.Path(directory) / "report.md"
+            try:
+                controller = ctrl.ReadOnlyController(
+                    api,
+                    sleep=lambda _: None,
+                    monotonic=lambda: 0,
+                    poll_interval=0,
+                    poll_timeout=1,
+                )
+                result = controller.run()
+                self.assertEqual(result["status"], "PASS")
+                self.assertTrue(ctrl.EVIDENCE_PATH.is_file())
+                self.assertTrue(ctrl.REPORT_PATH.is_file())
+                self.assertIn("PRODUCTION_TOUCHED: NO", ctrl.REPORT_PATH.read_text())
+            finally:
+                ctrl.EVIDENCE_PATH, ctrl.REPORT_PATH = old
+        self.assertEqual(api.created_triggers, 1)
+        self.assertEqual(api.deleted_triggers, 1)
+        self.assertEqual(api.deleted_receipts, 2)
 
-            def poll_fn():
-                calls["poll"] += 1
-                return good_receipt
+    def test_malformed_receipt_still_cleans_trigger_and_receipt(self):
+        class MalformedAPI(FakeAPI):
+            def read_file(self, path: str) -> str:
+                if path == ctrl.REMOTE_RECEIPT:
+                    return "{not-json"
+                return super().read_file(path)
 
-            def sync_fn(m):
-                calls["sync"] += 1
-
-            def run_fn(cmd):
-                calls["run"] += 1
-
-            def cleanup_fn():
-                calls["cleanup"] += 1
-
-            c = ctrl.ReadOnlyController(cfg, sync_fn, run_fn, poll_fn, cleanup_fn)
-            result = c.run()
-            self.assertEqual(result["status"], "READY_FOR_LIVE_READONLY_CONTROLLER_TASK_058")
-            self.assertEqual(calls["cleanup"], 1)
-            self.assertEqual(calls["sync"], 1)
-            self.assertEqual(calls["run"], 1)
-            self.assertTrue(Path(cfg.receipt_local_path).exists())
-            for key in (
-                "PRODUCTION_TOUCHED", "CRM_TOUCHED", "CRM_DB_WRITTEN", "SITE_REBUILT",
-                "SERVICE_RELOADED", "OCR_FIX_INSTALLED", "GATE_B_EXECUTED", "UA_0009_PUBLISHED",
-            ):
-                self.assertEqual(result[key], "NO")
-
-    def test_timeout_still_cleans_up(self):
-        with tempfile.TemporaryDirectory() as d:
-            manifest = make_manifest(d)
-            cfg = ctrl.ControllerConfig(
-                manifest=manifest,
-                allowlist_file_remote="x",
-                receipt_local_path=str(Path(d) / "out.json"),
-                poll_timeout_seconds=0.05,
-                poll_interval_seconds=0.01,
-            )
-            calls = {"cleanup": 0}
-
-            def cleanup_fn():
-                calls["cleanup"] += 1
-
-            c = ctrl.ReadOnlyController(cfg, lambda m: None, lambda cmd: None, lambda: None, cleanup_fn)
-            result = c.run()
-            self.assertTrue(result["status"].startswith("BLOCKED_WITH_EXACT_REASON_TASK_058"))
-            self.assertEqual(calls["cleanup"], 1)
-
-    def test_exception_in_run_fn_still_cleans_up(self):
-        with tempfile.TemporaryDirectory() as d:
-            manifest = make_manifest(d)
-            cfg = ctrl.ControllerConfig(manifest=manifest, allowlist_file_remote="x", receipt_local_path=str(Path(d) / "out.json"))
-            calls = {"cleanup": 0}
-
-            def cleanup_fn():
-                calls["cleanup"] += 1
-
-            def run_fn(cmd):
-                raise RuntimeError("simulated remote failure")
-
-            c = ctrl.ReadOnlyController(cfg, lambda m: None, run_fn, lambda: None, cleanup_fn)
-            with self.assertRaises(RuntimeError):
-                c.run()
-            self.assertEqual(calls["cleanup"], 1)
-
-    def test_manifest_failure_still_cleans_up(self):
-        with tempfile.TemporaryDirectory() as d:
-            manifest = [{"local_path": str(Path(d) / "missing.py"), "expected_sha256": "0" * 64}]
-            cfg = ctrl.ControllerConfig(manifest=manifest, allowlist_file_remote="x", receipt_local_path=str(Path(d) / "out.json"))
-            calls = {"cleanup": 0}
-
-            def cleanup_fn():
-                calls["cleanup"] += 1
-
-            c = ctrl.ReadOnlyController(cfg, lambda m: None, lambda cmd: None, lambda: None, cleanup_fn)
-            result = c.run()
-            self.assertTrue(result["status"].startswith("BLOCKED_WITH_EXACT_REASON_TASK_058"))
-            self.assertEqual(calls["cleanup"], 1)
-
-
-class DeterminismTests(unittest.TestCase):
-    def test_repeated_manifest_validation_deterministic(self):
-        with tempfile.TemporaryDirectory() as d:
-            manifest = make_manifest(d)
-            cfg = ctrl.ControllerConfig(manifest=manifest, allowlist_file_remote="x", receipt_local_path=str(Path(d) / "o.json"))
-            c = ctrl.ReadOnlyController(cfg, lambda m: None, lambda cmd: None, lambda: None, lambda: None)
-            c.validate_manifest()
-            c.validate_manifest()  # deterministic, no state mutation
+        api = MalformedAPI()
+        ticks = iter([0, 0, 0, 0])
+        controller = ctrl.ReadOnlyController(
+            api,
+            sleep=lambda _: None,
+            monotonic=lambda: next(ticks),
+            poll_interval=0,
+            poll_timeout=1,
+        )
+        with self.assertRaises(ctrl.ControllerError):
+            controller.run()
+        self.assertEqual(api.deleted_triggers, 1)
+        self.assertEqual(api.deleted_receipts, 2)
 
 
 if __name__ == "__main__":
