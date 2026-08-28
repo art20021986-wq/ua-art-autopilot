@@ -1,291 +1,45 @@
 {
   "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
   "errors": [
-    "ControllerError:SOAK_FAIL:[\"stale_heartbeat:crm_bot:17.058\", \"guard_event_p0\"]"
+    "ControllerError:SHADOW_FAIL:[\"OperationalError:database is locked\"]"
   ],
-  "finished_at_utc": "2026-08-28T20:30:49Z",
-  "install": {
-    "already_applied": true,
-    "backup_dir": null,
-    "changed_files": [],
-    "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
-    "crm_db_write": false,
-    "db_after": {
-      "cars": 11,
-      "clients": 4,
-      "quick_check": "ok"
-    },
-    "db_before": {
-      "cars": 11,
-      "clients": 4,
-      "quick_check": "ok"
-    },
-    "errors": [],
-    "files_after": {
-      "ai.py": "5037fe26fb917875002ec4bc7ebc4362298d991a885b8e8536e4e0df25f8a41b",
-      "cars_ui.py": "862baea2ca0794f5e0d83bc04169f6d2fdec401f86f384ef4376e373c02a776b",
-      "client_ui.py": "97ff4b717e123ae45b12bc966e2d2be5c680370111cf16d4f285c9464a511d4a",
-      "crm_online_guard.py": "1c794c3de1b06968f292930eed15b6c48d86748005a40a7160954a2b9c9f25e3",
-      "db.py": "4322c8d4f4a96307adc6dbabfff5e8f58003bc8c1251e201d67cf04ec9d54457",
-      "lead_bot.py": "27270e38f1b7ed913140127231149b6d862876f3b3a02a58c4a852b40ce8a3f8",
-      "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
-      "team_bot.py": "bbd644eaf2c25802984df930459da6a36f137ef2b1519642b3d006ab57388a48"
-    },
-    "finished_at_utc": "2026-08-28T20:14:10Z",
-    "llm_tokens": 0,
-    "media_write": false,
-    "mode": "ATOMIC_PRODUCTION_INSTALL",
-    "site_write": false,
-    "started_at_utc": "2026-08-28T20:14:10Z",
-    "status": "PASS",
-    "task_id": "task_067"
-  },
+  "finished_at_utc": "2026-08-28T21:07:59Z",
   "llm_tokens": 0,
   "mode": "ATOMIC_DEPLOY_AND_60M_SOAK",
-  "postcheck_initial": {
-    "bots": {
-      "bots": {
-        "client": {
-          "latency_seconds": 0.245,
-          "ok": true
-        },
-        "crm": {
-          "latency_seconds": 0.263,
-          "ok": true
-        }
-      },
-      "tokens_distinct": true
-    },
-    "callbacks": {
-      "condition": {
-        "elapsed_seconds": 0.021,
-        "expired_ack_continued": true,
-        "status": "PASS"
-      },
-      "delivery": {
-        "elapsed_seconds": 0.022,
-        "expired_ack_continued": true,
-        "status": "PASS"
-      }
-    },
-    "client_catalog": {
-      "cars": 10,
-      "elapsed_seconds": 0.021,
-      "status": "PASS"
-    },
-    "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
-    "crm_db_write": false,
-    "database": {
-      "card_count": 11,
-      "quick_check": "ok"
-    },
-    "errors": [],
-    "field_queue": {
-      "accepted": 3,
-      "duplicates_rejected": 1,
-      "order_exact": true,
-      "processed": 3,
-      "queue": 0,
-      "status": "PASS"
-    },
-    "finished_at_utc": "2026-08-28T20:20:48Z",
-    "guard": {
-      "active": {},
-      "bots": {
-        "client": {
-          "attempts": 1,
-          "latency_seconds": 0.456,
-          "ok": true
-        },
-        "crm": {
-          "attempts": 1,
-          "latency_seconds": 0.249,
-          "ok": true
-        },
-        "tokens_distinct": true
-      },
-      "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
-      "db": {
-        "attempts": 1,
-        "latency_seconds": 0.112,
-        "quick_check": "ok"
-      },
-      "disk_free_bytes": 1185974059008,
-      "field_spool": {
-        "oldest_age_seconds": 0,
-        "queued": 0
-      },
-      "generated_at_utc": "2026-08-28T20:20:47Z",
-      "heartbeat_age_seconds": {
-        "client_bot": 0.606,
-        "crm_bot": 0.381,
-        "guard": 0.825
-      },
-      "last": {
-        "operation": {
-          "action": "crm_cards_cars",
-          "at": "2026-08-28T20:20:47Z",
-          "elapsed_seconds": 0.007,
-          "status": "ack"
-        }
-      },
-      "last_field_recovery": {
-        "attempted": false
-      },
-      "last_recovery": {
-        "attempted": false
-      },
-      "latency_seconds": {
-        "crm_cards_cars": {
-          "count": 2,
-          "max": 0.008,
-          "p50": 0.007,
-          "p95": 0.008,
-          "p99": 0.008
-        }
-      },
-      "llm_tokens": 0,
-      "pid": 1,
-      "spool": {
-        "invalid_lines": 0,
-        "oldest_age_seconds": 0,
-        "queued": 0
-      }
-    },
-    "llm_tokens": 0,
-    "media": {
-      "accepted": 100,
-      "duplicates_rejected": 3,
-      "limit_101_rejected": true,
-      "order_exact": true,
-      "queue": 0,
-      "saved": 100,
-      "status": "PASS",
-      "workers": 6
-    },
-    "media_write": false,
-    "mode": "POST_RESTART_ACCEPTANCE",
-    "site_write": false,
-    "source_checks": {
-      "callback_safety": true,
-      "cas_no_overwrite": true,
-      "client_fast_tail": true,
-      "condition_route": true,
-      "db_field_durable_queue": true,
-      "db_wait_bounded": true,
-      "delivery_route": true,
-      "event_loop_autorecovery": true,
-      "guard_latency_percentiles": true,
-      "marker_all_core": true,
-      "media_receipts": true,
-      "stt_auto_language": true,
-      "updates_preserved": true,
-      "voice_five_seconds": true
-    },
-    "started_at_utc": "2026-08-28T20:16:09Z",
-    "status": "PASS",
-    "task_id": "task_067",
-    "voice_golden": {
-      "cases": 150,
-      "failures": 0,
-      "normal_overwrites": 0,
-      "status": "PASS",
-      "unexpected_new_cards": 0
-    }
-  },
-  "restart": {
-    "command": "python3.10 /home/Carix/start_safe.py",
-    "launcher_id": 266084,
-    "status": "accepted"
-  },
-  "rollback": {
-    "backup_dir": "/home/Carix/backups/task_067/20260828T201110Z",
-    "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
-    "finished_at_utc": "2026-08-28T20:30:35Z",
-    "mode": "ROLLBACK",
-    "status": "PASS",
-    "task_id": "task_067"
-  },
-  "rollback_restart": {
-    "command": "python3.10 /home/Carix/start_safe.py",
-    "launcher_id": 266084,
-    "status": "accepted"
-  },
   "shadow": {
-    "candidate_sha256": {
-      "ai.py": "5037fe26fb917875002ec4bc7ebc4362298d991a885b8e8536e4e0df25f8a41b",
-      "cars_ui.py": "862baea2ca0794f5e0d83bc04169f6d2fdec401f86f384ef4376e373c02a776b",
-      "client_ui.py": "97ff4b717e123ae45b12bc966e2d2be5c680370111cf16d4f285c9464a511d4a",
-      "crm_online_guard.py": "1c794c3de1b06968f292930eed15b6c48d86748005a40a7160954a2b9c9f25e3",
-      "db.py": "4322c8d4f4a96307adc6dbabfff5e8f58003bc8c1251e201d67cf04ec9d54457",
-      "lead_bot.py": "27270e38f1b7ed913140127231149b6d862876f3b3a02a58c4a852b40ce8a3f8",
-      "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
-      "team_bot.py": "bbd644eaf2c25802984df930459da6a36f137ef2b1519642b3d006ab57388a48"
-    },
     "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
     "crm_db_write": false,
-    "db_after": {
-      "cars": 11,
-      "clients": 4,
-      "quick_check": "ok"
-    },
-    "db_before": {
-      "cars": 11,
-      "clients": 4,
-      "quick_check": "ok"
-    },
-    "errors": [],
-    "finished_at_utc": "2026-08-28T20:12:12Z",
+    "errors": [
+      "OperationalError:database is locked"
+    ],
+    "finished_at_utc": "2026-08-28T21:07:40Z",
     "llm_tokens": 0,
     "media_write": false,
     "mode": "SHADOW_COMPILE_NO_PRODUCTION_WRITE",
     "site_write": false,
-    "started_at_utc": "2026-08-28T20:12:12Z",
-    "status": "PASS",
-    "task_id": "task_067"
-  },
-  "soak": {
-    "contract_id": "CRM-ONLINE-GUARD-001-V1.3",
-    "crm_db_write": false,
-    "duration_actual_seconds": 240.408,
-    "duration_target_seconds": 3600,
-    "event_bytes_checked": 1393,
-    "event_p0": [
-      {
-        "at": "2026-08-28T20:27:12Z",
-        "component": "client_bot",
-        "elapsed_seconds": 17.194,
-        "kind": "p0_heartbeat",
-        "status": "stale"
-      },
-      {
-        "at": "2026-08-28T20:27:12Z",
-        "component": "crm_bot",
-        "elapsed_seconds": 16.978,
-        "kind": "p0_heartbeat",
-        "status": "stale"
-      }
-    ],
-    "finished_at_utc": "2026-08-28T20:27:13Z",
-    "llm_tokens": 0,
-    "max_heartbeat_age_seconds": {
-      "client_bot": 0.996,
-      "crm_bot": 17.058
-    },
-    "max_spool_age_seconds": 0,
-    "media_write": false,
-    "mode": "SIXTY_MINUTE_SOAK",
-    "p0": [
-      "stale_heartbeat:crm_bot:17.058",
-      "guard_event_p0"
-    ],
-    "samples": 217,
-    "site_write": false,
-    "started_at_utc": "2026-08-28T20:23:13Z",
+    "started_at_utc": "2026-08-28T21:07:09Z",
     "status": "FAIL",
     "task_id": "task_067"
   },
-  "started_at_utc": "2026-08-28T20:10:13Z",
+  "stale_triggers_removed": [
+    {
+      "id": 1502127,
+      "kind": "schedule"
+    },
+    {
+      "id": 1502133,
+      "kind": "schedule"
+    },
+    {
+      "id": 1502188,
+      "kind": "schedule"
+    },
+    {
+      "id": 1502190,
+      "kind": "schedule"
+    }
+  ],
+  "started_at_utc": "2026-08-28T21:07:29Z",
   "status": "FAIL",
   "task_id": "task_067",
   "uploaded": [
