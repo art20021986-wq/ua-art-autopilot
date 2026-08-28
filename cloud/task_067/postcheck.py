@@ -448,6 +448,52 @@ def media_synthetic(cars_ui, guard):
                 setattr(guard, name, value)
 
 
+async def universal_media_route_synthetic(cars_ui):
+    """An open-card photo is ACKed durably and scheduled exactly once."""
+    original_spool = cars_ui._v165_spool_enqueue
+    original_schedule = cars_ui._v171_schedule_media_extract
+    scheduled, replies = [], []
+
+    class Message:
+        photo = [SimpleNamespace(file_id="photo-file-1", file_unique_id="photo-unique-1")]
+        video = None
+        video_note = None
+        document = None
+        caption = "тип топлива LPI, объём 2.0, цвет белый, пробег 163400 км"
+        message_id = 501
+        chat_id = 77
+        text = None
+
+        async def reply_text(self, text, **kwargs):
+            replies.append({"text": str(text), "kwargs": kwargs})
+
+    try:
+        cars_ui._v165_spool_enqueue = lambda *_args, **_kwargs: {
+            "state": "accepted", "queued": 1}
+        cars_ui._v171_schedule_media_extract = lambda *args, **kwargs: (
+            scheduled.append((args, kwargs)) or True)
+        started = time.monotonic()
+        accepted = await cars_ui.auto_catch(
+            Message(), {"id": 9903, "auto_number": "TEST-9903"}, 7,
+            SimpleNamespace())
+        elapsed = time.monotonic() - started
+        check(accepted and replies, "UNIVERSAL_MEDIA_NO_ACK")
+        check(elapsed <= 5.0, "UNIVERSAL_MEDIA_ACK_OVER_5S")
+        check(len(scheduled) == 1, "UNIVERSAL_MEDIA_NOT_SCHEDULED_ONCE")
+        fields = cars_ui._v171_media_candidates(
+            Message.caption, {"fuel", "engine_cc", "color", "mileage_km"})
+        check(fields.get("fuel") == "LPI", "MEDIA_CAPTION_FUEL")
+        check(fields.get("engine_cc") == 2000, "MEDIA_CAPTION_ENGINE")
+        check(fields.get("color") == "белый", "MEDIA_CAPTION_COLOR")
+        check(fields.get("mileage_km") == 163400, "MEDIA_CAPTION_MILEAGE")
+        return {"status": "PASS", "ack_seconds": round(elapsed, 3),
+                "scheduled": len(scheduled), "caption_fields": len(fields),
+                "llm_tokens": 0}
+    finally:
+        cars_ui._v165_spool_enqueue = original_spool
+        cars_ui._v171_schedule_media_extract = original_schedule
+
+
 def field_queue_synthetic(cars_ui, guard, db_module):
     guard_original = {name: getattr(guard, name) for name in
                       ("FIELD_SPOOL_PATH", "FIELD_SPOOL_LOCK")}
@@ -582,6 +628,10 @@ def source_checks():
                                      and "return db.update_card_field" in
                                      sources["konteyner.py"]),
         "crm_ferry_vocabulary": "_v170_anchor_ferry_terms" in sources["cars_ui.py"],
+        "media_extract_missing_only": (
+            "CRM-MEDIA-EXTRACT-03-V1.3.3" in sources["cars_ui.py"]
+            and "_v171_schedule_media_extract" in sources["cars_ui.py"]
+            and "allowed_now" in sources["cars_ui.py"]),
     }
     check(all(checks.values()), "SOURCE_CONTRACT:" + json.dumps(checks))
     for name, source in sources.items():
@@ -612,6 +662,8 @@ def main():
         result["selected_field"] = selected_field_synthetic(cars_ui)
         result["container"] = asyncio.run(container_synthetic(konteyner))
         result["media"] = media_synthetic(cars_ui, guard)
+        result["universal_media_route"] = asyncio.run(
+            universal_media_route_synthetic(cars_ui))
         result["field_queue"] = field_queue_synthetic(cars_ui, guard, db_module)
         check(float(db_module.ZAMOK_OZHIDANIE) <= 2.0, "DB_QUEUE_WAIT_OVER_2S")
         started = time.monotonic()
