@@ -1742,7 +1742,62 @@ def _ua068_ensure_diag_files(kod, row):
                 pass
 
 
+def _ua068_balanced_div_end(source, start):
+    pattern = _ua068_re.compile(r"<div\b[^>]*>|</div\s*>", _ua068_re.I)
+    depth = 0
+    first = True
+    for match in pattern.finditer(source, start):
+        token = match.group(0).lower()
+        if first:
+            if match.start() != start or token.startswith("</"):
+                raise RuntimeError("UA068_LEGACY_DIV_START_INVALID")
+            first = False
+        if token.startswith("</"):
+            depth -= 1
+            if depth == 0:
+                return match.end()
+        else:
+            depth += 1
+    raise RuntimeError("UA068_LEGACY_DIV_UNBALANCED")
+
+
+def _ua068_strip_legacy_blocks(source):
+    """Remove superseded stage/diagnostics UI at every final generator boundary."""
+    legacy = r"(?:mcf-etap|mcf-track|mcf-diag-off)"
+    div_pattern = _ua068_re.compile(
+        r'<div\b(?=[^>]*\bclass=["\'][^"\']*\b' + legacy
+        + r'\b[^"\']*["\'])[^>]*>',
+        _ua068_re.I,
+    )
+    for _attempt in range(64):
+        match = div_pattern.search(source)
+        if match is None:
+            break
+        end = _ua068_balanced_div_end(source, match.start())
+        source = source[:match.start()] + source[end:]
+    else:
+        raise RuntimeError("UA068_LEGACY_DIV_LIMIT")
+
+    container_pattern = _ua068_re.compile(
+        r'<(?P<tag>a|button|section|aside)\b(?=[^>]*\bclass=["\'][^"\']*\b'
+        + legacy + r'\b[^"\']*["\'])[^>]*>.*?</(?P=tag)\s*>',
+        _ua068_re.I | _ua068_re.S,
+    )
+    previous = None
+    while previous != source:
+        previous = source
+        source = container_pattern.sub("", source)
+    if _ua068_re.search(
+        r'class=["\'][^"\']*\b' + legacy + r'\b[^"\']*["\']',
+        source,
+        _ua068_re.I,
+    ):
+        raise RuntimeError("UA068_LEGACY_UI_REMAINS")
+    return source
+
+
 def _ua068_ensure_stage_diag(source, kod, row):
+    source = _ua068_strip_legacy_blocks(source)
     master_stage = globals().get("_ua_master_ensure_stage")
     master_diag = globals().get("_ua_master_ensure_diag")
     if callable(master_stage):
@@ -1770,7 +1825,7 @@ def _ua068_ensure_stage_diag(source, kod, row):
         else:
             position = source.lower().rfind("</body>")
         source = source[:position] + _ua068_diag_anchor(kod) + source[position:]
-    return source
+    return _ua068_strip_legacy_blocks(source)
 
 
 def _ua068_vin_block(kod, row):
@@ -1833,6 +1888,7 @@ def _ua068_ensure_card(source, kod, row):
         position = source.lower().rfind("</body>")
     source = source[:position] + block + source[position:]
     source = _ua068_terms(source)
+    source = _ua068_strip_legacy_blocks(source)
     return source
 
 
@@ -2006,6 +2062,10 @@ def _ua068_card_errors(source, kod, row):
         errors.append("diagnostics links != 1")
     if _ua068_forbidden_count(source):
         errors.append("forbidden sea wording remains")
+    if _ua068_re.search(
+            r'class=["\'][^"\']*\b(?:mcf-etap|mcf-track|mcf-diag-off)\b[^"\']*["\']',
+            source, _ua068_re.I):
+        errors.append("legacy duplicate UI remains")
     vin = str((row or {}).get("vin") or "").strip().upper()
     if not vin or vin not in source:
         errors.append("VIN missing")
@@ -2381,6 +2441,7 @@ def _validate_cards(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "diagnostics_links": 1, "diagnostics_target_complete": True,
                 "vin_guard_count": 1,
                 "vin_button_count": 1, "forbidden_sea_terms": 0,
+                "legacy_duplicate_ui": 0,
                 "engine_cc": int(row.get("engine_cc") or 0), "vin": row.get("vin"),
                 "video_count": runtime["_ua068_video_count"](identifier, row, source),
             }
@@ -2403,7 +2464,11 @@ def _fixture_contract() -> dict[str, int]:
     result = {}
     for row in runtime["_ua068_rows"].values():
         identifier = str(row["auto_number"])
-        old = "<html><head></head><body><div>%s</div><div>В море</div><h2>Комплексная диагностика</h2><a class='dejstvie' href='#'>Купить</a></body></html>" % identifier
+        old = ("<html><head></head><body><div>%s</div><div>В море</div>"
+               "<div class='mcf-etap mcf-kiev'><div>Старый этап</div></div>"
+               "<div class='mcf-diag-off'><span>Диагностика готовится</span></div>"
+               "<h2>Комплексная диагностика</h2>"
+               "<a class='dejstvie' href='#'>Купить</a></body></html>") % identifier
         upgraded = runtime["_ua068_ensure_card"](old, identifier, row)
         upgraded2 = runtime["_ua068_ensure_card"](upgraded, identifier, row)
         if upgraded != upgraded2:
