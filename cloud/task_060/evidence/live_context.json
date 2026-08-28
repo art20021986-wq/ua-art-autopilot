@@ -1,4 +1,16 @@
 {
+  "ai_globals": {
+    "IMAGE_PROMPT": {
+      "length": 1425,
+      "sha256": "caf87b7bf9328c9b85ad2f09c6ec4495f1d15e226503586772e5999c3a09d7ca"
+    },
+    "MAX_TOKENS": 1200,
+    "MODEL": "claude-haiku-4-5-20251001",
+    "SYSTEM_PROMPT": {
+      "length": 4142,
+      "sha256": "48f46b513851ee1e969583edbc60f8555c2821ffa76df366bb916ae964846383"
+    }
+  },
   "allowed": {
     "keys": [
       "brand",
@@ -13,11 +25,103 @@
       "vin",
       "year"
     ],
-    "kind": "dict"
+    "kind": "dict",
+    "mapping": {
+      "brand": [
+        "brand",
+        "make",
+        "manufacturer",
+        "марка",
+        "производитель"
+      ],
+      "color": [
+        "color",
+        "colour",
+        "цвет"
+      ],
+      "condition_text": [
+        "condition_text",
+        "condition",
+        "состояние",
+        "tech_condition",
+        "техническое_состояние"
+      ],
+      "drive": [
+        "drive",
+        "drivetrain",
+        "drive_type",
+        "привод"
+      ],
+      "engine_cc": [
+        "engine_cc",
+        "engine",
+        "engine_size",
+        "engine_size_cc",
+        "engine_volume",
+        "displacement",
+        "объем",
+        "объём",
+        "двигатель"
+      ],
+      "fuel": [
+        "fuel",
+        "fuel_type",
+        "топливо",
+        "тип_топлива"
+      ],
+      "gearbox": [
+        "gearbox",
+        "transmission",
+        "коробка",
+        "кпп",
+        "коробка_передач"
+      ],
+      "mileage_km": [
+        "mileage_km",
+        "mileage",
+        "odometer",
+        "пробег"
+      ],
+      "model": [
+        "model",
+        "model_name",
+        "модель"
+      ],
+      "vin": [
+        "vin",
+        "vin_code",
+        "chassis",
+        "chassis_no",
+        "chassis_number",
+        "вин",
+        "номер_кузова"
+      ],
+      "year": [
+        "year",
+        "registration_date",
+        "reg_date",
+        "год",
+        "год_выпуска"
+      ]
+    }
   },
   "files": {
     "ai.py": {
       "functions": [
+        {
+          "end_lineno": 76,
+          "lineno": 75,
+          "name": "anthropic_key",
+          "sha256": "505dff687eec1e521d5e985728142ec2c4df0937d80559faf0e1ac7a1c9189bc",
+          "source": "def anthropic_key() -> str:\n    return _read_key(ANTHROPIC_KEY_FILE, \"ANTHROPIC_API_KEY\")"
+        },
+        {
+          "end_lineno": 176,
+          "lineno": 172,
+          "name": "_post_json",
+          "sha256": "bc91b1eff481a4469abe013c55e95cf2b5da8e3311576867c0b6b074aa6c045c",
+          "source": "def _post_json(url: str, headers: dict, payload: dict) -> dict:\n    data = json.dumps(payload).encode(\"utf-8\")\n    req = urllib.request.Request(url, data=data, headers=headers, method=\"POST\")\n    with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as resp:\n        return json.loads(resp.read().decode(\"utf-8\"))"
+        },
         {
           "end_lineno": 310,
           "lineno": 245,
@@ -45,6 +149,13 @@
     },
     "ai_filter.py": {
       "functions": [
+        {
+          "end_lineno": 115,
+          "lineno": 89,
+          "name": "flatten",
+          "sha256": "cccbd9656a356ab7145a6bfa67d722986b3446e266efd37abefba8adea6b9f7e",
+          "source": "def flatten(obj, out=None):\n    \"\"\"Разворачивает разбор в один уровень.\n    Понимает вид {\"поле\": {\"value\": ..., \"sure\": true}} и пропускает\n    всё, в чём ИИ не уверен (sure: false) — догадки в карточку не идут.\"\"\"\n    if out is None:\n        out = {}\n    if isinstance(obj, dict):\n        for k, v in obj.items():\n            nk = _norm(k)\n            if nk in SKIP:\n                continue\n            if isinstance(v, dict) and \"value\" in v:\n                if v.get(\"sure\") is False:\n                    continue\n                val = v.get(\"value\")\n                if val not in (None, \"\", \"-\", \"—\") and nk not in out:\n                    out[nk] = val\n                continue\n            if isinstance(v, (dict, list)):\n                flatten(v, out)\n            elif v not in (None, \"\", \"-\", \"—\"):\n                if nk not in out:\n                    out[nk] = v\n    elif isinstance(obj, list):\n        for item in obj:\n            flatten(item, out)\n    return out"
+        },
         {
           "end_lineno": 262,
           "lineno": 211,
