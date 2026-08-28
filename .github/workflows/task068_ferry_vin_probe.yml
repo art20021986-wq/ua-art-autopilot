@@ -1,0 +1,73 @@
+name: task068-ferry-vin-probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task068_ferry_vin_probe.yml'
+      - 'cloud/task_068_ferry_vin/read_current.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task068-ferry-vin-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Read current production without writes
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 -m py_compile cloud/task_068_ferry_vin/read_current.py
+          python3 cloud/task_068_ferry_vin/read_current.py
+
+      - name: Validate and commit bounded evidence
+        run: |
+          python3 -m json.tool cloud/task_068_ferry_vin/evidence/current.json >/dev/null
+          git add -- cloud/task_068_ferry_vin/evidence/current.json
+          mapfile -t staged < <(git diff --cached --name-only)
+          if [ "${#staged[@]}" -gt 1 ]; then
+            echo 'Unexpected evidence file count'
+            exit 1
+          fi
+          for path in "${staged[@]}"; do
+            test "${path}" = 'cloud/task_068_ferry_vin/evidence/current.json'
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then
+            echo 'Evidence already current'
+            exit 0
+          fi
+          git config user.name 'task068-ferry-vin-read'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_068: record ferry VIN and engine context'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then break; fi
+            if [ "${attempt}" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 2))
+          done
+
+      - name: Upload read-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task068-ferry-vin-probe-${{ github.run_id }}
+          path: cloud/task_068_ferry_vin/evidence/current.json
+          if-no-files-found: error
+          retention-days: 7
