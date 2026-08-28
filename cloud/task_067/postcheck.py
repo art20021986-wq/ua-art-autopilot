@@ -30,6 +30,7 @@ FILES = {
     "run_all.py": ROOT / "run_all.py", "client_ui.py": ROOT / "client_ui.py",
     "team_bot.py": ROOT / "team_bot.py", "lead_bot.py": ROOT / "lead_bot.py",
     "db.py": ROOT / "db.py",
+    "konteyner.py": ROOT / "konteyner.py",
     "crm_online_guard.py": ROOT / "crm_online_guard.py",
 }
 
@@ -214,8 +215,167 @@ def voice_golden(cars_ui):
     check(len(changes) == 1, "EXPLICIT_CORRECTION_FAILED")
     check(not cars_ui._v168_is_correction("тип топлива LPI"), "FALSE_CORRECTION")
     check(cars_ui._v168_is_correction("измени тип топлива LPI"), "CORRECTION_NOT_FOUND")
-    return {"status": "PASS", "cases": len(corpus), "failures": 0,
+    extra = []
+    mileage_phrases = [
+        ("пробег 145 тысяч", 145000),
+        ("пробіг 145 тисяч", 145000),
+        ("mileage 145 thousand", 145000),
+        ("сто сорок пять тысяч километров пробега", 145000),
+        ("пробег составляет 88000", 88000),
+    ]
+    price_phrases = [
+        ("цена продажи 12 500 долларов", 12500),
+        ("стоимость 12500", 12500),
+        ("ціна продажу 12 500", 12500),
+        ("sale price 12500", 12500),
+        ("цена двенадцать тысяч", 12000),
+    ]
+    description_phrases = [
+        "описание автомобиль в хорошем состоянии",
+        "опиши машина обслужена и готова к продаже",
+        "опис авто без замечаний по двигателю",
+        "техническое состояние двигатель работает ровно",
+        "description clean interior and smooth engine",
+    ]
+    for index in range(15):
+        text, expected = mileage_phrases[index % len(mileage_phrases)]
+        actual = cars_ui._v169_extra_fields(text, {"mileage_km"})
+        check(actual.get("mileage_km") == expected, "VOICE_MILEAGE:%s:%s" % (text, actual))
+        extra.append(text)
+    for index in range(15):
+        text, expected = price_phrases[index % len(price_phrases)]
+        actual = cars_ui._v169_extra_fields(text, {"price_uah"})
+        check(actual.get("price_uah") == expected, "VOICE_PRICE:%s:%s" % (text, actual))
+        extra.append(text)
+    for index in range(10):
+        text = description_phrases[index % len(description_phrases)]
+        actual = cars_ui._v169_extra_fields(text, {"condition_text"})
+        check(bool(actual.get("condition_text")), "VOICE_DESCRIPTION:%s:%s" % (text, actual))
+        extra.append(text)
+    for index in range(9):
+        text = ("поставь статус на пароме", "этап море", "stage ferry")[index % 3]
+        actual = cars_ui._v169_extra_fields(text, {"status"})
+        check(bool(actual.get("status")), "VOICE_STATUS:%s:%s" % (text, actual))
+        check(cars_ui.S.stage_of(actual["status"]) == 2,
+              "VOICE_STATUS_STAGE:%s:%s" % (text, actual))
+        extra.append(text)
+
+    # The semantic fallback is exercised without spending tokens: its only
+    # network dependency is replaced by a deterministic strict-JSON answer.
+    import assistant
+    old_enabled, old_ask = assistant.enabled, assistant.ask
+    try:
+        assistant.enabled = lambda: True
+        assistant.ask = lambda *args, **kwargs: json.dumps({
+            "mileage_km": 145000, "price_uah": 12500,
+            "condition_text": "Автомобиль обслужен", "forbidden": "ignored",
+        }, ensure_ascii=False)
+        semantic = cars_ui._v169_semantic_fields(
+            "пробег сто сорок пять тысяч, цена 12500, машина обслужена",
+            {"mileage_km", "price_uah", "condition_text"}, 0.5)
+    finally:
+        assistant.enabled, assistant.ask = old_enabled, old_ask
+    check(semantic.get("mileage_km") == 145000, "VOICE_SEMANTIC_MILEAGE")
+    check(semantic.get("price_uah") == 12500, "VOICE_SEMANTIC_PRICE")
+    check(semantic.get("condition_text") == "Автомобиль обслужен",
+          "VOICE_SEMANTIC_DESCRIPTION")
+    check("forbidden" not in semantic, "VOICE_SEMANTIC_WHITELIST")
+    extra.append("semantic_whitelist")
+    return {"status": "PASS", "cases": len(corpus) + len(extra), "failures": 0,
             "normal_overwrites": 0, "unexpected_new_cards": 0}
+
+
+def selected_field_synthetic(cars_ui):
+    """The selected mileage field accepts digits and spoken number words."""
+    old_set, old_card = cars_ui.set_field, cars_ui.card_of
+    state = {"id": 9901, "mileage_km": None}
+    try:
+        def fake_set(_card_id, field, value, _actor_id):
+            state[field] = value
+            return {"queued": False}
+        cars_ui.set_field = fake_set
+        cars_ui.card_of = lambda _card_id: dict(state)
+        cases = (("163400", 163400),
+                 ("163 400 км", 163400),
+                 ("сто шестьдесят три тысячи четыреста", 163400))
+        for raw, expected in cases:
+            state["mileage_km"] = None
+            ok, answer = cars_ui.apply_value(9901, "mileage_km", raw, 7)
+            check(ok and state["mileage_km"] == expected,
+                  "SELECTED_MILEAGE:%s:%s:%s" % (raw, answer, state))
+        cars_ui._v170_anchor_ferry_terms()
+        labels = [str(name).casefold() for _, name in cars_ui.S.STAGES]
+        status_labels = [str(spec[1]).casefold()
+                         for spec in cars_ui.S.STATUSES.values()]
+        check(all("море" not in value for value in labels + status_labels),
+              "CRM_FERRY_VOCABULARY")
+        return {"status": "PASS", "mileage_cases": len(cases),
+                "ferry_vocabulary": True}
+    finally:
+        cars_ui.set_field, cars_ui.card_of = old_set, old_card
+
+
+async def container_synthetic(konteyner):
+    """Container scalar and expired callback routes without production writes."""
+    original = {name: getattr(konteyner, name)
+                for name in ("_pisat", "_karta", "_peresobrat")}
+    state = {"id": 9902, "auto_number": "TEST-9902", "sea_container": "",
+             "sea_date_out": "", "eta_manual": ""}
+
+    class Message(FakeMessage):
+        def __init__(self, text=""):
+            super().__init__()
+            self.text = text
+
+    async def run_accept(write):
+        message = Message("ONEYSELGF1046602")
+        update = SimpleNamespace(
+            effective_message=message, effective_user=SimpleNamespace(id=7))
+        context = SimpleNamespace(user_data={
+            "cont_wait": {"card_id": 9902, "field": "sea_container"}})
+        konteyner._pisat = write
+        try:
+            await konteyner.prinyat(update, context)
+        except Exception as exc:
+            if type(exc).__name__ != "ApplicationHandlerStop":
+                raise
+        return message.sent
+
+    try:
+        konteyner._karta = lambda _cid: dict(state)
+        konteyner._peresobrat = lambda: None
+
+        def direct(_cid, field, value, _actor):
+            state[field] = value
+            return {"queued": False}
+        direct_messages = await run_accept(direct)
+        check(state["sea_container"] == "ONEYSELGF1046602",
+              "CONTAINER_DIRECT_VALUE")
+        check(any("сохранён" in item["text"] for item in direct_messages),
+              "CONTAINER_DIRECT_CONFIRM")
+
+        state["sea_container"] = ""
+        queued_messages = await run_accept(
+            lambda *_args: {"queued": True})
+        check(any("надёжной очереди" in item["text"] for item in queued_messages),
+              "CONTAINER_QUEUE_CONFIRM")
+
+        query = FakeQuery("cont_num:9902")
+        update = SimpleNamespace(callback_query=query)
+        context = SimpleNamespace(user_data={})
+        try:
+            await konteyner.sprosit_nomer(update, context)
+        except Exception as exc:
+            if type(exc).__name__ != "ApplicationHandlerStop":
+                raise
+        check(context.user_data.get("cont_wait", {}).get("field") == "sea_container",
+              "CONTAINER_CALLBACK_WAIT")
+        check(query.message.sent, "CONTAINER_CALLBACK_NO_REPLY")
+        return {"status": "PASS", "direct": True, "queued": True,
+                "expired_ack_continued": True}
+    finally:
+        for name, value in original.items():
+            setattr(konteyner, name, value)
 
 
 def media_synthetic(cars_ui, guard):
@@ -281,6 +441,8 @@ def field_queue_synthetic(cars_ui, guard, db_module):
                       ("FIELD_SPOOL_PATH", "FIELD_SPOOL_LOCK")}
     db_update = db_module.update_card_field
     db_log = db_module.log_action
+    db_connect = db_module.connect
+    db_get_card = db_module.get_card
     cars_cas = cars_ui._v168_cas_write
     with tempfile.TemporaryDirectory(prefix="task067-fields-") as directory:
         root = pathlib.Path(directory)
@@ -326,11 +488,41 @@ def field_queue_synthetic(cars_ui, guard, db_module):
                   "FIELD_QUEUE_DRAIN")
             check([item[0] for item in applied] == ["set", "cas", "audit"],
                   "FIELD_QUEUE_ORDER")
-            return {"status": "PASS", "accepted": 3, "duplicates_rejected": 1,
-                    "processed": 3, "queue": 0, "order_exact": True}
+
+            class LockedConnection:
+                def __enter__(self):
+                    return self
+                def execute(self, *_args, **_kwargs):
+                    return self
+                def __exit__(self, *_args):
+                    raise sqlite3.OperationalError("database is locked")
+
+            # Exercise the real production update_card_field fallback.  No
+            # production DB is touched: connect/get_card are isolated here.
+            db_module.update_card_field = db_update
+            db_module.connect = lambda: LockedConnection()
+            db_module.get_card = lambda *_args: {"mileage_km": None}
+            queued = db_module.update_card_field(
+                "cars", 77, "mileage_km", 163400, 7)
+            check(queued.get("queued") is True, "DB_LOCK_NOT_QUEUED")
+            check(guard._field_spool_state()["queued"] == 1,
+                  "DB_LOCK_QUEUE_COUNT")
+            db_module.connect = db_connect
+            db_module.get_card = db_get_card
+            db_module.update_card_field = fake_update
+            lock_recovery = guard._attempt_field_recovery(guard._field_spool_state())
+            check(lock_recovery.get("processed") == 1,
+                  "DB_LOCK_QUEUE_DRAIN")
+            check(guard._field_spool_state()["queued"] == 0,
+                  "DB_LOCK_QUEUE_REMAINS")
+            return {"status": "PASS", "accepted": 4, "duplicates_rejected": 1,
+                    "processed": 4, "queue": 0, "order_exact": True,
+                    "database_locked_queued": True}
         finally:
             db_module.update_card_field = db_update
             db_module.log_action = db_log
+            db_module.connect = db_connect
+            db_module.get_card = db_get_card
             cars_ui._v168_cas_write = cars_cas
             for name, value in guard_original.items():
                 setattr(guard, name, value)
@@ -344,7 +536,11 @@ def source_checks():
         "callback_safety": "safe_callback_answer" in sources["cars_ui.py"],
         "cas_no_overwrite": "_v168_cas_write" in sources["cars_ui.py"],
         "voice_five_seconds": "hard_deadline = started + 4.65" in sources["cars_ui.py"],
-        "stt_auto_language": '"language": "ru"' not in sources["ai.py"],
+        "voice_restore_semantic": ("CRM-VOICE-RESTORE-01-V1.3.1" in sources["cars_ui.py"]
+                                   and "_v169_semantic_fields" in sources["cars_ui.py"]
+                                   and "not override" not in sources["cars_ui.py"]),
+        "stt_last_known_good_ru": ('CRM-VOICE-RESTORE-01-V1.3.1' in sources["ai.py"]
+                                    and '"language": "ru"' in sources["ai.py"]),
         "media_receipts": "media_mark" in sources["cars_ui.py"],
         "client_fast_tail": "media_tail" in sources["client_ui.py"],
         "updates_preserved": all("drop_pending_updates=True" not in sources[name]
@@ -354,6 +550,8 @@ def source_checks():
         "db_wait_bounded": ("CRM-DB-BOUNDED-QUEUE-001" in sources["db.py"]
                             and "ZAMOK_OZHIDANIE = 2.0" in sources["db.py"]
                             and "PRAGMA busy_timeout=450" in sources["db.py"]),
+        "db_no_hot_journal_switch": ("PRAGMA journal_mode=DELETE" not in
+                                      sources["db.py"]),
         "db_field_durable_queue": ("enqueue_field_update" in sources["db.py"]
                                    and "FIELD_SPOOL_PATH" in sources["crm_online_guard.py"]),
         "guard_latency_percentiles": ("latency_seconds" in sources["crm_online_guard.py"]
@@ -363,6 +561,15 @@ def source_checks():
                                     sources["crm_online_guard.py"]
                                     and "_restart_budget_available" in
                                     sources["crm_online_guard.py"]),
+        "selected_field_route": ("CRM-INPUT-DB-ROUTES-02-V1.3.2" in
+                                  sources["cars_ui.py"]
+                                  and "_v169_parse_number(value)" in
+                                  sources["cars_ui.py"]),
+        "container_durable_route": ("CRM-CONTAINER-ROUTES-02-V1.3.2" in
+                                     sources["konteyner.py"]
+                                     and "return db.update_card_field" in
+                                     sources["konteyner.py"]),
+        "crm_ferry_vocabulary": "_v170_anchor_ferry_terms" in sources["cars_ui.py"],
     }
     check(all(checks.values()), "SOURCE_CONTRACT:" + json.dumps(checks))
     for name, source in sources.items():
@@ -387,8 +594,11 @@ def main():
         import client_ui
         import crm_online_guard as guard
         import db as db_module
+        import konteyner
         result["callbacks"] = asyncio.run(callback_routes(cars_ui, state["latest_card"]))
         result["voice_golden"] = voice_golden(cars_ui)
+        result["selected_field"] = selected_field_synthetic(cars_ui)
+        result["container"] = asyncio.run(container_synthetic(konteyner))
         result["media"] = media_synthetic(cars_ui, guard)
         result["field_queue"] = field_queue_synthetic(cars_ui, guard, db_module)
         check(float(db_module.ZAMOK_OZHIDANIE) <= 2.0, "DB_QUEUE_WAIT_OVER_2S")
