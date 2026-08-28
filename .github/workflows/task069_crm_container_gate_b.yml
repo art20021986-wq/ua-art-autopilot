@@ -1,0 +1,159 @@
+name: task069-crm-container-production-gate-b
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task069_crm_container_gate_b.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task069-crm-container-production-gate-b
+  cancel-in-progress: false
+
+jobs:
+  gate-b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Compile bounded release
+        run: |
+          python3 -m py_compile \
+            cloud/task_069/gate_b_installer.py \
+            cloud/task_069/gate_b_postcheck.py \
+            cloud/task_069/gate_b_controller.py
+          python3 - <<'PY'
+          from pathlib import Path
+          installer = Path('cloud/task_069/gate_b_installer.py').read_text(encoding='utf-8')
+          controller = Path('cloud/task_069/gate_b_controller.py').read_text(encoding='utf-8')
+          assert 'CRM-CONTAINER-KYIV-DAYS-001-V1.0' in installer
+          assert 'ONEYSELGF1046602' in installer
+          assert '⏱ Количество дней до Киева' in installer
+          assert 'os.replace(temporary, path)' in installer
+          assert 'BACKUP_PARENT' in installer
+          assert 'rollback_backup' in installer
+          assert 'runtime_llm_tokens' in installer
+          assert 'owner_approval' in controller
+          print('TASK069_RELEASE_STATIC_PASS')
+          PY
+
+      - name: Wait for an exclusive production window
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.request
+
+          conflicts = {
+              'task067-crm-online-guard-v1-3-deploy',
+              'task068-ferry-vin-v1-1-deploy',
+              'task064-emergency-crm-quiesce',
+              'SEO Rehab Guard 068 production',
+          }
+          deadline = time.monotonic() + 5100
+          while True:
+              request = urllib.request.Request(
+                  'https://api.github.com/repos/%s/actions/runs?per_page=100' % os.environ['REPOSITORY'],
+                  headers={
+                      'Authorization': 'Bearer ' + os.environ['GITHUB_TOKEN'],
+                      'Accept': 'application/vnd.github+json',
+                      'X-GitHub-Api-Version': '2022-11-28',
+                      'User-Agent': 'ua-art-task069-exclusive-window/1',
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  value = json.loads(response.read().decode('utf-8'))
+              active = [
+                  {'id': run['id'], 'name': run['name'], 'status': run['status']}
+                  for run in value.get('workflow_runs', [])
+                  if str(run.get('id')) != os.environ['CURRENT_RUN_ID']
+                  and run.get('name') in conflicts
+                  and run.get('status') in {'queued', 'in_progress', 'waiting', 'pending'}
+              ]
+              if not active:
+                  print('TASK069_EXCLUSIVE_PRODUCTION_WINDOW_PASS')
+                  break
+              print('TASK069_WAITING_FOR_CONFLICTS ' + json.dumps(active, sort_keys=True), flush=True)
+              if time.monotonic() >= deadline:
+                  raise SystemExit('TASK069_EXCLUSIVE_WINDOW_TIMEOUT')
+              time.sleep(30)
+          PY
+
+      - name: Shadow, backup, canary, deploy and verify
+        id: production
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 cloud/task_069/gate_b_controller.py
+
+      - name: Commit bounded Gate B evidence
+        if: always()
+        run: |
+          git add -- \
+            cloud/task_069/evidence/gate_b.json \
+            cloud/task_069/GATE_B_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_069/evidence/gate_b.json|cloud/task_069/GATE_B_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task069-production-gate-b'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task_069: record approved production Gate B evidence'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main || exit 1
+              if git push origin HEAD:main; then break; fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Require production PASS
+        run: |
+          python3 - <<'PY'
+          import json
+          value = json.load(open('cloud/task_069/evidence/gate_b.json', encoding='utf-8'))
+          assert value['contract_id'] == 'CRM-CONTAINER-KYIV-DAYS-001-V1.0'
+          assert value['status'] == 'PASS', value
+          assert value['runtime_llm_tokens'] == 0
+          assert value['install']['status'] == 'PASS'
+          assert value['install']['database_after']['target']['sea_container'] == 'ONEYSELGF1046602'
+          assert value['postcheck']['status'] == 'PASS'
+          assert value['postcheck_delayed']['status'] == 'PASS'
+          assert value['postcheck_delayed']['ua_0009_protected'] is True
+          assert value['postcheck_delayed']['all_cards_protected'] is True
+          assert value['postcheck_delayed']['database']['quick_check'] == 'ok'
+          assert value['postcheck_delayed']['candidate']['button_label_occurrences'] == 2
+          assert value['rollback'] is None
+          print('TASK069_PRODUCTION_GATE_B_PASS')
+          PY
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task069-production-gate-b-${{ github.run_id }}
+          path: |
+            cloud/task_069/evidence/gate_b.json
+            cloud/task_069/GATE_B_REPORT.md
+          if-no-files-found: error
+          retention-days: 30
