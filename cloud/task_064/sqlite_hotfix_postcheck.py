@@ -10,6 +10,8 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+import urllib.error
+import urllib.request
 
 
 BASE = pathlib.Path("/home/Carix")
@@ -20,6 +22,16 @@ RECEIPT = SAFE / "postcheck_receipt.json"
 MARKER = "CRM-DB-LOCK-EMERGENCY-001"
 WORKERS = 4
 ITERATIONS = 10
+BOT_TOKEN_FILES = {
+    "client": BASE / "bot_token.txt",
+    "crm": BASE / "team_token.txt",
+}
+BOT_RUNTIME_FILES = {
+    "launcher": BASE / "start_safe.py",
+    "orchestrator": BASE / "run_all.py",
+    "client": BASE / "lead_bot.py",
+    "crm": BASE / "team_bot.py",
+}
 
 
 def sha(data: bytes) -> str:
@@ -61,6 +73,78 @@ def snapshot():
         return result
     finally:
         connection.close()
+
+
+def telegram_bots_probe():
+    results = {}
+    token_hashes = []
+    for label, path in BOT_TOKEN_FILES.items():
+        item = {"ok": False, "token_file": path.name}
+        try:
+            token = path.read_text(encoding="utf-8").strip()
+            if not token or ":" not in token or len(token) < 30:
+                raise RuntimeError("TOKEN_FORMAT_INVALID")
+            token_hashes.append(sha(token.encode("utf-8")))
+            request = urllib.request.Request(
+                "https://api.telegram.org/bot%s/getMe" % token,
+                headers={"User-Agent": "ua-art-task064-bot-health/1"},
+            )
+            with urllib.request.urlopen(request, timeout=20) as response:
+                payload = json.loads(response.read(200_000).decode("utf-8"))
+            bot = payload.get("result") if isinstance(payload, dict) else None
+            if not payload.get("ok") or not isinstance(bot, dict) or not bot.get("is_bot"):
+                raise RuntimeError("TELEGRAM_GETME_REJECTED")
+            item["ok"] = True
+            item["identity_sha256"] = sha(
+                (str(bot.get("id")) + ":" + str(bot.get("username", ""))).encode("utf-8")
+            )
+        except urllib.error.HTTPError as exc:
+            item["error"] = "TELEGRAM_HTTP_%d" % exc.code
+        except Exception as exc:
+            item["error"] = type(exc).__name__ + ":" + str(exc)
+        results[label] = item
+    return {
+        "bots": results,
+        "tokens_distinct": len(token_hashes) == len(BOT_TOKEN_FILES)
+        and len(set(token_hashes)) == len(BOT_TOKEN_FILES),
+    }
+
+
+def process_probe():
+    result = subprocess.run(
+        ["ps", "-eo", "pid=,args="],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+    matches = [
+        line for line in result.stdout.splitlines()
+        if "/home/Carix/start_safe.py" in line and "task064" not in line
+    ]
+    return {"running": bool(matches), "matching_processes": len(matches)}
+
+
+def runtime_contract_probe():
+    records = {}
+    sources = {}
+    for label, path in BOT_RUNTIME_FILES.items():
+        data = path.read_bytes()
+        source = data.decode("utf-8")
+        compile(source, str(path), "exec")
+        sources[label] = source
+        records[label] = {"sha256": sha(data), "compiled": True}
+    checks = {
+        "client_builder": "build_application" in sources["client"],
+        "client_catalog_button": "Открыть каталог" in sources["client"],
+        "crm_builder": "build_application" in sources["crm"],
+        "both_apps_started": all(value in sources["orchestrator"] for value in (
+            "lead_bot.build_application", "team_bot.build_application",
+        )),
+        "stable_launcher": "run_all.py" in sources["launcher"],
+    }
+    return {"ok": all(checks.values()), "checks": checks, "files": records}
 
 
 def worker_code():
@@ -115,6 +199,20 @@ def main() -> int:
         before = snapshot()
         if before["quick_check"] != "ok":
             raise RuntimeError("QUICK_CHECK_BEFORE_FAILED")
+        bot_health = telegram_bots_probe()
+        receipt["bot_health"] = bot_health
+        if not bot_health["tokens_distinct"] or any(
+            not item.get("ok") for item in bot_health["bots"].values()
+        ):
+            raise RuntimeError("BOT_TOKEN_HEALTH_FAILED")
+        service = process_probe()
+        receipt["service_process"] = service
+        if not service["running"]:
+            raise RuntimeError("BOT_SERVICE_NOT_RUNNING")
+        runtime = runtime_contract_probe()
+        receipt["runtime_contract"] = runtime
+        if not runtime["ok"]:
+            raise RuntimeError("BOT_RUNTIME_CONTRACT_FAILED")
         workers = concurrency_probe()
         receipt["workers"] = workers
         if len(workers) != WORKERS or any(
