@@ -15,6 +15,7 @@ TASK 067: **PASS_READY_FOR_OWNER_VISUAL_GATE**
 - Повторяемость: 10/10, один tree SHA-256 `3013e22ac57c56bf85ff0ad7ae8610bbf6383ebb6fbbf439925d6289025dd05f`.
 - Protected diff вне SEO-head/диагностической ссылки/CTA allowlist: 0.
 - GitHub workflow повторяет те же проверки без deploy и без secrets.
+- Визуальный branch preview изолирован: static assets, GET/HEAD only, `X-Robots-Tag: noindex, nofollow`, без cron и D1.
 - PRODUCTION WRITE: NO. CRM/DB WRITE: NO. FORM SUBMIT: NO.
 
-GitHub Preview готов к draft PR. До визуального Gate владельца, отдельной production-команды и merge production-релиз запрещён.
+Draft PR и визуальный branch preview готовы. До визуального Gate владельца, отдельной production-команды и merge production-релиз запрещён.

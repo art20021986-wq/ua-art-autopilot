@@ -34,6 +34,9 @@ builds. Do not deploy, merge or change PythonAnywhere, Cloudflare production, CR
 4. Exact visible CTA text correction only on `UA-0002`, `UA-0007`, `UA-0008`:
    `Купить авто` / `Купити авто` to `Забронировать авто за 500$`.
 5. Reports, tests, manifests and preview files under `cloud/seo_leads_7d/`.
+6. Branch-only Cloudflare Worker wrapper may serve the static candidate at the generated branch
+   preview URL. It must accept GET/HEAD only, add `X-Robots-Tag: noindex, nofollow`, have no cron,
+   no D1 and no production route.
 
 ## Forbidden changes
 
@@ -73,5 +76,6 @@ for inspection.
 - `cloud/seo_leads_7d/evidence/GATE-REPORT.json`
 - `cloud/seo_leads_7d/evidence/REPEATABILITY.json`
 - `.github/workflows/seo-leads-7d-preview.yml`
+- branch-only `src/worker.js` and `wrangler.jsonc` visual preview wrapper
 - `cloud/latest_status.md`
 - `cloud/owner_reply.md`

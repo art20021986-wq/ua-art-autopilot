@@ -37,6 +37,10 @@ The GitHub workflow repeats the candidate build ten times from the same captured
 compares deterministic tree hashes. Its downloadable `seo-leads-7d-preview` artifact contains the
 baseline evidence, candidate site, Gate report and repeatability report.
 
+The branch-only Worker configuration serves the committed static candidate through Cloudflare's
+generated branch preview URL. It has no cron or D1 binding, rejects every method except GET/HEAD,
+adds `X-Robots-Tag: noindex, nofollow` and never owns the UA ART production domain.
+
 ## Gate interpretation
 
 - `PASS_READY_FOR_OWNER_VISUAL_GATE`: technical sandbox checks passed. This is **not** production
