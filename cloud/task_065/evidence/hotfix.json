@@ -1,21 +1,19 @@
 {
   "bot_restarted": true,
   "contract_id": "CRM-PHOTO-FASTPATH-001",
-  "errors": [
-    "ControllerError:POSTCHECK_FAILED:RuntimeError:LIVE_DB_NOT_WAL"
-  ],
+  "errors": [],
   "install": {
     "already_applied": false,
-    "backup_path": "/home/Carix/backups/task_065/20260828T175014Z",
+    "backup_path": "/home/Carix/backups/task_065/20260828T175915Z",
     "contract_id": "CRM-PHOTO-FASTPATH-001",
     "crm_db_write": false,
     "errors": [],
     "files_sha256_after": {
       "cars_ui.py": "a7da33f7a653a0cef697aad784e5c29bc2600639eb48b272793d61f1ac0e2af5",
-      "db.py": "2c0e3514b498a099aa9d154b4b5ce28e19ea44254ed7b4fbf642ac17bba989e0",
+      "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
       "team_bot.py": "70b349cdbe72a0cf5f674a1341a493de7759b5263859ce73d86fb292db3b5ad2"
     },
-    "finished_at_utc": "2026-08-28T17:50:15Z",
+    "finished_at_utc": "2026-08-28T17:59:15Z",
     "llm_tokens": 0,
     "mode": "ATOMIC_PHOTO_FASTPATH",
     "readonly_after": {
@@ -31,7 +29,7 @@
       "ua0009_sha256": "f2093ee2295b18a45ecc7a81feb5d764436bf2a6d04ff984a05254292005d3be"
     },
     "site_write": false,
-    "started_at_utc": "2026-08-28T17:50:13Z",
+    "started_at_utc": "2026-08-28T17:59:14Z",
     "status": "PASS",
     "task_id": "task_065"
   },
@@ -52,18 +50,16 @@
     },
     "contract_id": "CRM-PHOTO-FASTPATH-001",
     "crm_db_write": false,
-    "errors": [
-      "RuntimeError:LIVE_DB_NOT_WAL"
-    ],
+    "errors": [],
     "files_sha256": {
       "cars_ui.py": "a7da33f7a653a0cef697aad784e5c29bc2600639eb48b272793d61f1ac0e2af5",
-      "db.py": "2c0e3514b498a099aa9d154b4b5ce28e19ea44254ed7b4fbf642ac17bba989e0",
+      "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
       "team_bot.py": "70b349cdbe72a0cf5f674a1341a493de7759b5263859ce73d86fb292db3b5ad2"
     },
     "llm_tokens": 0,
     "readonly_live_db": {
       "cars_count": 11,
-      "journal_mode": "delete",
+      "journal_mode": "wal",
       "quick_check": "ok",
       "ua0009_rows": 1
     },
@@ -88,6 +84,13 @@
         "saved": 100
       }
     },
+    "sqlite_stress": {
+      "alive": 0,
+      "errors": [],
+      "ok": true,
+      "operations": 100,
+      "quick_check": "ok"
+    },
     "static_contract": {
       "checks": {
         "background_worker": true,
@@ -99,38 +102,19 @@
         "photo_stops_before_ai": true,
         "queued_db_connection": true,
         "raw_media_connection_removed": true,
-        "wal": true
+        "transaction_queue": true
       },
       "ok": true
-    },
-    "status": "FAIL",
-    "task_id": "task_065",
-    "wal_stress": {
-      "alive": 0,
-      "errors": [],
-      "ok": true,
-      "operations": 100,
-      "quick_check": "ok"
-    }
-  },
-  "rollback": {
-    "backup_path": "/home/Carix/backups/task_065/20260828T175014Z",
-    "contract_id": "CRM-PHOTO-FASTPATH-001",
-    "finished_at_utc": "2026-08-28T17:55:15Z",
-    "mode": "ROLLBACK",
-    "restored": {
-      "cars_ui.py": "721e21f43787832b325c1fc806a64f332cb14a26bd63b297cb738c9fbb687563",
-      "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
-      "team_bot.py": "4e0ede93c744e49c2a634fa5e7f195bdda27208d7575c3cd9a0e4ce419913918"
     },
     "status": "PASS",
     "task_id": "task_065"
   },
+  "rollback": null,
   "service_contract": {
     "command": "python3.10 /home/Carix/start_safe.py",
     "enabled": true,
     "restart_accepted": true
   },
-  "status": "FAIL",
+  "status": "PASS",
   "task_id": "task_065"
 }
