@@ -1,0 +1,56 @@
+name: task067-crm-online-guard-read-only-audit
+# audit-revision: 1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task067_read_only_audit.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task067-crm-online-guard-read-only-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Compile read-only audit
+        run: python3 -m py_compile cloud/task_067/audit.py
+      - name: Audit production without writes
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_067/audit.py
+      - name: Require read-only PASS
+        run: |
+          python3 - <<'PY'
+          import json
+          value = json.load(open('cloud/task_067/evidence/read_only_audit.json', encoding='utf-8'))
+          assert value['status'] == 'PASS', value['errors']
+          assert value['production_touched'] is False
+          assert value['crm_write'] is False
+          assert value['site_write'] is False
+          assert value['media_write'] is False
+          assert value['llm_tokens'] == 0
+          PY
+      - name: Commit bounded audit evidence
+        run: |
+          git add -- cloud/task_067/evidence/read_only_audit.json
+          git config user.name 'task067-read-only-audit'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_067: record fresh CRM read-only audit'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || exit 1
+            if git push origin HEAD:main; then break; fi
+            test "$attempt" -lt 5 || exit 1
+            sleep $((attempt * 2))
+          done
