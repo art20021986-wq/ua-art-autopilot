@@ -1,0 +1,178 @@
+# Owner-authorized emergency repair from the 2026-08-28 request.
+name: task064-permanent-diagnostics-repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task064_diagnostics_permanent.yml'
+      - 'cloud/task_064_diagnostics/repair_remote.py'
+      - 'cloud/task_064_diagnostics/controller.py'
+      - 'cloud/task_064_diagnostics/live_verify.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task064-permanent-diagnostics-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile and test the bounded repair
+        run: |
+          python3 -m py_compile \
+            cloud/task_064_diagnostics/repair_remote.py \
+            cloud/task_064_diagnostics/controller.py \
+            cloud/task_064_diagnostics/live_verify.py
+          python3 cloud/task_064_diagnostics/repair_remote.py --self-test
+
+      - name: Apply atomic repair on PythonAnywhere
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_USERNAME: Carix
+          PYTHONANYWHERE_HOST: www.pythonanywhere.com
+        run: python3 cloud/task_064_diagnostics/controller.py
+
+      - name: Verify every public card and diagnostics page
+        run: python3 cloud/task_064_diagnostics/live_verify.py
+
+      - name: Capture live card and diagnostics screenshots
+        run: |
+          identifier="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('cloud/task_064_diagnostics/evidence/repair.json').read_text())
+          print('UA-0009' if 'UA-0009' in receipt['card_ids'] else receipt['card_ids'][0])
+          PY
+          )"
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "${browser}"
+          mkdir -p cloud/task_064_diagnostics/screenshots
+          for suffix in '' '-diag'; do
+            name="${identifier}${suffix}"
+            "${browser}" --headless=new --disable-gpu --disable-background-networking \
+              --hide-scrollbars --window-size=430,1800 --virtual-time-budget=2500 \
+              --screenshot="cloud/task_064_diagnostics/screenshots/${name}.png" \
+              "https://www.uaart.com.ua/video/${name}.html?task064_screenshot=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          paths = sorted(Path('cloud/task_064_diagnostics/screenshots').glob('*.png'))
+          if len(paths) != 2:
+              raise SystemExit('TASK064_SCREENSHOT_COUNT_FAIL')
+          for path in paths:
+              data = path.read_bytes()
+              if len(data) < 1000 or not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                  raise SystemExit('TASK064_SCREENSHOT_INVALID:' + str(path))
+          print('TASK064_SCREENSHOTS_PASS')
+          PY
+
+      - name: Write owner status
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('cloud/task_064_diagnostics')
+          repair = json.loads((root / 'evidence/repair.json').read_text())
+          live = json.loads((root / 'evidence/live.json').read_text())
+          if repair['status'] != 'PASS' or live['status'] != 'PASS':
+              raise SystemExit('TASK064_NOT_COMPLETE')
+          status = "\n".join([
+              "# Последний статус", "", "TASK 064: **DONE**", "",
+              f"- Комплексная диагностика восстановлена на {live['card_count']} карточках.",
+              f"- Публично проверено: {live['page_count']} страниц, все HTTP 200 и совпали по SHA-256.",
+              "- На каждой карточке ровно одна кнопка диагностики.",
+              "- Пустые карточки показывают постоянную страницу «Материалы пока не добавлены».",
+              "- Генератор закреплён для всех будущих UA-XXXX; *-diag.html защищены от перезаписи карточкой.",
+              f"- UA-0009: {'PASS' if live['ua0009_safe'] else 'FAIL'}.",
+              "- CRM/DB write: false. Service reload: false.",
+              f"- Резервная копия: `{repair['backup_root']}`.",
+              f"- Проверено: {live['generated_at_utc']}.", "",
+          ])
+          owner = "\n".join([
+              "# Ответ владельцу", "",
+              "Готово. Комплексная диагностика восстановлена на всех текущих карточках и "
+              "навсегда закреплена в двух действующих генераторах. Даже без материалов кнопка "
+              "остаётся видимой и открывает честное пустое состояние. Отдельные страницы "
+              "диагностики больше не могут быть перезаписаны обычной карточкой. "
+              f"Проверено {live['page_count']} публичных страниц; UA-0009 — "
+              f"{'PASS' if live['ua0009_safe'] else 'FAIL'}. CRM, база, цены, фото и этапы не изменялись.",
+              "",
+          ])
+          Path('cloud/latest_status.md').write_text(status, encoding='utf-8')
+          Path('cloud/owner_reply.md').write_text(owner, encoding='utf-8')
+          PY
+
+      - name: Commit bounded evidence
+        run: |
+          git add -- \
+            cloud/task_064_diagnostics/evidence/repair.json \
+            cloud/task_064_diagnostics/evidence/live.json \
+            cloud/task_064_diagnostics/TASK_064_REPORT.md \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          if [ "${#staged[@]}" -gt 5 ]; then
+            echo 'Unexpected evidence file count'
+            exit 1
+          fi
+          for path in "${staged[@]}"; do
+            case "${path}" in
+              cloud/task_064_diagnostics/evidence/repair.json|\
+              cloud/task_064_diagnostics/evidence/live.json|\
+              cloud/task_064_diagnostics/TASK_064_REPORT.md|\
+              cloud/latest_status.md|\
+              cloud/owner_reply.md) ;;
+              *) echo "Unexpected staged path: ${path}"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then
+            echo 'Evidence already current'
+            exit 0
+          fi
+          git config user.name 'task064-diagnostics'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'diagnostics: record permanent production repair'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              break
+            fi
+            if [ "${attempt}" -eq 5 ]; then
+              exit 1
+            fi
+            sleep $((attempt * 3))
+          done
+
+      - name: Upload visual and machine evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task064-diagnostics-${{ github.run_id }}
+          path: |
+            cloud/task_064_diagnostics/evidence
+            cloud/task_064_diagnostics/TASK_064_REPORT.md
+            cloud/task_064_diagnostics/screenshots
+          if-no-files-found: warn
+          retention-days: 14
