@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 4
+# probe-revision: 5
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
         run: |
           python3 - <<'PY'
-          import hashlib, json, os, re, urllib.error, urllib.parse, urllib.request
+          import ast, hashlib, json, os, re, urllib.error, urllib.parse, urllib.request
           root = '/home/Carix'
           state = root + '/autopilot_inbox/cloud/task_067'
           base = 'https://www.pythonanywhere.com/api/v0/user/Carix/'
@@ -107,6 +107,22 @@ jobs:
                   log_signals[path.rsplit('/', 1)[-1]] = hits[-80:]
           result['runtime_logs'] = {'paths': [p.rsplit('/', 1)[-1] for p in log_paths],
                                     'signals': log_signals}
+          db_source = get(root + '/db.py', limit=1_000_000).decode('utf-8')
+          db_tree = ast.parse(db_source)
+          db_selected = {}
+          wanted = {'ZAMOK_OZHIDANIE', '_ua_fayl_zahvatit', '_ua_fayl_otpustit',
+                    '_ua_sql_pishet', 'Soedinenie', 'connect', 'update_card_field'}
+          for node in db_tree.body:
+              names = []
+              if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+                  names = [node.name]
+              elif isinstance(node, (ast.Assign, ast.AnnAssign)):
+                  targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                  names = [target.id for target in targets if isinstance(target, ast.Name)]
+              for name in names:
+                  if name in wanted:
+                      db_selected[name] = ast.get_source_segment(db_source, node)
+          result['db_lock_contract'] = db_selected
           events_raw = get(root + '/.crm_guard_events.jsonl', missing=True, limit=2_000_000)
           if events_raw:
               events = []
