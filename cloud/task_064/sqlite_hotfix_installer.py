@@ -28,8 +28,20 @@ EXPECTED_CONNECT_SHA = "40daadeb50ac5ffdb79918c4c64b0fcabcf91ec2d657e2a47d46c41e
 MARKER = "CRM-DB-LOCK-EMERGENCY-001"
 
 
-HELPERS_AND_CLASS = r'''# CRM-DB-LOCK-EMERGENCY-001: one cross-process SQLite queue.
+HELPERS_AND_CLASS = r'''# CRM-DB-LOCK-EMERGENCY-001: one queue per write transaction.
 _UA_FAYL_SOSTOYANIE = _potoki.local()
+
+
+def _ua_sql_pishet(sql):
+    """Conservatively classify SQL; unknown statements enter the write queue."""
+    try:
+        text = str(sql).lstrip()
+        while text.startswith("--"):
+            text = text.split("\n", 1)[1].lstrip()
+        slovo = text.split(None, 1)[0].upper().rstrip(";") if text else ""
+    except Exception:
+        return True
+    return slovo not in ("", "SELECT", "PRAGMA", "EXPLAIN")
 
 
 def _ua_fayl_zahvatit(timeout):
@@ -78,10 +90,54 @@ def _ua_fayl_otpustit():
         handle.close()
 
 
+class _UaKursor(sqlite3.Cursor):
+    """Cursor path cannot bypass the transaction queue."""
+
+    def _vypolnit(self, method, sql, *args):
+        conn = self.connection
+        novaya = conn._pered_zapisyu(sql)
+        try:
+            return method(self, sql, *args)
+        except Exception:
+            if novaya and not conn.in_transaction:
+                conn._otpustit()
+            raise
+
+    def execute(self, sql, parameters=()):
+        return self._vypolnit(sqlite3.Cursor.execute, sql, parameters)
+
+    def executemany(self, sql, seq_of_parameters):
+        return self._vypolnit(sqlite3.Cursor.executemany, sql, seq_of_parameters)
+
+    def executescript(self, sql_script):
+        return self._vypolnit(sqlite3.Cursor.executescript, sql_script)
+
+
 class Soedinenie(sqlite3.Connection):
-    """SQLite connection owning both the thread and process queue slots."""
+    """Own the process queue only while a write transaction is active."""
+
+    def _pered_zapisyu(self, sql):
+        if not _ua_sql_pishet(sql) or getattr(self, "_ua_zapis_v_ocheredi", False):
+            return False
+        vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)
+        if not vzyata:
+            raise sqlite3.OperationalError("CRM thread queue timeout")
+        self._ochered_vzyata = True
+        try:
+            _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)
+            self._fayl_zaregistrirovan = True
+            self._ua_zapis_v_ocheredi = True
+            return True
+        except Exception:
+            self._ochered_vzyata = False
+            try:
+                ZAMOK.release()
+            except Exception:
+                pass
+            raise
 
     def _otpustit(self):
+        self._ua_zapis_v_ocheredi = False
         if getattr(self, "_fayl_zaregistrirovan", False):
             self._fayl_zaregistrirovan = False
             try:
@@ -95,16 +151,40 @@ class Soedinenie(sqlite3.Connection):
             except Exception:
                 pass
 
-    def close(self):
+    def cursor(self, factory=None):
+        return sqlite3.Connection.cursor(self, factory or _UaKursor)
+
+    def execute(self, sql, parameters=()):
+        novaya = self._pered_zapisyu(sql)
         try:
-            sqlite3.Connection.close(self)
-        finally:
-            self._otpustit()
+            return sqlite3.Connection.execute(self, sql, parameters)
+        except Exception:
+            if novaya and not self.in_transaction:
+                self._otpustit()
+            raise
+
+    def executemany(self, sql, seq_of_parameters):
+        novaya = self._pered_zapisyu(sql)
+        try:
+            return sqlite3.Connection.executemany(self, sql, seq_of_parameters)
+        except Exception:
+            if novaya and not self.in_transaction:
+                self._otpustit()
+            raise
+
+    def executescript(self, sql_script):
+        novaya = self._pered_zapisyu(sql_script)
+        try:
+            return sqlite3.Connection.executescript(self, sql_script)
+        except Exception:
+            if novaya and not self.in_transaction:
+                self._otpustit()
+            raise
 
     def _commit_s_povtorom(self):
         import time as _ua_time
 
-        for attempt in range(4):
+        for attempt in range(5):
             try:
                 sqlite3.Connection.commit(self)
                 return
@@ -112,14 +192,39 @@ class Soedinenie(sqlite3.Connection):
                 text = str(exc).casefold()
                 if "locked" not in text and "busy" not in text:
                     raise
-                if attempt == 3:
+                if attempt == 4:
                     raise
                 _ua_time.sleep(0.15 * (2 ** attempt))
+
+    def commit(self):
+        try:
+            self._commit_s_povtorom()
+        except Exception:
+            try:
+                sqlite3.Connection.rollback(self)
+            finally:
+                self._otpustit()
+            raise
+        self._otpustit()
+
+    def rollback(self):
+        try:
+            return sqlite3.Connection.rollback(self)
+        finally:
+            self._otpustit()
+
+    def close(self):
+        try:
+            if self.in_transaction:
+                sqlite3.Connection.rollback(self)
+            sqlite3.Connection.close(self)
+        finally:
+            self._otpustit()
 
     def __exit__(self, tip, znachenie, sled):
         try:
             if tip is None:
-                self._commit_s_povtorom()
+                self.commit()
             else:
                 self.rollback()
         finally:
@@ -135,43 +240,18 @@ class Soedinenie(sqlite3.Connection):
 
 
 CONNECT_SOURCE = r'''def connect():
-    vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)
-    if not vzyata:
-        raise sqlite3.OperationalError("CRM thread queue timeout")
-
-    fayl_zaregistrirovan = False
-    conn = None
+    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)
+    conn.row_factory = sqlite3.Row
+    # Setup pragmas must not hold the transaction queue for a long-lived reader.
     try:
-        _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)
-        fayl_zaregistrirovan = True
-        conn = sqlite3.connect(DB_FILE, timeout=OZHIDANIE_SEK, factory=Soedinenie)
-        conn._ochered_vzyata = True
-        conn._fayl_zaregistrirovan = True
-        conn.row_factory = sqlite3.Row
-        try:
-            conn.execute("PRAGMA journal_mode=DELETE")
-        except Exception:
-            pass
-        conn.execute("PRAGMA busy_timeout=%d" % (OZHIDANIE_SEK * 1000))
-        conn.execute("PRAGMA foreign_keys=ON")
-        return conn
+        sqlite3.Connection.execute(conn, "PRAGMA journal_mode=DELETE")
     except Exception:
-        if conn is not None:
-            try:
-                conn.close()
-            except Exception:
-                pass
-        else:
-            if fayl_zaregistrirovan:
-                try:
-                    _ua_fayl_otpustit()
-                except Exception:
-                    pass
-            try:
-                ZAMOK.release()
-            except Exception:
-                pass
-        raise
+        pass
+    sqlite3.Connection.execute(
+        conn, "PRAGMA busy_timeout=%d" % (ZAMOK_OZHIDANIE * 1000)
+    )
+    sqlite3.Connection.execute(conn, "PRAGMA foreign_keys=ON")
+    return conn
 '''
 
 
@@ -239,13 +319,16 @@ def validate_candidate(source: str) -> None:
         MARKER,
         "_ua_fayl_zahvatit",
         "CRM thread queue timeout",
-        "fayl_zaregistrirovan",
+        "_pered_zapisyu",
+        "class _UaKursor",
         "_commit_s_povtorom",
     )
-    if any(value not in source for value in required) or "_ua_fayl_zahvatit" not in connect_text:
+    if any(value not in source for value in required):
         raise InstallError("HOTFIX_CONTRACT_MISSING")
-    if "if not vzyata" not in connect_text:
+    if "if not vzyata" not in source:
         raise InstallError("THREAD_QUEUE_NOT_FAIL_CLOSED")
+    if "factory=Soedinenie" not in connect_text or "sqlite3.Connection.execute" not in connect_text:
+        raise InstallError("CONNECT_CONTRACT_MISSING")
     compile(source, "db.py.candidate", "exec")
 
 
