@@ -1,5 +1,5 @@
 name: task068-ferry-vin-v1-1-deploy
-# deploy-revision: 11-semantic-crm-action-gate
+# deploy-revision: 12-final-legacy-duplicate-purge
 
 on:
   push:
@@ -189,6 +189,7 @@ jobs:
                   assert item['diagnostics_links'] == 1 and item['diagnostics_target_complete'] is True
                   assert item['vin_guard_count'] == 1 and item['vin_button_count'] == 1
                   assert item['forbidden_sea_terms'] == 0
+                  assert item['legacy_duplicate_ui'] == 0
                   assert item['vin'] and item['engine_cc'] > 0 and item['video_count'] >= 0
           assert cards['UA-0009']['roots']['video']['engine_cc'] == 2000
           assert cards['UA-0010']['roots']['video']['engine_cc'] == 2000
@@ -201,6 +202,7 @@ jobs:
               assert card['video_count'] == expected['video_count']
               assert card['vin_button_count'] == 1 and card['diagnostics_links'] == 1
               assert card['forbidden_sea_terms'] == 0
+              assert card['legacy_duplicate_ui'] == 0
           report = '\n'.join([
               '# UA-CARDS-FERRY-VIN-001 V1.1', '', 'STATUS: **DONE**', '',
               '- Все 10 текущих карточек и все будущие закреплены единым финальным контрактом.',
@@ -210,6 +212,7 @@ jobs:
               '- VIN, двигатель, этап, срок и количество видео синхронизированы между CRM, каталогом и карточкой.',
               '- UA-0009 и UA-0010: двигатель 2000 см³; отдельный safe-publication gate PASS.',
               '- Все пользовательские формулировки «море» заменены на «паром» в RU/UA.',
+              '- Старые mcf-etap/mcf-track/mcf-diag-off блоки удаляются финальным фильтром всех генераторов.',
               '- Каталог и карточки защищены от старого Safari-кеша версией контракта.',
               '- CRM-бот: дублирующих семантических кнопок нет.',
               '- Оба Telegram-бота после перезапуска: PASS.',
