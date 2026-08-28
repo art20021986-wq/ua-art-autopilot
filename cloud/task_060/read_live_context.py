@@ -52,7 +52,7 @@ def function_records(source, filename):
         segment = "\n".join(lines[node.lineno - 1:node.end_lineno])
         low = segment.lower()
         wanted = (
-            node.name in {"run_ai_draft", "ai_save", "parse_image", "parse_message", "_post_json", "anthropic_key", "clean", "render", "flatten"}
+            node.name in {"run_ai_draft", "ai_save", "parse_image", "parse_message", "transcribe", "voice_enabled", "_post_json", "anthropic_key", "clean", "render", "flatten"}
             or any(n in low for n in NEEDLES)
         )
         if not wanted:
