@@ -22,6 +22,7 @@ VOICE_RESTORE_MARKER = "CRM-VOICE-RESTORE-01-V1.3.1"
 INPUT_DB_MARKER = "CRM-INPUT-DB-ROUTES-02-V1.3.2"
 CONTAINER_MARKER = "CRM-CONTAINER-ROUTES-02-V1.3.2"
 MEDIA_EXTRACT_MARKER = "CRM-MEDIA-EXTRACT-03-V1.3.3"
+UNIVERSAL_TEXT_MARKER = "CRM-UNIVERSAL-TEXT-04-V1.3.4"
 DB_MARKER = "CRM-DB-BOUNDED-QUEUE-001"
 ROOT = pathlib.Path("/home/Carix")
 STAGING = ROOT / "autopilot_inbox" / "cloud" / "task_047_ferry_discovery"
@@ -1347,6 +1348,111 @@ def _v171_schedule_media_extract(context, msg, card_id, file_id, unique_id,
 '''
 
 
+UNIVERSAL_TEXT_HELPERS = r'''# CRM-UNIVERSAL-TEXT-04-V1.3.4: every relevant open-card text is handled.
+def _v172_text_candidates(text, schema):
+    """Extract only explicit CRM facts; marketing prose is never a field value."""
+    import re as _v172_re
+    value = str(text or "").strip()
+    data = _v171_media_candidates(value, schema)
+    folded = value.casefold().replace("ё", "е")
+
+    # A deposit, booking fee or other number in an advertisement is not the
+    # vehicle sale price.  Price/status/description require an explicit label.
+    if "price_uah" in data and not _v172_re.search(
+            r"(?:цена\s+(?:продажи|авто|автомобиля)|стоимость\s+(?:авто|автомобиля)|"
+            r"sale\s+price|vehicle\s+price)\s*[:=\-–—]?\s*(?:[$₴]\s*)?"
+            r"(?:\d|один|два|две|три|четыре|пять|сто|one|two|three|hundred)",
+            folded):
+        data.pop("price_uah", None)
+    if "condition_text" in data and not _v172_re.search(
+            r"(?:описание|тех(?:ническое)?\s+состояние|description)\s*[:=\-–—]", folded):
+        data.pop("condition_text", None)
+    if "status" in data and not _v172_re.search(
+            r"(?:статус|этап|status)\s*[:=\-–—]", folded):
+        data.pop("status", None)
+    return data
+
+
+def _v172_queue_cas(card_id, field, expected_old, new_value, actor_id):
+    """Durably accept a missing-only field without waiting for SQLite."""
+    try:
+        import crm_online_guard as _v172_guard
+        _v172_guard.enqueue_field_update(
+            "cars", card_id, field, new_value, actor_id,
+            expected_old=expected_old, correction=False, mode="cas")
+        return True, "queued"
+    except Exception:
+        return False, "queue_error"
+
+
+async def _v172_apply_open_text(msg, card, actor_id, text):
+    """Parse the complete message once and fill every still-empty CRM field."""
+    import time as _v172_time
+    import ai_fast_schema as _v172_fast
+    import ai_filter as _v172_filter
+    started = _v172_time.monotonic()
+    if _v168_is_correction(text):
+        return False
+    schema = _v169_voice_schema(_v172_fast, _v172_filter)
+    data_all = _v172_text_candidates(text, schema)
+    if not data_all:
+        return False
+
+    card_id = int(card["id"])
+    current = card_of(card_id) or card
+    missing = {field for field in schema if _v168_empty(current.get(field))}
+    data = {field: value for field, value in data_all.items() if field in missing}
+    changes, _skipped = voice_change_plan(current, data, missing, False)
+    accepted, queued, failed = [], [], []
+    force_queue = False
+    for field, old, new in changes:
+        # One lock wait is enough evidence that this whole message belongs in
+        # the durable queue.  The remaining fields are then accepted instantly.
+        if force_queue or _v172_time.monotonic() - started >= 2.8:
+            ok, reason = _v172_queue_cas(
+                card_id, field, old, new, actor_id)
+        else:
+            ok, reason = _v168_cas_write(
+                card_id, field, old, new, actor_id, False)
+        if reason in ("queued", "busy"):
+            force_queue = True
+        if ok:
+            accepted.append((field, new))
+            if reason == "queued":
+                queued.append(field)
+        else:
+            failed.append(field)
+
+    number = current.get("auto_number") or "#%d" % card_id
+    if accepted:
+        names = ", ".join(LABELS_ALL.get(field, field) for field, _ in accepted)
+        suffix = (" Часть значений принята в надёжную очередь."
+                  if queued else "")
+        await msg.reply_text(
+            "%s · записано: %s.%s Уже заполненные поля не изменялись."
+            % (number, names, suffix),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                "← Вернуться к карточке", callback_data="car_open:%d" % card_id)]]))
+    elif data_all:
+        await msg.reply_text(
+            "%s · распознанные данные уже заполнены; повторно не записывал."
+            % number,
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                "← Вернуться к карточке", callback_data="car_open:%d" % card_id)]]))
+
+    try:
+        import crm_online_guard as _v172_guard
+        _v172_guard.record_timing(
+            "crm_universal_text", _v172_time.monotonic() - started,
+            "accepted" if accepted else "already_filled", card_id=card_id,
+            detail="fields=%d;queued=%d;failed=%d" % (
+                len(accepted), len(queued), len(failed)))
+    except Exception:
+        pass
+    return True
+'''
+
+
 CLIENT_HELPERS = r'''# CRM-ONLINE-GUARD-001-V1.3: fast client callbacks and cached read-only catalog.
 _V168_CATALOG_CACHE = []
 _V168_CATALOG_AT = 0.0
@@ -1822,6 +1928,35 @@ def upgrade_v13_media(source: str) -> str:
     return source
 
 
+def upgrade_v13_text(source: str) -> str:
+    """Route every relevant ordinary text through the missing-only parser."""
+    if UNIVERSAL_TEXT_MARKER in source:
+        return source
+    if MEDIA_EXTRACT_MARKER not in source:
+        raise InstallError("TEXT_UPGRADE_REQUIRES_MEDIA_V133")
+    source = insert_before(source, "voice_change_plan", UNIVERSAL_TEXT_HELPERS)
+    auto = segment(source, "auto_catch")
+    old_entry = '''    text = (msg.text or "").strip()
+    if not text:
+        return False
+    if VIN_RE.search(text):
+        return False                        # новый VIN — это новая машина, не правка'''
+    new_entry = '''    text = (msg.text or "").strip()
+    if not text:
+        return False
+
+    # The open card owns this message.  Parse all explicit CRM facts before
+    # legacy command/request routing, including a missing VIN in long text.
+    if await _v172_apply_open_text(msg, card, actor_id, text):
+        return True
+    if VIN_RE.search(text):
+        return False                        # different VIN is never a silent overwrite'''
+    auto = replace_once(auto, old_entry, new_entry, "universal_open_text_route")
+    return replace_definition(
+        source, "auto_catch", auto,
+        sha(segment(source, "auto_catch").encode()))
+
+
 def build_container(source: str) -> str:
     """Make all container callbacks bounded and all writes queue-aware."""
     if CONTAINER_MARKER in source:
@@ -2055,6 +2190,7 @@ def validate_candidates(candidates):
         'schema_allowed = _v169_voice_schema(fast, ai_filter)',
         INPUT_DB_MARKER, "_v170_anchor_ferry_terms",
         MEDIA_EXTRACT_MARKER, "_v171_schedule_media_extract",
+        UNIVERSAL_TEXT_MARKER, "_v172_apply_open_text",
         "Сохраняю из очереди", "_v169_parse_number(value)",
     )
     if any(value not in cars for value in required):
@@ -2125,6 +2261,7 @@ def build_all(original):
                 "drop_pending_updates=True", "drop_pending_updates=False")
     candidates["cars_ui.py"] = upgrade_v13_input(candidates["cars_ui.py"])
     candidates["cars_ui.py"] = upgrade_v13_media(candidates["cars_ui.py"])
+    candidates["cars_ui.py"] = upgrade_v13_text(candidates["cars_ui.py"])
     candidates["konteyner.py"] = build_container(candidates["konteyner.py"])
     if DB_MARKER not in candidates["db.py"]:
         candidates["db.py"] = build_db(sources["db.py"])
