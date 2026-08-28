@@ -21,6 +21,7 @@ MARKER = "CRM-ONLINE-GUARD-001-V1.3"
 VOICE_RESTORE_MARKER = "CRM-VOICE-RESTORE-01-V1.3.1"
 INPUT_DB_MARKER = "CRM-INPUT-DB-ROUTES-02-V1.3.2"
 CONTAINER_MARKER = "CRM-CONTAINER-ROUTES-02-V1.3.2"
+MEDIA_EXTRACT_MARKER = "CRM-MEDIA-EXTRACT-03-V1.3.3"
 DB_MARKER = "CRM-DB-BOUNDED-QUEUE-001"
 ROOT = pathlib.Path("/home/Carix")
 STAGING = ROOT / "autopilot_inbox" / "cloud" / "task_047_ferry_discovery"
@@ -1233,6 +1234,119 @@ def _v169_semantic_fields(text, allowed, timeout=1.8):
 '''
 
 
+MEDIA_EXTRACT_HELPERS = r'''# CRM-MEDIA-EXTRACT-03-V1.3.3: durable first, extract missing fields in background.
+def _v171_media_candidates(text, allowed):
+    """Use the same zero-token schema parser for captions and OCR text."""
+    import ai_fast_schema as _v171_fast
+    import ai_filter as _v171_filter
+    import local_ocr as _v171_ocr
+    permitted = set(allowed or ())
+    value = str(text or "").strip()
+    if not value or not permitted:
+        return {}
+    data = {}
+    data.update(_v171_ocr.fields_from_text(value, permitted))
+    data.update(_v171_fast.fast_text_data(value, _v171_filter))
+    if data:
+        data = _v171_fast.clean_car(
+            _v171_fast.parsed_from_data(data), _v171_filter, value)
+    data = {key: item for key, item in (data or {}).items()
+            if key in permitted and item not in (None, "", [])}
+    data.update(_v167_voice_explicit_fields(value, permitted))
+    data.update(_v169_extra_fields(value, permitted))
+    return {key: item for key, item in data.items()
+            if key in permitted and item not in (None, "", [])}
+
+
+async def _v171_extract_media(context, msg, card_id, file_id, unique_id,
+                              actor_id, kind, caption=""):
+    """Extract without delaying the user's durable media acknowledgement."""
+    import asyncio as _v171_asyncio
+    import time as _v171_time
+    started = _v171_time.monotonic()
+    applied = []
+    try:
+        import ai_fast_schema as _v171_fast
+        import ai_filter as _v171_filter
+        import local_ocr as _v171_ocr
+        card = card_of(card_id) or {}
+        schema = _v169_voice_schema(_v171_fast, _v171_filter)
+        allowed = {field for field in schema if _v168_empty(card.get(field))}
+        data = _v171_media_candidates(caption, allowed)
+
+        # Photo OCR is local and bounded; no LLM token is spent.  The media
+        # itself was already accepted to the durable spool before this starts.
+        if kind == "photo" and allowed:
+            try:
+                telegram_file = await _v171_asyncio.wait_for(
+                    context.bot.get_file(file_id), timeout=1.25)
+                payload = bytes(await _v171_asyncio.wait_for(
+                    telegram_file.download_as_bytearray(), timeout=1.5))
+                remaining = max(0.25, 4.25 - (_v171_time.monotonic() - started))
+                image_data = await _v171_asyncio.wait_for(
+                    _v171_asyncio.to_thread(
+                        _v171_ocr.fields_from_image, payload, allowed,
+                        min(2.25, remaining)),
+                    timeout=remaining)
+                data.update({key: value for key, value in (image_data or {}).items()
+                             if key in allowed and value not in (None, "", [])})
+            except Exception as exc:
+                log.info("CRM media OCR skipped card=%s: %s", card_id, type(exc).__name__)
+
+        # Re-read immediately before CAS: a concurrent voice/text update wins.
+        card = card_of(card_id) or card
+        allowed_now = {field for field in schema if _v168_empty(card.get(field))}
+        data = {key: value for key, value in data.items() if key in allowed_now}
+        changes, _skipped = voice_change_plan(card, data, allowed_now, False)
+        for field, old, new in changes:
+            ok, _reason = _v168_cas_write(
+                card_id, field, old, new, actor_id, False)
+            if ok:
+                applied.append((field, new))
+        if applied:
+            names = ", ".join(LABELS_ALL.get(field, field) for field, _ in applied)
+            await msg.reply_text(
+                "Из медиа заполнено: %s. Уже заполненные поля не изменялись."
+                % names,
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                    "Открыть карточку", callback_data="car_open:%d" % int(card_id))]]))
+    except Exception as exc:
+        log.warning("CRM media extraction card=%s: %s", card_id, exc)
+    finally:
+        try:
+            import crm_online_guard as _v171_guard
+            _v171_guard.record_timing(
+                "crm_media_extract", _v171_time.monotonic() - started,
+                "updated" if applied else "no_fields", card_id=card_id,
+                detail=str(kind))
+        except Exception:
+            pass
+
+
+def _v171_schedule_media_extract(context, msg, card_id, file_id, unique_id,
+                                 actor_id, kind, caption=""):
+    """Idempotently start one background extraction per Telegram media file."""
+    try:
+        state = context.application.bot_data
+        seen = state.get("crm_media_extract_seen")
+        if not isinstance(seen, list):
+            seen = []
+            state["crm_media_extract_seen"] = seen
+        key = "%s:%s" % (int(card_id), str(unique_id or file_id))
+        if key in seen:
+            return False
+        seen.append(key)
+        del seen[:-200]
+        context.application.create_task(
+            _v171_extract_media(context, msg, int(card_id), file_id,
+                                unique_id, int(actor_id), str(kind), caption or ""))
+        return True
+    except Exception as exc:
+        log.warning("CRM media extraction not scheduled: %s", exc)
+        return False
+'''
+
+
 CLIENT_HELPERS = r'''# CRM-ONLINE-GUARD-001-V1.3: fast client callbacks and cached read-only catalog.
 _V168_CATALOG_CACHE = []
 _V168_CATALOG_AT = 0.0
@@ -1605,6 +1719,109 @@ def upgrade_v13_input(source: str) -> str:
     return source
 
 
+def upgrade_v13_media(source: str) -> str:
+    """Accept media immediately and extract only still-missing CRM fields."""
+    if MEDIA_EXTRACT_MARKER in source:
+        return source
+    if INPUT_DB_MARKER not in source:
+        raise InstallError("MEDIA_UPGRADE_REQUIRES_INPUT_V132")
+    source = insert_before(source, "voice_change_plan", MEDIA_EXTRACT_HELPERS)
+
+    auto = segment(source, "auto_catch")
+    old_media = '''    # ── фото, видео, документы: только по кнопке ──
+    # Что нельзя опознать наверняка, бот сам в карточку не кладёт.
+    # Нажмите «Фото и видео» или «Тех. состояние» и пришлите файлы туда.
+    if msg.photo or msg.video or msg.video_note or msg.document:
+        return False'''
+    new_media = '''    # Every media source is durably accepted first; extraction never blocks ACK.
+    if msg.photo or msg.video or msg.video_note or msg.document:
+        tag = ""
+        if msg.photo:
+            media_object = msg.photo[-1]
+            target, kind = "photos", "photo"
+        elif msg.video:
+            media_object = msg.video
+            target, kind = "videos", "video"
+            slot = _orient(msg.video)
+            tag = {"video_h": "гориз", "video_v": "вертик"}.get(slot, "")
+        elif msg.video_note:
+            media_object = msg.video_note
+            target, kind, tag = "videos", "video", "вертик"
+        else:
+            media_object = msg.document
+            mime = str(getattr(media_object, "mime_type", "") or "").casefold()
+            if mime.startswith("image/"):
+                target, kind = "photos", "photo"
+            elif mime.startswith("video/"):
+                target, kind = "videos", "video"
+            else:
+                return False
+        file_id = media_object.file_id
+        unique_id = getattr(media_object, "file_unique_id", None) or file_id
+        result = _v165_spool_enqueue(
+            cid, target, file_id, actor_id, tag,
+            unique_id=unique_id, message_id=getattr(msg, "message_id", None))
+        state = str(result.get("state") or "")
+        if state == "accepted":
+            _v171_schedule_media_extract(
+                context, msg, cid, file_id, unique_id, actor_id, kind,
+                getattr(msg, "caption", "") or "")
+            await msg.reply_text(
+                "%s · медиа принято. Сохранение и распознавание идут в фоне."
+                % number,
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                    "Открыть карточку", callback_data="car_open:%d" % cid)]]))
+        elif state.startswith("duplicate"):
+            await msg.reply_text("%s · этот файл уже принят, дубль не создан." % number)
+        else:
+            await msg.reply_text("%s · достигнут лимит медиа карточки." % number)
+        return True'''
+    auto = replace_once(auto, old_media, new_media, "auto_media_durable_extract")
+    source = replace_definition(
+        source, "auto_catch", auto, sha(segment(source, "auto_catch").encode()))
+
+    catch = segment(source, "catch_message")
+    old_fast_photo = '''                _v165_schedule_progress(
+                    context, msg, wait["card_id"], target, _v166_session_ids,
+                    wait.get("_fast_session_duplicates", 0),
+                    wait.get("_fast_session_rejected", 0))
+                raise ApplicationHandlerStop'''
+    new_fast_photo = '''                _v165_schedule_progress(
+                    context, msg, wait["card_id"], target, _v166_session_ids,
+                    wait.get("_fast_session_duplicates", 0),
+                    wait.get("_fast_session_rejected", 0))
+                if state == "accepted":
+                    _v171_schedule_media_extract(
+                        context, msg, wait["card_id"], file_id, unique_id,
+                        user_id, "photo", getattr(msg, "caption", "") or "")
+                raise ApplicationHandlerStop'''
+    catch = replace_once(catch, old_fast_photo, new_fast_photo,
+                         "selected_photo_background_extract")
+    old_other_media = '''        if file_id:
+            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)
+            if answer:
+                await msg.reply_text(answer)
+            raise ApplicationHandlerStop'''
+    new_other_media = '''        if file_id:
+            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)
+            if answer:
+                await msg.reply_text(answer)
+            media_object = msg.video or msg.video_note or msg.document
+            unique_id = getattr(media_object, "file_unique_id", None) or file_id
+            media_kind = ("photo" if str(getattr(media_object, "mime_type", "") or "")
+                          .casefold().startswith("image/") else "video")
+            _v171_schedule_media_extract(
+                context, msg, wait["card_id"], file_id, unique_id,
+                user_id, media_kind, getattr(msg, "caption", "") or "")
+            raise ApplicationHandlerStop'''
+    catch = replace_once(catch, old_other_media, new_other_media,
+                         "selected_other_media_background_extract")
+    source = replace_definition(
+        source, "catch_message", catch,
+        sha(segment(source, "catch_message").encode()))
+    return source
+
+
 def build_container(source: str) -> str:
     """Make all container callbacks bounded and all writes queue-aware."""
     if CONTAINER_MARKER in source:
@@ -1837,6 +2054,7 @@ def validate_candidates(candidates):
         VOICE_RESTORE_MARKER, "_v169_semantic_fields",
         'schema_allowed = _v169_voice_schema(fast, ai_filter)',
         INPUT_DB_MARKER, "_v170_anchor_ferry_terms",
+        MEDIA_EXTRACT_MARKER, "_v171_schedule_media_extract",
         "Сохраняю из очереди", "_v169_parse_number(value)",
     )
     if any(value not in cars for value in required):
@@ -1906,6 +2124,7 @@ def build_all(original):
             candidates[name] = candidates[name].replace(
                 "drop_pending_updates=True", "drop_pending_updates=False")
     candidates["cars_ui.py"] = upgrade_v13_input(candidates["cars_ui.py"])
+    candidates["cars_ui.py"] = upgrade_v13_media(candidates["cars_ui.py"])
     candidates["konteyner.py"] = build_container(candidates["konteyner.py"])
     if DB_MARKER not in candidates["db.py"]:
         candidates["db.py"] = build_db(sources["db.py"])
