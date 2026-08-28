@@ -1,0 +1,69 @@
+{
+  "card": {
+    "condition_total": 0,
+    "condition_unique": 0,
+    "id": 18,
+    "photo_hashes_ordered": [
+      "53bb562bac82f456239c56a894c87e3d5317dbfb9e69051cccbecf4fb0bd8204",
+      "7404e4e573785781bc3b1b44f6a2fcca8651a21d5b91ced4f4a9300cef1b2490",
+      "a99929e64c2f5c00b1a1dfd77107b949183b0c74a81fdeddf10336f05dfcfc38",
+      "5123278c863d06a2ae1dbeea8e3ded00e9a0f34fee5f43628e214cc11d1cd49d",
+      "56206b5c15f0173fc756771654b946cc85df14617bfcaa3a0cc3e4d14c999092",
+      "654b71ff1565c1d33d630abedf06f1ef24c27e6054a1d311b0cd01c0989cd175",
+      "c5d445b341e1c6fb0c29fd23bc7a982a311e87ea9b0dac387d14f087a38b0e08",
+      "0b7746b96dd5f242683b868bf8e7dd4482b4c03720dc43568be9556aae97e46d",
+      "6183770bc0b54e3c3af538f0bab308ab59bcaff1c1af7fe5054b8128c3e8ae5f",
+      "d967d4f4a4b759cf42df9cc1289caf34bbb6c508dd2b8f013c1aa033c2a3ecf1",
+      "9c5b5cc656f303b624522bda5a0d9a909101c0017af37ee707ffab4c4276e7ea",
+      "fab53dadb885571efdc23ad6db44ad464fb465c435c15a3cea2e13ade2b080c1",
+      "831e4c18bd707af5028a06dd40741c078dc4b22ab8aab090c6508e2f7c08f4d2",
+      "6a975083c0fc091ebc4b101992d3761b40f600d4180ee2b2af9da8c546b501bb",
+      "c9745e91141ec314aaeb6ec7afa6ed5d70de2f5e6d92aa0c2a150a92d16b49e9",
+      "562ceef137366492975610503126c9e5573bc0614a574e80aaf674f80461c9e9",
+      "c2e19f603316a8acf52cac39168922ceaa270dbdbee86ad62bb22519f1577979",
+      "528ca24f5f921e0c2db1c27f4261cdf635693502a5a06996c5b25475e8eaeb46",
+      "03910f41447d989e140ce41fb89cfdac2704accefd0472c859e6a3cdc4d2fa50",
+      "1605d1f4cf0f938fbd72addeb1a211b8014beba3f91be21241a41dfc9aa4560e",
+      "f5d14b276048b342fc21e7b7a2a41056976c2dd1619fab5d86e3f799f853a12b",
+      "ad5ccd45d02b7d157ef343722ce1f0d85b58bd23bd69a9b630a9714a9f8abf46"
+    ],
+    "photos_duplicate_hashes": [],
+    "photos_total": 22,
+    "photos_unique": 22,
+    "updated_at": "2026-08-28T18:07:45"
+  },
+  "cards_found": 1,
+  "errors": [],
+  "llm_tokens": 0,
+  "media_table": {
+    "by_status": {
+      "pending": 19
+    },
+    "by_vid": {
+      "foto": 19
+    },
+    "duplicate_hashes": [],
+    "missing_vs_media_hashes": [
+      "5123278c863d06a2ae1dbeea8e3ded00e9a0f34fee5f43628e214cc11d1cd49d",
+      "53bb562bac82f456239c56a894c87e3d5317dbfb9e69051cccbecf4fb0bd8204",
+      "56206b5c15f0173fc756771654b946cc85df14617bfcaa3a0cc3e4d14c999092"
+    ],
+    "orphan_vs_card_hashes": [],
+    "rows_total": 19,
+    "unique_file_ids": 19
+  },
+  "mode": "READ_ONLY_UA0011_RECONCILIATION",
+  "production_touched": false,
+  "quick_check": "ok",
+  "runtime": {
+    "cars_ui_sha256": "a7da33f7a653a0cef697aad784e5c29bc2600639eb48b272793d61f1ac0e2af5",
+    "drain_lock_marker": false,
+    "fastpath_marker": true
+  },
+  "spool": {
+    "rows_for_card": 0,
+    "targets": {},
+    "unique_file_ids": 0
+  },
+  "task_id": "task_065"
+}
