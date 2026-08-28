@@ -30,7 +30,7 @@ MAX_DB = 100_000_000
 FILES = {
     "cars_ui.py": ROOT + "/cars_ui.py",
     "team_bot.py": ROOT + "/team_bot.py",
-    "client_bot.py": ROOT + "/client_bot.py",
+    "bot.py": ROOT + "/bot.py",
     "start_safe.py": ROOT + "/start_safe.py",
     "db.py": ROOT + "/db.py",
     "ai.py": ROOT + "/ai.py",
@@ -112,7 +112,7 @@ def relevant_definition(filename: str, name: str, body: str) -> bool:
             "register", "build_application", "_v165_", "_v166_", "_v167_",
         )
         return any(key in lowered for key in keys)
-    if filename in {"team_bot.py", "client_bot.py", "start_safe.py"}:
+    if filename in {"team_bot.py", "bot.py", "start_safe.py"}:
         return any(key in lowered for key in (
             "build_application", "add_handler", "callbackqueryhandler",
             "cars_ui", "run_polling", "start", "health", "error",
