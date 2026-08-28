@@ -33,6 +33,7 @@ CATALOG_PATHS = {
 }
 OUT = pathlib.Path("cloud/task_068_ferry_vin/evidence/current.json")
 MAX_FILE = 2_000_000
+MAX_DB_FILE = 128_000_000
 CARD_RE = re.compile(r"^UA-[0-9]{4,}$")
 BUTTON_FILES = {"cars_ui.py", "team_bot.py"}
 WANTED_DEFINITIONS = {
@@ -93,13 +94,14 @@ def read_remote(path: str, *, missing_ok: bool = False) -> bytes:
         },
     )
     try:
-        with urllib.request.urlopen(request, timeout=60) as response:
-            data = response.read(MAX_FILE + 1)
+        with urllib.request.urlopen(request, timeout=120) as response:
+            limit = MAX_DB_FILE if path == CRM_PATH else MAX_FILE
+            data = response.read(limit + 1)
     except urllib.error.HTTPError as exc:
         if missing_ok and exc.code == 404:
             return b""
         raise
-    if len(data) > MAX_FILE:
+    if len(data) > (MAX_DB_FILE if path == CRM_PATH else MAX_FILE):
         raise RuntimeError("REMOTE_FILE_TOO_LARGE:" + pathlib.PurePosixPath(path).name)
     return data
 
