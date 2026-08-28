@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 15
+# probe-revision: 16
 
 on:
   push:
@@ -160,10 +160,13 @@ jobs:
           result['db_lock_contract'] = db_selected
           code_audit = {}
           requested = {
-              'ai.py': {'transcribe', 'openai_key'},
+              'ai.py': {'transcribe', 'openai_key', 'enabled', 'parse_message',
+                        'validate', 'to_card_data'},
               'ai_fast_schema.py': {'car_fields', 'fast_text_data', 'parsed_from_data', 'clean_car'},
               'local_ocr.py': {'fields_from_text'},
-              'cars_ui.py': {'voice_change_plan', '_v167_voice_explicit_fields'},
+              'cars_ui.py': {'voice_change_plan', '_v167_voice_explicit_fields',
+                             'auto_catch'},
+              'ai_filter.py': {'clean'},
           }
           for filename, selected_names in requested.items():
               module_source = get(root + '/' + filename, limit=2_000_000).decode('utf-8')
