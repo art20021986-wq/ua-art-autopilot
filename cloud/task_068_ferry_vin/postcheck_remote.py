@@ -9,6 +9,7 @@ import os
 import pathlib
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -124,6 +125,21 @@ def _runtime_contract() -> dict:
     }
 
 
+def _db_snapshot_retry():
+    """Wait out short CRM write locks without weakening the read-only gate."""
+    last = None
+    for attempt in range(1, 9):
+        try:
+            return repair._db_snapshot()
+        except Exception as exc:
+            if "database is locked" not in str(exc).lower():
+                raise
+            last = exc
+            if attempt < 8:
+                time.sleep(min(attempt * 2, 10))
+    raise last
+
+
 def main() -> int:
     result = {
         "contract_id": repair.CONTRACT,
@@ -143,7 +159,7 @@ def main() -> int:
         repair._validate_task068_source(pathlib.Path(repair.YADRO_PATH).read_text(encoding="utf-8"), repair.YADRO_PATH)
         repair._validate_task068_source(pathlib.Path(repair.MASTER_CARD_PATH).read_text(encoding="utf-8"), repair.MASTER_CARD_PATH)
         repair._validate_untouched()
-        rows, db_state = repair._db_snapshot()
+        rows, db_state = _db_snapshot_retry()
         identifiers = [str(row["auto_number"]) for row in rows]
         media_state = repair._media_inventory(identifiers)
         cards = repair._validate_cards(rows)
