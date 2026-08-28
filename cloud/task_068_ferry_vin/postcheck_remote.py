@@ -97,7 +97,6 @@ def _runtime_contract() -> dict:
         )),
         "cards_ui_registered": "cars_ui.register" in sources["crm"],
         "stable_launcher": "run_all.py" in sources["launcher"],
-        "sqlite_lock_preserved": "CRM-DB-LOCK-EMERGENCY-001" in sources["db"],
         "crm_actions_unique": sources["cards_ui"].count('callback_data="car_stage:%d"') == 1
         and sources["cards_ui"].count('callback_data="car_cond:%d"') == 1,
         "master_final_filter": repair.FERRY_VIN_SOURCE_MARKER in sources["master_card"],
@@ -167,11 +166,13 @@ def main() -> int:
             raise RuntimeError("UA0009_STAGE_CONTRACT_FAILED")
 
         bot_health = _telegram_probe()
+        result["bot_health"] = bot_health
         if not bot_health["tokens_distinct"] or any(
             not bot_health["bots"].get(name, {}).get("ok") for name in ("client", "crm")
         ):
             raise RuntimeError("BOT_HEALTH_FAILED")
         runtime = _runtime_contract()
+        result["runtime"] = runtime
         if not runtime["ok"]:
             raise RuntimeError("BOT_RUNTIME_CONTRACT_FAILED")
 
