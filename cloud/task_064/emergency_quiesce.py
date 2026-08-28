@@ -26,7 +26,7 @@ def request(method: str, endpoint: str, allowed=(200,), data=None):
         method=method,
         headers={
             "Authorization": "Token " + os.environ["PYTHONANYWHERE_API_TOKEN"],
-            "User-Agent": "ua-art-task064-quiesce/1",
+            "User-Agent": "ua-art-task064-quiesce/2",
         },
     )
     try:
@@ -66,9 +66,8 @@ def main():
     schedules = read_list("schedule/")
     matched = [item for item in schedules if str(item.get("command", "")).strip() in TARGETS]
     commands = {str(item.get("command", "")).strip() for item in matched}
-    missing = sorted(TARGETS - commands)
-    if missing:
-        raise RuntimeError("TARGET_SCHEDULE_MISSING:" + ",".join(missing))
+    # Idempotent recovery: already-removed legacy writers are the desired state.
+    already_absent = sorted(TARGETS - commands)
 
     removed = []
     for item in matched:
@@ -106,6 +105,7 @@ def main():
         "crm_db_write": False,
         "site_write": False,
         "legacy_schedules_removed": removed,
+        "legacy_schedules_already_absent": already_absent,
         "remaining_conflicts": conflicts,
         "bot_restart_requested": True,
         "bot_task_id_sha256": hashlib.sha256(str(bot_id).encode()).hexdigest(),
