@@ -1,9 +1,9 @@
 # Ferry wording Gate A report
 
 status: PASS_READY_FOR_GATE_B
-generated_at_utc: 2026-08-28T07:25:11Z
-candidate_files: 13
-total_html_changes: 39
+generated_at_utc: 2026-08-28T07:42:13Z
+candidate_files: 14
+total_html_changes: 44
 generator_literals_requiring_patch: 18
 generator_candidate_files: 2
 crm_table: cars
@@ -19,7 +19,7 @@ ua0009_published: false
 ## Isolated HTML candidates
 
 - `video/index.html`: 2 changes; `f8c64fec851d025f37f3efb35d539aaf1c361be7f6a2102d2b2ac5dbd4649985` → `545bae287315336804a01cb0467abb376298c8463e16a8ae05d916757cde42ba`
-- `video/katalog.html`: 14 changes; `743ce2a2d0bd35f475006cb0991f52982b6540670d62544654d2caf4d387c61a` → `73ac788e38d6aedf0c8efbf3b24278012e6bff087c9de1468fcfbfaf37f5246b`
+- `video/katalog.html`: 16 changes; `743ce2a2d0bd35f475006cb0991f52982b6540670d62544654d2caf4d387c61a` → `6711e2b02f269680b0c3ecc76371b9aa79830f9a0466b7e51b517ef547627899`
 - `video/info.html`: 2 changes; `d7e2589542991a1628835df919ce60ef0c7a29a8130cbf3915553517e62559a1` → `dbd759eb4aca9ee413d72c88d32dac9c3c626b657587479f6ab55c167fef600f`
 - `video/podbor.html`: 0 changes; `00d4f473812bcebef1d760465e0a2ed18cc010b152ea1eae340773e0527324a5` → `00d4f473812bcebef1d760465e0a2ed18cc010b152ea1eae340773e0527324a5`
 - `video/UA-0001.html`: 2 changes; `2c1f40123210389453c192098f893b5fafb4bd53aeea92855f35456f7a982a09` → `48d66ed286aa88a494322971d99e93b933af8bc7560961e6f3e32188475748b1`
@@ -31,6 +31,7 @@ ua0009_published: false
 - `video/UA-0007.html`: 2 changes; `35b27dafe0ac62e909d033074a1d7bfcf3d56f10db2ded7b4d10aa9854f7805f` → `23d2f4bfe481f6e9bbb4371598b58e06304455112ad904d8bdf2f8c37c037c51`
 - `video/UA-0008.html`: 2 changes; `d3df03714bd0dc2a420eef88c16eb89f530d7dc38ec5dfb7e325dd3199659d9e` → `f3192e949b0c86f1274e1ff34c426d33c17ab089a9f66a487ec562d71f28a736`
 - `video/UA-0009.html`: 3 changes; `c00fe8edaad664b605abe05271b72d08f5fac6ad507bdf51e22c98fdc46a103a` → `03b83759f304706e4b6a61070616348493a24b1e21134bdee9589c4f527fb48d`
+- `video/UA-0010.html`: 3 changes; `236b2934c0f404fd9d1ef5ae8f851d3625b7f303e7746a3f4ac886edccbb9951` → `fb2d459583df51ef3ae8ddd0d5a4fd26d70f8f0d020591c16826b62bc14488b9`
 
 ## Bounded Python generator context
 

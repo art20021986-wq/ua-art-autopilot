@@ -32,9 +32,9 @@
     },
     {
       "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/katalog.html",
-      "candidate_sha256": "73ac788e38d6aedf0c8efbf3b24278012e6bff087c9de1468fcfbfaf37f5246b",
-      "candidate_size": 29213,
-      "changes": 14,
+      "candidate_sha256": "6711e2b02f269680b0c3ecc76371b9aa79830f9a0466b7e51b517ef547627899",
+      "candidate_size": 29540,
+      "changes": 16,
       "occurrences": [
         {
           "action": "APPLIED",
@@ -56,110 +56,128 @@
         },
         {
           "action": "APPLIED",
-          "after": "На пароме · Корея → Грузия",
-          "before": "В море · Корея → Грузия",
-          "classification": "USER_FACING_LONG",
-          "context": "ATTR_DATA-RU",
-          "form": "long",
+          "after": "На пароме · 4",
+          "before": "В море · 4",
+          "classification": "USER_FACING_STATUS",
+          "context": "TEXT_NODE",
+          "form": "sea_filter",
           "language": "ru"
         },
         {
           "action": "APPLIED",
-          "after": "На поромі · Корея → Грузія",
+          "after": "Показано: 10",
+          "before": "Показано: 8",
+          "classification": "USER_FACING_CATALOG_COUNT",
+          "context": "TEXT_NODE",
+          "form": "catalog_result",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_CATALOG_ROUTE",
+          "context": "ATTR_DATA-RU",
+          "form": "catalog_sea_status",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На поромі&#10;Маршрут: Корея → Грузія",
           "before": "У морі · Корея → Грузія",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "ATTR_DATA-UK",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "uk"
         },
         {
           "action": "APPLIED",
-          "after": "На пароме · Корея → Грузия",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
           "before": "В море · Корея → Грузия",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "TEXT_NODE",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "ru"
         },
         {
           "action": "APPLIED",
-          "after": "На пароме · Корея → Грузия",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
           "before": "В море · Корея → Грузия",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "ATTR_DATA-RU",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "ru"
         },
         {
           "action": "APPLIED",
-          "after": "На поромі · Корея → Грузія",
+          "after": "На поромі&#10;Маршрут: Корея → Грузія",
           "before": "У морі · Корея → Грузія",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "ATTR_DATA-UK",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "uk"
         },
         {
           "action": "APPLIED",
-          "after": "На пароме · Корея → Грузия",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
           "before": "В море · Корея → Грузия",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "TEXT_NODE",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "ru"
         },
         {
           "action": "APPLIED",
-          "after": "На пароме · Корея → Грузия",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
           "before": "В море · Корея → Грузия",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "ATTR_DATA-RU",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "ru"
         },
         {
           "action": "APPLIED",
-          "after": "На поромі · Корея → Грузія",
+          "after": "На поромі&#10;Маршрут: Корея → Грузія",
           "before": "У морі · Корея → Грузія",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "ATTR_DATA-UK",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "uk"
         },
         {
           "action": "APPLIED",
-          "after": "На пароме · Корея → Грузия",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
           "before": "В море · Корея → Грузия",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "TEXT_NODE",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "ru"
         },
         {
           "action": "APPLIED",
-          "after": "На пароме · Корея → Грузия",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
           "before": "В море · Корея → Грузия",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "ATTR_DATA-RU",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "ru"
         },
         {
           "action": "APPLIED",
-          "after": "На поромі · Корея → Грузія",
+          "after": "На поромі&#10;Маршрут: Корея → Грузія",
           "before": "У морі · Корея → Грузія",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "ATTR_DATA-UK",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "uk"
         },
         {
           "action": "APPLIED",
-          "after": "На пароме · Корея → Грузия",
+          "after": "На пароме&#10;Маршрут: Корея → Грузия",
           "before": "В море · Корея → Грузия",
-          "classification": "USER_FACING_LONG",
+          "classification": "USER_FACING_CATALOG_ROUTE",
           "context": "TEXT_NODE",
-          "form": "long",
+          "form": "catalog_sea_status",
           "language": "ru"
         }
       ],
@@ -493,12 +511,50 @@
       "path": "video/UA-0009.html",
       "source_sha256": "c00fe8edaad664b605abe05271b72d08f5fac6ad507bdf51e22c98fdc46a103a",
       "source_size": 35908
+    },
+    {
+      "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/video/UA-0010.html",
+      "candidate_sha256": "fb2d459583df51ef3ae8ddd0d5a4fd26d70f8f0d020591c16826b62bc14488b9",
+      "candidate_size": 36917,
+      "changes": 3,
+      "occurrences": [
+        {
+          "action": "APPLIED",
+          "after": "Паром",
+          "before": "Море",
+          "classification": "USER_FACING_SHORT_STAGE",
+          "context": "FOUR_SPAN_SEQUENCE",
+          "form": "short",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "На пароме · Корея → Грузия",
+          "before": "В море · Корея → Грузия",
+          "classification": "USER_FACING_LONG",
+          "context": "TEXT_NODE",
+          "form": "long",
+          "language": "ru"
+        },
+        {
+          "action": "APPLIED",
+          "after": "Паром: Корея → Грузия",
+          "before": "Море: Корея → Грузия",
+          "classification": "USER_FACING_ROUTE_HEADING",
+          "context": "TEXT_NODE",
+          "form": "route_heading",
+          "language": "ru"
+        }
+      ],
+      "path": "video/UA-0010.html",
+      "source_sha256": "236b2934c0f404fd9d1ef5ae8f851d3625b7f303e7746a3f4ac886edccbb9951",
+      "source_size": 36907
     }
   ],
   "crm": {
     "container_column": "sea_container",
     "id_column": "auto_number",
-    "id_count": 9,
+    "id_count": 10,
     "sha256": "065a7b53f6e5d97e8b43690306750e33fac3534dccbf713fe66b464eeb824b0f",
     "status": "OK",
     "table": "cars"
@@ -508,7 +564,7 @@
   "discovery_reasons": [],
   "errors": [],
   "gate_b_executed": false,
-  "generated_at_utc": "2026-08-28T07:25:11Z",
+  "generated_at_utc": "2026-08-28T07:42:13Z",
   "generator_candidates": [
     {
       "candidate_path": "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery/gate_a_candidates/python/stranica.py",
