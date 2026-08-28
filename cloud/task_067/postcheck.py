@@ -681,7 +681,8 @@ def source_checks():
         "voice_five_seconds": "hard_deadline = started + 4.65" in sources["cars_ui.py"],
         "voice_restore_semantic": ("CRM-VOICE-RESTORE-01-V1.3.1" in sources["cars_ui.py"]
                                    and "_v169_semantic_fields" in sources["cars_ui.py"]
-                                   and "not override" not in sources["cars_ui.py"]),
+                                   and "elif (skipped or already) and not correction:"
+                                   in sources["cars_ui.py"]),
         "stt_last_known_good_ru": ('CRM-VOICE-RESTORE-01-V1.3.1' in sources["ai.py"]
                                     and '"language": "ru"' in sources["ai.py"]),
         "media_receipts": "media_mark" in sources["cars_ui.py"],
