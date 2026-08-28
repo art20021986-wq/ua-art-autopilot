@@ -17,17 +17,18 @@ import uuid
 
 HERE = pathlib.Path(__file__).resolve().parent
 BASE = "https://www.pythonanywhere.com/api/v0/user/Carix/"
-REMOTE = "/home/Carix/autopilot_inbox/cloud/task_066_stage_anchor"
+REMOTE = "/home/Carix/autopilot_inbox/cloud/task_047_ferry_discovery"
+STATE_ROOT = "/home/Carix/autopilot_inbox/cloud/task_066_stage_anchor"
 FILES = {
-    "repair_remote.py": HERE / "repair_remote.py",
-    "postcheck_remote.py": HERE / "postcheck_remote.py",
+    "task066_stage_repair.py": HERE / "repair_remote.py",
+    "task066_stage_postcheck.py": HERE / "postcheck_remote.py",
 }
-INSTALL_RECEIPT = REMOTE + "/install_receipt.json"
-POSTCHECK_RECEIPT = REMOTE + "/postcheck_receipt.json"
-ROLLBACK_RECEIPT = REMOTE + "/rollback_receipt.json"
-INSTALL_COMMAND = "cd %s && python3.10 repair_remote.py" % REMOTE
-POSTCHECK_COMMAND = "cd %s && python3.10 postcheck_remote.py" % REMOTE
-ROLLBACK_COMMAND = "cd %s && python3.10 repair_remote.py --rollback" % REMOTE
+INSTALL_RECEIPT = STATE_ROOT + "/install_receipt.json"
+POSTCHECK_RECEIPT = STATE_ROOT + "/postcheck_receipt.json"
+ROLLBACK_RECEIPT = STATE_ROOT + "/rollback_receipt.json"
+INSTALL_COMMAND = "cd %s && python3.10 task066_stage_repair.py" % REMOTE
+POSTCHECK_COMMAND = "cd %s && python3.10 task066_stage_postcheck.py" % REMOTE
+ROLLBACK_COMMAND = "cd %s && python3.10 task066_stage_repair.py --rollback" % REMOTE
 EVIDENCE = HERE / "evidence" / "deploy.json"
 REPORT = HERE / "TASK_066_REPORT.md"
 CONTRACT = "UA-CARDS-STAGE-ANCHOR-001-V1.1"
@@ -85,7 +86,7 @@ class API:
         return status, body
 
     def file_url(self, path: str) -> str:
-        if not path.startswith(REMOTE + "/"):
+        if not (path.startswith(REMOTE + "/") or path.startswith(STATE_ROOT + "/")):
             raise ControllerError("REMOTE_PATH_NOT_ALLOWED")
         return BASE + "files/path" + urllib.parse.quote(path, safe="/")
 
@@ -251,7 +252,7 @@ def validate_install(value: dict) -> None:
         raise ControllerError("INSTALL_MEDIA_CHANGED")
     if value.get("fixtures") != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
         raise ControllerError("INSTALL_FIXTURES_INVALID")
-    if not value.get("backup_root", "").startswith(REMOTE + "/backups/"):
+    if not value.get("backup_root", "").startswith(STATE_ROOT + "/backups/"):
         raise ControllerError("INSTALL_BACKUP_INVALID")
     if value.get("production_files_changed") != len(value.get("changed_paths") or []):
         raise ControllerError("INSTALL_CHANGED_COUNT_INVALID")
