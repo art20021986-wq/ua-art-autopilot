@@ -8,6 +8,11 @@ on:
       - "cloud/task_072/crm_description_writer_v2.py"
       - "cloud/task_072/patch_cars_ui_v2.py"
       - "cloud/task_072/gate_a_v2.py"
+      - "cloud/task_072/installer_v2.py"
+      - "cloud/task_072/postcheck_v2.py"
+      - "cloud/task_072/gate_b_controller_v2.py"
+      - "cloud/task_072/GATE_B_PLAN.md"
+      - ".github/workflows/task072_gate_b.yml"
       - ".github/workflows/task072_gate_a_v2.yml"
 
 permissions:
@@ -32,6 +37,9 @@ jobs:
           cloud/task_072/crm_description_writer_v2.py
           cloud/task_072/patch_cars_ui_v2.py
           cloud/task_072/gate_a_v2.py
+          cloud/task_072/installer_v2.py
+          cloud/task_072/postcheck_v2.py
+          cloud/task_072/gate_b_controller_v2.py
 
       - name: Run GET-only Gate A
         id: gate
@@ -61,4 +69,3 @@ jobs:
       - name: Preserve Gate A failure
         if: steps.gate.outcome != 'success'
         run: exit 1
-

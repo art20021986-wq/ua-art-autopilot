@@ -1,0 +1,114 @@
+name: task072-description-production-gate-b
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval:
+        description: "Exact owner approval: TASK_072_GATE_B_APPROVED"
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: task072-description-production-gate-b
+  cancel-in-progress: false
+
+jobs:
+  gate-b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Require separate written owner approval
+        env:
+          TASK072_OWNER_APPROVAL: ${{ inputs.approval }}
+        run: test "$TASK072_OWNER_APPROVAL" = "TASK_072_GATE_B_APPROVED"
+
+      - name: Compile and require full Gate A
+        run: |
+          python3 -m py_compile \
+            cloud/task_072/crm_description_writer_v2.py \
+            cloud/task_072/patch_cars_ui_v2.py \
+            cloud/task_072/installer_v2.py \
+            cloud/task_072/postcheck_v2.py \
+            cloud/task_072/gate_b_controller_v2.py
+          python3 - <<'PY'
+          import json
+          value = json.load(open('cloud/task_072/evidence/gate_a_v2.json', encoding='utf-8'))
+          assert value['status'] == 'PASS'
+          assert value['production_touched'] is False
+          assert value['gate_b_executed'] is False
+          assert value['live_database']['cards_count'] == 11
+          assert value['database_tests']['existing_cards_tested'] == 11
+          assert value['call_path_tests']['direct_commands_tested'] == 3
+          assert value['performance']['sequential_operations'] == 100
+          assert value['performance']['concurrent_operations'] == 100
+          assert value['queue_tests']['multiprocess_no_loss_or_duplicates'] is True
+          print('TASK072_GATE_A_REQUIRED_PASS')
+          PY
+
+      - name: Shadow, backup, install, restart, verify
+        id: production
+        continue-on-error: true
+        env:
+          TASK072_OWNER_APPROVAL: ${{ inputs.approval }}
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 cloud/task_072/gate_b_controller_v2.py
+
+      - name: Commit bounded Gate B evidence
+        if: always()
+        run: |
+          if [ ! -f cloud/task_072/evidence/gate_b_v2.json ]; then
+            exit 0
+          fi
+          git add -- \
+            cloud/task_072/evidence/gate_b_v2.json \
+            cloud/task_072/GATE_B_V2_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_072/evidence/gate_b_v2.json|cloud/task_072/GATE_B_V2_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then
+            exit 0
+          fi
+          git config user.name 'task072-production-gate-b'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task072: record approved production Gate B'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -lt 5 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Require production PASS
+        run: |
+          test "${{ steps.production.outcome }}" = "success"
+          python3 - <<'PY'
+          import json
+          value = json.load(open('cloud/task_072/evidence/gate_b_v2.json', encoding='utf-8'))
+          assert value['contract_id'] == 'CRM-DESCRIPTION-SAVE-072-V2'
+          assert value['status'] == 'PASS', value.get('errors')
+          assert value['owner_approval'] == 'TASK_072_GATE_B_APPROVED'
+          assert value['install']['crm_db_write'] is False
+          assert value['install']['database_before'] == value['install']['database_after']
+          assert value['install']['queue_preserved'] is True
+          assert value['postcheck']['temporary_clone']['cards_tested'] == 11
+          assert value['postcheck']['temporary_clone']['new_cards_created'] == 0
+          assert value['postcheck_delayed']['status'] == 'PASS'
+          assert value['rollback'] is None
+          print('TASK072_PRODUCTION_GATE_B_PASS')
+          PY
+

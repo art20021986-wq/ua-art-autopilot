@@ -37,6 +37,9 @@ EVIDENCE_PATH = TASK_DIR / "evidence" / "gate_a_v2.json"
 REPORT_PATH = TASK_DIR / "GATE_A_V2_REPORT.md"
 WRITER_PATH = TASK_DIR / "crm_description_writer_v2.py"
 PATCHER_PATH = TASK_DIR / "patch_cars_ui_v2.py"
+INSTALLER_PATH = TASK_DIR / "installer_v2.py"
+POSTCHECK_PATH = TASK_DIR / "postcheck_v2.py"
+GATE_B_CONTROLLER_PATH = TASK_DIR / "gate_b_controller_v2.py"
 
 API_BASE = "https://www.pythonanywhere.com/api/v0/user/Carix/"
 REMOTE = {
@@ -1125,6 +1128,79 @@ def run_performance_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> 
     }
 
 
+def run_installer_tests(
+    downloaded: dict[str, bytes],
+    live_db: pathlib.Path,
+    temp: pathlib.Path,
+) -> dict[str, Any]:
+    for path in (INSTALLER_PATH, POSTCHECK_PATH, GATE_B_CONTROLLER_PATH):
+        compile(path.read_text(encoding="utf-8"), path.name, "exec")
+    installer = import_from(INSTALLER_PATH, "task072_installer_gate_a")
+    root = temp / "installer-root"
+    safe = temp / "installer-safe"
+    root.mkdir()
+    safe.mkdir()
+    (root / "cars_ui.py").write_bytes(downloaded["cars_ui.py"])
+    shutil.copy2(live_db, root / "crm.db")
+    shutil.copy2(WRITER_PATH, safe / "crm_description_writer_v2.py")
+    shutil.copy2(PATCHER_PATH, safe / "patch_cars_ui_v2.py")
+    queue_path = root / "crm.db.description_queue.sqlite3"
+    queue_path.write_bytes(b"TASK072-DURABLE-QUEUE-MUST-SURVIVE")
+    old_cars_sha = sha_bytes((root / "cars_ui.py").read_bytes())
+    old_db_sha = sha_bytes((root / "crm.db").read_bytes())
+    old_queue_sha = sha_bytes(queue_path.read_bytes())
+    installer._set_paths(root, safe)
+
+    shadow = installer.shadow()
+    require(shadow["status"] == "PASS", "installer_shadow")
+    require(shadow["production_write"] is False, "installer_shadow_write")
+    require(sha_bytes((root / "cars_ui.py").read_bytes()) == old_cars_sha,
+            "installer_shadow_changed_source")
+
+    installed = installer.install()
+    require(installed["status"] == "PASS", "installer_apply")
+    require(installed["production_write"] is True, "installer_apply_no_write")
+    require(installed["crm_db_write"] is False, "installer_db_write")
+    require(installed["queue_preserved"] is True, "installer_queue_flag")
+    require((root / "crm_description_writer.py").exists(), "installer_writer_missing")
+    require(sha_bytes((root / "cars_ui.py").read_bytes())
+            == installer.EXPECTED_PATCHED_CARS_SHA256, "installer_patched_sha")
+    require(sha_bytes((root / "crm_description_writer.py").read_bytes())
+            == installer.EXPECTED_WRITER_SHA256, "installer_writer_sha")
+    require(sha_bytes((root / "crm.db").read_bytes()) == old_db_sha,
+            "installer_database_changed")
+    require(sha_bytes(queue_path.read_bytes()) == old_queue_sha,
+            "installer_queue_changed")
+    backup = pathlib.Path(installed["backup_root"])
+    require((backup / "manifest.json").exists(), "installer_backup_manifest")
+
+    installer.atomic_json(installer.INSTALL_RECEIPT, installed)
+    rolled_back = installer.explicit_rollback()
+    require(rolled_back["status"] == "PASS", "installer_rollback")
+    require(rolled_back["queue_preserved"] is True, "rollback_queue_flag")
+    require(sha_bytes((root / "cars_ui.py").read_bytes()) == old_cars_sha,
+            "rollback_source_not_exact")
+    require(not (root / "crm_description_writer.py").exists(),
+            "rollback_new_writer_remained")
+    require(sha_bytes((root / "crm.db").read_bytes()) == old_db_sha,
+            "rollback_database_changed")
+    require(sha_bytes(queue_path.read_bytes()) == old_queue_sha,
+            "rollback_queue_changed")
+    after = installer.shadow()
+    require(after["status"] == "PASS" and not after["candidate"]["already_installed"],
+            "rollback_shadow")
+    return {
+        "shadow_read_only": True,
+        "atomic_install": True,
+        "backup_manifest": True,
+        "code_only_rollback": True,
+        "database_unchanged": True,
+        "durable_queue_preserved": True,
+        "gate_b_manual_approval_constant": "TASK_072_GATE_B_APPROVED",
+        "gate_b_not_executed": True,
+    }
+
+
 def write_outputs(result: dict[str, Any]) -> None:
     EVIDENCE_PATH.parent.mkdir(parents=True, exist_ok=True)
     temp = EVIDENCE_PATH.with_suffix(".tmp")
@@ -1160,6 +1236,7 @@ Status: **PASS**
 - Lock fallback: queued in **{queue['locked_path_seconds']:.4f}s**, then applied after unlock.
 - Replay/crash/restart/multiprocess idempotency and last-intended-wins: PASS.
 - 100 sequential + 100 concurrent descriptions: PASS, no missing/duplicate operations.
+- Dry-run install, backup and code-only rollback with queue preservation: PASS.
 - Direct path p95/p99: **{perf['p95_seconds']:.6f}s / {perf['p99_seconds']:.6f}s**.
 
 Gate B remains intentionally unexecuted and requires explicit owner approval.
@@ -1241,6 +1318,7 @@ def main() -> None:
             )
             result["queue_tests"] = run_queue_tests(writer, queue_db, temp)
             result["performance"] = run_performance_tests(writer, perf_db, temp)
+            result["installer_tests"] = run_installer_tests(downloaded, live_db, temp)
             require(sha_bytes(live_db.read_bytes()) == live_hash_before, "live_copy_mutated")
             final_source_conn = db_connect(live_db)
             require(count_rows(final_source_conn, "cars") == 11, "live_copy_count_changed")
