@@ -1,0 +1,36 @@
+name: UA ART SEO Watch smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - src/**
+      - package.json
+      - wrangler.jsonc
+      - .github/workflows/seo-watch-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Wait for read-only Worker health
+        shell: bash
+        run: |
+          for attempt in {1..18}; do
+            body="$(curl --fail --silent --show-error --max-time 20 \
+              https://ua-art-seo-watch.art20021986.workers.dev/health 2>/dev/null || true)"
+            echo "attempt=${attempt} response=${body}"
+            if printf '%s' "$body" | jq -e \
+              '.ok == true and .mode == "read-only" and .urls == 17' >/dev/null; then
+              echo "UA ART SEO Watch is healthy"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Worker health check did not pass"
+          exit 1
