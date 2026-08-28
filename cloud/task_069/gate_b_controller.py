@@ -77,32 +77,30 @@ def active_production_conflicts() -> list[dict]:
     current = str(os.environ.get("GITHUB_RUN_ID", ""))
     if not token or not repository or not current:
         raise ControllerError("GITHUB_CONFLICT_GUARD_MISSING")
-    url = "https://api.github.com/repos/%s/actions/runs?per_page=100" % repository
-    request = urllib.request.Request(
-        url,
-        headers={
-            "Authorization": "Bearer " + token,
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-            "User-Agent": "ua-art-task069-conflict-guard/1",
-        },
-    )
+    conflicts = []
+    headers = {
+        "Authorization": "Bearer " + token,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "ua-art-task069-conflict-guard/1",
+    }
     try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            value = json.loads(response.read(4_000_001).decode("utf-8"))
+        for status in ("queued", "in_progress", "waiting", "pending"):
+            url = (
+                "https://api.github.com/repos/%s/actions/runs?status=%s&per_page=100"
+                % (repository, status)
+            )
+            request = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(request, timeout=30) as response:
+                value = json.loads(response.read(4_000_001).decode("utf-8"))
+            for run in value.get("workflow_runs") or []:
+                if str(run.get("id")) == current or run.get("name") not in CONFLICTING_WORKFLOWS:
+                    continue
+                conflicts.append({
+                    "id": run.get("id"), "name": run.get("name"), "status": run.get("status"),
+                })
     except Exception as exc:
         raise ControllerError("GITHUB_CONFLICT_GUARD_NETWORK:" + type(exc).__name__) from exc
-    conflicts = []
-    for run in value.get("workflow_runs") or []:
-        if str(run.get("id")) == current:
-            continue
-        if run.get("name") not in CONFLICTING_WORKFLOWS:
-            continue
-        if run.get("status") not in ("queued", "in_progress", "waiting", "pending"):
-            continue
-        conflicts.append({
-            "id": run.get("id"), "name": run.get("name"), "status": run.get("status"),
-        })
     return conflicts
 
 
