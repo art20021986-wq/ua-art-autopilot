@@ -75,21 +75,37 @@ def main() -> int:
             repair.YADRO_PATH: repair._patch_yadro,
             repair.MASTER_CARD_PATH: repair._patch_master_card,
         }
-        for path, patcher in patchers.items():
+        observed = {}
+        for path in patchers:
             raw = fetch(path)
             source = raw.decode("utf-8")
+            name = pathlib.PurePosixPath(path).name
+            observed[path] = (raw, source)
+            result["files"][name] = {
+                "sha256_before": sha(raw),
+                "bytes_before": len(raw),
+                "task068_marker_count": source.count(repair.FERRY_VIN_SOURCE_MARKER),
+                "seo068_marker_count": source.count("# SEO-REHAB-GUARD-068-PRODUCTION-V1"),
+                "task068_marker_position": source.find(repair.FERRY_VIN_SOURCE_MARKER),
+                "seo068_marker_position": source.find("# SEO-REHAB-GUARD-068-PRODUCTION-V1"),
+                "main_guard_position": source.rfind("if __name__"),
+                "patch_evaluated": False,
+            }
+
+        for path, patcher in patchers.items():
+            raw, source = observed[path]
             candidate = patcher(source, sha(raw))
             repair._validate_task068_source(candidate, path)
             guard = candidate.rfind("if __name__")
             marker = candidate.find(repair.FERRY_VIN_SOURCE_MARKER)
             if guard >= 0 and not marker < guard:
                 raise RuntimeError("FILTER_ORDER_INVALID:" + pathlib.PurePosixPath(path).name)
-            result["files"][pathlib.PurePosixPath(path).name] = {
-                "sha256_before": sha(raw),
+            result["files"][pathlib.PurePosixPath(path).name].update({
                 "sha256_after": sha(candidate.encode("utf-8")),
                 "changed": candidate != source,
                 "marker_before_main": guard < 0 or marker < guard,
-            }
+                "patch_evaluated": True,
+            })
 
         for path in (repair.CARS_UI_PATH, repair.DB_PATH,
                      repair.TEAM_BOT_PATH, repair.START_SAFE_PATH):
