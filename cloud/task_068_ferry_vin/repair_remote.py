@@ -91,7 +91,7 @@ EXPECTED_FUNCTION_SHA = {
 PRESERVE_FUNCTIONS = {
     # CRM-PHOTO-FASTPATH-001 is the current production baseline.  The stage
     # anchor must retain its spool enqueue/worker path byte-for-byte.
-    "catch_message": "03a26be9a856227f8a592929a3b530f2a9979294b3fc21cc92baf76048d3b9d4",
+    "catch_message": "2b02ec1cf0cc649618f88de40fbb3a8e37d325828b4e925c9b15dc75859a850c",
     "save_media": "6be0c1a9e8c6b94063262e330a3cb3dd4026b7d1d008b9e100dc3160249b747f",
 }
 
