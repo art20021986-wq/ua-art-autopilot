@@ -95,10 +95,15 @@ def main() -> int:
                      repair.TEAM_BOT_PATH, repair.START_SAFE_PATH):
             raw = fetch(path)
             digest = sha(raw)
+            name = pathlib.PurePosixPath(path).name
+            result["protected"][name] = {
+                "sha256_actual": digest,
+                "sha256_expected": repair.EXPECTED_SHA[path],
+                "matches_expected": digest == repair.EXPECTED_SHA[path],
+            }
             if digest != repair.EXPECTED_SHA[path]:
-                raise RuntimeError("PROTECTED_SOURCE_CHANGED:" + pathlib.PurePosixPath(path).name)
+                raise RuntimeError("PROTECTED_SOURCE_CHANGED:" + name)
             compile(raw.decode("utf-8"), path, "exec")
-            result["protected"][pathlib.PurePosixPath(path).name] = digest
         repair._validate_cars_ui(fetch(repair.CARS_UI_PATH).decode("utf-8"))
         result["status"] = "PASS"
     except Exception as exc:
