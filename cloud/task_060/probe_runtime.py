@@ -60,7 +60,7 @@ def main():
     try:
         api.delete_receipt()
         trigger=api.create()
-        deadline=time.monotonic()+90
+        deadline=time.monotonic()+360
         raw=None
         while time.monotonic()<deadline:
             raw=api.read()
