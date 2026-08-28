@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/task060_read_live_context.yml'
+      - 'cloud/task_060/read_live_context.py'
   workflow_dispatch:
 
 permissions:
