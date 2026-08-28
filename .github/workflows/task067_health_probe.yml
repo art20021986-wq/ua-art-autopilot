@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 23-v132-deploy-progress
+# probe-revision: 24-universal-input-audit
 
 on:
   push:
@@ -168,7 +168,8 @@ jobs:
               'ai.py': {'transcribe', 'openai_key', 'enabled', 'parse_message',
                         'validate', 'to_card_data'},
               'ai_fast_schema.py': {'car_fields', 'fast_text_data', 'parsed_from_data', 'clean_car'},
-              'local_ocr.py': {'fields_from_text'},
+              'local_ocr.py': {'fields_from_text', 'fields_from_image'},
+              'team_bot.py': {'intake'},
               'cars_ui.py': {'voice_change_plan', '_v167_voice_explicit_fields',
                              'auto_catch', 'catch_message', 'render',
                              'apply_value', 'edit_ask', 'drop_wait', 'set_field',
