@@ -43,6 +43,7 @@ TEAM_BOT_PATH = ROOT + "/team_bot.py"
 START_SAFE_PATH = ROOT + "/start_safe.py"
 SAFE_ROOT = ROOT + "/autopilot_inbox/cloud/task_066_stage_anchor"
 RECEIPT_PATH = SAFE_ROOT + "/install_receipt.json"
+SOURCE_RECEIPT_PATH = SAFE_ROOT + "/source_install_receipt.json"
 ROLLBACK_RECEIPT_PATH = SAFE_ROOT + "/rollback_receipt.json"
 BACKUP_PARENT = SAFE_ROOT + "/backups"
 LOCK_PATH = ROOT + "/.task066_stage_anchor.lock"
@@ -1478,12 +1479,13 @@ def _build_sources() -> tuple[dict[str, bytes], dict[str, str]]:
     return candidates, before_hashes
 
 
-def run_install() -> dict[str, Any]:
+def run_install(*, sources_only: bool = False) -> dict[str, Any]:
     receipt: dict[str, Any] = {
         "mode": MODE,
         "contract_id": CONTRACT,
         "status": "BLOCKED",
         "generated_at_utc": _utc_now(),
+        "sources_only": sources_only,
         "production_write": False,
         "production_files_changed": 0,
         "crm_write": False,
@@ -1512,16 +1514,21 @@ def run_install() -> dict[str, Any]:
     changed: list[str] = []
     try:
         receipt["protected_files"] = _validate_untouched()
-        rows, db_before = _db_snapshot()
-        identifiers = [str(row["auto_number"]) for row in rows]
-        receipt["card_ids"] = identifiers
-        receipt["db_before"] = db_before
-        media_before = _media_inventory(identifiers)
-        receipt["media_before"] = media_before
+        rows: list[dict[str, Any]] = []
+        identifiers: list[str] = []
+        db_before: dict[str, Any] = {}
+        media_before: dict[str, Any] = {}
+        if not sources_only:
+            rows, db_before = _db_snapshot()
+            identifiers = [str(row["auto_number"]) for row in rows]
+            receipt["card_ids"] = identifiers
+            receipt["db_before"] = db_before
+            media_before = _media_inventory(identifiers)
+            receipt["media_before"] = media_before
 
         source_candidates, before_hashes = _build_sources()
         receipt["source_sha256_before"] = before_hashes
-        candidates = _collect_candidates(rows, source_candidates)
+        candidates = source_candidates if sources_only else _collect_candidates(rows, source_candidates)
         receipt["fixtures"] = _fixture_contract()
         receipt["master_final_fixtures"] = _master_final_fixture_contract()
 
@@ -1558,9 +1565,10 @@ def run_install() -> dict[str, Any]:
         )
 
         # Fail closed on concurrent page/source or CRM changes before write one.
-        _, db_check = _db_snapshot()
-        if db_check["published_rows_sha256"] != db_before["published_rows_sha256"]:
-            raise RepairBlocked("crm_rows_changed_before_install")
+        if not sources_only:
+            _, db_check = _db_snapshot()
+            if db_check["published_rows_sha256"] != db_before["published_rows_sha256"]:
+                raise RepairBlocked("crm_rows_changed_before_install")
         for path in sorted(candidates):
             if _read(path, required=False) != before[path]:
                 raise RepairBlocked("concurrent_file_change:" + path)
@@ -1581,17 +1589,18 @@ def run_install() -> dict[str, Any]:
         _validate_yadro(_read(YADRO_PATH).decode("utf-8"))
         _validate_master_card(_read(MASTER_CARD_PATH).decode("utf-8"))
         _validate_cars_ui(_read(CARS_UI_PATH).decode("utf-8"))
-        receipt["cards"] = _validate_cards(rows)
-        rows_after, db_after = _db_snapshot()
-        receipt["db_after"] = db_after
-        media_after = _media_inventory(identifiers)
-        receipt["media_after"] = media_after
-        if [row["auto_number"] for row in rows_after] != identifiers:
-            raise RepairBlocked("published_ids_changed_during_install")
-        if db_after["published_rows_sha256"] != db_before["published_rows_sha256"]:
-            raise RepairBlocked("crm_rows_changed_during_install")
-        if media_after != media_before:
-            raise RepairBlocked("media_inventory_changed_during_install")
+        if not sources_only:
+            receipt["cards"] = _validate_cards(rows)
+            rows_after, db_after = _db_snapshot()
+            receipt["db_after"] = db_after
+            media_after = _media_inventory(identifiers)
+            receipt["media_after"] = media_after
+            if [row["auto_number"] for row in rows_after] != identifiers:
+                raise RepairBlocked("published_ids_changed_during_install")
+            if db_after["published_rows_sha256"] != db_before["published_rows_sha256"]:
+                raise RepairBlocked("crm_rows_changed_during_install")
+            if media_after != media_before:
+                raise RepairBlocked("media_inventory_changed_during_install")
         receipt["source_sha256_after"] = {
             os.path.basename(path): _sha(_read(path))
             for path in (STRANICA_PATH, YADRO_PATH, MASTER_CARD_PATH, CARS_UI_PATH)
@@ -1701,6 +1710,7 @@ def self_test() -> int:
 def main() -> int:
     if "--self-test" in sys.argv:
         return self_test()
+    sources_only = "--sources-only" in sys.argv
     descriptor = os.open(LOCK_PATH, os.O_CREAT | os.O_RDWR, 0o600)
     try:
         try:
@@ -1716,7 +1726,7 @@ def main() -> int:
             else:
                 retry_history = []
                 for attempt in range(1, 6):
-                    result = run_install()
+                    result = run_install(sources_only=sources_only)
                     result["attempt_count"] = attempt
                     errors = [str(value) for value in result.get("errors", [])]
                     retryable = (
@@ -1742,7 +1752,12 @@ def main() -> int:
                 result["retry_history"] = retry_history
     finally:
         os.close(descriptor)
-    path = ROLLBACK_RECEIPT_PATH if "--rollback" in sys.argv else RECEIPT_PATH
+    if "--rollback" in sys.argv:
+        path = ROLLBACK_RECEIPT_PATH
+    elif sources_only:
+        path = SOURCE_RECEIPT_PATH
+    else:
+        path = RECEIPT_PATH
     _atomic_json(path, result)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0 if result.get("status") == "PASS" else 1
