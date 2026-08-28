@@ -101,6 +101,7 @@ jobs:
           if deploy['status'] != 'PASS' or live['status'] != 'PASS':
               raise SystemExit('TASK066_NOT_COMPLETE')
           post = deploy['postcheck']
+          delayed = deploy['postcheck_delayed']
           assert post['card_count'] == 10
           assert post['stage_distribution'].keys() == {'1', '2', '3', '4'}
           assert all(value > 0 for value in post['stage_distribution'].values())
@@ -108,6 +109,12 @@ jobs:
           assert post['bot_health']['bots']['client']['ok'] is True
           assert post['bot_health']['bots']['crm']['ok'] is True
           assert post['bot_health']['tokens_distinct'] is True
+          assert post['master_final_fixtures'] == {'korea': 1, 'ferry': 2, 'georgia': 3, 'kyiv': 4}
+          assert delayed['status'] == 'PASS' and delayed['card_count'] == 10
+          assert delayed['stage_distribution'].keys() == {'1', '2', '3', '4'}
+          assert all(value > 0 for value in delayed['stage_distribution'].values())
+          assert delayed['master_final_fixtures'] == {'korea': 1, 'ferry': 2, 'georgia': 3, 'kyiv': 4}
+          assert delayed['runtime']['checks']['master_final_filter'] is True
           assert deploy['install']['db_before']['published_rows_sha256'] == deploy['install']['db_after']['published_rows_sha256']
           assert deploy['install']['media_before'] == deploy['install']['media_after']
           assert live['card_count'] == 10 and live['page_count'] == 20
@@ -118,11 +125,12 @@ jobs:
               '- На всех 10 текущих карточках установлен постоянный маршрут: Корея → Паром → Грузия → Киев.',
               '- У каждого маршрута ровно четыре узла и ровно один текущий этап «СЕЙЧАС».',
               '- Закреплены три визуальных состояния: пройдено, сейчас, впереди.',
-              '- Тот же компонент встроен в оба генератора для всех будущих карточек.',
+              '- Компонент встроен в оба генератора и в последний фильтр master_card.py для всех будущих пересборок.',
               '- Комплексная диагностика снова постоянна на 10/10 карточках, даже без материалов.',
               '- CRM: один вход «🚚 Доставка и этапы»; дублирующие кнопки удалены.',
               '- Старые callback ID сохранены для уже отправленных сообщений Telegram.',
               '- Оба Telegram-бота после перезапуска: PASS.',
+              '- Отсроченная проверка после окна фоновой пересборки: PASS.',
               '- UA-0009: PASS, этап «Паром», диагностика PASS.',
               '- CRM rows unchanged; media unchanged; LLM tokens: 0.',
               f"- Публично проверено: {live['page_count']} страниц.",
@@ -179,5 +187,3 @@ jobs:
             cloud/task_066_stage_anchor/screenshots
           if-no-files-found: warn
           retention-days: 14
-
-# attempt: stage-anchor-fresh-snapshot-retry-v5
