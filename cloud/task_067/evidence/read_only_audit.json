@@ -1,11 +1,740 @@
 {
+  "baseline_checks": {
+    "client_ok": true,
+    "crm_ok": true,
+    "db_ok": true,
+    "launcher_unique": true,
+    "tokens_distinct": true
+  },
+  "bots": {
+    "bots": {
+      "client": {
+        "identity_sha256": "62f6339b925eda20540b16b1ba07db879c8f90fcfca5115bb0d275abfd8d60bb",
+        "latency_seconds": 0.308,
+        "ok": true
+      },
+      "crm": {
+        "identity_sha256": "a154fbe5ef59df6162adec0ae993c6a9ba0dd05a60c3ca9e5c0baa40e6a7c8ed",
+        "latency_seconds": 0.265,
+        "ok": true
+      }
+    },
+    "tokens_distinct": true
+  },
+  "callback_snippets": [
+    {
+      "lineno": 36,
+      "source": "ИИ-разбор и согласование работают как работали.\n\"\"\"\n\nimport json\nimport logging\n\nfrom telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update\nfrom telegram.ext import (\n    ApplicationHandlerStop,\n    CallbackQueryHandler,\n    ContextTypes,\n    MessageHandler,\n    filters,\n)\n\nimport cars_schema as S\nimport card_render as CR\nimport db\n"
+    },
+    {
+      "lineno": 297,
+      "source": "        return int(str(card.get(\"year\"))[:4])\n    except Exception:\n        return None\n\n\n# UA-CARDS-STAGE-ANCHOR-001-V1.1 · one visible entry per semantic action.\ndef card_kb(card, staff):\n    cid = card[\"id\"]\n    rows = [\n        [InlineKeyboardButton(\"Редактировать данные\", callback_data=\"car_edit:%d\" % cid),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\", callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\","
+    },
+    {
+      "lineno": 298,
+      "source": "    except Exception:\n        return None\n\n\n# UA-CARDS-STAGE-ANCHOR-001-V1.1 · one visible entry per semantic action.\ndef card_kb(card, staff):\n    cid = card[\"id\"]\n    rows = [\n        [InlineKeyboardButton(\"Редактировать данные\", callback_data=\"car_edit:%d\" % cid),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\", callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])"
+    },
+    {
+      "lineno": 299,
+      "source": "        return None\n\n\n# UA-CARDS-STAGE-ANCHOR-001-V1.1 · one visible entry per semantic action.\ndef card_kb(card, staff):\n    cid = card[\"id\"]\n    rows = [\n        [InlineKeyboardButton(\"Редактировать данные\", callback_data=\"car_edit:%d\" % cid),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\", callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\","
+    },
+    {
+      "lineno": 300,
+      "source": "\n\n# UA-CARDS-STAGE-ANCHOR-001-V1.1 · one visible entry per semantic action.\ndef card_kb(card, staff):\n    cid = card[\"id\"]\n    rows = [\n        [InlineKeyboardButton(\"Редактировать данные\", callback_data=\"car_edit:%d\" % cid),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\", callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])"
+    },
+    {
+      "lineno": 305,
+      "source": "    rows = [\n        [InlineKeyboardButton(\"Редактировать данные\", callback_data=\"car_edit:%d\" % cid),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\", callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),"
+    },
+    {
+      "lineno": 307,
+      "source": "         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\", callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),\n    ])\n    rows.append([InlineKeyboardButton(\"Удалить\", callback_data=\"car_del:%d\" % cid)])"
+    },
+    {
+      "lineno": 309,
+      "source": "        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),\n    ])\n    rows.append([InlineKeyboardButton(\"Удалить\", callback_data=\"car_del:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Все автомобили\", callback_data=\"cards_cars\")])\n    return InlineKeyboardMarkup(rows)"
+    },
+    {
+      "lineno": 313,
+      "source": "        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),\n    ])\n    rows.append([InlineKeyboardButton(\"Удалить\", callback_data=\"car_del:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Все автомобили\", callback_data=\"cards_cars\")])\n    return InlineKeyboardMarkup(rows)\n\n\n# ─────────────────────────────────────────────────────────────\n# ОТКРЫТИЕ КАРТОЧКИ"
+    },
+    {
+      "lineno": 314,
+      "source": "        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),\n    ])\n    rows.append([InlineKeyboardButton(\"Удалить\", callback_data=\"car_del:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Все автомобили\", callback_data=\"cards_cars\")])\n    return InlineKeyboardMarkup(rows)\n\n\n# ─────────────────────────────────────────────────────────────\n# ОТКРЫТИЕ КАРТОЧКИ\n# ─────────────────────────────────────────────────────────────"
+    },
+    {
+      "lineno": 316,
+      "source": "                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),\n    ])\n    rows.append([InlineKeyboardButton(\"Удалить\", callback_data=\"car_del:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Все автомобили\", callback_data=\"cards_cars\")])\n    return InlineKeyboardMarkup(rows)\n\n\n# ─────────────────────────────────────────────────────────────\n# ОТКРЫТИЕ КАРТОЧКИ\n# ─────────────────────────────────────────────────────────────\n\nasync def open_card(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+    },
+    {
+      "lineno": 317,
+      "source": "    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),\n    ])\n    rows.append([InlineKeyboardButton(\"Удалить\", callback_data=\"car_del:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Все автомобили\", callback_data=\"cards_cars\")])\n    return InlineKeyboardMarkup(rows)\n\n\n# ─────────────────────────────────────────────────────────────\n# ОТКРЫТИЕ КАРТОЧКИ\n# ─────────────────────────────────────────────────────────────\n\nasync def open_card(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query"
+    },
+    {
+      "lineno": 370,
+      "source": "    try:\n        cards = db.list_cards(\"cars\", limit=30)\n    except Exception as e:\n        log.warning(\"Список машин: %s\", e)\n        return\n    if not cards:\n        await q.message.reply_text(\n            \"Автомобилей пока нет. Откройте явное создание новой карточки.\",\n            reply_markup=InlineKeyboardMarkup([[\n                InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")]]))\n        raise ApplicationHandlerStop\n\n    lines = [\"<b>Автомобили</b>\", \"Нажмите на машину — откроется карточка для правки.\", \"\"]\n    rows = []\n    for card in cards:\n        card = card_of(card[\"id\"]) or card\n        nomer = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n        name = \" \".join(str(x) for x in (card.get(\"brand\"), card.get(\"model\"),\n                                         card.get(\"year\")) if x) or \"без названия\""
+    },
+    {
+      "lineno": 386,
+      "source": "        nomer = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n        name = \" \".join(str(x) for x in (card.get(\"brand\"), card.get(\"model\"),\n                                         card.get(\"year\")) if x) or \"без названия\"\n        miss = S.missing_required(card)\n        sostoyanie = (\"черновик, не хватает %d\" % len(miss)) if miss else \"заполнена\"\n        etap = S.status_label(card.get(\"status\")) if card.get(\"status\") else \"этап не задан\"\n        lines.append(\"<b>%s</b> · %s\" % (nomer, name))\n        lines.append(\"   %s · %s\" % (etap, sostoyanie))\n        rows.append([InlineKeyboardButton(\"%s · %s\" % (nomer, name[:28]),\n                                          callback_data=\"car_open:%d\" % card[\"id\"])])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")])\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\n\n# ─────────────────────────────────────────────────────────────\n# РЕДАКТИРОВАНИЕ ПОЛЕЙ"
+    },
+    {
+      "lineno": 387,
+      "source": "        name = \" \".join(str(x) for x in (card.get(\"brand\"), card.get(\"model\"),\n                                         card.get(\"year\")) if x) or \"без названия\"\n        miss = S.missing_required(card)\n        sostoyanie = (\"черновик, не хватает %d\" % len(miss)) if miss else \"заполнена\"\n        etap = S.status_label(card.get(\"status\")) if card.get(\"status\") else \"этап не задан\"\n        lines.append(\"<b>%s</b> · %s\" % (nomer, name))\n        lines.append(\"   %s · %s\" % (etap, sostoyanie))\n        rows.append([InlineKeyboardButton(\"%s · %s\" % (nomer, name[:28]),\n                                          callback_data=\"car_open:%d\" % card[\"id\"])])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")])\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\n\n# ─────────────────────────────────────────────────────────────\n# РЕДАКТИРОВАНИЕ ПОЛЕЙ\n# ─────────────────────────────────────────────────────────────"
+    },
+    {
+      "lineno": 427,
+      "source": "\nasync def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    drop_wait(context)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    rows, buf = [], []\n    for key, label in EDITABLE:\n        buf.append(InlineKeyboardButton(label, callback_data=\"car_setf:%d:%s\" % (cid, key)))\n        if len(buf) == 2:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\n        \"Что меняем?\\n%s\" % (card.get(\"auto_number\") or db.card_title(\"cars\", card)),\n        reply_markup=InlineKeyboardMarkup(rows))"
+    },
+    {
+      "lineno": 433,
+      "source": "    card = card_of(cid)\n    rows, buf = [], []\n    for key, label in EDITABLE:\n        buf.append(InlineKeyboardButton(label, callback_data=\"car_setf:%d:%s\" % (cid, key)))\n        if len(buf) == 2:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\n        \"Что меняем?\\n%s\" % (card.get(\"auto_number\") or db.card_title(\"cars\", card)),\n        reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\nasync def edit_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()"
+    },
+    {
+      "lineno": 467,
+      "source": "    elif field == \"eta_days\":\n        hint = (\"\\nСколько дней осталось до прибытия в Киев. \"\n                \"Дата пересчитается сама, дальше счётчик пойдёт вниз каждый день.\")\n    context.user_data[\"car_wait\"] = {\"card_id\": int(cid), \"field\": field}\n    await q.message.reply_text(\n        \"<b>%s</b>\\nСейчас: %s%s\\n\\nПришлите новое значение текстом или голосом.\"\n        % (label, now if now else \"—\", hint),\n        parse_mode=\"HTML\",\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"← Отмена\", callback_data=\"car_open:%s\" % cid)]\n            + ([InlineKeyboardButton(\"Очистить\",\n                callback_data=\"car_clr:%s:%s\" % (cid, field))]\n               if field == \"condition_text\" and now else [])]))\n    raise ApplicationHandlerStop\n\n\nasync def clear_field(update: Update,\n                      context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"UA-V65 — кнопка «Очистить» на экране правки описания.\"\"\""
+    },
+    {
+      "lineno": 469,
+      "source": "                \"Дата пересчитается сама, дальше счётчик пойдёт вниз каждый день.\")\n    context.user_data[\"car_wait\"] = {\"card_id\": int(cid), \"field\": field}\n    await q.message.reply_text(\n        \"<b>%s</b>\\nСейчас: %s%s\\n\\nПришлите новое значение текстом или голосом.\"\n        % (label, now if now else \"—\", hint),\n        parse_mode=\"HTML\",\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"← Отмена\", callback_data=\"car_open:%s\" % cid)]\n            + ([InlineKeyboardButton(\"Очистить\",\n                callback_data=\"car_clr:%s:%s\" % (cid, field))]\n               if field == \"condition_text\" and now else [])]))\n    raise ApplicationHandlerStop\n\n\nasync def clear_field(update: Update,\n                      context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"UA-V65 — кнопка «Очистить» на экране правки описания.\"\"\"\n    q = update.callback_query\n    await q.answer()"
+    },
+    {
+      "lineno": 506,
+      "source": "        await q.message.reply_text(\"Не удалось очистить: %r\" % (e,))\n        raise ApplicationHandlerStop\n    context.user_data.pop(\"car_wait\", None)\n    await q.message.reply_text(\n        \"Описание очищено. Стёрто знаков: %d.\\n\"\n        \"Пришлите новый текст кнопкой «Описание».\"\n        % bylo_znakov,\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"← К машине\",\n                                 callback_data=\"car_open:%s\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def diag_clear(update: Update,\n                     context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"UA-V77 — убрать все кадры проверки разом.\"\"\"\n    q = update.callback_query\n    await q.answer()\n    try:"
+    },
+    {
+      "lineno": 571,
+      "source": "        pass\n\n    _peresobrat_stranicy()          # UA-V103\n    chto = \"Фото\" if pole == \"condition_photos\" else \"Видео\"\n    await q.message.reply_text(\n        \"%s проверки убраны: %d.\\nНа сайте пропадут после пересборки.\"\n        % (chto, bylo),\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"← К диагностике\",\n                                 callback_data=\"car_cond:%s\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\",\n                                  callback_data=\"car_open:%s\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\ndef apply_value(card_id, field, raw, actor_id):\n    \"\"\"Возвращает (ок, сообщение). Ничего не додумывает.\"\"\"\n    value = (raw or \"\").strip()\n    if not value:"
+    },
+    {
+      "lineno": 573,
+      "source": "    _peresobrat_stranicy()          # UA-V103\n    chto = \"Фото\" if pole == \"condition_photos\" else \"Видео\"\n    await q.message.reply_text(\n        \"%s проверки убраны: %d.\\nНа сайте пропадут после пересборки.\"\n        % (chto, bylo),\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"← К диагностике\",\n                                 callback_data=\"car_cond:%s\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\",\n                                  callback_data=\"car_open:%s\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\ndef apply_value(card_id, field, raw, actor_id):\n    \"\"\"Возвращает (ок, сообщение). Ничего не додумывает.\"\"\"\n    value = (raw or \"\").strip()\n    if not value:\n        return False, \"Пустое значение не записываю.\"\n"
+    },
+    {
+      "lineno": 654,
+      "source": "            card.get(\"auto_number\") or \"\",\n            \"\",\n            \"Фото: %d из %d\" % (len(photos), S.PHOTO_LIMIT),\n            \"Заглавная — передняя часть авто, за ней VIN и одометр.\",\n            \"\",\n            \"Видео: %d из %d\" % (len(vids), VIDEO_LIMIT)]\n    if vids:\n        text.append(\"горизонтальных %d · вертикальных %d\" % (gor, ver))\n    rows = [\n        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],"
+    },
+    {
+      "lineno": 655,
+      "source": "            \"\",\n            \"Фото: %d из %d\" % (len(photos), S.PHOTO_LIMIT),\n            \"Заглавная — передняя часть авто, за ней VIN и одометр.\",\n            \"\",\n            \"Видео: %d из %d\" % (len(vids), VIDEO_LIMIT)]\n    if vids:\n        text.append(\"горизонтальных %d · вертикальных %d\" % (gor, ver))\n    rows = [\n        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]"
+    },
+    {
+      "lineno": 656,
+      "source": "            \"Фото: %d из %d\" % (len(photos), S.PHOTO_LIMIT),\n            \"Заглавная — передняя часть авто, за ней VIN и одометр.\",\n            \"\",\n            \"Видео: %d из %d\" % (len(vids), VIDEO_LIMIT)]\n    if vids:\n        text.append(\"горизонтальных %d · вертикальных %d\" % (gor, ver))\n    rows = [\n        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\","
+    },
+    {
+      "lineno": 657,
+      "source": "            \"Заглавная — передняя часть авто, за ней VIN и одометр.\",\n            \"\",\n            \"Видео: %d из %d\" % (len(vids), VIDEO_LIMIT)]\n    if vids:\n        text.append(\"горизонтальных %d · вертикальных %d\" % (gor, ver))\n    rows = [\n        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))"
+    },
+    {
+      "lineno": 659,
+      "source": "            \"Видео: %d из %d\" % (len(vids), VIDEO_LIMIT)]\n    if vids:\n        text.append(\"горизонтальных %d · вертикальных %d\" % (gor, ver))\n    rows = [\n        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
+    },
+    {
+      "lineno": 660,
+      "source": "    if vids:\n        text.append(\"горизонтальных %d · вертикальных %d\" % (gor, ver))\n    rows = [\n        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n"
+    },
+    {
+      "lineno": 661,
+      "source": "        text.append(\"горизонтальных %d · вертикальных %d\" % (gor, ver))\n    rows = [\n        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\nasync def video_gallery(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+    },
+    {
+      "lineno": 662,
+      "source": "    rows = [\n        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\nasync def video_gallery(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query"
+    },
+    {
+      "lineno": 663,
+      "source": "        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\nasync def video_gallery(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()"
+    },
+    {
+      "lineno": 681,
+      "source": "    await q.answer()\n    _, cid, page = q.data.split(\":\")\n    cid, page = int(cid), int(page)\n    card = card_of(cid)\n    vids = videos_of(card)\n    if not vids:\n        await q.message.reply_text(\n            \"Видео пока нет.\",\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n    chunk = vids[page * 5:(page + 1) * 5]\n    for v in chunk:\n        try:\n            await q.message.reply_video(v[\"file_id\"],\n                                        caption=v.get(\"tag\") or None)\n        except Exception as e:\n            log.warning(\"Видео не отправилось: %s\", e)\n    total = (len(vids) - 1) // 5 + 1"
+    },
+    {
+      "lineno": 693,
+      "source": "    for v in chunk:\n        try:\n            await q.message.reply_video(v[\"file_id\"],\n                                        caption=v.get(\"tag\") or None)\n        except Exception as e:\n            log.warning(\"Видео не отправилось: %s\", e)\n    total = (len(vids) - 1) // 5 + 1\n    nav = []\n    if page > 0:\n        nav.append(InlineKeyboardButton(\"←\", callback_data=\"car_vid:%d:%d\" % (cid, page - 1)))\n    nav.append(InlineKeyboardButton(\"%d / %d\" % (page + 1, total),\n                                    callback_data=\"car_media:%d\" % cid))\n    if page + 1 < total:\n        nav.append(InlineKeyboardButton(\"→\", callback_data=\"car_vid:%d:%d\" % (cid, page + 1)))\n    await q.message.reply_text(\n        \"Видео %d–%d из %d\" % (page * 5 + 1, min((page + 1) * 5, len(vids)), len(vids)),\n        reply_markup=InlineKeyboardMarkup([nav, [\n            InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop"
+    },
+    {
+      "lineno": 695,
+      "source": "            await q.message.reply_video(v[\"file_id\"],\n                                        caption=v.get(\"tag\") or None)\n        except Exception as e:\n            log.warning(\"Видео не отправилось: %s\", e)\n    total = (len(vids) - 1) // 5 + 1\n    nav = []\n    if page > 0:\n        nav.append(InlineKeyboardButton(\"←\", callback_data=\"car_vid:%d:%d\" % (cid, page - 1)))\n    nav.append(InlineKeyboardButton(\"%d / %d\" % (page + 1, total),\n                                    callback_data=\"car_media:%d\" % cid))\n    if page + 1 < total:\n        nav.append(InlineKeyboardButton(\"→\", callback_data=\"car_vid:%d:%d\" % (cid, page + 1)))\n    await q.message.reply_text(\n        \"Видео %d–%d из %d\" % (page * 5 + 1, min((page + 1) * 5, len(vids)), len(vids)),\n        reply_markup=InlineKeyboardMarkup([nav, [\n            InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n"
+    },
+    {
+      "lineno": 697,
+      "source": "        except Exception as e:\n            log.warning(\"Видео не отправилось: %s\", e)\n    total = (len(vids) - 1) // 5 + 1\n    nav = []\n    if page > 0:\n        nav.append(InlineKeyboardButton(\"←\", callback_data=\"car_vid:%d:%d\" % (cid, page - 1)))\n    nav.append(InlineKeyboardButton(\"%d / %d\" % (page + 1, total),\n                                    callback_data=\"car_media:%d\" % cid))\n    if page + 1 < total:\n        nav.append(InlineKeyboardButton(\"→\", callback_data=\"car_vid:%d:%d\" % (cid, page + 1)))\n    await q.message.reply_text(\n        \"Видео %d–%d из %d\" % (page * 5 + 1, min((page + 1) * 5, len(vids)), len(vids)),\n        reply_markup=InlineKeyboardMarkup([nav, [\n            InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def gallery(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query"
+    },
+    {
+      "lineno": 701,
+      "source": "    if page > 0:\n        nav.append(InlineKeyboardButton(\"←\", callback_data=\"car_vid:%d:%d\" % (cid, page - 1)))\n    nav.append(InlineKeyboardButton(\"%d / %d\" % (page + 1, total),\n                                    callback_data=\"car_media:%d\" % cid))\n    if page + 1 < total:\n        nav.append(InlineKeyboardButton(\"→\", callback_data=\"car_vid:%d:%d\" % (cid, page + 1)))\n    await q.message.reply_text(\n        \"Видео %d–%d из %d\" % (page * 5 + 1, min((page + 1) * 5, len(vids)), len(vids)),\n        reply_markup=InlineKeyboardMarkup([nav, [\n            InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def gallery(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    _, cid, page = q.data.split(\":\")\n    cid, page = int(cid), int(page)\n    card = card_of(cid)"
+    },
+    {
+      "lineno": 730,
+      "source": "        log.warning(\"Галерея: %s\", e)\n        for p in chunk[:5]:\n            try:\n                await q.message.reply_photo(p[\"file_id\"])\n            except Exception:\n                pass\n    total_pages = (len(photos) - 1) // PHOTO_PAGE + 1\n    nav = []\n    if page > 0:\n        nav.append(InlineKeyboardButton(\"←\", callback_data=\"car_gal:%d:%d\" % (cid, page - 1)))\n    nav.append(InlineKeyboardButton(\"%d / %d\" % (page + 1, total_pages),\n                                    callback_data=\"car_media:%d\" % cid))\n    if page + 1 < total_pages:\n        nav.append(InlineKeyboardButton(\"→\", callback_data=\"car_gal:%d:%d\" % (cid, page + 1)))\n    await q.message.reply_text(\n        \"Фото %d–%d из %d\" % (page * PHOTO_PAGE + 1,\n                              min((page + 1) * PHOTO_PAGE, len(photos)), len(photos)),\n        reply_markup=InlineKeyboardMarkup([\n            nav,"
+    },
+    {
+      "lineno": 732,
+      "source": "            try:\n                await q.message.reply_photo(p[\"file_id\"])\n            except Exception:\n                pass\n    total_pages = (len(photos) - 1) // PHOTO_PAGE + 1\n    nav = []\n    if page > 0:\n        nav.append(InlineKeyboardButton(\"←\", callback_data=\"car_gal:%d:%d\" % (cid, page - 1)))\n    nav.append(InlineKeyboardButton(\"%d / %d\" % (page + 1, total_pages),\n                                    callback_data=\"car_media:%d\" % cid))\n    if page + 1 < total_pages:\n        nav.append(InlineKeyboardButton(\"→\", callback_data=\"car_gal:%d:%d\" % (cid, page + 1)))\n    await q.message.reply_text(\n        \"Фото %d–%d из %d\" % (page * PHOTO_PAGE + 1,\n                              min((page + 1) * PHOTO_PAGE, len(photos)), len(photos)),\n        reply_markup=InlineKeyboardMarkup([\n            nav,\n            [InlineKeyboardButton(\"Удалить лишние\",\n                                  callback_data=\"car_rmphoto:%d\" % cid)],"
+    },
+    {
+      "lineno": 734,
+      "source": "            except Exception:\n                pass\n    total_pages = (len(photos) - 1) // PHOTO_PAGE + 1\n    nav = []\n    if page > 0:\n        nav.append(InlineKeyboardButton(\"←\", callback_data=\"car_gal:%d:%d\" % (cid, page - 1)))\n    nav.append(InlineKeyboardButton(\"%d / %d\" % (page + 1, total_pages),\n                                    callback_data=\"car_media:%d\" % cid))\n    if page + 1 < total_pages:\n        nav.append(InlineKeyboardButton(\"→\", callback_data=\"car_gal:%d:%d\" % (cid, page + 1)))\n    await q.message.reply_text(\n        \"Фото %d–%d из %d\" % (page * PHOTO_PAGE + 1,\n                              min((page + 1) * PHOTO_PAGE, len(photos)), len(photos)),\n        reply_markup=InlineKeyboardMarkup([\n            nav,\n            [InlineKeyboardButton(\"Удалить лишние\",\n                                  callback_data=\"car_rmphoto:%d\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop"
+    },
+    {
+      "lineno": 741,
+      "source": "                                    callback_data=\"car_media:%d\" % cid))\n    if page + 1 < total_pages:\n        nav.append(InlineKeyboardButton(\"→\", callback_data=\"car_gal:%d:%d\" % (cid, page + 1)))\n    await q.message.reply_text(\n        \"Фото %d–%d из %d\" % (page * PHOTO_PAGE + 1,\n                              min((page + 1) * PHOTO_PAGE, len(photos)), len(photos)),\n        reply_markup=InlineKeyboardMarkup([\n            nav,\n            [InlineKeyboardButton(\"Удалить лишние\",\n                                  callback_data=\"car_rmphoto:%d\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def photo_remove_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Выбор кадра для удаления по номеру.\"\"\"\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])"
+    },
+    {
+      "lineno": 742,
+      "source": "    if page + 1 < total_pages:\n        nav.append(InlineKeyboardButton(\"→\", callback_data=\"car_gal:%d:%d\" % (cid, page + 1)))\n    await q.message.reply_text(\n        \"Фото %d–%d из %d\" % (page * PHOTO_PAGE + 1,\n                              min((page + 1) * PHOTO_PAGE, len(photos)), len(photos)),\n        reply_markup=InlineKeyboardMarkup([\n            nav,\n            [InlineKeyboardButton(\"Удалить лишние\",\n                                  callback_data=\"car_rmphoto:%d\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def photo_remove_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Выбор кадра для удаления по номеру.\"\"\"\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)"
+    },
+    {
+      "lineno": 759,
+      "source": "    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    photos = photos_of(card)\n    if not photos:\n        await q.message.reply_text(\"Фото нет.\")\n        raise ApplicationHandlerStop\n    rows, buf = [], []\n    for i in range(len(photos)):\n        buf.append(InlineKeyboardButton(str(i + 1),\n                                        callback_data=\"car_rmpok:%d:%d\" % (cid, i)))\n        if len(buf) == 5:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"Удалить ВСЕ фото\",          # v29-udalit-vse\n                                      callback_data=\"car_rmvse:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"car_gal:%d:0\" % cid)])\n    await q.message.reply_text("
+    },
+    {
+      "lineno": 766,
+      "source": "    for i in range(len(photos)):\n        buf.append(InlineKeyboardButton(str(i + 1),\n                                        callback_data=\"car_rmpok:%d:%d\" % (cid, i)))\n        if len(buf) == 5:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"Удалить ВСЕ фото\",          # v29-udalit-vse\n                                      callback_data=\"car_rmvse:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"car_gal:%d:0\" % cid)])\n    await q.message.reply_text(\n        \"Какой кадр убрать? Номера идут в том же порядке, что и в галерее.\\n\"\n        \"Первый — заглавный.\",\n        reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\nasync def photo_remove(update: Update, context: ContextTypes.DEFAULT_TYPE):"
+    },
+    {
+      "lineno": 767,
+      "source": "        buf.append(InlineKeyboardButton(str(i + 1),\n                                        callback_data=\"car_rmpok:%d:%d\" % (cid, i)))\n        if len(buf) == 5:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"Удалить ВСЕ фото\",          # v29-udalit-vse\n                                      callback_data=\"car_rmvse:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"car_gal:%d:0\" % cid)])\n    await q.message.reply_text(\n        \"Какой кадр убрать? Номера идут в том же порядке, что и в галерее.\\n\"\n        \"Первый — заглавный.\",\n        reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\nasync def photo_remove(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query"
+    },
+    {
+      "lineno": 792,
+      "source": "        ubrat = photos[idx].get(\"file_id\")\n        ostalos = [p for p in photos if p.get(\"file_id\") != ubrat]\n        db.update_card_field(\"cars\", cid, \"photos\", jdump(ostalos), q.from_user.id)\n        if card.get(\"cover_photo\") == ubrat:\n            db.update_card_field(\"cars\", cid, \"cover_photo\", None, q.from_user.id)\n    card = card_of(cid)\n    await q.message.reply_text(\n        \"Убрал. Осталось фото: %d\" % len(photos_of(card)),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Убрать ещё\", callback_data=\"car_rmphoto:%d\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def photo_remove_all_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Спрашиваем подтверждение: удаление всех кадров не отменить.\"\"\"\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])"
+    },
+    {
+      "lineno": 793,
+      "source": "        ostalos = [p for p in photos if p.get(\"file_id\") != ubrat]\n        db.update_card_field(\"cars\", cid, \"photos\", jdump(ostalos), q.from_user.id)\n        if card.get(\"cover_photo\") == ubrat:\n            db.update_card_field(\"cars\", cid, \"cover_photo\", None, q.from_user.id)\n    card = card_of(cid)\n    await q.message.reply_text(\n        \"Убрал. Осталось фото: %d\" % len(photos_of(card)),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Убрать ещё\", callback_data=\"car_rmphoto:%d\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def photo_remove_all_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Спрашиваем подтверждение: удаление всех кадров не отменить.\"\"\"\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)"
+    },
+    {
+      "lineno": 815,
+      "source": "        raise ApplicationHandlerStop\n    await q.message.reply_text(\n        \"Удалить все %d фото у %s?\\n\\n\"\n        \"Кадры уйдут из карточки, и собранная страница покупателя тоже \"\n        \"будет убрана — иначе на сайте остались бы старые снимки.\\n\"\n        \"Загрузите новые фото и нажмите «Показать клиентам».\"\n        % (skolko, card.get(\"auto_number\") or (\"id %d\" % cid)),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Да, удалить все %d\" % skolko,\n                                  callback_data=\"car_rmvse2:%d\" % cid)],\n            [InlineKeyboardButton(\"Отмена\", callback_data=\"car_gal:%d:0\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def photo_remove_all(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Удаляем все кадры разом и убираем устаревшую страницу покупателя.\"\"\"\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])"
+    },
+    {
+      "lineno": 816,
+      "source": "    await q.message.reply_text(\n        \"Удалить все %d фото у %s?\\n\\n\"\n        \"Кадры уйдут из карточки, и собранная страница покупателя тоже \"\n        \"будет убрана — иначе на сайте остались бы старые снимки.\\n\"\n        \"Загрузите новые фото и нажмите «Показать клиентам».\"\n        % (skolko, card.get(\"auto_number\") or (\"id %d\" % cid)),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Да, удалить все %d\" % skolko,\n                                  callback_data=\"car_rmvse2:%d\" % cid)],\n            [InlineKeyboardButton(\"Отмена\", callback_data=\"car_gal:%d:0\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def photo_remove_all(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Удаляем все кадры разом и убираем устаревшую страницу покупателя.\"\"\"\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)"
+    },
+    {
+      "lineno": 838,
+      "source": "    _v142_kuda, _v142_skolko = _v142_zapas_foto(str(card.get(\"auto_number\") or \"\").upper())\n    try:\n        _ubrano_s_diska = _ubrat_fayly_foto(card.get(\"auto_number\"))   # UA-V100\n    except Exception as _e142:\n        _v142_vernut_foto(str(card.get(\"auto_number\") or \"\").upper(), _v142_kuda)\n        log.warning(\"Файлы фото не убраны, вернул из копии: %s\", _e142)\n        await q.message.reply_text(\n            \"Фото убрать не вышло — карточка осталась без изменений.\",\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"\\u2190 К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n    db.update_card_field(\"cars\", cid, \"photos\", jdump([]), q.from_user.id)\n    if card.get(\"cover_photo\"):\n        db.update_card_field(\"cars\", cid, \"cover_photo\", None, q.from_user.id)\n    try:\n        db.update_card_field(\"cars\", cid, \"hidden_photos\", jdump([]), q.from_user.id)\n    except Exception:\n        pass\n"
+    },
+    {
+      "lineno": 864,
+      "source": "            else:\n                ubrano = \"\\nСтраницу пересобрать не вышло — она осталась прежней.\"\n        except Exception as e:\n            log.warning(\"Пересборка после удаления фото: %s\", e)\n\n    await q.message.reply_text(\n        \"Удалено фото: %d.%s\\n\\nТеперь пришлите новые кадры одним альбомом.\"\n        % (bylo, ubrano),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nTARGET_LABELS = {\n    \"photos\": \"фото авто\",\n    \"videos\": \"видео (до 30, ориентацию определю сам)\",\n    \"video_h\": \"видео\",\n    \"video_v\": \"видео\",\n    \"condition_photos\": \"фото технического состояния\","
+    },
+    {
+      "lineno": 889,
+      "source": "    q = update.callback_query\n    await q.answer()\n    _, cid, target = q.data.split(\":\")\n    context.user_data[\"car_media_wait\"] = {\"card_id\": int(cid), \"target\": target}\n    await q.message.reply_text(\n        \"Пришлите %s — можно несколько сразу.\\nКогда закончите, нажмите «Вернуться к карточке».\"\n        % TARGET_LABELS.get(target, \"файлы\"),\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"← Вернуться к карточке\",\n                                 callback_data=\"car_open:%s\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\ndef _save_media_bazovoe(card, target, file_id, actor_id, tag=\"\"):  # UA-V142\n    \"\"\"Write one unique media id using the latest authoritative card state.\"\"\"\n    cid = card[\"id\"]\n    latest = card_of(cid)\n    if latest:\n        card = latest"
+    },
+    {
+      "lineno": 935,
+      "source": "\nasync def condition_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    drop_wait(context)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    # UA-V70 — раздел комплексной диагностики\n    diag_opis = (card.get(\"diag_text\") or \"\").strip()\n    text = [\"<b>Комплексная диагностика</b>\",\n            card.get(\"auto_number\") or \"\",\n            \"\",\n            diag_opis or \"Описание пока не заполнено.\",\n            \"\",\n            \"Фото проверки: %d из 50\"\n            % len(jload(card.get(\"condition_photos\"))),\n            \"Видео проверки: %d из 10\"\n            % len(jload(card.get(\"condition_videos\"))),\n            \"\","
+    },
+    {
+      "lineno": 948,
+      "source": "            \"\",\n            \"Фото проверки: %d из 50\"\n            % len(jload(card.get(\"condition_photos\"))),\n            \"Видео проверки: %d из 10\"\n            % len(jload(card.get(\"condition_videos\"))),\n            \"\",\n            \"Ссылка OBD: %s\" % (card.get(\"diag_link\") or \"нет\")]\n    rows = [\n        [InlineKeyboardButton(\"Описание\",\n                              callback_data=\"car_setf:%d:diag_text\" % cid)],\n        # UA-V100 · посмотреть, что уже загружено в проверку\n        [InlineKeyboardButton(\"Показать фото проверки\",\n                              callback_data=\"car_dgal:%d\" % cid),\n         InlineKeyboardButton(\"Показать видео проверки\",\n                              callback_data=\"car_dvid:%d\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\",\n                              callback_data=\"car_add:%d:condition_photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\",\n                              callback_data=\"car_add:%d:condition_videos\" % cid)],"
+    },
+    {
+      "lineno": 951,
+      "source": "            \"Видео проверки: %d из 10\"\n            % len(jload(card.get(\"condition_videos\"))),\n            \"\",\n            \"Ссылка OBD: %s\" % (card.get(\"diag_link\") or \"нет\")]\n    rows = [\n        [InlineKeyboardButton(\"Описание\",\n                              callback_data=\"car_setf:%d:diag_text\" % cid)],\n        # UA-V100 · посмотреть, что уже загружено в проверку\n        [InlineKeyboardButton(\"Показать фото проверки\",\n                              callback_data=\"car_dgal:%d\" % cid),\n         InlineKeyboardButton(\"Показать видео проверки\",\n                              callback_data=\"car_dvid:%d\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\",\n                              callback_data=\"car_add:%d:condition_photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\",\n                              callback_data=\"car_add:%d:condition_videos\" % cid)],\n        [InlineKeyboardButton(\"Ссылка OBD\",\n                              callback_data=\"car_setf:%d:diag_link\" % cid)],\n    ]"
+    },
+    {
+      "lineno": 953,
+      "source": "            \"\",\n            \"Ссылка OBD: %s\" % (card.get(\"diag_link\") or \"нет\")]\n    rows = [\n        [InlineKeyboardButton(\"Описание\",\n                              callback_data=\"car_setf:%d:diag_text\" % cid)],\n        # UA-V100 · посмотреть, что уже загружено в проверку\n        [InlineKeyboardButton(\"Показать фото проверки\",\n                              callback_data=\"car_dgal:%d\" % cid),\n         InlineKeyboardButton(\"Показать видео проверки\",\n                              callback_data=\"car_dvid:%d\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\",\n                              callback_data=\"car_add:%d:condition_photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\",\n                              callback_data=\"car_add:%d:condition_videos\" % cid)],\n        [InlineKeyboardButton(\"Ссылка OBD\",\n                              callback_data=\"car_setf:%d:diag_link\" % cid)],\n    ]\n    # UA-V103 — кнопки удаления проверки стоят всегда, каждая с подтверждением\n    rows.append([InlineKeyboardButton("
+    },
+    {
+      "lineno": 955,
+      "source": "    rows = [\n        [InlineKeyboardButton(\"Описание\",\n                              callback_data=\"car_setf:%d:diag_text\" % cid)],\n        # UA-V100 · посмотреть, что уже загружено в проверку\n        [InlineKeyboardButton(\"Показать фото проверки\",\n                              callback_data=\"car_dgal:%d\" % cid),\n         InlineKeyboardButton(\"Показать видео проверки\",\n                              callback_data=\"car_dvid:%d\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\",\n                              callback_data=\"car_add:%d:condition_photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\",\n                              callback_data=\"car_add:%d:condition_videos\" % cid)],\n        [InlineKeyboardButton(\"Ссылка OBD\",\n                              callback_data=\"car_setf:%d:diag_link\" % cid)],\n    ]\n    # UA-V103 — кнопки удаления проверки стоят всегда, каждая с подтверждением\n    rows.append([InlineKeyboardButton(\n        \"Удалить все фото проверки\",\n        callback_data=\"diag_ask:%d:condition_photos\" % cid)])"
+    },
+    {
+      "lineno": 957,
+      "source": "                              callback_data=\"car_setf:%d:diag_text\" % cid)],\n        # UA-V100 · посмотреть, что уже загружено в проверку\n        [InlineKeyboardButton(\"Показать фото проверки\",\n                              callback_data=\"car_dgal:%d\" % cid),\n         InlineKeyboardButton(\"Показать видео проверки\",\n                              callback_data=\"car_dvid:%d\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\",\n                              callback_data=\"car_add:%d:condition_photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\",\n                              callback_data=\"car_add:%d:condition_videos\" % cid)],\n        [InlineKeyboardButton(\"Ссылка OBD\",\n                              callback_data=\"car_setf:%d:diag_link\" % cid)],\n    ]\n    # UA-V103 — кнопки удаления проверки стоят всегда, каждая с подтверждением\n    rows.append([InlineKeyboardButton(\n        \"Удалить все фото проверки\",\n        callback_data=\"diag_ask:%d:condition_photos\" % cid)])\n    rows.append([InlineKeyboardButton(\n        \"Удалить все видео проверки\","
+    },
+    {
+      "lineno": 959,
+      "source": "        [InlineKeyboardButton(\"Показать фото проверки\",\n                              callback_data=\"car_dgal:%d\" % cid),\n         InlineKeyboardButton(\"Показать видео проверки\",\n                              callback_data=\"car_dvid:%d\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\",\n                              callback_data=\"car_add:%d:condition_photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\",\n                              callback_data=\"car_add:%d:condition_videos\" % cid)],\n        [InlineKeyboardButton(\"Ссылка OBD\",\n                              callback_data=\"car_setf:%d:diag_link\" % cid)],\n    ]\n    # UA-V103 — кнопки удаления проверки стоят всегда, каждая с подтверждением\n    rows.append([InlineKeyboardButton(\n        \"Удалить все фото проверки\",\n        callback_data=\"diag_ask:%d:condition_photos\" % cid)])\n    rows.append([InlineKeyboardButton(\n        \"Удалить все видео проверки\",\n        callback_data=\"diag_ask:%d:condition_videos\" % cid)])\n    rows += ["
+    },
+    {
+      "lineno": 964,
+      "source": "                              callback_data=\"car_add:%d:condition_photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\",\n                              callback_data=\"car_add:%d:condition_videos\" % cid)],\n        [InlineKeyboardButton(\"Ссылка OBD\",\n                              callback_data=\"car_setf:%d:diag_link\" % cid)],\n    ]\n    # UA-V103 — кнопки удаления проверки стоят всегда, каждая с подтверждением\n    rows.append([InlineKeyboardButton(\n        \"Удалить все фото проверки\",\n        callback_data=\"diag_ask:%d:condition_photos\" % cid)])\n    rows.append([InlineKeyboardButton(\n        \"Удалить все видео проверки\",\n        callback_data=\"diag_ask:%d:condition_videos\" % cid)])\n    rows += [\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows),\n                               disable_web_page_preview=True)"
+    },
+    {
+      "lineno": 967,
+      "source": "        [InlineKeyboardButton(\"Ссылка OBD\",\n                              callback_data=\"car_setf:%d:diag_link\" % cid)],\n    ]\n    # UA-V103 — кнопки удаления проверки стоят всегда, каждая с подтверждением\n    rows.append([InlineKeyboardButton(\n        \"Удалить все фото проверки\",\n        callback_data=\"diag_ask:%d:condition_photos\" % cid)])\n    rows.append([InlineKeyboardButton(\n        \"Удалить все видео проверки\",\n        callback_data=\"diag_ask:%d:condition_videos\" % cid)])\n    rows += [\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows),\n                               disable_web_page_preview=True)\n    raise ApplicationHandlerStop\n\n"
+    },
+    {
+      "lineno": 969,
+      "source": "    ]\n    # UA-V103 — кнопки удаления проверки стоят всегда, каждая с подтверждением\n    rows.append([InlineKeyboardButton(\n        \"Удалить все фото проверки\",\n        callback_data=\"diag_ask:%d:condition_photos\" % cid)])\n    rows.append([InlineKeyboardButton(\n        \"Удалить все видео проверки\",\n        callback_data=\"diag_ask:%d:condition_videos\" % cid)])\n    rows += [\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows),\n                               disable_web_page_preview=True)\n    raise ApplicationHandlerStop\n\n\n# ─────────────────────────────────────────────────────────────\n# ЭТАПЫ"
+    },
+    {
+      "lineno": 990,
+      "source": "# UA-CARDS-STAGE-ANCHOR-001-V1.1 · canonical delivery submenu.\nasync def stage_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    drop_wait(context)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    stage = S.stage_of(card.get(\"status\")) or 1\n    lines = [\n        \"🚚 Доставка и этапы\",\n        card.get(\"auto_number\") or \"#%d\" % cid,\n        \"\",\n        \"Сейчас: %s\" % S.status_label(card.get(\"status\")),\n        \"Этап %d из 4: %s\" % (stage, dict(S.STAGES).get(stage, \"—\")),\n    ]\n    if card.get(\"sea_container\"):\n        lines.append(\"Контейнер: %s\" % card[\"sea_container\"])\n    if card.get(\"sea_date_out\"):\n        lines.append(\"Дата отправления: %s\" % str(card[\"sea_date_out\"])[:10])"
+    },
+    {
+      "lineno": 1013,
+      "source": "        lines.append(\"До выдачи в Киеве: %d дней · %s\" % (\n            left, eta.strftime(\"%d.%m.%Y\")))\n    else:\n        lines.append(\"Срок: уточняется\")\n\n    rows = []\n    for number, _name in S.STAGES:\n        pair = [InlineKeyboardButton(\n            (\"• \" if card.get(\"status\") == code else \"\") + label,\n            callback_data=\"car_setstage:%d:%s\" % (cid, code))\n            for code, (stage_no, label) in S.STATUSES.items() if stage_no == number]\n        for index in range(0, len(pair), 2):\n            rows.append(pair[index:index + 2])\n    rows.append([InlineKeyboardButton(\"📦 Контейнер, даты и сроки\",\n                                      callback_data=\"cont_menu:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
+    },
+    {
+      "lineno": 1018,
+      "source": "    rows = []\n    for number, _name in S.STAGES:\n        pair = [InlineKeyboardButton(\n            (\"• \" if card.get(\"status\") == code else \"\") + label,\n            callback_data=\"car_setstage:%d:%s\" % (cid, code))\n            for code, (stage_no, label) in S.STATUSES.items() if stage_no == number]\n        for index in range(0, len(pair), 2):\n            rows.append(pair[index:index + 2])\n    rows.append([InlineKeyboardButton(\"📦 Контейнер, даты и сроки\",\n                                      callback_data=\"cont_menu:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\n# Грузия → Украина: выезд отмечает владелец,\n# и с этого дня отсчитывается ровно столько дней до прибытия.\nDNEI_GRUZIA_UKRAINA = 15\n"
+    },
+    {
+      "lineno": 1019,
+      "source": "    for number, _name in S.STAGES:\n        pair = [InlineKeyboardButton(\n            (\"• \" if card.get(\"status\") == code else \"\") + label,\n            callback_data=\"car_setstage:%d:%s\" % (cid, code))\n            for code, (stage_no, label) in S.STATUSES.items() if stage_no == number]\n        for index in range(0, len(pair), 2):\n            rows.append(pair[index:index + 2])\n    rows.append([InlineKeyboardButton(\"📦 Контейнер, даты и сроки\",\n                                      callback_data=\"cont_menu:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\n# Грузия → Украина: выезд отмечает владелец,\n# и с этого дня отсчитывается ровно столько дней до прибытия.\nDNEI_GRUZIA_UKRAINA = 15\n\n"
+    },
+    {
+      "lineno": 1069,
+      "source": "                log.warning(\"не смог поставить срок до Украины: %s\", exc)\n\n    card = card_of(cid)\n    saved = card.get(\"status\")\n    if saved != code:\n        await q.message.reply_text(\n            \"Не удалось сохранить этап. Сейчас в карточке: %s\"\n            % S.status_label(saved),\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n\n    lines = [\n        card.get(\"auto_number\") or \"#%d\" % cid,\n        \"Этап сохранён: %s\" % S.status_label(saved),\n    ]\n    left, eta = eta_of(card)\n    if left is not None:\n        lines.append(\"До выдачи в Киеве: %d дней · %s\" % ("
+    },
+    {
+      "lineno": 1081,
+      "source": "    lines = [\n        card.get(\"auto_number\") or \"#%d\" % cid,\n        \"Этап сохранён: %s\" % S.status_label(saved),\n    ]\n    left, eta = eta_of(card)\n    if left is not None:\n        lines.append(\"До выдачи в Киеве: %d дней · %s\" % (\n            left, eta.strftime(\"%d.%m.%Y\")))\n    rows = [\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\",\n                              callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                              callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\n# ─────────────────────────────────────────────────────────────"
+    },
+    {
+      "lineno": 1082,
+      "source": "        card.get(\"auto_number\") or \"#%d\" % cid,\n        \"Этап сохранён: %s\" % S.status_label(saved),\n    ]\n    left, eta = eta_of(card)\n    if left is not None:\n        lines.append(\"До выдачи в Киеве: %d дней · %s\" % (\n            left, eta.strftime(\"%d.%m.%Y\")))\n    rows = [\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\",\n                              callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                              callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\n# ─────────────────────────────────────────────────────────────\n# ЦЕНА ПО ЭТАПАМ"
+    },
+    {
+      "lineno": 1084,
+      "source": "    ]\n    left, eta = eta_of(card)\n    if left is not None:\n        lines.append(\"До выдачи в Киеве: %d дней · %s\" % (\n            left, eta.strftime(\"%d.%m.%Y\")))\n    rows = [\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\",\n                              callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                              callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\n# ─────────────────────────────────────────────────────────────\n# ЦЕНА ПО ЭТАПАМ\n# ─────────────────────────────────────────────────────────────\n"
+    },
+    {
+      "lineno": 1114,
+      "source": "    lines = [\"<b>Цена по этапам</b>\", card.get(\"auto_number\") or \"\", \"\"]\n    for n, name in S.STAGES:\n        val = hist.get(str(n))\n        lines.append(\"%d · %s: <b>%s</b>\" % (n, name, S.money(_int(val)) if val else \"не задана\"))\n    lines.append(\"\")\n    lines.append(\"Текущая цена: <b>%s</b>\" % S.money(_int(card.get(\"price_uah\"))))\n    lines.append(\"В договоре цена фиксируется в гривне, оплата по курсу НБУ \"\n                 \"на день платежа.\")\n    rows = [[InlineKeyboardButton(\"Задать цену этапа\",\n                                  callback_data=\"car_setf:%d:price_uah\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\nasync def save_ai_text(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Записывает последний ответ помощника в описание состояния.\"\"\"\n    q = update.callback_query"
+    },
+    {
+      "lineno": 1115,
+      "source": "    for n, name in S.STAGES:\n        val = hist.get(str(n))\n        lines.append(\"%d · %s: <b>%s</b>\" % (n, name, S.money(_int(val)) if val else \"не задана\"))\n    lines.append(\"\")\n    lines.append(\"Текущая цена: <b>%s</b>\" % S.money(_int(card.get(\"price_uah\"))))\n    lines.append(\"В договоре цена фиксируется в гривне, оплата по курсу НБУ \"\n                 \"на день платежа.\")\n    rows = [[InlineKeyboardButton(\"Задать цену этапа\",\n                                  callback_data=\"car_setf:%d:price_uah\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\nasync def save_ai_text(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Записывает последний ответ помощника в описание состояния.\"\"\"\n    q = update.callback_query\n    await q.answer()"
+    },
+    {
+      "lineno": 1135,
+      "source": "    otvet = context.user_data.get(\"ai_otvet\")\n    if not otvet:\n        await q.message.reply_text(\"Текст потерялся — попросите заново.\")\n        raise ApplicationHandlerStop\n    set_field(cid, \"condition_text\", otvet.strip(), q.from_user.id)\n    card = card_of(cid)\n    await q.message.reply_text(\n        \"%s · описание записано.\" % (card.get(\"auto_number\") or \"\"),\n        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n            \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\nasync def keep_price(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"«Оставить прежнюю» — цена подтверждена, напоминания прекращаются.\"\"\"\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)"
+    },
+    {
+      "lineno": 1150,
+      "source": "    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    remember_price(card, q.from_user.id)\n    await q.message.reply_text(\n        \"Цена подтверждена: %s. Напоминать по этому этапу не буду.\"\n        % S.money(_int(card.get(\"price_uah\"))),\n        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n            \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n\n\ndef remember_price(card, actor_id):\n    \"\"\"Фиксирует цену за текущим этапом.\"\"\"\n    stage = S.stage_of(card.get(\"status\")) or 1\n    hist = price_history(card)\n    hist[str(stage)] = card.get(\"price_uah\")\n    set_field(card[\"id\"], \"price_history\", jdump(hist), actor_id)"
+    },
+    {
+      "lineno": 1229,
+      "source": "\n    golo = _re.fullmatch(r\"[\\d\\s]{3,12}\\s*[$₴]?\", text)\n    if golo:\n        ok, answer = apply_value(cid, \"price_uah\", text, actor_id)\n        if ok:\n            await msg.reply_text(\n                \"%s · цена: %s\" % (number, answer.replace(\"Записано: \", \"\")),\n                reply_markup=InlineKeyboardMarkup([[\n                    InlineKeyboardButton(\"← Вернуться к карточке\",\n                                         callback_data=\"car_open:%d\" % cid)]]))\n            return True\n\n    # «запиши / добавь / поставь» — ИИ сам вносит данные в карточку\n    try:\n        import assistant\n        if assistant.is_write(text):\n            polya = assistant.extract(text, card)\n            zapisano = []\n            for field, value in (polya or {}).items():"
+    },
+    {
+      "lineno": 1251,
+      "source": "                    continue\n                ok, _ = apply_value(cid, field, str(value), actor_id)\n                if ok:\n                    zapisano.append(LABELS_ALL.get(field, field))\n            if zapisano:\n                await msg.reply_text(\n                    \"%s · записано: %s\" % (number, \", \".join(zapisano)),\n                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                        \"← Вернуться к карточке\",\n                        callback_data=\"car_open:%d\" % cid)]]))\n                return True\n    except Exception as e:\n        log.warning(\"Запись через ИИ: %s\", e)\n\n    # свободная просьба — отвечает ИИ, а не «необработанное»\n    try:\n        import assistant\n        if assistant.is_request(text):\n            otvet = assistant.ask(text, card)"
+    },
+    {
+      "lineno": 1267,
+      "source": "        import assistant\n        if assistant.is_request(text):\n            otvet = assistant.ask(text, card)\n            if otvet:\n                context.user_data[\"ai_otvet\"] = otvet[:1500]\n                await msg.reply_text(\n                    assistant.clean_html(otvet)[:3800], parse_mode=\"HTML\",\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"Записать в тех. состояние\",\n                                              callback_data=\"car_saveai:%d\" % cid)],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % cid)]]))\n                return True\n    except Exception as e:\n        log.warning(\"Помощник: %s\", e)\n\n    for rx, field in PHRASES:\n        m = rx.search(text)\n        if not m:"
+    },
+    {
+      "lineno": 1269,
+      "source": "            otvet = assistant.ask(text, card)\n            if otvet:\n                context.user_data[\"ai_otvet\"] = otvet[:1500]\n                await msg.reply_text(\n                    assistant.clean_html(otvet)[:3800], parse_mode=\"HTML\",\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"Записать в тех. состояние\",\n                                              callback_data=\"car_saveai:%d\" % cid)],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % cid)]]))\n                return True\n    except Exception as e:\n        log.warning(\"Помощник: %s\", e)\n\n    for rx, field in PHRASES:\n        m = rx.search(text)\n        if not m:\n            continue\n        raw = (m.group(1) or \"\").strip()"
+    },
+    {
+      "lineno": 1293,
+      "source": "                    raw = str(int(raw.replace(\" \", \"\")) * 1000)\n            except ValueError:\n                continue\n        ok, answer = apply_value(cid, field, raw, actor_id)\n        if ok:\n            await msg.reply_text(\n                \"%s · %s\" % (number, answer),\n                reply_markup=InlineKeyboardMarkup([[\n                    InlineKeyboardButton(\"← Вернуться к карточке\",\n                                         callback_data=\"car_open:%d\" % cid)]]))\n            return True\n    return False\n\n\n\n\n# ─────────────────────────────────────────────────────────────\n# ПОКУПАТЕЛЬ: ОДНА КАРТОЧКА НА КЛИЕНТА И МЕНЕДЖЕРА\n# ─────────────────────────────────────────────────────────────"
+    },
+    {
+      "lineno": 1356,
+      "source": "             \"\"]\n    for key, label in CLIENT_FIELDS:\n        lines.append(\"%s: %s\" % (label, klient.get(key) or \"—\"))\n    lines.append(\"\")\n    lines.append(\"<i>Эти данные видите и правите вы и менеджер. \"\n                 \"Когда клиент оформляет авто сам, они попадают сюда же.</i>\")\n\n    rows, buf = [], []\n    for key, label in CLIENT_FIELDS:\n        buf.append(InlineKeyboardButton(label, callback_data=\"car_setc:%d:%s\" % (cid, key)))\n        if len(buf) == 2:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"Отвязать покупателя\",\n                                      callback_data=\"car_unclient:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % cid)])"
+    },
+    {
+      "lineno": 1363,
+      "source": "    rows, buf = [], []\n    for key, label in CLIENT_FIELDS:\n        buf.append(InlineKeyboardButton(label, callback_data=\"car_setc:%d:%s\" % (cid, key)))\n        if len(buf) == 2:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"Отвязать покупателя\",\n                                      callback_data=\"car_unclient:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n\n\nasync def client_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query"
+    }
+  ],
+  "callbacks": {
+    "all_literal_count": 71,
+    "all_pattern_count": 69,
+    "target_callback_literals": [
+      "car_open:%d",
+      "car_open:%s",
+      "car_setf:%d:diag_link",
+      "car_setf:%d:diag_text",
+      "car_setstage:%d:%s",
+      "car_stage:%d",
+      "diag_ask:%d:condition_photos",
+      "diag_ask:%d:condition_videos",
+      "diag_clr:%s:%s"
+    ],
+    "target_handler_patterns": [
+      "^car_ad:",
+      "^car_add:",
+      "^car_client:",
+      "^car_clr:",
+      "^car_cond:",
+      "^car_del:",
+      "^car_delok:",
+      "^car_demo:",
+      "^car_dgal:",
+      "^car_dvid:",
+      "^car_edit:",
+      "^car_gal:",
+      "^car_keepprice:",
+      "^car_media:",
+      "^car_open:",
+      "^car_preview:",
+      "^car_price:",
+      "^car_pub:",
+      "^car_rmphoto:",
+      "^car_rmpok:",
+      "^car_rmvse2:",
+      "^car_rmvse:",
+      "^car_saveai:",
+      "^car_setc:",
+      "^car_setf:",
+      "^car_setstage:",
+      "^car_sold:",
+      "^car_soldok:",
+      "^car_stage:",
+      "^car_unclient:",
+      "^car_vid:",
+      "^car_vidvse:",
+      "^car_vidvseok:",
+      "^car_vundo:",
+      "^diag_ask:",
+      "^diag_clr:"
+    ]
+  },
   "contract_id": "CRM-ONLINE-GUARD-001-V1.3-AUDIT",
   "crm_write": false,
-  "elapsed_seconds": 1.345,
-  "errors": [
-    "RuntimeError:REMOTE_READ_HTTP_404:bot.py"
-  ],
+  "db": {
+    "card_count": 11,
+    "cards": [
+      {
+        "auto_number": "UA-0001",
+        "id": 7,
+        "photos_bytes": 3329,
+        "status": "ge_waiting",
+        "updated_at": "2026-08-18T01:18:33",
+        "videos_bytes": 104
+      },
+      {
+        "auto_number": "UA-0002",
+        "id": 8,
+        "photos_bytes": 3665,
+        "status": "ua_arrived",
+        "updated_at": "2026-08-22T14:10:07",
+        "videos_bytes": 210
+      },
+      {
+        "auto_number": "UA-0003",
+        "id": 9,
+        "photos_bytes": 2887,
+        "status": "kr_bought",
+        "updated_at": "2026-08-18T01:05:56",
+        "videos_bytes": 2
+      },
+      {
+        "auto_number": "UA-0004",
+        "id": 10,
+        "photos_bytes": 3114,
+        "status": "kr_bought",
+        "updated_at": "2026-08-17T06:19:53",
+        "videos_bytes": 2
+      },
+      {
+        "auto_number": "UA-0005",
+        "id": 11,
+        "photos_bytes": 1220,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-18T04:11:16",
+        "videos_bytes": 0
+      },
+      {
+        "auto_number": "UA-0006",
+        "id": 12,
+        "photos_bytes": 4440,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-27T19:50:42",
+        "videos_bytes": 0
+      },
+      {
+        "auto_number": "UA-0007",
+        "id": 13,
+        "photos_bytes": 3334,
+        "status": "ua_arrived",
+        "updated_at": "2026-08-21T15:58:52",
+        "videos_bytes": 104
+      },
+      {
+        "auto_number": "UA-0008",
+        "id": 14,
+        "photos_bytes": 3665,
+        "status": "ua_arrived",
+        "updated_at": "2026-08-24T04:58:50",
+        "videos_bytes": 210
+      },
+      {
+        "auto_number": "UA-0009",
+        "id": 15,
+        "photos_bytes": 2222,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-27T18:52:11",
+        "videos_bytes": 0
+      },
+      {
+        "auto_number": "UA-0010",
+        "id": 16,
+        "photos_bytes": 3112,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-28T07:10:07",
+        "videos_bytes": 0
+      },
+      {
+        "auto_number": "UA-0011",
+        "id": 18,
+        "photos_bytes": 3905,
+        "status": null,
+        "updated_at": "2026-08-28T19:07:11",
+        "videos_bytes": 0
+      }
+    ],
+    "columns": [
+      "id",
+      "brand",
+      "model",
+      "year",
+      "vin",
+      "fuel",
+      "engine",
+      "color",
+      "mileage",
+      "trim",
+      "condition",
+      "accidents",
+      "auction_link",
+      "price_buy",
+      "price_extra",
+      "price_ship",
+      "price_customs",
+      "price_total",
+      "stage",
+      "photos",
+      "videos",
+      "docs",
+      "responsible",
+      "review_status",
+      "published",
+      "created_by",
+      "approved_by",
+      "created_at",
+      "updated_at",
+      "client_id",
+      "publish_pending",
+      "video_h",
+      "video_v",
+      "auto_number",
+      "engine_cc",
+      "gearbox",
+      "drive",
+      "mileage_km",
+      "condition_text",
+      "condition_photos",
+      "condition_videos",
+      "diag_report",
+      "diag_link",
+      "kr_buy_date",
+      "kr_parking",
+      "sea_container",
+      "sea_port_from",
+      "sea_date_out",
+      "ge_port",
+      "ge_arrived",
+      "ge_released",
+      "days_to_kyiv",
+      "ua_delivered",
+      "ua_handed",
+      "cost_purchase",
+      "cost_fees",
+      "cost_logistics",
+      "cost_total",
+      "price_uah",
+      "nbu_rate",
+      "status",
+      "owner_user",
+      "history",
+      "price_history",
+      "cover_photo",
+      "eta_manual",
+      "description",
+      "hidden_photos",
+      "diag_text",
+      "ge_to_kyiv_at"
+    ],
+    "journal_mode": "delete",
+    "published_count": 10,
+    "quick_check": "ok",
+    "rows_sha256": "bce0dc2304a88a6a3ef3158d0a6402d0397ba66b911c1067bb30a954ea586840"
+  },
+  "elapsed_seconds": 7.681,
+  "errors": [],
   "files": {
+    "ai.py": {
+      "bytes": 37332,
+      "definitions": [
+        {
+          "end_lineno": 80,
+          "kind": "FunctionDef",
+          "lineno": 79,
+          "name": "openai_key",
+          "sha256": "62bb11465e18f648dd368c7599f3645e85d02305830458de70f775fcd7c2d052",
+          "source": "def openai_key() -> str:\n    return _read_key(OPENAI_KEY_FILE, \"OPENAI_API_KEY\")"
+        },
+        {
+          "end_lineno": 89,
+          "kind": "FunctionDef",
+          "lineno": 88,
+          "name": "voice_enabled",
+          "sha256": "ccc4252bae05035cbed968a90feeae16eb0df30855acb1f63c8f04c79486849a",
+          "source": "def voice_enabled() -> bool:\n    return bool(openai_key())"
+        },
+        {
+          "end_lineno": 225,
+          "kind": "FunctionDef",
+          "lineno": 206,
+          "name": "transcribe",
+          "sha256": "68e2cbd03b89278f6e9a164c6220dbc60da3e7ae85e766964d002e58e3f45cd2",
+          "source": "def transcribe(file_bytes: bytes, filename=\"voice.ogg\") -> str:\n    \"\"\"Возвращает текст или пустую строку. Оригинал голосового\n    никогда не удаляется — расшифровка идёт дополнением к нему.\"\"\"\n    key = openai_key()\n    if not key:\n        return \"\"\n    try:\n        result = _post_multipart(\n            \"https://api.openai.com/v1/audio/transcriptions\",\n            {\"Authorization\": f\"Bearer {key}\"},\n            {\"model\": TRANSCRIBE_MODEL, \"language\": \"ru\",\n             \"prompt\": TRANSCRIBE_HINT},\n            \"file\", filename, file_bytes,\n        )\n        return (result.get(\"text\") or \"\").strip()\n    except urllib.error.HTTPError as e:\n        logging.error(f\"Расшифровка не удалась: {e.code} {e.read()[:200]}\")\n    except Exception as e:\n        logging.error(f\"Расшифровка не удалась: {e}\")\n    return \"\""
+        }
+      ],
+      "path": "/home/Carix/ai.py",
+      "sha256": "406c625f43d966e6871d766ca2dd825e7e33c019fadb6e287cafdb7803a524ed"
+    },
+    "ai_fast_schema.py": {
+      "bytes": 6725,
+      "definitions": [
+        {
+          "end_lineno": 27,
+          "kind": "FunctionDef",
+          "lineno": 25,
+          "name": "car_fields",
+          "sha256": "384787debeea9281dd06025558fc61be47e6179d49683f12794b497d3228a077",
+          "source": "def car_fields(ai_filter):\n    allowed = getattr(ai_filter, \"ALLOWED\", {})\n    return frozenset(str(name) for name in allowed)"
+        },
+        {
+          "end_lineno": 35,
+          "kind": "FunctionDef",
+          "lineno": 30,
+          "name": "allowed_for_type",
+          "sha256": "79d785f016d935ef3c33ad8c5dbd64bf7c7009d6f3004299589a7abfce4f05d0",
+          "source": "def allowed_for_type(parsed_type, ai_filter, db_module=None):\n    if parsed_type == \"car\":\n        return car_fields(ai_filter)\n    if parsed_type == \"client\" and db_module is not None:\n        return frozenset(getattr(db_module, \"CLIENT_FIELDS\", ()))\n    return frozenset()"
+        },
+        {
+          "end_lineno": 64,
+          "kind": "FunctionDef",
+          "lineno": 38,
+          "name": "sanitize_parsed",
+          "sha256": "c82a792d35d04a492bfbe0ebe6ea626eda87d585acc7a5b97efa73d7eff1b80e",
+          "source": "def sanitize_parsed(parsed, ai_filter, db_module=None):\n    \"\"\"Return only fields that have a real destination in the CRM form.\"\"\"\n    if not isinstance(parsed, dict):\n        return None\n    parsed_type = parsed.get(\"type\")\n    allowed = allowed_for_type(parsed_type, ai_filter, db_module)\n    if not allowed:\n        return None\n    raw_fields = parsed.get(\"fields\")\n    if not isinstance(raw_fields, dict):\n        raw_fields = {}\n    fields = {name: value for name, value in raw_fields.items() if name in allowed}\n    meta = parsed.get(\"_meta\") if isinstance(parsed.get(\"_meta\"), dict) else {}\n    safe_meta = {\n        key: meta[key]\n        for key in (\"model\", \"elapsed\", \"source\")\n        if key in meta and isinstance(meta[key], (str, int, float))\n    }\n    result = {\n        \"type\": parsed_type,\n        \"fields\": fields,\n        \"question\": None,\n        \"summary\": \"Автомобиль\" if parsed_type == \"car\" else \"Клиент\",\n    }\n    if safe_meta:\n        result[\"_meta\"] = safe_meta\n    return result"
+        },
+        {
+          "end_lineno": 73,
+          "kind": "FunctionDef",
+          "lineno": 67,
+          "name": "parsed_from_data",
+          "sha256": "d50395403a691e083e123935bcc1b0bdebb8dc7f7f6ffb5003bed4438a24ffff",
+          "source": "def parsed_from_data(data, parsed_type=\"car\"):\n    return {\n        \"type\": parsed_type,\n        \"fields\": {name: {\"value\": value} for name, value in data.items()},\n        \"question\": None,\n        \"summary\": \"Автомобиль\" if parsed_type == \"car\" else \"Клиент\",\n    }"
+        },
+        {
+          "end_lineno": 138,
+          "kind": "FunctionDef",
+          "lineno": 80,
+          "name": "labeled_text_data",
+          "sha256": "bc78924678d344f8985d4e473240e26300d99910f8ec044f28c890344ce276fc",
+          "source": "def labeled_text_data(text, ai_filter):\n    \"\"\"Fast deterministic parser for ``Поле: значение`` owner messages.\"\"\"\n    allowed = car_fields(ai_filter)\n    fixed_raw = {\n        \"марка\": _choose(allowed, \"brand\"),\n        \"бренд\": _choose(allowed, \"brand\"),\n        \"модель\": _choose(allowed, \"model\"),\n        \"год\": _choose(allowed, \"year\"),\n        \"рік\": _choose(allowed, \"year\"),\n        \"поколение\": _choose(allowed, \"trim\"),\n        \"покоління\": _choose(allowed, \"trim\"),\n        \"комплектация\": _choose(allowed, \"trim\"),\n        \"комплектація\": _choose(allowed, \"trim\"),\n        \"vin\": _choose(allowed, \"vin\"),\n        \"вин\": _choose(allowed, \"vin\"),\n        \"топливо\": _choose(allowed, \"fuel\"),\n        \"паливо\": _choose(allowed, \"fuel\"),\n        \"двигатель\": _choose(allowed, \"engine_cc\", \"engine\"),\n        \"двигун\": _choose(allowed, \"engine_cc\", \"engine\"),\n        \"объем двигателя\": _choose(allowed, \"engine_cc\", \"engine\"),\n        \"объём двигателя\": _choose(allowed, \"engine_cc\", \"engine\"),\n        \"пробег\": _choose(allowed, \"mileage_km\", \"mileage\"),\n        \"пробіг\": _choose(allowed, \"mileage_km\", \"mileage\"),\n        \"кпп\": _choose(allowed, \"gearbox\"),\n        \"коробка\": _choose(allowed, \"gearbox\"),\n        \"коробка передач\": _choose(allowed, \"gearbox\"),\n        \"привод\": _choose(allowed, \"drive\"),\n        \"колір\": _choose(allowed, \"color\"),\n        \"цвет\": _choose(allowed, \"color\"),\n        \"цена\": _choose(allowed, \"price_total\", \"price_buy\"),\n        \"ціна\": _choose(allowed, \"price_total\", \"price_buy\"),\n        \"цена usd\": _choose(allowed, \"price_total\", \"price_buy\"),\n        \"цена в гривнах\": _choose(allowed, \"price_uah\"),\n        \"ціна у гривнях\": _choose(allowed, \"price_uah\"),\n        \"этап\": _choose(allowed, \"stage\"),\n        \"етап\": _choose(allowed, \"stage\"),\n    }\n    fixed = {_norm(label): field for label, field in fixed_raw.items()}\n    reverse = {}\n    for field, aliases in getattr(ai_filter, \"ALLOWED\", {}).items():\n        reverse[_norm(field)] = field\n        for alias in aliases:\n            reverse[_norm(alias)] = field\n    result = {}\n    for raw_line in str(text or \"\").splitlines():\n        if \":\" not in raw_line:\n            continue\n        label, value = raw_line.split(\":\", 1)\n        canonical = fixed.get(_norm(label)) or reverse.get(_norm(label))\n        if canonical in allowed and value.strip():\n            result[canonical] = value.strip()\n    if not result:\n        return {}\n    # Reuse the production normalizers but give them only whitelisted keys.\n    return {\n        key: value\n        for key, value in ai_filter.clean(parsed_from_data(result), \"\").items()\n        if key in allowed\n    }"
+        },
+        {
+          "end_lineno": 147,
+          "kind": "FunctionDef",
+          "lineno": 141,
+          "name": "clean_car",
+          "sha256": "be564a1bb5f0f93f97711980a76604aa516425cd867c797512ffd7e82f66180e",
+          "source": "def clean_car(parsed, ai_filter, extra_text=\"\"):\n    safe = sanitize_parsed(parsed, ai_filter)\n    if safe is None:\n        safe = parsed_from_data({})\n    data = ai_filter.clean(safe, extra_text or \"\")\n    allowed = car_fields(ai_filter)\n    return {key: value for key, value in data.items() if key in allowed}"
+        },
+        {
+          "end_lineno": 155,
+          "kind": "FunctionDef",
+          "lineno": 150,
+          "name": "fast_text_data",
+          "sha256": "0d9b0f70f493a75ef235ac38a7c20c8682708a83a3fac3fe16eeb3c07bfe0ccd",
+          "source": "def fast_text_data(text, ai_filter):\n    labeled = labeled_text_data(text, ai_filter)\n    fallback = clean_car(parsed_from_data({}), ai_filter, text or \"\")\n    merged = dict(fallback)\n    merged.update(labeled)\n    return merged"
+        },
+        {
+          "end_lineno": 174,
+          "kind": "FunctionDef",
+          "lineno": 158,
+          "name": "install_prompt",
+          "sha256": "7379c81f761cb7f761cff23cd17547b58a461f0dbb7e715b77f587ee9d2e6c05",
+          "source": "def install_prompt(ai_module, ai_filter):\n    \"\"\"Constrain the existing model prompt without changing client parsing.\"\"\"\n    allowed = sorted(car_fields(ai_filter))\n    rule = (\n        \"\\n\\n[\" + PROMPT_MARKER + \"] Для type=car разрешены ТОЛЬКО поля: \"\n        + \", \".join(allowed)\n        + \". Не извлекай прочие сведения, не помещай их в summary/question. \"\n          \"Верни только JSON; fields не должен содержать другие ключи.\"\n    )\n    for name in (\"SYSTEM_PROMPT\", \"IMAGE_PROMPT\"):\n        current = str(getattr(ai_module, name, \"\"))\n        if PROMPT_MARKER not in current:\n            setattr(ai_module, name, current + rule)\n    try:\n        ai_module.MAX_TOKENS = min(int(ai_module.MAX_TOKENS), 700)\n    except Exception:\n        pass"
+        }
+      ],
+      "path": "/home/Carix/ai_fast_schema.py",
+      "sha256": "d2ac2104b2293e3c5cb38930fac6f4de87b9d1d3f35783b1b4e892433fcfd64e"
+    },
+    "ai_filter.py": {
+      "bytes": 26858,
+      "definitions": [
+        {
+          "end_lineno": 262,
+          "kind": "FunctionDef",
+          "lineno": 211,
+          "name": "clean",
+          "sha256": "9910ac7e62e88324466471b1ca009c733958b183b40775e150d0f321d69ec2f2",
+          "source": "def clean(parsed, extra_text=\"\"):\n    \"\"\"Из разбора оставляем только поля карточки.\n    extra_text — исходное сообщение: если разбор что-то потерял, ищем там.\"\"\"\n    flat = flatten(parsed if isinstance(parsed, dict) else {})\n    text_all = _all_text(flat)\n    if extra_text:\n        text_all = text_all + \" | \" + str(extra_text)\n    out = {}\n    for field, keys in ALLOWED.items():\n        raw = _pick(flat, keys)\n        if raw in (None, \"\", \"-\", \"—\"):\n            for f2, rx in FALLBACK:\n                if f2 != field:\n                    continue\n                m = rx.search(text_all)\n                if m:\n                    raw = m.group(1) if m.groups() else m.group(0)\n                    break\n        if raw in (None, \"\"):\n            continue\n        if field == \"engine_cc\":\n            val = _cc(raw)\n            if val and not (500 <= val <= 8000):\n                val = None\n        elif field == \"mileage_km\":\n            val = _km(raw)\n            if val and not (0 < val <= 2000000):\n                val = None\n        elif field == \"year\":\n            val = _year(raw)\n            if val and not (1980 <= val <= date.today().year + 1):\n                val = None\n        elif field == \"fuel\":\n            val = _map(raw, FUEL)\n        elif field == \"gearbox\":\n            val = _map(raw, GEARBOX)\n        elif field == \"drive\":\n            val = _map(raw, DRIVE)\n        elif field == \"color\":\n            val = _map(raw, COLOR)\n        elif field == \"vin\":\n            vin = str(raw).upper().replace(\" \", \"\").replace(\"-\", \"\")\n            if len(vin) != 17:\n                m = _re.search(r\"[A-HJ-NPR-Z0-9]{17}\", text_all.upper())\n                vin = m.group(0) if m else None\n            val = vin\n        else:\n            val = str(raw).strip()\n        if val not in (None, \"\"):\n            out[field] = val\n    _log_parsed(parsed, out)\n    return out"
+        },
+        {
+          "end_lineno": 295,
+          "kind": "FunctionDef",
+          "lineno": 278,
+          "name": "render",
+          "sha256": "9e9a13c8edd807ac87e9d34e4c5b52ca464993721cc78fe229e7b4534bf00e78",
+          "source": "def render(data, existing=None):\n    L = [\"<b>Автомобиль</b>\"]\n    if existing:\n        L.append(\"VIN уже есть в базе: <b>%s</b>\" % (existing.get(\"auto_number\") or\n                                                     \"#%s\" % existing[\"id\"]))\n        L.append(\"Дополню эту карточку, новую заводить не буду.\")\n    L.append(\"\")\n    for field in ORDER:\n        val = data.get(field)\n        if val in (None, \"\"):\n            continue\n        if field == \"engine_cc\":\n            val = S.num(val, \" см³\")\n        elif field == \"mileage_km\":\n            val = S.num(val, \" км\")\n        L.append(\"<b>%s:</b> %s\" % (LABELS[field], val))\n\n    return \"\\n\".join(L)"
+        },
+        {
+          "end_lineno": 328,
+          "kind": "FunctionDef",
+          "lineno": 318,
+          "name": "render_from",
+          "sha256": "2bdfead9e2ba429e66a25482fb1c494a09944fba3766cee6a39e0b2521814df5",
+          "source": "def render_from(parsed, issues=None):\n    \"\"\"Прямая точка входа для team_bot: только поля карточки, ничего лишнего.\"\"\"\n    if not isinstance(parsed, dict) or parsed.get(\"type\") == \"client\":\n        if _ORIG_DRAFT:\n            try:\n                return _ORIG_DRAFT(parsed, issues)\n            except Exception:\n                pass\n        return \"\"\n    data = clean(parsed)\n    return render(data, find_by_vin(data.get(\"vin\")))"
+        },
+        {
+          "end_lineno": 376,
+          "kind": "FunctionDef",
+          "lineno": 331,
+          "name": "install",
+          "sha256": "f064a8538d0d2f184928e29c0ab8eaca5e7ead793ff52973b2f0970add060d0d",
+          "source": "def install():\n    global _ORIG_DRAFT, _ORIG_REVIEW, _ORIG_DATA\n    \"\"\"Перехватывает вывод разбора: лишнее не доходит ни до чата, ни до базы.\"\"\"\n    try:\n        import ai\n    except Exception as e:\n        log.warning(\"ai.py не найден, фильтр не поставлен: %s\", e)\n        return\n\n    def render_draft(parsed, issues=None, *a, **k):\n        if isinstance(parsed, dict) and parsed.get(\"type\") == \"client\":\n            return _orig_draft(parsed, issues) if _orig_draft else \"\"\n        data = clean(parsed if isinstance(parsed, dict) else {})\n        existing = find_by_vin(data.get(\"vin\"))\n        return render(data, existing)\n\n    def render_review(*a, **k):\n        return \"\"      # блок «Проверка» и предположения в чат не выводим\n\n    def to_card_data(parsed, *a, **k):\n        if isinstance(parsed, dict) and parsed.get(\"type\") == \"client\":\n            return _orig_data(parsed) if _orig_data else {}\n        data = clean(parsed if isinstance(parsed, dict) else {})\n        # в старые колонки кладём то, что понимает db.create_card\n        out = {}\n        for k2, v in data.items():\n            if k2 == \"engine_cc\":\n                out[\"engine\"] = v\n            elif k2 == \"mileage_km\":\n                out[\"mileage\"] = v\n            elif k2 == \"condition_text\":\n                out[\"condition\"] = v\n            else:\n                out[k2] = v\n        out[\"_clean\"] = data          # новые поля дозапишем после создания\n        return out\n\n    _orig_draft = getattr(ai, \"render_draft\", None)\n    _orig_data = getattr(ai, \"to_card_data\", None)\n    _ORIG_DRAFT = _orig_draft\n    _ORIG_REVIEW = getattr(ai, \"render_review\", None)\n    _ORIG_DATA = _orig_data\n    ai.render_draft = render_draft\n    ai.render_review = render_review\n    ai.to_card_data = to_card_data\n    log.info(\"ai_filter поставлен: в карточку идут только нужные поля\")"
+        },
+        {
+          "end_lineno": 434,
+          "kind": "FunctionDef",
+          "lineno": 384,
+          "name": "store",
+          "sha256": "7ddb70281a4edf9e2e082be10a7c66cd66e33b5ee945cf47ec39d2e7e4955d5e",
+          "source": "def store(data, actor, inbox_id=None, card_id=None):\n    \"\"\"Кладёт данные в карточку.\n    Новая карточка заводится ТОЛЬКО когда есть VIN.\n    Заполненные поля никогда не затираются — дописываются лишь пустые.\n    Возвращает (card_id, номер, признак новой) или (None, None, None),\n    если заводить нечего.\n    \"\"\"\n    existing = None\n    if card_id:\n        existing = db.get_card(\"cars\", int(card_id))\n    if not existing and data.get(\"vin\"):\n        existing = find_by_vin(data[\"vin\"])\n\n    if existing:\n        card_id = existing[\"id\"]\n        for field, value in data.items():\n            if existing.get(field) in (None, \"\", 0):\n                db.update_card_field(\"cars\", card_id, field, value, actor)\n        number = existing.get(\"auto_number\")\n        if not number:\n            with db.connect() as c:\n                number = S.next_auto_number(c)\n            db.update_card_field(\"cars\", card_id, \"auto_number\", number, actor)\n        novaya = False\n    else:\n        if not data.get(\"vin\"):\n            return None, None, None          # без VIN новую не заводим\n        legacy = {k: v for k, v in {\n            \"brand\": data.get(\"brand\"), \"model\": data.get(\"model\"),\n            \"year\": data.get(\"year\"), \"vin\": data.get(\"vin\"),\n            \"fuel\": data.get(\"fuel\"), \"color\": data.get(\"color\"),\n        }.items() if v}\n        card_id = db.create_card(\"cars\", legacy, actor)\n        with db.connect() as c:\n            number = S.next_auto_number(c)\n        db.update_card_field(\"cars\", card_id, \"auto_number\", number, actor)\n        for field, value in data.items():\n            db.update_card_field(\"cars\", card_id, field, value, actor)\n        db.set_card_review(\"cars\", card_id, db.ST_APPROVED_OWNER, actor, publish=False)\n        novaya = True\n\n    if inbox_id:\n        # Присланное сообщение к карточке не прикрепляем: скриншоты и документы\n        # в галерею попадать не должны. Фото добавляются только кнопкой.\n        try:\n            db.link_inbox_card(inbox_id, \"cars\", card_id, actor)\n            db.set_inbox_status(inbox_id, db.ST_APPROVED_OWNER, actor)\n        except Exception:\n            pass\n\n    return card_id, number, novaya"
+        },
+        {
+          "end_lineno": 514,
+          "kind": "AsyncFunctionDef",
+          "lineno": 437,
+          "name": "autosave",
+          "sha256": "4ca27a797e3f249406da80f52a697e0ea1bbf61a33ae356aa5b881052964f613",
+          "source": "async def autosave(update, context, thinking, inbox_id, parsed):\n    \"\"\"Сохраняет авто сразу, без кнопки подтверждения.\n    Возвращает True, если карточка записана.\"\"\"\n    if not isinstance(parsed, dict) or parsed.get(\"type\") != \"car\":\n        return False\n    user = update.effective_user\n    staff = db.get_staff(user.id) if user else None\n    if not staff:\n        return False\n    text_prosby = source_text(inbox_id)\n    try:\n        import assistant\n        if assistant.is_request(text_prosby):\n            card = None\n            posl = context.user_data.get(\"car_last\")\n            if posl:\n                card = db.get_card(\"cars\", posl)\n            otvet = assistant.ask(text_prosby, card)\n            if otvet:\n                await thinking.edit_text(assistant.clean_html(otvet)[:3800],\n                                         parse_mode=\"HTML\")\n                context.user_data.pop(\"ai_draft\", None)\n                return True\n    except Exception as e:\n        log.warning(\"Помощник: %s\", e)\n\n    data = clean(parsed, source_text(inbox_id))\n    if not data:\n        return False\n\n    otkrytaya = context.user_data.get(\"car_last\")\n    try:\n        card_id, number, novaya = store(data, staff[\"user_id\"], inbox_id,\n                                        card_id=None if data.get(\"vin\") else otkrytaya)\n    except Exception as e:\n        log.warning(\"Автосохранение не прошло: %s\", e)\n        return False\n\n    if not card_id:\n        # VIN не найден и открытой карточки нет — новую не заводим\n        kb = []\n        posledn = None\n        try:\n            spisok = db.list_cards(\"cars\", limit=1)\n            posledn = spisok[0] if spisok else None\n        except Exception:\n            pass\n        if posledn:\n            kb.append([InlineKeyboardButton(\n                \"Записать в %s\" % (posledn.get(\"auto_number\") or \"последнюю\"),\n                callback_data=\"car_open:%d\" % posledn[\"id\"])])\n        kb.append([InlineKeyboardButton(\"Список автомобилей\",\n                                        callback_data=\"cars_cards\")])\n        try:\n            await thinking.edit_text(\n                \"Новую карточку завожу только по VIN — его в сообщении нет.\\n\"\n                \"Пришлите VIN или откройте нужную карточку.\",\n                reply_markup=InlineKeyboardMarkup(kb))\n        except Exception:\n            pass\n        return True\n\n    head = (\"Открыл новую карточку %s\" % number if novaya\n            else \"Дополнил карточку %s — заполненное не тронул\" % number)\n    text = head + \"\\n\\n\" + render(data)\n    kb = InlineKeyboardMarkup([\n        [InlineKeyboardButton(\"← Открыть карточку\", callback_data=\"car_open:%d\" % card_id)],\n        [InlineKeyboardButton(\"Редактировать\", callback_data=\"car_edit:%d\" % card_id),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % card_id)],\n    ])\n    try:\n        await thinking.edit_text(text, parse_mode=\"HTML\", reply_markup=kb)\n    except Exception:\n        await update.effective_message.reply_text(text, parse_mode=\"HTML\",\n                                                  reply_markup=kb)\n    context.user_data.pop(\"ai_draft\", None)\n    context.user_data[\"car_last\"] = card_id\n    return True"
+        },
+        {
+          "end_lineno": 598,
+          "kind": "AsyncFunctionDef",
+          "lineno": 516,
+          "name": "save",
+          "sha256": "d70a5eb0d08f7f0a95dc80640a6f04bfb3775036cb470a3b49bd39a4f311ac73",
+          "source": "async def save(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    staff = db.get_staff(q.from_user.id)\n    draft = context.user_data.get(\"ai_draft\")\n    if not draft or not staff:\n        return                      # пусть отработает обычный обработчик\n\n    parsed = draft.get(\"parsed\") or {}\n    if parsed.get(\"type\") == \"client\":\n        return                      # клиентов не трогаем\n\n    data = clean(parsed)\n    if not data:\n        await q.message.reply_text(\"Из сообщения нечего взять в карточку.\")\n        raise ApplicationHandlerStop\n\n    existing = find_by_vin(data.get(\"vin\"))\n    actor = staff[\"user_id\"]\n\n    if existing:\n        card_id = existing[\"id\"]\n        for field, value in data.items():\n            if not existing.get(field):\n                db.update_card_field(\"cars\", card_id, field, value, actor)\n        note = \"Дополнил карточку %s.\" % (existing.get(\"auto_number\") or \"#%d\" % card_id)\n    else:\n        legacy = {\"brand\": data.get(\"brand\"), \"model\": data.get(\"model\"),\n                  \"year\": data.get(\"year\"), \"vin\": data.get(\"vin\"),\n                  \"fuel\": data.get(\"fuel\"), \"color\": data.get(\"color\")}\n        legacy = {k: v for k, v in legacy.items() if v}\n        card_id = db.create_card(\"cars\", legacy, actor)\n        with db.connect() as c:\n            number = S.next_auto_number(c)\n        db.update_card_field(\"cars\", card_id, \"auto_number\", number, actor)\n        for field, value in data.items():\n            db.update_card_field(\"cars\", card_id, field, value, actor)\n        db.set_card_review(\"cars\", card_id, db.ST_APPROVED_OWNER, actor, publish=False)\n        note = \"Открыл новую карточку %s.\" % number\n\n    # переносим фото и видео из входящего сообщения\n    try:\n        import team_bot\n        foto, video = team_bot.collect_media(draft[\"inbox_id\"])\n        if foto:\n            import json\n            card = db.get_card(\"cars\", card_id)\n            have = []\n            try:\n                have = json.loads(card.get(\"photos\") or \"[]\")\n            except Exception:\n                have = []\n            norm = [p if isinstance(p, dict) else {\"file_id\": p, \"tag\": \"\"} for p in have]\n            for f in foto:\n                if not any(p.get(\"file_id\") == f for p in norm):\n                    norm.append({\"file_id\": f, \"tag\": \"\"})\n            db.update_card_field(\"cars\", card_id, \"photos\",\n                                 json.dumps(norm, ensure_ascii=False), actor)\n            try:\n                import photo_hide\n                photo_hide.archive(card_id, foto, actor)\n            except Exception as e:\n                log.warning(\"Архив служебных фото: %s\", e)\n        if video:\n            db.update_card_field(\"cars\", card_id, \"video_h\", video[0], actor)\n    except Exception as e:\n        log.warning(\"Медиа не перенеслись: %s\", e)\n\n    try:\n        db.link_inbox_card(draft[\"inbox_id\"], \"cars\", card_id, actor)\n        db.set_inbox_status(draft[\"inbox_id\"], db.ST_APPROVED_OWNER, actor)\n    except Exception:\n        pass\n\n    context.user_data.pop(\"ai_draft\", None)\n    card = db.get_card(\"cars\", card_id)\n    await q.message.edit_reply_markup(reply_markup=None)\n    await q.message.reply_text(\n        note,\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"Открыть карточку\", callback_data=\"car_open:%d\" % card_id)],\n            [InlineKeyboardButton(\"Дозаполнить\", callback_data=\"car_edit:%d\" % card_id)]]))\n    raise ApplicationHandlerStop"
+        }
+      ],
+      "path": "/home/Carix/ai_filter.py",
+      "sha256": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6"
+    },
     "cars_ui.py": {
       "bytes": 154243,
       "definitions": [
@@ -421,6 +1150,227 @@
       "path": "/home/Carix/cars_ui.py",
       "sha256": "734f61a314b9f5391f999664d5267448a7f1e372245a7840057cf7fb7e599f9c"
     },
+    "db.py": {
+      "bytes": 34721,
+      "definitions": [
+        {
+          "end_lineno": 311,
+          "kind": "ClassDef",
+          "lineno": 189,
+          "name": "Soedinenie",
+          "sha256": "8f2ea10d7ef423768646706a07ec14c9b793e74d070e6cab85179e5bbc225823",
+          "source": "class Soedinenie(sqlite3.Connection):\n    \"\"\"Own the process queue only while a write transaction is active.\"\"\"\n\n    def _pered_zapisyu(self, sql):\n        if not _ua_sql_pishet(sql) or getattr(self, \"_ua_zapis_v_ocheredi\", False):\n            return False\n        vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)\n        if not vzyata:\n            raise sqlite3.OperationalError(\"CRM thread queue timeout\")\n        self._ochered_vzyata = True\n        try:\n            _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)\n            self._fayl_zaregistrirovan = True\n            self._ua_zapis_v_ocheredi = True\n            return True\n        except Exception:\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n            raise\n\n    def _otpustit(self):\n        self._ua_zapis_v_ocheredi = False\n        if getattr(self, \"_fayl_zaregistrirovan\", False):\n            self._fayl_zaregistrirovan = False\n            try:\n                _ua_fayl_otpustit()\n            except Exception:\n                pass\n        if getattr(self, \"_ochered_vzyata\", False):\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n\n    def cursor(self, factory=None):\n        return sqlite3.Connection.cursor(self, factory or _UaKursor)\n\n    def execute(self, sql, parameters=()):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.execute(self, sql, parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executemany(self, sql, seq_of_parameters):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.executemany(self, sql, seq_of_parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executescript(self, sql_script):\n        novaya = self._pered_zapisyu(sql_script)\n        try:\n            return sqlite3.Connection.executescript(self, sql_script)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def _commit_s_povtorom(self):\n        import time as _ua_time\n\n        for attempt in range(5):\n            try:\n                sqlite3.Connection.commit(self)\n                return\n            except sqlite3.OperationalError as exc:\n                text = str(exc).casefold()\n                if \"locked\" not in text and \"busy\" not in text:\n                    raise\n                if attempt == 4:\n                    raise\n                _ua_time.sleep(0.15 * (2 ** attempt))\n\n    def commit(self):\n        try:\n            self._commit_s_povtorom()\n        except Exception:\n            try:\n                sqlite3.Connection.rollback(self)\n            finally:\n                self._otpustit()\n            raise\n        self._otpustit()\n\n    def rollback(self):\n        try:\n            return sqlite3.Connection.rollback(self)\n        finally:\n            self._otpustit()\n\n    def close(self):\n        try:\n            if self.in_transaction:\n                sqlite3.Connection.rollback(self)\n            sqlite3.Connection.close(self)\n        finally:\n            self._otpustit()\n\n    def __exit__(self, tip, znachenie, sled):\n        try:\n            if tip is None:\n                self.commit()\n            else:\n                self.rollback()\n        finally:\n            try:\n                self.close()\n            except Exception:\n                self._otpustit()\n        return False\n\n    def __del__(self):\n        self._otpustit()"
+        },
+        {
+          "end_lineno": 327,
+          "kind": "FunctionDef",
+          "lineno": 315,
+          "name": "connect",
+          "sha256": "3257e05c559e7c2d6d39ba0ca1b66818f6283909a411bba695d21517b29afe15",
+          "source": "def connect():\n    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)\n    conn.row_factory = sqlite3.Row\n    # Setup pragmas must not hold the transaction queue for a long-lived reader.\n    try:\n        sqlite3.Connection.execute(conn, \"PRAGMA journal_mode=DELETE\")\n    except Exception:\n        pass\n    sqlite3.Connection.execute(\n        conn, \"PRAGMA busy_timeout=%d\" % (ZAMOK_OZHIDANIE * 1000)\n    )\n    sqlite3.Connection.execute(conn, \"PRAGMA foreign_keys=ON\")\n    return conn"
+        },
+        {
+          "end_lineno": 719,
+          "kind": "FunctionDef",
+          "lineno": 716,
+          "name": "get_card",
+          "sha256": "98ec50651f47457a5c3fb62099076e9c1e8e9b20a9eac79be648f985b8ec04b1",
+          "source": "def get_card(table: str, card_id: int):\n    with connect() as c:\n        row = c.execute(f\"SELECT * FROM {table} WHERE id=?\", (card_id,)).fetchone()\n        return dict(row) if row else None"
+        },
+        {
+          "end_lineno": 742,
+          "kind": "FunctionDef",
+          "lineno": 735,
+          "name": "update_card_field",
+          "sha256": "1749f0eef8fc799ed5b08bd6a4482fad3126199d8c40207b76143b263349a1b1",
+          "source": "def update_card_field(table: str, card_id: int, field: str, value, actor_id: int):\n    \"\"\"Каждая правка поля попадает в журнал со старым и новым значением.\"\"\"\n    old = get_card(table, card_id)\n    old_value = old.get(field) if old else None\n    with connect() as c:\n        c.execute(f\"UPDATE {table} SET {field}=?, updated_at=? WHERE id=?\",\n                  (value, now(), card_id))\n    log_action(actor_id, \"card_edit\", table, card_id, field, old_value, value)"
+        }
+      ],
+      "path": "/home/Carix/db.py",
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
+    },
+    "local_ocr.py": {
+      "bytes": 8690,
+      "definitions": [
+        {
+          "end_lineno": 95,
+          "kind": "FunctionDef",
+          "lineno": 85,
+          "name": "_prepare",
+          "sha256": "3cebac1bd1ce464c4353805147e432651939211a3782dcf886e26323446d7c07",
+          "source": "def _prepare(image, scale: int):\n    from PIL import ImageEnhance, ImageFilter, ImageOps\n\n    if scale > 1:\n        image = image.resize(\n            (image.width * scale, image.height * scale),\n            resample=getattr(__import__(\"PIL.Image\", fromlist=[\"Resampling\"]), \"Resampling\").LANCZOS,\n        )\n    image = ImageOps.autocontrast(ImageOps.grayscale(image), cutoff=1)\n    image = ImageEnhance.Contrast(image).enhance(1.25)\n    return image.filter(ImageFilter.SHARPEN)"
+        },
+        {
+          "end_lineno": 117,
+          "kind": "FunctionDef",
+          "lineno": 98,
+          "name": "_ocr_one",
+          "sha256": "3f7b7cf6bc1d47d3ad6dcb3dcc09f16a26d33d4637c2bbacbfaade4339b6e2c3",
+          "source": "def _ocr_one(image, binary: str, languages: str, deadline: float, psm: int) -> str:\n    remaining = deadline - time.monotonic()\n    if remaining <= 0.3:\n        return \"\"\n    with tempfile.NamedTemporaryFile(suffix=\".png\", delete=False) as handle:\n        path = Path(handle.name)\n    try:\n        image.save(path, format=\"PNG\", optimize=False)\n        result = subprocess.run(\n            [binary, str(path), \"stdout\", \"-l\", languages, \"--psm\", str(psm)],\n            capture_output=True,\n            text=True,\n            timeout=max(0.25, min(1.45, remaining)),\n            check=False,\n        )\n        return result.stdout if result.returncode == 0 else \"\"\n    except subprocess.TimeoutExpired:\n        return \"\"\n    finally:\n        path.unlink(missing_ok=True)"
+        },
+        {
+          "end_lineno": 169,
+          "kind": "FunctionDef",
+          "lineno": 120,
+          "name": "image_text",
+          "sha256": "e4ca875e483996e2c052afeeb4cc9533ec108db2e4093b75bccd37336ff5fa74",
+          "source": "def image_text(image_bytes: bytes, hard_seconds: float = DEFAULT_PHOTO_SECONDS) -> str:\n    \"\"\"Run local OCR within the caller's deadline; never use a network model.\"\"\"\n    binary = shutil.which(\"tesseract\")\n    if not binary or not image_bytes:\n        return \"\"\n    try:\n        from PIL import Image\n    except Exception:\n        return \"\"\n\n    deadline = time.monotonic() + max(0.5, float(hard_seconds))\n    try:\n        original = Image.open(io.BytesIO(image_bytes)).convert(\"RGB\")\n    except Exception:\n        return \"\"\n    width, height = original.size\n    if width < 32 or height < 32:\n        return \"\"\n\n    languages = _languages(binary)\n    chunks = []\n\n    # A sparse full-page pass finds large labels before the detailed crop passes.\n    full_scale = 2 if max(width, height) < 2200 else 1\n    full = _prepare(original.copy(), full_scale)\n    first = _ocr_one(full, binary, languages, deadline, 11)\n    if first:\n        chunks.append(first)\n\n    # Right-first overlapping tiles prioritize nested marketplace screenshots\n    # commonly forwarded inside Telegram while still covering the whole image.\n    tile_w = max(32, int(width * 0.56))\n    tile_h = max(32, int(height * 0.34))\n    x_positions = [max(0, width - tile_w), 0]\n    y_positions = [\n        0,\n        max(0, int((height - tile_h) * 0.34)),\n        max(0, int((height - tile_h) * 0.67)),\n        max(0, height - tile_h),\n    ]\n    for y in y_positions:\n        for x in x_positions:\n            if time.monotonic() >= deadline:\n                break\n            tile = original.crop((x, y, min(width, x + tile_w), min(height, y + tile_h)))\n            scale = 3 if max(tile.size) < 1800 else 2\n            text = _ocr_one(_prepare(tile, scale), binary, languages, deadline, 3)\n            if text and text not in chunks:\n                chunks.append(text)\n    return \"\\n\".join(chunks)"
+        },
+        {
+          "end_lineno": 250,
+          "kind": "FunctionDef",
+          "lineno": 177,
+          "name": "fields_from_text",
+          "sha256": "006573a733e7645031248f57e1672bbf092ebc1eacb148346ad1ff661484519e",
+          "source": "def fields_from_text(text: str, allowed_keys) -> dict:\n    \"\"\"Extract only keys that exist in the live CRM schema.\"\"\"\n    allowed = set(allowed_keys or ())\n    data = {}\n    raw = str(text or \"\")\n    folded = raw.casefold()\n\n    match = CAR_LINE_RE.search(raw)\n    if match:\n        _put(data, allowed, \"brand\", BRANDS[match.group(1).casefold()])\n        _put(data, allowed, \"model\", match.group(2).upper())\n        _put(data, allowed, \"year\", match.group(3))\n\n    vins = VIN_RE.findall(raw.upper())\n    vins = [v for v in vins if any(c.isalpha() for c in v) and any(c.isdigit() for c in v)]\n    if vins:\n        _put(data, allowed, \"vin\", vins[0].upper())\n\n    if \"year\" not in data:\n        years = re.findall(r\"(?<!\\d)((?:19|20)\\d{2})(?!\\d)\", raw)\n        if years:\n            _put(data, allowed, \"year\", years[0])\n\n    mileage = re.search(\n        r\"(?<!\\d)(\\d{1,3}(?:[ .]\\d{3})?|\\d{1,7})\\s*\"\n        r\"(tuc|тыс|тис|тысяч|тисяч)?\\.?\\s*(km|км)\\b\",\n        folded,\n    )\n    if mileage:\n        value = int(re.sub(r\"\\D\", \"\", mileage.group(1)))\n        if mileage.group(2) and value < 10000:\n            value *= 1000\n        if 0 < value <= 2_000_000:\n            _put(data, allowed, \"mileage_km\", value)\n\n    if re.search(r\"\\b(lpg|газ|gaz|gas|fas)\\b\", folded):\n        _put(data, allowed, \"fuel\", \"LPG\")\n    elif re.search(r\"\\b(diesel|дизел)\\w*\\b\", folded):\n        _put(data, allowed, \"fuel\", \"diesel\")\n    elif re.search(r\"\\b(hybrid|гибрид)\\w*\\b\", folded):\n        _put(data, allowed, \"fuel\", \"hybrid\")\n    elif re.search(r\"\\b(electric|электро|ev)\\w*\\b\", folded):\n        _put(data, allowed, \"fuel\", \"electric\")\n    elif re.search(r\"\\b(gasoline|petrol|бензин)\\w*\\b\", folded):\n        _put(data, allowed, \"fuel\", \"gasoline\")\n\n    if re.search(r\"\\b(automatic|automat|astomat|asromat|автомат)\\w*\\b\", folded):\n        _put(data, allowed, \"gearbox\", \"automatic\")\n    elif re.search(r\"\\b(manual|механик)\\w*\\b\", folded):\n        _put(data, allowed, \"gearbox\", \"manual\")\n\n    if re.search(r\"\\b(awd|4wd|полный|повний)\\b\", folded):\n        _put(data, allowed, \"drive\", \"4wd\")\n    elif re.search(r\"\\b(fwd|передний|передній)\\b\", folded):\n        _put(data, allowed, \"drive\", \"fwd\")\n    elif re.search(r\"\\b(rwd|задний|задній)\\b\", folded):\n        _put(data, allowed, \"drive\", \"rwd\")\n\n    fuel_engine = re.search(\n        r\"(?:lpg|gas|gaz|fas|газ)[^\\n]{0,10}?[,;:\\s]\\s*\"\n        r\"([1-8])(?:\\s*[.,]\\s*([0-9]))?\\s*(?:l|л|n)\\b\",\n        folded,\n    )\n    engine = fuel_engine or re.search(\n        r\"(?<!\\d)([1-8])\\s*[.,]\\s*([0-9])\\s*(?:l|л|n)?\\b\", folded\n    )\n    if engine:\n        fraction = int(engine.group(2) or 0)\n        _put(data, allowed, \"engine_cc\", int(engine.group(1)) * 1000 + fraction * 100)\n    else:\n        engine = re.search(r\"(?<!\\d)([1-8])\\s*(?:l|л|n)\\b\", folded)\n        if engine:\n            _put(data, allowed, \"engine_cc\", int(engine.group(1)) * 1000)\n    return data"
+        },
+        {
+          "end_lineno": 258,
+          "kind": "FunctionDef",
+          "lineno": 253,
+          "name": "fields_from_image",
+          "sha256": "385eeb87a21baa864ebfb8546d6571908172aadfd89eb3dfa21d5420ed99d086",
+          "source": "def fields_from_image(\n    image_bytes: bytes,\n    allowed_keys,\n    hard_seconds: float = DEFAULT_PHOTO_SECONDS,\n) -> dict:\n    return fields_from_text(image_text(image_bytes, hard_seconds=hard_seconds), allowed_keys)"
+        }
+      ],
+      "path": "/home/Carix/local_ocr.py",
+      "sha256": "7eb4de0597fb6064c8e5f7b56c00d673e8d964630481b3fe5511bb20363770b5"
+    },
+    "start_safe.py": {
+      "bytes": 60219,
+      "definitions": [
+        {
+          "end_lineno": 81,
+          "kind": "FunctionDef",
+          "lineno": 74,
+          "name": "_bump",
+          "sha256": "454fd90207cdc38ebecf06222945c96e3d76dc905e28ec03020a4d9fa6f584de",
+          "source": "def _bump(value, floor):\n    \"\"\"None значит «без ограничения» — не трогаем. Маленькое значение поднимаем.\"\"\"\n    if value is None:\n        return None\n    try:\n        return max(float(value), float(floor))\n    except (TypeError, ValueError):\n        return floor"
+        },
+        {
+          "end_lineno": 120,
+          "kind": "FunctionDef",
+          "lineno": 84,
+          "name": "patch_request_timeouts",
+          "sha256": "fd6a2270996fd7e6359fa8f9833153ce94aa18510288ff4938ae7045c876ed75",
+          "source": "def patch_request_timeouts():\n    \"\"\"Заводские 5 секунд в HTTPXRequest заменяем на человеческие.\"\"\"\n    from telegram.request import HTTPXRequest\n\n    orig = HTTPXRequest.__init__\n    if getattr(orig, \"_ns_wrapped\", False):\n        return\n\n    @functools.wraps(orig)\n    def inner(self, *args, **kwargs):\n        # ГЛАВНОЕ: по умолчанию соединение с Telegram всего одно.\n        # Пока уходит альбом фото, все остальные запросы стоят в очереди\n        # и умирают по таймауту. Даём 16 параллельных соединений.\n        try:\n            size = int(kwargs.get(\"connection_pool_size\") or 1)\n        except (TypeError, ValueError):\n            size = 1\n        kwargs[\"connection_pool_size\"] = max(size, 16)\n\n        kwargs[\"read_timeout\"] = _bump(kwargs.get(\"read_timeout\", 5), READ_TIMEOUT)\n        kwargs[\"write_timeout\"] = _bump(kwargs.get(\"write_timeout\", 5), WRITE_TIMEOUT_TEXT)\n        kwargs[\"connect_timeout\"] = _bump(kwargs.get(\"connect_timeout\", 5), CONNECT_TIMEOUT)\n        kwargs[\"pool_timeout\"] = _bump(kwargs.get(\"pool_timeout\", 1), POOL_TIMEOUT)\n        try:\n            return orig(self, *args, **kwargs)\n        except TypeError:\n            # версия библиотеки не знает таких аргументов — идём как есть\n            for k in (\n                \"read_timeout\", \"write_timeout\", \"connect_timeout\",\n                \"pool_timeout\", \"connection_pool_size\",\n            ):\n                kwargs.pop(k, None)\n            return orig(self, *args, **kwargs)\n\n    inner._ns_wrapped = True\n    HTTPXRequest.__init__ = inner\n    log.info(\"таймауты соединения подняты\")"
+        },
+        {
+          "end_lineno": 189,
+          "kind": "FunctionDef",
+          "lineno": 123,
+          "name": "_wrap_send",
+          "sha256": "9f3486c62874ed5e717c1b9413526bc62ecdc9ff5d546c720da969950cb510df",
+          "source": "def _wrap_send(orig, is_media, errors):\n    TimedOut, NetworkError, RetryAfter = errors\n\n    @functools.wraps(orig)\n    async def inner(self, *args, **kwargs):\n        args, kwargs = fix_split_text(orig.__name__, args, kwargs)\n        if orig.__name__ == \"send_media_group\":\n            args, kwargs = _dopisat_video(args, kwargs)\n        kwargs.setdefault(\"read_timeout\", READ_TIMEOUT)\n        kwargs.setdefault(\"connect_timeout\", CONNECT_TIMEOUT)\n        kwargs.setdefault(\n            \"write_timeout\", WRITE_TIMEOUT_MEDIA if is_media else WRITE_TIMEOUT_TEXT\n        )\n\n        last = None\n        for attempt in range(1, RETRIES + 1):\n            try:\n                # тот же самый файл уже уходил — отправляем по id, без заливки\n                sent_id = None\n                if orig.__name__ == \"send_document\":\n                    raw = _doc_bytes(kwargs.get(\"document\") or (args[1] if len(args) > 1 else None))\n                    if raw:\n                        sig = \"doc:\" + hashlib.md5(raw).hexdigest()\n                        cached = _cache_get(sig)\n                        if cached:\n                            kwargs.pop(\"document\", None)\n                            if len(args) > 1:\n                                args = (args[0],) + (cached.decode(\"utf-8\"),) + tuple(args[2:])\n                            else:\n                                kwargs[\"document\"] = cached.decode(\"utf-8\")\n                            log.info(\"файл взят из кэша, без перезаливки\")\n                        else:\n                            sent_id = sig\n\n                result = await orig(self, *args, **kwargs)\n\n                if orig.__name__ == \"send_document\":\n                    try:\n                        if sent_id and getattr(result, \"document\", None):\n                            _cache_put(sent_id, result.document.file_id.encode(\"utf-8\"))\n                    except Exception:\n                        pass\n                    asyncio.create_task(_videos_after_html(self, result))\n                return result\n            except RetryAfter as e:\n                last = e\n                wait = float(getattr(e, \"retry_after\", 3)) + 1\n                log.warning(\"флуд-контроль на %s, ждём %.0f c\", orig.__name__, wait)\n                await asyncio.sleep(wait)\n            except (TimedOut, NetworkError) as e:\n                last = e\n                if attempt == RETRIES:\n                    break\n                wait = PAUSE * attempt\n                log.warning(\n                    \"сеть подвела на %s, попытка %d из %d, пауза %.0f c\",\n                    orig.__name__, attempt, RETRIES, wait,\n                )\n                await asyncio.sleep(wait)\n            except TypeError:\n                for k in (\"read_timeout\", \"write_timeout\", \"connect_timeout\"):\n                    kwargs.pop(k, None)\n                return await orig(self, *args, **kwargs)\n        raise last\n\n    inner._ns_wrapped = True\n    return inner"
+        },
+        {
+          "end_lineno": 430,
+          "kind": "FunctionDef",
+          "lineno": 407,
+          "name": "_wrap_silent",
+          "sha256": "362278725973c777bd5fbb850aae3569719135148de9a30baa2e128c5339e52e",
+          "source": "def _wrap_silent(orig):\n    \"\"\"answer_callback_query живёт секунды: не повторяем и не роняем обработчик.\"\"\"\n\n    @functools.wraps(orig)\n    async def inner(self, *args, **kwargs):\n        kwargs.setdefault(\"read_timeout\", 10)\n        kwargs.setdefault(\"write_timeout\", 10)\n        kwargs.setdefault(\"connect_timeout\", 10)\n        kwargs.setdefault(\"pool_timeout\", 10)\n        try:\n            return await orig(self, *args, **kwargs)\n        except TypeError:\n            for k in (\"read_timeout\", \"write_timeout\", \"connect_timeout\", \"pool_timeout\"):\n                kwargs.pop(k, None)\n            try:\n                return await orig(self, *args, **kwargs)\n            except Exception:\n                return True\n        except Exception as e:\n            log.warning(\"не подтвердили нажатие кнопки, идём дальше: %r\", e)\n            return True\n\n    inner._ns_wrapped = True\n    return inner"
+        },
+        {
+          "end_lineno": 458,
+          "kind": "FunctionDef",
+          "lineno": 436,
+          "name": "patch_card_html_budget",
+          "sha256": "851d4bb60b3cd089af87a21de4fc48e44145447913dbae6ce1465a0b5a3fb94c",
+          "source": "def patch_card_html_budget():\n    \"\"\"Делаем HTML-файл лёгким: он собирается долго только из-за веса.\"\"\"\n    try:\n        sys.path.insert(0, BASE)\n        import card_html\n    except Exception:\n        return\n    changed = []\n    for name in dir(card_html):\n        if name.startswith(\"_\") or not name.isupper():\n            continue\n        try:\n            value = getattr(card_html, name)\n        except Exception:\n            continue\n        if not isinstance(value, int) or isinstance(value, bool):\n            continue\n        if \"BUDGET\" in name or \"LIMIT_BYTES\" in name or \"MAX_BYTES\" in name:\n            if value > 6 * 1024 * 1024:\n                setattr(card_html, name, 6 * 1024 * 1024)\n                changed.append(name)\n    if changed:\n        log.info(\"HTML облегчён, правила: %s\", \", \".join(changed))"
+        },
+        {
+          "end_lineno": 495,
+          "kind": "FunctionDef",
+          "lineno": 461,
+          "name": "patch_bot_methods",
+          "sha256": "dcd865bdd12d39ef0d378ff2261c9b8201e1bb249290618e04537ddbf7a2af32",
+          "source": "def patch_bot_methods():\n    \"\"\"Повторы отправки при обрыве связи.\"\"\"\n    from telegram import Bot\n    from telegram.error import TimedOut, NetworkError, RetryAfter\n\n    errors = (TimedOut, NetworkError, RetryAfter)\n\n    # ВАЖНО: ExtBot наследуется от Bot. Если обернуть оба класса,\n    # повторы вкладываются друг в друга: 4 попытки превращаются в 16.\n    # Поэтому Bot трогаем только там, где ExtBot своего метода не имеет.\n    ext = None\n    try:\n        from telegram.ext import ExtBot\n        ext = ExtBot\n    except Exception:\n        ext = None\n\n    n = 0\n    for name in TEXT_METHODS + MEDIA_METHODS + SILENT_METHODS:\n        target = None\n        if ext is not None and name in ext.__dict__:\n            target = ext\n        elif name in Bot.__dict__:\n            target = Bot\n        if target is None:\n            continue\n        orig = target.__dict__.get(name)\n        if orig is None or getattr(orig, \"_ns_wrapped\", False):\n            continue\n        if name in SILENT_METHODS:\n            setattr(target, name, _wrap_silent(orig))\n        else:\n            setattr(target, name, _wrap_send(orig, name in MEDIA_METHODS, errors))\n        n += 1\n    log.info(\"защищено методов отправки: %d\", n)"
+        },
+        {
+          "end_lineno": 530,
+          "kind": "FunctionDef",
+          "lineno": 498,
+          "name": "patch_error_handlers",
+          "sha256": "eb9cc2daab877bc065c43e518efd236530c7dca7e282083e01d84437676f36ad",
+          "source": "def patch_error_handlers():\n    \"\"\"Сетевые таймауты не уходят владельцу как «Сбой во внутреннем боте».\"\"\"\n    from telegram.ext import Application\n    from telegram.error import TimedOut, NetworkError\n\n    orig = Application.add_error_handler\n    if getattr(orig, \"_ns_wrapped\", False):\n        return\n\n    def filtered(callback):\n        @functools.wraps(callback)\n        async def inner(update, context):\n            err = getattr(context, \"error\", None)\n            if isinstance(err, (TimedOut, NetworkError)):\n                log.warning(\"сетевая ошибка не показана владельцу: %r\", err)\n                return\n            return await callback(update, context)\n\n        inner._ns_filtered = True\n        return inner\n\n    @functools.wraps(orig)\n    def inner(self, callback, block=True, *args, **kwargs):\n        if not getattr(callback, \"_ns_filtered\", False):\n            callback = filtered(callback)\n        try:\n            return orig(self, callback, block, *args, **kwargs)\n        except TypeError:\n            return orig(self, callback)\n\n    inner._ns_wrapped = True\n    Application.add_error_handler = inner\n    log.info(\"фильтр сетевых ошибок включён\")"
+        },
+        {
+          "end_lineno": 703,
+          "kind": "FunctionDef",
+          "lineno": 677,
+          "name": "_ids",
+          "sha256": "2effbbf04e6a7ac215a6d1c8de44e588c4d30cfd9bddeb260f5684b9f93a8f6a",
+          "source": "def _ids(value):\n    \"\"\"Достаёт список file_id из колонки, в каком бы виде она ни хранилась.\"\"\"\n    if not value:\n        return []\n    if isinstance(value, (list, tuple)):\n        items = list(value)\n    else:\n        text = str(value).strip()\n        items = None\n        if text.startswith(\"[\") or text.startswith(\"{\"):\n            try:\n                data = json.loads(text)\n                if isinstance(data, dict):\n                    data = list(data.values())\n                items = data\n            except Exception:\n                items = None\n        if items is None:\n            items = re.split(r\"[\\s,;|]+\", text)\n    out = []\n    for it in items:\n        if isinstance(it, dict):\n            it = it.get(\"file_id\") or it.get(\"id\") or \"\"\n        it = str(it).strip().strip('\"').strip(\"'\")\n        if len(it) > 20:\n            out.append(it)\n    return out"
+        },
+        {
+          "end_lineno": 711,
+          "kind": "FunctionDef",
+          "lineno": 706,
+          "name": "_money",
+          "sha256": "eb72f53118bb1663e1a9cd0895f3ab01f642c64377cda1760e8edaf49d1caadc",
+          "source": "def _money(value):\n    try:\n        n = int(float(value))\n    except (TypeError, ValueError):\n        return \"—\"\n    return \"{:,}\".format(n).replace(\",\", \" \") + \" $\""
+        },
+        {
+          "end_lineno": 1101,
+          "kind": "FunctionDef",
+          "lineno": 797,
+          "name": "register_pokaz",
+          "sha256": "92b9d27fa684f4aa2aef1af111cf209f088d1ed2c8a8be861f7d092cfdaef705",
+          "source": "def register_pokaz(app):\n    \"\"\"Вешает /pokaz на CRM-бота.\"\"\"\n    from telegram.ext import CommandHandler, CallbackQueryHandler\n    from telegram import InlineKeyboardButton, InlineKeyboardMarkup\n\n    if getattr(app, \"_ns_pokaz\", False):\n        return\n    app._ns_pokaz = True\n\n    cols = set(_car_columns())\n    have = [c for c in CAR_FIELDS if c in cols]\n\n    async def cmd(update, context):\n        rows = _rows(\n            \"SELECT rowid, %s FROM cars ORDER BY rowid DESC LIMIT 30\" % \", \".join(have)\n        )\n        if not rows:\n            await update.message.reply_text(\"Карточек пока нет.\")\n            return\n        buttons = []\n        for car in rows:\n            name = \" \".join(\n                str(x) for x in [car.get(\"auto_number\"), car.get(\"brand\"), car.get(\"model\")] if x\n            ) or (\"Карточка %s\" % car[\"rowid\"])\n            buttons.append([InlineKeyboardButton(name[:60], callback_data=\"nspokaz:%d\" % car[\"rowid\"])])\n        await update.message.reply_text(\n            \"Как видит покупатель — выбери карточку:\",\n            reply_markup=InlineKeyboardMarkup(buttons),\n        )\n\n    async def press(update, context):\n        q = update.callback_query\n        await q.answer()\n        rowid = int(q.data.split(\":\")[1])\n        rows = _rows(\n            \"SELECT rowid, %s FROM cars WHERE rowid = ?\" % \", \".join(have), (rowid,)\n        )\n        if not rows:\n            await q.message.reply_text(\"Карточка не найдена.\")\n            return\n        await _send_client_card(context.bot, q.message.chat_id, rows[0])\n\n    async def sostoyanie(update, context):\n        stroki = [\"СОСТОЯНИЕ СИСТЕМЫ\", \"\"]\n\n        def est(fname, priznak, podpis):\n            try:\n                with open(os.path.join(BASE, fname), \"r\", encoding=\"utf-8\") as fh:\n                    ok = priznak in fh.read()\n            except Exception:\n                ok = None\n            znak = \"—\" if ok is None else (\"да\" if ok else \"НЕТ\")\n            stroki.append(\"%s: %s\" % (podpis, znak))\n\n        est(\"card_html.py\", \"PARALLEL\", \"Быстрая сборка страницы\")\n        est(\"card_html.py\", \"VIDEO_BUDGET = 0\", \"Видео отдельно от файла\")\n        stroki.append(\"Ускорение связи: да\")\n\n        try:\n            n = len(os.listdir(CACHE_DIR))\n            ves = sum(os.path.getsize(os.path.join(CACHE_DIR, f))\n                      for f in os.listdir(CACHE_DIR))\n            stroki.append(\"Кэш кадров: %d шт, %.1f МБ\" % (n, ves / 1024.0 / 1024))\n        except Exception:\n            stroki.append(\"Кэш кадров: пусто\")\n\n        probely = [f for f in os.listdir(BASE) if \" \" in f and f.endswith(\".py\")]\n        stroki.append(\"Файлы с пробелом: %s\" % (\", \".join(probely) if probely else \"нет\"))\n\n        try:\n            stroki.append(\"В архиве staroe: %d файлов\" % len(os.listdir(STAROE)))\n        except Exception:\n            stroki.append(\"В архиве staroe: 0 файлов\")\n\n        stroki.append(\"\")\n        try:\n            rows = _rows(\"SELECT %s FROM cars ORDER BY rowid DESC LIMIT 5\" % \", \".join(have))\n            for car in rows:\n                hidden = set(_ids(car.get(\"hidden_photos\")))\n                foto = len([p for p in _ids(car.get(\"photos\")) if p not in hidden])\n                stroki.append(\"%s — фото %d, видео %d, %s\" % (\n                    car.get(\"auto_number\") or \"?\", foto,\n                    len(_ids(car.get(\"videos\"))), (car.get(\"status\") or \"\")[:20]))\n        except Exception as e:\n            stroki.append(\"База не прочиталась: %r\" % e)\n\n        await update.message.reply_text(\"\\n\".join(stroki))\n\n    async def kanal(update, context):\n        put = os.path.join(BASE, \"video_kanal.txt\")\n        argument = (context.args[0].strip() if getattr(context, \"args\", None) else \"\")\n\n        if not argument:\n            try:\n                with open(put, \"r\", encoding=\"utf-8\") as fh:\n                    est = fh.read().strip()\n            except Exception:\n                est = \"\"\n            if est:\n                await update.message.reply_text(\n                    \"Служебный канал для видео: %s\\n\\n\"\n                    \"Сменить: /kanal @novoe_imya\" % est)\n            else:\n                await update.message.reply_text(\n                    \"Служебный канал не задан.\\n\\n\"\n                    \"1. Создай публичный канал в Telegram\\n\"\n                    \"2. Добавь меня туда администратором\\n\"\n                    \"3. Напиши сюда: /kanal @imya_kanala\")\n            return\n\n        if not argument.startswith(\"@\"):\n            await update.message.reply_text(\"Имя канала начинается с @. Пример: /kanal @uaart_video\")\n            return\n\n        # проверяем, что бот там админ и может публиковать\n        try:\n            await context.bot.get_chat(argument)\n        except Exception as e:\n            await update.message.reply_text(\n                \"Не вижу канал %s. Проверь, что он публичный \"\n                \"и я добавлен администратором.\\n\\n(%s)\" % (argument, e))\n            return\n\n        try:\n            with open(put, \"w\", encoding=\"utf-8\") as fh:\n                fh.write(argument + \"\\n\")\n        except Exception as e:\n            await update.message.reply_text(\"Не смог записать настройку: %r\" % e)\n            return\n\n        await update.message.reply_text(\n            \"Готово. Ролики карточек буду публиковать в %s, \"\n            \"и они будут играть прямо в странице покупателя.\\n\\n\"\n            \"Дальше ничего делать не нужно: присылаешь видео по кнопке \"\n            \"в карточке — остальное само.\" % argument)\n\n    async def pro_video(update, context):\n        \"\"\"Подсказка по весу присланного ролика.\"\"\"\n        try:\n            v = update.message.video or update.message.animation\n            if not v:\n                return\n            ves = int(getattr(v, \"file_size\", 0) or 0)\n            sek = int(getattr(v, \"duration\", 0) or 0)\n            mb = ves / 1024.0 / 1024\n            minuty = \"%d:%02d\" % (sek // 60, sek % 60) if sek else \"—\"\n\n            if ves and ves <= 20 * 1024 * 1024:\n                await update.message.reply_text(\n                    \"Ролик %.1f МБ, %s — попадёт прямо в страницу покупателя \"\n                    \"и будет играть под фото.\" % (mb, minuty))\n            elif ves:\n                await update.message.reply_text(\n                    \"Ролик %.1f МБ, %s — тяжеловат.\\n\\n\"\n                    \"В страницу помещаются ролики до 20 МБ. Пришлите этот же \"\n                    \"ролик ещё раз и перед отправкой нажмите значок качества \"\n                    \"над видео — выберите 720p. Станет 10–15 МБ, и видео будет \"\n                    \"играть прямо в карточке.\\n\\n\"\n                    \"Если оставить как есть — в карточке Telegram ролик будет, \"\n                    \"а в странице встанет плитка с кнопкой.\" % (mb, minuty))\n        except Exception as e:\n            log.warning(\"не разобрал видео: %r\", e)\n\n    try:\n        from telegram.ext import MessageHandler, filters\n        app.add_handler(\n            MessageHandler(filters.VIDEO | filters.ANIMATION, pro_video), group=7)\n    except Exception as e:\n        log.warning(\"подсказка по видео не подключилась: %r\", e)\n\n    async def video_master(update, context):\n        \"\"\"Настройка помощника, который забирает видео любого веса.\"\"\"\n        try:\n            sys.path.insert(0, BASE)\n            import video_helper as VH\n        except Exception:\n            await update.message.reply_text(\n                \"Помощник не установлен. Загрузите video_helper.py в /home/Carix/ \"\n                \"и запустите ustanovka_telethon.py кнопкой «Run this file».\")\n            return\n\n        argument = \" \".join(getattr(context, \"args\", []) or []).strip()\n\n        if VH.gotov() and not argument:\n            await update.message.reply_text(\n                \"Помощник настроен и работает.\\n\\n\"\n                \"Ролики любого веса и качества сами попадают в страницу \"\n                \"покупателя. Ничего делать не нужно.\\n\\n\"\n                \"Сбросить настройку: /video sbros\")\n            return\n\n        if argument == \"sbros\":\n            for f in (VH.KLYUCHI, VH.SESSIYA + \".session\"):\n                try:\n                    os.remove(f)\n                except Exception:\n                    pass\n            NASTROYKA.pop(update.effective_chat.id, None)\n            await update.message.reply_text(\"Настройка сброшена. Начать заново: /video\")\n            return\n\n        if not VH.klyuchi_est():\n            NASTROYKA[update.effective_chat.id] = \"klyuchi\"\n            await update.message.reply_text(\n                \"Настройка помощника — три шага, пять минут.\\n\\n\"\n                \"ШАГ 1. Открой на телефоне my.telegram.org, войди по своему \"\n                \"номеру, зайди в «API development tools» и создай приложение \"\n                \"(название любое, например uaart).\\n\\n\"\n                \"Оттуда пришли мне сюда две строки одним сообщением:\\n\"\n                \"api_id\\napi_hash\")\n            return\n\n        NASTROYKA[update.effective_chat.id] = \"telefon\"\n        await update.message.reply_text(\n            \"ШАГ 2. Пришли номер телефона аккаунта Telegram \"\n            \"в виде +380XXXXXXXXX\")\n\n    async def video_otvet(update, context):\n        \"\"\"Ловит ответы владельца во время настройки помощника.\"\"\"\n        shag = NASTROYKA.get(update.effective_chat.id)\n        if not shag:\n            return\n        try:\n            sys.path.insert(0, BASE)\n            import video_helper as VH\n        except Exception:\n            return\n\n        text = (update.message.text or \"\").strip()\n\n        try:\n            if shag == \"klyuchi\":\n                chasti = [c for c in text.replace(\"\\n\", \" \").split() if c]\n                if len(chasti) < 2 or not chasti[0].isdigit():\n                    await update.message.reply_text(\n                        \"Нужны две части: сначала api_id (только цифры), \"\n                        \"потом api_hash. Пришли одним сообщением.\")\n                    return\n                VH.zapisat_klyuchi(chasti[0], chasti[1])\n                NASTROYKA[update.effective_chat.id] = \"telefon\"\n                await update.message.reply_text(\n                    \"Принял.\\n\\nШАГ 2. Пришли номер телефона аккаунта \"\n                    \"в виде +380XXXXXXXXX\")\n                return\n\n            if shag == \"telefon\":\n                itog = await VH.nachat_vhod(text)\n                if itog == \"uzhe\":\n                    NASTROYKA.pop(update.effective_chat.id, None)\n                    await update.message.reply_text(\"Вход уже выполнен, всё готово.\")\n                    return\n                NASTROYKA[update.effective_chat.id] = \"kod\"\n                await update.message.reply_text(\n                    \"ШАГ 3. Telegram прислал код в чат «Telegram».\\n\\n\"\n                    \"Пришли его сюда с пробелами между цифрами — например 1 2 3 4 5. \"\n                    \"Так Telegram не посчитает код использованным.\")\n                return\n\n            if shag == \"kod\":\n                kod = \"\".join(c for c in text if c.isdigit())\n                itog = await VH.vvesti_kod(kod)\n                if itog == \"parol\":\n                    NASTROYKA[update.effective_chat.id] = \"parol\"\n                    await update.message.reply_text(\n                        \"Нужен пароль двухэтапной проверки. Пришли его сюда — \"\n                        \"я запишу только сессию, сам пароль не сохраняется.\")\n                    return\n                if itog == \"gotovo\":\n                    NASTROYKA.pop(update.effective_chat.id, None)\n                    await update.message.reply_text(\n                        \"Готово. Помощник работает.\\n\\n\"\n                        \"Теперь ролики любого веса и качества сами попадают \"\n                        \"в страницу покупателя и играют под фото. \"\n                        \"Первый раз ролик появится через минуту-две после \"\n                        \"открытия карточки — он качается и ужимается в фоне.\")\n                    return\n                await update.message.reply_text(\n                    \"Код не подошёл. Начнём заново: /video\")\n                NASTROYKA.pop(update.effective_chat.id, None)\n                return\n\n            if shag == \"parol\":\n                itog = await VH.vvesti_parol(text)\n                NASTROYKA.pop(update.effective_chat.id, None)\n                await update.message.reply_text(\n                    \"Готово, помощник работает.\" if itog == \"gotovo\"\n                    else \"Пароль не подошёл. Начнём заново: /video\")\n                return\n        except Exception as e:\n            NASTROYKA.pop(update.effective_chat.id, None)\n            await update.message.reply_text(\"Сбой настройки: %r\\n\\nНачать заново: /video\" % e)\n\n    app.add_handler(CommandHandler(\"video\", video_master))\n    try:\n        from telegram.ext import MessageHandler, filters\n        app.add_handler(\n            MessageHandler(filters.TEXT & ~filters.COMMAND, video_otvet), group=8)\n    except Exception as e:\n        log.warning(\"мастер настройки не подключился: %r\", e)\n\n    app.add_handler(CommandHandler(\"kanal\", kanal))\n    app.add_handler(CommandHandler([\"sostoyanie\", \"proverka\"], sostoyanie))\n    app.add_handler(CommandHandler([\"pokaz\", \"pokazat\"], cmd))\n    app.add_handler(CallbackQueryHandler(press, pattern=r\"^nspokaz:\\d+$\"))\n    log.info(\"команда /pokaz подключена\")"
+        },
+        {
+          "end_lineno": 1211,
+          "kind": "FunctionDef",
+          "lineno": 1104,
+          "name": "register_token",
+          "sha256": "79afb0f554117f5c0fc6574907d0ece7a41be1a87330e3050b9a8ce11ce1f5eb",
+          "source": "def register_token(app):\n    \"\"\"Команда /token — записывает новый токен бота без захода в редактор.\n\n    Работает в обоих ботах: если один бот «умер» после отзыва токена,\n    новый токен для него присылаешь во второй.\n    \"\"\"\n    from telegram.ext import CommandHandler\n\n    if getattr(app, \"_ns_token\", False):\n        return\n    app._ns_token = True\n\n    VLADELEC = os.path.join(BASE, \"vladelec.txt\")\n    OBRAZEC = re.compile(r\"^\\d{6,}:[A-Za-z0-9_\\-]{30,}$\")\n    FAYLY = {\n        \"client\": (\"bot_token.txt\", \"клиентского бота\"),\n        \"crm\": (\"team_token.txt\", \"CRM-бота\"),\n    }\n\n    def vladelec():\n        try:\n            with open(VLADELEC, \"r\", encoding=\"utf-8\") as fh:\n                return int(fh.read().strip())\n        except Exception:\n            return None\n\n    async def token(update, context):\n        kto = update.effective_user.id\n        hozyain = vladelec()\n\n        # первый, кто воспользовался командой, становится владельцем\n        if hozyain is None:\n            try:\n                with open(VLADELEC, \"w\", encoding=\"utf-8\") as fh:\n                    fh.write(str(kto))\n                hozyain = kto\n            except Exception as e:\n                await update.message.reply_text(\"Не смог запомнить владельца: %r\" % e)\n                return\n        if kto != hozyain:\n            return\n\n        args = getattr(context, \"args\", None) or []\n\n        def chey(znachenie):\n            \"\"\"Определяет по номеру бота, в какой файл писать.\"\"\"\n            nomer = znachenie.split(\":\")[0]\n            for vid, (imya, _) in FAYLY.items():\n                try:\n                    with open(os.path.join(BASE, imya), \"r\", encoding=\"utf-8\") as fh:\n                        if fh.read().strip().split(\":\")[0] == nomer:\n                            return vid\n                except Exception:\n                    continue\n            return None\n\n        if len(args) == 1 and OBRAZEC.match(args[0].strip()):\n            znachenie = args[0].strip()\n            vid = chey(znachenie)\n            if vid is None:\n                await update.message.reply_text(\n                    \"Не понял, чей это токен. Уточни:\\n\"\n                    \"/token client ТОКЕН — клиентский\\n\"\n                    \"/token crm ТОКЕН — CRM\")\n                return\n        elif len(args) >= 2 and args[0].lower() in FAYLY:\n            vid = args[0].lower()\n            znachenie = args[1].strip()\n            if not OBRAZEC.match(znachenie):\n                await update.message.reply_text(\n                    \"Это не похоже на токен. Он выглядит так:\\n\"\n                    \"1234567890:AAH... (цифры, двоеточие, длинная часть)\")\n                return\n        else:\n            await update.message.reply_text(\n                \"Смена токена без захода в редактор.\\n\\n\"\n                \"Просто пришли токен:\\n/token НОВЫЙ_ТОКЕН\\n\"\n                \"Я сам пойму, чей он.\\n\\n\"\n                \"Если не понял — уточни:\\n\"\n                \"/token client ТОКЕН\\n/token crm ТОКЕН\\n\\n\"\n                \"После записи нажми Tasks → Restart.\")\n            return\n\n        imya, opisanie = FAYLY[vid]\n        put = os.path.join(BASE, imya)\n        try:\n            if os.path.exists(put):\n                shutil.copy2(put, put + \".staryy\")\n            with open(put, \"w\", encoding=\"utf-8\") as fh:\n                fh.write(znachenie + \"\\n\")\n        except Exception as e:\n            await update.message.reply_text(\"Не смог записать: %r\" % e)\n            return\n\n        await update.message.reply_text(\n            \"Новый токен %s записан.\\n\\n\"\n            \"Перезапускаюсь сам — через полминуты всё поднимется. \"\n            \"Нажимать ничего не нужно.\\n\"\n            \"Прежний токен сохранён рядом как %s.staryy\" % (opisanie, imya))\n\n        # завершаемся: always-on задача поднимет процесс заново уже с новым токеном\n        try:\n            asyncio.get_event_loop().call_later(2, os._exit, 0)\n        except Exception:\n            os._exit(0)\n\n    app.add_handler(CommandHandler(\"token\", token))\n    log.info(\"команда /token подключена\")"
+        },
+        {
+          "end_lineno": 1313,
+          "kind": "FunctionDef",
+          "lineno": 1283,
+          "name": "pochinit_imena",
+          "sha256": "3499ab260fdae9d850a28f6620df90777243761550a28c8748ebfc7ff15159a4",
+          "source": "def pochinit_imena():\n    \"\"\"Айфон подставляет пробел вместо подчёркивания — чиним сами.\"\"\"\n    nado_restart = []\n    try:\n        files = os.listdir(BASE)\n    except Exception:\n        return nado_restart\n\n    for name in files:\n        if \" \" not in name or not name.endswith(\".py\"):\n            continue\n        pravilno = name.replace(\" \", \"_\")\n        src = os.path.join(BASE, name)\n        dst = os.path.join(BASE, pravilno)\n        try:\n            if not os.path.exists(dst):\n                shutil.move(src, dst)\n                log.info(\"имя исправлено: «%s» -> %s\", name, pravilno)\n                nado_restart.append(pravilno)\n                continue\n            # оба есть — оставляем свежий, старый в архив\n            if os.path.getmtime(src) > os.path.getmtime(dst):\n                _v_arhiv(pravilno, \"заменён более свежей версией\")\n                shutil.move(src, dst)\n                log.info(\"«%s» новее — стал %s\", name, pravilno)\n                nado_restart.append(pravilno)\n            else:\n                _v_arhiv(name, \"дубль с пробелом, версия старая\")\n        except Exception as e:\n            log.warning(\"не переименовался %s: %r\", name, e)\n    return nado_restart"
+        },
+        {
+          "end_lineno": 1334,
+          "kind": "FunctionDef",
+          "lineno": 1316,
+          "name": "ubrat_musor",
+          "sha256": "e9e93a3e7f5c22ab206133306dc152cb7ae3a8a3b0286850b4b63c2d37e3f028",
+          "source": "def ubrat_musor():\n    \"\"\"Отработавшие скрипты и бэкапы уезжают в папку staroe.\"\"\"\n    ubrano = 0\n    try:\n        files = os.listdir(BASE)\n    except Exception:\n        return 0\n    for name in files:\n        if name in SVYATOE or name.startswith(\".\"):\n            continue\n        path = os.path.join(BASE, name)\n        if not os.path.isfile(path):\n            continue\n        musor = name.startswith(MUSOR) or any(k in name for k in MUSOR_KONCY)\n        if musor and _v_arhiv(name, \"отработал\"):\n            ubrano += 1\n    if ubrano:\n        log.info(\"убрано в staroe: %d файлов\", ubrano)\n    return ubrano"
+        },
+        {
+          "end_lineno": 1352,
+          "kind": "FunctionDef",
+          "lineno": 1337,
+          "name": "apply_all",
+          "sha256": "27b9c20e0236fd3cecda5c610b2b0796e2b025694406cd89050a33502c40dda6",
+          "source": "def apply_all():\n    ok = True\n    for func in (\n        patch_request_timeouts,\n        patch_bot_methods,\n        patch_error_handlers,\n        patch_register_hook,\n        patch_card_html_budget,\n        patch_download_cache,\n    ):\n        try:\n            func()\n        except Exception as e:\n            ok = False\n            log.warning(\"не удалось применить %s: %r\", func.__name__, e)\n    return ok"
+        },
+        {
+          "end_lineno": 1405,
+          "kind": "FunctionDef",
+          "lineno": 1380,
+          "name": "avariynyy_rezhim",
+          "sha256": "0686741ce51532936982fa0dac28187991c5ccdcd8286ffe30a5d20c7741770d",
+          "source": "def avariynyy_rezhim(zhivoy, slomannyy_fayl):\n    \"\"\"Один токен негоден — поднимаем только рабочего бота ради /token.\"\"\"\n    from telegram.ext import ApplicationBuilder\n\n    log.warning(\"АВАРИЙНЫЙ РЕЖИМ: %s содержит негодный токен\", slomannyy_fayl)\n    app = ApplicationBuilder().token(zhivoy).build()\n    register_token(app)\n\n    async def pri_starte(application):\n        try:\n            hozyain = None\n            put = os.path.join(BASE, \"vladelec.txt\")\n            if os.path.exists(put):\n                with open(put, \"r\", encoding=\"utf-8\") as fh:\n                    hozyain = int(fh.read().strip())\n            if hozyain:\n                await application.bot.send_message(\n                    hozyain,\n                    \"Один из ботов не поднялся: в файле %s негодный токен.\\n\\n\"\n                    \"Пришли новый сюда одной командой:\\n/token НОВЫЙ_ТОКЕН\\n\\n\"\n                    \"Я сам пойму, чей он. Потом Tasks → Restart.\" % slomannyy_fayl)\n        except Exception as e:\n            log.warning(\"не предупредил владельца: %r\", e)\n\n    app.post_init = pri_starte\n    app.run_polling(drop_pending_updates=True)"
+        },
+        {
+          "end_lineno": 1468,
+          "kind": "FunctionDef",
+          "lineno": 1408,
+          "name": "main",
+          "sha256": "bec600cd173e24a7d9ce5d8e70d35c233e9284fdb8fa7970016f582e16967fdd",
+          "source": "def main():\n    if not os.path.exists(TARGET):\n        log.error(\"не найден %s — проверь имя файла\", TARGET)\n        raise SystemExit(1)\n\n    os.chdir(BASE)\n    if BASE not in sys.path:\n        sys.path.insert(0, BASE)\n\n    novye = pochinit_imena()\n    ubrat_musor()\n    if novye:\n        log.warning(\"обновились файлы: %s — если что-то ведёт себя странно, \"\n                    \"нажми Restart ещё раз\", \", \".join(novye))\n\n    apply_all()\n    db_clean_split()\n\n    # проверяем токены до запуска: один битый больше не роняет обоих\n    klient = _token_iz(\"bot_token.txt\")\n    krm = _token_iz(\"team_token.txt\")\n    ok_klient = _zhivoy_token(klient)\n    ok_krm = _zhivoy_token(krm)\n\n    if ok_krm is False and ok_klient is not False:\n        avariynyy_rezhim(klient, \"team_token.txt\")\n        return\n    if ok_klient is False and ok_krm is not False:\n        avariynyy_rezhim(krm, \"bot_token.txt\")\n        return\n    if ok_klient is False and ok_krm is False:\n        log.error(\"оба токена негодны — впиши их в bot_token.txt и team_token.txt\")\n\n    log.info(\"защита включена, запускаю run_all.py\")\n\n    while True:\n        try:\n            runpy.run_path(TARGET, run_name=\"__main__\")\n            log.warning(\"run_all.py завершился сам, перезапуск через 10 c\")\n        except SystemExit:\n            raise\n        except KeyboardInterrupt:\n            raise\n        except Exception as e:\n            tekst = \"%r\" % e\n            if \"InvalidToken\" in tekst or \"Unauthorized\" in tekst:\n                # какой именно токен отвергли — видно в тексте ошибки\n                klient = _token_iz(\"bot_token.txt\")\n                krm = _token_iz(\"team_token.txt\")\n                if klient and klient in tekst and krm and krm not in tekst:\n                    avariynyy_rezhim(krm, \"bot_token.txt\")\n                    return\n                if krm and krm in tekst and klient and klient not in tekst:\n                    avariynyy_rezhim(klient, \"team_token.txt\")\n                    return\n                log.error(\"Оба токена не приняты. Впиши действующие в \"\n                          \"bot_token.txt и team_token.txt через редактор.\")\n                time.sleep(60)\n                continue\n            log.exception(\"run_all.py упал: %r — перезапуск через 10 c\", e)\n        time.sleep(10)"
+        }
+      ],
+      "path": "/home/Carix/start_safe.py",
+      "sha256": "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007"
+    },
     "team_bot.py": {
       "bytes": 62702,
       "definitions": [
@@ -526,10 +1476,32 @@
     }
   },
   "llm_tokens": 0,
+  "logs": {
+    "candidate_count": 1,
+    "hits": {}
+  },
   "media_write": false,
   "mode": "READ_ONLY_FRESH_PRODUCTION_AUDIT",
   "production_touched": false,
+  "service": {
+    "ok": true,
+    "production_launcher_count": 1,
+    "tasks": [
+      {
+        "command": "python3.10 /home/Carix/start_safe.py",
+        "description": "",
+        "enabled": true,
+        "id": 266084
+      }
+    ]
+  },
   "site_write": false,
-  "status": "FAIL",
+  "spool": {
+    "invalid_lines": 0,
+    "queued": 0,
+    "rows": [],
+    "unique_keys": 0
+  },
+  "status": "PASS",
   "task_id": "task_067"
 }
