@@ -242,6 +242,7 @@ def load_allowlist(path: pathlib.Path) -> dict:
 
 def hardcoded_paths() -> set[str]:
     source_names = (
+        "ai.py",
         "team_bot.py",
         "db.py",
         "cars_ui.py",
