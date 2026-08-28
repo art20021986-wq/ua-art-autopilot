@@ -85,7 +85,9 @@ jobs:
           assert d['postcheck']['bot_health']['bots']['client']['ok'] is True
           assert d['postcheck']['bot_health']['bots']['crm']['ok'] is True
           assert d['postcheck']['bot_health']['tokens_distinct'] is True
-          assert d['postcheck']['service_process']['running'] is True
+          assert d['service_contract']['configured'] is True
+          assert d['service_contract']['enabled'] is True
+          assert d['service_contract']['restart_accepted'] is True
           assert d['postcheck']['runtime_contract']['ok'] is True
           print('TASK064_CRM_DB_LOCK_HOTFIX_PASS')
           PY
