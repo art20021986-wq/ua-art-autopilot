@@ -1,0 +1,181 @@
+name: task066-stage-anchor-v1-1-deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task066_stage_anchor_deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task066-stage-anchor-v1-1-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 32
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile and test atomic installer
+        run: |
+          python3 -m py_compile \
+            cloud/task_066_stage_anchor/repair_remote.py \
+            cloud/task_066_stage_anchor/postcheck_remote.py \
+            cloud/task_066_stage_anchor/controller.py \
+            cloud/task_066_stage_anchor/live_verify.py
+          python3 cloud/task_066_stage_anchor/repair_remote.py --self-test
+
+      - name: Install, restart and verify production
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_066_stage_anchor/controller.py
+
+      - name: Verify all public cards and diagnostics
+        run: python3 cloud/task_066_stage_anchor/live_verify.py
+
+      - name: Capture all ten mobile cards
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "${browser}"
+          mkdir -p cloud/task_066_stage_anchor/screenshots
+          python3 - <<'PY' > /tmp/task066_cards.txt
+          import json
+          from pathlib import Path
+          data = json.loads(Path('cloud/task_066_stage_anchor/evidence/live.json').read_text())
+          for card in data['cards']:
+              print(card['id'])
+          PY
+          while IFS= read -r identifier; do
+            "${browser}" --headless=new --disable-gpu --disable-background-networking \
+              --hide-scrollbars --window-size=430,2400 --virtual-time-budget=3000 \
+              --screenshot="cloud/task_066_stage_anchor/screenshots/${identifier}.png" \
+              "https://www.uaart.com.ua/video/${identifier}.html?task066_screen=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          done < /tmp/task066_cards.txt
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('cloud/task_066_stage_anchor/screenshots')
+          paths = sorted(root.glob('UA-*.png'))
+          if len(paths) != 10:
+              raise SystemExit('TASK066_SCREENSHOT_COUNT_INVALID')
+          live = json.loads(Path('cloud/task_066_stage_anchor/evidence/live.json').read_text())
+          stages = {card['id']: card['stage'] for card in live['cards']}
+          manifest = []
+          for path in paths:
+              data = path.read_bytes()
+              if len(data) < 5000 or not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                  raise SystemExit('TASK066_SCREENSHOT_INVALID:' + str(path))
+              manifest.append({'id': path.stem, 'stage': stages[path.stem], 'bytes': len(data)})
+          if set(item['stage'] for item in manifest) != {1, 2, 3, 4}:
+              raise SystemExit('TASK066_VISUAL_STAGE_COVERAGE_INVALID')
+          (root / 'manifest.json').write_text(
+              json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print('TASK066_SCREENSHOTS_PASS')
+          PY
+
+      - name: Final evidence gate and owner report
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('cloud/task_066_stage_anchor')
+          deploy = json.loads((root / 'evidence/deploy.json').read_text())
+          live = json.loads((root / 'evidence/live.json').read_text())
+          if deploy['status'] != 'PASS' or live['status'] != 'PASS':
+              raise SystemExit('TASK066_NOT_COMPLETE')
+          post = deploy['postcheck']
+          assert post['card_count'] == 10
+          assert post['stage_distribution'].keys() == {'1', '2', '3', '4'}
+          assert all(value > 0 for value in post['stage_distribution'].values())
+          assert post['ua0009']['id'] == 'UA-0009' and post['ua0009']['stage'] == 2
+          assert post['bot_health']['bots']['client']['ok'] is True
+          assert post['bot_health']['bots']['crm']['ok'] is True
+          assert post['bot_health']['tokens_distinct'] is True
+          assert deploy['install']['db_before']['published_rows_sha256'] == deploy['install']['db_after']['published_rows_sha256']
+          assert deploy['install']['media_before'] == deploy['install']['media_after']
+          assert live['card_count'] == 10 and live['page_count'] == 20
+          assert live['ua0009_safe'] is True
+          report = '\n'.join([
+              '# UA-CARDS-STAGE-ANCHOR-001 V1.1', '',
+              'STATUS: **DONE**', '',
+              '- На всех 10 текущих карточках установлен постоянный маршрут: Корея → Паром → Грузия → Киев.',
+              '- У каждого маршрута ровно четыре узла и ровно один текущий этап «СЕЙЧАС».',
+              '- Закреплены три визуальных состояния: пройдено, сейчас, впереди.',
+              '- Тот же компонент встроен в оба генератора для всех будущих карточек.',
+              '- Комплексная диагностика снова постоянна на 10/10 карточках, даже без материалов.',
+              '- CRM: один вход «🚚 Доставка и этапы»; дублирующие кнопки удалены.',
+              '- Старые callback ID сохранены для уже отправленных сообщений Telegram.',
+              '- Оба Telegram-бота после перезапуска: PASS.',
+              '- UA-0009: PASS, этап «Паром», диагностика PASS.',
+              '- CRM rows unchanged; media unchanged; LLM tokens: 0.',
+              f"- Публично проверено: {live['page_count']} страниц.",
+              f"- Резервная копия: `{deploy['install']['backup_root']}`.", '',
+          ])
+          (root / 'TASK_066_REPORT.md').write_text(report, encoding='utf-8')
+          PY
+
+      - name: Commit bounded machine evidence
+        run: |
+          git add -- \
+            cloud/task_066_stage_anchor/evidence/deploy.json \
+            cloud/task_066_stage_anchor/evidence/live.json \
+            cloud/task_066_stage_anchor/TASK_066_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          if [ "${#staged[@]}" -gt 3 ]; then
+            echo 'Unexpected evidence file count'
+            exit 1
+          fi
+          for path in "${staged[@]}"; do
+            case "${path}" in
+              cloud/task_066_stage_anchor/evidence/deploy.json|\
+              cloud/task_066_stage_anchor/evidence/live.json|\
+              cloud/task_066_stage_anchor/TASK_066_REPORT.md) ;;
+              *) echo "Unexpected staged path: ${path}"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then
+            echo 'Evidence already current'
+            exit 0
+          fi
+          git config user.name 'task066-stage-anchor'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_066: record permanent stage anchor deployment'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then break; fi
+            if [ "${attempt}" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 3))
+          done
+
+      - name: Upload visual and machine evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task066-stage-anchor-${{ github.run_id }}
+          path: |
+            cloud/task_066_stage_anchor/evidence
+            cloud/task_066_stage_anchor/TASK_066_REPORT.md
+            cloud/task_066_stage_anchor/screenshots
+          if-no-files-found: warn
+          retention-days: 14
