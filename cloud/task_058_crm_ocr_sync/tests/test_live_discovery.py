@@ -162,7 +162,7 @@ class AllowlistTests(unittest.TestCase):
         serialized = json.dumps(data)
         self.assertNotIn("/mysite/", serialized)
         self.assertEqual(data["db_path"], "/home/Carix/crm.db")
-        self.assertEqual(len(data["required_source_paths"]), 5)
+        self.assertEqual(len(data["required_source_paths"]), 6)
         self.assertEqual(len(data["required_site_paths"]), 20)
         self.assertEqual(
             set(data["optional_site_paths"]),

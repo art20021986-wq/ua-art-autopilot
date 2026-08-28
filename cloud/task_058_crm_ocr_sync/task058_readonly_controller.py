@@ -73,6 +73,7 @@ GENERIC_SECRET_ASSIGNMENT_RE = re.compile(
 )
 
 REQUIRED_SOURCE_PATHS = {
+    "/home/Carix/ai.py",
     "/home/Carix/team_bot.py",
     "/home/Carix/db.py",
     "/home/Carix/cars_ui.py",
@@ -110,6 +111,7 @@ def expected_allowlist() -> dict:
     return {
         "task_id": "task_058",
         "required_source_paths": [
+            "/home/Carix/ai.py",
             "/home/Carix/team_bot.py",
             "/home/Carix/db.py",
             "/home/Carix/cars_ui.py",

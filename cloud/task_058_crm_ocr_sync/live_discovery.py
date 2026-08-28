@@ -37,9 +37,10 @@ MAX_EXCERPT_CHARS = 30_000
 MAX_IMPORTS_PER_FILE = 120
 
 TARGET_FUNCTIONS = {
+    "ai.py": {"parse_image", "parse_message", "transcribe", "validate", "to_card_data"},
     "team_bot.py": {"detect_kind", "intake", "run_ai_draft", "ai_save"},
-    "ai_filter.py": {"autosave"},
-    "db.py": {"connect"},
+    "ai_filter.py": {"clean", "store", "render", "source_text", "autosave"},
+    "db.py": {"connect", "create_card", "set_card_review"},
     "cars_ui.py": {"_peresobrat_stranicy", "photo_remove_all"},
     "avtoperedacha.py": {"sobrat", "sobrat_svoimi_rukami", "shag"},
     "stranica.py": {"main", "zapisat", "zapisat_atomarno"},
