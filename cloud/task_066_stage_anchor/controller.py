@@ -252,6 +252,8 @@ def validate_install(value: dict) -> None:
         raise ControllerError("INSTALL_MEDIA_CHANGED")
     if value.get("fixtures") != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
         raise ControllerError("INSTALL_FIXTURES_INVALID")
+    if value.get("master_final_fixtures") != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
+        raise ControllerError("INSTALL_MASTER_FINAL_FIXTURES_INVALID")
     if not value.get("backup_root", "").startswith(STATE_ROOT + "/backups/"):
         raise ControllerError("INSTALL_BACKUP_INVALID")
     if value.get("production_files_changed") != len(value.get("changed_paths") or []):
@@ -278,6 +280,8 @@ def validate_postcheck(value: dict) -> None:
         raise ControllerError("POSTCHECK_BOTS_INVALID")
     if not (value.get("runtime") or {}).get("ok"):
         raise ControllerError("POSTCHECK_RUNTIME_INVALID")
+    if value.get("master_final_fixtures") != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
+        raise ControllerError("POSTCHECK_MASTER_FINAL_FIXTURES_INVALID")
 
 
 def main() -> int:
@@ -317,6 +321,18 @@ def main() -> int:
         )
         evidence["postcheck"] = postcheck
         validate_postcheck(postcheck)
+        # A second independent read is intentionally delayed.  The previous
+        # regression appeared only after a background generator rewrote the
+        # cards, so an immediate green check is no longer sufficient evidence.
+        for _interval in range(3):
+            time.sleep(30)
+        delayed = api.run_remote(
+            POSTCHECK_COMMAND,
+            "task066 delayed permanence check after background writers",
+            POSTCHECK_RECEIPT,
+        )
+        evidence["postcheck_delayed"] = delayed
+        validate_postcheck(delayed)
         evidence["status"] = "PASS"
     except Exception as exc:
         evidence["errors"].append(type(exc).__name__ + ":" + str(exc))
@@ -339,6 +355,7 @@ def main() -> int:
     atomic_text(EVIDENCE, json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
     install_value = evidence.get("install") or {}
     post = evidence.get("postcheck") or {}
+    delayed = evidence.get("postcheck_delayed") or {}
     report = "\n".join([
         "# UA-CARDS-STAGE-ANCHOR-001 V1.1", "",
         "STATUS: **%s**" % evidence["status"], "",
@@ -346,6 +363,7 @@ def main() -> int:
         "- Stage coverage: %s" % json.dumps(post.get("stage_distribution", {}), sort_keys=True),
         "- UA-0009: %s" % ("PASS" if post.get("ua0009") else "NOT VERIFIED"),
         "- Both bots: %s" % ("PASS" if post.get("bot_health") else "NOT VERIFIED"),
+        "- Delayed permanence check: %s" % ("PASS" if delayed.get("status") == "PASS" else "NOT VERIFIED"),
         "- CRM write: false; media write: false; LLM tokens: 0",
         "- Changed production files: %s" % install_value.get("production_files_changed", 0),
         "- Backup: `%s`" % install_value.get("backup_root", ""),
