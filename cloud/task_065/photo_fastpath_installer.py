@@ -592,27 +592,19 @@ def validate_team(source: str) -> None:
 
 
 def build_db(source: str) -> str:
-    if MARKER in source:
-        validate_db(source)
-        return source
     if sha(source.encode()) != EXPECTED["db.py"]:
         raise InstallError("SOURCE_HASH_MISMATCH:db.py")
-    old = '        sqlite3.Connection.execute(conn, "PRAGMA journal_mode=DELETE")'
-    new = ('        # CRM-PHOTO-FASTPATH-001: readers (site) cannot block CRM writes.\n'
-           '        sqlite3.Connection.execute(conn, "PRAGMA journal_mode=WAL")\n'
-           '        sqlite3.Connection.execute(conn, "PRAGMA synchronous=NORMAL")')
-    if source.count(old) != 1:
-        raise InstallError("DB_JOURNAL_BLOCK_MISMATCH")
-    candidate = source.replace(old, new, 1)
-    validate_db(candidate)
-    return candidate
+    # The durable spool deliberately works with the existing task_064 queue.
+    # PythonAnywhere can refuse a live DELETE -> WAL switch while readers exist.
+    validate_db(source)
+    return source
 
 
 def validate_db(source: str) -> None:
-    if MARKER not in source or "PRAGMA journal_mode=WAL" not in source:
-        raise InstallError("DB_WAL_CONTRACT_MISSING")
-    if "PRAGMA journal_mode=DELETE" in source:
-        raise InstallError("DELETE_JOURNAL_REMAINS")
+    required = ("CRM-DB-LOCK-EMERGENCY-001", "factory=Soedinenie",
+                "_ua_fayl_zahvatit", "_commit_s_povtorom")
+    if any(value not in source for value in required):
+        raise InstallError("DB_QUEUE_CONTRACT_MISSING")
     compile(source, "db.py.candidate", "exec")
 
 
@@ -659,7 +651,8 @@ def main() -> int:
             "team_bot.py": build_team(originals["team_bot.py"].decode("utf-8")),
             "db.py": build_db(originals["db.py"].decode("utf-8")),
         }
-        already = all(MARKER in originals[name].decode("utf-8") for name in candidates)
+        already = (MARKER in originals["cars_ui.py"].decode("utf-8")
+                   and MARKER in originals["team_bot.py"].decode("utf-8"))
         receipt["already_applied"] = already
         if not already:
             stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
