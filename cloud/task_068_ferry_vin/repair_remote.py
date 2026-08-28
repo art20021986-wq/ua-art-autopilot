@@ -2134,6 +2134,18 @@ def katalog_html(spisok, foto_po_nomeru, video_po_nomeru=None):
 '''.strip()
 
 
+def _inject_task068(base: str, wrapper: str) -> str:
+    payload = FERRY_VIN_COMMON_SOURCE + "\n\n" + wrapper
+    guards = list(re.finditer(
+        r'(?m)^if\s+__name__\s*==\s*["\']__main__["\']\s*:', base
+    ))
+    if not guards:
+        return base.rstrip() + "\n\n" + payload + "\n"
+    position = guards[-1].start()
+    return (base[:position].rstrip() + "\n\n" + payload + "\n\n"
+            + base[position:].lstrip())
+
+
 def _append_task068(source: str, original_sha: str, path: str, wrapper: str) -> str:
     if FERRY_VIN_SOURCE_MARKER in source:
         if ("def _ua068_catalog_fallback" in source
@@ -2149,12 +2161,12 @@ def _append_task068(source: str, original_sha: str, path: str, wrapper: str) -> 
         base = source[:start].rstrip()
         if not base:
             raise RepairBlocked("task068_upgrade_base_missing:" + os.path.basename(path))
-        candidate = base + "\n\n" + FERRY_VIN_COMMON_SOURCE + "\n\n" + wrapper + "\n"
+        candidate = _inject_task068(base, wrapper)
         _validate_task068_source(candidate, path)
         return candidate
     if original_sha != EXPECTED_SHA[path]:
         raise RepairBlocked("task068_source_sha_changed:" + os.path.basename(path))
-    candidate = source.rstrip() + "\n\n" + FERRY_VIN_COMMON_SOURCE + "\n\n" + wrapper + "\n"
+    candidate = _inject_task068(source, wrapper)
     _validate_task068_source(candidate, path)
     return candidate
 
@@ -2196,6 +2208,11 @@ def _validate_task068_source(source: str, path: str) -> None:
             raise RepairBlocked("task068_contract_missing:%s:%s" % (os.path.basename(path), value))
     if source.count(FERRY_VIN_SOURCE_MARKER) != 1:
         raise RepairBlocked("task068_marker_count_invalid:" + os.path.basename(path))
+    guards = list(re.finditer(
+        r'(?m)^if\s+__name__\s*==\s*["\']__main__["\']\s*:', source
+    ))
+    if guards and source.find(FERRY_VIN_SOURCE_MARKER) > guards[-1].start():
+        raise RepairBlocked("task068_filter_after_main_guard:" + os.path.basename(path))
     expected_last = {
         STRANICA_PATH: ("sobrat_kartochku", "_ua068_stranica_card_original"),
         YADRO_PATH: ("karta_html", "_ua068_yadro_card_original"),
@@ -2286,6 +2303,10 @@ def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -
             if diag_data is None or not _valid_diag_page(diag_data.decode("utf-8", "replace"), identifier):
                 diag_source = runtime["_ua068_diag_placeholder"](identifier, row)
                 candidates[diag_path] = diag_source.encode("utf-8")
+            else:
+                candidates[diag_path] = terms(
+                    diag_data.decode("utf-8", "replace")
+                ).encode("utf-8")
             paths = {os.path.join(root, identifier + ".html")}
             paths.update(glob.glob(os.path.join(root, identifier + "-*.html")))
             for path in sorted(paths):
@@ -2345,8 +2366,11 @@ def _validate_cards(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             diag_path = os.path.join(root, identifier + "-diag.html")
             diag_data = _read(diag_path)
             assert diag_data is not None
-            if not _valid_diag_page(diag_data.decode("utf-8", "replace"), identifier):
+            diag_source = diag_data.decode("utf-8", "replace")
+            if not _valid_diag_page(diag_source, identifier):
                 raise RepairBlocked("diagnostics_target_invalid:" + diag_path)
+            if runtime["_ua068_forbidden_count"](diag_source):
+                raise RepairBlocked("diagnostics_sea_wording_remains:" + diag_path)
             item["roots"][os.path.basename(root)] = {
                 "sha256": _sha(data), "stage_anchor_count": 1,
                 "diagnostics_links": 1, "diagnostics_target_complete": True,
@@ -2645,6 +2669,11 @@ def rollback_from_receipt(receipt_path: str = RECEIPT_PATH) -> dict[str, Any]:
 
 
 def self_test() -> int:
+    guard_fixture = "def main():\n    return 0\n\nif __name__ == '__main__':\n    main()\n"
+    injected_fixture = _inject_task068(guard_fixture, "# wrapper-fixture")
+    if not (injected_fixture.find(FERRY_VIN_SOURCE_MARKER)
+            < injected_fixture.rfind("if __name__ == '__main__'")):
+        raise SystemExit("TASK068_FILTER_ORDER_FAIL")
     fixtures = _fixture_contract()
     if fixtures != {"korea": 1, "ferry": 2, "georgia": 3, "kyiv": 4}:
         raise SystemExit("TASK068_FIXTURE_CONTRACT_FAIL")
