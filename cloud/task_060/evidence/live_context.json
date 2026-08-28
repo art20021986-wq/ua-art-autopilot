@@ -140,11 +140,25 @@
           "source": "def anthropic_key() -> str:\n    return _read_key(ANTHROPIC_KEY_FILE, \"ANTHROPIC_API_KEY\")"
         },
         {
+          "end_lineno": 89,
+          "lineno": 88,
+          "name": "voice_enabled",
+          "sha256": "ccc4252bae05035cbed968a90feeae16eb0df30855acb1f63c8f04c79486849a",
+          "source": "def voice_enabled() -> bool:\n    return bool(openai_key())"
+        },
+        {
           "end_lineno": 176,
           "lineno": 172,
           "name": "_post_json",
           "sha256": "bc91b1eff481a4469abe013c55e95cf2b5da8e3311576867c0b6b074aa6c045c",
           "source": "def _post_json(url: str, headers: dict, payload: dict) -> dict:\n    data = json.dumps(payload).encode(\"utf-8\")\n    req = urllib.request.Request(url, data=data, headers=headers, method=\"POST\")\n    with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as resp:\n        return json.loads(resp.read().decode(\"utf-8\"))"
+        },
+        {
+          "end_lineno": 225,
+          "lineno": 206,
+          "name": "transcribe",
+          "sha256": "68e2cbd03b89278f6e9a164c6220dbc60da3e7ae85e766964d002e58e3f45cd2",
+          "source": "def transcribe(file_bytes: bytes, filename=\"voice.ogg\") -> str:\n    \"\"\"Возвращает текст или пустую строку. Оригинал голосового\n    никогда не удаляется — расшифровка идёт дополнением к нему.\"\"\"\n    key = openai_key()\n    if not key:\n        return \"\"\n    try:\n        result = _post_multipart(\n            \"https://api.openai.com/v1/audio/transcriptions\",\n            {\"Authorization\": f\"Bearer {key}\"},\n            {\"model\": TRANSCRIBE_MODEL, \"language\": \"ru\",\n             \"prompt\": TRANSCRIBE_HINT},\n            \"file\", filename, file_bytes,\n        )\n        return (result.get(\"text\") or \"\").strip()\n    except urllib.error.HTTPError as e:\n        logging.error(f\"Расшифровка не удалась: {e.code} {e.read()[:200]}\")\n    except Exception as e:\n        logging.error(f\"Расшифровка не удалась: {e}\")\n    return \"\""
         },
         {
           "end_lineno": 310,
