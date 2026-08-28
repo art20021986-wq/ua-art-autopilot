@@ -58,12 +58,21 @@ test("catalog IDs are discovered from card links, including future cards", () =>
   assert.ok(indexablePaths(extractVehicleIds(catalog)).includes("/video/UA-9999.html"));
 });
 
-test("future cards fail closed when diagnostics are absent or duplicated", () => {
+test("missing diagnostics are restored, while duplicates still fail closed", () => {
   const path = "/video/UA-9999.html";
   let result = transformCandidateHtml(path, page({ diagnostics: false }));
-  assert.ok(validateCandidateHtml(path, result).errors.some((value) => value.startsWith("diagnostics:")));
+  assert.equal(validateCandidateHtml(path, result).pass, true);
+  assert.match(result, /href="UA-9999-diag\.html"/);
   result = transformCandidateHtml(path, page() + '<a href="UA-9999-diag.html">Комплексная диагностика</a>');
   assert.equal(validateCandidateHtml(path, result).pass, false);
+});
+
+test("a diagnostic link for a different vehicle remains blocked", () => {
+  const path = "/video/UA-9999.html";
+  const source = page({ diagnostics: false }) + '<a class="mcf-diag-cta" href="UA-0008-diag.html">Комплексная диагностика</a>';
+  const result = transformCandidateHtml(path, source);
+  assert.equal(validateCandidateHtml(path, result).pass, false);
+  assert.doesNotMatch(result, /href="UA-9999-diag\.html"/);
 });
 
 test("duplicate primary CTA fails closed", () => {
