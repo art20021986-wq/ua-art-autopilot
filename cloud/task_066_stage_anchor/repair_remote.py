@@ -1727,6 +1727,7 @@ def main() -> int:
                         and all(
                             value.startswith("concurrent_file_change:")
                             or value == "crm_rows_changed_before_install"
+                            or value == "OperationalError:database is locked"
                             for value in errors
                         )
                     )
