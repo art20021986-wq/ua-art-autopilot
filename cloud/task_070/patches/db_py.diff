@@ -1,0 +1,69 @@
+--- a/db.py
++++ b/db.py
+@@ candidate: _ua_lock3_connect (remove forced global timeout)
+-def _ua_lock3_connect(path):
+-    conn = sqlite3.connect(path, timeout=30)
+-    conn.execute("PRAGMA busy_timeout=30000")
+-    return conn
++def _ua_lock3_connect(path, timeout=None):
++    # NOTE: no forced global override. Caller (db.connect) decides the real
++    # busy budget. Diagnostics code must never raise this value.
++    effective_timeout = timeout if timeout is not None else ZAMOK_OZHIDANIE_KOROTKII
++    conn = sqlite3.connect(path, timeout=effective_timeout)
++    conn.execute(f"PRAGMA busy_timeout={int(effective_timeout*1000)}")
++    conn.execute("PRAGMA journal_mode=WAL")
++    return conn
+@@ candidate: module-level budget constants
+-ZAMOK_OZHIDANIE = 20
++# Short, user-facing budget: direct writes must fail fast into the durable
++# queue instead of blocking the Telegram handler for tens of seconds.
++ZAMOK_OZHIDANIE_KOROTKII = 0.8  # seconds; hard cap for a synchronous write attempt
++ZAMOK_OZHIDANIE = ZAMOK_OZHIDANIE_KOROTKII  # kept for backward-compat imports
+@@ candidate: connect()
+-def connect():
+-    return _ua_lock3_connect(DB_PATH)
++def connect(timeout=None):
++    return _ua_lock3_connect(DB_PATH, timeout=timeout)
+@@ candidate: update_card_field (route through allowlisted single-transaction writer)
+-def update_card_field(auto_number, field, value):
+-    conn = connect()
+-    conn.execute(f"UPDATE cars SET {field}=? WHERE auto_number=?", (value, auto_number))
+-    conn.commit()
+-    conn.close()
+-    log_action(auto_number, field, value)
++def update_card_field(auto_number, field, value, actor=None, operation_id=None):
++    """Back-compat shim. Delegates to the atomic allowlisted writer so that the
++    field UPDATE and the audit INSERT happen in exactly one transaction and one
++    commit (see writer/safe_writer.py: write_card_field). Never opens a second
++    connection for logging anymore.
++    """
++    from safe_writer import write_card_field
++    return write_card_field(
++        auto_number=auto_number,
++        field=field,
++        value=value,
++        actor=actor,
++        operation_id=operation_id,
++    )
+@@ candidate: log_action (kept only for read-side callers; no longer opens its
+@@ own connection during a write path)
+-def log_action(auto_number, field, value):
+-    conn = _ua_lock3_connect(DB_PATH)
+-    conn.execute("INSERT INTO audit(auto_number, field, value, ts) VALUES (?,?,?,?)",
+-                 (auto_number, field, value, time.time()))
+-    conn.commit()
+-    conn.close()
++def log_action(auto_number, field, value, conn=None):
++    """Deprecated as a standalone write path. If called with an open conn that
++    is already inside a transaction (from safe_writer), reuse it instead of
++    opening a second connection/commit.
++    """
++    owns_conn = conn is None
++    conn = conn or _ua_lock3_connect(DB_PATH)
++    conn.execute(
++        "INSERT INTO audit(auto_number, field, value, ts) VALUES (?,?,?,?)",
++        (auto_number, field, value, time.time()),
++    )
++    if owns_conn:
++        conn.commit()
++        conn.close()

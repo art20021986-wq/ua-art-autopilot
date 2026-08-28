@@ -1,0 +1,27 @@
+--- a/trace_zhurnal.py
++++ b/trace_zhurnal.py
+@@ candidate: _ua_connect no longer forces a 30s timeout on a diagnostic
+@@ connection; it only observes
+-def _ua_connect(path):
+-    conn = sqlite3.connect(path, timeout=30)
+-    conn.execute("PRAGMA busy_timeout=30000")
+-    return conn
++def _ua_connect(path, timeout=None):
++    # Diagnostics/tracing must be read-only and must never widen a caller's
++    # busy budget. Default to a short, non-blocking observation window.
++    effective_timeout = timeout if timeout is not None else 0.2
++    conn = sqlite3.connect(path, timeout=effective_timeout)
++    conn.execute(f"PRAGMA busy_timeout={int(effective_timeout*1000)}")
++    conn.execute("PRAGMA query_only=1")
++    return conn
+@@ candidate: _Obertka.__enter__ must not raise a caller's timeout
+-class _Obertka:
+-    def __enter__(self):
+-        if self.conn.timeout < 30:
+-            self.conn = _ua_connect(self.path)
+-        return self.conn
++class _Obertka:
++    def __enter__(self):
++        # Observe only; never mutate or replace the caller's connection or
++        # its transaction/timeout settings.
++        return self.conn

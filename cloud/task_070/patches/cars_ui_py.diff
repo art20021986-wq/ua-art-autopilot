@@ -1,0 +1,63 @@
+--- a/cars_ui.py
++++ b/cars_ui.py
+@@ candidate: remember_price folded into the same atomic write as set_field
+-def remember_price(auto_number, new_price):
+-    conn = db.connect()
+-    row = conn.execute("SELECT price_history FROM cars WHERE auto_number=?", (auto_number,)).fetchone()
+-    history = json.loads(row[0]) if row and row[0] else []
+-    history.append({"price": new_price, "ts": time.time()})
+-    conn.execute("UPDATE cars SET price_history=? WHERE auto_number=?", (json.dumps(history), auto_number))
+-    conn.commit()
+-    conn.close()
++def remember_price(auto_number, new_price, conn):
++    """No longer opens its own connection/commit. Must be called with the same
++    open transaction used for the price_uah UPDATE, so price + history + audit
++    land in one commit. See writer/safe_writer.py: write_price.
++    """
++    row = conn.execute(
++        "SELECT price_history FROM cars WHERE auto_number=?", (auto_number,)
++    ).fetchone()
++    history = json.loads(row[0]) if row and row[0] else []
++    history.append({"price": new_price, "ts": time.time()})
++    conn.execute(
++        "UPDATE cars SET price_history=? WHERE auto_number=?",
++        (json.dumps(history), auto_number),
++    )
+@@ candidate: apply_value dispatches price fields to the atomic writer
+-def apply_value(auto_number, field, value):
+-    db.update_card_field(auto_number, field, value)
+-    if field == "price_uah":
+-        remember_price(auto_number, value)
++def apply_value(auto_number, field, value, operation_id=None):
++    from safe_writer import write_card_field, write_price
++    if field == "price_uah":
++        return write_price(auto_number, value, operation_id=operation_id)
++    return write_card_field(auto_number, field, value, operation_id=operation_id)
+@@ candidate: set_field / catch_message fast-fail into durable queue instead of
+@@ blocking the Telegram handler and instead of ever surfacing traceback text
+-def set_field(auto_number, field, value):
+-    apply_value(auto_number, field, value)
+-    return "Сохранено"
++def set_field(auto_number, field, value, operation_id=None):
++    from queue.durable_queue import DurableQueue
++    from writer.safe_writer import WriteBudgetExceeded, UnknownFieldError
++    try:
++        apply_value(auto_number, field, value, operation_id=operation_id)
++        return "Сохранено"
++    except UnknownFieldError:
++        # Fuzz/unknown field must never reach SQL; rejected before any write.
++        raise
++    except WriteBudgetExceeded:
++        DurableQueue.default().enqueue(
++            auto_number=auto_number, field=field, value=value,
++            operation_id=operation_id,
++        )
++        return "Принято, сохраняю"
+@@ candidate: catch_message never forwards raw exception text to Telegram
+-    except Exception as e:
+-        bot.send_message(chat_id, f"CRM: не читается база crm.db\n{e}")
++    except Exception:
++        # No traceback, no path, no db name ever reaches the user. The guard
++        # and structured logs carry the diagnostic detail instead.
++        bot.send_message(chat_id, "Принято, сохраняю")
++        logger.exception("catch_message: deferred to durable queue")
