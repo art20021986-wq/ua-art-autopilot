@@ -1,0 +1,35 @@
+{
+  "task_id": "CRM-CONTAINER-KYIV-DAYS-001-V1.0",
+  "mode": "ISOLATED_GATE_A",
+  "status": "PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL",
+  "production_touched": false,
+  "crm_db_write": false,
+  "service_reload": false,
+  "source": {
+    "path": "/home/Carix/konteyner.py",
+    "sha256": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d",
+    "size": 24533
+  },
+  "candidate": {
+    "sha256": "a916266016d4ff0551e99bd74b5eb295e3c69babe2f6b7eec7f218d69a0de64b",
+    "size": 22612
+  },
+  "changed_functions": [
+    "_ekran",
+    "posle_statusa",
+    "prinyat"
+  ],
+  "checks": {
+    "compile": true,
+    "source_hash_guard": true,
+    "only_expected_functions_changed": true,
+    "central_button_once": true,
+    "status_prompt_button_once": true,
+    "days_routes_existing_handler": true,
+    "wait_clear_after_readback": true,
+    "readback_equality_required": true,
+    "exact_container_success": true,
+    "runtime_llm_tokens": 0
+  },
+  "diff": "--- /home/Carix/konteyner.py\n+++ candidate/konteyner.py\n@@ -177,8 +177,8 @@\n         [InlineKeyboardButton(\n             \"Изменить дату\" if data else \"Указать дату отправления\",\n             callback_data=\"cont_date:%d\" % cid)],\n-        [InlineKeyboardButton(\"Дни до прибытия\",\n-                              callback_data=\"cont_days:%d\" % cid)],\n+        [InlineKeyboardButton(\"⏱ Количество дней до Киева\",\n+                              callback_data=\"car_setf:%d:eta_days\" % cid)],\n     ]\n     if nomer or data:\n         rows.append([InlineKeyboardButton(\"Очистить данные контейнера\",\n@@ -332,7 +332,6 @@\n                     \"Отмена\", callback_data=\"cont_menu:%d\" % cid)]]))\n             raise ApplicationHandlerStop\n \n-    context.user_data.pop(\"cont_wait\", None)\n     do = _karta(cid) or {}\n     try:\n         _pisat(cid, pole, znachenie, kto)\n@@ -342,9 +341,19 @@\n         raise ApplicationHandlerStop\n \n     posle = _karta(cid) or {}          # повторное чтение из базы\n-    stalo = (posle.get(pole) or \"\").strip()\n+    stalo = str(posle.get(pole) or \"\").strip()\n+    ozhidaemoe = str(znachenie).strip()\n+    if stalo != ozhidaemoe:\n+        log.warning(\"konteyner: read-back mismatch %s expected=%r actual=%r\",\n+                    pole, ozhidaemoe, stalo)\n+        await msg.reply_text(\n+            \"Не удалось подтвердить сохранение. Повторите ввод.\",\n+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n+                \"Отмена\", callback_data=\"cont_menu:%d\" % cid)]]))\n+        raise ApplicationHandlerStop\n+    context.user_data.pop(\"cont_wait\", None)\n     if pole == \"sea_container\":\n-        podpis = \"Номер контейнера сохранён: %s\" % (stalo or \"—\")\n+        podpis = \"✅ Контейнер сохранён: %s\" % stalo\n     elif pole == \"sea_date_out\":\n         podpis = \"Дата отправления сохранена: %s\" % (_krasivo(stalo) or \"—\")\n     else:\n@@ -393,6 +402,8 @@\n                                       callback_data=\"cont_num:%d\" % cid)],\n                 [InlineKeyboardButton(\"Ввести дату отправления\",\n                                       callback_data=\"cont_date:%d\" % cid)],\n+                [InlineKeyboardButton(\"⏱ Количество дней до Киева\",\n+                                      callback_data=\"car_setf:%d:eta_days\" % cid)],\n                 [InlineKeyboardButton(\"Пропустить\",\n                                       callback_data=\"car_open:%d\" % cid)]]))\n     except Exception as e:\n"
+}
