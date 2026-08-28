@@ -1,0 +1,36 @@
+{
+  "controller": {
+    "bot_restarted": true,
+    "bot_task_id_sha256": "ddab74aff3b2a90095923bf1b6e2880ceb8d82e217b930565eb778dfdbfd7b60",
+    "status": "PASS"
+  },
+  "installer": {
+    "already_applied": false,
+    "backup_path": "/home/Carix/backups/task_060/20260828T055708Z",
+    "crm_db_write": false,
+    "errors": [],
+    "files": {
+      "/home/Carix/local_ocr.py": {
+        "after": "c82c69eb69eccfb901cae56e111155b2cccd49e5ae63a10bb7ad4dafeea724a8",
+        "before": null
+      },
+      "/home/Carix/team_bot.py": {
+        "after": "cfb1f52ea820a2e5a3e65a2d4b0e2c99c5c6e35402dd3678a22a7bdd6fb3b09a",
+        "before": "6f34c77e288946503bed97739e2c77143fdce79e86d0e21dae889c933b00ab78"
+      }
+    },
+    "finished_at_utc": "2026-08-28T05:57:08Z",
+    "mode": "TOKEN_FREE_OCR_INSTALL",
+    "production_write": true,
+    "rollback_performed": false,
+    "service_restarted": false,
+    "site_write": false,
+    "staff_handoff_removed": true,
+    "started_at_utc": "2026-08-28T05:57:08Z",
+    "status": "PASS",
+    "task_id": "task_060",
+    "token_cost_per_photo": 0,
+    "ua0010_published": false
+  },
+  "task_id": "task_060"
+}
