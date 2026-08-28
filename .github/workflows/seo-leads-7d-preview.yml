@@ -1,0 +1,87 @@
+name: SEO Leads Kyiv 7D Preview
+
+on:
+  push:
+    branches:
+      - seo/index-leads-7d-001
+    paths:
+      - cloud/seo_leads_7d/**
+      - tasks/task_067.md
+      - .github/workflows/seo-leads-7d-preview.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-leads-7d-preview
+  cancel-in-progress: true
+
+jobs:
+  sandbox-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unit tests
+        run: python3 -m unittest cloud/seo_leads_7d/test_pipeline.py
+
+      - name: Capture immutable public baseline (GET only)
+        run: |
+          python3 cloud/seo_leads_7d/baseline.py \
+            --output "$RUNNER_TEMP/baseline" --save-raw
+
+      - name: Build first isolated candidate and run gates
+        run: |
+          python3 cloud/seo_leads_7d/build_candidate.py \
+            --baseline-dir "$RUNNER_TEMP/baseline" \
+            --output "$RUNNER_TEMP/build-01"
+          python3 cloud/seo_leads_7d/gate.py \
+            --baseline-dir "$RUNNER_TEMP/baseline" \
+            --candidate-dir "$RUNNER_TEMP/build-01" \
+            --report "$RUNNER_TEMP/build-01/GATE-REPORT.json"
+
+      - name: Verify ten deterministic builds
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > "$RUNNER_TEMP/tree-hashes.txt"
+          for run in $(seq -w 1 10); do
+            out="$RUNNER_TEMP/repeat-$run"
+            python3 cloud/seo_leads_7d/build_candidate.py \
+              --baseline-dir "$RUNNER_TEMP/baseline" --output "$out"
+            tree_hash="$(cd "$out/site" && find . -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)"
+            printf '%s  run-%s\n' "$tree_hash" "$run" | tee -a "$RUNNER_TEMP/tree-hashes.txt"
+          done
+          unique="$(cut -d' ' -f1 "$RUNNER_TEMP/tree-hashes.txt" | sort -u | wc -l)"
+          test "$unique" -eq 1
+          python3 - "$RUNNER_TEMP/tree-hashes.txt" "$RUNNER_TEMP/REPEATABILITY.json" <<'PY'
+          import json, pathlib, sys
+          lines = pathlib.Path(sys.argv[1]).read_text().splitlines()
+          hashes = [line.split()[0] for line in lines]
+          pathlib.Path(sys.argv[2]).write_text(json.dumps({
+              "runs": 10,
+              "unique_tree_hashes": len(set(hashes)),
+              "pass": len(set(hashes)) == 1,
+              "tree_sha256": hashes[0],
+              "production_write": False
+          }, indent=2) + "\n")
+          PY
+
+      - name: Assemble GitHub preview artifact
+        run: |
+          mkdir -p "$RUNNER_TEMP/artifact/evidence"
+          cp "$RUNNER_TEMP/baseline/BASELINE-SEO-001.json" "$RUNNER_TEMP/artifact/evidence/"
+          cp "$RUNNER_TEMP/baseline/BASELINE-SEO-001.html" "$RUNNER_TEMP/artifact/evidence/"
+          cp "$RUNNER_TEMP/baseline/sha256-manifest.txt" "$RUNNER_TEMP/artifact/evidence/"
+          cp -R "$RUNNER_TEMP/build-01" "$RUNNER_TEMP/artifact/candidate"
+          cp "$RUNNER_TEMP/REPEATABILITY.json" "$RUNNER_TEMP/artifact/evidence/"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: seo-leads-7d-preview
+          path: ${{ runner.temp }}/artifact
+          retention-days: 14
+          if-no-files-found: error
+

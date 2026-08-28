@@ -1,0 +1,204 @@
+<!doctype html><html lang="ru"><head>
+<script id="ua-cifry-storozh">/* UA-CIFRY-V1 */
+(function(){
+try{
+var PODPISI={
+ vse:["Все","Всi","Всі","Усі","Усi"],
+ kiev:["В Киеве","У Києві","У Києвi","Киев","Київ"],
+ georgia:["В Грузии","У Грузії","У Грузii","Грузия","Грузія"],
+ sea:["В море","У морі","У морi","В пути","У дорозі"],
+ korea:["В Корее","У Кореї","У Кореi","Корея"]};
+var ETAPY=["kiev","georgia","sea","korea"];
+function etapPoTekstu(t){
+ t=(t||"").toLowerCase();
+ if(t.indexOf("кие")>=0||t.indexOf("київ")>=0||t.indexOf("києв")>=0)return "kiev";
+ if(t.indexOf("груз")>=0)return "georgia";
+ if(t.indexOf("мор")>=0)return "sea";
+ if(t.indexOf("коре")>=0)return "korea";
+ return "";
+}
+function normEtap(z){
+ z=(z||"").toLowerCase();
+ if(z.indexOf("kiev")>=0||z.indexOf("ua_")>=0||z.indexOf("ukr")>=0)return "kiev";
+ if(z.indexOf("georg")>=0||z.indexOf("ge_")>=0||z.indexOf("gruz")>=0)return "georgia";
+ if(z.indexOf("sea")>=0||z.indexOf("more")>=0)return "sea";
+ if(z.indexOf("kore")>=0||z.indexOf("kr_")>=0)return "korea";
+ return etapPoTekstu(z);
+}
+function sobratKartochki(){
+ var spisok=[],bylo=[];
+ var ssylki=document.querySelectorAll('a[href*="UA-"]');
+ for(var i=0;i<ssylki.length;i++){
+  var h=ssylki[i].getAttribute("href")||"";
+  if(h.toLowerCase().indexOf("-diag")>=0)continue;
+  var m=h.match(/UA-\d{3,5}/);
+  if(!m)continue;
+  var kart=null;
+  if(ssylki[i].closest)kart=ssylki[i].closest("[data-stage]");
+  if(!kart){
+   var p=ssylki[i],shag=0;
+   while(p&&p.parentElement&&shag<6){
+    p=p.parentElement;
+    var kl=(p.className&&p.className.baseVal!==undefined)?p.className.baseVal:(p.className||"");
+    if(typeof kl==="string"&&/kart|card|auto|avto|tile|item|mash/i.test(kl)){kart=p;break;}
+    shag++;
+   }
+  }
+  if(!kart)kart=ssylki[i].parentElement;
+  if(!kart)continue;
+  if(bylo.indexOf(kart)>=0)continue;
+  bylo.push(kart);
+  kart.setAttribute("data-ua-kod",m[0]);
+  spisok.push(kart);
+ }
+ return spisok;
+}
+function schitat(){
+ var karty=sobratKartochki();
+ var vidano={},cifry={vse:0,kiev:0,georgia:0,sea:0,korea:0},dubley=0;
+ for(var i=0;i<karty.length;i++){
+  var k=karty[i],kod=k.getAttribute("data-ua-kod");
+  if(vidano[kod]){k.setAttribute("data-ua-dubl","1");k.style.display="none";dubley++;continue;}
+  vidano[kod]=1;
+  k.removeAttribute("data-ua-dubl");
+  var et=normEtap(k.getAttribute("data-stage")||"");
+  if(!et)et=etapPoTekstu(k.textContent||"");
+  cifry.vse++;
+  if(et&&cifry[et]!==undefined)cifry[et]++;
+ }
+ cifry.dubley=dubley;
+ cifry.karty=karty;
+ return cifry;
+}
+function listya(){
+ var vse=document.querySelectorAll("a,span,button,div,li,p,em,b,strong,small");
+ var res=[];
+ for(var i=0;i<vse.length;i++){
+  var e=vse[i];
+  if(e.children&&e.children.length>0)continue;
+  var t=e.textContent||"";
+  if(t.length>40)continue;
+  res.push(e);
+ }
+ return res;
+}
+function vpisat(cifry){
+ var lis=listya(),i,j,k;
+ for(i=0;i<lis.length;i++){
+  var e=lis[i],t=e.textContent||"";
+  for(k in PODPISI){
+   if(!PODPISI.hasOwnProperty(k))continue;
+   if(cifry[k]===undefined)continue;
+   var spisok=PODPISI[k];
+   for(j=0;j<spisok.length;j++){
+    var re1=new RegExp("^\\s*"+spisok[j].replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*[\u00b7\u2022:]\\s*\\d+\\s*$");
+    if(re1.test(t)){
+     var novoe=spisok[j]+" \u00b7 "+cifry[k];
+     if(t.replace(/\s+/g," ").trim()!==novoe)e.textContent=novoe;
+     j=spisok.length;k="";break;
+    }
+   }
+   if(k==="")break;
+  }
+ }
+}
+function vidimyh(){
+ var karty=sobratKartochki(),vidano={},n=0;
+ for(var i=0;i<karty.length;i++){
+  var k=karty[i],kod=k.getAttribute("data-ua-kod");
+  if(k.getAttribute("data-ua-dubl")==="1")continue;
+  if(vidano[kod])continue;
+  vidano[kod]=1;
+  var st=window.getComputedStyle?window.getComputedStyle(k):null;
+  if(st&&(st.display==="none"||st.visibility==="hidden"))continue;
+  n++;
+ }
+ return n;
+}
+function pokazano(){
+ var n=vidimyh(),lis=listya();
+ for(var i=0;i<lis.length;i++){
+  var e=lis[i],t=(e.textContent||"").replace(/\s+/g," ").trim();
+  if(/^(Показано|Показанo|Показано:|Показуємо|Показано авто)\s*:?\s*\d+$/.test(t)){
+   var novoe=t.replace(/\d+/,String(n));
+   if(t!==novoe)e.textContent=novoe;
+  }
+ }
+}
+function krug(){
+ try{var c=schitat();vpisat(c);pokazano();}catch(e){}
+}
+function zapusk(){
+ krug();
+ setTimeout(krug,400);
+ setTimeout(pokazano,900);
+ document.addEventListener("click",function(){setTimeout(krug,80);setTimeout(krug,400);},true);
+ window.addEventListener("hashchange",function(){setTimeout(krug,80);});
+ window.addEventListener("popstate",function(){setTimeout(krug,80);});
+}
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",zapusk);}else{zapusk();}
+}catch(e){}
+})();
+</script>
+
+<script>/* UA ART фильтр этапов v3 */
+(function(){
+  var par=new URLSearchParams(location.search);
+  var st=par.get('stage')||par.get('f');
+  if(!st) return;
+  var karta={kiev:'kiev',gruzia:'georgia',georgia:'georgia',more:'sea',sea:'sea',korea:'korea'};
+  st=karta[st]||st;
+  document.documentElement.setAttribute('data-etap-filtr',st);
+})();
+</script>
+
+
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07111e"><meta name="color-scheme" content="dark"><title data-ru="Каталог автомобилей — UA ART COMPANY" data-uk="Каталог автомобілів — UA ART COMPANY">Каталог автомобилей — UA ART COMPANY</title><meta property="og:title" content="Каталог автомобилей — UA ART COMPANY" data-ru-content="Каталог автомобилей — UA ART COMPANY" data-uk-content="Каталог автомобілів — UA ART COMPANY"><meta property="og:description" content="Автомобили в наличии и в пути с живыми фото и текущим этапом доставки." data-ru-content="Автомобили в наличии и в пути с живыми фото и текущим этапом доставки." data-uk-content="Автомобілі в наявності та в дорозі з живими фото та поточним етапом доставки."><meta property="og:type" content="website"><link rel="stylesheet" href="ua-v203.css?v=20260828_0710"><style id="ua-chat-vid">.floating-chat{display:inline-flex!important;align-items:center!important;gap:8px!important;white-space:nowrap!important;overflow:visible!important;text-indent:0!important}.floating-chat svg{width:22px!important;height:22px!important;flex:0 0 auto!important;display:inline-block!important;fill:currentColor}.floating-chat i,.floating-chat span,.floating-chat b{display:inline!important;font-style:normal!important;opacity:1!important;clip:auto!important;width:auto!important;height:auto!important;position:static!important;font-size:15px!important;text-indent:0!important}@media(max-width:520px){.floating-chat i,.floating-chat span,.floating-chat b{display:inline!important;font-size:14px!important}}</style><style id="mcf-chat-css">
+/* Desktop не меняем */
+a.mcf-chat,.mcf-chat{position:fixed!important;right:16px!important;left:auto!important;
+bottom:calc(16px + env(safe-area-inset-bottom))!important;z-index:9990!important;
+display:inline-flex!important;align-items:center!important;gap:8px!important;
+width:auto!important;padding:11px 16px!important;border-radius:999px!important;
+font-size:15px!important;line-height:1!important;white-space:nowrap!important}
+/* Телефон: маленький кружок, не закрывает автомобиль, стрелку и текст.
+   Правило ловит кнопку по ссылке на WhatsApp и слову chat в классе,
+   поэтому работает даже если наш класс не проставился. */
+@media (max-width:900px){
+body a.mcf-chat,
+body a[href*="wa.me"][class*="chat"],
+body a[href*="wa.me"][id*="chat"]{
+width:44px!important;min-width:44px!important;max-width:44px!important;
+height:44px!important;padding:0!important;border-radius:50%!important;
+display:flex!important;align-items:center!important;justify-content:center!important;
+right:10px!important;left:auto!important;
+bottom:calc(78px + env(safe-area-inset-bottom))!important;
+font-size:0!important;line-height:0!important;gap:0!important;overflow:hidden!important;
+opacity:.94!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important}
+body a.mcf-chat svg,
+body a[href*="wa.me"][class*="chat"] svg{width:22px!important;height:22px!important;
+flex:0 0 auto!important;display:block!important}
+body a.mcf-chat > *:not(svg),
+body a[href*="wa.me"][class*="chat"] > *:not(svg){display:none!important}
+body a.mcf-chat::after,body a[href*="wa.me"][class*="chat"]::after{content:""!important}
+}
+</style><style id="mcf-photofit-css">
+/* Фото в плитках и превью заполняют контейнер, не деформируясь */
+.plitka img,.karta img,.card img,.preview img,.tile img,
+a[href*="UA-"] > img,figure.foto img{
+object-fit:cover!important;width:100%!important;height:100%!important;
+display:block!important;background:transparent!important}
+</style>
+<link rel="canonical" href="https://www.uaart.com.ua/video/katalog.html">
+<meta name="description" content="Каталог перевірених авто з Кореї UA ART: актуальні машини, етап доставки, ціна та діагностика.">
+<base href="https://www.uaart.com.ua/video/">
+<style id="seo-preview-guard">body::before{content:"GITHUB PREVIEW · PRODUCTION WRITE NO";position:fixed;z-index:2147483647;top:0;left:0;right:0;padding:7px 12px;text-align:center;font:700 12px system-ui;background:#7c3aed;color:#fff;pointer-events:none}</style>
+<script id="seo-preview-guard-script">addEventListener("click",function(e){if(e.target.closest("a,button,[onclick]")){e.preventDefault();e.stopImmediatePropagation();}},true);addEventListener("submit",function(e){e.preventDefault();e.stopImmediatePropagation();},true);</script>
+</head><body class="antialiased"><div class="site-shell"><a class="skip-link" href="#main-content" data-ru="К содержанию" data-uk="До вмісту">К содержанию</a><header class="site-header"><div class="header-main"><a href="index.html" class="brand"  aria-label="UA ART Company — главная" data-ru-aria="UA ART Company — главная" data-uk-aria="UA ART Company — головна"><span class="brand-mark">UA</span><span class="brand-copy"><b>UA ART COMPANY</b><small data-ru="АВТОМОБИЛИ ИЗ РАЗНЫХ СТРАН" data-uk="АВТОМОБІЛІ З РІЗНИХ КРАЇН">АВТОМОБИЛИ ИЗ РАЗНЫХ СТРАН</small></span></a><nav class="desktop-nav"  aria-label="Основная навигация" data-ru-aria="Основная навигация" data-uk-aria="Основна навігація"><a href="index.html" data-ru="Главная" data-uk="Головна">Главная</a><a href="katalog.html" data-ru="Автомобили" data-uk="Автомобілі">Автомобили</a><a href="podbor.html" data-ru="Подбор" data-uk="Підбір">Подбор</a><a href="info.html" data-ru="Условия" data-uk="Умови">Условия</a></nav><div class="lang-toggle"  aria-label="Выбор языка" data-ru-aria="Выбор языка" data-uk-aria="Вибір мови"><button data-lang="ru" class="active" aria-pressed="true">RU</button><i></i><button data-lang="uk" aria-pressed="false">UA</button></div></div><div class="header-contacts"  aria-label="Контакты UA ART" data-ru-aria="Контакты UA ART" data-uk-aria="Контакти UA ART"><a class="header-phone" href="tel:+380992222002"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 5 5c-1 1 1 5 4 8s7 5 8 4l2-3-4-2-2 2c-2-1-4-3-5-5l2-2z"/></svg><span data-ru="Позвонить" data-uk="Зателефонувати">Позвонить</span><b>+380 99 222 20 02</b></a><a class="header-whatsapp" href="https://wa.me/380992222002" target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="header-map" href="https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA" target="_blank" rel="noopener noreferrer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg><span data-ru="Офис на карте" data-uk="Офіс на мапі">Офис на карте</span></a></div></header><main id="main-content"><section class="content-page catalog-page"><div class="page-intro"><span class="section-kicker">КАТАЛОГ</span><h1 data-ru="Автомобили в наличии и в пути" data-uk="Автомобілі в наявності та в дорозі">Автомобили в наличии и в пути</h1><p data-ru="Живые фото, прозрачный этап доставки и окончательная цена в Киеве." data-uk="Живі фото, прозорий етап доставки та остаточна ціна у Києві.">Живые фото, прозрачный этап доставки и окончательная цена в Киеве.</p></div><div class="filter-row" aria-label="Фильтр по этапу" data-ru-aria="Фильтр по этапу" data-uk-aria="Фільтр за етапом"><button type="button" data-f="all" class="active" aria-pressed="true" data-ru="Все · 10" data-uk="Усі · 10">Все · 10</button><button type="button" data-f="kiev" class="" aria-pressed="false" data-ru="В Киеве · 3" data-uk="У Києві · 3">В Киеве · 3</button><button type="button" data-f="georgia" class="" aria-pressed="false" data-ru="В Грузии · 1" data-uk="У Грузії · 1">В Грузии · 1</button><button type="button" data-f="sea" class="" aria-pressed="false" data-ru="На пароме · 4" data-uk="На поромі · 4">На пароме · 4</button><button type="button" data-f="korea" class="" aria-pressed="false" data-ru="В Корее · 2" data-uk="У Кореї · 2">В Корее · 2</button></div><p class="catalog-result" aria-live="polite">Показано: 10</p><div class="catalog-grid"><article class="catalog-card" data-stage="kiev"><a href="UA-0002.html" class="catalog-photo"><img src="/video/stage/UA-0002.webp?v=034537" alt="Mercedes-Benz B-Class 2010" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">33 фото · 2 видео</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0002</span><b data-ru="8 700 $" data-uk="8 700 $">8 700 $</b></div><h2>Mercedes-Benz B-Class 2010</h2><div class="status-pill" data-ru="В Киеве · можно посмотреть" data-uk="У Києві · можна оглянути">В Киеве · можно посмотреть</div><p>104 000 км · 1 700 см³ · бензин · автомат</p><a class="card-arrow" href="UA-0002.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article><article class="catalog-card" data-stage="kiev"><a href="UA-0007.html" class="catalog-photo"><img src="/video/stage/UA-0007.webp?v=034537" alt="Mercedes-Benz B-Class 2011" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">30 фото · 1 видео</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0007</span><b data-ru="9 300 $" data-uk="9 300 $">9 300 $</b></div><h2>Mercedes-Benz B-Class 2011</h2><div class="status-pill" data-ru="В Киеве · можно посмотреть" data-uk="У Києві · можна оглянути">В Киеве · можно посмотреть</div><p>50 000 км · 1 700 см³ · бензин · автомат</p><a class="card-arrow" href="UA-0007.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article><article class="catalog-card" data-stage="kiev"><a href="UA-0008.html" class="catalog-photo"><img src="/video/stage/UA-0008.webp?v=034537" alt="Mercedes-Benz B-Class 2009" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">33 фото</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0008</span><b data-ru="9 100 $" data-uk="9 100 $">9 100 $</b></div><h2>Mercedes-Benz B-Class 2009</h2><div class="status-pill" data-ru="В Киеве · можно посмотреть" data-uk="У Києві · можна оглянути">В Киеве · можно посмотреть</div><p>51 000 км · 1 700 см³ · бензин · автомат</p><a class="card-arrow" href="UA-0008.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article><article class="catalog-card" data-stage="georgia"><a href="UA-0001.html" class="catalog-photo"><img src="/video/stage/UA-0001.webp?v=034537" alt="Mercedes-Benz E 220 2017" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">30 фото · 1 видео</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0001</span><b data-ru="23 000 $" data-uk="23 000 $">23 000 $</b></div><h2>Mercedes-Benz E 220 2017</h2><div class="status-pill" data-ru="В Грузии · финальный этап" data-uk="У Грузії · фінальний етап">В Грузии · финальный этап</div><p>147 962 км · 1 950 см³ · дизель · автомат</p><a class="card-arrow" href="UA-0001.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article><article class="catalog-card" data-stage="sea"><a href="UA-0005.html" class="catalog-photo"><img src="/video/stage/UA-0005.webp?v=034537" alt="Mercedes-Benz B-Class 2013" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">11 фото</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0005</span><b data-ru="11 500 $" data-uk="11 500 $">11 500 $</b></div><h2>Mercedes-Benz B-Class 2013</h2><div class="status-pill" data-ru="На пароме&#10;Маршрут: Корея → Грузия" data-uk="На поромі&#10;Маршрут: Корея → Грузія" style="white-space:pre-line">На пароме&#10;Маршрут: Корея → Грузия</div><p>139 000 км · 1 800 см³ · Дизель · автомат</p><a class="card-arrow" href="UA-0005.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article>
+<article class="catalog-card" data-stage="sea"><a href="UA-0010.html" class="catalog-photo"><img src="/video/stage/UA-0010.webp?v=034537" alt="Kia K5 2018" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">11 фото</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0010</span><b data-ru="11 700 $" data-uk="11 700 $">11 700 $</b></div><h2>Kia K5 2018</h2><div class="status-pill" data-ru="На пароме&#10;Маршрут: Корея → Грузия" data-uk="На поромі&#10;Маршрут: Корея → Грузія" style="white-space:pre-line">На пароме&#10;Маршрут: Корея → Грузия</div><p>198 000 км · 1 800 см³ · газ · автомат</p><a class="card-arrow" href="UA-0010.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article>
+<article class="catalog-card" data-stage="sea"><a href="UA-0009.html" class="catalog-photo"><img src="/video/stage/UA-0009.webp?v=034537" alt="Kia K5 2018" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">11 фото</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0009</span><b data-ru="11 500 $" data-uk="11 500 $">11 500 $</b></div><h2>Kia K5 2018</h2><div class="status-pill" data-ru="На пароме&#10;Маршрут: Корея → Грузия" data-uk="На поромі&#10;Маршрут: Корея → Грузія" style="white-space:pre-line">На пароме&#10;Маршрут: Корея → Грузия</div><p>300 000 км · 1 800 см³ · газ · автомат</p><a class="card-arrow" href="UA-0009.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article><article class="catalog-card" data-stage="sea"><a href="UA-0006.html" class="catalog-photo"><img src="/video/stage/UA-0006.webp?v=034537" alt="Kia K5 2019" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">40 фото</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0006</span><b data-ru="11 500 $" data-uk="11 500 $">11 500 $</b></div><h2>Kia K5 2019</h2><div class="status-pill" data-ru="На пароме&#10;Маршрут: Корея → Грузия" data-uk="На поромі&#10;Маршрут: Корея → Грузія" style="white-space:pre-line">На пароме&#10;Маршрут: Корея → Грузия</div><p>178 000 км · 2 000 см³ · LPI · автомат</p><a class="card-arrow" href="UA-0006.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article><article class="catalog-card" data-stage="korea"><a href="UA-0003.html" class="catalog-photo"><img src="/video/stage/UA-0003.webp?v=034537" alt="Kia K5 2019" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">26 фото</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0003</span><b data-ru="11 500 $" data-uk="11 500 $">11 500 $</b></div><h2>Kia K5 2019</h2><div class="status-pill" data-ru="Выкуплен и проверен в Корее" data-uk="Викуплений і перевірений у Кореї">Выкуплен и проверен в Корее</div><p>181 000 км · 2 000 см³ · LPI · автомат</p><a class="card-arrow" href="UA-0003.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article><article class="catalog-card" data-stage="korea"><a href="UA-0004.html" class="catalog-photo"><img src="/video/stage/UA-0004.webp?v=034537" alt="Kia K5 2019" loading="lazy" decoding="async" style=";background:#0B1524!important;object-fit:cover!important;object-position:50% 50%!important" data-mcf-foto="1"><span class="photo-count">28 фото</span></a><div class="catalog-body"><div class="catalog-top"><span>UA-0004</span><b data-ru="11 000 $" data-uk="11 000 $">11 000 $</b></div><h2>Kia K5 2019</h2><div class="status-pill" data-ru="Выкуплен и проверен в Корее" data-uk="Викуплений і перевірений у Кореї">Выкуплен и проверен в Корее</div><p>254 590 км · 2 000 см³ · LPI · автомат</p><a class="card-arrow" href="UA-0004.html" aria-label="Открыть карточку" data-ru-aria="Открыть карточку" data-uk-aria="Відкрити картку"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a></div></article></div><div class="empty-assist"><div><span>&#8981;</span><h2 data-ru="Не нашли подходящий автомобиль?" data-uk="Не знайшли відповідний автомобіль?">Не нашли подходящий автомобиль?</h2><p data-ru="Подберём нужную комплектацию и бюджет на зарубежных аукционах." data-uk="Підберемо потрібну комплектацію та бюджет на закордонних аукціонах.">Подберём нужную комплектацию и бюджет на зарубежных аукционах.</p></div><a class="button gold" href="podbor.html" data-ru="Подобрать авто" data-uk="Підібрати авто">Подобрать авто</a></div><a class="back-home" href="index.html" data-ru="← Назад на главную" data-uk="← На головну">← Назад на главную</a></section></main><footer class="site-footer"><div class="footer-meta"><span data-ru="ул. Победы 20, Киев" data-uk="вул. Перемоги, 20, Київ">ул. Победы 20, Киев</span><span data-ru="UA ART COMPANY LLC · Киев · с 2023 года" data-uk="UA ART COMPANY LLC · Київ · з 2023 року">UA ART COMPANY LLC · Киев · с 2023 года</span></div><div class="signature">BA | Created by Artem Borovinsky</div></footer><a class="mcf-chat floating-chat" href="https://wa.me/380992222002" target="_blank" rel="noopener noreferrer"><svg viewBox='0 0 24 24'><path d='M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1-.2.2-.6.8-.7.9-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.1.1-.2 0-.3 0-.5s-.5-1.3-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3-.3.3-.9.9-.9 2.1s.9 2.5 1.1 2.7c.1.2 1.8 2.9 4.5 4 .6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3z'/></svg><i data-ru="Чат online" data-uk="Чат online">Чат online</i></a></div><script src="i18n.js?v=20260828_0710" defer></script>
+<!-- УДАЛЕНО 2026-08-21: два старых inline-скрипта фильтра этапов ("v208-f-filter" и "фильтр этапов v2").
+     Они использовали неточные соответствия слов (например, "корея" вместо "Корее") и в паре
+     с удалённым CSS-правилом html[data-etap-filtr] могли навсегда скрывать карточки нового этапа.
+     Фильтр теперь полностью работает через i18n.js (функция pokazat), которая сравнивает data-stage
+     напрямую, без текстовых совпадений. -->
+<script src='/ua/a.js?v=1' defer></script><!--UA-ANALIT-V1--></body></html>
