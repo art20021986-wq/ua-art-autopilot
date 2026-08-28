@@ -1,0 +1,254 @@
+{
+  "task_id": "task_071",
+  "mode": "READ_ONLY_CURRENT_CALL_PATH",
+  "remote_http_methods": [
+    "GET"
+  ],
+  "production_touched": false,
+  "crm_db_write": false,
+  "sources": {
+    "db.py": {
+      "definitions": [
+        {
+          "kind": "FunctionDef",
+          "name": "_ua_lock3_connect",
+          "lineno": 86,
+          "end_lineno": 94,
+          "sha256": "ae4460327802937cf7ad1e631bcb84f15ee68eec1aa328e9fde83f914dbfcd92",
+          "source": "    def _ua_lock3_connect(*a, **kw):\n        if len(a) < 2 and \"timeout\" not in kw:\n            kw[\"timeout\"] = 30.0\n        con = _ua_lock3_original_connect(*a, **kw)\n        try:\n            con.execute(\"PRAGMA busy_timeout=30000\")\n        except Exception:\n            pass\n        return con"
+        },
+        {
+          "kind": "ClassDef",
+          "name": "Soedinenie",
+          "lineno": 189,
+          "end_lineno": 311,
+          "sha256": "8f2ea10d7ef423768646706a07ec14c9b793e74d070e6cab85179e5bbc225823",
+          "source": "class Soedinenie(sqlite3.Connection):\n    \"\"\"Own the process queue only while a write transaction is active.\"\"\"\n\n    def _pered_zapisyu(self, sql):\n        if not _ua_sql_pishet(sql) or getattr(self, \"_ua_zapis_v_ocheredi\", False):\n            return False\n        vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)\n        if not vzyata:\n            raise sqlite3.OperationalError(\"CRM thread queue timeout\")\n        self._ochered_vzyata = True\n        try:\n            _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)\n            self._fayl_zaregistrirovan = True\n            self._ua_zapis_v_ocheredi = True\n            return True\n        except Exception:\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n            raise\n\n    def _otpustit(self):\n        self._ua_zapis_v_ocheredi = False\n        if getattr(self, \"_fayl_zaregistrirovan\", False):\n            self._fayl_zaregistrirovan = False\n            try:\n                _ua_fayl_otpustit()\n            except Exception:\n                pass\n        if getattr(self, \"_ochered_vzyata\", False):\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n\n    def cursor(self, factory=None):\n        return sqlite3.Connection.cursor(self, factory or _UaKursor)\n\n    def execute(self, sql, parameters=()):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.execute(self, sql, parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executemany(self, sql, seq_of_parameters):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.executemany(self, sql, seq_of_parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executescript(self, sql_script):\n        novaya = self._pered_zapisyu(sql_script)\n        try:\n            return sqlite3.Connection.executescript(self, sql_script)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def _commit_s_povtorom(self):\n        import time as _ua_time\n\n        for attempt in range(5):\n            try:\n                sqlite3.Connection.commit(self)\n                return\n            except sqlite3.OperationalError as exc:\n                text = str(exc).casefold()\n                if \"locked\" not in text and \"busy\" not in text:\n                    raise\n                if attempt == 4:\n                    raise\n                _ua_time.sleep(0.15 * (2 ** attempt))\n\n    def commit(self):\n        try:\n            self._commit_s_povtorom()\n        except Exception:\n            try:\n                sqlite3.Connection.rollback(self)\n            finally:\n                self._otpustit()\n            raise\n        self._otpustit()\n\n    def rollback(self):\n        try:\n            return sqlite3.Connection.rollback(self)\n        finally:\n            self._otpustit()\n\n    def close(self):\n        try:\n            if self.in_transaction:\n                sqlite3.Connection.rollback(self)\n            sqlite3.Connection.close(self)\n        finally:\n            self._otpustit()\n\n    def __exit__(self, tip, znachenie, sled):\n        try:\n            if tip is None:\n                self.commit()\n            else:\n                self.rollback()\n        finally:\n            try:\n                self.close()\n            except Exception:\n                self._otpustit()\n        return False\n\n    def __del__(self):\n        self._otpustit()"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "connect",
+          "lineno": 315,
+          "end_lineno": 327,
+          "sha256": "3257e05c559e7c2d6d39ba0ca1b66818f6283909a411bba695d21517b29afe15",
+          "source": "def connect():\n    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)\n    conn.row_factory = sqlite3.Row\n    # Setup pragmas must not hold the transaction queue for a long-lived reader.\n    try:\n        sqlite3.Connection.execute(conn, \"PRAGMA journal_mode=DELETE\")\n    except Exception:\n        pass\n    sqlite3.Connection.execute(\n        conn, \"PRAGMA busy_timeout=%d\" % (ZAMOK_OZHIDANIE * 1000)\n    )\n    sqlite3.Connection.execute(conn, \"PRAGMA foreign_keys=ON\")\n    return conn"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "now",
+          "lineno": 479,
+          "end_lineno": 480,
+          "sha256": "5f9286bb0c78ef9b91d5ab328bd316151d46390ffb2ca71d4b00acbb5e454ebd",
+          "source": "def now() -> str:\n    return datetime.now().isoformat(timespec=\"seconds\")"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "log_action",
+          "lineno": 486,
+          "end_lineno": 497,
+          "sha256": "a3df565d695dbd57cd2462030e503c42dc64b671482b731d8ae1c02f769d7af3",
+          "source": "def log_action(actor_id, action, entity_type=None, entity_id=None,\n               field=None, old_value=None, new_value=None):\n    \"\"\"Пишем каждое значимое действие. Историю задним числом не восстановить,\n    поэтому журнал ведётся с первого дня.\"\"\"\n    with connect() as c:\n        c.execute(\n            \"INSERT INTO audit (actor_id, action, entity_type, entity_id, field,\"\n            \" old_value, new_value, created_at) VALUES (?,?,?,?,?,?,?,?)\",\n            (actor_id, action, entity_type, entity_id, field,\n             str(old_value) if old_value is not None else None,\n             str(new_value) if new_value is not None else None, now()),\n        )"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "get_card",
+          "lineno": 716,
+          "end_lineno": 719,
+          "sha256": "98ec50651f47457a5c3fb62099076e9c1e8e9b20a9eac79be648f985b8ec04b1",
+          "source": "def get_card(table: str, card_id: int):\n    with connect() as c:\n        row = c.execute(f\"SELECT * FROM {table} WHERE id=?\", (card_id,)).fetchone()\n        return dict(row) if row else None"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "update_card_field",
+          "lineno": 735,
+          "end_lineno": 742,
+          "sha256": "1749f0eef8fc799ed5b08bd6a4482fad3126199d8c40207b76143b263349a1b1",
+          "source": "def update_card_field(table: str, card_id: int, field: str, value, actor_id: int):\n    \"\"\"Каждая правка поля попадает в журнал со старым и новым значением.\"\"\"\n    old = get_card(table, card_id)\n    old_value = old.get(field) if old else None\n    with connect() as c:\n        c.execute(f\"UPDATE {table} SET {field}=?, updated_at=? WHERE id=?\",\n                  (value, now(), card_id))\n    log_action(actor_id, \"card_edit\", table, card_id, field, old_value, value)"
+        }
+      ],
+      "assignments": [
+        {
+          "names": [
+            "DB_FILE"
+          ],
+          "lineno": 20,
+          "sha256": "3cef441ecf5ebe883fb1402864673f766226fac5c9756befd03dec00fa23bab4",
+          "source": "DB_FILE = os.path.join(BASE_DIR, \"crm.db\")"
+        },
+        {
+          "names": [
+            "ZAMOK_OZHIDANIE"
+          ],
+          "lineno": 101,
+          "sha256": "fb6dcc1b23ee5427af95531f65381156d3023b4d566b31337c1f1acc764bb911",
+          "source": "ZAMOK_OZHIDANIE = 20        # сколько ждём своей очереди, сек"
+        }
+      ],
+      "path": "/home/Carix/db.py",
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "size": 34721
+    },
+    "cars_ui.py": {
+      "definitions": [
+        {
+          "kind": "FunctionDef",
+          "name": "card_of",
+          "lineno": 98,
+          "end_lineno": 106,
+          "sha256": "4cbec081f1a21c0bbacbea10c271233255cedebee26115a949e38aaaf4a0f60f",
+          "source": "def card_of(card_id):\n    card = db.get_card(\"cars\", int(card_id))\n    if not card:\n        return None\n    # старые значения подтягиваем в новые поля, если новые пустые\n    for old, new in LEGACY.items():\n        if not card.get(new) and card.get(old):\n            card[new] = card[old]\n    return card"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "price_history",
+          "lineno": 136,
+          "end_lineno": 137,
+          "sha256": "844f6b630128e19e6c5f8548ddb11b5d27859b5762e76647ea71856ac2284e87",
+          "source": "def price_history(card):\n    return jload(card.get(\"price_history\"), {}) or {}"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "set_field",
+          "lineno": 148,
+          "end_lineno": 152,
+          "sha256": "8f6ea6455a0f950573e4433f3bc273471c617b679d37ae96b803cfbf492440e8",
+          "source": "def set_field(card_id, field, value, actor_id):\n    \"\"\"Пустое значение в карточку не пишем — данные не теряются.\"\"\"\n    if value in (None, \"\", []):\n        return\n    db.update_card_field(\"cars\", int(card_id), field, value, actor_id)"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "apply_value",
+          "lineno": 577,
+          "end_lineno": 627,
+          "sha256": "18c8dfc9f7cb6f5d4cf4e41a0fe02dbd07be9b21f142a072e90bfac602f7388b",
+          "source": "def apply_value(card_id, field, raw, actor_id):\n    \"\"\"Возвращает (ок, сообщение). Ничего не додумывает.\"\"\"\n    value = (raw or \"\").strip()\n    if not value:\n        return False, \"Пустое значение не записываю.\"\n\n    if field == \"eta_days\":\n        digits = \"\".join(ch for ch in value if ch.isdigit())\n        if not digits:\n            return False, \"Пришлите число дней, например 45.\"\n        n = int(digits)\n        if n > 400:\n            return False, \"Слишком большой срок. Пришлите число дней.\"\n        eta = _date.today() + _td(days=n)\n        set_field(card_id, \"eta_manual\", eta.isoformat(), actor_id)\n        set_field(card_id, \"days_to_kyiv\", n, actor_id)\n        return True, \"До прибытия %d дней · %s\" % (n, eta.strftime(\"%d.%m.%Y\"))\n\n    if field in NUMERIC:\n        digits = value.lower().replace(\" \", \"\").replace(\"\\u00a0\", \"\")\n        for lishnee in (\"цена\", \"стоимость\", \"$\", \"usd\", \"долларов\", \"долл\"):\n            digits = digits.replace(lishnee, \"\")\n        for word, mult in ((\"тысяч\", 1000), (\"тыс\", 1000), (\"к\", 1000)):\n            if word in digits.lower():\n                digits = digits.lower().split(word)[0]\n                try:\n                    num = int(float(digits.replace(\",\", \".\")) * mult)\n                except ValueError:\n                    return False, \"Не разобрал число. Пришлите цифрами.\"\n                break\n        else:\n            digits = \"\".join(ch for ch in digits if ch.isdigit())\n            if not digits:\n                return False, \"Не разобрал число. Пришлите цифрами.\"\n            num = int(digits)\n        if field == \"engine_cc\" and num < 100:\n            return False, (\"Похоже, это литры. Объём нужен в кубических сантиметрах — \"\n                           \"например, 1598.\")\n        set_field(card_id, field, num, actor_id)\n        return True, \"Записано: %s\" % S.num(num)\n\n    if field == \"vin\":\n        vin = value.upper().replace(\" \", \"\")\n        ok, msg = S.check_vin(vin)\n        if not ok:\n            return False, \"VIN не принят: %s\" % msg\n        set_field(card_id, field, vin, actor_id)\n        return True, \"Записано: %s\" % vin\n\n    set_field(card_id, field, value, actor_id)\n    return True, \"Записано.\""
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "remember_price",
+          "lineno": 1173,
+          "end_lineno": 1178,
+          "sha256": "0702c97d9efbfe65dd4750dcc00191d72e0f0d314cfe1804edb2fb439424a988",
+          "source": "def remember_price(card, actor_id):\n    \"\"\"Фиксирует цену за текущим этапом.\"\"\"\n    stage = S.stage_of(card.get(\"status\")) or 1\n    hist = price_history(card)\n    hist[str(stage)] = card.get(\"price_uah\")\n    set_field(card[\"id\"], \"price_history\", jdump(hist), actor_id)"
+        },
+        {
+          "kind": "AsyncFunctionDef",
+          "name": "auto_catch",
+          "lineno": 1215,
+          "end_lineno": 1314,
+          "sha256": "0d828afcac3c3e5cc304846821784189aeab4c157e1941eb5e99ee85f94844b3",
+          "source": "async def auto_catch(msg, card, actor_id, context):\n    \"\"\"Кладёт присланное в открытую карточку само, без кнопок.\n    Возвращает True, если разобралось; False — пусть идёт обычным путём.\"\"\"\n    cid = card[\"id\"]\n    number = card.get(\"auto_number\") or \"#%d\" % cid\n\n    # ── фото, видео, документы: только по кнопке ──\n    # Что нельзя опознать наверняка, бот сам в карточку не кладёт.\n    # Нажмите «Фото и видео» или «Тех. состояние» и пришлите файлы туда.\n    if msg.photo or msg.video or msg.video_note or msg.document:\n        return False\n\n    # ── текст ──\n    text = (msg.text or \"\").strip()\n    if not text:\n        return False\n    if VIN_RE.search(text):\n        return False                        # новый VIN — это новая машина, не правка\n\n    link = _re.search(r\"https?://\\S+\", text)\n    if link and len(text) < 200:\n        set_field(cid, \"diag_link\", link.group(0), actor_id)\n        await msg.reply_text(\"Ссылка на отчёт записана в %s.\" % number)\n        return True\n\n    golo = _re.fullmatch(r\"[\\d\\s]{3,12}\\s*[$₴]?\", text)\n    if golo:\n        ok, answer = apply_value(cid, \"price_uah\", text, actor_id)\n        if ok:\n            await msg.reply_text(\n                \"%s · цена: %s\" % (number, answer.replace(\"Записано: \", \"\")),\n                reply_markup=InlineKeyboardMarkup([[\n                    InlineKeyboardButton(\"← Вернуться к карточке\",\n                                         callback_data=\"car_open:%d\" % cid)]]))\n            return True\n\n    # «запиши / добавь / поставь» — ИИ сам вносит данные в карточку\n    try:\n        import assistant\n        if assistant.is_write(text):\n            polya = assistant.extract(text, card)\n            zapisano = []\n            for field, value in (polya or {}).items():\n                if field not in dict(EDITABLE) and field not in (\n                        \"brand\", \"model\", \"condition_text\", \"sea_container\",\n                        \"diag_link\", \"fuel\"):\n                    continue\n                ok, _ = apply_value(cid, field, str(value), actor_id)\n                if ok:\n                    zapisano.append(LABELS_ALL.get(field, field))\n            if zapisano:\n                await msg.reply_text(\n                    \"%s · записано: %s\" % (number, \", \".join(zapisano)),\n                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                        \"← Вернуться к карточке\",\n                        callback_data=\"car_open:%d\" % cid)]]))\n                return True\n    except Exception as e:\n        log.warning(\"Запись через ИИ: %s\", e)\n\n    # свободная просьба — отвечает ИИ, а не «необработанное»\n    try:\n        import assistant\n        if assistant.is_request(text):\n            otvet = assistant.ask(text, card)\n            if otvet:\n                context.user_data[\"ai_otvet\"] = otvet[:1500]\n                await msg.reply_text(\n                    assistant.clean_html(otvet)[:3800], parse_mode=\"HTML\",\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"Записать в тех. состояние\",\n                                              callback_data=\"car_saveai:%d\" % cid)],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % cid)]]))\n                return True\n    except Exception as e:\n        log.warning(\"Помощник: %s\", e)\n\n    for rx, field in PHRASES:\n        m = rx.search(text)\n        if not m:\n            continue\n        raw = (m.group(1) or \"\").strip()\n        if not raw:\n            continue\n        if field == \"mileage_km\" and len(m.groups()) > 1 and m.group(2):\n            try:\n                if int(raw.replace(\" \", \"\")) < 1000:\n                    raw = str(int(raw.replace(\" \", \"\")) * 1000)\n            except ValueError:\n                continue\n        ok, answer = apply_value(cid, field, raw, actor_id)\n        if ok:\n            await msg.reply_text(\n                \"%s · %s\" % (number, answer),\n                reply_markup=InlineKeyboardMarkup([[\n                    InlineKeyboardButton(\"← Вернуться к карточке\",\n                                         callback_data=\"car_open:%d\" % cid)]]))\n            return True\n    return False"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "_v168_named_fields",
+          "lineno": 2052,
+          "end_lineno": 2072,
+          "sha256": "c154b0410fec9d955532fc9cd5e314d5f1f87b04f217133cce6e65aef481a006",
+          "source": "def _v168_named_fields(text, allowed):\n    import re as _v168_re\n    value = str(text or \"\").casefold().replace(\"ё\", \"е\")\n    patterns = {\n        \"fuel\": r\"топлив|палив|fuel|l\\s*p\\s*[ig]|бензин|diesel|дизел|hybrid|electric|газ\",\n        \"engine_cc\": r\"объ?ем|об['’]?єм|двигател|двигун|мотор|engine\",\n        \"color\": r\"цвет|колір|color|white|black|silver|gray|grey|бел|білий|черн\",\n        \"mileage_km\": r\"пробег|пробіг|mileage|kilometr\",\n        \"transmission\": r\"кпп|коробк|трансмис|transmission|automatic|manual|автомат|механик\",\n        \"drive\": r\"привод|привід|drive|4wd|awd|fwd|rwd\",\n        \"price_uah\": r\"цена|ціна|стоимост|вартіст|price\",\n        \"description\": r\"описан|опис|description\",\n        \"status\": r\"статус|этап|етап|stage|status\",\n        \"brand\": r\"марка|бренд|brand|make\",\n        \"model\": r\"модель|model\",\n        \"year\": r\"год|рік|year\",\n        \"vin\": r\"\\bvin\\b|вин[- ]?код\",\n    }\n    permitted = set(allowed or ())\n    return {field for field, pattern in patterns.items()\n            if field in permitted and _v168_re.search(pattern, value)}"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "_v168_cas_write",
+          "lineno": 2075,
+          "end_lineno": 2108,
+          "sha256": "c7e2d1cca5cd063e3d00063ccb94ba72463749b3b06613d74be53bdbfee0c381",
+          "source": "def _v168_cas_write(card_id, field, expected_old, new_value, actor_id, correction=False):\n    import re as _v168_re\n    if not _v168_re.fullmatch(r\"[a-z_][a-z0-9_]*\", str(field or \"\")):\n        return False, \"invalid\"\n    if _v168_empty(new_value):\n        return False, \"empty\"\n    with db.connect() as _v168_con:\n        columns = {row[1] for row in _v168_con.execute(\"PRAGMA table_info(cars)\")}\n        if field not in columns:\n            return False, \"unknown\"\n        row = _v168_con.execute(\n            \"SELECT %s FROM cars WHERE id=?\" % field, (int(card_id),)).fetchone()\n        if row is None:\n            return False, \"missing_card\"\n        current = row[0]\n        if str(current or \"\") == str(new_value):\n            return False, \"same\"\n        if correction:\n            if str(current or \"\") != str(expected_old or \"\"):\n                return False, \"conflict\"\n        elif not _v168_empty(current):\n            return False, \"filled\"\n        cursor = _v168_con.execute(\n            \"UPDATE cars SET %s=?,updated_at=? WHERE id=? AND %s IS ?\" % (field, field),\n            (new_value, db.now(), int(card_id), current))\n        if cursor.rowcount != 1:\n            return False, \"conflict\"\n    try:\n        db.log_action(actor_id, \"card_edit\", \"cars\", int(card_id),\n                      field, current, new_value)\n    except Exception as _v168_exc:\n        log.warning(\"CRM CAS audit failed card=%s field=%s error=%s\",\n                    card_id, field, _v168_exc)\n    return True, \"applied\""
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "voice_change_plan",
+          "lineno": 2156,
+          "end_lineno": 2170,
+          "sha256": "becf0b6d7c761056e94fa4033d323fdb454f387a56af58321554d6122f078d49",
+          "source": "def voice_change_plan(card, data, allowed, override=False):\n    \"\"\"Return bounded field updates; filled values change only by explicit request.\"\"\"\n    changes = []\n    skipped = []\n    permitted = set(allowed or ())\n    for field, value in (data or {}).items():\n        if field not in permitted or value in (None, \"\", []):\n            continue\n        old = card.get(field)\n        if old not in (None, \"\", 0, []) and not override:\n            skipped.append(field)\n            continue\n        if str(old or \"\") != str(value):\n            changes.append((field, old, value))\n    return changes, skipped"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "_v167_voice_explicit_fields",
+          "lineno": 2507,
+          "end_lineno": 2564,
+          "sha256": "9c147051b825ec15c6c74c15305a4a45507aa2bc2502cc075e76b3db247a41d7",
+          "source": "def _v167_voice_explicit_fields(text, allowed):\n    \"\"\"Deterministic RU/UA/EN automotive fields; ambiguous input writes nothing.\"\"\"\n    import re as _v167_re\n    value = str(text or \"\").casefold().replace(\"ё\", \"е\")\n    for words in (\"две тысячи\", \"дві тисячі\", \"дві тисячі\", \"two thousand\"):\n        value = value.replace(words, \"2000\")\n    result, permitted = {}, set(allowed or ())\n    if \"fuel\" in permitted:\n        fuel = None\n        if _v167_re.search(r\"(?<![a-zа-яіїєґ0-9])(?:l\\s*p\\s*i|л\\s*п\\s*и|[еэ]л\\s*пи\\s*ай)(?![a-zа-яіїєґ0-9])\", value):\n            fuel = \"LPI\"\n        elif _v167_re.search(r\"(?<![a-zа-яіїєґ0-9])(?:l\\s*p\\s*g|л\\s*п\\s*г|[еэ]л\\s*пи\\s*джи)(?![a-zа-яіїєґ0-9])\", value):\n            fuel = \"LPG\"\n        elif _v167_re.search(r\"\\b(?:дизел[ьяь]?|дизельне|diesel)\\b\", value):\n            fuel = \"diesel\"\n        elif _v167_re.search(r\"\\b(?:бензин|бензинов|gasoline|petrol)\\b\", value):\n            fuel = \"gasoline\"\n        elif _v167_re.search(r\"\\b(?:гибрид|гібрид|hybrid)\\b\", value):\n            fuel = \"hybrid\"\n        elif _v167_re.search(r\"\\b(?:электро|електро|electric)\\b\", value):\n            fuel = \"electric\"\n        elif _v167_re.search(r\"(?:топлив|палив|fuel)\\s*(?:[:=\\-–—]|тип)?\\s*газ\\b\", value):\n            fuel = \"LPG\"\n        if fuel:\n            result[\"fuel\"] = fuel\n    if \"engine_cc\" in permitted:\n        label = r\"(?:объ?ем(?:\\s+двигателя)?|об['’]?єм(?:\\s+двигуна)?|двигател[ья]|двигун[ау]?|мотор[ау]?|engine(?:\\s+volume)?)\"\n        match = (_v167_re.search(label + r\"\\s*(?:[:=\\-–—]|составляет|становить|is)?\\s*(\\d+(?:[.,]\\d+)?)\", value)\n                 or _v167_re.search(r\"(\\d+(?:[.,]\\d+)?)\\s*(?:см3|см³|cc|куб(?:ов)?)?\\s*\" + label, value))\n        if match:\n            try:\n                number = float(match.group(1).replace(\",\", \".\"))\n                cc = int(round(number * 1000 if number < 20 else number))\n                if 400 <= cc <= 12000:\n                    result[\"engine_cc\"] = cc\n            except Exception:\n                pass\n    if \"color\" in permitted:\n        colors = {\n            \"бел\": \"белый\", \"білий\": \"белый\", \"біла\": \"белый\", \"white\": \"белый\",\n            \"черн\": \"чёрный\", \"чорн\": \"чёрный\", \"black\": \"чёрный\",\n            \"серебр\": \"серебристый\", \"сріб\": \"серебристый\", \"silver\": \"серебристый\",\n            \"сер\": \"серый\", \"сір\": \"серый\", \"gray\": \"серый\", \"grey\": \"серый\",\n            \"красн\": \"красный\", \"червон\": \"красный\", \"red\": \"красный\",\n            \"син\": \"синий\", \"blue\": \"синий\", \"зелен\": \"зелёный\", \"green\": \"зелёный\",\n            \"желт\": \"жёлтый\", \"жовт\": \"жёлтый\", \"yellow\": \"жёлтый\",\n            \"беж\": \"бежевый\", \"beige\": \"бежевый\", \"корич\": \"коричневый\", \"brown\": \"коричневый\",\n        }\n        match = _v167_re.search(\n            r\"(?:(?:цвет|колір|color)\\s*(?:[:=\\-–—]|автомобиля|авто|машины|car)?\\s*([a-zа-яіїєґ]+)|\"\n            r\"([a-zа-яіїєґ]+)\\s+(?:цвет|колір|color))\", value)\n        if match:\n            word = next((item for item in match.groups() if item), \"\")\n            for prefix, normalized in colors.items():\n                if word.startswith(prefix):\n                    result[\"color\"] = normalized\n                    break\n    return result"
+        },
+        {
+          "kind": "AsyncFunctionDef",
+          "name": "catch_message",
+          "lineno": 2568,
+          "end_lineno": 2875,
+          "sha256": "2b02ec1cf0cc649618f88de40fbb3a8e37d325828b4e925c9b15dc75859a850c",
+          "source": "async def catch_message(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"CRM-VOICE-FILL-001: voice fills only the explicitly open card.\"\"\"\n    import asyncio\n    import time\n    import ai\n    import ai_fast_schema as fast\n    import ai_filter\n    import local_ocr\n\n    msg = update.effective_message\n    if not msg:\n        return\n    user_id = update.effective_user.id\n\n    wait = context.user_data.get(\"car_media_wait\")\n    if wait:\n        target = wait[\"target\"]\n        tag = \"\"\n        file_id = None\n        if msg.photo:\n            file_id = msg.photo[-1].file_id\n            if target in (\"photos\", \"condition_photos\"):\n                unique_id = getattr(msg.photo[-1], \"file_unique_id\", None) or file_id\n                _v166_result = _v165_spool_enqueue(\n                    wait[\"card_id\"], target, file_id, user_id, tag,\n                    unique_id=unique_id, message_id=msg.message_id)\n                _v166_session_ids = wait.setdefault(\"_fast_session_ids\", [])\n                state = _v166_result.get(\"state\")\n                if state == \"accepted\" and file_id not in _v166_session_ids:\n                    _v166_session_ids.append(file_id)\n                elif str(state).startswith(\"duplicate\"):\n                    wait[\"_fast_session_duplicates\"] = int(\n                        wait.get(\"_fast_session_duplicates\") or 0) + 1\n                elif state == \"limit\":\n                    wait[\"_fast_session_rejected\"] = int(\n                        wait.get(\"_fast_session_rejected\") or 0) + 1\n                _v165_schedule_progress(\n                    context, msg, wait[\"card_id\"], target, _v166_session_ids,\n                    wait.get(\"_fast_session_duplicates\", 0),\n                    wait.get(\"_fast_session_rejected\", 0))\n                raise ApplicationHandlerStop\n        elif msg.video:\n            file_id = msg.video.file_id\n            if target in (\"videos\", \"video_h\", \"video_v\"):\n                target = \"videos\"\n                slot = _orient(msg.video)\n                tag = {\"video_h\": \"гориз\", \"video_v\": \"вертик\"}.get(slot, \"\")\n        elif msg.video_note:\n            file_id = msg.video_note.file_id\n        elif msg.document:\n            file_id = msg.document.file_id\n        card = card_of(wait[\"card_id\"])\n        if not card:\n            context.user_data.pop(\"car_media_wait\", None)\n            return\n        if file_id:\n            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)\n            if answer:\n                await msg.reply_text(answer)\n            raise ApplicationHandlerStop\n        if msg.text and target == \"diag_report\":\n            pass\n        return\n\n    voice_object = msg.voice or msg.audio or msg.video_note\n    input_text = (msg.text or \"\").strip()\n    wait = context.user_data.get(\"car_wait\")\n    thinking = None\n    voice_elapsed = None\n\n    if voice_object:\n        active_id = wait.get(\"card_id\") if wait else context.user_data.get(\"car_voice_active\")\n        active_card = card_of(active_id) if active_id else None\n        if not active_card:\n            context.user_data.pop(\"car_last\", None)\n            context.user_data.pop(\"car_voice_active\", None)\n            await msg.reply_text(\n                \"Откройте нужную карточку автомобиля и повторите голосовое. \"\n                \"Новая карточка автоматически не создаётся.\"\n            )\n            raise ApplicationHandlerStop\n\n        chat_id = getattr(msg, \"chat_id\", None) or update.effective_chat.id\n        marker = \"%s:%s\" % (chat_id, msg.message_id)\n        seen = context.chat_data.get(\"crm_voice_seen\")\n        if not isinstance(seen, list):\n            seen = []\n            context.chat_data[\"crm_voice_seen\"] = seen\n        if marker in seen:\n            await msg.reply_text(\"Это голосовое уже обработано.\")\n            raise ApplicationHandlerStop\n        seen.append(marker)\n        del seen[:-20]\n        context.user_data.pop(\"voice_undo\", None)\n\n        started = time.monotonic()\n        hard_deadline = started + 4.65\n        thinking = await msg.reply_text(\"🎤 Распознаю, до 5 секунд...\")\n        if not ai.voice_enabled():\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\"Расшифровка голоса не настроена. Карточка не изменена.\")\n            raise ApplicationHandlerStop\n        try:\n            import crm_online_guard as _v168_guard\n            if not _v168_guard.circuit_allows(\"stt\"):\n                if marker in seen:\n                    seen.remove(marker)\n                await thinking.edit_text(\n                    \"Сервис распознавания восстанавливается. Карточка не изменена; повторите через 15 секунд.\")\n                raise ApplicationHandlerStop\n        except ApplicationHandlerStop:\n            raise\n        except Exception:\n            pass\n\n        if msg.voice:\n            file_id, filename = msg.voice.file_id, \"voice.ogg\"\n        elif msg.audio:\n            file_id, filename = msg.audio.file_id, \"audio.mp3\"\n        else:\n            file_id, filename = msg.video_note.file_id, \"video_note.mp4\"\n\n        async def download_voice(fid):\n            tg_file = await context.bot.get_file(fid)\n            return bytes(await tg_file.download_as_bytearray())\n\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio_bytes = await asyncio.wait_for(\n                download_voice(file_id), timeout=min(1.1, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            input_text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio_bytes, filename),\n                timeout=remaining,\n            )\n            input_text = (input_text or \"\").strip()\n        except asyncio.TimeoutError:\n            input_text = \"\"\n            log.warning(\"CRM voice timeout card=%s\", active_id)\n        except Exception as e:\n            input_text = \"\"\n            log.warning(\"CRM voice recognition failed card=%s error=%s\", active_id, e)\n        voice_elapsed = time.monotonic() - started\n        try:\n            import crm_online_guard as _v168_guard\n            _v168_guard.circuit_result(\"stt\", bool(input_text))\n            _v168_guard.record_timing(\n                \"crm_voice\", voice_elapsed, \"ok\" if input_text else \"empty\",\n                card_id=active_id)\n        except Exception:\n            pass\n        if not input_text:\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\n                \"Голос не распознан за 5 секунд. Карточка не изменена; повторите короче.\"\n            )\n            raise ApplicationHandlerStop\n\n    if not wait:\n        cid = (context.user_data.get(\"car_voice_active\") if voice_object\n               else context.user_data.get(\"car_last\"))\n        card = card_of(cid) if cid else None\n        if card and voice_object:\n            schema_allowed = set(fast.car_fields(ai_filter))\n            card = card_of(card[\"id\"]) or card\n            correction = _v168_is_correction(input_text)\n            if correction:\n                allowed = _v168_named_fields(input_text, schema_allowed)\n            else:\n                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}\n            data = {}\n            if allowed:\n                data.update(local_ocr.fields_from_text(input_text, allowed))\n                data.update(fast.fast_text_data(input_text, ai_filter))\n                if data:\n                    data = fast.clean_car(fast.parsed_from_data(data), ai_filter, \"\")\n                data = {key: value for key, value in (data or {}).items()\n                        if key in allowed and value not in (None, \"\", [])}\n                data.update(_v167_voice_explicit_fields(input_text, allowed))\n            changes, skipped = voice_change_plan(card, data, allowed, correction)\n            applied = []\n            for field, old, new in changes:\n                try:\n                    ok, reason = _v168_cas_write(\n                        card[\"id\"], field, old, new, user_id, correction)\n                    if ok:\n                        applied.append((field, old, new))\n                    elif reason in (\"filled\", \"conflict\"):\n                        skipped.append(field)\n                except Exception as e:\n                    log.warning(\"CRM voice write failed card=%s field=%s error=%s\",\n                                card[\"id\"], field, e)\n\n            number = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n            if applied:\n                token = str(msg.message_id)\n                context.user_data[\"voice_undo\"] = {\n                    \"card_id\": card[\"id\"], \"token\": token,\n                    \"changes\": [{\"field\": f, \"old\": old, \"new\": new}\n                                for f, old, new in applied],\n                }\n                value_names = {\n                    \"fwd\": \"передний\", \"rwd\": \"задний\", \"4wd\": \"полный\",\n                    \"automatic\": \"автомат\", \"manual\": \"механика\",\n                    \"gasoline\": \"бензин\", \"diesel\": \"дизель\",\n                    \"hybrid\": \"гибрид\", \"electric\": \"электро\", \"LPG\": \"газ\",\n                }\n                lines = []\n                for field, _, value in applied:\n                    shown = value_names.get(str(value), str(value))\n                    lines.append(\"• %s — %s\" % (LABELS_ALL.get(field, field), shown))\n                await thinking.edit_text(\n                    \"✅ %s дополнена:\\n%s\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\"\n                    % (number, \"\\n\".join(lines), voice_elapsed or 0.0),\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"↩️ Отменить изменение\",\n                                              callback_data=\"car_vundo:%d:%s\" % (\n                                                  card[\"id\"], token))],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % card[\"id\"])],\n                    ]),\n                )\n            elif data and skipped and not override:\n                await thinking.edit_text(\n                    \"%s: распознанные поля уже заполнены. \"\n                    \"Для замены скажите: «измени …». Новая карточка не создана.\" % number\n                )\n            elif data:\n                await thinking.edit_text(\"%s: новых значений нет. Карточка не изменена.\" % number)\n            else:\n                await thinking.edit_text(\n                    \"Не распознал поле CRM. Назовите поле и значение, например: \"\n                    \"«привод передний». Карточка не изменена.\"\n                )\n            raise ApplicationHandlerStop\n\n        if card:\n            done = await auto_catch(msg, card, user_id, context)\n            if done:\n                raise ApplicationHandlerStop\n\n    wait = context.user_data.get(\"car_wait\")\n    if wait and input_text and wait.get(\"client\"):\n        context.user_data.pop(\"car_wait\", None)\n        card = card_of(wait[\"card_id\"])\n        klient = client_of(card)\n        if klient:\n            db.update_card_field(\"clients\", klient[\"id\"], wait[\"field\"],\n                                 input_text, user_id)\n        answer = \"Записано.\"\n        if voice_object:\n            answer += \" · %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if thinking:\n            await thinking.edit_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        else:\n            await msg.reply_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        raise ApplicationHandlerStop\n\n    if wait and input_text:\n        context.user_data.pop(\"car_wait\", None)\n        field = wait[\"field\"]\n        nizhny = input_text.lower()\n        if field not in (\"price_uah\", \"condition_text\", \"diag_text\", \"diag_link\") \\\n                and (\"$\" in nizhny or \"цена\" in nizhny or \"стоимость\" in nizhny):\n            field = \"price_uah\"\n        elif field == \"eta_days\" and _re.search(r\"\\d{4,}\", nizhny):\n            field = \"price_uah\"\n        ok, answer = apply_value(wait[\"card_id\"], field, input_text, user_id)\n        card = card_of(wait[\"card_id\"])\n        if ok and field == \"price_uah\" and card:\n            remember_price(card, user_id)\n            answer = \"%s · цена этапа «%s»: %s\" % (\n                card.get(\"auto_number\") or \"\", S.status_label(card.get(\"status\")),\n                S.money(_int(card.get(\"price_uah\"))))\n        rows = [[InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % wait[\"card_id\"])]]\n        if ok and field in (\"condition_text\", \"diag_text\"):\n            zapisano = input_text\n            punktov = len([s for s in zapisano.split(\"\\n\") if s.strip()])\n            answer = (\"Описание сохранено · %d пунктов, %d знаков\\n\\n%s\"\n                      % (punktov, len(zapisano), zapisano))\n            rows.insert(0, [InlineKeyboardButton(\n                \"Изменить снова\",\n                callback_data=\"car_setf:%d:condition_text\" % wait[\"card_id\"])])\n        if voice_object:\n            answer += \"\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if not ok:\n            wait[\"field\"] = field\n            context.user_data[\"car_wait\"] = wait\n            rows.insert(0, [InlineKeyboardButton(\n                \"Отмена\", callback_data=\"car_open:%d\" % wait[\"card_id\"])])\n        if thinking:\n            await thinking.edit_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        else:\n            await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        raise ApplicationHandlerStop"
+        }
+      ],
+      "assignments": [
+        {
+          "names": [
+            "NUMERIC"
+          ],
+          "lineno": 416,
+          "sha256": "c2bb6899ec1840652b67b7466ce5e1b8d3833c7e5749c451129969c49fccabec",
+          "source": "NUMERIC = {\"engine_cc\", \"mileage_km\", \"price_uah\"}"
+        }
+      ],
+      "path": "/home/Carix/cars_ui.py",
+      "sha256": "862baea2ca0794f5e0d83bc04169f6d2fdec401f86f384ef4376e373c02a776b",
+      "size": 164431
+    },
+    "trace_zhurnal.py": {
+      "definitions": [
+        {
+          "kind": "ClassDef",
+          "name": "_UaSoedinenie",
+          "lineno": 254,
+          "end_lineno": 293,
+          "sha256": "fe87dae1c69dd5a27d78f10276e8b56a4e0ecc822825618932fe1de13149dc95",
+          "source": "    class _UaSoedinenie(sqlite3.Connection):\n        def __init__(self, *a, **kw):\n            sqlite3.Connection.__init__(self, *a, **kw)\n            self._ua_baza = os.path.basename(str(a[0] if a else kw.get(\"database\", \"?\")))\n            self._ua_svoya = CEL in self._ua_baza\n            self._ua_id = _novyy_id()\n            self._ua_t0 = time.time()\n            self._ua_kto = _kto(3)\n            if self._ua_svoya:\n                _dobavit(self._ua_id, self._ua_kto, self._ua_baza, self)\n                _zapis(\"OPEN \" + self._ua_id, 0.0, self._ua_baza + \" | \" + self._ua_kto)\n\n        def commit(self):\n            t0 = time.time()\n            busy = \"?\"\n            if self._ua_svoya:\n                try:\n                    busy = self.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n                except Exception:\n                    pass\n            try:\n                sqlite3.Connection.commit(self)\n            except Exception as e:\n                d = time.time() - t0\n                _zapis(\"COMMIT_FAIL\", d, self._ua_baza + \" | \" + self._ua_kto + \" | \" + repr(e))\n                if self._ua_svoya:\n                    otchet_o_sboe(d, e, self._ua_kto, busy)\n                raise\n            d = time.time() - t0\n            if self._ua_svoya:\n                _zapis(\"COMMIT_OK \" + self._ua_id, d, self._ua_kto)\n\n        def close(self):\n            try:\n                if self._ua_svoya:\n                    _ubrat(self._ua_id)\n                    _zapis(\"CLOSE \" + self._ua_id, time.time() - self._ua_t0, self._ua_kto)\n            except Exception:\n                pass\n            sqlite3.Connection.close(self)"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "_ua_connect",
+          "lineno": 295,
+          "end_lineno": 304,
+          "sha256": "068a1c1bba0712d11fdcecd753ad234b4391f120f28761be294c7fd668db0fe9",
+          "source": "    def _ua_connect(*a, **kw):\n        if len(a) < 2 and \"timeout\" not in kw:\n            kw[\"timeout\"] = 30.0\n        kw.setdefault(\"factory\", _UaSoedinenie)\n        con = _originalnyy_connect(*a, **kw)\n        try:\n            con.execute(\"PRAGMA busy_timeout=30000\")\n        except Exception:\n            pass\n        return con"
+        },
+        {
+          "kind": "ClassDef",
+          "name": "_Obertka",
+          "lineno": 320,
+          "end_lineno": 362,
+          "sha256": "266ae6101db9477640bf61a8145e437bc8079eff2db016fbefd46a2f02fb5d66",
+          "source": "class _Obertka(object):\n    def __init__(self, vnutri, kto):\n        object.__setattr__(self, \"_ua_vnutri\", vnutri)\n        object.__setattr__(self, \"_ua_kto\", kto)\n        object.__setattr__(self, \"_ua_id\", _novyy_id())\n        object.__setattr__(self, \"_ua_t0\", time.time())\n        object.__setattr__(self, \"_ua_busy\", \"?\")\n        _dobavit(self._ua_id, kto, \"db.connect\")\n        _zapis(\"OPEN \" + self._ua_id, 0.0, \"db.connect | \" + kto)\n\n    def __enter__(self):\n        c = self._ua_vnutri.__enter__()\n        try:\n            _privyazat(self._ua_id, c)\n            bylo = c.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n            if int(bylo) < 30000:\n                c.execute(\"PRAGMA busy_timeout=30000\")\n                _zapis(\"BUSY_ISPRAVLEN\", 0.0, str(bylo) + \" -> 30000 | \" + self._ua_kto)\n            stalo = c.execute(\"PRAGMA busy_timeout\").fetchone()[0]\n            object.__setattr__(self, \"_ua_busy\", stalo)\n        except Exception:\n            pass\n        return c\n\n    def __exit__(self, *a):\n        t0 = time.time()\n        _zapis(\"COMMIT_START \" + self._ua_id, 0.0, \"busy_timeout=\" + str(self._ua_busy) + \" | \" + self._ua_kto)\n        try:\n            r = self._ua_vnutri.__exit__(*a)\n        except Exception as e:\n            d = time.time() - t0\n            _ubrat(self._ua_id)\n            _zapis(\"COMMIT_FAIL\", d, \"db.connect | \" + self._ua_kto + \" | \" + repr(e))\n            otchet_o_sboe(d, e, self._ua_kto, self._ua_busy)\n            raise\n        d = time.time() - t0\n        _ubrat(self._ua_id)\n        _zapis(\"COMMIT_OK \" + self._ua_id, d, self._ua_kto)\n        _zapis(\"CLOSE \" + self._ua_id, time.time() - self._ua_t0, self._ua_kto)\n        return r\n\n    def __getattr__(self, imya):\n        return getattr(object.__getattribute__(self, \"_ua_vnutri\"), imya)"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "podklyuchit",
+          "lineno": 365,
+          "end_lineno": 381,
+          "sha256": "645119fb99099676eaad124f5f3f9860cedf3a1d23ee67e72bfd65eb2a36d183",
+          "source": "def podklyuchit(g):\n    try:\n        ishodnyy = g.get(\"connect\")\n        if not callable(ishodnyy) or getattr(ishodnyy, \"_ua_trace\", False):\n            return False\n\n        def connect_s_trassoy(*a, **kw):\n            return _Obertka(ishodnyy(*a, **kw), _kto(3))\n\n        connect_s_trassoy._ua_trace = True\n        connect_s_trassoy._ua_ishodnyy = ishodnyy\n        g[\"connect\"] = connect_s_trassoy\n        _zapis(\"PODKLYUCHEN\", 0.0, \"db.connect обёрнут (V2)\")\n        return True\n    except Exception as e:\n        _zapis(\"PODKLYUCHENIE_FAIL\", 0.0, repr(e))\n        return False"
+        },
+        {
+          "kind": "FunctionDef",
+          "name": "connect_s_trassoy",
+          "lineno": 371,
+          "end_lineno": 372,
+          "sha256": "56a8031ca910a6df0d6d101182c133e40eeed5584d8634b9f4df926aaa39e3de",
+          "source": "        def connect_s_trassoy(*a, **kw):\n            return _Obertka(ishodnyy(*a, **kw), _kto(3))"
+        }
+      ],
+      "assignments": [
+        {
+          "names": [
+            "CEL"
+          ],
+          "lineno": 8,
+          "sha256": "ea305e87190184a6d9fd91d2bf88c643c9b1e0f0739e855a10a190ad893b8d04",
+          "source": "CEL = \"crm.db\""
+        }
+      ],
+      "path": "/home/Carix/trace_zhurnal.py",
+      "sha256": "fc4b95fc749f3d9b785ce69bfce2705b11ade95a560d6fbd901b50de1423d086",
+      "size": 14871
+    }
+  }
+}
