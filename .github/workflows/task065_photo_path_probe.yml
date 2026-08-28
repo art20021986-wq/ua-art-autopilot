@@ -1,0 +1,38 @@
+name: task065-photo-path-probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task065_photo_path_probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Read bounded photo path
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_065/read_photo_path.py
+      - name: Commit evidence
+        run: |
+          python3 -m json.tool cloud/task_065/evidence/photo_path.json >/dev/null
+          git add -- cloud/task_065/evidence/photo_path.json
+          git config user.name 'task065-photo-read'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_065: record CRM photo path'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || exit 1
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 2))
+          done
