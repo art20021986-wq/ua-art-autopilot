@@ -104,6 +104,13 @@ def _operation_id(value: str) -> str:
     return value
 
 
+def _canonical_field(value: str) -> str:
+    requested = str(value or "").strip()
+    if requested in ("condition_text", "description"):
+        return CANONICAL_FIELD
+    raise DescriptionValidationError("field")
+
+
 def _card_id(value: Any) -> int:
     try:
         result = int(value)
@@ -347,12 +354,14 @@ def save_or_enqueue(
     operation_id: str,
     *,
     start_worker: bool = True,
+    requested_field: str = CANONICAL_FIELD,
 ) -> dict[str, Any]:
     """Save immediately or durably enqueue within the sub-second lock budget.
 
     ``operation_id`` must be stable for the Telegram update (``chat_id:message_id``).
     Replaying the same update never produces a second CRM write or audit row.
     """
+    _canonical_field(requested_field)
     text = normalize_text(raw_text)
     card = _card_id(card_id)
     actor = _actor_id(actor_id)

@@ -6,17 +6,25 @@ temporary copies on the GitHub Actions runner.
 """
 from __future__ import annotations
 
+import ast
+import asyncio
+import concurrent.futures
 import hashlib
 import importlib.util
 import json
+import logging
 import math
+import multiprocessing
 import os
 import pathlib
+import re
 import shutil
 import sqlite3
 import statistics
+import sys
 import tempfile
 import time
+import types
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -137,6 +145,28 @@ def protected_digest(conn: sqlite3.Connection) -> str:
     return sha_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")))
 
 
+def row_digest(row: sqlite3.Row | None) -> str:
+    require(row is not None, "row_digest_missing")
+    payload = {key: row[key] for key in sorted(row.keys())}
+    return sha_text(json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str))
+
+
+def non_description_digest(conn: sqlite3.Connection, card_ids: list[int]) -> str:
+    columns = [
+        str(row[1]) for row in table_columns(conn, "cars")
+        if str(row[1]) not in ("condition_text", "updated_at")
+    ]
+    placeholders = ",".join("?" for _ in card_ids)
+    rows = []
+    for row in conn.execute(
+        "SELECT %s FROM cars WHERE id IN (%s) ORDER BY id"
+        % (", ".join(columns), placeholders),
+        card_ids,
+    ):
+        rows.append([row[column] for column in columns])
+    return sha_text(json.dumps(rows, ensure_ascii=False, default=str, separators=(",", ":")))
+
+
 def restore_card(
     conn: sqlite3.Connection,
     card_id: int,
@@ -223,7 +253,7 @@ def insert_future_card(conn: sqlite3.Connection) -> int:
                 conn, name, str(column[2]), bool(column[3]), value
             )
         values[name] = value
-    values["auto_number"] = "UA-GATEA-072-FUTURE"
+    values["auto_number"] = "UA-9912"
     values["condition_text"] = ""
     values["description"] = "legacy-future-protected"
     values["diag_text"] = "diagnostic-future-protected"
@@ -242,6 +272,103 @@ def insert_future_card(conn: sqlite3.Connection) -> int:
     return int(cursor.lastrowid)
 
 
+def source_definition(source: str, name: str) -> str:
+    tree = ast.parse(source)
+    lines = source.splitlines()
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name:
+            return "\n".join(lines[node.lineno - 1:node.end_lineno]) + "\n"
+    raise GateFailure("missing_definition_" + name)
+
+
+class _Button:
+    def __init__(self, text: str, **kwargs: Any):
+        self.text = text
+        self.kwargs = kwargs
+
+
+class _Markup:
+    def __init__(self, rows: Any):
+        self.rows = rows
+
+
+class _Stop(Exception):
+    pass
+
+
+class _Message:
+    def __init__(self, text: str, message_id: int, chat_id: int = 72072):
+        self.text = text
+        self.message_id = message_id
+        self.chat_id = chat_id
+        self.chat = types.SimpleNamespace(id=chat_id)
+        self.photo = None
+        self.video = None
+        self.video_note = None
+        self.document = None
+        self.voice = None
+        self.audio = None
+        self.replies: list[tuple[str, Any]] = []
+
+    async def reply_text(self, text: str, reply_markup: Any = None, **kwargs: Any):
+        self.replies.append((text, reply_markup))
+        return types.SimpleNamespace(edit_text=self.reply_text)
+
+
+class _Context:
+    def __init__(self, user_data: dict[str, Any]):
+        self.user_data = user_data
+        self.chat_data: dict[str, Any] = {}
+        self.bot = types.SimpleNamespace()
+
+
+def _stub_modules() -> tuple[dict[str, Any], list[str]]:
+    names = ["ai", "ai_fast_schema", "ai_filter", "local_ocr"]
+    previous = {name: sys.modules.get(name) for name in names}
+    for name in names:
+        sys.modules[name] = types.ModuleType(name)
+    return previous, names
+
+
+def _restore_modules(previous: dict[str, Any], names: list[str]) -> None:
+    for name in names:
+        if previous[name] is None:
+            sys.modules.pop(name, None)
+        else:
+            sys.modules[name] = previous[name]
+
+
+def catch_namespace(db_path: pathlib.Path, writer: Any) -> dict[str, Any]:
+    return {
+        "Update": object,
+        "ContextTypes": types.SimpleNamespace(DEFAULT_TYPE=object),
+        "ApplicationHandlerStop": _Stop,
+        "InlineKeyboardButton": _Button,
+        "InlineKeyboardMarkup": _Markup,
+        "db": types.SimpleNamespace(DB_FILE=str(db_path)),
+        "log": logging.getLogger("task072-gate-a"),
+        "_re": re,
+        "card_of": lambda card_id: None,
+        "crm_description_writer": writer,
+    }
+
+
+def execute_catch(source: str, namespace: dict[str, Any]):
+    code = source_definition(source, "_ua072_description_payload") \
+        + "\n" + source_definition(source, "catch_message") \
+        if "def _ua072_description_payload" in source \
+        else source_definition(source, "catch_message")
+    exec(compile(code, "cars_ui.catch_message", "exec"), namespace)
+    return namespace["catch_message"]
+
+
+def execute_auto_catch(source: str, namespace: dict[str, Any]):
+    code = source_definition(source, "_ua072_description_payload") \
+        + "\n" + source_definition(source, "auto_catch")
+    exec(compile(code, "cars_ui.auto_catch", "exec"), namespace)
+    return namespace["auto_catch"]
+
+
 def inspect_and_patch_sources(downloaded: dict[str, bytes], temp: pathlib.Path) -> dict[str, Any]:
     patcher = import_from(PATCHER_PATH, "task072_patcher")
     for name, expected in EXPECTED_SOURCE_SHA256.items():
@@ -252,6 +379,11 @@ def inspect_and_patch_sources(downloaded: dict[str, bytes], temp: pathlib.Path) 
     require("old = get_card(table, card_id)" in db_source, "baseline_db_read_missing")
     require("log_action(actor_id, \"card_edit\"" in db_source, "baseline_audit_missing")
 
+    live_cars_text = downloaded["cars_ui.py"].decode("utf-8")
+    require(
+        "car_setf:%d:condition_text" in live_cars_text,
+        "dynamic_description_button_missing",
+    )
     patched = patcher.patch_source(downloaded["cars_ui.py"])
     patched_text = patched.decode("utf-8")
     compile(patched_text, "cars_ui.py", "exec")
@@ -269,6 +401,12 @@ def inspect_and_patch_sources(downloaded: dict[str, bytes], temp: pathlib.Path) 
     require(
         'callback_data="car_setf:%d:diag_text"' in patched_text,
         "diagnostic_route_mixed",
+    )
+    for command in ("описание", "добавь\\s+описание", "измени\\s+описание"):
+        require(command in patched_text, "direct_command_missing")
+    require(
+        "Новая карточка автоматически не создаётся" in patched_text,
+        "no_open_card_prompt_missing",
     )
     (temp / "cars_ui.py").write_bytes(patched)
     shutil.copy2(WRITER_PATH, temp / "crm_description_writer.py")
@@ -292,6 +430,9 @@ def inspect_and_patch_sources(downloaded: dict[str, bytes], temp: pathlib.Path) 
         "dynamic_wait_card_id_route": True,
         "legacy_description_aliases_to_condition_text": True,
         "diagnostic_route_separate": True,
+        "dynamic_description_button_present": True,
+        "direct_description_commands_present": True,
+        "no_open_card_never_creates": True,
         "telegram_confirmation_is_bounded": True,
     }
 
@@ -329,6 +470,7 @@ def run_database_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> dic
     existing_count = len(existing_ids)
     ids_digest = sha_text(json.dumps(existing_ids, separators=(",", ":")))
     protected_before = protected_digest(conn)
+    non_description_before = non_description_digest(conn, existing_ids)
 
     for ordinal, card_id in enumerate(existing_ids, 1):
         before_conditions = condition_map(conn)
@@ -369,6 +511,66 @@ def run_database_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> dic
         restore_card(conn, card_id, old_text, old_updated, schema["has_updated_at"])
 
     require(protected_digest(conn) == protected_before, "protected_field_changed")
+    require(
+        non_description_digest(conn, existing_ids) == non_description_before,
+        "non_description_field_changed",
+    )
+
+    # Legacy input name is an alias only; the legacy and diagnostic columns stay intact.
+    alias_id = existing_ids[0]
+    alias_row = conn.execute(
+        "SELECT condition_text, description, diag_text%s FROM cars WHERE id=?"
+        % (", updated_at" if schema["has_updated_at"] else ""),
+        (alias_id,),
+    ).fetchone()
+    alias_audit = audit_count(conn)
+    alias_text = "Legacy alias writes canonical only 🚗"
+    alias_outcome = writer.save_or_enqueue(
+        str(db_path), str(queue_path), alias_id, alias_text, 72072,
+        "gate-alias:1", start_worker=False, requested_field="description",
+    )
+    require(alias_outcome["status"] == "saved", "legacy_alias_not_saved")
+    alias_after = conn.execute(
+        "SELECT condition_text, description, diag_text FROM cars WHERE id=?",
+        (alias_id,),
+    ).fetchone()
+    require(alias_after["condition_text"] == alias_text, "legacy_alias_wrong_target")
+    require(alias_after["description"] == alias_row["description"], "legacy_alias_mutated")
+    require(alias_after["diag_text"] == alias_row["diag_text"], "alias_diag_mutated")
+    require(audit_count(conn) == alias_audit + 1, "legacy_alias_audit")
+    restore_card(
+        conn,
+        alias_id,
+        alias_row["condition_text"],
+        alias_row["updated_at"] if schema["has_updated_at"] else None,
+        schema["has_updated_at"],
+    )
+
+    # Empty/NUL-only/unknown/diagnostic requests fail before any CRM mutation.
+    rejected_audit = audit_count(conn)
+    rejected_count = count_rows(conn, "cars")
+    rejected_condition = condition_map(conn)
+    rejection_cases = [
+        ("", "condition_text"),
+        ("\x00", "condition_text"),
+        ("valid text", "unknown_field"),
+        ("marketing text", "diag_text"),
+    ]
+    for index, (bad_text, bad_field) in enumerate(rejection_cases):
+        try:
+            writer.save_or_enqueue(
+                str(db_path), str(queue_path), alias_id, bad_text, 72072,
+                "gate-reject:%d" % index, start_worker=False,
+                requested_field=bad_field,
+            )
+        except writer.DescriptionValidationError:
+            pass
+        else:
+            raise GateFailure("unsafe_input_accepted")
+    require(audit_count(conn) == rejected_audit, "rejected_input_audit")
+    require(count_rows(conn, "cars") == rejected_count, "rejected_input_created_card")
+    require(condition_map(conn) == rejected_condition, "rejected_input_changed_card")
+    require(writer.normalize_text("a\x00b") == "ab", "embedded_nul_not_removed")
 
     # Future-card proof uses the exact live schema and a cloned valid row.
     count_before_future = count_rows(conn, "cars")
@@ -383,9 +585,10 @@ def run_database_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> dic
     )
     require(outcome["status"] == "saved", "future_not_saved")
     row = conn.execute(
-        "SELECT condition_text, description, diag_text FROM cars WHERE id=?",
+        "SELECT auto_number, condition_text, description, diag_text FROM cars WHERE id=?",
         (future_id,),
     ).fetchone()
+    require(row["auto_number"] == "UA-9912", "future_number_not_ua9912")
     require(row["condition_text"] == future_text, "future_readback")
     require(row["description"] == "legacy-future-protected", "future_legacy_changed")
     require(row["diag_text"] == "diagnostic-future-protected", "future_diag_changed")
@@ -454,11 +657,214 @@ def run_database_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> dic
         "canonical_field_exact_readback": True,
         "protected_description_unchanged": True,
         "protected_diag_text_unchanged": True,
+        "all_other_existing_card_fields_unchanged": True,
+        "legacy_alias_to_canonical_tested": True,
+        "empty_nul_unknown_and_diag_rejected": True,
         "unicode_linebreak_dollar_vin_emoji": True,
         "length_1_to_12000_enforced": True,
         "one_transaction_update_and_audit": True,
         "no_cross_card_writes": True,
     }
+
+
+def run_call_path_tests(
+    writer: Any,
+    original_source: str,
+    patched_source: str,
+    db_path: pathlib.Path,
+) -> dict[str, Any]:
+    previous_modules, stub_names = _stub_modules()
+    previous_writer_module = sys.modules.get("crm_description_writer")
+    sys.modules["crm_description_writer"] = writer
+    original_start_worker = writer._start_worker
+    writer._start_worker = lambda *_args, **_kwargs: None
+    try:
+        conn = db_connect(db_path)
+        card_id = int(conn.execute("SELECT id FROM cars ORDER BY id LIMIT 1").fetchone()[0])
+        columns = {str(row[1]) for row in table_columns(conn, "cars")}
+        has_updated = "updated_at" in columns
+        initial = conn.execute(
+            "SELECT condition_text%s FROM cars WHERE id=?"
+            % (", updated_at" if has_updated else ""),
+            (card_id,),
+        ).fetchone()
+        initial_text = initial["condition_text"]
+        initial_updated = initial["updated_at"] if has_updated else None
+        initial_count = count_rows(conn, "cars")
+
+        # Baseline reproduction: the old handler clears car_wait before the
+        # locked write raises, so the editing session is lost.
+        baseline_ns = catch_namespace(db_path, writer)
+        def locked_apply(*_args: Any, **_kwargs: Any):
+            raise sqlite3.OperationalError("database is locked")
+        baseline_ns["apply_value"] = locked_apply
+        baseline = execute_catch(original_source, baseline_ns)
+        baseline_context = _Context({
+            "car_wait": {"card_id": card_id, "field": "condition_text"}
+        })
+        baseline_msg = _Message("baseline lock", 70001)
+        baseline_update = types.SimpleNamespace(
+            effective_message=baseline_msg,
+            effective_user=types.SimpleNamespace(id=72072),
+            effective_chat=types.SimpleNamespace(id=72072),
+        )
+        try:
+            asyncio.run(baseline(baseline_update, baseline_context))
+        except sqlite3.OperationalError:
+            pass
+        else:
+            raise GateFailure("baseline_lock_not_reproduced")
+        require("car_wait" not in baseline_context.user_data, "baseline_wait_not_lost")
+
+        patched_ns = catch_namespace(db_path, writer)
+        patched = execute_catch(patched_source, patched_ns)
+        before_audit = audit_count(conn)
+        success_text = SCREENSHOT_STYLE_TEXT + "\nТочный read-back ✅"
+        success_context = _Context({
+            "car_wait": {"card_id": card_id, "field": "condition_text"}
+        })
+        success_msg = _Message(success_text, 70002)
+        success_update = types.SimpleNamespace(
+            effective_message=success_msg,
+            effective_user=types.SimpleNamespace(id=72072),
+            effective_chat=types.SimpleNamespace(id=72072),
+        )
+        try:
+            asyncio.run(patched(success_update, success_context))
+        except _Stop:
+            pass
+        else:
+            raise GateFailure("patched_catch_did_not_stop")
+        require("car_wait" not in success_context.user_data, "patched_wait_not_cleared")
+        require(success_msg.replies and "✅ Описание сохранено" in success_msg.replies[-1][0],
+                "patched_success_confirmation")
+        require(len(success_msg.replies[-1][0]) < 900, "patched_confirmation_too_long")
+        require(
+            conn.execute("SELECT condition_text FROM cars WHERE id=?", (card_id,)).fetchone()[0]
+            == success_text,
+            "patched_catch_readback",
+        )
+        require(audit_count(conn) == before_audit + 1, "patched_catch_audit")
+        require(count_rows(conn, "cars") == initial_count, "patched_catch_created_card")
+
+        # Under a real EXCLUSIVE lock the patched handler keeps car_wait and
+        # replies with a bounded non-success acknowledgement.
+        blocker = sqlite3.connect(str(db_path), timeout=1)
+        blocker.execute("BEGIN EXCLUSIVE")
+        blocker.execute("UPDATE cars SET condition_text=condition_text WHERE id=?", (card_id,))
+        lock_context = _Context({
+            "car_wait": {"card_id": card_id, "field": "description"}
+        })
+        lock_msg = _Message("Locked path\nVIN · 500 $ · 🚗", 70003)
+        lock_update = types.SimpleNamespace(
+            effective_message=lock_msg,
+            effective_user=types.SimpleNamespace(id=72072),
+            effective_chat=types.SimpleNamespace(id=72072),
+        )
+        started = time.monotonic()
+        try:
+            asyncio.run(patched(lock_update, lock_context))
+        except _Stop:
+            pass
+        else:
+            raise GateFailure("patched_lock_did_not_stop")
+        locked_seconds = time.monotonic() - started
+        require("car_wait" in lock_context.user_data, "patched_lock_lost_wait")
+        require(lock_msg.replies and "Принято, сохраняю" in lock_msg.replies[-1][0],
+                "patched_lock_ack")
+        require("✅" not in lock_msg.replies[-1][0], "patched_lock_false_success")
+        require(locked_seconds < 1.0, "patched_catch_lock_budget")
+        blocker.rollback()
+        blocker.close()
+        queue_path = str(db_path) + ".description_queue.sqlite3"
+        drained = writer.drain_pending(str(db_path), queue_path, max_items=20)
+        require(drained["applied"] >= 1, "patched_catch_queue_not_drained")
+        require(
+            conn.execute("SELECT condition_text FROM cars WHERE id=?", (card_id,)).fetchone()[0]
+            == "Locked path\nVIN · 500 $ · 🚗",
+            "patched_lock_readback",
+        )
+
+        # Deterministic direct commands bypass both VIN heuristics and the AI path.
+        auto_ns = catch_namespace(db_path, writer)
+        auto_ns.update({
+            "VIN_RE": re.compile(r"[A-HJ-NPR-Z0-9]{17}"),
+            "EDITABLE": [],
+            "LABELS_ALL": {},
+            "PHRASES": [],
+            "set_field": lambda *_args, **_kwargs: None,
+            "apply_value": lambda *_args, **_kwargs: (False, ""),
+        })
+        auto = execute_auto_catch(patched_source, auto_ns)
+        phrases = [
+            "Описание: первая строка\nVIN 1HGCM82633A004352 · 500 $ 🚗",
+            "Добавь описание: второе значение\nперенос строки",
+            "Измени описание: итоговое значение ✅",
+        ]
+        direct_audit = audit_count(conn)
+        for offset, command in enumerate(phrases):
+            message = _Message(command, 70100 + offset)
+            handled = asyncio.run(
+                auto(message, {"id": card_id, "auto_number": "UA-GATE"}, 72072, _Context({}))
+            )
+            require(handled is True, "direct_command_not_handled")
+            require(message.replies and "✅ Описание сохранено" in message.replies[-1][0],
+                    "direct_command_confirmation")
+            require(len(message.replies[-1][0]) < 900, "direct_confirmation_too_long")
+        require(audit_count(conn) == direct_audit + 3, "direct_command_audit_count")
+        require(
+            conn.execute("SELECT condition_text FROM cars WHERE id=?", (card_id,)).fetchone()[0]
+            == "итоговое значение ✅",
+            "direct_command_final_readback",
+        )
+
+        # The same command without an open card asks for selection and never inserts.
+        no_card_context = _Context({})
+        no_card_msg = _Message("Описание: не создавать карточку", 70200)
+        no_card_update = types.SimpleNamespace(
+            effective_message=no_card_msg,
+            effective_user=types.SimpleNamespace(id=72072),
+            effective_chat=types.SimpleNamespace(id=72072),
+        )
+        count_before_no_card = count_rows(conn, "cars")
+        audit_before_no_card = audit_count(conn)
+        try:
+            asyncio.run(patched(no_card_update, no_card_context))
+        except _Stop:
+            pass
+        else:
+            raise GateFailure("no_card_command_not_stopped")
+        require(no_card_msg.replies and "Откройте нужную карточку" in no_card_msg.replies[-1][0],
+                "no_card_prompt")
+        require(count_rows(conn, "cars") == count_before_no_card, "no_card_insert")
+        require(audit_count(conn) == audit_before_no_card, "no_card_audit")
+
+        restore_card(conn, card_id, initial_text, initial_updated, has_updated)
+        require(conn.execute("PRAGMA quick_check").fetchone()[0] == "ok", "call_path_quick_check")
+        conn.close()
+        return {
+            "baseline_locked_write_loses_car_wait": True,
+            "patched_button_text_readback_and_audit": True,
+            "patched_lock_keeps_car_wait": True,
+            "patched_lock_seconds": round(locked_seconds, 4),
+            "queued_reply_never_claims_success": True,
+            "direct_commands_tested": 3,
+            "direct_commands_use_zero_llm_calls": True,
+            "no_open_card_prompt_and_no_insert": True,
+            "confirmation_under_900_characters": True,
+        }
+    finally:
+        writer._start_worker = original_start_worker
+        if previous_writer_module is None:
+            sys.modules.pop("crm_description_writer", None)
+        else:
+            sys.modules["crm_description_writer"] = previous_writer_module
+        _restore_modules(previous_modules, stub_names)
+
+
+def _multiprocess_drain_entry(writer_file: str, db_path: str, queue_path: str) -> None:
+    module = import_from(pathlib.Path(writer_file), "task072_process_writer_%d" % os.getpid())
+    module.drain_pending(db_path, queue_path, max_items=500)
 
 
 def run_queue_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> dict[str, Any]:
@@ -552,6 +958,78 @@ def run_queue_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> dict[s
     )
     require(audit_count(conn) == before_last_wins_audit + 1, "order_audit_count")
 
+    # A fresh module import drains a queue left by a previous process lifetime.
+    restart_queue = temp / "restart-queue.sqlite3"
+    blocker = sqlite3.connect(str(db_path), timeout=1)
+    blocker.execute("BEGIN EXCLUSIVE")
+    blocker.execute("UPDATE cars SET condition_text=condition_text WHERE id=?", (card_id,))
+    restart_outcome = writer.save_or_enqueue(
+        str(db_path), str(restart_queue), card_id, "restart durable intent", 72072,
+        "gate-restart:1", start_worker=False,
+    )
+    require(restart_outcome["status"] == "queued", "restart_fixture_not_queued")
+    blocker.rollback()
+    blocker.close()
+    restarted_writer = import_from(pathlib.Path(writer.__file__), "task072_restarted_writer")
+    restarted_result = restarted_writer.drain_pending(
+        str(db_path), str(restart_queue), max_items=20
+    )
+    require(restarted_result["applied"] == 1, "restart_drain_failed")
+    require(
+        conn.execute("SELECT condition_text FROM cars WHERE id=?", (card_id,)).fetchone()[0]
+        == "restart durable intent",
+        "restart_readback",
+    )
+
+    # Multiple independent drain processes share one durable lease.  All 20
+    # intents remain represented once; superseded older values cannot win.
+    process_queue = temp / "multiprocess-queue.sqlite3"
+    blocker = sqlite3.connect(str(db_path), timeout=1)
+    blocker.execute("BEGIN EXCLUSIVE")
+    blocker.execute("UPDATE cars SET condition_text=condition_text WHERE id=?", (card_id,))
+    for index in range(20):
+        outcome = writer.save_or_enqueue(
+            str(db_path), str(process_queue), card_id,
+            "multiprocess intent %02d" % index, 72072,
+            "gate-process:%d" % index, start_worker=False,
+        )
+        require(outcome["status"] == "queued", "multiprocess_fixture_not_queued")
+    blocker.rollback()
+    blocker.close()
+    conn.close()
+    mp = multiprocessing.get_context("fork")
+    processes = [
+        mp.Process(
+            target=_multiprocess_drain_entry,
+            args=(writer.__file__, str(db_path), str(process_queue)),
+        )
+        for _ in range(4)
+    ]
+    for process in processes:
+        process.start()
+    for process in processes:
+        process.join(20)
+        require(process.exitcode == 0, "multiprocess_drain_exit")
+    conn = db_connect(db_path)
+    qconn = sqlite3.connect(str(process_queue))
+    qconn.row_factory = sqlite3.Row
+    process_rows = list(qconn.execute(
+        "SELECT operation_id, description_text, status FROM description_ops ORDER BY id"
+    ))
+    require(len(process_rows) == 20, "multiprocess_queue_loss")
+    require(len({row["operation_id"] for row in process_rows}) == 20,
+            "multiprocess_operation_duplicate")
+    require(
+        all(row["status"] in ("APPLIED", "SUPERSEDED") for row in process_rows),
+        "multiprocess_queue_not_empty",
+    )
+    require(
+        conn.execute("SELECT condition_text FROM cars WHERE id=?", (card_id,)).fetchone()[0]
+        == process_rows[-1]["description_text"],
+        "multiprocess_last_intent_not_final",
+    )
+    qconn.close()
+
     restore_card(conn, card_id, old_text, old_updated, has_updated)
     require(conn.execute("PRAGMA quick_check").fetchone()[0] == "ok", "queue_quick_check")
     conn.close()
@@ -563,6 +1041,10 @@ def run_queue_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> dict[s
         "stable_operation_id_idempotent": True,
         "crash_after_commit_no_duplicate_audit": True,
         "last_intended_wins": True,
+        "restart_drain": True,
+        "multiprocess_drain_workers": 4,
+        "multiprocess_operations": 20,
+        "multiprocess_no_loss_or_duplicates": True,
     }
 
 
@@ -580,7 +1062,8 @@ def run_performance_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> 
     old_text = old["condition_text"]
     old_updated = old["updated_at"] if has_updated else None
     durations: list[float] = []
-    for index in range(60):
+    sequential_audit = audit_count(conn)
+    for index in range(100):
         text = "performance-%02d-%s" % (index, "🚗\n500 $ VIN")
         started = time.monotonic()
         outcome = writer.save_or_enqueue(
@@ -589,11 +1072,52 @@ def run_performance_tests(writer, db_path: pathlib.Path, temp: pathlib.Path) -> 
         )
         durations.append(time.monotonic() - started)
         require(outcome["status"] == "saved", "performance_not_saved")
+    require(audit_count(conn) == sequential_audit + 100, "sequential_audit_count")
+
+    concurrent_queue = temp / "concurrent-100-queue.sqlite3"
+    concurrent_audit = audit_count(conn)
+
+    def submit(index: int) -> dict[str, Any]:
+        return writer.save_or_enqueue(
+            str(db_path), str(concurrent_queue), card_id,
+            "concurrent intent %03d 🚗" % index, 72072,
+            "gate-concurrent:%d" % index, start_worker=False,
+        )
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=12) as pool:
+        outcomes = list(pool.map(submit, range(100)))
+    require(all(item["status"] in ("saved", "queued") for item in outcomes),
+            "concurrent_not_accepted")
+    writer.drain_pending(str(db_path), str(concurrent_queue), max_items=500)
+    qconn = sqlite3.connect(str(concurrent_queue))
+    qconn.row_factory = sqlite3.Row
+    rows = list(qconn.execute(
+        "SELECT operation_id, description_text, status FROM description_ops ORDER BY id"
+    ))
+    require(len(rows) == 100, "concurrent_queue_loss")
+    require(len({row["operation_id"] for row in rows}) == 100,
+            "concurrent_operation_duplicate")
+    require(all(row["status"] in ("APPLIED", "SUPERSEDED") for row in rows),
+            "concurrent_queue_not_drained")
+    applied_count = sum(row["status"] == "APPLIED" for row in rows)
+    require(audit_count(conn) == concurrent_audit + applied_count,
+            "concurrent_duplicate_or_missing_audit")
+    require(
+        conn.execute("SELECT condition_text FROM cars WHERE id=?", (card_id,)).fetchone()[0]
+        == rows[-1]["description_text"],
+        "concurrent_last_intended_not_final",
+    )
+    qconn.close()
     restore_card(conn, card_id, old_text, old_updated, has_updated)
     require(conn.execute("PRAGMA quick_check").fetchone()[0] == "ok", "performance_quick_check")
     conn.close()
     return {
         "samples": len(durations),
+        "sequential_operations": 100,
+        "concurrent_operations": 100,
+        "concurrent_applied_operations": applied_count,
+        "concurrent_no_loss_or_duplicates": True,
+        "concurrent_last_intended_wins": True,
         "median_seconds": round(statistics.median(durations), 6),
         "p95_seconds": round(percentile(durations, 0.95), 6),
         "p99_seconds": round(percentile(durations, 0.99), 6),
@@ -612,19 +1136,30 @@ def write_outputs(result: dict[str, Any]) -> None:
         db = result["database_tests"]
         queue = result["queue_tests"]
         perf = result["performance"]
+        call_path = result["call_path_tests"]
         report = f"""# TASK 072 — Gate A V2
 
 Status: **PASS**
+
+`TASK_072_GATE_A: PASS_READY_FOR_OWNER_GATE_B`  
+`DESCRIPTION_SAVE_EXISTING_11: PASS`  
+`DESCRIPTION_SAVE_FUTURE_CARD: PASS`  
+`NO_NEW_CARD_CREATED: PASS`  
+`UA-0009_INTEGRITY: PASS`  
+`SAFE_TO_START_PRODUCTION_GATE_B: YES`
 
 - Production access: GET only; no production files or database rows were changed.
 - Live source SHA guards: PASS.
 - Real schema: `cars.id` → `cars.condition_text`; live `audit` columns verified.
 - Existing cards tested dynamically: **{db['existing_cards_tested']}**.
-- Future-card test on the same live schema: PASS.
+- Future `UA-9912` test on the same live schema: PASS.
+- Old lock failure reproduced; patched Telegram button route keeps `car_wait`: PASS ({call_path['patched_lock_seconds']:.4f}s).
+- Direct `Описание:`, `Добавь описание:`, `Измени описание:` routes: PASS, zero LLM calls.
 - Unicode/newlines/`$`/VIN/emoji and 12,000-character boundary: PASS.
 - `description` and `diag_text` remained unchanged: PASS.
 - Lock fallback: queued in **{queue['locked_path_seconds']:.4f}s**, then applied after unlock.
-- Replay/crash idempotency and last-intended-wins: PASS.
+- Replay/crash/restart/multiprocess idempotency and last-intended-wins: PASS.
+- 100 sequential + 100 concurrent descriptions: PASS, no missing/duplicate operations.
 - Direct path p95/p99: **{perf['p95_seconds']:.6f}s / {perf['p99_seconds']:.6f}s**.
 
 Gate B remains intentionally unexecuted and requires explicit owner approval.
@@ -664,6 +1199,12 @@ def main() -> None:
                 "downloaded_db_quick_check",
             )
             source_count = count_rows(source_conn, "cars")
+            require(source_count == 11, "production_copy_count_not_11")
+            ua0009_rows = list(source_conn.execute(
+                "SELECT * FROM cars WHERE auto_number='UA-0009'"
+            ))
+            require(len(ua0009_rows) == 1, "ua0009_not_unique")
+            ua0009_sha = row_digest(ua0009_rows[0])
             source_conn.close()
             require(source_count > 0, "downloaded_db_empty")
 
@@ -673,22 +1214,42 @@ def main() -> None:
             core_db = temp / "core-tests.crm.db"
             queue_db = temp / "queue-tests.crm.db"
             perf_db = temp / "performance-tests.crm.db"
+            call_path_db = temp / "call-path-tests.crm.db"
             shutil.copy2(live_db, core_db)
             shutil.copy2(live_db, queue_db)
             shutil.copy2(live_db, perf_db)
+            shutil.copy2(live_db, call_path_db)
 
             result["sources"] = sources
             result["live_database"] = {
                 "sha256": live_hash_before,
                 "size_bytes": len(downloaded["crm.db"]),
                 "cards_count": source_count,
+                "cards_count_after_gate": 11,
+                "ua0009_rows": 1,
+                "ua0009_sha256": ua0009_sha,
+                "ua0009_integrity": True,
                 "quick_check": "ok",
                 "copy_only": True,
             }
             result["database_tests"] = run_database_tests(writer, core_db, temp)
+            result["call_path_tests"] = run_call_path_tests(
+                writer,
+                downloaded["cars_ui.py"].decode("utf-8"),
+                (temp / "cars_ui.py").read_text(encoding="utf-8"),
+                call_path_db,
+            )
             result["queue_tests"] = run_queue_tests(writer, queue_db, temp)
             result["performance"] = run_performance_tests(writer, perf_db, temp)
             require(sha_bytes(live_db.read_bytes()) == live_hash_before, "live_copy_mutated")
+            final_source_conn = db_connect(live_db)
+            require(count_rows(final_source_conn, "cars") == 11, "live_copy_count_changed")
+            final_ua0009 = list(final_source_conn.execute(
+                "SELECT * FROM cars WHERE auto_number='UA-0009'"
+            ))
+            require(len(final_ua0009) == 1, "live_copy_ua0009_count_changed")
+            require(row_digest(final_ua0009[0]) == ua0009_sha, "live_copy_ua0009_changed")
+            final_source_conn.close()
             result["live_download_unchanged_after_tests"] = True
             result["status"] = "PASS"
             write_outputs(result)
