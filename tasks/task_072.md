@@ -1,6 +1,6 @@
 # TASK 072 — CRM-DESCRIPTION-SAVE-072 v1.0
 
-STATUS: OWNER_DIRECTIVE_IN_WORK
+STATUS: PASS_READY_FOR_OWNER_GATE_B
 PRIORITY: P0
 MODE: ROOT-CAUSE REPAIR / INDEPENDENT GATE A
 OWNER_DIRECTIVE: «Не могу добавить описание. Реши вопрос с существующими карточками и дальнейшими карточками, чтобы такого вопроса больше не возникало у меня.»
@@ -103,3 +103,17 @@ RUNTIME_LLM_TOKENS_TARGET: 0
 `SAFE_TO_START_PRODUCTION_GATE_B: YES`
 
 При любом пробеле — BLOCKED/FAIL с точной причиной. Production не менять до отдельного письменного Gate B владельца.
+
+
+## Независимый Gate A V2 — итог
+
+`TASK_072_GATE_A: PASS_READY_FOR_OWNER_GATE_B`
+`DESCRIPTION_SAVE_EXISTING_11: PASS`
+`DESCRIPTION_SAVE_FUTURE_CARD: PASS`
+`NO_NEW_CARD_CREATED: PASS`
+`UA-0009_INTEGRITY: PASS`
+`SAFE_TO_START_PRODUCTION_GATE_B: YES`
+
+Фактический Gate A завершён через GET-only PythonAnywhere API. Production не менялся.
+Gate B подготовлен без push-trigger и может быть запущен только после отдельного
+письменного подтверждения владельца `TASK_072_GATE_B_APPROVED`.
