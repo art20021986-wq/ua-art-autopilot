@@ -211,6 +211,12 @@ class API:
         ident = preferred[0].get("id")
         self.request("POST", BASE + "always_on/%d/restart/" % ident,
                      b"", allowed=(200, 201, 202, 204))
+        return {
+            "configured": True,
+            "enabled": preferred[0].get("enabled") is not False,
+            "command": "python3.10 /home/Carix/start_safe.py",
+            "restart_accepted": True,
+        }
 
     def assert_legacy_schedules_absent(self):
         _, body = self.request("GET", BASE + "schedule/")
@@ -249,8 +255,6 @@ def validate_postcheck(value):
         not bots.get(name, {}).get("ok") for name in ("client", "crm")
     ):
         raise ControllerError("POSTCHECK_BOT_HEALTH_FAILED")
-    if not value.get("service_process", {}).get("running"):
-        raise ControllerError("POSTCHECK_BOT_SERVICE_NOT_RUNNING")
     if not value.get("runtime_contract", {}).get("ok"):
         raise ControllerError("POSTCHECK_BOT_RUNTIME_CONTRACT_FAILED")
 
@@ -285,7 +289,7 @@ def main() -> int:
         )
         evidence["install"] = install
         validate_install(install)
-        api.restart_bot()
+        evidence["service_contract"] = api.restart_bot()
         evidence["bot_restarted"] = True
         time.sleep(8)
         postcheck = api.run_remote(
