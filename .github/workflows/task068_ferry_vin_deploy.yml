@@ -1,0 +1,200 @@
+name: task068-ferry-vin-v1-1-deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task068_ferry_vin_deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task068-ferry-vin-v1-1-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile and test atomic contract
+        run: |
+          python3 -m py_compile \
+            cloud/task_068_ferry_vin/repair_remote.py \
+            cloud/task_068_ferry_vin/postcheck_remote.py \
+            cloud/task_068_ferry_vin/controller.py \
+            cloud/task_068_ferry_vin/live_verify.py
+          python3 cloud/task_068_ferry_vin/repair_remote.py --self-test
+
+      - name: Install, restart and verify production
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_068_ferry_vin/controller.py
+
+      - name: Verify public cards, diagnostics and catalog
+        run: python3 cloud/task_068_ferry_vin/live_verify.py
+
+      - name: Capture catalog and all ten mobile cards
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "${browser}"
+          mkdir -p cloud/task_068_ferry_vin/screenshots
+          python3 - <<'PY' > /tmp/task068_cards.txt
+          import json
+          from pathlib import Path
+          data = json.loads(Path('cloud/task_068_ferry_vin/evidence/live.json').read_text())
+          for card in data['cards']:
+              print(card['id'])
+          PY
+          "${browser}" --headless=new --disable-gpu --disable-background-networking \
+            --hide-scrollbars --window-size=430,3600 --virtual-time-budget=3500 \
+            --screenshot="cloud/task_068_ferry_vin/screenshots/katalog.png" \
+            "https://www.uaart.com.ua/video/katalog.html?task068_screen=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          while IFS= read -r identifier; do
+            "${browser}" --headless=new --disable-gpu --disable-background-networking \
+              --hide-scrollbars --window-size=430,6000 --virtual-time-budget=3500 \
+              --screenshot="cloud/task_068_ferry_vin/screenshots/${identifier}.png" \
+              "https://www.uaart.com.ua/video/${identifier}.html?task068_screen=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          done < /tmp/task068_cards.txt
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('cloud/task_068_ferry_vin/screenshots')
+          paths = sorted(root.glob('*.png'))
+          if len(paths) != 11:
+              raise SystemExit('TASK068_SCREENSHOT_COUNT_INVALID')
+          manifest = []
+          for path in paths:
+              data = path.read_bytes()
+              if len(data) < 5000 or not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                  raise SystemExit('TASK068_SCREENSHOT_INVALID:' + str(path))
+              manifest.append({'page': path.stem, 'bytes': len(data)})
+          (root / 'manifest.json').write_text(
+              json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print('TASK068_SCREENSHOTS_PASS')
+          PY
+
+      - name: Final evidence gate and owner report
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('cloud/task_068_ferry_vin')
+          deploy = json.loads((root / 'evidence/deploy.json').read_text())
+          live = json.loads((root / 'evidence/live.json').read_text())
+          if deploy['status'] != 'PASS' or live['status'] != 'PASS':
+              raise SystemExit('TASK068_NOT_COMPLETE')
+          source_install = deploy['source_install']
+          install = deploy['install']
+          post = deploy['postcheck']
+          delayed = deploy['postcheck_delayed']
+          assert source_install['status'] == 'PASS' and source_install['sources_only'] is True
+          assert {'stranica.py', 'yadro.py', 'master_card.py'} <= set(source_install['source_sha256_after'])
+          assert post['card_count'] == 10 and delayed['card_count'] == 10
+          assert post['stage_distribution'].keys() == {'1', '2', '3', '4'}
+          assert all(value > 0 for value in post['stage_distribution'].values())
+          assert post['ua0009']['id'] == 'UA-0009' and post['ua0009']['stage'] == 2
+          assert post['bot_health']['bots']['client']['ok'] is True
+          assert post['bot_health']['bots']['crm']['ok'] is True
+          assert post['bot_health']['tokens_distinct'] is True
+          assert delayed['status'] == 'PASS'
+          assert delayed['runtime']['checks']['master_final_filter'] is True
+          assert delayed['runtime']['checks']['stranica_final_filter'] is True
+          assert delayed['runtime']['checks']['yadro_final_filter'] is True
+          assert install['db_before']['published_rows_sha256'] == install['db_after']['published_rows_sha256']
+          assert install['media_before'] == install['media_after']
+          cards = {card['id']: card for card in install['cards']}
+          assert len(cards) == 10
+          for identifier, card in cards.items():
+              assert set(card['roots']) == {'video', 'site'}
+              for item in card['roots'].values():
+                  assert item['stage_anchor_count'] == 1
+                  assert item['diagnostics_links'] == 1 and item['diagnostics_target_complete'] is True
+                  assert item['vin_guard_count'] == 1 and item['vin_button_count'] == 1
+                  assert item['forbidden_sea_terms'] == 0
+                  assert item['vin'] and item['engine_cc'] > 0 and item['video_count'] >= 0
+          assert cards['UA-0009']['roots']['video']['engine_cc'] == 2000
+          assert cards['UA-0010']['roots']['video']['engine_cc'] == 2000
+          assert live['card_count'] == 10 and live['page_count'] == 21
+          assert live['ua0009_safe'] is True and live['catalog_http'] == 200
+          for card in live['cards']:
+              expected = cards[card['id']]['roots']['video']
+              assert card['vin'] == expected['vin']
+              assert card['engine_cc'] == expected['engine_cc']
+              assert card['video_count'] == expected['video_count']
+              assert card['vin_button_count'] == 1 and card['diagnostics_links'] == 1
+              assert card['forbidden_sea_terms'] == 0
+          report = '\n'.join([
+              '# UA-CARDS-FERRY-VIN-001 V1.1', '', 'STATUS: **DONE**', '',
+              '- Все 10 текущих карточек и все будущие закреплены единым финальным контрактом.',
+              '- На каждой карточке восстановлены постоянные этапы и ровно одна активная комплексная диагностика.',
+              '- Если материалов диагностики нет, целевая страница показывает «Диагностика ожидает данных».',
+              '- На каждой карточке ровно одна кнопка «Проверить VIN» и VIN Guard Lite без платных запросов.',
+              '- VIN, двигатель, этап, срок и количество видео синхронизированы между CRM, каталогом и карточкой.',
+              '- UA-0009 и UA-0010: двигатель 2000 см³; отдельный safe-publication gate PASS.',
+              '- Все пользовательские формулировки «море» заменены на «паром» в RU/UA.',
+              '- Каталог и карточки защищены от старого Safari-кеша версией контракта.',
+              '- CRM-бот: дублирующих семантических кнопок нет.',
+              '- Оба Telegram-бота после перезапуска: PASS.',
+              '- Отсроченная проверка после фоновой перезаписи: PASS.',
+              '- CRM rows unchanged; media unchanged; paid VIN requests 0; LLM tokens 0.',
+              f"- Публично проверено: {live['page_count']} страниц.",
+              f"- Резервная копия: `{install['backup_root']}`.", '',
+          ])
+          (root / 'TASK_068_REPORT.md').write_text(report, encoding='utf-8')
+          PY
+
+      - name: Commit bounded machine evidence
+        run: |
+          git add -- \
+            cloud/task_068_ferry_vin/evidence/deploy.json \
+            cloud/task_068_ferry_vin/evidence/live.json \
+            cloud/task_068_ferry_vin/TASK_068_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          if [ "${#staged[@]}" -gt 3 ]; then exit 1; fi
+          for path in "${staged[@]}"; do
+            case "${path}" in
+              cloud/task_068_ferry_vin/evidence/deploy.json|\
+              cloud/task_068_ferry_vin/evidence/live.json|\
+              cloud/task_068_ferry_vin/TASK_068_REPORT.md) ;;
+              *) echo "Unexpected staged path: ${path}"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then exit 0; fi
+          git config user.name 'task068-ferry-vin'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task068: record ferry VIN card contract deployment'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then break; fi
+            if [ "${attempt}" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 3))
+          done
+
+      - name: Upload visual and machine evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task068-ferry-vin-${{ github.run_id }}
+          path: |
+            cloud/task_068_ferry_vin/evidence
+            cloud/task_068_ferry_vin/TASK_068_REPORT.md
+            cloud/task_068_ferry_vin/screenshots
+          if-no-files-found: warn
+          retention-days: 14
