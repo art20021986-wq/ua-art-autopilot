@@ -1,0 +1,45 @@
+name: SEO Rehab Preview Smoke 068
+
+on:
+  push:
+    branches: [seo/rehab-guard-068]
+    paths:
+      - cloud/seo_rehab_guard/preview_worker.js
+      - cloud/seo_rehab_guard/test_preview.mjs
+      - wrangler.jsonc
+      - .github/workflows/seo-rehab-preview-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview-only-do-not-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify preview-only source isolation
+        run: |
+          node --check cloud/seo_rehab_guard/preview_worker.js
+          node --test cloud/seo_rehab_guard/test_preview.mjs
+          test "$(jq -r '.main' wrangler.jsonc)" = "cloud/seo_rehab_guard/preview_worker.js"
+          test "$(jq -r '.triggers // empty' wrangler.jsonc)" = ""
+          test "$(jq -r '.d1_databases // empty' wrangler.jsonc)" = ""
+          test "$(jq -r '.routes // empty' wrangler.jsonc)" = ""
+
+      - name: Wait for Cloudflare branch preview health
+        env:
+          PREVIEW_URL: https://seo-rehab-guard-068-ua-art-seo-watch.art20021986.workers.dev/health
+        run: |
+          for attempt in {1..24}; do
+            body="$(curl --fail --silent --show-error --max-time 20 "$PREVIEW_URL" 2>/dev/null || true)"
+            echo "attempt=${attempt} response=${body}"
+            if printf '%s' "$body" | jq -e \
+              '.ok == true and .mode == "sandbox-github-preview" and .productionWrite == false and .bindings == 0 and .crons == 0' >/dev/null; then
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 1

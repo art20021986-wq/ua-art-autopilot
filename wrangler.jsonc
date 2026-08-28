@@ -1,8 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ua-art-seo-watch",
-  "main": "src/worker.js",
+  "main": "cloud/seo_rehab_guard/preview_worker.js",
   "compatibility_date": "2026-08-28",
-  "observability": { "enabled": true },
-  "triggers": { "crons": ["15 * * * *"] }
+  "observability": { "enabled": true }
 }
