@@ -10,12 +10,12 @@
     "bots": {
       "client": {
         "identity_sha256": "62f6339b925eda20540b16b1ba07db879c8f90fcfca5115bb0d275abfd8d60bb",
-        "latency_seconds": 0.457,
+        "latency_seconds": 0.355,
         "ok": true
       },
       "crm": {
         "identity_sha256": "a154fbe5ef59df6162adec0ae993c6a9ba0dd05a60c3ca9e5c0baa40e6a7c8ed",
-        "latency_seconds": 0.411,
+        "latency_seconds": 0.311,
         "ok": true
       }
     },
@@ -567,7 +567,7 @@
     "quick_check": "ok",
     "rows_sha256": "bce0dc2304a88a6a3ef3158d0a6402d0397ba66b911c1067bb30a954ea586840"
   },
-  "elapsed_seconds": 10.876,
+  "elapsed_seconds": 9.492,
   "errors": [],
   "files": {
     "ai.py": {
@@ -1149,6 +1149,149 @@
       ],
       "path": "/home/Carix/cars_ui.py",
       "sha256": "734f61a314b9f5391f999664d5267448a7f1e372245a7840057cf7fb7e599f9c"
+    },
+    "client_ui.py": {
+      "bytes": 30393,
+      "definitions": [
+        {
+          "end_lineno": 55,
+          "kind": "FunctionDef",
+          "lineno": 46,
+          "name": "_fayl",
+          "sha256": "514c38f0140e1824ae52efc3b441499468e3701b2340efd9e7810c5c4046aac3",
+          "source": "def _fayl(imya, zapas):\n    try:\n        p = _os.path.join(\"/home/Carix\", imya)\n        if _os.path.exists(p):\n            z = open(p, encoding=\"utf-8\").read().strip()\n            if z.startswith(\"http\"):\n                return z.rstrip(\"/\") if imya == \"video_sayt.txt\" else z\n    except Exception:\n        pass\n    return zapas"
+        },
+        {
+          "end_lineno": 74,
+          "kind": "FunctionDef",
+          "lineno": 66,
+          "name": "stranica_url",
+          "sha256": "fcef03bf3aad76d159aa9368edd129d4b65199749fb3f6fb5831bbbae8f56f70",
+          "source": "def stranica_url(card):\n    \"\"\"Адрес страницы покупателя, если она уже собрана.\"\"\"\n    nomer = str(card.get(\"auto_number\") or \"\").upper()\n    if not nomer:\n        return None\n    put = \"/home/Carix/video/%s.html\" % nomer\n    if not _os.path.exists(put):\n        return None\n    return \"%s/video/%s.html?v=%d\" % (_sayt(), nomer, int(_os.path.getmtime(put)))"
+        },
+        {
+          "end_lineno": 86,
+          "kind": "FunctionDef",
+          "lineno": 77,
+          "name": "knopka_stranicy",
+          "sha256": "55e674fd19129defe88e88d0faa1eddd4613fe0e4a99112b812f5b06c739b771",
+          "source": "def knopka_stranicy(card):\n    u = stranica_url(card)\n    if not u:\n        return None\n    try:\n        from telegram import WebAppInfo\n        return InlineKeyboardButton(\"\\U0001F697  Открыть карточку\",\n                                    web_app=WebAppInfo(url=u))\n    except Exception:\n        return InlineKeyboardButton(\"\\U0001F697  Открыть карточку\", url=u)"
+        },
+        {
+          "end_lineno": 129,
+          "kind": "FunctionDef",
+          "lineno": 127,
+          "name": "_cars_ui",
+          "sha256": "129ec85fab87e98639b43aa7785a6faff67474dc025941e77e2136061ee5802f",
+          "source": "def _cars_ui():\n    import cars_ui\n    return cars_ui"
+        },
+        {
+          "end_lineno": 148,
+          "kind": "FunctionDef",
+          "lineno": 137,
+          "name": "catalog_cars",
+          "sha256": "b94a3a5cfb422920702c19a7da0baae167b406a0581ab4c5577c37bffe6f1fc7",
+          "source": "def catalog_cars():\n    \"\"\"Машины, отмеченные «показать клиентам».\"\"\"\n    try:\n        import db\n        with db.connect() as c:\n            rows = c.execute(\n                \"SELECT * FROM cars WHERE published=1 ORDER BY id DESC LIMIT 50\"\n            ).fetchall()\n        return [dict(r) for r in rows]\n    except Exception as e:\n        log.warning(\"Каталог: %s\", e)\n        return []"
+        },
+        {
+          "end_lineno": 248,
+          "kind": "FunctionDef",
+          "lineno": 241,
+          "name": "glavnoe_menu",
+          "sha256": "a3d6c3ca8778f364e5eecdf2009f87bea347cbed09b3a20f491890d2bf1a34ad",
+          "source": "def glavnoe_menu():\n    return InlineKeyboardMarkup([\n        [InlineKeyboardButton(\"Авто в наличии и в пути\", callback_data=\"c_cars\")],\n        [InlineKeyboardButton(\"Подобрать под заказ из Кореи\", callback_data=\"c_order\")],\n        [InlineKeyboardButton(\"Как мы работаем\", callback_data=\"c_terms\"),\n         InlineKeyboardButton(\"Контакты\", callback_data=\"c_contacts\")],\n        [InlineKeyboardButton(\"Написать в WhatsApp\", url=WHATSAPP)],\n    ])"
+        },
+        {
+          "end_lineno": 269,
+          "kind": "AsyncFunctionDef",
+          "lineno": 251,
+          "name": "start_screen",
+          "sha256": "a6441c9d31de8ae894ede572b6420926b943f91c5dc2fc040144991d3391896f",
+          "source": "async def start_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    msg = update.effective_message\n    cars = catalog_cars()\n\n    hvost = \"\"\n    if cars:\n        S = _schema()\n        blizhaishaya = None\n        for c in cars:\n            left, eta = _cars_ui().eta_of(c)\n            if left is not None and (blizhaishaya is None or left < blizhaishaya[0]):\n                blizhaishaya = (left, eta)\n        hvost = \"\\n\\nСейчас в наличии и в пути — <b>%d</b>.\" % len(cars)\n        if blizhaishaya:\n            hvost += \"\\nБлижайшая прибывает в Киев %s.\" % blizhaishaya[1].strftime(\"%d.%m\")\n\n    await ST.send(msg, GLAVNAYA + hvost, parse_mode=\"HTML\",\n                         reply_markup=glavnoe_menu())\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 279,
+          "kind": "AsyncFunctionDef",
+          "lineno": 272,
+          "name": "menu_cb",
+          "sha256": "51fe9f7a9b9ef8fda964c90f52e13e56229b94fd4bd960e92c5a291d797a2da1",
+          "source": "async def menu_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    cars = catalog_cars()\n    hvost = (\"\\n\\nСейчас в наличии и в пути — <b>%d</b>.\" % len(cars)) if cars else \"\"\n    await ST.send(q.message, GLAVNAYA + hvost, parse_mode=\"HTML\",\n                               reply_markup=glavnoe_menu())\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 355,
+          "kind": "AsyncFunctionDef",
+          "lineno": 286,
+          "name": "catalog",
+          "sha256": "daef37a3dd03a99efd47eaf20cf656ef76b2020b48d00a9fbc5c8785ebef7e80",
+          "source": "async def catalog(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    if q:\n        await q.answer()\n        msg = q.message\n    else:\n        msg = update.effective_message\n\n    cars = catalog_cars()\n    if not cars:\n        await ST.send(msg, \n            \"<b>Сейчас машины в подборе</b>\\n\\n\"\n            \"Все свободные автомобили уже закреплены за клиентами.\\n\"\n            \"Напишите, что ищете — покажем варианты с аукциона и \"\n            \"зафиксируем цену до покупки. Подбор бесплатный.\",\n            parse_mode=\"HTML\",\n            reply_markup=InlineKeyboardMarkup([\n                [InlineKeyboardButton(\"Подобрать авто\", callback_data=\"c_order\")],\n                [InlineKeyboardButton(\"Написать в WhatsApp\", url=WHATSAPP)],\n                [InlineKeyboardButton(\"← Назад\", callback_data=\"c_menu\")]]))\n        raise ApplicationHandlerStop\n\n    S = _schema()\n    U = _cars_ui()\n    try:\n        import card_render as CR\n    except Exception:\n        CR = None\n\n    spisok = [U.card_of(c[\"id\"]) or c for c in cars[:12]]\n\n    # немного машин — показываем каждую с фото: так выбирают глазами\n    if CR is not None and len(spisok) <= 6:\n        await ST.send(msg, tablica_mashin(cars, S, U, CR),   # v26-tablica\n                      parse_mode=\"HTML\")\n        for card in spisok:\n            cena = S.money(U._int(card.get(\"price_uah\")))\n            srok = CR.srok_stroka(card)\n            metka = \"продана · в пути · \" if CR.prodano(card) else \"\"\n            text = \"<b>%s</b>\\n%s%s · %s\" % (podpis(card), metka, cena, srok)\n            knopka = InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"Открыть карточку\", callback_data=\"c_car:%d\" % card[\"id\"])]])\n            foto = CR.pervoe_foto(card)\n            try:\n                if foto:\n                    await msg.reply_photo(foto, caption=text, parse_mode=\"HTML\",\n                                          reply_markup=knopka)\n                    continue\n            except Exception:\n                pass\n            await ST.send(msg, text, parse_mode=\"HTML\", reply_markup=knopka)\n        await ST.send(msg, \"Не нашли подходящую?\", reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Подобрать под заказ\", callback_data=\"c_order\")],\n            [InlineKeyboardButton(\"← Назад\", callback_data=\"c_menu\")]]))\n        raise ApplicationHandlerStop\n\n    lines = [tablica_mashin(cars, S, U, CR)]   # v26-tablica\n    rows = []\n    for card in spisok:\n        cena = S.money(U._int(card.get(\"price_uah\")))\n        rows.append([InlineKeyboardButton(\n            \"%s — %s\" % (podpis(card)[:26], cena),\n            callback_data=\"c_car:%d\" % card[\"id\"])])\n\n    rows.append([InlineKeyboardButton(\"Не нашли подходящую?\",\n                                      callback_data=\"c_order\")])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"c_menu\")])\n    await ST.send(msg, \"\\n\".join(lines), parse_mode=\"HTML\",\n                         reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 418,
+          "kind": "AsyncFunctionDef",
+          "lineno": 362,
+          "name": "car_screen",
+          "sha256": "9ba521882a07dedeec59c7e0826fe942a3f1f4a90f6dbe441b866b44827e82b0",
+          "source": "async def car_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    U = _cars_ui()\n    S = _schema()\n    card = U.card_of(cid)\n    if not card or not card.get(\"published\"):\n        await ST.send(q.message, \"Эта машина уже недоступна.\",\n                                   reply_markup=InlineKeyboardMarkup([[\n                                       InlineKeyboardButton(\"← В каталог\",\n                                                            callback_data=\"c_cars\")]]))\n        raise ApplicationHandlerStop\n\n    try:\n        import card_render\n        await card_render.send_photos(q.message, card)\n    except Exception as e:\n        log.warning(\"Медиа: %s\", e)\n\n    etap = S.stage_of(card.get(\"status\"))\n    try:\n        import card_render as CR\n        prodana = CR.prodano(card)\n    except Exception:\n        prodana = False\n    rows = []\n    _knopka = knopka_stranicy(card)          # v19\n    if _knopka:                              # v19\n        rows.append([_knopka])               # v19\n    if prodana:\n        rows.append([InlineKeyboardButton(\"Хочу такую же под заказ\",\n                                          callback_data=\"c_order\")])\n    elif etap >= 3:\n        rows.append([InlineKeyboardButton(\"Забронировать за %s\" % BRON,\n                                          callback_data=\"c_bron:%d\" % cid)])\n    elif card.get(\"sea_container\"):\n        rows.append([InlineKeyboardButton(\"Отследить контейнер\",\n                                          url=\"https://www.searates.com/container/tracking/\")])\n    rows.append([InlineKeyboardButton(\"Задать вопрос по этой машине\",\n                                      callback_data=\"c_vopros:%d\" % cid)])\n    if card.get(\"vin\"):\n        rows.append([InlineKeyboardButton(\n            \"Проверить VIN\",\n            url=\"https://www.vindecoderz.com/EN/check-lookup/\" + str(card[\"vin\"]))])\n    rows.append([InlineKeyboardButton(\"← Все машины\", callback_data=\"c_cars\")])\n\n    await otmetit_prosmotr(context, q.from_user, card)     # v19\n    await ST.send(q.message, U.client_view(card), parse_mode=\"HTML\",\n                               disable_web_page_preview=True,\n                               reply_markup=InlineKeyboardMarkup(rows))\n    try:\n        import card_render\n        await card_render.send_videos(q.message, card)\n    except Exception as e:\n        log.warning(\"Видео: %s\", e)\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 473,
+          "kind": "AsyncFunctionDef",
+          "lineno": 445,
+          "name": "bron",
+          "sha256": "c6152c26d3e0175cccd42b7bb10e07a32ee329e0a15a898e154bde79aa4d13cc",
+          "source": "async def bron(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    U = _cars_ui()\n    S = _schema()\n    card = U.card_of(cid)\n    if not card:\n        raise ApplicationHandlerStop\n\n    await _zayavka(context, q.from_user, \"Бронь автомобиля\",\n                   \"<b>Машина:</b> %s\\n<b>Номер:</b> %s\\n<b>Цена:</b> %s\"\n                   % (podpis(card), card.get(\"auto_number\") or \"\",\n                      S.money(U._int(card.get(\"price_uah\")))),\n                   \"бронь · %s\" % podpis(card))\n\n    await ST.send(q.message, \n        \"<b>Заявка на бронь принята</b>\\n\"\n        \"%s\\n\\n\"\n        \"<b>ЧТО ДАЛЬШЕ</b>\\n\"\n        \"·  Менеджер Артём свяжется с вами в ближайшее время\\n\"\n        \"·  Подписываем договор — цена в нём фиксируется\\n\"\n        \"·  Бронь %s входит в стоимость автомобиля\"\n        % (podpis(card), BRON),\n        parse_mode=\"HTML\",\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Написать в WhatsApp\", url=WHATSAPP)],\n            [InlineKeyboardButton(\"← В каталог\", callback_data=\"c_cars\")]]))\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 492,
+          "kind": "AsyncFunctionDef",
+          "lineno": 476,
+          "name": "vopros",
+          "sha256": "c3ea58f2da9da8f0e193524ebf1efa700934f4a0d4d3693d4f737651e7f77f4e",
+          "source": "async def vopros(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    U = _cars_ui()\n    card = U.card_of(cid)\n    await _zayavka(context, q.from_user, \"Вопрос по машине\",\n                   \"<b>Машина:</b> %s\\n<b>Номер:</b> %s\"\n                   % (podpis(card), card.get(\"auto_number\") or \"\"),\n                   \"вопрос · %s\" % podpis(card))\n    await ST.send(q.message, \n        \"Передал ваш вопрос менеджеру Артёму — он ответит в ближайшее время.\\n\"\n        \"Если удобнее голосом, напишите сразу в WhatsApp.\",\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Написать в WhatsApp\", url=WHATSAPP)],\n            [InlineKeyboardButton(\"← К машине\", callback_data=\"c_car:%d\" % cid)]]))\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 521,
+          "kind": "AsyncFunctionDef",
+          "lineno": 516,
+          "name": "order_start",
+          "sha256": "daf00a71a1b3c482262f347c1f337380d9f0cacec696847c181a28c8fc18790f",
+          "source": "async def order_start(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    context.user_data[\"podbor\"] = {}\n    await _shag(q.message, \"class\")\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 572,
+          "kind": "AsyncFunctionDef",
+          "lineno": 533,
+          "name": "order_answer",
+          "sha256": "b64c40e817648e60b2383e25d7754830f7fcd2b1a0ecba356c520be28d0a0a69",
+          "source": "async def order_answer(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    _, key, znachenie = q.data.split(\":\", 2)\n    dannye = context.user_data.setdefault(\"podbor\", {})\n    dannye[key] = znachenie\n\n    sleduyushiy = None\n    for k in PORYADOK:\n        if k not in dannye:\n            sleduyushiy = k\n            break\n\n    if sleduyushiy:\n        await _shag(q.message, sleduyushiy)\n        raise ApplicationHandlerStop\n\n    telo = (\"<b>Класс:</b> %s\\n<b>Бюджет:</b> %s\\n<b>Сроки:</b> %s\"\n            % (dannye.get(\"class\", \"-\"), dannye.get(\"budget\", \"-\"),\n               dannye.get(\"srok\", \"-\")))\n    await _zayavka(context, q.from_user, \"Подбор под заказ\", telo, \"подбор под заказ\")\n\n    await ST.send(q.message, \n        \"<b>Заявка принята</b>\\n\\n\"\n        \"<b>ВЫ ВЫБРАЛИ</b>\\n%s · %s · %s\\n\\n\"\n        \"<b>ЧТО ДАЛЬШЕ</b>\\n\"\n        \"·  Подберём варианты с аукциона и зафиксируем цену — бесплатно\\n\"\n        \"·  Аванс %s нужен только для выхода на аукцион \"\n        \"и войдёт в стоимость\\n\"\n        \"·  Менеджер Артём свяжется с вами в ближайшее время\"\n        % (dannye.get(\"class\", \"—\"), dannye.get(\"budget\", \"—\"),\n           dannye.get(\"srok\", \"—\"), BRON),\n        parse_mode=\"HTML\",\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Написать в WhatsApp\", url=WHATSAPP)],\n            [InlineKeyboardButton(\"Посмотреть авто в наличии\",\n                                  callback_data=\"c_cars\")],\n            [InlineKeyboardButton(\"← В меню\", callback_data=\"c_menu\")]]))\n    context.user_data.pop(\"podbor\", None)\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 632,
+          "kind": "AsyncFunctionDef",
+          "lineno": 618,
+          "name": "terms_screen",
+          "sha256": "ecbc6c999987ff6239c32315f96d5cd46ccecb480086f517c0db3c59692d2c2b",
+          "source": "async def terms_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    if q:\n        await q.answer()\n        msg = q.message\n    else:\n        msg = update.effective_message\n    await ST.send(msg, TERMS, parse_mode=\"HTML\",\n                         reply_markup=InlineKeyboardMarkup([\n                             [InlineKeyboardButton(\"Подобрать авто\",\n                                                   callback_data=\"c_order\")],\n                             [InlineKeyboardButton(\"Написать в WhatsApp\",\n                                                   url=WHATSAPP)],\n                             [InlineKeyboardButton(\"← Назад\", callback_data=\"c_menu\")]]))\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 644,
+          "kind": "AsyncFunctionDef",
+          "lineno": 635,
+          "name": "contacts_screen",
+          "sha256": "86d826eff1cfad27e1babe074030f5eae65ce5fd07c28ed3596f05102aabd420",
+          "source": "async def contacts_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    await ST.send(q.message, \n        CONTACTS, parse_mode=\"HTML\",\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Показать на карте\", url=MAPS)],\n            [InlineKeyboardButton(\"Написать в WhatsApp\", url=WHATSAPP)],\n            [InlineKeyboardButton(\"← Назад\", callback_data=\"c_menu\")]]))\n    raise ApplicationHandlerStop"
+        },
+        {
+          "end_lineno": 679,
+          "kind": "FunctionDef",
+          "lineno": 651,
+          "name": "register",
+          "sha256": "1a937b7e96cb9127941ba2db24cf1cd69b232c94da7475feae49a13e8a67b29e",
+          "source": "def register(app, vladelec=None):\n    global VLADELEC\n    VLADELEC = vladelec\n    g = -1\n    app.add_handler(CommandHandler(\"start\", start_screen), group=g)\n    app.add_handler(CommandHandler(\"cars\", catalog), group=g)\n    app.add_handler(CommandHandler(\"terms\", terms_screen), group=g)\n    app.add_handler(CallbackQueryHandler(menu_cb, pattern=r\"^c_menu$\"), group=g)\n    app.add_handler(CallbackQueryHandler(catalog, pattern=r\"^c_cars$\"), group=g)\n    app.add_handler(CallbackQueryHandler(car_screen, pattern=r\"^c_car:\"), group=g)\n    app.add_handler(CallbackQueryHandler(bron, pattern=r\"^c_bron:\"), group=g)\n    app.add_handler(CallbackQueryHandler(vopros, pattern=r\"^c_vopros:\"), group=g)\n    app.add_handler(CallbackQueryHandler(order_start, pattern=r\"^c_order$\"), group=g)\n    app.add_handler(CallbackQueryHandler(order_answer, pattern=r\"^c_ans:\"), group=g)\n    app.add_handler(CallbackQueryHandler(terms_screen, pattern=r\"^c_terms$\"), group=g)\n    app.add_handler(CallbackQueryHandler(contacts_screen, pattern=r\"^c_contacts$\"), group=g)\n\n    # v22-starye-knopki — кнопки старого бота ведут на новые экраны\n    app.add_handler(CallbackQueryHandler(\n        catalog, pattern=r\"^(show_cars|show_transit|adm_mycars)$\"), group=g)\n    app.add_handler(CallbackQueryHandler(\n        terms_screen, pattern=r\"^show_terms$\"), group=g)\n    app.add_handler(CallbackQueryHandler(\n        contacts_screen, pattern=r\"^contact_manager$\"), group=g)\n    app.add_handler(CallbackQueryHandler(\n        order_start, pattern=r\"^(lead_start|buycar:|ready$|custom_order$)\"), group=g)\n    app.add_handler(CommandHandler(\"help\", start_screen), group=g)\n    app.add_handler(CommandHandler(\"mycar\", catalog), group=g)\n    log.info(\"client_ui подключён\")"
+        }
+      ],
+      "path": "/home/Carix/client_ui.py",
+      "sha256": "e3b3964644fc8f18e28916ee665685e42c139d47a6276d2f2bb4eaddd62891d3"
     },
     "db.py": {
       "bytes": 34721,
