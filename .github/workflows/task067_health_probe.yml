@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 21-container-field-state
+# probe-revision: 22-v132-live-gate
 
 on:
   push:
@@ -59,7 +59,12 @@ jobs:
           result['production'] = {
               'cars_ui_sha256': hashlib.sha256(source).hexdigest(),
               'v1_3_marker': b'CRM-ONLINE-GUARD-001-V1.3' in source,
+              'voice_restore_marker': b'CRM-VOICE-RESTORE-01-V1.3.1' in source,
+              'input_db_marker': b'CRM-INPUT-DB-ROUTES-02-V1.3.2' in source,
           }
+          container_source = get(root + '/konteyner.py')
+          result['production']['container_sha256'] = hashlib.sha256(container_source).hexdigest()
+          result['production']['container_marker'] = b'CRM-CONTAINER-ROUTES-02-V1.3.2' in container_source
           status_raw = get(root + '/.crm_guard_status.json', missing=True)
           if status_raw:
               status = json.loads(status_raw.decode('utf-8'))
