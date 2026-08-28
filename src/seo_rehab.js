@@ -11,6 +11,7 @@ const CARD_PATH = /^\/video\/(UA-\d{4})\.html$/i;
 const CANONICAL_TAG = /<link\b(?=[^>]*\brel\s*=\s*["'][^"']*\bcanonical\b[^"']*["'])[^>]*>\s*/gi;
 const ROBOT_META_TAG = /<meta\b(?=[^>]*\bname\s*=\s*["'](?:robots|googlebot)["'])[^>]*>\s*/gi;
 const ACTION_ELEMENT = /(<(?:a|button)\b[^>]*>)([\s\S]*?)(<\/(?:a|button)>)/gi;
+const DIAGNOSTIC_ELEMENT = /<a\b(?=[^>]*\bclass\s*=\s*["'][^"']*\bmcf-diag-cta\b[^"']*["'])[^>]*>[\s\S]*?<\/a>\s*/gi;
 const CTA_VARIANT_SOURCE = "(?:Купить авто|Купити авто|Задаток\\s*\\$?\\s*500\\s*\\$?|Депозит\\s*\\$?\\s*500\\s*\\$?|Забронировать авто за\\s*\\$?\\s*500\\s*\\$?)";
 
 function ctaPattern(flags = "giu") {
@@ -71,6 +72,27 @@ function normalizeCtaElements(source) {
   });
 }
 
+function diagnosticAnchorTags(source) {
+  return [...String(source).matchAll(/<a\b[^>]*>/gi)]
+    .map((match) => match[0])
+    .filter((tag) => classTokens(tag).includes("mcf-diag-cta") || /UA-\d{4}-diag\.html(?:[?#]|$)/i.test(attribute(tag, "href")));
+}
+
+function diagnosticCta(id) {
+  return `<a class="mcf-diag-cta" href="${id}-diag.html" style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);color:#f4e3ae"><span style="font-size:22px;line-height:1">🔧</span><span style="flex:1"><span style="display:block;font-weight:800;font-size:16px">Открыть комплексную диагностику →</span><span style="display:block;font-size:13px;opacity:.85;margin-top:3px">ЛКП · OBD · ходовая · фото · видео</span></span><span style="font-size:20px;opacity:.8">›</span></a>`;
+}
+
+function ensureDiagnosticCta(source, id) {
+  // Any existing diagnostic anchor is left untouched so mismatches and
+  // duplicates remain visible to the fail-closed validator.
+  if (diagnosticAnchorTags(source).length) return source;
+  const addition = `${diagnosticCta(id)}\n`;
+  const primaryCta = /<a\b(?=[^>]*\bclass\s*=\s*["'][^"']*\bkn_kupit\b[^"']*["'])/i;
+  if (primaryCta.test(source)) return source.replace(primaryCta, `${addition}<a`);
+  if (/<\/body\s*>/i.test(source)) return source.replace(/<\/body\s*>/i, `${addition}</body>`);
+  return `${source}\n${addition}`;
+}
+
 export function transformCandidateHtml(pathname, html) {
   const normalizedPath = pathname === "/" ? "/video/index.html" : pathname;
   const isCandidate = CORE_PATHS.includes(normalizedPath) || Boolean(cardIdFromPath(normalizedPath));
@@ -79,7 +101,11 @@ export function transformCandidateHtml(pathname, html) {
   const canonical = `${PRODUCTION_ORIGIN}${normalizedPath}`;
   let result = String(html).replace(CANONICAL_TAG, "").replace(ROBOT_META_TAG, "");
   result = insertIntoHead(result, `<link rel="canonical" href="${escapeAttribute(canonical)}">`);
-  if (cardIdFromPath(normalizedPath)) result = normalizeCtaElements(result);
+  const vehicleId = cardIdFromPath(normalizedPath);
+  if (vehicleId) {
+    result = ensureDiagnosticCta(result, vehicleId);
+    result = normalizeCtaElements(result);
+  }
   return result;
 }
 
@@ -126,16 +152,13 @@ export function htmlFacts(html) {
     .filter((tag) => ["robots", "googlebot"].includes(attribute(tag, "name").toLowerCase()))
     .map((tag) => attribute(tag, "content"));
   const primaryCtas = [];
-  const diagnostics = [];
+  const diagnostics = diagnosticAnchorTags(source).map((open) => ({ text: "", href: attribute(open, "href") }));
   for (const match of source.matchAll(ACTION_ELEMENT)) {
     const open = match[1];
     const text = stripTags(match[2]);
     const href = attribute(open, "href");
     if (classTokens(open).includes("kn_kupit") || ctaPattern("iu").test(text)) {
       primaryCtas.push({ text, href, ariaLabel: attribute(open, "aria-label"), title: attribute(open, "title") });
-    }
-    if (classTokens(open).includes("mcf-diag-cta") || /UA-\d{4}-diag\.html(?:[?#]|$)/i.test(href)) {
-      diagnostics.push({ text, href });
     }
   }
   return { canonicals, robotMeta, primaryCtas, diagnostics };
@@ -202,6 +225,7 @@ export function normalizeAllowedDiff(html) {
   return String(html)
     .replace(CANONICAL_TAG, "")
     .replace(ROBOT_META_TAG, "")
+    .replace(DIAGNOSTIC_ELEMENT, "")
     .replace(ctaPattern(), "__UA_ART_APPROVED_CTA__")
     .replace(/\s+/g, " ")
     .trim();
