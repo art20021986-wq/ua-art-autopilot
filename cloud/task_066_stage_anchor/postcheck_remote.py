@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import os
 import pathlib
@@ -13,12 +14,18 @@ import urllib.request
 
 
 HERE = pathlib.Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))
-import repair_remote as repair  # noqa: E402
+REPAIR_PATH = HERE / "task066_stage_repair.py"
+if not REPAIR_PATH.exists():
+    REPAIR_PATH = HERE / "repair_remote.py"
+_SPEC = importlib.util.spec_from_file_location("task066_stage_repair", REPAIR_PATH)
+if _SPEC is None or _SPEC.loader is None:
+    raise RuntimeError("TASK066_REPAIR_IMPORT_SPEC_FAILED")
+repair = importlib.util.module_from_spec(_SPEC)
+_SPEC.loader.exec_module(repair)
 
 
-RECEIPT_PATH = HERE / "install_receipt.json"
-POSTCHECK_PATH = HERE / "postcheck_receipt.json"
+RECEIPT_PATH = pathlib.Path(repair.SAFE_ROOT) / "install_receipt.json"
+POSTCHECK_PATH = pathlib.Path(repair.SAFE_ROOT) / "postcheck_receipt.json"
 BOT_TOKEN_FILES = {
     "client": pathlib.Path("/home/Carix/bot_token.txt"),
     "crm": pathlib.Path("/home/Carix/team_token.txt"),
