@@ -1,0 +1,26 @@
+{
+  "always_on_count": 1,
+  "candidate_sha256": "3c6f12227e45a3ba936d48d4a12435378045e879fea481def04f3378f6a0f12f",
+  "crm_write": false,
+  "db_write": false,
+  "errors": [],
+  "gate_b_executed": false,
+  "mode": "GATE_B_READ_ONLY_PREFLIGHT",
+  "production_candidates": [
+    {
+      "command_sha256": "bb7491b6a7cbf510aefe675ed052bf3c1b64fe0cff47edebcccfd8b6848ff240",
+      "enabled": true,
+      "entrypoints": [
+        "start_safe.py"
+      ],
+      "id": 266084,
+      "inbox_task": false,
+      "running": null
+    }
+  ],
+  "production_write": false,
+  "restart": false,
+  "source_sha256": "06e7da916ea36c4ffafef01c85f59a0574f06d3cdda24aa1f8c242175de726b7",
+  "status": "PASS",
+  "task_id": "task_049"
+}
