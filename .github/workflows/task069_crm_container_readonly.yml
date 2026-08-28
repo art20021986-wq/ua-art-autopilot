@@ -1,0 +1,73 @@
+name: task069-crm-container-readonly-audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task069_crm_container_readonly.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task069-crm-container-readonly-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Read live CRM without writes
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 -m py_compile cloud/task_069/read_current.py
+          python3 cloud/task_069/read_current.py
+          python3 - <<'PY'
+          import json
+          path = 'cloud/task_069/evidence/current.json'
+          value = json.load(open(path, encoding='utf-8'))
+          assert value['production_touched'] is False
+          assert value['crm_db_write'] is False
+          assert value['errors'] == [], value['errors']
+          assert value['db']['quick_check'] == 'ok'
+          assert 'konteyner.py' in value['files']
+          print('TASK069_LIVE_READ_ONLY_AUDIT_PASS')
+          PY
+
+      - name: Commit bounded evidence
+        run: |
+          git add -- cloud/task_069/evidence/current.json
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            test "$path" = 'cloud/task_069/evidence/current.json' || exit 1
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task069-readonly-audit'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task_069: record live read-only container audit'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main || exit 1
+              if git push origin HEAD:main; then break; fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task069-live-readonly-${{ github.run_id }}
+          path: cloud/task_069/evidence/current.json
+          if-no-files-found: error
+          retention-days: 30
