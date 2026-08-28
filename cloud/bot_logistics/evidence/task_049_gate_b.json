@@ -1,15 +1,19 @@
 {
+  "backup_path": "/home/Carix/autopilot_inbox/cloud/bot_logistics/task049_cars_ui.py.before_gate_b.20260828T045145Z",
+  "candidate_path": "/home/Carix/autopilot_inbox/cloud/bot_logistics/task049_cars_ui.py.candidate",
   "controller_status": "BLOCKED",
   "crm_write": false,
   "db_write": false,
   "errors": [
-    "temporary_trigger_unavailable"
+    "approval_field_invalid:SOURCE_SHA256",
+    "install_not_pass"
   ],
-  "mode": "GATE_B_CONTROLLER",
-  "production_write": null,
+  "mode": "GATE_B_INSTALL",
+  "production_write": false,
   "restart_accepted": false,
   "rollback": false,
   "service_restart": false,
+  "source_path": "/home/Carix/cars_ui.py",
   "status": "BLOCKED",
   "target_always_on_id": 266084,
   "target_command_sha256": "bb7491b6a7cbf510aefe675ed052bf3c1b64fe0cff47edebcccfd8b6848ff240",

@@ -6,7 +6,7 @@ source_sha256_before: NONE
 source_sha256_after: NONE
 backup_sha256: NONE
 db_hash_unchanged: false
-production_write: unknown
+production_write: false
 ua0006_container_preserved: false
 ua0006_sea_date_preserved: false
 ua0006_container: NONE
@@ -23,4 +23,4 @@ website_write: false
 crm_write: false
 db_write: false
 rollback: false
-errors: temporary_trigger_unavailable
+errors: approval_field_invalid:SOURCE_SHA256,install_not_pass
