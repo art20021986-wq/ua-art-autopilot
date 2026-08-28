@@ -108,16 +108,37 @@ class HotfixTests(unittest.TestCase):
     def test_remote_worker_code_compiles(self):
         compile(postcheck.worker_code(), "task064_worker.py", "exec")
 
-    def test_nested_connections_release_reentrant_file_lock(self):
+    def test_long_lived_reader_does_not_hold_write_queue(self):
         with tempfile.TemporaryDirectory() as folder:
             db_path = os.path.join(folder, "crm.db")
-            sqlite3.connect(db_path).close()
+            setup = sqlite3.connect(db_path)
+            setup.execute("CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT)")
+            setup.execute("INSERT INTO t(v) VALUES ('ok')")
+            setup.commit()
+            setup.close()
             _, namespace = self.candidate_namespace(db_path)
-            first = namespace["connect"]()
-            second = namespace["connect"]()
-            second.close()
-            first.close()
+            reader = namespace["connect"]()
+            self.assertEqual(reader.execute("SELECT v FROM t").fetchone()[0], "ok")
+            with namespace["connect"]() as writer:
+                writer.execute("UPDATE t SET v=v WHERE 0")
+            reader.close()
             self.assertEqual(namespace["_UA_FAYL_SOSTOYANIE"].depth, 0)
+
+    def test_cursor_write_acquires_and_commit_releases_queue(self):
+        with tempfile.TemporaryDirectory() as folder:
+            db_path = os.path.join(folder, "crm.db")
+            setup = sqlite3.connect(db_path)
+            setup.execute("CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT)")
+            setup.commit()
+            setup.close()
+            _, namespace = self.candidate_namespace(db_path)
+            connection = namespace["connect"]()
+            cursor = connection.cursor()
+            cursor.execute("UPDATE t SET v=v WHERE 0")
+            self.assertEqual(namespace["_UA_FAYL_SOSTOYANIE"].depth, 1)
+            connection.commit()
+            self.assertEqual(namespace["_UA_FAYL_SOSTOYANIE"].depth, 0)
+            connection.close()
 
     def test_concurrent_noop_writes_have_no_locked_errors(self):
         with tempfile.TemporaryDirectory() as folder:
