@@ -879,18 +879,44 @@ def main() -> int:
     with open(LOCK_PATH, "a+b") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if args.dry_run:
-            value = dry_run()
+            try:
+                value = dry_run()
+            except Exception as exc:
+                value = {
+                    "contract": CONTRACT,
+                    "mode": "dry-run",
+                    "status": "FAIL",
+                    "production_write": False,
+                    "errors": [type(exc).__name__ + ":" + str(exc)],
+                    "generated_at_utc": utc_now(),
+                }
             atomic_json(DRY_RUN_RECEIPT_PATH, value)
         elif args.sources_only:
             value = install("sources")
         elif args.content_only:
             value = install("content")
         elif args.rollback_content:
-            value = rollback_receipt(RECEIPT_PATH, ROLLBACK_RECEIPT_PATH, "content")
+            try:
+                value = rollback_receipt(RECEIPT_PATH, ROLLBACK_RECEIPT_PATH, "content")
+            except Exception as exc:
+                value = {
+                    "contract": CONTRACT, "mode": "rollback", "phase": "content",
+                    "status": "FAIL", "errors": [type(exc).__name__ + ":" + str(exc)],
+                    "generated_at_utc": utc_now(),
+                }
+                atomic_json(ROLLBACK_RECEIPT_PATH, value)
         elif args.rollback_sources:
-            value = rollback_receipt(
-                SOURCE_RECEIPT_PATH, SOURCE_ROLLBACK_RECEIPT_PATH, "sources"
-            )
+            try:
+                value = rollback_receipt(
+                    SOURCE_RECEIPT_PATH, SOURCE_ROLLBACK_RECEIPT_PATH, "sources"
+                )
+            except Exception as exc:
+                value = {
+                    "contract": CONTRACT, "mode": "rollback", "phase": "sources",
+                    "status": "FAIL", "errors": [type(exc).__name__ + ":" + str(exc)],
+                    "generated_at_utc": utc_now(),
+                }
+                atomic_json(SOURCE_ROLLBACK_RECEIPT_PATH, value)
         else:
             raise SystemExit("MODE_REQUIRED")
     print(json.dumps({"contract": value["contract"], "mode": value["mode"], "status": value["status"]}))
