@@ -1,0 +1,47 @@
+{
+  "contract_id": "CRM-AI-CARD-001",
+  "controller": {
+    "bot_restarted": true,
+    "bot_task_id_sha256": "ddab74aff3b2a90095923bf1b6e2880ceb8d82e217b930565eb778dfdbfd7b60",
+    "status": "PASS"
+  },
+  "installer": {
+    "already_applied": false,
+    "auto_open_draft": true,
+    "backup_path": "/home/Carix/backups/task_061/20260828T061812Z",
+    "contract_id": "CRM-AI-CARD-001",
+    "crm_db_write": false,
+    "errors": [],
+    "files": {
+      "/home/Carix/local_ocr.py": {
+        "after": "7eb4de0597fb6064c8e5f7b56c00d673e8d964630481b3fe5511bb20363770b5",
+        "before": "c82c69eb69eccfb901cae56e111155b2cccd49e5ae63a10bb7ad4dafeea724a8"
+      },
+      "/home/Carix/team_bot.py": {
+        "after": "0dddd71ceb64d0397cf94faad994f85494032173cc025adf3e1634da0652abd0",
+        "before": "cfb1f52ea820a2e5a3e65a2d4b0e2c99c5c6e35402dd3678a22a7bdd6fb3b09a"
+      }
+    },
+    "finished_at_utc": "2026-08-28T06:18:12Z",
+    "mode": "OWNER_APPROVED_INSTALL",
+    "photo_ai_tokens": 0,
+    "photo_text_deadline_seconds": 15,
+    "production_write": true,
+    "rollback_performed": false,
+    "service_restarted": false,
+    "site_write": false,
+    "staff_handoff_removed": true,
+    "started_at_utc": "2026-08-28T06:18:12Z",
+    "status": "PASS",
+    "task_id": "task_061",
+    "text_ai_tokens": 0,
+    "ua0009_publication_performed": false,
+    "ua0009_readonly_check": {
+      "cars_columns": 70,
+      "cars_table": true,
+      "quick_check": "ok",
+      "ua0009_rows": 1
+    }
+  },
+  "task_id": "task_061"
+}
