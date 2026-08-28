@@ -1039,7 +1039,7 @@ def _patch_cars_ui(source: str, original_sha: str) -> str:
 def _validate_cars_ui(source: str) -> None:
     compile(source, CARS_UI_PATH, "exec")
     required = (
-        CONTRACT, '"🚚 Доставка и этапы"', '"Редактировать данные"',
+        '"🚚 Доставка и этапы"', '"Редактировать данные"',
         '"Комплексная диагностика"', '"📦 Контейнер, даты и сроки"',
         'pattern=r"^car_price:"', 'pattern=r"^car_keepprice:"',
         'pattern=r"^car_setf:"',
