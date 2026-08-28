@@ -270,6 +270,21 @@ class GateBControllerTests(unittest.TestCase):
         with self.assertRaisesRegex(C.ControllerBlocked, "refuse_delete_target"):
             api.delete_trigger(("always_on", C.TARGET_TASK_ID))
 
+    def test_schedule_fallback_is_bounded_and_deletable(self):
+        api = C.PythonAnywhereAPI(C.USERNAME, C.HOSTS[0], "token")
+        api.request = mock.Mock(side_effect=[
+            (403, b""),
+            (201, b'{"id": 700001}'),
+            (204, b""),
+        ])
+        trigger = api.create_trigger(C.INSTALL_COMMAND)
+        self.assertEqual(trigger, ("schedule", 700001))
+        api.delete_trigger(trigger)
+        calls = api.request.call_args_list
+        self.assertIn("always_on/", calls[0].args[1])
+        self.assertIn("schedule/", calls[1].args[1])
+        self.assertIn("schedule/700001/", calls[2].args[1])
+
     def test_target_identity_is_hash_bound(self):
         with self.fx.patched():
             valid = {

@@ -9,6 +9,7 @@ command and restarts the original bot code.
 """
 from __future__ import annotations
 
+import datetime as dt
 import hashlib
 import json
 import mimetypes
@@ -215,20 +216,44 @@ class PythonAnywhereAPI:
             label="create_trigger",
         )
         identifier = self.trigger_id(body) if status in (200, 201, 202) else None
+        if identifier is not None:
+            if identifier == TARGET_TASK_ID:
+                raise ControllerBlocked("temporary_trigger_collides_with_target")
+            return "always_on", identifier
+
+        run_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=2)
+        form = urllib.parse.urlencode({
+            "command": command,
+            "description": (
+                "UA ART task049 approved Gate B fallback"
+                if command == INSTALL_COMMAND
+                else "UA ART task049 automatic rollback fallback"
+            ),
+            "enabled": "true",
+            "interval": "daily",
+            "hour": run_at.hour,
+            "minute": run_at.minute,
+        }).encode()
+        status, body = self.request(
+            "POST", self.base + "schedule/", data=form,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            allowed=(200, 201, 202, 400, 403, 404, 409),
+            label="create_schedule_fallback",
+        )
+        identifier = self.trigger_id(body) if status in (200, 201, 202) else None
         if identifier is None:
             raise ControllerBlocked("temporary_trigger_unavailable")
-        if identifier == TARGET_TASK_ID:
-            raise ControllerBlocked("temporary_trigger_collides_with_target")
-        return "always_on", identifier
+        return "schedule", identifier
 
     def delete_trigger(self, trigger: tuple[str, int]) -> None:
         kind, identifier = trigger
-        if kind != "always_on" or not isinstance(identifier, int) or identifier <= 0:
+        if kind not in {"always_on", "schedule"} or not isinstance(identifier, int) or identifier <= 0:
             raise ControllerBlocked("trigger_invalid")
-        if identifier == TARGET_TASK_ID:
+        if kind == "always_on" and identifier == TARGET_TASK_ID:
             raise ControllerBlocked("refuse_delete_target")
+        endpoint = "always_on" if kind == "always_on" else "schedule"
         self.request(
-            "DELETE", self.base + f"always_on/{identifier}/",
+            "DELETE", self.base + f"{endpoint}/{identifier}/",
             allowed=(200, 202, 204, 404), label="delete_trigger",
         )
 
@@ -398,6 +423,8 @@ class GateBController:
         trigger = None
         try:
             trigger = self.api.create_trigger(command)
+            if command == INSTALL_COMMAND:
+                self.install_started = True
             return self.poll(output, "install" if command == INSTALL_COMMAND else "rollback")
         finally:
             if trigger is not None:
@@ -525,7 +552,6 @@ errors: {','.join(receipt.get("errors", [])) or 'NONE'}
             if sha256(candidate) != EXPECTED_CANDIDATE_SHA:
                 raise ControllerBlocked("preinstall_candidate_hash_changed")
 
-            self.install_started = True
             raw_install = self.execute(INSTALL_COMMAND, REMOTE_INSTALL_OUTPUT)
             try:
                 install = validate_install_receipt(raw_install)
