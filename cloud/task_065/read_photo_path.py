@@ -17,6 +17,7 @@ REMOTE = {
     "cars_ui.py": "/home/Carix/cars_ui.py",
     "team_bot.py": "/home/Carix/team_bot.py",
     "db.py": "/home/Carix/db.py",
+    "start_safe.py": "/home/Carix/start_safe.py",
 }
 OUT = pathlib.Path("cloud/task_065/evidence/photo_path.json")
 MAX_FILE = 1_500_000
@@ -47,12 +48,51 @@ def source_segment(lines, node):
     return "\n".join(lines[node.lineno - 1:node.end_lineno])
 
 
+def tree_remote(path: str):
+    query = urllib.parse.urlencode({"path": path})
+    request = urllib.request.Request(
+        API + "files/tree/?" + query,
+        headers={
+            "Authorization": "Token " + os.environ["PYTHONANYWHERE_API_TOKEN"],
+            "User-Agent": "ua-art-task065-photo-read/2",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=60) as response:
+        value = json.loads(response.read(MAX_FILE + 1).decode("utf-8"))
+    if isinstance(value, dict):
+        value = value.get("files") or value.get("paths") or value.get("objects") or []
+    if not isinstance(value, list):
+        raise RuntimeError("REMOTE_TREE_INVALID")
+    return [str(item) for item in value]
+
+
+def snippets(source: str, patterns, radius=12):
+    lines = source.splitlines()
+    found = []
+    used = set()
+    for index, line in enumerate(lines):
+        if not any(pattern.casefold() in line.casefold() for pattern in patterns):
+            continue
+        start = max(0, index - radius)
+        end = min(len(lines), index + radius + 1)
+        key = (start, end)
+        if key in used:
+            continue
+        used.add(key)
+        found.append({
+            "lineno": index + 1,
+            "source": redact("\n".join(lines[start:end])),
+        })
+    return found[:30]
+
+
 def wanted(filename: str, node: ast.AST) -> bool:
     if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
         return False
     name = node.name.casefold()
     if filename == "cars_ui.py":
-        return name == "catch_message" or "save_media" in name
+        return (name in {"catch_message", "set_field", "_v140_sprosit"}
+                or "save_media" in name)
     if filename == "team_bot.py":
         return name in {"build_application", "intake"} or "handler" in name
     if filename == "db.py":
@@ -90,7 +130,39 @@ def main() -> None:
             "sha256": hashlib.sha256(data).hexdigest(),
             "size": len(data),
             "definitions": sorted(definitions, key=lambda item: item["lineno"]),
+            "target_snippets": snippets(source, (
+                "не читается база", "страницы сайта", "crm.db",
+                "_v140_sprosit", "_v152_save_media", "_v140_save_media_ishodnyy",
+            )),
         }
+
+    scanned = {}
+    paths = tree_remote("/home/Carix/")
+    candidates = sorted({
+        value for value in paths
+        if value.startswith("/home/Carix/")
+        and value.endswith(".py")
+        and len(pathlib.PurePosixPath(value).parts) <= 5
+        and "/.local/" not in value
+        and "/backups/" not in value
+        and "/autopilot_inbox/" not in value
+    })
+    for path in candidates[:250]:
+        name = pathlib.PurePosixPath(path).name
+        if path in REMOTE.values():
+            continue
+        try:
+            source = read_remote(path).decode("utf-8")
+        except Exception:
+            continue
+        hits = snippets(source, ("не читается база", "страницы сайта"), radius=18)
+        if hits:
+            scanned[path] = hits
+    evidence["tree"] = {
+        "python_candidates": len(candidates),
+        "searched": min(len(candidates), 250),
+        "message_hits": scanned,
+    }
     names = {
         item["name"]
         for item in evidence["files"]["cars_ui.py"]["definitions"]
