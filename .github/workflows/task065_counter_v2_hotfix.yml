@@ -1,0 +1,70 @@
+name: task065-crm-rehabilitation-v2
+# CRM-PHOTO-COUNTER-002 + CRM-VOICE-FIELDS-003
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task065_counter_v2_hotfix.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task065-crm-rehabilitation-v2
+  cancel-in-progress: false
+
+jobs:
+  hotfix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate controller sources
+        run: >-
+          python3 -m py_compile
+          cloud/task_065/counter_v2_installer.py
+          cloud/task_065/counter_v2_postcheck.py
+          cloud/task_065/voice_fields_repair.py
+          cloud/task_065/counter_v2_controller.py
+      - name: Install and verify CRM rehabilitation
+        id: execute
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          set +e
+          python3 cloud/task_065/counter_v2_controller.py
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Commit evidence
+        run: |
+          python3 -m json.tool cloud/task_065/evidence/counter_v2_hotfix.json >/dev/null
+          git add -- cloud/task_065/evidence/counter_v2_hotfix.json cloud/task_065/COUNTER_V2_REPORT.md
+          git config user.name 'task065-crm-rehabilitation'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task_065: record CRM rehabilitation v2 result'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || exit 1
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt * 2))
+          done
+      - name: Require PASS
+        run: |
+          test "${{ steps.execute.outputs.exit_code }}" = "0"
+          python3 - <<'PY'
+          import json
+          value = json.load(open('cloud/task_065/evidence/counter_v2_hotfix.json', encoding='utf-8'))
+          assert value['status'] == 'PASS', value.get('errors')
+          assert value['postcheck']['concurrency_test']['batch_17']['session_saved'] == 17
+          assert value['postcheck']['concurrency_test']['capacity_100']['saved_unique'] == 100
+          assert value['postcheck']['voice_regression']['ok'] is True
+          assert value['field_repair']['after']['fuel'] == 'LPI'
+          assert value['field_repair']['after']['engine_cc'] == 2000
+          assert value['field_repair']['after']['color'] == 'белый'
+          PY
