@@ -1,5 +1,5 @@
 name: task067-crm-online-guard-health-probe
-# probe-revision: 12
+# probe-revision: 13
 
 on:
   push:
@@ -75,19 +75,48 @@ jobs:
           if isinstance(tasks, dict):
               tasks = tasks.get('tasks') or tasks.get('objects') or tasks.get('results') or []
           selected = []
+          always_on_logs = {}
           for item in tasks if isinstance(tasks, list) else []:
               if not isinstance(item, dict):
                   continue
               command = str(item.get('command') or '').strip()
               description = str(item.get('description') or '')
               if command == 'python3.10 /home/Carix/start_safe.py' or description.startswith('task067'):
+                  task_id = item.get('id')
+                  detail = item
+                  if task_id is not None:
+                      try:
+                          value = json.loads(request('always_on/%s/' % task_id).decode('utf-8'))
+                          if isinstance(value, dict):
+                              detail = value
+                      except Exception as exc:
+                          detail = dict(item)
+                          detail['detail_error'] = type(exc).__name__
+                  log_path = str(detail.get('logfile') or detail.get('log_file') or
+                                 item.get('logfile') or item.get('log_file') or '')
                   selected.append({
-                      'id': item.get('id'), 'command': command,
+                      'id': task_id, 'command': command,
                       'description': description, 'enabled': item.get('enabled'),
-                      'status': item.get('status'),
-                      'logfile': str(item.get('logfile') or item.get('log_file') or '').rsplit('/', 1)[-1],
+                      'status': detail.get('status'),
+                      'running': detail.get('running'), 'pid': detail.get('pid'),
+                      'last_run': detail.get('last_run'),
+                      'last_start': detail.get('last_start'),
+                      'last_stop': detail.get('last_stop'),
+                      'keys': sorted(str(key) for key in detail.keys()),
+                      'logfile': log_path,
                   })
+                  if log_path:
+                      try:
+                          raw = get(log_path, missing=True, limit=2_000_000)
+                          if raw:
+                              lines = raw.decode('utf-8', errors='replace').splitlines()[-160:]
+                              always_on_logs[log_path.rsplit('/', 1)[-1]] = [redacted(line) for line in lines[-80:]]
+                          else:
+                              always_on_logs[log_path.rsplit('/', 1)[-1]] = ['LOG_NOT_FOUND']
+                      except Exception as exc:
+                          always_on_logs[log_path.rsplit('/', 1)[-1]] = ['LOG_READ_%s' % type(exc).__name__]
           result['always_on'] = selected
+          result['always_on_logs'] = always_on_logs
           tree_raw = request('files/tree/?' + urllib.parse.urlencode({'path': root + '/'}), limit=2_000_000)
           tree = json.loads(tree_raw.decode('utf-8'))
           if isinstance(tree, dict):
@@ -97,16 +126,18 @@ jobs:
                              and '/backups/' not in path and '/.local/' not in path)[:20]
           signal = re.compile(r'Traceback|Error|Exception|database is locked|timed?\s*out|crm[_ -]?guard', re.I)
           log_signals = {}
+          log_tails = {}
           for path in log_paths:
               raw = get(path, missing=True, limit=2_000_000)
               if not raw:
                   continue
               lines = raw.decode('utf-8', errors='replace').splitlines()[-1200:]
+              log_tails[path.rsplit('/', 1)[-1]] = [redacted(line) for line in lines[-60:]]
               hits = [redacted(line) for line in lines if signal.search(line)]
               if hits:
                   log_signals[path.rsplit('/', 1)[-1]] = hits[-80:]
           result['runtime_logs'] = {'paths': [p.rsplit('/', 1)[-1] for p in log_paths],
-                                    'signals': log_signals}
+                                    'signals': log_signals, 'tails': log_tails}
           db_source = get(root + '/db.py', limit=1_000_000).decode('utf-8')
           db_tree = ast.parse(db_source)
           db_selected = {}
