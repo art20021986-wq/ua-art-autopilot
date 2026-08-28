@@ -105,6 +105,14 @@ def validate_card(source: str, identifier: str, expected_stage: int,
         raise RuntimeError("FORBIDDEN_SEA_WORDING_REMAINS:" + identifier)
     if re.search(r'class=["\'][^"\']*\b(?:mcf-etap|mcf-track|mcf-diag-off)\b', source, re.IGNORECASE):
         raise RuntimeError("LEGACY_DUPLICATE_REMAINS:" + identifier)
+    if re.search(
+        r'<div\b(?=[^>]*class=["\'][^"\']*\bzag\b[^"\']*["\'])[^>]*>\s*'
+        r'(?:Где\s+(?:машина|автомобиль)\s+сейчас|'
+        r'Де\s+(?:машина|автомобіль|авто)\s+зараз)\s*</div\s*>',
+        source,
+        re.IGNORECASE,
+    ):
+        raise RuntimeError("NATIVE_STAGE_DUPLICATE_REMAINS:" + identifier)
     if 'name="ua-art-contract" content="UA-CARDS-FERRY-VIN-001-V1.1"' not in source:
         raise RuntimeError("CACHE_CONTRACT_META_MISSING:" + identifier)
 
@@ -189,6 +197,7 @@ def main() -> int:
                 "video_count": root_contract["video_count"],
                 "forbidden_sea_terms": 0,
                 "legacy_duplicate_ui": 0,
+                "native_stage_duplicate_ui": 0,
             })
         catalog_status, catalog_data = fetch(BASE + "katalog.html")
         if catalog_status != 200:
