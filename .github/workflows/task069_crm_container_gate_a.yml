@@ -1,0 +1,73 @@
+name: task069-crm-container-gate-a
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task069_crm_container_gate_a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task069-crm-container-gate-a
+  cancel-in-progress: false
+
+jobs:
+  gate-a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Build and test isolated candidate
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 -m py_compile cloud/task_069/gate_a.py
+          python3 cloud/task_069/gate_a.py
+          python3 - <<'PY'
+          import json
+          value = json.load(open('cloud/task_069/evidence/gate_a.json', encoding='utf-8'))
+          assert value['status'] == 'PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL'
+          assert value['production_touched'] is False
+          assert value['crm_db_write'] is False
+          assert value['service_reload'] is False
+          assert value['changed_functions'] == ['_ekran', 'posle_statusa', 'prinyat']
+          assert all(v is True or k == 'runtime_llm_tokens' for k, v in value['checks'].items())
+          print('TASK069_ISOLATED_GATE_A_PASS')
+          PY
+
+      - name: Commit bounded Gate A evidence
+        run: |
+          git add -- cloud/task_069/evidence/gate_a.json
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            test "$path" = 'cloud/task_069/evidence/gate_a.json' || exit 1
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task069-gate-a'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task_069: record isolated container Gate A'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main || exit 1
+              if git push origin HEAD:main; then break; fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload Gate A evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task069-gate-a-${{ github.run_id }}
+          path: cloud/task_069/evidence/gate_a.json
+          if-no-files-found: error
+          retention-days: 30
