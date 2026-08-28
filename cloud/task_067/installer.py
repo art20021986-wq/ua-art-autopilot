@@ -18,6 +18,9 @@ import tempfile
 
 CONTRACT = "CRM-ONLINE-GUARD-001-V1.3"
 MARKER = "CRM-ONLINE-GUARD-001-V1.3"
+VOICE_RESTORE_MARKER = "CRM-VOICE-RESTORE-01-V1.3.1"
+INPUT_DB_MARKER = "CRM-INPUT-DB-ROUTES-02-V1.3.2"
+CONTAINER_MARKER = "CRM-CONTAINER-ROUTES-02-V1.3.2"
 DB_MARKER = "CRM-DB-BOUNDED-QUEUE-001"
 ROOT = pathlib.Path("/home/Carix")
 STAGING = ROOT / "autopilot_inbox" / "cloud" / "task_047_ferry_discovery"
@@ -38,6 +41,7 @@ PATHS = {
     "team_bot.py": ROOT / "team_bot.py",
     "lead_bot.py": ROOT / "lead_bot.py",
     "db.py": ROOT / "db.py",
+    "konteyner.py": ROOT / "konteyner.py",
     "crm_online_guard.py": ROOT / "crm_online_guard.py",
 }
 EXPECTED = {
@@ -69,6 +73,22 @@ EXPECTED_DEFS = {
     "db_connection_class": "8f2ea10d7ef423768646706a07ec14c9b793e74d070e6cab85179e5bbc225823",
     "db_connect": "3257e05c559e7c2d6d39ba0ca1b66818f6283909a411bba695d21517b29afe15",
     "db_update_card_field": "1749f0eef8fc799ed5b08bd6a4482fad3126199d8c40207b76143b263349a1b1",
+}
+
+# Exact live v1.3 definitions audited read-only on 29.08.2026 before the
+# voice-restoration hotfix.  They make the incremental upgrade fail closed.
+VOICE_V13_DEFS = {
+    "catch_message": "2b02ec1cf0cc649618f88de40fbb3a8e37d325828b4e925c9b15dc75859a850c",
+    "transcribe": "731c2b98652fb0ddecc3711d81b78c8eca5e84084327e6539b1c58d8e1d56fc4",
+}
+
+INPUT_V13_DEFS = {
+    "set_field": "8f6ea6455a0f950573e4433f3bc273471c617b679d37ae96b803cfbf492440e8",
+    "apply_value": "18c8dfc9f7cb6f5d4cf4e41a0fe02dbd07be9b21f142a072e90bfac602f7388b",
+    "stage_set": "f5f962f3bace303d314e82cf053e95000d601e9e827e7cd181a4bd3e0a4d650e",
+    "register": "eae5c22d3d823e6524b6ec2823e03d46deb2d38dbfeb80e189508aadc41cc5e3",
+    "container_write": "fc1309f3d134b0730a569182fa2ef19fda15325d77dd0bd0361d412ae8f8a519",
+    "container_accept": "e82be6158f5f67025b88e5e17f70e77b814e0c239acbfbb23bc4e124baa02ee7",
 }
 
 
@@ -181,12 +201,8 @@ DB_CONNECT = r'''def connect():
     # CRM-DB-BOUNDED-QUEUE-001: a user operation never waits 20 seconds.
     conn = sqlite3.connect(DB_FILE, timeout=2.0, factory=Soedinenie)
     conn.row_factory = sqlite3.Row
-    # Keep rollback-journal mode: the home directory may be on shared storage,
-    # where SQLite WAL shared memory is not a safe assumption.
-    try:
-        sqlite3.Connection.execute(conn, "PRAGMA journal_mode=DELETE")
-    except Exception:
-        pass
+    # Journal mode is a database-level deployment setting. Reissuing it on
+    # every hot-path connection may itself request a lock and stall callbacks.
     sqlite3.Connection.execute(conn, "PRAGMA busy_timeout=450")
     sqlite3.Connection.execute(conn, "PRAGMA foreign_keys=ON")
     return conn
@@ -244,6 +260,220 @@ DB_UPDATE_FIELD = r'''def update_card_field(table: str, card_id: int, field: str
         else:
             raise
     return {"queued": False}
+'''
+
+
+SET_FIELD_RESTORE = r'''# CRM-INPUT-DB-ROUTES-02-V1.3.2: return durable-write state to callers.
+def set_field(card_id, field, value, actor_id):
+    """Write one non-empty field and expose whether it entered the durable queue."""
+    if value in (None, "", []):
+        return {"queued": False, "skipped": True}
+    return db.update_card_field("cars", int(card_id), field, value, actor_id)
+'''
+
+
+APPLY_VALUE_RESTORE = r'''# CRM-INPUT-DB-ROUTES-02-V1.3.2: selected field accepts text or voice scalar.
+def apply_value(card_id, field, raw, actor_id):
+    """Normalize the selected CRM field, commit/queue it, then report truthfully."""
+    value = (raw or "").strip()
+    if not value:
+        return False, "Пустое значение не записываю."
+
+    if field == "eta_days":
+        n = _v169_parse_number(value)
+        if n is None:
+            return False, "Пришлите число дней, например 45."
+        if n < 0 or n > 400:
+            return False, "Слишком большой срок. Пришлите число дней до 400."
+        eta = _date.today() + _td(days=n)
+        first = set_field(card_id, "eta_manual", eta.isoformat(), actor_id)
+        second = set_field(card_id, "days_to_kyiv", n, actor_id)
+        queued = any(isinstance(item, dict) and item.get("queued")
+                     for item in (first, second))
+        if queued:
+            return True, "Принято: %d дней. Сохраняю из очереди." % n
+        return True, "До прибытия %d дней · %s" % (n, eta.strftime("%d.%m.%Y"))
+
+    if field in NUMERIC:
+        num = _v169_parse_number(value)
+        if num is None:
+            return False, "Не разобрал число. Пришлите цифрами или словами."
+        limits = {
+            "year": (1900, 2100), "engine_cc": (400, 12000),
+            "mileage_km": (0, 2_000_000), "price_uah": (0, 100_000_000),
+        }
+        low, high = limits.get(field, (0, 1_000_000_000))
+        if not low <= int(num) <= high:
+            return False, "Число вне допустимого диапазона для этого поля."
+        result = set_field(card_id, field, int(num), actor_id)
+        if isinstance(result, dict) and result.get("queued"):
+            return True, "Принято: %s. Сохраняю из очереди." % S.num(int(num))
+        saved = card_of(card_id) or {}
+        if str(saved.get(field) or "") != str(int(num)):
+            return False, "Запись не подтверждена. Значение оставлено для повторной попытки."
+        return True, "Записано: %s" % S.num(int(num))
+
+    if field == "vin":
+        vin = value.upper().replace(" ", "")
+        ok, msg = S.check_vin(vin)
+        if not ok:
+            return False, "VIN не принят: %s" % msg
+        result = set_field(card_id, field, vin, actor_id)
+        if isinstance(result, dict) and result.get("queued"):
+            return True, "VIN принят. Сохраняю из очереди."
+        return True, "Записано: %s" % vin
+
+    result = set_field(card_id, field, value, actor_id)
+    if isinstance(result, dict) and result.get("queued"):
+        return True, "Принято. Сохраняю из очереди."
+    return True, "Записано."
+'''
+
+
+STAGE_SET_RESTORE = r'''# CRM-INPUT-DB-ROUTES-02-V1.3.2: stage writes never leak DB locks.
+async def stage_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q,)
+    drop_wait(context)
+    _, cid, code = q.data.split(":")
+    cid = int(cid)
+    card_before = card_of(cid) or {}
+    status_result = set_field(cid, "status", code, q.from_user.id)
+
+    if code == "ge_waiting" and not card_before.get("ge_arrived"):
+        set_field(cid, "ge_arrived", _date.today().isoformat(), q.from_user.id)
+    if code == "ge_to_kyiv":
+        released = card_before.get("ge_released")
+        if not released:
+            released = _date.today().isoformat()
+            set_field(cid, "ge_released", released, q.from_user.id)
+        if not card_before.get("eta_manual"):
+            try:
+                base = _dt.strptime(str(released)[:10], "%Y-%m-%d").date()
+            except Exception:
+                base = _date.today()
+            eta = base + _td(days=DNEI_GRUZIA_UKRAINA)
+            set_field(cid, "eta_manual", eta.isoformat(), q.from_user.id)
+            set_field(cid, "days_to_kyiv", DNEI_GRUZIA_UKRAINA, q.from_user.id)
+
+    rows = [
+        [InlineKeyboardButton("🚚 Доставка и этапы", callback_data="car_stage:%d" % cid)],
+        [InlineKeyboardButton("← Вернуться к карточке", callback_data="car_open:%d" % cid)],
+    ]
+    if isinstance(status_result, dict) and status_result.get("queued"):
+        await q.message.reply_text(
+            "Этап принят: %s. База занята; сохраняю из надёжной очереди."
+            % _v170_ferry_label(S.status_label(code)),
+            reply_markup=InlineKeyboardMarkup(rows))
+        raise ApplicationHandlerStop
+
+    card = card_of(cid) or {}
+    saved = card.get("status")
+    if saved != code:
+        await q.message.reply_text(
+            "Запись этапа не подтверждена. Сейчас: %s"
+            % _v170_ferry_label(S.status_label(saved)),
+            reply_markup=InlineKeyboardMarkup(rows))
+        raise ApplicationHandlerStop
+    lines = [card.get("auto_number") or "#%d" % cid,
+             "Этап сохранён: %s" % _v170_ferry_label(S.status_label(saved))]
+    left, eta = eta_of(card)
+    if left is not None:
+        lines.append("До выдачи в Киеве: %d дней · %s" % (
+            left, eta.strftime("%d.%m.%Y")))
+    await q.message.reply_text("\n".join(lines), reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+'''
+
+
+CONTAINER_HELPERS = r'''# CRM-CONTAINER-ROUTES-02-V1.3.2: bounded ACK and durable writes.
+async def _v170_cont_ack(q):
+    import asyncio as _v170_asyncio
+    try:
+        await _v170_asyncio.wait_for(q.answer(), timeout=0.7)
+        return True
+    except Exception:
+        return False
+'''
+
+
+CONTAINER_WRITE = r'''def _pisat(cid, pole, znachenie, kto):
+    return db.update_card_field("cars", int(cid), pole, znachenie, kto)
+'''
+
+
+CONTAINER_ACCEPT = r'''async def prinyat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    wait = context.user_data.get("cont_wait")
+    if not wait:
+        return
+    msg = update.effective_message
+    if not msg or not msg.text:
+        return
+    cid, pole = wait["card_id"], wait["field"]
+    kto, syroe = update.effective_user.id, msg.text.strip()
+
+    if pole == "sea_container":
+        znachenie = re.sub(r"[^A-Za-z0-9]", "", syroe).upper()
+        if not OBRAZEC_NOMERA.match(znachenie):
+            await msg.reply_text(
+                "Это не похоже на номер контейнера. Нужно 4–20 латинских букв/цифр.",
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                    "Отмена", callback_data="cont_menu:%d" % cid)]]))
+            raise ApplicationHandlerStop
+    elif pole == "sea_date_out":
+        znachenie = _v_iso(syroe)
+        if not znachenie:
+            await msg.reply_text("Не понял дату. Нужен вид ДД.ММ.ГГГГ.")
+            raise ApplicationHandlerStop
+    else:
+        parsed = None
+        try:
+            import cars_ui as _v170_cars
+            parsed = _v170_cars._v169_parse_number(syroe)
+        except Exception:
+            pass
+        if parsed is not None and 0 <= int(parsed) <= 900:
+            znachenie = time.strftime(
+                "%Y-%m-%d", time.localtime(time.time() + 7 * 3600 + int(parsed) * 86400))
+        else:
+            znachenie = _v_iso(syroe)
+        if not znachenie:
+            await msg.reply_text("Не понял значение. Пришлите число дней или ДД.ММ.ГГГГ.")
+            raise ApplicationHandlerStop
+
+    try:
+        result = _pisat(cid, pole, znachenie, kto)
+    except Exception as exc:
+        log.warning("konteyner: write failed %s: %s", pole, exc)
+        await msg.reply_text("Не удалось принять значение. Оно не потеряно — повторите после возврата.")
+        raise ApplicationHandlerStop
+    context.user_data.pop("cont_wait", None)
+
+    rows = InlineKeyboardMarkup([[InlineKeyboardButton(
+        "← К карточке", callback_data="car_open:%d" % cid)]])
+    if isinstance(result, dict) and result.get("queued"):
+        await msg.reply_text(
+            "Принято: %s. База занята; сохраняю из надёжной очереди." % znachenie,
+            reply_markup=rows)
+        raise ApplicationHandlerStop
+
+    posle = _karta(cid) or {}
+    stalo = str(posle.get(pole) or "").strip()
+    if stalo != str(znachenie):
+        context.user_data["cont_wait"] = wait
+        await msg.reply_text("Запись не подтверждена. Пришлите значение ещё раз.", reply_markup=rows)
+        raise ApplicationHandlerStop
+    if pole == "sea_container":
+        podpis = "Номер контейнера сохранён: %s" % stalo
+    elif pole == "sea_date_out":
+        podpis = "Дата отправления сохранена: %s" % (_krasivo(stalo) or stalo)
+    else:
+        podpis = "Срок прибытия сохранён: %s" % (_krasivo(stalo) or stalo)
+    _peresobrat()
+    text, kb = _ekran(posle)
+    await msg.reply_text(podpis + "\n\n" + text,
+                         parse_mode="HTML", reply_markup=kb)
+    raise ApplicationHandlerStop
 '''
 
 
@@ -748,6 +978,250 @@ TRANSCRIBE = r'''def transcribe(file_bytes: bytes, filename="voice.ogg") -> str:
 '''
 
 
+TRANSCRIBE_RESTORE = r'''def transcribe(file_bytes: bytes, filename="voice.ogg") -> str:
+    """Last-known-good short-voice STT for the Russian-speaking owner.
+
+    English automotive terms and Ukrainian words remain in the prompt.  A
+    second transcription is not hidden here: one Telegram voice means one STT
+    request, so billing and idempotency stay predictable.
+    """
+    # CRM-VOICE-RESTORE-01-V1.3.1
+    key = openai_key()
+    if not key:
+        return ""
+    try:
+        hint = ("Автомобильная CRM. Короткая русская речь владельца с возможными "
+                "украинскими и английскими терминами. Точно сохраняй VIN, LPI, LPG, "
+                "пробег, цену, статус, объём двигателя, цвет, привод и КПП. "
+                + str(TRANSCRIBE_HINT or ""))
+        result = _post_multipart(
+            "https://api.openai.com/v1/audio/transcriptions",
+            {"Authorization": f"Bearer {key}"},
+            {"model": TRANSCRIBE_MODEL, "language": "ru", "prompt": hint},
+            "file", filename, file_bytes)
+        return (result.get("text") or "").strip()
+    except urllib.error.HTTPError as e:
+        logging.error(f"Расшифровка не удалась: {e.code} {e.read()[:200]}")
+    except Exception as e:
+        logging.error(f"Расшифровка не удалась: {e}")
+    return ""
+'''
+
+
+VOICE_RESTORE_HELPERS = r'''# CRM-VOICE-RESTORE-01-V1.3.1: semantic fallback for missing fields only.
+def _v169_voice_schema(fast, ai_filter):
+    # condition_text is already present in ai_filter.  price_uah and status are
+    # real CRM fields that the previous fast-only whitelist accidentally lost.
+    return set(fast.car_fields(ai_filter)) | {"price_uah", "status"}
+
+
+def _v170_ferry_label(label):
+    """One CRM display vocabulary: Море/В море -> Паром/На пароме."""
+    import re as _v170_re
+    value = str(label or "")
+    value = _v170_re.sub(r"(?i)\bв\s+море\b", "На пароме", value)
+    value = _v170_re.sub(r"(?i)\bна\s+море\b", "На пароме", value)
+    value = _v170_re.sub(r"(?i)\bморе\b", "Паром", value)
+    return value
+
+
+def _v170_anchor_ferry_terms():
+    """Anchor labels once without changing persisted status codes."""
+    try:
+        S.STAGES = [(number, "Паром" if int(number) == 2 else _v170_ferry_label(name))
+                    for number, name in S.STAGES]
+        S.STATUSES = {
+            code: (spec[0], _v170_ferry_label(spec[1]))
+            for code, spec in S.STATUSES.items()
+        }
+    except Exception as exc:
+        log.warning("CRM ferry vocabulary not anchored: %s", exc)
+
+
+def _v169_parse_number(text):
+    import re as _v169_re
+    value = str(text or "").casefold().replace("ё", "е")
+    digit = _v169_re.search(r"(?<!\d)(\d{1,3}(?:[ .]\d{3})+|\d+(?:[.,]\d+)?)(?!\d)", value)
+    if digit:
+        raw = digit.group(1).replace(" ", "")
+        try:
+            number = float(raw.replace(",", "."))
+        except ValueError:
+            number = 0
+        if _v169_re.search(r"\b(?:тыс\w*|тис\w*|thousand|k)\b", value) and number < 10000:
+            number *= 1000
+        return int(round(number)) if number > 0 else None
+    words = {
+        "один": 1, "одна": 1, "одну": 1, "одна": 1, "раз": 1,
+        "два": 2, "две": 2, "дві": 2, "три": 3, "четыре": 4, "чотири": 4,
+        "пять": 5, "п'ять": 5, "шість": 6, "шесть": 6, "семь": 7,
+        "сім": 7, "восемь": 8, "вісім": 8, "девять": 9, "дев'ять": 9,
+        "десять": 10, "одиннадцать": 11, "двенадцать": 12, "тринадцать": 13,
+        "четырнадцать": 14, "пятнадцать": 15, "шестнадцать": 16,
+        "семнадцать": 17, "восемнадцать": 18, "девятнадцать": 19,
+        "двадцать": 20, "тридцать": 30, "сорок": 40, "пятьдесят": 50,
+        "шестьдесят": 60, "семьдесят": 70, "восемьдесят": 80, "девяносто": 90,
+        "сто": 100, "двести": 200, "триста": 300, "четыреста": 400,
+        "пятьсот": 500, "шестьсот": 600, "семьсот": 700,
+        "восемьсот": 800, "девятьсот": 900,
+        "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+        "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+        "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50,
+        "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90,
+    }
+    total = current = 0
+    seen = False
+    for token in _v169_re.findall(r"[a-zа-яіїєґ'’]+", value):
+        token = token.replace("’", "'")
+        if token in ("hundred",):
+            current = max(1, current) * 100
+            seen = True
+        elif token.startswith(("тысяч", "тисяч")) or token == "thousand":
+            total += max(1, current) * 1000
+            current = 0
+            seen = True
+        elif token in words:
+            current += words[token]
+            seen = True
+    number = total + current
+    return number if seen and number > 0 else None
+
+
+def _v169_status_code(text):
+    import re as _v169_re
+    value = str(text or "").casefold().replace("ё", "е")
+    for code, spec in getattr(S, "STATUSES", {}).items():
+        try:
+            label = str(spec[1]).casefold().replace("ё", "е")
+        except Exception:
+            label = ""
+        if label and (label in value or value in label):
+            return code
+    stage = None
+    if _v169_re.search(r"коре|korea", value):
+        stage = 1
+    elif _v169_re.search(r"паром|море|sea|ferry|ship", value):
+        stage = 2
+    elif _v169_re.search(r"грузи|georgia|поти|батуми", value):
+        stage = 3
+    elif _v169_re.search(r"киев|київ|kyiv|kiev", value):
+        stage = 4
+    if stage is not None:
+        for code, spec in getattr(S, "STATUSES", {}).items():
+            try:
+                if int(spec[0]) == stage:
+                    return code
+            except Exception:
+                pass
+    return None
+
+
+def _v169_extra_fields(text, allowed):
+    import re as _v169_re
+    permitted = set(allowed or ())
+    original = str(text or "").strip()
+    value = original.casefold().replace("ё", "е")
+    result = {}
+    if "mileage_km" in permitted:
+        match = (_v169_re.search(
+            r"(?:пробег(?![а-я])|пробіг(?![а-яіїєґ])|mileage\b|odometer\b)"
+            r"\s*(?:[:=\-–—]|составляет|is)?\s*([^,;.]+)",
+            value)
+            or _v169_re.search(
+                r"([^,;.]{1,90}?)\s*(?:км|километр\w*|кілометр\w*|km)?\s*"
+                r"(?:пробега|пробігу|mileage|odometer)\b", value))
+        if match:
+            number = _v169_parse_number(match.group(1))
+            if number and 0 < number <= 2_000_000:
+                result["mileage_km"] = number
+    if "price_uah" in permitted:
+        match = (_v169_re.search(
+            r"(?:цена(?:\s+продажи)?|стоимость|ціна(?:\s+продажу)?|sale\s+price|price)"
+            r"\s*(?:[:=\-–—]|составляет|is)?\s*([^,;.]+)", value)
+            or _v169_re.search(
+                r"([^,;.]{1,80}?)\s*(?:доллар\w*|usd|\$)?\s*"
+                r"(?:цена|стоимость|ціна|sale\s+price|price)\b", value))
+        if match:
+            number = _v169_parse_number(match.group(1))
+            if number and 100 <= number <= 100_000_000:
+                result["price_uah"] = number
+    if "condition_text" in permitted:
+        match = _v169_re.search(
+            r"(?:описание|опиши|опис|тех(?:ническое)?\s+состояние|description)"
+            r"\s*(?:[:=\-–—]|автомобиля|машины|car|такое)?\s*(.{3,})$", original,
+            _v169_re.I)
+        if match:
+            result["condition_text"] = match.group(1).strip()[:3500]
+    if "status" in permitted and _v169_re.search(
+            r"статус|этап|етап|stage|коре|паром|море|грузи|киев|київ|ferry|sea|georgia|kyiv",
+            value):
+        status = _v169_status_code(value)
+        if status:
+            result["status"] = status
+    return result
+
+
+def _v169_semantic_fields(text, allowed, timeout=1.8):
+    """One minimal Claude Haiku call, used only after the zero-token path is empty."""
+    import json as _v169_json
+    import re as _v169_re
+    import assistant as _v169_assistant
+    import ai_fast_schema as _v169_fast
+    import ai_filter as _v169_filter
+    permitted = set(allowed or ())
+    if not permitted or not _v169_assistant.enabled():
+        return {}
+    labels = {field: LABELS_ALL.get(field, field) for field in sorted(permitted)}
+    system = (
+        "Ты точный парсер голоса CRM автомобиля. Верни только один JSON-объект без markdown. "
+        "Ключи могут быть только из whitelist пользователя. Извлекай только сказанное, ничего "
+        "не выдумывай. Числа словами преобразуй в числа. LPI не заменяй на LPG. Для status "
+        "верни услышанное название этапа. Если данных нет, верни {}."
+    )
+    prompt = ("Whitelist недостающих полей: " +
+              _v169_json.dumps(labels, ensure_ascii=False, sort_keys=True) +
+              "\nРаспознанная речь: " + str(text or "")[:1200])
+    answer = _v169_assistant.ask(
+        prompt, card=None, timeout=max(0.4, float(timeout)), web=False,
+        system=system, max_tokens=260)
+    if not answer:
+        return {}
+    cleaned = _v169_re.sub(r"^```(?:json)?|```$", "", answer.strip(), flags=_v169_re.M).strip()
+    match = _v169_re.search(r"\{.*\}", cleaned, _v169_re.S)
+    if not match:
+        return {}
+    try:
+        raw = _v169_json.loads(match.group(0))
+    except Exception:
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    raw = {str(key): value for key, value in raw.items()
+           if str(key) in permitted and value not in (None, "", [], {})}
+    standard = set(_v169_fast.car_fields(_v169_filter)) & permitted
+    normalized = {}
+    if standard:
+        value = _v169_fast.clean_car(
+            _v169_fast.parsed_from_data({key: raw[key] for key in standard if key in raw}),
+            _v169_filter, str(text or ""))
+        normalized.update({key: item for key, item in value.items()
+                           if key in standard and item not in (None, "", [])})
+    if "price_uah" in permitted and "price_uah" in raw:
+        number = _v169_parse_number(raw["price_uah"])
+        if number and 100 <= number <= 100_000_000:
+            normalized["price_uah"] = number
+    if "condition_text" in permitted and "condition_text" in raw:
+        value = str(raw["condition_text"]).strip()
+        if value:
+            normalized["condition_text"] = value[:3500]
+    if "status" in permitted and "status" in raw:
+        status = _v169_status_code(raw["status"])
+        if status:
+            normalized["status"] = status
+    return normalized
+'''
+
+
 CLIENT_HELPERS = r'''# CRM-ONLINE-GUARD-001-V1.3: fast client callbacks and cached read-only catalog.
 _V168_CATALOG_CACHE = []
 _V168_CATALOG_AT = 0.0
@@ -945,6 +1419,196 @@ CLIENT_CAR_SCREEN = r'''async def car_screen(update: Update, context: ContextTyp
         _v168_asyncio.create_task(media_tail())
     raise ApplicationHandlerStop
 '''
+
+
+def upgrade_v13_voice(source: str) -> str:
+    """Incrementally restore semantic voice parsing on the live v1.3 source."""
+    if VOICE_RESTORE_MARKER in source:
+        return source
+    if MARKER not in source:
+        raise InstallError("VOICE_UPGRADE_REQUIRES_V13")
+    current_catch = segment(source, "catch_message")
+    if sha(current_catch.encode()) != VOICE_V13_DEFS["catch_message"]:
+        raise InstallError("VOICE_V13_SHA:catch_message")
+
+    # Correct field aliases in the explicit-correction router.
+    source = replace_once(
+        source,
+        '        "transmission": r"кпп|коробк|трансмис|transmission|automatic|manual|автомат|механик",',
+        '        "gearbox": r"кпп|коробк|трансмис|transmission|automatic|manual|автомат|механик",',
+        "voice_gearbox_schema")
+    source = replace_once(
+        source,
+        '        "description": r"описан|опис|description",',
+        '        "condition_text": r"описан|опис|состояни|description",',
+        "voice_description_schema")
+    source = insert_before(source, "voice_change_plan", VOICE_RESTORE_HELPERS)
+
+    catch = current_catch
+    old_parse = """            schema_allowed = set(fast.car_fields(ai_filter))
+            card = card_of(card["id"]) or card
+            correction = _v168_is_correction(input_text)
+            if correction:
+                allowed = _v168_named_fields(input_text, schema_allowed)
+            else:
+                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}
+            data = {}
+            if allowed:
+                data.update(local_ocr.fields_from_text(input_text, allowed))
+                data.update(fast.fast_text_data(input_text, ai_filter))
+                if data:
+                    data = fast.clean_car(fast.parsed_from_data(data), ai_filter, "")
+                data = {key: value for key, value in (data or {}).items()
+                        if key in allowed and value not in (None, "", [])}
+                data.update(_v167_voice_explicit_fields(input_text, allowed))
+            changes, skipped = voice_change_plan(card, data, allowed, correction)"""
+    new_parse = """            schema_allowed = _v169_voice_schema(fast, ai_filter)
+            card = card_of(card["id"]) or card
+            correction = _v168_is_correction(input_text)
+            if correction:
+                allowed = _v168_named_fields(input_text, schema_allowed)
+            else:
+                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}
+
+            # Parse against the complete safe schema first, so a repeated value
+            # is reported as already filled instead of falsely "not recognized".
+            data_all = {}
+            if schema_allowed:
+                data_all.update(local_ocr.fields_from_text(input_text, schema_allowed))
+                data_all.update(fast.fast_text_data(input_text, ai_filter))
+                if data_all:
+                    data_all = fast.clean_car(
+                        fast.parsed_from_data(data_all), ai_filter, input_text)
+                data_all = {key: value for key, value in (data_all or {}).items()
+                            if key in schema_allowed and value not in (None, "", [])}
+                data_all.update(_v167_voice_explicit_fields(input_text, schema_allowed))
+                data_all.update(_v169_extra_fields(input_text, schema_allowed))
+            data = {key: value for key, value in data_all.items() if key in allowed}
+            already = [key for key in data_all
+                       if key not in allowed and not _v168_empty(card.get(key))]
+            semantic_used = False
+
+            # Restore the original meaningful AI behavior only when the fast,
+            # zero-token path found nothing.  The AI sees the transcript and
+            # missing-field whitelist, never the full card or media.
+            if not data and not already and allowed:
+                try:
+                    import crm_online_guard as _v169_guard
+                    semantic_allowed = _v169_guard.circuit_allows("voice_semantic")
+                except Exception:
+                    semantic_allowed = True
+                remaining = hard_deadline - time.monotonic() - 0.25
+                if semantic_allowed and remaining >= 0.55:
+                    semantic_used = True
+                    semantic_started = time.monotonic()
+                    semantic_error = False
+                    try:
+                        semantic = await asyncio.wait_for(
+                            asyncio.to_thread(
+                                _v169_semantic_fields, input_text, allowed,
+                                min(1.8, remaining)),
+                            timeout=remaining)
+                    except Exception:
+                        semantic = {}
+                        semantic_error = True
+                    data.update({key: value for key, value in (semantic or {}).items()
+                                 if key in allowed and value not in (None, "", [])})
+                    try:
+                        _v169_guard.circuit_result("voice_semantic", not semantic_error)
+                        _v169_guard.record_timing(
+                            "crm_voice_semantic", time.monotonic() - semantic_started,
+                            "ok" if data else "empty", card_id=card["id"])
+                    except Exception:
+                        pass
+            voice_elapsed = time.monotonic() - started
+            voice_note = ("1 смысловой AI-вызов" if semantic_used
+                          else "0 LLM-вызовов")
+            try:
+                import crm_online_guard as _v169_quality_guard
+                _v169_quality_guard.record_timing(
+                    "crm_voice_total", voice_elapsed,
+                    "ok" if (data or already) else "unrecognized",
+                    card_id=card["id"], detail=("semantic" if semantic_used else "fast"))
+            except Exception:
+                pass
+            changes, skipped = voice_change_plan(card, data, allowed, correction)"""
+    catch = replace_once(catch, old_parse, new_parse, "voice_semantic_restore")
+    catch = replace_once(
+        catch,
+        '                    "✅ %s дополнена:\\n%s\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов"\n'
+        '                    % (number, "\\n".join(lines), voice_elapsed or 0.0),',
+        '                    "✅ %s дополнена:\\n%s\\n\\n⏱ %.1f с · 1 расшифровка · %s"\n'
+        '                    % (number, "\\n".join(lines), voice_elapsed or 0.0, voice_note),',
+        "voice_cost_truth")
+    catch = replace_once(
+        catch, "            elif data and skipped and not override:",
+        "            elif (skipped or already) and not correction:",
+        "voice_undefined_override")
+    catch = replace_once(
+        catch,
+        '''                await thinking.edit_text(
+                    "Не распознал поле CRM. Назовите поле и значение, например: "
+                    "«привод передний». Карточка не изменена."
+                )''',
+        '''                missing_names = ", ".join(
+                    LABELS_ALL.get(field, field) for field in sorted(allowed))
+                heard = str(input_text or "").replace("\\n", " ").strip()[:220]
+                await thinking.edit_text(
+                    "Я услышал: «%s». Из доступных незаполненных полей не удалось "
+                    "уверенно извлечь значение. Ещё нужны: %s. Карточка не изменена."
+                    % (heard or "—", missing_names or "—")
+                )''',
+        "voice_diagnostic_reply")
+    source = replace_definition(
+        source, "catch_message", catch, VOICE_V13_DEFS["catch_message"])
+    return source
+
+
+def upgrade_v13_ai(source: str) -> str:
+    if VOICE_RESTORE_MARKER in source:
+        return source
+    return replace_definition(
+        source, "transcribe", TRANSCRIBE_RESTORE, VOICE_V13_DEFS["transcribe"])
+
+
+def upgrade_v13_input(source: str) -> str:
+    """Repair selected-field values, stage writes and CRM ferry vocabulary."""
+    if INPUT_DB_MARKER in source:
+        return source
+    if VOICE_RESTORE_MARKER not in source:
+        raise InstallError("INPUT_UPGRADE_REQUIRES_VOICE_RESTORE")
+    source = replace_definition(
+        source, "set_field", SET_FIELD_RESTORE, INPUT_V13_DEFS["set_field"])
+    source = replace_definition(
+        source, "apply_value", APPLY_VALUE_RESTORE, INPUT_V13_DEFS["apply_value"])
+    source = replace_definition(
+        source, "stage_set", STAGE_SET_RESTORE, INPUT_V13_DEFS["stage_set"])
+    register = segment(source, "register")
+    register = replace_once(
+        register,
+        '    _v168_start_guard(app, "crm_bot")',
+        '    _v168_start_guard(app, "crm_bot")\n    _v170_anchor_ferry_terms()',
+        "ferry_vocabulary_startup")
+    source = replace_definition(
+        source, "register", register, INPUT_V13_DEFS["register"])
+    return source
+
+
+def build_container(source: str) -> str:
+    """Make all container callbacks bounded and all writes queue-aware."""
+    if CONTAINER_MARKER in source:
+        return source
+    source = insert_before(source, "_pisat", CONTAINER_HELPERS)
+    source = replace_definition(
+        source, "_pisat", CONTAINER_WRITE, INPUT_V13_DEFS["container_write"])
+    source = replace_definition(
+        source, "prinyat", CONTAINER_ACCEPT, INPUT_V13_DEFS["container_accept"])
+    if source.count("await q.answer()") < 5:
+        raise InstallError("CONTAINER_ACK_BASELINE")
+    source = source.replace("await q.answer()", "await _v170_cont_ack(q)")
+    if "await q.answer()" in source:
+        raise InstallError("CONTAINER_UNSAFE_ACK")
+    return source
 
 
 def build_cars(source: str) -> str:
@@ -1159,26 +1823,42 @@ def validate_candidates(candidates):
         MARKER, "_v168_cas_write", "hard_deadline = started + 4.65",
         "correction = _v168_is_correction", "state == \"accepted\"",
         "media_mark", "Принято сейчас", "safe_callback_answer",
+        VOICE_RESTORE_MARKER, "_v169_semantic_fields",
+        'schema_allowed = _v169_voice_schema(fast, ai_filter)',
+        INPUT_DB_MARKER, "_v170_anchor_ferry_terms",
+        "Сохраняю из очереди", "_v169_parse_number(value)",
     )
     if any(value not in cars for value in required):
         raise InstallError("CARS_CONTRACT_MISSING")
-    if "override = bool(voice_object)" in cars or "до 15 секунд" in segment(cars, "catch_message"):
+    if ("override = bool(voice_object)" in cars
+            or "not override" in segment(cars, "catch_message")
+            or "до 15 секунд" in segment(cars, "catch_message")):
         raise InstallError("OLD_VOICE_CONTRACT_PRESENT")
     if "await q.answer(" in cars:
         raise InstallError("UNSAFE_CRM_ACK_PRESENT")
+    container = candidates["konteyner.py"]
+    if any(value not in container for value in (
+            CONTAINER_MARKER, "_v170_cont_ack", "return db.update_card_field",
+            "База занята; сохраняю из надёжной очереди")):
+        raise InstallError("CONTAINER_CONTRACT_MISSING")
+    if "await q.answer()" in container:
+        raise InstallError("UNSAFE_CONTAINER_ACK_PRESENT")
     client = candidates["client_ui.py"]
     if any(value not in client for value in (
             MARKER, "_v168_client_ack", "mode=ro", "media_tail", "client_catalog")):
         raise InstallError("CLIENT_CONTRACT_MISSING")
     if "await q.answer(" in client:
         raise InstallError("UNSAFE_CLIENT_ACK_PRESENT")
-    if '"language": "ru"' in candidates["ai.py"]:
-        raise InstallError("HARDCODED_STT_LANGUAGE")
+    if (VOICE_RESTORE_MARKER not in candidates["ai.py"]
+            or '"language": "ru"' not in candidates["ai.py"]):
+        raise InstallError("LAST_KNOWN_GOOD_STT_MISSING")
     db_source = candidates["db.py"]
     if any(value not in db_source for value in (
             DB_MARKER, "ZAMOK_OZHIDANIE = 2.0", "PRAGMA busy_timeout=450",
             "_queue_on_busy", "enqueue_field_update")):
         raise InstallError("DB_BOUNDED_QUEUE_CONTRACT")
+    if "PRAGMA journal_mode" in segment(db_source, "connect"):
+        raise InstallError("DB_HOT_JOURNAL_SWITCH_PRESENT")
     guard_source = candidates["crm_online_guard.py"]
     if any(value not in guard_source for value in (
             "enqueue_field_update", "field_spool", "FIELD_SPOOL_PATH")):
@@ -1196,6 +1876,8 @@ def build_all(original):
                if name != "crm_online_guard.py"}
     if MARKER in sources["cars_ui.py"]:
         candidates = dict(sources)
+        candidates["cars_ui.py"] = upgrade_v13_voice(candidates["cars_ui.py"])
+        candidates["ai.py"] = upgrade_v13_ai(candidates["ai.py"])
     else:
         for name, expected in EXPECTED.items():
             if sha(original[name]) != expected:
@@ -1204,12 +1886,16 @@ def build_all(original):
         candidates["cars_ui.py"] = build_cars(sources["cars_ui.py"])
         candidates["ai.py"] = replace_definition(
             sources["ai.py"], "transcribe", TRANSCRIBE, EXPECTED_DEFS["transcribe"])
+        candidates["cars_ui.py"] = upgrade_v13_voice(candidates["cars_ui.py"])
+        candidates["ai.py"] = upgrade_v13_ai(candidates["ai.py"])
         candidates["client_ui.py"] = build_client(sources["client_ui.py"])
         for name in ("run_all.py", "team_bot.py", "lead_bot.py"):
             if "drop_pending_updates=True" not in candidates[name]:
                 raise InstallError("DROP_PENDING_BASELINE:" + name)
             candidates[name] = candidates[name].replace(
                 "drop_pending_updates=True", "drop_pending_updates=False")
+    candidates["cars_ui.py"] = upgrade_v13_input(candidates["cars_ui.py"])
+    candidates["konteyner.py"] = build_container(candidates["konteyner.py"])
     if DB_MARKER not in candidates["db.py"]:
         candidates["db.py"] = build_db(sources["db.py"])
     guard = safe_read(GUARD_STAGED).decode("utf-8")
