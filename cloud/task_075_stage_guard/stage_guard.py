@@ -12,6 +12,7 @@ from urllib.parse import urljoin
 
 
 CONTRACT_ID = "CRM-CATALOG-STAGE-GUARD-003-V1.0"
+CATALOG_CARD_DEDUP_GUARD = "CATALOG-CARD-DEDUP-GUARD-083-V1.0"
 CARD_ID_RE = re.compile(r"UA-[0-9]{4,}", re.I)
 RASTER_RE = re.compile(r"\.(?:avif|jpe?g|png|webp)(?:[?#].*)?$", re.I)
 STAGE_KEYS = {1: "korea", 2: "more", 3: "gruzia", 4: "kiev"}
@@ -78,6 +79,16 @@ def media_count(value) -> int:
     except Exception:
         return 0
     return len(loaded) if isinstance(loaded, list) else 0
+
+
+def public_media_summary(photos: int, videos: int) -> str:
+    """Show useful media counts once; never render technical zero values."""
+    values = []
+    if photos > 0:
+        values.append("Фото: %d" % photos)
+    if videos > 0:
+        values.append("Видео: %d" % videos)
+    return " · ".join(values) or "Медиа готовятся"
 
 
 def title(row: Mapping) -> str:
@@ -254,6 +265,7 @@ def render_card(row: Mapping, photo_url: str) -> str:
     vin = str(row.get("vin") or "VIN НЕ УКАЗАН").upper()
     photos = media_count(row.get("photos"))
     videos = media_count(row.get("videos"))
+    media = public_media_summary(photos, videos)
     eta_ru, eta_uk = public_eta(row, stage)
     eta = (
         '<div class="ua-stage-card-v2-eta"><span class="ua075-ru">{eta_ru}</span>'
@@ -273,7 +285,7 @@ def render_card(row: Mapping, photo_url: str) -> str:
         '<div class="ua-stage-card-v2-spec">{mileage} км · {engine} см³ · {fuel} · {gearbox}</div>'
         '{eta}'
         '<div class="ua-stage-card-v2-vin"><span>VIN <b>{vin}</b></span>'
-        '<i>VIN ПРОВЕРЕН</i><small>Фото: {photos} · Видео: {videos}</small></div>'
+        '<i>VIN ПРОВЕРЕН</i><small>{media}</small></div>'
         '<span class="ua-stage-card-v2-open"><span class="ua075-ru">Открыть карточку →</span>'
         '<span class="ua075-uk">Відкрити картку →</span></span></div>'
         '<figure class="ua-stage-card-v2-photo"><img src="{photo}" alt="{title}" '
@@ -282,7 +294,7 @@ def render_card(row: Mapping, photo_url: str) -> str:
         id=esc(identifier), key=esc(key), stage=stage, title=esc(title(row) or identifier),
         ru=esc(label_ru), uk=esc(label_uk), mileage=esc(mileage), engine=esc(engine),
         fuel=esc(fuel), gearbox=esc(gearbox), vin=esc(vin), photos=photos,
-        videos=videos, photo=esc(photo_url), price=esc(public_price(row)), eta=eta.format(
+        media=esc(media), photo=esc(photo_url), price=esc(public_price(row)), eta=eta.format(
             eta_ru=esc(eta_ru), eta_uk=esc(eta_uk)),
     )
 
@@ -369,6 +381,57 @@ def enforce_catalog(source: str, rows: Iterable[Mapping], photos: Mapping[str, s
     return source
 
 
+def semantic_duplicate_issues(block: str, row: Mapping) -> list[str]:
+    """Audit one rendered card for repeated client-facing expressions."""
+    issues = []
+    folded = " ".join(
+        _html.unescape(re.sub(r"<[^>]+>", " ", block)).casefold().split()
+    )
+    for name, phrase in (
+        ("FERRY_RU", "Автомобиль на пароме: Корея → Грузия."),
+        ("FERRY_UK", "Автомобіль на поромі: Корея → Грузія."),
+        ("KYIV_RU", "Автомобиль в Киеве и готов к осмотру."),
+        ("KYIV_UK", "Автомобіль у Києві та готовий до огляду."),
+    ):
+        if " ".join(phrase.casefold().split()) in folded:
+            issues.append("LEGACY_REPEAT_" + name)
+    if re.search(r"(?:видео|відео)\s*:\s*0(?:\D|$)", folded, re.I):
+        issues.append("ZERO_VIDEO_TEXT")
+    for class_name in (
+        "ua-stage-card-v2-status", "ua-stage-card-v2-spec",
+        "ua-stage-card-v2-vin", "ua-stage-card-v2-photo",
+    ):
+        count = len(re.findall(
+            r'class=["\'][^"\']*\b' + re.escape(class_name) + r'\b', block, re.I
+        ))
+        if count != 1:
+            issues.append("REPEATED_SECTION_%s_%d" % (class_name, count))
+    for language in ("ru", "uk"):
+        texts = []
+        pattern = (
+            r'<span\b[^>]*class=["\'][^"\']*\bua075-' + language
+            + r'\b[^"\']*["\'][^>]*>(.*?)</span\s*>'
+        )
+        for match in re.finditer(pattern, block, re.I | re.S):
+            value = " ".join(
+                _html.unescape(re.sub(r"<[^>]+>", " ", match.group(1)))
+                .casefold().split()
+            )
+            if len(value) >= 12:
+                texts.append(value)
+        if len(texts) != len(set(texts)):
+            issues.append("REPEATED_%s_EXPRESSION" % language.upper())
+    stage = stage_number(row)
+    for language, label in zip(("RU", "UK"), PUBLIC_LABELS[stage]):
+        normalized = " ".join(label.casefold().split())
+        if folded.count(normalized) > 1:
+            issues.append("REPEATED_STAGE_" + language)
+    media = re.findall(r"(?:фото|видео|відео)\s*:\s*\d+", folded, re.I)
+    if len(media) != len(set(media)):
+        issues.append("REPEATED_MEDIA_COUNT")
+    return issues
+
+
 def audit_catalog(source: str, rows: Iterable[Mapping]) -> dict:
     rows_by_id = {
         str(row.get("auto_number") or "").upper(): dict(row)
@@ -405,6 +468,8 @@ def audit_catalog(source: str, rows: Iterable[Mapping]) -> dict:
         leaked = [value for value in FORBIDDEN_PUBLIC if value.casefold() in folded]
         if leaked:
             errors.append("INTERNAL_TEXT_LEAK:%s" % identifier)
+        for issue in semantic_duplicate_issues(block, row):
+            errors.append("SEMANTIC_DUPLICATE:%s:%s" % (identifier, issue))
         if expected_stage == 2 and re.search(r"корея\s*[→-]\s*грузи", folded, re.I):
             errors.append("FERRY_ROUTE_OLD:%s" % identifier)
         if PUBLIC_LABELS[expected_stage][0].casefold() not in folded:
@@ -442,3 +507,4 @@ def extract_main_photo(page: str, page_url: str, identifier: str) -> str:
         return ""
     value = max(scored, key=lambda item: item[0])[1]
     return value if value.startswith("data:") else urljoin(page_url, value)
+

@@ -1,0 +1,97 @@
+name: task083-catalog-dedup-v1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task083_catalog_dedup.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile and test permanent de-duplication guard
+        run: |
+          python3 -m py_compile \
+            cloud/task_075_stage_guard/stage_guard.py \
+            cloud/task_083_catalog_dedup/installer.py \
+            cloud/task_083_catalog_dedup/controller.py
+          python3 cloud/task_083_catalog_dedup/tests/test_installer.py -v
+
+      - name: Backup, shadow, install and verify all cards
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          TASK083_OWNER_DIRECTIVE: CATALOG-CARD-DEDUP-GUARD-083-V1.0-OWNER-DIRECTIVE
+        run: python3 cloud/task_083_catalog_dedup/controller.py
+
+      - name: Capture complete mobile catalog evidence
+        if: always()
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "${browser}"
+          mkdir -p cloud/task_083_catalog_dedup/screenshots
+          "${browser}" --headless=new --disable-gpu --disable-background-networking \
+            --hide-scrollbars --window-size=430,9000 --virtual-time-budget=5000 \
+            --screenshot="cloud/task_083_catalog_dedup/screenshots/katalog-mobile.png" \
+            "https://www.uaart.com.ua/video/katalog.html?task083_screen=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test "$(wc -c < cloud/task_083_catalog_dedup/screenshots/katalog-mobile.png)" -gt 5000
+
+      - name: Commit bounded evidence
+        if: always()
+        run: |
+          git add -- \
+            cloud/task_083_catalog_dedup/evidence/controller.json \
+            cloud/task_083_catalog_dedup/TASK_083_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "${path}" in
+              cloud/task_083_catalog_dedup/evidence/controller.json|cloud/task_083_catalog_dedup/TASK_083_REPORT.md) ;;
+              *) echo "Unexpected staged path: ${path}"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task083-catalog-dedup'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task083: record catalog de-duplication evidence'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+              if git push origin HEAD:main; then break; fi
+              if [ "${attempt}" -eq 5 ]; then exit 1; fi
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload machine and visual evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task083-catalog-dedup-${{ github.run_id }}
+          path: |
+            cloud/task_083_catalog_dedup/evidence
+            cloud/task_083_catalog_dedup/TASK_083_REPORT.md
+            cloud/task_083_catalog_dedup/screenshots
+          if-no-files-found: warn
+          retention-days: 14
