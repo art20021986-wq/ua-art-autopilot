@@ -1,8 +1,6 @@
 {
   "contract_id": "CATALOG-CARD-UNIFY-002-V1.0",
-  "errors": [
-    "Blocked:PUBLIC_CATALOG_FAIL:site:{\"eleven_blocks\": false, \"http_200\": true, \"no_ru_duplicate\": true, \"no_uk_duplicate\": true, \"safe_canonical_url\": false, \"status_preserved\": false, \"style_once\": false, \"ua0009\": false}"
-  ],
+  "errors": [],
   "install": {
     "after": {
       "catalogs": {
@@ -226,7 +224,7 @@
         }
       }
     },
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_074_catalog_unify/backups/20260829T054011Z-2c166c1ccc6a",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_074_catalog_unify/backups/20260829T055013Z-a4fd5926ef2a",
     "before": {
       "catalogs": {
         "/home/Carix/site/katalog.html": {
@@ -741,29 +739,322 @@
     "production_write": false,
     "status": "PASS"
   },
+  "postcheck_delayed": {
+    "before": {
+      "catalogs": {
+        "/home/Carix/site/katalog.html": {
+          "bytes": 43258,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0001",
+            "UA-0002",
+            "UA-0003",
+            "UA-0004",
+            "UA-0005",
+            "UA-0006",
+            "UA-0007",
+            "UA-0008",
+            "UA-0009",
+            "UA-0010",
+            "UA-0011"
+          ],
+          "duplicate_ru": 0,
+          "duplicate_uk": 0,
+          "ferry_status": true,
+          "sha256": "948bfc2412ca2909009a1644b0f3fc81faac3abdc6720bd61fe6460ff35bd84c",
+          "style_marker": 1,
+          "ua0009": true,
+          "unknown_old_ru": 0,
+          "unknown_old_uk": 0
+        },
+        "/home/Carix/video/katalog.html": {
+          "bytes": 41082,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0002",
+            "UA-0007",
+            "UA-0008",
+            "UA-0001",
+            "UA-0005",
+            "UA-0010",
+            "UA-0009",
+            "UA-0006",
+            "UA-0003",
+            "UA-0004",
+            "UA-0011"
+          ],
+          "duplicate_ru": 0,
+          "duplicate_uk": 0,
+          "ferry_status": true,
+          "sha256": "34fb82b9ec1bc66b76fccbbaad9b440d01ea4d60fe5c195954e88251442ecdd0",
+          "style_marker": 1,
+          "ua0009": true,
+          "unknown_old_ru": 0,
+          "unknown_old_uk": 0
+        }
+      },
+      "database": {
+        "count": 11,
+        "file_sha256": "5743702206898b09543d6f50fb8b76a0b04265140ac8d14d0c1430bb99bb6eb4",
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011"
+        ],
+        "quick_check": "ok",
+        "rows_sha256": "b0c847d62bb7209faaf9ad10ddf727424535c6e7d63d35437867ce388ea90919",
+        "ua0009": {
+          "accidents": null,
+          "approved_by": 397376186,
+          "auction_link": null,
+          "auto_number": "UA-0009",
+          "brand": "Kia",
+          "client_id": null,
+          "color": "серый",
+          "condition": null,
+          "condition_photos": null,
+          "condition_text": "Kia K5 2018 — вигідне бронювання автомобіля в дорозі\n\nАвтомобіль уже викуплений, перевірений за VIN та завантажений у контейнер. Зараз Kia K5 прямує до порту Поті/Батумі. Орієнтовне прибуття — 9 вересня 2026 року, тому чекати залишилося зовсім недовго.\n\nСаме зараз найвигідніший момент для бронювання: купівля автомобіля ще в дорозі дозволяє зафіксувати хороші умови та суттєво заощадити порівняно з придбанням аналогічної машини вже після її прибуття та підготовки в Україні.\n\nОсновні характеристики:\n\n• 2018 рік випуску\n• економічний газовий двигун 2,0 л\n• автоматична коробка передач\n• передній привод\n• сірий колір\n• чесно зазначений пробіг — 300 000 км\n• VIN перевірений\n\nKia K5 — просторий, комфортний і практичний седан для щоденних поїздок та далеких подорожей. Газовий двигун допомагає помітно скоротити витрати на пальне, що особливо важливо за активної експлуатації автомобіля.\n\nМаршрут контейнера можна відстежувати онлайн. Забронюйте автомобіль у дорозі, щоб отримати вигідні умови та стати його першим власником в Україні одразу після завершення доставки й оформлення.",
+          "condition_videos": null,
+          "cost_fees": null,
+          "cost_logistics": null,
+          "cost_purchase": null,
+          "cost_total": null,
+          "cover_photo": null,
+          "created_at": "2026-08-25T10:59:37",
+          "created_by": 397376186,
+          "days_to_kyiv": "13",
+          "description": null,
+          "diag_link": null,
+          "diag_report": null,
+          "diag_text": null,
+          "docs": null,
+          "drive": "передний",
+          "engine": null,
+          "engine_cc": 2000,
+          "eta_manual": "2026-09-09",
+          "fuel": "газ",
+          "ge_arrived": null,
+          "ge_port": null,
+          "ge_released": null,
+          "ge_to_kyiv_at": null,
+          "gearbox": "автомат",
+          "hidden_photos": null,
+          "history": null,
+          "id": 15,
+          "kr_buy_date": null,
+          "kr_parking": null,
+          "mileage": null,
+          "mileage_km": 300000,
+          "model": "K5",
+          "nbu_rate": null,
+          "owner_user": null,
+          "photos": "[{\"file_id\": \"AgACAgIAAxkBAAIsLmqQgiGjGxs4sXfXx7lLCL5ki4_8AAK3H2sbtOSJSDDG01OdMc5tAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsL2qQgiHF6bdJ74rVmwF5fnwkarIDAALEH2sbtOSJSE6Yp-_A7_jyAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsMGqQgiG1DGDXin3Me66hjT4QRBzNAAK6H2sbtOSJSCeqow0rj0nAAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsMWqQgiGUlv1lgJVcaeISrfiS7uNxAAK8H2sbtOSJSKOV6OH7IBRyAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsMmqQgiHP853qso7WL_Wy5e8tW0zhAAK4H2sbtOSJSKptQ5Xs5By7AQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsM2qQgiE8-zCmyirJjMHJevRxH8MlAAK_H2sbtOSJSK0eeL2IwREYAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsNGqQgiEiodlQlDdnEEedMUj13LGDAAK9H2sbtOSJSEIQ2_MmRf-sAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsNWqQgiHBlJ00b2uC7owjpL35Tw_qAAK-H2sbtOSJSIG2rh6fhz3eAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsNmqQgiHgkQ7uuOeZXBhfiIEc3HW9AALCH2sbtOSJSFbBCX-2lYxyAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsN2qQgiFQpD-DtNtIkDHWEmD56ehuAALBH2sbtOSJSOV_J3IC4vEHAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsOGqQgiFC9WAgLPoD93XNiTC1CRTKAALFH2sbtOSJSGlQr4uw00h_AQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsOWqQgiFMcEGcJ6IXDKNxcO9nhwGeAALAH2sbtOSJSJKUgJZF8ZBqAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsOmqQgiHgauvbDB2Zb-I7yRhxdB4uAAK7H2sbtOSJSM8FhxIcsMVsAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsO2qQgiEIjSRfa12kqdXnFPKnAwE4AAK5H2sbtOSJSGWao3_6QLgdAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsPGqQgiFifjUtZJzOBeLKhIXOu85DAALJH2sbtOSJSAABOwUY2XjMkQEAAwIAA3kAAz0E\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsPWqQgiHBn1wOxNQzF2eLUPYeJpSuAALIH2sbtOSJSDyj11FOrvYcAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsPmqQgiFgtA9kif8JeJBZZqIwIgwFAALHH2sbtOSJSBMHJQOn8qE0AQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsP2qQgiGBZXW-YTpStQbS_5Canz7KAALDH2sbtOSJSG84-aPTB1QsAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsQGqQgiFt9jr6k4vDSbj8b6D5XJ5xAAK2H2sbtOSJSN9_xNlzcqvxAQADAgADeQADPQQ\", \"tag\": \"\"}, {\"file_id\": \"AgACAgIAAxkBAAIsQWqQgiGhCm8AAZLTPs4PQk95lJqgYAACxh9rG7TkiUjmMx8k0IspcwEAAwIAA3kAAz0E\", \"tag\": \"\"}]",
+          "price_buy": null,
+          "price_customs": null,
+          "price_extra": null,
+          "price_history": "{\"1\": 11500}",
+          "price_ship": null,
+          "price_total": null,
+          "price_uah": 11500,
+          "publish_pending": 0,
+          "published": 1,
+          "responsible": null,
+          "review_status": "approved_owner",
+          "sea_container": "ONEYSELGB4471700",
+          "sea_date_out": null,
+          "sea_port_from": null,
+          "stage": null,
+          "status": "sea_loaded",
+          "trim": null,
+          "ua_delivered": null,
+          "ua_handed": null,
+          "updated_at": "2026-08-27T18:52:11",
+          "video_h": null,
+          "video_v": null,
+          "videos": null,
+          "vin": "KNAGU416BJA242741",
+          "year": "2018"
+        }
+      },
+      "protected_pages": {
+        "/home/Carix/site/UA-0001-00cf71c0.html": "ff3403b61646713d8ab5f530fe741b29d29dff5cfdc1e1cb599c7bf3d9af9029",
+        "/home/Carix/site/UA-0001-diag.html": "2732eef7327a0f8b8c0da70c36a29955a129cdcd0c4b409a1adb553ad9204177",
+        "/home/Carix/site/UA-0001.html": "ff3403b61646713d8ab5f530fe741b29d29dff5cfdc1e1cb599c7bf3d9af9029",
+        "/home/Carix/site/UA-0002-a6f9d391.html": "05c99c6d8b5c52b302738c0c28ec67b3b958edec550fd235f2ae6f4ba4aacf78",
+        "/home/Carix/site/UA-0002-diag.html": "0c66a8b6c06311ff1b69f5c7a9a436243dd9ba45772ea9d8091cacf0e144baa7",
+        "/home/Carix/site/UA-0002.html": "05c99c6d8b5c52b302738c0c28ec67b3b958edec550fd235f2ae6f4ba4aacf78",
+        "/home/Carix/site/UA-0003-diag.html": "57486e94cf4bb7c9242d28230d6fddb0a459419bec89b61fc6c5872927b00c38",
+        "/home/Carix/site/UA-0003.html": "ca1c885abfdbb04b60fc2aa157d52f919767c6b784cd084e8b60d891febfb68b",
+        "/home/Carix/site/UA-0004-0edda61a.html": "b430a321af103d6f87e7e6ad13c2685753a2d59d9ac5f66e5225572c89b0d59b",
+        "/home/Carix/site/UA-0004-diag.html": "3e1bfbd6d5b0432eb5cb858f4a36ca791f3fa17c8f21c86ab0719dc9c837740a",
+        "/home/Carix/site/UA-0004.html": "b430a321af103d6f87e7e6ad13c2685753a2d59d9ac5f66e5225572c89b0d59b",
+        "/home/Carix/site/UA-0005-diag.html": "d23e020ff15afd33bf9d48677e13bb6d0ae305e54925aebdac38e3f75266a8d3",
+        "/home/Carix/site/UA-0005.html": "fb4d140e164ada0739fb4cfafce3e96e163bdadaecfdce0461813ba86ffca9b5",
+        "/home/Carix/site/UA-0006-diag.html": "c791758aaacf41fb441e6d6c75adedb666cc875b1d2c1a6d54a05b45eadf09e9",
+        "/home/Carix/site/UA-0006.html": "a1f6ef231222bf89a9a5cd736fddbad2766e072f58222b8b01c9ed39f77edc4b",
+        "/home/Carix/site/UA-0007-diag.html": "fa797330b66c45f5e9f0d4f2c15a7c5b28017894873a970331f4d4f308956623",
+        "/home/Carix/site/UA-0007.html": "723edf05994bad06dd69d90eef9d6e021f640fed0e456b43b46c4d5d1e3e8592",
+        "/home/Carix/site/UA-0008-diag.html": "3ed3943be61e73ab54f430fb8ee5d6dd8978df990e80be1dd22671426bac5e74",
+        "/home/Carix/site/UA-0008.html": "638252dacd138b0018f6972fda195a5280456e8fb6bb2ca003bb429dcffc349e",
+        "/home/Carix/site/UA-0009-diag.html": "078c07e9fd864e1f2504ddf0f618d04f27892f2207c7a134933206b2b2d3cd7a",
+        "/home/Carix/site/UA-0009.html": "5e258043efc5d1603e2d034391201b8860c5a78cced6012b686fe5a67dc544d4",
+        "/home/Carix/site/UA-0010-diag.html": "b384a5a87525b790d91ce6eadd690da7ef7dc824bcf161d4ac0b6d113f08c6f8",
+        "/home/Carix/site/UA-0010.html": "22a9355a48ce991d0bd1219adad953a63e7dfb4021fdf2e67d56f4daa6f30c8f",
+        "/home/Carix/site/UA-0011-diag.html": "265fcf4a4ccc508a6321b2a771dbbb3ebec35ac12eea88712d3f7982de11512c",
+        "/home/Carix/site/UA-0011.html": "37f32782599e902d0a2b75f1892085306a5d3e38dab5d1ccdc79eb39a81a193c",
+        "/home/Carix/video/UA-0001-00cf71c0.html": "ff3403b61646713d8ab5f530fe741b29d29dff5cfdc1e1cb599c7bf3d9af9029",
+        "/home/Carix/video/UA-0001-diag.html": "2732eef7327a0f8b8c0da70c36a29955a129cdcd0c4b409a1adb553ad9204177",
+        "/home/Carix/video/UA-0001.html": "ff3403b61646713d8ab5f530fe741b29d29dff5cfdc1e1cb599c7bf3d9af9029",
+        "/home/Carix/video/UA-0002-a6f9d391.html": "05c99c6d8b5c52b302738c0c28ec67b3b958edec550fd235f2ae6f4ba4aacf78",
+        "/home/Carix/video/UA-0002-diag.html": "0c66a8b6c06311ff1b69f5c7a9a436243dd9ba45772ea9d8091cacf0e144baa7",
+        "/home/Carix/video/UA-0002.html": "05c99c6d8b5c52b302738c0c28ec67b3b958edec550fd235f2ae6f4ba4aacf78",
+        "/home/Carix/video/UA-0003-a7bfb532.html": "ca1c885abfdbb04b60fc2aa157d52f919767c6b784cd084e8b60d891febfb68b",
+        "/home/Carix/video/UA-0003-diag.html": "57486e94cf4bb7c9242d28230d6fddb0a459419bec89b61fc6c5872927b00c38",
+        "/home/Carix/video/UA-0003.html": "ca1c885abfdbb04b60fc2aa157d52f919767c6b784cd084e8b60d891febfb68b",
+        "/home/Carix/video/UA-0004-0edda61a.html": "b430a321af103d6f87e7e6ad13c2685753a2d59d9ac5f66e5225572c89b0d59b",
+        "/home/Carix/video/UA-0004-diag.html": "3e1bfbd6d5b0432eb5cb858f4a36ca791f3fa17c8f21c86ab0719dc9c837740a",
+        "/home/Carix/video/UA-0004.html": "b430a321af103d6f87e7e6ad13c2685753a2d59d9ac5f66e5225572c89b0d59b",
+        "/home/Carix/video/UA-0005-9e3432b2.html": "fb4d140e164ada0739fb4cfafce3e96e163bdadaecfdce0461813ba86ffca9b5",
+        "/home/Carix/video/UA-0005-diag.html": "d23e020ff15afd33bf9d48677e13bb6d0ae305e54925aebdac38e3f75266a8d3",
+        "/home/Carix/video/UA-0005.html": "fb4d140e164ada0739fb4cfafce3e96e163bdadaecfdce0461813ba86ffca9b5",
+        "/home/Carix/video/UA-0006-diag.html": "c791758aaacf41fb441e6d6c75adedb666cc875b1d2c1a6d54a05b45eadf09e9",
+        "/home/Carix/video/UA-0006-ed784b7f.html": "a1f6ef231222bf89a9a5cd736fddbad2766e072f58222b8b01c9ed39f77edc4b",
+        "/home/Carix/video/UA-0006.html": "a1f6ef231222bf89a9a5cd736fddbad2766e072f58222b8b01c9ed39f77edc4b",
+        "/home/Carix/video/UA-0007-de6e3ebe.html": "723edf05994bad06dd69d90eef9d6e021f640fed0e456b43b46c4d5d1e3e8592",
+        "/home/Carix/video/UA-0007-diag.html": "fa797330b66c45f5e9f0d4f2c15a7c5b28017894873a970331f4d4f308956623",
+        "/home/Carix/video/UA-0007.html": "723edf05994bad06dd69d90eef9d6e021f640fed0e456b43b46c4d5d1e3e8592",
+        "/home/Carix/video/UA-0008-87693e0e.html": "638252dacd138b0018f6972fda195a5280456e8fb6bb2ca003bb429dcffc349e",
+        "/home/Carix/video/UA-0008-diag.html": "3ed3943be61e73ab54f430fb8ee5d6dd8978df990e80be1dd22671426bac5e74",
+        "/home/Carix/video/UA-0008.html": "638252dacd138b0018f6972fda195a5280456e8fb6bb2ca003bb429dcffc349e",
+        "/home/Carix/video/UA-0009-372ada15.html": "5e258043efc5d1603e2d034391201b8860c5a78cced6012b686fe5a67dc544d4",
+        "/home/Carix/video/UA-0009-diag.html": "078c07e9fd864e1f2504ddf0f618d04f27892f2207c7a134933206b2b2d3cd7a",
+        "/home/Carix/video/UA-0009.html": "5e258043efc5d1603e2d034391201b8860c5a78cced6012b686fe5a67dc544d4",
+        "/home/Carix/video/UA-0010-614505f4.html": "22a9355a48ce991d0bd1219adad953a63e7dfb4021fdf2e67d56f4daa6f30c8f",
+        "/home/Carix/video/UA-0010-diag.html": "b384a5a87525b790d91ce6eadd690da7ef7dc824bcf161d4ac0b6d113f08c6f8",
+        "/home/Carix/video/UA-0010.html": "22a9355a48ce991d0bd1219adad953a63e7dfb4021fdf2e67d56f4daa6f30c8f",
+        "/home/Carix/video/UA-0011-9842913c.html": "37f32782599e902d0a2b75f1892085306a5d3e38dab5d1ccdc79eb39a81a193c",
+        "/home/Carix/video/UA-0011-diag.html": "265fcf4a4ccc508a6321b2a771dbbb3ebec35ac12eea88712d3f7982de11512c",
+        "/home/Carix/video/UA-0011.html": "37f32782599e902d0a2b75f1892085306a5d3e38dab5d1ccdc79eb39a81a193c"
+      },
+      "sources": {
+        "/home/Carix/master_card.py": {
+          "bytes": 141682,
+          "marker": true,
+          "sha256": "df2001cd808e5fbb2201e2dbc5e06ab3d529be3cdb65dbaca691a15a2bad2174"
+        },
+        "/home/Carix/stranica.py": {
+          "bytes": 197611,
+          "marker": true,
+          "sha256": "84a56024e185932c3f2af289db87d1b98558acdf9c4788256dfd36d544ec28b3"
+        },
+        "/home/Carix/yadro.py": {
+          "bytes": 145171,
+          "marker": true,
+          "sha256": "a0976afb93a4d2fdcab392601d25253700977618a02b04bc31903a18e95ee81a"
+        }
+      }
+    },
+    "candidate_catalogs": {
+      "/home/Carix/site/katalog.html": {
+        "card_count": 11,
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011"
+        ],
+        "sha256": "948bfc2412ca2909009a1644b0f3fc81faac3abdc6720bd61fe6460ff35bd84c"
+      },
+      "/home/Carix/video/katalog.html": {
+        "card_count": 11,
+        "identifiers": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0003",
+          "UA-0004",
+          "UA-0011"
+        ],
+        "sha256": "34fb82b9ec1bc66b76fccbbaad9b440d01ea4d60fe5c195954e88251442ecdd0"
+      }
+    },
+    "candidate_sources": {
+      "/home/Carix/master_card.py": {
+        "changed": false,
+        "sha256": "df2001cd808e5fbb2201e2dbc5e06ab3d529be3cdb65dbaca691a15a2bad2174"
+      },
+      "/home/Carix/stranica.py": {
+        "changed": false,
+        "sha256": "84a56024e185932c3f2af289db87d1b98558acdf9c4788256dfd36d544ec28b3"
+      },
+      "/home/Carix/yadro.py": {
+        "changed": false,
+        "sha256": "a0976afb93a4d2fdcab392601d25253700977618a02b04bc31903a18e95ee81a"
+      }
+    },
+    "contract_id": "CATALOG-CARD-UNIFY-002-V1.0",
+    "crm_db_write": false,
+    "mode": "SHADOW",
+    "production_write": false,
+    "status": "PASS"
+  },
+  "public": {
+    "video": {
+      "bytes": 41082,
+      "checks": {
+        "eleven_blocks": true,
+        "http_200": true,
+        "no_ru_duplicate": true,
+        "no_uk_duplicate": true,
+        "safe_canonical_url": true,
+        "status_preserved": true,
+        "style_once": true,
+        "ua0009": true
+      },
+      "url": "https://www.uaart.com.ua/video/katalog.html?task074=1787982744"
+    }
+  },
+  "public_delayed": {
+    "video": {
+      "bytes": 41082,
+      "checks": {
+        "eleven_blocks": true,
+        "http_200": true,
+        "no_ru_duplicate": true,
+        "no_uk_duplicate": true,
+        "safe_canonical_url": true,
+        "status_preserved": true,
+        "style_once": true,
+        "ua0009": true
+      },
+      "url": "https://www.uaart.com.ua/video/katalog.html?task074=1787982938"
+    }
+  },
   "restart": {
     "launcher_id": 266084,
     "status": "accepted"
   },
-  "rollback": {
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_074_catalog_unify/backups/20260829T054011Z-2c166c1ccc6a",
-    "contract_id": "CATALOG-CARD-UNIFY-002-V1.0",
-    "crm_db_write": false,
-    "mode": "ROLLBACK",
-    "production_write": true,
-    "restored": [
-      "/home/Carix/stranica.py",
-      "/home/Carix/yadro.py",
-      "/home/Carix/master_card.py",
-      "/home/Carix/video/katalog.html",
-      "/home/Carix/site/katalog.html"
-    ],
-    "status": "PASS"
-  },
-  "rollback_restart": {
-    "launcher_id": 266084,
-    "status": "accepted"
-  },
+  "rollback": null,
   "shadow": {
     "before": {
       "catalogs": {
@@ -1043,5 +1334,5 @@
     "production_write": false,
     "status": "PASS"
   },
-  "status": "ROLLED_BACK"
+  "status": "PASS"
 }
