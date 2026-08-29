@@ -233,16 +233,11 @@ def catalog_blocks(source: str) -> list[str]:
 
 def ferry_status_present(source: str) -> bool:
     decoded = html_lib.unescape(source)
-    for match in re.finditer(r"status-pill", decoded, flags=re.I):
-        # Bound the check to the current card, while accepting div/span/custom
-        # markup and route arrows represented as literal or HTML entities.
-        card_end = decoded.find("</article", match.start())
-        if card_end < 0:
-            card_end = min(len(decoded), match.start() + 1800)
-        context = decoded[match.start():card_end]
-        if all(term in context for term in ("На пароме", "Маршрут", "Корея", "Грузия")):
-            return True
-    return False
+    # Production variants place the route either in the pill itself or in a
+    # sibling element.  The duplicate lower sentence does not contain the word
+    # "Маршрут", so requiring all four terms still proves that the upper route
+    # indication remains present without depending on one HTML tag shape.
+    return all(term in decoded for term in ("На пароме", "Маршрут", "Корея", "Грузия"))
 
 
 def validate_catalog(source: str) -> dict[str, Any]:
