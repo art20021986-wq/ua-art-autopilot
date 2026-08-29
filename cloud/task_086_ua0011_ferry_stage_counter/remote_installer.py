@@ -758,6 +758,17 @@ def canary_10(guard, candidates: dict[pathlib.Path, bytes], target: dict) -> dic
     return {"runs": 10, "stable": True, "sha256": hashes[0]}
 
 
+UA0011_COVER_RE = re.compile(
+    r"foto/UA-0011/(?:[^\"'<>]+/)*001\.(?:jpg|jpeg|png|webp)(?:\?[^\"'<>]*)?",
+    re.I,
+)
+
+
+def is_ua0011_cover_path(value) -> bool:
+    """Accept both original 001.jpg and generated m/001.jpg cover paths."""
+    return bool(UA0011_COVER_RE.search(str(value)))
+
+
 def visual_preview(target: dict, guard) -> dict:
     """Render the ferry candidate entirely in memory; no production write."""
     if str(ROOT) not in sys.path:
@@ -797,13 +808,11 @@ def visual_preview(target: dict, guard) -> dict:
         "ferry_label": bool(re.search(r"На\s+(?:пароме|поромі)", visible, re.I)),
         "route": bool(re.search(r"Коре[яї].{0,160}Груз[иі]", visible, re.I)),
         "vin_4289": "4289" in html,
-        "own_media": bool(re.search(r"foto/UA-0011/.+001\.(?:jpg|jpeg|png|webp)", html, re.I)),
+        "own_media": is_ua0011_cover_path(html),
         "current_verified_cover_m001": bool(re.search(
             r"foto/UA-0011/m/001\.jpg", current_detail, re.I
         )),
-        "first_photo_is_cover": bool(frames) and bool(re.search(
-            r"foto/UA-0011/.+001\.(?:jpg|jpeg|png|webp)", str(frames[0]), re.I
-        )),
+        "first_photo_is_cover": bool(frames) and is_ua0011_cover_path(frames[0]),
         "photo_count": len(frames) >= 1,
         "lower_duplicate_absent": "автомобиль на пароме" not in visible.casefold(),
     }
