@@ -118,6 +118,8 @@ def validate_card(source: str, identifier: str, expected_stage: int,
         raise RuntimeError("NATIVE_STAGE_DUPLICATE_REMAINS:" + identifier)
     if 'name="ua-art-contract" content="UA-CARDS-FERRY-VIN-001-V1.1"' not in source:
         raise RuntimeError("CACHE_CONTRACT_META_MISSING:" + identifier)
+    if expected_stage == 4 and ("Выдача и осмотр — Киев" in source or "Видача та огляд — Київ" in source):
+        raise RuntimeError("REDUNDANT_KYIV_COPY_REMAINS:" + identifier)
     actions = re.findall(
         r'<a\b[^>]*class=["\'][^"\']*\bua-primary-action-v1\b[^"\']*["\'][^>]*>.*?</a\s*>',
         source, re.I | re.S)
