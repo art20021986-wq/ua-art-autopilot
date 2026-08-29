@@ -264,7 +264,7 @@
     "sha256": "2b27edb26377e24e869dd61447ae535ae8004768a33c6ed3cb05f0666c5be7c8"
   },
   "errors": [],
-  "finished_at_utc": "2026-08-29T07:22:11Z",
+  "finished_at_utc": "2026-08-29T07:24:45Z",
   "http_methods": [
     "GET"
   ],
@@ -464,6 +464,15 @@
           "name": "voice_change_plan",
           "sha256": "fa9e5c4a440314d4fac07d091f3044a73201606e74d7c952b739e5f87d0a427a",
           "source": "def voice_change_plan(card, data, allowed, override=False):\n    \"\"\"Return bounded field updates; filled values change only by explicit request.\"\"\"\n    changes = []\n    skipped = []\n    permitted = set(allowed or ())\n    for field, value in (data or {}).items():\n        if field not in permitted or value in (None, \"\", []):\n            continue\n        old = card.get(field)\n        if old not in (None, \"\", 0, []) and not override:\n            skipped.append(field)\n            continue\n        if str(old or \"\") != str(value):\n            changes.append((field, old, value))\n    return changes, skipped\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2215,
+          "kind": "AsyncFunctionDef",
+          "line": 2175,
+          "name": "voice_undo",
+          "sha256": "77910d3484d0892231988260b6a3905daab78bc87daed336533eb01b85e97f5e",
+          "source": "async def voice_undo(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Undo only the latest matching voice fill and never create a card.\"\"\"\n    q = update.callback_query\n    try:\n        _, cid_raw, token = q.data.split(\":\", 2)\n        cid = int(cid_raw)\n    except Exception:\n        await _v168_ack(q,\"Некорректная команда\", show_alert=True)\n        raise ApplicationHandlerStop\n\n    saved = context.user_data.get(\"voice_undo\") or {}\n    if saved.get(\"card_id\") != cid or str(saved.get(\"token\")) != token:\n        await _v168_ack(q,\"Это изменение уже недоступно\", show_alert=True)\n        raise ApplicationHandlerStop\n\n    card = card_of(cid)\n    if not card:\n        context.user_data.pop(\"voice_undo\", None)\n        await _v168_ack(q,\"Карточка не найдена\", show_alert=True)\n        raise ApplicationHandlerStop\n\n    restored = []\n    for change in saved.get(\"changes\") or []:\n        field = change.get(\"field\")\n        current = card.get(field)\n        if str(current or \"\") != str(change.get(\"new\") or \"\"):\n            continue\n        db.update_card_field(\"cars\", cid, field, change.get(\"old\"), q.from_user.id)\n        restored.append(LABELS_ALL.get(field, field))\n    context.user_data.pop(\"voice_undo\", None)\n    if restored:\n        await _v168_ack(q,\"Изменение отменено\")\n        await q.message.reply_text(\n            \"↩️ %s: восстановлено — %s\" % (\n                card.get(\"auto_number\") or \"#%d\" % cid, \", \".join(restored)),\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]])\n        )\n    else:\n        await _v168_ack(q,\"Поля уже менялись позже — отмена не выполнена\", show_alert=True)\n    raise ApplicationHandlerStop\n",
           "truncated": false
         },
         {
@@ -724,7 +733,7 @@
       "sha256": "fc4b95fc749f3d9b785ce69bfce2705b11ade95a560d6fbd901b50de1423d086"
     }
   },
-  "started_at_utc": "2026-08-29T07:22:09Z",
+  "started_at_utc": "2026-08-29T07:24:35Z",
   "status": "PASS_LIVE_GET_AUDIT",
   "task_id": "task_080",
   "writer": {
