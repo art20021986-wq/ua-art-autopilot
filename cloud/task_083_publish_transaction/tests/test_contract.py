@@ -74,6 +74,39 @@ def test_publisher_wrapper_canonicalizes_diagnostic_section():
         raise AssertionError("wrong diagnostic target was not rejected")
 
 
+def test_master_card_patch_excludes_unpublished_catalog_rows():
+    source = '''
+_ua068_master_common_original = lambda html: html
+
+def vse_kody():
+    return ["UA-0012", "UA-0013", "UA-0014"]
+
+def _ua068_master_row(kod):
+    return {
+        "auto_number": kod,
+        "published": 0 if kod == "UA-0014" else 1,
+    }
+
+def _ua068_ensure_catalog(html, rows):
+    return "<html>" + "".join(
+        '<a href="%s.html">%s</a>' % (kod, kod) for kod in rows
+    ) + "</html>"
+
+def obrabotat_obshuyu(html):
+    return html
+'''
+    first = installer.patch_master_card(source)
+    second = installer.patch_master_card(first)
+    assert first == second
+    assert first.count(installer.MASTER_START) == 1
+    namespace = {}
+    exec(first, namespace)
+    catalog = namespace["obrabotat_obshuyu"]("<html></html>")
+    assert catalog.count("UA-0012.html") == 1
+    assert catalog.count("UA-0013.html") == 1
+    assert "UA-0014.html" not in catalog
+
+
 def test_cars_ui_patch_is_idempotent_and_single_result():
     source = """
 class ApplicationHandlerStop(Exception): pass
