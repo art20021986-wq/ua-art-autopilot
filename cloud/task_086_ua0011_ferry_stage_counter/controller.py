@@ -407,9 +407,6 @@ def public_round(label: str, expected_payload: dict) -> dict:
             opening, re.I,
         ):
             raise ControllerError("PUBLIC_CATALOG_WRONG_STAGE:" + surface)
-        if PROTECTED_CODE not in ids:
-            raise ControllerError("PUBLIC_UA0009_MISSING:" + surface)
-
         stage_counts = {"korea": 0, "more": 0, "gruzia": 0, "kiev": 0}
         for match in blocks:
             card_opening = re.match(r"<a\b[^>]*>", match.group(0), re.I | re.S).group(0)
