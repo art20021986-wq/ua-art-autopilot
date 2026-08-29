@@ -14,6 +14,7 @@ on:
       - 'PythonAnywhere Inbox Sync'
       - 'TASK076_ETA_GATE_A_LIVE'
       - 'task075-crm-catalog-stage-guard-sandbox'
+      - 'task077-container-stage-sync-gate-a'
     types: [completed]
 
 permissions:
@@ -58,6 +59,7 @@ jobs:
               'PythonAnywhere Inbox Sync': 20,
               'TASK076_ETA_GATE_A_LIVE': 20,
               'task075-crm-catalog-stage-guard-sandbox': 20,
+              'task077-container-stage-sync-gate-a': 20,
           }
           max_attempts = 3
 
