@@ -220,9 +220,11 @@ def public_catalog_check() -> dict:
             status = response.status
             source = response.read(MAX_BYTES + 1).decode("utf-8")
             final_url = response.geturl()
-        decoded_source = html_lib.unescape(source)
+        decoded_source = " ".join(
+            html_lib.unescape(source).casefold().replace("\u00a0", " ").split()
+        )
         status_preserved = all(
-            term in decoded_source for term in ("На пароме", "Маршрут", "Корея", "Грузия")
+            term in decoded_source for term in ("на пароме", "маршрут", "корея", "грузия")
         )
         checks = {
             "http_200": status == 200,
