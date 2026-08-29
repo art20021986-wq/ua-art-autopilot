@@ -1,0 +1,68 @@
+name: TASK 082 VIN4 title production
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/task082_vin4_title_deploy.yml
+      - cloud/task_082_vin4_title/controller.py
+      - cloud/task_082_vin4_title/repair_remote.py
+      - cloud/task_082_vin4_title/tests/**
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task082-vin4-title-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Deterministic offline canary
+        run: python -m unittest discover -s cloud/task_082_vin4_title/tests -v
+
+      - name: Backup, install, restart and double-check
+        id: production
+        continue-on-error: true
+        run: python cloud/task_082_vin4_title/controller.py
+
+      - name: Record sanitized evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cloud/task_082_vin4_title/evidence/deploy.json cloud/task_082_vin4_title/STATUS.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "task082-vin4: record production transaction"
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep $((attempt * 3))
+          done
+          exit 1
+
+      - name: Enforce production result
+        if: always()
+        shell: bash
+        run: |
+          test "${{ steps.production.outcome }}" = "success"
