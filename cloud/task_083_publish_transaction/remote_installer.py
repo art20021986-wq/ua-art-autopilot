@@ -28,13 +28,14 @@ LAST_BACKUP = REMOTE / "last_successful_install.json"
 LOCK = ROOT / ".task083_publish_install.lock"
 PUBLISHER = ROOT / "publikaciya.py"
 CARS_UI = ROOT / "cars_ui.py"
+MASTER_CARD = ROOT / "master_card.py"
 DB = ROOT / "crm.db"
 TARGETS = ("UA-0012", "UA-0013")
 INBOX = {
     ROOT / "publish_transaction_guard.py": REMOTE / "publish_transaction_guard.py",
     ROOT / "catalog_stage_guard_core.py": REMOTE / "catalog_stage_guard_core.py",
 }
-MANAGED_CODE = (PUBLISHER, CARS_UI, *INBOX.keys())
+MANAGED_CODE = (PUBLISHER, CARS_UI, MASTER_CARD, *INBOX.keys())
 RECEIPTS = {
     "install": REMOTE / "install_receipt.json",
     "postcheck": REMOTE / "postcheck_receipt.json",
@@ -44,6 +45,8 @@ PUB_START = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:PUBLISHER:START"
 PUB_END = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:PUBLISHER:END"
 UI_START = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:UI:START"
 UI_END = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:UI:END"
+MASTER_START = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:MASTER_CARD:START"
+MASTER_END = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:MASTER_CARD:END"
 MAX_FILE = 40 * 1024 * 1024
 
 
@@ -296,6 +299,64 @@ def patch_cars_ui(source: str) -> str:
     return candidate
 
 
+
+def master_wrapper() -> str:
+    """Filter the shared catalog to CRM rows that were explicitly published."""
+    return r'''
+# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:MASTER_CARD:START
+import re as _ua083_master_re
+
+
+def obrabotat_obshuyu(html):
+    html = _ua068_master_common_original(html)
+    rows = {}
+    for kod in vse_kody():
+        row = dict(_ua068_master_row(str(kod)) or {})
+        try:
+            published = int(row.get("published") or 0)
+        except (TypeError, ValueError):
+            published = 0
+        if published != 1:
+            continue
+        rows[str(kod).upper()] = row
+
+    result = _ua068_ensure_catalog(html, rows)
+    found = {
+        value.upper() for value in _ua083_master_re.findall(
+            r'href\s*=\s*["\'](?:[^"\']*/)?(UA-[0-9]{4,})\.html'
+            r'(?:[?#][^"\']*)?["\']', str(result or ""), _ua083_master_re.I)
+    }
+    unexpected = sorted(found - set(rows))
+    if unexpected:
+        raise RuntimeError(
+            "TASK083_UNPUBLISHED_CATALOG_IDS:" + ",".join(unexpected))
+    return result
+# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:MASTER_CARD:END
+'''
+
+
+def patch_master_card(source: str) -> str:
+    """Install the fail-closed published-only catalog filter."""
+    base = strip_marker(source, MASTER_START, MASTER_END).rstrip() + "\n"
+    tree = ast.parse(base)
+    functions = {
+        node.name for node in tree.body if isinstance(node, ast.FunctionDef)
+    }
+    required = {
+        "obrabotat_obshuyu", "vse_kody", "_ua068_master_row",
+        "_ua068_ensure_catalog",
+    }
+    if not required.issubset(functions) or "_ua068_master_common_original" not in base:
+        raise InstallError("MASTER_CATALOG_FILTER_ANCHOR_MISSING")
+    candidate = base + master_wrapper().lstrip()
+    compile(candidate, str(MASTER_CARD), "exec")
+    if candidate.count(MASTER_START) != 1 or candidate.count(MASTER_END) != 1:
+        raise InstallError("MASTER_MARKER_COUNT")
+    if "published != 1" not in candidate or "TASK083_UNPUBLISHED_CATALOG_IDS" not in candidate:
+        raise InstallError("MASTER_PUBLISHED_FILTER_READBACK")
+    return candidate
+
+
 def db_state() -> dict[str, Any]:
     connection = sqlite3.connect("file:%s?mode=ro" % DB, uri=True, timeout=30)
     connection.row_factory = sqlite3.Row
@@ -390,6 +451,7 @@ def install_code() -> tuple[pathlib.Path, dict[str, str]]:
     candidates = {
         PUBLISHER: patch_publisher(PUBLISHER.read_text(encoding="utf-8")),
         CARS_UI: patch_cars_ui(CARS_UI.read_text(encoding="utf-8")),
+        MASTER_CARD: patch_master_card(MASTER_CARD.read_text(encoding="utf-8")),
     }
     for destination, source in INBOX.items():
         data = read(source)
@@ -410,6 +472,8 @@ def install_code() -> tuple[pathlib.Path, dict[str, str]]:
             raise InstallError("PUBLISHER_INSTALL_READBACK")
         if CARS_UI.read_text(encoding="utf-8").count(UI_START) != 1:
             raise InstallError("CARS_UI_INSTALL_READBACK")
+        if MASTER_CARD.read_text(encoding="utf-8").count(MASTER_START) != 1:
+            raise InstallError("MASTER_CARD_INSTALL_READBACK")
         return backup, {str(path): sha(read(path)) for path in MANAGED_CODE}
     except Exception:
         restore_code(backup)
@@ -475,6 +539,7 @@ def run_postcheck() -> dict[str, Any]:
         "markers": {
             "publisher": PUBLISHER.read_text(encoding="utf-8").count(PUB_START),
             "cars_ui": CARS_UI.read_text(encoding="utf-8").count(UI_START),
+            "master_card": MASTER_CARD.read_text(encoding="utf-8").count(MASTER_START),
         },
     }
 
