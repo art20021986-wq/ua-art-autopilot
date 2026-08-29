@@ -1,0 +1,34 @@
+{
+  "contract_id": "UA-0011-RENDERER-GATE-A-086-V1.0",
+  "status": "PASS_READ_ONLY",
+  "http_methods": [
+    "GET"
+  ],
+  "production_write": false,
+  "crm_write": false,
+  "media_write": false,
+  "generated_at_utc": "2026-08-29T08:51:48Z",
+  "renderers": {
+    "stranica.py": {
+      "function": "sobrat_kartochku",
+      "definition_count": 3,
+      "active_lineno": 3961,
+      "active_sha256": "05f34f6948ccc122925f98e9df0076c1544d0fae6f26dbad0d023aa00a3d69b2",
+      "active_source": "def sobrat_kartochku(m, kadry, sredn=None):\n    html = _ua068_stranica_card_original(m, kadry, sredn)\n    kod = str(nomer(m))\n    row = dict(m or {})\n    row[\"_ua068_vin_duplicates\"] = 1\n    return _ua068_ensure_card(html, kod, row)\n"
+    },
+    "master_card.py": {
+      "function": "obrabotat_kartochku",
+      "definition_count": 5,
+      "active_lineno": 2835,
+      "active_sha256": "77bfcd9f5ccdb73dd7fd052709cc20aae4fdcfb34e6e484079f0cf41aeb4f286",
+      "active_source": "def obrabotat_kartochku(html, kod):\n    html = _ua068_master_card_original(html, kod)\n    if not html:\n        return html\n    kod = str(kod)\n    row = _ua068_master_row(kod)\n    html = _ua068_ensure_card(html, kod, row)\n    _ua068_ensure_diag_files(kod, row)\n    errors = _ua068_card_errors(html, kod, row)\n    if errors:\n        raise RuntimeError(\"UA068_MASTER_FINAL:%s:%s\" % (kod, \";\".join(errors)))\n    return html\n"
+    },
+    "cars_schema.py": {
+      "function": "render_card",
+      "definition_count": 1,
+      "active_lineno": 285,
+      "active_sha256": "aaecc6ade919220948757a3f21ada1383aac568ad6cc47c49309e9b12ab734e8",
+      "active_source": "def render_card(car, role=\"owner\", today=None):\n    \"\"\"\n    Текст карточки для Telegram (HTML-разметка).\n    role: \"owner\" видит деньги, \"admin\"/\"manager\" — нет.\n    Пустые поля показываются прочерком: бот не выдумывает значения.\n    \"\"\"\n    L = []\n    title = \" \".join(x for x in [car.get(\"brand\"), car.get(\"model\"), str(car.get(\"year\") or \"\")] if x)\n    L.append(\"<b>%s</b>\" % (title.strip() or \"Без названия\"))\n\n    if is_draft(car):\n        L.append(\"<i>Черновик · не хватает %d полей</i>\" % len(missing_required(car)))\n    else:\n        L.append(\"<i>%s · %s</i>\" % (\n            status_label(car.get(\"status\")),\n            \"в каталоге\" if car.get(\"published\") else \"не опубликовано\"))\n\n    L.append(\"\")\n    L.append(\"<b>ИДЕНТИФИКАЦИЯ</b>\")\n    L.append(\"Номер авто: <b>%s</b>\" % (car.get(\"auto_number\") or \"—\"))\n    L.append(\"Год выпуска: %s\" % (car.get(\"year\") or \"—\"))\n    ok, msg = check_vin(car.get(\"vin\"), car.get(\"year\"))\n    L.append(\"VIN: <b>%s</b>\" % (car.get(\"vin\") or \"—\"))\n    if car.get(\"vin\"):\n        L.append(\"  <i>%s</i>\" % msg)\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИКА</b>\")\n    L.append(\"Топливо: %s\" % (car.get(\"fuel\") or \"—\"))\n    L.append(\"Объём: <b>%s</b>\" % num(car.get(\"engine_cc\"), \" см³\"))\n    L.append(\"КПП: %s\" % (car.get(\"gearbox\") or \"—\"))\n    L.append(\"Привод: %s\" % (car.get(\"drive\") or \"—\"))\n    L.append(\"Пробег: %s\" % num(car.get(\"mileage_km\"), \" км\"))\n    L.append(\"Цвет: %s\" % (car.get(\"color\") or \"—\"))\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИЧЕСКОЕ СОСТОЯНИЕ</b>\")\n    L.append(car.get(\"condition_text\") or \"—\")\n    L.append(\"Фото: %d из %d\" % (len(car.get(\"condition_photos\") or []), CONDITION_PHOTO_LIMIT))\n    L.append(\"Видео: %d из %d\" % (len(car.get(\"condition_videos\") or []), CONDITION_VIDEO_LIMIT))\n    if car.get(\"diag_report\") or car.get(\"diag_link\"):\n        L.append(\"Диагностика: отчёт загружен\")\n        if car.get(\"diag_link\"):\n            L.append(\"  <a href=\\\"%s\\\">полный отчёт</a>\" % car[\"diag_link\"])\n\n    L.append(\"\")\n    stage = stage_of(car.get(\"status\"))\n    L.append(\"<b>ЛОГИСТИКА · ЭТАП %d ИЗ 4</b>\" % stage)\n    for n, name in STAGES:\n        mark = \"пройден\" if n < stage else (\"сейчас\" if n == stage else \"—\")\n        L.append(\"%d. %s: <b>%s</b>\" % (n, name, mark))\n        if n == 1 and car.get(\"kr_buy_date\"):\n            L.append(\"   выкуп %s · %s\" % (dmy(car[\"kr_buy_date\"]), car.get(\"kr_parking\") or \"\"))\n        if n == 2 and car.get(\"sea_container\"):\n            L.append(\"   %s · отправка %s\" % (car[\"sea_container\"], dmy(car.get(\"sea_date_out\"))))\n        if n == 3 and car.get(\"ge_arrived\"):\n            L.append(\"   прибыло %s\" % dmy(car[\"ge_arrived\"]))\n\n    left, eta = days_to_kyiv(car, today)\n    if left is not None:\n        L.append(\"\")\n        L.append(\"🚚 <b>ДО КИЕВА: %d дней</b>\" % left)\n        L.append(\"ориентировочно %s\" % eta.strftime(\"%d.%m.%Y\"))\n\n    if role == \"owner\":\n        L.append(\"\")\n        L.append(\"<b>ДЕНЬГИ</b>\")\n        L.append(\"Себестоимость: %s\" % money(car.get(\"cost_total\")))\n        L.append(\"Цена продажи: <b>%s</b>\" % money(car.get(\"price_uah\")))\n\n    return \"\\n\".join(L)\n"
+    }
+  }
+}
