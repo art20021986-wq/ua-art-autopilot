@@ -15,26 +15,33 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - name: Hold until catalog de-dup writer completes
+      - name: Hold until catalog de-dup writers complete
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
         run: |
           python3 - <<'PY'
           import json, os, time, urllib.request
-          target = 33241869961
+          current = int(os.environ['CURRENT_RUN_ID'])
           for _ in range(100):
               req = urllib.request.Request(
-                  'https://api.github.com/repos/%s/actions/runs/%d' % (os.environ['REPOSITORY'], target),
+                  'https://api.github.com/repos/%s/actions/runs?per_page=100' % os.environ['REPOSITORY'],
                   headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],
                            'Accept':'application/vnd.github+json',
-                           'User-Agent':'ua-art-task083-hold/1'}, method='GET')
+                           'User-Agent':'ua-art-task083-hold/2'}, method='GET')
               with urllib.request.urlopen(req, timeout=30) as response:
-                  run = json.load(response)
-              if run.get('status') == 'completed':
-                  print('FOREIGN_PRODUCTION_COMPLETED', run.get('conclusion'))
+                  runs = (json.load(response).get('workflow_runs') or [])
+              active = [run for run in runs
+                        if int(run.get('id') or 0) != current
+                        and run.get('name') == 'task083-catalog-dedup-v1'
+                        and run.get('status') != 'completed']
+              if not active:
+                  print('FOREIGN_PRODUCTION_COMPLETED')
                   break
-              print('WAITING_FOR_FOREIGN_PRODUCTION', run.get('status'), flush=True)
+              print('WAITING_FOR_FOREIGN_PRODUCTION',
+                    ','.join('%s:%s' % (run.get('id'), run.get('status')) for run in active),
+                    flush=True)
               time.sleep(15)
           else:
               raise SystemExit('FOREIGN_PRODUCTION_TIMEOUT')
