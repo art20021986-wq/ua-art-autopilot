@@ -232,12 +232,12 @@ def catalog_blocks(source: str) -> list[str]:
 
 
 def ferry_status_present(source: str) -> bool:
-    decoded = html_lib.unescape(source)
+    decoded = re.sub(r"\s+", " ", html_lib.unescape(source).casefold().replace("\u00a0", " "))
     # Production variants place the route either in the pill itself or in a
     # sibling element.  The duplicate lower sentence does not contain the word
     # "Маршрут", so requiring all four terms still proves that the upper route
     # indication remains present without depending on one HTML tag shape.
-    return all(term in decoded for term in ("На пароме", "Маршрут", "Корея", "Грузия"))
+    return all(term in decoded for term in ("на пароме", "маршрут", "корея", "грузия"))
 
 
 def validate_catalog(source: str) -> dict[str, Any]:
