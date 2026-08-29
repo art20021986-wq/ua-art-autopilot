@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/task082_catalog_stage_production.yml'
+      - 'cloud/task_082_catalog_stage_repair/**'
+      - 'cloud/task_075_stage_guard/stage_guard.py'
+      - 'tasks/task_082.md'
   workflow_dispatch:
 
 permissions:
