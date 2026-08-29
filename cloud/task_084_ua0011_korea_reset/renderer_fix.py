@@ -23,7 +23,10 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from .guards import require_media_mapping_before_catalog_write, GuardViolation
+try:
+    from .guards import require_media_mapping_before_catalog_write, GuardViolation
+except ImportError:  # Supports the repository's direct-file test runner.
+    from guards import require_media_mapping_before_catalog_write, GuardViolation
 
 STAGE_LABELS = {
     "kr_bought": "В Корее",

@@ -1,0 +1,144 @@
+name: task084-ua0011-korea-reset-gate-a
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task084_korea_reset_gate_a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task084-ua0011-korea-reset-gate-a
+  cancel-in-progress: true
+
+jobs:
+  live-readonly-sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact Gate A commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Compile and run offline contract tests
+        run: |
+          python3 -m py_compile \
+            cloud/task_075_stage_guard/stage_guard.py \
+            cloud/task_084_ua0011_korea_reset/guards.py \
+            cloud/task_084_ua0011_korea_reset/renderer_fix.py \
+            cloud/task_084_ua0011_korea_reset/sandbox_transform.py \
+            cloud/task_084_ua0011_korea_reset/live_gate_a.py
+          python3 -m pytest cloud/task_084_ua0011_korea_reset/tests/test_gate_a_sandbox.py -q
+
+      - name: Enforce GET-only implementation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('cloud/task_084_ua0011_korea_reset/live_gate_a.py').read_text(encoding='utf-8')
+          assert 'method="GET"' in source
+          for forbidden in ('method="POST"', 'method="PUT"', 'method="PATCH"', 'method="DELETE"', 'urlopen(request, data='):
+              assert forbidden not in source, forbidden
+          print('TASK084_GET_ONLY_STATIC_PASS')
+          PY
+
+      - name: Fresh live read-only audit and sandbox canary
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          for attempt in 1 2; do
+            python3 cloud/task_084_ua0011_korea_reset/live_gate_a.py && exit 0
+            test "$attempt" -lt 2 || exit 1
+            echo "Transient Gate A failure; safe GET-only retry 2/2 in 10 seconds"
+            sleep 10
+          done
+
+      - name: Validate live evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('cloud/task_084_ua0011_korea_reset/evidence/live_gate_a.json')
+          v=json.loads(p.read_text(encoding='utf-8'))
+          assert v['status']=='PASS', v['errors']
+          assert v['production_touched'] is False
+          assert v['pythonanywhere_methods']==['GET']
+          assert not v['crm_write'] and not v['site_write'] and not v['media_write']
+          assert v['ua0011']['after']['status']=='kr_bought'
+          for field in v['ua0011']['transport_fields']:
+              assert v['ua0011']['after'][field] is None
+          assert v['ua0011']['media_preserved']
+          assert v['ua0011']['resolved_main_photo']
+          assert v['ten_run_guard']=={'runs':10,'duplicates':0,'drift':0,'unexpected_changes':0}
+          assert v['ua0009']['safe_to_publish_without_damaging_existing_cards'] is True
+          for catalog in v['canary'].values():
+              card=catalog['audit']['cards']['UA-0011']
+              assert card['count']==1 and card['stage']==1 and card['category']=='korea'
+              assert card['template'] and card['photo'] and card['absolute_photo']
+          print('TASK084_LIVE_GATE_A_EVIDENCE_PASS')
+          PY
+
+      - name: Capture mobile canary screenshots
+        if: always()
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "$browser"
+          mkdir -p cloud/task_084_ua0011_korea_reset/screenshots
+          root="file://${GITHUB_WORKSPACE}/cloud/task_084_ua0011_korea_reset/canary"
+          "$browser" --headless=new --disable-gpu --allow-file-access-from-files --hide-scrollbars \
+            --window-size=430,7000 --virtual-time-budget=6000 \
+            --screenshot="cloud/task_084_ua0011_korea_reset/screenshots/video-korea-mobile.png" \
+            "$root/video-katalog.html?f=korea"
+          "$browser" --headless=new --disable-gpu --allow-file-access-from-files --hide-scrollbars \
+            --window-size=430,7000 --virtual-time-budget=6000 \
+            --screenshot="cloud/task_084_ua0011_korea_reset/screenshots/site-korea-mobile.png" \
+            "$root/site-katalog.html?f=korea"
+          test "$(wc -c < cloud/task_084_ua0011_korea_reset/screenshots/video-korea-mobile.png)" -gt 5000
+          test "$(wc -c < cloud/task_084_ua0011_korea_reset/screenshots/site-korea-mobile.png)" -gt 5000
+
+      - name: Commit sanitized Gate A evidence
+        if: always()
+        run: |
+          git add -- \
+            cloud/task_084_ua0011_korea_reset/evidence/live_gate_a.json \
+            cloud/task_084_ua0011_korea_reset/TASK_084_REPORT.md \
+            cloud/task_084_ua0011_korea_reset/before_after_matrix.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_084_ua0011_korea_reset/evidence/live_gate_a.json|\
+              cloud/task_084_ua0011_korea_reset/TASK_084_REPORT.md|\
+              cloud/task_084_ua0011_korea_reset/before_after_matrix.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then exit 0; fi
+          git config user.name 'task084-korea-reset'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task084: record live GET-only Korea reset Gate A'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -lt 5 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Upload canary evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task084-ua0011-korea-reset-${{ github.run_id }}
+          path: |
+            cloud/task_084_ua0011_korea_reset/evidence
+            cloud/task_084_ua0011_korea_reset/TASK_084_REPORT.md
+            cloud/task_084_ua0011_korea_reset/before_after_matrix.md
+            cloud/task_084_ua0011_korea_reset/canary
+            cloud/task_084_ua0011_korea_reset/screenshots
+          if-no-files-found: warn
+          retention-days: 14
