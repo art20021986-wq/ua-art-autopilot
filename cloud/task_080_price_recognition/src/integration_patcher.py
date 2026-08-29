@@ -186,6 +186,7 @@ def apply_value(card_id, field, raw, actor_id, correction=False,
             now=db.now,
             card_id=int(card_id),
             expected_auto_number=expected_auto_number or number,
+            expected_status=card.get("status"),
             expected_old=card.get("price_uah"),
             new_value=parsed.value,
             actor_id=actor_id,
@@ -200,7 +201,7 @@ def apply_value(card_id, field, raw, actor_id, correction=False,
                            "«измени цену на 11 400». Карточка не изменена.")
         if result.reason == "same":
             return False, "Такая цена уже указана. Карточка не изменена."
-        if result.reason in ("conflict", "identity_conflict"):
+        if result.reason in ("conflict", "identity_conflict", "stage_conflict"):
             return False, "Карточка изменилась параллельно. Откройте её снова; цена не записана."
         return False, "Цена не записана из-за технической ошибки. Повторите позже."
 
@@ -273,6 +274,7 @@ def _v168_cas_write(card_id, field, expected_old, new_value, actor_id,
             now=db.now,
             card_id=int(card_id),
             expected_auto_number=expected_auto_number or number,
+            expected_status=card.get("status"),
             expected_old=expected_old,
             new_value=new_value,
             actor_id=actor_id,
@@ -479,6 +481,7 @@ def _patch_voice_undo(block: str) -> str:
                 now=db.now,
                 card_id=cid,
                 expected_auto_number=card.get("auto_number"),
+                expected_status=card.get("status"),
                 expected_old=current,
                 new_value=change.get("old"),
                 actor_id=q.from_user.id,
