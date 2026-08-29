@@ -35,12 +35,32 @@ function norm(v){v=(v||'all').toLowerCase().trim();var a={
 'ge':'gruzia','georgia':'gruzia','gruzia':'gruzia','грузия':'gruzia',
 'ua':'kiev','kyiv':'kiev','kiev':'kiev','киев':'kiev','київ':'kiev',
 'all':'all'};return a[v]||v;}
+function setChipCount(el,n){
+var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),nodes=[],node,changed=false;
+while((node=w.nextNode())){nodes.push(node)}
+for(var i=0;i<nodes.length;i++){var v=nodes[i].nodeValue||'';
+if(/[·•]\s*\d+\s*$/.test(v)){nodes[i].nodeValue=v.replace(/([·•]\s*)\d+(\s*)$/,'$1'+n+'$2');changed=true}}
+if(!changed){for(var j=nodes.length-1;j>=0;j--){var t=nodes[j].nodeValue||'';
+if(/^\s*\d+\s*$/.test(t)){nodes[j].nodeValue=t.replace(/\d+/,String(n));changed=true;break}}}
+if(!changed){el.appendChild(document.createTextNode(' · '+n))}
+}
+function setShown(n){
+var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),node;
+while((node=w.nextNode())){var v=node.nodeValue||'';
+if(/Показано\s*:\s*\d+/i.test(v)){node.nodeValue=v.replace(/(Показано\s*:\s*)\d+/i,'$1'+n)}}
+}
 function apply(){var p=new URLSearchParams(location.search);
 var f=norm(p.get('f')||p.get('etap')||p.get('stage')||p.get('category')||'all');
-var cards=document.querySelectorAll('[data-ua-card-stage]');for(var i=0;i<cards.length;i++){
-var s=norm(cards[i].getAttribute('data-ua-card-stage'));cards[i].style.display=(f==='all'||s===f)?'':'none';}
-var chips=document.querySelectorAll('.chipy [data-f]');for(var j=0;j<chips.length;j++){
-if(norm(chips[j].getAttribute('data-f'))===f){chips[j].classList.add('on')}else{chips[j].classList.remove('on')}}}
+var cards=document.querySelectorAll('[data-ua-card-stage]');
+var counts={all:cards.length,korea:0,more:0,gruzia:0,kiev:0},shown=0;
+for(var i=0;i<cards.length;i++){var s=norm(cards[i].getAttribute('data-ua-card-stage'));
+if(Object.prototype.hasOwnProperty.call(counts,s)){counts[s]++}
+var visible=(f==='all'||s===f);cards[i].style.display=visible?'':'none';if(visible){shown++}}
+var chips=document.querySelectorAll('.chipy [data-f]');
+for(var j=0;j<chips.length;j++){var key=norm(chips[j].getAttribute('data-f'));
+if(Object.prototype.hasOwnProperty.call(counts,key)){setChipCount(chips[j],counts[key])}
+if(key===f){chips[j].classList.add('on')}else{chips[j].classList.remove('on')}}
+setShown(shown)}
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',apply)}else{apply()}})();</script>"""
 
 
