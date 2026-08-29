@@ -1,13 +1,9 @@
 name: Claude Autopilot
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tasks/**'
-      - 'CLAUDE.md'
-      - 'automation/claude_worker.py'
-      - '.github/workflows/claude_autopilot.yml'
+  # Manual-only while the visible owner directive for UA-0011 is repaired.
+  # This prevents an inferred Korea target from racing the explicit ferry
+  # target and can be re-enabled after the bounded production verification.
   workflow_dispatch:
 
 permissions:

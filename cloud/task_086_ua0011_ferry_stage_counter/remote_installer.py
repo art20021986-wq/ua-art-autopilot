@@ -630,13 +630,10 @@ def inspect_detail(path: pathlib.Path, target: dict) -> dict:
 
 
 def card_blocks(source: str) -> dict[str, list[str]]:
-    pattern = re.compile(
-        r"<a\b(?=[^>]*href=[\"'][^\"']*(UA-[0-9]{4,})\.html(?:\?[^\"']*)?[\"'])"
-        r"[^>]*>.*?</a\s*>", re.I | re.S,
-    )
+    guard = import_guard_from_upload()
     result: dict[str, list[str]] = {}
-    for match in pattern.finditer(source):
-        result.setdefault(match.group(1).upper(), []).append(match.group(0))
+    for code, _stage, block in guard.card_entries(source):
+        result.setdefault(code, []).append(block)
     return result
 
 
@@ -645,7 +642,11 @@ def catalog_semantics(path: pathlib.Path, expected_more: bool = True) -> dict:
         raise Task086Error("CATALOG_MISSING:" + str(path))
     data = path.read_bytes()
     source = data.decode("utf-8", "replace")
-    blocks = card_blocks(source)
+    guard = import_guard_from_upload()
+    entries = guard.card_entries(source)
+    blocks: dict[str, list[str]] = {}
+    for code, _stage, block in entries:
+        blocks.setdefault(code, []).append(block)
     target_count = len(blocks.get(TARGET_CODE, []))
     if expected_more and target_count != 1:
         raise Task086Error("UA0011_CATALOG_COUNT:%s:%d" % (
@@ -654,11 +655,9 @@ def catalog_semantics(path: pathlib.Path, expected_more: bool = True) -> dict:
     if not expected_more and target_count < 1:
         raise Task086Error("UA0011_CATALOG_MISSING:" + path.parent.name)
     protected_catalog_count = len(blocks.get(PROTECTED_CODE, []))
-    block = blocks[TARGET_CODE][0]
-    opening = re.match(r"<a\b[^>]*>", block, re.I | re.S).group(0)
-    stage_ok = bool(re.search(
-        r"data-(?:ua-card-stage|stage|etap)=[\"']more[\"']", opening, re.I
-    ))
+    target_entries = [entry for entry in entries if entry[0] == TARGET_CODE]
+    block = target_entries[0][2]
+    stage_ok = target_entries[0][1] == "more"
     checks = {
         "photo": bool(re.search(r"<img\b[^>]*src=", block, re.I)),
         "own_media": "UA-0011" in block,
@@ -666,32 +665,31 @@ def catalog_semantics(path: pathlib.Path, expected_more: bool = True) -> dict:
     if expected_more:
         checks.update({
             "stage_more": stage_ok,
-            "not_korea_or_kiev": not re.search(
-                r"data-(?:ua-card-stage|stage|etap)=[\"'](?:korea|kiev)[\"']",
-                opening, re.I,
-            ),
+            "not_korea_or_kiev": target_entries[0][1] not in ("korea", "kiev"),
         })
-    if not all(checks.values()):
+    if expected_more and not all(checks.values()):
         raise Task086Error("CATALOG_CONTRACT:%s:%s" % (
             path.parent.name, ",".join(key for key, ok in checks.items() if not ok)
         ))
     semantic = {}
     for code, values in blocks.items():
-        if len(values) == 1:
+        matching = [entry for entry in entries if entry[0] == code]
+        if len(matching) == 1:
             item = values[0]
-            opening_item = re.match(r"<a\b[^>]*>", item, re.I | re.S).group(0)
             image = re.search(r"<img\b[^>]*src=[\"']([^\"']+)", item, re.I)
-            stage = re.search(r"data-(?:ua-card-stage|stage)=[\"']([^\"']+)", opening_item, re.I)
             semantic[code] = {
-                "stage": stage.group(1) if stage else None,
+                "stage": matching[0][1],
                 "photo": image.group(1) if image else None,
             }
-    guard = import_guard_from_upload()
     issues = []
     if expected_more:
         counts = guard.verify_catalog(source, TARGET_CODE, "more")
         chips = counts
     else:
+        if not all(checks.values()):
+            issues.append("preexisting_target:" + ",".join(
+                key for key, ok in checks.items() if not ok
+            ))
         try:
             counts = guard.catalog_counts(source)
         except Exception as exc:

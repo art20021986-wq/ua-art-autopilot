@@ -9,6 +9,12 @@ SPEC = importlib.util.spec_from_file_location("task086_remote", ROOT / "remote_i
 remote = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(remote)
 
+GUARD_SPEC = importlib.util.spec_from_file_location(
+    "task086_guard_for_remote", ROOT / "stage_counter_guard.py"
+)
+guard = importlib.util.module_from_spec(GUARD_SPEC)
+GUARD_SPEC.loader.exec_module(guard)
+
 
 class SourcePatchTests(unittest.TestCase):
     def test_db_patch_is_atomic_and_idempotent(self):
@@ -84,6 +90,33 @@ UA-0011 VIN 4289 <img src="foto/UA-0011/m/001.jpg">
             path.write_text(good.replace("На пароме", "Автомобиль на пароме"), encoding="utf-8")
             with self.assertRaises(remote.Task086Error):
                 remote.inspect_detail(path, target)
+
+    def test_shadow_catalog_tolerates_existing_fallback_but_final_does_not(self):
+        source = "".join([
+            "<button class='chip' data-f='all'>x<b>2</b></button>",
+            "<button class='chip' data-f='korea'>x<b>0</b></button>",
+            "<button class='chip' data-f='sea'>x<b>1</b></button>",
+            "<button class='chip' data-f='georgia'>x<b>0</b></button>",
+            "<button class='chip' data-f='kiev'>x<b>0</b></button>",
+            "<article class='catalog-card' data-stage='sea'>",
+            "<a href='UA-0009.html'><img src='9.jpg'></a>",
+            "<a href='UA-0009.html'>open</a></article>",
+            "<a class='ua-cat-fallback-v1' data-ua-stage-tile='2' ",
+            "href='UA-0011.html'>UA-0011</a>",
+        ])
+        original = remote.import_guard_from_upload
+        remote.import_guard_from_upload = lambda: guard
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                path = pathlib.Path(tmp) / "katalog.html"
+                path.write_text(source, encoding="utf-8")
+                shadow = remote.catalog_semantics(path, expected_more=False)
+                self.assertIn("preexisting_target:photo", shadow["preexisting_issues"])
+                self.assertIn("preexisting_counter_drift", shadow["preexisting_issues"])
+                with self.assertRaises(remote.Task086Error):
+                    remote.catalog_semantics(path, expected_more=True)
+        finally:
+            remote.import_guard_from_upload = original
 
 
 if __name__ == "__main__":

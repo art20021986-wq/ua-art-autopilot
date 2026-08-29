@@ -33,6 +33,36 @@ def catalog(target_stage="more", duplicate=False, chip_more=1):
     return chips + blocks
 
 
+def modern_catalog(canonical_target=True, chip_more=1):
+    cards = [
+        ("UA-0009", "sea"),
+        ("UA-0012", "georgia"),
+        ("UA-0013", "kiev"),
+    ]
+    if canonical_target:
+        cards.append(("UA-0011", "sea"))
+    chips = "".join([
+        "<button class='chip' data-f='all'>x<b>4</b></button>",
+        "<button class='chip' data-f='korea'>x<b>0</b></button>",
+        "<button class='chip' data-f='sea'>x<b>%d</b></button>" % chip_more,
+        "<button class='chip' data-f='georgia'>x<b>1</b></button>",
+        "<button class='chip' data-f='kiev'>x<b>1</b></button>",
+    ])
+    blocks = "".join(
+        "<article class='catalog-card' data-stage='%s'>"
+        "<a class='catalog-photo' href='%s.html'><img src='%s.jpg'></a>"
+        "<a class='card-arrow' href='%s.html'>open</a></article>"
+        % (stage, code, code, code)
+        for code, stage in cards
+    )
+    if not canonical_target:
+        blocks += (
+            "<a class='ua-cat-fallback-v1' data-ua-stage-tile='2' "
+            "href='UA-0011.html'>UA-0011</a>"
+        )
+    return chips + blocks
+
+
 class StageCounterGuardTests(unittest.TestCase):
     def test_stage_mapping_and_legacy_destination(self):
         self.assertEqual(guard.public_bucket("kr_bought"), "korea")
@@ -81,6 +111,21 @@ class StageCounterGuardTests(unittest.TestCase):
             guard.verify_catalog(catalog(duplicate=True, chip_more=2), "UA-0011", "more")
         with self.assertRaises(guard.StageCounterError):
             guard.verify_catalog(catalog(chip_more=9), "UA-0011", "more")
+
+    def test_live_article_cards_count_once_and_normalize_stage_aliases(self):
+        counts = guard.verify_catalog(modern_catalog(chip_more=2), "UA-0011", "more")
+        self.assertEqual(counts, {
+            "all": 4, "korea": 0, "more": 2, "gruzia": 1, "kiev": 1,
+        })
+        self.assertEqual(len(guard.card_entries(modern_catalog(chip_more=2))), 4)
+
+    def test_fallback_is_semantic_card_but_counter_drift_still_fails(self):
+        source = modern_catalog(canonical_target=False, chip_more=1)
+        self.assertEqual(guard.catalog_counts(source), {
+            "all": 4, "korea": 0, "more": 2, "gruzia": 1, "kiev": 1,
+        })
+        with self.assertRaises(guard.StageCounterError):
+            guard.verify_catalog(source, "UA-0011", "more")
 
 
 if __name__ == "__main__":

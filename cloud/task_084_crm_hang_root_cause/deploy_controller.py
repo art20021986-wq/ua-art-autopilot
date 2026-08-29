@@ -705,6 +705,23 @@ def run_deploy() -> int:
             evidence["launcher_immediate"] = api.wait_launcher_running()
             immediate = api.run_remote("postcheck")
             evidence["postcheck_immediate"] = immediate
+            immediate_errors = " ".join(
+                str(item) for item in (immediate.get("errors") or [])
+            )
+            if immediate.get("status") != "PASS" and any(
+                marker in immediate_errors
+                for marker in ("START_SINGLETON_NOT_HELD", "TELEGRAM_HEALTH")
+            ):
+                # The code fix is already installed, but a failed neighboring
+                # publication can leave PythonAnywhere's control plane saying
+                # "Running" while no start_safe process owns the lock.  Start
+                # exactly one guarded launcher and re-check; the singleton in
+                # start_safe makes this bounded and idempotent.
+                evidence["launcher_rescue"] = api.rescue_bot()
+                evidence["bot_restarted"] = True
+                time.sleep(20)
+                immediate = api.run_remote("postcheck")
+                evidence["postcheck_after_rescue"] = immediate
             validate_postcheck(immediate)
             time.sleep(30)
             evidence["launcher_delayed"] = api.wait_launcher_running()

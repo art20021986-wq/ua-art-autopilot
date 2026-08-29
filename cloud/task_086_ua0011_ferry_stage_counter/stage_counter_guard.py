@@ -147,48 +147,129 @@ def _restore(preimage: Mapping[str, bytes | None]) -> None:
             raise StageCounterError("FILE_ROLLBACK_MISMATCH:" + path)
 
 
-def _card_blocks(source: str) -> list[tuple[str, str]]:
-    pattern = re.compile(
+_PUBLIC_STAGE_ALIASES = {
+    "korea": "korea",
+    "more": "more",
+    "sea": "more",
+    "ferry": "more",
+    "gruzia": "gruzia",
+    "georgia": "gruzia",
+    "kiev": "kiev",
+    "kyiv": "kiev",
+}
+
+
+def _rendered_stage(opening: str) -> str | None:
+    found = re.search(
+        r"data-(?:ua-card-stage|stage|etap)=[\"']([^\"']+)[\"']",
+        opening, re.I,
+    )
+    if found:
+        return _PUBLIC_STAGE_ALIASES.get(found.group(1).strip().casefold())
+    tile = re.search(r"data-ua-stage-tile=[\"']([1-4])[\"']", opening, re.I)
+    return PUBLIC_STAGE.get(int(tile.group(1))) if tile else None
+
+
+def card_entries(source: str) -> list[tuple[str, str | None, str]]:
+    """Return one semantic entry per rendered vehicle card.
+
+    The live catalog uses ``article.catalog-card`` containers with two links
+    to the same vehicle.  Older catalogs used one stage-annotated anchor and
+    the temporary UA-0011 fallback uses a standalone anchor.  Parsing the
+    semantic container prevents the two normal links from being counted as
+    duplicate vehicles while retaining fail-closed duplicate detection.
+    """
+    article_pattern = re.compile(
+        r"<article\b(?=[^>]*class=[\"'][^\"']*\bcatalog-card\b)[^>]*>"
+        r".*?</article\s*>", re.I | re.S,
+    )
+    entries: list[tuple[str, str | None, str]] = []
+    spans: list[tuple[int, int]] = []
+    for match in article_pattern.finditer(source):
+        block = match.group(0)
+        opening = re.match(r"<article\b[^>]*>", block, re.I | re.S)
+        code = re.search(
+            r"href=[\"'][^\"']*(UA-[0-9]{4,})\.html(?:\?[^\"']*)?[\"']",
+            block, re.I,
+        )
+        if not code:
+            raise StageCounterError("CATALOG_CARD_CODE_MISSING")
+        entries.append((
+            code.group(1).upper(),
+            _rendered_stage(opening.group(0) if opening else ""),
+            block,
+        ))
+        spans.append(match.span())
+
+    # Remove article bodies before parsing legacy/fallback anchors.  Otherwise
+    # each canonical card's photo and arrow links would be counted twice.
+    remainder_parts = []
+    cursor = 0
+    for start, end in spans:
+        remainder_parts.append(source[cursor:start])
+        cursor = end
+    remainder_parts.append(source[cursor:])
+    remainder = "".join(remainder_parts)
+    anchor_pattern = re.compile(
         r"<a\b(?=[^>]*href=[\"'][^\"']*(UA-[0-9]{4,})\.html(?:\?[^\"']*)?[\"'])"
         r"[^>]*>.*?</a\s*>", re.I | re.S,
     )
-    return [(match.group(1).upper(), match.group(0)) for match in pattern.finditer(source)]
+    for match in anchor_pattern.finditer(remainder):
+        block = match.group(0)
+        opening = re.match(r"<a\b[^>]*>", block, re.I | re.S)
+        entries.append((
+            match.group(1).upper(),
+            _rendered_stage(opening.group(0) if opening else ""),
+            block,
+        ))
+    return entries
+
+
+def _card_blocks(source: str) -> list[tuple[str, str]]:
+    return [(code, block) for code, _stage, block in card_entries(source)]
 
 
 def catalog_counts(source: str) -> dict[str, int]:
     """Recompute from unique rendered cards; never increment/decrement chips."""
-    blocks = _card_blocks(source)
-    ids = [code for code, _block in blocks]
+    entries = card_entries(source)
+    ids = [code for code, _stage, _block in entries]
     if len(ids) != len(set(ids)):
         raise StageCounterError("CATALOG_DUPLICATE_AUTO_NUMBER")
     counts = {"all": len(ids), "korea": 0, "more": 0, "gruzia": 0, "kiev": 0}
-    for code, block in blocks:
-        opening = re.match(r"<a\b[^>]*>", block, re.I | re.S)
-        stage = re.search(
-            r"data-(?:ua-card-stage|stage|etap)=[\"'](korea|more|gruzia|kiev)[\"']",
-            opening.group(0) if opening else "", re.I,
-        )
+    for code, stage, _block in entries:
         if not stage:
             raise StageCounterError("CARD_PUBLIC_STAGE_MISSING:" + code)
-        counts[stage.group(1).lower()] += 1
+        counts[stage] += 1
     if counts["all"] != sum(counts[key] for key in ("korea", "more", "gruzia", "kiev")):
         raise StageCounterError("CATALOG_COUNT_INVARIANT")
     return counts
 
 
 def chip_counts(source: str) -> dict[str, int]:
-    values = {}
-    for key in ("all", "korea", "more", "gruzia", "kiev"):
-        found = re.findall(
-            r"<a\b(?=[^>]*class=[\"'][^\"']*\bchip\b)(?=[^>]*data-f=[\"']"
-            + re.escape(key)
-            + r"[\"'])[^>]*>.*?<b[^>]*>\s*(\d+)\s*</b>.*?</a\s*>",
-            source, re.I | re.S,
-        )
+    values: dict[str, list[int]] = {
+        key: [] for key in ("all", "korea", "more", "gruzia", "kiev")
+    }
+    pattern = re.compile(
+        r"<(?P<tag>a|button)\b"
+        r"(?=[^>]*class=[\"'][^\"']*\bchip\b)"
+        r"(?=[^>]*data-f=[\"'](?P<bucket>all|korea|more|sea|gruzia|georgia|kiev|kyiv)[\"'])"
+        r"[^>]*>(?P<body>.*?)</(?P=tag)\s*>",
+        re.I | re.S,
+    )
+    for match in pattern.finditer(source):
+        key = _PUBLIC_STAGE_ALIASES.get(match.group("bucket").casefold(),
+                                        match.group("bucket").casefold())
+        found = re.findall(r"<b\b[^>]*>\s*(\d+)\s*</b\s*>",
+                           match.group("body"), re.I | re.S)
+        if len(found) != 1:
+            raise StageCounterError("CHIP_VALUE_%s:%d" % (key, len(found)))
+        values[key].append(int(found[0]))
+    result = {}
+    for key, found in values.items():
         if len(found) != 1:
             raise StageCounterError("CHIP_COUNT_%s:%d" % (key, len(found)))
-        values[key] = int(found[0])
-    return values
+        result[key] = found[0]
+    return result
 
 
 def verify_catalog(source: str, target_code: str | None = None,
@@ -198,16 +279,13 @@ def verify_catalog(source: str, target_code: str | None = None,
     if chip_counts(source) != actual:
         raise StageCounterError("CHIPS_DO_NOT_MATCH_CARDS")
     if target_code:
-        target = [block for code, block in _card_blocks(source) if code == target_code.upper()]
+        target = [entry for entry in card_entries(source)
+                  if entry[0] == target_code.upper()]
         wanted_count = 1 if expect_target else 0
         if len(target) != wanted_count:
             raise StageCounterError("TARGET_CATALOG_COUNT:%d" % len(target))
         if target_bucket and expect_target:
-            opening = re.match(r"<a\b[^>]*>", target[0], re.I | re.S)
-            if not re.search(
-                r"data-(?:ua-card-stage|stage|etap)=[\"']%s[\"']" % re.escape(target_bucket),
-                opening.group(0) if opening else "", re.I,
-            ):
+            if target[0][1] != target_bucket:
                 raise StageCounterError("TARGET_BUCKET_MISMATCH")
     return actual
 
