@@ -1,14 +1,14 @@
 {
   "contract_id": "CATALOG-CARD-UNIFY-002-V1.0",
   "errors": [
-    "Blocked:SHADOW_FAILED:[\"Blocked:CATALOG_BASE_INVARIANT:katalog.html\"]"
+    "Blocked:SHADOW_FAILED:[\"Blocked:CATALOG_BASE_INVARIANT:katalog.html:{\\\"bytes\\\": 43309, \\\"canonical_blocks\\\": 11, \\\"canonical_identifiers\\\": [\\\"UA-0001\\\", \\\"UA-0002\\\", \\\"UA-0003\\\", \\\"UA-0004\\\", \\\"UA-0005\\\", \\\"UA-0006\\\", \\\"UA-0007\\\", \\\"UA-0008\\\", \\\"UA-0009\\\", \\\"UA-0010\\\", \\\"UA-0011\\\"], \\\"duplicate_ru\\\": 5, \\\"duplicate_uk\\\": 5, \\\"ferry_status\\\": false, \\\"sha256\\\": \\\"a6200d21cbb93b527df24387d877dfe778fd5d0792a1aa682c1b47967bc03e1f\\\", \\\"style_marker\\\": 0, \\\"ua0009\\\": true, \\\"unknown_old_ru\\\": 0, \\\"unknown_old_uk\\\": 0}\"]"
   ],
   "rollback": null,
   "shadow": {
     "contract_id": "CATALOG-CARD-UNIFY-002-V1.0",
     "crm_db_write": false,
     "errors": [
-      "Blocked:CATALOG_BASE_INVARIANT:katalog.html"
+      "Blocked:CATALOG_BASE_INVARIANT:katalog.html:{\"bytes\": 43309, \"canonical_blocks\": 11, \"canonical_identifiers\": [\"UA-0001\", \"UA-0002\", \"UA-0003\", \"UA-0004\", \"UA-0005\", \"UA-0006\", \"UA-0007\", \"UA-0008\", \"UA-0009\", \"UA-0010\", \"UA-0011\"], \"duplicate_ru\": 5, \"duplicate_uk\": 5, \"ferry_status\": false, \"sha256\": \"a6200d21cbb93b527df24387d877dfe778fd5d0792a1aa682c1b47967bc03e1f\", \"style_marker\": 0, \"ua0009\": true, \"unknown_old_ru\": 0, \"unknown_old_uk\": 0}"
     ],
     "mode": "SHADOW",
     "production_write": false,
