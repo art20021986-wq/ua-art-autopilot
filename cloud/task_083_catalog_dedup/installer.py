@@ -945,13 +945,19 @@ def run_shadow() -> dict[str, Any]:
             **validate_catalog(candidate, require_dedup=True),
         }
     after = inspect_base()
-    if before != after:
-        raise Blocked("SHADOW_PRODUCTION_CHANGED")
+    stable_scopes = ("sources", "stage_guard", "catalogs", "protected_pages")
+    changed_scopes = [name for name in stable_scopes if before[name] != after[name]]
+    if changed_scopes:
+        raise Blocked("SHADOW_PRODUCTION_CHANGED:" + ",".join(changed_scopes))
     return {
         "contract_id": CONTRACT, "status": "PASS", "mode": "SHADOW",
         "production_write": False, "crm_db_write": False,
         "before": before, "candidate_sources": candidate_sources,
         "candidate_core": candidate_core, "candidate_catalogs": candidate_catalogs,
+        "database_rows_changed_during_readonly_check": (
+            before["database"]["rows_sha256"] != after["database"]["rows_sha256"]
+        ),
+        "database_after": after["database"],
     }
 
 

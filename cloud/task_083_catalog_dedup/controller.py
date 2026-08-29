@@ -36,6 +36,9 @@ PRODUCTION_WORKFLOWS = {
     "TASK073_GATE_B_V5",
     "task074-catalog-card-unify-v1",
     "task082-catalog-stage-production",
+    "task083-publish-transaction-production",
+    "task084-crm-hang-root-cause-production",
+    "task085-ua0011-stage-payload-production",
     "task083-catalog-dedup-v1",
 }
 
@@ -282,6 +285,19 @@ def require_pass(value: dict, label: str) -> None:
         raise Blocked(label + "_FAILED:" + json.dumps(value.get("errors") or [])[:1000])
 
 
+def already_enforced(shadow: dict) -> bool:
+    if any(item.get("changed") for item in (shadow.get("candidate_sources") or {}).values()):
+        return False
+    core = shadow.get("candidate_core")
+    if core and core.get("changed"):
+        return False
+    before_catalogs = (shadow.get("before") or {}).get("catalogs") or {}
+    for path, item in (shadow.get("candidate_catalogs") or {}).items():
+        if item.get("sha256") != (before_catalogs.get(path) or {}).get("sha256"):
+            return False
+    return bool(before_catalogs)
+
+
 def report(value: dict) -> str:
     install = value.get("install") or {}
     return "\n".join([
@@ -314,16 +330,32 @@ def main() -> int:
         value["shadow"] = shadow
         require_pass(shadow, "SHADOW")
         wait_for_github_quiet(timeout=600)
-        install = api.run_remote("install")
+        if already_enforced(shadow):
+            install = {
+                "contract_id": CONTRACT,
+                "status": "PASS",
+                "mode": "ALREADY_INSTALLED",
+                "production_write": False,
+                "crm_db_write": False,
+                "backup_root": None,
+                "changed_paths": [],
+                "before": shadow["before"],
+                "after": shadow["before"],
+            }
+        else:
+            install = api.run_remote("install")
         value["install"] = install
         require_pass(install, "INSTALL")
-        installed = True
+        installed = install.get("mode") == "INSTALL"
         if install.get("before", {}).get("database") != install.get("after", {}).get("database"):
             raise Blocked("INSTALL_DATABASE_CHANGED")
         if install.get("before", {}).get("protected_pages") != install.get("after", {}).get("protected_pages"):
             raise Blocked("INSTALL_CARD_PAGES_CHANGED")
-        value["restart"] = api.restart_bot()
-        time.sleep(18)
+        if installed:
+            value["restart"] = api.restart_bot()
+            time.sleep(18)
+        else:
+            value["restart"] = {"status": "SKIPPED_ALREADY_INSTALLED"}
         value["postcheck"] = api.run_remote("shadow")
         require_pass(value["postcheck"], "POSTCHECK")
         value["public"] = public_catalog_check()
