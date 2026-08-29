@@ -127,6 +127,17 @@ class StageGuardTests(unittest.TestCase):
         self.assertIn("UA-0011", managed)
         self.assertLess(managed.index("UA-0011"), managed.index("UA-0001"))
 
+    def test_filter_overrides_template_display_and_self_audits_rendering(self):
+        source = """<!doctype html><html><head></head><body>
+        <div class="catalog-grid"></div><div class="empty-assist"></div></body></html>"""
+        candidate = enforce_catalog(source, [row("UA-0011", "sea_loaded")], {
+            "UA-0011": "https://example.test/UA-0011.jpg",
+        })
+        self.assertIn(".ua-stage-card-v2[hidden]{display:none!important}", candidate)
+        self.assertIn("style.setProperty('display',visible?'grid':'none','important')", candidate)
+        self.assertIn("window.getComputedStyle(cards[k]).display!=='none'", candidate)
+        self.assertIn("data-ua-stage-filter-ok", candidate)
+
 
 if __name__ == "__main__":
     unittest.main()
