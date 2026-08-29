@@ -40,6 +40,7 @@ CONTRACT_ID = "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0"
 TARGET_CODE = "UA-0011"
 PROTECTED_CODE = "UA-0009"
 EXPECTED_STATUS = "kr_bought"
+EXPECTED_VIN = "KMHE341DBKA544289"
 OLD_CONTAINER = "ONEYSELGF1046602"
 OLD_ETA_VALUES = (
     "2026-12-12", "12.12.2026", "12 декабря 2026", "12 грудня 2026",
@@ -254,10 +255,16 @@ def validate_shadow(value: dict) -> None:
     require_pass(value, "SHADOW")
     if value.get("production_write") or value.get("crm_write") or value.get("media_write"):
         raise ControllerError("SHADOW_WRITE_SCOPE")
-    target = (value.get("database") or {}).get("target") or {}
-    if target.get("auto_number") != TARGET_CODE or target.get("status") != EXPECTED_STATUS:
+    database = value.get("database") or {}
+    target = database.get("target") or {}
+    if (
+        target.get("auto_number") != TARGET_CODE
+        or str(target.get("vin") or "").strip().upper() != EXPECTED_VIN
+        or database.get("observed_stage") not in (1, 2, 3, 4)
+        or database.get("destination_status") != EXPECTED_STATUS
+    ):
         raise ControllerError("SHADOW_TARGET")
-    if ((value.get("database") or {}).get("protected_ua0009") or {}).get(
+    if (database.get("protected_ua0009") or {}).get(
         "auto_number"
     ) != PROTECTED_CODE:
         raise ControllerError("SHADOW_UA0009")
