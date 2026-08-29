@@ -1,15 +1,10 @@
 # CRM-CONTAINER-STAGE-SYNC-004 v1.0 — Gate A audit
 
-STATUS: **PASS_AUDIT_DEFECT_REPRODUCED**
+STATUS: **FAIL**
 
 - Production touched: **NO**
 - PythonAnywhere methods: **GET only**
 - CRM/site/media writes: **NO**
-- SQLite quick_check: **ok**
-- Current rows/published: **13/13**
-- UA-0009 protected audit: **PASS**
-- UA-0012 local-copy canary: **sea_loaded / 30 / 2026-09-28 / На пароме**
-- Media and published fields in canary: **UNCHANGED**
-- Missing diagnostics placeholder: **PASS**
+- Errors: `PatchAbortedError:ABORT: cars_ui.py full-file hash mismatch (expected 50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306, got cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea). No write performed.`
 
-This is audit/reproduction evidence only. Production remains locked.
+Production remains locked.
