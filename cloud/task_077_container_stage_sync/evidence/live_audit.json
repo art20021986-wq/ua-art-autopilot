@@ -1,0 +1,713 @@
+{
+  "backup": {
+    "captured_before_transform": true,
+    "files": {
+      "cars_schema.py": {
+        "bytes": 24486,
+        "path": "/home/Carix/cars_schema.py",
+        "sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496"
+      },
+      "cars_ui.py": {
+        "bytes": 164687,
+        "path": "/home/Carix/cars_ui.py",
+        "sha256": "50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306"
+      },
+      "crm.db": {
+        "bytes": 2691072,
+        "path": "/home/Carix/crm.db",
+        "sha256": "22af7606bfe64a4c0a5c699ecb99e66a0d5c9cab236f4c1948ad94116c10e4f2"
+      },
+      "crm.db-wal": {
+        "missing": true,
+        "path": "/home/Carix/crm.db-wal"
+      },
+      "db.py": {
+        "bytes": 34721,
+        "path": "/home/Carix/db.py",
+        "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
+      },
+      "konteyner.py": {
+        "bytes": 24533,
+        "path": "/home/Carix/konteyner.py",
+        "sha256": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d"
+      },
+      "master_card.py": {
+        "bytes": 141682,
+        "path": "/home/Carix/master_card.py",
+        "sha256": "df2001cd808e5fbb2201e2dbc5e06ab3d529be3cdb65dbaca691a15a2bad2174"
+      },
+      "publikaciya.py": {
+        "bytes": 21682,
+        "path": "/home/Carix/publikaciya.py",
+        "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4"
+      },
+      "site_catalog": {
+        "bytes": 43258,
+        "path": "/home/Carix/site/katalog.html",
+        "sha256": "948bfc2412ca2909009a1644b0f3fc81faac3abdc6720bd61fe6460ff35bd84c"
+      },
+      "site_ua0012": {
+        "missing": true,
+        "path": "/home/Carix/site/UA-0012.html"
+      },
+      "stranica.py": {
+        "bytes": 197611,
+        "path": "/home/Carix/stranica.py",
+        "sha256": "84a56024e185932c3f2af289db87d1b98558acdf9c4788256dfd36d544ec28b3"
+      },
+      "video_catalog": {
+        "bytes": 41082,
+        "path": "/home/Carix/video/katalog.html",
+        "sha256": "34fb82b9ec1bc66b76fccbbaad9b440d01ea4d60fe5c195954e88251442ecdd0"
+      },
+      "video_ua0012": {
+        "missing": true,
+        "path": "/home/Carix/video/UA-0012.html"
+      },
+      "yadro.py": {
+        "bytes": 145171,
+        "path": "/home/Carix/yadro.py",
+        "sha256": "a0976afb93a4d2fdcab392601d25253700977618a02b04bc31903a18e95ee81a"
+      }
+    }
+  },
+  "contract_id": "CRM-CONTAINER-STAGE-SYNC-004-V1.0",
+  "crm_write": false,
+  "database": {
+    "canary": {
+      "diagnostic_placeholder": true,
+      "legacy_remaining": 0,
+      "media_hashes_unchanged": true,
+      "migration_ids": [
+        19
+      ],
+      "owner_label": "На пароме",
+      "published_unchanged": true,
+      "transition": {
+        "changed": true,
+        "days_to_kyiv": 30,
+        "eta_manual": "2026-09-28",
+        "status": "sea_loaded"
+      },
+      "ua0012_after": {
+        "auto_number": "UA-0012",
+        "condition_photos_bytes": 0,
+        "condition_videos_bytes": 0,
+        "days_to_kyiv": "30",
+        "eta_manual": "2026-09-28",
+        "id": 19,
+        "photos_bytes": 1234,
+        "publish_pending": 0,
+        "published": 1,
+        "sea_container": "ONEYSELGF1046602",
+        "sea_date_out": null,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-29T13:28:00+00:00",
+        "videos_bytes": 0
+      }
+    },
+    "columns": [
+      "id",
+      "brand",
+      "model",
+      "year",
+      "vin",
+      "fuel",
+      "engine",
+      "color",
+      "mileage",
+      "trim",
+      "condition",
+      "accidents",
+      "auction_link",
+      "price_buy",
+      "price_extra",
+      "price_ship",
+      "price_customs",
+      "price_total",
+      "stage",
+      "photos",
+      "videos",
+      "docs",
+      "responsible",
+      "review_status",
+      "published",
+      "created_by",
+      "approved_by",
+      "created_at",
+      "updated_at",
+      "client_id",
+      "publish_pending",
+      "video_h",
+      "video_v",
+      "auto_number",
+      "engine_cc",
+      "gearbox",
+      "drive",
+      "mileage_km",
+      "condition_text",
+      "condition_photos",
+      "condition_videos",
+      "diag_report",
+      "diag_link",
+      "kr_buy_date",
+      "kr_parking",
+      "sea_container",
+      "sea_port_from",
+      "sea_date_out",
+      "ge_port",
+      "ge_arrived",
+      "ge_released",
+      "days_to_kyiv",
+      "ua_delivered",
+      "ua_handed",
+      "cost_purchase",
+      "cost_fees",
+      "cost_logistics",
+      "cost_total",
+      "price_uah",
+      "nbu_rate",
+      "status",
+      "owner_user",
+      "history",
+      "price_history",
+      "cover_photo",
+      "eta_manual",
+      "description",
+      "hidden_photos",
+      "diag_text",
+      "ge_to_kyiv_at"
+    ],
+    "db_bytes": 2691072,
+    "db_sha256": "22af7606bfe64a4c0a5c699ecb99e66a0d5c9cab236f4c1948ad94116c10e4f2",
+    "legacy_sea_transit_ids": [
+      19
+    ],
+    "published_count": 12,
+    "quick_check": "ok",
+    "row_count": 12,
+    "status_counts": {
+      "ge_waiting": 1,
+      "kr_bought": 2,
+      "sea_loaded": 5,
+      "sea_transit": 1,
+      "ua_arrived": 3
+    },
+    "ua0009": {
+      "auto_number": "UA-0009",
+      "condition_photos_bytes": 0,
+      "condition_videos_bytes": 0,
+      "days_to_kyiv": "13",
+      "eta_manual": "2026-09-28",
+      "id": 15,
+      "photos_bytes": 2222,
+      "publish_pending": 0,
+      "published": 1,
+      "sea_container": "ONEYSELGB4471700",
+      "sea_date_out": null,
+      "status": "sea_loaded",
+      "updated_at": "2026-08-29T06:06:09",
+      "videos_bytes": 0
+    },
+    "ua0012_before": {
+      "auto_number": "UA-0012",
+      "condition_photos_bytes": 0,
+      "condition_videos_bytes": 0,
+      "days_to_kyiv": null,
+      "eta_manual": "2026-09-28",
+      "id": 19,
+      "photos_bytes": 1234,
+      "publish_pending": 0,
+      "published": 1,
+      "sea_container": "ONEYSELGF1046602",
+      "sea_date_out": null,
+      "status": "sea_transit",
+      "updated_at": "2026-08-29T06:28:22",
+      "videos_bytes": 0
+    },
+    "unique_published_ids": 12,
+    "wal_present": false
+  },
+  "defect_signals": {
+    "diagnostic_missing_guards": 3,
+    "sea_loaded_callbacks": 0,
+    "sea_transit_callbacks": 0,
+    "sold_transit_callbacks": 0,
+    "standalone_sea_transit_in_sources": 2,
+    "unconditional_success_texts": 1
+  },
+  "errors": [],
+  "finished_at_utc": "2026-08-29T06:39:45Z",
+  "media_write": false,
+  "mode": "LIVE_GET_ONLY_PLUS_LOCAL_COPY_CANARY",
+  "pages": {
+    "site_catalog": {
+      "bytes": 43258,
+      "contains_2026_09_28": false,
+      "contains_30_days": false,
+      "contains_diag_wait": false,
+      "contains_ferry_label": true,
+      "contains_ua0012": false,
+      "missing": false,
+      "sha256": "948bfc2412ca2909009a1644b0f3fc81faac3abdc6720bd61fe6460ff35bd84c"
+    },
+    "site_ua0012": {
+      "missing": true
+    },
+    "video_catalog": {
+      "bytes": 41082,
+      "contains_2026_09_28": false,
+      "contains_30_days": false,
+      "contains_diag_wait": false,
+      "contains_ferry_label": true,
+      "contains_ua0012": false,
+      "missing": false,
+      "sha256": "34fb82b9ec1bc66b76fccbbaad9b440d01ea4d60fe5c195954e88251442ecdd0"
+    },
+    "video_ua0012": {
+      "missing": true
+    }
+  },
+  "production_touched": false,
+  "pythonanywhere_methods": [
+    "GET"
+  ],
+  "runtime_llm_tokens": 0,
+  "site_write": false,
+  "sources": {
+    "cars_schema.py": {
+      "bytes": 24486,
+      "callbacks": {
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0
+      },
+      "compiled": true,
+      "counts": {
+        "SEO068_DIAGNOSTIC_TARGET_MISSING": 0,
+        "days_to_kyiv": 4,
+        "eta_days": 0,
+        "eta_manual": 0,
+        "opublikovat": 0,
+        "sea_loaded": 1,
+        "sea_transit": 1,
+        "sold_transit": 2,
+        "Машина видна клиентам в каталоге": 0
+      },
+      "definitions": [
+        {
+          "end_line": 227,
+          "line": 213,
+          "name": "days_to_kyiv",
+          "sha256": "5ff696215c8a1b7f122ebfce617b27592ff2171d8cbda8574051b2692750d2f6",
+          "source": "def days_to_kyiv(car, today=None):\n    \"\"\"\n    Пока машина в Грузии — сколько дней до Киева и ориентировочная дата.\n    Возвращает (дней, дата) или (None, None), если счётчик не нужен.\n    \"\"\"\n    if car.get(\"status\") not in GEORGIA_STATUSES:\n        return None, None\n    today = today or date.today()\n    if car.get(\"status\") != KYIV_STATUS:\n        return None, None          # пока ждёт покупателя — счётчик не нужен\n    total = LEG_ROAD + LEG_BUFFER\n    start = _as_date(car.get(\"ge_released\")) or _as_date(car.get(\"ge_arrived\")) or today\n    eta = start + timedelta(days=total)\n    left = (eta - today).days\n    return max(left, 0), eta\n",
+          "truncated": false
+        },
+        {
+          "end_line": 355,
+          "line": 285,
+          "name": "render_card",
+          "sha256": "aaecc6ade919220948757a3f21ada1383aac568ad6cc47c49309e9b12ab734e8",
+          "source": "def render_card(car, role=\"owner\", today=None):\n    \"\"\"\n    Текст карточки для Telegram (HTML-разметка).\n    role: \"owner\" видит деньги, \"admin\"/\"manager\" — нет.\n    Пустые поля показываются прочерком: бот не выдумывает значения.\n    \"\"\"\n    L = []\n    title = \" \".join(x for x in [car.get(\"brand\"), car.get(\"model\"), str(car.get(\"year\") or \"\")] if x)\n    L.append(\"<b>%s</b>\" % (title.strip() or \"Без названия\"))\n\n    if is_draft(car):\n        L.append(\"<i>Черновик · не хватает %d полей</i>\" % len(missing_required(car)))\n    else:\n        L.append(\"<i>%s · %s</i>\" % (\n            status_label(car.get(\"status\")),\n            \"в каталоге\" if car.get(\"published\") else \"не опубликовано\"))\n\n    L.append(\"\")\n    L.append(\"<b>ИДЕНТИФИКАЦИЯ</b>\")\n    L.append(\"Номер авто: <b>%s</b>\" % (car.get(\"auto_number\") or \"—\"))\n    L.append(\"Год выпуска: %s\" % (car.get(\"year\") or \"—\"))\n    ok, msg = check_vin(car.get(\"vin\"), car.get(\"year\"))\n    L.append(\"VIN: <b>%s</b>\" % (car.get(\"vin\") or \"—\"))\n    if car.get(\"vin\"):\n        L.append(\"  <i>%s</i>\" % msg)\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИКА</b>\")\n    L.append(\"Топливо: %s\" % (car.get(\"fuel\") or \"—\"))\n    L.append(\"Объём: <b>%s</b>\" % num(car.get(\"engine_cc\"), \" см³\"))\n    L.append(\"КПП: %s\" % (car.get(\"gearbox\") or \"—\"))\n    L.append(\"Привод: %s\" % (car.get(\"drive\") or \"—\"))\n    L.append(\"Пробег: %s\" % num(car.get(\"mileage_km\"), \" км\"))\n    L.append(\"Цвет: %s\" % (car.get(\"color\") or \"—\"))\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИЧЕСКОЕ СОСТОЯНИЕ</b>\")\n    L.append(car.get(\"condition_text\") or \"—\")\n    L.append(\"Фото: %d из %d\" % (len(car.get(\"condition_photos\") or []), CONDITION_PHOTO_LIMIT))\n    L.append(\"Видео: %d из %d\" % (len(car.get(\"condition_videos\") or []), CONDITION_VIDEO_LIMIT))\n    if car.get(\"diag_report\") or car.get(\"diag_link\"):\n        L.append(\"Диагностика: отчёт загружен\")\n        if car.get(\"diag_link\"):\n            L.append(\"  <a href=\\\"%s\\\">полный отчёт</a>\" % car[\"diag_link\"])\n\n    L.append(\"\")\n    stage = stage_of(car.get(\"status\"))\n    L.append(\"<b>ЛОГИСТИКА · ЭТАП %d ИЗ 4</b>\" % stage)\n    for n, name in STAGES:\n        mark = \"пройден\" if n < stage else (\"сейчас\" if n == stage else \"—\")\n        L.append(\"%d. %s: <b>%s</b>\" % (n, name, mark))\n        if n == 1 and car.get(\"kr_buy_date\"):\n            L.append(\"   выкуп %s · %s\" % (dmy(car[\"kr_buy_date\"]), car.get(\"kr_parking\") or \"\"))\n        if n == 2 and car.get(\"sea_container\"):\n            L.append(\"   %s · отправка %s\" % (car[\"sea_container\"], dmy(car.get(\"sea_date_out\"))))\n        if n == 3 and car.get(\"ge_arrived\"):\n            L.append(\"   прибыло %s\" % dmy(car[\"ge_arrived\"]))\n\n    left, eta = days_to_kyiv(car, today)\n    if left is not None:\n        L.append(\"\")\n        L.append(\"🚚 <b>ДО КИЕВА: %d дней</b>\" % left)\n        L.append(\"ориентировочно %s\" % eta.strftime(\"%d.%m.%Y\"))\n\n    if role == \"owner\":\n        L.append(\"\")\n        L.append(\"<b>ДЕНЬГИ</b>\")\n        L.append(\"Себестоимость: %s\" % money(car.get(\"cost_total\")))\n        L.append(\"Цена продажи: <b>%s</b>\" % money(car.get(\"price_uah\")))\n\n    return \"\\n\".join(L)\n",
+          "truncated": false
+        }
+      ],
+      "sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496"
+    },
+    "cars_ui.py": {
+      "bytes": 164687,
+      "callbacks": {
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0
+      },
+      "compiled": true,
+      "counts": {
+        "SEO068_DIAGNOSTIC_TARGET_MISSING": 0,
+        "days_to_kyiv": 3,
+        "eta_days": 5,
+        "eta_manual": 6,
+        "opublikovat": 2,
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0,
+        "Машина видна клиентам в каталоге": 1
+      },
+      "definitions": [
+        {
+          "end_line": 81,
+          "line": 69,
+          "name": "ensure_columns",
+          "sha256": "665d5c9fc39f142ab9cf21b9130a02ed70427e7485e2063d7e39083157e165bf",
+          "source": "def ensure_columns():\n    \"\"\"Добавляет колонки, которых нет ни в старой схеме, ни в cars_schema.\"\"\"\n    extra = [(\"price_history\", \"TEXT\"), (\"cover_photo\", \"TEXT\"),\n             (\"eta_manual\", \"TEXT\")]\n    with db.connect() as c:\n        have = {r[\"name\"] for r in c.execute(\"PRAGMA table_info(cars)\").fetchall()}\n        for name, decl in extra:\n            if name not in have:\n                try:\n                    c.execute(\"ALTER TABLE cars ADD COLUMN %s %s\" % (name, decl))\n                    log.info(\"Добавлена колонка cars.%s\", name)\n                except Exception as e:\n                    log.warning(\"Не добавил cars.%s: %s\", name, e)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 264,
+          "line": 172,
+          "name": "render",
+          "sha256": "09fbb1baabdf297a24a2f4fb757464836a718edc086680f699218cacf77c97a8",
+          "source": "def render(card, staff):\n    L = []\n    L.append(\"<b>%s</b>\" % (card.get(\"auto_number\") or \"#%s\" % card.get(\"id\")))\n\n    miss = S.missing_required(card)\n    if miss:\n        L.append(\"<i>Черновик · не хватает %d полей</i>\" % len(miss))\n    else:\n        L.append(\"<i>%s · %s</i>\" % (\n            db.STATUS_LABELS.get(card.get(\"review_status\"), \"\"),\n            \"в каталоге\" if card.get(\"published\") else \"не опубликовано\"))\n\n    photos = photos_of(card)\n    vids = videos_of(card)\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(photos), S.PHOTO_LIMIT, len(vids), VIDEO_LIMIT))\n\n    L.append(\"\")\n    L.append(\"<b>ИДЕНТИФИКАЦИЯ</b>\")\n    L.append(\"Марка: <b>%s</b>\" % (card.get(\"brand\") or \"—\"))\n    L.append(\"Модель: <b>%s</b>\" % (card.get(\"model\") or \"—\"))\n    L.append(\"Год выпуска: %s\" % (card.get(\"year\") or \"—\"))\n    L.append(\"VIN: <b>%s</b>\" % (card.get(\"vin\") or \"—\"))\n    if card.get(\"vin\"):\n        ok, msg = S.check_vin(card.get(\"vin\"), _year(card))\n        L.append(\"  <i>%s</i>\" % msg)\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИКА</b>\")\n    L.append(\"Топливо: %s\" % (card.get(\"fuel\") or \"—\"))\n    L.append(\"Объём: <b>%s</b>\" % S.num(_int(card.get(\"engine_cc\")), \" см³\"))\n    L.append(\"КПП: %s\" % (card.get(\"gearbox\") or \"—\"))\n    L.append(\"Привод: %s\" % (card.get(\"drive\") or \"—\"))\n    L.append(\"Пробег: %s\" % S.num(_int(card.get(\"mileage_km\")), \" км\"))\n    L.append(\"Цвет: %s\" % (card.get(\"color\") or \"—\"))\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИЧЕСКОЕ СОСТОЯНИЕ</b>\")\n    L.append(card.get(\"condition_text\") or \"—\")\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(jload(card.get(\"condition_photos\"))), S.CONDITION_PHOTO_LIMIT,\n        len(jload(card.get(\"condition_videos\"))), S.CONDITION_VIDEO_LIMIT))\n    if card.get(\"diag_report\") or card.get(\"diag_link\"):\n        L.append(\"Диагностика: отчёт загружен\")\n        if card.get(\"diag_link\"):\n            L.append('  <a href=\"%s\">полный отчёт</a>' % card[\"diag_link\"])\n\n    L.append(\"\")\n    stage = S.stage_of(card.get(\"status\"))\n    L.append(\"<b>ЛОГИСТИКА · ЭТАП %d ИЗ 4</b>\" % (stage or 1))\n    for n, name in S.STAGES:\n        mark = \"пройден\" if n < stage else (\"сейчас\" if n == stage else \"—\")\n        L.append(\"%d. %s: <b>%s</b>\" % (n, name, mark))\n    if card.get(\"status\"):\n        L.append(\"Статус: %s\" % S.status_label(card.get(\"status\")))\n    if card.get(\"sea_container\"):\n        L.append(\"Контейнер: <b>%s</b>\" % card[\"sea_container\"])\n\n    left, eta = eta_of(card)\n    # Подпись зависит от того, где машина сейчас.\n    # На море счёт идёт до Грузии, до Киева — только когда она уже в Грузии.\n    podpis = {2: \"ДО ПОТИ/БАТУМИ\", 3: \"ДО КИЕВА\"}.get(stage)\n    if left is not None and podpis:\n        L.append(\"\")\n        L.append(\"🚚 <b>%s: %d дней</b>\" % (podpis, left))\n        L.append(\"ориентировочно %s%s\" % (\n            eta.strftime(\"%d.%m.%Y\"),\n            \" · задано вручную\" if card.get(\"eta_manual\") else \"\"))\n\n    klient = client_of(card)\n    if klient:\n        L.append(\"\")\n        L.append(\"<b>ПОКУПАТЕЛЬ</b>\")\n        L.append(\"Имя: %s\" % (klient.get(\"name\") or \"—\"))\n        L.append(\"Телефон: %s\" % (klient.get(\"phone\") or \"—\"))\n        if klient.get(\"telegram\"):\n            L.append(\"Telegram: %s\" % klient[\"telegram\"])\n        if klient.get(\"prepayment\"):\n            L.append(\"Предоплата: %s\" % klient[\"prepayment\"])\n        if klient.get(\"wishes\"):\n            L.append(\"Заметка: %s\" % klient[\"wishes\"])\n\n    if is_owner(staff):\n        L.extend(CR.owner_money(card))\n        if price_stale(card):\n            L.append(\"⚠️ <b>Цена на этом этапе ещё не обновлена</b>\")\n\n    if miss:\n        L.append(\"\")\n        L.append(\"<b>НЕ ХВАТАЕТ</b>\")\n        L.append(\", \".join(miss))\n\n    return \"\\n\".join(L)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 276,
+          "line": 267,
+          "name": "eta_of",
+          "sha256": "986b7d53970c7fa5a929a6a2b7cfa52656d6ed8206fec89db1d8f1613d1235af",
+          "source": "def eta_of(card):\n    \"\"\"Сколько дней до Киева и когда. Ручной срок важнее расчётного.\"\"\"\n    manual = card.get(\"eta_manual\")\n    if manual:\n        try:\n            eta = _dt.strptime(str(manual)[:10], \"%Y-%m-%d\").date()\n            return max((eta - _date.today()).days, 0), eta\n        except Exception:\n            pass\n    return S.days_to_kyiv(card)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 474,
+          "line": 443,
+          "name": "edit_ask",
+          "sha256": "492c45404438b6c363d0f14391997d73150234c20293ad9f1eef03e977ceef14",
+          "source": "async def edit_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    _, cid, field = q.data.split(\":\")\n    card = card_of(cid)\n    label = dict(EDITABLE).get(field, field)\n    now = card.get(field)\n    hint = \"\"\n    if field == \"engine_cc\":\n        hint = \"\\nВ кубических сантиметрах, например 1598.\"\n    elif field == \"price_uah\":\n        hint = \"\\nТолько число, в долларах.\"\n    elif field == \"condition_text\":\n        hint = (\"\\n\\nЧтобы изменить — пришлите новый текст. \"\n                \"Он полностью заменит нынешний. \"\n                \"Каждый пункт с новой строки.\")\n    elif field == \"vin\":\n        hint = \"\\n17 знаков.\"\n    elif field == \"eta_days\":\n        hint = (\"\\nСколько дней осталось до прибытия в Киев. \"\n                \"Дата пересчитается сама, дальше счётчик пойдёт вниз каждый день.\")\n    context.user_data[\"car_wait\"] = {\"card_id\": int(cid), \"field\": field}\n    await q.message.reply_text(\n        \"<b>%s</b>\\nСейчас: %s%s\\n\\nПришлите новое значение текстом или голосом.\"\n        % (label, now if now else \"—\", hint),\n        parse_mode=\"HTML\",\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"← Отмена\", callback_data=\"car_open:%s\" % cid)]\n            + ([InlineKeyboardButton(\"Очистить\",\n                callback_data=\"car_clr:%s:%s\" % (cid, field))]\n               if field == \"condition_text\" and now else [])]))\n    raise ApplicationHandlerStop\n",
+          "truncated": false
+        },
+        {
+          "end_line": 630,
+          "line": 580,
+          "name": "apply_value",
+          "sha256": "2d6db7d9b36cbff2635e2012f95d232dfd9be3b757f82540e0df43bfa9a77133",
+          "source": "def apply_value(card_id, field, raw, actor_id):\n    \"\"\"Возвращает (ок, сообщение). Ничего не додумывает.\"\"\"\n    value = (raw or \"\").strip()\n    if not value:\n        return False, \"Пустое значение не записываю.\"\n\n    if field == \"eta_days\":\n        digits = \"\".join(ch for ch in value if ch.isdigit())\n        if not digits:\n            return False, \"Пришлите число дней, например 45.\"\n        n = int(digits)\n        if n > 400:\n            return False, \"Слишком большой срок. Пришлите число дней.\"\n        eta = _date.today() + _td(days=n)\n        set_field(card_id, \"eta_manual\", eta.isoformat(), actor_id)\n        set_field(card_id, \"days_to_kyiv\", n, actor_id)\n        return True, \"До прибытия %d дней · %s\" % (n, eta.strftime(\"%d.%m.%Y\"))\n\n    if field in NUMERIC:\n        digits = value.lower().replace(\" \", \"\").replace(\"\\u00a0\", \"\")\n        for lishnee in (\"цена\", \"стоимость\", \"$\", \"usd\", \"долларов\", \"долл\"):\n            digits = digits.replace(lishnee, \"\")\n        for word, mult in ((\"тысяч\", 1000), (\"тыс\", 1000), (\"к\", 1000)):\n            if word in digits.lower():\n                digits = digits.lower().split(word)[0]\n                try:\n                    num = int(float(digits.replace(\",\", \".\")) * mult)\n                except ValueError:\n                    return False, \"Не разобрал число. Пришлите цифрами.\"\n                break\n        else:\n            digits = \"\".join(ch for ch in digits if ch.isdigit())\n            if not digits:\n                return False, \"Не разобрал число. Пришлите цифрами.\"\n            num = int(digits)\n        if field == \"engine_cc\" and num < 100:\n            return False, (\"Похоже, это литры. Объём нужен в кубических сантиметрах — \"\n                           \"например, 1598.\")\n        set_field(card_id, field, num, actor_id)\n        return True, \"Записано: %s\" % S.num(num)\n\n    if field == \"vin\":\n        vin = value.upper().replace(\" \", \"\")\n        ok, msg = S.check_vin(vin)\n        if not ok:\n            return False, \"VIN не принят: %s\" % msg\n        set_field(card_id, field, vin, actor_id)\n        return True, \"Записано: %s\" % vin\n\n    set_field(card_id, field, value, actor_id)\n    return True, \"Записано.\"\n",
+          "truncated": false
+        },
+        {
+          "end_line": 1109,
+          "line": 1052,
+          "name": "stage_set",
+          "sha256": "9f0a885100cb9fe62815fabefc6b6e1d649d99e348568e9b0893c7d6f106987f",
+          "source": "async def stage_set(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    _, cid, code = q.data.split(\":\")\n    cid = int(cid)\n    card_before = card_of(cid)\n    set_field(cid, \"status\", code, q.from_user.id)\n\n    if code == \"ge_waiting\" and not card_before.get(\"ge_arrived\"):\n        set_field(cid, \"ge_arrived\", _date.today().isoformat(), q.from_user.id)\n    if code == \"ge_to_kyiv\":\n        released = card_before.get(\"ge_released\")\n        if not released:\n            released = _date.today().isoformat()\n            set_field(cid, \"ge_released\", released, q.from_user.id)\n        # A deliberate manual date is immutable here.  The 15-day default is\n        # initialized only when no manual ETA has ever been saved.\n        if not card_before.get(\"eta_manual\"):\n            try:\n                base = _dt.strptime(str(released)[:10], \"%Y-%m-%d\").date()\n            except Exception:\n                base = _date.today()\n            eta = base + _td(days=DNEI_GRUZIA_UKRAINA)\n            try:\n                db.update_card_field(\"cars\", cid, \"eta_manual\",\n                                     eta.isoformat(), q.from_user.id)\n                db.update_card_field(\"cars\", cid, \"days_to_kyiv\",\n                                     DNEI_GRUZIA_UKRAINA, q.from_user.id)\n            except Exception as exc:\n                log.warning(\"не смог поставить срок до Украины: %s\", exc)\n\n    card = card_of(cid)\n    saved = card.get(\"status\")\n    if saved != code:\n        await q.message.reply_text(\n            \"Не удалось сохранить этап. Сейчас в карточке: %s\"\n            % S.status_label(saved),\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n\n    lines = [\n        card.get(\"auto_number\") or \"#%d\" % cid,\n        \"Этап сохранён: %s\" % S.status_label(saved),\n    ]\n    left, eta = eta_of(card)\n    if left is not None:\n        lines.append(\"До выдачи в Киеве: %d дней · %s\" % (\n            left, eta.strftime(\"%d.%m.%Y\")))\n    rows = [\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\",\n                              callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                              callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n",
+          "truncated": false
+        },
+        {
+          "end_line": 1461,
+          "line": 1427,
+          "name": "toggle_publish",
+          "sha256": "e84fa97d435143231e7055b8dfcd75c349fd766631130b04145e2d9fa79a22cc",
+          "source": "async def toggle_publish(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    novoe = 0 if card.get(\"published\") else 1\n\n    if novoe:\n        miss = S.missing_required(card)\n        if miss:\n            await q.message.reply_text(\n                \"Для показа клиентам не хватает: %s\" % \", \".join(miss),\n                reply_markup=InlineKeyboardMarkup([\n                    [InlineKeyboardButton(\"Дозаполнить\",\n                                          callback_data=\"car_edit:%d\" % cid)],\n                    [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                          callback_data=\"car_open:%d\" % cid)]]))\n            raise ApplicationHandlerStop\n\n    db.update_card_field(\"cars\", cid, \"published\", novoe, q.from_user.id)\n    if novoe:                                                    # v19\n        try:                                                     # v19\n            import asyncio as _aio_rem2                       # UA-REM2\n            import publikaciya as _pub_rem2                   # UA-REM2\n            _ok_rem2, _txt_rem2 = await _aio_rem2.to_thread(  # UA-REM2\n                _pub_rem2.opublikovat, card.get(\"auto_number\"))\n            await q.message.reply_text(_txt_rem2)             # UA-REM2\n        except Exception as _e:                                  # v19\n            log.warning(\"Страница при публикации: %s\", _e)       # v19\n    await q.message.reply_text(\n        \"Машина видна клиентам в каталоге.\" if novoe\n        else \"Машина скрыта от клиентов.\",\n        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n            \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n",
+          "truncated": false
+        },
+        {
+          "end_line": 1816,
+          "line": 1746,
+          "name": "preview",
+          "sha256": "6276e0e19f0c40ecb1ae3cc3eac2e8c5e43e860350a6e8e73eddb89087b71380",
+          "source": "async def preview(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Предпросмотр карточки глазами покупателя.\"\"\"\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    await CR.send_photos(q.message, card)\n    # v21-glazami-klienta — кнопки строятся так же, как в клиентском боте\n    miss = S.missing_required(card)\n    etap = S.stage_of(card.get(\"status\"))\n    try:\n        prodana = CR.prodano(card)\n    except Exception:\n        prodana = False\n\n    knopki_klienta = []\n\n    # 1) страница покупателя — первой, и она рабочая\n    try:\n        import client_ui as _CU\n        _k = _CU.knopka_stranicy(card)\n        if _k:\n            knopki_klienta.append([_k])\n    except Exception:\n        pass\n\n    # 2) главное действие по этапу — как решает клиентский бот\n    if prodana:\n        knopki_klienta.append([InlineKeyboardButton(\"Хочу такую же под заказ\",\n                                                    callback_data=\"car_demo:%d\" % cid)])\n    elif etap >= 3:\n        knopki_klienta.append([InlineKeyboardButton(\"Забронировать за 500 $\",\n                                                    callback_data=\"car_demo:%d\" % cid)])\n    elif card.get(\"sea_container\"):\n        knopki_klienta.append([InlineKeyboardButton(\"Отследить контейнер\",\n                                                    callback_data=\"car_demo:%d\" % cid)])\n\n    knopki_klienta.append([InlineKeyboardButton(\"Задать вопрос по этой машине\",\n                                                callback_data=\"car_demo:%d\" % cid)])\n    if card.get(\"vin\"):\n        knopki_klienta.append([InlineKeyboardButton(\"Проверить VIN\",\n                                                    callback_data=\"car_demo:%d\" % cid)])\n    knopki_klienta.append([InlineKeyboardButton(\"← Все машины\",\n                                                callback_data=\"car_demo:%d\" % cid)])\n    knopki_klienta.append([InlineKeyboardButton(\"· · · это видит покупатель · · ·\",\n                                                callback_data=\"car_demo:%d\" % cid)])\n    knopki_klienta.append([InlineKeyboardButton(\"Разместить объявление\",\n                                                callback_data=\"car_ad:%d\" % cid)])\n    knopki_klienta.append([InlineKeyboardButton(\"← Вернуться к карточке\",\n                                                callback_data=\"car_open:%d\" % cid)])\n\n    await q.message.reply_text(\n        client_view(card),\n        parse_mode=\"HTML\", disable_web_page_preview=True,\n        reply_markup=InlineKeyboardMarkup(knopki_klienta))\n\n    # служебное — отдельным сообщением, вне карточки покупателя\n    if miss:\n        await q.message.reply_text(\n            \"<i>Покупателю это ещё не показать: не хватает %s</i>\" % \", \".join(miss),\n            parse_mode=\"HTML\")\n    await CR.send_videos(q.message, card)\n    try:\n        import asyncio as _aio_rem2                       # UA-REM2\n        import publikaciya as _pub_rem2                   # UA-REM2\n        _ok_rem2, _txt_rem2 = await _aio_rem2.to_thread(  # UA-REM2\n            _pub_rem2.opublikovat, card.get(\"auto_number\"))\n        await q.message.reply_text(_txt_rem2)             # UA-REM2\n    except Exception as e:\n        log.warning(\"HTML-предпросмотр: %s\", e)\n    raise ApplicationHandlerStop\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2878,
+          "line": 2571,
+          "name": "catch_message",
+          "sha256": "152d00158bcd097f61fad4e795340f45113724217b481d56ab32f358549a4fd5",
+          "source": "async def catch_message(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"CRM-VOICE-FILL-001: voice fills only the explicitly open card.\"\"\"\n    import asyncio\n    import time\n    import ai\n    import ai_fast_schema as fast\n    import ai_filter\n    import local_ocr\n\n    msg = update.effective_message\n    if not msg:\n        return\n    user_id = update.effective_user.id\n\n    wait = context.user_data.get(\"car_media_wait\")\n    if wait:\n        target = wait[\"target\"]\n        tag = \"\"\n        file_id = None\n        if msg.photo:\n            file_id = msg.photo[-1].file_id\n            if target in (\"photos\", \"condition_photos\"):\n                unique_id = getattr(msg.photo[-1], \"file_unique_id\", None) or file_id\n                _v166_result = _v165_spool_enqueue(\n                    wait[\"card_id\"], target, file_id, user_id, tag,\n                    unique_id=unique_id, message_id=msg.message_id)\n                _v166_session_ids = wait.setdefault(\"_fast_session_ids\", [])\n                state = _v166_result.get(\"state\")\n                if state == \"accepted\" and file_id not in _v166_session_ids:\n                    _v166_session_ids.append(file_id)\n                elif str(state).startswith(\"duplicate\"):\n                    wait[\"_fast_session_duplicates\"] = int(\n                        wait.get(\"_fast_session_duplicates\") or 0) + 1\n                elif state == \"limit\":\n                    wait[\"_fast_session_rejected\"] = int(\n                        wait.get(\"_fast_session_rejected\") or 0) + 1\n                _v165_schedule_progress(\n                    context, msg, wait[\"card_id\"], target, _v166_session_ids,\n                    wait.get(\"_fast_session_duplicates\", 0),\n                    wait.get(\"_fast_session_rejected\", 0))\n                raise ApplicationHandlerStop\n        elif msg.video:\n            file_id = msg.video.file_id\n            if target in (\"videos\", \"video_h\", \"video_v\"):\n                target = \"videos\"\n                slot = _orient(msg.video)\n                tag = {\"video_h\": \"гориз\", \"video_v\": \"вертик\"}.get(slot, \"\")\n        elif msg.video_note:\n            file_id = msg.video_note.file_id\n        elif msg.document:\n            file_id = msg.document.file_id\n        card = card_of(wait[\"card_id\"])\n        if not card:\n            context.user_data.pop(\"car_media_wait\", None)\n            return\n        if file_id:\n            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)\n            if answer:\n                await msg.reply_text(answer)\n            raise ApplicationHandlerStop\n        if msg.text and target == \"diag_report\":\n            pass\n        return\n\n    voice_object = msg.voice or msg.audio or msg.video_note\n    input_text = (msg.text or \"\").strip()\n    wait = context.user_data.get(\"car_wait\")\n    thinking = None\n    voice_elapsed = None\n\n    if voice_object:\n        active_id = wait.get(\"card_id\") if wait else context.user_data.get(\"car_voice_active\")\n        active_card = card_of(active_id) if active_id else None\n        if not active_card:\n            context.user_data.pop(\"car_last\", None)\n            context.user_data.pop(\"car_voice_active\", None)\n            await msg.reply_text(\n                \"Откройте нужную карточку автомобиля и повторите голосовое. \"\n                \"Новая карточка автоматически не создаётся.\"\n            )\n            raise ApplicationHandlerStop\n\n        chat_id = getattr(msg, \"chat_id\", None) or update.effective_chat.id\n        marker = \"%s:%s\" % (chat_id, msg.message_id)\n        seen = context.chat_data.get(\"crm_voice_seen\")\n        if not isinstance(seen, list):\n            seen = []\n            context.chat_data[\"crm_voice_seen\"] = seen\n        if marker in seen:\n            await msg.reply_text(\"Это голосовое уже обработано.\")\n            raise ApplicationHandlerStop\n        seen.append(marker)\n        del seen[:-20]\n        context.user_data.pop(\"voice_undo\", None)\n\n        started = time.monotonic()\n        hard_deadline = started + 4.65\n        thinking = await msg.reply_text(\"🎤 Распознаю, до 5 секунд...\")\n        if not ai.voice_enabled():\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\"Расшифровка голоса не настроена. Карточка не изменена.\")\n            raise ApplicationHandlerStop\n        try:\n            import crm_online_guard as _v168_guard\n            if not _v168_guard.circuit_allows(\"stt\"):\n                if marker in seen:\n                    seen.remove(marker)\n                await thinking.edit_text(\n                    \"Сервис распознавания восстанавливается. Карточка не изменена; повторите через 15 секунд.\")\n                raise ApplicationHandlerStop\n        except ApplicationHandlerStop:\n            raise\n        except Exception:\n            pass\n\n        if msg.voice:\n            file_id, filename = msg.voice.file_id, \"voice.ogg\"\n        elif msg.audio:\n            file_id, filename = msg.audio.file_id, \"audio.mp3\"\n        else:\n            file_id, filename = msg.video_note.file_id, \"video_note.mp4\"\n\n        async def download_voice(fid):\n            tg_file = await context.bot.get_file(fid)\n            return bytes(await tg_file.download_as_bytearray())\n\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio_bytes = await asyncio.wait_for(\n                download_voice(file_id), timeout=min(1.1, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            input_text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio_bytes, filename),\n                timeout=remaining,\n            )\n            input_text = (input_text or \"\").strip()\n        except asyncio.TimeoutError:\n            input_text = \"\"\n            log.warning(\"CRM voice timeout card=%s\", active_id)\n        except Exception as e:\n            input_text = \"\"\n            log.warning(\"CRM voice recognition failed card=%s error=%s\", active_id, e)\n        voice_elapsed = time.monotonic() - started\n        try:\n            import crm_online_guard as _v168_guard\n            _v168_guard.circuit_result(\"stt\", bool(input_text))\n            _v168_guard.record_timing(\n                \"crm_voice\", voice_elapsed, \"ok\" if input_text else \"empty\",\n                card_id=active_id)\n        except Exception:\n            pass\n        if not input_text:\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\n                \"Голос не распознан за 5 секунд. Карточка не изменена; повторите короче.\"\n            )\n            raise ApplicationHandlerStop\n\n    if not wait:\n        cid = (context.user_data.get(\"car_voice_active\") if voice_object\n               else context.user_data.get(\"car_last\"))\n        card = card_of(cid) if cid else None\n        if card and voice_object:\n            schema_allowed = set(fast.car_fields(ai_filter))\n            card = card_of(card[\"id\"]) or card\n            correction = _v168_is_correction(input_text)\n            if correction:\n                allowed = _v168_named_fields(input_text, schema_allowed)\n            else:\n                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}\n            data = {}\n            if allowed:\n                data.update(local_ocr.fields_from_text(input_text, allowed))\n                data.update(fast.fast_text_data(input_text, ai_filter))\n                if data:\n                    data = fast.clean_car(fast.parsed_from_data(data), ai_filter, \"\")\n                data = {key: value for key, value in (data or {}).items()\n                        if key in allowed and value not in (None, \"\", [])}\n                data.update(_v167_voice_explicit_fields(input_text, allowed))\n            changes, skipped = voice_change_plan(card, data, allowed, correction)\n            applied = []\n            for field, old, new in changes:\n                try:\n                    ok, reason = _v168_cas_write(\n                        card[\"id\"], field, old, new, user_id, correction)\n                    if ok:\n                        applied.append((field, old, new))\n                    elif reason in (\"filled\", \"conflict\"):\n                        skipped.append(field)\n                except Exception as e:\n                    log.warning(\"CRM voice write failed card=%s field=%s error=%s\",\n                                card[\"id\"], field, e)\n\n            number = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n            if applied:\n                token = str(msg.message_id)\n                context.user_data[\"voice_undo\"] = {\n                    \"card_id\": card[\"id\"], \"token\": token,\n                    \"changes\": [{\"field\": f, \"old\": old, \"new\": new}\n                                for f, old, new in applied],\n                }\n                value_names = {\n                    \"fwd\": \"передний\", \"rwd\": \"задний\", \"4wd\": \"полный\",\n                    \"automatic\": \"автомат\", \"manual\": \"механика\",\n                    \"gasoline\": \"бензин\", \"diesel\": \"дизель\",\n                    \"hybrid\": \"гибрид\", \"electric\": \"электро\", \"LPG\": \"газ\",\n                }\n                lines = []\n                for field, _, value in applied:\n                    shown = value_names.get(str(value), str(value))\n                    lines.append(\"• %s — %s\" % (LABELS_ALL.get(field, field), shown))\n                await thinking.edit_text(\n                    \"✅ %s дополнена:\\n%s\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\"\n                    % (number, \"\\n\".join(lines), voice_elapsed or 0.0),\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"↩️ Отменить изменение\",\n                                              callback_data=\"car_vundo:%d:%s\" % (\n                                                  card[\"id\"], token))],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % card[\"id\"])],\n                    ]),\n                )\n            elif data and skipped and not override:\n                await thinking.edit_text(\n                    \"%s: распознанные поля уже заполнены. \"\n                    \"Для замены скажите: «измени …». Новая карточка не создана.\" % number\n                )\n            elif data:\n                await thinking.edit_text(\"%s: новых значений нет. Карточка не изменена.\" % number)\n            else:\n                await thinking.edit_text(\n                    \"Не распознал поле CRM. Назовите поле и значение, например: \"\n                    \"«привод передний». Карточка не изменена.\"\n                )\n            raise ApplicationHandlerStop\n\n        if card:\n            done = await auto_catch(msg, card, user_id, context)\n            if done:\n                raise ApplicationHandlerStop\n\n    wait = context.user_data.get(\"car_wait\")\n    if wait and input_text and wait.get(\"client\"):\n        context.user_data.pop(\"car_wait\", None)\n        card = card_of(wait[\"card_id\"])\n        klient = client_of(card)\n        if klient:\n            db.update_card_field(\"clients\", klient[\"id\"], wait[\"field\"],\n                                 input_text, user_id)\n        answer = \"Записано.\"\n        if voice_object:\n            answer += \" · %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if thinking:\n            await thinking.edit_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        else:\n            await msg.reply_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        raise ApplicationHandlerStop\n\n    if wait and input_text:\n        context.user_data.pop(\"car_wait\", None)\n        field = wait[\"field\"]\n        nizhny = input_text.lower()\n        if field not in (\"price_uah\", \"condition_text\", \"diag_text\", \"diag_link\") \\\n                and (\"$\" in nizhny or \"цена\" in nizhny or \"стоимость\" in nizhny):\n            field = \"price_uah\"\n        elif field == \"eta_days\" and _re.search(r\"\\d{4,}\", nizhny):\n            field = \"price_uah\"\n        ok, answer = apply_value(wait[\"card_id\"], field, input_text, user_id)\n        card = card_of(wait[\"card_id\"])\n        if ok and field == \"price_uah\" and card:\n            remember_price(card, user_id)\n            answer = \"%s · цена этапа «%s»: %s\" % (\n                card.get(\"auto_number\") or \"\", S.status_label(card.get(\"status\")),\n                S.money(_int(card.get(\"price_uah\"))))\n        rows = [[InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % wait[\"card_id\"])]]\n        if ok and field in (\"condition_text\", \"diag_text\"):\n            zapisano = input_text\n            punktov = len([s for s in zapisano.split(\"\\n\") if s.strip()])\n            answer = (\"Описание сохранено · %d пунктов, %d знаков\\n\\n%s\"\n                      % (punktov, len(zapisano), zapisano))\n            rows.insert(0, [InlineKeyboardButton(\n                \"Изменить снова\",\n                callback_data=\"car_setf:%d:condition_text\" % wait[\"card_id\"])])\n        if voice_object:\n            answer += \"\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if not ok:\n            wait[\"field\"] = field\n            context.user_data[\"car_wait\"] = wait\n            rows.insert(0, [InlineKeyboardButton(\n                \"Отмена\", callback_data=\"car_open:%d\" % wait[\"card_id\"])])\n        if thinking:\n            await thinking.edit_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        else:\n            await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        raise ApplicationHandlerStop\n",
+          "truncated": false
+        }
+      ],
+      "sha256": "50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306"
+    },
+    "db.py": {
+      "bytes": 34721,
+      "callbacks": {
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0
+      },
+      "compiled": true,
+      "counts": {
+        "SEO068_DIAGNOSTIC_TARGET_MISSING": 0,
+        "days_to_kyiv": 0,
+        "eta_days": 0,
+        "eta_manual": 0,
+        "opublikovat": 0,
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0,
+        "Машина видна клиентам в каталоге": 0
+      },
+      "definitions": [],
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
+    },
+    "konteyner.py": {
+      "bytes": 24533,
+      "callbacks": {
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0
+      },
+      "compiled": true,
+      "counts": {
+        "SEO068_DIAGNOSTIC_TARGET_MISSING": 0,
+        "days_to_kyiv": 0,
+        "eta_days": 0,
+        "eta_manual": 5,
+        "opublikovat": 0,
+        "sea_loaded": 1,
+        "sea_transit": 1,
+        "sold_transit": 0,
+        "Машина видна клиентам в каталоге": 0
+      },
+      "definitions": [
+        {
+          "end_line": 106,
+          "line": 87,
+          "name": "_dney_do",
+          "sha256": "0f7b9d63af7b27c2b22e4c7c8206fafde7036261c3a26e27ab703a59953d04c7",
+          "source": "def _dney_do(card):\n    \"\"\"Дни до выдачи: ручная дата важнее, иначе отправление + 75.\"\"\"\n    ruchnaya = _razobrat(card.get(\"eta_manual\"))\n    otpravka = _razobrat(card.get(\"sea_date_out\"))\n    if ruchnaya is not None:\n        cel = ruchnaya\n    elif otpravka is not None:\n        cel = otpravka + DNEY_PUTI * 86400\n    else:\n        return None, None\n    seychas = time.strftime(\"%Y-%m-%d\", time.localtime(time.time() + 7 * 3600))\n    try:\n        a = time.mktime(time.strptime(seychas, \"%Y-%m-%d\"))\n        b = time.mktime(time.strptime(time.strftime(\"%Y-%m-%d\",\n                                                    time.localtime(cel)),\n                                      \"%Y-%m-%d\"))\n        dney = max(int(round((b - a) / 86400.0)), 0)\n    except Exception:\n        dney = 0\n    return dney, cel\n",
+          "truncated": false
+        },
+        {
+          "end_line": 250,
+          "line": 239,
+          "name": "sprosit_dni",
+          "sha256": "54c1b35c5bd0f522f31a484e3931f2ee959b846ea2d39d4cab491e503923adc0",
+          "source": "async def sprosit_dni(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await q.answer()\n    cid = int(q.data.split(\":\")[-1])\n    _sprosit(context, cid, \"eta_manual\")\n    await q.message.reply_text(\n        \"Пришлите или число дней до прибытия (например 60), \"\n        \"или саму дату выдачи в виде ДД.ММ.ГГГГ.\\n\"\n        \"Номер контейнера и дата отправления при этом не меняются.\",\n        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n            \"Пропустить\", callback_data=\"cont_menu:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n",
+          "truncated": false
+        },
+        {
+          "end_line": 368,
+          "line": 284,
+          "name": "prinyat",
+          "sha256": "8d682efcc37fba1533fa18f582fa01046fd3e029db7eba50b6798e99d223fa68",
+          "source": "async def prinyat(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    wait = context.user_data.get(\"cont_wait\")\n    if not wait:\n        return\n    msg = update.effective_message\n    if not msg or not msg.text:\n        return\n    cid = wait[\"card_id\"]\n    pole = wait[\"field\"]\n    kto = update.effective_user.id\n    syroe = msg.text.strip()\n\n    if pole == \"sea_container\":\n        znachenie = re.sub(r\"[^A-Za-z0-9]\", \"\", syroe).upper()\n        if not OBRAZEC_NOMERA.match(znachenie):\n            await msg.reply_text(\n                \"Это не похоже на номер контейнера.\\n\"\n                \"Нужно от 4 до 20 латинских букв и цифр.\\n\"\n                \"Пришлите ещё раз.\",\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"Отмена\", callback_data=\"cont_menu:%d\" % cid)]]))\n            raise ApplicationHandlerStop\n    elif pole == \"sea_date_out\":\n        znachenie = _v_iso(syroe)\n        if not znachenie:\n            await msg.reply_text(\n                \"Не понял дату.\\nНужен вид ДД.ММ.ГГГГ, например 15.08.2026.\\n\"\n                \"Пришлите ещё раз.\",\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"Отмена\", callback_data=\"cont_menu:%d\" % cid)]]))\n            raise ApplicationHandlerStop\n    else:  # eta_manual — дни или дата\n        znachenie = \"\"\n        chistoe = syroe.replace(\" \", \"\")\n        if re.match(r\"^\\d{1,4}$\", chistoe):\n            dney = int(chistoe)\n            if dney > 900:\n                await msg.reply_text(\"Слишком много дней. Пришлите число до 900.\")\n                raise ApplicationHandlerStop\n            znachenie = time.strftime(\n                \"%Y-%m-%d\", time.localtime(time.time() + 7 * 3600 + dney * 86400))\n        else:\n            znachenie = _v_iso(syroe)\n        if not znachenie:\n            await msg.reply_text(\n                \"Не понял значение.\\nПришлите число дней (например 60) \"\n                \"или дату в виде ДД.ММ.ГГГГ.\",\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"Отмена\", callback_data=\"cont_menu:%d\" % cid)]]))\n            raise ApplicationHandlerStop\n\n    context.user_data.pop(\"cont_wait\", None)\n    do = _karta(cid) or {}\n    try:\n        _pisat(cid, pole, znachenie, kto)\n    except Exception as e:\n        log.warning(\"konteyner: не записано %s: %s\", pole, e)\n        await msg.reply_text(\"Не удалось записать значение. Попробуйте ещё раз.\")\n        raise ApplicationHandlerStop\n\n    posle = _karta(cid) or {}          # повторное чтение из базы\n    stalo = (posle.get(pole) or \"\").strip()\n    if pole == \"sea_container\":\n        podpis = \"Номер контейнера сохранён: %s\" % (stalo or \"—\")\n    elif pole == \"sea_date_out\":\n        podpis = \"Дата отправления сохранена: %s\" % (_krasivo(stalo) or \"—\")\n    else:\n        podpis = \"Срок прибытия сохранён: %s\" % (_krasivo(stalo) or \"—\")\n\n    poteri = []\n    for drugoe in (\"sea_container\", \"sea_date_out\", \"eta_manual\"):\n        if drugoe == pole:\n            continue\n        if (do.get(drugoe) or \"\").strip() and not (posle.get(drugoe) or \"\").strip():\n            poteri.append(drugoe)\n    if poteri:\n        podpis += \"\\nВНИМАНИЕ: пропали поля %s\" % \", \".join(poteri)\n        log.warning(\"konteyner: после записи %s пропали %s\", pole, poteri)\n\n    _peresobrat()\n    text, kb = _ekran(posle)\n    await msg.reply_text(podpis + \"\\n\\n\" + text +\n                         \"\\n\\nСтраница на сайте обновляется.\",\n                         parse_mode=\"HTML\", reply_markup=kb)\n    raise ApplicationHandlerStop\n",
+          "truncated": false
+        },
+        {
+          "end_line": 399,
+          "line": 371,
+          "name": "posle_statusa",
+          "sha256": "4deca934b4170ae481a4831e67591fed1e7a464465072fef7647c7db98af1cb9",
+          "source": "async def posle_statusa(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    try:\n        chasti = q.data.split(\":\")\n        cid = int(chasti[1])\n        status = chasti[2]\n    except Exception:\n        return\n    if status not in (\"sea_loaded\", \"sea_transit\"):\n        return\n    card = _karta(cid)\n    if not card:\n        return\n    if (card.get(\"sea_container\") or \"\").strip() and \\\n            (card.get(\"sea_date_out\") or \"\").strip():\n        return\n    try:\n        await q.message.reply_text(\n            \"Данные контейнера пока не заполнены.\\n\"\n            \"Их видит покупатель на странице машины.\",\n            reply_markup=InlineKeyboardMarkup([\n                [InlineKeyboardButton(\"Ввести номер контейнера\",\n                                      callback_data=\"cont_num:%d\" % cid)],\n                [InlineKeyboardButton(\"Ввести дату отправления\",\n                                      callback_data=\"cont_date:%d\" % cid)],\n                [InlineKeyboardButton(\"Пропустить\",\n                                      callback_data=\"car_open:%d\" % cid)]]))\n    except Exception as e:\n        log.warning(\"konteyner: подсказка не отправлена: %s\", e)\n",
+          "truncated": false
+        }
+      ],
+      "sha256": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d"
+    },
+    "master_card.py": {
+      "bytes": 141682,
+      "callbacks": {
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0
+      },
+      "compiled": true,
+      "counts": {
+        "SEO068_DIAGNOSTIC_TARGET_MISSING": 1,
+        "days_to_kyiv": 0,
+        "eta_days": 0,
+        "eta_manual": 3,
+        "opublikovat": 0,
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0,
+        "Машина видна клиентам в каталоге": 0
+      },
+      "definitions": [
+        {
+          "end_line": 1521,
+          "line": 1503,
+          "name": "_ua_stage_eta",
+          "sha256": "c6fb6b7deb6dab2894cac036763145999fe8869275c2d908892604656f0d212d",
+          "source": "def _ua_stage_eta(m, stage):\n    status = str(m.get(\"status\") or \"\").strip().lower()\n    if stage >= 4 or status.startswith(\"ua_\"):\n        return (\"arrived\", None, None)\n    manual = _ua_stage_date(m.get(\"eta_manual\"))\n    if manual is not None:\n        target = manual\n    elif status == \"ge_to_kyiv\":\n        released = _ua_stage_saved_release(m)\n        target = released + _ua_stage_dt.timedelta(days=15) if released else None\n    elif status.startswith(\"ge_\"):\n        target = None\n    else:\n        shipped = _ua_stage_date(m.get(\"sea_date_out\"))\n        target = shipped + _ua_stage_dt.timedelta(days=75) if shipped else None\n    if target is None:\n        return (\"georgia\" if status.startswith(\"ge_\") else \"unknown\", None, None)\n    days = max((target - _ua_stage_today()).days, 0)\n    return (\"due\" if days else \"soon\", days, target)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 1880,
+          "line": 1854,
+          "name": "_ua_seo068_normalize",
+          "sha256": "c20a4cb3b0cb2f4da7c929e0fcd3dda1495331122bc485092484042e122fd1aa",
+          "source": "def _ua_seo068_normalize(source, file_name, identifier=''):\n    if not source:\n        return source\n    source = _UA_SEO068_CANONICAL.sub('', str(source))\n    source = _UA_SEO068_ROBOTS.sub('', source)\n    source = _ua_seo068_head(source, '<link rel=\"canonical\" href=\"%s/video/%s\">' % (_UA_SEO068_ORIGIN, file_name))\n    if identifier:\n        identifier = str(identifier).upper()\n        target = identifier + '-diag.html'\n        if not any(_ua_seo068_os.path.isfile(_ua_seo068_os.path.join(root, target)) for root in ('/home/Carix/video', '/home/Carix/site')):\n            raise RuntimeError('SEO068_DIAGNOSTIC_TARGET_MISSING:' + identifier)\n        hrefs = []\n        for tag in _ua_seo068_re.findall(r'<a\\b[^>]*>', source, _ua_seo068_re.I):\n            href = _ua_seo068_attr(tag, 'href')\n            match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\\.html)(?:[?#]|$)', href, _ua_seo068_re.I)\n            if match:\n                hrefs.append(match.group(1).upper())\n        if any(value != target.upper() for value in hrefs):\n            raise RuntimeError('SEO068_WRONG_DIAGNOSTIC:' + identifier)\n        source = _UA_SEO068_DIAG.sub('', source).replace('<!--seo-rehab-guard-068-diagnostics-->', '')\n        source = _ua_seo068_cta(source)\n        purchase = _ua_seo068_re.search(r'<a\\b(?=[^>]*\\bclass\\s*=\\s*[\"\\'][^\"\\']*\\bkn_kupit\\b[^\"\\']*[\"\\'])', source, _ua_seo068_re.I)\n        position = purchase.start() if purchase else source.lower().rfind('</body>')\n        if position < 0:\n            raise RuntimeError('SEO068_INSERTION_POINT_MISSING:' + identifier)\n        source = source[:position] + _ua_seo068_diag_anchor(identifier) + '\\n' + source[position:]\n    return source\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2171,
+          "line": 2115,
+          "name": "_ua068_eta",
+          "sha256": "ce1674c19b5d52eb288941af9616ce8844b9fc015fd3a2c90de42682ed7642fd",
+          "source": "def _ua068_eta(row, stage):\n    row = row or {}\n    today = _ua068_dt.datetime.now(_ua068_dt.timezone.utc).date()\n    if stage == 1:\n        return (\n            \"После внесения предоплаты 500 $ автомобиль будет отправлен ближайшим паромом.\",\n            \"Після внесення передоплати 500 $ автомобіль буде відправлено найближчим поромом.\",\n            \"Дата прибытия будет рассчитана после погрузки на паром.\",\n            \"Дату прибуття буде розраховано після завантаження на пором.\",\n        )\n    if stage == 2:\n        target = _ua068_date(row.get(\"eta_manual\"))\n        if target is None:\n            shipped = _ua068_date(row.get(\"sea_date_out\"))\n            if shipped is not None:\n                target = shipped + _ua068_dt.timedelta(days=75)\n        if target is not None:\n            days = max(0, (target - today).days)\n            ru_date, uk_date = _ua068_pretty(target)\n            return (\n                \"%d дн. до Киева · ориентировочно %s.\" % (days, ru_date),\n                \"%d дн. до Києва · орієнтовно %s.\" % (days, uk_date),\n                \"\",\n                \"\",\n            )\n        return (\n            \"Количество дней до Киева уточняется.\",\n            \"Кількість днів до Києва уточнюється.\",\n            \"Дата прибытия будет рассчитана после подтверждения маршрута.\",\n            \"Дату прибуття буде розраховано після підтвердження маршруту.\",\n        )\n    if stage == 3:\n        deposit = _ua068_date(row.get(\"ge_to_kyiv_at\"))\n        if deposit is not None:\n            target = deposit + _ua068_dt.timedelta(days=15)\n            ru_date, uk_date = _ua068_pretty(target)\n            extra_ru = \"Расчётная дата прибытия — %s.\" % ru_date\n            extra_uk = \"Розрахункова дата прибуття — %s.\" % uk_date\n        else:\n            extra_ru = \"Точная дата появится после внесения предоплаты.\"\n            extra_uk = \"Точна дата з’явиться після внесення передоплати.\"\n        return (\n            \"После внесения предоплаты 500 $ автомобиль прибудет в Киев в течение 15 календарных дней.\",\n            \"Після внесення передоплати 500 $ автомобіль прибуде до Києва протягом 15 календарних днів.\",\n            extra_ru,\n            extra_uk,\n        )\n    arrived = (_ua068_date(row.get(\"ua_delivered\")) or _ua068_date(row.get(\"ua_handed\"))\n               or _ua068_date(row.get(\"eta_manual\")))\n    if arrived is not None:\n        ru_date, uk_date = _ua068_pretty(arrived)\n        extra_ru = \"Дата прибытия в Киев — %s.\" % ru_date\n        extra_uk = \"Дата прибуття до Києва — %s.\" % uk_date\n    else:\n        extra_ru = \"Автомобиль в Киеве и готов к осмотру.\"\n        extra_uk = \"Автомобіль у Києві та готовий до огляду.\"\n    return (extra_ru, extra_uk, \"\", \"\")\n",
+          "truncated": false
+        }
+      ],
+      "sha256": "df2001cd808e5fbb2201e2dbc5e06ab3d529be3cdb65dbaca691a15a2bad2174"
+    },
+    "publikaciya.py": {
+      "bytes": 21682,
+      "callbacks": {
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0
+      },
+      "compiled": true,
+      "counts": {
+        "SEO068_DIAGNOSTIC_TARGET_MISSING": 0,
+        "days_to_kyiv": 0,
+        "eta_days": 0,
+        "eta_manual": 0,
+        "opublikovat": 2,
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0,
+        "Машина видна клиентам в каталоге": 0
+      },
+      "definitions": [
+        {
+          "end_line": 216,
+          "line": 145,
+          "name": "opublikovat",
+          "sha256": "27f3422fc4025ff1baadd177e82f0a5a52e20cbd533cc8c667a1ef476730e4c9",
+          "source": "def opublikovat(kod, proba=False):\n    \"\"\"Единственная разрешённая публикация карточки. (ok, текст для владельца)\"\"\"\n    kod = (kod or \"\").strip().upper()\n    if not re.match(r\"^UA-\\d{3,5}$\", kod):\n        return False, \"Публикация отменена: непонятный номер машины.\"\n\n    do = _kartochki(krome=kod)          # чужие карточки до работы\n    try:\n        html, diag, m = _master(kod)\n    except Exception as e:\n        _zhurnal([\"%s FAIL сборка мастером: %s\" % (kod, e)])\n        return False, \"Публикация отменена: сборщик не смог собрать %s (%s). Старая страница цела.\" % (kod, e)\n    if not html:\n        _zhurnal([\"%s FAIL машина не найдена в CRM\" % kod])\n        return False, \"Публикация отменена: %s не найдена среди машин CRM.\" % kod\n\n    prichiny = proverit(html, kod)\n    if prichiny:\n        _zhurnal([\"%s FAIL валидация: %s\" % (kod, \"; \".join(prichiny))])\n        return False, (\"Публикация отменена, страница не прошла проверку:\\n· %s\\n\"\n                       \"Прежняя страница на сайте не тронута.\" % \"\\n· \".join(prichiny))\n\n    if proba:\n        return True, \"Проба: страница %s собрана и проверена, ничего не записано.\" % kod\n\n    papka_rez = os.path.join(REZERV_KORE, \"%s_%s\" % (kod, time.strftime(\"%Y%m%d_%H%M%S\")))\n    celi = []\n    for papka in (VIDEO, SITE):\n        if not os.path.isdir(papka):\n            continue\n        celi.append(os.path.join(papka, kod + \".html\"))\n        for imya in os.listdir(papka):\n            if re.match(r\"^%s-[0-9a-f]{6,10}\\.html$\" % kod, imya):\n                celi.append(os.path.join(papka, imya))\n        if diag:\n            celi.append(os.path.join(papka, kod + \"-diag.html\"))\n    try:\n        os.makedirs(papka_rez, exist_ok=True)\n        for put in celi:\n            if os.path.exists(put):\n                shutil.copy2(put, os.path.join(\n                    papka_rez, put.replace(BASE + \"/\", \"\").replace(\"/\", \"__\")))\n    except Exception as e:\n        _zhurnal([\"%s FAIL резерв: %s\" % (kod, e)])\n        return False, \"Публикация отменена: не удалось сделать резерв (%s).\" % e\n\n    bylo = dict((put, _sha(put)) for put in celi)\n    try:\n        for put in celi:\n            _zapisat_atomarno(put, diag if put.endswith(\"-diag.html\") else html)\n    except Exception as e:\n        _otkat(papka_rez, celi)\n        _zhurnal([\"%s FAIL запись: %s — выполнен откат\" % (kod, e)])\n        return False, \"Публикация отменена при записи (%s). Выполнен откат.\" % e\n\n    posle = _kartochki(krome=kod)\n    izmenilis = [k for k in do if do.get(k) != posle.get(k)]\n    if izmenilis:\n        _otkat(papka_rez, celi)\n        _zhurnal([\"%s FAIL регрессия: изменились %s — откат\" % (kod, \", \".join(izmenilis))])\n        return False, (\"Публикация отменена: изменились чужие карточки (%s). \"\n                       \"Выполнен откат.\" % \", \".join(os.path.basename(x) for x in izmenilis))\n\n    stalo = dict((put, _sha(put)) for put in celi)\n    _zhurnal([\"%s PASS публикация · мастер stranica.sobrat_kartochku · файлов %d\"\n              % (kod, len(celi))]\n             + [\"    %s  %s -> %s\" % (os.path.basename(k), (bylo.get(k) or \"-\")[:12],\n                                      (stalo.get(k) or \"-\")[:12]) for k in celi])\n    hvost = \"\" if diag else \"\\nМатериалов диагностики в CRM нет — страница диагностики не трогалась.\"\n    return True, (\"Страница %s обновлена на сайте по утверждённому шаблону.%s\\n\"\n                  \"https://www.uaart.com.ua/video/%s.html?v=%d\"\n                  % (kod, hvost, kod, int(time.time())))\n",
+          "truncated": false
+        }
+      ],
+      "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4"
+    },
+    "stranica.py": {
+      "bytes": 197611,
+      "callbacks": {
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0
+      },
+      "compiled": true,
+      "counts": {
+        "SEO068_DIAGNOSTIC_TARGET_MISSING": 1,
+        "days_to_kyiv": 0,
+        "eta_days": 0,
+        "eta_manual": 7,
+        "opublikovat": 0,
+        "sea_loaded": 2,
+        "sea_transit": 0,
+        "sold_transit": 0,
+        "Машина видна клиентам в каталоге": 0
+      },
+      "definitions": [
+        {
+          "end_line": 185,
+          "line": 175,
+          "name": "ostatok_dney",
+          "sha256": "2f0a30473c7289b08a33a7a26e76c77a9d68c413f094e57a52024233e7ea8fd8",
+          "source": "def ostatok_dney(m):\n    \"\"\"Сколько дней до Киева. Ручная дата важнее расчёта по этапу.\"\"\"\n    eta = (m.get(\"eta_manual\") or \"\").strip()\n    if eta:\n        for obr in (\"%Y-%m-%d\", \"%d.%m.%Y\", \"%Y-%m-%dT%H:%M:%S\"):\n            try:\n                cel = time.mktime(time.strptime(eta[:19], obr))\n                return max(int((cel - time.time()) // 86400), 0)\n            except Exception:\n                continue\n    return OSTATOK_PO_ETAPU.get(nomer_etapa(m), 0)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 256,
+          "line": 229,
+          "name": "srok",
+          "sha256": "8bd8b9988b02c15dfdc2471a64e5d8b1d6666ebe364dc7fd6cc2aae1a8f2edd4",
+          "source": "def srok(m):\n    eta = (m.get(\"eta_manual\") or \"\").strip()\n    if eta:\n        for obr in (\"%Y-%m-%d\", \"%d.%m.%Y\", \"%Y-%m-%dT%H:%M:%S\"):\n            try:\n                cel = time.mktime(time.strptime(eta[:19], obr))\n                ostalos = int((cel - time.time()) // 86400)\n                if ostalos > 0:\n                    return \"До прибытия в Киев — %d %s\" % (ostalos, sklonenie(ostalos))\n                return \"Прибытие в Киев ожидается со дня на день\"\n            except Exception:\n                continue\n    s = (m.get(\"status\") or \"\").lower()\n    if s.startswith(\"ua_\"):\n        return \"Машина в Киеве — можно приехать и посмотреть\"\n    if s == \"ge_to_kyiv\":\n        try:\n            pamyat = json.loads(chitat(os.path.join(BAZA_DIR, \".etapy.json\"), 200000))\n            kogda = (pamyat.get(nomer(m)) or {}).get(\"s_kogda\")\n        except Exception:\n            kogda = None\n        if kogda:\n            ostalos = SROK_DNEY - int((time.time() - kogda) // 86400)\n            if ostalos > 0:\n                return \"До прибытия в Киев — %d %s\" % (ostalos, sklonenie(ostalos))\n            return \"Прибытие в Киев ожидается со дня на день\"\n    d = ostatok_dney(m)  # UA-V115\n    return \"До Киева — %d %s\" % (d, sklonenie(d))\n",
+          "truncated": false
+        },
+        {
+          "end_line": 820,
+          "line": 722,
+          "name": "sobrat_diagnostiku",
+          "sha256": "34a9423e2f813fae9a303b624de231d34132d4db75cf157f227878f7db6b4093",
+          "source": "def sobrat_diagnostiku(m):\n    nom = nomer(m)\n    nazvanie = \" \".join(str(x) for x in [m.get(\"brand\"), m.get(\"model\"), m.get(\"year\")] if x)\n    tekst = (m.get(\"diag_text\") or \"\").strip()\n    foto, video = kadry_diagnostiki(m)\n    sredn = [umenshit(x, \"m\", SREDNIJ, 78) for x in foto]\n\n    c = []\n    c.append(\"<!doctype html><html lang='ru'><head><meta charset='utf-8'>\")\n    c.append(\"<meta name='viewport' content='width=device-width,initial-scale=1'>\")\n    c.append(\"<script src='https://telegram.org/js/telegram-web-app.js'></script>\")\n    c.append(\"<title>Диагностика %s — UA ART COMPANY</title><style>%s</style></head><body>\"\n             % (ekran(nazvanie), STIL))\n    c.append(shapka())\n\n    c.append(\"<div class='blok'><div class='nom'>%s</div><h1>%s</h1>\"\n             \"<div class='chip'>комплексная диагностика</div></div>\"\n             % (ekran(nom), ekran(nazvanie)))\n\n    if tekst:\n        c.append(\"<div class='blok'><div class='zag'>Описание</div>\")\n        stroki = [s.strip() for s in tekst.replace(\"\\r\", \"\").split(\"\\n\")]\n        stroki = [s for s in stroki if s]\n        spiskom = sum(1 for s in stroki if s[:1] in \"-–—•*·\") >= 2\n        if spiskom:\n            for s in stroki:\n                s = s.lstrip(\"-–—•*· \").strip()\n                if s:\n                    c.append(\"<div class='tehstr'><div class='m'>•</div><div>%s</div></div>\"\n                             % ekran(s))\n        else:\n            c.append(\"<div class='tehtekst'>%s</div>\"\n                     % \"<br>\".join(ekran(s) for s in stroki))\n        c.append(\"</div>\")\n\n    if sredn:\n        c.append(\"<div class='zagolovok'>Фото проверки</div>\")\n        c.append(\"<div class='lenta'>\")\n        for i, k in enumerate(sredn, 1):\n            c.append(\"<div class='kadr'><img src='%s' loading='%s' decoding='async' alt=''>\"\n                     \"<div class='podpis_kadra'>кадр %d</div></div>\"\n                     % (k, \"eager\" if i <= 2 else \"lazy\", i))\n        c.append(\"</div>\")\n        c.append(\"<div class='schet'>%d фото · листайте вбок, тап — во весь экран</div>\"\n                 % len(sredn))\n\n    if video:\n        c.append(\"<div class='zagolovok'>Видео проверки</div>\")\n        poster_diag = (\" poster='%s'\" % sredn[0]) if sredn else \"\"\n        for v in video:\n            c.append(\"<video controls playsinline webkit-playsinline preload='metadata'%s>\"\n                     \"<source src='%s' type='video/mp4'>\"\n                     \"<a class='vtoraya' href='%s'>Открыть видео отдельно</a>\"\n                     \"</video>\" % (zastavka(v) or poster_diag, v, v))\n        c.append(\"<div class='schet'>%d видео</div>\" % len(video))\n\n    if (m.get(\"diag_link\") or \"\").strip():\n        c.append(\"<div class='zagolovok'>Отчёт сканера</div>\")\n        c.append(\"<a class='diag' href='%s'>Открыть отчёт OBD</a>\"\n                 % ekran(m[\"diag_link\"]))\n        c.append(\"<div class='diag_pod'>Полный отчёт компьютерной диагностики</div>\")\n\n    prodana = (m.get(\"status\") or \"\").lower().startswith(\"sold\")\n    if not prodana:\n        # UA-FIXCTA-V2: одна CTA на страницу, текст по стадии\n        _st_cta = ((m.get(\"status\") or m.get(\"stage\") or \"\")).strip()\n        if _st_cta in (\"ge_waiting\", \"sea_loaded\", \"kr_bought\"):\n            c.append(\"<a class='dejstvie' href='%s'>Забронировать авто за 500 $</a>\" % v_bota(\"bron_\" + nom))\n            c.append('<p class=\"cta-note\" style=\"margin:8px 0 0;text-align:center;font-size:14px;color:#c8d2e1;background:none;border:0\">500 $ входит в стоимость автомобиля</p>')\n        else:\n            c.append(\"<a class='dejstvie' href='%s'>Купить авто</a>\" % v_bota(\"kupit_\" + nom))\n    c.append(\"<a class='vtoraya' href='%s.html?v=%d'>← Вернуться к машине</a>\"\n             % (nom, int(time.time())))\n    c.append(podval(\" · диагностика \" + ekran(nom)))\n\n    if sredn:\n        c.append(\"<div id='lupa'><img id='bolshoe' src='' alt=''></div><div id='lupaschet'></div>\")\n        c.append(\"<script>var kadry=%s;var tek=0;\" % json.dumps(sredn))\n        c.append(\"\"\"\nvar sloj=document.getElementById('lupa'),bol=document.getElementById('bolshoe'),\n    sch=document.getElementById('lupaschet');\nfunction pokazat(i){tek=(i+kadry.length)%kadry.length;bol.src=kadry[tek];\n sloj.style.display='flex';sch.style.display='block';sch.textContent=(tek+1)+' / '+kadry.length;\n document.body.style.overflow='hidden';}\nfunction zakryt(){sloj.style.display='none';sch.style.display='none';document.body.style.overflow='';}\ndocument.querySelectorAll('.lenta img').forEach(function(el,i){\n el.addEventListener('click',function(){pokazat(i);});});\nvar x0=null;\nsloj.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;});\nsloj.addEventListener('touchend',function(e){if(x0===null)return;\n var dx=e.changedTouches[0].clientX-x0;\n if(Math.abs(dx)>50){pokazat(dx<0?tek+1:tek-1);}else{zakryt();}x0=null;});\nsloj.addEventListener('click',function(e){if(e.target===sloj)zakryt();});\n\"\"\")\n        c.append(\"</script>\")\n    c.append(CHAT_KNOPKA)\n    c.append(SKRIPT_TG)\n    c.append(\"</body></html>\")\n    return \"\".join(c)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 949,
+          "line": 931,
+          "name": "_ua_stage_eta",
+          "sha256": "c6fb6b7deb6dab2894cac036763145999fe8869275c2d908892604656f0d212d",
+          "source": "def _ua_stage_eta(m, stage):\n    status = str(m.get(\"status\") or \"\").strip().lower()\n    if stage >= 4 or status.startswith(\"ua_\"):\n        return (\"arrived\", None, None)\n    manual = _ua_stage_date(m.get(\"eta_manual\"))\n    if manual is not None:\n        target = manual\n    elif status == \"ge_to_kyiv\":\n        released = _ua_stage_saved_release(m)\n        target = released + _ua_stage_dt.timedelta(days=15) if released else None\n    elif status.startswith(\"ge_\"):\n        target = None\n    else:\n        shipped = _ua_stage_date(m.get(\"sea_date_out\"))\n        target = shipped + _ua_stage_dt.timedelta(days=75) if shipped else None\n    if target is None:\n        return (\"georgia\" if status.startswith(\"ge_\") else \"unknown\", None, None)\n    days = max((target - _ua_stage_today()).days, 0)\n    return (\"due\" if days else \"soon\", days, target)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 1191,
+          "line": 1013,
+          "name": "sobrat_kartochku",
+          "sha256": "887a5c66e8a9d8d6fad1685fa971f4a2cfc88994b5d965b92754760e91491494",
+          "source": "def sobrat_kartochku(m, kadry, sredn=None):\n    nom = nomer(m)\n    sredn = sredn or kadry\n    nazvanie = \" \".join(str(x) for x in [m.get(\"brand\"), m.get(\"model\"), m.get(\"year\")] if x)\n    etap_tekst, mozhno_bron = etap_dlinno(m)\n    prodana = (m.get(\"status\") or \"\").lower().startswith(\"sold\")\n    video_est = os.path.exists(os.path.join(PAPKA_VID, nom + \".mp4\"))\n\n    c = []\n    c.append(\"<!doctype html><html lang='ru'><head><meta charset='utf-8'>\")\n    c.append(\"<meta name='viewport' content='width=device-width,initial-scale=1'>\")\n    c.append(\"<script src='https://telegram.org/js/telegram-web-app.js'></script>\")\n    c.append(\"<title>%s — UA ART COMPANY</title><style>%s</style></head><body>\"\n             % (ekran(nazvanie), STIL))\n    c.append(shapka())\n\n    if not kadry:\n        c.append(\"<div class='blok' style='text-align:center;color:var(--seryj)'>\"\n                 \"Фотографии готовятся — пришлём в чат, как только появятся.</div>\")\n    if kadry:\n        c.append(\"<div class='lenta'>\")\n        for i, k in enumerate(sredn, 1):\n            c.append(\"<div class='kadr'><img src='%s' loading='%s' decoding='async' alt=''>\"\n                     \"<div class='podpis_kadra'>фото %d</div></div>\"\n                     % (k, \"eager\" if i <= 2 else \"lazy\", i))\n        c.append(\"</div>\")\n        c.append(\"<div class='schet'>%d фото · листайте вбок, тап — во весь экран</div>\" % len(kadry))\n\n    # UA-V105 · подмены роликом проверки больше нет:\n    # обычный блок «Видео» строится только из своих роликов машины\n    if video_est:\n        poster = (\" poster='%s'\" % sredn[0]) if sredn else \"\"\n        # UA-V97 · ролики горизонтальной лентой, как фотографии\n        _vse = [\"%s.mp4\" % nom]\n        try:\n            for _f in sorted(os.listdir(PAPKA_VID)):\n                if (_f.startswith(nom + \"-\") and _f.lower().endswith(\".mp4\")\n                        and \".mp4.\" not in _f):\n                    _vse.append(_f)\n        except Exception:\n            pass\n        c.append(\"<div class='zagolovok'>Видео</div>\")\n        c.append(\"<div class='lenta'>\")\n        for _i, _f in enumerate(_vse, 1):\n            c.append(\"<div class='kadr'>\")\n            c.append(\"<video controls playsinline webkit-playsinline preload='metadata'%s\"\n                     \" style='width:100%%;height:auto;display:block;border-radius:14px'>\"\n                     \"<source src='%s' type='video/mp4'>\"\n                     \"<a class='vtoraya' href='%s'>Открыть видео отдельно</a>\"\n                     \"</video>\" % (zastavka(_f) or poster, _f, _f))\n            c.append(\"<div class='podpis_kadra'>видео %d</div></div>\" % _i)\n        c.append(\"</div>\")\n        if len(_vse) > 1:\n            c.append(\"<div class='schet'>%d видео · листайте вбок, \"\n                     \"звук касанием</div>\" % len(_vse))\n        else:\n            c.append(\"<div class='schet'>видео · звук касанием</div>\")\n\n    c.append(\"<div class='blok'>\")\n    c.append(\"<div class='nom'>%s</div><h1>%s</h1>\" % (ekran(nom), ekran(nazvanie)))\n    c.append(\"<div class='chip'>%s</div>\" % ekran(etap_tekst))\n    c.append(\"<div class='cena' style='margin-top:14px'>%s</div>\" % cena(m))\n    c.append(\"<div class='tihо'>Под ключ в Киеве. Выкуп на аукционе, доставка, \"\n             \"растаможка и сертификат — доплат нет.</div>\")\n    c.append(\"</div>\")\n\n    # UA-V61 · верхняя кнопка «Купить авто» убрана, осталась нижняя\n    pary = []\n    if m.get(\"mileage_km\"):\n        try:\n            pary.append((\"Пробег\", \"{:,} км\".format(int(m[\"mileage_km\"])).replace(\",\", \" \")))\n        except Exception:\n            pass\n    if m.get(\"engine_cc\"):\n        pary.append((\"Двигатель\", \"%s см³%s\" % (m[\"engine_cc\"],\n                                                (\", \" + str(m[\"fuel\"])) if m.get(\"fuel\") else \"\")))\n    elif m.get(\"fuel\"):\n        pary.append((\"Топливо\", str(m[\"fuel\"])))\n    for nazv, pole in ((\"Коробка\", \"gearbox\"), (\"Привод\", \"drive\"), (\"Цвет\", \"color\"), (\"VIN\", \"vin\")):\n        if m.get(pole):\n            pary.append((nazv, str(m[pole])))\n    if pary:\n        c.append(\"<div class='blok'><div class='zag'>Коротко</div><table class='kratko'>\")\n        for a, b in pary:\n            c.append(\"<tr><td class='k'>%s</td><td>%s</td></tr>\" % (ekran(a), ekran(b)))\n        c.append(\"</table></div>\")\n\n    # UA-CARDS-STAGE-ANCHOR-001-V1.1 · permanent visual anchor\n    c.append(_ua_delivery_stage_anchor(m))\n    def blok_teksta(zagolovok, tekst):\n        tekst = (tekst or \"\").strip()\n        if not tekst:\n            return\n        c.append(\"<div class='blok'><div class='zag'>%s</div>\" % ekran(zagolovok))\n        stroki = [s.strip() for s in tekst.replace(\"\\r\", \"\").split(\"\\n\")]\n        stroki = [s for s in stroki if s]\n        spiskom = sum(1 for s in stroki if s[:1] in \"-–—•*·\") >= 2\n        if spiskom:\n            for s in stroki:\n                s = s.lstrip(\"-–—•*· \").strip()\n                if s:\n                    c.append(\"<div class='tehstr'><div class='m'>•</div><div>%s</div></div>\"\n                             % ekran(s))\n        else:\n            c.append(\"<div class='tehtekst'>%s</div>\"\n                     % \"<br>\".join(ekran(s) for s in stroki))\n        c.append(\"</div>\")\n\n    sostoyanie = (m.get(\"condition_text\") or \"\").strip()\n    opisanie = (m.get(\"description\") or \"\").strip()\n    # UA-V62 · сначала то, что вписал владелец (condition_text).\n    # description — запасной вариант, там лежит короткий автотекст.\n    polnoe_opisanie = sostoyanie or opisanie\n    blok_teksta(\"Описание\", polnoe_opisanie)\n\n    # UA-V75 · кнопка на отдельную страницу диагностики\n    # UA-DIAG-PERMANENT-V1 · never conditional in a card\n    c.append(\"<!--ua-art-diagnostics-permanent-v1-->\")\n    c.append('<a class=\"mcf-diag-cta\" href=\"%s-diag.html\" style=\"display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);color:#f4e3ae\"><span style=\"font-size:22px;line-height:1\">🔧</span><span style=\"flex:1\"><span style=\"display:block;font-weight:800;font-size:16px\">Открыть комплексную диагностику →</span><span style=\"display:block;font-size:13px;opacity:.85;margin-top:3px\">ЛКП · OBD · ходовая · фото · видео</span></span><span style=\"font-size:20px;opacity:.8\">›</span></a>' % nom)\n\n    if prodana:\n        c.append(\"<a class='dejstvie' href='podbor.html?v=%d'>Хочу такую же под заказ</a>\"\n                 % int(time.time()))\n    else:\n        # UA-FIXCTA-V2: одна CTA на страницу, текст по стадии\n        _st_cta = ((m.get(\"status\") or m.get(\"stage\") or \"\")).strip()\n        if _st_cta in (\"ge_waiting\", \"sea_loaded\", \"kr_bought\"):\n            c.append(\"<a class='dejstvie kn_kupit' href='%s'>Забронировать авто за 500 $</a>\"\n                     % v_bota(\"bron_\" + nom))\n            c.append('<p class=\"cta-note\" style=\"margin:8px 0 0;text-align:center;font-size:14px;color:#c8d2e1;background:none;border:0\">500 $ входит в стоимость автомобиля</p>')\n        else:\n            c.append(\"<a class='dejstvie kn_kupit' href='%s'>Купить авто</a>\"\n                     % v_bota(\"kupit_\" + nom))\n        c.append(\"<a class='vtoraya' id='vopros' href='%s'>Задать вопрос по этой машине</a>\"\n                 % v_bota(\"vopros_\" + nom))\n    c.append(\"<a class='vtoraya' href='katalog.html?v=%d'>← Все машины</a>\" % int(time.time()))\n    c.append(USPEH_BLOK)\n    c.append(podval(\" · \" + ekran(nom)))\n    c.append(\"<script>(function(){\"\n             \"document.querySelectorAll('.kn_kupit').forEach(function(kp){\"\n             \"kp.addEventListener('click',function(e){e.preventDefault();\"\n             \"otpravit_zayavku({t:'kupit',nom:'%(n)s'},'Заявка на покупку принята',\"\n             \"'Менеджер Артём свяжется с вами в течение часа, подтвердит наличие \"\n             \"и подготовит договор с фиксированной ценой.', kp.getAttribute('href'));});});\"\n             \"var b=document.getElementById('bron');\"\n             \"if(b){b.addEventListener('click',function(e){e.preventDefault();\"\n             \"otpravit_zayavku({t:'bron',nom:'%(n)s'},'Бронь принята',\"\n             \"'Автомобиль забронирован за вами. Менеджер Артём свяжется в течение часа \"\n             \"и подтвердит договор с фиксированной ценой.', b.getAttribute('href'));});}\"\n             \"var v=document.getElementById('vopros');\"\n             \"if(v){v.addEventListener('click',function(e){e.preventDefault();\"\n             \"otpravit_zayavku({t:'vopros',nom:'%(n)s'},'Вопрос отправлен',\"\n             \"'Менеджер Артём ответит вам в чате в ближайшее время.', v.getAttribute('href'));});}\"\n             \"})();</script>\" % {\"n\": nom})\n\n    if kadry:\n        c.append(\"<div id='lupa'><img id='bolshoe' src='' alt=''></div><div id='lupaschet'></div>\")\n        c.append(\"<script>var kadry=%s;var tek=0;\" % json.dumps(kadry))\n        c.append(\"\"\"\nvar sloj=document.getElementById('lupa'),bol=document.getElementById('bolshoe'),\n    sch=document.getElementById('lupaschet');\nfunction pokazat(i){tek=(i+kadry.length)%kadry.length;bol.src=kadry[tek];\n sloj.style.display='flex';sch.style.display='block';sch.textContent=(tek+1)+' / '+kadry.length;\n document.body.style.overflow='hidden';}\nfunction zakryt(){sloj.style.display='none';sch.style.display='none';document.body.style.overflow='';}\ndocument.querySelectorAll('.lenta img').forEach(function(el,i){\n el.addEventListener('click',function(){pokazat(i);});});\nvar x0=null;\nsloj.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;});\nsloj.addEventListener('touchend',function(e){if(x0===null)return;\n var dx=e.changedTouches[0].clientX-x0;\n if(Math.abs(dx)>50){pokazat(dx<0?tek+1:tek-1);}else{zakryt();}x0=null;});\nsloj.addEventListener('click',function(e){if(e.target===sloj)zakryt();});\n\"\"\")\n        c.append(\"</script>\")\n    c.append(CHAT_KNOPKA)\n    c.append(SKRIPT_TG)\n    c.append(\"</body></html>\")\n    return \"\".join(c)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2257,
+          "line": 2190,
+          "name": "blok_pribytiya",
+          "sha256": "2d0708c601ab67aa432391086409ce25740aaa6fc18cea090ba9b26d3111a725",
+          "source": "def blok_pribytiya(m):\n    \"\"\"UA-V169. Контейнер перед отсчётом. Ручная дата важнее расчёта,\n    расчёт — от даты отправления. Нет даты — отсчёт не выдумывается.\"\"\"\n    etap = nomer_etapa(m)\n    proc = SHKALA_PO_ETAPU.get(etap, 100)\n    c = []\n\n    nomer_konteynera = (m.get(\"sea_container\") or \"\").strip()\n    data_otpravki = _v169_razobrat(m.get(\"sea_date_out\"))\n    if nomer_konteynera or data_otpravki:\n        c.append(\"<div style='margin-top:16px;font-size:14px;opacity:.8;\"\n                 \"line-height:1.6'>\")\n        if nomer_konteynera:\n            c.append(\"Контейнер: <b>%s</b><br>\" % nomer_konteynera)\n        if data_otpravki:\n            c.append(\"Дата отправления: <b>%s</b>\"\n                     % _v169_krasivo(data_otpravki))\n        c.append(\"</div>\")\n\n    ruchnaya = _v169_razobrat(m.get(\"eta_manual\"))\n    if ruchnaya:\n        cel = ruchnaya\n    elif data_otpravki:\n        cel = data_otpravki + V169_DNEY_PUTI * 86400\n    else:\n        cel = None\n\n    if etap >= 4:\n        proc = 100\n        c.append(\"<div style='margin-top:16px;font-size:19px;font-weight:800;\"\n                 \"color:#f0a63c'>Машина в Киеве</div>\")\n        c.append(\"<div style='margin-top:5px;font-size:14px;opacity:.75'>\"\n                 \"Приезжайте на осмотр — Победы 20</div>\")\n    elif cel is None:\n        c.append(\"<div style='margin-top:16px;font-size:17px;font-weight:700;\"\n                 \"color:#f0a63c'>Дата прибытия уточняется</div>\")\n        c.append(\"<div style='margin-top:5px;font-size:14px;opacity:.75'>\"\n                 \"Сообщим точный срок после отправки контейнера</div>\")\n    else:\n        dney = _v169_dney_do(cel)\n        if dney <= 0:\n            proc = 100\n            c.append(\"<div style='margin-top:16px;font-size:19px;\"\n                     \"font-weight:800;color:#f0a63c'>\"\n                     \"Прибытие ожидается со дня на день</div>\")\n        else:\n            c.append(\"<div style='margin-top:16px;display:flex;\"\n                     \"align-items:baseline;gap:10px'>\")\n            c.append(\"<div style='font-size:46px;line-height:1;font-weight:800;\"\n                     \"color:#f0a63c'>%d</div>\" % dney)\n            c.append(\"<div style='font-size:15px;font-weight:600'>%s до выдачи\"\n                     \"<br>в Киеве</div>\" % sklonenie(dney))\n            c.append(\"</div>\")\n            c.append(\"<div style='margin-top:8px;font-size:14px;opacity:.75'>\"\n                     \"Ориентировочная дата выдачи — <b>%s</b></div>\"\n                     % _v169_krasivo(cel))\n\n    c.append(\"<div style='margin-top:16px;height:5px;border-radius:3px;\"\n             \"background:rgba(255,255,255,.10);overflow:hidden'>\"\n             \"<div style='height:100%%;width:%d%%;background:#f0a63c;\"\n             \"border-radius:3px'></div></div>\" % proc)\n    c.append(\"<div style='display:flex;justify-content:space-between;\"\n             \"margin-top:8px;font-size:11px;opacity:.65'>\")\n    for i, nazv in enumerate((\"Корея\", \"Паром\", \"Грузия\", \"Киев\"), 1):\n        stil = \"color:#f0a63c;font-weight:700;opacity:1\" if i <= etap else \"\"\n        c.append(\"<span style='%s'>%s</span>\" % (stil, nazv))\n    c.append(\"</div></div>\")\n    return \"\".join(c)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2845,
+          "line": 2781,
+          "name": "blok_pribytiya",
+          "sha256": "1fc9f681e2b194966cd69fc5175f4d9b11412167a5d8e1906a8cdc559af2a562",
+          "source": "def blok_pribytiya(m):\n    \"\"\"UA-V173. Контейнер, затем срок по единому правилу, затем шкала.\"\"\"\n    status = (m.get(\"status\") or \"\").lower()\n    etap = nomer_etapa(m)\n    proc = SHKALA_PO_ETAPU.get(etap, 100)\n    c = [V173_METKA_MARSHRUTA]\n\n    nomer_konteynera = (m.get(\"sea_container\") or \"\").strip()\n    data_otpravki = _v173_razobrat(m.get(\"sea_date_out\"))\n    if nomer_konteynera or data_otpravki:\n        c.append(\"<div style='margin-top:16px;font-size:14px;opacity:.8;\"\n                 \"line-height:1.6'>\")\n        if nomer_konteynera:\n            c.append(\"Контейнер: <b>%s</b><br>\" % nomer_konteynera)\n        if data_otpravki:\n            c.append(\"Дата отправления: <b>%s</b>\" % _v173_krasivo(data_otpravki))\n        c.append(\"</div>\")\n\n    ruchnaya = _v173_razobrat(m.get(\"eta_manual\"))\n    vyehal = _v173_razobrat(_v173_data_vyezda(m))\n\n    if etap >= 4 or status.startswith(\"ua_\"):\n        proc = 100\n        c += _v173_stroka(\"Автомобиль в Киеве — можно приехать на осмотр\",\n                          \"Осмотр в офисе на Победы 20\")\n    elif ruchnaya is not None:\n        dney = _v173_dney_do(ruchnaya)\n        if dney <= 0:\n            c += _v173_stroka(\"Прибытие в Киев ожидается со дня на день\")\n        else:\n            c += _v173_bolshoy_schet(dney, ruchnaya)\n    elif status == \"ge_to_kyiv\" and vyehal is not None:\n        cel = vyehal + V173_SROK_GRUZIA * 86400\n        dney = _v173_dney_do(cel)\n        if dney <= 0:\n            c += _v173_stroka(\"Прибытие в Киев ожидается со дня на день\")\n        else:\n            c += _v173_bolshoy_schet(dney, cel)\n            c.append(\"<div style='margin-top:4px;font-size:13px;opacity:.6'>\"\n                     \"Выехал из Грузии %s</div>\" % _v173_krasivo(vyehal))\n    elif status.startswith(\"ge_\"):\n        c += _v173_stroka(\"Автомобиль в Грузии\",\n                          \"Дата отправления в Украину уточняется\")\n    elif data_otpravki is not None:\n        cel = data_otpravki + V173_DNEY_MORE * 86400\n        dney = _v173_dney_do(cel)\n        if dney <= 0:\n            c += _v173_stroka(\"Прибытие ожидается со дня на день\")\n        else:\n            c += _v173_bolshoy_schet(dney, cel)\n    else:\n        c += _v173_stroka(\"Дата прибытия уточняется\",\n                          \"Сообщим точный срок после отправки контейнера\")\n\n    c.append(\"<div style='margin-top:16px;height:5px;border-radius:3px;\"\n             \"background:rgba(255,255,255,.10);overflow:hidden'>\"\n             \"<div style='height:100%%;width:%d%%;background:#f0a63c;\"\n             \"border-radius:3px'></div></div>\" % proc)\n    c.append(\"<div style='display:flex;justify-content:space-between;\"\n             \"margin-top:8px;font-size:11px;opacity:.65'>\")\n    for i, nazv in enumerate((\"Корея\", \"Паром\", \"Грузия\", \"Киев\"), 1):\n        stil = \"color:#f0a63c;font-weight:700;opacity:1\" if i <= etap else \"\"\n        c.append(\"<span style='%s'>%s</span>\" % (stil, nazv))\n    c.append(\"</div></div>\")\n    return \"\".join(c)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 3060,
+          "line": 3034,
+          "name": "_ua_seo068_normalize",
+          "sha256": "c20a4cb3b0cb2f4da7c929e0fcd3dda1495331122bc485092484042e122fd1aa",
+          "source": "def _ua_seo068_normalize(source, file_name, identifier=''):\n    if not source:\n        return source\n    source = _UA_SEO068_CANONICAL.sub('', str(source))\n    source = _UA_SEO068_ROBOTS.sub('', source)\n    source = _ua_seo068_head(source, '<link rel=\"canonical\" href=\"%s/video/%s\">' % (_UA_SEO068_ORIGIN, file_name))\n    if identifier:\n        identifier = str(identifier).upper()\n        target = identifier + '-diag.html'\n        if not any(_ua_seo068_os.path.isfile(_ua_seo068_os.path.join(root, target)) for root in ('/home/Carix/video', '/home/Carix/site')):\n            raise RuntimeError('SEO068_DIAGNOSTIC_TARGET_MISSING:' + identifier)\n        hrefs = []\n        for tag in _ua_seo068_re.findall(r'<a\\b[^>]*>', source, _ua_seo068_re.I):\n            href = _ua_seo068_attr(tag, 'href')\n            match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\\.html)(?:[?#]|$)', href, _ua_seo068_re.I)\n            if match:\n                hrefs.append(match.group(1).upper())\n        if any(value != target.upper() for value in hrefs):\n            raise RuntimeError('SEO068_WRONG_DIAGNOSTIC:' + identifier)\n        source = _UA_SEO068_DIAG.sub('', source).replace('<!--seo-rehab-guard-068-diagnostics-->', '')\n        source = _ua_seo068_cta(source)\n        purchase = _ua_seo068_re.search(r'<a\\b(?=[^>]*\\bclass\\s*=\\s*[\"\\'][^\"\\']*\\bkn_kupit\\b[^\"\\']*[\"\\'])', source, _ua_seo068_re.I)\n        position = purchase.start() if purchase else source.lower().rfind('</body>')\n        if position < 0:\n            raise RuntimeError('SEO068_INSERTION_POINT_MISSING:' + identifier)\n        source = source[:position] + _ua_seo068_diag_anchor(identifier) + '\\n' + source[position:]\n    return source\n",
+          "truncated": false
+        },
+        {
+          "end_line": 3314,
+          "line": 3258,
+          "name": "_ua068_eta",
+          "sha256": "ce1674c19b5d52eb288941af9616ce8844b9fc015fd3a2c90de42682ed7642fd",
+          "source": "def _ua068_eta(row, stage):\n    row = row or {}\n    today = _ua068_dt.datetime.now(_ua068_dt.timezone.utc).date()\n    if stage == 1:\n        return (\n            \"После внесения предоплаты 500 $ автомобиль будет отправлен ближайшим паромом.\",\n            \"Після внесення передоплати 500 $ автомобіль буде відправлено найближчим поромом.\",\n            \"Дата прибытия будет рассчитана после погрузки на паром.\",\n            \"Дату прибуття буде розраховано після завантаження на пором.\",\n        )\n    if stage == 2:\n        target = _ua068_date(row.get(\"eta_manual\"))\n        if target is None:\n            shipped = _ua068_date(row.get(\"sea_date_out\"))\n            if shipped is not None:\n                target = shipped + _ua068_dt.timedelta(days=75)\n        if target is not None:\n            days = max(0, (target - today).days)\n            ru_date, uk_date = _ua068_pretty(target)\n            return (\n                \"%d дн. до Киева · ориентировочно %s.\" % (days, ru_date),\n                \"%d дн. до Києва · орієнтовно %s.\" % (days, uk_date),\n                \"\",\n                \"\",\n            )\n        return (\n            \"Количество дней до Киева уточняется.\",\n            \"Кількість днів до Києва уточнюється.\",\n            \"Дата прибытия будет рассчитана после подтверждения маршрута.\",\n            \"Дату прибуття буде розраховано після підтвердження маршруту.\",\n        )\n    if stage == 3:\n        deposit = _ua068_date(row.get(\"ge_to_kyiv_at\"))\n        if deposit is not None:\n            target = deposit + _ua068_dt.timedelta(days=15)\n            ru_date, uk_date = _ua068_pretty(target)\n            extra_ru = \"Расчётная дата прибытия — %s.\" % ru_date\n            extra_uk = \"Розрахункова дата прибуття — %s.\" % uk_date\n        else:\n            extra_ru = \"Точная дата появится после внесения предоплаты.\"\n            extra_uk = \"Точна дата з’явиться після внесення передоплати.\"\n        return (\n            \"После внесения предоплаты 500 $ автомобиль прибудет в Киев в течение 15 календарных дней.\",\n            \"Після внесення передоплати 500 $ автомобіль прибуде до Києва протягом 15 календарних днів.\",\n            extra_ru,\n            extra_uk,\n        )\n    arrived = (_ua068_date(row.get(\"ua_delivered\")) or _ua068_date(row.get(\"ua_handed\"))\n               or _ua068_date(row.get(\"eta_manual\")))\n    if arrived is not None:\n        ru_date, uk_date = _ua068_pretty(arrived)\n        extra_ru = \"Дата прибытия в Киев — %s.\" % ru_date\n        extra_uk = \"Дата прибуття до Києва — %s.\" % uk_date\n    else:\n        extra_ru = \"Автомобиль в Киеве и готов к осмотру.\"\n        extra_uk = \"Автомобіль у Києві та готовий до огляду.\"\n    return (extra_ru, extra_uk, \"\", \"\")\n",
+          "truncated": false
+        }
+      ],
+      "sha256": "84a56024e185932c3f2af289db87d1b98558acdf9c4788256dfd36d544ec28b3"
+    },
+    "yadro.py": {
+      "bytes": 145171,
+      "callbacks": {
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0
+      },
+      "compiled": true,
+      "counts": {
+        "SEO068_DIAGNOSTIC_TARGET_MISSING": 1,
+        "days_to_kyiv": 0,
+        "eta_days": 0,
+        "eta_manual": 3,
+        "opublikovat": 0,
+        "sea_loaded": 0,
+        "sea_transit": 0,
+        "sold_transit": 0,
+        "Машина видна клиентам в каталоге": 0
+      },
+      "definitions": [
+        {
+          "end_line": 849,
+          "line": 831,
+          "name": "_ua_stage_eta",
+          "sha256": "c6fb6b7deb6dab2894cac036763145999fe8869275c2d908892604656f0d212d",
+          "source": "def _ua_stage_eta(m, stage):\n    status = str(m.get(\"status\") or \"\").strip().lower()\n    if stage >= 4 or status.startswith(\"ua_\"):\n        return (\"arrived\", None, None)\n    manual = _ua_stage_date(m.get(\"eta_manual\"))\n    if manual is not None:\n        target = manual\n    elif status == \"ge_to_kyiv\":\n        released = _ua_stage_saved_release(m)\n        target = released + _ua_stage_dt.timedelta(days=15) if released else None\n    elif status.startswith(\"ge_\"):\n        target = None\n    else:\n        shipped = _ua_stage_date(m.get(\"sea_date_out\"))\n        target = shipped + _ua_stage_dt.timedelta(days=75) if shipped else None\n    if target is None:\n        return (\"georgia\" if status.startswith(\"ge_\") else \"unknown\", None, None)\n    days = max((target - _ua_stage_today()).days, 0)\n    return (\"due\" if days else \"soon\", days, target)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 1772,
+          "line": 1746,
+          "name": "_ua_seo068_normalize",
+          "sha256": "c20a4cb3b0cb2f4da7c929e0fcd3dda1495331122bc485092484042e122fd1aa",
+          "source": "def _ua_seo068_normalize(source, file_name, identifier=''):\n    if not source:\n        return source\n    source = _UA_SEO068_CANONICAL.sub('', str(source))\n    source = _UA_SEO068_ROBOTS.sub('', source)\n    source = _ua_seo068_head(source, '<link rel=\"canonical\" href=\"%s/video/%s\">' % (_UA_SEO068_ORIGIN, file_name))\n    if identifier:\n        identifier = str(identifier).upper()\n        target = identifier + '-diag.html'\n        if not any(_ua_seo068_os.path.isfile(_ua_seo068_os.path.join(root, target)) for root in ('/home/Carix/video', '/home/Carix/site')):\n            raise RuntimeError('SEO068_DIAGNOSTIC_TARGET_MISSING:' + identifier)\n        hrefs = []\n        for tag in _ua_seo068_re.findall(r'<a\\b[^>]*>', source, _ua_seo068_re.I):\n            href = _ua_seo068_attr(tag, 'href')\n            match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\\.html)(?:[?#]|$)', href, _ua_seo068_re.I)\n            if match:\n                hrefs.append(match.group(1).upper())\n        if any(value != target.upper() for value in hrefs):\n            raise RuntimeError('SEO068_WRONG_DIAGNOSTIC:' + identifier)\n        source = _UA_SEO068_DIAG.sub('', source).replace('<!--seo-rehab-guard-068-diagnostics-->', '')\n        source = _ua_seo068_cta(source)\n        purchase = _ua_seo068_re.search(r'<a\\b(?=[^>]*\\bclass\\s*=\\s*[\"\\'][^\"\\']*\\bkn_kupit\\b[^\"\\']*[\"\\'])', source, _ua_seo068_re.I)\n        position = purchase.start() if purchase else source.lower().rfind('</body>')\n        if position < 0:\n            raise RuntimeError('SEO068_INSERTION_POINT_MISSING:' + identifier)\n        source = source[:position] + _ua_seo068_diag_anchor(identifier) + '\\n' + source[position:]\n    return source\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2026,
+          "line": 1970,
+          "name": "_ua068_eta",
+          "sha256": "ce1674c19b5d52eb288941af9616ce8844b9fc015fd3a2c90de42682ed7642fd",
+          "source": "def _ua068_eta(row, stage):\n    row = row or {}\n    today = _ua068_dt.datetime.now(_ua068_dt.timezone.utc).date()\n    if stage == 1:\n        return (\n            \"После внесения предоплаты 500 $ автомобиль будет отправлен ближайшим паромом.\",\n            \"Після внесення передоплати 500 $ автомобіль буде відправлено найближчим поромом.\",\n            \"Дата прибытия будет рассчитана после погрузки на паром.\",\n            \"Дату прибуття буде розраховано після завантаження на пором.\",\n        )\n    if stage == 2:\n        target = _ua068_date(row.get(\"eta_manual\"))\n        if target is None:\n            shipped = _ua068_date(row.get(\"sea_date_out\"))\n            if shipped is not None:\n                target = shipped + _ua068_dt.timedelta(days=75)\n        if target is not None:\n            days = max(0, (target - today).days)\n            ru_date, uk_date = _ua068_pretty(target)\n            return (\n                \"%d дн. до Киева · ориентировочно %s.\" % (days, ru_date),\n                \"%d дн. до Києва · орієнтовно %s.\" % (days, uk_date),\n                \"\",\n                \"\",\n            )\n        return (\n            \"Количество дней до Киева уточняется.\",\n            \"Кількість днів до Києва уточнюється.\",\n            \"Дата прибытия будет рассчитана после подтверждения маршрута.\",\n            \"Дату прибуття буде розраховано після підтвердження маршруту.\",\n        )\n    if stage == 3:\n        deposit = _ua068_date(row.get(\"ge_to_kyiv_at\"))\n        if deposit is not None:\n            target = deposit + _ua068_dt.timedelta(days=15)\n            ru_date, uk_date = _ua068_pretty(target)\n            extra_ru = \"Расчётная дата прибытия — %s.\" % ru_date\n            extra_uk = \"Розрахункова дата прибуття — %s.\" % uk_date\n        else:\n            extra_ru = \"Точная дата появится после внесения предоплаты.\"\n            extra_uk = \"Точна дата з’явиться після внесення передоплати.\"\n        return (\n            \"После внесения предоплаты 500 $ автомобиль прибудет в Киев в течение 15 календарных дней.\",\n            \"Після внесення передоплати 500 $ автомобіль прибуде до Києва протягом 15 календарних днів.\",\n            extra_ru,\n            extra_uk,\n        )\n    arrived = (_ua068_date(row.get(\"ua_delivered\")) or _ua068_date(row.get(\"ua_handed\"))\n               or _ua068_date(row.get(\"eta_manual\")))\n    if arrived is not None:\n        ru_date, uk_date = _ua068_pretty(arrived)\n        extra_ru = \"Дата прибытия в Киев — %s.\" % ru_date\n        extra_uk = \"Дата прибуття до Києва — %s.\" % uk_date\n    else:\n        extra_ru = \"Автомобиль в Киеве и готов к осмотру.\"\n        extra_uk = \"Автомобіль у Києві та готовий до огляду.\"\n    return (extra_ru, extra_uk, \"\", \"\")\n",
+          "truncated": false
+        }
+      ],
+      "sha256": "a0976afb93a4d2fdcab392601d25253700977618a02b04bc31903a18e95ee81a"
+    }
+  },
+  "started_at_utc": "2026-08-29T06:39:22Z",
+  "status": "PASS_AUDIT_DEFECT_REPRODUCED",
+  "task_id": "task_077"
+}
