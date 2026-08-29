@@ -1,192 +1,192 @@
 {
   "cars_ui": {
-    "bytes": 164687,
+    "bytes": 166212,
     "definitions": {
       "card_kb": {
-        "end_line": 321,
-        "line": 295,
+        "end_line": 372,
+        "line": 346,
         "sha256": "40f5d4456e691645f91b2a1f2aea9244adc3faceffc78e81f8742249217b9b70",
         "source": "def card_kb(card, staff):\n    cid = card[\"id\"]\n    rows = [\n        [InlineKeyboardButton(\"Редактировать данные\", callback_data=\"car_edit:%d\" % cid),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\", callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n        [InlineKeyboardButton(\"🇰🇷 Проверить VIN · CarHistory\",\n                              url=\"https://www.carhistory.kr/search/carhistory/search.car?lang=ru\")],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),\n    ])\n    rows.append([InlineKeyboardButton(\"Удалить\", callback_data=\"car_del:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Все автомобили\", callback_data=\"cards_cars\")])\n    return InlineKeyboardMarkup(rows)\n"
       },
       "cars_list": {
-        "end_line": 393,
-        "line": 356,
-        "sha256": "058a155a5910fa7819f3a4d9b701b1cd98e8639493c0d8af8ad5f0eeb79395c0",
-        "source": "async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    context.user_data.pop(\"car_last\", None)\n    context.user_data.pop(\"car_voice_active\", None)\n    context.user_data.pop(\"voice_undo\", None)\n    staff = db.get_staff(q.from_user.id)\n    try:\n        cards = db.list_cards(\"cars\", limit=30)\n    except Exception as e:\n        log.warning(\"Список машин: %s\", e)\n        return\n    if not cards:\n        await q.message.reply_text(\n            \"Автомобилей пока нет. Откройте явное создание новой карточки.\",\n            reply_markup=InlineKeyboardMarkup([[\n                InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")]]))\n        raise ApplicationHandlerStop\n\n    lines = [\"<b>Автомобили</b>\", \"Нажмите на машину — откроется карточка для правки.\", \"\"]\n    rows = []\n    for card in cards:\n        card = card_of(card[\"id\"]) or card\n        nomer = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n        name = \" \".join(str(x) for x in (card.get(\"brand\"), card.get(\"model\"),\n                                         card.get(\"year\")) if x) or \"без названия\"\n        miss = S.missing_required(card)\n        sostoyanie = (\"черновик, не хватает %d\" % len(miss)) if miss else \"заполнена\"\n        etap = S.status_label(card.get(\"status\")) if card.get(\"status\") else \"этап не задан\"\n        lines.append(\"<b>%s</b> · %s\" % (nomer, name))\n        lines.append(\"   %s · %s\" % (etap, sostoyanie))\n        rows.append([InlineKeyboardButton(\"%s · %s\" % (nomer, name[:28]),\n                                          callback_data=\"car_open:%d\" % card[\"id\"])])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")])\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
+        "end_line": 444,
+        "line": 407,
+        "sha256": "df3105cbf4b63550720ba3438d7770e758dab62c8b0563304b3dd6a6f35f66c6",
+        "source": "async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    context.user_data.pop(\"car_last\", None)\n    context.user_data.pop(\"car_voice_active\", None)\n    context.user_data.pop(\"voice_undo\", None)\n    staff = db.get_staff(q.from_user.id)\n    try:\n        cards = db.list_cards(\"cars\", limit=30)\n    except Exception as e:\n        log.warning(\"Список машин: %s\", e)\n        return\n    if not cards:\n        await q.message.reply_text(\n            \"Автомобилей пока нет. Откройте явное создание новой карточки.\",\n            reply_markup=InlineKeyboardMarkup([[\n                InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")]]))\n        raise ApplicationHandlerStop\n\n    lines = [\"<b>Автомобили</b>\", \"Нажмите на машину — откроется карточка для правки.\", \"\"]\n    rows = []\n    for card in cards:\n        card = card_of(card[\"id\"]) or card\n        nomer = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n        name = \" \".join(str(x) for x in (card.get(\"brand\"), card.get(\"model\"),\n                                         card.get(\"year\")) if x) or \"без названия\"\n        miss = S.missing_required(card)\n        sostoyanie = (\"черновик, не хватает %d\" % len(miss)) if miss else \"заполнена\"\n        etap = S.status_label(card.get(\"status\")) if card.get(\"status\") else \"этап не задан\"\n        lines.append(_ua082_title_html(card))\n        lines.append(\"   %s · %s\" % (etap, sostoyanie))\n        rows.append([InlineKeyboardButton(_ua082_title_button(card),\n                                          callback_data=\"car_open:%d\" % card[\"id\"])])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")])\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
       },
       "open_card": {
-        "end_line": 346,
-        "line": 328,
+        "end_line": 397,
+        "line": 379,
         "sha256": "d3e814f9c763bc9b9a3719ca5a109e04cacbae72b450315c8a37cc6c19af0ffa",
         "source": "async def open_card(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    staff = db.get_staff(q.from_user.id)\n    cid = q.data.split(\":\")[-1]\n    card = card_of(cid)\n    if not card:\n        await q.message.reply_text(\"Карточка не найдена.\")\n        raise ApplicationHandlerStop\n\n    await CR.send_photos(q.message, card)\n    await q.message.reply_text(render(card, staff), parse_mode=\"HTML\",\n                               reply_markup=card_kb(card, staff),\n                               disable_web_page_preview=True)\n    await CR.send_videos(q.message, card)\n    context.user_data[\"car_last\"] = int(cid)\n    context.user_data[\"car_voice_active\"] = int(cid)\n    raise ApplicationHandlerStop\n"
       },
       "render": {
-        "end_line": 264,
-        "line": 172,
-        "sha256": "09fbb1baabdf297a24a2f4fb757464836a718edc086680f699218cacf77c97a8",
-        "source": "def render(card, staff):\n    L = []\n    L.append(\"<b>%s</b>\" % (card.get(\"auto_number\") or \"#%s\" % card.get(\"id\")))\n\n    miss = S.missing_required(card)\n    if miss:\n        L.append(\"<i>Черновик · не хватает %d полей</i>\" % len(miss))\n    else:\n        L.append(\"<i>%s · %s</i>\" % (\n            db.STATUS_LABELS.get(card.get(\"review_status\"), \"\"),\n            \"в каталоге\" if card.get(\"published\") else \"не опубликовано\"))\n\n    photos = photos_of(card)\n    vids = videos_of(card)\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(photos), S.PHOTO_LIMIT, len(vids), VIDEO_LIMIT))\n\n    L.append(\"\")\n    L.append(\"<b>ИДЕНТИФИКАЦИЯ</b>\")\n    L.append(\"Марка: <b>%s</b>\" % (card.get(\"brand\") or \"—\"))\n    L.append(\"Модель: <b>%s</b>\" % (card.get(\"model\") or \"—\"))\n    L.append(\"Год выпуска: %s\" % (card.get(\"year\") or \"—\"))\n    L.append(\"VIN: <b>%s</b>\" % (card.get(\"vin\") or \"—\"))\n    if card.get(\"vin\"):\n        ok, msg = S.check_vin(card.get(\"vin\"), _year(card))\n        L.append(\"  <i>%s</i>\" % msg)\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИКА</b>\")\n    L.append(\"Топливо: %s\" % (card.get(\"fuel\") or \"—\"))\n    L.append(\"Объём: <b>%s</b>\" % S.num(_int(card.get(\"engine_cc\")), \" см³\"))\n    L.append(\"КПП: %s\" % (card.get(\"gearbox\") or \"—\"))\n    L.append(\"Привод: %s\" % (card.get(\"drive\") or \"—\"))\n    L.append(\"Пробег: %s\" % S.num(_int(card.get(\"mileage_km\")), \" км\"))\n    L.append(\"Цвет: %s\" % (card.get(\"color\") or \"—\"))\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИЧЕСКОЕ СОСТОЯНИЕ</b>\")\n    L.append(card.get(\"condition_text\") or \"—\")\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(jload(card.get(\"condition_photos\"))), S.CONDITION_PHOTO_LIMIT,\n        len(jload(card.get(\"condition_videos\"))), S.CONDITION_VIDEO_LIMIT))\n    if card.get(\"diag_report\") or card.get(\"diag_link\"):\n        L.append(\"Диагностика: отчёт загружен\")\n        if card.get(\"diag_link\"):\n            L.append('  <a href=\"%s\">полный отчёт</a>' % card[\"diag_link\"])\n\n    L.append(\"\")\n    stage = S.stage_of(card.get(\"status\"))\n    L.append(\"<b>ЛОГИСТИКА · ЭТАП %d ИЗ 4</b>\" % (stage or 1))\n    for n, name in S.STAGES:\n        mark = \"пройден\" if n < stage else (\"сейчас\" if n == stage else \"—\")\n        L.append(\"%d. %s: <b>%s</b>\" % (n, name, mark))\n    if card.get(\"status\"):\n        L.append(\"Статус: %s\" % S.status_label(card.get(\"status\")))\n    if card.get(\"sea_container\"):\n        L.append(\"Контейнер: <b>%s</b>\" % card[\"sea_container\"])\n\n    left, eta = eta_of(card)\n    # Подпись зависит от того, где машина сейчас.\n    # На море счёт идёт до Грузии, до Киева — только когда она уже в Грузии.\n    podpis = {2: \"ДО ПОТИ/БАТУМИ\", 3: \"ДО КИЕВА\"}.get(stage)\n    if left is not None and podpis:\n        L.append(\"\")\n        L.append(\"🚚 <b>%s: %d дней</b>\" % (podpis, left))\n        L.append(\"ориентировочно %s%s\" % (\n            eta.strftime(\"%d.%m.%Y\"),\n            \" · задано вручную\" if card.get(\"eta_manual\") else \"\"))\n\n    klient = client_of(card)\n    if klient:\n        L.append(\"\")\n        L.append(\"<b>ПОКУПАТЕЛЬ</b>\")\n        L.append(\"Имя: %s\" % (klient.get(\"name\") or \"—\"))\n        L.append(\"Телефон: %s\" % (klient.get(\"phone\") or \"—\"))\n        if klient.get(\"telegram\"):\n            L.append(\"Telegram: %s\" % klient[\"telegram\"])\n        if klient.get(\"prepayment\"):\n            L.append(\"Предоплата: %s\" % klient[\"prepayment\"])\n        if klient.get(\"wishes\"):\n            L.append(\"Заметка: %s\" % klient[\"wishes\"])\n\n    if is_owner(staff):\n        L.extend(CR.owner_money(card))\n        if price_stale(card):\n            L.append(\"⚠️ <b>Цена на этом этапе ещё не обновлена</b>\")\n\n    if miss:\n        L.append(\"\")\n        L.append(\"<b>НЕ ХВАТАЕТ</b>\")\n        L.append(\", \".join(miss))\n\n    return \"\\n\".join(L)\n"
+        "end_line": 315,
+        "line": 223,
+        "sha256": "1246f876de2a56811d42afd9be4b675d7ba0e6cc36685f932f094cf55bc95eb2",
+        "source": "def render(card, staff):\n    L = []\n    L.append(_ua082_title_html(card))\n\n    miss = S.missing_required(card)\n    if miss:\n        L.append(\"<i>Черновик · не хватает %d полей</i>\" % len(miss))\n    else:\n        L.append(\"<i>%s · %s</i>\" % (\n            db.STATUS_LABELS.get(card.get(\"review_status\"), \"\"),\n            \"в каталоге\" if card.get(\"published\") else \"не опубликовано\"))\n\n    photos = photos_of(card)\n    vids = videos_of(card)\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(photos), S.PHOTO_LIMIT, len(vids), VIDEO_LIMIT))\n\n    L.append(\"\")\n    L.append(\"<b>ИДЕНТИФИКАЦИЯ</b>\")\n    L.append(\"Марка: <b>%s</b>\" % (card.get(\"brand\") or \"—\"))\n    L.append(\"Модель: <b>%s</b>\" % (card.get(\"model\") or \"—\"))\n    L.append(\"Год выпуска: %s\" % (card.get(\"year\") or \"—\"))\n    L.append(\"VIN: <b>%s</b>\" % (card.get(\"vin\") or \"—\"))\n    if card.get(\"vin\"):\n        ok, msg = S.check_vin(card.get(\"vin\"), _year(card))\n        L.append(\"  <i>%s</i>\" % msg)\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИКА</b>\")\n    L.append(\"Топливо: %s\" % (card.get(\"fuel\") or \"—\"))\n    L.append(\"Объём: <b>%s</b>\" % S.num(_int(card.get(\"engine_cc\")), \" см³\"))\n    L.append(\"КПП: %s\" % (card.get(\"gearbox\") or \"—\"))\n    L.append(\"Привод: %s\" % (card.get(\"drive\") or \"—\"))\n    L.append(\"Пробег: %s\" % S.num(_int(card.get(\"mileage_km\")), \" км\"))\n    L.append(\"Цвет: %s\" % (card.get(\"color\") or \"—\"))\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИЧЕСКОЕ СОСТОЯНИЕ</b>\")\n    L.append(card.get(\"condition_text\") or \"—\")\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(jload(card.get(\"condition_photos\"))), S.CONDITION_PHOTO_LIMIT,\n        len(jload(card.get(\"condition_videos\"))), S.CONDITION_VIDEO_LIMIT))\n    if card.get(\"diag_report\") or card.get(\"diag_link\"):\n        L.append(\"Диагностика: отчёт загружен\")\n        if card.get(\"diag_link\"):\n            L.append('  <a href=\"%s\">полный отчёт</a>' % card[\"diag_link\"])\n\n    L.append(\"\")\n    stage = S.stage_of(card.get(\"status\"))\n    L.append(\"<b>ЛОГИСТИКА · ЭТАП %d ИЗ 4</b>\" % (stage or 1))\n    for n, name in S.STAGES:\n        mark = \"пройден\" if n < stage else (\"сейчас\" if n == stage else \"—\")\n        L.append(\"%d. %s: <b>%s</b>\" % (n, name, mark))\n    if card.get(\"status\"):\n        L.append(\"Статус: %s\" % S.status_label(card.get(\"status\")))\n    if card.get(\"sea_container\"):\n        L.append(\"Контейнер: <b>%s</b>\" % card[\"sea_container\"])\n\n    left, eta = eta_of(card)\n    # Подпись зависит от того, где машина сейчас.\n    # На море счёт идёт до Грузии, до Киева — только когда она уже в Грузии.\n    podpis = {2: \"ДО ПОТИ/БАТУМИ\", 3: \"ДО КИЕВА\"}.get(stage)\n    if left is not None and podpis:\n        L.append(\"\")\n        L.append(\"🚚 <b>%s: %d дней</b>\" % (podpis, left))\n        L.append(\"ориентировочно %s%s\" % (\n            eta.strftime(\"%d.%m.%Y\"),\n            \" · задано вручную\" if card.get(\"eta_manual\") else \"\"))\n\n    klient = client_of(card)\n    if klient:\n        L.append(\"\")\n        L.append(\"<b>ПОКУПАТЕЛЬ</b>\")\n        L.append(\"Имя: %s\" % (klient.get(\"name\") or \"—\"))\n        L.append(\"Телефон: %s\" % (klient.get(\"phone\") or \"—\"))\n        if klient.get(\"telegram\"):\n            L.append(\"Telegram: %s\" % klient[\"telegram\"])\n        if klient.get(\"prepayment\"):\n            L.append(\"Предоплата: %s\" % klient[\"prepayment\"])\n        if klient.get(\"wishes\"):\n            L.append(\"Заметка: %s\" % klient[\"wishes\"])\n\n    if is_owner(staff):\n        L.extend(CR.owner_money(card))\n        if price_stale(card):\n            L.append(\"⚠️ <b>Цена на этом этапе ещё не обновлена</b>\")\n\n    if miss:\n        L.append(\"\")\n        L.append(\"<b>НЕ ХВАТАЕТ</b>\")\n        L.append(\", \".join(miss))\n\n    return \"\\n\".join(L)\n"
       }
     },
     "header_definitions": {
       "_save_media_proverka": {
-        "end_line": 3340,
-        "line": 3303,
+        "end_line": 3391,
+        "line": 3354,
         "sha256": "c08913131f6bd86b70d3a9032cf5bdb64c6e7f16996d2a94e4125ff630ae0413",
         "source": "def _save_media_proverka(card, target, file_id, actor_id, tag=\"\"):  # UA-V152\n    nomer = str(card.get(\"auto_number\") or \"?\")\n    eto_video = target in (\"videos\", \"video_h\", \"video_v\", \"condition_videos\")\n    # Telegram already validated msg.photo. A second blocking getFile request is redundant.\n    if target in (\"photos\", \"condition_photos\"):\n        _v140_zapis(\"%s · %s · принято fast-path · %s\"\n                    % (nomer, target, str(file_id)[:24]))\n        return _v140_save_media_ishodnyy(card, target, file_id, actor_id, tag)\n    otvetil, razmer, oshibka = _v140_sprosit(file_id)\n\n    if otvetil is False:\n        if \"too big\" in oshibka.lower():\n            _v140_zapis(\"%s · %s · ОТКАЗ файл больше предела Telegram · %s · %s\"\n                        % (nomer, target, str(file_id)[:24], oshibka))\n            return _V140_BOLSHOE\n        _v140_zapis(\"%s · %s · ОТКАЗ · %s · %s\"\n                    % (nomer, target, str(file_id)[:24], oshibka))\n        return (\"Файл не принят: Telegram отвечает «%s».\\n\\n\"\n                \"Пришлите файл этому боту ещё раз.\" % oshibka)\n\n    if otvetil and _v159_ne_tot_tip(target, file_id):\n        _v140_zapis(\"%s · %s · ОТКАЗ не тот тип файла\" % (nomer, target))\n        return (\"В этот раздел нужен другой тип файла.\\n\\n\"\n                \"Для видео нажмите «Добавить видео», для фотографий — «Добавить фото».\")\n\n    if otvetil and eto_video and razmer > _V140_PREDEL_VIDEO:\n        _v140_zapis(\"%s · %s · ОТКАЗ размер %d байт · %s\"\n                    % (nomer, target, razmer, str(file_id)[:24]))\n        return _V140_BOLSHOE\n\n    if otvetil is None:\n        _v140_zapis(\"%s · %s · ОТКАЗ проверка не выполнена (%s) — в карточку не записан\"\n                    % (nomer, target, oshibka))\n        return (\"Файл пока не проверен: Telegram не ответил (%s).\\n\\n\"\n                \"В карточку он НЕ сохранён — пришлите его ещё раз через минуту.\"\n                % oshibka)\n    _v140_zapis(\"%s · %s · принято · размер %d байт\" % (nomer, target, razmer))\n    return _v140_save_media_ishodnyy(card, target, file_id, actor_id, tag)\n"
       },
+      "_ua082_title_parts": {
+        "end_line": 194,
+        "line": 186,
+        "sha256": "12d5fdd38982bb4a6d9a419d9259ddade4bef8fabf84b67d9ffa7de47c37962b",
+        "source": "def _ua082_title_parts(card):\n    card = card or {}\n    number = _ua082_clean(card.get(\"auto_number\") or (\"#%s\" % card.get(\"id\")))\n    name = \" \".join(\n        _ua082_clean(value)\n        for value in (card.get(\"brand\"), card.get(\"model\"), card.get(\"year\"))\n        if _ua082_clean(value)\n    ) or \"без названия\"\n    return number, name, _ua082_vin4(card)\n"
+      },
       "_v163_status": {
-        "end_line": 3512,
-        "line": 3483,
+        "end_line": 3563,
+        "line": 3534,
         "sha256": "832e78bcdbfb3cf68d2d0a6b92baf42093504b4d3ea3d5aa89cbf86049ea44d7",
         "source": "def _v163_status(nomer, novyj, staryj=None):\n    \"\"\"Меняет статус записей видео машины и пересобирает старое поле.\"\"\"\n    zatronuto = []\n    try:\n        con = _s163.connect(\"/home/Carix/crm.db\", timeout=20)\n        con.row_factory = _s163.Row\n        car = con.execute(\"SELECT id FROM cars WHERE auto_number=?\", (nomer,)).fetchone()\n        if not car:\n            return []\n        usloviye = \"AND status=?\" if staryj else \"\"\n        parametry = [car[\"id\"]] + ([staryj] if staryj else [])\n        for r in con.execute(\"SELECT id, file_id, tag FROM media WHERE car_id=? AND vid='video' \"\n                             + usloviye, parametry):\n            con.execute(\"UPDATE media SET status=? WHERE id=?\", (novyj, r[\"id\"]))\n            zatronuto.append(r[\"id\"])\n        spisok = [{\"file_id\": r[\"file_id\"], \"tag\": r[\"tag\"] or \"\"}\n                  for r in con.execute(\"SELECT file_id, tag FROM media WHERE car_id=? \"\n                                       \"AND vid='video' AND status='ready' ORDER BY poryadok\",\n                                       (car[\"id\"],))]\n        import json as _j163\n        con.execute(\"UPDATE cars SET videos=? WHERE id=?\",\n                    (_j163.dumps(spisok, ensure_ascii=False), car[\"id\"]))\n        con.commit()\n        con.close()\n    except Exception as e:\n        try:\n            _v140_zapis(\"media: смена статуса видео %s не удалась — %r\" % (nomer, e))\n        except Exception:\n            pass\n    return zatronuto\n"
       },
       "auto_catch": {
-        "end_line": 1317,
-        "line": 1218,
+        "end_line": 1368,
+        "line": 1269,
         "sha256": "eb285e823ad69e55ec1a5d3995450c45ee767de0316e50ac9fad80850b16287b",
         "source": "async def auto_catch(msg, card, actor_id, context):\n    \"\"\"Кладёт присланное в открытую карточку само, без кнопок.\n    Возвращает True, если разобралось; False — пусть идёт обычным путём.\"\"\"\n    cid = card[\"id\"]\n    number = card.get(\"auto_number\") or \"#%d\" % cid\n\n    # ── фото, видео, документы: только по кнопке ──\n    # Что нельзя опознать наверняка, бот сам в карточку не кладёт.\n    # Нажмите «Фото и видео» или «Тех. состояние» и пришлите файлы туда.\n    if msg.photo or msg.video or msg.video_note or msg.document:\n        return False\n\n    # ── текст ──\n    text = (msg.text or \"\").strip()\n    if not text:\n        return False\n    if VIN_RE.search(text):\n        return False                        # новый VIN — это новая машина, не правка\n\n    link = _re.search(r\"https?://\\S+\", text)\n    if link and len(text) < 200:\n        set_field(cid, \"diag_link\", link.group(0), actor_id)\n        await msg.reply_text(\"Ссылка на отчёт записана в %s.\" % number)\n        return True\n\n    golo = _re.fullmatch(r\"[\\d\\s]{3,12}\\s*[$₴]?\", text)\n    if golo:\n        ok, answer = apply_value(cid, \"price_uah\", text, actor_id)\n        if ok:\n            await msg.reply_text(\n                \"%s · цена: %s\" % (number, answer.replace(\"Записано: \", \"\")),\n                reply_markup=InlineKeyboardMarkup([[\n                    InlineKeyboardButton(\"← Вернуться к карточке\",\n                                         callback_data=\"car_open:%d\" % cid)]]))\n            return True\n\n    # «запиши / добавь / поставь» — ИИ сам вносит данные в карточку\n    try:\n        import assistant\n        if assistant.is_write(text):\n            polya = assistant.extract(text, card)\n            zapisano = []\n            for field, value in (polya or {}).items():\n                if field not in dict(EDITABLE) and field not in (\n                        \"brand\", \"model\", \"condition_text\", \"sea_container\",\n                        \"diag_link\", \"fuel\"):\n                    continue\n                ok, _ = apply_value(cid, field, str(value), actor_id)\n                if ok:\n                    zapisano.append(LABELS_ALL.get(field, field))\n            if zapisano:\n                await msg.reply_text(\n                    \"%s · записано: %s\" % (number, \", \".join(zapisano)),\n                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                        \"← Вернуться к карточке\",\n                        callback_data=\"car_open:%d\" % cid)]]))\n                return True\n    except Exception as e:\n        log.warning(\"Запись через ИИ: %s\", e)\n\n    # свободная просьба — отвечает ИИ, а не «необработанное»\n    try:\n        import assistant\n        if assistant.is_request(text):\n            otvet = assistant.ask(text, card)\n            if otvet:\n                context.user_data[\"ai_otvet\"] = otvet[:1500]\n                await msg.reply_text(\n                    assistant.clean_html(otvet)[:3800], parse_mode=\"HTML\",\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"Записать в тех. состояние\",\n                                              callback_data=\"car_saveai:%d\" % cid)],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % cid)]]))\n                return True\n    except Exception as e:\n        log.warning(\"Помощник: %s\", e)\n\n    for rx, field in PHRASES:\n        m = rx.search(text)\n        if not m:\n            continue\n        raw = (m.group(1) or \"\").strip()\n        if not raw:\n            continue\n        if field == \"mileage_km\" and len(m.groups()) > 1 and m.group(2):\n            try:\n                if int(raw.replace(\" \", \"\")) < 1000:\n                    raw = str(int(raw.replace(\" \", \"\")) * 1000)\n            except ValueError:\n                continue\n        ok, answer = apply_value(cid, field, raw, actor_id)\n        if ok:\n            await msg.reply_text(\n                \"%s · %s\" % (number, answer),\n                reply_markup=InlineKeyboardMarkup([[\n                    InlineKeyboardButton(\"← Вернуться к карточке\",\n                                         callback_data=\"car_open:%d\" % cid)]]))\n            return True\n    return False\n"
       },
       "cars_list": {
-        "end_line": 393,
-        "line": 356,
-        "sha256": "058a155a5910fa7819f3a4d9b701b1cd98e8639493c0d8af8ad5f0eeb79395c0",
-        "source": "async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    context.user_data.pop(\"car_last\", None)\n    context.user_data.pop(\"car_voice_active\", None)\n    context.user_data.pop(\"voice_undo\", None)\n    staff = db.get_staff(q.from_user.id)\n    try:\n        cards = db.list_cards(\"cars\", limit=30)\n    except Exception as e:\n        log.warning(\"Список машин: %s\", e)\n        return\n    if not cards:\n        await q.message.reply_text(\n            \"Автомобилей пока нет. Откройте явное создание новой карточки.\",\n            reply_markup=InlineKeyboardMarkup([[\n                InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")]]))\n        raise ApplicationHandlerStop\n\n    lines = [\"<b>Автомобили</b>\", \"Нажмите на машину — откроется карточка для правки.\", \"\"]\n    rows = []\n    for card in cards:\n        card = card_of(card[\"id\"]) or card\n        nomer = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n        name = \" \".join(str(x) for x in (card.get(\"brand\"), card.get(\"model\"),\n                                         card.get(\"year\")) if x) or \"без названия\"\n        miss = S.missing_required(card)\n        sostoyanie = (\"черновик, не хватает %d\" % len(miss)) if miss else \"заполнена\"\n        etap = S.status_label(card.get(\"status\")) if card.get(\"status\") else \"этап не задан\"\n        lines.append(\"<b>%s</b> · %s\" % (nomer, name))\n        lines.append(\"   %s · %s\" % (etap, sostoyanie))\n        rows.append([InlineKeyboardButton(\"%s · %s\" % (nomer, name[:28]),\n                                          callback_data=\"car_open:%d\" % card[\"id\"])])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")])\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
+        "end_line": 444,
+        "line": 407,
+        "sha256": "df3105cbf4b63550720ba3438d7770e758dab62c8b0563304b3dd6a6f35f66c6",
+        "source": "async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    context.user_data.pop(\"car_last\", None)\n    context.user_data.pop(\"car_voice_active\", None)\n    context.user_data.pop(\"voice_undo\", None)\n    staff = db.get_staff(q.from_user.id)\n    try:\n        cards = db.list_cards(\"cars\", limit=30)\n    except Exception as e:\n        log.warning(\"Список машин: %s\", e)\n        return\n    if not cards:\n        await q.message.reply_text(\n            \"Автомобилей пока нет. Откройте явное создание новой карточки.\",\n            reply_markup=InlineKeyboardMarkup([[\n                InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")]]))\n        raise ApplicationHandlerStop\n\n    lines = [\"<b>Автомобили</b>\", \"Нажмите на машину — откроется карточка для правки.\", \"\"]\n    rows = []\n    for card in cards:\n        card = card_of(card[\"id\"]) or card\n        nomer = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n        name = \" \".join(str(x) for x in (card.get(\"brand\"), card.get(\"model\"),\n                                         card.get(\"year\")) if x) or \"без названия\"\n        miss = S.missing_required(card)\n        sostoyanie = (\"черновик, не хватает %d\" % len(miss)) if miss else \"заполнена\"\n        etap = S.status_label(card.get(\"status\")) if card.get(\"status\") else \"этап не задан\"\n        lines.append(_ua082_title_html(card))\n        lines.append(\"   %s · %s\" % (etap, sostoyanie))\n        rows.append([InlineKeyboardButton(_ua082_title_button(card),\n                                          callback_data=\"car_open:%d\" % card[\"id\"])])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")])\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
       },
       "catch_message": {
-        "end_line": 2878,
-        "line": 2571,
+        "end_line": 2929,
+        "line": 2622,
         "sha256": "152d00158bcd097f61fad4e795340f45113724217b481d56ab32f358549a4fd5",
         "source": "async def catch_message(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"CRM-VOICE-FILL-001: voice fills only the explicitly open card.\"\"\"\n    import asyncio\n    import time\n    import ai\n    import ai_fast_schema as fast\n    import ai_filter\n    import local_ocr\n\n    msg = update.effective_message\n    if not msg:\n        return\n    user_id = update.effective_user.id\n\n    wait = context.user_data.get(\"car_media_wait\")\n    if wait:\n        target = wait[\"target\"]\n        tag = \"\"\n        file_id = None\n        if msg.photo:\n            file_id = msg.photo[-1].file_id\n            if target in (\"photos\", \"condition_photos\"):\n                unique_id = getattr(msg.photo[-1], \"file_unique_id\", None) or file_id\n                _v166_result = _v165_spool_enqueue(\n                    wait[\"card_id\"], target, file_id, user_id, tag,\n                    unique_id=unique_id, message_id=msg.message_id)\n                _v166_session_ids = wait.setdefault(\"_fast_session_ids\", [])\n                state = _v166_result.get(\"state\")\n                if state == \"accepted\" and file_id not in _v166_session_ids:\n                    _v166_session_ids.append(file_id)\n                elif str(state).startswith(\"duplicate\"):\n                    wait[\"_fast_session_duplicates\"] = int(\n                        wait.get(\"_fast_session_duplicates\") or 0) + 1\n                elif state == \"limit\":\n                    wait[\"_fast_session_rejected\"] = int(\n                        wait.get(\"_fast_session_rejected\") or 0) + 1\n                _v165_schedule_progress(\n                    context, msg, wait[\"card_id\"], target, _v166_session_ids,\n                    wait.get(\"_fast_session_duplicates\", 0),\n                    wait.get(\"_fast_session_rejected\", 0))\n                raise ApplicationHandlerStop\n        elif msg.video:\n            file_id = msg.video.file_id\n            if target in (\"videos\", \"video_h\", \"video_v\"):\n                target = \"videos\"\n                slot = _orient(msg.video)\n                tag = {\"video_h\": \"гориз\", \"video_v\": \"вертик\"}.get(slot, \"\")\n        elif msg.video_note:\n            file_id = msg.video_note.file_id\n        elif msg.document:\n            file_id = msg.document.file_id\n        card = card_of(wait[\"card_id\"])\n        if not card:\n            context.user_data.pop(\"car_media_wait\", None)\n            return\n        if file_id:\n            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)\n            if answer:\n                await msg.reply_text(answer)\n            raise ApplicationHandlerStop\n        if msg.text and target == \"diag_report\":\n            pass\n        return\n\n    voice_object = msg.voice or msg.audio or msg.video_note\n    input_text = (msg.text or \"\").strip()\n    wait = context.user_data.get(\"car_wait\")\n    thinking = None\n    voice_elapsed = None\n\n    if voice_object:\n        active_id = wait.get(\"card_id\") if wait else context.user_data.get(\"car_voice_active\")\n        active_card = card_of(active_id) if active_id else None\n        if not active_card:\n            context.user_data.pop(\"car_last\", None)\n            context.user_data.pop(\"car_voice_active\", None)\n            await msg.reply_text(\n                \"Откройте нужную карточку автомобиля и повторите голосовое. \"\n                \"Новая карточка автоматически не создаётся.\"\n            )\n            raise ApplicationHandlerStop\n\n        chat_id = getattr(msg, \"chat_id\", None) or update.effective_chat.id\n        marker = \"%s:%s\" % (chat_id, msg.message_id)\n        seen = context.chat_data.get(\"crm_voice_seen\")\n        if not isinstance(seen, list):\n            seen = []\n            context.chat_data[\"crm_voice_seen\"] = seen\n        if marker in seen:\n            await msg.reply_text(\"Это голосовое уже обработано.\")\n            raise ApplicationHandlerStop\n        seen.append(marker)\n        del seen[:-20]\n        context.user_data.pop(\"voice_undo\", None)\n\n        started = time.monotonic()\n        hard_deadline = started + 4.65\n        thinking = await msg.reply_text(\"🎤 Распознаю, до 5 секунд...\")\n        if not ai.voice_enabled():\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\"Расшифровка голоса не настроена. Карточка не изменена.\")\n            raise ApplicationHandlerStop\n        try:\n            import crm_online_guard as _v168_guard\n            if not _v168_guard.circuit_allows(\"stt\"):\n                if marker in seen:\n                    seen.remove(marker)\n                await thinking.edit_text(\n                    \"Сервис распознавания восстанавливается. Карточка не изменена; повторите через 15 секунд.\")\n                raise ApplicationHandlerStop\n        except ApplicationHandlerStop:\n            raise\n        except Exception:\n            pass\n\n        if msg.voice:\n            file_id, filename = msg.voice.file_id, \"voice.ogg\"\n        elif msg.audio:\n            file_id, filename = msg.audio.file_id, \"audio.mp3\"\n        else:\n            file_id, filename = msg.video_note.file_id, \"video_note.mp4\"\n\n        async def download_voice(fid):\n            tg_file = await context.bot.get_file(fid)\n            return bytes(await tg_file.download_as_bytearray())\n\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio_bytes = await asyncio.wait_for(\n                download_voice(file_id), timeout=min(1.1, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            input_text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio_bytes, filename),\n                timeout=remaining,\n            )\n            input_text = (input_text or \"\").strip()\n        except asyncio.TimeoutError:\n            input_text = \"\"\n            log.warning(\"CRM voice timeout card=%s\", active_id)\n        except Exception as e:\n            input_text = \"\"\n            log.warning(\"CRM voice recognition failed card=%s error=%s\", active_id, e)\n        voice_elapsed = time.monotonic() - started\n        try:\n            import crm_online_guard as _v168_guard\n            _v168_guard.circuit_result(\"stt\", bool(input_text))\n            _v168_guard.record_timing(\n                \"crm_voice\", voice_elapsed, \"ok\" if input_text else \"empty\",\n                card_id=active_id)\n        except Exception:\n            pass\n        if not input_text:\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\n                \"Голос не распознан за 5 секунд. Карточка не изменена; повторите короче.\"\n            )\n            raise ApplicationHandlerStop\n\n    if not wait:\n        cid = (context.user_data.get(\"car_voice_active\") if voice_object\n               else context.user_data.get(\"car_last\"))\n        card = card_of(cid) if cid else None\n        if card and voice_object:\n            schema_allowed = set(fast.car_fields(ai_filter))\n            card = card_of(card[\"id\"]) or card\n            correction = _v168_is_correction(input_text)\n            if correction:\n                allowed = _v168_named_fields(input_text, schema_allowed)\n            else:\n                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}\n            data = {}\n            if allowed:\n                data.update(local_ocr.fields_from_text(input_text, allowed))\n                data.update(fast.fast_text_data(input_text, ai_filter))\n                if data:\n                    data = fast.clean_car(fast.parsed_from_data(data), ai_filter, \"\")\n                data = {key: value for key, value in (data or {}).items()\n                        if key in allowed and value not in (None, \"\", [])}\n                data.update(_v167_voice_explicit_fields(input_text, allowed))\n            changes, skipped = voice_change_plan(card, data, allowed, correction)\n            applied = []\n            for field, old, new in changes:\n                try:\n                    ok, reason = _v168_cas_write(\n                        card[\"id\"], field, old, new, user_id, correction)\n                    if ok:\n                        applied.append((field, old, new))\n                    elif reason in (\"filled\", \"conflict\"):\n                        skipped.append(field)\n                except Exception as e:\n                    log.warning(\"CRM voice write failed card=%s field=%s error=%s\",\n                                card[\"id\"], field, e)\n\n            number = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n            if applied:\n                token = str(msg.message_id)\n                context.user_data[\"voice_undo\"] = {\n                    \"card_id\": card[\"id\"], \"token\": token,\n                    \"changes\": [{\"field\": f, \"old\": old, \"new\": new}\n                                for f, old, new in applied],\n                }\n                value_names = {\n                    \"fwd\": \"передний\", \"rwd\": \"задний\", \"4wd\": \"полный\",\n                    \"automatic\": \"автомат\", \"manual\": \"механика\",\n                    \"gasoline\": \"бензин\", \"diesel\": \"дизель\",\n                    \"hybrid\": \"гибрид\", \"electric\": \"электро\", \"LPG\": \"газ\",\n                }\n                lines = []\n                for field, _, value in applied:\n                    shown = value_names.get(str(value), str(value))\n                    lines.append(\"• %s — %s\" % (LABELS_ALL.get(field, field), shown))\n                await thinking.edit_text(\n                    \"✅ %s дополнена:\\n%s\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\"\n                    % (number, \"\\n\".join(lines), voice_elapsed or 0.0),\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"↩️ Отменить изменение\",\n                                              callback_data=\"car_vundo:%d:%s\" % (\n                                                  card[\"id\"], token))],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % card[\"id\"])],\n                    ]),\n                )\n            elif data and skipped and not override:\n                await thinking.edit_text(\n                    \"%s: распознанные поля уже заполнены. \"\n                    \"Для замены скажите: «измени …». Новая карточка не создана.\" % number\n                )\n            elif data:\n                await thinking.edit_text(\"%s: новых значений нет. Карточка не изменена.\" % number)\n            else:\n                await thinking.edit_text(\n                    \"Не распознал поле CRM. Назовите поле и значение, например: \"\n                    \"«привод передний». Карточка не изменена.\"\n                )\n            raise ApplicationHandlerStop\n\n        if card:\n            done = await auto_catch(msg, card, user_id, context)\n            if done:\n                raise ApplicationHandlerStop\n\n    wait = context.user_data.get(\"car_wait\")\n    if wait and input_text and wait.get(\"client\"):\n        context.user_data.pop(\"car_wait\", None)\n        card = card_of(wait[\"card_id\"])\n        klient = client_of(card)\n        if klient:\n            db.update_card_field(\"clients\", klient[\"id\"], wait[\"field\"],\n                                 input_text, user_id)\n        answer = \"Записано.\"\n        if voice_object:\n            answer += \" · %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if thinking:\n            await thinking.edit_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        else:\n            await msg.reply_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        raise ApplicationHandlerStop\n\n    if wait and input_text:\n        context.user_data.pop(\"car_wait\", None)\n        field = wait[\"field\"]\n        nizhny = input_text.lower()\n        if field not in (\"price_uah\", \"condition_text\", \"diag_text\", \"diag_link\") \\\n                and (\"$\" in nizhny or \"цена\" in nizhny or \"стоимость\" in nizhny):\n            field = \"price_uah\"\n        elif field == \"eta_days\" and _re.search(r\"\\d{4,}\", nizhny):\n            field = \"price_uah\"\n        ok, answer = apply_value(wait[\"card_id\"], field, input_text, user_id)\n        card = card_of(wait[\"card_id\"])\n        if ok and field == \"price_uah\" and card:\n            remember_price(card, user_id)\n            answer = \"%s · цена этапа «%s»: %s\" % (\n                card.get(\"auto_number\") or \"\", S.status_label(card.get(\"status\")),\n                S.money(_int(card.get(\"price_uah\"))))\n        rows = [[InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % wait[\"card_id\"])]]\n        if ok and field in (\"condition_text\", \"diag_text\"):\n            zapisano = input_text\n            punktov = len([s for s in zapisano.split(\"\\n\") if s.strip()])\n            answer = (\"Описание сохранено · %d пунктов, %d знаков\\n\\n%s\"\n                      % (punktov, len(zapisano), zapisano))\n            rows.insert(0, [InlineKeyboardButton(\n                \"Изменить снова\",\n                callback_data=\"car_setf:%d:condition_text\" % wait[\"card_id\"])])\n        if voice_object:\n            answer += \"\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if not ok:\n            wait[\"field\"] = field\n            context.user_data[\"car_wait\"] = wait\n            rows.insert(0, [InlineKeyboardButton(\n                \"Отмена\", callback_data=\"car_open:%d\" % wait[\"card_id\"])])\n        if thinking:\n            await thinking.edit_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        else:\n            await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        raise ApplicationHandlerStop\n"
       },
       "client_screen": {
-        "end_line": 1390,
-        "line": 1346,
+        "end_line": 1441,
+        "line": 1397,
         "sha256": "a6e487d8458e5f7383ce715462b4e57b3f763a76281157c892e435aad7b90a8c",
         "source": "async def client_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    klient = client_of(card)\n    nomer = card.get(\"auto_number\") or \"#%d\" % cid\n\n    if not klient:\n        try:\n            client_id = db.create_card(\"clients\", {\"car_interest\": nomer},\n                                       q.from_user.id)\n            set_field(cid, \"client_id\", client_id, q.from_user.id)\n        except Exception as e:\n            log.warning(\"Не создал карточку клиента: %s\", e)\n            raise ApplicationHandlerStop\n        card = card_of(cid)\n        klient = client_of(card)\n\n    lines = [\"<b>Покупатель</b>\",\n             \"%s · %s\" % (nomer, \" \".join(str(x) for x in (card.get(\"brand\"),\n                                                           card.get(\"model\")) if x)),\n             \"\"]\n    for key, label in CLIENT_FIELDS:\n        lines.append(\"%s: %s\" % (label, klient.get(key) or \"—\"))\n    lines.append(\"\")\n    lines.append(\"<i>Эти данные видите и правите вы и менеджер. \"\n                 \"Когда клиент оформляет авто сам, они попадают сюда же.</i>\")\n\n    rows, buf = [], []\n    for key, label in CLIENT_FIELDS:\n        buf.append(InlineKeyboardButton(label, callback_data=\"car_setc:%d:%s\" % (cid, key)))\n        if len(buf) == 2:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"Отвязать покупателя\",\n                                      callback_data=\"car_unclient:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
       },
       "condition_screen": {
-        "end_line": 978,
-        "line": 930,
+        "end_line": 1029,
+        "line": 981,
         "sha256": "be9b9ebae49837399a685c0cd7e40cd5c8eee2e1750e9d929a11c20661fbb622",
         "source": "async def condition_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    import asyncio as _v168_asyncio\n    import crm_online_guard as _v168_guard\n    q = update.callback_query\n    cid = int(q.data.split(\":\")[-1])\n    token, started = await _v168_guard.safe_callback_answer(q, \"crm_condition\", cid)\n    try:\n        drop_wait(context)\n        card = card_of(cid)\n        if not card:\n            await q.message.reply_text(\"Карточка не найдена.\")\n            _v168_guard.finish_operation(token, \"missing_card\")\n            raise ApplicationHandlerStop\n        diag_opis = (card.get(\"diag_text\") or \"\").strip()\n        text = [\"<b>Комплексная диагностика</b>\", card.get(\"auto_number\") or \"\", \"\",\n                diag_opis or \"Описание пока не заполнено.\", \"\",\n                \"Фото проверки: %d из 50\" % len(jload(card.get(\"condition_photos\"))),\n                \"Видео проверки: %d из 10\" % len(jload(card.get(\"condition_videos\"))), \"\",\n                \"Ссылка OBD: %s\" % (card.get(\"diag_link\") or \"нет\")]\n        rows = [\n            [InlineKeyboardButton(\"Описание\", callback_data=\"car_setf:%d:diag_text\" % cid)],\n            [InlineKeyboardButton(\"Показать фото проверки\", callback_data=\"car_dgal:%d\" % cid),\n             InlineKeyboardButton(\"Показать видео проверки\", callback_data=\"car_dvid:%d\" % cid)],\n            [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:condition_photos\" % cid),\n             InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:condition_videos\" % cid)],\n            [InlineKeyboardButton(\"Ссылка OBD\", callback_data=\"car_setf:%d:diag_link\" % cid)],\n            [InlineKeyboardButton(\"Удалить все фото проверки\", callback_data=\"diag_ask:%d:condition_photos\" % cid)],\n            [InlineKeyboardButton(\"Удалить все видео проверки\", callback_data=\"diag_ask:%d:condition_videos\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n        ]\n        send_task = _v168_asyncio.create_task(q.message.reply_text(\n            \"\\n\".join(text), parse_mode=\"HTML\", reply_markup=InlineKeyboardMarkup(rows),\n            disable_web_page_preview=True))\n        try:\n            await _v168_asyncio.wait_for(\n                _v168_asyncio.shield(send_task), timeout=_v168_guard.remaining(started))\n            _v168_guard.finish_operation(token, \"ok\")\n        except _v168_asyncio.TimeoutError:\n            _v168_guard.finish_operation(token, \"deferred\", \"telegram_send\")\n        raise ApplicationHandlerStop\n    except ApplicationHandlerStop:\n        raise\n    except Exception as exc:\n        _v168_guard.finish_operation(token, \"error\", type(exc).__name__)\n        log.exception(\"condition route failed card=%s\", cid)\n        try:\n            await q.message.reply_text(\"Не удалось открыть диагностику. Повторите нажатие.\")\n        finally:\n            raise ApplicationHandlerStop\n"
       },
       "delete_ask": {
-        "end_line": 1509,
-        "line": 1495,
+        "end_line": 1560,
+        "line": 1546,
         "sha256": "902c7b81571c24d003140057933b668f62af30bde0109d989d83bcac385dcda2",
         "source": "async def delete_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    name = \"%s %s\" % (card.get(\"auto_number\") or \"\",\n                      \" \".join(str(x) for x in (card.get(\"brand\"),\n                                                card.get(\"model\")) if x))\n    await q.message.reply_text(\n        \"Удалить карточку %s?\\nВернуть её будет нельзя. Фото, видео и история \"\n        \"пропадут вместе с ней.\" % name.strip(),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Да, удалить\", callback_data=\"car_delok:%d\" % cid)],\n            [InlineKeyboardButton(\"← Отмена\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n"
       },
       "delete_ok": {
-        "end_line": 1532,
-        "line": 1512,
+        "end_line": 1583,
+        "line": 1563,
         "sha256": "e86958d72b882ccef78168092a2bce75822099d59a1976f52ef7a289bc992106",
         "source": "async def delete_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    nomer = card.get(\"auto_number\") if card else \"#%d\" % cid\n    try:\n        with db.connect() as c:\n            c.execute(\"DELETE FROM cars WHERE id=?\", (cid,))\n        db.log_action(q.from_user.id, \"card_delete\", \"cars\", cid, \"auto_number\",\n                      nomer, None)\n    except Exception as e:\n        log.warning(\"Не удалил карточку: %s\", e)\n        await q.message.reply_text(\"Не получилось удалить: %s\" % e)\n        raise ApplicationHandlerStop\n    context.user_data.pop(\"car_last\", None)\n    await q.message.reply_text(\n        \"Карточка %s удалена.\" % nomer,\n        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n            \"← Все автомобили\", callback_data=\"cards_cars\")]]))\n    raise ApplicationHandlerStop\n"
       },
       "diag_clear": {
-        "end_line": 577,
-        "line": 513,
+        "end_line": 628,
+        "line": 564,
         "sha256": "017e6695a0705c7d29ee93348d536aa24a1c8c35033349e89aebda3850b64d5d",
         "source": "async def diag_clear(update: Update,\n                     context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"UA-V77 — убрать все кадры проверки разом.\"\"\"\n    q = update.callback_query\n    await _v168_ack(q,)\n    try:\n        _, cid, pole = (q.data or \"\").split(\":\", 2)\n    except ValueError:\n        return\n    if pole not in (\"condition_photos\", \"condition_videos\"):\n        return\n\n    card = card_of(cid)\n    bylo = len(jload(card.get(pole))) if card else 0\n\n    # пустое значение обычным путём не пишется — идём напрямую\n    try:\n        db.update_card_field(\"cars\", int(cid), pole, \"[]\", q.from_user.id)\n    except Exception as e:\n        await q.message.reply_text(\"Не удалось убрать: %r\" % (e,))\n        raise ApplicationHandlerStop\n\n    # заодно чистим уже скачанные файлы на сайте\n    ubrano_faylov = 0\n    try:\n        import glob as _glob\n        nom = str((card or {}).get(\"auto_number\") or \"\").strip()\n        if not nom and card:\n            nom = \"UA-%04d\" % int(card[\"id\"])\n        papka = os.path.join(\"/home/Carix\", \"video\", \"diag\", nom)\n        # UA-V105 · разбираем по содержимому: ролик мог сохраниться как .jpg\n        _nuzhno_video = (pole == \"condition_videos\")\n        for _imya in sorted(os.listdir(papka)):\n            put = os.path.join(papka, _imya)\n            if not os.path.isfile(put):\n                continue\n            try:\n                with open(put, \"rb\") as _f:\n                    _b = _f.read(16)\n            except Exception:\n                continue\n            _eto_video = (_b[4:8] == b\"ftyp\")\n            if _eto_video != _nuzhno_video:\n                continue\n            try:\n                os.remove(put)\n                ubrano_faylov += 1\n                if os.path.exists(put + \".poster.jpg\"):\n                    os.remove(put + \".poster.jpg\")\n            except Exception:\n                pass\n    except Exception:\n        pass\n\n    _peresobrat_stranicy()          # UA-V103\n    chto = \"Фото\" if pole == \"condition_photos\" else \"Видео\"\n    await q.message.reply_text(\n        \"%s проверки убраны: %d.\\nНа сайте пропадут после пересборки.\"\n        % (chto, bylo),\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"← К диагностике\",\n                                 callback_data=\"car_cond:%s\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\",\n                                  callback_data=\"car_open:%s\" % cid)]]))\n    raise ApplicationHandlerStop\n"
       },
       "diag_clear_ask": {
-        "end_line": 3121,
-        "line": 3086,
+        "end_line": 3172,
+        "line": 3137,
         "sha256": "4eea63a5e892b4a9c0179ec1113f6b79517ea04f788ffdc371f590d22cf8cbd4",
         "source": "async def diag_clear_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"UA-V103 · подтверждение перед удалением материалов проверки.\n\n    Работает только с condition_photos и condition_videos — обычные фото и\n    видео машины лежат в других колонках и здесь не затрагиваются.\n    \"\"\"\n    q = update.callback_query\n    await _v168_ack(q,)\n    try:\n        _, cid, pole = (q.data or \"\").split(\":\", 2)\n    except ValueError:\n        raise ApplicationHandlerStop\n    if pole not in (\"condition_photos\", \"condition_videos\"):\n        raise ApplicationHandlerStop\n\n    card = card_of(cid)\n    skolko = len(jload(card.get(pole))) if card else 0\n    chto = \"фото\" if pole == \"condition_photos\" else \"видео\"\n\n    if not skolko:\n        await q.message.reply_text(\n            \"%s проверки и так нет.\" % chto.capitalize(),\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"\\u2190 К диагностике\", callback_data=\"car_cond:%s\" % cid)]]))\n        raise ApplicationHandlerStop\n\n    await q.message.reply_text(\n        \"Точно удалить все %s проверки (%d) у %s?\\n\\n\"\n        \"Обычные фото и видео машины останутся на месте.\"\n        % (chto, skolko, (card.get(\"auto_number\") or \"\")),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Да, удалить\",\n                                  callback_data=\"diag_clr:%s:%s\" % (cid, pole))],\n            [InlineKeyboardButton(\"Отмена\",\n                                  callback_data=\"car_cond:%s\" % cid)]]))\n    raise ApplicationHandlerStop\n"
       },
       "edit_menu": {
-        "end_line": 440,
-        "line": 422,
+        "end_line": 491,
+        "line": 473,
         "sha256": "c335c4d0a5d7ad257164dff252ab66b6b7dc80e52c06a95ff9977ccc2f4adb08",
         "source": "async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    rows, buf = [], []\n    for key, label in EDITABLE:\n        buf.append(InlineKeyboardButton(label, callback_data=\"car_setf:%d:%s\" % (cid, key)))\n        if len(buf) == 2:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\n        \"Что меняем?\\n%s\" % (card.get(\"auto_number\") or db.card_title(\"cars\", card)),\n        reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
       },
       "mark_sold": {
-        "end_line": 1479,
-        "line": 1464,
+        "end_line": 1530,
+        "line": 1515,
         "sha256": "936ea97abbb3b485f3b6c49f39f14dd2bf696dbb785f6f2f2645547ea2c446ca",
         "source": "async def mark_sold(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    klient = client_of(card)\n    rows = [[InlineKeyboardButton(\"Да, продана\", callback_data=\"car_soldok:%d\" % cid)]]\n    if not klient:\n        rows.insert(0, [InlineKeyboardButton(\"Сначала оформить за клиентом\",\n                                             callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Отмена\", callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\n        \"Отметить %s как проданную?\\nОна пропадёт из каталога, но карточка и все \"\n        \"данные останутся.\" % (card.get(\"auto_number\") or \"машину\"),\n        reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
       },
       "media_screen": {
-        "end_line": 670,
-        "line": 637,
+        "end_line": 721,
+        "line": 688,
         "sha256": "a586792ea3913e4cfa2a60ede564edcbfbffb1ad19db94bcc504ae556969ba38",
         "source": "async def media_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    photos = photos_of(card)\n    vids = videos_of(card)\n    gor = sum(1 for v in vids if v.get(\"tag\") == \"гориз\")\n    ver = sum(1 for v in vids if v.get(\"tag\") == \"вертик\")\n    text = [\"<b>Фото и видео</b>\",\n            card.get(\"auto_number\") or \"\",\n            \"\",\n            \"Фото: %d из %d\" % (len(photos), S.PHOTO_LIMIT),\n            \"Заглавная — передняя часть авто, за ней VIN и одометр.\",\n            \"\",\n            \"Видео: %d из %d\" % (len(vids), VIDEO_LIMIT)]\n    if vids:\n        text.append(\"горизонтальных %d · вертикальных %d\" % (gor, ver))\n    rows = [\n        [InlineKeyboardButton(\"Показать фото\", callback_data=\"car_gal:%d:0\" % cid),\n         InlineKeyboardButton(\"Показать видео\", callback_data=\"car_vid:%d:0\" % cid)],\n        [InlineKeyboardButton(\"Добавить фото\", callback_data=\"car_add:%d:photos\" % cid),\n         InlineKeyboardButton(\"Добавить видео\", callback_data=\"car_add:%d:videos\" % cid)],\n        # UA-V100 · удаление разом, каждое со своим подтверждением\n        [InlineKeyboardButton(\"Удалить все фото\", callback_data=\"car_rmvse:%d\" % cid),\n         InlineKeyboardButton(\"Удалить все видео\", callback_data=\"car_vidvse:%d\" % cid)],\n        [InlineKeyboardButton(\"Скрыть от клиента\", callback_data=\"car_hide:%d\" % cid)],\n        [InlineKeyboardButton(\"Исходники · архив\", callback_data=\"car_arch:%d\" % cid)],\n        [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(text), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
       },
       "photo_remove_all": {
-        "end_line": 868,
-        "line": 823,
+        "end_line": 919,
+        "line": 874,
         "sha256": "380617f38ff5f68de80d9829f8c94b8ad93b33f3d565b604e5a089d9045fb857",
         "source": "async def photo_remove_all(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Удаляем все кадры разом и убираем устаревшую страницу покупателя.\"\"\"\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    bylo = len(photos_of(card))\n\n    # UA-V142 · сначала запасная копия и файлы, база — только при успехе\n    _v142_kuda, _v142_skolko = _v142_zapas_foto(str(card.get(\"auto_number\") or \"\").upper())\n    try:\n        _ubrano_s_diska = _ubrat_fayly_foto(card.get(\"auto_number\"))   # UA-V100\n    except Exception as _e142:\n        _v142_vernut_foto(str(card.get(\"auto_number\") or \"\").upper(), _v142_kuda)\n        log.warning(\"Файлы фото не убраны, вернул из копии: %s\", _e142)\n        await q.message.reply_text(\n            \"Фото убрать не вышло — карточка осталась без изменений.\",\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"\\u2190 К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n    db.update_card_field(\"cars\", cid, \"photos\", jdump([]), q.from_user.id)\n    if card.get(\"cover_photo\"):\n        db.update_card_field(\"cars\", cid, \"cover_photo\", None, q.from_user.id)\n    try:\n        db.update_card_field(\"cars\", cid, \"hidden_photos\", jdump([]), q.from_user.id)\n    except Exception:\n        pass\n\n    # UA-V140 · страницу машины НЕ трогаем, только пересобираем\n    ubrano = \"\"\n    nomer = str(card.get(\"auto_number\") or \"\").upper()\n    if nomer:\n        try:\n            if _peresobrat_stranicy():\n                ubrano = \"\\nСтраница покупателя пересобрана.\"\n            else:\n                ubrano = \"\\nСтраницу пересобрать не вышло — она осталась прежней.\"\n        except Exception as e:\n            log.warning(\"Пересборка после удаления фото: %s\", e)\n\n    await q.message.reply_text(\n        \"Удалено фото: %d.%s\\n\\nТеперь пришлите новые кадры одним альбомом.\"\n        % (bylo, ubrano),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n"
       },
       "photo_remove_all_ask": {
-        "end_line": 820,
-        "line": 800,
+        "end_line": 871,
+        "line": 851,
         "sha256": "56677d7c3e8c63df1c650c8b3472c0924eb1a2542a19727be9f3e8173b932d00",
         "source": "async def photo_remove_all_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Спрашиваем подтверждение: удаление всех кадров не отменить.\"\"\"\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    skolko = len(photos_of(card))\n    if not skolko:\n        await q.message.reply_text(\"Фото и так нет.\")\n        raise ApplicationHandlerStop\n    await q.message.reply_text(\n        \"Удалить все %d фото у %s?\\n\\n\"\n        \"Кадры уйдут из карточки, и собранная страница покупателя тоже \"\n        \"будет убрана — иначе на сайте остались бы старые снимки.\\n\"\n        \"Загрузите новые фото и нажмите «Показать клиентам».\"\n        % (skolko, card.get(\"auto_number\") or (\"id %d\" % cid)),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Да, удалить все %d\" % skolko,\n                                  callback_data=\"car_rmvse2:%d\" % cid)],\n            [InlineKeyboardButton(\"Отмена\", callback_data=\"car_gal:%d:0\" % cid)]]))\n    raise ApplicationHandlerStop\n"
       },
       "preview": {
-        "end_line": 1816,
-        "line": 1746,
+        "end_line": 1867,
+        "line": 1797,
         "sha256": "6276e0e19f0c40ecb1ae3cc3eac2e8c5e43e860350a6e8e73eddb89087b71380",
         "source": "async def preview(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Предпросмотр карточки глазами покупателя.\"\"\"\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    await CR.send_photos(q.message, card)\n    # v21-glazami-klienta — кнопки строятся так же, как в клиентском боте\n    miss = S.missing_required(card)\n    etap = S.stage_of(card.get(\"status\"))\n    try:\n        prodana = CR.prodano(card)\n    except Exception:\n        prodana = False\n\n    knopki_klienta = []\n\n    # 1) страница покупателя — первой, и она рабочая\n    try:\n        import client_ui as _CU\n        _k = _CU.knopka_stranicy(card)\n        if _k:\n            knopki_klienta.append([_k])\n    except Exception:\n        pass\n\n    # 2) главное действие по этапу — как решает клиентский бот\n    if prodana:\n        knopki_klienta.append([InlineKeyboardButton(\"Хочу такую же под заказ\",\n                                                    callback_data=\"car_demo:%d\" % cid)])\n    elif etap >= 3:\n        knopki_klienta.append([InlineKeyboardButton(\"Забронировать за 500 $\",\n                                                    callback_data=\"car_demo:%d\" % cid)])\n    elif card.get(\"sea_container\"):\n        knopki_klienta.append([InlineKeyboardButton(\"Отследить контейнер\",\n                                                    callback_data=\"car_demo:%d\" % cid)])\n\n    knopki_klienta.append([InlineKeyboardButton(\"Задать вопрос по этой машине\",\n                                                callback_data=\"car_demo:%d\" % cid)])\n    if card.get(\"vin\"):\n        knopki_klienta.append([InlineKeyboardButton(\"Проверить VIN\",\n                                                    callback_data=\"car_demo:%d\" % cid)])\n    knopki_klienta.append([InlineKeyboardButton(\"← Все машины\",\n                                                callback_data=\"car_demo:%d\" % cid)])\n    knopki_klienta.append([InlineKeyboardButton(\"· · · это видит покупатель · · ·\",\n                                                callback_data=\"car_demo:%d\" % cid)])\n    knopki_klienta.append([InlineKeyboardButton(\"Разместить объявление\",\n                                                callback_data=\"car_ad:%d\" % cid)])\n    knopki_klienta.append([InlineKeyboardButton(\"← Вернуться к карточке\",\n                                                callback_data=\"car_open:%d\" % cid)])\n\n    await q.message.reply_text(\n        client_view(card),\n        parse_mode=\"HTML\", disable_web_page_preview=True,\n        reply_markup=InlineKeyboardMarkup(knopki_klienta))\n\n    # служебное — отдельным сообщением, вне карточки покупателя\n    if miss:\n        await q.message.reply_text(\n            \"<i>Покупателю это ещё не показать: не хватает %s</i>\" % \", \".join(miss),\n            parse_mode=\"HTML\")\n    await CR.send_videos(q.message, card)\n    try:\n        import asyncio as _aio_rem2                       # UA-REM2\n        import publikaciya as _pub_rem2                   # UA-REM2\n        _ok_rem2, _txt_rem2 = await _aio_rem2.to_thread(  # UA-REM2\n            _pub_rem2.opublikovat, card.get(\"auto_number\"))\n        await q.message.reply_text(_txt_rem2)             # UA-REM2\n    except Exception as e:\n        log.warning(\"HTML-предпросмотр: %s\", e)\n    raise ApplicationHandlerStop\n"
       },
       "price_screen": {
-        "end_line": 1140,
-        "line": 1116,
+        "end_line": 1191,
+        "line": 1167,
         "sha256": "c250c3c410ee66cb740bb457598bd7683a9e58ab1be1d6b44dde6f3e44914f98",
         "source": "async def price_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    staff = db.get_staff(q.from_user.id)\n    if not is_owner(staff):\n        await _v168_ack(q,\"Только для владельца\", show_alert=True)\n        raise ApplicationHandlerStop\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    hist = price_history(card)\n    lines = [\"<b>Цена по этапам</b>\", card.get(\"auto_number\") or \"\", \"\"]\n    for n, name in S.STAGES:\n        val = hist.get(str(n))\n        lines.append(\"%d · %s: <b>%s</b>\" % (n, name, S.money(_int(val)) if val else \"не задана\"))\n    lines.append(\"\")\n    lines.append(\"Текущая цена: <b>%s</b>\" % S.money(_int(card.get(\"price_uah\"))))\n    lines.append(\"В договоре цена фиксируется в гривне, оплата по курсу НБУ \"\n                 \"на день платежа.\")\n    rows = [[InlineKeyboardButton(\"Задать цену этапа\",\n                                  callback_data=\"car_setf:%d:price_uah\" % cid)],\n            [InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)]]\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
       },
-      "render": {
-        "end_line": 264,
-        "line": 172,
-        "sha256": "09fbb1baabdf297a24a2f4fb757464836a718edc086680f699218cacf77c97a8",
-        "source": "def render(card, staff):\n    L = []\n    L.append(\"<b>%s</b>\" % (card.get(\"auto_number\") or \"#%s\" % card.get(\"id\")))\n\n    miss = S.missing_required(card)\n    if miss:\n        L.append(\"<i>Черновик · не хватает %d полей</i>\" % len(miss))\n    else:\n        L.append(\"<i>%s · %s</i>\" % (\n            db.STATUS_LABELS.get(card.get(\"review_status\"), \"\"),\n            \"в каталоге\" if card.get(\"published\") else \"не опубликовано\"))\n\n    photos = photos_of(card)\n    vids = videos_of(card)\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(photos), S.PHOTO_LIMIT, len(vids), VIDEO_LIMIT))\n\n    L.append(\"\")\n    L.append(\"<b>ИДЕНТИФИКАЦИЯ</b>\")\n    L.append(\"Марка: <b>%s</b>\" % (card.get(\"brand\") or \"—\"))\n    L.append(\"Модель: <b>%s</b>\" % (card.get(\"model\") or \"—\"))\n    L.append(\"Год выпуска: %s\" % (card.get(\"year\") or \"—\"))\n    L.append(\"VIN: <b>%s</b>\" % (card.get(\"vin\") or \"—\"))\n    if card.get(\"vin\"):\n        ok, msg = S.check_vin(card.get(\"vin\"), _year(card))\n        L.append(\"  <i>%s</i>\" % msg)\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИКА</b>\")\n    L.append(\"Топливо: %s\" % (card.get(\"fuel\") or \"—\"))\n    L.append(\"Объём: <b>%s</b>\" % S.num(_int(card.get(\"engine_cc\")), \" см³\"))\n    L.append(\"КПП: %s\" % (card.get(\"gearbox\") or \"—\"))\n    L.append(\"Привод: %s\" % (card.get(\"drive\") or \"—\"))\n    L.append(\"Пробег: %s\" % S.num(_int(card.get(\"mileage_km\")), \" км\"))\n    L.append(\"Цвет: %s\" % (card.get(\"color\") or \"—\"))\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИЧЕСКОЕ СОСТОЯНИЕ</b>\")\n    L.append(card.get(\"condition_text\") or \"—\")\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(jload(card.get(\"condition_photos\"))), S.CONDITION_PHOTO_LIMIT,\n        len(jload(card.get(\"condition_videos\"))), S.CONDITION_VIDEO_LIMIT))\n    if card.get(\"diag_report\") or card.get(\"diag_link\"):\n        L.append(\"Диагностика: отчёт загружен\")\n        if card.get(\"diag_link\"):\n            L.append('  <a href=\"%s\">полный отчёт</a>' % card[\"diag_link\"])\n\n    L.append(\"\")\n    stage = S.stage_of(card.get(\"status\"))\n    L.append(\"<b>ЛОГИСТИКА · ЭТАП %d ИЗ 4</b>\" % (stage or 1))\n    for n, name in S.STAGES:\n        mark = \"пройден\" if n < stage else (\"сейчас\" if n == stage else \"—\")\n        L.append(\"%d. %s: <b>%s</b>\" % (n, name, mark))\n    if card.get(\"status\"):\n        L.append(\"Статус: %s\" % S.status_label(card.get(\"status\")))\n    if card.get(\"sea_container\"):\n        L.append(\"Контейнер: <b>%s</b>\" % card[\"sea_container\"])\n\n    left, eta = eta_of(card)\n    # Подпись зависит от того, где машина сейчас.\n    # На море счёт идёт до Грузии, до Киева — только когда она уже в Грузии.\n    podpis = {2: \"ДО ПОТИ/БАТУМИ\", 3: \"ДО КИЕВА\"}.get(stage)\n    if left is not None and podpis:\n        L.append(\"\")\n        L.append(\"🚚 <b>%s: %d дней</b>\" % (podpis, left))\n        L.append(\"ориентировочно %s%s\" % (\n            eta.strftime(\"%d.%m.%Y\"),\n            \" · задано вручную\" if card.get(\"eta_manual\") else \"\"))\n\n    klient = client_of(card)\n    if klient:\n        L.append(\"\")\n        L.append(\"<b>ПОКУПАТЕЛЬ</b>\")\n        L.append(\"Имя: %s\" % (klient.get(\"name\") or \"—\"))\n        L.append(\"Телефон: %s\" % (klient.get(\"phone\") or \"—\"))\n        if klient.get(\"telegram\"):\n            L.append(\"Telegram: %s\" % klient[\"telegram\"])\n        if klient.get(\"prepayment\"):\n            L.append(\"Предоплата: %s\" % klient[\"prepayment\"])\n        if klient.get(\"wishes\"):\n            L.append(\"Заметка: %s\" % klient[\"wishes\"])\n\n    if is_owner(staff):\n        L.extend(CR.owner_money(card))\n        if price_stale(card):\n            L.append(\"⚠️ <b>Цена на этом этапе ещё не обновлена</b>\")\n\n    if miss:\n        L.append(\"\")\n        L.append(\"<b>НЕ ХВАТАЕТ</b>\")\n        L.append(\", \".join(miss))\n\n    return \"\\n\".join(L)\n"
-      },
       "save_ai_text": {
-        "end_line": 1158,
-        "line": 1143,
+        "end_line": 1209,
+        "line": 1194,
         "sha256": "1c96cbf98e6a06f7fe24d1905f862ed16948f2ad2b325180e9e15b6558dc9f29",
         "source": "async def save_ai_text(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Записывает последний ответ помощника в описание состояния.\"\"\"\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    otvet = context.user_data.get(\"ai_otvet\")\n    if not otvet:\n        await q.message.reply_text(\"Текст потерялся — попросите заново.\")\n        raise ApplicationHandlerStop\n    set_field(cid, \"condition_text\", otvet.strip(), q.from_user.id)\n    card = card_of(cid)\n    await q.message.reply_text(\n        \"%s · описание записано.\" % (card.get(\"auto_number\") or \"\"),\n        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n            \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n"
       },
       "save_media": {
-        "end_line": 3450,
-        "line": 3428,
+        "end_line": 3501,
+        "line": 3479,
         "sha256": "9ee384e3c44128ecd152f1f8aa440e7416e5ea4d837504c1d85aa07c379ccda9",
         "source": "def save_media(card, target, file_id, actor_id, tag=\"\"):\n    otvet = _v152_save_media(card, target, file_id, actor_id, tag)\n    cel = \"videos\" if target in (\"video_h\", \"video_v\") else target\n    vid = _V152_VID.get(cel)\n    otkaz = otvet and any(word in str(otvet).casefold() for word in (\n        \"слишком большое\", \"не принят\", \"не проверен\", \"достигнут предел\"))\n    if vid and not otkaz:\n        with db.connect() as con:\n            est = con.execute(\"SELECT id FROM media WHERE car_id=? AND vid=? AND file_id=?\",\n                              (card[\"id\"], vid, file_id)).fetchone()\n            if not est:\n                nomer = con.execute(\n                    \"SELECT COALESCE(MAX(poryadok),0)+1 FROM media WHERE car_id=? AND vid=?\",\n                    (card[\"id\"], vid)).fetchone()[0]\n                con.execute(\n                    \"INSERT INTO media (car_id, auto_number, vid, file_id, status, tag,\"\n                    \" poryadok, kogda, kto, primechanie) VALUES (?,?,?,?,'pending',?,?,?,?,?)\",\n                    (card[\"id\"], str(card.get(\"auto_number\") or \"\"), vid, file_id, tag,\n                     nomer, _t140.strftime(\"%Y-%m-%dT%H:%M:%S\"), str(actor_id),\n                     \"принят ботом, ждёт скачивания\"))\n                _v140_zapis(\"media: заведена запись %s %s pending\"\n                            % (card.get(\"auto_number\"), vid))\n    return otvet\n"
       },
       "stage_menu": {
-        "end_line": 1042,
-        "line": 987,
+        "end_line": 1093,
+        "line": 1038,
         "sha256": "3631b4e6480dc96d0885a031201f78b28eac76d3ac09ce6172bf518a8dce0c24",
         "source": "async def stage_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    import asyncio as _v168_asyncio\n    import crm_online_guard as _v168_guard\n    q = update.callback_query\n    cid = int(q.data.split(\":\")[-1])\n    token, started = await _v168_guard.safe_callback_answer(q, \"crm_delivery\", cid)\n    try:\n        drop_wait(context)\n        card = card_of(cid)\n        if not card:\n            await q.message.reply_text(\"Карточка не найдена.\")\n            _v168_guard.finish_operation(token, \"missing_card\")\n            raise ApplicationHandlerStop\n        stage = S.stage_of(card.get(\"status\")) or 1\n        lines = [\"🚚 Доставка и этапы\", card.get(\"auto_number\") or \"#%d\" % cid, \"\",\n                 \"Сейчас: %s\" % S.status_label(card.get(\"status\")),\n                 \"Этап %d из 4: %s\" % (stage, dict(S.STAGES).get(stage, \"—\"))]\n        if card.get(\"sea_container\"):\n            lines.append(\"Контейнер: %s\" % card[\"sea_container\"])\n        if card.get(\"sea_date_out\"):\n            lines.append(\"Дата отправления: %s\" % str(card[\"sea_date_out\"])[:10])\n        left, eta = eta_of(card)\n        if stage >= 4:\n            lines.append(\"Выдача: автомобиль в Киеве\")\n        elif left is not None:\n            lines.append(\"До выдачи в Киеве: %d дней · %s\" % (left, eta.strftime(\"%d.%m.%Y\")))\n        else:\n            lines.append(\"Срок: уточняется\")\n        rows = []\n        for number, _name in S.STAGES:\n            pair = [InlineKeyboardButton(\n                (\"• \" if card.get(\"status\") == code else \"\") + label,\n                callback_data=\"car_setstage:%d:%s\" % (cid, code))\n                for code, (stage_no, label) in S.STATUSES.items() if stage_no == number]\n            for index in range(0, len(pair), 2):\n                rows.append(pair[index:index + 2])\n        rows.append([InlineKeyboardButton(\"📦 Контейнер, даты и сроки\", callback_data=\"cont_menu:%d\" % cid)])\n        rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])\n        send_task = _v168_asyncio.create_task(q.message.reply_text(\n            \"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows)))\n        try:\n            await _v168_asyncio.wait_for(\n                _v168_asyncio.shield(send_task), timeout=_v168_guard.remaining(started))\n            _v168_guard.finish_operation(token, \"ok\")\n        except _v168_asyncio.TimeoutError:\n            _v168_guard.finish_operation(token, \"deferred\", \"telegram_send\")\n        raise ApplicationHandlerStop\n    except ApplicationHandlerStop:\n        raise\n    except Exception as exc:\n        _v168_guard.finish_operation(token, \"error\", type(exc).__name__)\n        log.exception(\"delivery route failed card=%s\", cid)\n        try:\n            await q.message.reply_text(\"Не удалось открыть доставку. Повторите нажатие.\")\n        finally:\n            raise ApplicationHandlerStop\n"
       },
       "stage_set": {
-        "end_line": 1109,
-        "line": 1052,
+        "end_line": 1160,
+        "line": 1103,
         "sha256": "9f0a885100cb9fe62815fabefc6b6e1d649d99e348568e9b0893c7d6f106987f",
         "source": "async def stage_set(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    _, cid, code = q.data.split(\":\")\n    cid = int(cid)\n    card_before = card_of(cid)\n    set_field(cid, \"status\", code, q.from_user.id)\n\n    if code == \"ge_waiting\" and not card_before.get(\"ge_arrived\"):\n        set_field(cid, \"ge_arrived\", _date.today().isoformat(), q.from_user.id)\n    if code == \"ge_to_kyiv\":\n        released = card_before.get(\"ge_released\")\n        if not released:\n            released = _date.today().isoformat()\n            set_field(cid, \"ge_released\", released, q.from_user.id)\n        # A deliberate manual date is immutable here.  The 15-day default is\n        # initialized only when no manual ETA has ever been saved.\n        if not card_before.get(\"eta_manual\"):\n            try:\n                base = _dt.strptime(str(released)[:10], \"%Y-%m-%d\").date()\n            except Exception:\n                base = _date.today()\n            eta = base + _td(days=DNEI_GRUZIA_UKRAINA)\n            try:\n                db.update_card_field(\"cars\", cid, \"eta_manual\",\n                                     eta.isoformat(), q.from_user.id)\n                db.update_card_field(\"cars\", cid, \"days_to_kyiv\",\n                                     DNEI_GRUZIA_UKRAINA, q.from_user.id)\n            except Exception as exc:\n                log.warning(\"не смог поставить срок до Украины: %s\", exc)\n\n    card = card_of(cid)\n    saved = card.get(\"status\")\n    if saved != code:\n        await q.message.reply_text(\n            \"Не удалось сохранить этап. Сейчас в карточке: %s\"\n            % S.status_label(saved),\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n\n    lines = [\n        card.get(\"auto_number\") or \"#%d\" % cid,\n        \"Этап сохранён: %s\" % S.status_label(saved),\n    ]\n    left, eta = eta_of(card)\n    if left is not None:\n        lines.append(\"До выдачи в Киеве: %d дней · %s\" % (\n            left, eta.strftime(\"%d.%m.%Y\")))\n    rows = [\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\",\n                              callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                              callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
       },
       "toggle_publish": {
-        "end_line": 1461,
-        "line": 1427,
+        "end_line": 1512,
+        "line": 1478,
         "sha256": "e84fa97d435143231e7055b8dfcd75c349fd766631130b04145e2d9fa79a22cc",
         "source": "async def toggle_publish(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    novoe = 0 if card.get(\"published\") else 1\n\n    if novoe:\n        miss = S.missing_required(card)\n        if miss:\n            await q.message.reply_text(\n                \"Для показа клиентам не хватает: %s\" % \", \".join(miss),\n                reply_markup=InlineKeyboardMarkup([\n                    [InlineKeyboardButton(\"Дозаполнить\",\n                                          callback_data=\"car_edit:%d\" % cid)],\n                    [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                          callback_data=\"car_open:%d\" % cid)]]))\n            raise ApplicationHandlerStop\n\n    db.update_card_field(\"cars\", cid, \"published\", novoe, q.from_user.id)\n    if novoe:                                                    # v19\n        try:                                                     # v19\n            import asyncio as _aio_rem2                       # UA-REM2\n            import publikaciya as _pub_rem2                   # UA-REM2\n            _ok_rem2, _txt_rem2 = await _aio_rem2.to_thread(  # UA-REM2\n                _pub_rem2.opublikovat, card.get(\"auto_number\"))\n            await q.message.reply_text(_txt_rem2)             # UA-REM2\n        except Exception as _e:                                  # v19\n            log.warning(\"Страница при публикации: %s\", _e)       # v19\n    await q.message.reply_text(\n        \"Машина видна клиентам в каталоге.\" if novoe\n        else \"Машина скрыта от клиентов.\",\n        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n            \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n"
       },
       "video_remove_all": {
-        "end_line": 3030,
-        "line": 2986,
+        "end_line": 3081,
+        "line": 3037,
         "sha256": "43f3392aba311294fce6fd4ccd9cbc359f0a9cf6444c82eb27059fe5736eff61",
         "source": "async def video_remove_all(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Чистим колонку videos, файлы с диска и пересобираем страницы.\"\"\"\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    bylo = len(videos_of(card))\n    _v140_bylo = (card.get(\"videos\"), card.get(\"video_h\"), card.get(\"video_v\"))\n\n    db.update_card_field(\"cars\", cid, \"videos\", jdump([]), q.from_user.id)\n    for pole in (\"video_h\", \"video_v\"):\n        try:\n            db.update_card_field(\"cars\", cid, pole, None, q.from_user.id)\n        except Exception:\n            pass\n\n    # UA-V104 · доводим до конца и честно говорим об этапе сбоя\n    ubrano, _sboi = _ubrat_video_polno(card.get(\"auto_number\"))\n    if _sboi:\n        try:  # UA-V140 · файловая часть не удалась — возвращаем записи в базу\n            for _pole, _znach in ((\"videos\", _v140_bylo[0]),\n                                  (\"video_h\", _v140_bylo[1]),\n                                  (\"video_v\", _v140_bylo[2])):\n                db.update_card_field(\"cars\", cid, _pole, _znach, q.from_user.id)\n        except Exception as _e140:\n            log.warning(\"Откат видео не удался: %s\", _e140)\n        await q.message.reply_text(\n            \"Видео убрать полностью не вышло, записи возвращены как были:\\n\\u2022 %s\\n\\n\"\n            \"На сайте они могли остаться — проверьте карточку.\"\n            % \"\\n\\u2022 \".join(_sboi),\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"\\u2190 К карточке\", callback_data=\"car_open:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n\n    await q.message.reply_text(\n        \"Удалено видео: %d. Файлов с сайта убрано: %d.\\n\"\n        \"Фото и материалы диагностики не тронуты.\\n\\n\"\n        \"Теперь можно прислать новые ролики кнопкой «Добавить видео».\"\n        % (bylo, ubrano),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"\\u2190 Фото и видео\",\n                                  callback_data=\"car_media:%d\" % cid)],\n            [InlineKeyboardButton(\"\\u2190 К карточке\",\n                                  callback_data=\"car_open:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n"
       },
       "video_remove_all_ask": {
-        "end_line": 2983,
-        "line": 2962,
+        "end_line": 3034,
+        "line": 3013,
         "sha256": "dd2e70cd3b0815b84d42c996683f97a86bf1ff8a6dc649dcfbae2e1078635001",
         "source": "async def video_remove_all_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Спрашиваем подтверждение — удаление всех роликов не отменить.\"\"\"\n    q = update.callback_query\n    await _v168_ack(q,)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    skolko = len(videos_of(card))\n    if not skolko:\n        await q.message.reply_text(\n            \"Видео и так нет.\",\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"\\u2190 Назад\", callback_data=\"car_media:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n    await q.message.reply_text(\n        \"Точно удалить все видео (%d) у %s?\\n\\n\"\n        \"Фотографии и материалы комплексной диагностики останутся на месте.\"\n        % (skolko, card.get(\"auto_number\") or \"\"),\n        reply_markup=InlineKeyboardMarkup([\n            [InlineKeyboardButton(\"Да, удалить\",\n                                  callback_data=\"car_vidvseok:%d\" % cid)],\n            [InlineKeyboardButton(\"Отмена\", callback_data=\"car_media:%d\" % cid)]]))\n    raise ApplicationHandlerStop\n"
       },
       "voice_undo": {
-        "end_line": 2215,
-        "line": 2175,
+        "end_line": 2266,
+        "line": 2226,
         "sha256": "77910d3484d0892231988260b6a3905daab78bc87daed336533eb01b85e97f5e",
         "source": "async def voice_undo(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Undo only the latest matching voice fill and never create a card.\"\"\"\n    q = update.callback_query\n    try:\n        _, cid_raw, token = q.data.split(\":\", 2)\n        cid = int(cid_raw)\n    except Exception:\n        await _v168_ack(q,\"Некорректная команда\", show_alert=True)\n        raise ApplicationHandlerStop\n\n    saved = context.user_data.get(\"voice_undo\") or {}\n    if saved.get(\"card_id\") != cid or str(saved.get(\"token\")) != token:\n        await _v168_ack(q,\"Это изменение уже недоступно\", show_alert=True)\n        raise ApplicationHandlerStop\n\n    card = card_of(cid)\n    if not card:\n        context.user_data.pop(\"voice_undo\", None)\n        await _v168_ack(q,\"Карточка не найдена\", show_alert=True)\n        raise ApplicationHandlerStop\n\n    restored = []\n    for change in saved.get(\"changes\") or []:\n        field = change.get(\"field\")\n        current = card.get(field)\n        if str(current or \"\") != str(change.get(\"new\") or \"\"):\n            continue\n        db.update_card_field(\"cars\", cid, field, change.get(\"old\"), q.from_user.id)\n        restored.append(LABELS_ALL.get(field, field))\n    context.user_data.pop(\"voice_undo\", None)\n    if restored:\n        await _v168_ack(q,\"Изменение отменено\")\n        await q.message.reply_text(\n            \"↩️ %s: восстановлено — %s\" % (\n                card.get(\"auto_number\") or \"#%d\" % cid, \", \".join(restored)),\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]])\n        )\n    else:\n        await _v168_ack(q,\"Поля уже менялись позже — отмена не выполнена\", show_alert=True)\n    raise ApplicationHandlerStop\n"
       }
@@ -259,631 +259,667 @@
         "sha256": "385fa2a2b56d818b6fa18e9b1cf11ea909562b45dec601804b0e867333095ebe"
       },
       {
-        "end_line": 264,
-        "line": 172,
-        "name": "render",
-        "sha256": "09fbb1baabdf297a24a2f4fb757464836a718edc086680f699218cacf77c97a8"
+        "end_line": 174,
+        "line": 173,
+        "name": "_ua082_clean",
+        "sha256": "f92e8fce95c809a79896df8f63311134ebc1a4b03a897c0e83e8590c26f57575"
       },
       {
-        "end_line": 276,
-        "line": 267,
+        "end_line": 183,
+        "line": 177,
+        "name": "_ua082_vin4",
+        "sha256": "77327b5795b501754d88b89253e7756b9fcd7b85c6688a7c0d0d4191b889e4a8"
+      },
+      {
+        "end_line": 194,
+        "line": 186,
+        "name": "_ua082_title_parts",
+        "sha256": "12d5fdd38982bb4a6d9a419d9259ddade4bef8fabf84b67d9ffa7de47c37962b"
+      },
+      {
+        "end_line": 199,
+        "line": 197,
+        "name": "_ua082_title_plain",
+        "sha256": "98ba769162278eb52c4bc800eda86612a73da246962c359cb0ba56d425c56d70"
+      },
+      {
+        "end_line": 209,
+        "line": 202,
+        "name": "_ua082_title_html",
+        "sha256": "b194f238c20aa0b4f833dcf7455bed92dfff723166ee0c6bf7aeda58fe8cbf16"
+      },
+      {
+        "end_line": 220,
+        "line": 212,
+        "name": "_ua082_title_button",
+        "sha256": "4dbc7cc97ad64514090649e592d299a219ed3986a247abb9748c6106495c061c"
+      },
+      {
+        "end_line": 315,
+        "line": 223,
+        "name": "render",
+        "sha256": "1246f876de2a56811d42afd9be4b675d7ba0e6cc36685f932f094cf55bc95eb2"
+      },
+      {
+        "end_line": 327,
+        "line": 318,
         "name": "eta_of",
         "sha256": "986b7d53970c7fa5a929a6a2b7cfa52656d6ed8206fec89db1d8f1613d1235af"
       },
       {
-        "end_line": 283,
-        "line": 279,
+        "end_line": 334,
+        "line": 330,
         "name": "_int",
         "sha256": "cffa08efad95dab805ceb2dbeca6c33819d4173e6dac71f85f153759082b5e12"
       },
       {
-        "end_line": 290,
-        "line": 286,
+        "end_line": 341,
+        "line": 337,
         "name": "_year",
         "sha256": "93cca982fe3d4961d140022c6f46633a7e6041514c9859afaae578e501f61508"
       },
       {
-        "end_line": 321,
-        "line": 295,
+        "end_line": 372,
+        "line": 346,
         "name": "card_kb",
         "sha256": "40f5d4456e691645f91b2a1f2aea9244adc3faceffc78e81f8742249217b9b70"
       },
       {
-        "end_line": 346,
-        "line": 328,
+        "end_line": 397,
+        "line": 379,
         "name": "open_card",
         "sha256": "d3e814f9c763bc9b9a3719ca5a109e04cacbae72b450315c8a37cc6c19af0ffa"
       },
       {
-        "end_line": 393,
-        "line": 356,
+        "end_line": 444,
+        "line": 407,
         "name": "cars_list",
-        "sha256": "058a155a5910fa7819f3a4d9b701b1cd98e8639493c0d8af8ad5f0eeb79395c0"
+        "sha256": "df3105cbf4b63550720ba3438d7770e758dab62c8b0563304b3dd6a6f35f66c6"
       },
       {
-        "end_line": 440,
-        "line": 422,
+        "end_line": 491,
+        "line": 473,
         "name": "edit_menu",
         "sha256": "c335c4d0a5d7ad257164dff252ab66b6b7dc80e52c06a95ff9977ccc2f4adb08"
       },
       {
-        "end_line": 474,
-        "line": 443,
+        "end_line": 525,
+        "line": 494,
         "name": "edit_ask",
         "sha256": "492c45404438b6c363d0f14391997d73150234c20293ad9f1eef03e977ceef14"
       },
       {
-        "end_line": 510,
-        "line": 477,
+        "end_line": 561,
+        "line": 528,
         "name": "clear_field",
         "sha256": "3590b1c3df8697dab432f26f8527f3922cafee0e099a4e96a43f0134d9b7ba92"
       },
       {
-        "end_line": 577,
-        "line": 513,
+        "end_line": 628,
+        "line": 564,
         "name": "diag_clear",
         "sha256": "017e6695a0705c7d29ee93348d536aa24a1c8c35033349e89aebda3850b64d5d"
       },
       {
-        "end_line": 630,
-        "line": 580,
+        "end_line": 681,
+        "line": 631,
         "name": "apply_value",
         "sha256": "2d6db7d9b36cbff2635e2012f95d232dfd9be3b757f82540e0df43bfa9a77133"
       },
       {
-        "end_line": 670,
-        "line": 637,
+        "end_line": 721,
+        "line": 688,
         "name": "media_screen",
         "sha256": "a586792ea3913e4cfa2a60ede564edcbfbffb1ad19db94bcc504ae556969ba38"
       },
       {
-        "end_line": 705,
-        "line": 673,
+        "end_line": 756,
+        "line": 724,
         "name": "video_gallery",
         "sha256": "6e30c4a187a1cbc885d793c141c96a8a84509042e918db6ce112bf45d72a75b7"
       },
       {
-        "end_line": 746,
-        "line": 708,
+        "end_line": 797,
+        "line": 759,
         "name": "gallery",
         "sha256": "d0ebcd0f42253d1a56439176ed3cb21f5f2d3a9ba9427aee23a94ef1c87c55d5"
       },
       {
-        "end_line": 775,
-        "line": 749,
+        "end_line": 826,
+        "line": 800,
         "name": "photo_remove_menu",
         "sha256": "1999239896ede275e51facb9a6a2884ca32cdf5f9aeb43f7392aae71efec8ce7"
       },
       {
-        "end_line": 797,
-        "line": 778,
+        "end_line": 848,
+        "line": 829,
         "name": "photo_remove",
         "sha256": "cec351ec3f6df6a152480b60061ab4df9da0e1167fba0f7e5d8e5533c534ec00"
       },
       {
-        "end_line": 820,
-        "line": 800,
+        "end_line": 871,
+        "line": 851,
         "name": "photo_remove_all_ask",
         "sha256": "56677d7c3e8c63df1c650c8b3472c0924eb1a2542a19727be9f3e8173b932d00"
       },
       {
-        "end_line": 868,
-        "line": 823,
+        "end_line": 919,
+        "line": 874,
         "name": "photo_remove_all",
         "sha256": "380617f38ff5f68de80d9829f8c94b8ad93b33f3d565b604e5a089d9045fb857"
       },
       {
-        "end_line": 893,
-        "line": 882,
+        "end_line": 944,
+        "line": 933,
         "name": "add_media_start",
         "sha256": "b5893783f82b1140ad69b5fa7631e39417419bd4d5319df1d55516663052750a"
       },
       {
-        "end_line": 922,
-        "line": 896,
+        "end_line": 973,
+        "line": 947,
         "name": "_save_media_bazovoe",
         "sha256": "e9045a6b0f65d8be73a764c51f95e82f9953a8dddba4865f663285bb06b9e431"
       },
       {
-        "end_line": 978,
-        "line": 930,
+        "end_line": 1029,
+        "line": 981,
         "name": "condition_screen",
         "sha256": "be9b9ebae49837399a685c0cd7e40cd5c8eee2e1750e9d929a11c20661fbb622"
       },
       {
-        "end_line": 1042,
-        "line": 987,
+        "end_line": 1093,
+        "line": 1038,
         "name": "stage_menu",
         "sha256": "3631b4e6480dc96d0885a031201f78b28eac76d3ac09ce6172bf518a8dce0c24"
       },
       {
-        "end_line": 1109,
-        "line": 1052,
+        "end_line": 1160,
+        "line": 1103,
         "name": "stage_set",
         "sha256": "9f0a885100cb9fe62815fabefc6b6e1d649d99e348568e9b0893c7d6f106987f"
       },
       {
-        "end_line": 1140,
-        "line": 1116,
+        "end_line": 1191,
+        "line": 1167,
         "name": "price_screen",
         "sha256": "c250c3c410ee66cb740bb457598bd7683a9e58ab1be1d6b44dde6f3e44914f98"
       },
       {
-        "end_line": 1158,
-        "line": 1143,
+        "end_line": 1209,
+        "line": 1194,
         "name": "save_ai_text",
         "sha256": "1c96cbf98e6a06f7fe24d1905f862ed16948f2ad2b325180e9e15b6558dc9f29"
       },
       {
-        "end_line": 1173,
-        "line": 1161,
+        "end_line": 1224,
+        "line": 1212,
         "name": "keep_price",
         "sha256": "a59f82e1316dfff27440a21e27806ecb10e40f9fda5cbd7b279c1831a1c7a313"
       },
       {
-        "end_line": 1181,
-        "line": 1176,
+        "end_line": 1232,
+        "line": 1227,
         "name": "remember_price",
         "sha256": "47820cb8c39396babe707a5abad8c9f980423f7ad2e2664ec09d1896f52cd003"
       },
       {
-        "end_line": 1215,
-        "line": 1208,
+        "end_line": 1266,
+        "line": 1259,
         "name": "_orient",
         "sha256": "8ad22aeed03d540d879b5e3ebcd7df6d5153da7db86bdba4b10c731375f1df0f"
       },
       {
-        "end_line": 1317,
-        "line": 1218,
+        "end_line": 1368,
+        "line": 1269,
         "name": "auto_catch",
         "sha256": "eb285e823ad69e55ec1a5d3995450c45ee767de0316e50ac9fad80850b16287b"
       },
       {
-        "end_line": 1343,
-        "line": 1335,
+        "end_line": 1394,
+        "line": 1386,
         "name": "client_of",
         "sha256": "7091ee70117777ab824fe25c602c10c77da2c3a5dc0a34b19dfe2e00a7c2f119"
       },
       {
-        "end_line": 1390,
-        "line": 1346,
+        "end_line": 1441,
+        "line": 1397,
         "name": "client_screen",
         "sha256": "a6e487d8458e5f7383ce715462b4e57b3f763a76281157c892e435aad7b90a8c"
       },
       {
-        "end_line": 1408,
-        "line": 1393,
+        "end_line": 1459,
+        "line": 1444,
         "name": "client_ask",
         "sha256": "1561362165307657dd4f75a3e7228656a33a204901e2ab020e1d04cc4a4455f5"
       },
       {
-        "end_line": 1420,
-        "line": 1411,
+        "end_line": 1471,
+        "line": 1462,
         "name": "client_unlink",
         "sha256": "b7db68fb0d9fbb0dd8d70e54e3bd4d017c26d8880d4c6eca30fd6e9fdf1e3cd3"
       },
       {
-        "end_line": 1461,
-        "line": 1427,
+        "end_line": 1512,
+        "line": 1478,
         "name": "toggle_publish",
         "sha256": "e84fa97d435143231e7055b8dfcd75c349fd766631130b04145e2d9fa79a22cc"
       },
       {
-        "end_line": 1479,
-        "line": 1464,
+        "end_line": 1530,
+        "line": 1515,
         "name": "mark_sold",
         "sha256": "936ea97abbb3b485f3b6c49f39f14dd2bf696dbb785f6f2f2645547ea2c446ca"
       },
       {
-        "end_line": 1492,
-        "line": 1482,
+        "end_line": 1543,
+        "line": 1533,
         "name": "mark_sold_ok",
         "sha256": "5363fde241b0f5ee296dc0aefb08aa5659da754b8701c2ae2e44130ddf02ff4d"
       },
       {
-        "end_line": 1509,
-        "line": 1495,
+        "end_line": 1560,
+        "line": 1546,
         "name": "delete_ask",
         "sha256": "902c7b81571c24d003140057933b668f62af30bde0109d989d83bcac385dcda2"
       },
       {
-        "end_line": 1532,
-        "line": 1512,
+        "end_line": 1583,
+        "line": 1563,
         "name": "delete_ok",
         "sha256": "e86958d72b882ccef78168092a2bce75822099d59a1976f52ef7a289bc992106"
       },
       {
-        "end_line": 1555,
-        "line": 1541,
+        "end_line": 1606,
+        "line": 1592,
         "name": "stats_line",
         "sha256": "79e9f5ca9af19c84c19a8b8ce147b226a3170355237a5274e523fdae8ae31990"
       },
       {
-        "end_line": 1572,
-        "line": 1558,
+        "end_line": 1623,
+        "line": 1609,
         "name": "ai_warning",
         "sha256": "866c73ae7d198a5a0659be2804d18ebbe0fb7222adb4522245957e14365bcdb5"
       },
       {
-        "end_line": 1585,
-        "line": 1575,
+        "end_line": 1636,
+        "line": 1626,
         "name": "menu_header",
         "sha256": "f7ddfeedf59cc137dffc513d3f27f20c30447d88a3afbbf892fbebdae9f91d46"
       },
       {
-        "end_line": 1620,
-        "line": 1595,
+        "end_line": 1671,
+        "line": 1646,
         "name": "with_stats_button",
         "sha256": "5678f0bebb0942f1a55ef7a53293a2dd8d55e58cc7e40ecd93aaddb37d2bd3b1"
       },
       {
-        "end_line": 1638,
-        "line": 1623,
+        "end_line": 1689,
+        "line": 1674,
         "name": "more_screen",
         "sha256": "f09be8b78ce8424359d03e1afa3ac713d2e95b99a1f592ee8fe4f4360fd4bba5"
       },
       {
-        "end_line": 1668,
-        "line": 1641,
+        "end_line": 1719,
+        "line": 1692,
         "name": "clients_screen",
         "sha256": "42b2b9df45e083e423e5a04301a09e23ec081f922e67c782b97617c597e4d0a1"
       },
       {
-        "end_line": 1699,
-        "line": 1671,
+        "end_line": 1750,
+        "line": 1722,
         "name": "crm_leads",
         "sha256": "5d678409c1b3898b6cca6a8d67f2c5235b85673a9b3049f1a67d55e566325577"
       },
       {
-        "end_line": 1716,
-        "line": 1702,
+        "end_line": 1767,
+        "line": 1753,
         "name": "crm_stats",
         "sha256": "d4c910ee9acb7d0199e186501f9e140e22c2eccaad160024a7925e67bc39d01e"
       },
       {
-        "end_line": 1732,
-        "line": 1719,
+        "end_line": 1783,
+        "line": 1770,
         "name": "crm_stats_week",
         "sha256": "1789914d02237d7641dfee284352825f3b63ef0dd59feb0858def926dd2ccde7"
       },
       {
-        "end_line": 1743,
-        "line": 1741,
+        "end_line": 1794,
+        "line": 1792,
         "name": "client_view",
         "sha256": "327989181a902db959e22fcfde7e5f13f341215ba427cc7f72800a1e09d9fdfe"
       },
       {
-        "end_line": 1816,
-        "line": 1746,
+        "end_line": 1867,
+        "line": 1797,
         "name": "preview",
         "sha256": "6276e0e19f0c40ecb1ae3cc3eac2e8c5e43e860350a6e8e73eddb89087b71380"
       },
       {
-        "end_line": 1824,
-        "line": 1819,
+        "end_line": 1875,
+        "line": 1870,
         "name": "preview_demo",
         "sha256": "a05de18f3de2421b83ab2a136bc83621669e9096760e135fdd5732922ee15d3e"
       },
       {
-        "end_line": 1866,
-        "line": 1827,
+        "end_line": 1917,
+        "line": 1878,
         "name": "ad_text",
         "sha256": "a7c3a64b9009812ac7149d098669eac6e91f0ec30055b8deb2f1a8240a3d3dd7"
       },
       {
-        "end_line": 1899,
-        "line": 1869,
+        "end_line": 1950,
+        "line": 1920,
         "name": "ad_screen",
         "sha256": "abcc6fdf56af95a0caa7c4ada8cbaa3ff50e4294db2517c5251245591c28ff31"
       },
       {
-        "end_line": 1986,
-        "line": 1908,
+        "end_line": 2037,
+        "line": 1959,
         "name": "collect_svodka",
         "sha256": "25be331a0a4b0888a527faaf2b8d34216c7de8dd57fed25610401ea24c01d2aa"
       },
       {
-        "end_line": 2023,
-        "line": 1989,
+        "end_line": 2074,
+        "line": 2040,
         "name": "optimize_screen",
         "sha256": "93fb5afd9349c94b0211dd4b280c88a56a50fb70b5004d93ffa214882baf5f1a"
       },
       {
-        "end_line": 2035,
-        "line": 2026,
+        "end_line": 2086,
+        "line": 2077,
         "name": "svodka_screen",
         "sha256": "9c11240aa63d3e99a017db10a9f5a74e302383102f1f99351b12266143d78d9c"
       },
       {
-        "end_line": 2044,
-        "line": 2043,
+        "end_line": 2095,
+        "line": 2094,
         "name": "_v168_empty",
         "sha256": "815268921e7064a5832bcdcaf62810db86ecba5b4d0e4bea458226cf0a4cc27a"
       },
       {
-        "end_line": 2052,
-        "line": 2047,
+        "end_line": 2103,
+        "line": 2098,
         "name": "_v168_is_correction",
         "sha256": "879909d12036df9d08f8028362877507e137b7aafa17bb4bb9ef0537be5defad"
       },
       {
-        "end_line": 2075,
-        "line": 2055,
+        "end_line": 2126,
+        "line": 2106,
         "name": "_v168_named_fields",
         "sha256": "7c2242a40eedf9b0456c89c14383f0eea847e5b1be82cbea742072d69d7878e7"
       },
       {
-        "end_line": 2111,
-        "line": 2078,
+        "end_line": 2162,
+        "line": 2129,
         "name": "_v168_cas_write",
         "sha256": "1c6b4a285cb821847621ed16ac215cbbff9130006babfc01f739880eca04bf8a"
       },
       {
-        "end_line": 2119,
-        "line": 2114,
+        "end_line": 2170,
+        "line": 2165,
         "name": "_v168_guard_heartbeat",
         "sha256": "6664c129eec84f61721c41c00642341c5c87434c3d80973c3dca09c9a6220545"
       },
       {
-        "end_line": 2141,
-        "line": 2122,
+        "end_line": 2192,
+        "line": 2173,
         "name": "_v168_ack",
         "sha256": "02969d807a6e3a06643e81126b7d8222a303dbc37a40e16e23268b5db14be8af"
       },
       {
-        "end_line": 2156,
-        "line": 2144,
+        "end_line": 2207,
+        "line": 2195,
         "name": "_v168_start_guard",
         "sha256": "00f76e48381e51009d97e4dabe6eae7357ca46433d667dcd4a9f5ecc7d36edc9"
       },
       {
-        "end_line": 2173,
-        "line": 2159,
+        "end_line": 2224,
+        "line": 2210,
         "name": "voice_change_plan",
         "sha256": "fa9e5c4a440314d4fac07d091f3044a73201606e74d7c952b739e5f87d0a427a"
       },
       {
-        "end_line": 2215,
-        "line": 2175,
+        "end_line": 2266,
+        "line": 2226,
         "name": "voice_undo",
         "sha256": "77910d3484d0892231988260b6a3905daab78bc87daed336533eb01b85e97f5e"
       },
       {
-        "end_line": 2232,
-        "line": 2225,
+        "end_line": 2283,
+        "line": 2276,
         "name": "_v165_key",
         "sha256": "43501b279c485d9935b299825e160693a11ac8959d2ce58dc14c1d7ae5459e13"
       },
       {
-        "end_line": 2238,
-        "line": 2236,
+        "end_line": 2289,
+        "line": 2287,
         "name": "_v165_limit",
         "sha256": "19e3c6bd1978dc2273cbee03c72839b121dbec04021b007c82ab0ae9e338a816"
       },
       {
-        "end_line": 2264,
-        "line": 2241,
+        "end_line": 2315,
+        "line": 2292,
         "name": "_v165_read_rows",
         "sha256": "ba021a9d53ca858203ae1a05ce06aad9031fa17ac56054ee2d94f9c2daa4716c"
       },
       {
-        "end_line": 2328,
-        "line": 2267,
+        "end_line": 2379,
+        "line": 2318,
         "name": "_v165_spool_enqueue",
         "sha256": "1ab2c8da3adec70313b0ae469b371a9cd4bea74b6e8b3150f078dc8a243bda5f"
       },
       {
-        "end_line": 2370,
-        "line": 2332,
+        "end_line": 2421,
+        "line": 2383,
         "name": "_v165_spool_remove",
         "sha256": "42324f0f2481d3594bbf2f4f68273500f56c0d26fa4782df6d42f5cb1daccecd"
       },
       {
-        "end_line": 2400,
-        "line": 2373,
+        "end_line": 2451,
+        "line": 2424,
         "name": "_v166_drain_owned",
         "sha256": "41950d68f07cabaf46f331f433b16b3733b9d86c7e6439d6a9aa2dc16e43e802"
       },
       {
-        "end_line": 2417,
-        "line": 2404,
+        "end_line": 2468,
+        "line": 2455,
         "name": "_v165_spool_drain",
         "sha256": "2651e4bf2963b462d5d0423d479d26b4d8327632a335ad101d8ddce6ee79dc9a"
       },
       {
-        "end_line": 2434,
-        "line": 2421,
+        "end_line": 2485,
+        "line": 2472,
         "name": "_v165_media_ids",
         "sha256": "6ffd41e7fc5abb2ac9bc24aa9d3cca0de84ffb7cd51bb0fe18263aa33c3fad8a"
       },
       {
-        "end_line": 2450,
-        "line": 2437,
+        "end_line": 2501,
+        "line": 2488,
         "name": "_v165_status",
         "sha256": "31ae5127f812760b144e60037ea8608c77786412d947d304c4845ca183d554a3"
       },
       {
-        "end_line": 2457,
-        "line": 2455,
+        "end_line": 2508,
+        "line": 2506,
         "name": "media_spool_worker_job",
         "sha256": "948e255c37e859d2a8396cb48c85134785177b0eff2a429ae1c8392797f95c36"
       },
       {
-        "end_line": 2485,
-        "line": 2460,
+        "end_line": 2536,
+        "line": 2511,
         "name": "_v165_progress_job",
         "sha256": "13065f3937fc676c35519ac39a031e3ff7d370b6780af9bac6235e55fabaa15b"
       },
       {
-        "end_line": 2504,
-        "line": 2490,
+        "end_line": 2555,
+        "line": 2541,
         "name": "_v165_schedule_progress",
         "sha256": "9629cf1c3c215e1bbdaea24de7153ac3016246245e566ebed1f7596445c1f063"
       },
       {
-        "end_line": 2567,
-        "line": 2510,
+        "end_line": 2618,
+        "line": 2561,
         "name": "_v167_voice_explicit_fields",
         "sha256": "085d60a8fc7aaa798eb4a42bd35991fd93a71ac9b68c38a19dd90875c03e014b"
       },
       {
-        "end_line": 2878,
-        "line": 2571,
+        "end_line": 2929,
+        "line": 2622,
         "name": "catch_message",
         "sha256": "152d00158bcd097f61fad4e795340f45113724217b481d56ab32f358549a4fd5"
       },
       {
-        "end_line": 2696,
-        "line": 2694,
+        "end_line": 2747,
+        "line": 2745,
         "name": "download_voice",
         "sha256": "259898e6783792a0491739594ce48871bfcf1dc8504e7290575b5b728400f1a9"
       },
       {
-        "end_line": 2908,
-        "line": 2893,
+        "end_line": 2959,
+        "line": 2944,
         "name": "_ubrat_fayly_foto",
         "sha256": "be21babad4c216a0cd4c81cfbe075f98382eb186368aaf2bc2751fbe233c7bd4"
       },
       {
-        "end_line": 2942,
-        "line": 2911,
+        "end_line": 2993,
+        "line": 2962,
         "name": "_ubrat_fayly_video",
         "sha256": "1f6525b5ea63a6ab6040ed5011f9af962c52a920058ef49385fe7309963821bf"
       },
       {
-        "end_line": 2959,
-        "line": 2945,
+        "end_line": 3010,
+        "line": 2996,
         "name": "_peresobrat_stranicy",
         "sha256": "19ec0c4e8136870410e2bb1693fa22abf3d616202468afa7e40fbf3e9d34bc0d"
       },
       {
-        "end_line": 2983,
-        "line": 2962,
+        "end_line": 3034,
+        "line": 3013,
         "name": "video_remove_all_ask",
         "sha256": "dd2e70cd3b0815b84d42c996683f97a86bf1ff8a6dc649dcfbae2e1078635001"
       },
       {
-        "end_line": 3030,
-        "line": 2986,
+        "end_line": 3081,
+        "line": 3037,
         "name": "video_remove_all",
         "sha256": "43f3392aba311294fce6fd4ccd9cbc359f0a9cf6444c82eb27059fe5736eff61"
       },
       {
-        "end_line": 3056,
-        "line": 3033,
+        "end_line": 3107,
+        "line": 3084,
         "name": "diag_photo_show",
         "sha256": "ee7d40f62e8bb4b0952e54e20cab7517f6684c547772d4d4d857e8e93d7a8dca"
       },
       {
-        "end_line": 3082,
-        "line": 3059,
+        "end_line": 3133,
+        "line": 3110,
         "name": "diag_video_show",
         "sha256": "ef3494fbca7c021d4f39f471d21375d80be91db499297fcc2c083f1924f95e1f"
       },
       {
-        "end_line": 3121,
-        "line": 3086,
+        "end_line": 3172,
+        "line": 3137,
         "name": "diag_clear_ask",
         "sha256": "4eea63a5e892b4a9c0179ec1113f6b79517ea04f788ffdc371f590d22cf8cbd4"
       },
       {
-        "end_line": 3182,
-        "line": 3125,
+        "end_line": 3233,
+        "line": 3176,
         "name": "_ubrat_video_polno",
         "sha256": "591f92699f6a806aebb77153aeb41458c345748940db006bc1fcb70816c6bc0a"
       },
       {
-        "end_line": 3252,
-        "line": 3184,
+        "end_line": 3303,
+        "line": 3235,
         "name": "register",
         "sha256": "c43aa645da40b01814a03c2c857177062b720cd09415093b9b17fe8fae25e7de"
       },
       {
-        "end_line": 3277,
-        "line": 3272,
+        "end_line": 3328,
+        "line": 3323,
         "name": "_v140_zapis",
         "sha256": "c6d19a10eb0810d60c2167a59ec3c14ccc913d38e0e8f913d7f7fb21c1204931"
       },
       {
-        "end_line": 3300,
-        "line": 3280,
+        "end_line": 3351,
+        "line": 3331,
         "name": "_v140_sprosit",
         "sha256": "654a6e94fb626e4413c64f4205d9f842554d871bd62e9c4abb015f8b61527bda"
       },
       {
-        "end_line": 3340,
-        "line": 3303,
+        "end_line": 3391,
+        "line": 3354,
         "name": "_save_media_proverka",
         "sha256": "c08913131f6bd86b70d3a9032cf5bdb64c6e7f16996d2a94e4125ff630ae0413"
       },
       {
-        "end_line": 3356,
-        "line": 3352,
+        "end_line": 3407,
+        "line": 3403,
         "name": "_v142_papka",
         "sha256": "a50251916c35cfe6484d7bfff4316f8381c541c00ec8b3ad34cbd614e69ddb0f"
       },
       {
-        "end_line": 3367,
-        "line": 3359,
+        "end_line": 3418,
+        "line": 3410,
         "name": "_v142_kopirovat",
         "sha256": "ac0974575b17d1ab3f0052a3d01fa7fb6e42e5b6cb1a0db7bb3ed67186680272"
       },
       {
-        "end_line": 3384,
-        "line": 3370,
+        "end_line": 3435,
+        "line": 3421,
         "name": "_v142_vernut",
         "sha256": "6d404898518f2f29441b9025bd3c652822c028db491e84544e7973c916d7f59e"
       },
       {
-        "end_line": 3393,
-        "line": 3387,
+        "end_line": 3444,
+        "line": 3438,
         "name": "_v142_zapas_video",
         "sha256": "82ca525fcdcc44ff2235ee94786b054c1809157b1804c0ce6eacce4288d383b3"
       },
       {
-        "end_line": 3399,
-        "line": 3396,
+        "end_line": 3450,
+        "line": 3447,
         "name": "_v142_zapas_foto",
         "sha256": "67fa19c31c08f30c4d199dde07794eb352972502d493512e4758c462318a9bd8"
       },
       {
-        "end_line": 3403,
-        "line": 3402,
+        "end_line": 3454,
+        "line": 3453,
         "name": "_v142_vernut_foto",
         "sha256": "8c2e7c1f2781de383610ddd066322e41f310726d4e572faa705bf0832a0ceba7"
       },
       {
-        "end_line": 3417,
-        "line": 3409,
+        "end_line": 3468,
+        "line": 3460,
         "name": "_ubrat_video_polno",
         "sha256": "d5fc3d220695b4a8954c9843d909b95384017298b9280affc3fc081db0c3d595"
       },
       {
-        "end_line": 3450,
-        "line": 3428,
+        "end_line": 3501,
+        "line": 3479,
         "name": "save_media",
         "sha256": "9ee384e3c44128ecd152f1f8aa440e7416e5ea4d837504c1d85aa07c379ccda9"
       },
       {
-        "end_line": 3474,
-        "line": 3455,
+        "end_line": 3525,
+        "line": 3506,
         "name": "_v159_ne_tot_tip",
         "sha256": "b16e4885224165158dac0727d83a2e0f8ed378b41623f2b1c24c9fa9a8804e34"
       },
       {
-        "end_line": 3512,
-        "line": 3483,
+        "end_line": 3563,
+        "line": 3534,
         "name": "_v163_status",
         "sha256": "832e78bcdbfb3cf68d2d0a6b92baf42093504b4d3ea3d5aa89cbf86049ea44d7"
       },
       {
-        "end_line": 3522,
-        "line": 3515,
+        "end_line": 3573,
+        "line": 3566,
         "name": "_ubrat_video_polno",
         "sha256": "7434f9fc4072e6000ab0f92336f8e7d9a98b8f54b9a8eba0768136a2c3527422"
       }
     ],
-    "sha256": "50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306"
+    "sha256": "cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea"
   },
   "contract": "CRM-VIN4-TITLE-001-V1.0",
   "db": {
@@ -1047,7 +1083,7 @@
         "photo_count": 35,
         "published": true,
         "stage": null,
-        "status": "kr_bought",
+        "status": "sea_loaded",
         "vin4": "4289",
         "vin_present": true,
         "vin_valid": true,
@@ -1086,10 +1122,47 @@
     ],
     "count": 13,
     "quick_check": "ok",
-    "sha256": "0101eba634bfd997f4df143999bb2a41a4e478eec539370148bbfc6c2b90b5db"
+    "sha256": "9212cda6916692ce32cd6c4b1688f74363594bff9c4ae16c863b7a4e2c86a6a9",
+    "ua0011_status_audit": [
+      {
+        "action": "card_edit",
+        "created_at": "2026-08-29T07:36:51",
+        "field": "status",
+        "new_value": "kr_bought",
+        "old_value": "sea_loaded"
+      },
+      {
+        "action": "card_edit",
+        "created_at": "2026-08-29T01:48:51",
+        "field": "status",
+        "new_value": "sea_loaded",
+        "old_value": "sea_transit"
+      },
+      {
+        "action": "card_edit",
+        "created_at": "2026-08-29T01:48:21",
+        "field": "status",
+        "new_value": "sea_transit",
+        "old_value": "sea_loaded"
+      },
+      {
+        "action": "card_edit",
+        "created_at": "2026-08-29T01:48:08",
+        "field": "status",
+        "new_value": "sea_loaded",
+        "old_value": "sea_loaded"
+      },
+      {
+        "action": "card_edit",
+        "created_at": "2026-08-28T20:58:25",
+        "field": "status",
+        "new_value": "sea_loaded",
+        "old_value": null
+      }
+    ]
   },
   "errors": [],
-  "generated_at_utc": "2026-08-29T07:46:57Z",
+  "generated_at_utc": "2026-08-29T07:54:31Z",
   "http_methods": [
     "GET"
   ],
