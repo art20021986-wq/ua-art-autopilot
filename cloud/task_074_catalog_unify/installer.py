@@ -232,12 +232,21 @@ def catalog_blocks(source: str) -> list[str]:
 
 
 def ferry_status_present(source: str) -> bool:
-    decoded = re.sub(r"\s+", " ", html_lib.unescape(source).casefold().replace("\u00a0", " "))
-    # Production variants place the route either in the pill itself or in a
-    # sibling element.  The duplicate lower sentence does not contain the word
-    # "Маршрут", so requiring all four terms still proves that the upper route
-    # indication remains present without depending on one HTML tag shape.
-    return all(term in decoded for term in ("на пароме", "маршрут", "корея", "грузия"))
+    articles = re.findall(
+        r'<article\b(?=[^>]*data-stage=["\']sea["\'])[^>]*>.*?</article\s*>',
+        source, flags=re.I | re.S,
+    )
+    for article in articles:
+        # Only inspect content before the lower canonical VIN/ETA block, so
+        # the duplicate sentence itself can never satisfy this guard.
+        upper = article.split(CAT_START, 1)[0]
+        visible = re.sub(
+            r"\s+", " ",
+            html_lib.unescape(upper).casefold().replace("\u00a0", " "),
+        )
+        if "на пароме" in visible:
+            return True
+    return False
 
 
 def validate_catalog(source: str) -> dict[str, Any]:
@@ -258,9 +267,9 @@ def validate_catalog(source: str) -> dict[str, Any]:
         raise Blocked("CATALOG_DUPLICATE_CARD_BLOCK")
     if "UA-0009" not in identifiers:
         raise Blocked("CATALOG_UA0009_MISSING")
-    # The upper stage pill remains the only ferry/route indication.
+    # The upper stage pill remains the only required ferry indication.
     if not ferry_status_present(source):
-        raise Blocked("CATALOG_ROUTE_STATUS_MISSING")
+        raise Blocked("CATALOG_UPPER_FERRY_STATUS_MISSING")
     return {"card_count": len(identifiers), "identifiers": identifiers}
 
 
