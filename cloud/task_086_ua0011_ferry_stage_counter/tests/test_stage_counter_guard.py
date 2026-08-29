@@ -64,6 +64,27 @@ def modern_catalog(canonical_target=True, chip_more=1):
 
 
 class StageCounterGuardTests(unittest.TestCase):
+    def test_normalize_catalog_uses_fresh_rows_and_rewrites_chips(self):
+        source = "".join([
+            "<button class='chip' data-f='all'>Все <b>99</b></button>",
+            "<button class='chip' data-f='korea'>Корея <b>99</b></button>",
+            "<button class='chip' data-f='sea'>Паром <b>99</b></button>",
+            "<button class='chip' data-f='georgia'>Грузия <b>99</b></button>",
+            "<button class='chip' data-f='kiev'>Киев <b>99</b></button>",
+            "<article class='catalog-card'><a href='UA-0001.html'><img src='1.jpg'></a></article>",
+            "<article class='catalog-card'><a href='UA-0011.html'><img src='11.jpg'></a></article>",
+        ])
+        rows = [
+            {"auto_number": "UA-0001", "status": "kr_bought", "published": 1},
+            {"auto_number": "UA-0011", "status": "sea_loaded", "published": 1},
+        ]
+        candidate = guard.normalize_catalog_from_rows(source, rows)
+        self.assertEqual(guard.verify_catalog(candidate, "UA-0011", "more"), {
+            "all": 2, "korea": 1, "more": 1, "gruzia": 0, "kiev": 0,
+        })
+        self.assertIn('data-stage="korea"', candidate)
+        self.assertIn('data-stage="sea"', candidate)
+
     def test_stage_mapping_and_legacy_destination(self):
         self.assertEqual(guard.public_bucket("kr_bought"), "korea")
         self.assertEqual(guard.public_bucket("sea_loaded"), "more")
