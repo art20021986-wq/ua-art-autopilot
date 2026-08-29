@@ -141,11 +141,20 @@ def sanitized_ua0013(db_path: pathlib.Path) -> dict:
         rows = conn.execute(
             "SELECT * FROM cars WHERE auto_number=? ORDER BY id", ("UA-0013",)
         ).fetchall()
+        published_rows = conn.execute(
+            "SELECT auto_number, status, published FROM cars "
+            "WHERE published=1 ORDER BY auto_number"
+        ).fetchall()
         columns = {row[1] for row in conn.execute("PRAGMA table_info(cars)")}
     finally:
         conn.close()
     if len(rows) != 1:
-        return {"quick_check": quick, "row_count": len(rows), "error": "UA0013_NOT_UNIQUE"}
+        return {
+            "quick_check": quick,
+            "row_count": len(rows),
+            "published_rows": [dict(item) for item in published_rows],
+            "error": "UA0013_NOT_UNIQUE",
+        }
     row = rows[0]
     safe_fields = (
         "id",
@@ -174,7 +183,12 @@ def sanitized_ua0013(db_path: pathlib.Path) -> dict:
             else:
                 size = len(str(value).encode("utf-8"))
             safe[name + "_bytes"] = size
-    return {"quick_check": quick, "row_count": 1, "row": safe}
+    return {
+        "quick_check": quick,
+        "row_count": 1,
+        "row": safe,
+        "published_rows": [dict(item) for item in published_rows],
+    }
 
 
 def expected_stage(row: dict) -> dict:
@@ -195,6 +209,15 @@ def expected_stage(row: dict) -> dict:
 def public_record(api: ReadOnlyAPI, path: str) -> dict:
     status, body, final_url = api.get(PUBLIC_ORIGIN + path, authenticated=False, limit=5_000_000)
     text = body.decode("utf-8", "replace")
+    href_ids = re.findall(
+        r"href=[\"'](?:[^\"']*/)?(UA-[0-9]{4,})\.html(?:[?#][^\"']*)?[\"']",
+        text,
+        re.I,
+    )
+    href_counts = {}
+    for identifier in href_ids:
+        identifier = identifier.upper()
+        href_counts[identifier] = href_counts.get(identifier, 0) + 1
     return {
         "status": status,
         "final_url": final_url,
@@ -208,6 +231,9 @@ def public_record(api: ReadOnlyAPI, path: str) -> dict:
         ),
         "contains_sea_loaded": "sea_loaded" in text,
         "contains_more_category": bool(re.search(r"(?:data-category|category)[^>]{0,80}more", text, re.I)),
+        "ua_href_counts": href_counts,
+        "exact_ua0013_identity": "UA-0013" in text.upper()
+        and final_url.rstrip("/").endswith("/UA-0013.html"),
     }
 
 
@@ -225,6 +251,7 @@ def main() -> int:
         "database": {},
         "derived_stage": {},
         "public": {},
+        "publication_gap": {},
         "defects": {},
         "errors": [],
     }
@@ -253,6 +280,23 @@ def main() -> int:
         for path in PUBLIC_PATHS:
             report["public"][path] = public_record(api, path)
 
+        catalog_counts = report["public"]["/video/katalog.html"].get("ua_href_counts") or {}
+        published_rows = report["database"].get("published_rows") or []
+        published_numbers = [
+            str(item.get("auto_number") or "").upper()
+            for item in published_rows
+            if re.fullmatch(r"UA-[0-9]{4,}", str(item.get("auto_number") or "").upper())
+        ]
+        report["publication_gap"] = {
+            "published_numbers": published_numbers,
+            "catalog_href_counts": catalog_counts,
+            "missing_published_numbers": [
+                number for number in published_numbers if catalog_counts.get(number, 0) != 1
+            ],
+            "published_count": len(published_numbers),
+            "catalog_unique_count": len(catalog_counts),
+        }
+
         toggle = next(
             (r["source"] for r in report["functions"].get("cars_ui.py", []) if r["name"] == "toggle_publish"),
             "",
@@ -278,6 +322,8 @@ def main() -> int:
             report["errors"].append("UA0013_ROW_NOT_UNIQUE")
         if report["derived_stage"].get("status") != "sea_loaded":
             report["errors"].append("UA0013_STAGE_NOT_SEA_LOADED")
+        if "UA-0013" not in report["publication_gap"].get("missing_published_numbers", []):
+            report["errors"].append("UA0013_PUBLICATION_GAP_NOT_REPRODUCED")
         if not report["defects"].get("toggle_ignores_publisher_result"):
             report["errors"].append("FALSE_SUCCESS_DEFECT_NOT_REPRODUCED")
         if report["defects"].get("seo_live_diag_precheck_modules") != 3:
