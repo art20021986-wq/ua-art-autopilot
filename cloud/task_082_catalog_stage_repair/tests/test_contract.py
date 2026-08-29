@@ -101,6 +101,39 @@ class ContractTests(unittest.TestCase):
                 runtime.enforce_live_catalog("UA-0011")
             self.assertEqual(before, (root / "video/katalog.html").read_bytes())
 
+    def test_status_normalization_changes_only_status_and_rolls_back(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.fixture(root)
+            con = sqlite3.connect(root / "crm.db")
+            con.row_factory = sqlite3.Row
+            con.execute("UPDATE cars SET status='kr_bought' WHERE auto_number='UA-0011'")
+            con.commit()
+            before = dict(con.execute(
+                "SELECT * FROM cars WHERE auto_number='UA-0011'").fetchone())
+            con.close()
+            previous_root = installer.ROOT
+            try:
+                installer.ROOT = root
+                value = installer.normalize_ua0011_status()
+                self.assertTrue(value["changed"])
+                self.assertEqual(value["before_status"], "kr_bought")
+                self.assertEqual(value["after_status"], "sea_loaded")
+                self.assertEqual(value["fields_changed"], ["status"])
+                again = installer.normalize_ua0011_status()
+                self.assertFalse(again["changed"])
+                restored = installer.restore_ua0011_status(value)
+                self.assertTrue(restored["changed"])
+                self.assertEqual(restored["status"], "kr_bought")
+            finally:
+                installer.ROOT = previous_root
+            con = sqlite3.connect(root / "crm.db")
+            con.row_factory = sqlite3.Row
+            after = dict(con.execute(
+                "SELECT * FROM cars WHERE auto_number='UA-0011'").fetchone())
+            con.close()
+            self.assertEqual(before, after)
+
     def test_publisher_wrapper_checks_tuple_success(self):
         sample = """def opublikovat(kod, proba=False):
     if proba:
