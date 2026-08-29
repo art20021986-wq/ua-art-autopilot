@@ -213,14 +213,22 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 def public_catalog_check() -> dict:
     result = {}
-    opener = urllib.request.build_opener(NoRedirect)
     for root in ("video", "site"):
         url = "https://www.uaart.com.ua/%s/katalog.html?task074=%d" % (root, int(time.time()))
         request = urllib.request.Request(url, headers={"User-Agent": "ua-art-task074-public/1", "Cache-Control": "no-cache"})
-        with opener.open(request, timeout=60) as response:
+        # Production canonically redirects www.uaart.com.ua to uaart.com.ua.
+        # Follow it, but accept only HTTPS, the two owned hosts and the exact
+        # requested catalog path; a foreign host/path remains a hard failure.
+        with urllib.request.urlopen(request, timeout=60) as response:
             status = response.status
             source = response.read(MAX_BYTES + 1).decode("utf-8")
             final_url = response.geturl()
+        final = urllib.parse.urlsplit(final_url)
+        safe_canonical_url = (
+            final.scheme == "https"
+            and final.hostname in {"www.uaart.com.ua", "uaart.com.ua"}
+            and final.path == "/%s/katalog.html" % root
+        )
         cat_start = "<!-- UA-ART-CATALOG-VIN-V1:START -->"
         cat_end = "<!-- UA-ART-CATALOG-VIN-V1:END -->"
         status_preserved = False
@@ -239,7 +247,7 @@ def public_catalog_check() -> dict:
             cursor = marker + len(cat_start)
         checks = {
             "http_200": status == 200,
-            "no_redirect": final_url.startswith("https://www.uaart.com.ua/%s/katalog.html" % root),
+            "safe_canonical_url": safe_canonical_url,
             "style_once": source.count("UA-CATALOG-CARD-UNIFY-002-V1.0") == 1,
             "no_ru_duplicate": "Автомобиль на пароме: Корея → Грузия." not in source,
             "no_uk_duplicate": "Автомобіль на поромі: Корея → Грузія." not in source,
