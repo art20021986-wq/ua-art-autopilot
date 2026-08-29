@@ -41,6 +41,39 @@ def _ua9_sobrat_katalog():
     assert "publish_one" in first and "rebuild_catalog" in first
 
 
+def test_publisher_wrapper_canonicalizes_diagnostic_section():
+    original = (
+        "<html><body>" + "x" * 5200
+        + '<a class="mcf-diag-cta" href="UA-0012-diag.html">'
+          '<b>Открыть комплексную диагностику →</b></a>'
+        + '<a class="dejstvie kn_kupit" href="#">Задаток 500 $</a>'
+        + "</body></html>"
+    )
+    namespace = {
+        "_UA9_BASE_PUBLISH": lambda kod, proba=False: (True, kod),
+        "_master": lambda kod: (original, "diag", {"auto_number": kod}),
+    }
+    exec(installer.publisher_wrapper(), namespace)
+    html, diag, row = namespace["_master"]("UA-0012")
+    assert diag == "diag" and row["auto_number"] == "UA-0012"
+    assert html.count("UA-0012-diag.html") == 1
+    assert html.count("Комплексная диагностика") == 1
+    assert html.count("data-ua-task083-diagnostics=\"1\"") == 1
+
+    wrong = original.replace("UA-0012-diag.html", "UA-0013-diag.html")
+    namespace = {
+        "_UA9_BASE_PUBLISH": lambda kod, proba=False: (True, kod),
+        "_master": lambda kod: (wrong, "diag", {"auto_number": kod}),
+    }
+    exec(installer.publisher_wrapper(), namespace)
+    try:
+        namespace["_master"]("UA-0012")
+    except RuntimeError as exc:
+        assert "TASK083_WRONG_DIAGNOSTIC_LINK" in str(exc)
+    else:
+        raise AssertionError("wrong diagnostic target was not rejected")
+
+
 def test_cars_ui_patch_is_idempotent_and_single_result():
     source = """
 class ApplicationHandlerStop(Exception): pass
@@ -59,25 +92,6 @@ def register(app):
     assert "_ua083_restore_publish_preimage" in wrapper
     for field in ("published", "status", "publish_pending"):
         assert field in wrapper
-
-
-def test_master_card_patch_repairs_case_sensitive_diagnostics_contract():
-    source = '''
-def diag_anchor():
-    return "<b>Открыть комплексную диагностику →</b>"
-
-def proverit(html):
-    return [] if "Комплексная диагностика" in html else ["missing diagnostics"]
-'''
-    first = installer.patch_master_card(source)
-    second = installer.patch_master_card(first)
-    assert first == second
-    assert installer.DIAG_LEGACY not in first
-    assert first.count(installer.DIAG_CONTRACT) == 1
-    assert first.count(installer.MASTER_START) == 1
-    namespace = {}
-    exec(first, namespace)
-    assert namespace["proverit"](namespace["diag_anchor"]()) == []
 
 
 def test_stage_and_catalog_contract():
