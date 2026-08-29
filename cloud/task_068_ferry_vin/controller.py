@@ -258,10 +258,11 @@ def validate_install(value: dict) -> None:
         if value.get(key) is not False:
             raise ControllerError("INSTALL_WRITE_SCOPE_INVALID:" + key)
     ids = value.get("card_ids")
-    if not isinstance(ids, list) or len(ids) != 10 or len(set(ids)) != 10 or "UA-0009" not in ids:
+    if (not isinstance(ids, list) or len(ids) < 10 or len(set(ids)) != len(ids)
+            or not {"UA-0009", "UA-0010"}.issubset(ids)):
         raise ControllerError("INSTALL_CARD_SET_INVALID")
     cards = value.get("cards")
-    if not isinstance(cards, list) or len(cards) != 10:
+    if not isinstance(cards, list) or len(cards) != len(ids):
         raise ControllerError("INSTALL_CARD_RESULTS_INVALID")
     for card in cards:
         if card.get("id") not in ids or card.get("stage") not in (1, 2, 3, 4):
@@ -307,7 +308,7 @@ def validate_postcheck(value: dict) -> None:
         raise ControllerError("POSTCHECK_FAILED:" + ";".join(value.get("errors", [])))
     if value.get("read_only") is not True or value.get("crm_write") is not False or value.get("media_write") is not False:
         raise ControllerError("POSTCHECK_SCOPE_INVALID")
-    if value.get("card_count") != 10:
+    if not isinstance(value.get("card_count"), int) or value.get("card_count") < 10:
         raise ControllerError("POSTCHECK_CARD_COUNT_INVALID")
     distribution = value.get("stage_distribution") or {}
     if set(distribution) != {"1", "2", "3", "4"} or any(number <= 0 for number in distribution.values()):
