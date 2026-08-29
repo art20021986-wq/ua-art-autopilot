@@ -11,6 +11,7 @@ import argparse
 import datetime as dt
 import fcntl
 import hashlib
+import html as html_lib
 import json
 import os
 import pathlib
@@ -230,6 +231,18 @@ def catalog_blocks(source: str) -> list[str]:
     return re.findall(re.escape(CAT_START) + r".*?" + re.escape(CAT_END), source, re.S)
 
 
+def ferry_status_present(source: str) -> bool:
+    nodes = re.findall(
+        r'<div\b[^>]*class=["\'][^"\']*\bstatus-pill\b[^"\']*["\'][^>]*>.*?</div\s*>',
+        source, flags=re.I | re.S,
+    )
+    for node in nodes:
+        visible = html_lib.unescape(re.sub(r"<[^>]+>", " ", node))
+        if all(term in visible for term in ("На пароме", "Маршрут", "Корея", "Грузия")):
+            return True
+    return False
+
+
 def validate_catalog(source: str) -> dict[str, Any]:
     if source.count(STYLE_MARKER) != 1:
         raise Blocked("CATALOG_STYLE_MARKER_COUNT")
@@ -249,9 +262,7 @@ def validate_catalog(source: str) -> dict[str, Any]:
     if "UA-0009" not in identifiers:
         raise Blocked("CATALOG_UA0009_MISSING")
     # The upper stage pill remains the only ferry/route indication.
-    if not re.search(r'class=["\'][^"\']*status-pill[^"\']*["\'][^>]*data-ru=["\'][^"\']*На пароме', source, re.I):
-        raise Blocked("CATALOG_FERRY_STATUS_PILL_MISSING")
-    if "Маршрут: Корея → Грузия" not in source:
+    if not ferry_status_present(source):
         raise Blocked("CATALOG_ROUTE_STATUS_MISSING")
     return {"card_count": len(identifiers), "identifiers": identifiers}
 
@@ -293,7 +304,7 @@ def catalog_snapshot() -> dict[str, dict[str, Any]]:
             "canonical_blocks": len(catalog_blocks(source)),
             "canonical_identifiers": identifiers,
             "ua0009": "UA-0009" in source,
-            "ferry_status": "На пароме" in source and "Маршрут: Корея → Грузия" in source,
+            "ferry_status": ferry_status_present(source),
         }
     return result
 
