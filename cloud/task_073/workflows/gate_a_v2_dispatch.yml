@@ -1,0 +1,46 @@
+name: TASK073 Gate A V2 (GET-only, real credentials)
+
+on:
+  workflow_dispatch: {}
+  push:
+    paths:
+      - "cloud/task_073/workflows/gate_a_v2_dispatch.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  gate-a-v2:
+    runs-on: ubuntu-latest
+    environment: production-readonly
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile all TASK 073 python files
+        run: |
+          python -m py_compile $(find cloud/task_073 -name "*.py")
+
+      - name: Run offline unit tests
+        run: |
+          python -m unittest discover -s cloud/task_073/tests -p "test_*.py" -v
+
+      - name: Run real GET-only Gate A against PythonAnywhere
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
+        run: |
+          python -c "import sys; sys.path.insert(0, 'cloud/task_073/tools'); import gate_a_v2, json; result = gate_a_v2.run(); print(json.dumps({'mode': result.mode, 'passed': result.passed, 'checks': result.checks, 'notes': result.notes}, indent=2, ensure_ascii=False)); sys.exit(0 if result.passed else 1)"
+
+      - name: Upload Gate A evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task073-gate-a-v2-evidence
+          path: cloud/task_073/evidence/
+          if-no-files-found: ignore
