@@ -1,0 +1,112 @@
+name: task082-vin4-title-production
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task082_vin4_title_production.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ua-art-production-crm
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile and test exact VIN4 patch
+        working-directory: cloud/task_082_vin4_title
+        run: |
+          python3 -W error -m py_compile \
+            task082_exact_patch.py \
+            task082_remote_installer.py \
+            task082_remote_health.py \
+            task082_deploy_controller.py
+          python3 -W error task082_exact_patch.py
+          python3 -W error task082_remote_installer.py --self-test
+
+      - name: Backup, install, restart and verify production
+        id: deploy
+        working-directory: cloud/task_082_vin4_title
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          TASK082_DELAY_SECONDS: '45'
+        run: |
+          set +e
+          python3 task082_deploy_controller.py
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit bounded deployment evidence
+        if: always()
+        run: |
+          git add -- \
+            cloud/task_082_vin4_title/evidence/deploy_v2.json \
+            cloud/task_082_vin4_title/TASK_082_RESULT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_082_vin4_title/evidence/deploy_v2.json|\
+              cloud/task_082_vin4_title/TASK_082_RESULT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then exit 0; fi
+          git config user.name 'task082-vin4-title'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task082: record VIN4 title production result'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            if [ "$attempt" -eq 6 ]; then exit 1; fi
+            sleep $((attempt * 3))
+          done
+
+      - name: Enforce deployment result
+        if: always()
+        env:
+          DEPLOY_EXIT_CODE: ${{ steps.deploy.outputs.exit_code }}
+        run: |
+          test "$DEPLOY_EXIT_CODE" = "0"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('cloud/task_082_vin4_title/evidence/deploy_v2.json')
+          value = json.loads(path.read_text(encoding='utf-8'))
+          if value.get('status') != 'PASS' or not value.get('production_touched'):
+              raise SystemExit('TASK082_VIN4_FAIL_CLOSED')
+          if (value.get('health_initial') or {}).get('card_count') != 13:
+              raise SystemExit('TASK082_INITIAL_CARD_COUNT')
+          if (value.get('health_delayed') or {}).get('card_count') != 13:
+              raise SystemExit('TASK082_DELAYED_CARD_COUNT')
+          print('TASK082_VIN4_PRODUCTION_PASS')
+          PY
+
+      - name: Upload machine evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task082-vin4-title-${{ github.run_id }}
+          path: |
+            cloud/task_082_vin4_title/evidence/deploy_v2.json
+            cloud/task_082_vin4_title/TASK_082_RESULT.md
+          if-no-files-found: warn
+          retention-days: 30
