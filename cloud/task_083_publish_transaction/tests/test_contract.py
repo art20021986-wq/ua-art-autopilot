@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import pathlib
+import sqlite3
 import tempfile
 
 
@@ -106,6 +107,36 @@ def test_snapshot_rollback_restores_and_removes_new_files():
         finally:
             for name, value in old_values.items():
                 setattr(guard, name, value)
+
+
+def test_live_sqlite_row_shape_is_normalized_to_dict():
+    with tempfile.TemporaryDirectory() as directory:
+        database = pathlib.Path(directory) / "crm.db"
+        connection = sqlite3.connect(database)
+        connection.execute(
+            "CREATE TABLE cars (id INTEGER, auto_number TEXT, published INTEGER, "
+            "status TEXT, photos TEXT, vin TEXT, price_uah INTEGER, review_status TEXT, "
+            "publish_pending INTEGER)"
+        )
+        connection.executemany(
+            "INSERT INTO cars VALUES (?,?,?,?,?,?,?,?,?)",
+            [
+                (19, "UA-0012", 1, "sea_transit", "photos", "KNAGU416BJA244187", 10500,
+                 "approved_owner", 0),
+                (20, "UA-0013", 1, "sea_loaded", "photos", "WDDMH0JB6GN142530", 14700,
+                 "approved_owner", 0),
+            ],
+        )
+        connection.commit(); connection.close()
+        previous = installer.DB
+        try:
+            installer.DB = database
+            state = installer.db_state()
+        finally:
+            installer.DB = previous
+        assert state["published_rows"] == 2
+        assert state["targets"]["UA-0012"]["status"] == "sea_transit"
+        assert state["targets"]["UA-0013"]["category"] == "more"
 
 
 def main():

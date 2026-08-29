@@ -237,7 +237,7 @@ def db_state() -> dict[str, Any]:
         rows = [dict(row) for row in connection.execute(
             "SELECT * FROM cars WHERE published=1 ORDER BY auto_number, id"
         ).fetchall()]
-        targets = {str(row["auto_number"]): row for row in connection.execute(
+        targets = {str(row["auto_number"]): dict(row) for row in connection.execute(
             "SELECT * FROM cars WHERE auto_number IN (?,?) ORDER BY auto_number", TARGETS
         ).fetchall()}
     finally:
