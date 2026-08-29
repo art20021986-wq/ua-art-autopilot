@@ -1,0 +1,230 @@
+{
+  "contract": "CRM-VIN4-TITLE-001-V1.0",
+  "database_sha256": "0101eba634bfd997f4df143999bb2a41a4e478eec539370148bbfc6c2b90b5db",
+  "delayed_postcheck": {
+    "button_hook_once": true,
+    "helper_once": true,
+    "list_hook_once": true,
+    "render_hook_once": true,
+    "sha": true
+  },
+  "deployment_id": "vin4-20260829-074912",
+  "errors": [],
+  "finished_at_utc": "2026-08-29T07:51:53Z",
+  "immediate_postcheck": {
+    "button_hook_once": true,
+    "helper_once": true,
+    "list_hook_once": true,
+    "render_hook_once": true,
+    "sha": true
+  },
+  "install": {
+    "backup_path": "/home/Carix/backups/task_082_vin4_title/vin4-20260829-074912/cars_ui.py",
+    "changed_files": [
+      "cars_ui.py"
+    ],
+    "contract": "CRM-VIN4-TITLE-001-V1.0",
+    "database_after": {
+      "card_count": 13,
+      "current_count": 13,
+      "examples": [
+        {
+          "id": "UA-0001",
+          "vin4": "3001",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0002",
+          "vin4": "1014",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0003",
+          "vin4": "5484",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0004",
+          "vin4": "3849",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0005",
+          "vin4": "1918",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0006",
+          "vin4": "9954",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0007",
+          "vin4": "4006",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0008",
+          "vin4": "0158",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0009",
+          "vin4": "2741",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0010",
+          "vin4": "4445",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0011",
+          "vin4": "4289",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0012",
+          "vin4": "4187",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0013",
+          "vin4": "2530",
+          "vin_valid": true
+        }
+      ],
+      "quick_check": "ok",
+      "sha256": "0101eba634bfd997f4df143999bb2a41a4e478eec539370148bbfc6c2b90b5db",
+      "valid_current_count": 13
+    },
+    "database_before": {
+      "card_count": 13,
+      "current_count": 13,
+      "examples": [
+        {
+          "id": "UA-0001",
+          "vin4": "3001",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0002",
+          "vin4": "1014",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0003",
+          "vin4": "5484",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0004",
+          "vin4": "3849",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0005",
+          "vin4": "1918",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0006",
+          "vin4": "9954",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0007",
+          "vin4": "4006",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0008",
+          "vin4": "0158",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0009",
+          "vin4": "2741",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0010",
+          "vin4": "4445",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0011",
+          "vin4": "4289",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0012",
+          "vin4": "4187",
+          "vin_valid": true
+        },
+        {
+          "id": "UA-0013",
+          "vin4": "2530",
+          "vin_valid": true
+        }
+      ],
+      "quick_check": "ok",
+      "sha256": "0101eba634bfd997f4df143999bb2a41a4e478eec539370148bbfc6c2b90b5db",
+      "valid_current_count": 13
+    },
+    "db_write": false,
+    "deployment_id": "vin4-20260829-074912",
+    "errors": [],
+    "generated_at_utc": "2026-08-29T07:51:09Z",
+    "llm_tokens": 0,
+    "media_write": false,
+    "production_touched": true,
+    "rollback": false,
+    "site_write": false,
+    "source_after_sha256": "cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea",
+    "source_before_sha256": "50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306",
+    "status": "PASS_DEPLOYED",
+    "tests": {
+      "button_hook_once": true,
+      "callback_preserved": true,
+      "future_button_limit": true,
+      "future_button_no_markup": true,
+      "future_html_bold_once": true,
+      "future_html_escaped": true,
+      "future_plain_once": true,
+      "future_vin4": true,
+      "invalid_missing": true,
+      "list_hook_once": true,
+      "render_hook_once": true,
+      "suffix_letters": true,
+      "vin_exclusions": true
+    }
+  },
+  "launcher_health": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "enabled": true,
+    "id": 266084,
+    "status": null
+  },
+  "production_touched": true,
+  "restart": {
+    "accepted": true,
+    "after": {
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "enabled": true,
+      "id": 266084,
+      "status": null
+    },
+    "attempt": 1,
+    "before": {
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "enabled": true,
+      "id": 266084,
+      "status": null
+    }
+  },
+  "rollback": null,
+  "source_sha256": "cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea",
+  "started_at_utc": "2026-08-29T07:49:12Z",
+  "status": "PASS"
+}
