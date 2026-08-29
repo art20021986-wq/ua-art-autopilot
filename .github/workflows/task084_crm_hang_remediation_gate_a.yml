@@ -1,0 +1,66 @@
+name: task084-crm-hang-remediation-gate-a
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task084_crm_hang_remediation_gate_a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task084-crm-hang-remediation-gate-a
+  cancel-in-progress: true
+
+jobs:
+  gate-a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile remediation
+        run: |
+          python3 -W error -m py_compile \
+            cloud/task_084_crm_hang_root_cause/live_audit.py \
+            cloud/task_084_crm_hang_root_cause/deploy_controller.py \
+            cloud/task_084_crm_hang_root_cause/remote_installer.py \
+            cloud/task_078_voice_watchdog/voice_watchdog.py \
+            cloud/task_078_voice_watchdog/handler_patcher.py
+
+      - name: Test killable worker and exact patcher
+        run: |
+          python3 cloud/task_078_voice_watchdog/tests/test_voice_watchdog.py -v
+          python3 cloud/task_078_voice_watchdog/tests/test_handler_patcher.py -v
+
+      - name: Refresh GET-only root-cause evidence
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_084_crm_hang_root_cause/live_audit.py
+
+      - name: Test combined remediation candidate
+        run: python3 cloud/task_084_crm_hang_root_cause/deploy_controller.py --self-test
+
+      - name: Prove Gate A did not touch production
+        run: |
+          python3 - <<'PY'
+          import json
+          p='cloud/task_084_crm_hang_root_cause/evidence/live_audit.json'
+          value=json.load(open(p, encoding='utf-8'))
+          assert value['status']=='PASS_ROOT_CAUSE_CONFIRMED', value['errors']
+          assert value['production_touched'] is False
+          assert value['process_restart'] is False
+          assert value['http_methods']==['GET']
+          print('TASK084_GATE_A_PASS')
+          PY
