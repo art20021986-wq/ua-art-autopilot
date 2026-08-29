@@ -64,6 +64,16 @@ jobs:
           python3 -W error -m unittest discover \
             -s cloud/task_086_ua0011_ferry_stage_counter/tests -v
 
+      - name: Wait in fair production queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 -W error automation/production_queue.py self-test
+          python3 -W error automation/production_queue.py wait \
+            --task 86 --timeout-seconds 4500 --stable-polls 2
+
       - name: Shadow, backup, apply, restart and delayed verify
         id: production
         continue-on-error: true
