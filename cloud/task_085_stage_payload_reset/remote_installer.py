@@ -157,15 +157,16 @@ def target_business_digest(row: dict) -> str:
 
 
 def _function(source: str, name: str) -> tuple[int, int, str]:
+    """Resolve the active top-level definition (Python executes the last one)."""
     tree = ast.parse(source)
     lines = source.splitlines(keepends=True)
     matches = [
-        node for node in ast.walk(tree)
+        node for node in tree.body
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name
     ]
-    if len(matches) != 1:
-        raise Task085Error("FUNCTION_COUNT_%s:%d" % (name, len(matches)))
-    node = matches[0]
+    if not matches:
+        raise Task085Error("FUNCTION_MISSING_%s" % name)
+    node = matches[-1]
     start, end = node.lineno - 1, getattr(node, "end_lineno", node.lineno)
     return start, end, "".join(lines[start:end])
 
