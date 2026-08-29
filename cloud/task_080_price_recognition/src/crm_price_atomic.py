@@ -61,6 +61,7 @@ def write_price(
     now: Callable[[], str],
     card_id: int,
     expected_auto_number: Optional[str],
+    expected_status: Any,
     expected_old: Any,
     new_value: Any,
     actor_id: int,
@@ -85,8 +86,9 @@ def write_price(
     if not valid_price:
         return PriceWriteResult(False, "invalid_price", cid)
 
-    con = connect()
+    con = None
     try:
+        con = connect()
         con.row_factory = sqlite3.Row
         with con:
             row = con.execute(
@@ -100,6 +102,15 @@ def write_price(
             if expected_auto_number and auto_number != expected_auto_number:
                 return PriceWriteResult(
                     False, "identity_conflict", cid, auto_number=auto_number
+                )
+            if row["status"] != expected_status:
+                return PriceWriteResult(
+                    False,
+                    "stage_conflict",
+                    cid,
+                    auto_number=auto_number,
+                    old_value=row["price_uah"],
+                    new_value=normalized,
                 )
             current = row["price_uah"]
             if _same(current, normalized):
@@ -151,7 +162,7 @@ def write_price(
             cursor = con.execute(
                 "UPDATE cars SET price_uah=?,price_history=?,updated_at=? "
                 "WHERE id=? AND auto_number IS ? AND price_uah IS ? "
-                "AND price_history IS ?",
+                "AND price_history IS ? AND status IS ?",
                 (
                     normalized,
                     new_history,
@@ -160,6 +171,7 @@ def write_price(
                     auto_number,
                     current,
                     old_history,
+                    expected_status,
                 ),
             )
             if cursor.rowcount != 1:
@@ -201,13 +213,14 @@ def write_price(
                 history_ok = read_history.get(stage) == normalized
             if not history_ok:
                 raise sqlite3.OperationalError("price readback history")
-    except sqlite3.Error as exc:
+    except Exception as exc:
         return PriceWriteResult(False, "database:" + str(exc), cid)
     finally:
-        try:
-            con.close()
-        except Exception:
-            pass
+        if con is not None:
+            try:
+                con.close()
+            except Exception:
+                pass
 
     return PriceWriteResult(
         True,
