@@ -31,6 +31,11 @@ MAX_SOURCE = 4_000_000
 MAX_DB = 120_000_000
 SOURCES = {
     "cars_ui.py": {
+        "_v167_voice_explicit_fields",
+        "_v168_cas_write",
+        "_v168_empty",
+        "_v168_is_correction",
+        "_v168_named_fields",
         "catch_message",
         "auto_catch",
         "apply_value",
@@ -46,7 +51,15 @@ SOURCES = {
         "clean_car",
     },
     "ai_filter.py": {"clean"},
-    "db.py": {"connect", "update_card_field", "log_action"},
+    "db.py": {
+        "Soedinenie",
+        "_ua_lock3_connect",
+        "connect",
+        "get_card",
+        "update_card_field",
+        "log_action",
+        "now",
+    },
     "trace_zhurnal.py": {"_ua_connect", "_Obertka"},
 }
 PRICE_NEEDLES = (
@@ -247,12 +260,27 @@ def _snapshot_once(directory: pathlib.Path) -> dict:
                 "GROUP BY auto_number HAVING count(*)>1 ORDER BY auto_number"
             )
         ]
+        audit_columns = [
+            dict(row) for row in con.execute("PRAGMA table_info(audit)").fetchall()
+        ]
+        if not audit_columns:
+            raise RuntimeError("AUDIT_TABLE_MISSING")
+        audit_indexes = [
+            dict(row) for row in con.execute("PRAGMA index_list(audit)").fetchall()
+        ]
+        audit_create_row = con.execute(
+            "SELECT sql FROM sqlite_master WHERE type='table' AND name='audit'"
+        ).fetchone()
         return {
             "sha256": sha(db_path.read_bytes()),
             "bytes": db_path.stat().st_size,
             "quick_check": quick,
             "cars_count": len(cards),
             "columns": columns,
+            "audit_columns": audit_columns,
+            "audit_indexes": audit_indexes,
+            "audit_create_sql": audit_create_row["sql"] if audit_create_row else None,
+            "audit_count": con.execute("SELECT count(*) FROM audit").fetchone()[0],
             "cards": cards,
             "duplicates": duplicates,
             "price_audit": {
