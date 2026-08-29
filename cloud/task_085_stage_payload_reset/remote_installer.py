@@ -720,7 +720,7 @@ def catalog_semantics(path: pathlib.Path, require_target_contract: bool = True) 
                 "photo": image.group(1) if image else None,
             }
     other_cards = [
-        {"code": code, "html": re.sub(r"\\s+", " ", item).strip()}
+        {"code": code, "html": re.sub(r"\s+", " ", item).strip()}
         for code, values in blocks.items() if code != TARGET_CODE
         for item in values
     ]
