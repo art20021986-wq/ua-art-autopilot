@@ -80,6 +80,9 @@ def db_evidence(raw: bytes, wal: bytes | None):
             if row is None:
                 raise RuntimeError("UA0011_ROW_MISSING")
             card = dict(row)
+            inventory = [dict(item) for item in con.execute(
+                "SELECT id,auto_number,published,status,review_status FROM cars ORDER BY auto_number,id"
+            ).fetchall()]
             columns = [dict(item) for item in con.execute("PRAGMA table_info(cars)").fetchall()]
             conventions = {}
             for field in ("sea_container", "eta_manual"):
@@ -126,6 +129,9 @@ def db_evidence(raw: bytes, wal: bytes | None):
             "condition_videos": len(condition_videos), "total": len(media),
         },
         "audit": audit,
+        "inventory": inventory,
+        "published_ids": [str(item.get("auto_number") or "").upper() for item in inventory
+                          if int(item.get("published") or 0) == 1],
     }
 
 
@@ -266,6 +272,12 @@ def main() -> int:
             "container_field": "sea_container" in row,
             "arrival_eta_field": "eta_manual" in row,
             "status_already_korea": row.get("status") == "kr_bought",
+            "target_published": int(row.get("published") or 0) == 1,
+            "ua0001_to_ua0011_present": all(
+                "UA-%04d" % number in {str(item.get("auto_number") or "").upper()
+                                       for item in database["inventory"]}
+                for number in range(1, 12)
+            ),
             "cover_resolved": evidence["cover"]["first_media_is_own_cover"],
             "no_foreign_media_refs": not evidence["cover"]["foreign_card_refs"],
             "media_present": database["media_counts"]["photos"] > 0,
