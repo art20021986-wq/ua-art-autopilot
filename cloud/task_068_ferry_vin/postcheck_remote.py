@@ -142,6 +142,35 @@ def _db_snapshot_retry():
     raise last
 
 
+def _cards_snapshot_retry(rows):
+    """Wait through a generator's brief old-page -> final-filter window.
+
+    The card writers are independently scheduled.  A read may land after the
+    legacy body is emitted but before the permanent final filter replaces it.
+    Only this narrow validation race is retried; a stable contract defect still
+    fails closed and lets the controller roll the deployment back.
+    """
+    last = None
+    for attempt in range(1, 13):
+        try:
+            first = repair._validate_cards(rows)
+            time.sleep(2)
+            second = repair._validate_cards(rows)
+            if first == second:
+                return second
+            last = RuntimeError("CARD_SNAPSHOT_CHANGED_DURING_POSTCHECK")
+        except Exception as exc:
+            message = str(exc)
+            if not any(token in message for token in (
+                    "task068_card_invalid:", "invalid_file_size:",
+                    "missing_file:", "CARD_SNAPSHOT_CHANGED_DURING_POSTCHECK")):
+                raise
+            last = exc
+        if attempt < 12:
+            time.sleep(3)
+    raise last
+
+
 def main() -> int:
     result = {
         "contract_id": repair.CONTRACT,
@@ -164,7 +193,7 @@ def main() -> int:
         rows, db_state = _db_snapshot_retry()
         identifiers = [str(row["auto_number"]) for row in rows]
         media_state = repair._media_inventory(identifiers)
-        cards = repair._validate_cards(rows)
+        cards = _cards_snapshot_retry(rows)
         fixtures = repair._fixture_contract()
         master_final_fixtures = repair._master_final_fixture_contract()
         if db_state["published_rows_sha256"] != install["db_after"]["published_rows_sha256"]:
