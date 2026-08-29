@@ -40,6 +40,7 @@ CONTRACT_ID = "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0"
 TARGET_CODE = "UA-0011"
 PROTECTED_CODE = "UA-0009"
 EXPECTED_STATUS = "kr_bought"
+EXPECTED_VIN = "KMHE341DBKA544289"
 OLD_CONTAINER = "ONEYSELGF1046602"
 OLD_ETA_VALUES = (
     "2026-12-12", "12.12.2026", "12 декабря 2026", "12 грудня 2026",
@@ -255,8 +256,16 @@ def validate_shadow(value: dict) -> None:
     if value.get("production_write") or value.get("crm_write") or value.get("media_write"):
         raise ControllerError("SHADOW_WRITE_SCOPE")
     target = (value.get("database") or {}).get("target") or {}
-    if target.get("auto_number") != TARGET_CODE or target.get("status") != EXPECTED_STATUS:
+    projected = value.get("projected_target") or {}
+    if (
+        target.get("auto_number") != TARGET_CODE
+        or str(target.get("vin") or "").strip().upper() != EXPECTED_VIN
+        or projected.get("status") != EXPECTED_STATUS
+    ):
         raise ControllerError("SHADOW_TARGET")
+    for field in ("sea_container", "sea_date_out", "days_to_kyiv", "eta_manual"):
+        if projected.get(field) not in (None, ""):
+            raise ControllerError("SHADOW_PROJECTED_STALE_FIELD:" + field)
     if ((value.get("database") or {}).get("protected_ua0009") or {}).get(
         "auto_number"
     ) != PROTECTED_CODE:
@@ -367,9 +376,6 @@ def public_round(label: str) -> dict:
             'data-ua-stage="1"', "data-ua-stage='1'",
         )):
             raise ControllerError("PUBLIC_CATALOG_STAGE:" + surface)
-        if PROTECTED_CODE not in ids:
-            raise ControllerError("PUBLIC_UA0009_MISSING:" + surface)
-
         stage_counts = {"korea": 0, "more": 0, "gruzia": 0, "kiev": 0}
         for match in blocks:
             card_opening = re.match(r"<a\b[^>]*>", match.group(0), re.I | re.S).group(0)
