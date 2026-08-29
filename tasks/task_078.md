@@ -71,3 +71,17 @@ killable worker, handler patcher, tests, sandbox report, installer/controller
 
 Итог: `PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL` либо FAIL. Не заявлять,
 что live CRM перезапуск исправлен, пока production Gate B не разрешён.
+
+## Результат контроллера — 2026-08-29
+
+`PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL`
+
+- Свежий live Gate A: `PASS_AUDIT_AND_IN_MEMORY_CANARY`.
+- Канонический кандидат: `voice_watchdog.py` + `handler_patcher.py`.
+- Exact live candidate SHA256:
+  `60096df9867e544fe6dbc588fc0909c11d851765940d2e78bbd0096085fb4c1f`.
+- Sandbox/regression: 34/34 PASS.
+- Production touched: NO.
+- Full-process restart: запрещён текущим supervisor-аудитом; только killable
+  STT-worker restart.
+- Следующий шаг: отдельное письменное разрешение владельца на Gate B.
