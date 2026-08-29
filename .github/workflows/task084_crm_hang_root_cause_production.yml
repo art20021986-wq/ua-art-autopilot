@@ -1,0 +1,102 @@
+name: task084-crm-hang-root-cause-production
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task084_crm_hang_root_cause_production.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  remediate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact deployment commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile and test exact remediation
+        run: |
+          python3 -W error -m py_compile \
+            cloud/task_084_crm_hang_root_cause/live_audit.py \
+            cloud/task_084_crm_hang_root_cause/deploy_controller.py \
+            cloud/task_084_crm_hang_root_cause/remote_installer.py \
+            cloud/task_078_voice_watchdog/voice_watchdog.py \
+            cloud/task_078_voice_watchdog/handler_patcher.py
+          python3 cloud/task_078_voice_watchdog/tests/test_voice_watchdog.py -v
+          python3 cloud/task_078_voice_watchdog/tests/test_handler_patcher.py -v
+
+      - name: Refresh read-only live preimage
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_084_crm_hang_root_cause/live_audit.py
+
+      - name: Validate all candidates in memory
+        run: python3 cloud/task_084_crm_hang_root_cause/deploy_controller.py --self-test
+
+      - name: Install, restart once and verify twice
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_084_crm_hang_root_cause/deploy_controller.py
+
+      - name: Commit bounded deployment evidence
+        if: always()
+        run: |
+          git add -- \
+            cloud/task_084_crm_hang_root_cause/evidence/live_audit.json \
+            cloud/task_084_crm_hang_root_cause/evidence/deploy.json \
+            cloud/task_084_crm_hang_root_cause/TASK_084_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_084_crm_hang_root_cause/evidence/live_audit.json|cloud/task_084_crm_hang_root_cause/evidence/deploy.json|cloud/task_084_crm_hang_root_cause/TASK_084_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task084-crm-hang-remediation'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task084: record CRM hang remediation evidence'
+            for attempt in 1 2 3 4 5 6; do
+              git fetch origin main
+              if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+              if git push origin HEAD:main; then exit 0; fi
+              test "$attempt" -lt 6 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Require verified live result
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          path='cloud/task_084_crm_hang_root_cause/evidence/deploy.json'
+          value=json.load(open(path, encoding='utf-8'))
+          assert value['status']=='PASS', value['errors']
+          assert value['bot_restarted'] is True
+          assert value['crm_db_write'] is False
+          assert value['media_write'] is False
+          assert value['postcheck_immediate']['start_singleton_held'] is True
+          assert value['postcheck_delayed']['start_singleton_held'] is True
+          assert value['postcheck_immediate']['startup_notice_gate_active'] is True
+          assert value['postcheck_delayed']['startup_notice_gate_active'] is True
+          assert value['launcher_delayed']['state']=='Running'
+          print('TASK084_PRODUCTION_PASS')
+          PY
