@@ -1,0 +1,196 @@
+name: owner-ua0011-korea-now-production
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner_ua0011_korea_now_production.yml'
+      - 'tasks/task_088.md'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: owner-ua0011-korea-now-20260829
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify separate bounded owner authorization
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('tasks/task_088.md').read_text(encoding='utf-8')
+          normalized = ' '.join(source.split())
+          required = [
+              'Прямая текущая команда владельца',
+              'Дополнительное подтверждение владельца не требуется',
+              "status='kr_bought'",
+              'sea_container=NULL',
+              'eta_manual=NULL',
+              'Два writer-процесса одновременно запрещены',
+              'compensating DB rollback',
+              'TASK 088 окончательно отменяет ferry-цель',
+          ]
+          missing = [value for value in required if value not in normalized]
+          if missing:
+              raise SystemExit('TASK088_OWNER_AUTHORIZATION_MISSING:' + ','.join(missing))
+          print('TASK088_OWNER_AUTHORIZATION_PASS')
+          PY
+
+      - name: Compile and test permanent contract
+        run: |
+          python3 -W error -m py_compile \
+            cloud/task_085_stage_payload_reset/stage_payload_guard.py \
+            cloud/task_085_stage_payload_reset/remote_installer.py \
+            cloud/task_085_stage_payload_reset/controller.py \
+            cloud/task_085_stage_payload_reset/tests/test_stage_payload_guard.py \
+            cloud/task_085_stage_payload_reset/tests/test_remote_installer.py
+          python3 -W error cloud/task_085_stage_payload_reset/tests/test_stage_payload_guard.py
+          python3 -W error cloud/task_085_stage_payload_reset/tests/test_remote_installer.py
+
+      - name: Shadow, backup, repair, restart and delayed verification
+        id: production
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_085_stage_payload_reset/controller.py
+
+      - name: Finalize durable owner status
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+
+          root = Path('cloud/task_085_stage_payload_reset')
+          evidence = root / 'evidence/production.json'
+          if evidence.exists():
+              value = json.loads(evidence.read_text(encoding='utf-8'))
+          else:
+              value = {
+                  'contract_id': 'UA-0011-STAGE-PAYLOAD-RESET-005-V1.0',
+                  'status': 'FAIL', 'errors': ['PRODUCTION_EVIDENCE_MISSING'],
+                  'runtime_llm_tokens': 0, 'bot_restarted': False,
+              }
+              evidence.parent.mkdir(parents=True, exist_ok=True)
+              evidence.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          ok = value.get('status') == 'PASS'
+          final = value.get('postcheck_delayed') or value.get('postcheck') or {}
+          target = ((final.get('database') or {}).get('target') or {})
+          now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z')
+          latest = '\n'.join([
+              'TASK_ID: task_088',
+              'ROUND: 1',
+              'CLAUDE_STATUS: ' + ('DONE' if ok else 'BLOCKED'),
+              'CURRENT_ACTION: ' + (
+                  'UA-0011 fixed in Korea; previous-stage payload guard installed and public checks passed.'
+                  if ok else 'TASK 088 failed closed; rollback/recovery result is recorded in production evidence.'
+              ),
+              'FILES_CREATED: cloud/task_085_stage_payload_reset/evidence/production.json, cloud/task_085_stage_payload_reset/TASK_085_REPORT.md',
+              'PRODUCTION_TOUCHED: ' + ('YES' if ok else 'ROLLED_BACK_OR_NO'),
+              'OWNER_ACTION_REQUIRED: NO',
+              'OWNER_QUESTION: NONE',
+              'NEXT_FOR_CHATGPT: Verify TASK 088 evidence and report the exact production result.',
+              'UPDATED_AT_UTC: ' + now,
+          ]) + '\n'
+          errors = '; '.join(value.get('errors') or []) or 'НЕТ'
+          owner = '\n'.join([
+              '# Ответ владельцу',
+              'СТАТУС: ' + ('PASS' if ok else 'FAIL'),
+              'ЗАДАЧА: Убрать из UA-0011 контейнер и срок, оставить этап «В Корее» и фундаментально исключить наследование полей предыдущего этапа.',
+              'ЧТО СДЕЛАНО: ' + (
+                  'UA-0011 оставлена на этапе «В Корее»; контейнер, дата и дни удалены; карточка пересобрана; для всех текущих и будущих карточек установлен единый stage-payload guard.'
+                  if ok else 'Исправление не оставлено в частично рабочем состоянии; выполнен fail-closed контроль и автоматическое восстановление согласно evidence.'
+              ),
+              'ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО',
+              'БЕЗОПАСНОСТЬ: backup до записи, один writer, автоматический rollback и перезапуск; media и остальные CRM-строки не изменяются.',
+              'UA-0011 STATUS: ' + str(target.get('status', 'не подтверждено')),
+              'ОШИБКИ: ' + errors,
+          ]) + '\n'
+          Path('cloud/latest_status.md').write_text(latest, encoding='utf-8')
+          Path('cloud/owner_reply.md').write_text(owner, encoding='utf-8')
+          report = root / 'TASK_085_REPORT.md'
+          if not report.exists():
+              report.write_text(
+                  '# UA-0011-STAGE-PAYLOAD-RESET-005 v1.0\n\n'
+                  'STATUS: **FAIL BEFORE PRODUCTION**\n\n'
+                  '- Production touched: NO\n'
+                  '- Errors: ' + errors + '\n',
+                  encoding='utf-8',
+              )
+          PY
+
+      - name: Commit bounded evidence
+        if: always()
+        run: |
+          git add -- \
+            cloud/task_085_stage_payload_reset/evidence/production.json \
+            cloud/task_085_stage_payload_reset/TASK_085_REPORT.md \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_085_stage_payload_reset/evidence/production.json|\
+              cloud/task_085_stage_payload_reset/TASK_085_REPORT.md|\
+              cloud/latest_status.md|cloud/owner_reply.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then exit 0; fi
+          git config user.name 'task088-korea-stage'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task088: record UA-0011 Korea stage production result'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Require final PASS
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path(
+              'cloud/task_085_stage_payload_reset/evidence/production.json'
+          ).read_text(encoding='utf-8'))
+          assert value['contract_id'] == 'UA-0011-STAGE-PAYLOAD-RESET-005-V1.0'
+          assert value['status'] == 'PASS', value
+          assert value['runtime_llm_tokens'] == 0
+          assert value['bot_restarted'] is True
+          assert value['rollback'] is None
+          target = value['postcheck_delayed']['database']['target']
+          assert target['status'] == 'kr_bought'
+          for field in ('sea_container', 'sea_date_out', 'days_to_kyiv', 'eta_manual'):
+              assert target.get(field) in (None, ''), (field, target.get(field))
+          print('TASK088_PRODUCTION_PASS')
+          PY
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task088-korea-stage-${{ github.run_id }}
+          path: |
+            cloud/task_085_stage_payload_reset/evidence/production.json
+            cloud/task_085_stage_payload_reset/TASK_085_REPORT.md
+          if-no-files-found: warn
+          retention-days: 30
+
