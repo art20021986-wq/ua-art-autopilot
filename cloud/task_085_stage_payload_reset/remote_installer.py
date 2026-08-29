@@ -30,7 +30,8 @@ from typing import Any
 CONTRACT_ID = "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0"
 TARGET_CODE = "UA-0011"
 PROTECTED_CODE = "UA-0009"
-EXPECTED_STATUS = "kr_bought"\nEXPECTED_VIN = "KMHE341DBKA544289"
+EXPECTED_STATUS = "kr_bought"
+EXPECTED_VIN = "KMHE341DBKA544289"
 ACTOR_ID = 85005
 ROOT = pathlib.Path("/home/Carix")
 # The controller stages unique task085 files inside the already-existing,
