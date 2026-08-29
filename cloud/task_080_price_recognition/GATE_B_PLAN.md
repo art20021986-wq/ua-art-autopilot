@@ -9,7 +9,7 @@ Gate B is not authorized or executed in this round.
 3. Build the four patched live sources in memory from the freshly verified
    copies. Stage those files plus `price_parser.py` and
    `crm_price_atomic.py` outside the live directory.
-4. Compile every staged Python file and run all 56 tests against the staged
+4. Compile every staged Python file and run all 58 tests against the staged
    package and a disposable database copy.
 5. Atomically install only the six approved files. `db.py`, CRM schema, card
    rows, site files, media, and publication state remain unchanged.
