@@ -2,7 +2,8 @@
 """Permanent stage-owned payload policy for UA ART CRM and public cards."""
 from __future__ import annotations
 
-import re\nfrom typing import Iterable, Mapping
+import re
+from typing import Iterable, Mapping
 
 
 CONTRACT_ID = "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0"
