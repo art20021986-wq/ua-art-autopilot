@@ -482,7 +482,7 @@
           "kind": "FunctionDef",
           "line": 35,
           "name": "log",
-          "relevant": false,
+          "relevant": true,
           "sha256": "c7089af56cbcf0e095f93f11421d9ee28d8f424b79b0a971caaea4420bad5941"
         },
         {
@@ -490,7 +490,7 @@
           "kind": "FunctionDef",
           "line": 44,
           "name": "kolonki_cars",
-          "relevant": false,
+          "relevant": true,
           "sha256": "fec253fe0e289c08472ac7badd956eaa99d3f76bbb4645a07a63388a9c1f5028"
         },
         {
@@ -498,7 +498,7 @@
           "kind": "FunctionDef",
           "line": 54,
           "name": "pole_nomera",
-          "relevant": false,
+          "relevant": true,
           "sha256": "3513cf5ca84b3a2cd596d9bde7dad766a33c2ec0fdd1e5a5dcb7c6c31eb1c96b"
         },
         {
@@ -506,7 +506,7 @@
           "kind": "FunctionDef",
           "line": 63,
           "name": "nomer_mashiny",
-          "relevant": false,
+          "relevant": true,
           "sha256": "68bb95259d9edbd99ae439cd0b24f177316a846a39fba34813751b103f829f3c"
         },
         {
@@ -514,7 +514,7 @@
           "kind": "FunctionDef",
           "line": 78,
           "name": "otpechatok",
-          "relevant": false,
+          "relevant": true,
           "sha256": "03739c9a350ac89d81c4a7aef3149db188ebe3693fc72fec7e9629de2763bd40"
         },
         {
@@ -522,7 +522,7 @@
           "kind": "FunctionDef",
           "line": 105,
           "name": "prochest",
-          "relevant": false,
+          "relevant": true,
           "sha256": "e7ddead3bf3fe82d3ccdc64f72de4ccd110b099cd0ec661fc30ec42939bcf000"
         },
         {
@@ -530,7 +530,7 @@
           "kind": "FunctionDef",
           "line": 113,
           "name": "zapisat",
-          "relevant": false,
+          "relevant": true,
           "sha256": "142b652cbe3281a8b2881dc8474de400f642394029fa0f359411cbb01af1fe7e"
         },
         {
@@ -538,7 +538,7 @@
           "kind": "FunctionDef",
           "line": 140,
           "name": "sobrat_svoimi_rukami",
-          "relevant": false,
+          "relevant": true,
           "sha256": "8098c5b7821337fd9a1f78f52029c6db31cf10383a781007f2563d9344798191"
         },
         {
@@ -546,7 +546,7 @@
           "kind": "FunctionDef",
           "line": 157,
           "name": "sobrat",
-          "relevant": false,
+          "relevant": true,
           "sha256": "c858a2231879fd17b295d061bb437b1384d42f3ee5aca25fb596d6ab70df697d"
         },
         {
@@ -554,7 +554,7 @@
           "kind": "FunctionDef",
           "line": 184,
           "name": "shag",
-          "relevant": false,
+          "relevant": true,
           "sha256": "d67445216d8aa7a4e90d173f40df327728926ef9eed814ff4d3ccb9227f11637"
         },
         {
@@ -562,7 +562,7 @@
           "kind": "FunctionDef",
           "line": 224,
           "name": "_cikl",
-          "relevant": false,
+          "relevant": true,
           "sha256": "d822c2baa5c5bb3a49703ec9c677cf95b25f7446ed4f3a1fdbe889b22a0e2de3"
         },
         {
@@ -570,11 +570,108 @@
           "kind": "FunctionDef",
           "line": 237,
           "name": "start",
-          "relevant": false,
+          "relevant": true,
           "sha256": "3bae6d910d92c357393290a84917b51e43dd53ae8fd794a8b92c5613328e2ec7"
         }
       ],
-      "definitions": [],
+      "definitions": [
+        {
+          "end_line": 41,
+          "kind": "FunctionDef",
+          "line": 35,
+          "name": "log",
+          "sha256": "c7089af56cbcf0e095f93f11421d9ee28d8f424b79b0a971caaea4420bad5941",
+          "source": "def log(stroka):\n    try:\n        with open(LOG, \"a\", encoding=\"utf-8\") as f:\n            f.write(time.strftime(\"%Y-%m-%d %H:%M:%S\") + \"  \"\n                    + stroka + \"\\n\")\n    except Exception:\n        pass"
+        },
+        {
+          "end_line": 51,
+          "kind": "FunctionDef",
+          "line": 44,
+          "name": "kolonki_cars",
+          "sha256": "fec253fe0e289c08472ac7badd956eaa99d3f76bbb4645a07a63388a9c1f5028",
+          "source": "def kolonki_cars():\n    try:\n        soed = sqlite3.connect(BD, timeout=20)\n        est = [r[1] for r in soed.execute(\"PRAGMA table_info(cars)\")]\n        soed.close()\n        return est\n    except Exception:\n        return []"
+        },
+        {
+          "end_line": 60,
+          "kind": "FunctionDef",
+          "line": 54,
+          "name": "pole_nomera",
+          "sha256": "3513cf5ca84b3a2cd596d9bde7dad766a33c2ec0fdd1e5a5dcb7c6c31eb1c96b",
+          "source": "def pole_nomera(est=None):\n    \"\"\"Как в этой базе называется номер машины.\"\"\"\n    est = est if est is not None else kolonki_cars()\n    for imya in (\"auto_number\", \"code\", \"number\", \"nomer\"):\n        if imya in est:\n            return imya\n    return None"
+        },
+        {
+          "end_line": 75,
+          "kind": "FunctionDef",
+          "line": 63,
+          "name": "nomer_mashiny",
+          "sha256": "68bb95259d9edbd99ae439cd0b24f177316a846a39fba34813751b103f829f3c",
+          "source": "def nomer_mashiny(ryad, pole):\n    znachenie = \"\"\n    if pole:\n        try:\n            znachenie = str(ryad[pole] or \"\").strip()\n        except Exception:\n            znachenie = \"\"\n    if znachenie:\n        return znachenie\n    try:\n        return \"UA-%04d\" % int(ryad[\"id\"])\n    except Exception:\n        return \"\""
+        },
+        {
+          "end_line": 102,
+          "kind": "FunctionDef",
+          "line": 78,
+          "name": "otpechatok",
+          "sha256": "03739c9a350ac89d81c4a7aef3149db188ebe3693fc72fec7e9629de2763bd40",
+          "source": "def otpechatok():\n    est = kolonki_cars()\n    if not est:\n        return None\n    berem = [p for p in POLYA if p in est]\n    if not berem:\n        return None\n    poryadok = \"id\" if \"id\" in est else berem[0]\n    try:\n        soed = sqlite3.connect(BD, timeout=20)\n        soed.row_factory = sqlite3.Row\n        ryady = soed.execute(\n            \"SELECT \" + \", \".join(berem) + \" FROM cars ORDER BY \"\n            + poryadok).fetchall()\n        soed.close()\n    except Exception as e:\n        log(\"не прочитать базу: \" + repr(e))\n        return None\n\n    kusochki = []\n    for ryad in ryady:\n        for pole in berem:\n            kusochki.append(str(ryad[pole]))\n    slepok = \"\\u0001\".join(kusochki)\n    return hashlib.sha256(slepok.encode(\"utf-8\")).hexdigest()[:20]"
+        },
+        {
+          "end_line": 110,
+          "kind": "FunctionDef",
+          "line": 105,
+          "name": "prochest",
+          "sha256": "e7ddead3bf3fe82d3ccdc64f72de4ccd110b099cd0ec661fc30ec42939bcf000",
+          "source": "def prochest():\n    try:\n        with open(SOSTOYANIE, \"r\", encoding=\"utf-8\") as f:\n            return json.load(f)\n    except Exception:\n        return {}"
+        },
+        {
+          "end_line": 137,
+          "kind": "FunctionDef",
+          "line": 113,
+          "name": "zapisat",
+          "sha256": "142b652cbe3281a8b2881dc8474de400f642394029fa0f359411cbb01af1fe7e",
+          "source": "def zapisat(dannye):\n    # UA-V113: свой временный файл на каждый вызов, папка создаётся,\n    # в лог идёт полный путь и traceback\n    import uuid as _metka\n    import traceback as _sled\n    vremenno = \"%s.%d.%s.vremenno\" % (SOSTOYANIE, os.getpid(),\n                                      _metka.uuid4().hex[:10])\n    try:\n        papka = os.path.dirname(SOSTOYANIE)\n        if papka:\n            os.makedirs(papka, exist_ok=True)\n        with open(vremenno, \"w\", encoding=\"utf-8\") as f:\n            json.dump(dannye, f, ensure_ascii=False)\n        os.replace(vremenno, SOSTOYANIE)\n        return True\n    except Exception as e:\n        log(\"STATE WRITE ERROR: \" + SOSTOYANIE\n            + \" · временный \" + vremenno + \" · \" + repr(e))\n        log(_sled.format_exc())\n        try:\n            if os.path.exists(vremenno):\n                os.remove(vremenno)\n        except Exception:\n            pass\n        return False"
+        },
+        {
+          "end_line": 154,
+          "kind": "FunctionDef",
+          "line": 140,
+          "name": "sobrat_svoimi_rukami",
+          "sha256": "8098c5b7821337fd9a1f78f52029c6db31cf10383a781007f2563d9344798191",
+          "source": "def sobrat_svoimi_rukami():\n    \"\"\"UA-V122: сборка прямо здесь, когда отдельный процесс не поднялся.\"\"\"\n    try:\n        if BAZA not in sys.path:\n            sys.path.insert(0, BAZA)\n        import stranica\n        if not hasattr(stranica, \"main\"):\n            log(\"в stranica.py нет main()\")\n            return False\n        stranica.main()\n        log(\"сборка выполнена внутри автопередачи\")\n        return True\n    except Exception as e:\n        log(\"сборка не прошла: \" + repr(e))\n        return False"
+        },
+        {
+          "end_line": 181,
+          "kind": "FunctionDef",
+          "line": 157,
+          "name": "sobrat",
+          "sha256": "c858a2231879fd17b295d061bb437b1384d42f3ee5aca25fb596d6ab70df697d",
+          "source": "def sobrat():\n    \"\"\"UA-V122: отдельный процесс зовёт main() ЯВНО, а если процесс\n    не поднялся - собираем своими руками.\n\n    Раньше запускался сам файл stranica.py. В нём нет строки\n    if __name__ == \"__main__\", поэтому такой запуск просто ничего\n    не делал и возвращал ноль - автопередача считала, что собрала.\n    \"\"\"\n    if not os.path.exists(SBORSHCHIK):\n        log(\"stranica.py не найдена\")\n        return False\n    prikaz = (\"import sys; sys.path.insert(0, %r); \"\n              \"import stranica; stranica.main()\" % BAZA)\n    try:\n        itog = subprocess.run(\n            [sys.executable, \"-c\", prikaz],\n            cwd=BAZA, capture_output=True, text=True, timeout=600)\n        if itog.returncode == 0:\n            log(\"сборка выполнена отдельным процессом\")\n            return True\n        log(\"сборщик вернул код \" + str(itog.returncode) + \": \"\n            + (itog.stderr or \"\")[-200:])\n    except Exception as e:\n        log(\"отдельным процессом не вышло: \" + repr(e))\n    return sobrat_svoimi_rukami()"
+        },
+        {
+          "end_line": 221,
+          "kind": "FunctionDef",
+          "line": 184,
+          "name": "shag",
+          "sha256": "d67445216d8aa7a4e90d173f40df327728926ef9eed814ff4d3ccb9227f11637",
+          "source": "def shag():\n    if os.path.exists(STOP):\n        return\n\n    teper = otpechatok()\n    if teper is None:\n        return\n\n    dannye = prochest()\n    poslednij = dannye.get(\"otpechatok\")\n    zhdem_s = dannye.get(\"izmenilos_v\")\n    sobrali_v = float(dannye.get(\"sobrali_v\") or 0)\n\n    if teper == poslednij and not zhdem_s:\n        return\n\n    if teper != poslednij:\n        dannye[\"otpechatok\"] = teper\n        dannye[\"izmenilos_v\"] = time.time()\n        zapisat(dannye)\n        return\n\n    if time.time() - float(zhdem_s) < POKOY:\n        return\n\n    if time.time() - sobrali_v < MEZHDU:\n        return\n\n    # UA-V122: отметку об изменении снимаем только при успешной сборке,\n    # иначе повторяем на следующем круге, а не ждём новой правки\n    log(\"витрина изменилась - пересобираю страницы\")\n    dannye[\"sobrali_v\"] = time.time()\n    zapisat(dannye)\n    if sobrat():\n        dannye.pop(\"izmenilos_v\", None)\n        zapisat(dannye)\n    else:\n        log(\"сборка не удалась - повторю на следующем круге\")"
+        },
+        {
+          "end_line": 231,
+          "kind": "FunctionDef",
+          "line": 224,
+          "name": "_cikl",
+          "sha256": "d822c2baa5c5bb3a49703ec9c677cf95b25f7446ed4f3a1fdbe889b22a0e2de3",
+          "source": "def _cikl():\n    time.sleep(30)\n    while True:\n        try:\n            shag()\n        except Exception as e:\n            log(\"сбой: \" + repr(e))\n        time.sleep(PAUZA)"
+        },
+        {
+          "end_line": 243,
+          "kind": "FunctionDef",
+          "line": 237,
+          "name": "start",
+          "sha256": "3bae6d910d92c357393290a84917b51e43dd53ae8fd794a8b92c5613328e2ec7",
+          "source": "def start():\n    global _zapushchen\n    if _zapushchen:\n        return\n    _zapushchen = True\n    threading.Thread(target=_cikl, daemon=True).start()\n    log(\"автопередача запущена (UA-V73)\")"
+        }
+      ],
       "excerpts": [
         {
           "line": 18,
@@ -600,6 +697,11 @@
       "required": false,
       "sha256": "e0e5e0d55672689dec25c1ac69488b86fc1af00570f0ec563fc8095a1858b7d1",
       "size": 7638
+    },
+    "avtoperedacha_monitor.py": {
+      "path": "/home/Carix/avtoperedacha_monitor.py",
+      "present": false,
+      "required": false
     },
     "cars_schema.py": {
       "definition_inventory": [
@@ -3819,6 +3921,342 @@
       "sha256": "96bb7e99b15d6e5d8de7e825e427406945cf866b5cda300710950ab2ac803e81",
       "size": 137451
     },
+    "publikaciya.py": {
+      "definition_inventory": [
+        {
+          "end_line": 28,
+          "kind": "FunctionDef",
+          "line": 20,
+          "name": "_sha",
+          "relevant": true,
+          "sha256": "44d48f0b10663479a53f96f39fc1b0543eab915c18e3f205576479c27292b667"
+        },
+        {
+          "end_line": 34,
+          "kind": "FunctionDef",
+          "line": 31,
+          "name": "_sha_teksta",
+          "relevant": true,
+          "sha256": "d8815bd375024bbc0033db7a360aa613048d3acfd6446693a5747af19381cf9e"
+        },
+        {
+          "end_line": 42,
+          "kind": "FunctionDef",
+          "line": 37,
+          "name": "_chitat",
+          "relevant": true,
+          "sha256": "b148aa4ce57aa51dd9d7be0003749f99559af8ed7a9a1afa004613fcbee7b89c"
+        },
+        {
+          "end_line": 51,
+          "kind": "FunctionDef",
+          "line": 45,
+          "name": "_zhurnal",
+          "relevant": true,
+          "sha256": "a87536cc579edf8808fed2dbea1c20574bc075e3202a4ffc37351bd422f6c8c9"
+        },
+        {
+          "end_line": 66,
+          "kind": "FunctionDef",
+          "line": 54,
+          "name": "_kartochki",
+          "relevant": true,
+          "sha256": "163f4c20258699b24005b0470a9f21221f19316ae8280faf39786dcb93cde241"
+        },
+        {
+          "end_line": 106,
+          "kind": "FunctionDef",
+          "line": 70,
+          "name": "proverit",
+          "relevant": true,
+          "sha256": "d4fde2ead2a9876a77a30f73c07ebeafa57bd046fa8bfa748d7e2d1a30827bdf"
+        },
+        {
+          "end_line": 135,
+          "kind": "FunctionDef",
+          "line": 109,
+          "name": "_master",
+          "relevant": true,
+          "sha256": "4bd6575250c7363a637a011fd2aa8130e2f32433c46fef54357a7cd767c23da4"
+        },
+        {
+          "end_line": 142,
+          "kind": "FunctionDef",
+          "line": 138,
+          "name": "_zapisat_atomarno",
+          "relevant": true,
+          "sha256": "5d52a353d82403e41d4dd22bba4f2939543b27986a7ce3100a784f6276096e0a"
+        },
+        {
+          "end_line": 216,
+          "kind": "FunctionDef",
+          "line": 145,
+          "name": "opublikovat",
+          "relevant": true,
+          "sha256": "93f130c2542124b820eae2416984705ecbbc80019a298d2b3c40fdf58d93033f"
+        },
+        {
+          "end_line": 226,
+          "kind": "FunctionDef",
+          "line": 219,
+          "name": "_otkat",
+          "relevant": true,
+          "sha256": "141cd24d4d57b4812ea1339fd6f74a0656b993b190897a4e932e2ec6792e15b1"
+        },
+        {
+          "end_line": 246,
+          "kind": "FunctionDef",
+          "line": 236,
+          "name": "_zapisat_atomarno",
+          "relevant": true,
+          "sha256": "894adae774fe7a54c7e0f3d3571a522f3d3169175ad4888b7b6ffdf62370dae4"
+        },
+        {
+          "end_line": 280,
+          "kind": "FunctionDef",
+          "line": 259,
+          "name": "_zapisat_atomarno",
+          "relevant": true,
+          "sha256": "89aff713f168316c0ddc0fcbf659a8b131a164560eac729ab0d325b1fd12beab"
+        },
+        {
+          "end_line": 301,
+          "kind": "FunctionDef",
+          "line": 294,
+          "name": "_zapisat_atomarno",
+          "relevant": true,
+          "sha256": "09fe0f5f1ed94385a0f963e9cb927875cd296a4a45a01ae57caba8489f348fe5"
+        },
+        {
+          "end_line": 322,
+          "kind": "FunctionDef",
+          "line": 313,
+          "name": "_ua9_waiting_text",
+          "relevant": true,
+          "sha256": "006f30ccf7cb19c5b100bdf763e30c33203017d20ea8529ba6d2e847b17b3602"
+        },
+        {
+          "end_line": 347,
+          "kind": "FunctionDef",
+          "line": 324,
+          "name": "_master",
+          "relevant": true,
+          "sha256": "e275afb42c655a2929f2471e049f936178961c1b4b45adc4e1e80dad1d07d6fa"
+        },
+        {
+          "end_line": 354,
+          "kind": "FunctionDef",
+          "line": 349,
+          "name": "proverit",
+          "relevant": true,
+          "sha256": "f4c9e7a453702594bc30d1a3e2c2fda961d08c2040f3fa0eba1fbe567cdedaf4"
+        },
+        {
+          "end_line": 369,
+          "kind": "FunctionDef",
+          "line": 356,
+          "name": "_ua9_sobrat_katalog",
+          "relevant": true,
+          "sha256": "d3e013c8df3024e704fe990af052f0add4307b8d72262d864cf7ae20c30376db"
+        },
+        {
+          "end_line": 413,
+          "kind": "FunctionDef",
+          "line": 371,
+          "name": "ua0009_urgent_probe",
+          "relevant": true,
+          "sha256": "471a3cb42ceb82a644dd2ea61e802cae378e761b90cd173fcd9b934abbc8fdf5"
+        },
+        {
+          "end_line": 465,
+          "kind": "FunctionDef",
+          "line": 415,
+          "name": "ua0009_urgent_publish",
+          "relevant": true,
+          "sha256": "3028bcf7202d76bf696bea8f5e62bb375e7003c3c1ea17402d7b6c26d3e5328f"
+        },
+        {
+          "end_line": 498,
+          "kind": "FunctionDef",
+          "line": 472,
+          "name": "_master",
+          "relevant": true,
+          "sha256": "0422c489ed957c78fdb7e3b4b2c225f497525e2bbcfce6b03734fb31de02f854"
+        }
+      ],
+      "definitions": [
+        {
+          "end_line": 28,
+          "kind": "FunctionDef",
+          "line": 20,
+          "name": "_sha",
+          "sha256": "44d48f0b10663479a53f96f39fc1b0543eab915c18e3f205576479c27292b667",
+          "source": "def _sha(put):\n    try:\n        h = hashlib.sha256()\n        with open(put, \"rb\") as f:\n            for k in iter(lambda: f.read(65536), b\"\"):\n                h.update(k)\n        return h.hexdigest()\n    except Exception:\n        return \"-\""
+        },
+        {
+          "end_line": 34,
+          "kind": "FunctionDef",
+          "line": 31,
+          "name": "_sha_teksta",
+          "sha256": "d8815bd375024bbc0033db7a360aa613048d3acfd6446693a5747af19381cf9e",
+          "source": "def _sha_teksta(t):\n    if isinstance(t, str):\n        t = t.encode(\"utf-8\")\n    return hashlib.sha256(t).hexdigest()"
+        },
+        {
+          "end_line": 42,
+          "kind": "FunctionDef",
+          "line": 37,
+          "name": "_chitat",
+          "sha256": "b148aa4ce57aa51dd9d7be0003749f99559af8ed7a9a1afa004613fcbee7b89c",
+          "source": "def _chitat(put):\n    try:\n        with io.open(put, \"r\", encoding=\"utf-8\", errors=\"ignore\") as f:\n            return f.read()\n    except Exception:\n        return \"\""
+        },
+        {
+          "end_line": 51,
+          "kind": "FunctionDef",
+          "line": 45,
+          "name": "_zhurnal",
+          "sha256": "a87536cc579edf8808fed2dbea1c20574bc075e3202a4ffc37351bd422f6c8c9",
+          "source": "def _zhurnal(stroki):\n    try:\n        with io.open(LOG, \"a\", encoding=\"utf-8\") as f:\n            for s in stroki:\n                f.write(\"%s  %s\\n\" % (time.strftime(\"%Y-%m-%d %H:%M:%S\"), s))\n    except Exception:\n        pass"
+        },
+        {
+          "end_line": 66,
+          "kind": "FunctionDef",
+          "line": 54,
+          "name": "_kartochki",
+          "sha256": "163f4c20258699b24005b0470a9f21221f19316ae8280faf39786dcb93cde241",
+          "source": "def _kartochki(krome=None):\n    \"\"\"sha всех карточек и диагностик, кроме указанной машины.\"\"\"\n    d = {}\n    for papka in (VIDEO, SITE):\n        if not os.path.isdir(papka):\n            continue\n        for imya in os.listdir(papka):\n            if not (imya.startswith(\"UA-\") and imya.endswith(\".html\")):\n                continue\n            if krome and imya.startswith(krome):\n                continue\n            d[os.path.join(papka, imya)] = _sha(os.path.join(papka, imya))\n    return d"
+        },
+        {
+          "end_line": 106,
+          "kind": "FunctionDef",
+          "line": 70,
+          "name": "proverit",
+          "sha256": "d4fde2ead2a9876a77a30f73c07ebeafa57bd046fa8bfa748d7e2d1a30827bdf",
+          "source": "def proverit(html, kod):\n    \"\"\"Возвращает список причин отказа. Пустой список = страница годная.\"\"\"\n    prichiny = []\n    if not html or len(html) < 5000:\n        prichiny.append(\"страница короче 5 КБ\")\n        return prichiny\n    n64 = html.count(\"data:image\")\n    if n64 > 2:\n        prichiny.append(\"вшитые base64-фотографии: %d — чужой шаблон\" % n64)\n    if len(html) > 600000:\n        prichiny.append(\"страница тяжелее 600 КБ (%d байт)\" % len(html))\n    if kod not in html:\n        prichiny.append(\"нет номера машины %s\" % kod)\n    chuzhie = sorted(set(re.findall(r\"UA-\\d{4}\", html)) - set([kod]))\n    if chuzhie:\n        prichiny.append(\"данные другой машины: %s\" % \", \".join(chuzhie))\n    if \"</html>\" not in html:\n        prichiny.append(\"страница оборвана, нет </html>\")\n    if not re.search(r\"\\d[\\d\\s\\u00a0]{2,}\\s*\\$\", html):\n        prichiny.append(\"нет цены\")\n    if \"иагностик\" not in html:\n        prichiny.append(\"нет раздела диагностики\")\n    if (kod + \"-diag.html\") not in html:\n        prichiny.append(\"нет ссылки на страницу диагностики\")\n    if \"упить\" not in html:\n        prichiny.append(\"нет кнопки Купить\")\n    if \"оделиться\" not in html:\n        prichiny.append(\"нет кнопки Поделиться\")\n    if \"index.html\" not in html:\n        prichiny.append(\"нет навигации на главную\")\n    if \"wa.me\" not in html:\n        prichiny.append(\"нет контакта WhatsApp\")\n    if \"<img\" not in html:\n        prichiny.append(\"нет фотографий\")\n    if \"aspect-ratio:16/10\" not in html.replace(\" \", \"\"):\n        prichiny.append(\"правило показа фото не совпадает с эталоном 16/10\")\n    return prichiny"
+        },
+        {
+          "end_line": 135,
+          "kind": "FunctionDef",
+          "line": 109,
+          "name": "_master",
+          "sha256": "4bd6575250c7363a637a011fd2aa8130e2f32433c46fef54357a7cd767c23da4",
+          "source": "def _master(kod):\n    \"\"\"Собирает карточку и диагностику мастер-генератором. Возвращает (html, diag, mashina).\"\"\"\n    import stranica as S\n    spisok = S.mashiny()\n    m = None\n    for x in spisok:\n        try:\n            if (S.nomer(x) or \"\").upper() == kod.upper():\n                m = x\n                break\n        except Exception:\n            continue\n    if m is None:\n        return None, None, None\n    kadry = S.kadry_mashiny(m)\n    html = S.sobrat_kartochku(m, kadry)\n    diag = None\n    try:\n        if S.est_diagnostika(m):\n            diag = S.sobrat_diagnostiku(m)\n    except Exception:\n        diag = None\n    if isinstance(html, bytes):\n        html = html.decode(\"utf-8\", \"ignore\")\n    if isinstance(diag, bytes):\n        diag = diag.decode(\"utf-8\", \"ignore\")\n    return html, diag, m"
+        },
+        {
+          "end_line": 142,
+          "kind": "FunctionDef",
+          "line": 138,
+          "name": "_zapisat_atomarno",
+          "sha256": "5d52a353d82403e41d4dd22bba4f2939543b27986a7ce3100a784f6276096e0a",
+          "source": "def _zapisat_atomarno(put, tekst):\n    vrem = put + \".rem2tmp\"\n    with io.open(vrem, \"w\", encoding=\"utf-8\") as f:\n        f.write(tekst)\n    os.replace(vrem, put)"
+        },
+        {
+          "end_line": 216,
+          "kind": "FunctionDef",
+          "line": 145,
+          "name": "opublikovat",
+          "sha256": "93f130c2542124b820eae2416984705ecbbc80019a298d2b3c40fdf58d93033f",
+          "source": "def opublikovat(kod, proba=False):\n    \"\"\"Единственная разрешённая публикация карточки. (ok, текст для владельца)\"\"\"\n    kod = (kod or \"\").strip().upper()\n    if not re.match(r\"^UA-\\d{3,5}$\", kod):\n        return False, \"Публикация отменена: непонятный номер машины.\"\n\n    do = _kartochki(krome=kod)          # чужие карточки до работы\n    try:\n        html, diag, m = _master(kod)\n    except Exception as e:\n        _zhurnal([\"%s FAIL сборка мастером: %s\" % (kod, e)])\n        return False, \"Публикация отменена: сборщик не смог собрать %s (%s). Старая страница цела.\" % (kod, e)\n    if not html:\n        _zhurnal([\"%s FAIL машина не найдена в CRM\" % kod])\n        return False, \"Публикация отменена: %s не найдена среди машин CRM.\" % kod\n\n    prichiny = proverit(html, kod)\n    if prichiny:\n        _zhurnal([\"%s FAIL валидация: %s\" % (kod, \"; \".join(prichiny))])\n        return False, (\"Публикация отменена, страница не прошла проверку:\\n· %s\\n\"\n                       \"Прежняя страница на сайте не тронута.\" % \"\\n· \".join(prichiny))\n\n    if proba:\n        return True, \"Проба: страница %s собрана и проверена, ничего не записано.\" % kod\n\n    papka_rez = os.path.join(REZERV_KORE, \"%s_%s\" % (kod, time.strftime(\"%Y%m%d_%H%M%S\")))\n    celi = []\n    for papka in (VIDEO, SITE):\n        if not os.path.isdir(papka):\n            continue\n        celi.append(os.path.join(papka, kod + \".html\"))\n        for imya in os.listdir(papka):\n            if re.match(r\"^%s-[0-9a-f]{6,10}\\.html$\" % kod, imya):\n                celi.append(os.path.join(papka, imya))\n        if diag:\n            celi.append(os.path.join(papka, kod + \"-diag.html\"))\n    try:\n        os.makedirs(papka_rez, exist_ok=True)\n        for put in celi:\n            if os.path.exists(put):\n                shutil.copy2(put, os.path.join(\n                    papka_rez, put.replace(BASE + \"/\", \"\").replace(\"/\", \"__\")))\n    except Exception as e:\n        _zhurnal([\"%s FAIL резерв: %s\" % (kod, e)])\n        return False, \"Публикация отменена: не удалось сделать резерв (%s).\" % e\n\n    bylo = dict((put, _sha(put)) for put in celi)\n    try:\n        for put in celi:\n            _zapisat_atomarno(put, diag if put.endswith(\"-diag.html\") else html)\n    except Exception as e:\n        _otkat(papka_rez, celi)\n        _zhurnal([\"%s FAIL запись: %s — выполнен откат\" % (kod, e)])\n        return False, \"Публикация отменена при записи (%s). Выполнен откат.\" % e\n\n    posle = _kartochki(krome=kod)\n    izmenilis = [k for k in do if do.get(k) != posle.get(k)]\n    if izmenilis:\n        _otkat(papka_rez, celi)\n        _zhurnal([\"%s FAIL регрессия: изменились %s — откат\" % (kod, \", \".join(izmenilis))])\n        return False, (\"Публикация отменена: изменились чужие карточки (%s). \"\n                       \"Выполнен откат.\" % \", \".join(os.path.basename(x) for x in izmenilis))\n\n    stalo = dict((put, _sha(put)) for put in celi)\n    _zhurnal([\"%s PASS публикация · мастер stranica.sobrat_kartochku · файлов %d\"\n              % (kod, len(celi))]\n             + [\"    %s  %s -> %s\" % (os.path.basename(k), (bylo.get(k) or \"-\")[:12],\n                                      (stalo.get(k) or \"-\")[:12]) for k in celi])\n    hvost = \"\" if diag else \"\\nМатериалов диагностики в CRM нет — страница диагностики не трогалась.\"\n    return True, (\"Страница %s обновлена на сайте по утверждённому шаблону.%s\\n\"\n                  \"https://www.uaart.com.ua/video/%s.html?v=%d\"\n                  % (kod, hvost, kod, int(time.time())))"
+        },
+        {
+          "end_line": 226,
+          "kind": "FunctionDef",
+          "line": 219,
+          "name": "_otkat",
+          "sha256": "141cd24d4d57b4812ea1339fd6f74a0656b993b190897a4e932e2ec6792e15b1",
+          "source": "def _otkat(papka_rez, celi):\n    for put in celi:\n        kopiya = os.path.join(papka_rez, put.replace(BASE + \"/\", \"\").replace(\"/\", \"__\"))\n        try:\n            if os.path.exists(kopiya):\n                shutil.copy2(kopiya, put)\n        except Exception:\n            pass"
+        },
+        {
+          "end_line": 246,
+          "kind": "FunctionDef",
+          "line": 236,
+          "name": "_zapisat_atomarno",
+          "sha256": "894adae774fe7a54c7e0f3d3571a522f3d3169175ad4888b7b6ffdf62370dae4",
+          "source": "    def _zapisat_atomarno(put, tekst):\n        try:\n            imya = _mcf_os.path.basename(\"%s\" % put)\n            m = _mcf_re.search(r\"(UA-\\d{4})\", imya)\n            if m and \"-diag\" not in imya and isinstance(tekst, str):\n                tekst = _MCF.obrabotat_kartochku(tekst, m.group(1))\n            elif imya.startswith((\"index\", \"katalog\")) and isinstance(tekst, str):\n                tekst = _MCF.obrabotat_obshuyu(tekst)\n        except Exception:\n            pass\n        return _mcf_ishodnaya_zapis(put, tekst)"
+        },
+        {
+          "end_line": 280,
+          "kind": "FunctionDef",
+          "line": 259,
+          "name": "_zapisat_atomarno",
+          "sha256": "89aff713f168316c0ddc0fcbf659a8b131a164560eac729ab0d325b1fd12beab",
+          "source": "    def _zapisat_atomarno(put, tekst):\n        try:\n            imya = _v2_os.path.basename(\"%s\" % put)\n            m = _v2_re.search(r\"(UA-\\d{4})\", imya)\n            if m and \"-diag\" not in imya and isinstance(tekst, str):\n                bedy = _V2.proverit(tekst, m.group(1))\n                if bedy:\n                    try:\n                        with _v2_io.open(\"/home/Carix/publish_block.txt\", \"a\",\n                                         encoding=\"utf-8\") as f:\n                            f.write(\"%s %s BLOCKED: %s\\n\" % (\n                                _v2_time.strftime(\"%Y-%m-%d %H:%M:%S\"),\n                                m.group(1), \"; \".join(bedy)))\n                    except Exception:\n                        pass\n                    raise RuntimeError(\"PUBLICATION BLOCKED %s: %s\"\n                                       % (m.group(1), \"; \".join(bedy)))\n        except RuntimeError:\n            raise\n        except Exception:\n            pass\n        return _v2_ishodnaya(put, tekst)"
+        },
+        {
+          "end_line": 301,
+          "kind": "FunctionDef",
+          "line": 294,
+          "name": "_zapisat_atomarno",
+          "sha256": "09fe0f5f1ed94385a0f963e9cb927875cd296a4a45a01ae57caba8489f348fe5",
+          "source": "    def _zapisat_atomarno(put, tekst):\n        try:\n            m = _dd_re.search(r\"(UA-\\d{4})\", _dd_os.path.basename(\"%s\" % put))\n            if m and \"-diag\" not in \"%s\" % put:\n                _DD.svesti_k_unikalnym(m.group(1))\n        except Exception:\n            pass\n        return _dd_ishodnaya(put, tekst)"
+        },
+        {
+          "end_line": 322,
+          "kind": "FunctionDef",
+          "line": 313,
+          "name": "_ua9_waiting_text",
+          "sha256": "006f30ccf7cb19c5b100bdf763e30c33203017d20ea8529ba6d2e847b17b3602",
+          "source": "def _ua9_waiting_text(diag):\n    if not isinstance(diag, str):\n        return diag\n    for old in (\n        \"Материалы диагностики пока не добавлены.\",\n        \"Материалы комплексной диагностики пока не добавлены.\",\n        \"Данные диагностики пока не добавлены.\",\n    ):\n        diag = diag.replace(old, \"Комплексная диагностика ожидает данных.\")\n    return diag"
+        },
+        {
+          "end_line": 347,
+          "kind": "FunctionDef",
+          "line": 324,
+          "name": "_master",
+          "sha256": "e275afb42c655a2929f2471e049f936178961c1b4b45adc4e1e80dad1d07d6fa",
+          "source": "def _master(kod):\n    html, diag, mashina = _UA9_BASE_MASTER(kod)\n    if mashina is not None:\n        if not diag:\n            try:\n                import stranica as _ua9_stranica\n                diag = _ua9_stranica.sobrat_diagnostiku(mashina)\n            except Exception:\n                diag = None\n        try:\n            import master_card as _ua9_master_card\n            _ua9_master_card.cta_diagnostiki = (\n                lambda nom, m=None: _ua9_master_card._CTA_ON.replace(\"{KOD}\", nom)\n            )\n            if html:\n                html = _ua9_master_card.obrabotat_kartochku(html, kod)\n        except Exception:\n            pass\n    if isinstance(html, str):\n        html = html.replace(\n            \">Забронировать авто за 500 $<\", \">Задаток 500 $<\")\n        html = html.replace(\">Купить авто<\", \">Задаток 500 $<\")\n    diag = _ua9_waiting_text(diag)\n    return html, diag, mashina"
+        },
+        {
+          "end_line": 354,
+          "kind": "FunctionDef",
+          "line": 349,
+          "name": "proverit",
+          "sha256": "f4c9e7a453702594bc30d1a3e2c2fda961d08c2040f3fa0eba1fbe567cdedaf4",
+          "source": "def proverit(html, kod):\n    bedy = [x for x in _UA9_BASE_PROVERIT(html, kod)\n            if x != \"нет кнопки Купить\"]\n    if \"Задаток 500 $\" not in (html or \"\"):\n        bedy.append(\"нет кнопки Задаток 500 $\")\n    return bedy"
+        },
+        {
+          "end_line": 369,
+          "kind": "FunctionDef",
+          "line": 356,
+          "name": "_ua9_sobrat_katalog",
+          "sha256": "d3e013c8df3024e704fe990af052f0add4307b8d72262d864cf7ae20c30376db",
+          "source": "def _ua9_sobrat_katalog():\n    import stranica as _ua9_s\n    spisok = _ua9_s.mashiny()\n    kadry = {}\n    for mashina in spisok:\n        nom = _ua9_s.nomer(mashina)\n        kadry[nom] = _ua9_s.kadry_mashiny(mashina)\n    katalog = _ua9_s.sobrat_katalog(spisok, kadry)\n    try:\n        import master_card as _ua9_m\n        katalog = _ua9_m.obrabotat_obshuyu(katalog)\n    except Exception:\n        pass\n    return katalog, spisok"
+        },
+        {
+          "end_line": 413,
+          "kind": "FunctionDef",
+          "line": 371,
+          "name": "ua0009_urgent_probe",
+          "sha256": "471a3cb42ceb82a644dd2ea61e802cae378e761b90cd173fcd9b934abbc8fdf5",
+          "source": "def ua0009_urgent_probe():\n    kod = \"UA-0009\"\n    html, diag, mashina = _master(kod)\n    katalog, spisok = _ua9_sobrat_katalog()\n    nomera = []\n    try:\n        import stranica as _ua9_s\n        nomera = [_ua9_s.nomer(x) for x in spisok]\n    except Exception:\n        pass\n    try:\n        import master_card as _ua9_m\n        master_bedy = _ua9_m.proverit(html, kod)\n    except Exception as e:\n        master_bedy = [\"master check error: %s\" % e]\n    diag_href_count = (html or \"\").count(kod + \"-diag.html\")\n    catalog_count = len(re.findall(\n        r\"href=['\\\"]%s\\.html\" % re.escape(kod), katalog or \"\"))\n    result = {\n        \"card_found\": bool(mashina),\n        \"card_validation\": proverit(html, kod),\n        \"master_validation\": master_bedy,\n        \"diag_page_bytes\": len((diag or \"\").encode(\"utf-8\")),\n        \"diag_waiting_text\": \"Комплексная диагностика ожидает данных.\" in (diag or \"\"),\n        \"diag_href_count\": diag_href_count,\n        \"deposit_cta_count\": (html or \"\").count(\"Задаток 500 $\"),\n        \"catalog_ua0009_count\": catalog_count,\n        \"catalog_car_count\": len(spisok),\n        \"catalog_unique_numbers\": len(nomera) == len(set(nomera)),\n    }\n    result[\"pass\"] = bool(\n        result[\"card_found\"]\n        and not result[\"card_validation\"]\n        and not result[\"master_validation\"]\n        and result[\"diag_page_bytes\"] > 5000\n        and result[\"diag_waiting_text\"]\n        and result[\"diag_href_count\"] == 1\n        and result[\"deposit_cta_count\"] == 1\n        and result[\"catalog_ua0009_count\"] == 1\n        and result[\"catalog_car_count\"] >= 9\n        and result[\"catalog_unique_numbers\"]\n    )\n    return result"
+        },
+        {
+          "end_line": 465,
+          "kind": "FunctionDef",
+          "line": 415,
+          "name": "ua0009_urgent_publish",
+          "sha256": "3028bcf7202d76bf696bea8f5e62bb375e7003c3c1ea17402d7b6c26d3e5328f",
+          "source": "def ua0009_urgent_publish():\n    kod = \"UA-0009\"\n    proba = ua0009_urgent_probe()\n    if not proba.get(\"pass\"):\n        return False, \"UA-0009 URGENT PROBE FAIL: %s\" % json.dumps(\n            proba, ensure_ascii=False, sort_keys=True)\n    ok, soobshchenie = _UA9_BASE_PUBLISH(kod, proba=False)\n    if not ok:\n        return False, soobshchenie\n\n    katalog, spisok = _ua9_sobrat_katalog()\n    metka = time.strftime(\"%Y%m%d_%H%M%S\")\n    rezerv = os.path.join(REZERV_KORE, \"%s_URGENT_CATALOG_%s\" % (kod, metka))\n    os.makedirs(rezerv, exist_ok=True)\n    zapisannye = []\n    rezervy = {}\n    try:\n        for papka in (VIDEO, SITE):\n            if not os.path.isdir(papka):\n                continue\n            cel = os.path.join(papka, \"katalog.html\")\n            kopiya = os.path.join(\n                rezerv, os.path.basename(papka.rstrip(os.sep)) + \"__katalog.html\")\n            if os.path.exists(cel):\n                shutil.copy2(cel, kopiya)\n                rezervy[cel] = kopiya\n            _zapisat_atomarno(cel, katalog)\n            zapisannye.append(cel)\n\n        for cel in zapisannye:\n            fakt = _chitat(cel)\n            skolko = len(re.findall(\n                r\"href=['\\\"]%s\\.html\" % re.escape(kod), fakt))\n            if skolko != 1:\n                raise RuntimeError(\n                    \"catalog verification %s: UA-0009 count=%d\" % (cel, skolko))\n    except Exception as e:\n        for cel, kopiya in rezervy.items():\n            try:\n                shutil.copy2(kopiya, cel)\n            except Exception:\n                pass\n        return False, (\n            \"Карточка и диагностика созданы, но каталог возвращён из резерва: %s\"\n            % e)\n\n    return True, (\n        \"%s\\nUA-0009 добавлена в каталог. Диагностика активна и ожидает данных. \"\n        \"CTA: Задаток 500 $. Машин в каталоге: %d.\"\n        % (soobshchenie, len(spisok))\n    )"
+        },
+        {
+          "end_line": 498,
+          "kind": "FunctionDef",
+          "line": 472,
+          "name": "_master",
+          "sha256": "0422c489ed957c78fdb7e3b4b2c225f497525e2bbcfce6b03734fb31de02f854",
+          "source": "def _master(kod):\n    html, diag, mashina = _UA9_MASTER_V1(kod)\n    if html and (kod + \"-diag.html\") not in html:\n        cta = (\n            '<a class=\"mcf-diag-cta\" href=\"%s-diag.html\" '\n            'style=\"display:flex;align-items:center;gap:12px;margin:14px 0;'\n            'padding:15px 16px;border-radius:14px;text-decoration:none;'\n            'background:linear-gradient(180deg,rgba(212,175,55,.20),'\n            'rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);'\n            'color:#f4e3ae\">'\n            '<span style=\"font-size:22px;line-height:1\">🔧</span>'\n            '<span style=\"flex:1\">'\n            '<span style=\"display:block;font-weight:800;font-size:16px\">'\n            'Комплексная диагностика →</span>'\n            '<span style=\"display:block;font-size:13px;opacity:.85;'\n            'margin-top:3px\">Ожидает данных</span></span>'\n            '<span style=\"font-size:20px;opacity:.8\">›</span></a>'\n        ) % kod\n        poz = html.find(\"<a class='dejstvie kn_kupit'\")\n        if poz < 0:\n            poz = html.find(\"<a class='dejstvie'\")\n        if poz < 0:\n            poz = html.rfind(\"</body>\")\n        if poz < 0:\n            poz = len(html)\n        html = html[:poz] + cta + html[poz:]\n    return html, diag, mashina"
+        }
+      ],
+      "excerpts": [],
+      "needle_counts": {
+        "-diag.html": 6,
+        "материалы диагностики пока не добавлены": 1
+      },
+      "path": "/home/Carix/publikaciya.py",
+      "present": true,
+      "required": true,
+      "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4",
+      "size": 21682
+    },
     "seo_rehab_guard.py": {
       "path": "/home/Carix/seo_rehab_guard.py",
       "present": false,
@@ -6895,7 +7333,7 @@
       "size": 140940
     }
   },
-  "generated_at_utc": "2026-08-29T02:29:11Z",
+  "generated_at_utc": "2026-08-29T02:30:41Z",
   "mode": "LIVE_GET_ONLY_PROBE",
   "production_touched": false,
   "production_write_methods": [],
@@ -6910,7 +7348,7 @@
       "has_ua_0010": false,
       "has_ua_0011": false,
       "redirected": false,
-      "sha256": "96ecf28f0ee6a8e077dceb5d7538ecd220faa36275d1974b4fc3359b9aed160d",
+      "sha256": "a66db422436940a1fbbebb045223f7aa624074d388cc19c9a3c85d86278a78ce",
       "size": 17627,
       "status": 200,
       "url": "https://www.uaart.com.ua/video/UA-0009-diag.html"
@@ -6925,7 +7363,7 @@
       "has_ua_0010": false,
       "has_ua_0011": false,
       "redirected": false,
-      "sha256": "9ecceabbc7e5dbec7d81cc07597f507796e4417b9a542e2bf2e486aeed79bdec",
+      "sha256": "3f965f58fa7f43390804debe6c017bfb163f76b7b948fc381a39e328d5b87d1a",
       "size": 44476,
       "status": 200,
       "url": "https://www.uaart.com.ua/video/UA-0009.html"
@@ -6940,7 +7378,7 @@
       "has_ua_0010": true,
       "has_ua_0011": false,
       "redirected": false,
-      "sha256": "bba45fd989fee7ababdb18576f7411bcd898c9deac40029ea76b9fdc994332fd",
+      "sha256": "d9312bd194d9e31e794d1f31309f22bb24440026d9827ac9ef3293d1392a2a47",
       "size": 17627,
       "status": 200,
       "url": "https://www.uaart.com.ua/video/UA-0010-diag.html"
@@ -6955,7 +7393,7 @@
       "has_ua_0010": true,
       "has_ua_0011": false,
       "redirected": false,
-      "sha256": "a57d9079d9836339852961305f2bfd3f869869159e9d6630770f8317685c9e12",
+      "sha256": "02a80862559ae462cec09e3afed6bcd1ad9d73abfb0a96a526f534b854110876",
       "size": 45475,
       "status": 200,
       "url": "https://www.uaart.com.ua/video/UA-0010.html"
