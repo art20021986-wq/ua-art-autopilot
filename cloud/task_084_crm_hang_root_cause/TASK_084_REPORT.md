@@ -8,6 +8,6 @@ STATUS: **FAIL**
 - Startup singleton and notice debounce: NOT VERIFIED
 - CRM DB/media writes: NO
 - One controlled restart: YES
-- Backup: `/home/Carix/backups/task_084/20260829T083109Z`
+- Backup: `/home/Carix/backups/task_084/20260829T085009Z`
 - Immediate and delayed live checks: FAIL
-- Errors: ControllerError:LAUNCHER_NOT_RUNNING:Starting; ROLLBACK_RESTART_ControllerError:LAUNCHER_NOT_RUNNING:Starting
+- Errors: ControllerError:POSTCHECK_FAILED:InstallError:START_SINGLETON_NOT_HELD
