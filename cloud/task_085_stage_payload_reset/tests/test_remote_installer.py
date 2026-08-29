@@ -124,6 +124,7 @@ def sobrat_kartochku(m, kadry, sredn=None):
         compile(candidate, "publikaciya.py", "exec")
         self.assertIn(remote.MARKERS["publikaciya.py"], candidate)
         self.assertIn("diagnostic_placeholder_html", candidate)
+        self.assertIn("ensure_diagnostic_section", candidate)
         self.assertEqual(remote.patch_publikaciya(candidate), candidate)
 
     def test_catalog_preimage_does_not_require_final_stage_or_ua0009(self):

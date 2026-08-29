@@ -60,6 +60,22 @@ class StagePayloadGuardTests(unittest.TestCase):
         with self.assertRaises(guard.StagePayloadError):
             guard.diagnostic_placeholder_html("../UA-0011")
 
+    def test_main_card_diagnostic_cta_is_exact_and_wrong_link_fails(self):
+        html = (
+            "<html><body><section>Полная карточка</section>"
+            "<a class='kn_kupit' href='#buy'>Купить</a></body></html>"
+        )
+        result = guard.ensure_diagnostic_section(html, "UA-0011")
+        self.assertEqual(result.count("UA-0011-diag.html"), 1)
+        self.assertEqual(result.count("Комплексная диагностика"), 1)
+        self.assertLess(result.index("Комплексная диагностика"), result.index("kn_kupit"))
+        self.assertEqual(guard.ensure_diagnostic_section(result, "UA-0011"), result)
+        with self.assertRaises(guard.StagePayloadError):
+            guard.ensure_diagnostic_section(
+                "<html><body><a href='UA-0009-diag.html'>Диагностика</a></body></html>",
+                "UA-0011",
+            )
+
     def test_sql_triggers_block_container_and_eta_for_korea(self):
         con = sqlite3.connect(":memory:")
         con.execute(

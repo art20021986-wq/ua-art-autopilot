@@ -439,6 +439,8 @@ def patch_publikaciya(source: str) -> str:
     insertion = (
         anchor
         + "\n        # TASK087_DIAGNOSTIC_PLACEHOLDER_V1"
+        + "\n        from stage_payload_guard import ensure_diagnostic_section as _task087_main_diag"
+        + "\n        html = _task087_main_diag(html, kod)"
         + "\n        if not diag:"
         + "\n            from stage_payload_guard import diagnostic_placeholder_html as _task087_diag"
         + "\n            diag = _task087_diag(kod)"

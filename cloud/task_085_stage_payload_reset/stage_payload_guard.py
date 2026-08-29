@@ -112,6 +112,65 @@ def diagnostic_placeholder_html(code: str) -> str:
     )
 
 
+def ensure_diagnostic_section(html: str, code: str) -> str:
+    """Ensure exactly one correct full-card diagnostic CTA before validation."""
+    code = str(code or "").upper()
+    if not re.fullmatch(r"UA-[0-9]{4,}", code):
+        raise StagePayloadError("INVALID_DIAGNOSTIC_CODE")
+    source = str(html or "")
+    target = code + "-diag.html"
+    hrefs = []
+    for tag in re.findall(r"<a\b[^>]*>", source, re.I):
+        match = re.search(
+            r"href\s*=\s*[\"'](?:[^\"']*/)?(UA-[0-9]{4,}-diag\.html)"
+            r"(?:[?#][^\"']*)?[\"']",
+            tag, re.I,
+        )
+        if match:
+            hrefs.append(match.group(1).upper())
+    wrong = sorted(set(value for value in hrefs if value != target))
+    if wrong:
+        raise StagePayloadError(
+            "WRONG_DIAGNOSTIC_LINK:%s:%s" % (code, ",".join(wrong))
+        )
+    pattern = re.compile(
+        r"<a\b(?=[^>]*\bhref\s*=\s*[\"'](?:[^\"']*/)?"
+        + re.escape(target)
+        + r"(?:[?#][^\"']*)?[\"'])[^>]*>.*?</a\s*>",
+        re.I | re.S,
+    )
+    existing = list(pattern.finditer(source))
+    if len(existing) > 1:
+        raise StagePayloadError("DIAGNOSTIC_LINK_COUNT:%s:%d" % (code, len(existing)))
+    anchor = (
+        '<!--ua-task087-diagnostics-v1-->'
+        '<a class="mcf-diag-cta" data-ua-task087-diagnostics="1" '
+        'href="%s" style="display:flex;align-items:center;gap:12px;'
+        'margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;'
+        'background:linear-gradient(180deg,rgba(212,175,55,.20),'
+        'rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);'
+        'color:#f4e3ae"><span style="font-size:22px">🔧</span>'
+        '<span style="flex:1"><b>Комплексная диагностика →</b>'
+        '<small style="display:block;margin-top:3px;opacity:.82">'
+        'ЛКП · OBD · ходовая · фото · видео</small></span><span>›</span></a>'
+    ) % target
+    if existing:
+        source = pattern.sub(anchor, source, count=1)
+    else:
+        purchase = re.search(
+            r"<a\b(?=[^>]*\bclass\s*=\s*[\"'][^\"']*\bkn_kupit\b)",
+            source, re.I,
+        )
+        position = purchase.start() if purchase else source.lower().rfind("</body>")
+        if position < 0:
+            raise StagePayloadError("DIAGNOSTIC_INSERTION_POINT:" + code)
+        source = source[:position] + anchor + source[position:]
+    final = list(pattern.finditer(source))
+    if len(final) != 1 or "Комплексная диагностика" not in source:
+        raise StagePayloadError("DIAGNOSTIC_SECTION_INVALID:" + code)
+    return source
+
+
 def _quoted(names: Iterable[str]) -> list[str]:
     allowed = set(KOREA_RESET_FIELDS) | {"status"}
     result = []
