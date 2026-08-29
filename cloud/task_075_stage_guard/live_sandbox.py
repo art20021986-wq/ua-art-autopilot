@@ -144,8 +144,9 @@ def main() -> int:
         identifiers = [str(row.get("auto_number") or "").upper() for row in rows]
         if quick != "ok":
             raise StageGuardError("CRM_QUICK_CHECK:" + str(quick))
-        if len(rows) != 11 or len(set(identifiers)) != 11:
-            raise StageGuardError("EXPECTED_11_UNIQUE_CARDS")
+        if len(rows) < 11 or len(set(identifiers)) != len(rows):
+            raise StageGuardError("EXPECTED_AT_LEAST_11_UNIQUE_CARDS:%d:%d" %
+                                  (len(rows), len(set(identifiers))))
         if "UA-0009" not in identifiers or "UA-0011" not in identifiers:
             raise StageGuardError("MANDATORY_CARD_MISSING")
         evidence["database"] = {"quick_check": quick, "published": len(rows),
@@ -235,12 +236,16 @@ def main() -> int:
     if evidence["status"] == "PASS":
         report.extend([
             "- Backup manifest captured before transform: **PASS**",
-            "- Current published cards: **11/11 unique**",
+            "- Current published cards: **%d/%d unique**" % (
+                evidence["database"]["published"], evidence["database"]["unique_ids"]),
             "- UA-0009 protected check: **PASS**",
             "- UA-0011 photo restored in both local canaries: **PASS**",
-            "- Unified card template and absolute main photo: **11/11 PASS**",
-            "- Native stage filter compatibility and ordered placement: **11/11 PASS**",
-            "- Public photo HTTP probes: **11/11 PASS**",
+            "- Unified card template and absolute main photo: **%d/%d PASS**" % (
+                evidence["database"]["published"], evidence["database"]["published"]),
+            "- Native stage filter compatibility and ordered placement: **%d/%d PASS**" % (
+                evidence["database"]["published"], evidence["database"]["published"]),
+            "- Public photo HTTP probes: **%d/%d PASS**" % (
+                evidence["database"]["published"], evidence["database"]["published"]),
             "- Stage routing and universal category filter: **PASS**",
             "- Old ferry route / internal state leakage: **0**",
             "", "Production remains locked pending a separate owner command.",

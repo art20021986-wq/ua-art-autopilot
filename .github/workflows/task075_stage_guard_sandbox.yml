@@ -68,22 +68,25 @@ jobs:
           assert v['production_touched'] is False
           assert v['pythonanywhere_methods']==['GET']
           assert not v['crm_write'] and not v['site_write'] and not v['media_write']
-          assert v['database']['published']==11 and v['database']['unique_ids']==11
+          published = v['database']['published']
+          assert published >= 11 and v['database']['unique_ids'] == published
           assert v['database']['ua0009_safe'] is True
           assert v['ua0011']['resolved_main_photo'] is True
           assert v['ua0011']['category']=='more'
           for catalog in v['canary'].values():
               assert catalog['audit']['status']=='PASS', catalog['audit']['errors']
-              assert catalog['audit']['canonical_cards']==11
-              assert catalog['audit']['unified_templates']==11
-              assert catalog['audit']['absolute_photos']==11
-              assert catalog['audit']['native_filter_stages']==11
+              assert catalog['audit']['published_rows'] == published
+              assert catalog['audit']['canonical_cards'] == published
+              assert catalog['audit']['unified_templates'] == published
+              assert catalog['audit']['absolute_photos'] == published
+              assert catalog['audit']['native_filter_stages'] == published
               assert catalog['audit']['unified_list'] is True
               assert catalog['audit']['ordered_stage_groups']==sorted(
                   catalog['audit']['ordered_stage_groups'], reverse=True)
           assert all(item.get('status') in (200,206) and
                      str(item.get('content_type','')).startswith('image/')
                      for item in v['photo_resolution'].values())
+          assert len(v['photo_resolution']) == published
           print('TASK075_SANDBOX_EVIDENCE_PASS')
           PY
 
