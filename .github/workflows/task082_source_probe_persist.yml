@@ -41,6 +41,10 @@ jobs:
               text = raw.decode("utf-8","replace")
               lines = text.splitlines()
               tree = ast.parse(text)
+              function_names = sorted(
+                  node.name for node in ast.walk(tree)
+                  if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef))
+              )
               defs = {}
               for node in ast.walk(tree):
                   if (isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef))
@@ -58,7 +62,8 @@ jobs:
                   if any(token in source for token in ("init_db(","migrate(","run_polling(","start_polling(")):
                       module.append({"lineno":node.lineno,"end_lineno":end,"source":source})
               out["files"][name] = {"sha256":hashlib.sha256(raw).hexdigest(),
-                                     "definitions":defs,"module_statements":module}
+                                     "definitions":defs,"function_names":function_names,
+                                     "module_statements":module}
           dest=pathlib.Path("cloud/task_082_catalog_stage_repair/evidence/source_probe.json")
           dest.parent.mkdir(parents=True,exist_ok=True)
           dest.write_text(json.dumps(out,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding="utf-8")
