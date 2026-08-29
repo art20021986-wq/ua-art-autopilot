@@ -156,3 +156,52 @@ CLAUDE/Cloud не выполняет CRITICAL действия. Подготов
 Первый запуск Claude Autopilot `33228502519` завершился до commit и до любых production-действий: встроенный `python -m py_compile` отклонил сгенерированный `cloud/task_073/tests/test_installer.py` на строке 66, offset 0. Ни один из 15 временно сгенерированных файлов не был сохранён в репозиторий.
 
 Повторить формирование полного комплекта. Перед выдачей каждого Python-файла локально проверить закрытие всех строк/скобок и выполнить эквивалент `python3 -m py_compile` для **всех** `cloud/task_073/**/*.py`, включая `tests/test_installer.py`. Не сокращать и не оставлять незавершённые test literals. После compile обязательно запустить unit tests. При любой ошибке исправить кандидат внутри текущего запуска; не выдавать синтаксически невалидный файл и не переходить к Gate A/production.
+
+## Реальный live-аудит Codex и обязательная коррекция R3
+
+После отклонённого офлайн-прототипа Codex выполнил отдельный реальный GET-only probe через защищённый GitHub runner. Использовать `cloud/task_073/evidence/live_probe.json`, generated `2026-08-29T02:33Z`. Evidence получен только GET-запросами; production не менялся.
+
+Подтверждено:
+
+- `crm.db sha256=5743702206898b09543d6f50fb8b76a0b04265140ac8d14d0c1430bb99bb6eb4`, `quick_check=ok`, 11 уникальных UA-0001…UA-0011;
+- UA-0011: `id=18`, `published=1`, `publish_pending=0`, `status=sea_loaded`, диагностика отсутствует;
+- public `UA-0011.html` и `UA-0011-diag.html` перенаправляются на `/video/index.html`; в `katalog.html` ровно UA-0001…UA-0010, UA-0011 нет;
+- актуальные full SHA записаны в evidence для `cars_ui.py`, `konteyner.py`, `stranica.py`, `master_card.py`, `yadro.py`, `publikaciya.py` и остальных файлов;
+- реальный `konteyner.gde_mashina` и fallback `cars_ui.stage_menu` строят все `S.STATUSES`, включая внешние `sea_loaded / Загружено в контейнер` и `sea_transit / В пути`;
+- реальный `konteyner._ekran` (`📦 Номер и дата контейнера`) пока содержит поля номера/даты/срока, но не содержит двух status-callback. Следовательно, нельзя просто удалить внешние кнопки: сначала перенести/добавить те же `car_setstage:<cid>:sea_loaded|sea_transit` внутрь `_ekran`, затем исключить их из обоих внешних renderers. Существующие handlers `cars_ui.stage_set` и `konteyner.posle_statusa` не менять;
+- одинаковый `_ua_seo068_normalize` в `stranica.py`, `master_card.py`, `yadro.py` требует существующий live `<UA>-diag.html` ДО построения нового bundle и выбрасывает `SEO068_DIAGNOSTIC_TARGET_MISSING`; ниже уже существует `_ua068_ensure_diag_files`, поэтому текущий порядок делает failsafe недостижимым для новой карточки;
+- `cars_ui.toggle_publish` сначала пишет `published=1`, затем получает `(ok, text)` от `publikaciya.opublikovat`, игнорирует `ok` и безусловно отправляет `Машина видна клиентам в каталоге.`;
+- `publikaciya.opublikovat` пишет primary/diag, но общий `katalog.html` обновляется только отдельным hardcoded UA-0009 helper/background full rebuild. Это не единый commit публикации.
+
+### Отклонить R1-прототипы
+
+Текущие `tools/live_audit_controller.py`, `keyboard_transformer.py`, `publish_guard.py`, `installer.py`, `public_verifier.py` и `workflows/gate_b_manual_dispatch.yml` не являются release-кандидатом:
+
+- live controller возвращает `NOT_IMPLEMENTED_WITHOUT_LIVE_CREDENTIALS`;
+- keyboard transformer работает с вымышленным dict, не с live Python source;
+- publish guard пишет только два файла последовательно, не строит каталог/счётчики и не откатывает уже заменённый первый файл;
+- installer имеет неиспользуемый `target_paths`, collision backup по basename и неполный rollback;
+- verifier проверяет одну страницу и вымышленный revision header;
+- Gate B workflow содержит placeholder `echo` вместо действий.
+
+Не удалять их ради маскировки истории, но пометить в отчёте `REJECTED_PROTOTYPE_DO_NOT_DEPLOY` и создать полностью реализованные файлы с суффиксом `_v2`.
+
+### Обязательный live-кандидат V2
+
+1. `patcher_v2.py` скачивает/принимает полные live preimage только во временной среде и применяет точечные SHA+AST transforms:
+   - `konteyner._ekran`: добавить ровно по одному рабочему `car_setstage:%d:sea_loaded` и `car_setstage:%d:sea_transit` внутри контейнерного раздела;
+   - `konteyner.gde_mashina` и `cars_ui.stage_menu`: исключить только эти два code из внешних списков; остальные статусы/порядок/callback неизменны;
+   - `cars_ui.toggle_publish`: учитывать `ok`; success только после publish PASS; при publish fail вернуть `published` к точному preimage с read-back и отправить одно failure-сообщение; исключения также fail+rollback; скрытие сохранить;
+   - в трёх `_ua_seo068_normalize` убрать только ошибочный precondition на **старый live diagnostic file**. Оставить fail-closed проверки canonical, robots, exact diagnostic href, CTA и insertion point. Наличие/валидность diagnostics теперь проверяется в staged bundle до commit;
+   - `publikaciya.py`: добавить generic unified publisher для любого UA, не hardcoded UA-0009. Он до write строит primary+diag/placeholder+catalog для VIDEO и SITE, валидирует 11 уникальных карточек и exact href, готовит все temp files + fsync + manifest, делает уникальный backup каждого target, заменяет bounded set, read-back проверяет SHA и protected cards, при любой ошибке откатывает весь write set и проверяет восстановление. `proba=True` = строго zero production writes.
+2. Не менять `crm.db` в publisher. Единственная разрешённая DB-операция остаётся существующий field `published` выбранной карточки через `toggle_publish` с точным rollback при fail.
+3. Interactive publication должна проверить exact UA primary, diagnostics и catalog через реальный public HTTP без redirect-to-home до финального success; не требовать несуществующий revision header. Gate B дополнительно делает delayed verify >=60 секунд.
+4. Background `stranica.main()` после изменения DB тоже обязан проходить для UA-0011 без старого diag target и генерировать placeholder+catalog; Gate A запускает его только на temp copy/tree.
+5. Gate A V2 реально использует `PYTHONANYWHERE_API_TOKEN` GET-only, повторно проверяет свежие SHA, скачивает source+DB во временную папку, применяет V2 candidate, compile/import/tests на копии и не пишет production.
+6. Gate A V2 обязан доказать baseline FAIL → candidate PASS для UA-0011, UI outer=0/inner=2, false-success rollback, unified catalog=11, idempotent repeat, future UA-9913, fault injection + full rollback, UA-0009 и existing 10 protected.
+7. Создать реально исполнимые `gate_a_v2.py`, `gate_b_installer_v2.py`, `gate_b_controller_v2.py`, `postcheck_v2.py`, `GATE_A_V2_REPORT.md` generator и два workflow-файла under `cloud/task_073/workflows/`. Никаких `placeholder`, `TODO`, `NOT_IMPLEMENTED` или `echo`-шагов.
+8. Gate A workflow использует secret только для GET и может иметь push-trigger только на собственный путь после копирования Codex в `.github/workflows/`. Gate B — только manual `workflow_dispatch` с exact approval token.
+9. Для PythonAnywhere API/controller использовать проверенные production patterns из `cloud/task_069/gate_a.py`, `cloud/task_069/gate_b_controller.py`, `cloud/task_069/gate_b_installer.py`, `cloud/task_072/gate_a_v2.py` и `cloud/task_072/gate_b_controller_v2.py`; не создавать очередной API shell.
+10. Все Python-файлы compile + unit/integration tests внутри автопилота. Отчёт не может заявлять Gate A PASS, пока реальный secret-backed workflow не выполнен; допустимый результат генерации — `READY_TO_RUN_REAL_GATE_A_V2`.
+
+После этой коррекции production по-прежнему не трогать: Claude создаёт V2 release tooling, Codex копирует/запускает реальный Gate A, аудитирует evidence и только при PASS запускает уже одобренный Gate B.
