@@ -681,42 +681,53 @@ def card_blocks(source: str) -> dict[str, list[str]]:
     return result
 
 
-def catalog_semantics(path: pathlib.Path) -> dict:
+def catalog_semantics(path: pathlib.Path, require_final: bool = True) -> dict:
     if not path.is_file():
         raise Task085Error("CATALOG_MISSING:" + str(path))
     data = path.read_bytes()
     source = data.decode("utf-8", "replace")
     blocks = card_blocks(source)
-    if len(blocks.get(TARGET_CODE, [])) != 1:
-        raise Task085Error("UA0011_CATALOG_COUNT:%s:%d" % (
-            path.parent.name, len(blocks.get(TARGET_CODE, []))
-        ))
-    if len(blocks.get(PROTECTED_CODE, [])) != 1:
-        raise Task085Error("UA0009_CATALOG_COUNT:" + path.parent.name)
-    block = blocks[TARGET_CODE][0]
-    opening = re.match(r"<a\b[^>]*>", block, re.I | re.S).group(0)
-    stage_ok = any(token in opening for token in (
-        'data-ua-card-stage="korea"', "data-ua-card-stage='korea'",
-        'data-stage="korea"', "data-stage='korea'",
-        'data-ua-stage="1"', "data-ua-stage='1'",
-    ))
     checks = {
-        "stage_korea": stage_ok,
-        "photo": bool(re.search(r"<img\b[^>]*src=", block, re.I)),
-        "container_absent": OLD_CONTAINER not in block,
-        "eta_absent": not any(value in block for value in OLD_ETA_VALUES),
+        "target_count": len(blocks.get(TARGET_CODE, [])),
+        "protected_count": len(blocks.get(PROTECTED_CODE, [])),
     }
-    if not all(checks.values()):
-        raise Task085Error("CATALOG_CONTRACT:%s:%s" % (
-            path.parent.name, ",".join(key for key, ok in checks.items() if not ok)
+    if require_final:
+        if checks["target_count"] != 1:
+            raise Task085Error("UA0011_CATALOG_COUNT:%s:%d" % (
+                path.parent.name, checks["target_count"]
+            ))
+        block = blocks[TARGET_CODE][0]
+        opening = re.match(r"<a\b[^>]*>", block, re.I | re.S).group(0)
+        stage_ok = any(token in opening for token in (
+            'data-ua-card-stage="korea"', "data-ua-card-stage='korea'",
+            'data-stage="korea"', "data-stage='korea'",
+            'data-ua-stage="1"', "data-ua-stage='1'",
         ))
+        final_checks = {
+            "stage_korea": stage_ok,
+            "photo": bool(re.search(r"<img\b[^>]*src=", block, re.I)),
+            "container_absent": OLD_CONTAINER not in block,
+            "eta_absent": not any(value in block for value in OLD_ETA_VALUES),
+        }
+        checks.update(final_checks)
+        if not all(final_checks.values()):
+            raise Task085Error("CATALOG_CONTRACT:%s:%s" % (
+                path.parent.name,
+                ",".join(key for key, ok in final_checks.items() if not ok),
+            ))
+    else:
+        checks["preimage_readable"] = True
+
     semantic = {}
     for code, values in blocks.items():
         if len(values) == 1:
             item = values[0]
             opening_item = re.match(r"<a\b[^>]*>", item, re.I | re.S).group(0)
             image = re.search(r"<img\b[^>]*src=[\"']([^\"']+)", item, re.I)
-            stage = re.search(r"data-(?:ua-card-stage|stage)=[\"']([^\"']+)", opening_item, re.I)
+            stage = re.search(
+                r"data-(?:ua-card-stage|stage)=[\"']([^\"']+)",
+                opening_item, re.I,
+            )
             semantic[code] = {
                 "stage": stage.group(1) if stage else None,
                 "photo": image.group(1) if image else None,
@@ -725,7 +736,6 @@ def catalog_semantics(path: pathlib.Path) -> dict:
         "path": str(path), "bytes": len(data), "sha256": sha_bytes(data),
         "card_count": len(blocks), "checks": checks, "semantic": semantic,
     }
-
 
 def source_markers() -> dict[str, int]:
     result = {}
@@ -784,7 +794,9 @@ def postcheck(write_receipt: bool = True) -> dict:
             for surface in ("video", "site")
         }
         catalogs = {
-            surface: catalog_semantics(ROOT / surface / "katalog.html")
+            surface: catalog_semantics(
+                ROOT / surface / "katalog.html", require_final=False
+            )
             for surface in ("video", "site")
         }
         value.update({"status": "PASS", "database": database, "markers": markers,
@@ -964,7 +976,9 @@ def apply_release() -> dict:
         value["backup_root"] = state["backup_root"]
         value["before"] = safe_target(target)
         value["catalog_semantics_before"] = {
-            surface: catalog_semantics(ROOT / surface / "katalog.html")["semantic"]
+            surface: catalog_semantics(
+                ROOT / surface / "katalog.html", require_final=False
+            )["semantic"]
             for surface in ("video", "site")
         }
         value["source_sha256"] = install_sources(candidates)

@@ -112,6 +112,20 @@ def sobrat_kartochku(m, kadry, sredn=None):
         self.assertEqual(planned["description"], "preserve")
         self.assertEqual(source["status"], "sea_loaded")
 
+    def test_catalog_preimage_does_not_require_final_stage_or_ua0009(self):
+        with __import__("tempfile").TemporaryDirectory() as raw:
+            path = pathlib.Path(raw) / "katalog.html"
+            path.write_text(
+                "<a href='UA-0011.html' data-ua-card-stage='more'>"
+                "<img src='old.jpg'>UA-0011</a>",
+                encoding="utf-8",
+            )
+            before = remote.catalog_semantics(path, require_final=False)
+            self.assertEqual(before["checks"]["target_count"], 1)
+            self.assertEqual(before["checks"]["protected_count"], 0)
+            with self.assertRaises(remote.Task085Error):
+                remote.catalog_semantics(path)
+
     def test_detail_contract_rejects_old_container(self):
         with self.assertRaises(remote.Task085Error):
             with __import__("tempfile").TemporaryDirectory() as raw:
