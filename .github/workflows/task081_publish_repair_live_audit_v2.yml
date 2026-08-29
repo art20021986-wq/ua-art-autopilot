@@ -9,6 +9,10 @@ on:
       - 'cloud/task_081_publish_repair/patcher_v2.py'
       - 'cloud/task_081_publish_repair/gate_a_v2.py'
       - 'cloud/task_081_publish_repair/test_release_candidate_v2.py'
+      - 'cloud/task_081_publish_repair/gate_b_installer_v2.py'
+      - 'cloud/task_081_publish_repair/gate_b_controller_v2.py'
+      - 'cloud/task_081_publish_repair/postcheck_v2.py'
+      - 'cloud/task_081_publish_repair/test_gate_b_v2.py'
   workflow_dispatch:
 
 permissions:
@@ -51,8 +55,12 @@ jobs:
       - name: Build and test exact release candidate on live copies
         working-directory: cloud/task_081_publish_repair
         run: |
-          python3 -W error -m py_compile patcher_v2.py gate_a_v2.py test_release_candidate_v2.py
+          python3 -W error -m py_compile \
+            patcher_v2.py gate_a_v2.py test_release_candidate_v2.py \
+            gate_b_installer_v2.py gate_b_controller_v2.py postcheck_v2.py \
+            test_gate_b_v2.py
           python3 -W error test_release_candidate_v2.py
+          python3 -W error test_gate_b_v2.py
           python3 gate_a_v2.py
 
       - name: Validate evidence contract
