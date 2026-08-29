@@ -96,22 +96,35 @@ def db_audit(payload: bytes):
         connection.execute("PRAGMA query_only=ON")
         quick = connection.execute("PRAGMA quick_check").fetchone()[0]
         columns = [row[1] for row in connection.execute("PRAGMA table_info(cars)")]
-        needed = ["id", "auto_number", "brand", "model", "year", "vin"]
+        needed = [
+            "id", "auto_number", "brand", "model", "year", "vin",
+            "status", "stage", "published", "photos",
+        ]
         if any(name not in columns for name in needed):
             raise RuntimeError("DB_COLUMNS_MISSING")
         rows = [dict(row) for row in connection.execute(
-            "SELECT id,auto_number,brand,model,year,vin FROM cars ORDER BY id")]
+            "SELECT id,auto_number,brand,model,year,vin,status,stage,published,photos "
+            "FROM cars ORDER BY id")]
         connection.close()
     cards = []
     for row in rows:
         vin = re.sub(r"[\s-]+", "", str(row.get("vin") or "")).upper()
         valid = bool(re.fullmatch(r"[A-HJ-NPR-Z0-9]{17}", vin))
+        raw_photos = row.get("photos")
+        try:
+            loaded_photos = json.loads(raw_photos) if isinstance(raw_photos, str) else raw_photos
+        except Exception:
+            loaded_photos = []
         cards.append({
             "id": row.get("auto_number"),
             "db_id": row.get("id"),
             "brand": row.get("brand"),
             "model": row.get("model"),
             "year": row.get("year"),
+            "status": row.get("status"),
+            "stage": row.get("stage"),
+            "published": bool(row.get("published")),
+            "photo_count": len(loaded_photos) if isinstance(loaded_photos, list) else 0,
             "vin4": vin[-4:] if valid else None,
             "vin_valid": valid,
             "vin_present": bool(vin),
