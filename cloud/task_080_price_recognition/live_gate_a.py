@@ -261,6 +261,20 @@ def _snapshot_once(directory: pathlib.Path) -> dict:
                 "GROUP BY auto_number HAVING count(*)>1 ORDER BY auto_number"
             )
         ]
+        ua0013_rows = con.execute(
+            "SELECT id,auto_number,brand,model,year,review_status,published,"
+            "publish_pending,status,stage,sea_container,sea_date_out,"
+            "days_to_kyiv,eta_manual,"
+            "length(COALESCE(photos,'')) AS photos_bytes,"
+            "length(COALESCE(videos,'')) AS videos_bytes,"
+            "length(COALESCE(condition_photos,'')) AS condition_photos_bytes,"
+            "length(COALESCE(condition_videos,'')) AS condition_videos_bytes "
+            "FROM cars WHERE upper(auto_number)=?",
+            ("UA-0013",),
+        ).fetchall()
+        if len(ua0013_rows) != 1:
+            raise RuntimeError("UA0013_ROW_COUNT:%d" % len(ua0013_rows))
+        ua0013 = dict(ua0013_rows[0])
         audit_columns = [
             dict(row) for row in con.execute("PRAGMA table_info(audit)").fetchall()
         ]
@@ -283,6 +297,7 @@ def _snapshot_once(directory: pathlib.Path) -> dict:
             "audit_create_sql": audit_create_row["sql"] if audit_create_row else None,
             "audit_count": con.execute("SELECT count(*) FROM audit").fetchone()[0],
             "cards": cards,
+            "ua0013": ua0013,
             "duplicates": duplicates,
             "price_audit": {
                 "missing_or_empty": missing,
