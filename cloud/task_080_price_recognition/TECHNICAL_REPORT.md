@@ -42,7 +42,7 @@ or backfilled.
 
 ## Verification
 
-- `56/56 PASS` deterministic sandbox/canary tests.
+- `58/58 PASS` deterministic sandbox/canary tests.
 - Fresh GET-only Gate A matched all complete source and active-block hashes.
 - Nine transformed active blocks compiled in memory.
 - Candidate evidence status:
