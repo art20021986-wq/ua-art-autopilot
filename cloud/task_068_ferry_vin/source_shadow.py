@@ -124,7 +124,15 @@ def main() -> int:
             if digest != repair.EXPECTED_SHA[path]:
                 raise RuntimeError("PROTECTED_SOURCE_CHANGED:" + name)
             compile(raw.decode("utf-8"), path, "exec")
-        repair._validate_cars_ui(fetch(repair.CARS_UI_PATH).decode("utf-8"))
+        cars_raw = fetch(repair.CARS_UI_PATH)
+        cars_candidate = repair._patch_cars_ui(
+            cars_raw.decode("utf-8"), sha(cars_raw))
+        repair._validate_cars_ui(cars_candidate)
+        result["protected"]["cars_ui.py"].update({
+            "candidate_sha256": sha(cars_candidate.encode("utf-8")),
+            "candidate_changed": cars_candidate.encode("utf-8") != cars_raw,
+            "candidate_valid": True,
+        })
         result["status"] = "PASS"
     except Exception as exc:
         result["errors"].append(type(exc).__name__ + ":" + str(exc))
