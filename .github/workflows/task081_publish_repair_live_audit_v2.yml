@@ -1,0 +1,77 @@
+name: task081-publish-repair-live-audit-v2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task081_publish_repair_live_audit_v2.yml'
+      - 'cloud/task_081_publish_repair/live_audit_v2.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: task081-publish-repair-live-audit-v2
+  cancel-in-progress: false
+
+jobs:
+  fresh-get-only-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Prove transport is GET-only
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('cloud/task_081_publish_repair/live_audit_v2.py').read_text(encoding='utf-8')
+          assert 'method="GET"' in source
+          for forbidden in ('method="POST"', 'method="PUT"', 'method="PATCH"', 'method="DELETE"'):
+              assert forbidden not in source, forbidden
+          print('TASK081_GET_ONLY_STATIC_PASS')
+          PY
+
+      - name: Compile probe
+        run: python3 -W error -m py_compile cloud/task_081_publish_repair/live_audit_v2.py
+
+      - name: Fetch exact live sources, CRM row, and public state
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_081_publish_repair/live_audit_v2.py
+
+      - name: Validate evidence contract
+        run: |
+          python3 - <<'PY'
+          import json
+          path = 'cloud/task_081_publish_repair/evidence/live_audit_v2/live_audit.json'
+          value = json.load(open(path, encoding='utf-8'))
+          assert value['status'] == 'PASS_AUDIT_DEFECT_REPRODUCED', value['errors']
+          assert value['http_methods'] == ['GET']
+          assert value['production_touched'] is False
+          assert value['crm_write'] is False and value['site_write'] is False
+          assert value['database']['quick_check'] == 'ok'
+          assert value['database']['row_count'] == 1
+          assert value['derived_stage'] == {
+              'catalog_category': 'more',
+              'owner_label': 'На пароме',
+              'status': 'sea_loaded',
+          }
+          assert value['defects']['toggle_ignores_publisher_result'] is True
+          assert value['defects']['seo_live_diag_precheck_modules'] == 3
+          print('TASK081_LIVE_AUDIT_CONTRACT_PASS')
+          PY
+
+      - name: Upload exact audit artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task081-live-audit-v2-${{ github.run_id }}
+          path: cloud/task_081_publish_repair/evidence/live_audit_v2/
+          if-no-files-found: warn
+          retention-days: 14
