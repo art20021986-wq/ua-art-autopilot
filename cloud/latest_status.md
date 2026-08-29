@@ -1,12 +1,13 @@
-TASK_ID: task_079
+TASK_ID: task_080
 ROUND: 1
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Completed sandbox-only release-candidate design for TASK 077/076 ETA/status sync (shared writer, rollback orchestrator, file stager, narrow stale-date sanitizer, fail-closed live_patcher, sandbox test suite, prepared Gate B plan). Gate A/B not executed.
-FILES_CREATED: cloud/task_077_container_stage_sync/patcher/eta_release_candidate.py, cloud/task_077_container_stage_sync/patcher/live_patcher.py, cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py, cloud/task_077_container_stage_sync/sandbox/release_candidate_report.md, cloud/task_077_container_stage_sync/README.md, cloud/task_077_container_stage_sync/evidence/gate_a_findings.md, cloud/task_077_container_stage_sync/gate_b_manual_workflow.md
+CLAUDE_STATUS: BLOCKED
+CURRENT_ACTION: Prepared shared deterministic price parser, hash-gated patcher, offline tests, and rollback plan; could not perform the mandatory live Gate A GET/hash audit of cars_ui.py, local_ocr.py, ai_fast_schema.py, ai_filter.py, or the active price writer because this delivery channel has no live PythonAnywhere/network access.
+FILES_CREATED: cloud/task_080_price_recognition/audit/GATE_A_STATUS.md, cloud/task_080_price_recognition/src/price_parser.py, cloud/task_080_price_recognition/src/patcher.py, cloud/task_080_price_recognition/tests/test_price_parser.py, cloud/task_080_price_recognition/TEST_RESULTS.md, cloud/task_080_price_recognition/BACKUP_ROLLBACK_PLAN.md, cloud/task_080_price_recognition/REPORT.md
 PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Review cloud/task_077_container_stage_sync/sandbox/release_candidate_report.md final verdict FAIL_CLOSED_NO_LIVE_SOURCE_BYTES_AVAILABLE_FOR_FUNCTION_LEVEL_VERIFICATION. The 22-case sandbox suite passes against synthetic fixtures reproducing the documented live defect (UA-0009/0010/0011/0012). live_patcher.py intentionally always fails closed because no real live file bytes or captured golden function source were supplied to Claude/Cloud in this task. Gate B remains fully unexecuted, gated on the exact token CRM-CONTAINER-STAGE-SYNC-004-V1.0-PRODUCTION-APPROVED plus a separate evidence-backed function-source capture step described in gate_b_manual_workflow.md.
-UPDATED_AT_UTC: 2026-08-29T07:09:23Z
+NEXT_FOR_CHATGPT: Run a real live Gate A GET + SHA-256 audit of cars_ui.py, local_ocr.py, ai_fast_schema.py, ai_filter.py and the active price writer, feed those hashes into cloud/task_080_price_recognition/src/patcher.py, execute cloud/task_080_price_recognition/tests/test_price_parser.py in a real interpreter and record literal output, then request a separately authorized Gate B only after all of that passes. Result of this round is FAIL_CLOSED_NO_LIVE_GATE_A_ACCESS_IN_THIS_DELIVERY_CHANNEL, not PASS.
 CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+CURRENT_STATUS: {"canonical_branch":"main","conflicts_present":false,"crm_write":"NO","gate_a_executed":"NO","memory_version":4,"production_write":"NO","ua0009_safe_to_publish":"NO"}
+UPDATED_AT_UTC: 2026-08-29T07:12:57Z
 MEMORY_VERSION_READ: 4
