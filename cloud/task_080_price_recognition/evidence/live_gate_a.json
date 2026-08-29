@@ -2,6 +2,91 @@
   "contract_id": "CRM-PRICE-RECOGNITION-006-v1.0",
   "crm_write": false,
   "database": {
+    "audit_columns": [
+      {
+        "cid": 0,
+        "dflt_value": null,
+        "name": "id",
+        "notnull": 0,
+        "pk": 1,
+        "type": "INTEGER"
+      },
+      {
+        "cid": 1,
+        "dflt_value": null,
+        "name": "actor_id",
+        "notnull": 0,
+        "pk": 0,
+        "type": "INTEGER"
+      },
+      {
+        "cid": 2,
+        "dflt_value": null,
+        "name": "action",
+        "notnull": 1,
+        "pk": 0,
+        "type": "TEXT"
+      },
+      {
+        "cid": 3,
+        "dflt_value": null,
+        "name": "entity_type",
+        "notnull": 0,
+        "pk": 0,
+        "type": "TEXT"
+      },
+      {
+        "cid": 4,
+        "dflt_value": null,
+        "name": "entity_id",
+        "notnull": 0,
+        "pk": 0,
+        "type": "INTEGER"
+      },
+      {
+        "cid": 5,
+        "dflt_value": null,
+        "name": "field",
+        "notnull": 0,
+        "pk": 0,
+        "type": "TEXT"
+      },
+      {
+        "cid": 6,
+        "dflt_value": null,
+        "name": "old_value",
+        "notnull": 0,
+        "pk": 0,
+        "type": "TEXT"
+      },
+      {
+        "cid": 7,
+        "dflt_value": null,
+        "name": "new_value",
+        "notnull": 0,
+        "pk": 0,
+        "type": "TEXT"
+      },
+      {
+        "cid": 8,
+        "dflt_value": null,
+        "name": "created_at",
+        "notnull": 1,
+        "pk": 0,
+        "type": "TEXT"
+      }
+    ],
+    "audit_count": 1328,
+    "audit_create_sql": "CREATE TABLE audit (\n            id           INTEGER PRIMARY KEY AUTOINCREMENT,\n            actor_id     INTEGER,\n            action       TEXT NOT NULL,\n            entity_type  TEXT,\n            entity_id    INTEGER,\n            field        TEXT,\n            old_value    TEXT,\n            new_value    TEXT,\n            created_at   TEXT NOT NULL\n        )",
+    "audit_indexes": [
+      {
+        "name": "idx_audit_entity",
+        "origin": "c",
+        "partial": 0,
+        "seq": 0,
+        "unique": 0
+      }
+    ],
     "bytes": 2985984,
     "cards": [
       {
@@ -179,7 +264,7 @@
     "sha256": "2b27edb26377e24e869dd61447ae535ae8004768a33c6ed3cb05f0666c5be7c8"
   },
   "errors": [],
-  "finished_at_utc": "2026-08-29T07:20:01Z",
+  "finished_at_utc": "2026-08-29T07:22:11Z",
   "http_methods": [
     "GET"
   ],
@@ -337,12 +422,57 @@
           "truncated": false
         },
         {
+          "end_line": 2044,
+          "kind": "FunctionDef",
+          "line": 2043,
+          "name": "_v168_empty",
+          "sha256": "815268921e7064a5832bcdcaf62810db86ecba5b4d0e4bea458226cf0a4cc27a",
+          "source": "def _v168_empty(value):\n    return value in (None, \"\", 0, [], {})\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2052,
+          "kind": "FunctionDef",
+          "line": 2047,
+          "name": "_v168_is_correction",
+          "sha256": "879909d12036df9d08f8028362877507e137b7aafa17bb4bb9ef0537be5defad",
+          "source": "def _v168_is_correction(text):\n    import re as _v168_re\n    return bool(_v168_re.search(\n        r\"\\b(?:измени|изменить|исправь|исправить|замени|заменить|поменяй|\"\n        r\"скорректируй|зміни|змінити|виправ|заміни|поміняй|change|correct|\"\n        r\"replace|update)\\b\", str(text or \"\").casefold()))\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2075,
+          "kind": "FunctionDef",
+          "line": 2055,
+          "name": "_v168_named_fields",
+          "sha256": "7c2242a40eedf9b0456c89c14383f0eea847e5b1be82cbea742072d69d7878e7",
+          "source": "def _v168_named_fields(text, allowed):\n    import re as _v168_re\n    value = str(text or \"\").casefold().replace(\"ё\", \"е\")\n    patterns = {\n        \"fuel\": r\"топлив|палив|fuel|l\\s*p\\s*[ig]|бензин|diesel|дизел|hybrid|electric|газ\",\n        \"engine_cc\": r\"объ?ем|об['’]?єм|двигател|двигун|мотор|engine\",\n        \"color\": r\"цвет|колір|color|white|black|silver|gray|grey|бел|білий|черн\",\n        \"mileage_km\": r\"пробег|пробіг|mileage|kilometr\",\n        \"transmission\": r\"кпп|коробк|трансмис|transmission|automatic|manual|автомат|механик\",\n        \"drive\": r\"привод|привід|drive|4wd|awd|fwd|rwd\",\n        \"price_uah\": r\"цена|ціна|стоимост|вартіст|price\",\n        \"description\": r\"описан|опис|description\",\n        \"status\": r\"статус|этап|етап|stage|status\",\n        \"brand\": r\"марка|бренд|brand|make\",\n        \"model\": r\"модель|model\",\n        \"year\": r\"год|рік|year\",\n        \"vin\": r\"\\bvin\\b|вин[- ]?код\",\n    }\n    permitted = set(allowed or ())\n    return {field for field, pattern in patterns.items()\n            if field in permitted and _v168_re.search(pattern, value)}\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2111,
+          "kind": "FunctionDef",
+          "line": 2078,
+          "name": "_v168_cas_write",
+          "sha256": "1c6b4a285cb821847621ed16ac215cbbff9130006babfc01f739880eca04bf8a",
+          "source": "def _v168_cas_write(card_id, field, expected_old, new_value, actor_id, correction=False):\n    import re as _v168_re\n    if not _v168_re.fullmatch(r\"[a-z_][a-z0-9_]*\", str(field or \"\")):\n        return False, \"invalid\"\n    if _v168_empty(new_value):\n        return False, \"empty\"\n    with db.connect() as _v168_con:\n        columns = {row[1] for row in _v168_con.execute(\"PRAGMA table_info(cars)\")}\n        if field not in columns:\n            return False, \"unknown\"\n        row = _v168_con.execute(\n            \"SELECT %s FROM cars WHERE id=?\" % field, (int(card_id),)).fetchone()\n        if row is None:\n            return False, \"missing_card\"\n        current = row[0]\n        if str(current or \"\") == str(new_value):\n            return False, \"same\"\n        if correction:\n            if str(current or \"\") != str(expected_old or \"\"):\n                return False, \"conflict\"\n        elif not _v168_empty(current):\n            return False, \"filled\"\n        cursor = _v168_con.execute(\n            \"UPDATE cars SET %s=?,updated_at=? WHERE id=? AND %s IS ?\" % (field, field),\n            (new_value, db.now(), int(card_id), current))\n        if cursor.rowcount != 1:\n            return False, \"conflict\"\n    try:\n        db.log_action(actor_id, \"card_edit\", \"cars\", int(card_id),\n                      field, current, new_value)\n    except Exception as _v168_exc:\n        log.warning(\"CRM CAS audit failed card=%s field=%s error=%s\",\n                    card_id, field, _v168_exc)\n    return True, \"applied\"\n",
+          "truncated": false
+        },
+        {
           "end_line": 2173,
           "kind": "FunctionDef",
           "line": 2159,
           "name": "voice_change_plan",
           "sha256": "fa9e5c4a440314d4fac07d091f3044a73201606e74d7c952b739e5f87d0a427a",
           "source": "def voice_change_plan(card, data, allowed, override=False):\n    \"\"\"Return bounded field updates; filled values change only by explicit request.\"\"\"\n    changes = []\n    skipped = []\n    permitted = set(allowed or ())\n    for field, value in (data or {}).items():\n        if field not in permitted or value in (None, \"\", []):\n            continue\n        old = card.get(field)\n        if old not in (None, \"\", 0, []) and not override:\n            skipped.append(field)\n            continue\n        if str(old or \"\") != str(value):\n            changes.append((field, old, value))\n    return changes, skipped\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2567,
+          "kind": "FunctionDef",
+          "line": 2510,
+          "name": "_v167_voice_explicit_fields",
+          "sha256": "085d60a8fc7aaa798eb4a42bd35991fd93a71ac9b68c38a19dd90875c03e014b",
+          "source": "def _v167_voice_explicit_fields(text, allowed):\n    \"\"\"Deterministic RU/UA/EN automotive fields; ambiguous input writes nothing.\"\"\"\n    import re as _v167_re\n    value = str(text or \"\").casefold().replace(\"ё\", \"е\")\n    for words in (\"две тысячи\", \"дві тисячі\", \"дві тисячі\", \"two thousand\"):\n        value = value.replace(words, \"2000\")\n    result, permitted = {}, set(allowed or ())\n    if \"fuel\" in permitted:\n        fuel = None\n        if _v167_re.search(r\"(?<![a-zа-яіїєґ0-9])(?:l\\s*p\\s*i|л\\s*п\\s*и|[еэ]л\\s*пи\\s*ай)(?![a-zа-яіїєґ0-9])\", value):\n            fuel = \"LPI\"\n        elif _v167_re.search(r\"(?<![a-zа-яіїєґ0-9])(?:l\\s*p\\s*g|л\\s*п\\s*г|[еэ]л\\s*пи\\s*джи)(?![a-zа-яіїєґ0-9])\", value):\n            fuel = \"LPG\"\n        elif _v167_re.search(r\"\\b(?:дизел[ьяь]?|дизельне|diesel)\\b\", value):\n            fuel = \"diesel\"\n        elif _v167_re.search(r\"\\b(?:бензин|бензинов|gasoline|petrol)\\b\", value):\n            fuel = \"gasoline\"\n        elif _v167_re.search(r\"\\b(?:гибрид|гібрид|hybrid)\\b\", value):\n            fuel = \"hybrid\"\n        elif _v167_re.search(r\"\\b(?:электро|електро|electric)\\b\", value):\n            fuel = \"electric\"\n        elif _v167_re.search(r\"(?:топлив|палив|fuel)\\s*(?:[:=\\-–—]|тип)?\\s*газ\\b\", value):\n            fuel = \"LPG\"\n        if fuel:\n            result[\"fuel\"] = fuel\n    if \"engine_cc\" in permitted:\n        label = r\"(?:объ?ем(?:\\s+двигателя)?|об['’]?єм(?:\\s+двигуна)?|двигател[ья]|двигун[ау]?|мотор[ау]?|engine(?:\\s+volume)?)\"\n        match = (_v167_re.search(label + r\"\\s*(?:[:=\\-–—]|составляет|становить|is)?\\s*(\\d+(?:[.,]\\d+)?)\", value)\n                 or _v167_re.search(r\"(\\d+(?:[.,]\\d+)?)\\s*(?:см3|см³|cc|куб(?:ов)?)?\\s*\" + label, value))\n        if match:\n            try:\n                number = float(match.group(1).replace(\",\", \".\"))\n                cc = int(round(number * 1000 if number < 20 else number))\n                if 400 <= cc <= 12000:\n                    result[\"engine_cc\"] = cc\n            except Exception:\n                pass\n    if \"color\" in permitted:\n        colors = {\n            \"бел\": \"белый\", \"білий\": \"белый\", \"біла\": \"белый\", \"white\": \"белый\",\n            \"черн\": \"чёрный\", \"чорн\": \"чёрный\", \"black\": \"чёрный\",\n            \"серебр\": \"серебристый\", \"сріб\": \"серебристый\", \"silver\": \"серебристый\",\n            \"сер\": \"серый\", \"сір\": \"серый\", \"gray\": \"серый\", \"grey\": \"серый\",\n            \"красн\": \"красный\", \"червон\": \"красный\", \"red\": \"красный\",\n            \"син\": \"синий\", \"blue\": \"синий\", \"зелен\": \"зелёный\", \"green\": \"зелёный\",\n            \"желт\": \"жёлтый\", \"жовт\": \"жёлтый\", \"yellow\": \"жёлтый\",\n            \"беж\": \"бежевый\", \"beige\": \"бежевый\", \"корич\": \"коричневый\", \"brown\": \"коричневый\",\n        }\n        match = _v167_re.search(\n            r\"(?:(?:цвет|колір|color)\\s*(?:[:=\\-–—]|автомобиля|авто|машины|car)?\\s*([a-zа-яіїєґ]+)|\"\n            r\"([a-zа-яіїєґ]+)\\s+(?:цвет|колір|color))\", value)\n        if match:\n            word = next((item for item in match.groups() if item), \"\")\n            for prefix, normalized in colors.items():\n                if word.startswith(prefix):\n                    result[\"color\"] = normalized\n                    break\n    return result\n",
           "truncated": false
         },
         {
@@ -461,6 +591,24 @@
       "compiled": true,
       "definitions": [
         {
+          "end_line": 94,
+          "kind": "FunctionDef",
+          "line": 86,
+          "name": "_ua_lock3_connect",
+          "sha256": "26a2f472ec5842e70bdf8a3e6c4757d4626c258e733cad86b9b1b7e0fcda5fba",
+          "source": "    def _ua_lock3_connect(*a, **kw):\n        if len(a) < 2 and \"timeout\" not in kw:\n            kw[\"timeout\"] = 30.0\n        con = _ua_lock3_original_connect(*a, **kw)\n        try:\n            con.execute(\"PRAGMA busy_timeout=30000\")\n        except Exception:\n            pass\n        return con\n",
+          "truncated": false
+        },
+        {
+          "end_line": 311,
+          "kind": "ClassDef",
+          "line": 189,
+          "name": "Soedinenie",
+          "sha256": "edfd3fd7709aaaee60d013f266481a2cfc7cd03d0d318683f8e245f4aa816b66",
+          "source": "class Soedinenie(sqlite3.Connection):\n    \"\"\"Own the process queue only while a write transaction is active.\"\"\"\n\n    def _pered_zapisyu(self, sql):\n        if not _ua_sql_pishet(sql) or getattr(self, \"_ua_zapis_v_ocheredi\", False):\n            return False\n        vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)\n        if not vzyata:\n            raise sqlite3.OperationalError(\"CRM thread queue timeout\")\n        self._ochered_vzyata = True\n        try:\n            _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)\n            self._fayl_zaregistrirovan = True\n            self._ua_zapis_v_ocheredi = True\n            return True\n        except Exception:\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n            raise\n\n    def _otpustit(self):\n        self._ua_zapis_v_ocheredi = False\n        if getattr(self, \"_fayl_zaregistrirovan\", False):\n            self._fayl_zaregistrirovan = False\n            try:\n                _ua_fayl_otpustit()\n            except Exception:\n                pass\n        if getattr(self, \"_ochered_vzyata\", False):\n            self._ochered_vzyata = False\n            try:\n                ZAMOK.release()\n            except Exception:\n                pass\n\n    def cursor(self, factory=None):\n        return sqlite3.Connection.cursor(self, factory or _UaKursor)\n\n    def execute(self, sql, parameters=()):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.execute(self, sql, parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executemany(self, sql, seq_of_parameters):\n        novaya = self._pered_zapisyu(sql)\n        try:\n            return sqlite3.Connection.executemany(self, sql, seq_of_parameters)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def executescript(self, sql_script):\n        novaya = self._pered_zapisyu(sql_script)\n        try:\n            return sqlite3.Connection.executescript(self, sql_script)\n        except Exception:\n            if novaya and not self.in_transaction:\n                self._otpustit()\n            raise\n\n    def _commit_s_povtorom(self):\n        import time as _ua_time\n\n        for attempt in range(5):\n            try:\n                sqlite3.Connection.commit(self)\n                return\n            except sqlite3.OperationalError as exc:\n                text = str(exc).casefold()\n                if \"locked\" not in text and \"busy\" not in text:\n                    raise\n                if attempt == 4:\n                    raise\n                _ua_time.sleep(0.15 * (2 ** attempt))\n\n    def commit(self):\n        try:\n            self._commit_s_povtorom()\n        except Exception:\n            try:\n                sqlite3.Connection.rollback(self)\n            finally:\n                self._otpustit()\n            raise\n        self._otpustit()\n\n    def rollback(self):\n        try:\n            return sqlite3.Connection.rollback(self)\n        finally:\n            self._otpustit()\n\n    def close(self):\n        try:\n            if self.in_transaction:\n                sqlite3.Connection.rollback(self)\n            sqlite3.Connection.close(self)\n        finally:\n            self._otpustit()\n\n    def __exit__(self, tip, znachenie, sled):\n        try:\n            if tip is None:\n                self.commit()\n            else:\n                self.rollback()\n        finally:\n            try:\n                self.close()\n            except Exception:\n                self._otpustit()\n        return False\n\n    def __del__(self):\n        self._otpustit()\n",
+          "truncated": false
+        },
+        {
           "end_line": 327,
           "kind": "FunctionDef",
           "line": 315,
@@ -470,12 +618,30 @@
           "truncated": false
         },
         {
+          "end_line": 480,
+          "kind": "FunctionDef",
+          "line": 479,
+          "name": "now",
+          "sha256": "08c460137950477a288ce91ad002f0a9d0b5797c7ff8a484cded7def346d4bd3",
+          "source": "def now() -> str:\n    return datetime.now().isoformat(timespec=\"seconds\")\n",
+          "truncated": false
+        },
+        {
           "end_line": 497,
           "kind": "FunctionDef",
           "line": 486,
           "name": "log_action",
           "sha256": "fa2828c1dda20f5dace0f8b4118bfd7efd8978f9b513317b6fefdfb333803b73",
           "source": "def log_action(actor_id, action, entity_type=None, entity_id=None,\n               field=None, old_value=None, new_value=None):\n    \"\"\"Пишем каждое значимое действие. Историю задним числом не восстановить,\n    поэтому журнал ведётся с первого дня.\"\"\"\n    with connect() as c:\n        c.execute(\n            \"INSERT INTO audit (actor_id, action, entity_type, entity_id, field,\"\n            \" old_value, new_value, created_at) VALUES (?,?,?,?,?,?,?,?)\",\n            (actor_id, action, entity_type, entity_id, field,\n             str(old_value) if old_value is not None else None,\n             str(new_value) if new_value is not None else None, now()),\n        )\n",
+          "truncated": false
+        },
+        {
+          "end_line": 719,
+          "kind": "FunctionDef",
+          "line": 716,
+          "name": "get_card",
+          "sha256": "f64a89b44bd7ea5c56c45fd301bf7f19834c30b17abb6090348cd327e5d034ea",
+          "source": "def get_card(table: str, card_id: int):\n    with connect() as c:\n        row = c.execute(f\"SELECT * FROM {table} WHERE id=?\", (card_id,)).fetchone()\n        return dict(row) if row else None\n",
           "truncated": false
         },
         {
@@ -558,7 +724,7 @@
       "sha256": "fc4b95fc749f3d9b785ce69bfce2705b11ade95a560d6fbd901b50de1423d086"
     }
   },
-  "started_at_utc": "2026-08-29T07:19:54Z",
+  "started_at_utc": "2026-08-29T07:22:09Z",
   "status": "PASS_LIVE_GET_AUDIT",
   "task_id": "task_080",
   "writer": {
