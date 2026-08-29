@@ -1,0 +1,96 @@
+{
+  "contract_id": "UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0",
+  "verification": "PUBLIC_LIVE_READ_ONLY",
+  "verified_at_utc": "2026-08-29T10:18:30.061Z",
+  "http_methods": [
+    "GET"
+  ],
+  "production_write": false,
+  "status": "PASS",
+  "catalog": {
+    "path": "/video/katalog.html",
+    "effective_path": "/video/katalog.html",
+    "header_count": 13,
+    "unique_card_codes": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013"
+    ],
+    "unique_card_count": 13,
+    "unexpected_codes": [],
+    "targets": {
+      "UA-0012": {
+        "card_occurrences": 1,
+        "stage": 2,
+        "label": "На пароме",
+        "pass": true
+      },
+      "UA-0013": {
+        "card_occurrences": 1,
+        "stage": 2,
+        "label": "На пароме",
+        "pass": true
+      }
+    }
+  },
+  "pages": {
+    "UA-0012": {
+      "primary": {
+        "path": "/video/UA-0012.html",
+        "effective_path": "/video/UA-0012.html",
+        "title": "Kia K5 2018 — UA ART COMPANY",
+        "stage": 2,
+        "ferry_label": true,
+        "diagnostic_links": 1,
+        "pass": true
+      },
+      "diagnostic": {
+        "path": "/video/UA-0012-diag.html",
+        "effective_path": "/video/UA-0012-diag.html",
+        "title": "Диагностика Kia K5 2018 — UA ART COMPANY",
+        "complete_html": true,
+        "pass": true
+      }
+    },
+    "UA-0013": {
+      "primary": {
+        "path": "/video/UA-0013.html",
+        "effective_path": "/video/UA-0013.html",
+        "title": "Mercedes-Benz Б-КЛАССА 2015 — UA ART COMPANY",
+        "stage": 2,
+        "ferry_label": true,
+        "diagnostic_links": 1,
+        "pass": true
+      },
+      "diagnostic": {
+        "path": "/video/UA-0013-diag.html",
+        "effective_path": "/video/UA-0013-diag.html",
+        "title": "Диагностика Mercedes-Benz Б-КЛАССА 2015 — UA ART COMPANY",
+        "complete_html": true,
+        "pass": true
+      }
+    }
+  },
+  "delayed_catalog_recheck": {
+    "verified_at_utc": "2026-08-29T10:18:30.061Z",
+    "header_count": 13,
+    "unique_card_count": 13,
+    "UA-0012_occurrences": 1,
+    "UA-0013_occurrences": 1,
+    "pass": true
+  },
+  "notes": [
+    "UA-0014 was not present in the public catalog.",
+    "This receipt records independent public state only; installer and rollback details remain in TASK_083_REPORT.md."
+  ]
+}
