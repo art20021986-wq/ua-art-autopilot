@@ -41,6 +41,7 @@ SOURCES = {
         "apply_value",
         "set_field",
         "remember_price",
+        "voice_undo",
         "voice_change_plan",
     },
     "local_ocr.py": {"fields_from_text"},
