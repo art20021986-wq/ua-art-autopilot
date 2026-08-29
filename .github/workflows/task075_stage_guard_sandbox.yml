@@ -2,7 +2,7 @@ name: task075-crm-catalog-stage-guard-sandbox
 
 on:
   push:
-    branches: [task075-stage-guard]
+    branches: [main, task075-stage-guard]
     paths:
       - '.github/workflows/task075_stage_guard_sandbox.yml'
       - 'tasks/task_075.md'
