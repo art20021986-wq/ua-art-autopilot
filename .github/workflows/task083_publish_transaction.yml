@@ -1,4 +1,3 @@
-# Emergency retry revision 2: cancel only a stale TASK083 run and preserve fail-closed publication.
 name: task083-publish-transaction-production
 
 on:
@@ -14,12 +13,12 @@ permissions:
 
 concurrency:
   group: task083-publish-transaction-production
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   repair:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 90
     steps:
       - name: Checkout current main
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -70,7 +69,7 @@ jobs:
           import json, os, time, urllib.request
           active_states = {'queued', 'in_progress', 'pending', 'requested', 'waiting'}
           current = int(os.environ['CURRENT_RUN_ID'])
-          deadline = time.monotonic() + 600
+          deadline = time.monotonic() + 4500
           stable = 0
           while time.monotonic() < deadline:
               req = urllib.request.Request(
@@ -136,33 +135,7 @@ jobs:
           ok = evidence.get('status') == 'PASS'
           now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z')
           errors = list(evidence.get('errors') or [])
-          latest = '\n'.join([
-              'TASK_ID: task_083',
-              'ROUND: 1',
-              'CLAUDE_STATUS: ' + ('DONE' if ok else 'BLOCKED'),
-              'CURRENT_ACTION: ' + (
-                  'UA-0012 and UA-0013 published at stage 2; transactional future guard verified.'
-                  if ok else 'TASK 083 failed closed and requested rollback.'),
-              'FILES_CREATED: cloud/task_083_publish_transaction/evidence/deploy.json, cloud/task_083_publish_transaction/TASK_083_REPORT.md',
-              'PRODUCTION_TOUCHED: ' + ('YES' if ok else 'ROLLED_BACK_OR_NO'),
-              'OWNER_ACTION_REQUIRED: NO',
-              'OWNER_QUESTION: NONE',
-              'NEXT_FOR_CHATGPT: Verify TASK 083 public evidence and report the factual result.',
-              'UPDATED_AT_UTC: ' + now,
-          ]) + '\n'
-          owner = '\n'.join([
-              '# Ответ владельцу',
-              'СТАТУС: ' + ('PASS' if ok else 'FAIL'),
-              'ЗАДАЧА: Разместить UA-0012 и UA-0013 в каталоге на этапе «На пароме» и исключить ложный успех CRM.',
-              'ЧТО СДЕЛАНО: ' + (
-                  'Обе машины опубликованы на этапе 2 / more; primary, диагностика и оба каталога подтверждены немедленной и отложенной проверкой. CRM-бот получил транзакцию и автооткат.'
-                  if ok else 'Исправление не прошло полный контроль и не оставлено в частично рабочем состоянии.'),
-              'ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО',
-              'БЕЗОПАСНОСТЬ: CRM rows и media не изменялись; любой FAIL откатывается.',
-              'ОШИБКИ: ' + ('НЕТ' if not errors else '; '.join(errors)),
-          ]) + '\n'
-          Path('cloud/latest_status.md').write_text(latest, encoding='utf-8')
-          Path('cloud/owner_reply.md').write_text(owner, encoding='utf-8')
+          print('TASK083_FINAL_STATUS', 'PASS' if ok else 'FAIL', now, errors)
           PY
 
       - name: Commit bounded evidence
@@ -170,15 +143,12 @@ jobs:
         run: |
           git add -- \
             cloud/task_083_publish_transaction/evidence/deploy.json \
-            cloud/task_083_publish_transaction/TASK_083_REPORT.md \
-            cloud/latest_status.md \
-            cloud/owner_reply.md
+            cloud/task_083_publish_transaction/TASK_083_REPORT.md
           mapfile -t staged < <(git diff --cached --name-only)
           for path in "${staged[@]}"; do
             case "$path" in
               cloud/task_083_publish_transaction/evidence/deploy.json|\
-              cloud/task_083_publish_transaction/TASK_083_REPORT.md|\
-              cloud/latest_status.md|cloud/owner_reply.md) ;;
+              cloud/task_083_publish_transaction/TASK_083_REPORT.md) ;;
               *) echo "Unexpected staged path: $path"; exit 1 ;;
             esac
           done
