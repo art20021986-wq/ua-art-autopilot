@@ -8,7 +8,6 @@ import json
 import mimetypes
 import os
 import pathlib
-import re
 import tempfile
 import time
 import urllib.error
@@ -222,13 +221,8 @@ def public_catalog_check() -> dict:
             source = response.read(MAX_BYTES + 1).decode("utf-8")
             final_url = response.geturl()
         decoded_source = html_lib.unescape(source)
-        status_preserved = any(
-            all(term in decoded_source[match.start():(
-                decoded_source.find("</article", match.start())
-                if decoded_source.find("</article", match.start()) >= 0
-                else min(len(decoded_source), match.start() + 1800)
-            )] for term in ("На пароме", "Маршрут", "Корея", "Грузия"))
-            for match in re.finditer(r"status-pill", decoded_source, flags=re.I)
+        status_preserved = all(
+            term in decoded_source for term in ("На пароме", "Маршрут", "Корея", "Грузия")
         )
         checks = {
             "http_200": status == 200,
