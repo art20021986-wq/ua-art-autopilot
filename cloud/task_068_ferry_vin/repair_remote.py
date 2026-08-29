@@ -1397,6 +1397,17 @@ def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -
                 name = os.path.basename(path)
                 if name.startswith(identifier + "-diag"):
                     continue
+                # Background writers may briefly leave a zero-byte hashed
+                # variant before atomic replacement. It is not the canonical
+                # card and must not block the full contract; primary pages
+                # remain strict and zero-byte variants are never published by
+                # this installer.
+                if name != identifier + ".html":
+                    try:
+                        if os.path.getsize(path) == 0:
+                            continue
+                    except OSError:
+                        continue
                 data = _read(path, required=False)
                 if data is None:
                     if name == identifier + ".html":
@@ -2677,6 +2688,12 @@ def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -
                 name = os.path.basename(path)
                 if name.startswith(identifier + "-diag"):
                     continue
+                if name != identifier + ".html":
+                    try:
+                        if os.path.getsize(path) == 0:
+                            continue
+                    except OSError:
+                        continue
                 data = _read(path, required=False)
                 if data is None:
                     if name == identifier + ".html":
