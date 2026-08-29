@@ -155,7 +155,10 @@ def source_facts(name: str, source: str) -> dict:
         "crm_online_guard.py": {"_supervisor_loop", "start_supervisor", "_restart_budget_available"},
         "start_safe.py": {"main", "avariynyy_rezhim", "pri_starte"},
         "run_all.py": {"main", "post_init", "on_start", "startup", "pri_starte"},
-        "team_bot.py": {"main", "post_init", "on_start", "startup", "pri_starte", "start"},
+        "team_bot.py": {
+            "main", "post_init", "on_start", "startup", "pri_starte", "start",
+            "show_menu", "vvodnye_job",
+        },
     }.get(name, set())
     patterns = [
         r"Бот обновл[её]н",
@@ -193,6 +196,7 @@ def source_facts(name: str, source: str) -> dict:
                 "Бот запущен и готов к работе",
                 "Бот обновлён и готов к работе",
                 "Бот обновлен и готов к работе",
+                "asyncio.to_thread(ai.transcribe",
             ),
         ),
         "contexts": contexts(source, patterns),
