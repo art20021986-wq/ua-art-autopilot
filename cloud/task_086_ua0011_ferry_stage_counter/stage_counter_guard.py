@@ -158,6 +158,13 @@ _PUBLIC_STAGE_ALIASES = {
     "kyiv": "kiev",
 }
 
+_ARTICLE_STAGE_VALUE = {
+    "korea": "korea",
+    "more": "sea",
+    "gruzia": "georgia",
+    "kiev": "kiev",
+}
+
 
 def _rendered_stage(opening: str) -> str | None:
     found = re.search(
@@ -223,6 +230,109 @@ def card_entries(source: str) -> list[tuple[str, str | None, str]]:
             block,
         ))
     return entries
+
+
+def _set_attribute(opening: str, name: str, value: str) -> str:
+    pattern = re.compile(r"\s+" + re.escape(name) + r"=[\"'][^\"']*[\"']", re.I)
+    replacement = ' %s="%s"' % (name, value)
+    if pattern.search(opening):
+        return pattern.sub(replacement, opening, count=1)
+    return opening[:-1] + replacement + ">"
+
+
+def _published_stage_map(rows: Iterable[Mapping]) -> dict[str, str]:
+    result: dict[str, str] = {}
+    for raw in rows:
+        row = dict(raw or {})
+        if int(row.get("published") or 0) != 1:
+            continue
+        code = str(row.get("auto_number") or "").strip().upper()
+        if not re.fullmatch(r"UA-[0-9]{4,}", code):
+            raise StageCounterError("INVALID_PUBLISHED_AUTO_NUMBER")
+        if code in result:
+            raise StageCounterError("DUPLICATE_PUBLISHED_AUTO_NUMBER:" + code)
+        result[code] = public_bucket(row.get("status") or row.get("stage"))
+    if not result:
+        raise StageCounterError("NO_PUBLISHED_CARDS")
+    return result
+
+
+def _rewrite_chip_counts(source: str, counts: Mapping[str, int]) -> str:
+    seen = {key: 0 for key in ("all", "korea", "more", "gruzia", "kiev")}
+    pattern = re.compile(
+        r"<(?P<tag>a|button)\b"
+        r"(?=[^>]*class=[\"'][^\"']*\bchip\b)"
+        r"(?=[^>]*data-f=[\"'](?P<bucket>all|korea|more|sea|gruzia|georgia|kiev|kyiv)[\"'])"
+        r"[^>]*>(?P<body>.*?)</(?P=tag)\s*>",
+        re.I | re.S,
+    )
+
+    def replace(match: re.Match) -> str:
+        key = _PUBLIC_STAGE_ALIASES.get(match.group("bucket").casefold(),
+                                        match.group("bucket").casefold())
+        seen[key] += 1
+        body, changed = re.subn(
+            r"(<b\b[^>]*>)\s*\d+\s*(</b\s*>)",
+            lambda item: item.group(1) + str(int(counts[key])) + item.group(2),
+            match.group("body"), count=1, flags=re.I | re.S,
+        )
+        if changed != 1:
+            raise StageCounterError("CHIP_VALUE_%s:%d" % (key, changed))
+        opening_end = match.group(0).find(">") + 1
+        closing_start = match.group(0).lower().rfind("</")
+        return match.group(0)[:opening_end] + body + match.group(0)[closing_start:]
+
+    candidate = pattern.sub(replace, source)
+    invalid = [key for key, value in seen.items() if value != 1]
+    if invalid:
+        raise StageCounterError("CHIP_REWRITE_COUNT:" + ",".join(invalid))
+    return candidate
+
+
+def normalize_catalog_from_rows(source: str, rows: Iterable[Mapping]) -> str:
+    """Bind every rendered card and chip to one fresh published CRM snapshot."""
+    stages = _published_stage_map(rows)
+    article_pattern = re.compile(
+        r"<article\b(?=[^>]*class=[\"'][^\"']*\bcatalog-card\b)[^>]*>"
+        r".*?</article\s*>", re.I | re.S,
+    )
+
+    def rewrite_article(match: re.Match) -> str:
+        block = match.group(0)
+        code_match = re.search(
+            r"href=[\"'][^\"']*(UA-[0-9]{4,})\.html(?:\?[^\"']*)?[\"']",
+            block, re.I,
+        )
+        if not code_match:
+            raise StageCounterError("CATALOG_CARD_CODE_MISSING")
+        code = code_match.group(1).upper()
+        if code not in stages:
+            raise StageCounterError("CATALOG_CARD_NOT_PUBLISHED:" + code)
+        opening = re.match(r"<article\b[^>]*>", block, re.I | re.S)
+        if not opening:
+            raise StageCounterError("CATALOG_CARD_OPENING_MISSING:" + code)
+        updated = _set_attribute(
+            opening.group(0), "data-stage", _ARTICLE_STAGE_VALUE[stages[code]]
+        )
+        return updated + block[opening.end():]
+
+    candidate = article_pattern.sub(rewrite_article, source)
+    entries = card_entries(candidate)
+    rendered = [code for code, _stage, _block in entries]
+    if len(rendered) != len(set(rendered)):
+        raise StageCounterError("CATALOG_DUPLICATE_AUTO_NUMBER")
+    if set(rendered) != set(stages):
+        missing = sorted(set(stages) - set(rendered))
+        extra = sorted(set(rendered) - set(stages))
+        raise StageCounterError(
+            "CATALOG_DB_SET_MISMATCH:missing=%s:extra=%s"
+            % (",".join(missing), ",".join(extra))
+        )
+    for code, stage, _block in entries:
+        if stage != stages[code]:
+            raise StageCounterError("CATALOG_STAGE_MISMATCH:" + code)
+    counts = catalog_counts(candidate)
+    return _rewrite_chip_counts(candidate, counts)
 
 
 def _card_blocks(source: str) -> list[tuple[str, str]]:
@@ -319,6 +429,7 @@ def rebuild_catalogs_live() -> Tuple[bool, str]:
         html = stranica.sobrat_katalog(cars, frames, light)
         if not isinstance(html, str) or "UA-" not in html:
             raise StageCounterError("CATALOG_BUILDER_INVALID_HTML")
+        html = normalize_catalog_from_rows(html, cars)
         verify_catalog(html)
         payload = html.encode("utf-8")
         targets = [
