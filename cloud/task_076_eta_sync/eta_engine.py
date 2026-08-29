@@ -141,6 +141,11 @@ def strip_stale_dates(description: str) -> str:
     """
     if not description:
         return description
+    # Preserve byte-for-byte text when there is no stale date to remove.
+    # Besides avoiding needless publication churn, this keeps punctuation
+    # and formatting of ordinary descriptions intact.
+    if not (_RU_DATE_RE.search(description) or _NUM_DATE_RE.search(description)):
+        return description
     cleaned = _RU_DATE_RE.sub("", description)
     cleaned = _NUM_DATE_RE.sub("", cleaned)
     cleaned = re.sub(r"\s{2,}", " ", cleaned)
