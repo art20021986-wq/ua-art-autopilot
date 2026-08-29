@@ -1,12 +1,15 @@
-TASK_ID: task_077
+TASK_ID: task_078
 ROUND: 1
-CLAUDE_STATUS: WAITING_OWNER
-CURRENT_ACTION: Delivered GET-only Gate A audit tooling, sandbox/canary harness with PASS results on synthetic data, extended single-ETA-transaction controller (extends TASK 076 writer, no second writer), stage-sync patch descriptors, tests, and a documented-but-not-run Gate B manual workflow for CRM-CONTAINER-STAGE-SYNC-004.
-FILES_CREATED: cloud/task_077_container_stage_sync/README.md, cloud/task_077_container_stage_sync/gate_a_workflow.md, cloud/task_077_container_stage_sync/gate_a_audit.py, cloud/task_077_container_stage_sync/evidence/gate_a_findings.md, cloud/task_077_container_stage_sync/patcher/eta_transaction_controller.py, cloud/task_077_container_stage_sync/patcher/stage_sync_patch.py, cloud/task_077_container_stage_sync/patcher/installer.py, cloud/task_077_container_stage_sync/patcher/postcheck.py, cloud/task_077_container_stage_sync/sandbox/canary_harness.py, cloud/task_077_container_stage_sync/sandbox/canary_report.md, cloud/task_077_container_stage_sync/tests/test_stage_sync.py, cloud/task_077_container_stage_sync/gate_b_manual_workflow.md
+CLAUDE_STATUS: BLOCKED
+CURRENT_ACTION: Delivered killable-STT watchdog package (worker, job marker, circuit breaker, handler contract, installer/rollback, controller, offline test suite, sandbox report) for TASK 078; Gate A live secret-backed GET audit of cars_ui.py/ai.py/start_safe.py/crm_online_guard.py/launcher-supervisor could not be executed by this worker (no live credentials/network access available here), so the package is READY_FOR_CONTROLLER_GATE_A_EXECUTION, not yet production-approvable.
+FILES_CREATED: cloud/task_078_voice_watchdog/README.md, cloud/task_078_voice_watchdog/gate_a_audit.md, cloud/task_078_voice_watchdog/killable_stt_worker.py, cloud/task_078_voice_watchdog/job_marker.py, cloud/task_078_voice_watchdog/circuit_breaker.py, cloud/task_078_voice_watchdog/handler_patch.py, cloud/task_078_voice_watchdog/installer.py, cloud/task_078_voice_watchdog/controller.py, cloud/task_078_voice_watchdog/tests/__init__.py, cloud/task_078_voice_watchdog/tests/test_watchdog.py, cloud/task_078_voice_watchdog/sandbox_report.md
 PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Real Gate A (GET-only) against the live PythonAnywhere host and live crm.db has not been executed in this authoring environment (no live credentials/network here). Please have the controller run cloud/task_077_container_stage_sync/gate_a_audit.py per gate_a_workflow.md and confirm SHA/counts/handler-order before any production approval is considered.
-NEXT_FOR_CHATGPT: Route the package to the controller to actually execute Gate A GET-only against live PythonAnywhere and fill evidence/gate_a_findings.md with real values; only after a real PASS there should any Gate B production token be considered, per gate_b_manual_workflow.md.
-UPDATED_AT_UTC: 2026-08-29T06:36:43Z
+OWNER_ACTION_REQUIRED: NO
+OWNER_QUESTION: NONE
+NEXT_FOR_CHATGPT: Have the controller execute Gate A (fetch and hash cars_ui.py, ai.py, start_safe.py, crm_online_guard.py, launcher/supervisor manifest with a fresh secret-backed GET) and independently run `pytest cloud/task_078_voice_watchdog/tests -v`, then record both results in canonical memory before considering any Gate B production approval. TASK 077 was not touched.
+UPDATED_AT_UTC: 2026-08-29T06:48:16Z
+
+AUTOPILOT_VERIFIED_CANONICAL_SHARED_MEMORY:
 CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+CURRENT_STATUS_SNAPSHOT: production_write=NO crm_write=NO gate_a_executed=NO ua0009_safe_to_publish=NO
 MEMORY_VERSION_READ: 4
