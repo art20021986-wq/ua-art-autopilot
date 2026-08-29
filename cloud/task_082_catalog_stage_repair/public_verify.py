@@ -59,7 +59,9 @@ def inspect(variant: str, nonce: str) -> dict:
         "old_route_absent": not bool(re.search(r"Корея\s*(?:→|&rarr;|&#8594;|-)\s*Грузи", text, re.I)),
         "ua0009_photo": bool(re.search(r"<img\b", ua9[0], re.I)),
         "filter_guard": all(token in source for token in (
-            'id="ua-stage-card-v2-filter"', "p.get('etap')", "p.get('stage')", "'sea_loaded':'more'"
+            'id="ua-stage-card-v2-filter"', "p.get('etap')", "p.get('stage')",
+            "'sea_loaded':'more'", "function setChipCount", "counts={all:cards.length",
+            "setShown(shown)"
         )),
     }
     if not all(checks.values()):
