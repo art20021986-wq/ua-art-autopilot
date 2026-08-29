@@ -2,10 +2,13 @@ name: task075-crm-catalog-stage-guard-sandbox
 
 on:
   push:
-    branches: [main, task075-stage-guard]
+    branches: [main, task075-stage-guard, task075-stage-guard-final]
     paths:
       - '.github/workflows/task075_stage_guard_sandbox.yml'
       - 'tasks/task_075.md'
+      - 'cloud/task_075_stage_guard/stage_guard.py'
+      - 'cloud/task_075_stage_guard/live_sandbox.py'
+      - 'cloud/task_075_stage_guard/tests/**'
   pull_request:
     branches: [main]
     paths:
@@ -65,15 +68,25 @@ jobs:
           assert v['production_touched'] is False
           assert v['pythonanywhere_methods']==['GET']
           assert not v['crm_write'] and not v['site_write'] and not v['media_write']
-          assert v['database']['published']==11 and v['database']['unique_ids']==11
+          published = v['database']['published']
+          assert published >= 11 and v['database']['unique_ids'] == published
           assert v['database']['ua0009_safe'] is True
           assert v['ua0011']['resolved_main_photo'] is True
           assert v['ua0011']['category']=='more'
           for catalog in v['canary'].values():
               assert catalog['audit']['status']=='PASS', catalog['audit']['errors']
-              assert catalog['audit']['canonical_cards']==11
-              assert catalog['audit']['unified_templates']==11
-              assert catalog['audit']['absolute_photos']==11
+              assert catalog['audit']['published_rows'] == published
+              assert catalog['audit']['canonical_cards'] == published
+              assert catalog['audit']['unified_templates'] == published
+              assert catalog['audit']['absolute_photos'] == published
+              assert catalog['audit']['native_filter_stages'] == published
+              assert catalog['audit']['unified_list'] is True
+              assert catalog['audit']['ordered_stage_groups']==sorted(
+                  catalog['audit']['ordered_stage_groups'], reverse=True)
+          assert all(item.get('status') in (200,206) and
+                     str(item.get('content_type','')).startswith('image/')
+                     for item in v['photo_resolution'].values())
+          assert len(v['photo_resolution']) == published
           print('TASK075_SANDBOX_EVIDENCE_PASS')
           PY
 
@@ -85,15 +98,47 @@ jobs:
           mkdir -p cloud/task_075_stage_guard/screenshots
           root="file://${GITHUB_WORKSPACE}/cloud/task_075_stage_guard/canary"
           "$browser" --headless=new --disable-gpu --allow-file-access-from-files --hide-scrollbars \
-            --window-size=430,7000 --virtual-time-budget=6000 \
+            --window-size=430,7000 --virtual-time-budget=10000 \
             --screenshot="cloud/task_075_stage_guard/screenshots/video-mobile.png" \
             "$root/video-katalog.html?f=more"
           "$browser" --headless=new --disable-gpu --allow-file-access-from-files --hide-scrollbars \
-            --window-size=430,7000 --virtual-time-budget=6000 \
+            --window-size=430,7000 --virtual-time-budget=10000 \
             --screenshot="cloud/task_075_stage_guard/screenshots/site-mobile.png" \
             "$root/site-katalog.html?f=more"
           test "$(wc -c < cloud/task_075_stage_guard/screenshots/video-mobile.png)" -gt 5000
           test "$(wc -c < cloud/task_075_stage_guard/screenshots/site-mobile.png)" -gt 5000
+
+      - name: Validate computed stage filter visibility
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "$browser"
+          root="file://${GITHUB_WORKSPACE}/cloud/task_075_stage_guard/canary"
+          "$browser" --headless=new --disable-gpu --allow-file-access-from-files \
+            --virtual-time-budget=3000 --dump-dom "$root/video-katalog.html?f=more" \
+            > cloud/task_075_stage_guard/video-filter-dom.html
+          "$browser" --headless=new --disable-gpu --allow-file-access-from-files \
+            --virtual-time-budget=3000 --dump-dom "$root/site-katalog.html?f=more" \
+            > cloud/task_075_stage_guard/site-filter-dom.html
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import re
+
+          evidence = json.loads(pathlib.Path(
+              'cloud/task_075_stage_guard/evidence/sandbox.json').read_text(encoding='utf-8'))
+          expected = sum(row['stage'] == 2 for row in evidence['database']['rows'])
+          assert expected > 0
+          for variant in ('video', 'site'):
+              dom = pathlib.Path(
+                  f'cloud/task_075_stage_guard/{variant}-filter-dom.html').read_text(encoding='utf-8')
+              root = re.search(r'<html\b[^>]*>', dom, re.I).group(0)
+              attrs = dict(re.findall(r'(data-ua-stage-filter(?:-[a-z]+)?)="([^"]*)"', root))
+              assert attrs.get('data-ua-stage-filter') == 'sea', attrs
+              assert attrs.get('data-ua-stage-filter-ok') == 'true', attrs
+              assert int(attrs.get('data-ua-stage-filter-shown', '-1')) == expected, attrs
+              assert int(attrs.get('data-ua-stage-filter-rendered', '-1')) == expected, attrs
+          print(f'TASK075_RENDERED_FILTER_PASS:{expected}')
+          PY
 
       - name: Commit only sanitized evidence
         if: always() && github.event_name == 'push'

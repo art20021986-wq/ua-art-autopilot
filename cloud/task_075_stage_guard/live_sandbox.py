@@ -54,6 +54,20 @@ def get_remote(path: str, missing: bool = False, limit: int = MAX_FILE) -> bytes
     return data
 
 
+def probe_photo(url: str) -> dict:
+    request = urllib.request.Request(
+        url, method="GET",
+        headers={"Range": "bytes=0-65535", "User-Agent": "ua-art-task075-photo-probe/1"},
+    )
+    with urllib.request.urlopen(request, timeout=45) as response:
+        data = response.read(65_536)
+        status = int(response.status)
+        content_type = str(response.headers.get_content_type() or "")
+    if status not in (200, 206) or not content_type.startswith("image/") or len(data) < 128:
+        raise StageGuardError("PHOTO_HTTP_INVALID")
+    return {"status": status, "content_type": content_type, "sample_bytes": len(data)}
+
+
 def load_rows(db_bytes: bytes, wal_bytes: bytes | None):
     with tempfile.TemporaryDirectory(prefix="task075-db-") as directory:
         db_path = pathlib.Path(directory) / "crm.db"
@@ -130,8 +144,9 @@ def main() -> int:
         identifiers = [str(row.get("auto_number") or "").upper() for row in rows]
         if quick != "ok":
             raise StageGuardError("CRM_QUICK_CHECK:" + str(quick))
-        if len(rows) != 11 or len(set(identifiers)) != 11:
-            raise StageGuardError("EXPECTED_11_UNIQUE_CARDS")
+        if len(rows) < 11 or len(set(identifiers)) != len(rows):
+            raise StageGuardError("EXPECTED_AT_LEAST_11_UNIQUE_CARDS:%d:%d" %
+                                  (len(rows), len(set(identifiers))))
         if "UA-0009" not in identifiers or "UA-0011" not in identifiers:
             raise StageGuardError("MANDATORY_CARD_MISSING")
         evidence["database"] = {"quick_check": quick, "published": len(rows),
@@ -140,22 +155,48 @@ def main() -> int:
                                 "ua0009_safe": True}
 
         photos = {}
+        photo_http = {}
         page_manifest = {}
         for identifier in identifiers:
-            selected = ""
+            # New CRM cards may have uploaded media before their public detail
+            # page exists.  Resolve the established public media convention
+            # first, then retain existing detail pages as a compatibility
+            # fallback.  Every selected URL is still verified with a real GET.
+            candidates = [
+                ("%s/video/foto/%s/m/001.jpg" %
+                 (PUBLIC, urllib.parse.quote(identifier, safe="")), "crm_public_media"),
+                ("%s/site/foto/%s/m/001.jpg" %
+                 (PUBLIC, urllib.parse.quote(identifier, safe="")), "crm_public_media"),
+            ]
             for variant in ("video", "site"):
                 remote = "%s/%s/%s.html" % (REMOTE_ROOT, variant, identifier)
                 page = get_remote(remote, missing=True, limit=3_000_000)
                 page_manifest[variant + ":" + identifier] = (
                     {"sha256": sha(page), "bytes": len(page)} if page else {"missing": True})
-                if page and not selected:
-                    selected = extract_main_photo(
+                if page:
+                    candidate = extract_main_photo(
                         page.decode("utf-8", "replace"),
                         "%s/%s/%s.html" % (PUBLIC, variant, identifier), identifier)
+                    if candidate and candidate not in [value for value, _source in candidates]:
+                        candidates.append((candidate, "existing_detail_page"))
+            selected = ""
+            failures = []
+            for candidate, source in candidates:
+                try:
+                    check = probe_photo(candidate)
+                    selected = candidate
+                    photo_http[identifier] = {**check, "source": source}
+                    break
+                except Exception as exc:
+                    failures.append(type(exc).__name__)
+            if not selected:
+                raise StageGuardError("PUBLIC_PHOTO_HTTP_FAILED:%s:%s" %
+                                      (identifier, ",".join(failures) or "NO_CANDIDATE"))
             photos[identifier] = selected
         evidence["backup"]["pages"] = page_manifest
         evidence["photo_resolution"] = {
-            identifier: {"resolved": bool(value), "url_sha256": sha(value.encode()) if value else None}
+            identifier: {"resolved": bool(value), "url_sha256": sha(value.encode()) if value else None,
+                         **photo_http.get(identifier, {})}
             for identifier, value in sorted(photos.items())
         }
         ua11 = next(row for row in rows if row.get("auto_number") == "UA-0011")
@@ -204,10 +245,16 @@ def main() -> int:
     if evidence["status"] == "PASS":
         report.extend([
             "- Backup manifest captured before transform: **PASS**",
-            "- Current published cards: **11/11 unique**",
+            "- Current published cards: **%d/%d unique**" % (
+                evidence["database"]["published"], evidence["database"]["unique_ids"]),
             "- UA-0009 protected check: **PASS**",
             "- UA-0011 photo restored in both local canaries: **PASS**",
-            "- Unified card template and absolute main photo: **11/11 PASS**",
+            "- Unified card template and absolute main photo: **%d/%d PASS**" % (
+                evidence["database"]["published"], evidence["database"]["published"]),
+            "- Native stage filter compatibility and ordered placement: **%d/%d PASS**" % (
+                evidence["database"]["published"], evidence["database"]["published"]),
+            "- Public photo HTTP probes: **%d/%d PASS**" % (
+                evidence["database"]["published"], evidence["database"]["published"]),
             "- Stage routing and universal category filter: **PASS**",
             "- Old ferry route / internal state leakage: **0**",
             "", "Production remains locked pending a separate owner command.",
