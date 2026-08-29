@@ -1,0 +1,42 @@
+name: TASK-076 Gate B Manual Production Approval (DO NOT RUN WITHOUT OWNER TOKEN)
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval_token:
+        description: "Exact owner-issued approval token"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify-token-and-stop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify exact approval token
+        run: |
+          EXPECTED="CRM-ETA-SYNC-GUARD-004-V1.0-PRODUCTION-APPROVED"
+          if [ "${{ github.event.inputs.approval_token }}" != "$EXPECTED" ]; then
+            echo "Token mismatch. Refusing to proceed."
+            exit 1
+          fi
+          echo "Token verified. This workflow intentionally stops here."
+          echo "It does not perform any production write by itself."
+
+      - name: Print mandatory pre-write safety checklist (not implemented here)
+        run: |
+          echo "Before ANY production write, the following must exist and be verified:"
+          echo "1. Exclusive maintenance window on the exact active launcher."
+          echo "2. A fresh, collision-safe backup of crm.db and all touched source files."
+          echo "3. Full-source SHA gate matching the audited Gate A snapshot exactly."
+          echo "4. A single DB row-level transaction, never a full DB file replace."
+          echo "5. Atomic file replace for any touched page/catalog file."
+          echo "6. Restart of the exact active launcher process (not a generic restart)."
+          echo "7. Immediate public HTTP check AND a delayed (>=60s) public HTTP check."
+          echo "8. Automatic rollback plus rollback verification on any failure at any step."
+          echo "None of steps 1-8 is executed by this workflow. It is a controlled stop-gate only."
+
+      - name: No production action performed
+        run: echo "PRODUCTION_WRITE=NO"

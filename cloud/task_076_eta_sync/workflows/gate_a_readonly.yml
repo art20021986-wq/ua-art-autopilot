@@ -1,0 +1,49 @@
+name: TASK-076 Gate A Read-Only ETA Audit
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  gate-a-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Guard - GET only, no write secrets referenced
+        run: echo "This workflow must only use read-only / GET credentials. No write tokens are referenced here."
+
+      - name: Run offline synthetic test suite (always safe)
+        run: python3 cloud/task_076_eta_sync/run_tests.py
+
+      - name: Attempt real read-only fetch (requires owner/controller secrets)
+        env:
+          RO_HOST: ${{ secrets.PA_READONLY_HOST }}
+          RO_USER: ${{ secrets.PA_READONLY_USER }}
+          RO_KEY: ${{ secrets.PA_READONLY_SSH_KEY }}
+        run: |
+          if [ -z "$RO_HOST" ]; then
+            echo "PA_READONLY_HOST secret not configured; real Gate A audit cannot run in this environment."
+            echo "This is expected until the owner/controller wires real read-only secrets."
+            exit 0
+          fi
+          echo "Read-only secrets are present. The controller must implement the exact GET-only"
+          echo "fetch/hash/quick_check commands here for: crm.db (+ optional WAL), cars_ui.py, db.py,"
+          echo "konteyner.py, stranica.py, master_card.py, yadro.py, publikaciya.py, both catalog"
+          echo "directories, and the live UA-0009/UA-0010/UA-0011 pages, then run sha256sum and"
+          echo "'sqlite3 crm.db \"PRAGMA quick_check;\"' and store the results as evidence artifacts."
+          echo "No write command may appear in this job."
+
+      - name: Record run note
+        run: |
+          mkdir -p cloud/task_076_eta_sync/evidence/gate_a_run
+          echo "Gate A workflow invoked at $(date -u +%FT%TZ)." > cloud/task_076_eta_sync/evidence/gate_a_run/RUN_NOTE.txt
+
+      - name: Upload evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-a-evidence
+          path: cloud/task_076_eta_sync/evidence/gate_a_run/
