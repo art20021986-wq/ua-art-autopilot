@@ -72,6 +72,8 @@ jobs:
           for catalog in v['canary'].values():
               assert catalog['audit']['status']=='PASS', catalog['audit']['errors']
               assert catalog['audit']['canonical_cards']==11
+              assert catalog['audit']['unified_templates']==11
+              assert catalog['audit']['absolute_photos']==11
           print('TASK075_SANDBOX_EVIDENCE_PASS')
           PY
 

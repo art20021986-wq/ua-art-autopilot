@@ -89,9 +89,12 @@ def write_json(path: pathlib.Path, value) -> None:
 
 def add_base(source: str, base: str) -> str:
     source = re.sub(r"<base\b[^>]*>", "", source, flags=re.I)
-    position = source.lower().find("</head>")
-    if position < 0:
+    opening = re.search(r"<head\b[^>]*>", source, re.I)
+    if opening is None:
         raise StageGuardError("CANARY_HEAD_MISSING")
+    # The base must precede stylesheet links; inserting it at </head> is too
+    # late for parser-initiated CSS requests in the mobile screenshot.
+    position = opening.end()
     return source[:position] + '<base href="%s/">' % base.rstrip("/") + source[position:]
 
 
@@ -204,6 +207,7 @@ def main() -> int:
             "- Current published cards: **11/11 unique**",
             "- UA-0009 protected check: **PASS**",
             "- UA-0011 photo restored in both local canaries: **PASS**",
+            "- Unified card template and absolute main photo: **11/11 PASS**",
             "- Stage routing and universal category filter: **PASS**",
             "- Old ferry route / internal state leakage: **0**",
             "", "Production remains locked pending a separate owner command.",

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import html as _html
+import datetime as _dt
 import json
 import re
 from dataclasses import dataclass
@@ -93,6 +94,66 @@ def money(value) -> str:
         number = 0
     return ("{:,.0f} $".format(number).replace(",", " ")
             if number > 0 else "Цена по запросу")
+
+
+def _date(value):
+    text = str(value or "").strip()[:10]
+    if not text:
+        return None
+    for pattern in ("%Y-%m-%d", "%d.%m.%Y", "%d/%m/%Y"):
+        try:
+            return _dt.datetime.strptime(text, pattern).date()
+        except ValueError:
+            pass
+    return None
+
+
+def _pretty_date(value, language: str) -> str:
+    months = (
+        ("января", "февраля", "марта", "апреля", "мая", "июня",
+         "июля", "августа", "сентября", "октября", "ноября", "декабря")
+        if language == "ru" else
+        ("січня", "лютого", "березня", "квітня", "травня", "червня",
+         "липня", "серпня", "вересня", "жовтня", "листопада", "грудня")
+    )
+    return "%d %s %d" % (value.day, months[value.month - 1], value.year)
+
+
+def public_eta(row: Mapping, stage: int) -> tuple[str, str]:
+    """Client-safe ETA derived from CRM dates, never from an internal payment flag."""
+    if stage == 2:
+        target = _date(row.get("eta_manual"))
+        if target is None:
+            shipped = _date(row.get("sea_date_out"))
+            target = shipped + _dt.timedelta(days=75) if shipped else None
+        if target is None:
+            return ("Срок до Киева уточняется", "Строк до Києва уточнюється")
+        days = max((target - _dt.datetime.now(_dt.timezone.utc).date()).days, 0)
+        return (
+            "%d дн. до Киева · ориентировочно %s" % (days, _pretty_date(target, "ru")),
+            "%d дн. до Києва · орієнтовно %s" % (days, _pretty_date(target, "uk")),
+        )
+    if stage == 3:
+        transitioned = _date(row.get("ge_released")) or _date(row.get("ge_to_kyiv_at"))
+        if transitioned is None:
+            return (
+                "15 дней до Киева считаются от фактического перехода в этап 3",
+                "15 днів до Києва рахуються від фактичного переходу на етап 3",
+            )
+        target = transitioned + _dt.timedelta(days=15)
+        return (
+            "15 дней от перехода в этап 3 · ориентировочно %s" % _pretty_date(target, "ru"),
+            "15 днів від переходу на етап 3 · орієнтовно %s" % _pretty_date(target, "uk"),
+        )
+    return ("", "")
+
+
+def public_price(row: Mapping) -> str:
+    for key in ("price", "price_usd", "price_uah", "sale_price", "price_final"):
+        value = row.get(key)
+        if value not in (None, "", 0, "0"):
+            return money(value)
+    return money(None)
 
 
 def card_spans(source: str) -> list[CardSpan]:
@@ -193,16 +254,24 @@ def render_card(row: Mapping, photo_url: str) -> str:
     vin = str(row.get("vin") or "VIN НЕ УКАЗАН").upper()
     photos = media_count(row.get("photos"))
     videos = media_count(row.get("videos"))
+    eta_ru, eta_uk = public_eta(row, stage)
+    eta = (
+        '<div class="ua-stage-card-v2-eta"><span class="ua075-ru">{eta_ru}</span>'
+        '<span class="ua075-uk">{eta_uk}</span></div>'
+        if eta_ru or eta_uk else ""
+    )
     return (
         '<a class="kat ua-stage-card-v2 ua-stage-filterable" '
         'href="{id}.html" data-ua-card="{id}" data-ua-card-stage="{key}" '
         'data-etap="{key}" data-ua-stage="{stage}">'
         '<div class="ua-stage-card-v2-body">'
-        '<span class="ua-stage-card-v2-kicker">{id} · ЭТАП {stage} ИЗ 4</span>'
+        '<div class="ua-stage-card-v2-top"><span class="ua-stage-card-v2-kicker">'
+        '{id} · ЭТАП {stage} ИЗ 4</span><strong>{price}</strong></div>'
         '<h3>{title}</h3>'
         '<div class="ua-stage-card-v2-status"><span class="ua075-ru">{ru}</span>'
         '<span class="ua075-uk">{uk}</span></div>'
         '<div class="ua-stage-card-v2-spec">{mileage} км · {engine} см³ · {fuel} · {gearbox}</div>'
+        '{eta}'
         '<div class="ua-stage-card-v2-vin"><span>VIN <b>{vin}</b></span>'
         '<i>VIN ПРОВЕРЕН</i><small>Фото: {photos} · Видео: {videos}</small></div>'
         '<span class="ua-stage-card-v2-open"><span class="ua075-ru">Открыть карточку →</span>'
@@ -213,14 +282,15 @@ def render_card(row: Mapping, photo_url: str) -> str:
         id=esc(identifier), key=esc(key), stage=stage, title=esc(title(row) or identifier),
         ru=esc(label_ru), uk=esc(label_uk), mileage=esc(mileage), engine=esc(engine),
         fuel=esc(fuel), gearbox=esc(gearbox), vin=esc(vin), photos=photos,
-        videos=videos, photo=esc(photo_url),
+        videos=videos, photo=esc(photo_url), price=esc(public_price(row)), eta=eta.format(
+            eta_ru=esc(eta_ru), eta_uk=esc(eta_uk)),
     )
 
 
 STYLE = r'''<style id="ua-stage-card-v2-style">
 .ua-stage-card-v2{display:grid!important;grid-template-columns:minmax(0,55%) minmax(0,45%);padding:0!important;overflow:hidden;border:1px solid rgba(240,166,60,.46)!important;border-radius:22px!important;background:linear-gradient(145deg,#172a40,#102033)!important;color:#edf3fb!important;text-decoration:none!important;box-shadow:0 12px 30px rgba(0,0,0,.2);min-height:290px}
-.ua-stage-card-v2 *{box-sizing:border-box}.ua-stage-card-v2-body{padding:24px 20px;min-width:0}.ua-stage-card-v2-kicker{display:block;color:#f0a63c;font-size:11px;font-weight:900;letter-spacing:.11em}.ua-stage-card-v2 h3{margin:11px 0 7px;font-size:26px;line-height:1.16;color:#f3f6fa}.ua-stage-card-v2-status{color:#72dfa5;font-size:14px;line-height:1.4}.ua-stage-card-v2-spec{margin-top:15px;color:#aebed0;font-size:13px;line-height:1.5}.ua-stage-card-v2-vin{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:17px;padding:13px;border-top:1px solid rgba(240,166,60,.32);background:rgba(10,25,40,.25);font-size:12px;color:#b9c8d8}.ua-stage-card-v2-vin b{color:#f3f6fa;overflow-wrap:anywhere}.ua-stage-card-v2-vin i{font-style:normal;color:#72dfa5;font-size:9px;border:1px solid rgba(64,190,125,.42);border-radius:999px;padding:4px 6px}.ua-stage-card-v2-vin small{grid-column:1/-1;color:#9fb0c5}.ua-stage-card-v2-open{display:block;margin-top:16px;color:#f4b65c;font-weight:850}.ua-stage-card-v2-photo{margin:0;min-width:0;min-height:100%;background:#0a1725}.ua-stage-card-v2-photo img{display:block;width:100%;height:100%;min-height:290px;object-fit:cover;object-position:center}.ua075-uk{display:none}html:lang(uk) .ua075-ru{display:none}html:lang(uk) .ua075-uk{display:inline}
-@media(max-width:620px){.ua-stage-card-v2{grid-template-columns:minmax(0,56%) minmax(0,44%);min-height:330px}.ua-stage-card-v2-body{padding:20px 14px}.ua-stage-card-v2 h3{font-size:22px}.ua-stage-card-v2-status{font-size:13px}.ua-stage-card-v2-spec{font-size:12px}.ua-stage-card-v2-vin{grid-template-columns:1fr;padding:10px}.ua-stage-card-v2-vin i{justify-self:start}.ua-stage-card-v2-photo img{min-height:330px}}
+.ua-stage-card-v2 *{box-sizing:border-box}.ua-stage-card-v2-body{padding:24px 20px;min-width:0}.ua-stage-card-v2-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.ua-stage-card-v2-kicker{display:block;color:#f0a63c;font-size:11px;font-weight:900;letter-spacing:.11em}.ua-stage-card-v2-top strong{flex:0 0 auto;color:#f4b65c;font-size:16px;white-space:nowrap}.ua-stage-card-v2 h3{margin:11px 0 7px;font-size:26px;line-height:1.16;color:#f3f6fa}.ua-stage-card-v2-status{color:#72dfa5;font-size:14px;line-height:1.4}.ua-stage-card-v2-spec{margin-top:15px;color:#aebed0;font-size:13px;line-height:1.5}.ua-stage-card-v2-eta{margin-top:9px;color:#f2c27b;font-size:11px;line-height:1.4}.ua-stage-card-v2-vin{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:17px;padding:13px;border-top:1px solid rgba(240,166,60,.32);background:rgba(10,25,40,.25);font-size:12px;color:#b9c8d8}.ua-stage-card-v2-vin b{color:#f3f6fa;overflow-wrap:anywhere}.ua-stage-card-v2-vin i{font-style:normal;color:#72dfa5;font-size:9px;border:1px solid rgba(64,190,125,.42);border-radius:999px;padding:4px 6px}.ua-stage-card-v2-vin small{grid-column:1/-1;color:#9fb0c5}.ua-stage-card-v2-open{display:block;margin-top:16px;color:#f4b65c;font-weight:850}.ua-stage-card-v2-photo{margin:0;min-width:0;min-height:100%;background:#0a1725}.ua-stage-card-v2-photo img{display:block;width:100%;height:100%;min-height:290px;object-fit:cover;object-position:center}.ua075-uk{display:none}html:lang(uk) .ua075-ru{display:none}html:lang(uk) .ua075-uk{display:inline}
+@media(max-width:620px){.ua-stage-card-v2{grid-template-columns:minmax(0,56%) minmax(0,44%);min-height:350px}.ua-stage-card-v2-body{padding:18px 13px}.ua-stage-card-v2-top{display:block}.ua-stage-card-v2-top strong{display:block;margin-top:6px;font-size:15px}.ua-stage-card-v2 h3{font-size:22px}.ua-stage-card-v2-status{font-size:13px}.ua-stage-card-v2-spec{font-size:12px}.ua-stage-card-v2-vin{grid-template-columns:1fr;padding:10px}.ua-stage-card-v2-vin i{justify-self:start}.ua-stage-card-v2-photo img{min-height:350px}}
 </style>'''
 
 
@@ -267,10 +337,10 @@ def enforce_catalog(source: str, rows: Iterable[Mapping], photos: Mapping[str, s
             missing.append(identifier)
             continue
         span = current[0]
-        has_photo = bool(re.search(r"<img\b[^>]*\bsrc\s*=", span.block, re.I))
-        is_fallback = "ua-cat-fallback" in span.block
-        candidate = (render_card(row, photo) if is_fallback or not has_photo
-                     else normalize_block(span.block, row))
+        # Rebuild every published card through one renderer.  Keeping legacy
+        # photo cards in place was the visual split that hid behind a machine
+        # PASS in round 2.
+        candidate = render_card(row, photo)
         replacements.append((span.start, span.end, candidate))
 
     for start, end, value in sorted(replacements, reverse=True):
@@ -318,25 +388,37 @@ def audit_catalog(source: str, rows: Iterable[Mapping]) -> dict:
             errors.append("CARD_COUNT:%s:%d" % (identifier, len(found)))
             continue
         block = found[0].block
-        photo = bool(re.search(r"<img\b[^>]*\bsrc\s*=\s*[\"'][^\"']+[\"']", block, re.I))
+        photo_match = re.search(r"<img\b[^>]*\bsrc\s*=\s*[\"']([^\"']+)[\"']", block, re.I)
+        photo = bool(photo_match)
+        absolute_photo = bool(photo_match and re.match(r"(?:https?://|data:image/)", photo_match.group(1), re.I))
         stage_ok = ('data-ua-card-stage="%s"' % expected_key) in block
+        template_ok = bool(re.search(r'class=["\'][^"\']*\bua-stage-card-v2\b', block, re.I))
         if not photo:
             errors.append("PHOTO_MISSING:" + identifier)
+        if not absolute_photo:
+            errors.append("PHOTO_NOT_ABSOLUTE:" + identifier)
         if not stage_ok:
             errors.append("STAGE_MISMATCH:%s:%s" % (identifier, expected_key))
+        if not template_ok:
+            errors.append("TEMPLATE_MISMATCH:" + identifier)
         folded = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", block)).casefold()
         leaked = [value for value in FORBIDDEN_PUBLIC if value.casefold() in folded]
         if leaked:
             errors.append("INTERNAL_TEXT_LEAK:%s" % identifier)
         if expected_stage == 2 and re.search(r"корея\s*[→-]\s*грузи", folded, re.I):
             errors.append("FERRY_ROUTE_OLD:%s" % identifier)
+        if PUBLIC_LABELS[expected_stage][0].casefold() not in folded:
+            errors.append("PUBLIC_LABEL_MISMATCH:%s" % identifier)
         cards[identifier] = {"count": 1, "photo": photo, "stage": expected_stage,
-                             "category": expected_key, "stage_ok": stage_ok}
+                             "category": expected_key, "stage_ok": stage_ok,
+                             "template": template_ok, "absolute_photo": absolute_photo}
     return {
         "status": "PASS" if not errors else "FAIL",
         "errors": errors,
         "published_rows": len(rows_by_id),
         "canonical_cards": len([key for key in rows_by_id if len(by_id.get(key, [])) == 1]),
+        "unified_templates": sum(1 for value in cards.values() if value.get("template")),
+        "absolute_photos": sum(1 for value in cards.values() if value.get("absolute_photo")),
         "cards": cards,
     }
 
