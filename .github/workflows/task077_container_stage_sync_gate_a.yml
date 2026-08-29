@@ -1,0 +1,112 @@
+name: task077-container-stage-sync-gate-a
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task077_container_stage_sync_gate_a.yml'
+      - 'cloud/task_077_container_stage_sync/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task077-container-stage-sync-gate-a
+  cancel-in-progress: false
+
+jobs:
+  get-only-audit-and-local-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Compile and run pure contract tests
+        run: |
+          python3 -m py_compile \
+            cloud/task_077_container_stage_sync/stage_sync.py \
+            cloud/task_077_container_stage_sync/live_audit.py
+          python3 cloud/task_077_container_stage_sync/tests/test_stage_sync.py -v
+
+      - name: Prove remote transport is GET-only
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('cloud/task_077_container_stage_sync/live_audit.py').read_text(encoding='utf-8')
+          assert 'method="GET"' in source
+          for forbidden in ('method="POST"', 'method="PUT"', 'method="PATCH"', 'method="DELETE"'):
+              assert forbidden not in source, forbidden
+          print('TASK077_GET_ONLY_STATIC_PASS')
+          PY
+
+      - name: GET live snapshot and run local-copy canary
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        working-directory: cloud/task_077_container_stage_sync
+        run: python3 live_audit.py
+
+      - name: Validate sanitized evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          path = 'cloud/task_077_container_stage_sync/evidence/live_audit.json'
+          value = json.load(open(path, encoding='utf-8'))
+          assert value['status'] == 'PASS_AUDIT_DEFECT_REPRODUCED', value['errors']
+          assert value['production_touched'] is False
+          assert value['pythonanywhere_methods'] == ['GET']
+          assert not value['crm_write'] and not value['site_write'] and not value['media_write']
+          assert value['database']['quick_check'] == 'ok'
+          assert value['database']['canary']['transition'] == {
+              'changed': True,
+              'days_to_kyiv': 30,
+              'eta_manual': '2026-09-28',
+              'status': 'sea_loaded',
+          }
+          assert value['database']['canary']['owner_label'] == 'На пароме'
+          assert value['database']['canary']['media_hashes_unchanged'] is True
+          assert value['database']['canary']['published_unchanged'] is True
+          print('TASK077_GATE_A_EVIDENCE_PASS')
+          PY
+
+      - name: Commit only sanitized evidence
+        if: always() && github.event_name == 'push'
+        run: |
+          git add -- \
+            cloud/task_077_container_stage_sync/evidence/live_audit.json \
+            cloud/task_077_container_stage_sync/TASK_077_AUDIT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_077_container_stage_sync/evidence/live_audit.json|cloud/task_077_container_stage_sync/TASK_077_AUDIT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task077-gate-a'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task077: record GET-only audit evidence'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+              if git push origin HEAD:main; then exit 0; fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task077-gate-a-${{ github.run_id }}
+          path: |
+            cloud/task_077_container_stage_sync/evidence/live_audit.json
+            cloud/task_077_container_stage_sync/TASK_077_AUDIT.md
+          if-no-files-found: warn
+          retention-days: 14
