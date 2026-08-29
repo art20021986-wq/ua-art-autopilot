@@ -277,6 +277,11 @@ def catalog_snapshot() -> dict[str, dict[str, Any]]:
     for path in CATALOG_PATHS:
         data = read_bytes(path)
         source = data.decode("utf-8")
+        identifiers = []
+        for block in catalog_blocks(source):
+            found = re.search(r'data-ua-card=["\'](UA-[0-9]{4,})["\']', block, re.I)
+            if found:
+                identifiers.append(found.group(1).upper())
         result[str(path)] = {
             "sha256": sha256(data),
             "bytes": len(data),
@@ -286,6 +291,7 @@ def catalog_snapshot() -> dict[str, dict[str, Any]]:
             "unknown_old_uk": source.count(UK_UNKNOWN_OLD),
             "style_marker": source.count(STYLE_MARKER),
             "canonical_blocks": len(catalog_blocks(source)),
+            "canonical_identifiers": identifiers,
             "ua0009": "UA-0009" in source,
             "ferry_status": "На пароме" in source and "Маршрут: Корея → Грузия" in source,
         }
@@ -328,7 +334,10 @@ def inspect_base() -> dict[str, Any]:
     catalogs = catalog_snapshot()
     for path, item in catalogs.items():
         if item["canonical_blocks"] != 11 or not item["ua0009"] or not item["ferry_status"]:
-            raise Blocked("CATALOG_BASE_INVARIANT:" + pathlib.Path(path).name)
+            raise Blocked(
+                "CATALOG_BASE_INVARIANT:" + pathlib.Path(path).name + ":"
+                + json.dumps(item, ensure_ascii=False, sort_keys=True)
+            )
     return {"database": db, "sources": sources, "catalogs": catalogs, "protected_pages": protected_pages_snapshot()}
 
 
