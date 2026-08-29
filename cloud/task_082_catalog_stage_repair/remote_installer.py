@@ -94,6 +94,116 @@ def published_rows_hash() -> tuple[str, int]:
     return sha(data), len(rows)
 
 
+def _ua0011_row(connection: sqlite3.Connection) -> dict[str, Any]:
+    rows = connection.execute(
+        "SELECT * FROM cars WHERE auto_number = ? ORDER BY id", ("UA-0011",)
+    ).fetchall()
+    if len(rows) != 1:
+        raise InstallError("UA0011_ROW_COUNT:%d" % len(rows))
+    return dict(rows[0])
+
+
+def _row_hash(row: dict[str, Any]) -> str:
+    return sha(json.dumps(row, ensure_ascii=False, sort_keys=True, default=str).encode())
+
+
+def _validate_ua0011_identity(row: dict[str, Any]) -> int:
+    vin = re.sub(r"[^A-Z0-9]", "", str(row.get("vin") or "").upper())
+    try:
+        photos = json.loads(row.get("photos") or "[]")
+    except Exception as exc:
+        raise InstallError("UA0011_PHOTOS_INVALID") from exc
+    if vin != "KMHE341DBKA544289":
+        raise InstallError("UA0011_VIN_MISMATCH")
+    if int(row.get("published") or 0) != 1:
+        raise InstallError("UA0011_NOT_PUBLISHED")
+    if not isinstance(photos, list) or not photos:
+        raise InstallError("UA0011_PHOTOS_MISSING")
+    return len(photos)
+
+
+def normalize_ua0011_status() -> dict[str, Any]:
+    connection = sqlite3.connect(str(ROOT / "crm.db"), timeout=30)
+    connection.row_factory = sqlite3.Row
+    try:
+        connection.execute("PRAGMA busy_timeout=30000")
+        quick = connection.execute("PRAGMA quick_check").fetchone()[0]
+        if quick != "ok":
+            raise InstallError("CRM_QUICK_CHECK:" + str(quick))
+        connection.execute("BEGIN IMMEDIATE")
+        before = _ua0011_row(connection)
+        photo_count = _validate_ua0011_identity(before)
+        before_status = str(before.get("status") or "").strip()
+        if before_status not in ("kr_bought", "sea_loaded"):
+            raise InstallError("UA0011_STATUS_UNEXPECTED:" + before_status)
+        changed = before_status == "kr_bought"
+        if changed:
+            cursor = connection.execute(
+                "UPDATE cars SET status = ? WHERE id = ? AND status = ?",
+                ("sea_loaded", before["id"], "kr_bought"),
+            )
+            if cursor.rowcount != 1:
+                raise InstallError("UA0011_STATUS_UPDATE_RACE")
+        after = _ua0011_row(connection)
+        after_status = str(after.get("status") or "").strip()
+        fields_changed = sorted(
+            key for key in set(before) | set(after) if before.get(key) != after.get(key)
+        )
+        expected = ["status"] if changed else []
+        if after_status != "sea_loaded" or fields_changed != expected:
+            raise InstallError("UA0011_STATUS_CONTRACT:" + ",".join(fields_changed))
+        connection.commit()
+        return {
+            "target_id": "UA-0011",
+            "before_status": before_status,
+            "after_status": after_status,
+            "changed": changed,
+            "fields_changed": fields_changed,
+            "photo_count": photo_count,
+            "vin4": "4289",
+            "before_row_sha256": _row_hash(before),
+            "after_row_sha256": _row_hash(after),
+        }
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+
+def restore_ua0011_status(change: dict[str, Any]) -> dict[str, Any]:
+    if not change.get("changed"):
+        return {"changed": False, "status": str(change.get("before_status") or "sea_loaded")}
+    before_status = str(change.get("before_status") or "")
+    after_status = str(change.get("after_status") or "")
+    if (before_status, after_status) != ("kr_bought", "sea_loaded"):
+        raise InstallError("UA0011_ROLLBACK_CONTRACT_INVALID")
+    connection = sqlite3.connect(str(ROOT / "crm.db"), timeout=30)
+    connection.row_factory = sqlite3.Row
+    try:
+        connection.execute("PRAGMA busy_timeout=30000")
+        connection.execute("BEGIN IMMEDIATE")
+        current = _ua0011_row(connection)
+        if str(current.get("status") or "").strip() != after_status:
+            raise InstallError("UA0011_ROLLBACK_STATUS_RACE")
+        cursor = connection.execute(
+            "UPDATE cars SET status = ? WHERE id = ? AND status = ?",
+            (before_status, current["id"], after_status),
+        )
+        if cursor.rowcount != 1:
+            raise InstallError("UA0011_ROLLBACK_UPDATE_RACE")
+        restored = _ua0011_row(connection)
+        if str(restored.get("status") or "").strip() != before_status:
+            raise InstallError("UA0011_ROLLBACK_VERIFY")
+        connection.commit()
+        return {"changed": True, "status": before_status}
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+
 def protected_pages() -> dict[str, str]:
     result = {}
     for parent in (ROOT / "video", ROOT / "site"):
@@ -175,6 +285,19 @@ def create_backup() -> pathlib.Path:
             atomic(target, data, path.stat().st_mode & 0o777)
             item.update({"sha256": sha(data), "mode": path.stat().st_mode & 0o777})
         manifest[str(path)] = item
+    snapshot = root / "crm.db.snapshot"
+    source = sqlite3.connect(str(ROOT / "crm.db"), timeout=30)
+    target = sqlite3.connect(str(snapshot))
+    try:
+        source.backup(target)
+    finally:
+        target.close()
+        source.close()
+    snapshot_data = read(snapshot)
+    manifest["__crm_snapshot__"] = {
+        "path": str(snapshot), "sha256": sha(snapshot_data), "bytes": len(snapshot_data),
+        "restore_mode": "manual_recovery_only",
+    }
     atomic_json(root / "manifest.json", manifest)
     return root
 
@@ -236,7 +359,15 @@ def run_install() -> dict[str, Any]:
 
     backup_root = create_backup()
     changed = []
+    status_change = None
     try:
+        status_change = normalize_ua0011_status()
+        normalized_rows, normalized_count = published_rows_hash()
+        if normalized_count != row_count:
+            raise InstallError("CRM_ROW_COUNT_CHANGED")
+        if bool(status_change.get("changed")) != (normalized_rows != before_rows):
+            raise InstallError("CRM_STATUS_HASH_CONTRACT")
+
         for destination, source_path in SOURCE_INBOX.items():
             payload = read(source_path)
             if not destination.is_file() or read(destination) != payload:
@@ -250,19 +381,19 @@ def run_install() -> dict[str, Any]:
         repair = runtime.enforce_live_catalog("UA-0011")
         changed.extend(repair.get("changed_paths") or [])
         after_rows, after_count = published_rows_hash()
-        if (after_rows, after_count) != (before_rows, row_count):
-            raise InstallError("CRM_ROWS_CHANGED")
+        if (after_rows, after_count) != (normalized_rows, row_count):
+            raise InstallError("CRM_ROWS_CHANGED_OUTSIDE_STATUS")
         if protected_pages() != before_pages:
             raise InstallError("INDIVIDUAL_PAGES_CHANGED")
         if ua0011_media() != before_media:
             raise InstallError("UA0011_MEDIA_CHANGED")
-        postcheck = verify_catalogs(runtime, before_rows)
+        postcheck = verify_catalogs(runtime, after_rows)
         return {
             "contract_id": CONTRACT_ID,
             "status": "PASS",
             "mode": "INSTALL",
             "production_write": True,
-            "crm_write": False,
+            "crm_write": bool(status_change.get("changed")),
             "media_write": False,
             "llm_tokens": 0,
             "backup_root": str(backup_root),
@@ -272,11 +403,14 @@ def run_install() -> dict[str, Any]:
             "rows_sha256_after": after_rows,
             "protected_pages": len(before_pages),
             "ua0011_media_files": len(before_media),
+            "status_normalization": status_change,
             "repair": repair,
             "postcheck": postcheck,
         }
     except Exception:
         restore(backup_root)
+        if status_change and status_change.get("changed"):
+            restore_ua0011_status(status_change)
         raise
 
 
@@ -302,15 +436,17 @@ def run_postcheck() -> dict[str, Any]:
 def run_rollback() -> dict[str, Any]:
     receipt = json.loads(RECEIPTS["install"].read_text(encoding="utf-8"))
     backup_root = pathlib.Path(str(receipt.get("backup_root") or ""))
+    status_restored = restore_ua0011_status(receipt.get("status_normalization") or {})
     restored = restore(backup_root)
     return {
         "contract_id": CONTRACT_ID,
         "status": "PASS",
         "mode": "ROLLBACK",
         "production_write": True,
-        "crm_write": False,
+        "crm_write": bool(status_restored.get("changed")),
         "media_write": False,
         "backup_root": str(backup_root),
+        "status_restored": status_restored,
         "restored": restored,
     }
 
