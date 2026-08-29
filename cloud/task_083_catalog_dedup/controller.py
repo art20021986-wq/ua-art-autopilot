@@ -317,7 +317,9 @@ def main() -> int:
     try:
         if os.environ.get("TASK083_OWNER_DIRECTIVE") != APPROVAL:
             raise Blocked("OWNER_DIRECTIVE_MISSING")
-        wait_for_github_quiet()
+        verify_only = os.environ.get("TASK083_VERIFY_ONLY") == "1"
+        if not verify_only:
+            wait_for_github_quiet()
         api = API()
         data = INSTALLER.read_bytes()
         compile(data.decode(), "installer.py", "exec")
@@ -327,8 +329,8 @@ def main() -> int:
         shadow = api.run_remote("shadow")
         value["shadow"] = shadow
         require_pass(shadow, "SHADOW")
-        wait_for_github_quiet(timeout=600)
-        verify_only = os.environ.get("TASK083_VERIFY_ONLY") == "1"
+        if not verify_only:
+            wait_for_github_quiet(timeout=600)
         if verify_only and not already_enforced(shadow):
             raise Blocked("VERIFY_ONLY_GUARD_NOT_INSTALLED")
         if already_enforced(shadow):
