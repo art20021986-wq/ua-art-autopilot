@@ -75,6 +75,17 @@ def test_bare_digits_rejected_outside_wait_mode():
     assert reason == "NO_SALE_PRICE_INTENT"
 
 
+def test_wait_mode_accepts_currency_suffix_and_number_words():
+    assert _ok_value("11 400 $", wait=True) == 11400
+    assert _ok_value("одиннадцать тысяч четыреста долларов", wait=True) == 11400
+
+
+def test_english_price_and_change_intent():
+    assert _ok_value("price 11.4k USD") == 11400
+    result = parse_sale_price_message("change price to 12000")
+    assert result.ok and result.is_explicit_change_intent
+
+
 # --- Number/format normalization -----------------------------------------
 
 def test_nbsp_grouping():
@@ -136,6 +147,11 @@ def test_customs_cost_wording_blocked():
 def test_two_competing_amounts_rejected():
     reason = _rejected("цена 11400 или 12000 долларов")
     assert reason == "MULTIPLE_COMPETING_AMOUNTS"
+
+
+def test_ambiguous_currency_rejected():
+    reason = _rejected("цена 11400 USD грн")
+    assert reason == "AMBIGUOUS_CURRENCY"
 
 
 def test_zero_rejected():
