@@ -69,7 +69,7 @@ jobs:
           import json, os, time, urllib.request
           active_states = {'queued', 'in_progress', 'pending', 'requested', 'waiting'}
           current = int(os.environ['CURRENT_RUN_ID'])
-          deadline = time.monotonic() + 600
+          deadline = time.monotonic() + 4500
           stable = 0
           while time.monotonic() < deadline:
               req = urllib.request.Request(
