@@ -1,0 +1,41 @@
+name: task083-production-hold
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task083_production_hold.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+
+jobs:
+  hold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Hold until catalog de-dup writer completes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json, os, time, urllib.request
+          target = 33241869961
+          for _ in range(100):
+              req = urllib.request.Request(
+                  'https://api.github.com/repos/%s/actions/runs/%d' % (os.environ['REPOSITORY'], target),
+                  headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+                           'Accept':'application/vnd.github+json',
+                           'User-Agent':'ua-art-task083-hold/1'}, method='GET')
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  run = json.load(response)
+              if run.get('status') == 'completed':
+                  print('FOREIGN_PRODUCTION_COMPLETED', run.get('conclusion'))
+                  break
+              print('WAITING_FOR_FOREIGN_PRODUCTION', run.get('status'), flush=True)
+              time.sleep(15)
+          else:
+              raise SystemExit('FOREIGN_PRODUCTION_TIMEOUT')
+          PY
