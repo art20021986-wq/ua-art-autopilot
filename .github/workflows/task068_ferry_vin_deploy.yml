@@ -1,5 +1,5 @@
 name: task068-ferry-vin-v1-1-deploy
-# deploy-revision: 6-unified-cta-carhistory-crm-exact
+# deploy-revision: 7-unified-dynamic-card-set
 
 on:
   push:
@@ -81,7 +81,8 @@ jobs:
           from pathlib import Path
           root = Path('cloud/task_068_ferry_vin/screenshots')
           paths = sorted(root.glob('*.png'))
-          if len(paths) != 11:
+          expected = len(json.loads(Path('cloud/task_068_ferry_vin/evidence/live.json').read_text())['cards']) + 1
+          if len(paths) != expected:
               raise SystemExit('TASK068_SCREENSHOT_COUNT_INVALID')
           manifest = []
           for path in paths:
@@ -116,7 +117,7 @@ jobs:
           delayed = deploy['postcheck_delayed']
           assert source_install['status'] == 'PASS' and source_install['sources_only'] is True
           assert {'stranica.py', 'yadro.py', 'master_card.py', 'cars_ui.py'} == set(source_install['source_sha256_after'])
-          assert post['card_count'] == 10 and delayed['card_count'] == 10
+          assert post['card_count'] >= 10 and delayed['card_count'] == post['card_count']
           assert post['stage_distribution'].keys() == {'1', '2', '3', '4'}
           assert all(value > 0 for value in post['stage_distribution'].values())
           assert post['ua0009']['id'] == 'UA-0009' and post['ua0009']['stage'] == 2
@@ -130,7 +131,7 @@ jobs:
           assert install['db_before']['published_rows_sha256'] == install['db_after']['published_rows_sha256']
           assert install['media_before'] == install['media_after']
           cards = {card['id']: card for card in install['cards']}
-          assert len(cards) == 10
+          assert len(cards) == post['card_count']
           for identifier, card in cards.items():
               assert set(card['roots']) == {'video', 'site'}
               for item in card['roots'].values():
@@ -143,7 +144,8 @@ jobs:
                   assert item['vin'] and item['engine_cc'] > 0 and item['video_count'] >= 0
           assert cards['UA-0009']['roots']['video']['engine_cc'] == 2000
           assert cards['UA-0010']['roots']['video']['engine_cc'] == 2000
-          assert live['card_count'] == 10 and live['page_count'] == 21
+          assert live['card_count'] == post['card_count']
+          assert live['page_count'] == live['card_count'] * 2 + 1
           assert live['ua0009_safe'] is True and live['catalog_http'] == 200
           for card in live['cards']:
               expected = cards[card['id']]['roots']['video']
@@ -156,7 +158,7 @@ jobs:
               assert card['forbidden_sea_terms'] == 0
           report = '\n'.join([
               '# UA-CARDS-UNIFIED-SHELL-001 V1.1', '', 'STATUS: **DONE**', '',
-              '- Все 10 текущих карточек и все будущие закреплены единым финальным контрактом.',
+              f"- Все {live['card_count']} текущих карточек и все будущие закреплены единым финальным контрактом.",
               '- На каждой карточке восстановлены постоянные этапы и ровно одна активная комплексная диагностика.',
               '- Если материалов диагностики нет, целевая страница показывает «Диагностика ожидает данных».',
               '- На каждой карточке ровно одна VIN-кнопка на официальный Korea CarHistory (KIDI); VIN копируется локально и запрос подтверждает клиент.',
