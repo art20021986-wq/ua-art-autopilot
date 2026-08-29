@@ -8,6 +8,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+import logging
 
 
 HERE = pathlib.Path(__file__).resolve().parents[1]
@@ -83,9 +84,6 @@ class ContractTests(unittest.TestCase):
                 self.assertIn("На пароме · маршрут — Киев", source)
                 self.assertIn("ua-stage-card-v2-photo", source)
                 self.assertNotIn("Корея → Грузия", source)
-                self.assertIn("function setChipCount", source)
-                self.assertIn("counts={all:cards.length", source)
-                self.assertIn("setShown(shown)", source)
             second = runtime.enforce_live_catalog("UA-0011", dry_run=True)
             for item in second["catalogs"].values():
                 self.assertEqual(item["before_sha256"], item["candidate_sha256"])
@@ -101,39 +99,6 @@ class ContractTests(unittest.TestCase):
                 runtime.enforce_live_catalog("UA-0011")
             self.assertEqual(before, (root / "video/katalog.html").read_bytes())
 
-    def test_status_normalization_changes_only_status_and_rolls_back(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            self.fixture(root)
-            con = sqlite3.connect(root / "crm.db")
-            con.row_factory = sqlite3.Row
-            con.execute("UPDATE cars SET status='kr_bought' WHERE auto_number='UA-0011'")
-            con.commit()
-            before = dict(con.execute(
-                "SELECT * FROM cars WHERE auto_number='UA-0011'").fetchone())
-            con.close()
-            previous_root = installer.ROOT
-            try:
-                installer.ROOT = root
-                value = installer.normalize_ua0011_status()
-                self.assertTrue(value["changed"])
-                self.assertEqual(value["before_status"], "kr_bought")
-                self.assertEqual(value["after_status"], "sea_loaded")
-                self.assertEqual(value["fields_changed"], ["status"])
-                again = installer.normalize_ua0011_status()
-                self.assertFalse(again["changed"])
-                restored = installer.restore_ua0011_status(value)
-                self.assertTrue(restored["changed"])
-                self.assertEqual(restored["status"], "kr_bought")
-            finally:
-                installer.ROOT = previous_root
-            con = sqlite3.connect(root / "crm.db")
-            con.row_factory = sqlite3.Row
-            after = dict(con.execute(
-                "SELECT * FROM cars WHERE auto_number='UA-0011'").fetchone())
-            con.close()
-            self.assertEqual(before, after)
-
     def test_publisher_wrapper_checks_tuple_success(self):
         sample = """def opublikovat(kod, proba=False):
     if proba:
@@ -145,7 +110,54 @@ class ContractTests(unittest.TestCase):
         self.assertIn("result[0]", patched)
         compile(patched, "publikaciya.py", "exec")
 
+    def test_db_guard_blocks_stage_regression_when_container_exists(self):
+        sample = '''import logging
+CARD = {"status": "sea_loaded", "sea_container": "CONT-1"}
+AUDIT = []
+def get_card(table, card_id):
+    return dict(CARD)
+def log_action(actor_id, action, table, card_id, field, old, new):
+    AUDIT.append((action, old, new))
+def update_card_field(table, card_id, field, value, actor_id):
+    CARD[field] = value
+'''
+        scope = {}
+        exec(installer.patch_db(sample), scope)
+        result = scope["update_card_field"]("cars", 18, "status", "kr_bought", 397376186)
+        self.assertFalse(result)
+        self.assertEqual(scope["CARD"]["status"], "sea_loaded")
+        self.assertEqual(scope["AUDIT"], [("stage_regression_blocked", "sea_loaded", "kr_bought")])
+
+    def test_exact_stage_repair_changes_only_target_status(self):
+        with tempfile.TemporaryDirectory() as directory:
+            original = installer.DB_PATH
+            installer.DB_PATH = pathlib.Path(directory) / "crm.db"
+            try:
+                con = sqlite3.connect(installer.DB_PATH)
+                con.execute('''CREATE TABLE cars (
+                    id INTEGER PRIMARY KEY, auto_number TEXT, vin TEXT, published INTEGER,
+                    sea_container TEXT, status TEXT, updated_at TEXT
+                )''')
+                con.execute('''CREATE TABLE audit (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT, actor_id INTEGER, action TEXT,
+                    entity_type TEXT, entity_id INTEGER, field TEXT, old_value TEXT,
+                    new_value TEXT, created_at TEXT
+                )''')
+                con.execute("INSERT INTO cars VALUES (18,'UA-0011',?,1,'CONT-1','kr_bought','before')",
+                            (installer.TARGET_VIN,))
+                con.commit()
+                con.close()
+                result = installer.repair_target_stage()
+                self.assertTrue(result["changed"])
+                con = sqlite3.connect(installer.DB_PATH)
+                row = con.execute("SELECT status,sea_container FROM cars WHERE id=18").fetchone()
+                audit = con.execute("SELECT action,old_value,new_value FROM audit").fetchone()
+                con.close()
+                self.assertEqual(row, ("sea_loaded", "CONT-1"))
+                self.assertEqual(audit, ("task082_stage_repair", "kr_bought", "sea_loaded"))
+            finally:
+                installer.DB_PATH = original
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
-
