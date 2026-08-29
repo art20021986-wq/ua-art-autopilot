@@ -36,11 +36,13 @@ SALE_PRICE_INTENT_PATTERNS = [
     r"\bцен(?:а|у|ы|е|ой|ою|ам|ами|ах)?\b",
     r"\bцін(?:а|у|и|і|ою|ам|ами|ах)?\b",
     r"\bвартіст\w*\b",
+    r"\bprice\b",
 ]
 
 EXPLICIT_CHANGE_INTENT_PATTERNS = [
     r"измен\w*", r"исправ\w*", r"замен\w*", r"поменя\w*", r"скорректир\w*",
     r"зміни\w*", r"виправ\w*", r"заміни\w*", r"поміня\w*",
+    r"\bchange\w*", r"\bcorrect\w*", r"\breplace\w*", r"\bupdate\w*",
 ]
 
 # Fields/wording that must NEVER be mistaken for sale price even if a number
@@ -62,6 +64,9 @@ CURRENCY_WORDS = [
     r"\$", r"usd\b", r"долар\w*\b", r"доллар\w*\b", r"грн\b", r"гривен\w*\b",
     r"гривн\w*\b", r"uah\b",
 ]
+
+USD_PATTERNS = [r"\$", r"\busd\b", r"\bдолар\w*\b", r"\bдоллар\w*\b"]
+UAH_PATTERNS = [r"₴", r"\buah\b", r"\bгрн\b", r"\bгривен\w*\b", r"\bгривн\w*\b"]
 
 NBSP = "\u00a0"
 
@@ -209,7 +214,7 @@ _NUMBER_WORD_RUN_RE = re.compile(
 
 def _find_word_number_candidates(segment: str):
     """Scan for maximal runs of RU/UA number words and convert them."""
-    tokens = re.findall(r"[а-яіїєґ']+", segment, re.IGNORECASE)
+    tokens = re.findall(r"[а-яіїєґ'ʼ’]+", segment, re.IGNORECASE)
     if not tokens:
         return []
     results = []
@@ -304,9 +309,15 @@ def parse_sale_price_message(text: str, in_price_uah_wait: bool = False) -> Pric
             return PriceParseResult(ok=True, value=bare, field="price_uah",
                                      is_explicit_change_intent=is_change_intent)
 
-    has_intent = _has_any(SALE_PRICE_INTENT_PATTERNS, lower)
+    has_intent = in_price_uah_wait or _has_any(SALE_PRICE_INTENT_PATTERNS, lower)
     if not has_intent:
         return PriceParseResult(ok=False, reason="NO_SALE_PRICE_INTENT")
+
+    currency_classes = int(_has_any(USD_PATTERNS, lower)) + int(
+        _has_any(UAH_PATTERNS, lower)
+    )
+    if currency_classes > 1:
+        return PriceParseResult(ok=False, reason="AMBIGUOUS_CURRENCY")
 
     if _has_any(BLOCKING_CONTEXT_PATTERNS, lower):
         # Sale-price wording is present, but so is a competing internal /
