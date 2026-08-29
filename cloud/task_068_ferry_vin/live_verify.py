@@ -23,6 +23,7 @@ VIN_END = "<!-- UA-ART-VIN-GUARD-LITE-V1:END -->"
 CAT_START = "<!-- UA-ART-CATALOG-VIN-V1:START -->"
 CAT_END = "<!-- UA-ART-CATALOG-VIN-V1:END -->"
 BASE = "https://www.uaart.com.ua/video/"
+CARHISTORY = "https://www.carhistory.kr/search/carhistory/search.car?lang=ru"
 MAX_BYTES = 5_000_000
 
 
@@ -94,6 +95,8 @@ def validate_card(source: str, identifier: str, expected_stage: int,
         raise RuntimeError("VIN_GUARD_COUNT_INVALID:" + identifier)
     if len(re.findall(r'class=["\'][^"\']*\bua-vin-v1-button\b', source, re.I)) != 1:
         raise RuntimeError("VIN_BUTTON_COUNT_INVALID:" + identifier)
+    if source.count(CARHISTORY) != 1 or "navigator.clipboard.writeText" not in source:
+        raise RuntimeError("VIN_CARHISTORY_TARGET_INVALID:" + identifier)
     if vin not in source or "VIN ПРОВЕРЕН" not in source:
         raise RuntimeError("VIN_CONTENT_INVALID:" + identifier)
     normalized = re.sub(r"\s", "", source)
@@ -115,6 +118,17 @@ def validate_card(source: str, identifier: str, expected_stage: int,
         raise RuntimeError("NATIVE_STAGE_DUPLICATE_REMAINS:" + identifier)
     if 'name="ua-art-contract" content="UA-CARDS-FERRY-VIN-001-V1.1"' not in source:
         raise RuntimeError("CACHE_CONTRACT_META_MISSING:" + identifier)
+    actions = re.findall(
+        r'<a\b[^>]*class=["\'][^"\']*\bua-primary-action-v1\b[^"\']*["\'][^>]*>.*?</a\s*>',
+        source, re.I | re.S)
+    if len(actions) != 1:
+        raise RuntimeError("PRIMARY_ACTION_COUNT_INVALID:" + identifier)
+    expected_action = "kupit" if expected_stage == 4 else "bron"
+    expected_label = "Купить" if expected_stage == 4 else "Задаток 500 $"
+    if "start=%s_%s" % (expected_action, identifier) not in actions[0]:
+        raise RuntimeError("PRIMARY_ACTION_TARGET_INVALID:" + identifier)
+    if re.sub(r"<[^>]+>", "", actions[0]).strip() != expected_label:
+        raise RuntimeError("PRIMARY_ACTION_LABEL_INVALID:" + identifier)
 
 
 def validate_catalog(source: str, cards: list[dict]) -> None:
@@ -176,6 +190,15 @@ def main() -> int:
             diag_source = diag_data.decode("utf-8", "replace")
             if "<html" not in diag_source.lower() or "</html>" not in diag_source.lower():
                 raise RuntimeError("DIAGNOSTICS_PAGE_INVALID:" + identifier)
+            diag_actions = re.findall(
+                r'<a\b[^>]*class=["\'][^"\']*\bua-primary-action-v1\b[^"\']*["\'][^>]*>.*?</a\s*>',
+                diag_source, re.I | re.S)
+            expected_action = "kupit" if stage == 4 else "bron"
+            expected_label = "Купить" if stage == 4 else "Задаток 500 $"
+            if (len(diag_actions) != 1
+                    or "start=%s_%s" % (expected_action, identifier) not in diag_actions[0]
+                    or re.sub(r"<[^>]+>", "", diag_actions[0]).strip() != expected_label):
+                raise RuntimeError("DIAGNOSTICS_PRIMARY_ACTION_INVALID:" + identifier)
             result["cards"].append({
                 "id": identifier,
                 "stage": stage,
@@ -192,6 +215,8 @@ def main() -> int:
                 "diagnostics_links": 1,
                 "vin_guard_count": 1,
                 "vin_button_count": 1,
+                "carhistory": True,
+                "primary_action": expected_label,
                 "vin": root_contract["vin"],
                 "engine_cc": root_contract["engine_cc"],
                 "video_count": root_contract["video_count"],
