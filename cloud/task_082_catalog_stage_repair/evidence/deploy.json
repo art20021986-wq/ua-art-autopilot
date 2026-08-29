@@ -1,0 +1,22 @@
+{
+  "bot_restarted": false,
+  "contract_id": "UA-0011-CATALOG-FERRY-REPAIR-001-V1.0",
+  "errors": [
+    "ControllerError:INSTALL_FAILED:GuardError:UA0011_NOT_FERRY_IN_CRM"
+  ],
+  "install": {
+    "contract_id": "UA-0011-CATALOG-FERRY-REPAIR-001-V1.0",
+    "crm_write": false,
+    "errors": [
+      "GuardError:UA0011_NOT_FERRY_IN_CRM"
+    ],
+    "llm_tokens": 0,
+    "media_write": false,
+    "mode": "INSTALL",
+    "production_write": true,
+    "status": "FAIL"
+  },
+  "llm_tokens": 0,
+  "rollback": null,
+  "status": "FAIL"
+}
