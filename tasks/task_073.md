@@ -150,3 +150,9 @@ CLAUDE/Cloud не выполняет CRITICAL действия. Подготов
 `OWNER_APPROVAL_TOKEN: CRM-UNIFIED-CATALOG-001-V1.0-APPROVED`
 
 При любом пробеле — BLOCKED/FAIL с точной причиной. Не заявлять о production fix до успешного Gate B и публичной проверки.
+
+## Retry correction R2
+
+Первый запуск Claude Autopilot `33228502519` завершился до commit и до любых production-действий: встроенный `python -m py_compile` отклонил сгенерированный `cloud/task_073/tests/test_installer.py` на строке 66, offset 0. Ни один из 15 временно сгенерированных файлов не был сохранён в репозиторий.
+
+Повторить формирование полного комплекта. Перед выдачей каждого Python-файла локально проверить закрытие всех строк/скобок и выполнить эквивалент `python3 -m py_compile` для **всех** `cloud/task_073/**/*.py`, включая `tests/test_installer.py`. Не сокращать и не оставлять незавершённые test literals. После compile обязательно запустить unit tests. При любой ошибке исправить кандидат внутри текущего запуска; не выдавать синтаксически невалидный файл и не переходить к Gate A/production.
