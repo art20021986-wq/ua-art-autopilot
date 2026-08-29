@@ -1,0 +1,83 @@
+name: TASK082 persist stage writer source probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/task082_source_probe_persist.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract exact production stage writers
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import ast, datetime as dt, hashlib, json, os, pathlib
+          import urllib.parse, urllib.request
+          base = "https://www.pythonanywhere.com/api/v0/user/Carix/files/path"
+          wanted = {
+              "db.py": {"update_card_field","migrate","init_db","get_card","connect"},
+              "cars_ui.py": {"set_field","stage_set","apply_value","card_of"},
+              "cars_schema.py": {"stage_of"},
+          }
+          out = {"task_id":"task_082","mode":"GET_ONLY","production_touched":False,
+                 "generated_at_utc":dt.datetime.now(dt.timezone.utc).isoformat(),"files":{}}
+          for name, names in wanted.items():
+              req = urllib.request.Request(
+                  base + urllib.parse.quote("/home/Carix/"+name, safe="/"),
+                  headers={"Authorization":"Token "+os.environ["PYTHONANYWHERE_API_TOKEN"],
+                           "User-Agent":"task082-source-probe/1"})
+              with urllib.request.urlopen(req, timeout=70) as response:
+                  raw = response.read(8_000_001)
+              text = raw.decode("utf-8","replace")
+              lines = text.splitlines()
+              tree = ast.parse(text)
+              defs = {}
+              for node in ast.walk(tree):
+                  if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)) and node.name in names:
+                      end = getattr(node,"end_lineno",node.lineno)
+                      defs[node.name] = {"lineno":node.lineno,"end_lineno":end,
+                                         "source":"\n".join(lines[node.lineno-1:end])}
+              module = []
+              for node in tree.body:
+                  if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef,
+                                      ast.Import,ast.ImportFrom)):
+                      continue
+                  end = getattr(node,"end_lineno",node.lineno)
+                  source = "\n".join(lines[node.lineno-1:end])
+                  if any(token in source for token in ("init_db(","migrate(","run_polling(","start_polling(")):
+                      module.append({"lineno":node.lineno,"end_lineno":end,"source":source})
+              out["files"][name] = {"sha256":hashlib.sha256(raw).hexdigest(),
+                                     "definitions":defs,"module_statements":module}
+          dest=pathlib.Path("cloud/task_082_catalog_stage_repair/evidence/source_probe.json")
+          dest.parent.mkdir(parents=True,exist_ok=True)
+          dest.write_text(json.dumps(out,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+          print(json.dumps({n:list(v["definitions"]) for n,v in out["files"].items()}))
+          PY
+      - name: Persist evidence
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
+          git add cloud/task_082_catalog_stage_repair/evidence/source_probe.json
+          git commit -m "task082: record exact production stage writers"
+          for attempt in 1 2 3 4 5; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main
+          done
+          exit 1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: task082-source-probe-${{ github.run_id }}
+          path: cloud/task_082_catalog_stage_repair/evidence/source_probe.json
+          if-no-files-found: error
