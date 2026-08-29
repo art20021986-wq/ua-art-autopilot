@@ -17,6 +17,12 @@ GUARD_SPEC.loader.exec_module(guard)
 
 
 class SourcePatchTests(unittest.TestCase):
+    def test_cover_path_accepts_original_and_thumbnail(self):
+        self.assertTrue(remote.is_ua0011_cover_path("foto/UA-0011/001.jpg"))
+        self.assertTrue(remote.is_ua0011_cover_path("/video/foto/UA-0011/m/001.jpg?v=2"))
+        self.assertFalse(remote.is_ua0011_cover_path("foto/UA-0011/010.jpg"))
+        self.assertFalse(remote.is_ua0011_cover_path("foto/UA-0010/001.jpg"))
+
     def test_db_patch_is_atomic_and_idempotent(self):
         source = '''def update_card_field(table, card_id, field, value, actor_id):
     old = get_card(table, card_id)
