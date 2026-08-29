@@ -237,7 +237,7 @@ def validate_source_install(value: dict) -> None:
     if set(value.get("source_sha256_after") or {}) != expected:
         raise ControllerError("SOURCE_INSTALL_SET_INVALID")
     changed = set(value.get("changed_paths") or [])
-    if not changed.issubset({"stranica.py", "yadro.py", "master_card.py"}):
+    if not changed.issubset({"stranica.py", "yadro.py", "master_card.py", "cars_ui.py"}):
         raise ControllerError("SOURCE_INSTALL_CHANGED_PATH_INVALID")
     if value.get("production_files_changed") != len(changed):
         raise ControllerError("SOURCE_INSTALL_CHANGED_COUNT_INVALID")
@@ -275,6 +275,8 @@ def validate_install(value: dict) -> None:
                     or item.get("diagnostics_target_complete") is not True
                     or item.get("vin_guard_count") != 1
                     or item.get("vin_button_count") != 1
+                    or item.get("carhistory") is not True
+                    or item.get("primary_action") not in ("Купить", "Задаток 500 $")
                     or item.get("forbidden_sea_terms") != 0
                     or not item.get("vin") or not item.get("engine_cc")
                     or not isinstance(item.get("video_count"), int)):
@@ -283,6 +285,9 @@ def validate_install(value: dict) -> None:
             item.get("engine_cc") != 2000 for item in roots.values()
         ):
             raise ControllerError("INSTALL_ENGINE_CONTRACT_INVALID:" + card.get("id"))
+        expected_action = "Купить" if card.get("stage") == 4 else "Задаток 500 $"
+        if any(item.get("primary_action") != expected_action for item in roots.values()):
+            raise ControllerError("INSTALL_PRIMARY_ACTION_INVALID:" + card.get("id"))
     if value.get("db_before", {}).get("published_rows_sha256") != value.get("db_after", {}).get("published_rows_sha256"):
         raise ControllerError("INSTALL_CRM_CHANGED")
     if value.get("media_before") != value.get("media_after"):
@@ -428,7 +433,7 @@ def main() -> int:
     post = evidence.get("postcheck") or {}
     delayed = evidence.get("postcheck_delayed") or {}
     report = "\n".join([
-        "# UA-CARDS-FERRY-VIN-001 V1.1", "",
+        "# UA-CARDS-UNIFIED-SHELL-001 V1.1", "",
         "STATUS: **%s**" % evidence["status"], "",
         "- Current cards: %s" % post.get("card_count", "not verified"),
         "- Stage coverage: %s" % json.dumps(post.get("stage_distribution", {}), sort_keys=True),
@@ -436,7 +441,9 @@ def main() -> int:
         "- Both bots: %s" % ("PASS" if post.get("bot_health") else "NOT VERIFIED"),
         "- Two-phase source reload before card writes: %s" % ("PASS" if evidence.get("preinstall_bot_restarted") else "NOT RUN"),
         "- Delayed permanence check: %s" % ("PASS" if delayed.get("status") == "PASS" else "NOT VERIFIED"),
-        "- CRM write: false; media write: false; VIN check paid requests: 0; LLM tokens: 0",
+        "- Kyiv CTA: Купить; delivery stages CTA: Задаток 500 $",
+        "- VIN provider: official Korea CarHistory (KIDI); one public + one CRM entry",
+        "- CRM data write: false; media write: false; automated paid VIN requests: 0; LLM tokens: 0",
         "- Changed production files: %s" % install_value.get("production_files_changed", 0),
         "- Backup: `%s`" % install_value.get("backup_root", ""),
         "- Errors: %s" % ("; ".join(evidence["errors"]) if evidence["errors"] else "none"),
