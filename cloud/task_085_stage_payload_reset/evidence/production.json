@@ -1,27 +1,414 @@
 {
+  "apply": {
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task085_backups/20260829T091210Z_ca28851b21",
+    "before": {
+      "auto_number": "UA-0011",
+      "days_to_kyiv": null,
+      "eta_manual": "2026-09-28",
+      "ge_arrived": null,
+      "ge_port": null,
+      "ge_released": null,
+      "ge_to_kyiv_at": null,
+      "id": 18,
+      "published": 1,
+      "sea_container": "ONEYSELGB4471700",
+      "sea_date_out": null,
+      "sea_port_from": null,
+      "status": "sea_loaded",
+      "updated_at": "2026-08-29T08:28:32",
+      "vin": "KMHE341DBKA544289"
+    },
+    "catalog_semantics_before": {
+      "site": {
+        "UA-0001": {
+          "photo": "foto/UA-0001/m/001.jpg",
+          "stage": null
+        },
+        "UA-0002": {
+          "photo": "foto/UA-0002/m/001.jpg",
+          "stage": null
+        },
+        "UA-0003": {
+          "photo": "foto/UA-0003/m/002.jpg",
+          "stage": null
+        },
+        "UA-0004": {
+          "photo": "foto/UA-0004/m/002.jpg",
+          "stage": null
+        },
+        "UA-0005": {
+          "photo": "foto/UA-0005/m/001.jpg",
+          "stage": null
+        },
+        "UA-0006": {
+          "photo": "foto/UA-0006/m/001.jpg",
+          "stage": null
+        },
+        "UA-0007": {
+          "photo": "foto/UA-0007/m/001.jpg",
+          "stage": null
+        },
+        "UA-0008": {
+          "photo": null,
+          "stage": null
+        },
+        "UA-0009": {
+          "photo": null,
+          "stage": null
+        },
+        "UA-0010": {
+          "photo": null,
+          "stage": null
+        },
+        "UA-0011": {
+          "photo": null,
+          "stage": null
+        }
+      },
+      "video": {
+        "UA-0011": {
+          "photo": null,
+          "stage": null
+        }
+      }
+    },
+    "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
+    "crm_write": true,
+    "database_repair": {
+      "changed": true,
+      "fields": {
+        "eta_manual": {
+          "after": null,
+          "before": "2026-09-28"
+        },
+        "sea_container": {
+          "after": null,
+          "before": "ONEYSELGB4471700"
+        },
+        "status": {
+          "after": "kr_bought",
+          "before": "sea_loaded"
+        }
+      }
+    },
+    "errors": [
+      "Task085Error:PUBLISHER_FAILED:Публикация отменена при записи (PUBLICATION BLOCKED UA-0011: пропал раздел «Комплексная диагностика»). Выполнен откат."
+    ],
+    "finished_at_utc": "2026-08-29T09:12:14Z",
+    "media_write": false,
+    "mode": "APPROVED_PRODUCTION_APPLY",
+    "production_write": true,
+    "rollback": {
+      "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task085_backups/20260829T091210Z_ca28851b21",
+      "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
+      "errors": [],
+      "finished_at_utc": "2026-08-29T09:12:14Z",
+      "mode": "ROLLBACK",
+      "production_write": true,
+      "quick_check": "ok",
+      "reason": "automatic_apply_failure",
+      "runtime_llm_tokens": 0,
+      "started_at_utc": "2026-08-29T09:12:13Z",
+      "status": "PASS",
+      "target": {
+        "auto_number": "UA-0011",
+        "days_to_kyiv": null,
+        "eta_manual": "2026-09-28",
+        "ge_arrived": null,
+        "ge_port": null,
+        "ge_released": null,
+        "ge_to_kyiv_at": null,
+        "id": 18,
+        "published": 1,
+        "sea_container": "ONEYSELGB4471700",
+        "sea_date_out": null,
+        "sea_port_from": null,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-29T08:28:32",
+        "vin": "KMHE341DBKA544289"
+      }
+    },
+    "runtime_llm_tokens": 0,
+    "source_sha256": {
+      "cars_schema.py": "7c4a7eaf55b28ffdcd7b277b903400aa2647693593da2bd7de3190a9d45d3154",
+      "cars_ui.py": "ba19f2a58e95a58675440f0e622bb1a344921fb7f564c6ac438a3ee9a52d5b71",
+      "db.py": "45b62539dddc422cc9a8f051d9fc58db86440899b2e5ebe6ad402a1815e53d98",
+      "master_card.py": "113a7471b231ee46e4403c9ec78aad1a3c78ff89f7d17e52bb78c7dd57223879",
+      "stage_payload_guard.py": "d3f8b28150216abf9d25858132496dfbc6508c0e2f3d7c2162da5e5b4f133b34",
+      "stranica.py": "1fca8071b57ad800a3445b3a90238678678f4dda43ac6cab342846e31d900f1a"
+    },
+    "started_at_utc": "2026-08-29T09:12:09Z",
+    "status": "ROLLED_BACK"
+  },
   "automatic_remote_retry": true,
-  "bot_restarted": false,
+  "bot_restarted": true,
   "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
   "errors": [
-    "ControllerError:SHADOW_FAIL:Task085Error:CATALOG_CONTRACT:video:stage_korea,photo"
+    "ControllerError:APPLY_FAIL:Task085Error:PUBLISHER_FAILED:Публикация отменена при записи (PUBLICATION BLOCKED UA-0011: пропал раздел «Комплексная диагностика»). Выполнен откат."
   ],
-  "finished_at_utc": "2026-08-29T09:01:50Z",
-  "rollback": null,
+  "finished_at_utc": "2026-08-29T09:12:32Z",
+  "recovery_restart": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "restart_accepted": true,
+    "task_id": 266084
+  },
+  "rollback": {
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task085_backups/20260829T091210Z_ca28851b21",
+    "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
+    "errors": [],
+    "finished_at_utc": "2026-08-29T09:12:14Z",
+    "mode": "ROLLBACK",
+    "production_write": true,
+    "quick_check": "ok",
+    "reason": "automatic_apply_failure",
+    "runtime_llm_tokens": 0,
+    "started_at_utc": "2026-08-29T09:12:13Z",
+    "status": "PASS",
+    "target": {
+      "auto_number": "UA-0011",
+      "days_to_kyiv": null,
+      "eta_manual": "2026-09-28",
+      "ge_arrived": null,
+      "ge_port": null,
+      "ge_released": null,
+      "ge_to_kyiv_at": null,
+      "id": 18,
+      "published": 1,
+      "sea_container": "ONEYSELGB4471700",
+      "sea_date_out": null,
+      "sea_port_from": null,
+      "status": "sea_loaded",
+      "updated_at": "2026-08-29T08:28:32",
+      "vin": "KMHE341DBKA544289"
+    }
+  },
   "runtime_llm_tokens": 0,
   "shadow": {
+    "candidate_sources": {
+      "cars_schema.py": "7c4a7eaf55b28ffdcd7b277b903400aa2647693593da2bd7de3190a9d45d3154",
+      "cars_ui.py": "75a850c4438c6efca22830b32a11315dcfd10c9fdaa10e2325e9259b9451d982",
+      "db.py": "45b62539dddc422cc9a8f051d9fc58db86440899b2e5ebe6ad402a1815e53d98",
+      "master_card.py": "113a7471b231ee46e4403c9ec78aad1a3c78ff89f7d17e52bb78c7dd57223879",
+      "stage_payload_guard.py": "d3f8b28150216abf9d25858132496dfbc6508c0e2f3d7c2162da5e5b4f133b34",
+      "stranica.py": "1fca8071b57ad800a3445b3a90238678678f4dda43ac6cab342846e31d900f1a"
+    },
+    "catalogs_before": {
+      "site": {
+        "bytes": 41968,
+        "card_count": 11,
+        "checks": {
+          "preimage_readable": true,
+          "protected_count": 1,
+          "target_count": 1
+        },
+        "path": "/home/Carix/site/katalog.html",
+        "semantic": {
+          "UA-0001": {
+            "photo": "foto/UA-0001/m/001.jpg",
+            "stage": null
+          },
+          "UA-0002": {
+            "photo": "foto/UA-0002/m/001.jpg",
+            "stage": null
+          },
+          "UA-0003": {
+            "photo": "foto/UA-0003/m/002.jpg",
+            "stage": null
+          },
+          "UA-0004": {
+            "photo": "foto/UA-0004/m/002.jpg",
+            "stage": null
+          },
+          "UA-0005": {
+            "photo": "foto/UA-0005/m/001.jpg",
+            "stage": null
+          },
+          "UA-0006": {
+            "photo": "foto/UA-0006/m/001.jpg",
+            "stage": null
+          },
+          "UA-0007": {
+            "photo": "foto/UA-0007/m/001.jpg",
+            "stage": null
+          },
+          "UA-0008": {
+            "photo": null,
+            "stage": null
+          },
+          "UA-0009": {
+            "photo": null,
+            "stage": null
+          },
+          "UA-0010": {
+            "photo": null,
+            "stage": null
+          },
+          "UA-0011": {
+            "photo": null,
+            "stage": null
+          }
+        },
+        "sha256": "a60eccae34e5e83885ce9c601373260c424f637fd8bb8f2cbf23c11247be9fea"
+      },
+      "video": {
+        "bytes": 39056,
+        "card_count": 11,
+        "checks": {
+          "preimage_readable": true,
+          "protected_count": 2,
+          "target_count": 1
+        },
+        "path": "/home/Carix/video/katalog.html",
+        "semantic": {
+          "UA-0011": {
+            "photo": null,
+            "stage": null
+          }
+        },
+        "sha256": "2f9ab0d8e42d1177c70a052e9cb78343d692ce10df5dcbd3bfa7faed59cdc972"
+      }
+    },
     "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
     "crm_write": false,
-    "errors": [
-      "Task085Error:CATALOG_CONTRACT:video:stage_korea,photo"
-    ],
-    "finished_at_utc": "2026-08-29T09:01:22Z",
+    "database": {
+      "columns": [
+        "id",
+        "brand",
+        "model",
+        "year",
+        "vin",
+        "fuel",
+        "engine",
+        "color",
+        "mileage",
+        "trim",
+        "condition",
+        "accidents",
+        "auction_link",
+        "price_buy",
+        "price_extra",
+        "price_ship",
+        "price_customs",
+        "price_total",
+        "stage",
+        "photos",
+        "videos",
+        "docs",
+        "responsible",
+        "review_status",
+        "published",
+        "created_by",
+        "approved_by",
+        "created_at",
+        "updated_at",
+        "client_id",
+        "publish_pending",
+        "video_h",
+        "video_v",
+        "auto_number",
+        "engine_cc",
+        "gearbox",
+        "drive",
+        "mileage_km",
+        "condition_text",
+        "condition_photos",
+        "condition_videos",
+        "diag_report",
+        "diag_link",
+        "kr_buy_date",
+        "kr_parking",
+        "sea_container",
+        "sea_port_from",
+        "sea_date_out",
+        "ge_port",
+        "ge_arrived",
+        "ge_released",
+        "days_to_kyiv",
+        "ua_delivered",
+        "ua_handed",
+        "cost_purchase",
+        "cost_fees",
+        "cost_logistics",
+        "cost_total",
+        "price_uah",
+        "nbu_rate",
+        "status",
+        "owner_user",
+        "history",
+        "price_history",
+        "cover_photo",
+        "eta_manual",
+        "description",
+        "hidden_photos",
+        "diag_text",
+        "ge_to_kyiv_at"
+      ],
+      "protected_rows_sha256": "64b87ba839732bf95bb06d9dd2c3f4b4ec38b61cdc34470df7de02c3103b9017",
+      "protected_ua0009": {
+        "auto_number": "UA-0009",
+        "days_to_kyiv": "13",
+        "eta_manual": "2026-09-28",
+        "ge_arrived": null,
+        "ge_port": null,
+        "ge_released": null,
+        "ge_to_kyiv_at": null,
+        "id": 15,
+        "published": 1,
+        "sea_container": "ONEYSELGB4471700",
+        "sea_date_out": null,
+        "sea_port_from": null,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-29T06:06:09",
+        "vin": "KNAGU416BJA242741"
+      },
+      "quick_check": "ok",
+      "row_count": 14,
+      "target": {
+        "auto_number": "UA-0011",
+        "days_to_kyiv": null,
+        "eta_manual": "2026-09-28",
+        "ge_arrived": null,
+        "ge_port": null,
+        "ge_released": null,
+        "ge_to_kyiv_at": null,
+        "id": 18,
+        "published": 1,
+        "sea_container": "ONEYSELGB4471700",
+        "sea_date_out": null,
+        "sea_port_from": null,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-29T08:28:32",
+        "vin": "KMHE341DBKA544289"
+      },
+      "target_business_sha256": "b66d9ed94ae5acca7d15afe31d1a6496e391e7e072c356f3429c23b23459ca5c",
+      "target_media_sha256": "5e0e91f22c64c93a9eb23747e9effe6fbf2428524c30c4081caefd306f2b7395"
+    },
+    "errors": [],
+    "finished_at_utc": "2026-08-29T09:11:11Z",
     "media_write": false,
     "mode": "SHADOW",
     "production_write": false,
+    "projected_target": {
+      "auto_number": "UA-0011",
+      "days_to_kyiv": null,
+      "eta_manual": null,
+      "ge_arrived": null,
+      "ge_port": null,
+      "ge_released": null,
+      "ge_to_kyiv_at": null,
+      "id": 18,
+      "published": 1,
+      "sea_container": null,
+      "sea_date_out": null,
+      "sea_port_from": null,
+      "status": "kr_bought",
+      "updated_at": "2026-08-29T08:28:32",
+      "vin": "KMHE341DBKA544289"
+    },
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-08-29T09:01:21Z",
-    "status": "FAIL"
+    "started_at_utc": "2026-08-29T09:11:10Z",
+    "status": "PASS"
   },
-  "started_at_utc": "2026-08-29T09:00:45Z",
-  "status": "FAIL"
+  "started_at_utc": "2026-08-29T09:10:50Z",
+  "status": "ROLLED_BACK"
 }

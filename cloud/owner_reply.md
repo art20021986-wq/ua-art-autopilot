@@ -5,4 +5,4 @@
 ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО
 БЕЗОПАСНОСТЬ: backup до записи, один writer, автоматический rollback и перезапуск; media и остальные CRM-строки не изменяются.
 UA-0011 STATUS: не подтверждено
-ОШИБКИ: ControllerError:SHADOW_FAIL:Task085Error:CATALOG_CONTRACT:video:stage_korea,photo
+ОШИБКИ: ControllerError:APPLY_FAIL:Task085Error:PUBLISHER_FAILED:Публикация отменена при записи (PUBLICATION BLOCKED UA-0011: пропал раздел «Комплексная диагностика»). Выполнен откат.
