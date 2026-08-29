@@ -59,54 +59,18 @@ jobs:
             cloud/task_083_publish_transaction/tests/test_contract.py
           python3 -W error cloud/task_083_publish_transaction/tests/test_contract.py
 
-      - name: Wait for other production writers
+      - name: Wait in fair production queue
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
           CURRENT_RUN_ID: ${{ github.run_id }}
         run: |
-          python3 - <<'PY'
-          import json, os, time, urllib.request
-          active_states = {'queued', 'in_progress', 'pending', 'requested', 'waiting'}
-          current = int(os.environ['CURRENT_RUN_ID'])
-          deadline = time.monotonic() + 4500
-          stable = 0
-          while time.monotonic() < deadline:
-              req = urllib.request.Request(
-                  'https://api.github.com/repos/%s/actions/runs?per_page=100' % os.environ['REPOSITORY'],
-                  headers={
-                      'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
-                      'Accept': 'application/vnd.github+json',
-                      'X-GitHub-Api-Version': '2022-11-28',
-                      'User-Agent': 'ua-art-task083-production-lane/1',
-                  }, method='GET')
-              with urllib.request.urlopen(req, timeout=30) as response:
-                  runs = json.load(response).get('workflow_runs') or []
-              blockers = []
-              for run in runs:
-                  if int(run.get('id') or 0) == current or run.get('status') not in active_states:
-                      continue
-                  path = str(run.get('path') or '').casefold()
-                  name = str(run.get('name') or '').casefold()
-                  if path == '.github/workflows/task083_publish_transaction.yml':
-                      continue
-                  if ('production' in path or 'gate_b' in path or 'deploy' in path
-                          or 'catalog_dedup' in path or 'production' in name
-                          or 'gate b' in name or 'catalog-dedup' in name):
-                      blockers.append('%s:%s:%s' % (run.get('id'), run.get('name'), run.get('status')))
-              if blockers:
-                  stable = 0
-                  print('TASK083_WAITING_FOR_PRODUCTION_WRITERS', ','.join(blockers), flush=True)
-                  time.sleep(15)
-                  continue
-              stable += 1
-              if stable >= 2:
-                  print('TASK083_EXCLUSIVE_PRODUCTION_WINDOW_PASS')
-                  break
-              time.sleep(10)
-          else:
-              raise SystemExit('TASK083_PRODUCTION_WINDOW_TIMEOUT')
-          PY
+          python3 -W error automation/production_queue.py self-test
+          python3 -W error automation/production_queue.py wait \
+            --task 83 \
+            --drain-before 2026-08-29T09:05:01Z \
+            --timeout-seconds 4500 \
+            --stable-polls 2
 
       - name: Backup, install, publish, restart and verify
         id: deploy
