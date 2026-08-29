@@ -2658,6 +2658,72 @@ def _catalog_block_for_id(source: str, identifier: str) -> str:
     return source[start:end + len(CATALOG_VIN_END)] if start >= 0 and end >= 0 else ""
 
 
+def _recovered_primary_from_central(identifier: str, row: dict[str, Any]) -> bytes:
+    """Build a truthful canonical shell when a published primary was never emitted.
+
+    Only CRM fields and media already owned by this identifier are used.  This is
+    deliberately narrower than cloning another card and makes the future-card
+    invariant self-healing without inventing vehicle data.
+    """
+    media_root = os.path.join(VIDEO_ROOT, "foto", identifier)
+    media: list[str] = []
+    if os.path.isdir(media_root) and not os.path.islink(media_root):
+        for base, dirs, files in os.walk(media_root, followlinks=False):
+            dirs[:] = sorted(
+                name for name in dirs if not os.path.islink(os.path.join(base, name)))
+            for name in sorted(files):
+                path = os.path.join(base, name)
+                if os.path.islink(path) or not os.path.isfile(path):
+                    continue
+                suffix = pathlib.Path(name).suffix.lower()
+                if suffix not in {".jpg", ".jpeg", ".png", ".webp", ".mp4", ".mov", ".webm"}:
+                    continue
+                rel = os.path.relpath(path, VIDEO_ROOT).replace(os.sep, "/")
+                media.append("/video/" + rel)
+    for path in sorted(glob.glob(os.path.join(VIDEO_ROOT, identifier + "*"))):
+        suffix = pathlib.Path(path).suffix.lower()
+        name = os.path.basename(path).lower()
+        if (suffix in {".mp4", ".mov", ".webm"} and ".novoe." not in name
+                and os.path.isfile(path) and not os.path.islink(path)):
+            media.append("/video/" + os.path.basename(path))
+    media = list(dict.fromkeys(media))
+    videos = [value for value in media if pathlib.Path(value).suffix.lower() in {".mp4", ".mov", ".webm"}]
+    photos = [value for value in media if pathlib.Path(value).suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}]
+    # Keep the emergency page fast while retaining a representative gallery.
+    photos = photos[:40]
+
+    def esc(value: Any) -> str:
+        return html.escape(str(value or "").strip(), quote=True)
+
+    title = " ".join(filter(None, (
+        esc(row.get("brand")), esc(row.get("model")), esc(row.get("year"))))) or esc(identifier)
+    price = esc(row.get("price") or row.get("price_usd"))
+    mileage = esc(row.get("mileage") or row.get("mileage_km"))
+    fuel = esc(row.get("fuel") or row.get("fuel_type"))
+    gearbox = esc(row.get("gearbox") or row.get("transmission"))
+    specs = " · ".join(value for value in (
+        (mileage + " км") if mileage else "",
+        esc(row.get("engine_cc")) + " см³" if row.get("engine_cc") else "",
+        fuel, gearbox,
+    ) if value)
+    gallery = "".join(
+        '<img loading="lazy" src="%s" alt="%s · фото">' % (esc(url), title)
+        for url in photos)
+    gallery += "".join(
+        '<video controls preload="metadata" playsinline src="%s"></video>' % esc(url)
+        for url in videos)
+    if not gallery:
+        gallery = '<div class="empty">Фото и видео готовятся к публикации</div>'
+    price_html = ('<div class="price">%s $</div>' % price) if price else ""
+    source = """<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>%s — UA ART COMPANY</title><style>
+*{box-sizing:border-box}body{margin:0;background:#091625;color:#edf3fb;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:920px;margin:auto;padding:18px}.card{overflow:hidden;border:1px solid rgba(240,166,60,.55);border-radius:28px;background:#12243a;box-shadow:0 24px 65px rgba(0,0,0,.34)}.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;background:#0a1624}.gallery img,.gallery video{display:block;width:100%%;aspect-ratio:4/3;object-fit:cover;background:#07111d}.body{padding:24px}.top{display:flex;gap:18px;align-items:flex-start}.id{color:#93a6bc;letter-spacing:.15em}.price{margin-left:auto;color:#f0a63c;font-size:28px;font-weight:900}.title{margin:8px 0 12px;font-size:34px;line-height:1.15}.specs{color:#afbed0}.empty{grid-column:1/-1;padding:56px 20px;text-align:center;color:#9fb0c5}.dejstvie{display:block;margin-top:20px;padding:16px;border-radius:15px;background:#f0a63c;color:#102034;text-align:center;text-decoration:none;font-weight:900}@media(max-width:600px){.shell{padding:10px}.card{border-radius:21px}.gallery{grid-template-columns:1fr}.body{padding:18px}.title{font-size:27px}}
+</style></head><body><main class="shell"><article class="card"><div class="gallery">%s</div><div class="body"><div class="top"><span class="id">%s</span>%s</div><h1 class="title">%s</h1><div class="specs">%s</div><a class="dejstvie" href="https://t.me/UA_artcompany_LLC_bot?start=kupit_%s">Купить</a></div></article></main></body></html>""" % (
+        title, gallery, esc(identifier), price_html, title, specs, esc(identifier))
+    return source.encode("utf-8")
+
+
 def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -> dict[str, bytes]:
     candidates = dict(patched)
     runtime = _task068_runtime(rows)
@@ -2716,16 +2782,21 @@ def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -
                     except OSError:
                         continue
                 data = _read(path, required=False)
+                recovered = False
                 if data is None:
                     if name == identifier + ".html":
                         data = recover_primary(identifier, root)
                         if data is None:
-                            raise RepairBlocked("primary_card_missing_no_recovery_source:" + path)
+                            data = _recovered_primary_from_central(identifier, row)
+                        recovered = True
                     else:
                         continue
                 upgraded = ensure_card(data.decode("utf-8"), identifier, row)
                 _task068_validate_card(upgraded, identifier, row, runtime)
                 candidates[path] = upgraded.encode("utf-8")
+                if recovered:
+                    row["_ua068_video_count"] = runtime["_ua068_video_count"](
+                        identifier, row, upgraded)
                 if name == identifier + ".html":
                     found_primary.add(root)
         if found_primary != {VIDEO_ROOT, SITE_ROOT}:
