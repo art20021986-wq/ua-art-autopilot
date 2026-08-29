@@ -49,7 +49,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git pull --rebase origin main
-          git add cloud/task_084_ua0011_korea_reset/evidence/live_gate_a.json
+          git add cloud/task_084_ua0011_korea_reset/evidence/live_gate_a_inventory.json
           git commit -m "task084: record fresh UA-0011 read-only Gate A" || exit 0
           for attempt in 1 2 3 4 5; do
             git push origin HEAD:main && exit 0
@@ -62,7 +62,7 @@ jobs:
         with:
           name: task084-ua0011-live-gate-a-${{ github.run_id }}
           path: |
-            cloud/task_084_ua0011_korea_reset/evidence/live_gate_a.json
+            cloud/task_084_ua0011_korea_reset/evidence/live_gate_a_inventory.json
             cloud/task_084_ua0011_korea_reset/evidence/ua0011_cover.*
           if-no-files-found: error
           retention-days: 14
