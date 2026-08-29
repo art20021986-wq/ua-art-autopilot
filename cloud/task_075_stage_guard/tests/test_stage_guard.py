@@ -41,7 +41,9 @@ class StageGuardTests(unittest.TestCase):
         self.assertIn("На пароме · маршрут — Киев", candidate)
         self.assertNotIn("Корея → Грузия", candidate)
         self.assertIn('data-ua-card-stage="more"', candidate)
+        self.assertIn('data-stage="sea"', candidate)
         self.assertIn("UA-0011.jpg", candidate)
+        self.assertIn('loading="eager"', candidate)
         self.assertIn("11 500 $", candidate)
         self.assertEqual(result["unified_templates"], 1)
         self.assertEqual(result["absolute_photos"], 1)
@@ -78,6 +80,10 @@ class StageGuardTests(unittest.TestCase):
         self.assertEqual(result["status"], "PASS", result["errors"])
         self.assertEqual(result["unified_templates"], 2)
         self.assertEqual(result["absolute_photos"], 2)
+        self.assertEqual(result["native_filter_stages"], 2)
+        self.assertTrue(result["unified_list"])
+        self.assertEqual(result["ordered_stage_groups"], [4, 1])
+        self.assertLess(candidate.index("UA-0002"), candidate.index("UA-0001"))
         self.assertNotIn("catalog-card", candidate)
         self.assertNotIn("old-1.jpg", candidate)
         self.assertNotIn("old-2.jpg", candidate)
@@ -92,12 +98,34 @@ class StageGuardTests(unittest.TestCase):
 
     def test_audit_rejects_legacy_photo_card(self):
         source = """<!doctype html><html><head></head><body>
-        <a class="plitka" href="UA-0001.html" data-ua-card-stage="korea">
+        <!-- CRM-CATALOG-STAGE-GUARD-003-LIST:START -->
+        <a class="plitka" href="UA-0001.html" data-ua-card-stage="korea" data-stage="korea">
         <img src="https://example.test/UA-0001.jpg"><b>UA-0001</b>
-        <span>В Корее · выкуплен и проверен</span></a></body></html>"""
+        <span>В Корее · выкуплен и проверен</span></a>
+        <!-- CRM-CATALOG-STAGE-GUARD-003-LIST:END --></body></html>"""
         result = audit_catalog(source, [row("UA-0001", "kr_verified")])
         self.assertEqual(result["status"], "FAIL")
         self.assertIn("TEMPLATE_MISMATCH:UA-0001", result["errors"])
+
+    def test_outside_fallback_is_moved_into_ordered_list(self):
+        source = """<!doctype html><html><head></head><body><div class="catalog-grid">
+        <article><a href="UA-0001.html"><img src="one.jpg"></a><b>UA-0001</b></article>
+        </div><!-- UA-ART-CATALOG-CARD-FALLBACK-V1:START -->
+        <a class="ua-cat-fallback-v1" href="UA-0011.html"><b>UA-0011</b></a>
+        <!-- UA-ART-CATALOG-CARD-FALLBACK-V1:END --><div class="empty-assist"></div>
+        </body></html>"""
+        rows = [row("UA-0001", "kr_verified"), row("UA-0011", "sea_loaded")]
+        candidate = enforce_catalog(source, rows, {
+            "UA-0001": "https://example.test/UA-0001.jpg",
+            "UA-0011": "https://example.test/UA-0011.jpg",
+        })
+        result = audit_catalog(candidate, rows)
+        self.assertEqual(result["status"], "PASS", result["errors"])
+        self.assertNotIn("UA-ART-CATALOG-CARD-FALLBACK-V1", candidate)
+        managed = candidate[candidate.index("CRM-CATALOG-STAGE-GUARD-003-LIST:START"):
+                            candidate.index("CRM-CATALOG-STAGE-GUARD-003-LIST:END")]
+        self.assertIn("UA-0011", managed)
+        self.assertLess(managed.index("UA-0011"), managed.index("UA-0001"))
 
 
 if __name__ == "__main__":

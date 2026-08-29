@@ -54,6 +54,20 @@ def get_remote(path: str, missing: bool = False, limit: int = MAX_FILE) -> bytes
     return data
 
 
+def probe_photo(url: str) -> dict:
+    request = urllib.request.Request(
+        url, method="GET",
+        headers={"Range": "bytes=0-65535", "User-Agent": "ua-art-task075-photo-probe/1"},
+    )
+    with urllib.request.urlopen(request, timeout=45) as response:
+        data = response.read(65_536)
+        status = int(response.status)
+        content_type = str(response.headers.get_content_type() or "")
+    if status not in (200, 206) or not content_type.startswith("image/") or len(data) < 128:
+        raise StageGuardError("PHOTO_HTTP_INVALID")
+    return {"status": status, "content_type": content_type, "sample_bytes": len(data)}
+
+
 def load_rows(db_bytes: bytes, wal_bytes: bytes | None):
     with tempfile.TemporaryDirectory(prefix="task075-db-") as directory:
         db_path = pathlib.Path(directory) / "crm.db"
@@ -140,22 +154,39 @@ def main() -> int:
                                 "ua0009_safe": True}
 
         photos = {}
+        photo_http = {}
         page_manifest = {}
         for identifier in identifiers:
-            selected = ""
+            candidates = []
             for variant in ("video", "site"):
                 remote = "%s/%s/%s.html" % (REMOTE_ROOT, variant, identifier)
                 page = get_remote(remote, missing=True, limit=3_000_000)
                 page_manifest[variant + ":" + identifier] = (
                     {"sha256": sha(page), "bytes": len(page)} if page else {"missing": True})
-                if page and not selected:
-                    selected = extract_main_photo(
+                if page:
+                    candidate = extract_main_photo(
                         page.decode("utf-8", "replace"),
                         "%s/%s/%s.html" % (PUBLIC, variant, identifier), identifier)
+                    if candidate and candidate not in candidates:
+                        candidates.append(candidate)
+            selected = ""
+            failures = []
+            for candidate in candidates:
+                try:
+                    check = probe_photo(candidate)
+                    selected = candidate
+                    photo_http[identifier] = check
+                    break
+                except Exception as exc:
+                    failures.append(type(exc).__name__)
+            if not selected:
+                raise StageGuardError("PUBLIC_PHOTO_HTTP_FAILED:%s:%s" %
+                                      (identifier, ",".join(failures) or "NO_CANDIDATE"))
             photos[identifier] = selected
         evidence["backup"]["pages"] = page_manifest
         evidence["photo_resolution"] = {
-            identifier: {"resolved": bool(value), "url_sha256": sha(value.encode()) if value else None}
+            identifier: {"resolved": bool(value), "url_sha256": sha(value.encode()) if value else None,
+                         **photo_http.get(identifier, {})}
             for identifier, value in sorted(photos.items())
         }
         ua11 = next(row for row in rows if row.get("auto_number") == "UA-0011")
@@ -208,6 +239,8 @@ def main() -> int:
             "- UA-0009 protected check: **PASS**",
             "- UA-0011 photo restored in both local canaries: **PASS**",
             "- Unified card template and absolute main photo: **11/11 PASS**",
+            "- Native stage filter compatibility and ordered placement: **11/11 PASS**",
+            "- Public photo HTTP probes: **11/11 PASS**",
             "- Stage routing and universal category filter: **PASS**",
             "- Old ferry route / internal state leakage: **0**",
             "", "Production remains locked pending a separate owner command.",

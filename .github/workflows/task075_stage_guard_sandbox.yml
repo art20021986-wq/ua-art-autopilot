@@ -74,6 +74,13 @@ jobs:
               assert catalog['audit']['canonical_cards']==11
               assert catalog['audit']['unified_templates']==11
               assert catalog['audit']['absolute_photos']==11
+              assert catalog['audit']['native_filter_stages']==11
+              assert catalog['audit']['unified_list'] is True
+              assert catalog['audit']['ordered_stage_groups']==sorted(
+                  catalog['audit']['ordered_stage_groups'], reverse=True)
+          assert all(item.get('status') in (200,206) and
+                     str(item.get('content_type','')).startswith('image/')
+                     for item in v['photo_resolution'].values())
           print('TASK075_SANDBOX_EVIDENCE_PASS')
           PY
 
@@ -85,11 +92,11 @@ jobs:
           mkdir -p cloud/task_075_stage_guard/screenshots
           root="file://${GITHUB_WORKSPACE}/cloud/task_075_stage_guard/canary"
           "$browser" --headless=new --disable-gpu --allow-file-access-from-files --hide-scrollbars \
-            --window-size=430,7000 --virtual-time-budget=6000 \
+            --window-size=430,7000 --virtual-time-budget=10000 \
             --screenshot="cloud/task_075_stage_guard/screenshots/video-mobile.png" \
             "$root/video-katalog.html?f=more"
           "$browser" --headless=new --disable-gpu --allow-file-access-from-files --hide-scrollbars \
-            --window-size=430,7000 --virtual-time-budget=6000 \
+            --window-size=430,7000 --virtual-time-budget=10000 \
             --screenshot="cloud/task_075_stage_guard/screenshots/site-mobile.png" \
             "$root/site-katalog.html?f=more"
           test "$(wc -c < cloud/task_075_stage_guard/screenshots/video-mobile.png)" -gt 5000

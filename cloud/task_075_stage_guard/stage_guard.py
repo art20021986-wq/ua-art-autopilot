@@ -15,6 +15,9 @@ CONTRACT_ID = "CRM-CATALOG-STAGE-GUARD-003-V1.0"
 CARD_ID_RE = re.compile(r"UA-[0-9]{4,}", re.I)
 RASTER_RE = re.compile(r"\.(?:avif|jpe?g|png|webp)(?:[?#].*)?$", re.I)
 STAGE_KEYS = {1: "korea", 2: "more", 3: "gruzia", 4: "kiev"}
+NATIVE_STAGE_KEYS = {1: "korea", 2: "sea", 3: "georgia", 4: "kiev"}
+LIST_START = "<!-- CRM-CATALOG-STAGE-GUARD-003-LIST:START -->"
+LIST_END = "<!-- CRM-CATALOG-STAGE-GUARD-003-LIST:END -->"
 PUBLIC_LABELS = {
     1: ("В Корее · выкуплен и проверен", "У Кореї · викуплений і перевірений"),
     2: ("На пароме · маршрут — Киев", "На поромі · маршрут — Київ"),
@@ -202,6 +205,7 @@ def _ensure_class(opening: str, class_name: str) -> str:
 def normalize_block(block: str, row: Mapping) -> str:
     stage = stage_number(row)
     key = STAGE_KEYS[stage]
+    native_key = NATIVE_STAGE_KEYS[stage]
     opening_match = re.match(r"<(?:a|article)\b[^>]*>", block, re.I | re.S)
     if not opening_match:
         raise StageGuardError("CARD_OPENING_MISSING:%s" % row.get("auto_number"))
@@ -246,6 +250,7 @@ def render_card(row: Mapping, photo_url: str) -> str:
         raise StageGuardError("MAIN_PHOTO_MISSING:%s" % identifier)
     stage = stage_number(row)
     key = STAGE_KEYS[stage]
+    native_key = NATIVE_STAGE_KEYS[stage]
     label_ru, label_uk = PUBLIC_LABELS[stage]
     mileage = row.get("mileage_km") or row.get("mileage") or "—"
     engine = row.get("engine_cc") or row.get("engine") or "—"
@@ -263,7 +268,7 @@ def render_card(row: Mapping, photo_url: str) -> str:
     return (
         '<a class="kat ua-stage-card-v2 ua-stage-filterable" '
         'href="{id}.html" data-ua-card="{id}" data-ua-card-stage="{key}" '
-        'data-etap="{key}" data-ua-stage="{stage}">'
+        'data-stage="{native_key}" data-etap="{key}" data-ua-stage="{stage}">'
         '<div class="ua-stage-card-v2-body">'
         '<div class="ua-stage-card-v2-top"><span class="ua-stage-card-v2-kicker">'
         '{id} · ЭТАП {stage} ИЗ 4</span><strong>{price}</strong></div>'
@@ -277,9 +282,10 @@ def render_card(row: Mapping, photo_url: str) -> str:
         '<span class="ua-stage-card-v2-open"><span class="ua075-ru">Открыть карточку →</span>'
         '<span class="ua075-uk">Відкрити картку →</span></span></div>'
         '<figure class="ua-stage-card-v2-photo"><img src="{photo}" alt="{title}" '
-        'loading="lazy" decoding="async"></figure></a>'
+        'loading="eager" decoding="async"></figure></a>'
     ).format(
-        id=esc(identifier), key=esc(key), stage=stage, title=esc(title(row) or identifier),
+        id=esc(identifier), key=esc(key), native_key=esc(native_key), stage=stage,
+        title=esc(title(row) or identifier),
         ru=esc(label_ru), uk=esc(label_uk), mileage=esc(mileage), engine=esc(engine),
         fuel=esc(fuel), gearbox=esc(gearbox), vin=esc(vin), photos=photos,
         videos=videos, photo=esc(photo_url), price=esc(public_price(row)), eta=eta.format(
@@ -288,17 +294,26 @@ def render_card(row: Mapping, photo_url: str) -> str:
 
 
 STYLE = r'''<style id="ua-stage-card-v2-style">
-.ua-stage-card-v2{display:grid!important;grid-template-columns:minmax(0,55%) minmax(0,45%);padding:0!important;overflow:hidden;border:1px solid rgba(240,166,60,.46)!important;border-radius:22px!important;background:linear-gradient(145deg,#172a40,#102033)!important;color:#edf3fb!important;text-decoration:none!important;box-shadow:0 12px 30px rgba(0,0,0,.2);min-height:290px}
+.ua-stage-card-v2{display:grid!important;grid-template-columns:minmax(0,55%) minmax(0,45%);margin:12px 0;padding:0!important;overflow:hidden;border:1px solid rgba(240,166,60,.46)!important;border-radius:22px!important;background:linear-gradient(145deg,#172a40,#102033)!important;color:#edf3fb!important;text-decoration:none!important;box-shadow:0 12px 30px rgba(0,0,0,.2);min-height:290px}.catalog-grid>.ua-stage-card-v2{margin:0}
 .ua-stage-card-v2 *{box-sizing:border-box}.ua-stage-card-v2-body{padding:24px 20px;min-width:0}.ua-stage-card-v2-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.ua-stage-card-v2-kicker{display:block;color:#f0a63c;font-size:11px;font-weight:900;letter-spacing:.11em}.ua-stage-card-v2-top strong{flex:0 0 auto;color:#f4b65c;font-size:16px;white-space:nowrap}.ua-stage-card-v2 h3{margin:11px 0 7px;font-size:26px;line-height:1.16;color:#f3f6fa}.ua-stage-card-v2-status{color:#72dfa5;font-size:14px;line-height:1.4}.ua-stage-card-v2-spec{margin-top:15px;color:#aebed0;font-size:13px;line-height:1.5}.ua-stage-card-v2-eta{margin-top:9px;color:#f2c27b;font-size:11px;line-height:1.4}.ua-stage-card-v2-vin{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:17px;padding:13px;border-top:1px solid rgba(240,166,60,.32);background:rgba(10,25,40,.25);font-size:12px;color:#b9c8d8}.ua-stage-card-v2-vin b{color:#f3f6fa;overflow-wrap:anywhere}.ua-stage-card-v2-vin i{font-style:normal;color:#72dfa5;font-size:9px;border:1px solid rgba(64,190,125,.42);border-radius:999px;padding:4px 6px}.ua-stage-card-v2-vin small{grid-column:1/-1;color:#9fb0c5}.ua-stage-card-v2-open{display:block;margin-top:16px;color:#f4b65c;font-weight:850}.ua-stage-card-v2-photo{margin:0;min-width:0;min-height:100%;background:#0a1725}.ua-stage-card-v2-photo img{display:block;width:100%;height:100%;min-height:290px;object-fit:cover;object-position:center}.ua075-uk{display:none}html:lang(uk) .ua075-ru{display:none}html:lang(uk) .ua075-uk{display:inline}
 @media(max-width:620px){.ua-stage-card-v2{grid-template-columns:minmax(0,56%) minmax(0,44%);min-height:350px}.ua-stage-card-v2-body{padding:18px 13px}.ua-stage-card-v2-top{display:block}.ua-stage-card-v2-top strong{display:block;margin-top:6px;font-size:15px}.ua-stage-card-v2 h3{font-size:22px}.ua-stage-card-v2-status{font-size:13px}.ua-stage-card-v2-spec{font-size:12px}.ua-stage-card-v2-vin{grid-template-columns:1fr;padding:10px}.ua-stage-card-v2-vin i{justify-self:start}.ua-stage-card-v2-photo img{min-height:350px}}
 </style>'''
 
 
 FILTER_SCRIPT = r'''<script id="ua-stage-card-v2-filter">(function(){
-function apply(){var p=new URLSearchParams(location.search),f=p.get('f')||'all';
-var cards=document.querySelectorAll('[data-ua-card-stage]');for(var i=0;i<cards.length;i++){
-var s=cards[i].getAttribute('data-ua-card-stage');cards[i].style.display=(f==='all'||s===f)?'':'none';}}
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',apply)}else{apply()}})();</script>'''
+function apply(){var p=new URLSearchParams(location.search),f=p.get('f')||p.get('stage')||'all';
+var map={more:'sea',gruzia:'georgia',kiev:'kiev',korea:'korea',sea:'sea',georgia:'georgia'};
+f=map[f]||f;var cards=document.querySelectorAll('[data-ua-card-stage]'),shown=0;
+for(var i=0;i<cards.length;i++){var s=cards[i].getAttribute('data-stage');
+var visible=(f==='all'||s===f);cards[i].style.display=visible?'':'none';if(visible)shown++;}
+var buttons=document.querySelectorAll('[data-f]');for(var j=0;j<buttons.length;j++){
+var bf=map[buttons[j].getAttribute('data-f')]||buttons[j].getAttribute('data-f');
+var active=(bf===f||(f==='all'&&bf==='all'));buttons[j].classList.toggle('active',active);
+buttons[j].setAttribute('aria-pressed',active?'true':'false');}
+var result=document.querySelector('.catalog-result');if(result)result.textContent='Показано: '+shown;}
+function schedule(){apply();setTimeout(apply,120);setTimeout(apply,900);}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',schedule)}else{schedule()}
+window.addEventListener('load',schedule);})();</script>'''
 
 
 def _inject_once(source: str, marker_id: str, payload: str, before: str) -> str:
@@ -320,6 +335,16 @@ def enforce_catalog(source: str, rows: Iterable[Mapping], photos: Mapping[str, s
     }
     if not rows_by_id:
         raise StageGuardError("NO_PUBLISHED_ROWS")
+    managed = list(re.finditer(
+        re.escape(LIST_START) + r".*?" + re.escape(LIST_END), source, re.I | re.S))
+    if len(managed) > 1:
+        raise StageGuardError("MANAGED_LIST_DUPLICATE")
+    if managed:
+        old = managed[0]
+        old_cards = "".join(span.block for span in card_spans(old.group(0)))
+        source = source[:old.start()] + old_cards + source[old.end():]
+    source = source.replace("<!-- UA-ART-CATALOG-CARD-FALLBACK-V1:START -->", "")
+    source = source.replace("<!-- UA-ART-CATALOG-CARD-FALLBACK-V1:END -->", "")
     spans = card_spans(source)
     by_id: dict[str, list[CardSpan]] = {}
     for span in spans:
@@ -328,27 +353,22 @@ def enforce_catalog(source: str, rows: Iterable[Mapping], photos: Mapping[str, s
         if len(by_id.get(identifier, [])) > 1:
             raise StageGuardError("DUPLICATE_CARD:%s" % identifier)
 
-    replacements: list[tuple[int, int, str]] = []
-    missing: list[str] = []
-    for identifier, row in rows_by_id.items():
-        current = by_id.get(identifier, [])
-        photo = str(photos.get(identifier) or "")
-        if not current:
-            missing.append(identifier)
-            continue
-        span = current[0]
-        # Rebuild every published card through one renderer.  Keeping legacy
-        # photo cards in place was the visual split that hid behind a machine
-        # PASS in round 2.
-        candidate = render_card(row, photo)
-        replacements.append((span.start, span.end, candidate))
+    positions = {identifier: values[0].start for identifier, values in by_id.items() if values}
+    ordered = sorted(
+        rows_by_id,
+        key=lambda identifier: (-stage_number(rows_by_id[identifier]),
+                                positions.get(identifier, len(source) + 1), identifier),
+    )
+    rendered = LIST_START + "".join(
+        render_card(rows_by_id[identifier], photos.get(identifier, ""))
+        for identifier in ordered
+    ) + LIST_END
 
-    for start, end, value in sorted(replacements, reverse=True):
-        source = source[:start] + value + source[end:]
-
-    if missing:
-        rendered = "".join(render_card(rows_by_id[identifier], photos.get(identifier, ""))
-                           for identifier in missing)
+    if spans:
+        position = spans[0].start
+        for span in sorted(spans, key=lambda item: item.start, reverse=True):
+            source = source[:span.start] + source[span.end:]
+    else:
         markers = (
             r'<div\b[^>]*class=[\"\'][^\"\']*\bempty-assist\b',
             r'<a\b(?=[^>]*class=[\"\'][^\"\']*\bvtoraya\b)(?=[^>]*href=[\"\'][^\"\']*podbor\.html)',
@@ -362,7 +382,7 @@ def enforce_catalog(source: str, rows: Iterable[Mapping], photos: Mapping[str, s
                 break
         if position < 0:
             raise StageGuardError("CATALOG_INSERTION_POINT_MISSING")
-        source = source[:position] + rendered + source[position:]
+    source = source[:position] + rendered + source[position:]
 
     source = _inject_once(source, "ua-stage-card-v2-style", STYLE, "</head>")
     source = _inject_once(source, "ua-stage-card-v2-filter", FILTER_SCRIPT, "</body>")
@@ -380,10 +400,17 @@ def audit_catalog(source: str, rows: Iterable[Mapping]) -> dict:
         by_id.setdefault(span.card_id, []).append(span)
     errors: list[str] = []
     cards = {}
+    list_start = source.find(LIST_START)
+    list_end = source.find(LIST_END)
+    list_ok = source.count(LIST_START) == 1 and source.count(LIST_END) == 1 and 0 <= list_start < list_end
+    if not list_ok:
+        errors.append("UNIFIED_LIST_MARKERS")
+    ordered_stages = []
     for identifier, row in sorted(rows_by_id.items()):
         found = by_id.get(identifier, [])
         expected_stage = stage_number(row)
         expected_key = STAGE_KEYS[expected_stage]
+        expected_native = NATIVE_STAGE_KEYS[expected_stage]
         if len(found) != 1:
             errors.append("CARD_COUNT:%s:%d" % (identifier, len(found)))
             continue
@@ -392,6 +419,7 @@ def audit_catalog(source: str, rows: Iterable[Mapping]) -> dict:
         photo = bool(photo_match)
         absolute_photo = bool(photo_match and re.match(r"(?:https?://|data:image/)", photo_match.group(1), re.I))
         stage_ok = ('data-ua-card-stage="%s"' % expected_key) in block
+        native_stage_ok = ('data-stage="%s"' % expected_native) in block
         template_ok = bool(re.search(r'class=["\'][^"\']*\bua-stage-card-v2\b', block, re.I))
         if not photo:
             errors.append("PHOTO_MISSING:" + identifier)
@@ -399,8 +427,12 @@ def audit_catalog(source: str, rows: Iterable[Mapping]) -> dict:
             errors.append("PHOTO_NOT_ABSOLUTE:" + identifier)
         if not stage_ok:
             errors.append("STAGE_MISMATCH:%s:%s" % (identifier, expected_key))
+        if not native_stage_ok:
+            errors.append("NATIVE_FILTER_STAGE:%s:%s" % (identifier, expected_native))
         if not template_ok:
             errors.append("TEMPLATE_MISMATCH:" + identifier)
+        if list_ok and not (list_start < found[0].start < list_end):
+            errors.append("CARD_OUTSIDE_UNIFIED_LIST:" + identifier)
         folded = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", block)).casefold()
         leaked = [value for value in FORBIDDEN_PUBLIC if value.casefold() in folded]
         if leaked:
@@ -411,7 +443,15 @@ def audit_catalog(source: str, rows: Iterable[Mapping]) -> dict:
             errors.append("PUBLIC_LABEL_MISMATCH:%s" % identifier)
         cards[identifier] = {"count": 1, "photo": photo, "stage": expected_stage,
                              "category": expected_key, "stage_ok": stage_ok,
+                             "native_stage": expected_native,
+                             "native_stage_ok": native_stage_ok,
                              "template": template_ok, "absolute_photo": absolute_photo}
+    if list_ok:
+        for span in spans:
+            if span.card_id in rows_by_id and list_start < span.start < list_end:
+                ordered_stages.append(stage_number(rows_by_id[span.card_id]))
+        if any(left < right for left, right in zip(ordered_stages, ordered_stages[1:])):
+            errors.append("STAGE_GROUP_ORDER")
     return {
         "status": "PASS" if not errors else "FAIL",
         "errors": errors,
@@ -419,6 +459,9 @@ def audit_catalog(source: str, rows: Iterable[Mapping]) -> dict:
         "canonical_cards": len([key for key in rows_by_id if len(by_id.get(key, [])) == 1]),
         "unified_templates": sum(1 for value in cards.values() if value.get("template")),
         "absolute_photos": sum(1 for value in cards.values() if value.get("absolute_photo")),
+        "native_filter_stages": sum(1 for value in cards.values() if value.get("native_stage_ok")),
+        "unified_list": list_ok,
+        "ordered_stage_groups": ordered_stages,
         "cards": cards,
     }
 
