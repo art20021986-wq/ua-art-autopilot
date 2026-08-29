@@ -43,7 +43,8 @@ jobs:
               tree = ast.parse(text)
               defs = {}
               for node in ast.walk(tree):
-                  if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)) and node.name in names:
+                  if (isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef))
+                          and (node.name in names or (name == "cars_ui.py" and "stage" in node.name))):
                       end = getattr(node,"end_lineno",node.lineno)
                       defs[node.name] = {"lineno":node.lineno,"end_lineno":end,
                                          "source":"\n".join(lines[node.lineno-1:end])}
