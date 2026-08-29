@@ -126,7 +126,7 @@ def load_database(db_bytes: bytes, wal_bytes: bytes | None):
             quick = con.execute("PRAGMA quick_check").fetchone()[0]
             schema = [dict(row) for row in con.execute("PRAGMA table_info(cars)").fetchall()]
             rows = [dict(row) for row in con.execute(
-                "SELECT * FROM cars WHERE published=1 ORDER BY auto_number,id"
+                "SELECT * FROM cars WHERE auto_number GLOB 'UA-*' ORDER BY auto_number,id"
             ).fetchall()]
             target = con.execute(
                 "SELECT * FROM cars WHERE auto_number=? ORDER BY id DESC LIMIT 1", (TARGET_CARD,)
@@ -360,10 +360,16 @@ def main() -> int:
 
         evidence["database"] = {
             "quick_check": quick,
-            "published": len(rows),
+            "published": sum(1 for row in rows if int(row.get("published") or 0) == 1),
+            "known_cards": len(rows),
             "unique_ids": len(set(all_identifiers)),
             "canary_scope": identifiers,
-            "out_of_scope_published": sorted(set(all_identifiers) - set(identifiers)),
+            "out_of_scope_published": sorted(
+                str(row.get("auto_number") or "").upper()
+                for row in rows
+                if int(row.get("published") or 0) == 1
+                and str(row.get("auto_number") or "").upper() not in set(identifiers)
+            ),
             "rows": [public_row(row) for row in rows],
         }
         evidence["ua0011"] = {
