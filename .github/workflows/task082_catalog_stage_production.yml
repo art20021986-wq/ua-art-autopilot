@@ -1,0 +1,182 @@
+name: task082-catalog-stage-production
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task082_catalog_stage_production.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Verify bounded owner authorization
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('tasks/task_082.md').read_text(encoding='utf-8')
+          required = [
+              'без дополнительного утверждения',
+              'bounded production Gate B',
+              'Новое подтверждение не требуется',
+              'UA-0011',
+          ]
+          missing = [value for value in required if value not in source]
+          if missing:
+              raise SystemExit('TASK082_OWNER_AUTHORIZATION_MISSING:' + ','.join(missing))
+          print('TASK082_OWNER_AUTHORIZATION_PASS')
+          PY
+
+      - name: Compile and test catalog transaction
+        run: |
+          python3 -W error -m py_compile \
+            cloud/task_075_stage_guard/stage_guard.py \
+            cloud/task_082_catalog_stage_repair/runtime.py \
+            cloud/task_082_catalog_stage_repair/remote_installer.py \
+            cloud/task_082_catalog_stage_repair/controller.py \
+            cloud/task_082_catalog_stage_repair/public_verify.py \
+            cloud/task_082_catalog_stage_repair/tests/test_contract.py
+          python3 cloud/task_082_catalog_stage_repair/tests/test_contract.py
+
+      - name: Backup, repair, restart and delayed server check
+        id: deploy
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_082_catalog_stage_repair/controller.py
+
+      - name: Immediate and delayed public HTTP verification
+        id: public
+        if: steps.deploy.outcome == 'success'
+        continue-on-error: true
+        run: python3 cloud/task_082_catalog_stage_repair/public_verify.py
+
+      - name: Finalize owner-facing status
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+
+          root = Path('cloud/task_082_catalog_stage_repair')
+          deploy_path = root / 'evidence/deploy.json'
+          public_path = root / 'evidence/public.json'
+          deploy = json.loads(deploy_path.read_text()) if deploy_path.exists() else {'status':'FAIL','errors':['DEPLOY_EVIDENCE_MISSING']}
+          public = json.loads(public_path.read_text()) if public_path.exists() else {'status':'FAIL','errors':['PUBLIC_EVIDENCE_MISSING']}
+          deploy_path.parent.mkdir(parents=True, exist_ok=True)
+          if not deploy_path.exists():
+              deploy_path.write_text(json.dumps(deploy, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          if not public_path.exists():
+              public_path.write_text(json.dumps(public, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          report_path = root / 'TASK_082_REPORT.md'
+          if not report_path.exists():
+              report_path.write_text('# UA-0011-CATALOG-FERRY-REPAIR-001 v1.0\n\nSTATUS: **FAIL**\n', encoding='utf-8')
+          ok = deploy.get('status') == 'PASS' and public.get('status') == 'PASS'
+          status = 'DONE' if ok else 'BLOCKED'
+          reply_status = 'PASS' if ok else 'FAIL'
+          now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z')
+          errors = list(deploy.get('errors') or []) + list(public.get('errors') or [])
+          latest = '\n'.join([
+              'TASK_ID: task_082',
+              'ROUND: 1',
+              'CLAUDE_STATUS: ' + status,
+              'CURRENT_ACTION: ' + ('UA-0011 repaired and permanent catalog guard verified.' if ok else 'TASK 082 failed closed; automatic rollback was requested.'),
+              'FILES_CREATED: cloud/task_082_catalog_stage_repair/evidence/deploy.json, cloud/task_082_catalog_stage_repair/evidence/public.json, cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md',
+              'PRODUCTION_TOUCHED: ' + ('YES' if ok else 'ROLLED_BACK_OR_NO'),
+              'OWNER_ACTION_REQUIRED: NO',
+              'OWNER_QUESTION: NONE',
+              'NEXT_FOR_CHATGPT: Verify TASK 082 evidence and report the factual result to the owner.',
+              'UPDATED_AT_UTC: ' + now,
+          ]) + '\n'
+          owner = '\n'.join([
+              '# Ответ владельцу',
+              'СТАТУС: ' + reply_status,
+              'ЗАДАЧА: Восстановить полную карточку UA-0011 и закрепить её в разделе «На пароме».',
+              'ЧТО СДЕЛАНО: ' + (
+                  'UA-0011 пересобрана единым шаблоном с фотографией, категорией «На пароме» и VIN 4289; установлен автоматический контроль для будущих публикаций.'
+                  if ok else
+                  'Исправление не прошло полный контроль и не оставлено в частично рабочем состоянии.'
+              ),
+              'ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО',
+              'БЕЗОПАСНОСТЬ: CRM rows, индивидуальные страницы и media не изменялись.',
+              'ОШИБКИ: ' + ('НЕТ' if not errors else '; '.join(errors)),
+          ]) + '\n'
+          Path('cloud/latest_status.md').write_text(latest, encoding='utf-8')
+          Path('cloud/owner_reply.md').write_text(owner, encoding='utf-8')
+          PY
+
+      - name: Commit bounded evidence
+        if: always()
+        run: |
+          git add -- \
+            cloud/task_082_catalog_stage_repair/evidence/deploy.json \
+            cloud/task_082_catalog_stage_repair/evidence/public.json \
+            cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "${path}" in
+              cloud/task_082_catalog_stage_repair/evidence/deploy.json|\
+              cloud/task_082_catalog_stage_repair/evidence/public.json|\
+              cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md|\
+              cloud/latest_status.md|cloud/owner_reply.md) ;;
+              *) echo "Unexpected staged path: ${path}"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then exit 0; fi
+          git config user.name 'task082-catalog-stage'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task082: record UA-0011 ferry catalog repair'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            if [ "${attempt}" -eq 6 ]; then exit 1; fi
+            sleep $((attempt * 3))
+          done
+
+      - name: Enforce final result
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          deploy = json.loads(Path('cloud/task_082_catalog_stage_repair/evidence/deploy.json').read_text())
+          public = json.loads(Path('cloud/task_082_catalog_stage_repair/evidence/public.json').read_text())
+          if deploy.get('status') != 'PASS' or public.get('status') != 'PASS':
+              raise SystemExit('TASK082_FAIL_CLOSED')
+          print('TASK082_PRODUCTION_PASS')
+          PY
+
+      - name: Upload machine evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task082-catalog-stage-${{ github.run_id }}
+          path: |
+            cloud/task_082_catalog_stage_repair/evidence
+            cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md
+          if-no-files-found: warn
+          retention-days: 14

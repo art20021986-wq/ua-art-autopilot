@@ -1,68 +1,60 @@
-# TASK 082 — CRM-VIN4-TITLE-001 v1.0
+# TASK 082 — UA-0011-CATALOG-FERRY-REPAIR-001 v1.0
 
 ## Прямая команда владельца
 
-29.08.2026 владелец потребовал немедленно, максимум за 30 минут, изменить действующий Telegram CRM-бот UA ART: по каждому автомобилю и в каждой карточке дополнить название последними четырьмя символами VIN, визуально выделив их жирным основным цветом текста. Изменение требуется для всех текущих UA-0001…UA-0013 и автоматически для всех будущих карточек. Эта команда разрешает безопасную установку в production только после backup, deterministic tests, live shadow/canary и автоматического отката при любом FAIL.
+29.08.2026 владелец по скриншоту UA-0011 потребовал немедленно, без дополнительного утверждения:
 
-## Важная техническая трактовка Telegram
+- оформить Hyundai SONATA 2018 (UA-0011, VIN KMHE341DBKA544289) единым полным шаблоном каталога;
+- вернуть фотографию и правую медиачасть;
+- поместить карточку ровно в публичную категорию этапа «На пароме»;
+- определить причину дефекта и исключить повторение для всех будущих карточек;
+- выполнить исправление сразу в production с backup, проверкой и автооткатом.
 
-Telegram не разрешает задавать произвольный цвет отдельному фрагменту текста. В обычном сообщении использовать HTML `<b>…</b>` и стандартный основной цвет клиента (на светлой теме он чёрный). В тексте InlineKeyboardButton частичное форматирование/цвет невозможны: там добавить суффикс VIN4 обычным текстом. Не вставлять HTML в подпись кнопки.
+Эта команда является отдельным письменным разрешением на bounded production Gate B именно для TASK 082. Новое подтверждение не требуется.
 
-## Единый формат
+## Доказанная причина
 
-Текстовая строка/заголовок:
-`UA-0013 · Mercedes-Benz Б-КЛАССА 2015 · VIN <b>1234</b>`
+Свежий Gate A TASK 075 подтвердил:
 
-Кнопка выбора, если она содержит название:
-`UA-0013 · Mercedes-Benz Б-КЛАССА 2015 · VIN 1234`
+1. В CRM UA-0011 уже имеет канонический `status=sea_loaded`, 35 фото и этап 2.
+2. Каталог был собран в момент, когда media mapping ещё не содержал главное фото.
+3. Legacy renderer при пустом media mapping не блокировал публикацию, а выводил узкую текстовую fallback-карточку без фотографии.
+4. После завершения media sync каталог автоматически не пересобрал эту карточку полным единым шаблоном.
 
-VIN4 — последние 4 символа нормализованного полного VIN (`strip`, убрать пробелы/дефисы, uppercase). VIN может заканчиваться буквами, поэтому брать символы, а не только цифры. Нельзя раскрывать полный VIN в списке.
+Следовательно, менять этап в БД не требуется: ошибка находится между завершением media sync и финальной сборкой каталога.
 
-## Обязательная область
+## Разрешённый production scope
 
-1. Экран `Все автомобили` из приложенного скриншота: все строки UA-0001…UA-0013.
-2. Все inline-кнопки выбора автомобиля, где сейчас видны UA-ID/марка/модель/год.
-3. Заголовок открытой CRM-карточки и повторные заголовки после редактирования/медиа/этапов, если они формируются отдельно.
-4. Все будущие карточки через один централизованный renderer/helper; никакого hardcode для 13 машин.
-5. Данные брать только из существующего `cars.vin`; schema и CRM rows не менять.
+- `/home/Carix/video/katalog.html`;
+- `/home/Carix/site/katalog.html`;
+- новый единый runtime guard каталога;
+- один bounded wrapper активного `publikaciya.opublikovat` для запуска guard после успешной публикации;
+- restart только активного `/home/Carix/start_safe.py` после успешной установки.
 
-## Fail-safe для VIN
+Запрещено менять CRM rows, VIN, цену, описание, фото/видео, индивидуальные страницы и посторонние файлы.
 
-- Валидный нормализованный VIN: ровно 17 символов `[A-HJ-NPR-Z0-9]`, показывать последние 4.
-- Если VIN отсутствует/невалиден, карточка должна оставаться доступной для редактирования, но вместо выдуманных символов показать жирное `VIN НЕТ` в текстовом заголовке и `VIN НЕТ` в кнопке. Публикационный валидатор не ослаблять.
-- Любые значения обязательно HTML-escape до `parse_mode="HTML"`; запрет двойного суффикса `VIN` при повторном рендере.
-- Не менять названия/статусы/этапы/цену/фото/видео/описание/контейнер/ETA/published.
+## Обязательная логика
 
-## Реальный доступ и маршрут
+- источник этапа — только CRM `status`;
+- `sea_loaded` → этап 2 → category/key `more` → «На пароме · маршрут — Киев»;
+- UA-0011 в каждом каталоге ровно одна;
+- карточка имеет полную структуру 55/45: основной блок + фотография;
+- главное фото берётся из уже опубликованной индивидуальной страницы после media sync;
+- в названии текущих и будущих карточек добавляются последние 4 символа VIN: `VIN 4289` для UA-0011;
+- URL-фильтр поддерживает `f`, `etap`, `stage`, numeric 1–4 и aliases `sea/ferry/more`;
+- новая публикация без готовой индивидуальной страницы или главного фото завершается fail-closed до записи каталога;
+- оба каталога устанавливаются атомарно как одна транзакция; при ошибке восстанавливаются оба preimage;
+- runtime LLM tokens = 0.
 
-- Production: `/home/Carix`; bot source includes active `cars_ui.py`; DB `/home/Carix/crm.db`; launcher exactly `python3.10 /home/Carix/start_safe.py`.
-- Использовать уже работающий GitHub secret `PYTHONANYWHERE_API_TOKEN` и PythonAnywhere API pattern из TASK 067/068/077. Он подтверждён рабочими Gate A/production runs. Не просить пароль, логин или новый токен.
-- Не использовать runtime LLM; tokens = 0.
+## Проверка
 
-## Исполнение
+- fresh live audit перед записью;
+- persistent backup + full SHA;
+- DB normalized published rows до/после идентичны;
+- individual UA pages и media UA-0011 до/после идентичны;
+- UA-0011: stage 2, category `more`, full template, absolute main photo, VIN 4289;
+- UA-0009: ровно одна карточка, этап/медиа сохранены, safe gate PASS;
+- все уже существующие каталожные карточки пересобраны одним renderer без text fallback;
+- immediate и delayed HTTP verification обоих каталогов;
+- любой fail → rollback + restart восстановленного runtime.
 
-Сделать полный runnable package `cloud/task_082_vin4_title/`:
-- GET live source + read-only DB shadow;
-- sanitized evidence (для 13 cards только UA-ID, VIN4/missing marker, без полных VIN);
-- AST/full-SHA anchored patcher активных render functions;
-- backup + atomic installer + exact launcher restart;
-- immediate and delayed postcheck;
-- offline tests and live-copy canary;
-- controller with rollback;
-- production workflow under package for Codex to copy into `.github/workflows/task082_vin4_title_deploy.yml`.
-
-Workflow должен запускаться push после копирования, использовать только `PYTHONANYWHERE_API_TOKEN`, выполнить `BACKUP → live shadow → local canary → atomic source-only install → restart → immediate + delayed postcheck`. Любой drift/failure = rollback source + restart + FAIL. DB/site/media writes запрещены.
-
-## Acceptance
-
-- 13/13 текущих строк имеют ровно один VIN4/или доказанный VIN НЕТ; все валидные значения точно совпадают с последними четырьмя символами DB VIN.
-- Future fixture UA-9999 проходит тот же helper.
-- Text HTML has exactly one bold VIN4; button label has no markup and exactly one VIN4.
-- HTML escaping/injection, lowercase/spaces, suffix letters, invalid/missing, idempotency, Telegram limits covered.
-- Bot getMe/launcher health PASS before and after; existing buttons/callback_data unchanged.
-- `crm.db` SHA/quick_check, published rows, media hashes and protected website/card hashes unchanged.
-- exact changed production file set should normally be only `cars_ui.py`; if active renderer is demonstrably in another bot source, fail closed unless evidence proves the minimal exact set.
-- delayed check confirms no later generator overwrote the patch.
-- report exact backup path, changed file SHA before/after, 13 sanitized title examples, and `PRODUCTION_TOUCHED: YES` only after verified PASS.
-
-Обновить `cloud/latest_status.md` и `cloud/owner_reply.md`. Не останавливаться на просьбе о доступе: применить существующий рабочий transport из TASK 067/068/077.
