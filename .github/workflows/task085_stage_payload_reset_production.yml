@@ -37,6 +37,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           source = Path('tasks/task_085.md').read_text(encoding='utf-8')
+          normalized = ' '.join(source.split())
           required = [
               'Прямая production-команда владельца',
               'Дополнительное подтверждение не требуется',
@@ -46,7 +47,7 @@ jobs:
               'два writer-процесса одновременно запрещены',
               'auto-rollback и restart',
           ]
-          missing = [value for value in required if value not in source]
+          missing = [value for value in required if value not in normalized]
           if missing:
               raise SystemExit('TASK085_OWNER_AUTHORIZATION_MISSING:' + ','.join(missing))
           print('TASK085_OWNER_AUTHORIZATION_PASS')
@@ -125,6 +126,15 @@ jobs:
           ]) + '\n'
           Path('cloud/latest_status.md').write_text(latest, encoding='utf-8')
           Path('cloud/owner_reply.md').write_text(owner, encoding='utf-8')
+          report = root / 'TASK_085_REPORT.md'
+          if not report.exists():
+              report.write_text(
+                  '# UA-0011-STAGE-PAYLOAD-RESET-005 v1.0\n\n'
+                  'STATUS: **FAIL BEFORE PRODUCTION**\n\n'
+                  '- Production touched: NO\n'
+                  '- Errors: ' + errors + '\n',
+                  encoding='utf-8',
+              )
           PY
 
       - name: Commit bounded evidence
