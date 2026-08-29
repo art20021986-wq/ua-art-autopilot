@@ -73,12 +73,228 @@
   },
   "contract_id": "CRM-CONTAINER-STAGE-SYNC-004-V1.0",
   "crm_write": false,
-  "errors": [
-    "PatchAbortedError:ABORT: /tmp/task077-patch-bundle-pe8qiro7/db.py:update_card_field expected one approved definition, got 0"
-  ],
-  "finished_at_utc": "2026-08-29T07:21:24Z",
+  "database": {
+    "canary": {
+      "diagnostic_placeholder": true,
+      "legacy_remaining": 0,
+      "media_hashes_unchanged": true,
+      "migration_ids": [
+        19
+      ],
+      "owner_label": "На пароме",
+      "published_unchanged": true,
+      "transition": {
+        "changed": true,
+        "days_to_kyiv": 30,
+        "eta_manual": "2026-09-28",
+        "status": "sea_loaded"
+      },
+      "ua0012_after": {
+        "auto_number": "UA-0012",
+        "condition_photos_bytes": 0,
+        "condition_videos_bytes": 0,
+        "days_to_kyiv": "30",
+        "eta_manual": "2026-09-28",
+        "id": 19,
+        "photos_bytes": 1234,
+        "publish_pending": 0,
+        "published": 1,
+        "sea_container": "ONEYSELGF1046602",
+        "sea_date_out": null,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-29T13:28:00+00:00",
+        "videos_bytes": 0
+      }
+    },
+    "columns": [
+      "id",
+      "brand",
+      "model",
+      "year",
+      "vin",
+      "fuel",
+      "engine",
+      "color",
+      "mileage",
+      "trim",
+      "condition",
+      "accidents",
+      "auction_link",
+      "price_buy",
+      "price_extra",
+      "price_ship",
+      "price_customs",
+      "price_total",
+      "stage",
+      "photos",
+      "videos",
+      "docs",
+      "responsible",
+      "review_status",
+      "published",
+      "created_by",
+      "approved_by",
+      "created_at",
+      "updated_at",
+      "client_id",
+      "publish_pending",
+      "video_h",
+      "video_v",
+      "auto_number",
+      "engine_cc",
+      "gearbox",
+      "drive",
+      "mileage_km",
+      "condition_text",
+      "condition_photos",
+      "condition_videos",
+      "diag_report",
+      "diag_link",
+      "kr_buy_date",
+      "kr_parking",
+      "sea_container",
+      "sea_port_from",
+      "sea_date_out",
+      "ge_port",
+      "ge_arrived",
+      "ge_released",
+      "days_to_kyiv",
+      "ua_delivered",
+      "ua_handed",
+      "cost_purchase",
+      "cost_fees",
+      "cost_logistics",
+      "cost_total",
+      "price_uah",
+      "nbu_rate",
+      "status",
+      "owner_user",
+      "history",
+      "price_history",
+      "cover_photo",
+      "eta_manual",
+      "description",
+      "hidden_photos",
+      "diag_text",
+      "ge_to_kyiv_at"
+    ],
+    "db_bytes": 2985984,
+    "db_sha256": "2b27edb26377e24e869dd61447ae535ae8004768a33c6ed3cb05f0666c5be7c8",
+    "legacy_sea_transit_ids": [
+      19
+    ],
+    "published_count": 13,
+    "quick_check": "ok",
+    "row_count": 13,
+    "status_counts": {
+      "ge_waiting": 1,
+      "kr_bought": 2,
+      "sea_loaded": 6,
+      "sea_transit": 1,
+      "ua_arrived": 3
+    },
+    "ua0009": {
+      "auto_number": "UA-0009",
+      "condition_photos_bytes": 0,
+      "condition_videos_bytes": 0,
+      "days_to_kyiv": "13",
+      "eta_manual": "2026-09-28",
+      "id": 15,
+      "photos_bytes": 2222,
+      "publish_pending": 0,
+      "published": 1,
+      "sea_container": "ONEYSELGB4471700",
+      "sea_date_out": null,
+      "status": "sea_loaded",
+      "updated_at": "2026-08-29T06:06:09",
+      "videos_bytes": 0
+    },
+    "ua0012_before": {
+      "auto_number": "UA-0012",
+      "condition_photos_bytes": 0,
+      "condition_videos_bytes": 0,
+      "days_to_kyiv": null,
+      "eta_manual": "2026-09-28",
+      "id": 19,
+      "photos_bytes": 1234,
+      "publish_pending": 0,
+      "published": 1,
+      "sea_container": "ONEYSELGF1046602",
+      "sea_date_out": null,
+      "status": "sea_transit",
+      "updated_at": "2026-08-29T06:28:22",
+      "videos_bytes": 0
+    },
+    "unique_published_ids": 13,
+    "wal_present": false
+  },
+  "defect_signals": {
+    "diagnostic_missing_guards": 3,
+    "sea_loaded_callbacks": 0,
+    "sea_transit_callbacks": 0,
+    "sold_transit_callbacks": 0,
+    "standalone_sea_transit_in_sources": 2,
+    "unconditional_success_texts": 1
+  },
+  "errors": [],
+  "finished_at_utc": "2026-08-29T07:22:56Z",
   "media_write": false,
   "mode": "LIVE_GET_ONLY_PLUS_LOCAL_COPY_CANARY",
+  "pages": {
+    "site_catalog": {
+      "bytes": 43258,
+      "contains_2026_09_28": false,
+      "contains_30_days": false,
+      "contains_diag_wait": false,
+      "contains_ferry_label": true,
+      "contains_ua0012": false,
+      "missing": false,
+      "sha256": "948bfc2412ca2909009a1644b0f3fc81faac3abdc6720bd61fe6460ff35bd84c"
+    },
+    "site_ua0012": {
+      "missing": true
+    },
+    "video_catalog": {
+      "bytes": 41082,
+      "contains_2026_09_28": false,
+      "contains_30_days": false,
+      "contains_diag_wait": false,
+      "contains_ferry_label": true,
+      "contains_ua0012": false,
+      "missing": false,
+      "sha256": "34fb82b9ec1bc66b76fccbbaad9b440d01ea4d60fe5c195954e88251442ecdd0"
+    },
+    "video_ua0012": {
+      "missing": true
+    }
+  },
+  "patch_bundle": {
+    "files": {
+      "cars_ui.py": {
+        "compiled": true,
+        "sha256": "d9a785c0e9fb5cc08bfd462690b1ad8145b916aa63074bcd50ded42e1775991e"
+      },
+      "db.py": {
+        "compiled": true,
+        "sha256": "bc1f3376f0038b8fb38441240a56b77ad2ba14a76d0a8347db781f266857a7cd"
+      },
+      "konteyner.py": {
+        "compiled": true,
+        "sha256": "a3ea43de1d8e1f291aad329332c4f8cff46eadcd8bbaf7c26ea58e90645e0466"
+      },
+      "publikaciya.py": {
+        "compiled": true,
+        "sha256": "e29f49a03a50647369c7a62f453967a2858a21cca84375eb4c2d2d23d6eac850"
+      },
+      "stranica.py": {
+        "compiled": true,
+        "sha256": "cc43433fe17e3da1c6ed986d70de09ce98a30e6926fa4d1d904187fefbce3424"
+      }
+    },
+    "function_transforms": 8,
+    "production_write": false,
+    "status": "PASS"
+  },
   "production_touched": false,
   "pythonanywhere_methods": [
     "GET"
@@ -575,7 +791,7 @@
       "sha256": "a0976afb93a4d2fdcab392601d25253700977618a02b04bc31903a18e95ee81a"
     }
   },
-  "started_at_utc": "2026-08-29T07:21:21Z",
-  "status": "FAIL",
+  "started_at_utc": "2026-08-29T07:22:49Z",
+  "status": "PASS_AUDIT_DEFECT_REPRODUCED",
   "task_id": "task_077"
 }
