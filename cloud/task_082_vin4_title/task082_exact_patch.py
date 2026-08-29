@@ -16,6 +16,13 @@ END = "# CRM-VIN4-TITLE-001-V1.0:END"
 EXPECTED_FUNCTION_SHA = {
     "render": "09fbb1baabdf297a24a2f4fb757464836a718edc086680f699218cacf77c97a8",
     "cars_list": "058a155a5910fa7819f3a4d9b701b1cd98e8639493c0d8af8ad5f0eeb79395c0",
+    "edit_menu": "c335c4d0a5d7ad257164dff252ab66b6b7dc80e52c06a95ff9977ccc2f4adb08",
+    "media_screen": "a586792ea3913e4cfa2a60ede564edcbfbffb1ad19db94bcc504ae556969ba38",
+    "condition_screen": "be9b9ebae49837399a685c0cd7e40cd5c8eee2e1750e9d929a11c20661fbb622",
+    "stage_menu": "3631b4e6480dc96d0885a031201f78b28eac76d3ac09ce6172bf518a8dce0c24",
+    "stage_set": "9f0a885100cb9fe62815fabefc6b6e1d649d99e348568e9b0893c7d6f106987f",
+    "price_screen": "c250c3c410ee66cb740bb457598bd7683a9e58ab1be1d6b44dde6f3e44914f98",
+    "client_screen": "a6e487d8458e5f7383ce715462b4e57b3f763a76281157c892e435aad7b90a8c",
 }
 
 OLD_RENDER_TITLE = '''    L.append("<b>%s</b>" % (card.get("auto_number") or "#%s" % card.get("id")))'''
@@ -28,6 +35,51 @@ OLD_LIST_BUTTON = '''        rows.append([InlineKeyboardButton("%s · %s" % (nom
                                           callback_data="car_open:%d" % card["id"])])'''
 NEW_LIST_BUTTON = '''        rows.append([InlineKeyboardButton(_ua082_vin4_button_label(card),
                                           callback_data="car_open:%d" % card["id"])])'''
+
+SCREEN_TRANSFORMS = {
+    "edit_menu": [(
+        '''        "Что меняем?\\n%s" % (card.get("auto_number") or db.card_title("cars", card)),''',
+        '''        "Что меняем?\\n%s" % _ua082_vin4_button_label(card),''',
+        "edit_header",
+    )],
+    "media_screen": [(
+        '''            card.get("auto_number") or "",''',
+        '''            _ua082_vin4_title_html(card),''',
+        "media_header",
+    )],
+    "condition_screen": [(
+        '''        text = ["<b>Комплексная диагностика</b>", card.get("auto_number") or "", "",''',
+        '''        text = ["<b>Комплексная диагностика</b>", _ua082_vin4_title_html(card), "",''',
+        "condition_header",
+    )],
+    "stage_menu": [(
+        '''        lines = ["🚚 Доставка и этапы", card.get("auto_number") or "#%d" % cid, "",''',
+        '''        lines = ["🚚 Доставка и этапы", _ua082_vin4_button_label(card), "",''',
+        "stage_header",
+    )],
+    "stage_set": [(
+        '''    lines = [
+        card.get("auto_number") or "#%d" % cid,''',
+        '''    lines = [
+        _ua082_vin4_button_label(card),''',
+        "stage_saved_header",
+    )],
+    "price_screen": [(
+        '''    lines = ["<b>Цена по этапам</b>", card.get("auto_number") or "", ""]''',
+        '''    lines = ["<b>Цена по этапам</b>", _ua082_vin4_title_html(card), ""]''',
+        "price_header",
+    )],
+    "client_screen": [(
+        '''    lines = ["<b>Покупатель</b>",
+             "%s · %s" % (nomer, " ".join(str(x) for x in (card.get("brand"),
+                                                           card.get("model")) if x)),
+             ""]''',
+        '''    lines = ["<b>Покупатель</b>",
+             _ua082_vin4_title_html(card),
+             ""]''',
+        "client_header",
+    )],
+}
 
 HELPER = r'''# CRM-VIN4-TITLE-001-V1.0:START
 import html as _ua082_html
@@ -169,6 +221,12 @@ def patch_source(source: str) -> tuple[str, dict]:
         (render_node.lineno - 1, render_node.end_lineno, render_new),
         (list_node.lineno - 1, list_node.end_lineno, list_new),
     ]
+    for name, transforms in SCREEN_TRANSFORMS.items():
+        node, segment = _one_function(source, name)
+        candidate_segment = segment
+        for old, new, label in transforms:
+            candidate_segment = _replace_once(candidate_segment, old, new, label)
+        replacements.append((node.lineno - 1, node.end_lineno, candidate_segment))
     for start, end, value in sorted(replacements, reverse=True):
         lines[start:end] = [value if value.endswith("\n") else value + "\n"]
     candidate = "".join(lines)
@@ -181,7 +239,7 @@ def patch_source(source: str) -> tuple[str, dict]:
 
     after_functions = _functions(candidate)
     for name, items in before_functions.items():
-        if name in {"render", "cars_list"}:
+        if name in set(EXPECTED_FUNCTION_SHA):
             continue
         before_segments = [segment for _node, segment in items]
         after_segments = [segment for _node, segment in after_functions.get(name, [])]
@@ -191,7 +249,7 @@ def patch_source(source: str) -> tuple[str, dict]:
     validate_patched(candidate)
     return candidate, {
         "already_installed": False,
-        "changed_functions": ["render", "cars_list"],
+        "changed_functions": list(EXPECTED_FUNCTION_SHA),
         "function_sha_before": anchors,
         "source_sha_before": _sha(source),
         "source_sha_after": _sha(candidate),
@@ -212,6 +270,19 @@ def validate_patched(source: str) -> None:
         raise PatchBlocked("LIST_BUTTON_CONTRACT")
     if list_segment.count('callback_data="car_open:%d" % card["id"]') != 1:
         raise PatchBlocked("CALLBACK_CHANGED")
+    expected_calls = {
+        "edit_menu": "_ua082_vin4_button_label(card)",
+        "media_screen": "_ua082_vin4_title_html(card)",
+        "condition_screen": "_ua082_vin4_title_html(card)",
+        "stage_menu": "_ua082_vin4_button_label(card)",
+        "stage_set": "_ua082_vin4_button_label(card)",
+        "price_screen": "_ua082_vin4_title_html(card)",
+        "client_screen": "_ua082_vin4_title_html(card)",
+    }
+    for name, call in expected_calls.items():
+        _node, segment = _one_function(source, name)
+        if segment.count(call) != 1:
+            raise PatchBlocked("SCREEN_CONTRACT:%s" % name)
     validate_helper()
 
 
