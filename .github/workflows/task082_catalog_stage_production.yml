@@ -4,8 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/task082_catalog_stage_production.yml'
-      - 'cloud/task_082_catalog_stage_repair/**'
+      - 'cloud/task_082_catalog_stage_repair/controller.py'
+      - 'cloud/task_082_catalog_stage_repair/runtime.py'
+      - 'cloud/task_082_catalog_stage_repair/remote_installer.py'
+      - 'cloud/task_082_catalog_stage_repair/public_verify.py'
+      - 'cloud/task_082_catalog_stage_repair/tests/test_contract.py'
       - 'cloud/task_075_stage_guard/stage_guard.py'
       - 'tasks/task_082.md'
   workflow_dispatch:
