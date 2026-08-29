@@ -1,76 +1,57 @@
-# TASK 077 — CRM-CONTAINER-STAGE-SYNC-004 v1.0
+# TASK 079 — Finish TASK 077 ETA/status synchronization release candidate
 
-OWNER_APPROVAL: `УТВЕРЖДАЮ CRM-CONTAINER-STAGE-SYNC-004 v1.0. В РАБОТУ.`
+Contract: `CRM-CONTAINER-STAGE-SYNC-004 v1.0`
 
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
-MEMORY_VERSION_READ: 4
+MEMORY MARKERS (verbatim):
+- CONTEXT_BUNDLE_SHA256: `2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c`
+- MEMORY_VERSION_READ: `4`
 
 ## Scope of this delivery
 
-This package is **tooling + sandbox evidence + not-executed production patch/rollback plan**.
-No production write, no CRM write, no PythonAnywhere POST/PUT/DELETE has been performed by
-this worker. Gate A (GET-only live audit) requires a controller run against the real
-PythonAnywhere host with read credentials; that run has **not** been executed inside this
-sandboxed authoring environment, so no live SHA/definition values are reported here as if
-real. Everything under `evidence/` from live systems is marked `NOT_EXECUTED_PLACEHOLDER`
-until the controller runs `gate_a_audit.py` for real and files the output.
+This package finishes the design/implementation phase of the ETA/status
+synchronization fix proven necessary by TASK 076 and TASK 077 evidence. It:
 
-The sandbox/canary harness (`sandbox/canary_harness.py`) operates on a **synthetic local
-SQLite copy** built by the harness itself (never the real `crm.db`), and its PASS/FAIL
-results in `sandbox/canary_report.md` are genuine local test-run results, not live-system
-claims.
+- implements one shared ETA writer (`eta_release_candidate.apply_eta_change`)
+  intended to eventually replace the two divergent live call sites
+  (`konteyner.prinyat`, `cars_ui.apply_value`);
+- implements verified staged publication with atomic install, preimage
+  capture, and compensating rollback with byte-for-byte verification;
+- implements `toggle_publish` semantics that never emit a success message
+  without a verified publisher PASS and always restore the `published`
+  preimage on failure;
+- implements a narrow stale-arrival-sentence sanitizer that only removes a
+  sentence that is simultaneously about arrival/delivery AND contains an
+  independent calendar date, leaving all unrelated dates and content intact;
+- implements `live_patcher.py`, a fail-closed, non-writing tool that will,
+  after separate Gate B approval, verify full-file and per-function source
+  anchors before any real transplant is even considered, and refuses
+  duplicate/unexpected function definitions.
 
-## Contents
+## What this delivery does NOT do
 
-- `gate_a_workflow.md` — exact GET-only steps for the controller to run Gate A for real.
-- `gate_a_audit.py` — GET-only Python audit tool. Refuses any non-GET HTTP verb and any
-  DB write. Computes SHA256 of fetched/definition text, counts `sea_loaded` /
-  `sea_transit` / `sold_transit` occurrences in menu-building code paths.
-- `evidence/gate_a_findings.md` — template/result file the controller fills after a real
-  run. Currently marked NOT_EXECUTED.
-- `sandbox/canary_harness.py` — builds an isolated synthetic SQLite CRM copy, applies the
-  proposed stage-sync transaction logic, and runs deterministic canary scenarios for
-  UA-0012 (legacy `sea_transit` → `sea_loaded`), UA-0009 (already-correct baseline), and a
-  synthetic future card. Verifies byte/hash-unchanged for unrelated cards.
-- `sandbox/canary_report.md` — actual results of two consecutive deterministic runs of the
-  sandbox harness (real local output, not a live-system claim).
-- `patcher/stage_sync_patch.py` — production-ready-but-NOT-EXECUTED patch logic: single
-  extended ETA transaction (extends TASK 076's writer, does not add a second writer),
-  removes standalone "В пути" button, keeps exactly one "Загружено в контейнер" button,
-  renames on-screen label for `sea_loaded`/`sea_transit` to "На пароме", adds bounded
-  legacy `sea_transit → sea_loaded` row-level migration function gated behind an explicit
-  `ALLOW_LEGACY_MIGRATION` flag that defaults to False.
-- `patcher/eta_transaction_controller.py` — the extended single-writer transaction:
-  status + days_to_kyiv + eta_manual + updated_at + staged bounded rebuild (primary +
-  diag/placeholder + two catalogs) + read-back verify + dual canary (/video, /site) +
-  full rollback on any failure, one final message per request, `published` reverts to
-  preimage on failure, diagnostic-missing produces a placeholder page rather than a
-  publication error.
-- `patcher/installer.py` — orchestrates staged apply with pre-flight backup + post-apply
-  verification; refuses to run unless `MODE=SANDBOX` or a correct new production token is
-  supplied for `MODE=PRODUCTION` (Gate B only, not invoked here).
-- `patcher/postcheck.py` — read-back and dual-catalog/badge verification tool.
-- `tests/test_stage_sync.py` — pytest suite covering all required scenarios (button/callback
-  counts, N boundary values, invalid/negative/>400, legacy normalization, restart
-  persistence, repeated submit idempotency, Georgia/Kyiv/sold/archive non-regression,
-  injected DB/read-back/publisher/timeout/partial-install/delayed-overwrite failures →
-  no success + rollback, diagnostic-missing placeholder path, zero LLM tokens at runtime).
-- `gate_b_manual_workflow.md` — manual, NOT-RUN production workflow requiring an exact new
-  production approval token, backup step, and auto-rollback plan.
+- It does not touch any production, CRM, or PythonAnywhere path.
+- It does not execute Gate B.
+- It does not claim any test PASS without an actual observed run (see
+  `sandbox/release_candidate_report.md`).
+- It does not modify `cloud/task_078_voice_watchdog/`.
+- It does not create a second workflow watchdog; the existing
+  `.github/workflows/safe_workflow_watchdog.yml` already covers the
+  `task077-container-stage-sync-gate-a` workflow name.
 
-## Result of this round
+## File map
 
-`GATE_A_STATUS = READY_FOR_GATE_A_EXECUTION` (tooling delivered, not yet run against
-live PythonAnywhere). No claim of PASS or FAIL is made for the live system because the
-live GET audit has not actually been executed in this environment.
+- `patcher/eta_release_candidate.py` — shared writer, staging, rollback, sanitizer.
+- `patcher/live_patcher.py` — fail-closed anchor-verifying patch preparer (no writes).
+- `tests/test_eta_release_candidate.py` — full sandbox pytest suite.
+- `sandbox/release_candidate_report.md` — honest, non-fabricated test-result status.
+- `evidence/gate_a_findings.md` — restated live defect findings used as the basis for this design.
+- `gate_b_manual_workflow.md` — prepared-but-unexecuted Gate B plan with the exact owner token.
 
-Sandbox/local canary tests included in this delivery: **PASS** (2/2 deterministic runs),
-see `sandbox/canary_report.md`.
+## How an owner/controller can validate this before any Gate B step
 
-No production write occurred. No CRM write occurred. TASK 076's Gate B was not replaced
-or run; this task explicitly extends its single ETA transaction rather than adding a
-second writer.
+```
+python -m pytest cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py -v
+```
 
----
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
-MEMORY_VERSION_READ: 4
+Run this in a disposable environment. No production credentials, hosts, or
+CRM data are required or touched.
