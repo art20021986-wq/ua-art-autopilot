@@ -294,11 +294,17 @@ def main() -> int:
                 evidence["rollback"] = rollback
                 if rollback.get("status") != "PASS":
                     raise ControllerError("ROLLBACK_FAILED")
-                api.restart_bot()
             except Exception as rollback_exc:
                 evidence["errors"].append(
                     "ROLLBACK_" + type(rollback_exc).__name__ + ":" + str(rollback_exc)
                 )
+            finally:
+                try:
+                    api.restart_bot()
+                except Exception as restart_exc:
+                    evidence["errors"].append(
+                        "ROLLBACK_RESTART_" + type(restart_exc).__name__ + ":" + str(restart_exc)
+                    )
 
     atomic_text(EVIDENCE, json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
     install_value = evidence.get("install") or {}
