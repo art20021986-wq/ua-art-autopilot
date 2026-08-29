@@ -237,12 +237,13 @@ def source_evidence(filename: str, data: bytes) -> dict:
     except SyntaxError as exc:
         result["parse_error"] = str(exc)
         return result
-    terms = ("eta_manual", "days_to_kyiv", "eta_days", "opublikovat", "description", "updated_at")
+    terms = ("eta_manual", "days_to_kyiv", "eta_days", "opublikovat", "description",
+             "updated_at", "katalog.html")
     explicit = {
         "db.py": {"connect", "now", "log_action", "get_card", "update_card_field"},
         "cars_ui.py": {"set_field", "eta_of", "apply_value", "stage_menu", "stage_set", "toggle_publish"},
         "konteyner.py": {"_karta", "_pisat", "_sprosit", "_peresobrat", "_ekran", "sprosit_dni", "prinyat"},
-        "stranica.py": {"sobrat_kartochku", "blok_pribytiya", "srok", "ostatok_dney"},
+        "stranica.py": {"main", "sobrat_kartochku", "blok_pribytiya", "srok", "ostatok_dney"},
         "publikaciya.py": {"_master", "proverit", "_zapisat_atomarno", "_kartochki", "opublikovat"},
     }.get(filename, set())
     for node in ast.walk(tree):
