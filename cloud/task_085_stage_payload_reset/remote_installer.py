@@ -31,6 +31,7 @@ CONTRACT_ID = "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0"
 TARGET_CODE = "UA-0011"
 PROTECTED_CODE = "UA-0009"
 EXPECTED_STATUS = "kr_bought"
+EXPECTED_VIN = "KMHE341DBKA544289"
 ACTOR_ID = 85005
 ROOT = pathlib.Path("/home/Carix")
 # The controller stages unique task085 files inside the already-existing,
@@ -137,6 +138,19 @@ def safe_target(row: dict) -> dict:
         "ge_released", "ge_to_kyiv_at", "updated_at", "vin",
     )
     return {key: row.get(key) for key in keys if key in row}
+
+
+def authorized_preimage_stage(target: dict, guard, label: str) -> int:
+    """Accept any explicit current stage; Gate B owns the correction to Korea."""
+    vin = str(target.get("vin") or "").strip().upper()
+    if vin != EXPECTED_VIN:
+        raise Task085Error("%s_VIN_MISMATCH:%s" % (label, vin[-6:]))
+    stage = guard.stage_number(target.get("status"))
+    if stage not in (1, 2, 3, 4):
+        raise Task085Error(
+            "%s_UNKNOWN_STATUS:%s" % (label, str(target.get("status") or ""))
+        )
+    return int(stage)
 
 
 def media_digest(row: dict) -> str:
@@ -800,10 +814,13 @@ def shadow() -> dict:
             columns = [row[1] for row in reader.execute("PRAGMA table_info(cars)")]
         finally:
             reader.close()
-        if quick != "ok" or target.get("status") != EXPECTED_STATUS:
-            raise Task085Error("SHADOW_DATABASE_OR_STATUS")
+        if quick != "ok":
+            raise Task085Error("SHADOW_DATABASE_QUICK_CHECK:%s" % quick)
         guard = import_guard_from_upload()
-        projected = guard.public_projection(target)
+        observed_stage = authorized_preimage_stage(target, guard, "SHADOW")
+        destination = dict(target)
+        destination["status"] = EXPECTED_STATUS
+        projected = guard.public_projection(destination)
         for field in RESET_FIELDS:
             if field in projected and projected.get(field) not in (None, ""):
                 raise Task085Error("PROJECTION_LEAK:" + field)
@@ -815,6 +832,8 @@ def shadow() -> dict:
             "status": "PASS",
             "database": {
                 "quick_check": quick, "row_count": len(rows), "target": safe_target(target),
+                "observed_stage": observed_stage,
+                "destination_status": EXPECTED_STATUS,
                 "protected_ua0009": safe_target(protected), "columns": columns,
                 "protected_rows_sha256": protected_rows_digest(rows, int(target["id"])),
                 "target_business_sha256": target_business_digest(target),
@@ -936,9 +955,12 @@ def apply_release() -> dict:
             target = unique_row(rows, TARGET_CODE)
         finally:
             reader.close()
-        if quick != "ok" or target.get("status") != EXPECTED_STATUS:
-            raise Task085Error("PREWRITE_DATABASE_OR_STATUS")
+        if quick != "ok":
+            raise Task085Error("PREWRITE_DATABASE_QUICK_CHECK:%s" % quick)
+        guard = import_guard_from_upload()
+        observed_stage = authorized_preimage_stage(target, guard, "PREWRITE")
         state = create_backup(rows, target)
+        value["observed_stage_before"] = observed_stage
         value["backup_root"] = state["backup_root"]
         value["before"] = safe_target(target)
         value["catalog_semantics_before"] = {
