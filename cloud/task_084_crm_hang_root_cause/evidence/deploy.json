@@ -1,7 +1,7 @@
 {
   "bot_restarted": true,
   "build": {
-    "audit_started_at_utc": "2026-08-29T08:48:40Z",
+    "audit_started_at_utc": "2026-08-29T09:04:05Z",
     "audit_status": "PASS_ROOT_CAUSE_CONFIRMED",
     "candidate_sha256": {
       "cars_ui.py": "8c8a69834247e58795aace02e768caa8d64f31c200abb1dca003b4af50758780",
@@ -23,10 +23,8 @@
   },
   "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
   "crm_db_write": false,
-  "errors": [
-    "ControllerError:POSTCHECK_FAILED:InstallError:START_SINGLETON_NOT_HELD"
-  ],
-  "finished_at_utc": "2026-08-29T08:55:55Z",
+  "errors": [],
+  "finished_at_utc": "2026-08-29T09:08:44Z",
   "install": {
     "after_sha256": {
       "cars_ui.py": "8c8a69834247e58795aace02e768caa8d64f31c200abb1dca003b4af50758780",
@@ -34,7 +32,7 @@
       "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
       "team_bot.py": "b640a4dd0dffcc249dbc0f7ce46fb977fca58babc6a3dd1d8c0cf10d3819f03f"
     },
-    "backup_dir": "/home/Carix/backups/task_084/20260829T085009Z",
+    "backup_dir": "/home/Carix/backups/task_084/20260829T090523Z",
     "before_sha256": {
       "cars_ui.py": "cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea",
       "crm_voice_watchdog.py": null,
@@ -63,64 +61,91 @@
     "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
     "crm_db_write": false,
     "errors": [],
-    "finished_at_utc": "2026-08-29T08:50:10Z",
+    "finished_at_utc": "2026-08-29T09:05:24Z",
     "media_write": false,
     "mode": "ATOMIC_INSTALL",
     "production_write": true,
     "status": "PASS"
   },
-  "launcher_immediate": {
+  "launcher_delayed": {
     "command": "python3.10 /home/Carix/start_safe.py",
-    "control_plane_lag": true,
+    "control_plane_lag": false,
     "enabled": true,
     "id": 266084,
-    "state": "Starting"
+    "state": "Running"
+  },
+  "launcher_immediate": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "control_plane_lag": false,
+    "enabled": true,
+    "id": 266084,
+    "state": "Running"
   },
   "media_write": false,
-  "postcheck_immediate": {
-    "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
-    "crm_db_write": false,
-    "errors": [
-      "InstallError:START_SINGLETON_NOT_HELD"
-    ],
-    "finished_at_utc": "2026-08-29T08:53:12Z",
-    "mode": "POSTCHECK",
-    "production_write": false,
-    "status": "FAIL"
-  },
-  "rollback": {
-    "backup_dir": "/home/Carix/backups/task_084/20260829T085009Z",
+  "postcheck_delayed": {
+    "bots": {
+      "client": true,
+      "crm": true
+    },
+    "checks": {
+      "cars_killable_voice": true,
+      "cars_old_fixed_deadline_removed": true,
+      "cars_old_nonkillable_stt_removed": true,
+      "menu_debounce": true,
+      "start_singleton": true,
+      "startup_notice_debounce": true,
+      "team_killable_voice": true,
+      "team_old_nonkillable_stt_removed": true,
+      "worker_limit_two": true,
+      "worker_process_group": true,
+      "worker_term_kill": true
+    },
     "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
     "crm_db_write": false,
     "errors": [],
-    "finished_at_utc": "2026-08-29T08:55:12Z",
-    "mode": "ROLLBACK",
-    "production_write": true,
-    "removed": [],
-    "restored": [
-      "cars_ui.py",
-      "team_bot.py",
-      "start_safe.py"
-    ],
+    "finished_at_utc": "2026-08-29T09:08:13Z",
+    "mode": "POST_RESTART_CHECK",
+    "production_write": false,
+    "start_singleton_held": true,
+    "startup_notice_gate_active": true,
+    "startup_notice_state_mtime": 1787994394.9169564,
     "status": "PASS"
   },
-  "rollback_launcher": {
-    "command": "python3.10 /home/Carix/start_safe.py",
-    "control_plane_lag": true,
-    "enabled": true,
-    "id": 266084,
-    "state": "Starting"
+  "postcheck_immediate": {
+    "bots": {
+      "client": true,
+      "crm": true
+    },
+    "checks": {
+      "cars_killable_voice": true,
+      "cars_old_fixed_deadline_removed": true,
+      "cars_old_nonkillable_stt_removed": true,
+      "menu_debounce": true,
+      "start_singleton": true,
+      "startup_notice_debounce": true,
+      "team_killable_voice": true,
+      "team_old_nonkillable_stt_removed": true,
+      "worker_limit_two": true,
+      "worker_process_group": true,
+      "worker_term_kill": true
+    },
+    "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
+    "crm_db_write": false,
+    "errors": [],
+    "finished_at_utc": "2026-08-29T09:07:09Z",
+    "mode": "POST_RESTART_CHECK",
+    "production_write": false,
+    "start_singleton_held": true,
+    "startup_notice_gate_active": true,
+    "startup_notice_state_mtime": 1787994394.9169564,
+    "status": "PASS"
   },
-  "rollback_service": {
-    "command": "python3.10 /home/Carix/start_safe.py",
-    "id": 266084,
-    "restart_accepted": true
-  },
+  "rollback": null,
   "service": {
     "command": "python3.10 /home/Carix/start_safe.py",
     "id": 266084,
     "restart_accepted": true
   },
-  "started_at_utc": "2026-08-29T08:48:44Z",
-  "status": "FAIL"
+  "started_at_utc": "2026-08-29T09:04:11Z",
+  "status": "PASS"
 }
