@@ -6,6 +6,12 @@ on:
     paths:
       - '.github/workflows/task075_stage_guard_sandbox.yml'
       - 'tasks/task_075.md'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/task075_stage_guard_sandbox.yml'
+      - 'tasks/task_075.md'
+      - 'cloud/task_075_stage_guard/**'
   workflow_dispatch:
 
 permissions:
@@ -88,7 +94,7 @@ jobs:
           test "$(wc -c < cloud/task_075_stage_guard/screenshots/site-mobile.png)" -gt 5000
 
       - name: Commit only sanitized evidence
-        if: always()
+        if: always() && github.event_name == 'push'
         run: |
           git add -- cloud/task_075_stage_guard/evidence/sandbox.json cloud/task_075_stage_guard/TASK_075_REPORT.md
           mapfile -t staged < <(git diff --cached --name-only)
