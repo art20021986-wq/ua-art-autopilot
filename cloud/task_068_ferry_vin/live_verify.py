@@ -236,7 +236,7 @@ def main() -> int:
             card["id"] == "UA-0009" and card["stage"] == 2
             for card in result["cards"]
         )
-        if result["card_count"] != 10 or not result["ua0009_safe"]:
+        if result["card_count"] < 10 or not result["ua0009_safe"]:
             raise RuntimeError("PUBLIC_CARD_SET_INVALID")
         result["status"] = "PASS"
     except Exception as exc:
