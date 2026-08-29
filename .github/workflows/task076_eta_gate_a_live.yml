@@ -73,7 +73,15 @@ jobs:
       - name: Commit only bounded sanitized evidence
         if: always()
         run: |
-          git add -- cloud/task_076_eta_sync/evidence/gate_a_live.json cloud/task_076_eta_sync/GATE_A_LIVE_REPORT.md
+          paths=()
+          for path in cloud/task_076_eta_sync/evidence/gate_a_live.json cloud/task_076_eta_sync/GATE_A_LIVE_REPORT.md; do
+            test -f "$path" && paths+=("$path")
+          done
+          if [ "${#paths[@]}" -eq 0 ]; then
+            echo 'No Gate A evidence was produced before the failure'
+            exit 0
+          fi
+          git add -- "${paths[@]}"
           mapfile -t staged < <(git diff --cached --name-only)
           for path in "${staged[@]}"; do
             case "$path" in
