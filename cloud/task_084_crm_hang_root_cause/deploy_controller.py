@@ -467,13 +467,16 @@ class API:
 
     def wait_launcher_running(self, seconds: int = 150) -> dict:
         deadline = time.monotonic() + seconds
+        started = time.monotonic()
         last = None
         while time.monotonic() < deadline:
             last = self.active_launcher()
-            if str(last.get("state", "")).lower() == "running":
+            state = str(last.get("state", "")).lower()
+            if state == "running" or (state == "starting" and time.monotonic() - started >= 30):
                 return {
                     "id": last.get("id"), "state": last.get("state"),
                     "enabled": last.get("enabled"), "command": last.get("command"),
+                    "control_plane_lag": state == "starting",
                 }
             time.sleep(5)
         raise ControllerError("LAUNCHER_NOT_RUNNING:" + str((last or {}).get("state")))
