@@ -1,6 +1,20 @@
 {
-  "status": "FAIL",
+  "bot_restarted": false,
+  "contract_id": "UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0",
   "errors": [
-    "DEPLOY_EVIDENCE_MISSING"
-  ]
+    "ControllerError:INSTALL_FAILED:InstallError:INSTALL_ROLLED_BACK:{\"transaction\": {\"backup_root\": \"/home/Carix/rezerv_publikacii/TASK083/20260829T091110Z-1bce44a7ae72\", \"removed\": [], \"restored\": []}, \"code\": {\"backup_root\": \"/home/Carix/autopilot_inbox/cloud/task_083_publish_transaction/backups/20260829T091110Z-8c49b4be00c1\", \"changed_paths\": [\"/home/Carix/publikaciya.py\", \"/home/Carix/cars_ui.py\", \"/home/Carix/publish_transaction_guard.py\", \"/home/Carix/catalog_stage_guard_core.py\"]}}"
+  ],
+  "install": {
+    "contract_id": "UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0",
+    "errors": [
+      "InstallError:INSTALL_ROLLED_BACK:{\"transaction\": {\"backup_root\": \"/home/Carix/rezerv_publikacii/TASK083/20260829T091110Z-1bce44a7ae72\", \"removed\": [], \"restored\": []}, \"code\": {\"backup_root\": \"/home/Carix/autopilot_inbox/cloud/task_083_publish_transaction/backups/20260829T091110Z-8c49b4be00c1\", \"changed_paths\": [\"/home/Carix/publikaciya.py\", \"/home/Carix/cars_ui.py\", \"/home/Carix/publish_transaction_guard.py\", \"/home/Carix/catalog_stage_guard_core.py\"]}}"
+    ],
+    "mode": "INSTALL",
+    "runtime_llm_tokens": 0,
+    "status": "FAIL",
+    "traceback_tail": "Traceback (most recent call last):\n  File \"/home/Carix/autopilot_inbox/cloud/task_083_publish_transaction/task083_remote_installer.py\", line 363, in run_install\n    raise InstallError(\"BATCH_PUBLICATION_FAILED:\" + message)\nInstallError: BATCH_PUBLICATION_FAILED:Публикация отменена: BASE_PUBLISH_FAILED:UA-0012:Публикация отменена при записи (PUBLICATION BLOCKED UA-0012: пропал раздел «Комплексная диагностика»). Выполнен откат.. Выполнен полный откат.\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/Carix/autopilot_inbox/cloud/task_083_publish_transaction/task083_remote_installer.py\", line 440, in main\n    receipt = run_install()\n  File \"/home/Carix/autopilot_inbox/cloud/task_083_publish_transaction/task083_remote_installer.py\", line 394, in run_install\n    raise InstallError(\"INSTALL_ROLLED_BACK:\" + json.dumps(rollback, ensure_ascii=False))\nInstallError: INSTALL_ROLLED_BACK:{\"transaction\": {\"backup_root\": \"/home/Carix/rezerv_publikacii/TASK083/20260829T091110Z-1bce44a7ae72\", \"removed\": [], \"restored\": []}, \"code\": {\"backup_root\": \"/home/Carix/autopilot_inbox/cloud/task_083_publish_transaction/backups/20260829T091110Z-8c49b4be00c1\", \"changed_paths\": [\"/home/Carix/publikaciya.py\", \"/home/Carix/cars_ui.py\", \"/home/Carix/publish_transaction_guard.py\", \"/home/Carix/catalog_stage_guard_core.py\"]}}\n"
+  },
+  "rollback": null,
+  "runtime_llm_tokens": 0,
+  "status": "FAIL"
 }
