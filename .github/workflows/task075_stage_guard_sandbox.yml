@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/task075_stage_guard_sandbox.yml'
       - 'tasks/task_075.md'
+      - 'cloud/task_075_stage_guard/**'
   pull_request:
     branches: [main]
     paths:
@@ -101,6 +102,38 @@ jobs:
             "$root/site-katalog.html?f=more"
           test "$(wc -c < cloud/task_075_stage_guard/screenshots/video-mobile.png)" -gt 5000
           test "$(wc -c < cloud/task_075_stage_guard/screenshots/site-mobile.png)" -gt 5000
+
+      - name: Validate computed stage filter visibility
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "$browser"
+          root="file://${GITHUB_WORKSPACE}/cloud/task_075_stage_guard/canary"
+          "$browser" --headless=new --disable-gpu --allow-file-access-from-files \
+            --virtual-time-budget=3000 --dump-dom "$root/video-katalog.html?f=more" \
+            > cloud/task_075_stage_guard/video-filter-dom.html
+          "$browser" --headless=new --disable-gpu --allow-file-access-from-files \
+            --virtual-time-budget=3000 --dump-dom "$root/site-katalog.html?f=more" \
+            > cloud/task_075_stage_guard/site-filter-dom.html
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import re
+
+          evidence = json.loads(pathlib.Path(
+              'cloud/task_075_stage_guard/evidence/sandbox.json').read_text(encoding='utf-8'))
+          expected = sum(row['stage'] == 2 for row in evidence['database']['rows'])
+          assert expected > 0
+          for variant in ('video', 'site'):
+              dom = pathlib.Path(
+                  f'cloud/task_075_stage_guard/{variant}-filter-dom.html').read_text(encoding='utf-8')
+              root = re.search(r'<html\b[^>]*>', dom, re.I).group(0)
+              attrs = dict(re.findall(r'(data-ua-stage-filter(?:-[a-z]+)?)="([^"]*)"', root))
+              assert attrs.get('data-ua-stage-filter') == 'sea', attrs
+              assert attrs.get('data-ua-stage-filter-ok') == 'true', attrs
+              assert int(attrs.get('data-ua-stage-filter-shown', '-1')) == expected, attrs
+              assert int(attrs.get('data-ua-stage-filter-rendered', '-1')) == expected, attrs
+          print(f'TASK075_RENDERED_FILTER_PASS:{expected}')
+          PY
 
       - name: Commit only sanitized evidence
         if: always() && github.event_name == 'push'
