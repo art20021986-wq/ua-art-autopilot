@@ -1,3 +1,4 @@
+# retry: dedicated-workflow-remote-writer-lock-2026-08-29
 # retry: direct-runtime-proof-during-control-plane-lag-2026-08-29
 # retry: after-task085-scheduled-lane-2026-08-29
 # retry: final-quiet-window-2026-08-29
@@ -17,7 +18,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: ua-art-production-writer
+  # GitHub queue is task-local; the remote installer serializes all production writes
+  # with /home/Carix/.ua_art_production_writer.lock.
+  group: task084-crm-hang-remediation
   cancel-in-progress: false
 
 jobs:
