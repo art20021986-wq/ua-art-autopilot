@@ -1,0 +1,43 @@
+{
+  "candidate_files_persisted": false,
+  "candidate_sha256": {
+    "ai_fast_schema.py": "fceaeadc0546c1054262d53d15fb6851133e4a4674d7581f7ce13100ba756c2a",
+    "ai_filter.py": "f4bb1ded56428973881fe1dbde7db20e56fe54ab0d6010723ae1c962b0bb492f",
+    "cars_ui.py": "c585e914d4910f81a6578707c676bb365b7dd4d7a799164ac53b23778fe421f1",
+    "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+    "local_ocr.py": "91d7293b758bd081d8d8a0053f0c3716aeb5057718d4edd0a3e46da8cc79091c"
+  },
+  "changed_blocks": [
+    "cars_ui.py:apply_value",
+    "cars_ui.py:auto_catch",
+    "cars_ui.py:_v168_cas_write",
+    "cars_ui.py:voice_undo",
+    "cars_ui.py:catch_message",
+    "local_ocr.py:fields_from_text",
+    "ai_fast_schema.py:labeled_text_data",
+    "ai_fast_schema.py:fast_text_data",
+    "ai_filter.py:ALLOWED"
+  ],
+  "contract_id": "CRM-PRICE-RECOGNITION-006-v1.0",
+  "database_write": false,
+  "errors": [],
+  "finished_at_utc": "2026-08-29T07:41:10Z",
+  "http_methods": [
+    "GET"
+  ],
+  "input_sha256": {
+    "ai_fast_schema.py": "d2ac2104b2293e3c5cb38930fac6f4de87b9d1d3f35783b1b4e892433fcfd64e",
+    "ai_filter.py": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
+    "cars_ui.py": "50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306",
+    "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+    "local_ocr.py": "7eb4de0597fb6064c8e5f7b56c00d673e8d964630481b3fe5511bb20363770b5"
+  },
+  "mode": "LIVE_GET_ONLY_IN_MEMORY_CANDIDATE",
+  "process_restart": false,
+  "production_write": false,
+  "release_status": "READY_FOR_SEPARATE_PRODUCTION_APPROVAL",
+  "site_write": false,
+  "started_at_utc": "2026-08-29T07:41:05Z",
+  "status": "PASS_IN_MEMORY_CANDIDATE",
+  "task_id": "task_080"
+}
