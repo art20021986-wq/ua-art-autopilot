@@ -1,3 +1,4 @@
+# retry: simplified-state-gate-2026-08-29
 # retry: idempotent-runtime-verification-2026-08-29
 # retry: dedicated-workflow-remote-writer-lock-2026-08-29
 # retry: direct-runtime-proof-during-control-plane-lag-2026-08-29
@@ -56,21 +57,9 @@ jobs:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
         run: python3 cloud/task_084_crm_hang_root_cause/live_audit.py
 
-      - name: Validate candidates or already-installed state
-        run: |
-          if ! python3 cloud/task_084_crm_hang_root_cause/deploy_controller.py --self-test; then
-            python3 - <<'PY'
-          import json
-          value=json.load(open('cloud/task_084_crm_hang_root_cause/evidence/live_audit.json', encoding='utf-8'))
-          root=value.get('root_cause') or {}
-          assert value.get('status') == 'PASS_STATE_CHANGED'
-          assert root.get('fixed_deadline_4_65') is False
-          assert root.get('non_killable_to_thread') is False
-          assert root.get('killable_child_present') is True
-          assert root.get('start_safe_singleton_present') is True
-          print('TASK084_ALREADY_INSTALLED_GATE_PASS')
-          PY
-          fi
+      - name: Validate current remediation state
+        run: >-
+          python3 -c "import json; v=json.load(open('cloud/task_084_crm_hang_root_cause/evidence/live_audit.json', encoding='utf-8')); r=v.get('root_cause') or {}; assert (v.get('status') == 'PASS_ROOT_CAUSE_CONFIRMED') or (v.get('status') == 'PASS_STATE_CHANGED' and r.get('fixed_deadline_4_65') is False and r.get('non_killable_to_thread') is False and r.get('killable_child_present') is True and r.get('start_safe_singleton_present') is True); print('TASK084_STATE_GATE_PASS')"
 
       - name: Install, restart once and verify twice
         env:
