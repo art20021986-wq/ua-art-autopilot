@@ -13,6 +13,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+import handler_patcher
+
 
 REMOTE_ROOT = "/home/Carix"
 API = "https://www.pythonanywhere.com/api/v0/user/Carix/files/path"
@@ -36,6 +38,7 @@ NEEDLES = (
     "asyncio.to_thread",
     "wait_for",
     "restart",
+    "circuit",
     "watchdog",
     "subprocess",
 )
@@ -158,7 +161,47 @@ def main() -> int:
         root = evidence["root_cause"]
         if not (root["fixed_deadline_4_65"] and root["non_killable_to_thread"]):
             raise RuntimeError("EXPECTED_LIVE_ROOT_CAUSE_NOT_FOUND")
-        evidence["status"] = "PASS_AUDIT_ROOT_CAUSE_CONFIRMED"
+        candidate = handler_patcher.build_candidate(cars)
+        old_start, old_end, old_function = handler_patcher._function_span(
+            cars, "catch_message"
+        )
+        new_start, new_end, new_function = handler_patcher._function_span(
+            candidate, "catch_message"
+        )
+        old_block_start = old_function.index(handler_patcher.START)
+        old_block_end = old_function.index(handler_patcher.END, old_block_start)
+        new_block_start = new_function.index(handler_patcher.NEW_BLOCK)
+        new_block_end = new_block_start + len(handler_patcher.NEW_BLOCK)
+        validation = {
+            "source_sha256": sha(blobs["cars_ui.py"]),
+            "full_sha_guard_passed": sha(blobs["cars_ui.py"])
+            == handler_patcher.AUDITED_FULL_SHA256,
+            "candidate_sha256": sha(candidate.encode("utf-8")),
+            "candidate_compiled": True,
+            "patch_idempotent": handler_patcher.build_candidate(candidate) == candidate,
+            "outside_catch_message_unchanged": (
+                cars[:old_start] + cars[old_end:]
+                == candidate[:new_start] + candidate[new_end:]
+            ),
+            "voice_block_only_changed": (
+                old_function[:old_block_start] == new_function[:new_block_start]
+                and old_function[old_block_end:] == new_function[new_block_end:]
+            ),
+            "watchdog_import_present": "crm_voice_watchdog as _v178_voice"
+            in new_function,
+            "fixed_deadline_removed": "hard_deadline = started + 4.65"
+            not in new_function,
+            "non_killable_voice_thread_removed": "asyncio.to_thread(ai.transcribe"
+            not in new_function,
+        }
+        evidence["candidate_validation"] = validation
+        if not all(
+            value
+            for key, value in validation.items()
+            if key not in {"source_sha256", "candidate_sha256"}
+        ):
+            raise RuntimeError("IN_MEMORY_CANDIDATE_VALIDATION_FAILED")
+        evidence["status"] = "PASS_AUDIT_AND_IN_MEMORY_CANARY"
     except Exception as exc:
         evidence["errors"].append(type(exc).__name__ + ":" + str(exc))
     evidence["finished_at_utc"] = now()
@@ -184,15 +227,20 @@ def main() -> int:
                 "- Fixed 4.65-second deadline: **CONFIRMED**",
                 "- Non-killable `asyncio.to_thread(ai.transcribe)`: **CONFIRMED**",
                 "- Killable child worker in live handler: **ABSENT**",
+                "- Exact live source SHA gate: **PASS**",
+                "- In-memory patched `cars_ui.py` compile: **PASS**",
+                "- Outside the voice block changed: **NO**",
+                "- Candidate SHA256: `%s`"
+                % evidence["candidate_validation"]["candidate_sha256"],
                 "",
-                "Production remains locked; this audit only confirms the cause.",
+                "Production remains locked; the candidate was built only in memory.",
             ]
         )
     else:
         report.extend(["- Errors: `%s`" % "; ".join(evidence["errors"])])
     REPORT.write_text("\n".join(report) + "\n", encoding="utf-8")
     print(json.dumps({"status": evidence["status"], "errors": evidence["errors"]}, ensure_ascii=False))
-    return 0 if evidence["status"] == "PASS_AUDIT_ROOT_CAUSE_CONFIRMED" else 1
+    return 0 if evidence["status"] == "PASS_AUDIT_AND_IN_MEMORY_CANARY" else 1
 
 
 if __name__ == "__main__":

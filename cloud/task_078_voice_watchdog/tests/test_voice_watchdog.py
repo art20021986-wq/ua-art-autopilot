@@ -4,6 +4,8 @@ from __future__ import annotations
 import asyncio
 import pathlib
 import sys
+import tempfile
+import textwrap
 import unittest
 
 BASE = pathlib.Path(__file__).resolve().parents[1]
@@ -33,6 +35,33 @@ class TimeoutPolicyTests(unittest.TestCase):
 
 
 class VoiceControllerTests(unittest.IsolatedAsyncioTestCase):
+    async def test_real_hung_process_group_reaches_kill_and_is_reaped(self):
+        with tempfile.TemporaryDirectory(prefix="voice-watchdog-test-") as directory:
+            worker = pathlib.Path(directory) / "hung_worker.py"
+            worker.write_text(
+                textwrap.dedent(
+                    """
+                    import signal
+                    import time
+
+                    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+                    time.sleep(60)
+                    """
+                ),
+                encoding="utf-8",
+            )
+            old_grace = v.TERM_GRACE_SECONDS
+            v.TERM_GRACE_SECONDS = 0.05
+            try:
+                result = await v.run_killable_attempt(
+                    b"audio", "voice.ogg", 0.05, worker_path=worker
+                )
+            finally:
+                v.TERM_GRACE_SECONDS = old_grace
+        self.assertFalse(result.ok)
+        self.assertTrue(result.timed_out)
+        self.assertTrue(result.child_terminated)
+
     async def test_short_voice_succeeds_once(self):
         calls = []
 
@@ -40,7 +69,9 @@ class VoiceControllerTests(unittest.IsolatedAsyncioTestCase):
             calls.append((data, filename, timeout))
             return v.AttemptResult(True, text="готово")
 
-        result = await v.transcribe_with_restart(b"a", "voice.ogg", 3, run_attempt=runner)
+        result = await v.transcribe_with_restart(
+            b"a", "voice.ogg", 3, run_attempt=runner, budget=v.RestartBudget()
+        )
         self.assertTrue(result.ok)
         self.assertEqual(result.attempts, 1)
         self.assertEqual(result.restarted_workers, 0)
@@ -55,7 +86,9 @@ class VoiceControllerTests(unittest.IsolatedAsyncioTestCase):
         async def runner(_data, _filename, _timeout):
             return results.pop(0)
 
-        result = await v.transcribe_with_restart(b"a", "voice.ogg", 60, run_attempt=runner)
+        result = await v.transcribe_with_restart(
+            b"a", "voice.ogg", 60, run_attempt=runner, budget=v.RestartBudget()
+        )
         self.assertTrue(result.ok)
         self.assertEqual(result.attempts, 2)
         self.assertEqual(result.restarted_workers, 1)
@@ -71,7 +104,9 @@ class VoiceControllerTests(unittest.IsolatedAsyncioTestCase):
                 False, error="STT_TIMEOUT", timed_out=True, child_terminated=True
             )
 
-        result = await v.transcribe_with_restart(b"a", "voice.ogg", 120, run_attempt=runner)
+        result = await v.transcribe_with_restart(
+            b"a", "voice.ogg", 120, run_attempt=runner, budget=v.RestartBudget()
+        )
         self.assertFalse(result.ok)
         self.assertTrue(result.retryable)
         self.assertEqual(result.attempts, 2)
@@ -92,6 +127,78 @@ class VoiceControllerTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result.ok)
         self.assertEqual(result.error, "STT_COOLDOWN")
         self.assertEqual(result.attempts, 1)
+
+    async def test_twenty_parallel_calls_use_two_workers_maximum(self):
+        active = 0
+        peak = 0
+
+        async def runner(_data, _filename, _timeout):
+            nonlocal active, peak
+            active += 1
+            peak = max(peak, active)
+            try:
+                await asyncio.sleep(0.01)
+                return v.AttemptResult(True, text="готово")
+            finally:
+                active -= 1
+
+        limit = asyncio.Semaphore(2)
+        results = await asyncio.gather(
+            *(
+                v.transcribe_with_restart(
+                    str(index).encode(),
+                    "voice.ogg",
+                    3,
+                    run_attempt=runner,
+                    budget=v.RestartBudget(),
+                    worker_limit=limit,
+                )
+                for index in range(20)
+            )
+        )
+        self.assertTrue(all(result.ok for result in results))
+        self.assertEqual(peak, 2)
+
+    async def test_cancelled_attempt_releases_worker_limit(self):
+        entered = asyncio.Event()
+        blocked = asyncio.Event()
+        limit = asyncio.Semaphore(1)
+
+        async def hanging_runner(_data, _filename, _timeout):
+            entered.set()
+            await blocked.wait()
+            return v.AttemptResult(True, text="never")
+
+        first = asyncio.create_task(
+            v.transcribe_with_restart(
+                b"a",
+                "voice.ogg",
+                3,
+                run_attempt=hanging_runner,
+                budget=v.RestartBudget(),
+                worker_limit=limit,
+            )
+        )
+        await entered.wait()
+        first.cancel()
+        with self.assertRaises(asyncio.CancelledError):
+            await first
+
+        async def fast_runner(_data, _filename, _timeout):
+            return v.AttemptResult(True, text="после отмены")
+
+        result = await asyncio.wait_for(
+            v.transcribe_with_restart(
+                b"b",
+                "voice.ogg",
+                3,
+                run_attempt=fast_runner,
+                budget=v.RestartBudget(),
+                worker_limit=limit,
+            ),
+            timeout=1,
+        )
+        self.assertTrue(result.ok)
 
 
 if __name__ == "__main__":

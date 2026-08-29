@@ -61,11 +61,20 @@ jobs:
           import json
           path='cloud/task_078_voice_watchdog/evidence/live_audit.json'
           value=json.load(open(path,encoding='utf-8'))
-          assert value['status']=='PASS_AUDIT_ROOT_CAUSE_CONFIRMED', value['errors']
+          assert value['status']=='PASS_AUDIT_AND_IN_MEMORY_CANARY', value['errors']
           assert value['production_touched'] is False
           assert value['http_methods']==['GET']
           assert value['root_cause']['fixed_deadline_4_65'] is True
           assert value['root_cause']['non_killable_to_thread'] is True
+          candidate=value['candidate_validation']
+          assert candidate['full_sha_guard_passed'] is True
+          assert candidate['candidate_compiled'] is True
+          assert candidate['patch_idempotent'] is True
+          assert candidate['outside_catch_message_unchanged'] is True
+          assert candidate['voice_block_only_changed'] is True
+          assert candidate['watchdog_import_present'] is True
+          assert candidate['fixed_deadline_removed'] is True
+          assert candidate['non_killable_voice_thread_removed'] is True
           print('TASK078_LIVE_AUDIT_PASS')
           PY
 

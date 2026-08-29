@@ -19,6 +19,7 @@ import pathlib
 import signal
 import sys
 import tempfile
+import weakref
 from collections import deque
 from typing import Awaitable, Callable, Optional
 
@@ -32,6 +33,7 @@ TERM_GRACE_SECONDS = 3
 RESTART_WINDOW_SECONDS = 600
 MAX_RESTARTS_PER_WINDOW = 3
 COOLDOWN_SECONDS = 300
+MAX_CONCURRENT_WORKERS = 2
 
 
 class VoiceWatchdogError(RuntimeError):
@@ -95,6 +97,20 @@ class RestartBudget:
 
     def snapshot(self) -> dict:
         return {"restarts": list(self._restarts), "cooldown_until": self.cooldown_until}
+
+
+_GLOBAL_RESTART_BUDGET = RestartBudget()
+_LOOP_LIMITS: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
+
+
+def _worker_limit_for_current_loop() -> asyncio.Semaphore:
+    """Return one bounded STT semaphore per Telegram event loop."""
+    loop = asyncio.get_running_loop()
+    limit = _LOOP_LIMITS.get(loop)
+    if limit is None:
+        limit = asyncio.Semaphore(MAX_CONCURRENT_WORKERS)
+        _LOOP_LIMITS[loop] = limit
+    return limit
 
 
 async def _terminate_process_group(process: asyncio.subprocess.Process) -> bool:
@@ -174,15 +190,18 @@ async def transcribe_with_restart(
     run_attempt: Callable[[bytes, str, int], Awaitable[AttemptResult]] = run_killable_attempt,
     budget: Optional[RestartBudget] = None,
     clock: Callable[[], float] | None = None,
+    worker_limit: Optional[asyncio.Semaphore] = None,
 ) -> VoiceResult:
     loop = asyncio.get_running_loop()
     now_fn = clock or loop.time
-    budget = budget or RestartBudget()
+    budget = budget or _GLOBAL_RESTART_BUDGET
+    worker_limit = worker_limit or _worker_limit_for_current_loop()
     timeout = timeout_for_duration(duration_seconds)
     last_error = "STT_FAILED"
     restarted = 0
     for attempt_number in range(1, MAX_ATTEMPTS + 1):
-        result = await run_attempt(audio_bytes, filename, timeout)
+        async with worker_limit:
+            result = await run_attempt(audio_bytes, filename, timeout)
         if result.ok and result.text.strip():
             return VoiceResult(True, result.text.strip(), attempt_number, restarted)
         last_error = result.error or "STT_FAILED"

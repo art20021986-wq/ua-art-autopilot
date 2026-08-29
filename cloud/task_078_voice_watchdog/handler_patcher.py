@@ -88,10 +88,14 @@ NEW_BLOCK = r'''        import crm_voice_watchdog as _v178_voice
             if marker in seen:
                 seen.remove(marker)
             attempts = getattr(_v178_result, "attempts", 0) if _v178_result else 0
+            restarts = (getattr(_v178_result, "restarted_workers", 0)
+                        if _v178_result else 0)
             await thinking.edit_text(
-                "Голосовое не распознано после автоматического перезапуска "
-                "(%d попытки). Карточка не изменена; отправьте голосовое ещё раз."
-                % max(attempts, 1))
+                "Голосовое не распознано. Попыток: %d; автоматических "
+                "перезапусков: %d. Карточка не изменена; отправьте голосовое ещё раз."
+                % (max(attempts, 1), restarts),
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                    "🎤 Повторить голосовое", callback_data="car_open:%d" % active_id)]]))
             raise ApplicationHandlerStop
 '''
 
