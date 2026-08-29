@@ -14,6 +14,13 @@ remote = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 SPEC.loader.exec_module(remote)
 
+CONTROLLER_SPEC = importlib.util.spec_from_file_location(
+    "task085_controller", ROOT / "controller.py"
+)
+controller = importlib.util.module_from_spec(CONTROLLER_SPEC)
+assert CONTROLLER_SPEC.loader is not None
+CONTROLLER_SPEC.loader.exec_module(controller)
+
 
 class SourcePatchTests(unittest.TestCase):
     def test_db_patch_is_atomic_and_idempotent(self):
@@ -111,6 +118,59 @@ def sobrat_kartochku(m, kadry, sredn=None):
         self.assertIsNone(planned["eta_manual"])
         self.assertEqual(planned["description"], "preserve")
         self.assertEqual(source["status"], "sea_loaded")
+
+    def test_catalog_baseline_does_not_depend_on_ua0009(self):
+        with __import__("tempfile").TemporaryDirectory() as raw:
+            path = pathlib.Path(raw) / "video" / "katalog.html"
+            path.parent.mkdir()
+            path.write_text(
+                "<a href='UA-0011.html' data-ua-card-stage='korea'>"
+                "<img src='11.jpg'></a>"
+                "<a href='UA-0012.html' data-ua-card-stage='more'>"
+                "<img src='12.jpg'></a>",
+                encoding="utf-8",
+            )
+            before = remote.catalog_semantics(path)
+            self.assertIn("other_cards_sha256", before)
+            self.assertNotIn(remote.PROTECTED_CODE, before["semantic"])
+            path.write_text(
+                path.read_text(encoding="utf-8").replace("12.jpg", "changed.jpg"),
+                encoding="utf-8",
+            )
+            after = remote.catalog_semantics(path)
+            self.assertNotEqual(
+                before["other_cards_sha256"], after["other_cards_sha256"]
+            )
+
+    def test_controller_validates_projected_destination_not_preimage_stage(self):
+        value = {
+            "contract_id": controller.CONTRACT_ID,
+            "status": "PASS",
+            "runtime_llm_tokens": 0,
+            "production_write": False,
+            "crm_write": False,
+            "media_write": False,
+            "database": {
+                "target": {
+                    "auto_number": controller.TARGET_CODE,
+                    "vin": controller.EXPECTED_VIN,
+                    "status": "sea_loaded",
+                },
+                "protected_ua0009": {"auto_number": controller.PROTECTED_CODE},
+            },
+            "projected_target": {
+                "status": controller.EXPECTED_STATUS,
+                "sea_container": None,
+                "sea_date_out": None,
+                "days_to_kyiv": None,
+                "eta_manual": None,
+            },
+            "candidate_sources": {str(index): "sha" for index in range(6)},
+        }
+        controller.validate_shadow(value)
+        value["database"]["target"]["vin"] = "WRONG"
+        with self.assertRaises(controller.ControllerError):
+            controller.validate_shadow(value)
 
     def test_detail_contract_rejects_old_container(self):
         with self.assertRaises(remote.Task085Error):
