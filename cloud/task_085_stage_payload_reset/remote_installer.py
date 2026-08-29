@@ -33,8 +33,10 @@ PROTECTED_CODE = "UA-0009"
 EXPECTED_STATUS = "kr_bought"
 ACTOR_ID = 85005
 ROOT = pathlib.Path("/home/Carix")
-TASK_ROOT = ROOT / "autopilot_inbox/cloud/task_085_stage_payload_reset"
-UPLOADED_GUARD = TASK_ROOT / "stage_payload_guard.py"
+# The controller stages unique task085 files inside the already-existing,
+# proven task083 inbox directory; production targets remain independently scoped.
+TASK_ROOT = ROOT / "autopilot_inbox/cloud/task_083_catalog_dedup"
+UPLOADED_GUARD = TASK_ROOT / "task085_stage_payload_guard.py"
 LIVE_GUARD = ROOT / "stage_payload_guard.py"
 STATE = TASK_ROOT / "task085_state.json"
 LOCK = ROOT / ".ua_art_production_writer.lock"
@@ -42,10 +44,10 @@ DB_PATH = ROOT / "crm.db"
 SOURCE_NAMES = ("db.py", "cars_ui.py", "stranica.py", "master_card.py", "cars_schema.py")
 SOURCE_PATHS = tuple(ROOT / name for name in SOURCE_NAMES)
 RECEIPTS = {
-    "shadow": TASK_ROOT / "shadow_receipt.json",
-    "apply": TASK_ROOT / "apply_receipt.json",
-    "postcheck": TASK_ROOT / "postcheck_receipt.json",
-    "rollback": TASK_ROOT / "rollback_receipt.json",
+    "shadow": TASK_ROOT / "task085_shadow_receipt.json",
+    "apply": TASK_ROOT / "task085_apply_receipt.json",
+    "postcheck": TASK_ROOT / "task085_postcheck_receipt.json",
+    "rollback": TASK_ROOT / "task085_rollback_receipt.json",
 }
 RESET_FIELDS = (
     "sea_container", "sea_date_out", "sea_port_from", "days_to_kyiv",
@@ -364,7 +366,7 @@ def audit_max(connection: sqlite3.Connection) -> int:
 
 
 def create_backup(rows: list[dict], target: dict) -> dict:
-    backup = TASK_ROOT / "backups" / (
+    backup = TASK_ROOT / "task085_backups" / (
         dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + uuid.uuid4().hex[:10]
     )
     backup.mkdir(parents=True, exist_ok=False)
