@@ -10,4 +10,4 @@ STATUS: **FAIL**
 - Bot restart: NOT CONFIRMED
 - Runtime LLM tokens: 0
 - Rollback: null
-- Errors: ControllerError:SHADOW_FAIL:Task085Error:ANCHOR_COUNT_obrabotat_kartochku:0
+- Errors: ControllerError:SHADOW_FAIL:Task085Error:FUNCTION_ASSIGNMENT_obrabotat_kartochku:m

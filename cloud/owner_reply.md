@@ -5,4 +5,4 @@
 ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО
 БЕЗОПАСНОСТЬ: backup до записи, один writer, автоматический rollback и перезапуск; media и остальные CRM-строки не изменяются.
 UA-0011 STATUS: не подтверждено
-ОШИБКИ: ControllerError:SHADOW_FAIL:Task085Error:ANCHOR_COUNT_obrabotat_kartochku:0
+ОШИБКИ: ControllerError:SHADOW_FAIL:Task085Error:FUNCTION_ASSIGNMENT_obrabotat_kartochku:m
