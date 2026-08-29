@@ -153,11 +153,15 @@ def source_facts(name: str, source: str) -> dict:
         "cars_ui.py": {"catch_message"},
         "ai.py": {"transcribe"},
         "crm_online_guard.py": {"_supervisor_loop", "start_supervisor", "_restart_budget_available"},
-        "start_safe.py": {"main", "avariynyy_rezhim", "pri_starte"},
+        "start_safe.py": {
+            "main", "avariynyy_rezhim", "pri_starte", "apply_all",
+            "db_clean_split", "ubrat_musor",
+        },
         "run_all.py": {"main", "post_init", "on_start", "startup", "pri_starte"},
         "team_bot.py": {
             "main", "post_init", "on_start", "startup", "pri_starte", "start",
             "show_menu", "vvodnye_job",
+            "build_application",
         },
     }.get(name, set())
     patterns = [
