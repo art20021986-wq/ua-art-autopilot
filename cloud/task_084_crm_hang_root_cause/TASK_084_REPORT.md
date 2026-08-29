@@ -7,7 +7,7 @@ STATUS: **FAIL**
 - Menu replay debounce: NOT VERIFIED
 - Startup singleton and notice debounce: NOT VERIFIED
 - CRM DB/media writes: NO
-- One controlled restart: NO
-- Backup: ``
+- One controlled restart: YES
+- Backup: `/home/Carix/backups/task_084/20260829T083109Z`
 - Immediate and delayed live checks: FAIL
-- Errors: ControllerError:REMOTE_FILE_TIMEOUT:.bootstrap_ready
+- Errors: ControllerError:LAUNCHER_NOT_RUNNING:Starting; ROLLBACK_RESTART_ControllerError:LAUNCHER_NOT_RUNNING:Starting
