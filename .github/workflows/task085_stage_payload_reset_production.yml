@@ -1,11 +1,11 @@
-name: task085-ua0011-stage-payload-production
+name: task086-ua0011-korea-stage-production
 
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/task085_stage_payload_reset_production.yml'
-      - 'tasks/task_085.md'
+      - 'tasks/task_086.md'
       - 'cloud/task_085_stage_payload_reset/stage_payload_guard.py'
       - 'cloud/task_085_stage_payload_reset/remote_installer.py'
       - 'cloud/task_085_stage_payload_reset/controller.py'
@@ -18,13 +18,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: ua-art-production-writer
+  group: task086-ua0011-korea-production
   cancel-in-progress: false
 
 jobs:
   repair:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout current main
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -36,21 +36,22 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          source = Path('tasks/task_085.md').read_text(encoding='utf-8')
+          source = Path('tasks/task_086.md').read_text(encoding='utf-8')
           normalized = ' '.join(source.split())
           required = [
-              'Прямая production-команда владельца',
-              'Дополнительное подтверждение не требуется',
+              'Исправление целевого этапа по прямой команде владельца',
+              'Дополнительное подтверждение владельца не требуется',
               "status='kr_bought'",
-              'sea_container=NULL',
-              'eta_manual=NULL',
+              'sea_container',
+              'eta_manual',
               'два writer-процесса одновременно запрещены',
-              'auto-rollback и restart',
+              'compensating DB rollback',
+              'Старую ferry-цель TASK 086 не запускать',
           ]
           missing = [value for value in required if value not in normalized]
           if missing:
-              raise SystemExit('TASK085_OWNER_AUTHORIZATION_MISSING:' + ','.join(missing))
-          print('TASK085_OWNER_AUTHORIZATION_PASS')
+              raise SystemExit('TASK086_OWNER_AUTHORIZATION_MISSING:' + ','.join(missing))
+          print('TASK086_OWNER_AUTHORIZATION_PASS')
           PY
 
       - name: Compile and test permanent contract
@@ -96,18 +97,18 @@ jobs:
           target = ((final.get('database') or {}).get('target') or {})
           now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z')
           latest = '\n'.join([
-              'TASK_ID: task_085',
+              'TASK_ID: task_086',
               'ROUND: 1',
               'CLAUDE_STATUS: ' + ('DONE' if ok else 'BLOCKED'),
               'CURRENT_ACTION: ' + (
                   'UA-0011 fixed in Korea; previous-stage payload guard installed and public checks passed.'
-                  if ok else 'TASK 085 failed closed; rollback/recovery result is recorded in production evidence.'
+                  if ok else 'TASK 086 failed closed; rollback/recovery result is recorded in production evidence.'
               ),
               'FILES_CREATED: cloud/task_085_stage_payload_reset/evidence/production.json, cloud/task_085_stage_payload_reset/TASK_085_REPORT.md',
               'PRODUCTION_TOUCHED: ' + ('YES' if ok else 'ROLLED_BACK_OR_NO'),
               'OWNER_ACTION_REQUIRED: NO',
               'OWNER_QUESTION: NONE',
-              'NEXT_FOR_CHATGPT: Verify TASK 085 evidence and report the exact production result.',
+              'NEXT_FOR_CHATGPT: Verify TASK 086 evidence and report the exact production result.',
               'UPDATED_AT_UTC: ' + now,
           ]) + '\n'
           errors = '; '.join(value.get('errors') or []) or 'НЕТ'
@@ -155,9 +156,9 @@ jobs:
             esac
           done
           if [ "${#staged[@]}" -eq 0 ]; then exit 0; fi
-          git config user.name 'task085-stage-payload'
+          git config user.name 'task086-korea-stage'
           git config user.email 'actions@users.noreply.github.com'
-          git commit -m 'task085: record UA-0011 stage payload production result'
+          git commit -m 'task086: record UA-0011 Korea stage production result'
           for attempt in 1 2 3 4 5 6; do
             git fetch origin main
             if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
@@ -184,14 +185,14 @@ jobs:
           assert target['status'] == 'kr_bought'
           for field in ('sea_container', 'sea_date_out', 'days_to_kyiv', 'eta_manual'):
               assert target.get(field) in (None, ''), (field, target.get(field))
-          print('TASK085_PRODUCTION_PASS')
+          print('TASK086_PRODUCTION_PASS')
           PY
 
       - name: Upload bounded evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: task085-stage-payload-${{ github.run_id }}
+          name: task086-korea-stage-${{ github.run_id }}
           path: |
             cloud/task_085_stage_payload_reset/evidence/production.json
             cloud/task_085_stage_payload_reset/TASK_085_REPORT.md
