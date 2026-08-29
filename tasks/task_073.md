@@ -272,3 +272,93 @@ CLAUDE/Cloud не выполняет CRITICAL действия. Подготов
 10. Gate B workflow остаётся manual `workflow_dispatch` с exact token `CRM-UNIFIED-CATALOG-001-V1.0-APPROVED`. Claude НЕ запускает production. Codex после независимого аудита копирует Gate A V3 workflow в `.github/workflows`, запускает; при PASS запускает уже утверждённый Gate B.
 
 ROUND 4 результат считается готовым только если entrypoint реально существует, workflow не содержит условной заглушки, все tests проходят, а отчёт честно имеет `READY_TO_RUN_REAL_GATE_A_V3`. Production не трогать.
+
+
+---
+
+## ROUND 5 — V3 REJECTED, ОБЯЗАТЕЛЬНЫЙ LIVE-INTEGRATED V4
+
+Commit `6e2dfaf54cf6c1c0a03a20599a251065500fb650` НЕ ГОТОВ К GATE A/GATE B и запрещён к deployment.
+
+### Подтверждённые дефекты V3
+
+1. `gate_a_v3.py` читает несуществующие top-level keys `remote_paths`, `full_file_sha256`, `ekran_rows_anchor`, `toggle_publish_old_block`, `toggle_publish_new_block`. Реальный `live_probe.json` имеет `files.<name>.sha256` и `files.<name>.definitions[]`; поэтому V3 не fetch-ит ни одного live source и всегда блокируется.
+2. `bundle_publisher_v3.py` генерирует искусственную страницу из нескольких HTML-тегов и добавляет синтетический `<ul id="ua-catalog-cards">`. Это не production master template, уничтожает реальный дизайн/контент и категорически запрещено.
+3. V3 вообще не patch-ит live `publikaciya.opublikovat`; будущая CRM-кнопка продолжила бы вызывать старый publisher без catalog.
+4. V3 canary пишет синтетические primary/diag/catalog прямо через Files API, не делает полный persistent backup public targets и при последующем postcheck rollback восстанавливает только code.
+5. V3 restart endpoint `always_on_tasks/{id}` и input task id не соответствуют проверенному production pattern. Нужно найти ровно один launcher через GET `always_on/` и restart `always_on/<id>/restart/`, как task069.
+6. V3 не проверяет DB/protected pages и не использует remote trigger/receipt execution pattern.
+
+### Единственно допустимая V4 архитектура
+
+Создать `cloud/task_073/patcher_v4.py`, `gate_a_v4.py`, `gate_b_installer_v4.py`, `gate_b_controller_v4.py`, `gate_b_postcheck_v4.py`, tests и workflows. V1/V2/V3 не deployment.
+
+#### A. Реальные source paths и full-file SHA anchors (hard-code fail-closed; НЕ ожидать выдуманные evidence keys)
+
+```
+ROOT=/home/Carix
+konteyner.py   2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d
+cars_ui.py     862baea2ca0794f5e0d83bc04169f6d2fdec401f86f384ef4376e373c02a776b
+stranica.py    4bb4c26eee5948e1dc37b336c4c32689f51baf0fef1a2eceac86a50fe6434959
+master_card.py 96bb7e99b15d6e5d8de7e825e427406945cf866b5cda300710950ab2ac803e81
+yadro.py       45bc957a8f2b9cbc509e5e140badbb2117bedc6857e111607c50adb2058cdc30
+publikaciya.py 7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4
+```
+
+Gate A Files API GET paths are exactly `/home/Carix/<file>`. Username exactly `Carix`. Evidence file is only corroboration; V4 must not depend on absent custom keys.
+
+#### B. Patcher must transform exact live functions (read exact sources from `files.<file>.definitions[]`)
+
+- `konteyner.gde_mashina` definition SHA `d49710dbe1831353432c084439afc1ece9203eee116db9c42b0b00fcb7ca964c`: within this function only, replace `if stage_no == nomer_etapa` with `if stage_no == nomer_etapa and code not in ("sea_loaded", "sea_transit")`.
+- `konteyner._ekran` SHA `5e970dcedd8e29da0562dc2653c1b6173fd8d3007e0203fffc5e9f36bd196e6b`: within existing `rows = [...]` insert exactly two rows after `cont_days` and before clear/navigation, using existing callback format `"car_setstage:%d:sea_loaded" % cid` and `...sea_transit...`. Do NOT use an evidence-supplied anchor.
+- `cars_ui.stage_menu` SHA `edf960e645680f758dd3cbfd071410067f6b4be2a94ec4c4ca97793fc9d8d795`: add `and code not in ("sea_loaded", "sea_transit")` within this function only.
+- `cars_ui.toggle_publish` SHA `21c3f452813122f18247359259432bed2a23f12163ac36859bac0ffd594d8682`: replace exact function with compile-valid version that stores old published state, handles the real async `_ok_rem2`, rolls back with conditional read-back on `False` OR exception, validates rollback read-back, returns truthful failure, and emits `Машина видна клиентам в каталоге.` only after `ok=True`. Hiding path remains working.
+- SEO exact stale block is the `any(_ua_seo068_os.path.isfile(...))` two-line block already given in ROUND 4; remove only within `_ua_seo068_normalize` definition SHA `30b706...` in all three files.
+- `publikaciya.opublikovat` SHA `93f130c2542124b820eae2416984705ecbbc80019a298d2b3c40fdf58d93033f` MUST itself be patched. There must be NO parallel publisher/renderer. Use existing real `_master(kod)`, real `proverit`, real `_ua9_sobrat_katalog()`, real `_zapisat_atomarno`:
+  1. build real primary + mandatory diag/placeholder + real catalog before `proba` return;
+  2. validate catalog regex exact `href=['"]UA-0011\.html` count=1;
+  3. add VIDEO/SITE `katalog.html` into same `celi` backup/write set;
+  4. choose content by target basename: diag / katalog / primary;
+  5. read-back verify primary, diag, catalog before success;
+  6. any failure invokes full `_otkat`.
+- `publikaciya._otkat` SHA `141cd24d4d57b4812ea1339fd6f74a0656b993b190897a4e932e2ec6792e15b1`: if backup exists restore it; if no backup existed, delete a newly-created target. Thus rollback is exact.
+
+Patcher must AST-extract each function, verify exact definition SHA before replacement, verify full-file SHA before any transform, compile candidates, assert semantic counts. No arbitrary global replace.
+
+#### C. Gate A V4 is GET-only and real
+
+- Fetch all six exact files from `/home/Carix`, validate full SHA, transform in memory, compile.
+- Assert outer filter exists exactly in both handlers; inner actions exactly once each inside `_ekran`; original statuses/handler preserved; false-success guard present; stale error removed only in three target definitions; publisher contains real `_master`, `_ua9_sobrat_katalog`, unified `celi`, exact rollback semantics.
+- Offline integration tests must execute the transformed real definition fixtures from live_probe, not an invented HTML renderer.
+- No production writes, no `bundle_publisher_v3`, no synthetic HTML.
+- Output sanitized Gate A JSON artifact with before/after SHA and checks.
+
+#### D. Gate B V4 must use the proven remote trigger/receipt architecture
+
+Copy/adapt the actual API/session framework from `cloud/task_069/gate_b_controller.py`, not a new requests shell:
+
+- Controller uploads `patcher_v4.py`, `gate_b_installer_v4.py`, `gate_b_postcheck_v4.py` to `/home/Carix/autopilot_inbox/cloud/task_073`, GET read-back equality.
+- Run remote `--shadow`, install/publish, postcheck, rollback via temporary `always_on/` or `schedule/` trigger and JSON receipts; always delete temporary trigger.
+- Find exact launcher `python3.10 /home/Carix/start_safe.py` via GET `always_on/`; require exactly one; restart with `always_on/<id>/restart/`. No owner input task id.
+- Exclusive GitHub production conflict guard before shadow and install.
+- Remote installer uses `fcntl` lock, hard-coded source SHA, persistent collision-safe backup under `/home/Carix/autopilot_inbox/cloud/task_073/backups/<timestamp>`.
+- Before any write, snapshot:
+  - six code files;
+  - both locations of UA-0011 primary/diag and katalog, recording nonexistence so rollback deletes new files;
+  - protected UA-0001..UA-0010 primary/diag hashes;
+  - crm.db read-only SHA, quick_check, 11 unique rows, all row hashes, UA-0009 exact row SHA.
+- Shadow applies real V4 patch/compile and runs `publikaciya.opublikovat("UA-0011", proba=True)` against the candidate import if feasible; if not, exact publisher semantic + fixture integration checks must pass. Shadow writes=0.
+- Install atomically writes six code candidates, then invokes real patched `publikaciya.opublikovat("UA-0011", proba=False)` in a fresh Python 3.10 subprocess from `/home/Carix`; require `ok is True`; no direct synthetic page write.
+- DB must be byte-identical and all protected page hashes identical after install. UA-0011 primary/diag/catalog local readback valid.
+- Any install/publish failure restores/deletes entire code+public target set before receipt returns.
+- Controller restart, then immediate public check and delayed >=60 seconds: exact URL/no redirect/200/body UA-0011, diag placeholder or material, catalog exact href once; bot health and DB integrity.
+- Any postcheck failure calls explicit persistent rollback, restart, and rollback verification.
+- Report must never claim PASS from workflow status alone.
+
+#### E. Workflows
+
+- Gate A V4 file under cloud is manual plus optional self-path push after Codex copies to `.github/workflows/task073_gate_a_v4.yml`; contents read permission; real secrets; upload sanitized evidence.
+- Gate B V4 is only `workflow_dispatch` with exact approval token, no task-id/path/domain inputs, uses real controller.
+- No placeholder, TODO, NOT_IMPLEMENTED, synthetic renderer, `if file exists then...`, or echo-only production step.
+
+ROUND 5 result: `READY_TO_RUN_REAL_GATE_A_V4`, production untouched. Claude builds/tests only; Codex audits and operates approved gates.
