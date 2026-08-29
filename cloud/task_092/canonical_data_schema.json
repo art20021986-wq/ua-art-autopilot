@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UA_ART_Canonical_Car_Record",
+  "description": "Single source-of-truth schema for one car record. All computed fields are forbidden as stored values and must be derived by the renderer/build step.",
+  "type": "object",
+  "required": [
+    "id", "vin", "year", "make", "model", "stage",
+    "price", "mileage", "engine_cc", "fuel", "transmission", "drive", "color",
+    "container_number", "eta_kiev", "stage_changed_at",
+    "photos", "videos", "diagnostic_assets",
+    "cover_photo", "cover_focal_point",
+    "title_ru", "title_ua", "description_ru", "description_ua",
+    "published", "updated_at"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^UA-[0-9]{4}$"},
+    "vin": {"type": "string", "minLength": 11, "maxLength": 17},
+    "year": {"type": "integer"},
+    "make": {"type": "string"},
+    "model": {"type": "string"},
+    "stage": {"type": "string", "enum": ["korea", "sea", "georgia", "kyiv"]},
+    "price": {"type": "number", "minimum": 0},
+    "mileage": {"type": "integer", "minimum": 0},
+    "engine_cc": {"type": "integer", "minimum": 0},
+    "fuel": {"type": "string"},
+    "transmission": {"type": "string"},
+    "drive": {"type": "string"},
+    "color": {"type": "string"},
+    "container_number": {"type": ["string", "null"]},
+    "eta_kiev": {"type": ["string", "null"], "format": "date"},
+    "stage_changed_at": {"type": "string", "format": "date-time"},
+    "photos": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "videos": {"type": "array", "items": {"type": "string"}},
+    "diagnostic_assets": {"type": "array", "items": {"type": "string"}},
+    "cover_photo": {"type": "string"},
+    "cover_focal_point": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": {"type": "number", "minimum": 0, "maximum": 1},
+        "y": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "title_ru": {"type": "string"},
+    "title_ua": {"type": "string"},
+    "description_ru": {"type": "string"},
+    "description_ua": {"type": "string"},
+    "published": {"type": "boolean"},
+    "updated_at": {"type": "string", "format": "date-time"}
+  },
+  "x-forbidden-stored-fields": [
+    "stage_number", "days", "total_counter", "stage_counter",
+    "photo_count", "video_count", "public_status_string",
+    "route_text", "tracking_visibility"
+  ],
+  "x-stage-visibility-rules": {
+    "korea": {"public_allow": ["photos", "price", "vin", "specs"], "public_forbid": ["container_number", "eta_kiev", "days", "tracking"]},
+    "sea": {"public_allow": ["container_number", "eta_kiev", "days", "tracking"], "condition": "only if source fields are non-null and validated"},
+    "georgia": {"public_allow": ["eta_kiev", "days"], "note": "eta/days computed from stage_changed_at of this stage transition, not from prior sea-stage value"},
+    "kyiv": {"public_allow": [], "public_forbid": ["container_number", "eta_kiev", "days", "tracking"]}
+  }
+}

@@ -1,7 +1,10 @@
 # Ответ Claude владельцу
 СТАТУС: ЖДЁТ
-ЗАДАЧА: Закрепить правило «одно число — одна ячейка» и исправить ошибочный год UA-0015.
-ЧТО СДЕЛАНО: Исправление и автооткат готовы; 16/16 локальных проверок PASS. GitHub остановил production-запуск до первого шага, поэтому live CRM пока не изменена.
-СОЗДАННЫЕ ФАЙЛЫ: cloud/task_091_numeric_claim_guard/, tasks/task_091.md, .github/workflows/task091_numeric_claim_guard.yml
-ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: Восстановить GitHub Actions (лимит/оплата) и сообщить «готово». Пароль не нужен.
-БЕЗОПАСНОСТЬ: production, CRM и PythonAnywhere не изменены.
+ЗАДАЧА: Утверждён протокол UA-WEB-RECOVERY-015 v1.0 — восстановление сайта UA ART (единый счётчик 13 авто, синхронизация этапов/ETA, mobile/WhatsApp правки, UA-0009 как блокирующий пункт). Разрешено: аудит, backup, sandbox, canary. Production запрещён без отдельной команды.
+ЧТО СДЕЛАНО: Подготовлен полный рабочий каркас восстановления: шаблон предрелизного манифеста (PRE_RECOVERY_MANIFEST), план поиска первопричины (root-cause audit) по каждому writer/generator, единая схема данных автомобиля (canonical schema), контракт атомарной сборки (build_id), чек-лист всех обязательных инвариантов (счётчики, ETA, cover, WhatsApp и т.д.), отдельная карточка блокирующего статуса UA-0009 (сейчас FAIL/NOT_PROVEN, публикация запрещена), таблица требуемых визуальных тестов по устройствам, план rollback и честный отчёт прогресса.
+ВАЖНО: Этот репозиторий ("мост" Claude/Cloud) не содержит самого кода сайта UA ART, базы CRM или файлов с PythonAnywhere — только канал связи. Поэтому реальный аудит первопричины (реальные хеши файлов, реальная таблица 13 авто, реальный canary-сайт, реальные скриншоты мобильной версии) невозможно честно выполнить без доступа к этим исходным материалам. Ничего не было придумано или подставлено вместо реальных данных.
+СОЗДАННЫЕ ФАЙЛЫ: cloud/task_092/README.md, cloud/task_092/PRE_RECOVERY_MANIFEST_TEMPLATE.md, cloud/task_092/root_cause_audit_plan.md, cloud/task_092/canonical_data_schema.json, cloud/task_092/atomic_build_contract.md, cloud/task_092/data_invariants_checklist.md, cloud/task_092/ua0009_gate.md, cloud/task_092/visual_test_matrix.md, cloud/task_092/rollback_plan.md, cloud/task_092/progress_report.md
+ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: Дать доступ (архив/экспорт/путь) к реальному репозиторию сайта UA ART (шаблоны, генераторы, HTML/CSS/JS) и к каноническому CRM-экспорту 13 автомобилей (или список файлов PythonAnywhere с хешами), чтобы в следующем раунде выполнить настоящий аудит первопричины, собрать canary-версию и сделать реальные мобильные скриншоты.
+БЕЗОПАСНОСТЬ: Production, CRM и PythonAnywhere не изменялись и не затрагивались. UA-0009 остаётся в статусе NOT_PROVEN — публикация запрещена (согласно канонической памяти REC-0007).
+MEMORY_VERSION_READ: 4
+CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
