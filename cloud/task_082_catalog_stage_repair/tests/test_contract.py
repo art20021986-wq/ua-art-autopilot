@@ -83,6 +83,9 @@ class ContractTests(unittest.TestCase):
                 self.assertIn("На пароме · маршрут — Киев", source)
                 self.assertIn("ua-stage-card-v2-photo", source)
                 self.assertNotIn("Корея → Грузия", source)
+                self.assertIn("function setChipCount", source)
+                self.assertIn("counts={all:cards.length", source)
+                self.assertIn("setShown(shown)", source)
             second = runtime.enforce_live_catalog("UA-0011", dry_run=True)
             for item in second["catalogs"].values():
                 self.assertEqual(item["before_sha256"], item["candidate_sha256"])
