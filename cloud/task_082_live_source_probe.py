@@ -58,6 +58,7 @@ def function_sources(source: str):
     tree = ast.parse(source, filename="cars_ui.py")
     lines = source.splitlines(keepends=True)
     result = {}
+    header_defs = {}
     inventory = []
     for node in ast.walk(tree):
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -65,6 +66,13 @@ def function_sources(source: str):
         segment = "".join(lines[node.lineno - 1:node.end_lineno])
         digest = hashlib.sha256(segment.encode()).hexdigest()
         inventory.append({"name": node.name, "line": node.lineno, "end_line": node.end_lineno, "sha256": digest})
+        if "auto_number" in segment or "без названия" in segment:
+            header_defs[node.name] = {
+                "line": node.lineno,
+                "end_line": node.end_lineno,
+                "sha256": digest,
+                "source": clean(segment),
+            }
         if node.name in TARGETS:
             result[node.name] = {
                 "line": node.lineno,
@@ -75,7 +83,7 @@ def function_sources(source: str):
     missing = TARGETS - set(result)
     if missing:
         raise RuntimeError("TARGETS_MISSING:" + ",".join(sorted(missing)))
-    return result, sorted(inventory, key=lambda x: (x["line"], x["name"]))
+    return result, sorted(inventory, key=lambda x: (x["line"], x["name"])), header_defs
 
 
 def db_audit(payload: bytes):
@@ -131,7 +139,7 @@ def main():
         source_raw = get(ROOT + "/cars_ui.py")
         source = source_raw.decode("utf-8")
         compile(source, "cars_ui.py", "exec")
-        definitions, inventory = function_sources(source)
+        definitions, inventory, header_defs = function_sources(source)
         db_raw = get(ROOT + "/crm.db")
         value.update({
             "status": "PASS",
@@ -143,7 +151,7 @@ def main():
         value["errors"].append(type(exc).__name__ + ":" + str(exc))
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print("TASK082_PROBE_" + value["status"])
+    print("TASK082_PROBE_" + value["status"] + (":" + ";".join(value["errors"]) if value["errors"] else ""))
     return 0 if value["status"] == "PASS" else 1
 
 
