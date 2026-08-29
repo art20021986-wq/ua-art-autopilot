@@ -1,0 +1,108 @@
+name: task081-publish-repair-gate-a-v2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task081_publish_repair_gate_a_v2.yml'
+      - 'cloud/task_081_publish_repair/live_probe_v2.py'
+      - 'cloud/task_081_publish_repair/tests/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task081-publish-repair-gate-a-v2
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Compile and test deterministic repair tooling
+        run: |
+          python3 -m py_compile \
+            cloud/task_081_publish_repair/live_probe_v2.py \
+            cloud/task_081_publish_repair/patcher.py \
+            cloud/task_081_publish_repair/installer.py \
+            cloud/task_081_publish_repair/postcheck.py \
+            cloud/task_081_publish_repair/controller.py
+          python3 -m pytest cloud/task_081_publish_repair/tests -q
+
+      - name: Prove live audit transport is GET-only
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('cloud/task_081_publish_repair/live_probe_v2.py').read_text(encoding='utf-8')
+          assert 'method="GET"' in source
+          for forbidden in ('method="POST"', 'method="PUT"', 'method="PATCH"', 'method="DELETE"'):
+              assert forbidden not in source, forbidden
+          print('TASK081_GATE_A_V2_GET_ONLY_STATIC_PASS')
+          PY
+
+      - name: Read live source database and pages
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_081_publish_repair/live_probe_v2.py
+
+      - name: Validate bounded evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          path = 'cloud/task_081_publish_repair/evidence/live_audit_v2.json'
+          data = json.load(open(path, encoding='utf-8'))
+          assert data['status'] == 'PASS_GET_ONLY', data['errors']
+          assert data['http_methods'] == ['GET']
+          assert data['production_touched'] is False
+          assert data['crm_write'] is False and data['site_write'] is False and data['restart'] is False
+          assert data['db']['quick_check'] == 'ok'
+          assert set(('UA-0012', 'UA-0013')).issubset(data['db']['cards'])
+          for name in ('cars_ui.py', 'publikaciya.py', 'stranica.py', 'master_card.py', 'yadro.py', 'cars_schema.py', 'db.py'):
+              assert len(data['files'][name]['sha256']) == 64
+          print('TASK081_GATE_A_V2_LIVE_PASS')
+          PY
+
+      - name: Commit only sanitized GET evidence
+        if: always() && github.event_name == 'push'
+        run: |
+          git add -- \
+            cloud/task_081_publish_repair/evidence/live_audit_v2.json \
+            cloud/task_081_publish_repair/LIVE_AUDIT_V2.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_081_publish_repair/evidence/live_audit_v2.json|cloud/task_081_publish_repair/LIVE_AUDIT_V2.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task081-gate-a-v2'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task081: record UA-0012/UA-0013 live GET audit'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+              if git push origin HEAD:main; then exit 0; fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task081-gate-a-v2-${{ github.run_id }}
+          path: |
+            cloud/task_081_publish_repair/evidence/live_audit_v2.json
+            cloud/task_081_publish_repair/LIVE_AUDIT_V2.md
+          if-no-files-found: warn
+          retention-days: 14
