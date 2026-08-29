@@ -1,4 +1,5 @@
-name: task086-superseded-by-task088-fail-closed
+name: task086-ua0011-ferry-stage-counter-production
+# launch-contract: UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0
 
 on:
   push:
@@ -6,22 +7,223 @@ on:
     paths:
       - '.github/workflows/task086_ua0011_ferry_stage_counter_production.yml'
       - 'tasks/task_086.md'
+      - 'cloud/task_086_ua0011_ferry_stage_counter/stage_counter_guard.py'
+      - 'cloud/task_086_ua0011_ferry_stage_counter/remote_installer.py'
+      - 'cloud/task_086_ua0011_ferry_stage_counter/controller.py'
+      - 'cloud/task_086_ua0011_ferry_stage_counter/tests/test_stage_counter_guard.py'
+      - 'cloud/task_086_ua0011_ferry_stage_counter/tests/test_remote_installer.py'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  actions: read
+  contents: write
 
 concurrency:
   group: ua-art-production-writer
   cancel-in-progress: false
 
 jobs:
-  superseded:
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
+  ferry-stage-counter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
     steps:
-      - name: Refuse superseded ferry target before external access
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verify direct bounded owner authorization
         run: |
-          echo 'TASK 086 ferry target is superseded by the direct current TASK 088 Korea command.'
-          echo 'No PythonAnywhere request was made.'
-          exit 1
+          python3 - <<'PY'
+          from pathlib import Path
+          source = ' '.join(Path('tasks/task_086.md').read_text(encoding='utf-8').split())
+          required = [
+              'Прямая команда владельца',
+              'Дополнительное подтверждение владельца не требуется',
+              "status='sea_loaded'",
+              'Публичная категория: `more`',
+              'Счётчики не изменять арифметически `+1/-1`',
+              'Десять последовательных canary-прогонов',
+              'два writer-процесса одновременно запрещены',
+          ]
+          missing = [item for item in required if item not in source]
+          if missing:
+              raise SystemExit('TASK086_OWNER_AUTHORIZATION_MISSING:' + ','.join(missing))
+          print('TASK086_OWNER_AUTHORIZATION_PASS')
+          PY
+
+      - name: Compile and test stage-counter contract
+        run: |
+          python3 -W error -m py_compile \
+            cloud/task_086_ua0011_ferry_stage_counter/stage_counter_guard.py \
+            cloud/task_086_ua0011_ferry_stage_counter/remote_installer.py \
+            cloud/task_086_ua0011_ferry_stage_counter/controller.py \
+            cloud/task_086_ua0011_ferry_stage_counter/tests/test_stage_counter_guard.py \
+            cloud/task_086_ua0011_ferry_stage_counter/tests/test_remote_installer.py
+          python3 -W error -m unittest discover \
+            -s cloud/task_086_ua0011_ferry_stage_counter/tests -v
+
+      - name: Wait in fair production queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 -W error automation/production_queue.py self-test
+          python3 -W error automation/production_queue.py wait \
+            --task 86 --timeout-seconds 4500 --stable-polls 2
+
+      - name: Shadow, backup, apply, restart and delayed verify
+        id: production
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_086_ua0011_ferry_stage_counter/controller.py
+
+      - name: Finalize durable owner status
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+
+          root = Path('cloud/task_086_ua0011_ferry_stage_counter')
+          evidence = root / 'evidence/production.json'
+          if evidence.exists():
+              value = json.loads(evidence.read_text(encoding='utf-8'))
+          else:
+              value = {
+                  'contract_id': 'UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0',
+                  'status': 'FAIL', 'errors': ['PRODUCTION_EVIDENCE_MISSING'],
+                  'runtime_llm_tokens': 0, 'bot_restarted': False,
+              }
+              evidence.parent.mkdir(parents=True, exist_ok=True)
+              evidence.write_text(
+                  json.dumps(value, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          ok = value.get('status') == 'PASS'
+          final = value.get('postcheck_delayed') or value.get('postcheck') or {}
+          target = ((final.get('database') or {}).get('target') or {})
+          public = ((value.get('public_delayed') or {}).get('video') or {})
+          counts = public.get('visible_counts') or {}
+          now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z')
+          errors = '; '.join(value.get('errors') or []) or 'НЕТ'
+          latest = '\n'.join([
+              'TASK_ID: task_086',
+              'ROUND: 1',
+              'CLAUDE_STATUS: ' + ('DONE' if ok else 'BLOCKED'),
+              'CURRENT_ACTION: ' + (
+                  'UA-0011 is on the ferry; both catalogs and all stage counters are synchronized.'
+                  if ok else 'TASK 086 failed closed; rollback/recovery is recorded in production evidence.'
+              ),
+              'FILES_CREATED: cloud/task_086_ua0011_ferry_stage_counter/evidence/production.json, cloud/task_086_ua0011_ferry_stage_counter/TASK_086_REPORT.md',
+              'PRODUCTION_TOUCHED: ' + ('YES' if ok else 'ROLLED_BACK_OR_NO'),
+              'OWNER_ACTION_REQUIRED: NO',
+              'OWNER_QUESTION: NONE',
+              'NEXT_FOR_CHATGPT: Verify TASK 086 evidence and report the exact production result.',
+              'UPDATED_AT_UTC: ' + now,
+          ]) + '\n'
+          owner = '\n'.join([
+              '# Ответ владельцу',
+              'СТАТУС: ' + ('PASS' if ok else 'FAIL'),
+              'ЗАДАЧА: Перевести UA-0011 на этап «На пароме» и синхронизировать карточки, категории и верхние счётчики при каждой будущей смене этапа.',
+              'ЧТО СДЕЛАНО: ' + (
+                  'UA-0011 находится только в категории «На пароме»; из «Корея» и «Киев» удалена. Установлен единый транзакционный stage writer с полным пересчётом счётчиков.'
+                  if ok else 'Частичный результат не оставлен: сработал fail-closed контроль и автоматическое восстановление согласно evidence.'
+              ),
+              'ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО',
+              'БЕЗОПАСНОСТЬ: backup до записи, 10 canary, один writer, byte read-back, immediate/delayed проверки и автоматический rollback.',
+              'UA-0011 STATUS: ' + str(target.get('status', 'не подтверждено')),
+              'СЧЁТЧИКИ: ' + json.dumps(counts, ensure_ascii=False, sort_keys=True),
+              'ОШИБКИ: ' + errors,
+          ]) + '\n'
+          Path('cloud/latest_status.md').write_text(latest, encoding='utf-8')
+          Path('cloud/owner_reply.md').write_text(owner, encoding='utf-8')
+          report = root / 'TASK_086_REPORT.md'
+          if not report.exists():
+              report.write_text(
+                  '# UA-0011-FERRY-STAGE-COUNTER-SYNC-006 v1.0\n\n'
+                  'STATUS: **FAIL BEFORE PRODUCTION**\n\n'
+                  '- Production touched: NO\n- Errors: ' + errors + '\n',
+                  encoding='utf-8',
+              )
+          PY
+
+      - name: Commit bounded evidence
+        if: always()
+        run: |
+          git add -- \
+            cloud/task_086_ua0011_ferry_stage_counter/evidence/production.json \
+            cloud/task_086_ua0011_ferry_stage_counter/TASK_086_REPORT.md \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_086_ua0011_ferry_stage_counter/evidence/production.json|\
+              cloud/task_086_ua0011_ferry_stage_counter/TASK_086_REPORT.md|\
+              cloud/latest_status.md|cloud/owner_reply.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then exit 0; fi
+          git config user.name 'task086-ferry-stage-counter'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task086: record UA-0011 ferry stage production result'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Require final production PASS
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path(
+              'cloud/task_086_ua0011_ferry_stage_counter/evidence/production.json'
+          ).read_text(encoding='utf-8'))
+          assert value['contract_id'] == 'UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0'
+          assert value['status'] == 'PASS', value
+          assert value['runtime_llm_tokens'] == 0
+          assert value['bot_restarted'] is True
+          assert value['rollback'] is None
+          assert value['shadow']['canary'] == {
+              **value['shadow']['canary'], 'runs': 10, 'stable': True,
+          }
+          assert value['shadow']['visual_preview']['status'] == 'PASS'
+          before = value['apply']['before']
+          target = value['postcheck_delayed']['database']['target']
+          assert target['status'] == 'sea_loaded'
+          for field in ('sea_container','sea_date_out','sea_port_from','days_to_kyiv','eta_manual','published'):
+              if field in target:
+                  assert target.get(field) == before.get(field), (field, before.get(field), target.get(field))
+          for field in ('ge_arrived','ge_port','ge_released','ge_to_kyiv_at'):
+              assert target.get(field) in (None, ''), (field, target.get(field))
+          assert value['postcheck_delayed']['database']['legacy_triggers'] == []
+          public = value['public_delayed']['video']
+          assert public['catalog_count'] == 1
+          assert public['catalog_stage'] == 'more'
+          assert all(public['detail'].values()), public['detail']
+          counts = public['visible_counts']
+          assert counts['all'] == sum(counts[k] for k in ('korea','more','gruzia','kiev'))
+          assert value['postcheck_delayed']['markers']['publikaciya.py'] == 1
+          print('TASK086_PRODUCTION_PASS')
+          PY
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task086-ferry-stage-counter-${{ github.run_id }}
+          path: |
+            cloud/task_086_ua0011_ferry_stage_counter/evidence/production.json
+            cloud/task_086_ua0011_ferry_stage_counter/TASK_086_REPORT.md
+          if-no-files-found: warn
+          retention-days: 30
+
