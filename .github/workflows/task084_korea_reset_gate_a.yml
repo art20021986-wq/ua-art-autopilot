@@ -5,6 +5,13 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/task084_korea_reset_gate_a.yml'
+      - 'cloud/task_084_ua0011_korea_reset/live_gate_a.py'
+      - 'cloud/task_084_ua0011_korea_reset/guards.py'
+      - 'cloud/task_084_ua0011_korea_reset/renderer_fix.py'
+      - 'cloud/task_084_ua0011_korea_reset/sandbox_transform.py'
+      - 'cloud/task_084_ua0011_korea_reset/tests/test_gate_a_sandbox.py'
+      - 'cloud/task_084_ua0011_korea_reset/fixtures/ua_cards_fixture.json'
+      - 'tasks/task_084.md'
   workflow_dispatch:
 
 permissions:
