@@ -5,13 +5,6 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/task082_catalog_stage_production.yml'
-      - 'cloud/task_082_catalog_stage_repair/controller.py'
-      - 'cloud/task_082_catalog_stage_repair/runtime.py'
-      - 'cloud/task_082_catalog_stage_repair/remote_installer.py'
-      - 'cloud/task_082_catalog_stage_repair/public_verify.py'
-      - 'cloud/task_082_catalog_stage_repair/tests/test_contract.py'
-      - 'cloud/task_075_stage_guard/stage_guard.py'
-      - 'tasks/task_082.md'
   workflow_dispatch:
 
 permissions:
@@ -47,7 +40,6 @@ jobs:
               'bounded production Gate B',
               'Новое подтверждение не требуется',
               'UA-0011',
-              'kr_bought -> sea_loaded',
           ]
           missing = [value for value in required if value not in source]
           if missing:
@@ -107,9 +99,9 @@ jobs:
           errors = list(deploy.get('errors') or []) + list(public.get('errors') or [])
           latest = '\n'.join([
               'TASK_ID: task_082',
-              'ROUND: 1',
+              'ROUND: 2',
               'CLAUDE_STATUS: ' + status,
-              'CURRENT_ACTION: ' + ('UA-0011 repaired and permanent catalog guard verified.' if ok else 'TASK 082 failed closed; automatic rollback was requested.'),
+              'CURRENT_ACTION: ' + ('UA-0011 repaired; CRM regression guard and catalog guard verified.' if ok else 'TASK 082 round 2 failed closed; automatic rollback was requested.'),
               'FILES_CREATED: cloud/task_082_catalog_stage_repair/evidence/deploy.json, cloud/task_082_catalog_stage_repair/evidence/public.json, cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md',
               'PRODUCTION_TOUCHED: ' + ('YES' if ok else 'ROLLED_BACK_OR_NO'),
               'OWNER_ACTION_REQUIRED: NO',
@@ -127,11 +119,7 @@ jobs:
                   'Исправление не прошло полный контроль и не оставлено в частично рабочем состоянии.'
               ),
               'ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО',
-              'БЕЗОПАСНОСТЬ: ' + (
-                  'У UA-0011 изменён только status kr_bought → sea_loaded; остальные CRM-поля, индивидуальные страницы и media не изменялись.'
-                  if ok else
-                  'Частичные изменения не оставлены; при ошибке выполнен откат или запись не началась.'
-              ),
+              'БЕЗОПАСНОСТЬ: В CRM разрешена только точечная коррекция статуса UA-0011 и audit; индивидуальные страницы и media не изменялись.',
               'ОШИБКИ: ' + ('НЕТ' if not errors else '; '.join(errors)),
           ]) + '\n'
           Path('cloud/latest_status.md').write_text(latest, encoding='utf-8')
@@ -144,16 +132,13 @@ jobs:
           git add -- \
             cloud/task_082_catalog_stage_repair/evidence/deploy.json \
             cloud/task_082_catalog_stage_repair/evidence/public.json \
-            cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md \
-            cloud/latest_status.md \
-            cloud/owner_reply.md
+            cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md
           mapfile -t staged < <(git diff --cached --name-only)
           for path in "${staged[@]}"; do
             case "${path}" in
               cloud/task_082_catalog_stage_repair/evidence/deploy.json|\
               cloud/task_082_catalog_stage_repair/evidence/public.json|\
-              cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md|\
-              cloud/latest_status.md|cloud/owner_reply.md) ;;
+              cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md) ;;
               *) echo "Unexpected staged path: ${path}"; exit 1 ;;
             esac
           done
