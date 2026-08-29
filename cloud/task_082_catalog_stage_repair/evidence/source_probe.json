@@ -1,0 +1,88 @@
+{
+  "files": {
+    "cars_schema.py": {
+      "definitions": {
+        "stage_of": {
+          "end_lineno": 144,
+          "lineno": 142,
+          "source": "def stage_of(status):\n    \"\"\"Номер этапа (1-4) по статусу.\"\"\"\n    return STATUSES.get(status, (1, \"\"))[0]"
+        }
+      },
+      "module_statements": [
+        {
+          "end_lineno": 18,
+          "lineno": 2,
+          "source": "\"\"\"\ncars_schema.py — схема карточки авто UA Art Company (версия 5, 42 поля).\n\nФайл самодостаточный: зависимостей нет, только стандартная библиотека.\nКладётся в /home/Carix/ рядом с db.py и team_bot.py.\n\nЧто внутри:\n    FIELDS            — все 42 поля с блоками, типами и обязательностью\n    STAGES / STATUSES — 4 этапа логистики и 10 статусов\n    migrate(conn)     — создаёт/дополняет таблицу cars в crm.db без потери данных\n    missing_required  — чего не хватает, чтобы карточка перестала быть черновиком\n    days_to_kyiv      — счётчик дней до Киева, пока машина в Грузии\n    order_photos      — заглавная (перёд), затем VIN, затем одометр, затем остальные\n    render_card       — текст карточки для Telegram (владелец видит деньги, менеджер нет)\n    next_auto_number  — следующий номер вида UA-0001\n    AI_SYSTEM_PROMPT  — правила разбора для ai.py\n\"\"\""
+        }
+      ],
+      "sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496"
+    },
+    "cars_ui.py": {
+      "definitions": {
+        "apply_value": {
+          "end_lineno": 681,
+          "lineno": 631,
+          "source": "def apply_value(card_id, field, raw, actor_id):\n    \"\"\"Возвращает (ок, сообщение). Ничего не додумывает.\"\"\"\n    value = (raw or \"\").strip()\n    if not value:\n        return False, \"Пустое значение не записываю.\"\n\n    if field == \"eta_days\":\n        digits = \"\".join(ch for ch in value if ch.isdigit())\n        if not digits:\n            return False, \"Пришлите число дней, например 45.\"\n        n = int(digits)\n        if n > 400:\n            return False, \"Слишком большой срок. Пришлите число дней.\"\n        eta = _date.today() + _td(days=n)\n        set_field(card_id, \"eta_manual\", eta.isoformat(), actor_id)\n        set_field(card_id, \"days_to_kyiv\", n, actor_id)\n        return True, \"До прибытия %d дней · %s\" % (n, eta.strftime(\"%d.%m.%Y\"))\n\n    if field in NUMERIC:\n        digits = value.lower().replace(\" \", \"\").replace(\"\\u00a0\", \"\")\n        for lishnee in (\"цена\", \"стоимость\", \"$\", \"usd\", \"долларов\", \"долл\"):\n            digits = digits.replace(lishnee, \"\")\n        for word, mult in ((\"тысяч\", 1000), (\"тыс\", 1000), (\"к\", 1000)):\n            if word in digits.lower():\n                digits = digits.lower().split(word)[0]\n                try:\n                    num = int(float(digits.replace(\",\", \".\")) * mult)\n                except ValueError:\n                    return False, \"Не разобрал число. Пришлите цифрами.\"\n                break\n        else:\n            digits = \"\".join(ch for ch in digits if ch.isdigit())\n            if not digits:\n                return False, \"Не разобрал число. Пришлите цифрами.\"\n            num = int(digits)\n        if field == \"engine_cc\" and num < 100:\n            return False, (\"Похоже, это литры. Объём нужен в кубических сантиметрах — \"\n                           \"например, 1598.\")\n        set_field(card_id, field, num, actor_id)\n        return True, \"Записано: %s\" % S.num(num)\n\n    if field == \"vin\":\n        vin = value.upper().replace(\" \", \"\")\n        ok, msg = S.check_vin(vin)\n        if not ok:\n            return False, \"VIN не принят: %s\" % msg\n        set_field(card_id, field, vin, actor_id)\n        return True, \"Записано: %s\" % vin\n\n    set_field(card_id, field, value, actor_id)\n    return True, \"Записано.\""
+        },
+        "card_of": {
+          "end_lineno": 106,
+          "lineno": 98,
+          "source": "def card_of(card_id):\n    card = db.get_card(\"cars\", int(card_id))\n    if not card:\n        return None\n    # старые значения подтягиваем в новые поля, если новые пустые\n    for old, new in LEGACY.items():\n        if not card.get(new) and card.get(old):\n            card[new] = card[old]\n    return card"
+        },
+        "set_field": {
+          "end_lineno": 152,
+          "lineno": 148,
+          "source": "def set_field(card_id, field, value, actor_id):\n    \"\"\"Пустое значение в карточку не пишем — данные не теряются.\"\"\"\n    if value in (None, \"\", []):\n        return\n    db.update_card_field(\"cars\", int(card_id), field, value, actor_id)"
+        },
+        "stage_set": {
+          "end_lineno": 1160,
+          "lineno": 1103,
+          "source": "async def stage_set(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    _, cid, code = q.data.split(\":\")\n    cid = int(cid)\n    card_before = card_of(cid)\n    set_field(cid, \"status\", code, q.from_user.id)\n\n    if code == \"ge_waiting\" and not card_before.get(\"ge_arrived\"):\n        set_field(cid, \"ge_arrived\", _date.today().isoformat(), q.from_user.id)\n    if code == \"ge_to_kyiv\":\n        released = card_before.get(\"ge_released\")\n        if not released:\n            released = _date.today().isoformat()\n            set_field(cid, \"ge_released\", released, q.from_user.id)\n        # A deliberate manual date is immutable here.  The 15-day default is\n        # initialized only when no manual ETA has ever been saved.\n        if not card_before.get(\"eta_manual\"):\n            try:\n                base = _dt.strptime(str(released)[:10], \"%Y-%m-%d\").date()\n            except Exception:\n                base = _date.today()\n            eta = base + _td(days=DNEI_GRUZIA_UKRAINA)\n            try:\n                db.update_card_field(\"cars\", cid, \"eta_manual\",\n                                     eta.isoformat(), q.from_user.id)\n                db.update_card_field(\"cars\", cid, \"days_to_kyiv\",\n                                     DNEI_GRUZIA_UKRAINA, q.from_user.id)\n            except Exception as exc:\n                log.warning(\"не смог поставить срок до Украины: %s\", exc)\n\n    card = card_of(cid)\n    saved = card.get(\"status\")\n    if saved != code:\n        await q.message.reply_text(\n            \"Не удалось сохранить этап. Сейчас в карточке: %s\"\n            % S.status_label(saved),\n            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                \"← Вернуться к карточке\", callback_data=\"car_open:%d\" % cid)]]))\n        raise ApplicationHandlerStop\n\n    lines = [\n        card.get(\"auto_number\") or \"#%d\" % cid,\n        \"Этап сохранён: %s\" % S.status_label(saved),\n    ]\n    left, eta = eta_of(card)\n    if left is not None:\n        lines.append(\"До выдачи в Киеве: %d дней · %s\" % (\n            left, eta.strftime(\"%d.%m.%Y\")))\n    rows = [\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\",\n                              callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                              callback_data=\"car_open:%d\" % cid)],\n    ]\n    await q.message.reply_text(\"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop"
+        }
+      },
+      "module_statements": [],
+      "sha256": "cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea"
+    },
+    "db.py": {
+      "definitions": {
+        "connect": {
+          "end_lineno": 327,
+          "lineno": 315,
+          "source": "def connect():\n    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)\n    conn.row_factory = sqlite3.Row\n    # Setup pragmas must not hold the transaction queue for a long-lived reader.\n    try:\n        sqlite3.Connection.execute(conn, \"PRAGMA journal_mode=DELETE\")\n    except Exception:\n        pass\n    sqlite3.Connection.execute(\n        conn, \"PRAGMA busy_timeout=%d\" % (ZAMOK_OZHIDANIE * 1000)\n    )\n    sqlite3.Connection.execute(conn, \"PRAGMA foreign_keys=ON\")\n    return conn"
+        },
+        "get_card": {
+          "end_lineno": 719,
+          "lineno": 716,
+          "source": "def get_card(table: str, card_id: int):\n    with connect() as c:\n        row = c.execute(f\"SELECT * FROM {table} WHERE id=?\", (card_id,)).fetchone()\n        return dict(row) if row else None"
+        },
+        "init_db": {
+          "end_lineno": 457,
+          "lineno": 331,
+          "source": "def init_db():\n    \"\"\"Создаёт таблицы, если их ещё нет. Безопасно вызывать при каждом запуске.\"\"\"\n    with connect() as c:\n        c.executescript(\"\"\"\n        CREATE TABLE IF NOT EXISTS staff (\n            user_id     INTEGER PRIMARY KEY,\n            full_name   TEXT,\n            username    TEXT,\n            role        TEXT NOT NULL,\n            active      INTEGER NOT NULL DEFAULT 1,\n            added_by    INTEGER,\n            added_at    TEXT NOT NULL,\n            note        TEXT\n        );\n\n        CREATE TABLE IF NOT EXISTS invites (\n            code        TEXT PRIMARY KEY,\n            role        TEXT NOT NULL,\n            created_by  INTEGER NOT NULL,\n            created_at  TEXT NOT NULL,\n            used_by     INTEGER,\n            used_at     TEXT\n        );\n\n        -- Входящая информация от владельца в свободной форме\n        CREATE TABLE IF NOT EXISTS inbox (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            from_user_id  INTEGER NOT NULL,\n            kind          TEXT NOT NULL,      -- text/photo/video/voice/document/contact/other\n            text          TEXT,\n            file_id       TEXT,\n            media_group   TEXT,               -- альбом: несколько файлов одним сообщением\n            tg_chat_id    INTEGER,\n            tg_message_id INTEGER,\n            status        TEXT NOT NULL,\n            assigned_to   INTEGER,\n            card_type     TEXT,               -- car/client, если из записи создали карточку\n            card_id       INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        );\n\n        CREATE TABLE IF NOT EXISTS cars (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            brand         TEXT,\n            model         TEXT,\n            year          TEXT,\n            vin           TEXT,\n            fuel          TEXT,\n            engine        TEXT,\n            color         TEXT,\n            mileage       TEXT,\n            trim          TEXT,\n            condition     TEXT,\n            accidents     TEXT,\n            auction_link  TEXT,\n            price_buy     TEXT,\n            price_extra   TEXT,\n            price_ship    TEXT,\n            price_customs TEXT,\n            price_total   TEXT,\n            stage         TEXT,               -- этап доставки\n            photos        TEXT,               -- JSON-список file_id\n            videos        TEXT,\n            docs          TEXT,\n            responsible   INTEGER,\n            review_status TEXT NOT NULL,      -- статус согласования\n            published     INTEGER NOT NULL DEFAULT 0,  -- виден ли в клиентском боте\n            created_by    INTEGER,\n            approved_by   INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        );\n\n        CREATE TABLE IF NOT EXISTS clients (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            name          TEXT,\n            phone         TEXT,\n            telegram      TEXT,\n            whatsapp      TEXT,\n            car_interest  TEXT,\n            budget        TEXT,\n            wishes        TEXT,\n            source        TEXT,\n            prepayment    TEXT,\n            stage         TEXT,\n            responsible   INTEGER,\n            next_contact  TEXT,\n            tg_user_id    INTEGER,\n            review_status TEXT NOT NULL,\n            created_by    INTEGER,\n            approved_by   INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        );\n\n        CREATE TABLE IF NOT EXISTS comments (\n            id           INTEGER PRIMARY KEY AUTOINCREMENT,\n            entity_type  TEXT NOT NULL,       -- inbox/car/client\n            entity_id    INTEGER NOT NULL,\n            author_id    INTEGER NOT NULL,\n            text         TEXT,\n            file_id      TEXT,\n            created_at   TEXT NOT NULL\n        );\n\n        -- Журнал действий: кто, что, когда, было -> стало\n        CREATE TABLE IF NOT EXISTS audit (\n            id           INTEGER PRIMARY KEY AUTOINCREMENT,\n            actor_id     INTEGER,\n            action       TEXT NOT NULL,\n            entity_type  TEXT,\n            entity_id    INTEGER,\n            field        TEXT,\n            old_value    TEXT,\n            new_value    TEXT,\n            created_at   TEXT NOT NULL\n        );\n\n        CREATE INDEX IF NOT EXISTS idx_inbox_status ON inbox(status);\n        CREATE INDEX IF NOT EXISTS idx_cars_review ON cars(review_status);\n        CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit(entity_type, entity_id);\n        CREATE INDEX IF NOT EXISTS idx_cars_vin ON cars(vin);\n        CREATE INDEX IF NOT EXISTS idx_clients_phone ON clients(phone);\n        \"\"\")\n    migrate()\n    logging.info(f\"База готова: {DB_FILE}\")"
+        },
+        "migrate": {
+          "end_lineno": 476,
+          "lineno": 460,
+          "source": "def migrate():\n    \"\"\"Добавляет колонки, появившиеся после создания базы.\n    CREATE TABLE IF NOT EXISTS существующую таблицу не меняет.\"\"\"\n    novye = [\n        (\"clients\", \"tg_user_id\", \"INTEGER\"),\n        (\"cars\", \"client_id\", \"INTEGER\"),\n        (\"cars\", \"publish_pending\", \"INTEGER DEFAULT 0\"),\n    ]\n    with connect() as c:\n        for tablica, kolonka, tip in novye:\n            est = {r[\"name\"] for r in c.execute(f\"PRAGMA table_info({tablica})\").fetchall()}\n            if kolonka not in est:\n                try:\n                    c.execute(f\"ALTER TABLE {tablica} ADD COLUMN {kolonka} {tip}\")\n                    logging.info(f\"Добавлена колонка {tablica}.{kolonka}\")\n                except sqlite3.OperationalError as e:\n                    logging.warning(f\"Не добавил {tablica}.{kolonka}: {e}\")"
+        },
+        "update_card_field": {
+          "end_lineno": 742,
+          "lineno": 735,
+          "source": "def update_card_field(table: str, card_id: int, field: str, value, actor_id: int):\n    \"\"\"Каждая правка поля попадает в журнал со старым и новым значением.\"\"\"\n    old = get_card(table, card_id)\n    old_value = old.get(field) if old else None\n    with connect() as c:\n        c.execute(f\"UPDATE {table} SET {field}=?, updated_at=? WHERE id=?\",\n                  (value, now(), card_id))\n    log_action(actor_id, \"card_edit\", table, card_id, field, old_value, value)"
+        }
+      },
+      "module_statements": [
+        {
+          "end_lineno": 895,
+          "lineno": 892,
+          "source": "if __name__ == \"__main__\":\n    logging.basicConfig(level=logging.INFO)\n    init_db()\n    print(\"Таблицы созданы:\", DB_FILE)"
+        }
+      ],
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
+    }
+  },
+  "generated_at_utc": "2026-08-29T07:51:57.386073+00:00",
+  "mode": "GET_ONLY",
+  "production_touched": false,
+  "task_id": "task_082"
+}
