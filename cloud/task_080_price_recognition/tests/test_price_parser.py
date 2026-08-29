@@ -184,7 +184,13 @@ def test_sale_price_label_inflections():
 
 
 def test_negative_rejected():
-    for text in ["цена -12000", "цена минус 12000", "ціна мінус 12000"]:
+    for text in [
+        "цена -12000",
+        "цена-12000",
+        "цена минус 12000",
+        "ціна мінус 12000",
+        "цена минус одиннадцать тысяч",
+    ]:
         assert _rejected(text) == "NEGATIVE_AMOUNT"
 
 
