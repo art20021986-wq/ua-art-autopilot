@@ -54,7 +54,10 @@ class SourcePatchTests(unittest.TestCase):
              "def sobrat_kartochku(m, kadry, sredn=None):\n    nom = nomer(m)\n    return nom\n",
              "stranica.py"),
             (remote.patch_master_card,
-             "def obrabotat_kartochku(html, kod):\n    m = dannye(kod) or {}\n    return html\n",
+             "def obrabotat_kartochku(html, kod):\n"
+             "    html = _ua068_master_card_original(html, kod)\n"
+             "    row = _ua068_master_row(kod)\n"
+             "    return row.get('status') or html\n",
              "master_card.py"),
             (remote.patch_cars_schema,
              "def render_card(car, role='owner', today=None):\n    return car.get('status')\n",
