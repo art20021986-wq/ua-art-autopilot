@@ -32,3 +32,11 @@ Completed: 2026-08-29 UTC
 - A generated catalog containing an unexpected identifier is rejected before production write.
 - The package verifies exact card counts, stages, diagnostics links, protected-page hashes, both site roots, SQLite integrity, and CRM row hashes.
 - Contract coverage includes the unpublished-draft regression (`UA-0014`).
+
+## Independent public verification
+
+- Live read-only check: **PASS** at `2026-08-29T10:18:30Z`.
+- Catalog: 13 unique cards, exactly one UA-0012 and one UA-0013.
+- UA-0012 and UA-0013: stage 2, customer label «На пароме», primary and diagnostics pages open at their expected paths.
+- Delayed cache-busted catalog recheck: **PASS**.
+- Evidence: `cloud/task_083_publish_transaction/evidence/public_live_verification_20260829T101830Z.json`.
