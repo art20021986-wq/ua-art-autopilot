@@ -474,7 +474,7 @@ def run_install() -> dict[str, Any]:
             raise InstallError("INDIVIDUAL_PAGES_CHANGED")
         if ua0011_media() != before_media:
             raise InstallError("UA0011_MEDIA_CHANGED")
-        postcheck = verify_catalogs(runtime, before_rows)
+        postcheck = verify_catalogs(runtime, after_rows)
         return {
             "contract_id": CONTRACT_ID,
             "status": "PASS",
