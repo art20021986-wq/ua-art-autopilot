@@ -74,9 +74,9 @@
   "contract_id": "CRM-CONTAINER-STAGE-SYNC-004-V1.0",
   "crm_write": false,
   "errors": [
-    "PatchAbortedError:ABORT: /tmp/task077-patch-bundle-tvbloc5h/db.py:update_card_field expected one approved definition, got 0"
+    "PatchAbortedError:ABORT: /tmp/task077-patch-bundle-pe8qiro7/db.py:update_card_field expected one approved definition, got 0"
   ],
-  "finished_at_utc": "2026-08-29T07:19:44Z",
+  "finished_at_utc": "2026-08-29T07:21:24Z",
   "media_write": false,
   "mode": "LIVE_GET_ONLY_PLUS_LOCAL_COPY_CANARY",
   "production_touched": false,
@@ -186,6 +186,14 @@
           "truncated": false
         },
         {
+          "end_line": 1042,
+          "line": 987,
+          "name": "stage_menu",
+          "sha256": "3631b4e6480dc96d0885a031201f78b28eac76d3ac09ce6172bf518a8dce0c24",
+          "source": "async def stage_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    import asyncio as _v168_asyncio\n    import crm_online_guard as _v168_guard\n    q = update.callback_query\n    cid = int(q.data.split(\":\")[-1])\n    token, started = await _v168_guard.safe_callback_answer(q, \"crm_delivery\", cid)\n    try:\n        drop_wait(context)\n        card = card_of(cid)\n        if not card:\n            await q.message.reply_text(\"Карточка не найдена.\")\n            _v168_guard.finish_operation(token, \"missing_card\")\n            raise ApplicationHandlerStop\n        stage = S.stage_of(card.get(\"status\")) or 1\n        lines = [\"🚚 Доставка и этапы\", card.get(\"auto_number\") or \"#%d\" % cid, \"\",\n                 \"Сейчас: %s\" % S.status_label(card.get(\"status\")),\n                 \"Этап %d из 4: %s\" % (stage, dict(S.STAGES).get(stage, \"—\"))]\n        if card.get(\"sea_container\"):\n            lines.append(\"Контейнер: %s\" % card[\"sea_container\"])\n        if card.get(\"sea_date_out\"):\n            lines.append(\"Дата отправления: %s\" % str(card[\"sea_date_out\"])[:10])\n        left, eta = eta_of(card)\n        if stage >= 4:\n            lines.append(\"Выдача: автомобиль в Киеве\")\n        elif left is not None:\n            lines.append(\"До выдачи в Киеве: %d дней · %s\" % (left, eta.strftime(\"%d.%m.%Y\")))\n        else:\n            lines.append(\"Срок: уточняется\")\n        rows = []\n        for number, _name in S.STAGES:\n            pair = [InlineKeyboardButton(\n                (\"• \" if card.get(\"status\") == code else \"\") + label,\n                callback_data=\"car_setstage:%d:%s\" % (cid, code))\n                for code, (stage_no, label) in S.STATUSES.items() if stage_no == number]\n            for index in range(0, len(pair), 2):\n                rows.append(pair[index:index + 2])\n        rows.append([InlineKeyboardButton(\"📦 Контейнер, даты и сроки\", callback_data=\"cont_menu:%d\" % cid)])\n        rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])\n        send_task = _v168_asyncio.create_task(q.message.reply_text(\n            \"\\n\".join(lines), reply_markup=InlineKeyboardMarkup(rows)))\n        try:\n            await _v168_asyncio.wait_for(\n                _v168_asyncio.shield(send_task), timeout=_v168_guard.remaining(started))\n            _v168_guard.finish_operation(token, \"ok\")\n        except _v168_asyncio.TimeoutError:\n            _v168_guard.finish_operation(token, \"deferred\", \"telegram_send\")\n        raise ApplicationHandlerStop\n    except ApplicationHandlerStop:\n        raise\n    except Exception as exc:\n        _v168_guard.finish_operation(token, \"error\", type(exc).__name__)\n        log.exception(\"delivery route failed card=%s\", cid)\n        try:\n            await q.message.reply_text(\"Не удалось открыть доставку. Повторите нажатие.\")\n        finally:\n            raise ApplicationHandlerStop\n",
+          "truncated": false
+        },
+        {
           "end_line": 1109,
           "line": 1052,
           "name": "stage_set",
@@ -239,7 +247,16 @@
         "sold_transit": 0,
         "Машина видна клиентам в каталоге": 0
       },
-      "definitions": [],
+      "definitions": [
+        {
+          "end_line": 742,
+          "line": 735,
+          "name": "update_card_field",
+          "sha256": "65033f6dbbb341d69f7b9918e0e4fc69b4746596b7db6320f0d4ead6ec63dab0",
+          "source": "def update_card_field(table: str, card_id: int, field: str, value, actor_id: int):\n    \"\"\"Каждая правка поля попадает в журнал со старым и новым значением.\"\"\"\n    old = get_card(table, card_id)\n    old_value = old.get(field) if old else None\n    with connect() as c:\n        c.execute(f\"UPDATE {table} SET {field}=?, updated_at=? WHERE id=?\",\n                  (value, now(), card_id))\n    log_action(actor_id, \"card_edit\", table, card_id, field, old_value, value)\n",
+          "truncated": false
+        }
+      ],
       "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
     },
     "konteyner.py": {
@@ -268,6 +285,14 @@
           "name": "_dney_do",
           "sha256": "0f7b9d63af7b27c2b22e4c7c8206fafde7036261c3a26e27ab703a59953d04c7",
           "source": "def _dney_do(card):\n    \"\"\"Дни до выдачи: ручная дата важнее, иначе отправление + 75.\"\"\"\n    ruchnaya = _razobrat(card.get(\"eta_manual\"))\n    otpravka = _razobrat(card.get(\"sea_date_out\"))\n    if ruchnaya is not None:\n        cel = ruchnaya\n    elif otpravka is not None:\n        cel = otpravka + DNEY_PUTI * 86400\n    else:\n        return None, None\n    seychas = time.strftime(\"%Y-%m-%d\", time.localtime(time.time() + 7 * 3600))\n    try:\n        a = time.mktime(time.strptime(seychas, \"%Y-%m-%d\"))\n        b = time.mktime(time.strptime(time.strftime(\"%Y-%m-%d\",\n                                                    time.localtime(cel)),\n                                      \"%Y-%m-%d\"))\n        dney = max(int(round((b - a) / 86400.0)), 0)\n    except Exception:\n        dney = 0\n    return dney, cel\n",
+          "truncated": false
+        },
+        {
+          "end_line": 119,
+          "line": 109,
+          "name": "_peresobrat",
+          "sha256": "640484e4b8e856c77af717b8415048ee63c78eccebbb0b7ac5814f29e3bda1f3",
+          "source": "def _peresobrat():\n    \"\"\"Пересборка отдельным процессом — всегда свежим кодом.\"\"\"\n    try:\n        subprocess.Popen(\n            [\"python3.10\", \"-c\",\n             \"import sys; sys.path.insert(0, '/home/Carix'); \"\n             \"import stranica; stranica.main()\"],\n            cwd=\"/home/Carix\",\n            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n    except Exception as e:\n        log.warning(\"konteyner: пересборка не запущена: %s\", e)\n",
           "truncated": false
         },
         {
@@ -444,6 +469,22 @@
           "truncated": false
         },
         {
+          "end_line": 2457,
+          "line": 2412,
+          "name": "sobrat_kartochku",
+          "sha256": "5cfedab2c91e505d07919cc5793ffe47b3658e82df3afc0e475868b4917a9301",
+          "source": "    def sobrat_kartochku(m, kadry, sredn=None,\n                         _ishodnaya=_v170_kartochka_ishodnaya):\n        html = _ishodnaya(m, kadry, sredn)\n        try:\n            nom = nomer(m)\n            nazvanie = \" \".join(str(x) for x in [m.get(\"brand\"), m.get(\"model\"),\n                                                 m.get(\"year\")] if x)\n            adres = V170_ADRES + nom + \".html\"\n            cena_t = _v170_cena(m)\n            zagolovok = (nazvanie + \" — \" + cena_t) if cena_t else nazvanie\n            opisanie = V170_PODPIS + \". \" + nom\n            kartinka = _v170_kartinka(kadry, sredn)\n\n            meta = _v170_meta(zagolovok, opisanie, adres, kartinka)\n            if \"</head>\" in html and \"og:title\" not in html:\n                html = html.replace(\"</head>\", meta + \"</head>\", 1)\n\n            dannye = json.dumps({\"title\": zagolovok + \" · UA ART COMPANY\",\n                                 \"text\": zagolovok + \" · \" + V170_PODPIS,\n                                 \"url\": adres}, ensure_ascii=False)\n            knopka = V170_KNOPKA.replace(\"V170_DANNYE\", dannye)\n\n            if \"v170_share\" not in html:\n                postavleno = False\n                # 1) поверх ленты фотографий — как на образце владельца\n                lenta = html.find(\"<div class='lenta'>\")\n                if lenta >= 0:\n                    schet = html.find(\"<div class='schet'>\", lenta)\n                    if schet > lenta:\n                        html = (html[:lenta] + \"<div style='position:relative'>\"\n                                + html[lenta:schet] + knopka + \"</div>\"\n                                + html[schet:])\n                        postavleno = True\n                # 2) если фотографий нет — поверх первого блока с номером\n                if not postavleno:\n                    blok = html.find(\"<div class='blok'>\")\n                    if blok >= 0:\n                        konec = html.find(\"</div>\", blok)\n                        if konec > blok:\n                            konec += len(\"</div>\")\n                            html = (html[:blok] + \"<div style='position:relative'>\"\n                                    + html[blok:konec] + knopka + \"</div>\"\n                                    + html[konec:])\n        except Exception:\n            return html\n        return html\n",
+          "truncated": false
+        },
+        {
+          "end_line": 2620,
+          "line": 2603,
+          "name": "sobrat_kartochku",
+          "sha256": "9d7b64ad0e8bc7c98484d94a6128601cbc2fc8a84aa34991320741b9f0e191eb",
+          "source": "    def sobrat_kartochku(m, kadry, sredn=None, _ishodnaya=_v171_ishodnaya):\n        html = _ishodnaya(m, kadry, sredn)\n        try:\n            if \"v171_knopka\" in html:\n                return html\n            mesto = html.find(\"<body>\")\n            if mesto < 0:\n                mesto = html.find(\"<body\")\n                if mesto >= 0:\n                    mesto = html.find(\">\", mesto)\n                    mesto = mesto + 1 if mesto > 0 else -1\n            else:\n                mesto = mesto + len(\"<body>\")\n            if mesto > 0:\n                html = html[:mesto] + _v171_knopka(m) + html[mesto:]\n        except Exception:\n            return html\n        return html\n",
+          "truncated": false
+        },
+        {
           "end_line": 2845,
           "line": 2781,
           "name": "blok_pribytiya",
@@ -460,11 +501,27 @@
           "truncated": false
         },
         {
+          "end_line": 3098,
+          "line": 3093,
+          "name": "sobrat_kartochku",
+          "sha256": "2f85d3a4f2d0ffdb296a120d2414981e682bdd46d5cada0dc5ebfff4e9d3b75c",
+          "source": "def sobrat_kartochku(m, kadry, sredn=None):\n    result = _ua_seo068_original_sobrat_kartochku(m, kadry, sredn)\n    identifier = _ua_seo068_identifier(m)\n    if not _ua_seo068_re.fullmatch(r'UA-[0-9]{4,}', identifier):\n        raise RuntimeError('SEO068_CARD_ID_INVALID:' + identifier)\n    return _ua_seo068_normalize(result, identifier + '.html', identifier)\n",
+          "truncated": false
+        },
+        {
           "end_line": 3314,
           "line": 3258,
           "name": "_ua068_eta",
           "sha256": "ce1674c19b5d52eb288941af9616ce8844b9fc015fd3a2c90de42682ed7642fd",
           "source": "def _ua068_eta(row, stage):\n    row = row or {}\n    today = _ua068_dt.datetime.now(_ua068_dt.timezone.utc).date()\n    if stage == 1:\n        return (\n            \"После внесения предоплаты 500 $ автомобиль будет отправлен ближайшим паромом.\",\n            \"Після внесення передоплати 500 $ автомобіль буде відправлено найближчим поромом.\",\n            \"Дата прибытия будет рассчитана после погрузки на паром.\",\n            \"Дату прибуття буде розраховано після завантаження на пором.\",\n        )\n    if stage == 2:\n        target = _ua068_date(row.get(\"eta_manual\"))\n        if target is None:\n            shipped = _ua068_date(row.get(\"sea_date_out\"))\n            if shipped is not None:\n                target = shipped + _ua068_dt.timedelta(days=75)\n        if target is not None:\n            days = max(0, (target - today).days)\n            ru_date, uk_date = _ua068_pretty(target)\n            return (\n                \"%d дн. до Киева · ориентировочно %s.\" % (days, ru_date),\n                \"%d дн. до Києва · орієнтовно %s.\" % (days, uk_date),\n                \"\",\n                \"\",\n            )\n        return (\n            \"Количество дней до Киева уточняется.\",\n            \"Кількість днів до Києва уточнюється.\",\n            \"Дата прибытия будет рассчитана после подтверждения маршрута.\",\n            \"Дату прибуття буде розраховано після підтвердження маршруту.\",\n        )\n    if stage == 3:\n        deposit = _ua068_date(row.get(\"ge_to_kyiv_at\"))\n        if deposit is not None:\n            target = deposit + _ua068_dt.timedelta(days=15)\n            ru_date, uk_date = _ua068_pretty(target)\n            extra_ru = \"Расчётная дата прибытия — %s.\" % ru_date\n            extra_uk = \"Розрахункова дата прибуття — %s.\" % uk_date\n        else:\n            extra_ru = \"Точная дата появится после внесения предоплаты.\"\n            extra_uk = \"Точна дата з’явиться після внесення передоплати.\"\n        return (\n            \"После внесения предоплаты 500 $ автомобиль прибудет в Киев в течение 15 календарных дней.\",\n            \"Після внесення передоплати 500 $ автомобіль прибуде до Києва протягом 15 календарних днів.\",\n            extra_ru,\n            extra_uk,\n        )\n    arrived = (_ua068_date(row.get(\"ua_delivered\")) or _ua068_date(row.get(\"ua_handed\"))\n               or _ua068_date(row.get(\"eta_manual\")))\n    if arrived is not None:\n        ru_date, uk_date = _ua068_pretty(arrived)\n        extra_ru = \"Дата прибытия в Киев — %s.\" % ru_date\n        extra_uk = \"Дата прибуття до Києва — %s.\" % uk_date\n    else:\n        extra_ru = \"Автомобиль в Киеве и готов к осмотру.\"\n        extra_uk = \"Автомобіль у Києві та готовий до огляду.\"\n    return (extra_ru, extra_uk, \"\", \"\")\n",
+          "truncated": false
+        },
+        {
+          "end_line": 3864,
+          "line": 3859,
+          "name": "sobrat_kartochku",
+          "sha256": "05f34f6948ccc122925f98e9df0076c1544d0fae6f26dbad0d023aa00a3d69b2",
+          "source": "def sobrat_kartochku(m, kadry, sredn=None):\n    html = _ua068_stranica_card_original(m, kadry, sredn)\n    kod = str(nomer(m))\n    row = dict(m or {})\n    row[\"_ua068_vin_duplicates\"] = 1\n    return _ua068_ensure_card(html, kod, row)\n",
           "truncated": false
         }
       ],
@@ -518,7 +575,7 @@
       "sha256": "a0976afb93a4d2fdcab392601d25253700977618a02b04bc31903a18e95ee81a"
     }
   },
-  "started_at_utc": "2026-08-29T07:19:30Z",
+  "started_at_utc": "2026-08-29T07:21:21Z",
   "status": "FAIL",
   "task_id": "task_077"
 }
