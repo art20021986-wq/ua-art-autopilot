@@ -1,6 +1,6 @@
 {
   "apply": {
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task085_backups/20260829T091210Z_ca28851b21",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task085_backups/20260829T091709Z_272639a8cc",
     "before": {
       "auto_number": "UA-0011",
       "days_to_kyiv": null,
@@ -94,21 +94,21 @@
     "errors": [
       "Task085Error:PUBLISHER_FAILED:Публикация отменена при записи (PUBLICATION BLOCKED UA-0011: пропал раздел «Комплексная диагностика»). Выполнен откат."
     ],
-    "finished_at_utc": "2026-08-29T09:12:14Z",
+    "finished_at_utc": "2026-08-29T09:17:13Z",
     "media_write": false,
     "mode": "APPROVED_PRODUCTION_APPLY",
     "production_write": true,
     "rollback": {
-      "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task085_backups/20260829T091210Z_ca28851b21",
+      "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task085_backups/20260829T091709Z_272639a8cc",
       "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
       "errors": [],
-      "finished_at_utc": "2026-08-29T09:12:14Z",
+      "finished_at_utc": "2026-08-29T09:17:13Z",
       "mode": "ROLLBACK",
       "production_write": true,
       "quick_check": "ok",
       "reason": "automatic_apply_failure",
       "runtime_llm_tokens": 0,
-      "started_at_utc": "2026-08-29T09:12:13Z",
+      "started_at_utc": "2026-08-29T09:17:13Z",
       "status": "PASS",
       "target": {
         "auto_number": "UA-0011",
@@ -134,10 +134,11 @@
       "cars_ui.py": "ba19f2a58e95a58675440f0e622bb1a344921fb7f564c6ac438a3ee9a52d5b71",
       "db.py": "45b62539dddc422cc9a8f051d9fc58db86440899b2e5ebe6ad402a1815e53d98",
       "master_card.py": "113a7471b231ee46e4403c9ec78aad1a3c78ff89f7d17e52bb78c7dd57223879",
-      "stage_payload_guard.py": "d3f8b28150216abf9d25858132496dfbc6508c0e2f3d7c2162da5e5b4f133b34",
+      "publikaciya.py": "1b2928e659ff63ed32ed0aacfbb6f23ce25c10398e3763fdbdaab10b4220853f",
+      "stage_payload_guard.py": "8a6b59669e8632704e57873c50c90fd741863f42f92055c0bddff875c28adacb",
       "stranica.py": "1fca8071b57ad800a3445b3a90238678678f4dda43ac6cab342846e31d900f1a"
     },
-    "started_at_utc": "2026-08-29T09:12:09Z",
+    "started_at_utc": "2026-08-29T09:17:08Z",
     "status": "ROLLED_BACK"
   },
   "automatic_remote_retry": true,
@@ -146,23 +147,23 @@
   "errors": [
     "ControllerError:APPLY_FAIL:Task085Error:PUBLISHER_FAILED:Публикация отменена при записи (PUBLICATION BLOCKED UA-0011: пропал раздел «Комплексная диагностика»). Выполнен откат."
   ],
-  "finished_at_utc": "2026-08-29T09:12:32Z",
+  "finished_at_utc": "2026-08-29T09:17:45Z",
   "recovery_restart": {
     "command": "python3.10 /home/Carix/start_safe.py",
     "restart_accepted": true,
     "task_id": 266084
   },
   "rollback": {
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task085_backups/20260829T091210Z_ca28851b21",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task085_backups/20260829T091709Z_272639a8cc",
     "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
     "errors": [],
-    "finished_at_utc": "2026-08-29T09:12:14Z",
+    "finished_at_utc": "2026-08-29T09:17:13Z",
     "mode": "ROLLBACK",
     "production_write": true,
     "quick_check": "ok",
     "reason": "automatic_apply_failure",
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-08-29T09:12:13Z",
+    "started_at_utc": "2026-08-29T09:17:13Z",
     "status": "PASS",
     "target": {
       "auto_number": "UA-0011",
@@ -186,10 +187,11 @@
   "shadow": {
     "candidate_sources": {
       "cars_schema.py": "7c4a7eaf55b28ffdcd7b277b903400aa2647693593da2bd7de3190a9d45d3154",
-      "cars_ui.py": "75a850c4438c6efca22830b32a11315dcfd10c9fdaa10e2325e9259b9451d982",
+      "cars_ui.py": "ba19f2a58e95a58675440f0e622bb1a344921fb7f564c6ac438a3ee9a52d5b71",
       "db.py": "45b62539dddc422cc9a8f051d9fc58db86440899b2e5ebe6ad402a1815e53d98",
       "master_card.py": "113a7471b231ee46e4403c9ec78aad1a3c78ff89f7d17e52bb78c7dd57223879",
-      "stage_payload_guard.py": "d3f8b28150216abf9d25858132496dfbc6508c0e2f3d7c2162da5e5b4f133b34",
+      "publikaciya.py": "1b2928e659ff63ed32ed0aacfbb6f23ce25c10398e3763fdbdaab10b4220853f",
+      "stage_payload_guard.py": "8a6b59669e8632704e57873c50c90fd741863f42f92055c0bddff875c28adacb",
       "stranica.py": "1fca8071b57ad800a3445b3a90238678678f4dda43ac6cab342846e31d900f1a"
     },
     "catalogs_before": {
@@ -384,7 +386,7 @@
       "target_media_sha256": "5e0e91f22c64c93a9eb23747e9effe6fbf2428524c30c4081caefd306f2b7395"
     },
     "errors": [],
-    "finished_at_utc": "2026-08-29T09:11:11Z",
+    "finished_at_utc": "2026-08-29T09:16:08Z",
     "media_write": false,
     "mode": "SHADOW",
     "production_write": false,
@@ -406,9 +408,9 @@
       "vin": "KMHE341DBKA544289"
     },
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-08-29T09:11:10Z",
+    "started_at_utc": "2026-08-29T09:16:07Z",
     "status": "PASS"
   },
-  "started_at_utc": "2026-08-29T09:10:50Z",
+  "started_at_utc": "2026-08-29T09:15:33Z",
   "status": "ROLLED_BACK"
 }
