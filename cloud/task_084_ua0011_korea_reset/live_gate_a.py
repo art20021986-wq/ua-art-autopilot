@@ -257,7 +257,7 @@ def main() -> int:
         scoped_rows = []
         for row in rows:
             identifier = str(row.get("auto_number") or "").upper()
-            match = re.fullmatch(r"UA-(\\d{4,})", identifier)
+            match = re.fullmatch(r"UA-(\d{4,})", identifier)
             if match and 1 <= int(match.group(1)) <= 11:
                 scoped_rows.append(row)
         identifiers = [str(row.get("auto_number") or "").upper() for row in scoped_rows]
