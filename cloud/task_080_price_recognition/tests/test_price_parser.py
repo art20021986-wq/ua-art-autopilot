@@ -156,6 +156,22 @@ def test_explicit_change_intent_flagged():
     assert r.is_explicit_change_intent is True
 
 
+def test_sale_price_label_inflections():
+    for text in [
+        "поставь цену 12000",
+        "измени цену на 12000",
+        "нет стоимости 12000",
+        "онови ціну на 12000",
+        "зміни вартість на 12000",
+    ]:
+        assert _ok_value(text) == 12000
+
+
+def test_negative_rejected():
+    for text in ["цена -12000", "цена минус 12000", "ціна мінус 12000"]:
+        assert _rejected(text) == "NEGATIVE_AMOUNT"
+
+
 def test_no_change_intent_flag_absent():
     r = parse_sale_price_message("цена 12000")
     assert r.ok
