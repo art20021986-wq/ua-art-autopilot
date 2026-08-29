@@ -1,0 +1,106 @@
+name: TASK076_ETA_GATE_A_LIVE
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task076_eta_gate_a_live.yml'
+      - 'cloud/task_076_eta_sync/gate_a_live.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task076-eta-gate-a-live
+  cancel-in-progress: false
+
+jobs:
+  get-only-live-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Compile and run offline regression suite
+        run: |
+          python3 -m py_compile cloud/task_076_eta_sync/gate_a_live.py
+          python3 cloud/task_076_eta_sync/run_tests.py
+
+      - name: Enforce GET-only implementation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('cloud/task_076_eta_sync/gate_a_live.py').read_text(encoding='utf-8')
+          assert 'method="GET"' in source
+          for forbidden in ('method="POST"', 'method="PUT"', 'method="PATCH"',
+                            'method="DELETE"', 'urlopen(request, data='):
+              assert forbidden not in source, forbidden
+          print('TASK076_GET_ONLY_STATIC_PASS')
+          PY
+
+      - name: Run real backup and live GET audit
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        working-directory: cloud/task_076_eta_sync
+        run: python3 gate_a_live.py
+
+      - name: Validate sanitized evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          path = 'cloud/task_076_eta_sync/evidence/gate_a_live.json'
+          value = json.load(open(path, encoding='utf-8'))
+          assert value['status'] == 'PASS', value['errors']
+          assert value['production_touched'] is False
+          assert value['crm_write'] is False and value['site_write'] is False
+          assert value['pythonanywhere_methods'] == ['GET']
+          assert value['public_methods'] == ['GET']
+          assert value['backup']['captured_before_analysis'] is True
+          assert value['database']['quick_check'] == 'ok'
+          assert [row['auto_number'] for row in value['database']['rows']] == [
+              'UA-0009', 'UA-0010', 'UA-0011']
+          assert value['diagnosis']['split_eta_writes_in_current_cars_ui'] is True
+          assert value['diagnosis']['crm_success_path_has_no_publisher_verification'] is True
+          assert value['diagnosis']['root_cause_confirmed'] is True
+          print('TASK076_GATE_A_EVIDENCE_PASS')
+          PY
+
+      - name: Commit only bounded sanitized evidence
+        if: always()
+        run: |
+          git add -- cloud/task_076_eta_sync/evidence/gate_a_live.json cloud/task_076_eta_sync/GATE_A_LIVE_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_076_eta_sync/evidence/gate_a_live.json|cloud/task_076_eta_sync/GATE_A_LIVE_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task076-eta-gate-a'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task076: record real GET-only ETA Gate A evidence'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+              if git push origin HEAD:main; then break; fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload Gate A evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task076-eta-gate-a-${{ github.run_id }}
+          path: |
+            cloud/task_076_eta_sync/evidence/gate_a_live.json
+            cloud/task_076_eta_sync/GATE_A_LIVE_REPORT.md
+          if-no-files-found: warn
+          retention-days: 30
