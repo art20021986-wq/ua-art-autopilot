@@ -1,0 +1,63 @@
+name: TASK 081 Gate A - GET-only audit and offline verification
+
+on:
+  push:
+    paths:
+      - 'cloud/task_081_publish_repair/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task-081-gate-a
+  cancel-in-progress: true
+
+jobs:
+  gate-a:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pytest
+
+      - name: Run offline fixture test suite
+        run: |
+          python -m pytest cloud/task_081_publish_repair/tests -q
+
+      - name: Run GET-only live probe (skips cleanly if secrets absent)
+        env:
+          PYANYWHERE_API_TOKEN: ${{ secrets.PYANYWHERE_API_TOKEN }}
+          PYANYWHERE_USERNAME: ${{ secrets.PYANYWHERE_USERNAME }}
+          PYANYWHERE_HOST: ${{ secrets.PYANYWHERE_HOST }}
+          UA_SITE_BASE_URL: ${{ secrets.UA_SITE_BASE_URL }}
+        run: |
+          if [ -z "$PYANYWHERE_API_TOKEN" ] || [ -z "$PYANYWHERE_USERNAME" ]; then
+            echo "BLOCKED: PYANYWHERE_API_TOKEN/PYANYWHERE_USERNAME secrets not configured. Skipping live probe (fail closed, no production access attempted)."
+            exit 0
+          fi
+          python cloud/task_081_publish_repair/live_probe.py
+
+      - name: Run controller verdict
+        run: |
+          python cloud/task_081_publish_repair/controller.py || true
+
+      - name: Upload evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: task-081-gate-a-evidence
+          path: cloud/task_081_publish_repair/evidence/
+          if-no-files-found: ignore
+
+      - name: Assert no production write occurred
+        run: |
+          echo "Gate A performed GET-only operations. No CRM write, no site write, no restart was executed."

@@ -1,0 +1,73 @@
+name: TASK 081 Gate B - Production install (owner-approved only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval_token:
+        description: 'Exact owner-approval token'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task-081-gate-b-production
+  cancel-in-progress: false
+
+jobs:
+  verify-token:
+    runs-on: ubuntu-latest
+    outputs:
+      token_ok: ${{ steps.check.outputs.token_ok }}
+    steps:
+      - name: Verify exact approval token
+        id: check
+        env:
+          GIVEN_TOKEN: ${{ github.event.inputs.approval_token }}
+        run: |
+          EXPECTED='UA-0013-PUBLISH-REPAIR-001-V1.0-PRODUCTION-APPROVED'
+          if [ "$GIVEN_TOKEN" = "$EXPECTED" ]; then
+            echo "token_ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "token_ok=false" >> "$GITHUB_OUTPUT"
+            echo "REFUSED: approval token did not match exactly. No production action performed."
+            exit 1
+          fi
+
+  gate-b-install:
+    needs: verify-token
+    if: needs.verify-token.outputs.token_ok == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pytest
+
+      - name: Re-run offline test suite before touching anything
+        run: |
+          python -m pytest cloud/task_081_publish_repair/tests -q
+
+      - name: Require prior Gate A live evidence to exist
+        run: |
+          if [ ! -f cloud/task_081_publish_repair/evidence/live_audit_report.json ]; then
+            echo "BLOCKED: no prior Gate A live evidence found. Refusing to proceed to production install."
+            exit 1
+          fi
+
+      - name: Manual note
+        run: |
+          echo "This workflow intentionally stops after verification."
+          echo "Actual production backup/atomic-install/restart steps must be"
+          echo "wired to real production credentials by the owner-controlled"
+          echo "runner outside of this repository before any write is possible."
+          echo "No CRM write, no site write, no restart was executed by this run."
