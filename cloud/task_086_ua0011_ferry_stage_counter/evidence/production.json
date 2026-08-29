@@ -1,0 +1,27 @@
+{
+  "automatic_remote_retry": true,
+  "bot_restarted": false,
+  "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
+  "errors": [
+    "ControllerError:SHADOW_FAIL:Task086Error:UA0009_CATALOG_COUNT:video"
+  ],
+  "finished_at_utc": "2026-08-29T09:04:16Z",
+  "rollback": null,
+  "runtime_llm_tokens": 0,
+  "shadow": {
+    "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
+    "crm_write": false,
+    "errors": [
+      "Task086Error:UA0009_CATALOG_COUNT:video"
+    ],
+    "finished_at_utc": "2026-08-29T09:04:11Z",
+    "media_write": false,
+    "mode": "SHADOW",
+    "production_write": false,
+    "runtime_llm_tokens": 0,
+    "started_at_utc": "2026-08-29T09:04:10Z",
+    "status": "FAIL"
+  },
+  "started_at_utc": "2026-08-29T09:03:52Z",
+  "status": "FAIL"
+}
