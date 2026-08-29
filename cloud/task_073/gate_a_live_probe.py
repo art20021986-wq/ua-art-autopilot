@@ -220,6 +220,11 @@ def inspect_python(name: str, path: str, required: bool) -> dict:
         "definition_inventory": sorted(inventory, key=lambda item: (item["line"], item["name"])),
         "definitions": sorted(definitions, key=lambda item: (item["line"], item["name"])),
         "excerpts": excerpts,
+        "tail_source": (
+            redact("\n".join(source.splitlines()[-420:]))[-60_000:]
+            if name in {"stranica.py", "yadro.py", "master_card.py", "publikaciya.py"}
+            else None
+        ),
     }
 
 
