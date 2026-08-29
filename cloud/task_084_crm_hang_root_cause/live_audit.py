@@ -103,6 +103,32 @@ def function_info(source: str, names: set[str]) -> list[dict]:
     return sorted(result, key=lambda item: (item["line"], item["name"]))
 
 
+def marker_function_info(source: str, markers: tuple[str, ...]) -> list[dict]:
+    """Return only functions that contain startup/restart message markers."""
+    tree = ast.parse(source)
+    lines = source.splitlines(keepends=True)
+    offsets = [0]
+    for line in lines:
+        offsets.append(offsets[-1] + len(line))
+    result = []
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        start = offsets[node.lineno - 1]
+        end = offsets[node.end_lineno]
+        block = source[start:end]
+        if not any(marker in block for marker in markers):
+            continue
+        result.append({
+            "name": node.name,
+            "line": node.lineno,
+            "end_line": node.end_lineno,
+            "sha256": sha256_text(block),
+            "source": block if len(block) <= 20_000 else block[:20_000] + "\n# TRUNCATED\n",
+        })
+    return sorted(result, key=lambda item: (item["line"], item["name"]))
+
+
 def contexts(source: str, expressions: list[str], radius: int = 2) -> list[dict]:
     lines = source.splitlines()
     regex = re.compile("|".join("(?:%s)" % value for value in expressions), re.I)
@@ -161,6 +187,14 @@ def source_facts(name: str, source: str) -> dict:
             "singleton_lock": sum(source.count(value) for value in ("LOCK_EX", "singleton", ".start_safe.lock")),
         },
         "functions": function_info(source, selected),
+        "marker_functions": marker_function_info(
+            source,
+            (
+                "Бот запущен и готов к работе",
+                "Бот обновлён и готов к работе",
+                "Бот обновлен и готов к работе",
+            ),
+        ),
         "contexts": contexts(source, patterns),
     }
 
