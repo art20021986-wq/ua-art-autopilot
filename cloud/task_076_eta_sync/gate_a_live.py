@@ -117,7 +117,7 @@ def database_evidence(db_bytes: bytes, wal_bytes: bytes | None) -> dict:
         missing = sorted(required - set(columns))
         if missing:
             raise RuntimeError("CRM_COLUMNS_MISSING:" + ",".join(missing))
-        optional = [name for name in ("description", "published") if name in columns]
+        optional = [name for name in ("description", "condition_text", "published") if name in columns]
         selected = ["id", "auto_number", "status", "days_to_kyiv", "eta_manual", "updated_at"] + optional
         placeholders = ",".join("?" for _ in TARGETS)
         sql = "SELECT %s FROM cars WHERE auto_number IN (%s) ORDER BY auto_number" % (
@@ -137,6 +137,7 @@ def database_evidence(db_bytes: bytes, wal_bytes: bytes | None) -> dict:
                 days = None
             expected = today + dt.timedelta(days=days) if days is not None else None
             description = str(raw.get("description") or "")
+            condition_text = str(raw.get("condition_text") or "")
             rows.append({
                 "id": int(raw["id"]),
                 "auto_number": raw["auto_number"],
@@ -149,6 +150,8 @@ def database_evidence(db_bytes: bytes, wal_bytes: bytes | None) -> dict:
                 "desired_30_match": bool(days == 30 and eta == today + dt.timedelta(days=30)),
                 "description_sha256": digest(description.encode("utf-8")),
                 "description_date_contexts": date_contexts(description),
+                "condition_text_sha256": digest(condition_text.encode("utf-8")),
+                "condition_text_date_contexts": date_contexts(condition_text),
             })
         audit_rows = []
         audit_columns = [row[1] for row in connection.execute("PRAGMA table_info(audit)")]
@@ -235,11 +238,18 @@ def source_evidence(filename: str, data: bytes) -> dict:
         result["parse_error"] = str(exc)
         return result
     terms = ("eta_manual", "days_to_kyiv", "eta_days", "opublikovat", "description", "updated_at")
+    explicit = {
+        "db.py": {"connect", "now", "log_action", "get_card", "update_card_field"},
+        "cars_ui.py": {"set_field", "eta_of", "apply_value", "stage_menu", "stage_set", "toggle_publish"},
+        "konteyner.py": {"_karta", "_pisat", "_sprosit", "_peresobrat", "_ekran", "sprosit_dni", "prinyat"},
+        "stranica.py": {"sobrat_kartochku", "blok_pribytiya", "srok", "ostatok_dney"},
+        "publikaciya.py": {"_master", "proverit", "_zapisat_atomarno", "_kartochki", "opublikovat"},
+    }.get(filename, set())
     for node in ast.walk(tree):
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
         raw = function_source(source, node)
-        if not any(term in raw for term in terms):
+        if node.name not in explicit and not any(term in raw for term in terms):
             continue
         result["definitions"].append({
             "name": node.name,
