@@ -1,0 +1,105 @@
+name: task086-renderer-gate-a-read-only
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task086_renderer_gate_a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Read exact active renderer functions
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import ast, datetime as dt, hashlib, json, os
+          from pathlib import Path
+          import urllib.parse, urllib.request
+
+          token = os.environ['PYTHONANYWHERE_API_TOKEN']
+          targets = {
+              '/home/Carix/stranica.py': 'sobrat_kartochku',
+              '/home/Carix/master_card.py': 'obrabotat_kartochku',
+              '/home/Carix/cars_schema.py': 'render_card',
+          }
+          evidence = {
+              'contract_id': 'UA-0011-RENDERER-GATE-A-086-V1.0',
+              'status': 'PASS_READ_ONLY',
+              'http_methods': ['GET'],
+              'production_write': False,
+              'crm_write': False,
+              'media_write': False,
+              'generated_at_utc': dt.datetime.now(dt.timezone.utc).replace(
+                  microsecond=0).isoformat().replace('+00:00', 'Z'),
+              'renderers': {},
+          }
+          for path, name in targets.items():
+              url = (
+                  'https://www.pythonanywhere.com/api/v0/user/Carix/files/path'
+                  + urllib.parse.quote(path, safe='/')
+              )
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      'Authorization': 'Token ' + token,
+                      'User-Agent': 'ua-art-task086-renderer-gate-a/1',
+                  },
+                  method='GET',
+              )
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  source = response.read(16_000_001).decode('utf-8')
+              if len(source.encode('utf-8')) > 16_000_000:
+                  raise SystemExit('SOURCE_TOO_LARGE:' + path)
+              tree = ast.parse(source)
+              nodes = [
+                  node for node in tree.body
+                  if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                  and node.name == name
+              ]
+              if not nodes:
+                  raise SystemExit('FUNCTION_MISSING:' + name)
+              node = nodes[-1]
+              lines = source.splitlines(keepends=True)
+              active = ''.join(lines[node.lineno - 1:node.end_lineno])
+              evidence['renderers'][Path(path).name] = {
+                  'function': name,
+                  'definition_count': len(nodes),
+                  'active_lineno': node.lineno,
+                  'active_sha256': hashlib.sha256(active.encode()).hexdigest(),
+                  'active_source': active,
+              }
+          out = Path('cloud/task_086_ua0011_korea_stage/evidence/active_renderers.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + '\n',
+                         encoding='utf-8')
+          print('TASK086_RENDERER_GATE_A_PASS')
+          PY
+
+      - name: Commit read-only evidence
+        run: |
+          git add -- cloud/task_086_ua0011_korea_stage/evidence/active_renderers.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'task086-renderer-gate-a'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task086: record active renderer Gate A'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 2))
+          done
