@@ -34,7 +34,25 @@ jobs:
             cloud/task_084_ua0011_korea_reset/renderer_fix.py \
             cloud/task_084_ua0011_korea_reset/sandbox_transform.py \
             cloud/task_084_ua0011_korea_reset/live_gate_a.py
-          python3 -m pytest cloud/task_084_ua0011_korea_reset/tests/test_gate_a_sandbox.py -q
+          python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          path = Path('cloud/task_084_ua0011_korea_reset/tests/test_gate_a_sandbox.py')
+          spec = importlib.util.spec_from_file_location('task084_gate_a_tests', path)
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          tests = sorted(
+              (name, value) for name, value in vars(module).items()
+              if name.startswith('test_') and callable(value)
+          )
+          if not tests:
+              raise SystemExit('TASK084_OFFLINE_TESTS_MISSING')
+          for name, test in tests:
+              test()
+              print(name + ': PASS')
+          print('TASK084_OFFLINE_TESTS_PASS:%d' % len(tests))
+          PY
 
       - name: Enforce GET-only implementation
         run: |
