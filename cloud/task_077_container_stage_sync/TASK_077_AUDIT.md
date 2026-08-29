@@ -5,6 +5,6 @@ STATUS: **FAIL**
 - Production touched: **NO**
 - PythonAnywhere methods: **GET only**
 - CRM/site/media writes: **NO**
-- Errors: `PatchAbortedError:ABORT: cars_ui.py full-file hash mismatch (expected 50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306, got cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea). No write performed.`
+- Errors: `PatchAbortedError:ABORT: publikaciya.py full-file hash mismatch (expected 7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4, got 46d6ff20ca86ff911b168aefcf43e8b08b0de2efccf31590d7f275f124d15853). No write performed.`
 
 Production remains locked.

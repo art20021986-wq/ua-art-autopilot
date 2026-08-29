@@ -15,7 +15,7 @@
       "crm.db": {
         "bytes": 2990080,
         "path": "/home/Carix/crm.db",
-        "sha256": "0101eba634bfd997f4df143999bb2a41a4e478eec539370148bbfc6c2b90b5db"
+        "sha256": "ceba9857b7019bfbd00b63278eeeb99f4b3e4be6a1a502251306cff3623d761b"
       },
       "crm.db-wal": {
         "missing": true,
@@ -37,9 +37,9 @@
         "sha256": "df2001cd808e5fbb2201e2dbc5e06ab3d529be3cdb65dbaca691a15a2bad2174"
       },
       "publikaciya.py": {
-        "bytes": 21682,
+        "bytes": 22502,
         "path": "/home/Carix/publikaciya.py",
-        "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4"
+        "sha256": "46d6ff20ca86ff911b168aefcf43e8b08b0de2efccf31590d7f275f124d15853"
       },
       "site_catalog": {
         "bytes": 43258,
@@ -74,9 +74,9 @@
   "contract_id": "CRM-CONTAINER-STAGE-SYNC-004-V1.0",
   "crm_write": false,
   "errors": [
-    "PatchAbortedError:ABORT: cars_ui.py full-file hash mismatch (expected 50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306, got cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea). No write performed."
+    "PatchAbortedError:ABORT: publikaciya.py full-file hash mismatch (expected 7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4, got 46d6ff20ca86ff911b168aefcf43e8b08b0de2efccf31590d7f275f124d15853). No write performed."
   ],
-  "finished_at_utc": "2026-08-29T07:51:22Z",
+  "finished_at_utc": "2026-08-29T07:55:15Z",
   "media_write": false,
   "mode": "LIVE_GET_ONLY_PLUS_LOCAL_COPY_CANARY",
   "production_touched": false,
@@ -370,7 +370,7 @@
       "sha256": "df2001cd808e5fbb2201e2dbc5e06ab3d529be3cdb65dbaca691a15a2bad2174"
     },
     "publikaciya.py": {
-      "bytes": 21682,
+      "bytes": 22502,
       "callbacks": {
         "sea_loaded": 0,
         "sea_transit": 0,
@@ -382,7 +382,7 @@
         "days_to_kyiv": 0,
         "eta_days": 0,
         "eta_manual": 0,
-        "opublikovat": 2,
+        "opublikovat": 6,
         "sea_loaded": 0,
         "sea_transit": 0,
         "sold_transit": 0,
@@ -396,9 +396,17 @@
           "sha256": "27f3422fc4025ff1baadd177e82f0a5a52e20cbd533cc8c667a1ef476730e4c9",
           "source": "def opublikovat(kod, proba=False):\n    \"\"\"Единственная разрешённая публикация карточки. (ok, текст для владельца)\"\"\"\n    kod = (kod or \"\").strip().upper()\n    if not re.match(r\"^UA-\\d{3,5}$\", kod):\n        return False, \"Публикация отменена: непонятный номер машины.\"\n\n    do = _kartochki(krome=kod)          # чужие карточки до работы\n    try:\n        html, diag, m = _master(kod)\n    except Exception as e:\n        _zhurnal([\"%s FAIL сборка мастером: %s\" % (kod, e)])\n        return False, \"Публикация отменена: сборщик не смог собрать %s (%s). Старая страница цела.\" % (kod, e)\n    if not html:\n        _zhurnal([\"%s FAIL машина не найдена в CRM\" % kod])\n        return False, \"Публикация отменена: %s не найдена среди машин CRM.\" % kod\n\n    prichiny = proverit(html, kod)\n    if prichiny:\n        _zhurnal([\"%s FAIL валидация: %s\" % (kod, \"; \".join(prichiny))])\n        return False, (\"Публикация отменена, страница не прошла проверку:\\n· %s\\n\"\n                       \"Прежняя страница на сайте не тронута.\" % \"\\n· \".join(prichiny))\n\n    if proba:\n        return True, \"Проба: страница %s собрана и проверена, ничего не записано.\" % kod\n\n    papka_rez = os.path.join(REZERV_KORE, \"%s_%s\" % (kod, time.strftime(\"%Y%m%d_%H%M%S\")))\n    celi = []\n    for papka in (VIDEO, SITE):\n        if not os.path.isdir(papka):\n            continue\n        celi.append(os.path.join(papka, kod + \".html\"))\n        for imya in os.listdir(papka):\n            if re.match(r\"^%s-[0-9a-f]{6,10}\\.html$\" % kod, imya):\n                celi.append(os.path.join(papka, imya))\n        if diag:\n            celi.append(os.path.join(papka, kod + \"-diag.html\"))\n    try:\n        os.makedirs(papka_rez, exist_ok=True)\n        for put in celi:\n            if os.path.exists(put):\n                shutil.copy2(put, os.path.join(\n                    papka_rez, put.replace(BASE + \"/\", \"\").replace(\"/\", \"__\")))\n    except Exception as e:\n        _zhurnal([\"%s FAIL резерв: %s\" % (kod, e)])\n        return False, \"Публикация отменена: не удалось сделать резерв (%s).\" % e\n\n    bylo = dict((put, _sha(put)) for put in celi)\n    try:\n        for put in celi:\n            _zapisat_atomarno(put, diag if put.endswith(\"-diag.html\") else html)\n    except Exception as e:\n        _otkat(papka_rez, celi)\n        _zhurnal([\"%s FAIL запись: %s — выполнен откат\" % (kod, e)])\n        return False, \"Публикация отменена при записи (%s). Выполнен откат.\" % e\n\n    posle = _kartochki(krome=kod)\n    izmenilis = [k for k in do if do.get(k) != posle.get(k)]\n    if izmenilis:\n        _otkat(papka_rez, celi)\n        _zhurnal([\"%s FAIL регрессия: изменились %s — откат\" % (kod, \", \".join(izmenilis))])\n        return False, (\"Публикация отменена: изменились чужие карточки (%s). \"\n                       \"Выполнен откат.\" % \", \".join(os.path.basename(x) for x in izmenilis))\n\n    stalo = dict((put, _sha(put)) for put in celi)\n    _zhurnal([\"%s PASS публикация · мастер stranica.sobrat_kartochku · файлов %d\"\n              % (kod, len(celi))]\n             + [\"    %s  %s -> %s\" % (os.path.basename(k), (bylo.get(k) or \"-\")[:12],\n                                      (stalo.get(k) or \"-\")[:12]) for k in celi])\n    hvost = \"\" if diag else \"\\nМатериалов диагностики в CRM нет — страница диагностики не трогалась.\"\n    return True, (\"Страница %s обновлена на сайте по утверждённому шаблону.%s\\n\"\n                  \"https://www.uaart.com.ua/video/%s.html?v=%d\"\n                  % (kod, hvost, kod, int(time.time())))\n",
           "truncated": false
+        },
+        {
+          "end_line": 517,
+          "line": 503,
+          "name": "opublikovat",
+          "sha256": "36e134d043cf849c206db66aa129b2770011fea73e642b25d98848920bce3f99",
+          "source": "def opublikovat(kod, proba=False):\n    result = _ua082_opublikovat_original(kod, proba)\n    try:\n        ok = bool(result[0]) if isinstance(result, (tuple, list)) and result else bool(result)\n    except Exception:\n        ok = False\n    if proba or not ok:\n        return result\n    try:\n        from catalog_stage_guard_runtime import enforce_live_catalog as _ua082_enforce\n        _ua082_enforce(kod)\n    except Exception as exc:\n        return False, (\"Публикация отменена: каталог не прошёл проверку этапа/фото (%s). \"\n                       \"Старая версия каталога сохранена.\" % exc)\n    return result\n",
+          "truncated": false
         }
       ],
-      "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4"
+      "sha256": "46d6ff20ca86ff911b168aefcf43e8b08b0de2efccf31590d7f275f124d15853"
     },
     "stranica.py": {
       "bytes": 197611,
@@ -575,7 +583,7 @@
       "sha256": "a0976afb93a4d2fdcab392601d25253700977618a02b04bc31903a18e95ee81a"
     }
   },
-  "started_at_utc": "2026-08-29T07:51:16Z",
+  "started_at_utc": "2026-08-29T07:55:07Z",
   "status": "FAIL",
   "task_id": "task_077"
 }
