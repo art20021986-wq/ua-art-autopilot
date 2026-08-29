@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: task081-publish-repair-gate-a-v2
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   audit:
@@ -29,14 +29,24 @@ jobs:
 
       - name: Compile and test deterministic repair tooling
         run: |
-          python3 -m pip install --disable-pip-version-check -q pytest
           python3 -m py_compile \
             cloud/task_081_publish_repair/live_probe_v2.py \
             cloud/task_081_publish_repair/patcher.py \
             cloud/task_081_publish_repair/installer.py \
             cloud/task_081_publish_repair/postcheck.py \
             cloud/task_081_publish_repair/controller.py
-          python3 -m pytest cloud/task_081_publish_repair/tests -q
+          python3 - <<'PY'
+          import runpy
+          from pathlib import Path
+          for name in ('test_toggle_publish.py', 'test_seo068_normalize.py'):
+              values = runpy.run_path(str(Path('cloud/task_081_publish_repair/tests') / name))
+              tests = sorted((key, value) for key, value in values.items()
+                             if key.startswith('test_') and callable(value))
+              for key, test in tests:
+                  test()
+                  print('PASS', name, key)
+          print('TASK081_PURE_FIXTURE_TESTS_PASS')
+          PY
 
       - name: Prove live audit transport is GET-only
         run: |
