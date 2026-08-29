@@ -106,3 +106,22 @@ tests, Gate A workflow и manual Gate B workflow. Gate B должен требо
 
 Итог Gate A: только `PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL` либо FAIL.
 Не заявлять об исправлении live CRM/UA-0012 до отдельного разрешения production.
+
+## ROUND 2 — обязательная интеграция с завершённым TASK 076
+
+Первый push TASK 077 пересёкся по времени с завершением TASK 076. Канонический
+`main` теперь содержит commit `d05ebf0376f2779d2c36c29b80570f30adbfca57`
+с реальными выходами `cloud/task_076_eta_sync/`, однако первый worker TASK 077
+стартовал от более раннего SHA и не мог их прочитать. Этот continuation обязан:
+
+1. Прочитать все исходники, тесты и отчёт `cloud/task_076_eta_sync/`.
+2. Расширить существующие `eta_engine`/`eta_transaction`; не создавать второй
+   конкурирующий ETA writer и не дублировать очередь/publisher.
+3. Запустить объединённые offline tests TASK 076 + TASK 077 и записать точные
+   counts PASS/FAIL.
+4. Подготовить исполнимый Gate A candidate с GET-only/backup/sandbox режимом.
+   Фраза «нет live-доступа» не является PASS: без controller-verified evidence
+   итог остаётся `WAITING_GATE_A`, а не `DONE` и не «исправлено».
+5. В отчёте явно доказать: publisher FAIL даёт только одно failure-сообщение;
+   сообщение «Машина видна клиентам в каталоге» возможно только после verified
+   PASS primary + diag/placeholder + оба каталога.
