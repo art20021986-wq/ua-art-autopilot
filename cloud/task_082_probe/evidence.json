@@ -1,0 +1,883 @@
+{
+  "cars_ui": {
+    "bytes": 164687,
+    "definitions": {
+      "card_kb": {
+        "end_line": 321,
+        "line": 295,
+        "sha256": "40f5d4456e691645f91b2a1f2aea9244adc3faceffc78e81f8742249217b9b70",
+        "source": "def card_kb(card, staff):\n    cid = card[\"id\"]\n    rows = [\n        [InlineKeyboardButton(\"Редактировать данные\", callback_data=\"car_edit:%d\" % cid),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\", callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n        [InlineKeyboardButton(\"🇰🇷 Проверить VIN · CarHistory\",\n                              url=\"https://www.carhistory.kr/search/carhistory/search.car?lang=ru\")],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),\n    ])\n    rows.append([InlineKeyboardButton(\"Удалить\", callback_data=\"car_del:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Все автомобили\", callback_data=\"cards_cars\")])\n    return InlineKeyboardMarkup(rows)\n"
+      },
+      "cars_list": {
+        "end_line": 393,
+        "line": 356,
+        "sha256": "058a155a5910fa7819f3a4d9b701b1cd98e8639493c0d8af8ad5f0eeb79395c0",
+        "source": "async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    context.user_data.pop(\"car_last\", None)\n    context.user_data.pop(\"car_voice_active\", None)\n    context.user_data.pop(\"voice_undo\", None)\n    staff = db.get_staff(q.from_user.id)\n    try:\n        cards = db.list_cards(\"cars\", limit=30)\n    except Exception as e:\n        log.warning(\"Список машин: %s\", e)\n        return\n    if not cards:\n        await q.message.reply_text(\n            \"Автомобилей пока нет. Откройте явное создание новой карточки.\",\n            reply_markup=InlineKeyboardMarkup([[\n                InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")]]))\n        raise ApplicationHandlerStop\n\n    lines = [\"<b>Автомобили</b>\", \"Нажмите на машину — откроется карточка для правки.\", \"\"]\n    rows = []\n    for card in cards:\n        card = card_of(card[\"id\"]) or card\n        nomer = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n        name = \" \".join(str(x) for x in (card.get(\"brand\"), card.get(\"model\"),\n                                         card.get(\"year\")) if x) or \"без названия\"\n        miss = S.missing_required(card)\n        sostoyanie = (\"черновик, не хватает %d\" % len(miss)) if miss else \"заполнена\"\n        etap = S.status_label(card.get(\"status\")) if card.get(\"status\") else \"этап не задан\"\n        lines.append(\"<b>%s</b> · %s\" % (nomer, name))\n        lines.append(\"   %s · %s\" % (etap, sostoyanie))\n        rows.append([InlineKeyboardButton(\"%s · %s\" % (nomer, name[:28]),\n                                          callback_data=\"car_open:%d\" % card[\"id\"])])\n    rows.append([InlineKeyboardButton(\"← Назад\", callback_data=\"menu\")])\n    await q.message.reply_text(\"\\n\".join(lines), parse_mode=\"HTML\",\n                               reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop\n"
+      },
+      "open_card": {
+        "end_line": 346,
+        "line": 328,
+        "sha256": "d3e814f9c763bc9b9a3719ca5a109e04cacbae72b450315c8a37cc6c19af0ffa",
+        "source": "async def open_card(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    staff = db.get_staff(q.from_user.id)\n    cid = q.data.split(\":\")[-1]\n    card = card_of(cid)\n    if not card:\n        await q.message.reply_text(\"Карточка не найдена.\")\n        raise ApplicationHandlerStop\n\n    await CR.send_photos(q.message, card)\n    await q.message.reply_text(render(card, staff), parse_mode=\"HTML\",\n                               reply_markup=card_kb(card, staff),\n                               disable_web_page_preview=True)\n    await CR.send_videos(q.message, card)\n    context.user_data[\"car_last\"] = int(cid)\n    context.user_data[\"car_voice_active\"] = int(cid)\n    raise ApplicationHandlerStop\n"
+      },
+      "render": {
+        "end_line": 264,
+        "line": 172,
+        "sha256": "09fbb1baabdf297a24a2f4fb757464836a718edc086680f699218cacf77c97a8",
+        "source": "def render(card, staff):\n    L = []\n    L.append(\"<b>%s</b>\" % (card.get(\"auto_number\") or \"#%s\" % card.get(\"id\")))\n\n    miss = S.missing_required(card)\n    if miss:\n        L.append(\"<i>Черновик · не хватает %d полей</i>\" % len(miss))\n    else:\n        L.append(\"<i>%s · %s</i>\" % (\n            db.STATUS_LABELS.get(card.get(\"review_status\"), \"\"),\n            \"в каталоге\" if card.get(\"published\") else \"не опубликовано\"))\n\n    photos = photos_of(card)\n    vids = videos_of(card)\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(photos), S.PHOTO_LIMIT, len(vids), VIDEO_LIMIT))\n\n    L.append(\"\")\n    L.append(\"<b>ИДЕНТИФИКАЦИЯ</b>\")\n    L.append(\"Марка: <b>%s</b>\" % (card.get(\"brand\") or \"—\"))\n    L.append(\"Модель: <b>%s</b>\" % (card.get(\"model\") or \"—\"))\n    L.append(\"Год выпуска: %s\" % (card.get(\"year\") or \"—\"))\n    L.append(\"VIN: <b>%s</b>\" % (card.get(\"vin\") or \"—\"))\n    if card.get(\"vin\"):\n        ok, msg = S.check_vin(card.get(\"vin\"), _year(card))\n        L.append(\"  <i>%s</i>\" % msg)\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИКА</b>\")\n    L.append(\"Топливо: %s\" % (card.get(\"fuel\") or \"—\"))\n    L.append(\"Объём: <b>%s</b>\" % S.num(_int(card.get(\"engine_cc\")), \" см³\"))\n    L.append(\"КПП: %s\" % (card.get(\"gearbox\") or \"—\"))\n    L.append(\"Привод: %s\" % (card.get(\"drive\") or \"—\"))\n    L.append(\"Пробег: %s\" % S.num(_int(card.get(\"mileage_km\")), \" км\"))\n    L.append(\"Цвет: %s\" % (card.get(\"color\") or \"—\"))\n\n    L.append(\"\")\n    L.append(\"<b>ТЕХНИЧЕСКОЕ СОСТОЯНИЕ</b>\")\n    L.append(card.get(\"condition_text\") or \"—\")\n    L.append(\"Фото: %d из %d · видео: %d из %d\" % (\n        len(jload(card.get(\"condition_photos\"))), S.CONDITION_PHOTO_LIMIT,\n        len(jload(card.get(\"condition_videos\"))), S.CONDITION_VIDEO_LIMIT))\n    if card.get(\"diag_report\") or card.get(\"diag_link\"):\n        L.append(\"Диагностика: отчёт загружен\")\n        if card.get(\"diag_link\"):\n            L.append('  <a href=\"%s\">полный отчёт</a>' % card[\"diag_link\"])\n\n    L.append(\"\")\n    stage = S.stage_of(card.get(\"status\"))\n    L.append(\"<b>ЛОГИСТИКА · ЭТАП %d ИЗ 4</b>\" % (stage or 1))\n    for n, name in S.STAGES:\n        mark = \"пройден\" if n < stage else (\"сейчас\" if n == stage else \"—\")\n        L.append(\"%d. %s: <b>%s</b>\" % (n, name, mark))\n    if card.get(\"status\"):\n        L.append(\"Статус: %s\" % S.status_label(card.get(\"status\")))\n    if card.get(\"sea_container\"):\n        L.append(\"Контейнер: <b>%s</b>\" % card[\"sea_container\"])\n\n    left, eta = eta_of(card)\n    # Подпись зависит от того, где машина сейчас.\n    # На море счёт идёт до Грузии, до Киева — только когда она уже в Грузии.\n    podpis = {2: \"ДО ПОТИ/БАТУМИ\", 3: \"ДО КИЕВА\"}.get(stage)\n    if left is not None and podpis:\n        L.append(\"\")\n        L.append(\"🚚 <b>%s: %d дней</b>\" % (podpis, left))\n        L.append(\"ориентировочно %s%s\" % (\n            eta.strftime(\"%d.%m.%Y\"),\n            \" · задано вручную\" if card.get(\"eta_manual\") else \"\"))\n\n    klient = client_of(card)\n    if klient:\n        L.append(\"\")\n        L.append(\"<b>ПОКУПАТЕЛЬ</b>\")\n        L.append(\"Имя: %s\" % (klient.get(\"name\") or \"—\"))\n        L.append(\"Телефон: %s\" % (klient.get(\"phone\") or \"—\"))\n        if klient.get(\"telegram\"):\n            L.append(\"Telegram: %s\" % klient[\"telegram\"])\n        if klient.get(\"prepayment\"):\n            L.append(\"Предоплата: %s\" % klient[\"prepayment\"])\n        if klient.get(\"wishes\"):\n            L.append(\"Заметка: %s\" % klient[\"wishes\"])\n\n    if is_owner(staff):\n        L.extend(CR.owner_money(card))\n        if price_stale(card):\n            L.append(\"⚠️ <b>Цена на этом этапе ещё не обновлена</b>\")\n\n    if miss:\n        L.append(\"\")\n        L.append(\"<b>НЕ ХВАТАЕТ</b>\")\n        L.append(\", \".join(miss))\n\n    return \"\\n\".join(L)\n"
+      }
+    },
+    "inventory": [
+      {
+        "end_line": 81,
+        "line": 69,
+        "name": "ensure_columns",
+        "sha256": "665d5c9fc39f142ab9cf21b9130a02ed70427e7485e2063d7e39083157e165bf"
+      },
+      {
+        "end_line": 91,
+        "line": 84,
+        "name": "jload",
+        "sha256": "45230ff56c3fded26fcf6a56a6427383bcece09ebab64ae10d0eb05141dcd454"
+      },
+      {
+        "end_line": 95,
+        "line": 94,
+        "name": "jdump",
+        "sha256": "f6492fdf42e880a4e5564dadaa508bf110f3865ed8f774737feac32b93aaa110"
+      },
+      {
+        "end_line": 106,
+        "line": 98,
+        "name": "card_of",
+        "sha256": "c429b70785ff398842f940358c819b8d7e25b35f4ef5aac0b0b36e1a5991a1e7"
+      },
+      {
+        "end_line": 122,
+        "line": 109,
+        "name": "photos_of",
+        "sha256": "4540c65ddbb1d6e6ed0bf45c9851810f7f1a04e6a35c253235f9257bfd0d7f8b"
+      },
+      {
+        "end_line": 133,
+        "line": 125,
+        "name": "videos_of",
+        "sha256": "22ffb75e5bda9743baf66b6423529fc507def8ed7aa76692750c39fefc782392"
+      },
+      {
+        "end_line": 137,
+        "line": 136,
+        "name": "price_history",
+        "sha256": "454b60bdd02f96ba9156bf375ccde0c8c672d660b6b3d99e6c313c968170b0e0"
+      },
+      {
+        "end_line": 145,
+        "line": 140,
+        "name": "price_stale",
+        "sha256": "522936fba45869ad36089a836a15f5654dbafaf9324eba704ea4c546bcb36f25"
+      },
+      {
+        "end_line": 152,
+        "line": 148,
+        "name": "set_field",
+        "sha256": "12fa923888ca235f1961bf201da8fd59efd29e6b99e6d041c180828085922a7b"
+      },
+      {
+        "end_line": 161,
+        "line": 155,
+        "name": "drop_wait",
+        "sha256": "bb78f073e83f19b162e8c042835d04fccfe90d7d123ae785a5a2be5a7024c09c"
+      },
+      {
+        "end_line": 165,
+        "line": 164,
+        "name": "is_owner",
+        "sha256": "385fa2a2b56d818b6fa18e9b1cf11ea909562b45dec601804b0e867333095ebe"
+      },
+      {
+        "end_line": 264,
+        "line": 172,
+        "name": "render",
+        "sha256": "09fbb1baabdf297a24a2f4fb757464836a718edc086680f699218cacf77c97a8"
+      },
+      {
+        "end_line": 276,
+        "line": 267,
+        "name": "eta_of",
+        "sha256": "986b7d53970c7fa5a929a6a2b7cfa52656d6ed8206fec89db1d8f1613d1235af"
+      },
+      {
+        "end_line": 283,
+        "line": 279,
+        "name": "_int",
+        "sha256": "cffa08efad95dab805ceb2dbeca6c33819d4173e6dac71f85f153759082b5e12"
+      },
+      {
+        "end_line": 290,
+        "line": 286,
+        "name": "_year",
+        "sha256": "93cca982fe3d4961d140022c6f46633a7e6041514c9859afaae578e501f61508"
+      },
+      {
+        "end_line": 321,
+        "line": 295,
+        "name": "card_kb",
+        "sha256": "40f5d4456e691645f91b2a1f2aea9244adc3faceffc78e81f8742249217b9b70"
+      },
+      {
+        "end_line": 346,
+        "line": 328,
+        "name": "open_card",
+        "sha256": "d3e814f9c763bc9b9a3719ca5a109e04cacbae72b450315c8a37cc6c19af0ffa"
+      },
+      {
+        "end_line": 393,
+        "line": 356,
+        "name": "cars_list",
+        "sha256": "058a155a5910fa7819f3a4d9b701b1cd98e8639493c0d8af8ad5f0eeb79395c0"
+      },
+      {
+        "end_line": 440,
+        "line": 422,
+        "name": "edit_menu",
+        "sha256": "c335c4d0a5d7ad257164dff252ab66b6b7dc80e52c06a95ff9977ccc2f4adb08"
+      },
+      {
+        "end_line": 474,
+        "line": 443,
+        "name": "edit_ask",
+        "sha256": "492c45404438b6c363d0f14391997d73150234c20293ad9f1eef03e977ceef14"
+      },
+      {
+        "end_line": 510,
+        "line": 477,
+        "name": "clear_field",
+        "sha256": "3590b1c3df8697dab432f26f8527f3922cafee0e099a4e96a43f0134d9b7ba92"
+      },
+      {
+        "end_line": 577,
+        "line": 513,
+        "name": "diag_clear",
+        "sha256": "017e6695a0705c7d29ee93348d536aa24a1c8c35033349e89aebda3850b64d5d"
+      },
+      {
+        "end_line": 630,
+        "line": 580,
+        "name": "apply_value",
+        "sha256": "2d6db7d9b36cbff2635e2012f95d232dfd9be3b757f82540e0df43bfa9a77133"
+      },
+      {
+        "end_line": 670,
+        "line": 637,
+        "name": "media_screen",
+        "sha256": "a586792ea3913e4cfa2a60ede564edcbfbffb1ad19db94bcc504ae556969ba38"
+      },
+      {
+        "end_line": 705,
+        "line": 673,
+        "name": "video_gallery",
+        "sha256": "6e30c4a187a1cbc885d793c141c96a8a84509042e918db6ce112bf45d72a75b7"
+      },
+      {
+        "end_line": 746,
+        "line": 708,
+        "name": "gallery",
+        "sha256": "d0ebcd0f42253d1a56439176ed3cb21f5f2d3a9ba9427aee23a94ef1c87c55d5"
+      },
+      {
+        "end_line": 775,
+        "line": 749,
+        "name": "photo_remove_menu",
+        "sha256": "1999239896ede275e51facb9a6a2884ca32cdf5f9aeb43f7392aae71efec8ce7"
+      },
+      {
+        "end_line": 797,
+        "line": 778,
+        "name": "photo_remove",
+        "sha256": "cec351ec3f6df6a152480b60061ab4df9da0e1167fba0f7e5d8e5533c534ec00"
+      },
+      {
+        "end_line": 820,
+        "line": 800,
+        "name": "photo_remove_all_ask",
+        "sha256": "56677d7c3e8c63df1c650c8b3472c0924eb1a2542a19727be9f3e8173b932d00"
+      },
+      {
+        "end_line": 868,
+        "line": 823,
+        "name": "photo_remove_all",
+        "sha256": "380617f38ff5f68de80d9829f8c94b8ad93b33f3d565b604e5a089d9045fb857"
+      },
+      {
+        "end_line": 893,
+        "line": 882,
+        "name": "add_media_start",
+        "sha256": "b5893783f82b1140ad69b5fa7631e39417419bd4d5319df1d55516663052750a"
+      },
+      {
+        "end_line": 922,
+        "line": 896,
+        "name": "_save_media_bazovoe",
+        "sha256": "e9045a6b0f65d8be73a764c51f95e82f9953a8dddba4865f663285bb06b9e431"
+      },
+      {
+        "end_line": 978,
+        "line": 930,
+        "name": "condition_screen",
+        "sha256": "be9b9ebae49837399a685c0cd7e40cd5c8eee2e1750e9d929a11c20661fbb622"
+      },
+      {
+        "end_line": 1042,
+        "line": 987,
+        "name": "stage_menu",
+        "sha256": "3631b4e6480dc96d0885a031201f78b28eac76d3ac09ce6172bf518a8dce0c24"
+      },
+      {
+        "end_line": 1109,
+        "line": 1052,
+        "name": "stage_set",
+        "sha256": "9f0a885100cb9fe62815fabefc6b6e1d649d99e348568e9b0893c7d6f106987f"
+      },
+      {
+        "end_line": 1140,
+        "line": 1116,
+        "name": "price_screen",
+        "sha256": "c250c3c410ee66cb740bb457598bd7683a9e58ab1be1d6b44dde6f3e44914f98"
+      },
+      {
+        "end_line": 1158,
+        "line": 1143,
+        "name": "save_ai_text",
+        "sha256": "1c96cbf98e6a06f7fe24d1905f862ed16948f2ad2b325180e9e15b6558dc9f29"
+      },
+      {
+        "end_line": 1173,
+        "line": 1161,
+        "name": "keep_price",
+        "sha256": "a59f82e1316dfff27440a21e27806ecb10e40f9fda5cbd7b279c1831a1c7a313"
+      },
+      {
+        "end_line": 1181,
+        "line": 1176,
+        "name": "remember_price",
+        "sha256": "47820cb8c39396babe707a5abad8c9f980423f7ad2e2664ec09d1896f52cd003"
+      },
+      {
+        "end_line": 1215,
+        "line": 1208,
+        "name": "_orient",
+        "sha256": "8ad22aeed03d540d879b5e3ebcd7df6d5153da7db86bdba4b10c731375f1df0f"
+      },
+      {
+        "end_line": 1317,
+        "line": 1218,
+        "name": "auto_catch",
+        "sha256": "eb285e823ad69e55ec1a5d3995450c45ee767de0316e50ac9fad80850b16287b"
+      },
+      {
+        "end_line": 1343,
+        "line": 1335,
+        "name": "client_of",
+        "sha256": "7091ee70117777ab824fe25c602c10c77da2c3a5dc0a34b19dfe2e00a7c2f119"
+      },
+      {
+        "end_line": 1390,
+        "line": 1346,
+        "name": "client_screen",
+        "sha256": "a6e487d8458e5f7383ce715462b4e57b3f763a76281157c892e435aad7b90a8c"
+      },
+      {
+        "end_line": 1408,
+        "line": 1393,
+        "name": "client_ask",
+        "sha256": "1561362165307657dd4f75a3e7228656a33a204901e2ab020e1d04cc4a4455f5"
+      },
+      {
+        "end_line": 1420,
+        "line": 1411,
+        "name": "client_unlink",
+        "sha256": "b7db68fb0d9fbb0dd8d70e54e3bd4d017c26d8880d4c6eca30fd6e9fdf1e3cd3"
+      },
+      {
+        "end_line": 1461,
+        "line": 1427,
+        "name": "toggle_publish",
+        "sha256": "e84fa97d435143231e7055b8dfcd75c349fd766631130b04145e2d9fa79a22cc"
+      },
+      {
+        "end_line": 1479,
+        "line": 1464,
+        "name": "mark_sold",
+        "sha256": "936ea97abbb3b485f3b6c49f39f14dd2bf696dbb785f6f2f2645547ea2c446ca"
+      },
+      {
+        "end_line": 1492,
+        "line": 1482,
+        "name": "mark_sold_ok",
+        "sha256": "5363fde241b0f5ee296dc0aefb08aa5659da754b8701c2ae2e44130ddf02ff4d"
+      },
+      {
+        "end_line": 1509,
+        "line": 1495,
+        "name": "delete_ask",
+        "sha256": "902c7b81571c24d003140057933b668f62af30bde0109d989d83bcac385dcda2"
+      },
+      {
+        "end_line": 1532,
+        "line": 1512,
+        "name": "delete_ok",
+        "sha256": "e86958d72b882ccef78168092a2bce75822099d59a1976f52ef7a289bc992106"
+      },
+      {
+        "end_line": 1555,
+        "line": 1541,
+        "name": "stats_line",
+        "sha256": "79e9f5ca9af19c84c19a8b8ce147b226a3170355237a5274e523fdae8ae31990"
+      },
+      {
+        "end_line": 1572,
+        "line": 1558,
+        "name": "ai_warning",
+        "sha256": "866c73ae7d198a5a0659be2804d18ebbe0fb7222adb4522245957e14365bcdb5"
+      },
+      {
+        "end_line": 1585,
+        "line": 1575,
+        "name": "menu_header",
+        "sha256": "f7ddfeedf59cc137dffc513d3f27f20c30447d88a3afbbf892fbebdae9f91d46"
+      },
+      {
+        "end_line": 1620,
+        "line": 1595,
+        "name": "with_stats_button",
+        "sha256": "5678f0bebb0942f1a55ef7a53293a2dd8d55e58cc7e40ecd93aaddb37d2bd3b1"
+      },
+      {
+        "end_line": 1638,
+        "line": 1623,
+        "name": "more_screen",
+        "sha256": "f09be8b78ce8424359d03e1afa3ac713d2e95b99a1f592ee8fe4f4360fd4bba5"
+      },
+      {
+        "end_line": 1668,
+        "line": 1641,
+        "name": "clients_screen",
+        "sha256": "42b2b9df45e083e423e5a04301a09e23ec081f922e67c782b97617c597e4d0a1"
+      },
+      {
+        "end_line": 1699,
+        "line": 1671,
+        "name": "crm_leads",
+        "sha256": "5d678409c1b3898b6cca6a8d67f2c5235b85673a9b3049f1a67d55e566325577"
+      },
+      {
+        "end_line": 1716,
+        "line": 1702,
+        "name": "crm_stats",
+        "sha256": "d4c910ee9acb7d0199e186501f9e140e22c2eccaad160024a7925e67bc39d01e"
+      },
+      {
+        "end_line": 1732,
+        "line": 1719,
+        "name": "crm_stats_week",
+        "sha256": "1789914d02237d7641dfee284352825f3b63ef0dd59feb0858def926dd2ccde7"
+      },
+      {
+        "end_line": 1743,
+        "line": 1741,
+        "name": "client_view",
+        "sha256": "327989181a902db959e22fcfde7e5f13f341215ba427cc7f72800a1e09d9fdfe"
+      },
+      {
+        "end_line": 1816,
+        "line": 1746,
+        "name": "preview",
+        "sha256": "6276e0e19f0c40ecb1ae3cc3eac2e8c5e43e860350a6e8e73eddb89087b71380"
+      },
+      {
+        "end_line": 1824,
+        "line": 1819,
+        "name": "preview_demo",
+        "sha256": "a05de18f3de2421b83ab2a136bc83621669e9096760e135fdd5732922ee15d3e"
+      },
+      {
+        "end_line": 1866,
+        "line": 1827,
+        "name": "ad_text",
+        "sha256": "a7c3a64b9009812ac7149d098669eac6e91f0ec30055b8deb2f1a8240a3d3dd7"
+      },
+      {
+        "end_line": 1899,
+        "line": 1869,
+        "name": "ad_screen",
+        "sha256": "abcc6fdf56af95a0caa7c4ada8cbaa3ff50e4294db2517c5251245591c28ff31"
+      },
+      {
+        "end_line": 1986,
+        "line": 1908,
+        "name": "collect_svodka",
+        "sha256": "25be331a0a4b0888a527faaf2b8d34216c7de8dd57fed25610401ea24c01d2aa"
+      },
+      {
+        "end_line": 2023,
+        "line": 1989,
+        "name": "optimize_screen",
+        "sha256": "93fb5afd9349c94b0211dd4b280c88a56a50fb70b5004d93ffa214882baf5f1a"
+      },
+      {
+        "end_line": 2035,
+        "line": 2026,
+        "name": "svodka_screen",
+        "sha256": "9c11240aa63d3e99a017db10a9f5a74e302383102f1f99351b12266143d78d9c"
+      },
+      {
+        "end_line": 2044,
+        "line": 2043,
+        "name": "_v168_empty",
+        "sha256": "815268921e7064a5832bcdcaf62810db86ecba5b4d0e4bea458226cf0a4cc27a"
+      },
+      {
+        "end_line": 2052,
+        "line": 2047,
+        "name": "_v168_is_correction",
+        "sha256": "879909d12036df9d08f8028362877507e137b7aafa17bb4bb9ef0537be5defad"
+      },
+      {
+        "end_line": 2075,
+        "line": 2055,
+        "name": "_v168_named_fields",
+        "sha256": "7c2242a40eedf9b0456c89c14383f0eea847e5b1be82cbea742072d69d7878e7"
+      },
+      {
+        "end_line": 2111,
+        "line": 2078,
+        "name": "_v168_cas_write",
+        "sha256": "1c6b4a285cb821847621ed16ac215cbbff9130006babfc01f739880eca04bf8a"
+      },
+      {
+        "end_line": 2119,
+        "line": 2114,
+        "name": "_v168_guard_heartbeat",
+        "sha256": "6664c129eec84f61721c41c00642341c5c87434c3d80973c3dca09c9a6220545"
+      },
+      {
+        "end_line": 2141,
+        "line": 2122,
+        "name": "_v168_ack",
+        "sha256": "02969d807a6e3a06643e81126b7d8222a303dbc37a40e16e23268b5db14be8af"
+      },
+      {
+        "end_line": 2156,
+        "line": 2144,
+        "name": "_v168_start_guard",
+        "sha256": "00f76e48381e51009d97e4dabe6eae7357ca46433d667dcd4a9f5ecc7d36edc9"
+      },
+      {
+        "end_line": 2173,
+        "line": 2159,
+        "name": "voice_change_plan",
+        "sha256": "fa9e5c4a440314d4fac07d091f3044a73201606e74d7c952b739e5f87d0a427a"
+      },
+      {
+        "end_line": 2215,
+        "line": 2175,
+        "name": "voice_undo",
+        "sha256": "77910d3484d0892231988260b6a3905daab78bc87daed336533eb01b85e97f5e"
+      },
+      {
+        "end_line": 2232,
+        "line": 2225,
+        "name": "_v165_key",
+        "sha256": "43501b279c485d9935b299825e160693a11ac8959d2ce58dc14c1d7ae5459e13"
+      },
+      {
+        "end_line": 2238,
+        "line": 2236,
+        "name": "_v165_limit",
+        "sha256": "19e3c6bd1978dc2273cbee03c72839b121dbec04021b007c82ab0ae9e338a816"
+      },
+      {
+        "end_line": 2264,
+        "line": 2241,
+        "name": "_v165_read_rows",
+        "sha256": "ba021a9d53ca858203ae1a05ce06aad9031fa17ac56054ee2d94f9c2daa4716c"
+      },
+      {
+        "end_line": 2328,
+        "line": 2267,
+        "name": "_v165_spool_enqueue",
+        "sha256": "1ab2c8da3adec70313b0ae469b371a9cd4bea74b6e8b3150f078dc8a243bda5f"
+      },
+      {
+        "end_line": 2370,
+        "line": 2332,
+        "name": "_v165_spool_remove",
+        "sha256": "42324f0f2481d3594bbf2f4f68273500f56c0d26fa4782df6d42f5cb1daccecd"
+      },
+      {
+        "end_line": 2400,
+        "line": 2373,
+        "name": "_v166_drain_owned",
+        "sha256": "41950d68f07cabaf46f331f433b16b3733b9d86c7e6439d6a9aa2dc16e43e802"
+      },
+      {
+        "end_line": 2417,
+        "line": 2404,
+        "name": "_v165_spool_drain",
+        "sha256": "2651e4bf2963b462d5d0423d479d26b4d8327632a335ad101d8ddce6ee79dc9a"
+      },
+      {
+        "end_line": 2434,
+        "line": 2421,
+        "name": "_v165_media_ids",
+        "sha256": "6ffd41e7fc5abb2ac9bc24aa9d3cca0de84ffb7cd51bb0fe18263aa33c3fad8a"
+      },
+      {
+        "end_line": 2450,
+        "line": 2437,
+        "name": "_v165_status",
+        "sha256": "31ae5127f812760b144e60037ea8608c77786412d947d304c4845ca183d554a3"
+      },
+      {
+        "end_line": 2457,
+        "line": 2455,
+        "name": "media_spool_worker_job",
+        "sha256": "948e255c37e859d2a8396cb48c85134785177b0eff2a429ae1c8392797f95c36"
+      },
+      {
+        "end_line": 2485,
+        "line": 2460,
+        "name": "_v165_progress_job",
+        "sha256": "13065f3937fc676c35519ac39a031e3ff7d370b6780af9bac6235e55fabaa15b"
+      },
+      {
+        "end_line": 2504,
+        "line": 2490,
+        "name": "_v165_schedule_progress",
+        "sha256": "9629cf1c3c215e1bbdaea24de7153ac3016246245e566ebed1f7596445c1f063"
+      },
+      {
+        "end_line": 2567,
+        "line": 2510,
+        "name": "_v167_voice_explicit_fields",
+        "sha256": "085d60a8fc7aaa798eb4a42bd35991fd93a71ac9b68c38a19dd90875c03e014b"
+      },
+      {
+        "end_line": 2878,
+        "line": 2571,
+        "name": "catch_message",
+        "sha256": "152d00158bcd097f61fad4e795340f45113724217b481d56ab32f358549a4fd5"
+      },
+      {
+        "end_line": 2696,
+        "line": 2694,
+        "name": "download_voice",
+        "sha256": "259898e6783792a0491739594ce48871bfcf1dc8504e7290575b5b728400f1a9"
+      },
+      {
+        "end_line": 2908,
+        "line": 2893,
+        "name": "_ubrat_fayly_foto",
+        "sha256": "be21babad4c216a0cd4c81cfbe075f98382eb186368aaf2bc2751fbe233c7bd4"
+      },
+      {
+        "end_line": 2942,
+        "line": 2911,
+        "name": "_ubrat_fayly_video",
+        "sha256": "1f6525b5ea63a6ab6040ed5011f9af962c52a920058ef49385fe7309963821bf"
+      },
+      {
+        "end_line": 2959,
+        "line": 2945,
+        "name": "_peresobrat_stranicy",
+        "sha256": "19ec0c4e8136870410e2bb1693fa22abf3d616202468afa7e40fbf3e9d34bc0d"
+      },
+      {
+        "end_line": 2983,
+        "line": 2962,
+        "name": "video_remove_all_ask",
+        "sha256": "dd2e70cd3b0815b84d42c996683f97a86bf1ff8a6dc649dcfbae2e1078635001"
+      },
+      {
+        "end_line": 3030,
+        "line": 2986,
+        "name": "video_remove_all",
+        "sha256": "43f3392aba311294fce6fd4ccd9cbc359f0a9cf6444c82eb27059fe5736eff61"
+      },
+      {
+        "end_line": 3056,
+        "line": 3033,
+        "name": "diag_photo_show",
+        "sha256": "ee7d40f62e8bb4b0952e54e20cab7517f6684c547772d4d4d857e8e93d7a8dca"
+      },
+      {
+        "end_line": 3082,
+        "line": 3059,
+        "name": "diag_video_show",
+        "sha256": "ef3494fbca7c021d4f39f471d21375d80be91db499297fcc2c083f1924f95e1f"
+      },
+      {
+        "end_line": 3121,
+        "line": 3086,
+        "name": "diag_clear_ask",
+        "sha256": "4eea63a5e892b4a9c0179ec1113f6b79517ea04f788ffdc371f590d22cf8cbd4"
+      },
+      {
+        "end_line": 3182,
+        "line": 3125,
+        "name": "_ubrat_video_polno",
+        "sha256": "591f92699f6a806aebb77153aeb41458c345748940db006bc1fcb70816c6bc0a"
+      },
+      {
+        "end_line": 3252,
+        "line": 3184,
+        "name": "register",
+        "sha256": "c43aa645da40b01814a03c2c857177062b720cd09415093b9b17fe8fae25e7de"
+      },
+      {
+        "end_line": 3277,
+        "line": 3272,
+        "name": "_v140_zapis",
+        "sha256": "c6d19a10eb0810d60c2167a59ec3c14ccc913d38e0e8f913d7f7fb21c1204931"
+      },
+      {
+        "end_line": 3300,
+        "line": 3280,
+        "name": "_v140_sprosit",
+        "sha256": "654a6e94fb626e4413c64f4205d9f842554d871bd62e9c4abb015f8b61527bda"
+      },
+      {
+        "end_line": 3340,
+        "line": 3303,
+        "name": "_save_media_proverka",
+        "sha256": "c08913131f6bd86b70d3a9032cf5bdb64c6e7f16996d2a94e4125ff630ae0413"
+      },
+      {
+        "end_line": 3356,
+        "line": 3352,
+        "name": "_v142_papka",
+        "sha256": "a50251916c35cfe6484d7bfff4316f8381c541c00ec8b3ad34cbd614e69ddb0f"
+      },
+      {
+        "end_line": 3367,
+        "line": 3359,
+        "name": "_v142_kopirovat",
+        "sha256": "ac0974575b17d1ab3f0052a3d01fa7fb6e42e5b6cb1a0db7bb3ed67186680272"
+      },
+      {
+        "end_line": 3384,
+        "line": 3370,
+        "name": "_v142_vernut",
+        "sha256": "6d404898518f2f29441b9025bd3c652822c028db491e84544e7973c916d7f59e"
+      },
+      {
+        "end_line": 3393,
+        "line": 3387,
+        "name": "_v142_zapas_video",
+        "sha256": "82ca525fcdcc44ff2235ee94786b054c1809157b1804c0ce6eacce4288d383b3"
+      },
+      {
+        "end_line": 3399,
+        "line": 3396,
+        "name": "_v142_zapas_foto",
+        "sha256": "67fa19c31c08f30c4d199dde07794eb352972502d493512e4758c462318a9bd8"
+      },
+      {
+        "end_line": 3403,
+        "line": 3402,
+        "name": "_v142_vernut_foto",
+        "sha256": "8c2e7c1f2781de383610ddd066322e41f310726d4e572faa705bf0832a0ceba7"
+      },
+      {
+        "end_line": 3417,
+        "line": 3409,
+        "name": "_ubrat_video_polno",
+        "sha256": "d5fc3d220695b4a8954c9843d909b95384017298b9280affc3fc081db0c3d595"
+      },
+      {
+        "end_line": 3450,
+        "line": 3428,
+        "name": "save_media",
+        "sha256": "9ee384e3c44128ecd152f1f8aa440e7416e5ea4d837504c1d85aa07c379ccda9"
+      },
+      {
+        "end_line": 3474,
+        "line": 3455,
+        "name": "_v159_ne_tot_tip",
+        "sha256": "b16e4885224165158dac0727d83a2e0f8ed378b41623f2b1c24c9fa9a8804e34"
+      },
+      {
+        "end_line": 3512,
+        "line": 3483,
+        "name": "_v163_status",
+        "sha256": "832e78bcdbfb3cf68d2d0a6b92baf42093504b4d3ea3d5aa89cbf86049ea44d7"
+      },
+      {
+        "end_line": 3522,
+        "line": 3515,
+        "name": "_ubrat_video_polno",
+        "sha256": "7434f9fc4072e6000ab0f92336f8e7d9a98b8f54b9a8eba0768136a2c3527422"
+      }
+    ],
+    "sha256": "50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306"
+  },
+  "contract": "CRM-VIN4-TITLE-001-V1.0",
+  "db": {
+    "cards": [
+      {
+        "brand": "Mercedes-Benz",
+        "db_id": 7,
+        "expected_text_title": "UA-0001 · Mercedes-Benz E 220 2017 · VIN 3001",
+        "id": "UA-0001",
+        "model": "E 220",
+        "vin4": "3001",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2017"
+      },
+      {
+        "brand": "Mercedes-Benz",
+        "db_id": 8,
+        "expected_text_title": "UA-0002 · Mercedes-Benz B-Class 2010 · VIN 1014",
+        "id": "UA-0002",
+        "model": "B-Class",
+        "vin4": "1014",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2010"
+      },
+      {
+        "brand": "Kia",
+        "db_id": 9,
+        "expected_text_title": "UA-0003 · Kia K5 2019 · VIN 5484",
+        "id": "UA-0003",
+        "model": "K5",
+        "vin4": "5484",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2019"
+      },
+      {
+        "brand": "Kia",
+        "db_id": 10,
+        "expected_text_title": "UA-0004 · Kia K5 2019 · VIN 3849",
+        "id": "UA-0004",
+        "model": "K5",
+        "vin4": "3849",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2019"
+      },
+      {
+        "brand": "Mercedes-Benz",
+        "db_id": 11,
+        "expected_text_title": "UA-0005 · Mercedes-Benz B-Class 2013 · VIN 1918",
+        "id": "UA-0005",
+        "model": "B-Class",
+        "vin4": "1918",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2013"
+      },
+      {
+        "brand": "Kia",
+        "db_id": 12,
+        "expected_text_title": "UA-0006 · Kia K5 2019 · VIN 9954",
+        "id": "UA-0006",
+        "model": "K5",
+        "vin4": "9954",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2019"
+      },
+      {
+        "brand": "Mercedes-Benz",
+        "db_id": 13,
+        "expected_text_title": "UA-0007 · Mercedes-Benz B-Class 2011 · VIN 4006",
+        "id": "UA-0007",
+        "model": "B-Class",
+        "vin4": "4006",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2011"
+      },
+      {
+        "brand": "Mercedes-Benz",
+        "db_id": 14,
+        "expected_text_title": "UA-0008 · Mercedes-Benz B-Class 2009 · VIN 0158",
+        "id": "UA-0008",
+        "model": "B-Class",
+        "vin4": "0158",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2009"
+      },
+      {
+        "brand": "Kia",
+        "db_id": 15,
+        "expected_text_title": "UA-0009 · Kia K5 2018 · VIN 2741",
+        "id": "UA-0009",
+        "model": "K5",
+        "vin4": "2741",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2018"
+      },
+      {
+        "brand": "Kia",
+        "db_id": 16,
+        "expected_text_title": "UA-0010 · Kia K5 2018 · VIN 4445",
+        "id": "UA-0010",
+        "model": "K5",
+        "vin4": "4445",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2018"
+      },
+      {
+        "brand": "Hyundai",
+        "db_id": 18,
+        "expected_text_title": "UA-0011 · Hyundai SONATA 2018 · VIN 4289",
+        "id": "UA-0011",
+        "model": "SONATA",
+        "vin4": "4289",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2018"
+      },
+      {
+        "brand": "Kia",
+        "db_id": 19,
+        "expected_text_title": "UA-0012 · Kia K5 2018 · VIN 4187",
+        "id": "UA-0012",
+        "model": "K5",
+        "vin4": "4187",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2018"
+      },
+      {
+        "brand": "Mercedes-Benz",
+        "db_id": 20,
+        "expected_text_title": "UA-0013 · Mercedes-Benz Б-КЛАССА 2015 · VIN 2530",
+        "id": "UA-0013",
+        "model": "Б-КЛАССА",
+        "vin4": "2530",
+        "vin_present": true,
+        "vin_valid": true,
+        "year": "2015"
+      }
+    ],
+    "count": 13,
+    "quick_check": "ok",
+    "sha256": "50795c052b0763603a8517a7d50da2ec65b208e2c98d5b285d1037dc863f6444"
+  },
+  "errors": [],
+  "generated_at_utc": "2026-08-29T07:36:03Z",
+  "http_methods": [
+    "GET"
+  ],
+  "mode": "GET_ONLY",
+  "production_touched": false,
+  "status": "PASS"
+}
