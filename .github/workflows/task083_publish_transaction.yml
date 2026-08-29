@@ -68,7 +68,7 @@ jobs:
           python3 -W error automation/production_queue.py self-test
           python3 -W error automation/production_queue.py wait \
             --task 83 \
-            --drain-before 2026-08-29T09:06:10Z \
+            --drain-before 2026-08-29T09:05:20Z \
             --timeout-seconds 4500 \
             --stable-polls 2
 
