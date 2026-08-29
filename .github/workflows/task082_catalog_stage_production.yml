@@ -25,6 +25,18 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Fail closed on newer owner directive
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          newer = Path('tasks/task_084.md')
+          if newer.exists():
+              text = newer.read_text(encoding='utf-8')
+              if 'заменяет TASK 082' in text and 'В Корее' in text:
+                  raise SystemExit('TASK082_SUPERSEDED_BY_TASK084_BEFORE_PRODUCTION')
+          raise SystemExit('TASK082_SUPERSESSION_GUARD_MISSING')
+          PY
+
       - name: Set up Python 3.11
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
