@@ -1156,7 +1156,8 @@ def _db_snapshot() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             raise RepairBlocked("invalid_published_card_id:" + identifier)
         row["auto_number"] = identifier
         identifiers.append(identifier)
-    if len(rows) != 10 or len(set(identifiers)) != 10 or "UA-0009" not in identifiers:
+    if (len(rows) < 10 or len(set(identifiers)) != len(rows)
+            or not {"UA-0009", "UA-0010"}.issubset(identifiers)):
         raise RepairBlocked("published_card_contract_changed:" + ",".join(identifiers))
     canonical = json.dumps(rows, ensure_ascii=False, sort_keys=True, default=str).encode("utf-8")
     return rows, {
