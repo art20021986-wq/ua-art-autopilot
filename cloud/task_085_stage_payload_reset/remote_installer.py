@@ -319,27 +319,86 @@ def patch_stranica(source: str) -> str:
     )
 
 
+def _inject_after_assignment(
+    source: str,
+    function_name: str,
+    target_name: str,
+    statements: tuple[str, ...],
+    marker: str,
+) -> str:
+    """Inject after the active function first direct assignment to a local."""
+    tree = ast.parse(source)
+    matches = [
+        node for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == function_name
+    ]
+    if not matches:
+        raise Task085Error("FUNCTION_MISSING_%s" % function_name)
+    node = matches[-1]
+    lines = source.splitlines(keepends=True)
+    active = "".join(lines[node.lineno - 1 : getattr(node, "end_lineno", node.lineno)])
+    if marker in source:
+        if source.count(marker) == 1 and active.count(marker) == 1:
+            return source
+        raise Task085Error("MARKER_NOT_ACTIVE:" + marker)
+
+    assignment = None
+    for statement in node.body:
+        targets = []
+        if isinstance(statement, ast.Assign):
+            targets = list(statement.targets)
+        elif isinstance(statement, ast.AnnAssign):
+            targets = [statement.target]
+        names = {
+            item.id for target in targets for item in ast.walk(target)
+            if isinstance(item, ast.Name)
+        }
+        if target_name in names:
+            assignment = statement
+            break
+    if assignment is None:
+        raise Task085Error(
+            "FUNCTION_ASSIGNMENT_%s:%s" % (function_name, target_name)
+        )
+    insert_at = getattr(assignment, "end_lineno", assignment.lineno)
+    reference = lines[assignment.lineno - 1]
+    indent = reference[: len(reference) - len(reference.lstrip())]
+    if len(indent) <= node.col_offset:
+        indent = " " * (node.col_offset + 4)
+    payload = "".join(indent + statement + "\n" for statement in statements)
+    candidate = "".join(lines[:insert_at] + [payload] + lines[insert_at:])
+    compile(candidate, function_name + ".candidate.py", "exec")
+    if candidate.count(marker) != 1:
+        raise Task085Error("CANDIDATE_MARKER:" + function_name)
+    return candidate
+
+
 def patch_master_card(source: str) -> str:
-    needle = "    m = dannye(kod)\n"
-    insertion = needle + (
-        "    # TASK085_MASTER_PROJECTION_V1\n"
-        "    from stage_payload_guard import public_projection as _task085_project\n"
-        "    m = _task085_project(m)\n"
-    )
-    return _inject_function_line(
-        source, "obrabotat_kartochku", needle, insertion, MARKERS["master_card.py"]
+    return _inject_after_assignment(
+        source,
+        "obrabotat_kartochku",
+        "m",
+        (
+            "# TASK085_MASTER_PROJECTION_V1",
+            "from stage_payload_guard import public_projection as _task085_project",
+            "m = _task085_project(m)",
+        ),
+        MARKERS["master_card.py"],
     )
 
 
 def patch_cars_schema(source: str) -> str:
-    needle = "    L = []\n"
-    insertion = (
-        "    # TASK085_CRM_PROJECTION_V1\n"
-        "    from stage_payload_guard import public_projection as _task085_project\n"
-        "    car = _task085_project(car)\n" + needle
-    )
-    return _inject_function_line(
-        source, "render_card", needle, insertion, MARKERS["cars_schema.py"]
+    return _inject_function_prologue(
+        source,
+        "render_card",
+        "car",
+        (
+            "# TASK085_CRM_PROJECTION_V1",
+            "from stage_payload_guard import public_projection as _task085_project",
+            "car = _task085_project(car)",
+        ),
+        MARKERS["cars_schema.py"],
     )
 
 

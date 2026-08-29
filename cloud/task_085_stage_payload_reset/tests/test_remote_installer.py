@@ -54,10 +54,10 @@ class SourcePatchTests(unittest.TestCase):
              "def sobrat_kartochku(m, kadry, sredn=None):\n    nom = nomer(m)\n    return nom\n",
              "stranica.py"),
             (remote.patch_master_card,
-             "def obrabotat_kartochku(html, kod):\n    m = dannye(kod)\n    return html\n",
+             "def obrabotat_kartochku(html, kod):\n    m = dannye(kod) or {}\n    return html\n",
              "master_card.py"),
             (remote.patch_cars_schema,
-             "def render_card(car, role='owner', today=None):\n    L = []\n    return L\n",
+             "def render_card(car, role='owner', today=None):\n    return car.get('status')\n",
              "cars_schema.py"),
         )
         for patcher, source, name in cases:
