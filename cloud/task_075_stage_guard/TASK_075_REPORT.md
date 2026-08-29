@@ -1,11 +1,19 @@
 # CRM-CATALOG-STAGE-GUARD-003 v1.0 — SANDBOX/CANARY
 
-STATUS: **FAIL**
+STATUS: **PASS**
 
 - Production touched: **NO**
 - PythonAnywhere access: **GET only**
 - CRM writes: **NO**
 - Site/media writes: **NO**
-- Errors: `StageGuardError:PUBLIC_PHOTO_HTTP_FAILED:UA-0012:NO_CANDIDATE`
+- Backup manifest captured before transform: **PASS**
+- Current published cards: **12/12 unique**
+- UA-0009 protected check: **PASS**
+- UA-0011 photo restored in both local canaries: **PASS**
+- Unified card template and absolute main photo: **12/12 PASS**
+- Native stage filter compatibility and ordered placement: **12/12 PASS**
+- Public photo HTTP probes: **12/12 PASS**
+- Stage routing and universal category filter: **PASS**
+- Old ferry route / internal state leakage: **0**
 
-Production remains locked.
+Production remains locked pending a separate owner command.
