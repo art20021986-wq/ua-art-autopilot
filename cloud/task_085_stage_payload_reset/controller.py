@@ -271,7 +271,7 @@ def validate_shadow(value: dict) -> None:
         "auto_number"
     ) != PROTECTED_CODE:
         raise ControllerError("SHADOW_UA0009")
-    if len(value.get("candidate_sources") or {}) != 6:
+    if len(value.get("candidate_sources") or {}) != 7:
         raise ControllerError("SHADOW_SOURCE_COVERAGE")
 
 
@@ -304,7 +304,7 @@ def validate_postcheck(value: dict) -> None:
             raise ControllerError("POSTCHECK_STALE_FIELD:" + field)
     if value.get("markers") != {
         "db.py": 1, "cars_ui.py": 1, "stranica.py": 1,
-        "master_card.py": 1, "cars_schema.py": 1,
+        "master_card.py": 1, "cars_schema.py": 1, "publikaciya.py": 1,
     }:
         raise ControllerError("POSTCHECK_MARKERS")
 

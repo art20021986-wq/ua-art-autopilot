@@ -42,7 +42,7 @@ LIVE_GUARD = ROOT / "stage_payload_guard.py"
 STATE = TASK_ROOT / "task085_state.json"
 LOCK = ROOT / ".ua_art_production_writer.lock"
 DB_PATH = ROOT / "crm.db"
-SOURCE_NAMES = ("db.py", "cars_ui.py", "stranica.py", "master_card.py", "cars_schema.py")
+SOURCE_NAMES = ("db.py", "cars_ui.py", "stranica.py", "master_card.py", "cars_schema.py", "publikaciya.py")
 SOURCE_PATHS = tuple(ROOT / name for name in SOURCE_NAMES)
 RECEIPTS = {
     "shadow": TASK_ROOT / "task085_shadow_receipt.json",
@@ -64,6 +64,7 @@ MARKERS = {
     "stranica.py": "TASK085_PUBLIC_PROJECTION_V1",
     "master_card.py": "TASK085_MASTER_PROJECTION_V1",
     "cars_schema.py": "TASK085_CRM_PROJECTION_V1",
+    "publikaciya.py": "TASK087_DIAGNOSTIC_PLACEHOLDER_V1",
 }
 MAX_FILE_BYTES = 16_000_000
 
@@ -425,12 +426,37 @@ def patch_cars_schema(source: str) -> str:
     )
 
 
+def patch_publikaciya(source: str) -> str:
+    marker = MARKERS["publikaciya.py"]
+    if marker in source:
+        if source.count(marker) != 1:
+            raise Task085Error("PUBLISHER_MARKER_COUNT")
+        return source
+    start, end, block = _function(source, "opublikovat")
+    anchor = "        html, diag, m = _master(kod)"
+    if block.count(anchor) != 1:
+        raise Task085Error("PUBLISHER_MASTER_ANCHOR:%d" % block.count(anchor))
+    insertion = (
+        anchor
+        + "\n        # TASK087_DIAGNOSTIC_PLACEHOLDER_V1"
+        + "\n        if not diag:"
+        + "\n            from stage_payload_guard import diagnostic_placeholder_html as _task087_diag"
+        + "\n            diag = _task087_diag(kod)"
+    )
+    block = block.replace(anchor, insertion, 1)
+    lines = source.splitlines(keepends=True)
+    if not block.endswith("\n"):
+        block += "\n"
+    return "".join(lines[:start] + [block] + lines[end:])
+
+
 PATCHERS = {
     "db.py": patch_db,
     "cars_ui.py": patch_cars_ui,
     "stranica.py": patch_stranica,
     "master_card.py": patch_master_card,
     "cars_schema.py": patch_cars_schema,
+    "publikaciya.py": patch_publikaciya,
 }
 
 

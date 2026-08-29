@@ -52,6 +52,14 @@ class StagePayloadGuardTests(unittest.TestCase):
         self.assertEqual(projected["vin"], base["vin"])
         self.assertEqual(base["sea_container"], "ONEYSELGF1046602")
 
+    def test_diagnostic_placeholder_is_complete_and_scoped(self):
+        html = guard.diagnostic_placeholder_html("UA-0011")
+        self.assertIn("Комплексная диагностика UA-0011", html)
+        self.assertIn("Материалы комплексной диагностики ожидаются", html)
+        self.assertIn("UA-0011.html", html)
+        with self.assertRaises(guard.StagePayloadError):
+            guard.diagnostic_placeholder_html("../UA-0011")
+
     def test_sql_triggers_block_container_and_eta_for_korea(self):
         con = sqlite3.connect(":memory:")
         con.execute(

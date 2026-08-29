@@ -2,7 +2,7 @@
 """Permanent stage-owned payload policy for UA ART CRM and public cards."""
 from __future__ import annotations
 
-from typing import Iterable, Mapping
+import re\nfrom typing import Iterable, Mapping
 
 
 CONTRACT_ID = "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0"
@@ -94,6 +94,21 @@ def public_projection(card: Mapping | None) -> dict:
         if field in value:
             value[field] = None
     return value
+
+
+def diagnostic_placeholder_html(code: str) -> str:
+    """Return the complete diagnostic companion page when no report exists yet."""
+    if not re.fullmatch(r"UA-[0-9]{4,}", str(code or "")):
+        raise StagePayloadError("INVALID_DIAGNOSTIC_CODE")
+    return (
+        "<!doctype html><html lang='ru'><head><meta charset='utf-8'>"
+        "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+        "<title>Комплексная диагностика %s</title></head><body>"
+        "<h1>Комплексная диагностика %s</h1>"
+        "<p>Материалы комплексной диагностики ожидаются.</p>"
+        "<a href='%s.html'>Вернуться к автомобилю</a></body></html>"
+        % (code, code, code)
+    )
 
 
 def _quoted(names: Iterable[str]) -> list[str]:
