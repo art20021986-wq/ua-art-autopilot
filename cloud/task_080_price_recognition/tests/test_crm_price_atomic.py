@@ -76,6 +76,7 @@ def call(path, **overrides):
         "now": now,
         "card_id": 1,
         "expected_auto_number": "UA-0001",
+        "expected_status": "sea_loaded",
         "expected_old": None,
         "new_value": 11400,
         "actor_id": 77,
@@ -216,6 +217,40 @@ def test_identity_mismatch_never_cross_writes():
         assert not result.ok and result.reason == "identity_conflict"
         assert rows(path, "SELECT count(*) AS n FROM cars WHERE price_uah IS NOT NULL")[0]["n"] == 0
         assert rows(path, "SELECT * FROM audit") == []
+
+
+def test_stage_change_fails_without_cross_stage_history():
+    with tempfile.TemporaryDirectory() as temp:
+        path = str(Path(temp) / "crm.db")
+        make_db(path)
+        con = sqlite3.connect(path)
+        con.execute("UPDATE cars SET status='ua_delivered' WHERE id=1")
+        con.commit()
+        con.close()
+        result = call(path)
+        assert not result.ok and result.reason == "stage_conflict"
+        card = rows(path, "SELECT price_uah,price_history FROM cars WHERE id=1")[0]
+        assert card["price_uah"] is None and card["price_history"] is None
+        assert rows(path, "SELECT * FROM audit") == []
+
+
+def test_connection_failure_returns_bounded_result():
+    def broken_connect():
+        raise sqlite3.OperationalError("injected connect failure")
+
+    result = write_price(
+        connect=broken_connect,
+        now=now,
+        card_id=1,
+        expected_auto_number="UA-0001",
+        expected_status="sea_loaded",
+        expected_old=None,
+        new_value=11400,
+        actor_id=77,
+        stage_key=2,
+        correction=False,
+    )
+    assert not result.ok and result.reason.startswith("database:")
 
 
 def test_invalid_history_fails_closed():
