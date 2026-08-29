@@ -158,7 +158,16 @@ def main() -> int:
         photo_http = {}
         page_manifest = {}
         for identifier in identifiers:
-            candidates = []
+            # New CRM cards may have uploaded media before their public detail
+            # page exists.  Resolve the established public media convention
+            # first, then retain existing detail pages as a compatibility
+            # fallback.  Every selected URL is still verified with a real GET.
+            candidates = [
+                ("%s/video/foto/%s/m/001.jpg" %
+                 (PUBLIC, urllib.parse.quote(identifier, safe="")), "crm_public_media"),
+                ("%s/site/foto/%s/m/001.jpg" %
+                 (PUBLIC, urllib.parse.quote(identifier, safe="")), "crm_public_media"),
+            ]
             for variant in ("video", "site"):
                 remote = "%s/%s/%s.html" % (REMOTE_ROOT, variant, identifier)
                 page = get_remote(remote, missing=True, limit=3_000_000)
@@ -168,15 +177,15 @@ def main() -> int:
                     candidate = extract_main_photo(
                         page.decode("utf-8", "replace"),
                         "%s/%s/%s.html" % (PUBLIC, variant, identifier), identifier)
-                    if candidate and candidate not in candidates:
-                        candidates.append(candidate)
+                    if candidate and candidate not in [value for value, _source in candidates]:
+                        candidates.append((candidate, "existing_detail_page"))
             selected = ""
             failures = []
-            for candidate in candidates:
+            for candidate, source in candidates:
                 try:
                     check = probe_photo(candidate)
                     selected = candidate
-                    photo_http[identifier] = check
+                    photo_http[identifier] = {**check, "source": source}
                     break
                 except Exception as exc:
                     failures.append(type(exc).__name__)
