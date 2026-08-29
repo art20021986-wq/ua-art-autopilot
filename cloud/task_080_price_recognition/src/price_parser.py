@@ -30,19 +30,12 @@ from typing import Optional
 # ---------------------------------------------------------------------------
 
 SALE_PRICE_INTENT_PATTERNS = [
-    r"стоимость\s+автомобил\w*",
-    r"стоимость\s+авто\b",
-    r"стоимость\b",
-    r"цена\s+машин\w*",
-    r"цена\s+авто\b",
-    r"цена\s+автомобил\w*",
-    r"цена\b",
-    r"ціна\s+авто\b",
-    r"ціна\s+автомобіл\w*",
-    r"ціна\b",
-    r"вартість\s+авто\b",
-    r"вартість\s+автомобіл\w*",
-    r"вартість\b",
+    # Match grammatical forms used in commands as well as nominative labels:
+    # "цена", "цену", "цены", "стоимость", "стоимостью", etc.
+    r"\bстоимост\w*\b",
+    r"\bцен(?:а|у|ы|е|ой|ою|ам|ами|ах)?\b",
+    r"\bцін(?:а|у|и|і|ою|ам|ами|ах)?\b",
+    r"\bвартіст\w*\b",
 ]
 
 EXPLICIT_CHANGE_INTENT_PATTERNS = [
@@ -62,7 +55,7 @@ BLOCKING_CONTEXT_PATTERNS = [
     r"\bконтейнер\w*\b",
     r"\bзакуп\w*\b", r"\bзакупк\w*\b", r"\bзакупівл\w*\b",  # purchase cost
     r"\bлогистик\w*\b", r"\bлогістик\w*\b",     # logistics cost
-    r"\bтаможен\w*\b", r"\bмитн\w*\b",           # customs cost
+    r"\bтамож\w*\b", r"\bмитн\w*\b",             # customs cost
 ]
 
 CURRENCY_WORDS = [
@@ -296,6 +289,9 @@ def parse_sale_price_message(text: str, in_price_uah_wait: bool = False) -> Pric
         return PriceParseResult(ok=False, reason="EMPTY_INPUT")
 
     lower = norm.lower()
+
+    if re.search(r"(?:^|\s)(?:минус|мінус|[-−–—])\s*\d", lower):
+        return PriceParseResult(ok=False, reason="NEGATIVE_AMOUNT")
 
     is_change_intent = _has_any(EXPLICIT_CHANGE_INTENT_PATTERNS, lower)
 
