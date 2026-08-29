@@ -57,6 +57,9 @@ RELEVANT_NEEDLES = (
     "Машина видна клиентам в каталоге",
     "opublikovat",
 )
+PATCH_TARGET_NAMES = frozenset(
+    spec.function_name for spec in live_patcher.PATCH_SPECS
+)
 
 
 def utc_now() -> str:
@@ -119,7 +122,10 @@ def relevant_definitions(filename: str, source: str) -> list[dict]:
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
         segment = "".join(lines[node.lineno - 1 : node.end_lineno])
-        if not any(needle in segment for needle in RELEVANT_NEEDLES):
+        if (
+            node.name not in PATCH_TARGET_NAMES
+            and not any(needle in segment for needle in RELEVANT_NEEDLES)
+        ):
             continue
         clean = _redact_source(segment)
         result.append(
