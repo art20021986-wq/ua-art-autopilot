@@ -73,7 +73,8 @@ def function_sources(source: str):
                 "sha256": digest,
                 "source": clean(segment),
             }
-        if node.name in TARGETS:
+        stage_markers = ("car_stage:", "stage_set:", "Доставка и этапы", "status_label")
+        if node.name in TARGETS or any(marker in segment for marker in stage_markers):
             result[node.name] = {
                 "line": node.lineno,
                 "end_line": node.end_lineno,
