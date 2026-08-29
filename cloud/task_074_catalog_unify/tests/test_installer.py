@@ -82,6 +82,13 @@ class InstallerTests(unittest.TestCase):
         twice = MOD.patch_catalog(once)
         self.assertEqual(once, twice)
 
+    def test_ferry_status_accepts_encoded_route_arrow(self):
+        source = (
+            '<div class="status-pill" data-ru="На пароме&#10;Маршрут: Корея &rarr; Грузия">'
+            'На пароме&#10;Маршрут: Корея &rarr; Грузия</div>'
+        )
+        self.assertTrue(MOD.ferry_status_present(source))
+
     def test_unknown_eta_keeps_timing_information_without_stage_duplicate(self):
         block = (
             MOD.CAT_START + '<div data-ua-card="UA-0009">' + MOD.RU_UNKNOWN_OLD
