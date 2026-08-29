@@ -39,7 +39,7 @@ DIR_MARKER = REMOTE + "/task085_directory.ready"
 CONTRACT_ID = "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0"
 TARGET_CODE = "UA-0011"
 PROTECTED_CODE = "UA-0009"
-EXPECTED_STATUS = "kr_bought"
+EXPECTED_STATUS = "kr_bought"\nEXPECTED_VIN = "KMHE341DBKA544289"
 OLD_CONTAINER = "ONEYSELGF1046602"
 OLD_ETA_VALUES = (
     "2026-12-12", "12.12.2026", "12 декабря 2026", "12 грудня 2026",
@@ -255,8 +255,17 @@ def validate_shadow(value: dict) -> None:
     if value.get("production_write") or value.get("crm_write") or value.get("media_write"):
         raise ControllerError("SHADOW_WRITE_SCOPE")
     target = (value.get("database") or {}).get("target") or {}
-    if target.get("auto_number") != TARGET_CODE or target.get("status") != EXPECTED_STATUS:
-        raise ControllerError("SHADOW_TARGET")
+    if (
+        target.get("auto_number") != TARGET_CODE
+        or str(target.get("vin") or "").upper() != EXPECTED_VIN
+    ):
+        raise ControllerError("SHADOW_TARGET_IDENTITY")
+    projected = value.get("projected_target") or {}
+    if projected.get("status") != EXPECTED_STATUS:
+        raise ControllerError("SHADOW_PROJECTED_STATUS")
+    for field in ("sea_container", "sea_date_out", "days_to_kyiv", "eta_manual"):
+        if projected.get(field) not in (None, ""):
+            raise ControllerError("SHADOW_PROJECTED_PAYLOAD:" + field)
     if ((value.get("database") or {}).get("protected_ua0009") or {}).get(
         "auto_number"
     ) != PROTECTED_CODE:
