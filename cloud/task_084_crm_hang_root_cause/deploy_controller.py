@@ -31,7 +31,7 @@ INSTALLER = HERE / "remote_installer.py"
 
 BASE = "https://www.pythonanywhere.com/api/v0/user/Carix/"
 ROOT = "/home/Carix"
-REMOTE = ROOT + "/autopilot_inbox/cloud/task_084_crm_hang_root_cause"
+REMOTE = ROOT + "/autopilot_inbox/cloud/task_083_catalog_dedup"
 CONTRACT = "CRM-HANG-ROOT-CAUSE-084-V1.0"
 LAUNCHER = "python3.10 /home/Carix/start_safe.py"
 TARGET_PATHS = {
@@ -41,7 +41,7 @@ TARGET_PATHS = {
     "crm_voice_watchdog.py": ROOT + "/crm_voice_watchdog.py",
 }
 RECEIPTS = {
-    mode: REMOTE + "/%s_receipt.json" % mode
+    mode: REMOTE + "/task084_%s_receipt.json" % mode
     for mode in ("install", "postcheck", "rollback")
 }
 COMMANDS = {
@@ -424,18 +424,16 @@ class API:
         raise ControllerError("REMOTE_FILE_TIMEOUT:" + pathlib.PurePosixPath(path).name)
 
     def ensure_remote_dir(self) -> None:
-        receipt = REMOTE + "/.bootstrap_ready"
+        receipt = REMOTE + "/task084_directory.ready"
         try:
             self.delete_file(receipt)
         except ControllerError as exc:
             if "HTTP_404" not in str(exc):
                 raise
-        command = "mkdir -p %s && /usr/bin/touch %s" % (REMOTE, receipt)
-        trigger = self.create_trigger(command, "task084 staging bootstrap")
-        try:
-            self.wait_for_file(receipt, 300)
-        finally:
-            self.delete_trigger(trigger)
+        marker = b"TASK084_READY"
+        self.upload(receipt, marker)
+        if self.read(receipt) != marker:
+            raise ControllerError("REMOTE_STAGING_READBACK")
 
     def run_remote(self, mode: str, seconds: int = 420) -> dict:
         receipt = RECEIPTS[mode]
@@ -681,11 +679,11 @@ def run_deploy() -> int:
         api.ensure_remote_dir()
         uploads = {
             "task084_remote_installer.py": INSTALLER.read_bytes(),
-            "manifest.json": (
+            "task084_manifest.json": (
                 json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
             ).encode("utf-8"),
         }
-        uploads.update({name + ".candidate": data for name, data in candidates.items()})
+        uploads.update({"task084_" + name + ".candidate": data for name, data in candidates.items()})
         for name, data in uploads.items():
             if name.endswith((".py", ".candidate")):
                 compile(data.decode("utf-8"), name, "exec")
