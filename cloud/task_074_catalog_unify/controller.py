@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import datetime as dt
+import html as html_lib
 import json
 import mimetypes
 import os
 import pathlib
+import re
 import tempfile
 import time
 import urllib.error
@@ -219,6 +221,15 @@ def public_catalog_check() -> dict:
             status = response.status
             source = response.read(MAX_BYTES + 1).decode("utf-8")
             final_url = response.geturl()
+        status_nodes = re.findall(
+            r'<div\b[^>]*class=["\'][^"\']*\bstatus-pill\b[^"\']*["\'][^>]*>.*?</div\s*>',
+            source, flags=re.I | re.S,
+        )
+        status_preserved = any(
+            all(term in html_lib.unescape(re.sub(r"<[^>]+>", " ", node))
+                for term in ("На пароме", "Маршрут", "Корея", "Грузия"))
+            for node in status_nodes
+        )
         checks = {
             "http_200": status == 200,
             "no_redirect": final_url.startswith("https://www.uaart.com.ua/%s/katalog.html" % root),
@@ -227,7 +238,7 @@ def public_catalog_check() -> dict:
             "no_uk_duplicate": "Автомобіль на поромі: Корея → Грузія." not in source,
             "ua0009": "UA-0009" in source,
             "eleven_blocks": source.count("<!-- UA-ART-CATALOG-VIN-V1:START -->") == 11,
-            "status_preserved": "На пароме" in source and "Маршрут: Корея → Грузия" in source,
+            "status_preserved": status_preserved,
         }
         if not all(checks.values()):
             raise Blocked("PUBLIC_CATALOG_FAIL:%s:%s" % (root, json.dumps(checks, sort_keys=True)))
