@@ -31,8 +31,10 @@ jobs:
         run: |
           python3 -m py_compile \
             cloud/task_078_voice_watchdog/voice_watchdog.py \
-            cloud/task_078_voice_watchdog/live_audit.py
+            cloud/task_078_voice_watchdog/live_audit.py \
+            cloud/task_078_voice_watchdog/handler_patcher.py
           python3 cloud/task_078_voice_watchdog/tests/test_voice_watchdog.py -v
+          python3 cloud/task_078_voice_watchdog/tests/test_handler_patcher.py -v
 
       - name: Prove GET-only transport
         run: |
