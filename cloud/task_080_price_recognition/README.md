@@ -8,7 +8,7 @@ Key files:
 - `src/price_parser.py` — shared zero-LLM deterministic parser;
 - `src/crm_price_atomic.py` — atomic price/history/audit writer;
 - `src/integration_patcher.py` — exact hash-gated in-memory integration;
-- `tests/` and `run_tests.py` — 56 sandbox/canary regressions;
+- `tests/` and `run_tests.py` — 58 sandbox/canary regressions;
 - `live_gate_a.py` — current-card and active-code GET-only audit;
 - `candidate_gate_a.py` — fresh live-source in-memory compile gate;
 - `evidence/live_gate_a.json` and `evidence/candidate_gate_a.json` — sanitized evidence;
