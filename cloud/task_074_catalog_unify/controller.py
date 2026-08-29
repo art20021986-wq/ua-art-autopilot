@@ -8,6 +8,7 @@ import json
 import mimetypes
 import os
 import pathlib
+import re
 import tempfile
 import time
 import urllib.error
@@ -220,11 +221,17 @@ def public_catalog_check() -> dict:
             status = response.status
             source = response.read(MAX_BYTES + 1).decode("utf-8")
             final_url = response.geturl()
-        decoded_source = " ".join(
-            html_lib.unescape(source).casefold().replace("\u00a0", " ").split()
+        sea_articles = re.findall(
+            r'<article\b(?=[^>]*data-stage=["\']sea["\'])[^>]*>.*?</article\s*>',
+            source, flags=re.I | re.S,
         )
-        status_preserved = all(
-            term in decoded_source for term in ("на пароме", "маршрут", "корея", "грузия")
+        status_preserved = any(
+            "на пароме" in " ".join(
+                html_lib.unescape(
+                    article.split("<!-- UA-ART-CATALOG-VIN-V1:START -->", 1)[0]
+                ).casefold().replace("\u00a0", " ").split()
+            )
+            for article in sea_articles
         )
         checks = {
             "http_200": status == 200,
