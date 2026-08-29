@@ -29,6 +29,7 @@ jobs:
 
       - name: Compile and test watchdog
         run: |
+          python3 -m pip install --disable-pip-version-check --no-input pytest==8.3.5
           python3 -m py_compile \
             cloud/task_078_voice_watchdog/voice_watchdog.py \
             cloud/task_078_voice_watchdog/live_audit.py \
