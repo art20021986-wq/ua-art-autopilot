@@ -2666,6 +2666,27 @@ def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -
     ensure_catalog = runtime["_ua068_ensure_catalog"]
     terms = runtime["_ua068_terms"]
 
+    def recover_primary(identifier: str, missing_root: str) -> bytes | None:
+        """Recover a published canonical page only from a complete peer copy."""
+        roots = [SITE_ROOT, VIDEO_ROOT] if missing_root == VIDEO_ROOT else [VIDEO_ROOT, SITE_ROOT]
+        paths = []
+        for candidate_root in roots:
+            paths.append(os.path.join(candidate_root, identifier + ".html"))
+            paths.extend(sorted(
+                path for path in glob.glob(os.path.join(candidate_root, identifier + "-*.html"))
+                if not os.path.basename(path).startswith(identifier + "-diag")
+            ))
+        for candidate_path in paths:
+            try:
+                if not os.path.isfile(candidate_path) or os.path.getsize(candidate_path) <= 0:
+                    continue
+                data = _read(candidate_path, required=False)
+            except (OSError, RepairBlocked):
+                continue
+            if data and b"</html>" in data[-1200:].lower():
+                return data
+        return None
+
     for row in row_map.values():
         identifier = str(row["auto_number"])
         found_primary = set()
@@ -2697,8 +2718,11 @@ def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -
                 data = _read(path, required=False)
                 if data is None:
                     if name == identifier + ".html":
-                        raise RepairBlocked("primary_card_missing:" + path)
-                    continue
+                        data = recover_primary(identifier, root)
+                        if data is None:
+                            raise RepairBlocked("primary_card_missing_no_recovery_source:" + path)
+                    else:
+                        continue
                 upgraded = ensure_card(data.decode("utf-8"), identifier, row)
                 _task068_validate_card(upgraded, identifier, row, runtime)
                 candidates[path] = upgraded.encode("utf-8")
