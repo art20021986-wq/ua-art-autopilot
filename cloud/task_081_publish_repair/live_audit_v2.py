@@ -55,6 +55,10 @@ FUNCTIONS = {
 PUBLIC_PATHS = (
     "/video/katalog.html",
     "/katalog.html",
+    "/video/UA-0011.html",
+    "/video/UA-0011-diag.html",
+    "/video/UA-0012.html",
+    "/video/UA-0012-diag.html",
     "/video/UA-0013.html",
     "/UA-0013.html",
     "/video/UA-0013-diag.html",
@@ -218,6 +222,8 @@ def public_record(api: ReadOnlyAPI, path: str) -> dict:
     for identifier in href_ids:
         identifier = identifier.upper()
         href_counts[identifier] = href_counts.get(identifier, 0) + 1
+    identity_match = re.search(r"(UA-[0-9]{4,})\.html$", path, re.I)
+    expected_identity = identity_match.group(1).upper() if identity_match else None
     return {
         "status": status,
         "final_url": final_url,
@@ -232,8 +238,10 @@ def public_record(api: ReadOnlyAPI, path: str) -> dict:
         "contains_sea_loaded": "sea_loaded" in text,
         "contains_more_category": bool(re.search(r"(?:data-category|category)[^>]{0,80}more", text, re.I)),
         "ua_href_counts": href_counts,
-        "exact_ua0013_identity": "UA-0013" in text.upper()
-        and final_url.rstrip("/").endswith("/UA-0013.html"),
+        "expected_identity": expected_identity,
+        "exact_identity": bool(expected_identity)
+        and expected_identity in text.upper()
+        and final_url.rstrip("/").endswith("/%s.html" % expected_identity),
     }
 
 
@@ -291,7 +299,10 @@ def main() -> int:
             "published_numbers": published_numbers,
             "catalog_href_counts": catalog_counts,
             "missing_published_numbers": [
-                number for number in published_numbers if catalog_counts.get(number, 0) != 1
+                number for number in published_numbers if catalog_counts.get(number, 0) == 0
+            ],
+            "duplicate_href_numbers": [
+                number for number in published_numbers if catalog_counts.get(number, 0) > 1
             ],
             "published_count": len(published_numbers),
             "catalog_unique_count": len(catalog_counts),
