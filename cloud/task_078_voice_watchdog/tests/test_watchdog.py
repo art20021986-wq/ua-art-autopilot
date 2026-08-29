@@ -41,7 +41,7 @@ from cloud.task_078_voice_watchdog.killable_stt_worker import (
         (60, 100),
         (120, 180),
         (600, 180),
-        (3.33, 16),
+        (3.33, 15),
     ],
 )
 def test_compute_stt_timeout_bounds(duration, expected):
