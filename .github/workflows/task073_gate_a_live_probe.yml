@@ -1,0 +1,81 @@
+name: task073-live-readonly-gate-a-probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task073_gate_a_live_probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task073-live-readonly-gate-a-probe
+  cancel-in-progress: false
+
+jobs:
+  live-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Compile GET-only probe
+        run: python3 -m py_compile cloud/task_073/gate_a_live_probe.py
+
+      - name: Collect live GET-only evidence
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_073/gate_a_live_probe.py
+
+      - name: Validate bounded read-only receipt
+        run: |
+          python3 - <<'PY'
+          import json
+          value = json.load(open('cloud/task_073/evidence/live_probe.json', encoding='utf-8'))
+          assert value['contract'] == 'CRM-UNIFIED-CATALOG-001-V1.0'
+          assert value['mode'] == 'LIVE_GET_ONLY_PROBE'
+          assert value['status'] in {'EVIDENCE_READY', 'EVIDENCE_WITH_GAPS'}
+          assert value['production_touched'] is False
+          assert value['production_write_methods'] == []
+          assert value['crm_db_write'] is False
+          assert value['runtime_llm_tokens'] == 0
+          assert value['db']['quick_check'] == 'ok'
+          assert value['db']['cars_count'] == 11
+          assert value['db']['unique_card_ids'] is True
+          print('TASK073_LIVE_READONLY_EVIDENCE_PASS')
+          PY
+
+      - name: Commit only sanitized evidence
+        run: |
+          git add -- cloud/task_073/evidence/live_probe.json
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            test "$path" = 'cloud/task_073/evidence/live_probe.json' || exit 1
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task073-live-readonly-probe'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task_073: record live GET-only evidence'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main || exit 1
+              if git push origin HEAD:main; then exit 0; fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task073-live-readonly-probe-${{ github.run_id }}
+          path: cloud/task_073/evidence/live_probe.json
+          if-no-files-found: error
+          retention-days: 30
