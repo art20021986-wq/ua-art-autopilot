@@ -1,0 +1,25 @@
+name: TASK073 Gate A V3 (read-only)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  gate-a-v3:
+    runs-on: ubuntu-latest
+    environment: task073-gate-a
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install requests
+      - name: Compile all task_073 python files
+        run: python -m compileall cloud/task_073
+      - name: Run offline unit and integration tests
+        run: python -m unittest discover -s cloud/task_073/tests -p 'test_*.py' -v
+      - name: Run Gate A V3 against live PythonAnywhere (GET-only)
+        env:
+          PYTHONANYWHERE_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python cloud/task_073/gate_a_v3.py

@@ -1,0 +1,35 @@
+name: TASK073 Gate B V3 (manual, owner-approved production install)
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval:
+        description: "Exact owner approval token"
+        required: true
+      always_on_task_id:
+        description: "PythonAnywhere always_on task id for the launcher"
+        required: true
+
+jobs:
+  gate-b-v3:
+    if: ${{ github.event.inputs.approval == 'CRM-UNIFIED-CATALOG-001-V1.0-APPROVED' }}
+    runs-on: ubuntu-latest
+    environment: task073-gate-b-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install requests
+      - name: Compile all task_073 python files
+        run: python -m compileall cloud/task_073
+      - name: Run offline unit and integration tests
+        run: python -m unittest discover -s cloud/task_073/tests -p 'test_*.py' -v
+      - name: Run Gate B V3 production install
+        env:
+          PYTHONANYWHERE_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          TASK073_APPROVAL_TOKEN: ${{ github.event.inputs.approval }}
+          TASK073_ALWAYS_ON_TASK_ID: ${{ github.event.inputs.always_on_task_id }}
+        run: python cloud/task_073/gate_b_controller_v3.py
