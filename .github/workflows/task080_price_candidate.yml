@@ -20,7 +20,7 @@ permissions:
 
 concurrency:
   group: task080-price-candidate
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   verify:
