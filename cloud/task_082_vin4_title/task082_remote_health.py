@@ -114,11 +114,11 @@ def run() -> int:
         compile(source, str(SOURCE), "exec")
         if source.count(START) != 1 or source.count(END) != 1:
             raise RuntimeError("MARKER_COUNT")
-        # One definition plus two live call sites (card header + car list).
-        if source.count("_ua082_vin4_title_html(card)") != 3:
+        # One definition plus six HTML title surfaces.
+        if source.count("_ua082_vin4_title_html(card)") != 7:
             raise RuntimeError("TITLE_CALL_COUNT")
-        # One definition plus one live call site (selection button).
-        if source.count("_ua082_vin4_button_label(card)") != 2:
+        # One definition plus four plain-text/button title surfaces.
+        if source.count("_ua082_vin4_button_label(card)") != 5:
             raise RuntimeError("BUTTON_CALL_COUNT")
         block = source[source.index(START):source.index(END) + len(END)]
         namespace = {}
