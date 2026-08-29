@@ -1,0 +1,43 @@
+name: TASK073_GATE_A_V5
+
+on:
+  workflow_dispatch: {}
+  push:
+    paths:
+      - ".github/workflows/task073_gate_a_v5.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  gate_a_v5:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile and run exact live-definition fixtures
+        working-directory: cloud/task_073
+        run: |
+          python -m py_compile patcher_v5.py gate_a_v5.py gate_b_installer_v5.py gate_b_postcheck_v5.py gate_b_controller_v5.py
+          python -c "import sys; sys.path.insert(0, 'tests'); import test_patcher_v5 as t; t.test_function_hashes_match_live_evidence(); t.test_exact_transforms_compile_and_keep_handler_contracts(); print('TASK073_V5_FIXTURES_PASS')"
+
+      - name: Run real GET-only Gate A V5
+        working-directory: cloud/task_073
+        env:
+          PYTHONANYWHERE_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python gate_a_v5.py
+
+      - name: Upload sanitized Gate A evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task073-gate-a-v5-evidence
+          path: cloud/task_073/evidence/gate_a_v5.json
+          if-no-files-found: error
