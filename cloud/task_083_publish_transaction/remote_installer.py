@@ -28,13 +28,14 @@ LAST_BACKUP = REMOTE / "last_successful_install.json"
 LOCK = ROOT / ".task083_publish_install.lock"
 PUBLISHER = ROOT / "publikaciya.py"
 CARS_UI = ROOT / "cars_ui.py"
+MASTER_CARD = ROOT / "master_card.py"
 DB = ROOT / "crm.db"
 TARGETS = ("UA-0012", "UA-0013")
 INBOX = {
     ROOT / "publish_transaction_guard.py": REMOTE / "publish_transaction_guard.py",
     ROOT / "catalog_stage_guard_core.py": REMOTE / "catalog_stage_guard_core.py",
 }
-MANAGED_CODE = (PUBLISHER, CARS_UI, *INBOX.keys())
+MANAGED_CODE = (PUBLISHER, CARS_UI, MASTER_CARD, *INBOX.keys())
 RECEIPTS = {
     "install": REMOTE / "install_receipt.json",
     "postcheck": REMOTE / "postcheck_receipt.json",
@@ -44,6 +45,10 @@ PUB_START = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:PUBLISHER:START"
 PUB_END = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:PUBLISHER:END"
 UI_START = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:UI:START"
 UI_END = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:UI:END"
+MASTER_START = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:MASTER_CARD:START"
+MASTER_END = "# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:MASTER_CARD:END"
+DIAG_LEGACY = "Открыть комплексную диагностику"
+DIAG_CONTRACT = "Открыть: Комплексная диагностика"
 MAX_FILE = 40 * 1024 * 1024
 
 
@@ -228,6 +233,22 @@ def patch_cars_ui(source: str) -> str:
     return candidate
 
 
+def patch_master_card(source: str) -> str:
+    """Keep the generator compatible with its own case-sensitive validator."""
+    base = strip_marker(source, MASTER_START, MASTER_END).rstrip() + "\n"
+    anchors = base.count(DIAG_LEGACY) + base.count(DIAG_CONTRACT)
+    if anchors < 1:
+        raise InstallError("MASTER_DIAGNOSTICS_TEXT_ANCHOR_MISSING")
+    base = base.replace(DIAG_LEGACY, DIAG_CONTRACT)
+    candidate = base + "\n%s\n%s\n" % (MASTER_START, MASTER_END)
+    compile(candidate, str(MASTER_CARD), "exec")
+    if candidate.count(MASTER_START) != 1 or candidate.count(MASTER_END) != 1:
+        raise InstallError("MASTER_MARKER_COUNT")
+    if DIAG_LEGACY in candidate or candidate.count(DIAG_CONTRACT) != anchors:
+        raise InstallError("MASTER_DIAGNOSTICS_TEXT_READBACK")
+    return candidate
+
+
 def db_state() -> dict[str, Any]:
     connection = sqlite3.connect("file:%s?mode=ro" % DB, uri=True, timeout=30)
     connection.row_factory = sqlite3.Row
@@ -322,6 +343,7 @@ def install_code() -> tuple[pathlib.Path, dict[str, str]]:
     candidates = {
         PUBLISHER: patch_publisher(PUBLISHER.read_text(encoding="utf-8")),
         CARS_UI: patch_cars_ui(CARS_UI.read_text(encoding="utf-8")),
+        MASTER_CARD: patch_master_card(MASTER_CARD.read_text(encoding="utf-8")),
     }
     for destination, source in INBOX.items():
         data = read(source)
@@ -342,6 +364,8 @@ def install_code() -> tuple[pathlib.Path, dict[str, str]]:
             raise InstallError("PUBLISHER_INSTALL_READBACK")
         if CARS_UI.read_text(encoding="utf-8").count(UI_START) != 1:
             raise InstallError("CARS_UI_INSTALL_READBACK")
+        if MASTER_CARD.read_text(encoding="utf-8").count(MASTER_START) != 1:
+            raise InstallError("MASTER_CARD_INSTALL_READBACK")
         return backup, {str(path): sha(read(path)) for path in MANAGED_CODE}
     except Exception:
         restore_code(backup)
@@ -407,6 +431,7 @@ def run_postcheck() -> dict[str, Any]:
         "markers": {
             "publisher": PUBLISHER.read_text(encoding="utf-8").count(PUB_START),
             "cars_ui": CARS_UI.read_text(encoding="utf-8").count(UI_START),
+            "master_card": MASTER_CARD.read_text(encoding="utf-8").count(MASTER_START),
         },
     }
 
