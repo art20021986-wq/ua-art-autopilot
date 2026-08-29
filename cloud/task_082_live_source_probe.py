@@ -105,6 +105,14 @@ def db_audit(payload: bytes):
         rows = [dict(row) for row in connection.execute(
             "SELECT id,auto_number,brand,model,year,vin,status,stage,published,photos "
             "FROM cars ORDER BY id")]
+        target = next((row for row in rows if row.get("auto_number") == "UA-0011"), None)
+        status_audit = []
+        if target is not None:
+            status_audit = [dict(row) for row in connection.execute(
+                "SELECT action,field,old_value,new_value,created_at "
+                "FROM audit WHERE entity_type='cars' AND entity_id=? AND field='status' "
+                "ORDER BY id DESC LIMIT 20", (target["id"],)
+            )]
         connection.close()
     cards = []
     for row in rows:
@@ -136,7 +144,13 @@ def db_audit(payload: bytes):
                 vin[-4:] if valid else "НЕТ",
             ),
         })
-    return {"quick_check": quick, "sha256": sha(payload), "count": len(cards), "cards": cards}
+    return {
+        "quick_check": quick,
+        "sha256": sha(payload),
+        "count": len(cards),
+        "cards": cards,
+        "ua0011_status_audit": status_audit,
+    }
 
 
 def main():
