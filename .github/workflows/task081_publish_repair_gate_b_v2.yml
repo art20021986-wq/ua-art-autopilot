@@ -1,0 +1,72 @@
+name: TASK081_GATE_B_V2
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval:
+        description: "Exact recorded owner approval token"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ua-art-production-crm
+  cancel-in-progress: false
+
+jobs:
+  owner-approved-production-repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Verify exact approval before secrets or writes
+        env:
+          APPROVAL_INPUT: ${{ github.event.inputs.approval }}
+        run: |
+          test "$APPROVAL_INPUT" = "UA-0013-PUBLISH-REPAIR-001-V1.0-PRODUCTION-APPROVED"
+
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Compile and run bounded local-copy regression suite
+        working-directory: cloud/task_081_publish_repair
+        run: |
+          python3 -W error -m py_compile \
+            live_audit_v2.py patcher_v2.py gate_a_v2.py \
+            test_release_candidate_v2.py gate_b_installer_v2.py \
+            gate_b_controller_v2.py postcheck_v2.py test_gate_b_v2.py
+
+      - name: Re-run fresh GET-only Gate A immediately before Gate B
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 cloud/task_081_publish_repair/live_audit_v2.py
+          python3 -W error cloud/task_081_publish_repair/test_release_candidate_v2.py
+          python3 -W error cloud/task_081_publish_repair/test_gate_b_v2.py
+          python3 cloud/task_081_publish_repair/gate_a_v2.py
+
+      - name: Run exact owner-approved production controller
+        working-directory: cloud/task_081_publish_repair
+        env:
+          TASK081_OWNER_APPROVAL: ${{ github.event.inputs.approval }}
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 gate_b_controller_v2.py
+
+      - name: Upload bounded Gate B evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task081-gate-b-v2-${{ github.run_id }}
+          path: |
+            cloud/task_081_publish_repair/evidence/live_audit_v2/live_audit.json
+            cloud/task_081_publish_repair/evidence/gate_a_v2.json
+            cloud/task_081_publish_repair/evidence/gate_b_v2.json
+            cloud/task_081_publish_repair/GATE_B_V2_REPORT.md
+          if-no-files-found: warn
+          retention-days: 30
