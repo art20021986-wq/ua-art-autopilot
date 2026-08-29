@@ -11,6 +11,8 @@ STATUS: **PASS**
 - UA-0009 protected check: **PASS**
 - UA-0011 photo restored in both local canaries: **PASS**
 - Unified card template and absolute main photo: **11/11 PASS**
+- Native stage filter compatibility and ordered placement: **11/11 PASS**
+- Public photo HTTP probes: **11/11 PASS**
 - Stage routing and universal category filter: **PASS**
 - Old ferry route / internal state leakage: **0**
 
