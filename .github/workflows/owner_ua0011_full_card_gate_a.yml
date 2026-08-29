@@ -1,0 +1,104 @@
+name: owner-ua0011-full-card-gate-a-read-only
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner_ua0011_full_card_gate_a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact audit commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Capture exact active card validation functions
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import ast, datetime as dt, hashlib, json, os, re
+          from pathlib import Path
+          import urllib.parse, urllib.request
+
+          wanted = {
+              'master_card.py': {
+                  'obrabotat_kartochku', '_ua068_card_errors', '_ua068_ensure_card',
+                  '_ua068_master_row', '_ua068_ensure_diag_files',
+              },
+              'publikaciya.py': {'opublikovat', '_master'},
+          }
+          result = {
+              'contract_id': 'OWNER-UA0011-FULL-CARD-GATE-A-V1.0',
+              'status': 'PASS_READ_ONLY', 'http_methods': ['GET'],
+              'production_write': False, 'crm_write': False, 'media_write': False,
+              'generated_at_utc': dt.datetime.now(dt.timezone.utc).replace(
+                  microsecond=0).isoformat().replace('+00:00', 'Z'),
+              'files': {},
+          }
+          token = os.environ['PYTHONANYWHERE_API_TOKEN']
+          for filename, names in wanted.items():
+              path = '/home/Carix/' + filename
+              url = ('https://www.pythonanywhere.com/api/v0/user/Carix/files/path'
+                     + urllib.parse.quote(path, safe='/'))
+              request = urllib.request.Request(
+                  url, method='GET',
+                  headers={'Authorization': 'Token ' + token,
+                           'User-Agent': 'owner-ua0011-full-card-gate-a/1'})
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  source = response.read(16_000_001).decode('utf-8')
+              tree = ast.parse(source)
+              lines = source.splitlines(keepends=True)
+              functions = []
+              for node in tree.body:
+                  if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                      continue
+                  body = ''.join(lines[node.lineno - 1:node.end_lineno])
+                  relevant_text = bool(re.search(
+                      r'Комплексная диагностика|PUBLICATION BLOCKED|пропал раздел',
+                      body, re.I))
+                  if node.name in names or relevant_text:
+                      functions.append({
+                          'name': node.name, 'lineno': node.lineno,
+                          'sha256': hashlib.sha256(body.encode()).hexdigest(),
+                          'source': body,
+                      })
+              contexts = []
+              for pattern in ('Комплексная диагностика','PUBLICATION BLOCKED','пропал раздел'):
+                  for match in re.finditer(pattern, source, re.I):
+                      lo=max(0,match.start()-1000); hi=min(len(source),match.end()+1400)
+                      contexts.append({'pattern':pattern,'source':source[lo:hi]})
+              result['files'][filename] = {
+                  'sha256': hashlib.sha256(source.encode()).hexdigest(),
+                  'functions': functions, 'contexts': contexts,
+              }
+          out=Path('cloud/task_088_ua0011_korea/evidence/full_card_gate_a.json')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',
+                         encoding='utf-8')
+          print('OWNER_UA0011_FULL_CARD_GATE_A_PASS')
+          PY
+
+      - name: Commit GET-only evidence
+        run: |
+          git add -- cloud/task_088_ua0011_korea/evidence/full_card_gate_a.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'owner-ua0011-full-card-gate-a'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task088: record exact full-card Gate A'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 2))
+          done
