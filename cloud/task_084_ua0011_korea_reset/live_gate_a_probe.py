@@ -18,7 +18,7 @@ import urllib.request
 
 
 HERE = pathlib.Path(__file__).resolve().parent
-EVIDENCE = HERE / "evidence/live_gate_a.json"
+EVIDENCE = HERE / "evidence/live_gate_a_inventory.json"
 COVER_BASE = HERE / "evidence/ua0011_cover"
 API = "https://www.pythonanywhere.com/api/v0/user/Carix/files/path"
 ROOT = "/home/Carix"
