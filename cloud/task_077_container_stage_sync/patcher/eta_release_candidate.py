@@ -47,7 +47,7 @@ from eta_engine import compute_manual_eta
 
 LIVE_FULL_FILE_SHA256 = {
     "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
-    "cars_ui.py": "50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306",
+    "cars_ui.py": "cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea",
     "konteyner.py": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d",
     "stranica.py": "84a56024e185932c3f2af289db87d1b98558acdf9c4788256dfd36d544ec28b3",
     "publikaciya.py": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4",
