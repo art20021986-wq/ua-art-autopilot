@@ -378,11 +378,11 @@ def patch_master_card(source: str) -> str:
     return _inject_after_assignment(
         source,
         "obrabotat_kartochku",
-        "m",
+        "row",
         (
             "# TASK085_MASTER_PROJECTION_V1",
             "from stage_payload_guard import public_projection as _task085_project",
-            "m = _task085_project(m)",
+            "row = _task085_project(row)",
         ),
         MARKERS["master_card.py"],
     )
