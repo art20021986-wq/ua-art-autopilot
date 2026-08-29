@@ -60,6 +60,15 @@ jobs:
           python3 -W error cloud/task_085_stage_payload_reset/tests/test_stage_payload_guard.py
           python3 -W error cloud/task_085_stage_payload_reset/tests/test_remote_installer.py
 
+      - name: Wait in fair production queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 -W error automation/production_queue.py self-test
+          python3 -W error automation/production_queue.py wait \
+            --task 88 --timeout-seconds 4500 --stable-polls 2
       - name: Shadow, backup, repair, restart and delayed verification
         id: production
         continue-on-error: true
