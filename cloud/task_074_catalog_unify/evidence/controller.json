@@ -1,7 +1,7 @@
 {
   "contract_id": "CATALOG-CARD-UNIFY-002-V1.0",
   "errors": [
-    "HTTPError:HTTP Error 302: Found"
+    "Blocked:PUBLIC_CATALOG_FAIL:site:{\"eleven_blocks\": false, \"http_200\": true, \"no_ru_duplicate\": true, \"no_uk_duplicate\": true, \"safe_canonical_url\": false, \"status_preserved\": false, \"style_once\": false, \"ua0009\": false}"
   ],
   "install": {
     "after": {
@@ -226,7 +226,7 @@
         }
       }
     },
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_074_catalog_unify/backups/20260829T052911Z-06ee239a2a0d",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_074_catalog_unify/backups/20260829T054011Z-2c166c1ccc6a",
     "before": {
       "catalogs": {
         "/home/Carix/site/katalog.html": {
@@ -746,7 +746,7 @@
     "status": "accepted"
   },
   "rollback": {
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_074_catalog_unify/backups/20260829T052911Z-06ee239a2a0d",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_074_catalog_unify/backups/20260829T054011Z-2c166c1ccc6a",
     "contract_id": "CATALOG-CARD-UNIFY-002-V1.0",
     "crm_db_write": false,
     "mode": "ROLLBACK",
