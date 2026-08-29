@@ -1,0 +1,90 @@
+name: task089-crm-voice-photo-live-audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task089_crm_voice_photo_live_audit.yml'
+      - 'cloud/task_089_crm_voice_photo_repair/live_audit.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task089-crm-voice-photo-live-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact audit commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - name: Verify GET-only contract
+        run: |
+          python -W error -m py_compile cloud/task_089_crm_voice_photo_repair/live_audit.py
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('cloud/task_089_crm_voice_photo_repair/live_audit.py').read_text(encoding='utf-8')
+          forbidden = ['method="POST"', 'method="PUT"', 'method="PATCH"', 'method="DELETE"']
+          bad = [value for value in forbidden if value in source]
+          if bad:
+              raise SystemExit('NON_GET_METHOD:' + ','.join(bad))
+          print('GET_ONLY_CONTRACT_PASS')
+          PY
+
+      - name: Capture fresh production evidence
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python cloud/task_089_crm_voice_photo_repair/live_audit.py
+
+      - name: Persist bounded machine evidence
+        if: always()
+        run: |
+          test -f cloud/task_089_crm_voice_photo_repair/evidence/live_audit.json
+          git config user.name 'task089-crm-audit'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -- cloud/task_089_crm_voice_photo_repair/evidence/live_audit.json
+          git commit -m 'task089: record fresh CRM voice/photo audit' || exit 0
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 2))
+          done
+
+      - name: Require complete read-only result
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          path = 'cloud/task_089_crm_voice_photo_repair/evidence/live_audit.json'
+          value = json.load(open(path, encoding='utf-8'))
+          assert value['status'] == 'PASS_READ_ONLY', value['errors']
+          assert value['http_methods'] == ['GET']
+          assert value['production_touched'] is False
+          assert value['crm_db_write'] is False
+          assert value['media_write'] is False
+          print('TASK089_LIVE_AUDIT_PASS')
+          PY
+
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task089-crm-voice-photo-audit-${{ github.run_id }}
+          path: cloud/task_089_crm_voice_photo_repair/evidence/live_audit.json
+          if-no-files-found: error
+          retention-days: 14
