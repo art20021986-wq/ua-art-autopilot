@@ -221,18 +221,22 @@ def public_catalog_check() -> dict:
             status = response.status
             source = response.read(MAX_BYTES + 1).decode("utf-8")
             final_url = response.geturl()
-        sea_articles = re.findall(
-            r'<article\b(?=[^>]*data-stage=["\']sea["\'])[^>]*>.*?</article\s*>',
-            source, flags=re.I | re.S,
-        )
-        status_preserved = any(
-            "на пароме" in " ".join(
-                html_lib.unescape(
-                    article.split("<!-- UA-ART-CATALOG-VIN-V1:START -->", 1)[0]
-                ).casefold().replace("\u00a0", " ").split()
+        cat_start = "<!-- UA-ART-CATALOG-VIN-V1:START -->"
+        cat_end = "<!-- UA-ART-CATALOG-VIN-V1:END -->"
+        status_preserved = False
+        cursor = 0
+        while True:
+            marker = source.find(cat_start, cursor)
+            if marker < 0:
+                break
+            upper = source[:marker].rsplit(cat_end, 1)[-1]
+            visible = " ".join(
+                html_lib.unescape(upper).casefold().replace("\u00a0", " ").split()
             )
-            for article in sea_articles
-        )
+            if "на пароме" in visible or "на поромі" in visible:
+                status_preserved = True
+                break
+            cursor = marker + len(cat_start)
         checks = {
             "http_200": status == 200,
             "no_redirect": final_url.startswith("https://www.uaart.com.ua/%s/katalog.html" % root),
