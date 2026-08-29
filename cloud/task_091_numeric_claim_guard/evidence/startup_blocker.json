@@ -1,0 +1,21 @@
+{
+  "contract_id": "CRM-NUMERIC-SINGLE-CLAIM-091-V1.0",
+  "status": "BLOCKED_BEFORE_FIRST_STEP",
+  "workflow_run_id": 33250986783,
+  "job_id": 99096500936,
+  "job_name": "repair",
+  "job_status": "completed",
+  "job_conclusion": "failure",
+  "steps": null,
+  "logs_url": null,
+  "runner_started": false,
+  "production_touched": false,
+  "crm_write": false,
+  "pythonanywhere_touched": false,
+  "local_tests": {
+    "passed": 16,
+    "failed": 0
+  },
+  "required_action": "Restore GitHub Actions availability (limit/payment), then rerun workflow run 33250986783.",
+  "recorded_at_utc": "2026-08-29T11:49:00Z"
+}

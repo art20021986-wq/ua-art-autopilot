@@ -1,10 +1,10 @@
-TASK_ID: task_090
-ROUND: 2
+TASK_ID: task_091
+ROUND: 1
 CLAUDE_STATUS: BLOCKED
-CURRENT_ACTION: Production package passed all local and rollback tests, but GitHub Actions stopped before the first step with runner_id 0.
-FILES_CREATED: cloud/task_090_catalog_design_restore/catalog_design_guard.py, cloud/task_090_catalog_design_restore/remote_installer.py, cloud/task_090_catalog_design_restore/controller.py, cloud/task_090_catalog_design_restore/public_verify.py, cloud/task_090_catalog_design_restore/test_catalog_design_guard.py, cloud/task_090_catalog_design_restore/test_remote_installer.py, cloud/task_090_catalog_design_restore/TASK_090_REPORT.md, .github/workflows/task090_catalog_design_restore.yml
+CURRENT_ACTION: Package and 16 tests are PASS; GitHub Actions stopped workflow run 33250986783 before its first step.
+FILES_CREATED: cloud/task_091_numeric_claim_guard/, tasks/task_091.md, .github/workflows/task091_numeric_claim_guard.yml
 PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: YES
 OWNER_QUESTION: Восстановите доступность GitHub Actions (лимит/оплата) и сообщите «готово»; пароль не требуется.
-NEXT_FOR_CHATGPT: Rerun workflow task090_catalog_design_restore.yml, then verify live 13/3/1/7/2, mobile and desktop before reporting PASS.
-UPDATED_AT_UTC: 2026-08-29T11:18:34Z
+NEXT_FOR_CHATGPT: Rerun workflow run 33250986783, verify UA-0015 year empty and engine_cc=1999, then report PASS.
+UPDATED_AT_UTC: 2026-08-29T11:49:00Z
