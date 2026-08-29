@@ -35,9 +35,13 @@ jobs:
             cloud/task_077_container_stage_sync/live_audit.py \
             cloud/task_077_container_stage_sync/patcher/eta_release_candidate.py \
             cloud/task_077_container_stage_sync/patcher/live_patcher.py \
-            cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py
+            cloud/task_077_container_stage_sync/gate_b/remote.py \
+            cloud/task_077_container_stage_sync/gate_b/controller.py \
+            cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py \
+            cloud/task_077_container_stage_sync/tests/test_gate_b_release.py
           python3 cloud/task_077_container_stage_sync/tests/test_stage_sync.py -v
           python3 -W error cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py
+          python3 -W error cloud/task_077_container_stage_sync/tests/test_gate_b_release.py
 
       - name: Prove remote transport is GET-only
         run: |
