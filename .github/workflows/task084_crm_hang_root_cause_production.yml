@@ -62,6 +62,16 @@ jobs:
         run: >-
           python3 -c "import json; v=json.load(open('cloud/task_084_crm_hang_root_cause/evidence/live_audit.json', encoding='utf-8')); r=v.get('root_cause') or {}; assert (v.get('status') == 'PASS_ROOT_CAUSE_CONFIRMED') or (v.get('status') == 'PASS_STATE_CHANGED' and r.get('fixed_deadline_4_65') is False and r.get('non_killable_to_thread') is False and r.get('killable_child_present') is True and r.get('start_safe_singleton_present') is True); print('TASK084_STATE_GATE_PASS')"
 
+      - name: Wait in fair production queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 -W error automation/production_queue.py self-test
+          python3 -W error automation/production_queue.py wait \
+            --task 84 --timeout-seconds 4500 --stable-polls 2
+
       - name: Install, restart once and verify twice
         env:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
