@@ -232,13 +232,15 @@ def catalog_blocks(source: str) -> list[str]:
 
 
 def ferry_status_present(source: str) -> bool:
-    nodes = re.findall(
-        r'<div\b[^>]*class=["\'][^"\']*\bstatus-pill\b[^"\']*["\'][^>]*>.*?</div\s*>',
-        source, flags=re.I | re.S,
-    )
-    for node in nodes:
-        visible = html_lib.unescape(re.sub(r"<[^>]+>", " ", node))
-        if all(term in visible for term in ("На пароме", "Маршрут", "Корея", "Грузия")):
+    decoded = html_lib.unescape(source)
+    for match in re.finditer(r"status-pill", decoded, flags=re.I):
+        # Bound the check to the current card, while accepting div/span/custom
+        # markup and route arrows represented as literal or HTML entities.
+        card_end = decoded.find("</article", match.start())
+        if card_end < 0:
+            card_end = min(len(decoded), match.start() + 1800)
+        context = decoded[match.start():card_end]
+        if all(term in context for term in ("На пароме", "Маршрут", "Корея", "Грузия")):
             return True
     return False
 
