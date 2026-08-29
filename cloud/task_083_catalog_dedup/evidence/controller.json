@@ -1,18 +1,1171 @@
 {
   "contract_id": "CATALOG-CARD-DEDUP-GUARD-083-V1.0",
-  "errors": [
-    "Blocked:SHADOW_FAILED:[\"Blocked:SHADOW_PRODUCTION_CHANGED:protected_pages\"]"
-  ],
-  "rollback": null,
-  "shadow": {
+  "errors": [],
+  "install": {
+    "after": {
+      "catalogs": {
+        "/home/Carix/site/katalog.html": {
+          "bytes": 41968,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0001",
+            "UA-0002",
+            "UA-0003",
+            "UA-0004",
+            "UA-0005",
+            "UA-0006",
+            "UA-0007",
+            "UA-0008",
+            "UA-0009",
+            "UA-0010",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "a60eccae34e5e83885ce9c601373260c424f637fd8bb8f2cbf23c11247be9fea",
+          "style_marker": 1,
+          "ua0009": true
+        },
+        "/home/Carix/video/katalog.html": {
+          "bytes": 39056,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0002",
+            "UA-0007",
+            "UA-0008",
+            "UA-0001",
+            "UA-0005",
+            "UA-0010",
+            "UA-0009",
+            "UA-0006",
+            "UA-0003",
+            "UA-0004",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "2f9ab0d8e42d1177c70a052e9cb78343d692ce10df5dcbd3bfa7faed59cdc972",
+          "style_marker": 1,
+          "ua0009": true
+        }
+      },
+      "database": {
+        "count": 13,
+        "file_sha256": "d5ee847ba8e00a62273e01d80915dd6fd7e160afd511a18269d5fcc348a30ced",
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013"
+        ],
+        "quick_check": "ok",
+        "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+        "ua0009": true,
+        "ua0009_status": "sea_loaded"
+      },
+      "protected_pages": {
+        "/home/Carix/site/UA-0001-00cf71c0.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/site/UA-0001-diag.html": "512f312a0ddbed2cdefee812438f91b9950c5d35f6d7c73e3e6ec48be7e76cf9",
+        "/home/Carix/site/UA-0001.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/site/UA-0002-a6f9d391.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/site/UA-0002-diag.html": "c1981364bf058188b1ed6c97af5cae94710b61839d7b0baeb44a3cb5b4b176de",
+        "/home/Carix/site/UA-0002.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/site/UA-0003-diag.html": "950208fefe83b940d3ac39596386344d078784356624132a10181a07431bcf2d",
+        "/home/Carix/site/UA-0003.html": "4a9b9a8e1aa8139c8f0e4eaff4e440145f4ff97c41804b8d68e993fa4007a8e7",
+        "/home/Carix/site/UA-0004-0edda61a.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/site/UA-0004-diag.html": "4afc387c85b126a60c43da41eb375195e5b615186db6c364a260161408a50b86",
+        "/home/Carix/site/UA-0004.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/site/UA-0005-diag.html": "1b4baaaafba9ccae7c9d176ef59a20c6f6b02d08eb91e74bc5fb6c91c2c00b00",
+        "/home/Carix/site/UA-0005.html": "4d1da52ed8ef0e8295f58cf4af1578c7c0879512fc982b507b6efe69053e3aa4",
+        "/home/Carix/site/UA-0006-diag.html": "4d4ee1bc1b9033f1bd0e63729d5bbb8c2748d4f5080296edf90b586c79726a89",
+        "/home/Carix/site/UA-0006.html": "5fe7d030a99b2e1d91f23b16bfb40239dee68c7aae3c88a60ce88fb23de16f8b",
+        "/home/Carix/site/UA-0007-diag.html": "eea4edafbd360f5f07d5016da6260cf74a065b6a3a461f29ba55193578864fc1",
+        "/home/Carix/site/UA-0007.html": "d33ab956b98cfd182a4b2eacc183d5b2fa0e88c4f194647180988f40bb3005d8",
+        "/home/Carix/site/UA-0008-diag.html": "fca667899144b430abba7e5c98d75779606218b636fc5999bc52b23ccc3851be",
+        "/home/Carix/site/UA-0008.html": "b421a803b2b572e330adbb4ac1f9907f30b3733480f623367ecb29a1dca90f2a",
+        "/home/Carix/site/UA-0009-diag.html": "324fb5fe7f8aca58a93fba52c8f1977778a3e3cfbaf2bb51a6b1465a96643b09",
+        "/home/Carix/site/UA-0009.html": "b69a3ae70a53d9d9f3dcd07badd59e08582a561cd92bf478ab5d8603ca53a21c",
+        "/home/Carix/site/UA-0010-diag.html": "78cdee2d0168adb0ff97a6fe4e1bdf965c7e3801952a7e12829e1ddf51245d3b",
+        "/home/Carix/site/UA-0010.html": "137cc1391ee39350485f50b994b865fc7b6b3a59e1af77ec2edf3a0ec484f380",
+        "/home/Carix/site/UA-0011-diag.html": "97806be55526af5422d532cea2b9f7fb541b60465110727114b9ca22349a23fd",
+        "/home/Carix/site/UA-0011.html": "1681025e423e1438b29158f9bb66e39810ba0924142ad885e303818723fd2acb",
+        "/home/Carix/video/UA-0001-00cf71c0.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/video/UA-0001-diag.html": "512f312a0ddbed2cdefee812438f91b9950c5d35f6d7c73e3e6ec48be7e76cf9",
+        "/home/Carix/video/UA-0001.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/video/UA-0002-a6f9d391.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/video/UA-0002-diag.html": "c1981364bf058188b1ed6c97af5cae94710b61839d7b0baeb44a3cb5b4b176de",
+        "/home/Carix/video/UA-0002.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/video/UA-0003-a7bfb532.html": "4a9b9a8e1aa8139c8f0e4eaff4e440145f4ff97c41804b8d68e993fa4007a8e7",
+        "/home/Carix/video/UA-0003-diag.html": "950208fefe83b940d3ac39596386344d078784356624132a10181a07431bcf2d",
+        "/home/Carix/video/UA-0003.html": "4a9b9a8e1aa8139c8f0e4eaff4e440145f4ff97c41804b8d68e993fa4007a8e7",
+        "/home/Carix/video/UA-0004-0edda61a.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/video/UA-0004-diag.html": "4afc387c85b126a60c43da41eb375195e5b615186db6c364a260161408a50b86",
+        "/home/Carix/video/UA-0004.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/video/UA-0005-9e3432b2.html": "4d1da52ed8ef0e8295f58cf4af1578c7c0879512fc982b507b6efe69053e3aa4",
+        "/home/Carix/video/UA-0005-diag.html": "1b4baaaafba9ccae7c9d176ef59a20c6f6b02d08eb91e74bc5fb6c91c2c00b00",
+        "/home/Carix/video/UA-0005.html": "4d1da52ed8ef0e8295f58cf4af1578c7c0879512fc982b507b6efe69053e3aa4",
+        "/home/Carix/video/UA-0006-diag.html": "4d4ee1bc1b9033f1bd0e63729d5bbb8c2748d4f5080296edf90b586c79726a89",
+        "/home/Carix/video/UA-0006-ed784b7f.html": "5fe7d030a99b2e1d91f23b16bfb40239dee68c7aae3c88a60ce88fb23de16f8b",
+        "/home/Carix/video/UA-0006.html": "5fe7d030a99b2e1d91f23b16bfb40239dee68c7aae3c88a60ce88fb23de16f8b",
+        "/home/Carix/video/UA-0007-de6e3ebe.html": "d33ab956b98cfd182a4b2eacc183d5b2fa0e88c4f194647180988f40bb3005d8",
+        "/home/Carix/video/UA-0007-diag.html": "eea4edafbd360f5f07d5016da6260cf74a065b6a3a461f29ba55193578864fc1",
+        "/home/Carix/video/UA-0007.html": "d33ab956b98cfd182a4b2eacc183d5b2fa0e88c4f194647180988f40bb3005d8",
+        "/home/Carix/video/UA-0008-87693e0e.html": "b421a803b2b572e330adbb4ac1f9907f30b3733480f623367ecb29a1dca90f2a",
+        "/home/Carix/video/UA-0008-diag.html": "fca667899144b430abba7e5c98d75779606218b636fc5999bc52b23ccc3851be",
+        "/home/Carix/video/UA-0008.html": "b421a803b2b572e330adbb4ac1f9907f30b3733480f623367ecb29a1dca90f2a",
+        "/home/Carix/video/UA-0009-372ada15.html": "b69a3ae70a53d9d9f3dcd07badd59e08582a561cd92bf478ab5d8603ca53a21c",
+        "/home/Carix/video/UA-0009-diag.html": "324fb5fe7f8aca58a93fba52c8f1977778a3e3cfbaf2bb51a6b1465a96643b09",
+        "/home/Carix/video/UA-0009.html": "b69a3ae70a53d9d9f3dcd07badd59e08582a561cd92bf478ab5d8603ca53a21c",
+        "/home/Carix/video/UA-0010-614505f4.html": "137cc1391ee39350485f50b994b865fc7b6b3a59e1af77ec2edf3a0ec484f380",
+        "/home/Carix/video/UA-0010-diag.html": "78cdee2d0168adb0ff97a6fe4e1bdf965c7e3801952a7e12829e1ddf51245d3b",
+        "/home/Carix/video/UA-0010.html": "137cc1391ee39350485f50b994b865fc7b6b3a59e1af77ec2edf3a0ec484f380",
+        "/home/Carix/video/UA-0011-9842913c.html": "1681025e423e1438b29158f9bb66e39810ba0924142ad885e303818723fd2acb",
+        "/home/Carix/video/UA-0011-diag.html": "97806be55526af5422d532cea2b9f7fb541b60465110727114b9ca22349a23fd",
+        "/home/Carix/video/UA-0011.html": "1681025e423e1438b29158f9bb66e39810ba0924142ad885e303818723fd2acb"
+      },
+      "sources": {
+        "/home/Carix/master_card.py": {
+          "bytes": 147307,
+          "marker": true,
+          "sha256": "3f17274e948eda37b891c7b9074a95c4adaf8ed75a5bc9d17ddf9a26c36ba6d0",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/stranica.py": {
+          "bytes": 203236,
+          "marker": true,
+          "sha256": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/yadro.py": {
+          "bytes": 150796,
+          "marker": true,
+          "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f",
+          "style_marker": 1,
+          "task074_marker": true
+        }
+      },
+      "stage_guard": {
+        "files": {
+          "/home/Carix/publikaciya.py": {
+            "bytes": 21682,
+            "dedup_marker": null,
+            "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4"
+          }
+        },
+        "installed": false
+      }
+    },
+    "backup_root": null,
+    "before": {
+      "catalogs": {
+        "/home/Carix/site/katalog.html": {
+          "bytes": 41968,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0001",
+            "UA-0002",
+            "UA-0003",
+            "UA-0004",
+            "UA-0005",
+            "UA-0006",
+            "UA-0007",
+            "UA-0008",
+            "UA-0009",
+            "UA-0010",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "a60eccae34e5e83885ce9c601373260c424f637fd8bb8f2cbf23c11247be9fea",
+          "style_marker": 1,
+          "ua0009": true
+        },
+        "/home/Carix/video/katalog.html": {
+          "bytes": 39056,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0002",
+            "UA-0007",
+            "UA-0008",
+            "UA-0001",
+            "UA-0005",
+            "UA-0010",
+            "UA-0009",
+            "UA-0006",
+            "UA-0003",
+            "UA-0004",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "2f9ab0d8e42d1177c70a052e9cb78343d692ce10df5dcbd3bfa7faed59cdc972",
+          "style_marker": 1,
+          "ua0009": true
+        }
+      },
+      "database": {
+        "count": 13,
+        "file_sha256": "d5ee847ba8e00a62273e01d80915dd6fd7e160afd511a18269d5fcc348a30ced",
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013"
+        ],
+        "quick_check": "ok",
+        "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+        "ua0009": true,
+        "ua0009_status": "sea_loaded"
+      },
+      "protected_pages": {
+        "/home/Carix/site/UA-0001-00cf71c0.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/site/UA-0001-diag.html": "512f312a0ddbed2cdefee812438f91b9950c5d35f6d7c73e3e6ec48be7e76cf9",
+        "/home/Carix/site/UA-0001.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/site/UA-0002-a6f9d391.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/site/UA-0002-diag.html": "c1981364bf058188b1ed6c97af5cae94710b61839d7b0baeb44a3cb5b4b176de",
+        "/home/Carix/site/UA-0002.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/site/UA-0003-diag.html": "950208fefe83b940d3ac39596386344d078784356624132a10181a07431bcf2d",
+        "/home/Carix/site/UA-0003.html": "4a9b9a8e1aa8139c8f0e4eaff4e440145f4ff97c41804b8d68e993fa4007a8e7",
+        "/home/Carix/site/UA-0004-0edda61a.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/site/UA-0004-diag.html": "4afc387c85b126a60c43da41eb375195e5b615186db6c364a260161408a50b86",
+        "/home/Carix/site/UA-0004.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/site/UA-0005-diag.html": "1b4baaaafba9ccae7c9d176ef59a20c6f6b02d08eb91e74bc5fb6c91c2c00b00",
+        "/home/Carix/site/UA-0005.html": "4d1da52ed8ef0e8295f58cf4af1578c7c0879512fc982b507b6efe69053e3aa4",
+        "/home/Carix/site/UA-0006-diag.html": "4d4ee1bc1b9033f1bd0e63729d5bbb8c2748d4f5080296edf90b586c79726a89",
+        "/home/Carix/site/UA-0006.html": "5fe7d030a99b2e1d91f23b16bfb40239dee68c7aae3c88a60ce88fb23de16f8b",
+        "/home/Carix/site/UA-0007-diag.html": "eea4edafbd360f5f07d5016da6260cf74a065b6a3a461f29ba55193578864fc1",
+        "/home/Carix/site/UA-0007.html": "d33ab956b98cfd182a4b2eacc183d5b2fa0e88c4f194647180988f40bb3005d8",
+        "/home/Carix/site/UA-0008-diag.html": "fca667899144b430abba7e5c98d75779606218b636fc5999bc52b23ccc3851be",
+        "/home/Carix/site/UA-0008.html": "b421a803b2b572e330adbb4ac1f9907f30b3733480f623367ecb29a1dca90f2a",
+        "/home/Carix/site/UA-0009-diag.html": "324fb5fe7f8aca58a93fba52c8f1977778a3e3cfbaf2bb51a6b1465a96643b09",
+        "/home/Carix/site/UA-0009.html": "b69a3ae70a53d9d9f3dcd07badd59e08582a561cd92bf478ab5d8603ca53a21c",
+        "/home/Carix/site/UA-0010-diag.html": "78cdee2d0168adb0ff97a6fe4e1bdf965c7e3801952a7e12829e1ddf51245d3b",
+        "/home/Carix/site/UA-0010.html": "137cc1391ee39350485f50b994b865fc7b6b3a59e1af77ec2edf3a0ec484f380",
+        "/home/Carix/site/UA-0011-diag.html": "97806be55526af5422d532cea2b9f7fb541b60465110727114b9ca22349a23fd",
+        "/home/Carix/site/UA-0011.html": "1681025e423e1438b29158f9bb66e39810ba0924142ad885e303818723fd2acb",
+        "/home/Carix/video/UA-0001-00cf71c0.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/video/UA-0001-diag.html": "512f312a0ddbed2cdefee812438f91b9950c5d35f6d7c73e3e6ec48be7e76cf9",
+        "/home/Carix/video/UA-0001.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/video/UA-0002-a6f9d391.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/video/UA-0002-diag.html": "c1981364bf058188b1ed6c97af5cae94710b61839d7b0baeb44a3cb5b4b176de",
+        "/home/Carix/video/UA-0002.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/video/UA-0003-a7bfb532.html": "4a9b9a8e1aa8139c8f0e4eaff4e440145f4ff97c41804b8d68e993fa4007a8e7",
+        "/home/Carix/video/UA-0003-diag.html": "950208fefe83b940d3ac39596386344d078784356624132a10181a07431bcf2d",
+        "/home/Carix/video/UA-0003.html": "4a9b9a8e1aa8139c8f0e4eaff4e440145f4ff97c41804b8d68e993fa4007a8e7",
+        "/home/Carix/video/UA-0004-0edda61a.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/video/UA-0004-diag.html": "4afc387c85b126a60c43da41eb375195e5b615186db6c364a260161408a50b86",
+        "/home/Carix/video/UA-0004.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/video/UA-0005-9e3432b2.html": "4d1da52ed8ef0e8295f58cf4af1578c7c0879512fc982b507b6efe69053e3aa4",
+        "/home/Carix/video/UA-0005-diag.html": "1b4baaaafba9ccae7c9d176ef59a20c6f6b02d08eb91e74bc5fb6c91c2c00b00",
+        "/home/Carix/video/UA-0005.html": "4d1da52ed8ef0e8295f58cf4af1578c7c0879512fc982b507b6efe69053e3aa4",
+        "/home/Carix/video/UA-0006-diag.html": "4d4ee1bc1b9033f1bd0e63729d5bbb8c2748d4f5080296edf90b586c79726a89",
+        "/home/Carix/video/UA-0006-ed784b7f.html": "5fe7d030a99b2e1d91f23b16bfb40239dee68c7aae3c88a60ce88fb23de16f8b",
+        "/home/Carix/video/UA-0006.html": "5fe7d030a99b2e1d91f23b16bfb40239dee68c7aae3c88a60ce88fb23de16f8b",
+        "/home/Carix/video/UA-0007-de6e3ebe.html": "d33ab956b98cfd182a4b2eacc183d5b2fa0e88c4f194647180988f40bb3005d8",
+        "/home/Carix/video/UA-0007-diag.html": "eea4edafbd360f5f07d5016da6260cf74a065b6a3a461f29ba55193578864fc1",
+        "/home/Carix/video/UA-0007.html": "d33ab956b98cfd182a4b2eacc183d5b2fa0e88c4f194647180988f40bb3005d8",
+        "/home/Carix/video/UA-0008-87693e0e.html": "b421a803b2b572e330adbb4ac1f9907f30b3733480f623367ecb29a1dca90f2a",
+        "/home/Carix/video/UA-0008-diag.html": "fca667899144b430abba7e5c98d75779606218b636fc5999bc52b23ccc3851be",
+        "/home/Carix/video/UA-0008.html": "b421a803b2b572e330adbb4ac1f9907f30b3733480f623367ecb29a1dca90f2a",
+        "/home/Carix/video/UA-0009-372ada15.html": "b69a3ae70a53d9d9f3dcd07badd59e08582a561cd92bf478ab5d8603ca53a21c",
+        "/home/Carix/video/UA-0009-diag.html": "324fb5fe7f8aca58a93fba52c8f1977778a3e3cfbaf2bb51a6b1465a96643b09",
+        "/home/Carix/video/UA-0009.html": "b69a3ae70a53d9d9f3dcd07badd59e08582a561cd92bf478ab5d8603ca53a21c",
+        "/home/Carix/video/UA-0010-614505f4.html": "137cc1391ee39350485f50b994b865fc7b6b3a59e1af77ec2edf3a0ec484f380",
+        "/home/Carix/video/UA-0010-diag.html": "78cdee2d0168adb0ff97a6fe4e1bdf965c7e3801952a7e12829e1ddf51245d3b",
+        "/home/Carix/video/UA-0010.html": "137cc1391ee39350485f50b994b865fc7b6b3a59e1af77ec2edf3a0ec484f380",
+        "/home/Carix/video/UA-0011-9842913c.html": "1681025e423e1438b29158f9bb66e39810ba0924142ad885e303818723fd2acb",
+        "/home/Carix/video/UA-0011-diag.html": "97806be55526af5422d532cea2b9f7fb541b60465110727114b9ca22349a23fd",
+        "/home/Carix/video/UA-0011.html": "1681025e423e1438b29158f9bb66e39810ba0924142ad885e303818723fd2acb"
+      },
+      "sources": {
+        "/home/Carix/master_card.py": {
+          "bytes": 147307,
+          "marker": true,
+          "sha256": "3f17274e948eda37b891c7b9074a95c4adaf8ed75a5bc9d17ddf9a26c36ba6d0",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/stranica.py": {
+          "bytes": 203236,
+          "marker": true,
+          "sha256": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/yadro.py": {
+          "bytes": 150796,
+          "marker": true,
+          "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f",
+          "style_marker": 1,
+          "task074_marker": true
+        }
+      },
+      "stage_guard": {
+        "files": {
+          "/home/Carix/publikaciya.py": {
+            "bytes": 21682,
+            "dedup_marker": null,
+            "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4"
+          }
+        },
+        "installed": false
+      }
+    },
+    "changed_paths": [],
     "contract_id": "CATALOG-CARD-DEDUP-GUARD-083-V1.0",
     "crm_db_write": false,
-    "errors": [
-      "Blocked:SHADOW_PRODUCTION_CHANGED:protected_pages"
-    ],
+    "mode": "ALREADY_INSTALLED",
+    "production_write": false,
+    "status": "PASS"
+  },
+  "postcheck": {
+    "before": {
+      "catalogs": {
+        "/home/Carix/site/katalog.html": {
+          "bytes": 41968,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0001",
+            "UA-0002",
+            "UA-0003",
+            "UA-0004",
+            "UA-0005",
+            "UA-0006",
+            "UA-0007",
+            "UA-0008",
+            "UA-0009",
+            "UA-0010",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "a60eccae34e5e83885ce9c601373260c424f637fd8bb8f2cbf23c11247be9fea",
+          "style_marker": 1,
+          "ua0009": true
+        },
+        "/home/Carix/video/katalog.html": {
+          "bytes": 39056,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0002",
+            "UA-0007",
+            "UA-0008",
+            "UA-0001",
+            "UA-0005",
+            "UA-0010",
+            "UA-0009",
+            "UA-0006",
+            "UA-0003",
+            "UA-0004",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "2f9ab0d8e42d1177c70a052e9cb78343d692ce10df5dcbd3bfa7faed59cdc972",
+          "style_marker": 1,
+          "ua0009": true
+        }
+      },
+      "database": {
+        "count": 13,
+        "file_sha256": "d5ee847ba8e00a62273e01d80915dd6fd7e160afd511a18269d5fcc348a30ced",
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013"
+        ],
+        "quick_check": "ok",
+        "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+        "ua0009": true,
+        "ua0009_status": "sea_loaded"
+      },
+      "protected_pages": {
+        "/home/Carix/site/UA-0001-00cf71c0.html": "9dac195ce3037738a47002df11b11540aa645d989fbb52a652355a77b3396631",
+        "/home/Carix/site/UA-0001-diag.html": "366c8837b0ddc164b65827389dee24381287f8c0147b3832495cf3ab4e3a41f3",
+        "/home/Carix/site/UA-0001.html": "9dac195ce3037738a47002df11b11540aa645d989fbb52a652355a77b3396631",
+        "/home/Carix/site/UA-0002-a6f9d391.html": "2678de7bb9b4e916de6c63e751a1452826a00442ebf78d4c5c7a28a903ced629",
+        "/home/Carix/site/UA-0002-diag.html": "58719236b4e7a8f77cd5b64b437a080cb51d378d18ead0f91df449bd81a86031",
+        "/home/Carix/site/UA-0002.html": "2678de7bb9b4e916de6c63e751a1452826a00442ebf78d4c5c7a28a903ced629",
+        "/home/Carix/site/UA-0003-diag.html": "633c72776373fdcb8f15bb15e09777588c47cedfbacd28e24365f9cd385e0e2b",
+        "/home/Carix/site/UA-0003.html": "3f3e042d0ce9f32423b2f9da8b9d6ce1294bb7a753be8397aa29660dd4739e3d",
+        "/home/Carix/site/UA-0004-0edda61a.html": "b002daf7cfddc082287e52809bc24ebc21c8c8c5b5ab5f27137445ffaff35bb4",
+        "/home/Carix/site/UA-0004-diag.html": "7962fd687895fa87da4f87dd365b4173be1aba045ec6b7f2e3eeaebee0849a2a",
+        "/home/Carix/site/UA-0004.html": "b002daf7cfddc082287e52809bc24ebc21c8c8c5b5ab5f27137445ffaff35bb4",
+        "/home/Carix/site/UA-0005-diag.html": "90e0ff809f5500a5ad22ecc71d22e87d8d1031e0fe8c61d44767cfc9ec29de4d",
+        "/home/Carix/site/UA-0005.html": "9244a0f2184b6091a8d76046ab18ef33ad3b587fdff2df37de7b041e0f39f998",
+        "/home/Carix/site/UA-0006-diag.html": "d1f00eaa92911cfa59937a656ccf5a3d56979d9b6d261b43b2730042f5659710",
+        "/home/Carix/site/UA-0006.html": "f50e6138825bbf7a02a258883f7f5136da2a933c792fa4b6b93648521f01e1cf",
+        "/home/Carix/site/UA-0007-diag.html": "d51c9fc0fa4c54c4fcc232652703266e7f32a773372efc2d3d8347acffe7f1aa",
+        "/home/Carix/site/UA-0007.html": "d0019159c6fca9c9eae2b89aaf17d23cc3295d935ae93137a63fe14773da3184",
+        "/home/Carix/site/UA-0008-diag.html": "33b50e2308d1da6f61a768f7b2a5471180b01751c96d1aa10b5c4298dbbc6182",
+        "/home/Carix/site/UA-0008.html": "ca940498925d7cfd2e0c42af887ab4768487ff9f8e5064bbb24b73924612b6c7",
+        "/home/Carix/site/UA-0009-diag.html": "face33eedb4e08fb9170f15c7166e1d05c51061fbfdf82385bd606207f133271",
+        "/home/Carix/site/UA-0009.html": "a8ff3ed6fac4f551b29627f50b35b72cbea95c5387e2da61ab276c307fc895d6",
+        "/home/Carix/site/UA-0010-diag.html": "30ee50b6ac4baa6a5c6dcfa8ea2dc0bad22a6287139cf71e833bf5ba7fe443dc",
+        "/home/Carix/site/UA-0010.html": "5b0c00b7fc25fdf565abf85325207c4d87310cc31ba273fb704e2339116abfa3",
+        "/home/Carix/site/UA-0011-diag.html": "7ea7f547b878afd890a5b45fb7ae05c6a022ea8e6e9ca3b1b7751f60190bb944",
+        "/home/Carix/site/UA-0011.html": "812a3c54de74e3614af4fff22bc8a9043c64a4091b9e7ebff408b3e88ac90605",
+        "/home/Carix/video/UA-0001-00cf71c0.html": "9dac195ce3037738a47002df11b11540aa645d989fbb52a652355a77b3396631",
+        "/home/Carix/video/UA-0001-diag.html": "366c8837b0ddc164b65827389dee24381287f8c0147b3832495cf3ab4e3a41f3",
+        "/home/Carix/video/UA-0001.html": "9dac195ce3037738a47002df11b11540aa645d989fbb52a652355a77b3396631",
+        "/home/Carix/video/UA-0002-a6f9d391.html": "2678de7bb9b4e916de6c63e751a1452826a00442ebf78d4c5c7a28a903ced629",
+        "/home/Carix/video/UA-0002-diag.html": "58719236b4e7a8f77cd5b64b437a080cb51d378d18ead0f91df449bd81a86031",
+        "/home/Carix/video/UA-0002.html": "2678de7bb9b4e916de6c63e751a1452826a00442ebf78d4c5c7a28a903ced629",
+        "/home/Carix/video/UA-0003-a7bfb532.html": "3f3e042d0ce9f32423b2f9da8b9d6ce1294bb7a753be8397aa29660dd4739e3d",
+        "/home/Carix/video/UA-0003-diag.html": "633c72776373fdcb8f15bb15e09777588c47cedfbacd28e24365f9cd385e0e2b",
+        "/home/Carix/video/UA-0003.html": "3f3e042d0ce9f32423b2f9da8b9d6ce1294bb7a753be8397aa29660dd4739e3d",
+        "/home/Carix/video/UA-0004-0edda61a.html": "b002daf7cfddc082287e52809bc24ebc21c8c8c5b5ab5f27137445ffaff35bb4",
+        "/home/Carix/video/UA-0004-diag.html": "7962fd687895fa87da4f87dd365b4173be1aba045ec6b7f2e3eeaebee0849a2a",
+        "/home/Carix/video/UA-0004.html": "b002daf7cfddc082287e52809bc24ebc21c8c8c5b5ab5f27137445ffaff35bb4",
+        "/home/Carix/video/UA-0005-9e3432b2.html": "9244a0f2184b6091a8d76046ab18ef33ad3b587fdff2df37de7b041e0f39f998",
+        "/home/Carix/video/UA-0005-diag.html": "90e0ff809f5500a5ad22ecc71d22e87d8d1031e0fe8c61d44767cfc9ec29de4d",
+        "/home/Carix/video/UA-0005.html": "9244a0f2184b6091a8d76046ab18ef33ad3b587fdff2df37de7b041e0f39f998",
+        "/home/Carix/video/UA-0006-diag.html": "d1f00eaa92911cfa59937a656ccf5a3d56979d9b6d261b43b2730042f5659710",
+        "/home/Carix/video/UA-0006-ed784b7f.html": "f50e6138825bbf7a02a258883f7f5136da2a933c792fa4b6b93648521f01e1cf",
+        "/home/Carix/video/UA-0006.html": "f50e6138825bbf7a02a258883f7f5136da2a933c792fa4b6b93648521f01e1cf",
+        "/home/Carix/video/UA-0007-de6e3ebe.html": "d0019159c6fca9c9eae2b89aaf17d23cc3295d935ae93137a63fe14773da3184",
+        "/home/Carix/video/UA-0007-diag.html": "d51c9fc0fa4c54c4fcc232652703266e7f32a773372efc2d3d8347acffe7f1aa",
+        "/home/Carix/video/UA-0007.html": "d0019159c6fca9c9eae2b89aaf17d23cc3295d935ae93137a63fe14773da3184",
+        "/home/Carix/video/UA-0008-87693e0e.html": "ca940498925d7cfd2e0c42af887ab4768487ff9f8e5064bbb24b73924612b6c7",
+        "/home/Carix/video/UA-0008-diag.html": "33b50e2308d1da6f61a768f7b2a5471180b01751c96d1aa10b5c4298dbbc6182",
+        "/home/Carix/video/UA-0008.html": "ca940498925d7cfd2e0c42af887ab4768487ff9f8e5064bbb24b73924612b6c7",
+        "/home/Carix/video/UA-0009-372ada15.html": "a8ff3ed6fac4f551b29627f50b35b72cbea95c5387e2da61ab276c307fc895d6",
+        "/home/Carix/video/UA-0009-diag.html": "face33eedb4e08fb9170f15c7166e1d05c51061fbfdf82385bd606207f133271",
+        "/home/Carix/video/UA-0009.html": "a8ff3ed6fac4f551b29627f50b35b72cbea95c5387e2da61ab276c307fc895d6",
+        "/home/Carix/video/UA-0010-614505f4.html": "5b0c00b7fc25fdf565abf85325207c4d87310cc31ba273fb704e2339116abfa3",
+        "/home/Carix/video/UA-0010-diag.html": "30ee50b6ac4baa6a5c6dcfa8ea2dc0bad22a6287139cf71e833bf5ba7fe443dc",
+        "/home/Carix/video/UA-0010.html": "5b0c00b7fc25fdf565abf85325207c4d87310cc31ba273fb704e2339116abfa3",
+        "/home/Carix/video/UA-0011-9842913c.html": "812a3c54de74e3614af4fff22bc8a9043c64a4091b9e7ebff408b3e88ac90605",
+        "/home/Carix/video/UA-0011-diag.html": "7ea7f547b878afd890a5b45fb7ae05c6a022ea8e6e9ca3b1b7751f60190bb944",
+        "/home/Carix/video/UA-0011.html": "812a3c54de74e3614af4fff22bc8a9043c64a4091b9e7ebff408b3e88ac90605"
+      },
+      "sources": {
+        "/home/Carix/master_card.py": {
+          "bytes": 147307,
+          "marker": true,
+          "sha256": "3f17274e948eda37b891c7b9074a95c4adaf8ed75a5bc9d17ddf9a26c36ba6d0",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/stranica.py": {
+          "bytes": 203236,
+          "marker": true,
+          "sha256": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/yadro.py": {
+          "bytes": 150796,
+          "marker": true,
+          "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f",
+          "style_marker": 1,
+          "task074_marker": true
+        }
+      },
+      "stage_guard": {
+        "files": {
+          "/home/Carix/publikaciya.py": {
+            "bytes": 21682,
+            "dedup_marker": null,
+            "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4"
+          }
+        },
+        "installed": false
+      }
+    },
+    "candidate_catalogs": {
+      "/home/Carix/site/katalog.html": {
+        "card_count": 11,
+        "duplicate_issues": {},
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011"
+        ],
+        "mode": "legacy_v1",
+        "sha256": "a60eccae34e5e83885ce9c601373260c424f637fd8bb8f2cbf23c11247be9fea"
+      },
+      "/home/Carix/video/katalog.html": {
+        "card_count": 11,
+        "duplicate_issues": {},
+        "identifiers": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0003",
+          "UA-0004",
+          "UA-0011"
+        ],
+        "mode": "legacy_v1",
+        "sha256": "2f9ab0d8e42d1177c70a052e9cb78343d692ce10df5dcbd3bfa7faed59cdc972"
+      }
+    },
+    "candidate_core": null,
+    "candidate_sources": {
+      "/home/Carix/master_card.py": {
+        "changed": false,
+        "sha256": "3f17274e948eda37b891c7b9074a95c4adaf8ed75a5bc9d17ddf9a26c36ba6d0"
+      },
+      "/home/Carix/stranica.py": {
+        "changed": false,
+        "sha256": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244"
+      },
+      "/home/Carix/yadro.py": {
+        "changed": false,
+        "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f"
+      }
+    },
+    "contract_id": "CATALOG-CARD-DEDUP-GUARD-083-V1.0",
+    "crm_db_write": false,
+    "database_after": {
+      "count": 13,
+      "file_sha256": "d5ee847ba8e00a62273e01d80915dd6fd7e160afd511a18269d5fcc348a30ced",
+      "identifiers": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013"
+      ],
+      "quick_check": "ok",
+      "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+      "ua0009": true,
+      "ua0009_status": "sea_loaded"
+    },
+    "database_rows_changed_during_readonly_check": false,
+    "individual_pages_changed_during_readonly_check": false,
     "mode": "SHADOW",
     "production_write": false,
-    "status": "FAIL"
+    "status": "PASS"
   },
-  "status": "BLOCKED"
+  "postcheck_delayed": {
+    "before": {
+      "catalogs": {
+        "/home/Carix/site/katalog.html": {
+          "bytes": 41968,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0001",
+            "UA-0002",
+            "UA-0003",
+            "UA-0004",
+            "UA-0005",
+            "UA-0006",
+            "UA-0007",
+            "UA-0008",
+            "UA-0009",
+            "UA-0010",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "a60eccae34e5e83885ce9c601373260c424f637fd8bb8f2cbf23c11247be9fea",
+          "style_marker": 1,
+          "ua0009": true
+        },
+        "/home/Carix/video/katalog.html": {
+          "bytes": 39056,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0002",
+            "UA-0007",
+            "UA-0008",
+            "UA-0001",
+            "UA-0005",
+            "UA-0010",
+            "UA-0009",
+            "UA-0006",
+            "UA-0003",
+            "UA-0004",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "2f9ab0d8e42d1177c70a052e9cb78343d692ce10df5dcbd3bfa7faed59cdc972",
+          "style_marker": 1,
+          "ua0009": true
+        }
+      },
+      "database": {
+        "count": 13,
+        "file_sha256": "d5ee847ba8e00a62273e01d80915dd6fd7e160afd511a18269d5fcc348a30ced",
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013"
+        ],
+        "quick_check": "ok",
+        "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+        "ua0009": true,
+        "ua0009_status": "sea_loaded"
+      },
+      "protected_pages": {
+        "/home/Carix/site/UA-0001-00cf71c0.html": "d36d27a01d30a49ee9c49eaa9eec54304ef60f01a23997cb69870a16da0245a1",
+        "/home/Carix/site/UA-0001-diag.html": "12bdf8f04dcd21d84de9de7ce7568dda8e416723af07e5cde664f9103e283770",
+        "/home/Carix/site/UA-0001.html": "d36d27a01d30a49ee9c49eaa9eec54304ef60f01a23997cb69870a16da0245a1",
+        "/home/Carix/site/UA-0002-a6f9d391.html": "72b7ded82bc793e1327751f5091a5da821d8e6c7ba3538620605de9c088dd251",
+        "/home/Carix/site/UA-0002-diag.html": "2fc1a1b9524eb85d40747031d7d4fefaeef7fdae923513b3d16c5b647d046160",
+        "/home/Carix/site/UA-0002.html": "72b7ded82bc793e1327751f5091a5da821d8e6c7ba3538620605de9c088dd251",
+        "/home/Carix/site/UA-0003-diag.html": "be58bd59dae774b324ffba07d1d97cc5643fa16b5e3b2561ca9baf446c6a8677",
+        "/home/Carix/site/UA-0003.html": "4837d4e49659ebb6486b3de94ed47e52cc85460e4bf5326f4b4dea69de3c57d6",
+        "/home/Carix/site/UA-0004-0edda61a.html": "d34aeabc0ba5fc470f68011701d8f3851968eba944ff25211cf8d0686015fbad",
+        "/home/Carix/site/UA-0004-diag.html": "8f0b23f4e5747d6ce14ed65c7b41a183cb235042ea2dc7fee9b01af15f1f5c63",
+        "/home/Carix/site/UA-0004.html": "d34aeabc0ba5fc470f68011701d8f3851968eba944ff25211cf8d0686015fbad",
+        "/home/Carix/site/UA-0005-diag.html": "bf38e1b73f52a01f0149ff3e1c62acd58ec989d361e3c7a04e14808bb24739c8",
+        "/home/Carix/site/UA-0005.html": "7fb282d3d054c349f3e49d02756fa5e4e6fd3f079775c4c1294bc512caf79e7b",
+        "/home/Carix/site/UA-0006-diag.html": "c566e2e5d5f44b810df8fb8a9d17c432183f0f623662281deba337ccedc5b3b8",
+        "/home/Carix/site/UA-0006.html": "7b686f77805b23dd5d184592fa9f303c401ece7019f522b311b77176c35a7e85",
+        "/home/Carix/site/UA-0007-diag.html": "4d8cdac8afda641e37bfaf572e08aa5e83e84b001f6ad8fb94b96e1b3d5e1fe7",
+        "/home/Carix/site/UA-0007.html": "88215ec333b531a9a0ab5f6ea6b040ac25c2a01bd4d7aec1ea4af965077c76ce",
+        "/home/Carix/site/UA-0008-diag.html": "2796b5c4b489c5a521ef5d0dff800a0ba682574ad61825299a1d4372cf06ff07",
+        "/home/Carix/site/UA-0008.html": "5653411c3e19facaead7e2b18b5eda379b966dc925f87ad0940f8aca15f07d92",
+        "/home/Carix/site/UA-0009-diag.html": "523261417a23834eaf0a1e50acd818989cd16e2d6faf0aeabedf5ae48d4ec81d",
+        "/home/Carix/site/UA-0009.html": "b997adb3e35a4313d9437a535eb87efc5c9a84453133d4aa76e9c9b7f67ef1d2",
+        "/home/Carix/site/UA-0010-diag.html": "95f389cd878b15fe70c2da39753ad921d3a4d5fe20971fdce0fa14c9a4379089",
+        "/home/Carix/site/UA-0010.html": "ad6a4df107eddc56cd8088e6b09ca5bd613dd1f511182019581cd6823c829856",
+        "/home/Carix/site/UA-0011-diag.html": "1782aa4265fc50905f74c2513190165d7b71ed7d9df5135010867fcf05fddf48",
+        "/home/Carix/site/UA-0011.html": "f086de56a78975c0c8dfdaaac922265dec3a6da67e5bdac8514acd26bbf7f626",
+        "/home/Carix/video/UA-0001-00cf71c0.html": "d36d27a01d30a49ee9c49eaa9eec54304ef60f01a23997cb69870a16da0245a1",
+        "/home/Carix/video/UA-0001-diag.html": "12bdf8f04dcd21d84de9de7ce7568dda8e416723af07e5cde664f9103e283770",
+        "/home/Carix/video/UA-0001.html": "d36d27a01d30a49ee9c49eaa9eec54304ef60f01a23997cb69870a16da0245a1",
+        "/home/Carix/video/UA-0002-a6f9d391.html": "72b7ded82bc793e1327751f5091a5da821d8e6c7ba3538620605de9c088dd251",
+        "/home/Carix/video/UA-0002-diag.html": "2fc1a1b9524eb85d40747031d7d4fefaeef7fdae923513b3d16c5b647d046160",
+        "/home/Carix/video/UA-0002.html": "72b7ded82bc793e1327751f5091a5da821d8e6c7ba3538620605de9c088dd251",
+        "/home/Carix/video/UA-0003-a7bfb532.html": "4837d4e49659ebb6486b3de94ed47e52cc85460e4bf5326f4b4dea69de3c57d6",
+        "/home/Carix/video/UA-0003-diag.html": "be58bd59dae774b324ffba07d1d97cc5643fa16b5e3b2561ca9baf446c6a8677",
+        "/home/Carix/video/UA-0003.html": "4837d4e49659ebb6486b3de94ed47e52cc85460e4bf5326f4b4dea69de3c57d6",
+        "/home/Carix/video/UA-0004-0edda61a.html": "d34aeabc0ba5fc470f68011701d8f3851968eba944ff25211cf8d0686015fbad",
+        "/home/Carix/video/UA-0004-diag.html": "8f0b23f4e5747d6ce14ed65c7b41a183cb235042ea2dc7fee9b01af15f1f5c63",
+        "/home/Carix/video/UA-0004.html": "d34aeabc0ba5fc470f68011701d8f3851968eba944ff25211cf8d0686015fbad",
+        "/home/Carix/video/UA-0005-9e3432b2.html": "7fb282d3d054c349f3e49d02756fa5e4e6fd3f079775c4c1294bc512caf79e7b",
+        "/home/Carix/video/UA-0005-diag.html": "bf38e1b73f52a01f0149ff3e1c62acd58ec989d361e3c7a04e14808bb24739c8",
+        "/home/Carix/video/UA-0005.html": "7fb282d3d054c349f3e49d02756fa5e4e6fd3f079775c4c1294bc512caf79e7b",
+        "/home/Carix/video/UA-0006-diag.html": "c566e2e5d5f44b810df8fb8a9d17c432183f0f623662281deba337ccedc5b3b8",
+        "/home/Carix/video/UA-0006-ed784b7f.html": "7b686f77805b23dd5d184592fa9f303c401ece7019f522b311b77176c35a7e85",
+        "/home/Carix/video/UA-0006.html": "7b686f77805b23dd5d184592fa9f303c401ece7019f522b311b77176c35a7e85",
+        "/home/Carix/video/UA-0007-de6e3ebe.html": "88215ec333b531a9a0ab5f6ea6b040ac25c2a01bd4d7aec1ea4af965077c76ce",
+        "/home/Carix/video/UA-0007-diag.html": "4d8cdac8afda641e37bfaf572e08aa5e83e84b001f6ad8fb94b96e1b3d5e1fe7",
+        "/home/Carix/video/UA-0007.html": "88215ec333b531a9a0ab5f6ea6b040ac25c2a01bd4d7aec1ea4af965077c76ce",
+        "/home/Carix/video/UA-0008-87693e0e.html": "5653411c3e19facaead7e2b18b5eda379b966dc925f87ad0940f8aca15f07d92",
+        "/home/Carix/video/UA-0008-diag.html": "2796b5c4b489c5a521ef5d0dff800a0ba682574ad61825299a1d4372cf06ff07",
+        "/home/Carix/video/UA-0008.html": "5653411c3e19facaead7e2b18b5eda379b966dc925f87ad0940f8aca15f07d92",
+        "/home/Carix/video/UA-0009-372ada15.html": "b997adb3e35a4313d9437a535eb87efc5c9a84453133d4aa76e9c9b7f67ef1d2",
+        "/home/Carix/video/UA-0009-diag.html": "523261417a23834eaf0a1e50acd818989cd16e2d6faf0aeabedf5ae48d4ec81d",
+        "/home/Carix/video/UA-0009.html": "b997adb3e35a4313d9437a535eb87efc5c9a84453133d4aa76e9c9b7f67ef1d2",
+        "/home/Carix/video/UA-0010-614505f4.html": "ad6a4df107eddc56cd8088e6b09ca5bd613dd1f511182019581cd6823c829856",
+        "/home/Carix/video/UA-0010-diag.html": "95f389cd878b15fe70c2da39753ad921d3a4d5fe20971fdce0fa14c9a4379089",
+        "/home/Carix/video/UA-0010.html": "ad6a4df107eddc56cd8088e6b09ca5bd613dd1f511182019581cd6823c829856",
+        "/home/Carix/video/UA-0011-9842913c.html": "f086de56a78975c0c8dfdaaac922265dec3a6da67e5bdac8514acd26bbf7f626",
+        "/home/Carix/video/UA-0011-diag.html": "1782aa4265fc50905f74c2513190165d7b71ed7d9df5135010867fcf05fddf48",
+        "/home/Carix/video/UA-0011.html": "f086de56a78975c0c8dfdaaac922265dec3a6da67e5bdac8514acd26bbf7f626"
+      },
+      "sources": {
+        "/home/Carix/master_card.py": {
+          "bytes": 147307,
+          "marker": true,
+          "sha256": "3f17274e948eda37b891c7b9074a95c4adaf8ed75a5bc9d17ddf9a26c36ba6d0",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/stranica.py": {
+          "bytes": 203236,
+          "marker": true,
+          "sha256": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/yadro.py": {
+          "bytes": 150796,
+          "marker": true,
+          "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f",
+          "style_marker": 1,
+          "task074_marker": true
+        }
+      },
+      "stage_guard": {
+        "files": {
+          "/home/Carix/publikaciya.py": {
+            "bytes": 21682,
+            "dedup_marker": null,
+            "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4"
+          }
+        },
+        "installed": false
+      }
+    },
+    "candidate_catalogs": {
+      "/home/Carix/site/katalog.html": {
+        "card_count": 11,
+        "duplicate_issues": {},
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011"
+        ],
+        "mode": "legacy_v1",
+        "sha256": "a60eccae34e5e83885ce9c601373260c424f637fd8bb8f2cbf23c11247be9fea"
+      },
+      "/home/Carix/video/katalog.html": {
+        "card_count": 11,
+        "duplicate_issues": {},
+        "identifiers": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0003",
+          "UA-0004",
+          "UA-0011"
+        ],
+        "mode": "legacy_v1",
+        "sha256": "2f9ab0d8e42d1177c70a052e9cb78343d692ce10df5dcbd3bfa7faed59cdc972"
+      }
+    },
+    "candidate_core": null,
+    "candidate_sources": {
+      "/home/Carix/master_card.py": {
+        "changed": false,
+        "sha256": "3f17274e948eda37b891c7b9074a95c4adaf8ed75a5bc9d17ddf9a26c36ba6d0"
+      },
+      "/home/Carix/stranica.py": {
+        "changed": false,
+        "sha256": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244"
+      },
+      "/home/Carix/yadro.py": {
+        "changed": false,
+        "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f"
+      }
+    },
+    "contract_id": "CATALOG-CARD-DEDUP-GUARD-083-V1.0",
+    "crm_db_write": false,
+    "database_after": {
+      "count": 13,
+      "file_sha256": "d5ee847ba8e00a62273e01d80915dd6fd7e160afd511a18269d5fcc348a30ced",
+      "identifiers": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013"
+      ],
+      "quick_check": "ok",
+      "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+      "ua0009": true,
+      "ua0009_status": "sea_loaded"
+    },
+    "database_rows_changed_during_readonly_check": false,
+    "individual_pages_changed_during_readonly_check": false,
+    "mode": "SHADOW",
+    "production_write": false,
+    "status": "PASS"
+  },
+  "public": {
+    "video": {
+      "bytes": 39056,
+      "card_count": 11,
+      "checks": {
+        "at_least_eleven_blocks": true,
+        "http_200": true,
+        "no_semantic_duplicates": true,
+        "safe_canonical_url": true,
+        "status_preserved": true,
+        "style_once": true,
+        "ua0009": true,
+        "ua0011": true
+      },
+      "identifiers": [
+        "UA-0002",
+        "UA-0007",
+        "UA-0008",
+        "UA-0001",
+        "UA-0005",
+        "UA-0010",
+        "UA-0009",
+        "UA-0006",
+        "UA-0003",
+        "UA-0004",
+        "UA-0011"
+      ],
+      "mode": "legacy_v1",
+      "url": "https://www.uaart.com.ua/video/katalog.html?task083=1787992545"
+    }
+  },
+  "public_delayed": {
+    "video": {
+      "bytes": 39056,
+      "card_count": 11,
+      "checks": {
+        "at_least_eleven_blocks": true,
+        "http_200": true,
+        "no_semantic_duplicates": true,
+        "safe_canonical_url": true,
+        "status_preserved": true,
+        "style_once": true,
+        "ua0009": true,
+        "ua0011": true
+      },
+      "identifiers": [
+        "UA-0002",
+        "UA-0007",
+        "UA-0008",
+        "UA-0001",
+        "UA-0005",
+        "UA-0010",
+        "UA-0009",
+        "UA-0006",
+        "UA-0003",
+        "UA-0004",
+        "UA-0011"
+      ],
+      "mode": "legacy_v1",
+      "url": "https://www.uaart.com.ua/video/katalog.html?task083=1787992734"
+    }
+  },
+  "restart": {
+    "status": "SKIPPED_ALREADY_INSTALLED"
+  },
+  "rollback": null,
+  "shadow": {
+    "before": {
+      "catalogs": {
+        "/home/Carix/site/katalog.html": {
+          "bytes": 41968,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0001",
+            "UA-0002",
+            "UA-0003",
+            "UA-0004",
+            "UA-0005",
+            "UA-0006",
+            "UA-0007",
+            "UA-0008",
+            "UA-0009",
+            "UA-0010",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "a60eccae34e5e83885ce9c601373260c424f637fd8bb8f2cbf23c11247be9fea",
+          "style_marker": 1,
+          "ua0009": true
+        },
+        "/home/Carix/video/katalog.html": {
+          "bytes": 39056,
+          "canonical_blocks": 11,
+          "canonical_identifiers": [
+            "UA-0002",
+            "UA-0007",
+            "UA-0008",
+            "UA-0001",
+            "UA-0005",
+            "UA-0010",
+            "UA-0009",
+            "UA-0006",
+            "UA-0003",
+            "UA-0004",
+            "UA-0011"
+          ],
+          "duplicate_issues": {},
+          "ferry_status": true,
+          "mode": "legacy_v1",
+          "sha256": "2f9ab0d8e42d1177c70a052e9cb78343d692ce10df5dcbd3bfa7faed59cdc972",
+          "style_marker": 1,
+          "ua0009": true
+        }
+      },
+      "database": {
+        "count": 13,
+        "file_sha256": "d5ee847ba8e00a62273e01d80915dd6fd7e160afd511a18269d5fcc348a30ced",
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013"
+        ],
+        "quick_check": "ok",
+        "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+        "ua0009": true,
+        "ua0009_status": "sea_loaded"
+      },
+      "protected_pages": {
+        "/home/Carix/site/UA-0001-00cf71c0.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/site/UA-0001-diag.html": "512f312a0ddbed2cdefee812438f91b9950c5d35f6d7c73e3e6ec48be7e76cf9",
+        "/home/Carix/site/UA-0001.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/site/UA-0002-a6f9d391.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/site/UA-0002-diag.html": "c1981364bf058188b1ed6c97af5cae94710b61839d7b0baeb44a3cb5b4b176de",
+        "/home/Carix/site/UA-0002.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/site/UA-0003-diag.html": "950208fefe83b940d3ac39596386344d078784356624132a10181a07431bcf2d",
+        "/home/Carix/site/UA-0003.html": "4a9b9a8e1aa8139c8f0e4eaff4e440145f4ff97c41804b8d68e993fa4007a8e7",
+        "/home/Carix/site/UA-0004-0edda61a.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/site/UA-0004-diag.html": "4afc387c85b126a60c43da41eb375195e5b615186db6c364a260161408a50b86",
+        "/home/Carix/site/UA-0004.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/site/UA-0005-diag.html": "1b4baaaafba9ccae7c9d176ef59a20c6f6b02d08eb91e74bc5fb6c91c2c00b00",
+        "/home/Carix/site/UA-0005.html": "4d1da52ed8ef0e8295f58cf4af1578c7c0879512fc982b507b6efe69053e3aa4",
+        "/home/Carix/site/UA-0006-diag.html": "4d4ee1bc1b9033f1bd0e63729d5bbb8c2748d4f5080296edf90b586c79726a89",
+        "/home/Carix/site/UA-0006.html": "5fe7d030a99b2e1d91f23b16bfb40239dee68c7aae3c88a60ce88fb23de16f8b",
+        "/home/Carix/site/UA-0007-diag.html": "eea4edafbd360f5f07d5016da6260cf74a065b6a3a461f29ba55193578864fc1",
+        "/home/Carix/site/UA-0007.html": "d33ab956b98cfd182a4b2eacc183d5b2fa0e88c4f194647180988f40bb3005d8",
+        "/home/Carix/site/UA-0008-diag.html": "fca667899144b430abba7e5c98d75779606218b636fc5999bc52b23ccc3851be",
+        "/home/Carix/site/UA-0008.html": "b421a803b2b572e330adbb4ac1f9907f30b3733480f623367ecb29a1dca90f2a",
+        "/home/Carix/site/UA-0009-diag.html": "324fb5fe7f8aca58a93fba52c8f1977778a3e3cfbaf2bb51a6b1465a96643b09",
+        "/home/Carix/site/UA-0009.html": "b69a3ae70a53d9d9f3dcd07badd59e08582a561cd92bf478ab5d8603ca53a21c",
+        "/home/Carix/site/UA-0010-diag.html": "78cdee2d0168adb0ff97a6fe4e1bdf965c7e3801952a7e12829e1ddf51245d3b",
+        "/home/Carix/site/UA-0010.html": "137cc1391ee39350485f50b994b865fc7b6b3a59e1af77ec2edf3a0ec484f380",
+        "/home/Carix/site/UA-0011-diag.html": "97806be55526af5422d532cea2b9f7fb541b60465110727114b9ca22349a23fd",
+        "/home/Carix/site/UA-0011.html": "1681025e423e1438b29158f9bb66e39810ba0924142ad885e303818723fd2acb",
+        "/home/Carix/video/UA-0001-00cf71c0.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/video/UA-0001-diag.html": "512f312a0ddbed2cdefee812438f91b9950c5d35f6d7c73e3e6ec48be7e76cf9",
+        "/home/Carix/video/UA-0001.html": "bd77737b90bed3f072336089d8883e5bfc492f25787872888740ef478cb923e2",
+        "/home/Carix/video/UA-0002-a6f9d391.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/video/UA-0002-diag.html": "c1981364bf058188b1ed6c97af5cae94710b61839d7b0baeb44a3cb5b4b176de",
+        "/home/Carix/video/UA-0002.html": "4affbe9557d164357d8ad45db2e6184eacb5bff6a6fa7e0837874a047bf9deac",
+        "/home/Carix/video/UA-0003-a7bfb532.html": "4a9b9a8e1aa8139c8f0e4eaff4e440145f4ff97c41804b8d68e993fa4007a8e7",
+        "/home/Carix/video/UA-0003-diag.html": "950208fefe83b940d3ac39596386344d078784356624132a10181a07431bcf2d",
+        "/home/Carix/video/UA-0003.html": "4a9b9a8e1aa8139c8f0e4eaff4e440145f4ff97c41804b8d68e993fa4007a8e7",
+        "/home/Carix/video/UA-0004-0edda61a.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/video/UA-0004-diag.html": "4afc387c85b126a60c43da41eb375195e5b615186db6c364a260161408a50b86",
+        "/home/Carix/video/UA-0004.html": "baa4a2ef0cde7719b37b15559bce8197498c94707cab3c3578dcd7d95c8eed7d",
+        "/home/Carix/video/UA-0005-9e3432b2.html": "4d1da52ed8ef0e8295f58cf4af1578c7c0879512fc982b507b6efe69053e3aa4",
+        "/home/Carix/video/UA-0005-diag.html": "1b4baaaafba9ccae7c9d176ef59a20c6f6b02d08eb91e74bc5fb6c91c2c00b00",
+        "/home/Carix/video/UA-0005.html": "4d1da52ed8ef0e8295f58cf4af1578c7c0879512fc982b507b6efe69053e3aa4",
+        "/home/Carix/video/UA-0006-diag.html": "4d4ee1bc1b9033f1bd0e63729d5bbb8c2748d4f5080296edf90b586c79726a89",
+        "/home/Carix/video/UA-0006-ed784b7f.html": "5fe7d030a99b2e1d91f23b16bfb40239dee68c7aae3c88a60ce88fb23de16f8b",
+        "/home/Carix/video/UA-0006.html": "5fe7d030a99b2e1d91f23b16bfb40239dee68c7aae3c88a60ce88fb23de16f8b",
+        "/home/Carix/video/UA-0007-de6e3ebe.html": "d33ab956b98cfd182a4b2eacc183d5b2fa0e88c4f194647180988f40bb3005d8",
+        "/home/Carix/video/UA-0007-diag.html": "eea4edafbd360f5f07d5016da6260cf74a065b6a3a461f29ba55193578864fc1",
+        "/home/Carix/video/UA-0007.html": "d33ab956b98cfd182a4b2eacc183d5b2fa0e88c4f194647180988f40bb3005d8",
+        "/home/Carix/video/UA-0008-87693e0e.html": "b421a803b2b572e330adbb4ac1f9907f30b3733480f623367ecb29a1dca90f2a",
+        "/home/Carix/video/UA-0008-diag.html": "fca667899144b430abba7e5c98d75779606218b636fc5999bc52b23ccc3851be",
+        "/home/Carix/video/UA-0008.html": "b421a803b2b572e330adbb4ac1f9907f30b3733480f623367ecb29a1dca90f2a",
+        "/home/Carix/video/UA-0009-372ada15.html": "b69a3ae70a53d9d9f3dcd07badd59e08582a561cd92bf478ab5d8603ca53a21c",
+        "/home/Carix/video/UA-0009-diag.html": "324fb5fe7f8aca58a93fba52c8f1977778a3e3cfbaf2bb51a6b1465a96643b09",
+        "/home/Carix/video/UA-0009.html": "b69a3ae70a53d9d9f3dcd07badd59e08582a561cd92bf478ab5d8603ca53a21c",
+        "/home/Carix/video/UA-0010-614505f4.html": "137cc1391ee39350485f50b994b865fc7b6b3a59e1af77ec2edf3a0ec484f380",
+        "/home/Carix/video/UA-0010-diag.html": "78cdee2d0168adb0ff97a6fe4e1bdf965c7e3801952a7e12829e1ddf51245d3b",
+        "/home/Carix/video/UA-0010.html": "137cc1391ee39350485f50b994b865fc7b6b3a59e1af77ec2edf3a0ec484f380",
+        "/home/Carix/video/UA-0011-9842913c.html": "1681025e423e1438b29158f9bb66e39810ba0924142ad885e303818723fd2acb",
+        "/home/Carix/video/UA-0011-diag.html": "97806be55526af5422d532cea2b9f7fb541b60465110727114b9ca22349a23fd",
+        "/home/Carix/video/UA-0011.html": "1681025e423e1438b29158f9bb66e39810ba0924142ad885e303818723fd2acb"
+      },
+      "sources": {
+        "/home/Carix/master_card.py": {
+          "bytes": 147307,
+          "marker": true,
+          "sha256": "3f17274e948eda37b891c7b9074a95c4adaf8ed75a5bc9d17ddf9a26c36ba6d0",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/stranica.py": {
+          "bytes": 203236,
+          "marker": true,
+          "sha256": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244",
+          "style_marker": 1,
+          "task074_marker": true
+        },
+        "/home/Carix/yadro.py": {
+          "bytes": 150796,
+          "marker": true,
+          "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f",
+          "style_marker": 1,
+          "task074_marker": true
+        }
+      },
+      "stage_guard": {
+        "files": {
+          "/home/Carix/publikaciya.py": {
+            "bytes": 21682,
+            "dedup_marker": null,
+            "sha256": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4"
+          }
+        },
+        "installed": false
+      }
+    },
+    "candidate_catalogs": {
+      "/home/Carix/site/katalog.html": {
+        "card_count": 11,
+        "duplicate_issues": {},
+        "identifiers": [
+          "UA-0001",
+          "UA-0002",
+          "UA-0003",
+          "UA-0004",
+          "UA-0005",
+          "UA-0006",
+          "UA-0007",
+          "UA-0008",
+          "UA-0009",
+          "UA-0010",
+          "UA-0011"
+        ],
+        "mode": "legacy_v1",
+        "sha256": "a60eccae34e5e83885ce9c601373260c424f637fd8bb8f2cbf23c11247be9fea"
+      },
+      "/home/Carix/video/katalog.html": {
+        "card_count": 11,
+        "duplicate_issues": {},
+        "identifiers": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0003",
+          "UA-0004",
+          "UA-0011"
+        ],
+        "mode": "legacy_v1",
+        "sha256": "2f9ab0d8e42d1177c70a052e9cb78343d692ce10df5dcbd3bfa7faed59cdc972"
+      }
+    },
+    "candidate_core": null,
+    "candidate_sources": {
+      "/home/Carix/master_card.py": {
+        "changed": false,
+        "sha256": "3f17274e948eda37b891c7b9074a95c4adaf8ed75a5bc9d17ddf9a26c36ba6d0"
+      },
+      "/home/Carix/stranica.py": {
+        "changed": false,
+        "sha256": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244"
+      },
+      "/home/Carix/yadro.py": {
+        "changed": false,
+        "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f"
+      }
+    },
+    "contract_id": "CATALOG-CARD-DEDUP-GUARD-083-V1.0",
+    "crm_db_write": false,
+    "database_after": {
+      "count": 13,
+      "file_sha256": "d5ee847ba8e00a62273e01d80915dd6fd7e160afd511a18269d5fcc348a30ced",
+      "identifiers": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013"
+      ],
+      "quick_check": "ok",
+      "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+      "ua0009": true,
+      "ua0009_status": "sea_loaded"
+    },
+    "database_rows_changed_during_readonly_check": false,
+    "individual_pages_changed_during_readonly_check": false,
+    "mode": "SHADOW",
+    "production_write": false,
+    "status": "PASS"
+  },
+  "status": "PASS"
 }
