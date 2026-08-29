@@ -794,9 +794,7 @@ def postcheck(write_receipt: bool = True) -> dict:
             for surface in ("video", "site")
         }
         catalogs = {
-            surface: catalog_semantics(
-                ROOT / surface / "katalog.html", require_final=False
-            )
+            surface: catalog_semantics(ROOT / surface / "katalog.html")
             for surface in ("video", "site")
         }
         value.update({"status": "PASS", "database": database, "markers": markers,
@@ -840,7 +838,9 @@ def shadow() -> dict:
         guard = import_guard_from_upload()
         projected = planned_korea_target(guard, target)
         current_catalogs = {
-            surface: catalog_semantics(ROOT / surface / "katalog.html")
+            surface: catalog_semantics(
+                ROOT / surface / "katalog.html", require_final=False
+            )
             for surface in ("video", "site")
         }
         value.update({
