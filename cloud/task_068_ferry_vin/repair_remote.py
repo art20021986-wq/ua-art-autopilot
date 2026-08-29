@@ -1039,6 +1039,21 @@ def _patch_cars_ui(source: str, original_sha: str) -> str:
     if "🇰🇷 Проверить VIN · CarHistory" in source:
         _validate_cars_ui(source)
         return source
+    # Production already contains the approved stage-anchor CRM menu.  For
+    # this additive contract replace only its exact current card_kb function;
+    # stage handlers, media fast path and all other functions stay untouched.
+    if (original_sha == EXPECTED_SHA[CARS_UI_PATH]
+            and "UA-CARDS-STAGE-ANCHOR-001-V1.1" in source):
+        preserved_before = {name: _function_sha(source, name) for name in PRESERVE_FUNCTIONS}
+        source = _replace_function(
+            source, "card_kb", NEW_CARD_KB,
+            "fda0d3e7644e3cae77a176305d06ee1cb5f88ad210f5e99a515a4b0d77e8b608",
+        )
+        for name, value in preserved_before.items():
+            if _function_sha(source, name) != value:
+                raise RepairBlocked("preserved_function_modified:" + name)
+        _validate_cars_ui(source)
+        return source
     if CONTRACT in source:
         _validate_cars_ui(source)
         return source
