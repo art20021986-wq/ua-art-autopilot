@@ -99,6 +99,11 @@ class ContractTests(unittest.TestCase):
                 runtime.enforce_live_catalog("UA-0011")
             self.assertEqual(before, (root / "video/katalog.html").read_bytes())
 
+    def test_install_postcheck_uses_repaired_rows_hash(self):
+        source = INSTALLER_PATH.read_text(encoding="utf-8")
+        self.assertIn("postcheck = verify_catalogs(runtime, after_rows)", source)
+        self.assertNotIn("postcheck = verify_catalogs(runtime, before_rows)", source)
+
     def test_publisher_wrapper_checks_tuple_success(self):
         sample = """def opublikovat(kod, proba=False):
     if proba:
