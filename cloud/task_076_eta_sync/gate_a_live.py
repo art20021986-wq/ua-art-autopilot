@@ -252,6 +252,22 @@ def source_evidence(filename: str, data: bytes) -> dict:
     return result
 
 
+def expected_date_forms(value: str) -> set[str]:
+    parsed = parse_iso_date(value)
+    if parsed is None:
+        return set()
+    ru = ("января", "февраля", "марта", "апреля", "мая", "июня",
+          "июля", "августа", "сентября", "октября", "ноября", "декабря")
+    uk = ("січня", "лютого", "березня", "квітня", "травня", "червня",
+          "липня", "серпня", "вересня", "жовтня", "листопада", "грудня")
+    return {
+        parsed.isoformat(),
+        parsed.strftime("%d.%m.%Y"),
+        "%d %s %d" % (parsed.day, ru[parsed.month - 1], parsed.year),
+        "%d %s %d" % (parsed.day, uk[parsed.month - 1], parsed.year),
+    }
+
+
 def diagnose(database: dict, sources: dict, remote_pages: dict, public_pages: dict) -> dict:
     cars_ui_defs = {d["name"]: d["source"] for d in sources.get("cars_ui.py", {}).get("definitions", [])}
     apply_value = cars_ui_defs.get("apply_value", "")
@@ -272,15 +288,9 @@ def diagnose(database: dict, sources: dict, remote_pages: dict, public_pages: di
         for surface in ("video", "site"):
             page = remote_pages[surface + ":" + identifier]
             contexts = " ".join(page.get("date_contexts") or [])
-            if expected and expected not in contexts:
-                # HTML normally renders a localized date, so this is a signal only;
-                # detailed contexts remain in the evidence for controller review.
-                localized = ""
-                parsed = parse_iso_date(expected)
-                if parsed:
-                    localized = parsed.strftime("%d.%m.%Y")
-                if localized and localized not in contexts:
-                    findings.append(identifier + ":" + surface.upper() + "_DATE_NOT_CANONICAL")
+            forms = expected_date_forms(expected)
+            if forms and not any(form in contexts for form in forms):
+                findings.append(identifier + ":" + surface.upper() + "_DATE_NOT_CANONICAL")
         public = public_pages.get("video:" + identifier) or {}
         if public.get("missing"):
             findings.append(identifier + ":PUBLIC_VIDEO_MISSING")
