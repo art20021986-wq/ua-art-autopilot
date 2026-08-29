@@ -3,25 +3,25 @@
   "bot_restarted": false,
   "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
   "errors": [
-    "ControllerError:SHADOW_FAIL:Task085Error:ANCHOR_COUNT_sobrat_kartochku:0"
+    "ControllerError:SHADOW_FAIL:Task085Error:ANCHOR_COUNT_obrabotat_kartochku:0"
   ],
-  "finished_at_utc": "2026-08-29T08:44:34Z",
+  "finished_at_utc": "2026-08-29T08:47:53Z",
   "rollback": null,
   "runtime_llm_tokens": 0,
   "shadow": {
     "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
     "crm_write": false,
     "errors": [
-      "Task085Error:ANCHOR_COUNT_sobrat_kartochku:0"
+      "Task085Error:ANCHOR_COUNT_obrabotat_kartochku:0"
     ],
-    "finished_at_utc": "2026-08-29T08:44:10Z",
+    "finished_at_utc": "2026-08-29T08:47:11Z",
     "media_write": false,
     "mode": "SHADOW",
     "production_write": false,
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-08-29T08:44:09Z",
+    "started_at_utc": "2026-08-29T08:47:11Z",
     "status": "FAIL"
   },
-  "started_at_utc": "2026-08-29T08:43:38Z",
+  "started_at_utc": "2026-08-29T08:46:47Z",
   "status": "FAIL"
 }
