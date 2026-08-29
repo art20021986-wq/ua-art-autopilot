@@ -2,16 +2,17 @@
 
 Live Gate A status: **PASS**
 
-| CRM field | Before (live GET-only) | After (sandbox target) |
+| CRM field | Before (fresh GET-only) | After (sandbox target) |
 |---|---|---|
 | `status` | `kr_bought` | `kr_bought` |
-| `sea_container` | `ONEYSELGF1046602` | `None` |
-| `sea_date_out` | `None` | `None` |
-| `eta_manual` | `2026-12-12` | `None` |
-| `days_to_kyiv` | `None` | `None` |
+| `sea_container` | `ONEYSELGF1046602` | `NULL` |
+| `sea_date_out` | `NULL` | `NULL` |
+| `eta_manual` | `2026-12-12` | `NULL` |
+| `days_to_kyiv` | `NULL` | `NULL` |
 
-- Other CRM fields SHA-256 before: `2e6a26ee26140fdcd8cb516f9104ac5b6a782089b6c2e84c093243744fd133e4`
-- Other CRM fields SHA-256 after: `2e6a26ee26140fdcd8cb516f9104ac5b6a782089b6c2e84c093243744fd133e4`
-- Media manifest preserved: **PASS**
-- First facade photo resolved: **PASS**
+- Changed non-empty fields: `sea_container`, `eta_manual`
+- All other CRM fields: unchanged, field-by-field SHA-256 **PASS**
+- Ordered media manifest: 35 photos, preserved **PASS**
+- Own facade cover first: **PASS**
+- Repeated sandbox transform: 10/10 identical after first application
 - Production touched: **NO**
