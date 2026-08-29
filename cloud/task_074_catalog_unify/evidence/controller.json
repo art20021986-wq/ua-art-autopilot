@@ -1,0 +1,18 @@
+{
+  "contract_id": "CATALOG-CARD-UNIFY-002-V1.0",
+  "errors": [
+    "Blocked:SHADOW_FAILED:[\"Blocked:CATALOG_BASE_INVARIANT:katalog.html\"]"
+  ],
+  "rollback": null,
+  "shadow": {
+    "contract_id": "CATALOG-CARD-UNIFY-002-V1.0",
+    "crm_db_write": false,
+    "errors": [
+      "Blocked:CATALOG_BASE_INVARIANT:katalog.html"
+    ],
+    "mode": "SHADOW",
+    "production_write": false,
+    "status": "FAIL"
+  },
+  "status": "BLOCKED"
+}
