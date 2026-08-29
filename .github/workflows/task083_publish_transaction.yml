@@ -1,3 +1,4 @@
+# Emergency retry revision 2: cancel only a stale TASK083 run and preserve fail-closed publication.
 name: task083-publish-transaction-production
 
 on:
@@ -13,7 +14,7 @@ permissions:
 
 concurrency:
   group: task083-publish-transaction-production
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   repair:
@@ -69,7 +70,7 @@ jobs:
           import json, os, time, urllib.request
           active_states = {'queued', 'in_progress', 'pending', 'requested', 'waiting'}
           current = int(os.environ['CURRENT_RUN_ID'])
-          deadline = time.monotonic() + 1500
+          deadline = time.monotonic() + 600
           stable = 0
           while time.monotonic() < deadline:
               req = urllib.request.Request(
