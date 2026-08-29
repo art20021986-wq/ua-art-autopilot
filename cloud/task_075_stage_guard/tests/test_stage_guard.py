@@ -138,6 +138,21 @@ class StageGuardTests(unittest.TestCase):
         self.assertIn("window.getComputedStyle(cards[k]).display!=='none'", candidate)
         self.assertIn("data-ua-stage-filter-ok", candidate)
 
+    def test_shell_count_and_ferry_copy_follow_dynamic_contract(self):
+        source = """<!doctype html><html><head></head><body>
+        <p>11 в подборке · цены под ключ</p>
+        <p>Паром: Корея → Грузия</p>
+        <div class="catalog-grid"></div><div class="empty-assist"></div></body></html>"""
+        candidate = enforce_catalog(source, [row("UA-0012", "sea_transit")], {
+            "UA-0012": "https://example.test/UA-0012.jpg",
+        })
+        result = audit_catalog(candidate, [row("UA-0012", "sea_transit")])
+        self.assertEqual(result["status"], "PASS", result["errors"])
+        self.assertIn("1 в подборке", candidate)
+        self.assertNotIn("11 в подборке", candidate)
+        self.assertNotIn("Корея → Грузия", candidate)
+        self.assertIn("Паром: маршрут — Киев", candidate)
+
 
 if __name__ == "__main__":
     unittest.main()

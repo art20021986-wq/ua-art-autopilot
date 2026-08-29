@@ -399,6 +399,18 @@ def enforce_catalog(source: str, rows: Iterable[Mapping], photos: Mapping[str, s
             raise StageGuardError("CATALOG_INSERTION_POINT_MISSING")
     source = source[:position] + rendered + source[position:]
 
+    # Keep public shell copy synchronized with the same contract as the cards.
+    # This covers old static counters and explanatory text outside the grid.
+    total = len(rows_by_id)
+    source = re.sub(r"\b\d+\s+в\s+подборке\b", "%d в подборке" % total,
+                    source, flags=re.I)
+    source = re.sub(r"\b\d+\s+у\s+добірці\b", "%d у добірці" % total,
+                    source, flags=re.I)
+    source = re.sub(r"Корея\s*(?:→|&rarr;|&#8594;)\s*Грузия",
+                    "маршрут — Киев", source, flags=re.I)
+    source = re.sub(r"Корея\s*(?:→|&rarr;|&#8594;)\s*Грузія",
+                    "маршрут — Київ", source, flags=re.I)
+
     source = _inject_once(source, "ua-stage-card-v2-style", STYLE, "</head>")
     source = _inject_once(source, "ua-stage-card-v2-filter", FILTER_SCRIPT, "</body>")
     return source
@@ -420,6 +432,16 @@ def audit_catalog(source: str, rows: Iterable[Mapping]) -> dict:
     list_ok = source.count(LIST_START) == 1 and source.count(LIST_END) == 1 and 0 <= list_start < list_end
     if not list_ok:
         errors.append("UNIFIED_LIST_MARKERS")
+    public_shell = re.sub(r"<(?:script|style)\b[^>]*>.*?</(?:script|style)\s*>",
+                          " ", source, flags=re.I | re.S)
+    public_shell = _html.unescape(re.sub(r"<[^>]+>", " ", public_shell))
+    public_shell = re.sub(r"\s+", " ", public_shell)
+    if re.search(r"корея\s*[→-]\s*грузи", public_shell, re.I):
+        errors.append("CATALOG_FERRY_ROUTE_OLD")
+    for found in re.finditer(r"\b(\d+)\s+(?:в\s+подборке|у\s+добірці)\b",
+                             public_shell, re.I):
+        if int(found.group(1)) != len(rows_by_id):
+            errors.append("CATALOG_COUNT_STALE:%s" % found.group(1))
     ordered_stages = []
     for identifier, row in sorted(rows_by_id.items()):
         found = by_id.get(identifier, [])
