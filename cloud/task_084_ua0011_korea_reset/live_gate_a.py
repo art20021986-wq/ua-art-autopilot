@@ -251,11 +251,20 @@ def main() -> int:
         quick, schema, rows, ua11, audit = load_database(blobs["crm_db"], blobs["crm_wal"])
         if quick != "ok":
             raise StageGuardError("CRM_QUICK_CHECK:" + str(quick))
-        identifiers = [str(row.get("auto_number") or "").upper() for row in rows]
+        all_identifiers = [str(row.get("auto_number") or "").upper() for row in rows]
+        if len(all_identifiers) != len(set(all_identifiers)):
+            raise StageGuardError("DUPLICATE_PUBLISHED_CARD_IDS")
+        scoped_rows = []
+        for row in rows:
+            identifier = str(row.get("auto_number") or "").upper()
+            match = re.fullmatch(r"UA-(\\d{4,})", identifier)
+            if match and 1 <= int(match.group(1)) <= 11:
+                scoped_rows.append(row)
+        identifiers = [str(row.get("auto_number") or "").upper() for row in scoped_rows]
         if TARGET_CARD not in identifiers or "UA-0009" not in identifiers:
             raise StageGuardError("MANDATORY_CARD_MISSING")
-        if len(identifiers) != len(set(identifiers)):
-            raise StageGuardError("DUPLICATE_PUBLISHED_CARD_IDS")
+        if len(identifiers) != 11 or len(set(identifiers)) != 11:
+            raise StageGuardError("UA0001_UA0011_SCOPE_INCOMPLETE")
         columns = {item["name"] for item in schema}
         if "status" not in columns:
             raise StageGuardError("STATUS_FIELD_MISSING")
@@ -304,7 +313,10 @@ def main() -> int:
             raise StageGuardError("UA0011_CRM_PHOTOS_EMPTY")
         evidence["backup"]["pages"] = page_manifest
 
-        transformed_rows = [after if row.get("auto_number") == TARGET_CARD else copy.deepcopy(row) for row in rows]
+        transformed_rows = [
+            after if row.get("auto_number") == TARGET_CARD else copy.deepcopy(row)
+            for row in scoped_rows
+        ]
         CANARY.mkdir(parents=True, exist_ok=True)
         canaries = {}
         repeated = {}
@@ -349,7 +361,9 @@ def main() -> int:
         evidence["database"] = {
             "quick_check": quick,
             "published": len(rows),
-            "unique_ids": len(set(identifiers)),
+            "unique_ids": len(set(all_identifiers)),
+            "canary_scope": identifiers,
+            "out_of_scope_published": sorted(set(all_identifiers) - set(identifiers)),
             "rows": [public_row(row) for row in rows],
         }
         evidence["ua0011"] = {
