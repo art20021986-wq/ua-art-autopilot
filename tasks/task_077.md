@@ -125,3 +125,92 @@ tests, Gate A workflow и manual Gate B workflow. Gate B должен требо
 5. В отчёте явно доказать: publisher FAIL даёт только одно failure-сообщение;
    сообщение «Машина видна клиентам в каталоге» возможно только после verified
    PASS primary + diag/placeholder + оба каталога.
+
+
+## ROUND 3 — отклонение прототипа и обязательный live-anchored release candidate
+
+Controller 29.08.2026 выполнил реальные GET-only Gate A для TASK 076 и TASK 077.
+Канонические доказательства:
+- `cloud/task_076_eta_sync/evidence/gate_a_live.json` = PASS;
+- `cloud/task_077_container_stage_sync/evidence/live_audit.json` =
+  `PASS_AUDIT_DEFECT_REPRODUCED`;
+- production/CRM/site writes = 0, `PRAGMA quick_check=ok`.
+
+### Точная причина, уже доказанная live-кодом
+
+Активный `konteyner.sprosit_dni` ставит wait field `eta_manual`.
+`konteyner.prinyat` для числового N вычисляет дату и вызывает только
+`_pisat(cid, "eta_manual", date, actor)`; `days_to_kyiv` не записывает.
+Затем fire-and-forget `_peresobrat()` делает `subprocess.Popen(stranica.main)`
+без ожидания/результата, а handler всегда отвечает «Страница обновляется».
+Отдельный `cars_ui.apply_value("eta_days")` пишет два поля двумя независимыми
+`set_field`/транзакциями и также не проверяет publisher.
+
+Live preimage:
+- UA-0009: `days_to_kyiv=13`, `eta_manual=2026-09-28`,
+  `condition_text` содержит устаревшее «прибуття — 9 вересня 2026»;
+- UA-0010: `days_to_kyiv=NULL`, `eta_manual=2026-09-28`;
+- UA-0011: `days_to_kyiv=NULL`, `eta_manual=2026-09-28`;
+- public `/video/UA-0009..0011.html` уже показывает динамические
+  30 дней / 28 сентября 2026, но UA-0009 всё ещё содержит старую дату в
+  свободном тексте;
+- UA-0012 legacy `sea_transit`, страница отсутствует, publisher ранее дал
+  `SEO068_DIAGNOSTIC_TARGET_MISSING`, после чего caller ложно показал success.
+
+### Прототип Round 2 запрещено переносить в Gate B без исправления
+
+`patcher/eta_transaction_controller.py` и
+`patcher/stage_sync_patch.py` сейчас НЕ production-ready, потому что:
+1. создан второй конкурирующий ETA writer вместо реального расширения TASK 076;
+2. SQLite transaction/savepoint удерживается во время rebuild/publisher/canary,
+   что блокирует отдельные reader/writer connections и скрывает uncommitted ETA;
+3. реальный `cars.id` — integer, но прототип вызывает `car_id.replace`;
+4. protected statuses выдуманы (`georgia/kyiv/sold`) вместо реальных
+   `ge_waiting/ge_to_kyiv/ua_arrived/sold_*`;
+5. success всегда делает `published=1`, а обязан вернуть точный preimage;
+6. transforms generic, без literal live source/full-SHA anchors;
+7. README и `gate_a_findings.md` ошибочно остались
+   `NOT_EXECUTED_PLACEHOLDER` после реального PASS.
+
+### Обязательный Round 3
+
+1. Использовать точные full SHA из двух live evidence и literal function
+   definitions. Подготовить AST/function-SHA anchored transforms минимум для
+   `db.py:update_card_field`, `cars_ui.apply_value`,
+   `cars_ui.stage_menu/toggle_publish`, `konteyner.prinyat/_peresobrat`,
+   активного `stranica.sobrat_kartochku`, publisher.
+2. Одна короткая DB transaction выполняет только row-level write:
+   optional safe status normalization (только Korea/ferry →
+   `sea_loaded`), `days_to_kyiv=N`, `eta_manual=UTC_today+N`,
+   `updated_at` и обе audit rows. Затем COMMIT и отдельный verified read-back.
+   Нельзя держать DB transaction открытой при file/publisher/public HTTP.
+3. До write зафиксировать preimage DB и точный bounded file set. Publisher
+   строит staging primary + diag/placeholder + оба каталога, валидирует,
+   атомарно устанавливает и читает обратно. При любом FAIL выполнить
+   compensating DB transaction + file rollback и проверить восстановление.
+   `published` на PASS и rollback равен preimage, не принудительно 1.
+4. `konteyner.prinyat` и `cars_ui.apply_value` обязаны вызывать один и тот
+   же writer. Только после DB read-back + publisher PASS разрешено ровно одно
+   success-сообщение. Fire-and-forget success удалить.
+5. `toggle_publish`: при publisher FAIL восстановить preimage
+   `published` и выдать только failure. Текст «Машина видна клиентам…»
+   допустим только после verified PASS.
+6. Stale-text guard должен удалять/заменять только предложение о
+   прибытии/доставке/выдаче, содержащее независимую дату. Нельзя удалять даты
+   сервиса, аукциона, ремонта или регистрации. UA-0009 canary обязан убрать
+   «9 вересня 2026», сохранив остальное описание byte-semantic.
+7. На local copy canary привести UA-0009/0010/0011 к
+   `days=30, eta=2026-09-28, status=sea_loaded`; UA-0012 к
+   `sea_loaded, days=30, eta=2026-09-28` с diag placeholder. Проверить
+   `/video`, `/site`, оба каталога, UA-0009 отдельно и все чужие
+   фото/видео/VIN/price/status/description hashes.
+8. Tests: N=0/1/30/400, invalid; idempotence; int IDs; реальные protected
+   statuses; preimage published=0 и =1; DB commit before publisher;
+   injected publisher/readback/partial install/delayed overwrite;
+   compensating rollback; narrow stale-date sanitation; exact one message.
+9. Исправить canonical reports: live Gate A реально выполнен. Итог только
+   `PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL` либо FAIL.
+10. Gate B подготовить, но НЕ запускать. Exact token остаётся отдельной
+    owner-командой. Production writes = 0.
+11. Уже установлен `.github/workflows/safe_workflow_watchdog.yml`:
+    не создавать второй watchdog; лишь проверить совместимость workflow name.
