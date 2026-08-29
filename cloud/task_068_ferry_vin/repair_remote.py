@@ -107,6 +107,14 @@ UNIFIED_BASE_SOURCE_SHA = {
     MASTER_CARD_PATH: "96bb7e99b15d6e5d8de7e825e427406945cf866b5cda300710950ab2ac803e81",
 }
 
+# Exact hashes produced by the first unified CarHistory/CTA source phase.  A
+# follow-up design-only upgrade may remove the redundant Kyiv secondary line.
+UNIFIED_CARHISTORY_SOURCE_SHA = {
+    STRANICA_PATH: "c70402e495753c140d4ea0da4306c2e64b2a8c91d77a93a41ba8b9b02b6066a4",
+    YADRO_PATH: "b5192a7f2a3c69fbb5b7df0eedc6d302c2cf4ca2bfc0a1a6b1aa4b22cf8deda3",
+    MASTER_CARD_PATH: "8c48eab7589b1ebb3ef3ef107e88b313d1ff5e3d60357971585bdd10d53599ae",
+}
+
 EXPECTED_FUNCTION_SHA = {
     (STRANICA_PATH, "sobrat_kartochku"): "3d36b990a831078386477131afcaa74a40bccaa15e524c1ea2db2139673a13a8",
     (STRANICA_PATH, "sobrat_katalog"): "10d9505d2c65ec58ef5d83f928da123dcddd92d86080cfc14bedb96e262a4eea",
@@ -1724,7 +1732,7 @@ def _ua068_eta(row, stage):
     else:
         extra_ru = "Автомобиль в Киеве и готов к осмотру."
         extra_uk = "Автомобіль у Києві та готовий до огляду."
-    return (extra_ru, extra_uk, "Выдача и осмотр — Киев.", "Видача та огляд — Київ.")
+    return (extra_ru, extra_uk, "", "")
 
 
 def _ua068_vin_result(row):
@@ -2258,6 +2266,8 @@ def _ua068_card_errors(source, kod, row):
     stage = _ua068_stage(row)
     if 'data-ua-stage="%d"' % stage not in source:
         errors.append("stage copy mismatch")
+    if stage == 4 and ("Выдача и осмотр — Киев" in source or "Видача та огляд — Київ" in source):
+        errors.append("redundant Kyiv issue/inspection copy remains")
     expected_videos = _ua068_video_count(kod, row, source)
     if 'data-ua-video-count="%d"' % expected_videos not in source:
         errors.append("video count mismatch")
@@ -2453,7 +2463,8 @@ def _upgrade_task068_after_seo(source: str, original_sha: str,
                                path: str, wrapper: str) -> str:
     """Replace only the final task068 layer on the approved rebased hashes."""
     name = os.path.basename(path)
-    if original_sha not in (SEO_FINAL_V1_SOURCE_SHA[path], UNIFIED_BASE_SOURCE_SHA[path]):
+    if original_sha not in (SEO_FINAL_V1_SOURCE_SHA[path], UNIFIED_BASE_SOURCE_SHA[path],
+                            UNIFIED_CARHISTORY_SOURCE_SHA[path]):
         raise RepairBlocked("task068_final_layer_hash_changed:" + name)
     if source.count(FERRY_VIN_SOURCE_MARKER) != 1 or source.count(SEO_REHAB_SOURCE_MARKER) != 1:
         raise RepairBlocked("task068_final_layer_marker_count_invalid:" + name)
@@ -2483,7 +2494,8 @@ def _append_task068(source: str, original_sha: str, path: str, wrapper: str) -> 
         if SEO_REHAB_SOURCE_MARKER in source:
             if source.find(SEO_REHAB_SOURCE_MARKER) < source.find(FERRY_VIN_SOURCE_MARKER):
                 if ("def _ua068_reposition_stage" not in source
-                        or "Korea CarHistory" not in source):
+                        or "Korea CarHistory" not in source
+                        or "Выдача и осмотр — Киев." in source):
                     return _upgrade_task068_after_seo(source, original_sha, path, wrapper)
                 _validate_task068_source(source, path)
                 return source
@@ -2615,6 +2627,9 @@ def _task068_validate_catalog(source: str, rows: list[dict[str, Any]], runtime: 
         block = _catalog_block_for_id(source, identifier)
         if not block or not re.search(re.escape(engine) + r"\s*см³", block):
             raise RepairBlocked("catalog_engine_mismatch:%s:%s" % (path, identifier))
+        if runtime["_ua068_stage"](row) == 4 and (
+                "Выдача и осмотр — Киев" in block or "Видача та огляд — Київ" in block):
+            raise RepairBlocked("catalog_redundant_kyiv_copy:%s:%s" % (path, identifier))
         expected_videos = runtime["_ua068_video_count"](identifier, row)
         if 'data-ua-video-count="%d"' % expected_videos not in block:
             raise RepairBlocked("catalog_video_count_mismatch:%s:%s" % (path, identifier))
