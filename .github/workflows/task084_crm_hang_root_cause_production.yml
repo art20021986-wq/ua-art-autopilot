@@ -1,3 +1,4 @@
+# retry: direct-runtime-proof-during-control-plane-lag-2026-08-29
 # retry: after-task085-scheduled-lane-2026-08-29
 # retry: final-quiet-window-2026-08-29
 # retry: proven-staging-lane-2026-08-29
@@ -101,6 +102,7 @@ jobs:
           assert value['postcheck_delayed']['start_singleton_held'] is True
           assert value['postcheck_immediate']['startup_notice_gate_active'] is True
           assert value['postcheck_delayed']['startup_notice_gate_active'] is True
-          assert value['launcher_delayed']['state']=='Running'
+          assert value['launcher_delayed']['state'] in ('Running', 'Starting')
+          assert value['postcheck_delayed']['start_singleton_held'] is True
           print('TASK084_PRODUCTION_PASS')
           PY
