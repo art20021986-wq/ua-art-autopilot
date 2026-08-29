@@ -14,7 +14,8 @@ the owner sends that exact text as a new command after Gate A PASS.
 ## Preconditions
 
 1. Repository Gate A for the exact candidate commit is
-   `PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL`.
+   `PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL` (successful run
+   `33240690447`, candidate `9ca57523bf82691b3964ea473f94219985ef341d`).
 2. Fresh GET confirms all five full-file SHA-256 and eight function SHA-256
    anchors recorded in `live_patcher.PATCH_SPECS`.
 3. A DB backup including optional WAL and byte backups of both primary pages,
@@ -49,10 +50,13 @@ The installer:
 
 ## Existing-card correction and verification
 
-After installation, call the one shared `apply_eta_days_live` entry point
-sequentially for integer IDs 9, 10 and 11 with N=30. TASK 077's separately
-approved UA-0012 legacy migration may then use the same entry point; its
-`sea_transit` status can only move forward to `sea_loaded`.
+After installation, resolve `UA-0009`, `UA-0010` and `UA-0011` by their unique
+`auto_number` in a fresh read-only query and require exactly one row for each.
+Do **not** infer a database ID from the visible card number. Pass the three
+resolved integer IDs to the one shared `apply_eta_days_live` entry point,
+sequentially, with N=30. TASK 077's separately approved UA-0012 legacy
+migration may then use the same entry point; its `sea_transit` status can only
+move forward to `sea_loaded`.
 
 Each call must prove before returning success:
 
@@ -77,4 +81,3 @@ complete postcheck PASS permits the owner-facing statement that production is
 fixed.
 
 Current state: Gate B not run; production writes = 0.
-

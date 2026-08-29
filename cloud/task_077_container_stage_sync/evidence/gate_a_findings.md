@@ -24,9 +24,18 @@ compatibility runner) and was not promoted. The corrected candidate now has an
 observed stdlib result of **28 PASS / 0 FAIL** and concrete SHA/function-anchored
 transforms for the eight audited live call sites.
 
-`GATE_A_RESULT: CONTROLLER_LOCAL_PASS_PENDING_GITHUB_GATE_A`
+Repository Gate A run
+[`33240690447`](https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/33240690447)
+completed successfully for candidate commit
+`9ca57523bf82691b3964ea473f94219985ef341d`:
 
-Production writes remain zero. This file must be upgraded to
-`PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL` only after the repository Gate A
-workflow executes this exact source state successfully.
+- stdlib suite: **28 PASS / 0 FAIL**;
+- exact live function transforms: **8**;
+- patched live modules compiled from the current GET-only snapshot: **5**;
+- local-copy DB/site canary: **PASS**;
+- production writes: **0**.
 
+`GATE_A_RESULT: PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL`
+
+Gate B has not run and remains blocked until the owner issues the exact separate
+production command recorded in `gate_b_manual_workflow.md`.

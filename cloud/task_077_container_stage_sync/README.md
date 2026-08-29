@@ -35,5 +35,10 @@ cards without changing production during Gate A.
 - `gate_b_manual_workflow.md` — prepared, never automatically executed.
 
 Local controller result: **28 PASS / 0 FAIL**.
+Repository Gate A: **PASS**, run
+[`33240690447`](https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/33240690447).
 Production touched: **NO**.
 
+The repository safe-workflow watchdog checks this Gate A and the other approved
+non-production workflows every five minutes. A timeout/stale run is retried at
+most three times; production/Gate B/deploy workflows are explicitly excluded.

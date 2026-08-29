@@ -38,7 +38,12 @@ python3 -W error cloud/task_077_container_stage_sync/tests/test_eta_release_cand
 
 ## Current classification
 
-`CONTROLLER_LOCAL_PASS_PENDING_GITHUB_GATE_A`
+`PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL`
+
+GitHub Gate A run
+[`33240690447`](https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/33240690447)
+passed for candidate commit `9ca57523bf82691b3964ea473f94219985ef341d`.
+The run repeated the 28-test suite and proved all eight exact transforms compile
+against the current five-file live GET-only snapshot.
 
 This is not a production claim. Gate B has not run and is not authorized.
-
