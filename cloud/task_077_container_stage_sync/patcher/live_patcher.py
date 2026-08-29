@@ -64,28 +64,28 @@ class PatchSpec:
 
 PATCH_SPECS = (
     PatchSpec("db.py", "update_card_field",
-              "1749f0eef8fc799ed5b08bd6a4482fad3126199d8c40207b76143b263349a1b1",
+              "65033f6dbbb341d69f7b9918e0e4fc69b4746596b7db6320f0d4ead6ec63dab0",
               "db_bridge"),
     PatchSpec("cars_ui.py", "apply_value",
-              "18c8dfc9f7cb6f5d4cf4e41a0fe02dbd07be9b21f142a072e90bfac602f7388b",
+              "2d6db7d9b36cbff2635e2012f95d232dfd9be3b757f82540e0df43bfa9a77133",
               "apply_value"),
     PatchSpec("cars_ui.py", "stage_menu",
-              "edf960e645680f758dd3cbfd071410067f6b4be2a94ec4c4ca97793fc9d8d795",
+              "3631b4e6480dc96d0885a031201f78b28eac76d3ac09ce6172bf518a8dce0c24",
               "stage_menu"),
     PatchSpec("cars_ui.py", "toggle_publish",
-              "21c3f452813122f18247359259432bed2a23f12163ac36859bac0ffd594d8682",
+              "e84fa97d435143231e7055b8dfcd75c349fd766631130b04145e2d9fa79a22cc",
               "toggle_publish"),
     PatchSpec("konteyner.py", "prinyat",
-              "e82be6158f5f67025b88e5e17f70e77b814e0c239acbfbb23bc4e124baa02ee7",
+              "8d682efcc37fba1533fa18f582fa01046fd3e029db7eba50b6798e99d223fa68",
               "prinyat"),
     PatchSpec("konteyner.py", "_peresobrat",
-              "7a71a1fc49424bc849625034441e5931777f3f515c711780df3238b415749c65",
+              "640484e4b8e856c77af717b8415048ee63c78eccebbb0b7ac5814f29e3bda1f3",
               "peresobrat"),
     PatchSpec("stranica.py", "sobrat_kartochku",
-              "56c27f91c60285c32e96929bb913eed8fa1a627bd038bde57ce25a343044b9c5",
+              "05f34f6948ccc122925f98e9df0076c1544d0fae6f26dbad0d023aa00a3d69b2",
               "renderer"),
     PatchSpec("publikaciya.py", "opublikovat",
-              "93f130c2542124b820eae2416984705ecbbc80019a298d2b3c40fdf58d93033f",
+              "27f3422fc4025ff1baadd177e82f0a5a52e20cbd533cc8c667a1ef476730e4c9",
               "publisher"),
 )
 
@@ -277,15 +277,15 @@ async def prinyat(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return False
 '''
     if spec.transform == "renderer":
-        needle = "        html = _ishodnaya(m, kadry, sredn)"
+        needle = "    html = _ua068_stranica_card_original(m, kadry, sredn)"
         if source.count(needle) != 1:
             raise PatchAbortedError("active renderer call anchor is not unique")
         injected = (
-            "        from eta_sync_guard import sanitize_stale_arrival_sentence\n"
-            "        m = dict(m or {})\n"
-            "        for _task077_field in ('condition_text', 'description'):\n"
-            "            if m.get(_task077_field):\n"
-            "                m[_task077_field] = sanitize_stale_arrival_sentence(str(m[_task077_field]))\n"
+            "    from eta_sync_guard import sanitize_stale_arrival_sentence\n"
+            "    m = dict(m or {})\n"
+            "    for _task077_field in ('condition_text', 'description'):\n"
+            "        if m.get(_task077_field):\n"
+            "            m[_task077_field] = sanitize_stale_arrival_sentence(str(m[_task077_field]))\n"
             + needle
         )
         return source.replace(needle, injected, 1)
