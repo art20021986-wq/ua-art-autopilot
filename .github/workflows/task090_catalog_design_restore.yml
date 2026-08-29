@@ -1,0 +1,146 @@
+name: task090-catalog-design-restore-production
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task090_catalog_design_restore.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Verify owner authorization
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('tasks/task_090.md').read_text(encoding='utf-8')
+          required = [
+              'CRITICAL / P0',
+              'не требуется',
+              '13',
+              '13 / 3 / 1 / 7 / 2',
+              'полный автоматический откат',
+          ]
+          missing = [value for value in required if value not in source]
+          if missing:
+              raise SystemExit('TASK090_OWNER_AUTHORIZATION_MISSING:' + ','.join(missing))
+          print('TASK090_OWNER_AUTHORIZATION_PASS')
+          PY
+
+      - name: Compile and run fail-closed tests
+        run: |
+          python3 -W error -m py_compile cloud/task_090_catalog_design_restore/catalog_design_guard.py cloud/task_090_catalog_design_restore/remote_installer.py cloud/task_090_catalog_design_restore/public_verify.py cloud/task_090_catalog_design_restore/controller.py cloud/task_090_catalog_design_restore/test_catalog_design_guard.py
+          cd cloud/task_090_catalog_design_restore
+          python3 -W error -m unittest -v test_catalog_design_guard.py
+
+      - name: Wait in production queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 -W error automation/production_queue.py self-test
+          python3 -W error automation/production_queue.py wait --task 90 --drain-before 2026-08-29T11:00:00Z --timeout-seconds 900 --stable-polls 2
+
+      - name: Backup, restore, restart and verify
+        id: deploy
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_090_catalog_design_restore/controller.py
+
+      - name: Ensure evidence exists
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('cloud/task_090_catalog_design_restore')
+          evidence = root / 'evidence/deploy.json'
+          report = root / 'TASK_090_REPORT.md'
+          if not evidence.exists():
+              evidence.parent.mkdir(parents=True, exist_ok=True)
+              evidence.write_text(json.dumps({
+                  'contract_id': 'CATALOG-DESIGN-STAGE-RESTORE-090-V1.0',
+                  'status': 'FAIL',
+                  'errors': ['DEPLOY_EVIDENCE_MISSING'],
+              }, indent=2) + '\n', encoding='utf-8')
+          if not report.exists():
+              report.write_text(
+                  '# TASK 090 — восстановление каталога\n\nSTATUS: **FAIL**\n',
+                  encoding='utf-8')
+          PY
+
+      - name: Commit bounded evidence
+        if: always()
+        run: |
+          git add -- cloud/task_090_catalog_design_restore/evidence/deploy.json cloud/task_090_catalog_design_restore/TASK_090_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_090_catalog_design_restore/evidence/deploy.json|cloud/task_090_catalog_design_restore/TASK_090_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then exit 0; fi
+          git config user.name 'task090-catalog-design-restore'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task090: record catalog design restoration'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Enforce final result
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path(
+              'cloud/task_090_catalog_design_restore/evidence/deploy.json'
+          ).read_text())
+          if value.get('status') != 'PASS':
+              raise SystemExit('TASK090_FAIL_CLOSED:' + ';'.join(value.get('errors') or []))
+          install = value.get('install') or {}
+          before, after = install.get('db_before') or {}, install.get('db_after') or {}
+          if before.get('file_sha256') != after.get('file_sha256'):
+              raise SystemExit('TASK090_CRM_CHANGED')
+          print('TASK090_PRODUCTION_PASS')
+          PY
+
+      - name: Upload machine evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task090-catalog-design-restore-${{ github.run_id }}
+          path: |
+            cloud/task_090_catalog_design_restore/evidence/deploy.json
+            cloud/task_090_catalog_design_restore/TASK_090_REPORT.md
+          if-no-files-found: warn
+          retention-days: 14
