@@ -376,21 +376,11 @@ class API:
         return identifier if isinstance(identifier, int) and identifier > 0 else None
 
     def create_trigger(self, command: str, description: str):
-        form = urllib.parse.urlencode({
-            "command": command, "description": description, "enabled": "true",
-        }).encode()
-        status, body = self.request(
-            "POST", BASE + "always_on/", form,
-            {"Content-Type": "application/x-www-form-urlencoded"},
-            allowed=(200, 201, 202, 400, 403, 404, 409),
-        )
-        identifier = self.trigger_id(body) if status in (200, 201, 202) else None
-        if identifier:
-            return "always_on", identifier
-        run_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=2)
+        """Use PythonAnywhere's scheduled lane; the always-on quota is occupied."""
+        run_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=1)
         form = urllib.parse.urlencode({
             "command": command,
-            "description": description + " fallback",
+            "description": description + " scheduled executor",
             "enabled": "true",
             "interval": "daily",
             "hour": run_at.hour,
@@ -403,7 +393,7 @@ class API:
         )
         identifier = self.trigger_id(body) if status in (200, 201, 202) else None
         if not identifier:
-            raise ControllerError("NO_REMOTE_TRIGGER")
+            raise ControllerError("NO_SCHEDULED_EXECUTOR")
         return "schedule", identifier
 
     def delete_trigger(self, trigger) -> None:
@@ -444,6 +434,25 @@ class API:
             return json.loads(raw.decode("utf-8"))
         finally:
             self.delete_trigger(trigger)
+
+    def rescue_bot(self) -> dict:
+        """Start the exact launcher once when PythonAnywhere control plane is stuck."""
+        receipt = REMOTE + "/task084_rescue_started"
+        self.delete_file(receipt)
+        log_path = ROOT + "/task084_start_safe.log"
+        command = (
+            "cd " + ROOT
+            + " && (nohup python3.10 start_safe.py >> " + log_path
+            + " 2>&1 </dev/null &) && printf TASK084_RESCUE > " + receipt
+        )
+        trigger = self.create_trigger(command, "task084 one-shot launcher rescue")
+        try:
+            raw = self.wait_for_file(receipt, 240)
+            if raw != b"TASK084_RESCUE":
+                raise ControllerError("RESCUE_RECEIPT_INVALID")
+        finally:
+            self.delete_trigger(trigger)
+        return {"scheduled": True, "command": LAUNCHER, "receipt": receipt}
 
     def active_launcher(self) -> dict:
         _, body = self.request("GET", BASE + "always_on/")
@@ -733,6 +742,13 @@ def run_deploy() -> int:
         time.sleep(7)
         immediate = api.run_remote("postcheck")
         evidence["postcheck_immediate"] = immediate
+        if immediate.get("status") != "PASS" and any(
+            "START_SINGLETON_NOT_HELD" in str(item) for item in (immediate.get("errors") or [])
+        ):
+            evidence["launcher_rescue"] = api.rescue_bot()
+            time.sleep(20)
+            immediate = api.run_remote("postcheck")
+            evidence["postcheck_after_rescue"] = immediate
         validate_postcheck(immediate)
         time.sleep(30)
         evidence["launcher_delayed"] = api.wait_launcher_running()
