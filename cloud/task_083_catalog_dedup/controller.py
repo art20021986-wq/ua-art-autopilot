@@ -36,9 +36,7 @@ PRODUCTION_WORKFLOWS = {
     "TASK073_GATE_B_V5",
     "task074-catalog-card-unify-v1",
     "task082-catalog-stage-production",
-    "task083-publish-transaction-production",
     "task084-crm-hang-root-cause-production",
-    "task085-ua0011-stage-payload-production",
     "task083-catalog-dedup-v1",
 }
 
@@ -330,6 +328,9 @@ def main() -> int:
         value["shadow"] = shadow
         require_pass(shadow, "SHADOW")
         wait_for_github_quiet(timeout=600)
+        verify_only = os.environ.get("TASK083_VERIFY_ONLY") == "1"
+        if verify_only and not already_enforced(shadow):
+            raise Blocked("VERIFY_ONLY_GUARD_NOT_INSTALLED")
         if already_enforced(shadow):
             install = {
                 "contract_id": CONTRACT,

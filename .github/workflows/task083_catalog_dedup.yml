@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: task083-catalog-dedup-verification
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -45,6 +45,7 @@ jobs:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
           TASK083_OWNER_DIRECTIVE: CATALOG-CARD-DEDUP-GUARD-083-V1.0-OWNER-DIRECTIVE
+          TASK083_VERIFY_ONLY: '1'
         run: python3 cloud/task_083_catalog_dedup/controller.py
 
       - name: Capture complete mobile catalog evidence
