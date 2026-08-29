@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: task082-vin4-live-source-probe
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   probe:
