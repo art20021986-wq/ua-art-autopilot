@@ -110,6 +110,24 @@ class GateBInstallerTests(unittest.TestCase):
                 self.assertFalse((folder / (number + ".html")).exists())
                 self.assertFalse((folder / (number + "-diag.html")).exists())
 
+    def test_remote_publisher_subprocess_collects_every_result(self):
+        candidate = self.temp / "publisher_fixture"
+        candidate.mkdir()
+        (candidate / "publikaciya.py").write_text(
+            "def opublikovat(number, proba=False):\n"
+            "    return True, ('probe:' if proba else 'write:') + number\n",
+            encoding="utf-8",
+        )
+        result = installer.run_publishers(
+            ["UA-0012", "UA-0013"], proba=True, candidate_dir=candidate
+        )
+        self.assertEqual(result["returncode"], 0)
+        self.assertEqual(
+            [item["auto_number"] for item in result["results"]],
+            ["UA-0012", "UA-0013"],
+        )
+        self.assertTrue(all(item["ok"] is True for item in result["results"]))
+
     def test_more_than_five_missing_cards_fails_closed(self):
         for folder in installer.PUBLIC_DIRS:
             for index in range(7, 12):
