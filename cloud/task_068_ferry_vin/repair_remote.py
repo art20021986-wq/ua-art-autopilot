@@ -29,6 +29,8 @@ from typing import Any
 
 MODE = "UA_CARDS_FERRY_VIN_001_V1_1_ATOMIC_INSTALL"
 CONTRACT = "UA-CARDS-FERRY-VIN-001-V1.1"
+UNIFIED_CONTRACT = "UA-CARDS-UNIFIED-SHELL-001-V1.1"
+CARHISTORY_URL = "https://www.carhistory.kr/search/carhistory/search.car?lang=ru"
 ROOT = "/home/Carix"
 VIDEO_ROOT = ROOT + "/video"
 SITE_ROOT = ROOT + "/site"
@@ -94,6 +96,15 @@ SEO_FINAL_V1_SOURCE_SHA = {
     STRANICA_PATH: "b8fb7f418baa6a6a1ea586c8ef20a4d8e7e82ae1a41b5ee0f419f45882f80e49",
     YADRO_PATH: "3a44ae496ed65b769fa704cc3689add6f52c1ef1efc0f24be16fe20aa8b706f1",
     MASTER_CARD_PATH: "fe1bc2c317e303b799e4e50690c51e2ff4dd5a29612129b2cb5932b1c71def94",
+}
+
+# Exact production hashes from the successful permanent-anchor deployment.
+# They allow one bounded replacement of the final task068 layer with the
+# approved unified CTA + official Korean CarHistory extension.
+UNIFIED_BASE_SOURCE_SHA = {
+    STRANICA_PATH: "4bb4c26eee5948e1dc37b336c4c32689f51baf0fef1a2eceac86a50fe6434959",
+    YADRO_PATH: "45bc957a8f2b9cbc509e5e140badbb2117bedc6857e111607c50adb2058cdc30",
+    MASTER_CARD_PATH: "96bb7e99b15d6e5d8de7e825e427406945cf866b5cda300710950ab2ac803e81",
 }
 
 EXPECTED_FUNCTION_SHA = {
@@ -687,6 +698,8 @@ def card_kb(card, staff):
          InlineKeyboardButton("Фото и видео", callback_data="car_media:%d" % cid)],
         [InlineKeyboardButton("🚚 Доставка и этапы", callback_data="car_stage:%d" % cid)],
         [InlineKeyboardButton("Комплексная диагностика", callback_data="car_cond:%d" % cid)],
+        [InlineKeyboardButton("🇰🇷 Проверить VIN · CarHistory",
+                              url="https://www.carhistory.kr/search/carhistory/search.car?lang=ru")],
     ]
     klient = client_of(card)
     rows.append([InlineKeyboardButton(
@@ -1023,6 +1036,9 @@ def _validate_master_card(source: str) -> None:
 
 
 def _patch_cars_ui(source: str, original_sha: str) -> str:
+    if "🇰🇷 Проверить VIN · CarHistory" in source:
+        _validate_cars_ui(source)
+        return source
     if CONTRACT in source:
         _validate_cars_ui(source)
         return source
@@ -1061,6 +1077,8 @@ def _validate_cars_ui(source: str) -> None:
         '"Комплексная диагностика"', '"📦 Контейнер, даты и сроки"',
         'pattern=r"^car_price:"', 'pattern=r"^car_keepprice:"',
         'pattern=r"^car_setf:"',
+        '"🇰🇷 Проверить VIN · CarHistory"',
+        'https://www.carhistory.kr/search/carhistory/search.car?lang=ru',
     )
     for value in required:
         if value not in source:
@@ -1074,7 +1092,8 @@ def _validate_cars_ui(source: str) -> None:
         raise RepairBlocked("cars_ui_duplicate_main_button_remains")
     for label in (
         "Редактировать данные", "Фото и видео", "🚚 Доставка и этапы",
-        "Комплексная диагностика", "Покупатель", "Как видит покупатель",
+        "Комплексная диагностика", "🇰🇷 Проверить VIN · CarHistory",
+        "Покупатель", "Как видит покупатель",
         "Разместить объявление", "Продано", "Удалить", "← Все автомобили",
     ):
         if label not in card_segment:
@@ -1497,6 +1516,7 @@ _UA068_STAGE_START = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START -->"
 _UA068_STAGE_END = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:END -->"
 _UA068_DIAG = "<!--ua-art-diagnostics-permanent-v1-->"
 _UA068_VERSION = "ua06811"
+_UA068_CARHISTORY_URL = "https://www.carhistory.kr/search/carhistory/search.car?lang=ru"
 
 
 def _ua068_e(value):
@@ -1573,6 +1593,63 @@ def _ua068_stage(row):
     if status.startswith("ge_") or status in ("georgia", "3"):
         return 3
     return 4
+
+
+def _ua068_primary_action(source, kod, row):
+    """Enforce one stage-aware commercial CTA on cards and diagnostics."""
+    stage = _ua068_stage(row)
+    action = "kupit" if stage == 4 else "bron"
+    label = "Купить" if stage == 4 else "Задаток 500 $"
+    href = "https://t.me/UA_artcompany_LLC_bot?start=%s_%s" % (action, kod)
+    canonical = ('<a class="dejstvie kn_kupit ua-primary-action-v1" '
+                 'data-ua-stage-action="%d" href="%s">%s</a>'
+                 % (stage, _ua068_e(href), label))
+
+    purchase = _ua068_re.compile(
+        r'<a\b(?=[^>]*href=["\'][^"\']*start=(?:kupit|bron)_' +
+        _ua068_re.escape(str(kod)) + r'(?:&[^"\']*)?["\'])[^>]*>.*?</a\s*>',
+        _ua068_re.I | _ua068_re.S)
+    matches = list(purchase.finditer(source))
+    if matches:
+        source = purchase.sub(lambda match: canonical if match.start() == matches[0].start() else "", source)
+    else:
+        fallback = _ua068_re.compile(
+            r'<a\b(?=[^>]*class=["\'][^"\']*\b(?:kn_kupit|dejstvie)\b[^"\']*["\'])'
+            r'(?=[^>]*href=)[^>]*>.*?</a\s*>', _ua068_re.I | _ua068_re.S)
+        source, count = fallback.subn(canonical, source, count=1)
+        if count != 1:
+            text_fallback = _ua068_re.compile(
+                r'<a\b(?=[^>]*href=)[^>]*>\s*(?:Купить(?:\s+авто)?|Задаток\s+500\s*\$|Забронировать\s+авто\s+за\s+500\s*\$)\s*</a\s*>',
+                _ua068_re.I | _ua068_re.S)
+            source, count = text_fallback.subn(canonical, source, count=1)
+        if count != 1:
+            raise RuntimeError("UA068_PRIMARY_ACTION_MISSING:%s" % kod)
+    # A Kyiv purchase is immediate: no explanatory deposit note may remain
+    # next to the primary CTA. Delivery-stage copy elsewhere is stage-aware.
+    if stage == 4:
+        source = _ua068_re.sub(
+            r'<(?:div|p)\b[^>]*class=["\'][^"\']*\bcta-note\b[^"\']*["\'][^>]*>.*?</(?:div|p)\s*>',
+            "", source, flags=_ua068_re.I | _ua068_re.S)
+    return source
+
+
+def _ua068_primary_action_errors(source, kod, row):
+    stage = _ua068_stage(row)
+    nodes = _ua068_re.findall(
+        r'<a\b[^>]*class=["\'][^"\']*\bua-primary-action-v1\b[^"\']*["\'][^>]*>.*?</a\s*>',
+        source, _ua068_re.I | _ua068_re.S)
+    if len(nodes) != 1:
+        return ["primary actions != 1"]
+    node = nodes[0]
+    expected_action = "kupit" if stage == 4 else "bron"
+    expected_label = "Купить" if stage == 4 else "Задаток 500 $"
+    errors = []
+    if ("start=%s_%s" % (expected_action, kod)) not in node:
+        errors.append("primary action target mismatch")
+    text = _ua068_re.sub(r"<[^>]+>", "", node).strip()
+    if text != expected_label:
+        errors.append("primary action label mismatch")
+    return errors
 
 
 def _ua068_eta(row, stage):
@@ -1708,6 +1785,11 @@ def _ua068_cache_meta(source):
         head = _ua068_re.search(r"<head\b[^>]*>", source, _ua068_re.I)
         if head:
             source = source[:head.end()] + meta + source[head.end():]
+    if 'name="ua-art-unified-contract" content="UA-CARDS-UNIFIED-SHELL-001-V1.1"' not in source:
+        meta = '<meta name="ua-art-unified-contract" content="UA-CARDS-UNIFIED-SHELL-001-V1.1">'
+        head = _ua068_re.search(r"<head\b[^>]*>", source, _ua068_re.I)
+        if head:
+            source = source[:head.end()] + meta + source[head.end():]
     return source
 
 
@@ -1725,12 +1807,14 @@ def _ua068_diag_placeholder(kod, row):
     title = "%s %s %s" % (str((row or {}).get("brand") or "").strip(),
                            str((row or {}).get("model") or "").strip(),
                            str((row or {}).get("year") or "").strip())
-    return ("<!doctype html><html lang='ru'><head><meta charset='utf-8'>"
+    source = ("<!doctype html><html lang='ru'><head><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>"
             "<meta name='ua-art-contract' content='UA-CARDS-FERRY-VIN-001-V1.1'>"
+            "<meta name='ua-art-unified-contract' content='UA-CARDS-UNIFIED-SHELL-001-V1.1'>"
             "<title>Комплексная диагностика %s — UA ART</title>"
-            "<style>body{margin:0;background:#0b1726;color:#e8eef6;font:16px/1.55 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif}.w{max-width:720px;margin:auto;padding:24px}.c{margin-top:18px;padding:22px;border-radius:20px;background:#16263a;border:1px solid rgba(240,166,60,.46)}h1{font-size:25px;margin:0 0 9px}.s{display:inline-block;padding:7px 10px;border-radius:999px;color:#ffd283;border:1px solid rgba(240,166,60,.48);font-size:12px;font-weight:800}.p{color:#aebed0}.b{display:block;margin-top:20px;padding:14px;text-align:center;border-radius:13px;background:#f0a63c;color:#102034;text-decoration:none;font-weight:900}</style></head><body><main class='w'><div>UA ART COMPANY · %s</div><section class='c'><span class='s'>ДИАГНОСТИКА ОЖИДАЕТ ДАННЫХ</span><h1>Комплексная диагностика</h1><p>%s</p><p class='p'>Страница закреплена постоянно. Здесь появятся ЛКП, OBD, ходовая, фото и видео сразу после загрузки материалов.</p><a class='b' href='%s.html'>← Вернуться к автомобилю</a></section></main></body></html>"
-            % (_ua068_e(kod), _ua068_e(kod), _ua068_e(title), _ua068_e(kod)))
+            "<style>body{margin:0;background:#0b1726;color:#e8eef6;font:16px/1.55 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif}.w{max-width:720px;margin:auto;padding:24px}.c{margin-top:18px;padding:22px;border-radius:20px;background:#16263a;border:1px solid rgba(240,166,60,.46)}h1{font-size:25px;margin:0 0 9px}.s{display:inline-block;padding:7px 10px;border-radius:999px;color:#ffd283;border:1px solid rgba(240,166,60,.48);font-size:12px;font-weight:800}.p{color:#aebed0}.b,.dejstvie{display:block;margin-top:20px;padding:14px;text-align:center;border-radius:13px;background:#f0a63c;color:#102034;text-decoration:none;font-weight:900}</style></head><body><main class='w'><div>UA ART COMPANY · %s</div><section class='c'><span class='s'>ДИАГНОСТИКА ОЖИДАЕТ ДАННЫХ</span><h1>Комплексная диагностика</h1><p>%s</p><p class='p'>Страница закреплена постоянно. Здесь появятся ЛКП, OBD, ходовая, фото и видео сразу после загрузки материалов.</p><a class='dejstvie' href='https://t.me/UA_artcompany_LLC_bot?start=kupit_%s'>Купить</a><a class='b' href='%s.html'>← Вернуться к автомобилю</a></section></main></body></html>"
+            % (_ua068_e(kod), _ua068_e(kod), _ua068_e(title), _ua068_e(kod), _ua068_e(kod)))
+    return _ua068_primary_action(source, kod, row)
 
 
 def _ua068_ensure_diag_files(kod, row):
@@ -1915,18 +1999,17 @@ def _ua068_vin_block(kod, row):
     if container and stage == 2:
         extra = '<div class="ua-vin-v1-meta">Контейнер: <b>%s</b></div>' % _ua068_e(container)
     css = """<style>
-.ua-vin-v1{margin:18px 0;padding:18px;border-radius:20px;background:linear-gradient(145deg,#192a3e,#122033);border:1px solid rgba(240,166,60,.48);box-shadow:0 14px 38px rgba(0,0,0,.24);color:#edf3fb}.ua-vin-v1 *{box-sizing:border-box}.ua-vin-v1-head{display:flex;gap:12px;align-items:center}.ua-vin-v1-shield{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:rgba(240,166,60,.16);font-size:22px}.ua-vin-v1-title{font-size:17px;font-weight:850}.ua-vin-v1-sub{font-size:12px;color:#9fb0c5;margin-top:2px}.ua-vin-v1-status{margin-left:auto;padding:7px 9px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.08em}.ua-vin-v1-status.ok{color:#79e3a9;background:rgba(56,190,120,.13);border:1px solid rgba(56,190,120,.4)}.ua-vin-v1-status.warn{color:#ffd480;background:rgba(240,166,60,.13);border:1px solid rgba(240,166,60,.45)}.ua-vin-v1-status.error{color:#ff9696;background:rgba(235,80,80,.12);border:1px solid rgba(235,80,80,.4)}.ua-vin-v1-code{margin:15px 0 10px;padding:12px 13px;border-radius:12px;background:#0c1827;border:1px solid #2b3f57;font:800 16px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.05em;overflow-wrap:anywhere}.ua-vin-v1-route{font-size:14px;line-height:1.5;color:#d7e1ec}.ua-vin-v1-route small{display:block;color:#98abc0;margin-top:4px;font-size:12px}.ua-vin-v1-meta{font-size:12px;color:#aebed0;margin-top:8px}.ua-vin-v1-button{width:100%;margin-top:14px;padding:14px 16px;border:1px solid #f0a63c;border-radius:14px;background:linear-gradient(180deg,#f5b452,#e99a2a);color:#102034;font:900 15px/1.2 inherit;cursor:pointer;box-shadow:0 8px 20px rgba(240,166,60,.2)}.ua-vin-v1-panel{margin-top:10px;padding:13px;border-radius:12px;background:#0e1b2b;border:1px solid #293e55;color:#b9c8d8;font-size:13px;line-height:1.5}.ua-vin-v1-panel b{color:#edf3fb}.ua068-uk{display:none}html:lang(uk) .ua068-ru{display:none}html:lang(uk) .ua068-uk{display:inline}@media(max-width:520px){.ua-vin-v1{padding:15px;border-radius:17px}.ua-vin-v1-head{align-items:flex-start}.ua-vin-v1-status{font-size:9px}.ua-vin-v1-code{font-size:14px}}
+.ua-vin-v1{margin:18px 0;padding:18px;border-radius:20px;background:linear-gradient(145deg,#192a3e,#122033);border:1px solid rgba(240,166,60,.48);box-shadow:0 14px 38px rgba(0,0,0,.24);color:#edf3fb}.ua-vin-v1 *{box-sizing:border-box}.ua-vin-v1-head{display:flex;gap:12px;align-items:center}.ua-vin-v1-shield{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:rgba(240,166,60,.16);font-size:22px}.ua-vin-v1-title{font-size:17px;font-weight:850}.ua-vin-v1-sub{font-size:12px;color:#9fb0c5;margin-top:2px}.ua-vin-v1-status{margin-left:auto;padding:7px 9px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.08em}.ua-vin-v1-status.ok{color:#79e3a9;background:rgba(56,190,120,.13);border:1px solid rgba(56,190,120,.4)}.ua-vin-v1-status.warn{color:#ffd480;background:rgba(240,166,60,.13);border:1px solid rgba(240,166,60,.45)}.ua-vin-v1-status.error{color:#ff9696;background:rgba(235,80,80,.12);border:1px solid rgba(235,80,80,.4)}.ua-vin-v1-code{margin:15px 0 10px;padding:12px 13px;border-radius:12px;background:#0c1827;border:1px solid #2b3f57;font:800 16px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.05em;overflow-wrap:anywhere}.ua-vin-v1-route{font-size:14px;line-height:1.5;color:#d7e1ec}.ua-vin-v1-route small{display:block;color:#98abc0;margin-top:4px;font-size:12px}.ua-vin-v1-meta{font-size:12px;color:#aebed0;margin-top:8px}.ua-vin-v1-button{display:block;width:100%;margin-top:14px;padding:14px 16px;border:1px solid #f0a63c;border-radius:14px;background:linear-gradient(180deg,#f5b452,#e99a2a);color:#102034;font:900 15px/1.2 inherit;cursor:pointer;text-align:center;text-decoration:none;box-shadow:0 8px 20px rgba(240,166,60,.2)}.ua-vin-v1-panel{margin-top:10px;padding:13px;border-radius:12px;background:#0e1b2b;border:1px solid #293e55;color:#b9c8d8;font-size:13px;line-height:1.5}.ua-vin-v1-panel b{color:#edf3fb}.ua068-uk{display:none}html:lang(uk) .ua068-ru{display:none}html:lang(uk) .ua068-uk{display:inline}@media(max-width:520px){.ua-vin-v1{padding:15px;border-radius:17px}.ua-vin-v1-head{align-items:flex-start}.ua-vin-v1-status{font-size:9px}.ua-vin-v1-code{font-size:14px}}
 </style>"""
-    script = """<script>(function(){if(window.uaVinGuardToggle){return}window.uaVinGuardToggle=function(button){var panel=button.parentNode.querySelector('.ua-vin-v1-panel');var open=button.getAttribute('aria-expanded')==='true';button.setAttribute('aria-expanded',open?'false':'true');panel.hidden=open;return false;};})();</script>"""
     return (_UA068_VIN_START + css
-            + '<section class="ua-vin-v1" data-ua-contract="UA-CARDS-FERRY-VIN-001-V1.1" data-ua-card="%s" data-ua-stage="%d" data-ua-video-count="%d">' % (_ua068_e(kod), stage, video_count)
-            + '<div class="ua-vin-v1-head"><span class="ua-vin-v1-shield">🛡</span><span><span class="ua-vin-v1-title">VIN Guard Lite</span><span class="ua-vin-v1-sub">Локальная проверка · стоимость 0 $</span></span><span class="ua-vin-v1-status %s">%s</span></div>' % (kind, _ua068_e(status))
+            + '<section class="ua-vin-v1" data-ua-contract="UA-CARDS-UNIFIED-SHELL-001-V1.1" data-ua-card="%s" data-ua-stage="%d" data-ua-video-count="%d">' % (_ua068_e(kod), stage, video_count)
+            + '<div class="ua-vin-v1-head"><span class="ua-vin-v1-shield">🇰🇷</span><span><span class="ua-vin-v1-title">Korea CarHistory</span><span class="ua-vin-v1-sub">Официальная страховая история Кореи · 2 200 KRW</span></span><span class="ua-vin-v1-status %s">ФОРМАТ VIN ПРОВЕРЕН</span></div>' % kind
             + '<div class="ua-vin-v1-code">%s</div>' % (_ua068_e(vin) or "VIN НЕ УКАЗАН")
             + '<div class="ua-vin-v1-route"><span class="ua068-ru">%s</span><span class="ua068-uk">%s</span><small><span class="ua068-ru">%s</span><span class="ua068-uk">%s</span></small></div>' % (_ua068_e(ru), _ua068_e(uk), _ua068_e(ru2), _ua068_e(uk2))
             + extra + '<div class="ua-vin-v1-meta">Видео в карточке: <b>%d</b></div>' % video_count
-            + '<button type="button" class="ua-vin-v1-button" aria-expanded="false" onclick="return window.uaVinGuardToggle(this)">🛡 Проверить VIN →</button>'
-            + '<div class="ua-vin-v1-panel" hidden><b>%s</b><br>%s<br>Марка/модель: %s %s · %s · двигатель %s см³.<br>Проверка выполняется внутри карточки без платных запросов. Это проверка идентификатора и данных карточки, не отчёт о ДТП.</div>' % (_ua068_e(status), _ua068_e(reason), _ua068_e((row or {}).get("brand")), _ua068_e((row or {}).get("model")), _ua068_e((row or {}).get("year")), _ua068_e(engine))
-            + '</section>' + script + _UA068_VIN_END)
+            + '<a class="ua-vin-v1-button" href="%s" target="_blank" rel="noopener noreferrer" data-ua-vin="%s" onclick="try{navigator.clipboard.writeText(this.dataset.uaVin||\'\')}catch(e){}">🇰🇷 Проверить VIN в CarHistory →</a>' % (_ua068_e(_UA068_CARHISTORY_URL), _ua068_e(vin))
+            + '<div class="ua-vin-v1-panel"><b>%s</b><br>%s<br>Двигатель: <b>%s см³</b>.<br>VIN копируется локально: вставьте его на официальном сайте и подтвердите поиск. Отчёт может содержать страховые ДТП, стоимость ремонта, полную гибель, угон и затопление. События без страхового обращения могут отсутствовать.</div>' % (_ua068_e(status), _ua068_e(reason), _ua068_e(engine))
+            + '</section>' + _UA068_VIN_END)
 
 
 def _ua068_ensure_engine(source, row):
@@ -1963,6 +2046,7 @@ def _ua068_ensure_card(source, kod, row):
     if position < 0:
         position = source.lower().rfind("</body>")
     source = source[:position] + block + source[position:]
+    source = _ua068_primary_action(source, kod, row)
     source = _ua068_terms(source)
     source = _ua068_strip_legacy_blocks(source)
     return source
@@ -2127,6 +2211,11 @@ def _ua068_card_errors(source, kod, row):
         errors.append("VIN Guard blocks != 1")
     if len(_ua068_re.findall(r'class=["\'][^"\']*\bua-vin-v1-button\b', source, _ua068_re.I)) != 1:
         errors.append("VIN buttons != 1")
+    if source.count(_UA068_CARHISTORY_URL) != 1:
+        errors.append("CarHistory target != 1")
+    if "navigator.clipboard.writeText" not in source:
+        errors.append("VIN copy helper missing")
+    errors.extend(_ua068_primary_action_errors(source, kod, row))
     if source.count(_UA068_STAGE_START) != 1 or source.count(_UA068_STAGE_END) != 1:
         errors.append("stage anchors != 1")
     if source.count(_UA068_DIAG) != 1:
@@ -2348,7 +2437,7 @@ def _upgrade_task068_after_seo(source: str, original_sha: str,
                                path: str, wrapper: str) -> str:
     """Replace only the final task068 layer on the approved rebased hashes."""
     name = os.path.basename(path)
-    if original_sha != SEO_FINAL_V1_SOURCE_SHA[path]:
+    if original_sha not in (SEO_FINAL_V1_SOURCE_SHA[path], UNIFIED_BASE_SOURCE_SHA[path]):
         raise RepairBlocked("task068_final_layer_hash_changed:" + name)
     if source.count(FERRY_VIN_SOURCE_MARKER) != 1 or source.count(SEO_REHAB_SOURCE_MARKER) != 1:
         raise RepairBlocked("task068_final_layer_marker_count_invalid:" + name)
@@ -2377,7 +2466,8 @@ def _append_task068(source: str, original_sha: str, path: str, wrapper: str) -> 
     if FERRY_VIN_SOURCE_MARKER in source:
         if SEO_REHAB_SOURCE_MARKER in source:
             if source.find(SEO_REHAB_SOURCE_MARKER) < source.find(FERRY_VIN_SOURCE_MARKER):
-                if "def _ua068_reposition_stage" not in source:
+                if ("def _ua068_reposition_stage" not in source
+                        or "Korea CarHistory" not in source):
                     return _upgrade_task068_after_seo(source, original_sha, path, wrapper)
                 _validate_task068_source(source, path)
                 return source
@@ -2437,7 +2527,8 @@ def _validate_task068_source(source: str, path: str) -> None:
     compile(source, path, "exec")
     for value in (FERRY_VIN_SOURCE_MARKER, VIN_START_MARKER, VIN_END_MARKER,
                   CATALOG_VIN_START, CATALOG_VIN_END, "def _ua068_ensure_card",
-                  "def _ua068_ensure_catalog", "VIN Guard Lite"):
+                  "def _ua068_ensure_catalog", "Korea CarHistory",
+                  "def _ua068_primary_action", CARHISTORY_URL):
         if value not in source:
             raise RepairBlocked("task068_contract_missing:%s:%s" % (os.path.basename(path), value))
     if source.count(FERRY_VIN_SOURCE_MARKER) != 1:
@@ -2541,11 +2632,14 @@ def _collect_candidates(rows: list[dict[str, Any]], patched: dict[str, bytes]) -
             diag_data = _read(diag_path, required=False)
             if diag_data is None or not _valid_diag_page(diag_data.decode("utf-8", "replace"), identifier):
                 diag_source = runtime["_ua068_diag_placeholder"](identifier, row)
-                candidates[diag_path] = diag_source.encode("utf-8")
             else:
-                candidates[diag_path] = terms(
-                    diag_data.decode("utf-8", "replace")
-                ).encode("utf-8")
+                diag_source = terms(diag_data.decode("utf-8", "replace"))
+            diag_source = runtime["_ua068_primary_action"](diag_source, identifier, row)
+            diag_errors = runtime["_ua068_primary_action_errors"](diag_source, identifier, row)
+            if diag_errors:
+                raise RepairBlocked("diagnostics_primary_action_invalid:%s:%s" % (
+                    identifier, ";".join(diag_errors)))
+            candidates[diag_path] = diag_source.encode("utf-8")
             paths = {os.path.join(root, identifier + ".html")}
             paths.update(glob.glob(os.path.join(root, identifier + "-*.html")))
             for path in sorted(paths):
@@ -2615,11 +2709,18 @@ def _validate_cards(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 raise RepairBlocked("diagnostics_target_invalid:" + diag_path)
             if runtime["_ua068_forbidden_count"](diag_source):
                 raise RepairBlocked("diagnostics_sea_wording_remains:" + diag_path)
+            diag_cta_errors = runtime["_ua068_primary_action_errors"](
+                diag_source, identifier, row)
+            if diag_cta_errors:
+                raise RepairBlocked("diagnostics_primary_action_invalid:%s:%s" % (
+                    identifier, ";".join(diag_cta_errors)))
             item["roots"][os.path.basename(root)] = {
                 "sha256": _sha(data), "stage_anchor_count": 1,
                 "diagnostics_links": 1, "diagnostics_target_complete": True,
                 "vin_guard_count": 1,
                 "vin_button_count": 1, "forbidden_sea_terms": 0,
+                "primary_action": "Купить" if item["stage"] == 4 else "Задаток 500 $",
+                "carhistory": True,
                 "legacy_duplicate_ui": 0,
                 "native_stage_duplicate_ui": 0,
                 "engine_cc": int(row.get("engine_cc") or 0), "vin": row.get("vin"),
@@ -2701,7 +2802,9 @@ def _validate_untouched() -> dict[str, str]:
         data = _read(path)
         assert data is not None
         digest = _sha(data)
-        if digest != EXPECTED_SHA[path]:
+        if path == CARS_UI_PATH and digest != EXPECTED_SHA[path]:
+            _validate_cars_ui(data.decode("utf-8"))
+        elif digest != EXPECTED_SHA[path]:
             raise RepairBlocked("protected_hotfix_file_changed:" + os.path.basename(path))
         compile(data.decode("utf-8"), path, "exec")
         values[os.path.basename(path)] = digest
@@ -2715,6 +2818,7 @@ def _build_sources() -> tuple[dict[str, bytes], dict[str, str]]:
         (STRANICA_PATH, _patch_stranica),
         (YADRO_PATH, _patch_yadro),
         (MASTER_CARD_PATH, _patch_master_card),
+        (CARS_UI_PATH, _patch_cars_ui),
     ):
         data = _read(path)
         assert data is not None
