@@ -81,6 +81,17 @@ def github_conflicts() -> list[dict]:
     return conflicts
 
 
+def wait_for_github_quiet(timeout: int = 1200) -> list[dict]:
+    deadline = time.monotonic() + timeout
+    last: list[dict] = []
+    while time.monotonic() < deadline:
+        last = github_conflicts()
+        if not last:
+            return []
+        time.sleep(15)
+    raise Blocked("PARALLEL_PRODUCTION_GATE_TIMEOUT:" + json.dumps(last))
+
+
 class API:
     def __init__(self) -> None:
         self.token = os.environ.get("PYTHONANYWHERE_API_TOKEN", "")
@@ -292,9 +303,7 @@ def main() -> int:
     try:
         if os.environ.get("TASK083_OWNER_DIRECTIVE") != APPROVAL:
             raise Blocked("OWNER_DIRECTIVE_MISSING")
-        conflicts = github_conflicts()
-        if conflicts:
-            raise Blocked("PARALLEL_PRODUCTION_GATE:" + json.dumps(conflicts))
+        wait_for_github_quiet()
         api = API()
         data = INSTALLER.read_bytes()
         compile(data.decode(), "installer.py", "exec")
@@ -304,9 +313,7 @@ def main() -> int:
         shadow = api.run_remote("shadow")
         value["shadow"] = shadow
         require_pass(shadow, "SHADOW")
-        conflicts = github_conflicts()
-        if conflicts:
-            raise Blocked("PARALLEL_PRODUCTION_GATE_BEFORE_INSTALL:" + json.dumps(conflicts))
+        wait_for_github_quiet(timeout=600)
         install = api.run_remote("install")
         value["install"] = install
         require_pass(install, "INSTALL")

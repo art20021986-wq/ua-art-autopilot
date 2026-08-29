@@ -37,6 +37,8 @@ RECEIPTS = {
     "rollback": REMOTE_ROOT / "rollback_receipt.json",
 }
 LOCK_PATH = ROOT / ".task083_catalog_dedup.lock"
+TASK082_INSTALL_LOCK = ROOT / ".task082_catalog_stage_repair.lock"
+TASK082_RUNTIME_LOCK = ROOT / ".task082_catalog_stage_guard.lock"
 DB_PATH = ROOT / "crm.db"
 SOURCE_PATHS = [ROOT / name for name in ("stranica.py", "yadro.py", "master_card.py")]
 CORE_PATH = ROOT / "catalog_stage_guard_core.py"
@@ -1037,20 +1039,25 @@ def main() -> int:
     parser.add_argument("mode", choices=("shadow", "install", "rollback"))
     args = parser.parse_args()
     REMOTE_ROOT.mkdir(parents=True, exist_ok=True)
-    LOCK_PATH.touch(exist_ok=True)
+    for path in (TASK082_INSTALL_LOCK, TASK082_RUNTIME_LOCK, LOCK_PATH):
+        path.touch(exist_ok=True)
     receipt = RECEIPTS[args.mode]
     value: dict[str, Any]
-    with LOCK_PATH.open("r+") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        try:
-            value = {"shadow": run_shadow, "install": run_install, "rollback": run_rollback}[args.mode]()
-        except Exception as exc:
-            value = {
-                "contract_id": CONTRACT, "status": "FAIL", "mode": args.mode.upper(),
-                "production_write": args.mode != "shadow", "crm_db_write": False,
-                "errors": [type(exc).__name__ + ":" + str(exc)],
-            }
-        atomic_json(receipt, value)
+    with TASK082_INSTALL_LOCK.open("r+") as task082_install_lock:
+        fcntl.flock(task082_install_lock, fcntl.LOCK_EX)
+        with TASK082_RUNTIME_LOCK.open("r+") as task082_runtime_lock:
+            fcntl.flock(task082_runtime_lock, fcntl.LOCK_EX)
+            with LOCK_PATH.open("r+") as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                try:
+                    value = {"shadow": run_shadow, "install": run_install, "rollback": run_rollback}[args.mode]()
+                except Exception as exc:
+                    value = {
+                        "contract_id": CONTRACT, "status": "FAIL", "mode": args.mode.upper(),
+                        "production_write": args.mode != "shadow", "crm_db_write": False,
+                        "errors": [type(exc).__name__ + ":" + str(exc)],
+                    }
+                atomic_json(receipt, value)
     print(json.dumps({"status": value["status"], "mode": value["mode"], "errors": value.get("errors", [])}, ensure_ascii=False))
     return 0 if value["status"] == "PASS" else 1
 

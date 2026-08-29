@@ -12,7 +12,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: ua-art-production-writer
+  group: task083-catalog-dedup-production
   cancel-in-progress: false
 
 jobs:
