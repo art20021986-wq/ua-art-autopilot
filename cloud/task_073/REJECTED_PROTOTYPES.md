@@ -1,19 +1,22 @@
-# TASK 073 — Rejected prototype tooling
+# TASK 073 - Rejected prototypes (do not deploy)
 
-Per the R3 correction from Codex's real GET-only live probe
-(`cloud/task_073/evidence/live_probe.json`, generated 2026-08-29T02:33Z), any
-R1 prototype named below is marked REJECTED_PROTOTYPE_DO_NOT_DEPLOY and must
-never be used for a live Gate A or Gate B run:
+Marked `REJECTED_PROTOTYPE_DO_NOT_DEPLOY` per owner-directed ROUND 3/4/5 review.
+Kept for history only; V4 (`patcher_v4.py`, `gate_a_v4.py`, `gate_b_installer_v4.py`,
+`gate_b_controller_v4.py`, `gate_b_postcheck_v4.py`) is the only reviewable candidate.
 
-- `tools/live_audit_controller.py` — returned NOT_IMPLEMENTED_WITHOUT_LIVE_CREDENTIALS, no real GET evidence.
-- `tools/keyboard_transformer.py` — operated on an invented dict, not live Python source; no AST anchors.
-- `tools/publish_guard.py` — wrote two files sequentially with no catalog/index build and no rollback of the first file on second-file failure.
-- `tools/installer.py` — unused `target_paths`, basename-collision backup, incomplete rollback.
-- `tools/public_verifier.py` — checked a single page and an invented revision header that does not exist on the real site.
-- `workflows/gate_b_manual_dispatch.yml` — contained placeholder `echo` steps instead of real actions.
+- R1 tools (`tools/live_audit_controller.py`, `keyboard_transformer.py`,
+  `publish_guard.py`, `installer.py`, `public_verifier.py`,
+  `workflows/gate_b_manual_dispatch.yml`): not implemented against live
+  credentials, work on a synthetic dict instead of live Python source,
+  incomplete rollback, placeholder echo steps in Gate B workflow.
+- V2/V3 series: keyboard-outer-removal transforms searched for literal
+  `InlineKeyboardButton(...sea_loaded...)` strings instead of the real
+  `S.STATUSES.items()` comprehension filters; SEO068 stale-precondition
+  transform searched for `os.path.exists(...diag...)` instead of the real
+  `any(_ua_seo068_os.path.isfile(...))` block; publisher used a synthetic
+  HTML renderer instead of the real `_master`/`_ua9_sobrat_katalog`
+  helpers; Gate B used unverified `always_on_tasks/{id}` restart shape and
+  did not snapshot public targets before writing them.
 
-These files are not present in this branch's history at the time this task
-was executed; this note exists so any copy of them found elsewhere is
-treated as rejected and is never wired into the real Gate B controller
-(`gate_b_controller_v2.py`). Only the `_v2` files under `cloud/task_073/tools/`
-and `cloud/task_073/workflows/` are release candidates.
+Corrected root causes are addressed only in the V4 series described in
+`GATE_A_V4_REPORT.md`.

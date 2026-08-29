@@ -1,0 +1,44 @@
+name: TASK073_GATE_B_V4
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval:
+        description: "Exact owner approval token"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  gate_b_v4:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Verify exact approval token
+        run: |
+          if [ "${{ github.event.inputs.approval }}" != "CRM-UNIFIED-CATALOG-001-V1.0-APPROVED" ]; then
+            echo "APPROVAL_TOKEN_MISMATCH"
+            exit 1
+          fi
+
+      - name: Run manual, owner-approved Gate B controller
+        working-directory: cloud/task_073
+        env:
+          GATE_B_APPROVAL: ${{ github.event.inputs.approval }}
+          PYTHONANYWHERE_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python gate_b_controller_v4.py
