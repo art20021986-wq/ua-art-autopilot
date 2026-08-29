@@ -1,0 +1,64 @@
+name: TASK_073 CRM Unified Catalog - Gate B Manual Production Release
+
+# NOTE: This file is delivered under cloud/task_073/workflows/ per the
+# TASK 073 output constraint that all Claude/Cloud deliverables live under
+# cloud/. GitHub Actions only executes workflows placed under
+# .github/workflows/. Codex/owner must review and copy this file into
+# .github/workflows/ before Gate B can be dispatched. It intentionally has
+# no push/schedule trigger so it can never run automatically.
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval:
+        description: "Exact owner approval token"
+        required: true
+        type: string
+
+jobs:
+  gate_b:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate approval token before any secrets or writes
+        run: |
+          if [ "${{ github.event.inputs.approval }}" != "CRM-UNIFIED-CATALOG-001-V1.0-APPROVED" ]; then
+            echo "Approval token mismatch. Refusing to proceed."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fresh GET-only preflight re-audit (fail closed on SHA/AST/schema drift)
+        run: echo "placeholder: re-run live_audit_controller.py and abort on any drift"
+
+      - name: Exclusive production window check vs TASK 067/068/069/072
+        run: echo "placeholder: verify no concurrent writer holds the production lock"
+
+      - name: Shadow / dry-run on a fresh copy
+        run: echo "placeholder: run keyboard_transformer + publish_guard against a shadow copy"
+
+      - name: Backup affected source/content and record preimage manifest
+        run: echo "placeholder: installer.build_preimage_manifest() over the exact write set"
+
+      - name: Atomic code/content install
+        run: echo "placeholder: installer.atomic_install() using the isolated candidate"
+
+      - name: Restart/reload only the actually affected service
+        run: echo "placeholder: reload only CRM bot / publisher process, not full site"
+
+      - name: Canary publish UA-0011
+        run: echo "placeholder: publish_guard.publish_card('UA-0011', ...)"
+
+      - name: Immediate public verify
+        run: echo "placeholder: public_verifier.verify_public_page() against exact revision"
+
+      - name: Delayed public verify (>=60s)
+        run: echo "placeholder: public_verifier.immediate_and_delayed_verify()"
+
+      - name: Automatic rollback on any failure
+        if: failure()
+        run: echo "placeholder: installer.rollback() + verify_preimage_restored(), then report FAIL"
+
+      - name: Final success only after full PASS
+        run: echo "placeholder: emit Telegram success and evidence receipt only here"
