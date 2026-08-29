@@ -61,6 +61,25 @@ def register(app):
         assert field in wrapper
 
 
+def test_master_card_patch_repairs_case_sensitive_diagnostics_contract():
+    source = '''
+def diag_anchor():
+    return "<b>Открыть комплексную диагностику →</b>"
+
+def proverit(html):
+    return [] if "Комплексная диагностика" in html else ["missing diagnostics"]
+'''
+    first = installer.patch_master_card(source)
+    second = installer.patch_master_card(first)
+    assert first == second
+    assert installer.DIAG_LEGACY not in first
+    assert first.count(installer.DIAG_CONTRACT) == 1
+    assert first.count(installer.MASTER_START) == 1
+    namespace = {}
+    exec(first, namespace)
+    assert namespace["proverit"](namespace["diag_anchor"]()) == []
+
+
 def test_stage_and_catalog_contract():
     rows = {
         "UA-0012": {"auto_number": "UA-0012", "status": "sea_transit"},
