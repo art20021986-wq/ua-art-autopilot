@@ -1,5 +1,5 @@
 name: task068-ferry-vin-v1-1-deploy
-# deploy-revision: 9-retry-transient-zero-variant
+# deploy-revision: 10-recover-missing-published-primary
 
 on:
   push:
@@ -54,7 +54,7 @@ jobs:
       - name: Verify public cards, diagnostics and catalog
         run: python3 cloud/task_068_ferry_vin/live_verify.py
 
-      - name: Capture catalog and all ten mobile cards
+      - name: Capture catalog and all current mobile cards
         run: |
           browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
           test -n "${browser}"
