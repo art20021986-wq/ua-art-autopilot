@@ -6,7 +6,9 @@ on:
     paths:
       - '.github/workflows/task075_stage_guard_sandbox.yml'
       - 'tasks/task_075.md'
-      - 'cloud/task_075_stage_guard/**'
+      - 'cloud/task_075_stage_guard/stage_guard.py'
+      - 'cloud/task_075_stage_guard/live_sandbox.py'
+      - 'cloud/task_075_stage_guard/tests/**'
   pull_request:
     branches: [main]
     paths:
