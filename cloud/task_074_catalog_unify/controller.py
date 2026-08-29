@@ -221,14 +221,14 @@ def public_catalog_check() -> dict:
             status = response.status
             source = response.read(MAX_BYTES + 1).decode("utf-8")
             final_url = response.geturl()
-        status_nodes = re.findall(
-            r'<div\b[^>]*class=["\'][^"\']*\bstatus-pill\b[^"\']*["\'][^>]*>.*?</div\s*>',
-            source, flags=re.I | re.S,
-        )
+        decoded_source = html_lib.unescape(source)
         status_preserved = any(
-            all(term in html_lib.unescape(re.sub(r"<[^>]+>", " ", node))
-                for term in ("На пароме", "Маршрут", "Корея", "Грузия"))
-            for node in status_nodes
+            all(term in decoded_source[match.start():(
+                decoded_source.find("</article", match.start())
+                if decoded_source.find("</article", match.start()) >= 0
+                else min(len(decoded_source), match.start() + 1800)
+            )] for term in ("На пароме", "Маршрут", "Корея", "Грузия"))
+            for match in re.finditer(r"status-pill", decoded_source, flags=re.I)
         )
         checks = {
             "http_200": status == 200,
