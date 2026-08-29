@@ -295,7 +295,7 @@ def parse_sale_price_message(text: str, in_price_uah_wait: bool = False) -> Pric
 
     lower = norm.lower()
 
-    if re.search(r"(?:^|\s)(?:минус|мінус|[-−–—])\s*\d", lower):
+    if re.search(r"\b(?:минус|мінус)\b|[-−–—]\s*\d", lower):
         return PriceParseResult(ok=False, reason="NEGATIVE_AMOUNT")
 
     is_change_intent = _has_any(EXPLICIT_CHANGE_INTENT_PATTERNS, lower)
