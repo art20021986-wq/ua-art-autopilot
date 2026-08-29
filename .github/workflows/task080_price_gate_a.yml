@@ -1,0 +1,154 @@
+name: task080-price-recognition-gate-a
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task080_price_gate_a.yml'
+      - 'cloud/task_080_price_recognition/live_gate_a.py'
+      - 'cloud/task_080_price_recognition/src/price_parser.py'
+      - 'cloud/task_080_price_recognition/tests/test_price_parser.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task080-price-recognition-gate-a
+  cancel-in-progress: false
+
+jobs:
+  audit-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Compile candidate and audit
+        run: |
+          python3 -m py_compile \
+            cloud/task_080_price_recognition/src/price_parser.py \
+            cloud/task_080_price_recognition/src/patcher.py \
+            cloud/task_080_price_recognition/live_gate_a.py \
+            cloud/task_080_price_recognition/tests/test_price_parser.py
+
+      - name: Run parser tests without external dependencies
+        run: |
+          python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          path = Path("cloud/task_080_price_recognition/tests/test_price_parser.py")
+          spec = importlib.util.spec_from_file_location("task080_tests", path)
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          tests = sorted(
+              (name, value)
+              for name, value in vars(module).items()
+              if name.startswith("test_") and callable(value)
+          )
+          assert len(tests) == 30, len(tests)
+          for name, test in tests:
+              test()
+              print("PASS", name)
+          print("TASK080_PRICE_PARSER_30_OF_30_PASS")
+          PY
+
+      - name: Prove remote transport is GET-only
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path(
+              "cloud/task_080_price_recognition/live_gate_a.py"
+          ).read_text(encoding="utf-8")
+          assert 'method="GET"' in source
+          for forbidden in (
+              'method="POST"',
+              'method="PUT"',
+              'method="PATCH"',
+              'method="DELETE"',
+          ):
+              assert forbidden not in source, forbidden
+          print("TASK080_GET_ONLY_STATIC_PASS")
+          PY
+
+      - name: Capture live price path and local DB-copy audit
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/task_080_price_recognition/live_gate_a.py
+
+      - name: Validate bounded evidence
+        run: |
+          python3 - <<'PY'
+          import json
+
+          path = "cloud/task_080_price_recognition/evidence/live_gate_a.json"
+          data = json.load(open(path, encoding="utf-8"))
+          assert data["status"] == "PASS_LIVE_GET_AUDIT", data["errors"]
+          assert data["http_methods"] == ["GET"]
+          assert data["production_touched"] is False
+          assert data["crm_write"] is False
+          assert data["site_write"] is False
+          assert data["process_restart"] is False
+          assert data["database"]["quick_check"] == "ok"
+          assert data["database"]["cars_count"] >= 1
+          for name in (
+              "cars_ui.py",
+              "local_ocr.py",
+              "ai_fast_schema.py",
+              "ai_filter.py",
+              "db.py",
+              "trace_zhurnal.py",
+          ):
+              source = data["sources"][name]
+              assert len(source["sha256"]) == 64
+              assert source["compiled"] is True
+          print("TASK080_LIVE_GATE_A_PASS")
+          PY
+
+      - name: Commit only sanitized audit evidence
+        if: always() && github.event_name == 'push'
+        run: |
+          git add -- \
+            cloud/task_080_price_recognition/evidence/live_gate_a.json \
+            cloud/task_080_price_recognition/LIVE_GATE_A_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_080_price_recognition/evidence/live_gate_a.json|cloud/task_080_price_recognition/LIVE_GATE_A_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task080-price-gate-a'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task080: record live GET-only price audit'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                exit 0
+              fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task080-price-gate-a-${{ github.run_id }}
+          path: |
+            cloud/task_080_price_recognition/evidence/live_gate_a.json
+            cloud/task_080_price_recognition/LIVE_GATE_A_REPORT.md
+          if-no-files-found: warn
+          retention-days: 14
