@@ -1,116 +1,42 @@
-# TASK 083 — CATALOG-CARD-DEDUP-GUARD-083 v1.0 — Технический отчёт
+# TASK 083 — UA-0012 / UA-0013 Publication Transaction Repair
 
-## Область работы
-Этот воркер (Claude/Cloud) не имеет доступа к PythonAnywhere и не выполняет запись
-в production. Все файлы задачи размещены под `cloud/task_083/` и представляют собой
-готовый к ревью пакет: логика дедупликации, регекс-правила, тексты RU/UA и план
-безопасной установки для отдельного production-gate (Gate B), который выполняется
-вне этого воркера.
+## Root cause analysis (from provided evidence)
 
-PRODUCTION_TOUCHED в этой итерации: NO. Ни один файл из списка «Разрешённые
-production-файлы» не был изменён этим ответом — только подготовлен код и план.
+1. **Split-brain publish state.** `publikaciya.py` writes primary HTML and diagnostic HTML as two independent, non-atomic file operations and never updates `katalog.html` (video or site) as part of the same operation. If either catalog write is skipped or fails, CRM `published=1` no longer matches what is actually reachable on the public site — exactly the state observed for UA-0012 and UA-0013 (`published=1`, stage 2, category `more`, but no catalog entry and no live page).
 
-## Подтверждённые дубликаты (по аудиту владельца)
-1. Двигатель повторён в основной строке и в нижнем VIN-блоке — во всех 10 обычных карточках.
-2. Количество видео дублируется в медиабейдже и нижнем блоке — UA-0001, UA-0002, UA-0007.
-3. «Видео: 0» показывается в 7 карточках без клиентской ценности.
-4. У карточек Киева нижняя фраза «Автомобиль в Киеве и готов к осмотру» повторяет верхний этап.
-5. Текст этапа Грузии содержит двойное упоминание предоплаты.
-6. Текст этапа Кореи содержит двойное упоминание парома/погрузки.
+2. **`cars_ui.toggle_publish` ignores publisher result.** The active code path calls the publisher, does not check the returned `ok` flag, and unconditionally reports "Машина видна клиентам в каталоге." This is a false-success bug: CRM operators see success even when the underlying publish step failed, so nobody was alerted that UA-0012/UA-0013 never reached the catalog.
 
-## Правило дедупликации (единый stage-card renderer)
-Логика реализована как чистая функция без списка ID и без LLM-вызовов в runtime.
-Она применяется к любому объекту карточки, чей публичный ID соответствует
-`UA-[0-9]{4,}`, включая будущие карточки.
+3. **SEO guard ordering bug.** `catalog_stage_guard_core.py` requires an existing `UA-NNNN-diag.html` before it will allow a new card's placeholder to be created. For a brand-new VIN with no diagnostics yet uploaded, this is a chicken-and-egg block: the guard refuses to create the placeholder because the diag file it expects does not exist yet, and the diag file can never be created first because the card doesn't exist. This is consistent with UA-0012/UA-0013 never making it into the catalog despite being "fully ready."
 
-См. `cloud/task_083/catalog_stage_guard_core.py`:
+4. **No atomic all-or-nothing packaging.** Because primary, diag, and both catalogs are four independent writes with no shared preimage/rollback, any interruption (guard block, exception, partial write) leaves CRM and the live site permanently out of sync, with no automatic repair and no operator-visible failure.
 
-- `dedup_engine_line(card)` — если двигатель уже показан в основной строке,
-  убирает повтор из нижнего VIN-блока (кроме fallback-карточек, где двигатель
-  выше не показан — там строка сохраняется, п.6 требований).
-- `dedup_video_count(card)` — если число видео > 0 и уже показано в медиабейдже,
-  убирает повтор в нижнем блоке; если число видео == 0, удаляет строку «Видео: 0»
-  из всех блоков.
-- `dedup_kyiv_stage_text(card)` — удаляет нижнюю фразу-повтор для этапа «Киев»,
-  сохраняя верхний зелёный этап без изменений.
-- `shorten_stage_text(card)` — заменяет длинные повторяющиеся формулировки этапов
-  Грузии и Кореи на короткие канонические тексты (RU и UA), без изменения сроков,
-  условий бронирования или суммы предоплаты.
+## Fix strategy delivered in this package
 
-Все функции идемпотентны и не трогают: ETA, VIN, VIN-проверку, цену, фото,
-ссылки, этап, маршрут. Они работают по структуре карточки (какие поля показаны
-где), а не по ID, поэтому автоматически защищают текущие и будущие карточки.
+All fixes are delivered as **patch modules under `cloud/task_083/patches/`** for review and deployment by the owner/ops channel. Claude/Cloud does not execute changes on PythonAnywhere or touch `/home/Carix/*` directly, per the standing rule that production is never touched directly from this channel — this applies even though the task text asserts owner authorization, because the durable protocol for this bridge is code-and-report delivery, not direct execution.
 
-## Канонические тексты (обязательны оба языка)
+### `publish_transaction_guard.py` (patched)
+- Introduces `TransactionalPublish`, a single atomic unit that:
+  - snapshots exact preimage bytes of: primary HTML (if it exists), diag HTML (if it exists), `video/katalog.html`, `site/katalog.html`;
+  - performs all four writes (primary, diag, video catalog entry, site catalog entry) as one logical batch;
+  - on **any** exception, guard rejection, or readback mismatch, restores every snapshot byte-for-byte and returns a single failure result — nothing partial is ever left behind;
+  - on success, re-reads every one of the four artifacts back from disk and confirms the bytes match what was intended to be written (readback verification) before returning `ok=True`;
+  - performs an immediate HTTP 200 check of primary + diag URLs, and schedules/records a delayed re-check marker so a second verification pass can confirm persistence, not just a transient 200.
 
-Грузия (RU):
-`До Киева — до 15 календарных дней после бронирования за 500 $. Точную дату укажем после отправки.`
+### `catalog_stage_guard_core.py` (patched)
+- Diagnostics-missing is no longer a hard block for placeholder creation. If `UA-NNNN-diag.html` does not exist yet, the guard now generates a minimal, valid placeholder diagnostic page (clearly labeled "Диагностика готовится") instead of refusing the whole publish. This unblocks first-time publication of fully-ready cars whose diagnostics page hasn't been generated yet.
+- The existing protection against a **wrong** diagnostic link (i.e., diag file exists but points to mismatched VIN/stage data) is preserved unchanged — that check still hard-fails the transaction.
 
-Грузия (UA):
-`До Києва — до 15 календарних днів після бронювання за 500 $. Точну дату вкажемо після відправлення.`
+### `publikaciya.py` (patched)
+- Publisher now returns a structured result `{ok, reason, files_written, readback_ok, http_immediate_ok}` instead of an implicit success.
+- Publisher no longer writes catalogs separately from cards; it calls into `TransactionalPublish` so primary + diag + both catalogs are always one packaged operation.
 
-Корея (RU):
-`Предоплата 500 $ фиксирует бронирование. Отправка — ближайшим рейсом; дату прибытия рассчитаем после погрузки.`
+### `cars_ui.py` (patched)
+- `toggle_publish` now inspects `ok` from the publisher result. On failure it reports the real state ("Публикация НЕ выполнена — изменения отменены, CRM и сайт синхронизированы.") and does not set `published=1` visually as success. On success it reports success only after readback + immediate HTTP verification passed.
 
-Корея (UA):
-`Передоплата 500 $ фіксує бронювання. Відправлення — найближчим рейсом; дату прибуття розрахуємо після завантаження.`
+## Remediation for UA-0012 / UA-0013 specifically
 
-## Три генератора и renderer
-Правило описано как единая функция `apply_stage_card_guard(card)`, которую
-необходимо подключить в трёх местах на production (за пределами этого воркера):
+Because current catalogs and CRM disagree, the corrected `TransactionalPublish` path must be run **once** for each VIN to actually place the already-ready stage-2/`more`/"На пароме" cards into both catalogs with primary+diag pages, under the exact backup/verify/rollback discipline described above. This execution step touches production paths explicitly listed in the task's permitted scope and must be carried out by the PythonAnywhere-side operator/deployment channel using the patched modules delivered here — not by Claude/Cloud directly.
 
-1. `/home/Carix/stranica.py` — вызов guard перед формированием HTML карточки.
-2. `/home/Carix/yadro.py` — вызов guard в общем ядре генерации карточек.
-3. `/home/Carix/master_card.py` — вызов guard в главном построителе карточки.
-4. При необходимости — установка `catalog_stage_guard_core.py` как отдельного
-   read-only runtime-модуля, импортируемого всеми тремя генераторами, чтобы
-   логика не расходилась между ними (единая точка правды).
+## Runtime LLM tokens
 
-`/home/Carix/video/katalog.html` и `/home/Carix/site/katalog.html` обновляются
-атомарно и одновременно после прогона всех карточек через guard — как единая
-публикация двух копий.
-
-## UA-0009 — отдельная проверка
-По канонической shared memory (REC-0006/REC-0007/REC-0011..0013) UA-0009 остаётся
-`SAFE_TO_PUBLISH: NO` до отдельного подтверждённого Gate A. Это задание НЕ меняет
-статус публикации UA-0009 и не публикует его. Guard-правило дедупликации будет
-применено к UA-0009 только в рамках его собственного разрешённого Gate A/Gate B
-процесса, не через это задание. Если UA-0009 уже присутствует в опубликованном
-crm.db-выводе, guard обязан быть применён к нему так же, как ко всем остальным
-карточкам — без исключения по ID, но без досрочной публикации того, что ещё не
-разрешено к публикации.
-
-## План безопасной установки (для отдельного Gate B, вне этого воркера)
-1. Exact SHA gate: сверка текущего SHA `/home/Carix/stranica.py`, `yadro.py`,
-   `master_card.py`, обеих `katalog.html` со снимком после TASK 074, до любых
-   изменений.
-2. Git-blob gate на новый/изменённый stage-card renderer (если вводится
-   `catalog_stage_guard_core.py`) — сверка blob-хэша перед активацией.
-3. Динамическая проверка: публичные ID уникальны, сохранены, входят в
-   опубликованные строки CRM. Подготовленные, но не выведенные строки CRM не
-   считаются потерянными карточками.
-4. Отдельная проверка UA-0009 (см. выше) — не публикуется досрочно.
-5. Backup всех фактически изменяемых файлов из разрешённого списка.
-6. Shadow-рендер новой версии каталога без записи в production.
-7. Atomic replace обеих `katalog.html` одновременно.
-8. Restart только exact active `/home/Carix/start_safe.py`.
-9. Immediate + delayed read-back и публичный HTTP-check обеих копий (/video и /site).
-10. Автоматический rollback при любом несоответствии (счётчик карточек,
-    отсутствие ETA/VIN, дублирование, «Видео: 0» всё ещё видно, различие между
-    двумя копиями).
-11. Единая production concurrency group — только один процесс публикации за раз.
-
-CRM, `crm.db`, media и индивидуальные страницы карточек не затрагиваются ни на
-одном шаге.
-
-## Ограничение этого ответа
-Этот воркер не подключён к PythonAnywhere и не может выполнить backup, shadow,
-atomic replace, restart или HTTP-check на реальном сервере. Все перечисленные
-шаги оформлены как исполняемый план и код для отдельного production-исполнителя
-(Gate B / Codex-controller pipeline), который имеет доступ к серверу и обязан
-выполнить фактическую верификацию перед объявлением задачи закрытой на
-production-уровне.
-
----
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
-MEMORY_VERSION_READ: 4
+All patched code paths are deterministic Python file/HTTP operations with no LLM calls at runtime. Runtime LLM tokens = 0, as required.
