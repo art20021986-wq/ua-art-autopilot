@@ -86,6 +86,32 @@ def sobrat_kartochku(m, kadry, sredn=None):
         self.assertLess(active.index("public_projection"), active.index("code ="))
         self.assertEqual(remote.patch_stranica(candidate), candidate)
 
+    def test_planned_korea_target_accepts_a_different_canonical_stage(self):
+        class Guard:
+            @staticmethod
+            def stage_number(value):
+                return {"kr_bought": 1, "sea_loaded": 2, "ge_arrived": 3,
+                        "ua_delivered": 4}.get(value)
+
+            @staticmethod
+            def public_projection(value):
+                return dict(value)
+
+        source = {
+            "auto_number": remote.TARGET_CODE,
+            "vin": remote.EXPECTED_VIN,
+            "status": "sea_loaded",
+            "sea_container": "container",
+            "eta_manual": "2099-01-01",
+            "description": "preserve",
+        }
+        planned = remote.planned_korea_target(Guard(), source)
+        self.assertEqual(planned["status"], remote.EXPECTED_STATUS)
+        self.assertIsNone(planned["sea_container"])
+        self.assertIsNone(planned["eta_manual"])
+        self.assertEqual(planned["description"], "preserve")
+        self.assertEqual(source["status"], "sea_loaded")
+
     def test_detail_contract_rejects_old_container(self):
         with self.assertRaises(remote.Task085Error):
             with __import__("tempfile").TemporaryDirectory() as raw:

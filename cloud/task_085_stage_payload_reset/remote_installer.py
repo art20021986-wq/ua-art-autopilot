@@ -30,7 +30,7 @@ from typing import Any
 CONTRACT_ID = "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0"
 TARGET_CODE = "UA-0011"
 PROTECTED_CODE = "UA-0009"
-EXPECTED_STATUS = "kr_bought"
+EXPECTED_STATUS = "kr_bought"\nEXPECTED_VIN = "KMHE341DBKA544289"
 ACTOR_ID = 85005
 ROOT = pathlib.Path("/home/Carix")
 # The controller stages unique task085 files inside the already-existing,
@@ -154,6 +154,28 @@ def protected_rows_digest(rows: list[dict], target_id: int) -> str:
 def target_business_digest(row: dict) -> str:
     ignored = set(RESET_FIELDS) | {"status", "updated_at"}
     return stable({key: value for key, value in row.items() if key not in ignored})
+
+
+def planned_korea_target(guard, target: dict) -> dict:
+    """Validate a canonical preimage and simulate the exact requested destination."""
+    if str(target.get("auto_number") or "").upper() != TARGET_CODE:
+        raise Task085Error("TARGET_CODE_DRIFT")
+    if str(target.get("vin") or "").upper() != EXPECTED_VIN:
+        raise Task085Error("TARGET_VIN_DRIFT")
+    if guard.stage_number(target.get("status")) is None:
+        raise Task085Error("TARGET_STATUS_NONCANONICAL:" + str(target.get("status")))
+    desired = dict(target)
+    desired["status"] = EXPECTED_STATUS
+    for field in RESET_FIELDS:
+        if field in desired:
+            desired[field] = None
+    projected = guard.public_projection(desired)
+    if projected.get("status") != EXPECTED_STATUS:
+        raise Task085Error("PLANNED_STATUS_DRIFT")
+    for field in RESET_FIELDS:
+        if field in projected and projected.get(field) not in (None, ""):
+            raise Task085Error("PROJECTION_LEAK:" + field)
+    return projected
 
 
 def _function(source: str, name: str) -> tuple[int, int, str]:
@@ -800,13 +822,10 @@ def shadow() -> dict:
             columns = [row[1] for row in reader.execute("PRAGMA table_info(cars)")]
         finally:
             reader.close()
-        if quick != "ok" or target.get("status") != EXPECTED_STATUS:
-            raise Task085Error("SHADOW_DATABASE_OR_STATUS")
+        if quick != "ok":
+            raise Task085Error("SHADOW_DATABASE_QUICK_CHECK:" + str(quick))
         guard = import_guard_from_upload()
-        projected = guard.public_projection(target)
-        for field in RESET_FIELDS:
-            if field in projected and projected.get(field) not in (None, ""):
-                raise Task085Error("PROJECTION_LEAK:" + field)
+        projected = planned_korea_target(guard, target)
         current_catalogs = {
             surface: catalog_semantics(ROOT / surface / "katalog.html")
             for surface in ("video", "site")
@@ -936,8 +955,10 @@ def apply_release() -> dict:
             target = unique_row(rows, TARGET_CODE)
         finally:
             reader.close()
-        if quick != "ok" or target.get("status") != EXPECTED_STATUS:
-            raise Task085Error("PREWRITE_DATABASE_OR_STATUS")
+        if quick != "ok":
+            raise Task085Error("PREWRITE_DATABASE_QUICK_CHECK:" + str(quick))
+        guard = import_guard_from_upload()
+        planned_korea_target(guard, target)
         state = create_backup(rows, target)
         value["backup_root"] = state["backup_root"]
         value["before"] = safe_target(target)
