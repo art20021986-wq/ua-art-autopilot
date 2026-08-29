@@ -5,7 +5,7 @@
       "crm_db": {
         "bytes": 2691072,
         "path": "/home/Carix/crm.db",
-        "sha256": "ceb235f022c3b83b8ec83524786c4f956aa75072ddadb72318f606e5cdca8628"
+        "sha256": "22af7606bfe64a4c0a5c699ecb99e66a0d5c9cab236f4c1948ad94116c10e4f2"
       },
       "crm_wal": {
         "missing": true,
@@ -45,10 +45,138 @@
   },
   "contract_id": "CRM-CATALOG-STAGE-GUARD-003-V1.0",
   "crm_write": false,
+  "database": {
+    "published": 12,
+    "quick_check": "ok",
+    "rows": [
+      {
+        "auto_number": "UA-0001",
+        "brand": "Mercedes-Benz",
+        "model": "E 220",
+        "photos": 30,
+        "stage": 3,
+        "status": "ge_waiting",
+        "videos": 1,
+        "year": "2017"
+      },
+      {
+        "auto_number": "UA-0002",
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "photos": 33,
+        "stage": 4,
+        "status": "ua_arrived",
+        "videos": 2,
+        "year": "2010"
+      },
+      {
+        "auto_number": "UA-0003",
+        "brand": "Kia",
+        "model": "K5",
+        "photos": 26,
+        "stage": 1,
+        "status": "kr_bought",
+        "videos": 0,
+        "year": "2019"
+      },
+      {
+        "auto_number": "UA-0004",
+        "brand": "Kia",
+        "model": "K5",
+        "photos": 28,
+        "stage": 1,
+        "status": "kr_bought",
+        "videos": 0,
+        "year": "2019"
+      },
+      {
+        "auto_number": "UA-0005",
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "photos": 11,
+        "stage": 2,
+        "status": "sea_loaded",
+        "videos": 0,
+        "year": "2013"
+      },
+      {
+        "auto_number": "UA-0006",
+        "brand": "Kia",
+        "model": "K5",
+        "photos": 40,
+        "stage": 2,
+        "status": "sea_loaded",
+        "videos": 0,
+        "year": "2019"
+      },
+      {
+        "auto_number": "UA-0007",
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "photos": 30,
+        "stage": 4,
+        "status": "ua_arrived",
+        "videos": 1,
+        "year": "2011"
+      },
+      {
+        "auto_number": "UA-0008",
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "photos": 33,
+        "stage": 4,
+        "status": "ua_arrived",
+        "videos": 2,
+        "year": "2009"
+      },
+      {
+        "auto_number": "UA-0009",
+        "brand": "Kia",
+        "model": "K5",
+        "photos": 20,
+        "stage": 2,
+        "status": "sea_loaded",
+        "videos": 0,
+        "year": "2018"
+      },
+      {
+        "auto_number": "UA-0010",
+        "brand": "Kia",
+        "model": "K5",
+        "photos": 28,
+        "stage": 2,
+        "status": "sea_loaded",
+        "videos": 0,
+        "year": "2018"
+      },
+      {
+        "auto_number": "UA-0011",
+        "brand": "Hyundai",
+        "model": "SONATA",
+        "photos": 35,
+        "stage": 2,
+        "status": "sea_loaded",
+        "videos": 0,
+        "year": "2018"
+      },
+      {
+        "auto_number": "UA-0012",
+        "brand": "Kia",
+        "model": "K5",
+        "photos": 11,
+        "stage": 2,
+        "status": "sea_transit",
+        "videos": 0,
+        "year": "2018"
+      }
+    ],
+    "ua0009_safe": true,
+    "unique_ids": 12
+  },
   "errors": [
-    "StageGuardError:EXPECTED_11_UNIQUE_CARDS"
+    "StageGuardError:PUBLIC_PHOTO_HTTP_FAILED:UA-0012:NO_CANDIDATE"
   ],
-  "finished_at_utc": "2026-08-29T06:35:43Z",
+  "finished_at_utc": "2026-08-29T06:38:45Z",
   "media_write": false,
   "mode": "BACKUP_GET_ONLY_LOCAL_SANDBOX_CANARY",
   "production_touched": false,
@@ -57,7 +185,7 @@
   ],
   "runtime_llm_tokens": 0,
   "site_write": false,
-  "started_at_utc": "2026-08-29T06:35:41Z",
+  "started_at_utc": "2026-08-29T06:37:55Z",
   "status": "FAIL",
   "task_id": "task_075"
 }

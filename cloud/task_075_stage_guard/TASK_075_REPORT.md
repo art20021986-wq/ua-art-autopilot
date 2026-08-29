@@ -6,6 +6,6 @@ STATUS: **FAIL**
 - PythonAnywhere access: **GET only**
 - CRM writes: **NO**
 - Site/media writes: **NO**
-- Errors: `StageGuardError:EXPECTED_11_UNIQUE_CARDS`
+- Errors: `StageGuardError:PUBLIC_PHOTO_HTTP_FAILED:UA-0012:NO_CANDIDATE`
 
 Production remains locked.
