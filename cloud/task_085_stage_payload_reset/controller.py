@@ -163,22 +163,15 @@ class API:
         return identifier if isinstance(identifier, int) and identifier > 0 else None
 
     def create_trigger(self, command: str, description: str):
+        """Use the scheduled lane; a second always-on process is quota-blocked."""
+        run_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=1)
         form = urllib.parse.urlencode({
-            "command": command, "description": description, "enabled": "true"
-        }).encode()
-        status, body = self.request(
-            "POST", BASE + "always_on/", form,
-            {"Content-Type": "application/x-www-form-urlencoded"},
-            allowed=(200, 201, 202, 400, 403, 404, 409),
-        )
-        identifier = self._trigger_id(body) if status in (200, 201, 202) else None
-        if identifier:
-            return "always_on", identifier
-        run_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=2)
-        form = urllib.parse.urlencode({
-            "command": command, "description": description + " fallback",
-            "enabled": "true", "interval": "daily",
-            "hour": run_at.hour, "minute": run_at.minute,
+            "command": command,
+            "description": description + " scheduled executor",
+            "enabled": "true",
+            "interval": "daily",
+            "hour": run_at.hour,
+            "minute": run_at.minute,
         }).encode()
         status, body = self.request(
             "POST", BASE + "schedule/", form,
@@ -187,7 +180,7 @@ class API:
         )
         identifier = self._trigger_id(body) if status in (200, 201, 202) else None
         if not identifier:
-            raise ControllerError("NO_REMOTE_TRIGGER")
+            raise ControllerError("NO_SCHEDULED_EXECUTOR")
         return "schedule", identifier
 
     def delete_trigger(self, trigger) -> None:
@@ -205,7 +198,7 @@ class API:
         if self.read(DIR_MARKER) != marker:
             raise ControllerError("REMOTE_STAGING_READBACK")
 
-    def run_remote(self, mode: str, timeout: int = 900) -> dict[str, Any]:
+    def run_remote(self, mode: str, timeout: int = 360) -> dict[str, Any]:
         receipt = RECEIPTS[mode]
         last_error = None
         for run_attempt in (1, 2):
