@@ -86,6 +86,25 @@ def sobrat_kartochku(m, kadry, sredn=None):
         self.assertLess(active.index("public_projection"), active.index("code ="))
         self.assertEqual(remote.patch_stranica(candidate), candidate)
 
+    def test_authorized_preimage_accepts_known_stage_and_exact_vin(self):
+        class Guard:
+            @staticmethod
+            def stage_number(status):
+                return {"kr_bought": 1, "sea_loaded": 2, "ge_waiting": 3,
+                        "ua_arrived": 4}.get(status)
+
+        target = {"vin": remote.EXPECTED_VIN, "status": "ua_arrived"}
+        self.assertEqual(remote.authorized_preimage_stage(target, Guard, "TEST"), 4)
+
+        with self.assertRaises(remote.Task085Error):
+            remote.authorized_preimage_stage(
+                {"vin": "WRONG", "status": "kr_bought"}, Guard, "TEST"
+            )
+        with self.assertRaises(remote.Task085Error):
+            remote.authorized_preimage_stage(
+                {"vin": remote.EXPECTED_VIN, "status": "mystery"}, Guard, "TEST"
+            )
+
     def test_detail_contract_rejects_old_container(self):
         with self.assertRaises(remote.Task085Error):
             with __import__("tempfile").TemporaryDirectory() as raw:
