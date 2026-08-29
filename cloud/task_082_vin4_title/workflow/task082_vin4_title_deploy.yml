@@ -1,0 +1,53 @@
+name: task082_vin4_title_deploy
+
+# Codex: copy this file verbatim to .github/workflows/task082_vin4_title_deploy.yml
+# Triggers on push touching the package. Uses only PYTHONANYWHERE_API_TOKEN
+# (already-proven transport from TASK 067/068/077). No DB/site/media writes.
+
+on:
+  push:
+    paths:
+      - 'cloud/task_082_vin4_title/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  offline_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Run deterministic offline tests
+        run: |
+          cd cloud/task_082_vin4_title
+          python -m pytest test_vin4_helper.py -q
+
+  live_deploy:
+    needs: offline_tests
+    runs-on: ubuntu-latest
+    environment: production-gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Run deployment controller (backup -> shadow -> canary -> install -> restart -> postcheck)
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PA_USERNAME: Carix
+          PA_ALWAYS_ON_TASK_ID: ${{ secrets.PA_ALWAYS_ON_TASK_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          VIN4_ANCHOR_CONFIG: cloud/task_082_vin4_title/anchor_config.json
+        run: |
+          cd cloud/task_082_vin4_title
+          python controller.py
+      - name: Upload run report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task082-vin4-controller-report
+          path: cloud/task_082_vin4_title/backups/**

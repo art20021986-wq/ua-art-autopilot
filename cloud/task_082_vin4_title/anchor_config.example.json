@@ -1,0 +1,15 @@
+{
+  "_comment": "EXAMPLE / TEMPLATE ONLY. This is NOT a claim about the real cars_ui.py contents. The controller must run patcher.locate_render_functions() against the freshly fetched live source, have the discovered candidates reviewed (by Codex/owner or by an automated high-confidence single-match rule), and only then write the real anchor_config.json with expected_source_sha256 taken from that live fetch before controller.py is allowed to proceed past the dry-run gate.",
+  "functions": [
+    {
+      "name": "REPLACE_WITH_REAL_TITLE_FUNCTION_NAME",
+      "kind": "title_html",
+      "expected_source_sha256": "REPLACE_WITH_REAL_SHA256_FROM_LIVE_FETCH"
+    },
+    {
+      "name": "REPLACE_WITH_REAL_BUTTON_FUNCTION_NAME",
+      "kind": "button_label",
+      "expected_source_sha256": "REPLACE_WITH_REAL_SHA256_FROM_LIVE_FETCH"
+    }
+  ]
+}
