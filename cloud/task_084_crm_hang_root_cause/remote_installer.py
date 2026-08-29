@@ -18,9 +18,9 @@ from pathlib import Path
 
 
 ROOT = Path("/home/Carix")
-REMOTE = ROOT / "autopilot_inbox/cloud/task_084_crm_hang_root_cause"
+REMOTE = ROOT / "autopilot_inbox/cloud/task_083_catalog_dedup"
 BACKUPS = ROOT / "backups/task_084"
-MANIFEST = REMOTE / "manifest.json"
+MANIFEST = REMOTE / "task084_manifest.json"
 LOCK = ROOT / ".ua_art_production_writer.lock"
 CONTRACT = "CRM-HANG-ROOT-CAUSE-084-V1.0"
 TARGETS = {
@@ -29,11 +29,11 @@ TARGETS = {
     "start_safe.py": ROOT / "start_safe.py",
     "crm_voice_watchdog.py": ROOT / "crm_voice_watchdog.py",
 }
-CANDIDATES = {name: REMOTE / (name + ".candidate") for name in TARGETS}
+CANDIDATES = {name: REMOTE / ("task084_" + name + ".candidate") for name in TARGETS}
 RECEIPTS = {
-    "install": REMOTE / "install_receipt.json",
-    "postcheck": REMOTE / "postcheck_receipt.json",
-    "rollback": REMOTE / "rollback_receipt.json",
+    "install": REMOTE / "task084_install_receipt.json",
+    "postcheck": REMOTE / "task084_postcheck_receipt.json",
+    "rollback": REMOTE / "task084_rollback_receipt.json",
 }
 
 
