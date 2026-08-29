@@ -207,10 +207,29 @@ class API:
 def validate_install(value: dict) -> None:
     if value.get("contract_id") != CONTRACT or value.get("status") != "PASS":
         raise ControllerError("INSTALL_FAILED:" + ";".join(value.get("errors") or []))
-    if not value.get("production_write") or value.get("crm_write") or value.get("media_write"):
+    if not value.get("production_write") or value.get("media_write"):
         raise ControllerError("INSTALL_SCOPE_INVALID")
-    if value.get("rows_sha256_before") != value.get("rows_sha256_after"):
-        raise ControllerError("CRM_ROWS_CHANGED")
+    normalization = value.get("status_normalization") or {}
+    if normalization.get("target_id") != "UA-0011":
+        raise ControllerError("UA0011_STATUS_TARGET_MISSING")
+    changed = bool(normalization.get("changed"))
+    if changed:
+        if value.get("crm_write") is not True:
+            raise ControllerError("CRM_WRITE_RECEIPT_MISSING")
+        if (normalization.get("before_status"), normalization.get("after_status")) != (
+                "kr_bought", "sea_loaded"):
+            raise ControllerError("UA0011_STATUS_TRANSITION_INVALID")
+        if normalization.get("fields_changed") != ["status"]:
+            raise ControllerError("UA0011_STATUS_SCOPE_INVALID")
+        if value.get("rows_sha256_before") == value.get("rows_sha256_after"):
+            raise ControllerError("CRM_STATUS_HASH_UNCHANGED")
+    else:
+        if value.get("crm_write") or normalization.get("after_status") != "sea_loaded":
+            raise ControllerError("CRM_IDEMPOTENT_STATUS_INVALID")
+        if value.get("rows_sha256_before") != value.get("rows_sha256_after"):
+            raise ControllerError("CRM_ROWS_CHANGED")
+    if normalization.get("vin4") != "4289" or int(normalization.get("photo_count") or 0) < 1:
+        raise ControllerError("UA0011_IDENTITY_INVALID")
     if value.get("llm_tokens") != 0 or not value.get("backup_root"):
         raise ControllerError("INSTALL_CONTRACT_INVALID")
     repair = value.get("repair") or {}
@@ -288,7 +307,10 @@ def main() -> int:
         "- Main photo and 55/45 media structure: %s" % ("PASS" if evidence["status"] == "PASS" else "NOT VERIFIED"),
         "- Title VIN suffix: VIN 4289",
         "- UA-0009 protected gate: %s" % ("PASS" if evidence["status"] == "PASS" else "NOT VERIFIED"),
-        "- CRM rows changed: NO",
+        "- CRM rows changed: %s" % (
+            "UA-0011 status kr_bought → sea_loaded only"
+            if evidence["status"] == "PASS" and install_value.get("crm_write") else "NO"
+        ),
         "- Individual pages/media changed: NO",
         "- Future publication guard installed: %s" % ("YES" if evidence["status"] == "PASS" else "NO"),
         "- Immediate + delayed verification: %s" % ("PASS" if evidence["status"] == "PASS" else "FAIL"),
