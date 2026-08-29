@@ -1,8 +1,20 @@
 {
+  "candidate_validation": {
+    "candidate_compiled": true,
+    "candidate_sha256": "60096df9867e544fe6dbc588fc0909c11d851765940d2e78bbd0096085fb4c1f",
+    "fixed_deadline_removed": true,
+    "full_sha_guard_passed": true,
+    "non_killable_voice_thread_removed": true,
+    "outside_catch_message_unchanged": true,
+    "patch_idempotent": true,
+    "source_sha256": "50f1cb15b6e1ec3a35878a3021beb362a87f3607ac46abf3eb44566023b14306",
+    "voice_block_only_changed": true,
+    "watchdog_import_present": true
+  },
   "contract_id": "CRM-VOICE-WATCHDOG-005-V1.0",
   "crm_write": false,
   "errors": [],
-  "finished_at_utc": "2026-08-29T06:54:46Z",
+  "finished_at_utc": "2026-08-29T07:00:46Z",
   "http_methods": [
     "GET"
   ],
@@ -23,6 +35,7 @@
       "counts": {
         "asyncio.to_thread": 0,
         "audio": 1,
+        "circuit": 0,
         "hard_deadline": 0,
         "infinity_polling": 0,
         "restart": 0,
@@ -60,6 +73,7 @@
       "counts": {
         "asyncio.to_thread": 4,
         "audio": 6,
+        "circuit": 2,
         "hard_deadline": 3,
         "infinity_polling": 0,
         "restart": 0,
@@ -185,6 +199,7 @@
       "counts": {
         "asyncio.to_thread": 0,
         "audio": 0,
+        "circuit": 7,
         "hard_deadline": 0,
         "infinity_polling": 0,
         "restart": 5,
@@ -202,6 +217,22 @@
           "name": "_safe_event",
           "sha256": "d6488bb5c7428d6c943b8804f5cdc09f12c83b45c4f68509ce196bfee5106f57",
           "source": "def _safe_event(kind: str, **fields) -> None:\n    try:\n        row = {\"at\": _utc(), \"contract_id\": CONTRACT_ID, \"kind\": str(kind)}\n        for key, value in fields.items():\n            if value is not None and key not in {\"token\", \"text\", \"voice\", \"file_id\"}:\n                row[str(key)] = value\n        _append_json(EVENT_PATH, EVENT_LOCK_PATH, row)\n    except Exception:\n        pass\n",
+          "truncated": false
+        },
+        {
+          "end_line": 189,
+          "line": 184,
+          "name": "circuit_allows",
+          "sha256": "08387e791fabd9553255e58de100a29acbce0c471d1380db34e04f17ba9d6b67",
+          "source": "def circuit_allows(component: str) -> bool:\n    \"\"\"Bounded local breaker; it never calls an LLM or mutates CRM data.\"\"\"\n    now = time.monotonic()\n    with _LOCK:\n        state = _CIRCUITS.get(str(component)) or {}\n        return now >= float(state.get(\"open_until\", 0.0) or 0.0)\n",
+          "truncated": false
+        },
+        {
+          "end_line": 207,
+          "line": 192,
+          "name": "circuit_result",
+          "sha256": "918f7d125d998540b1ed3188455ca050a5e7fb89f21c60bbce27ddb1b3b3b73b",
+          "source": "def circuit_result(component: str, ok: bool) -> None:\n    name = str(component)\n    now = time.monotonic()\n    with _LOCK:\n        state = dict(_CIRCUITS.get(name) or {})\n        if ok:\n            state = {\"failures\": 0, \"open_until\": 0.0}\n        else:\n            failures = int(state.get(\"failures\", 0) or 0) + 1\n            state = {\n                \"failures\": failures,\n                \"open_until\": now + 15.0 if failures >= 3 else 0.0,\n            }\n        _CIRCUITS[name] = state\n    if not ok and state.get(\"open_until\"):\n        _safe_event(\"circuit_open\", component=name, seconds=15, status=\"degraded\")\n",
           "truncated": false
         },
         {
@@ -230,6 +261,7 @@
       "counts": {
         "asyncio.to_thread": 0,
         "audio": 1,
+        "circuit": 0,
         "hard_deadline": 0,
         "infinity_polling": 0,
         "restart": 9,
@@ -299,6 +331,7 @@
       "counts": {
         "asyncio.to_thread": 0,
         "audio": 0,
+        "circuit": 0,
         "hard_deadline": 0,
         "infinity_polling": 0,
         "restart": 0,
@@ -314,8 +347,8 @@
       "sha256": "a0976afb93a4d2fdcab392601d25253700977618a02b04bc31903a18e95ee81a"
     }
   },
-  "started_at_utc": "2026-08-29T06:54:44Z",
-  "status": "PASS_AUDIT_ROOT_CAUSE_CONFIRMED",
+  "started_at_utc": "2026-08-29T07:00:45Z",
+  "status": "PASS_AUDIT_AND_IN_MEMORY_CANARY",
   "supervisor": {
     "exit_75_handled": false,
     "file_present": true,
