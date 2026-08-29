@@ -1,0 +1,125 @@
+name: task075-crm-catalog-stage-guard-sandbox
+
+on:
+  push:
+    branches: [task075-stage-guard]
+    paths:
+      - '.github/workflows/task075_stage_guard_sandbox.yml'
+      - 'tasks/task_075.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task075-sandbox-canary
+  cancel-in-progress: false
+
+jobs:
+  sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact task commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Compile and test stage guard
+        run: |
+          python3 -m py_compile cloud/task_075_stage_guard/stage_guard.py cloud/task_075_stage_guard/live_sandbox.py
+          python3 cloud/task_075_stage_guard/tests/test_stage_guard.py -v
+
+      - name: Require GET-only implementation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('cloud/task_075_stage_guard/live_sandbox.py').read_text(encoding='utf-8')
+          assert 'method="GET"' in source
+          for forbidden in ('method="POST"', 'method="PUT"', 'method="DELETE"', 'urlopen(request, data='):
+              assert forbidden not in source, forbidden
+          print('TASK075_GET_ONLY_STATIC_PASS')
+          PY
+
+      - name: Run live backup and local sandbox canary
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        working-directory: cloud/task_075_stage_guard
+        run: python3 live_sandbox.py
+
+      - name: Validate machine evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          p='cloud/task_075_stage_guard/evidence/sandbox.json'
+          v=json.load(open(p,encoding='utf-8'))
+          assert v['status']=='PASS', v['errors']
+          assert v['production_touched'] is False
+          assert v['pythonanywhere_methods']==['GET']
+          assert not v['crm_write'] and not v['site_write'] and not v['media_write']
+          assert v['database']['published']==11 and v['database']['unique_ids']==11
+          assert v['database']['ua0009_safe'] is True
+          assert v['ua0011']['resolved_main_photo'] is True
+          assert v['ua0011']['category']=='more'
+          for catalog in v['canary'].values():
+              assert catalog['audit']['status']=='PASS', catalog['audit']['errors']
+              assert catalog['audit']['canonical_cards']==11
+          print('TASK075_SANDBOX_EVIDENCE_PASS')
+          PY
+
+      - name: Capture mobile canary screenshots
+        if: always()
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "$browser"
+          mkdir -p cloud/task_075_stage_guard/screenshots
+          root="file://${GITHUB_WORKSPACE}/cloud/task_075_stage_guard/canary"
+          "$browser" --headless=new --disable-gpu --allow-file-access-from-files --hide-scrollbars \
+            --window-size=430,7000 --virtual-time-budget=6000 \
+            --screenshot="cloud/task_075_stage_guard/screenshots/video-mobile.png" \
+            "$root/video-katalog.html?f=more"
+          "$browser" --headless=new --disable-gpu --allow-file-access-from-files --hide-scrollbars \
+            --window-size=430,7000 --virtual-time-budget=6000 \
+            --screenshot="cloud/task_075_stage_guard/screenshots/site-mobile.png" \
+            "$root/site-katalog.html?f=more"
+          test "$(wc -c < cloud/task_075_stage_guard/screenshots/video-mobile.png)" -gt 5000
+          test "$(wc -c < cloud/task_075_stage_guard/screenshots/site-mobile.png)" -gt 5000
+
+      - name: Commit only sanitized evidence
+        if: always()
+        run: |
+          git add -- cloud/task_075_stage_guard/evidence/sandbox.json cloud/task_075_stage_guard/TASK_075_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_075_stage_guard/evidence/sandbox.json|cloud/task_075_stage_guard/TASK_075_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task075-stage-guard'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task075: record sandbox stage guard evidence'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin "${GITHUB_REF_NAME}"
+              if ! git rebase "origin/${GITHUB_REF_NAME}"; then git rebase --abort || true; exit 1; fi
+              if git push origin "HEAD:${GITHUB_REF_NAME}"; then break; fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload canary and visual evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task075-stage-guard-${{ github.run_id }}
+          path: |
+            cloud/task_075_stage_guard/evidence
+            cloud/task_075_stage_guard/TASK_075_REPORT.md
+            cloud/task_075_stage_guard/canary
+            cloud/task_075_stage_guard/screenshots
+          if-no-files-found: warn
+          retention-days: 14
