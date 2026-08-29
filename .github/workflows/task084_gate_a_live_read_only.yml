@@ -1,0 +1,68 @@
+name: TASK084 fresh read-only UA-0011 Gate A
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/task084_gate_a_live_read_only.yml"
+      - "cloud/task_084_ua0011_korea_reset/live_gate_a_probe.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task084-ua0011-read-only-gate-a
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Verify GET-only contract
+        run: |
+          python -m py_compile cloud/task_084_ua0011_korea_reset/live_gate_a_probe.py
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('cloud/task_084_ua0011_korea_reset/live_gate_a_probe.py').read_text()
+          forbidden = ['method="POST"', 'method="PUT"', 'method="PATCH"', 'method="DELETE"']
+          bad = [item for item in forbidden if item in source]
+          if bad:
+              raise SystemExit('NON_GET_METHOD:' + ','.join(bad))
+          print('GET_ONLY_CONTRACT_PASS')
+          PY
+      - name: Run fresh live read-only audit and sandbox
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python cloud/task_084_ua0011_korea_reset/live_gate_a_probe.py
+      - name: Persist machine evidence
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
+          git add cloud/task_084_ua0011_korea_reset/evidence/live_gate_a.json
+          git commit -m "task084: record fresh UA-0011 read-only Gate A" || exit 0
+          for attempt in 1 2 3 4 5; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main
+          done
+          exit 1
+      - name: Upload evidence and cover sample
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task084-ua0011-live-gate-a-${{ github.run_id }}
+          path: |
+            cloud/task_084_ua0011_korea_reset/evidence/live_gate_a.json
+            cloud/task_084_ua0011_korea_reset/evidence/ua0011_cover.*
+          if-no-files-found: error
+          retention-days: 14
