@@ -213,7 +213,11 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 def public_catalog_check() -> dict:
     result = {}
-    for root in ("video", "site"):
+    # /video/katalog.html is the client-facing catalog.  The parallel
+    # /site/katalog.html file is still protected and validated byte-for-byte
+    # by the remote installer, but production routing does not expose it as a
+    # catalog endpoint, so it must not be used as a public HTTP gate.
+    for root in ("video",):
         url = "https://www.uaart.com.ua/%s/katalog.html?task074=%d" % (root, int(time.time()))
         request = urllib.request.Request(url, headers={"User-Agent": "ua-art-task074-public/1", "Cache-Control": "no-cache"})
         # Production canonically redirects www.uaart.com.ua to uaart.com.ua.
