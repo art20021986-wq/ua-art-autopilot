@@ -1,0 +1,165 @@
+name: Safe Workflow Watchdog
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/safe_workflow_watchdog.yml'
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+      - 'Claude Autopilot'
+      - 'PythonAnywhere Inbox Sync'
+      - 'TASK076_ETA_GATE_A_LIVE'
+      - 'task075-crm-catalog-stage-guard-sandbox'
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: safe-workflow-watchdog
+  cancel-in-progress: true
+
+jobs:
+  restart-only-real-hangs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Detect and bounded-restart stalled safe runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_EVENT_PATH: ${{ github.event_path }}
+          GH_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          repository = os.environ['GH_REPOSITORY']
+          base = 'https://api.github.com/repos/%s' % repository
+          headers = {
+              'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'User-Agent': 'ua-art-safe-workflow-watchdog/1',
+          }
+          # Thresholds sit above each workflow's own expected budget. A fast
+          # test/code failure is deliberately not restarted.
+          limits = {
+              'Claude Autopilot': 35,
+              'PythonAnywhere Inbox Sync': 20,
+              'TASK076_ETA_GATE_A_LIVE': 20,
+              'task075-crm-catalog-stage-guard-sandbox': 20,
+          }
+          max_attempts = 3
+
+          def request(method, path, allowed=(200,), body=None):
+              req = urllib.request.Request(
+                  base + path, data=body, method=method, headers=headers)
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      data = response.read()
+                      status = response.status
+              except urllib.error.HTTPError as exc:
+                  status = exc.code
+                  data = exc.read()
+              if status not in allowed:
+                  raise RuntimeError('%s %s -> %s %s' % (
+                      method, path, status, data[:300].decode('utf-8', 'replace')))
+              return json.loads(data.decode()) if data else {}
+
+          def parsed(value):
+              if not value:
+                  return None
+              return dt.datetime.fromisoformat(value.replace('Z', '+00:00'))
+
+          def age_minutes(run):
+              started = parsed(run.get('run_started_at') or run.get('created_at'))
+              if started is None:
+                  return 0.0
+              return (dt.datetime.now(dt.timezone.utc) - started).total_seconds() / 60.0
+
+          def safe(run):
+              name = run.get('name') or ''
+              if name in limits:
+                  return True
+              folded = name.casefold()
+              # Future read-only/sandbox Gate A workflows are covered, while
+              # every production/deploy/Gate B workflow remains excluded.
+              return (('gate_a' in folded or 'sandbox' in folded)
+                      and not any(x in folded for x in ('gate_b', 'production', 'deploy')))
+
+          def limit_for(run):
+              return limits.get(run.get('name'), 25)
+
+          def rerun(run, reason):
+              attempt = int(run.get('run_attempt') or 1)
+              if attempt >= max_attempts:
+                  print('WATCHDOG_MAX_ATTEMPTS id=%s attempt=%s reason=%s' % (
+                      run['id'], attempt, reason))
+                  return False
+              request('POST', '/actions/runs/%s/rerun' % run['id'], allowed=(201,), body=b'')
+              print('WATCHDOG_RESTARTED id=%s name=%s attempt=%s reason=%s' % (
+                  run['id'], run.get('name'), attempt + 1, reason))
+              return True
+
+          restarted = set()
+          event = json.load(open(os.environ['GH_EVENT_PATH'], encoding='utf-8'))
+          event_run = event.get('workflow_run') if os.environ['GH_EVENT_NAME'] == 'workflow_run' else None
+          if event_run and safe(event_run):
+              conclusion = event_run.get('conclusion')
+              elapsed = age_minutes(event_run)
+              threshold = limit_for(event_run)
+              timeout_like = conclusion == 'timed_out' or (
+                  conclusion == 'failure' and elapsed >= threshold - 1)
+              if timeout_like and rerun(event_run, 'completed_timeout_like_%.1fmin' % elapsed):
+                  restarted.add(int(event_run['id']))
+              else:
+                  print('WATCHDOG_NO_RESTART id=%s conclusion=%s elapsed=%.1f' % (
+                      event_run.get('id'), conclusion, elapsed))
+
+          # The scheduled/manual pass catches a process that remains in
+          # progress beyond its declared budget. It never touches production.
+          for status in ('in_progress', 'queued'):
+              page = request('GET', '/actions/runs?status=%s&per_page=100' % status)
+              for run in page.get('workflow_runs') or []:
+                  if not safe(run) or int(run['id']) in restarted:
+                      continue
+                  elapsed = age_minutes(run)
+                  threshold = limit_for(run) + (3 if status == 'in_progress' else 45)
+                  if elapsed < threshold:
+                      continue
+                  attempt = int(run.get('run_attempt') or 1)
+                  if attempt >= max_attempts:
+                      print('WATCHDOG_STALE_MAX_ATTEMPTS id=%s' % run['id'])
+                      continue
+                  request('POST', '/actions/runs/%s/cancel' % run['id'],
+                          allowed=(202, 409), body=b'')
+                  final = None
+                  for _ in range(12):
+                      time.sleep(3)
+                      final = request('GET', '/actions/runs/%s' % run['id'])
+                      if final.get('status') == 'completed':
+                          break
+                  if not final or final.get('status') != 'completed':
+                      request('POST', '/actions/runs/%s/force-cancel' % run['id'],
+                              allowed=(202, 409), body=b'')
+                      for _ in range(6):
+                          time.sleep(3)
+                          final = request('GET', '/actions/runs/%s' % run['id'])
+                          if final.get('status') == 'completed':
+                              break
+                  if final and final.get('status') == 'completed':
+                      rerun(final, 'stalled_%s_%.1fmin' % (status, elapsed))
+                  else:
+                      raise RuntimeError('WATCHDOG_CANCEL_NOT_SETTLED:%s' % run['id'])
+          PY
