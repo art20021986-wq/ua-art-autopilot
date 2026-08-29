@@ -84,8 +84,10 @@ class InstallerTests(unittest.TestCase):
 
     def test_ferry_status_accepts_encoded_route_arrow(self):
         source = (
-            '<span class="status-pill" data-ru="НА&nbsp;ПАРОМЕ&#10;Маршрут: Корея &rarr; Грузия">'
-            'НА&nbsp;ПАРОМЕ&#10;Маршрут: Корея &rarr; Грузия</span>'
+            '<article class="catalog-card" data-stage="sea">'
+            '<span class="status-pill">НА&nbsp;ПАРОМЕ</span>'
+            + MOD.CAT_START + '<div data-ua-card="UA-0009">'
+            + MOD.RU_DUPLICATE + '</div>' + MOD.CAT_END + '</article>'
         )
         self.assertTrue(MOD.ferry_status_present(source))
 
