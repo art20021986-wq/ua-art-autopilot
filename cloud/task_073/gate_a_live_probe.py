@@ -42,6 +42,8 @@ REMOTE = {
     "team_bot.py": (ROOT + "/team_bot.py", True),
     "start_safe.py": (ROOT + "/start_safe.py", True),
     "avtoperedacha.py": (ROOT + "/avtoperedacha.py", False),
+    "avtoperedacha_monitor.py": (ROOT + "/avtoperedacha_monitor.py", False),
+    "publikaciya.py": (ROOT + "/publikaciya.py", True),
     "catalog.py": (ROOT + "/catalog.py", False),
     "diagnostics.py": (ROOT + "/diagnostics.py", False),
     "seo_rehab_guard.py": (ROOT + "/seo_rehab_guard.py", False),
@@ -79,6 +81,7 @@ WANTED = {
     "yadro.py": {"main", "build", "generate", "publish", "sobrat", "sdelat"},
     "master_card.py": {"main", "build", "generate", "publish"},
     "team_bot.py": {"main", "start", "publish"},
+    "publikaciya.py": {"opublikovat", "main", "publish", "build", "run"},
 }
 
 PUBLIC_URLS = (
@@ -169,7 +172,8 @@ def inspect_python(name: str, path: str, required: bool) -> dict:
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             continue
         body = segment(source, node)
-        relevant = node.name in WANTED.get(name, set())
+        relevant = name in {"avtoperedacha.py", "avtoperedacha_monitor.py", "publikaciya.py"}
+        relevant = relevant or node.name in WANTED.get(name, set())
         relevant = relevant or any(needle in body.casefold() for needle in NEEDLES)
         inventory.append({
             "name": node.name,
