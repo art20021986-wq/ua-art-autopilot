@@ -68,6 +68,24 @@ class SourcePatchTests(unittest.TestCase):
                 self.assertEqual(candidate.count(remote.MARKERS[name]), 1)
                 self.assertEqual(patcher(candidate), candidate)
 
+    def test_stranica_projection_tracks_active_definition_without_old_anchor(self):
+        source = '''def sobrat_kartochku(m, kadry):
+    nom = nomer(m)
+    return nom
+
+def sobrat_kartochku(m, kadry, sredn=None):
+    """Active renderer with a changed body."""
+    code = m.get("auto_number")
+    return code
+'''
+        candidate = remote.patch_stranica(source)
+        compile(candidate, "stranica.py", "exec")
+        _start, _end, active = remote._function(candidate, "sobrat_kartochku")
+        self.assertEqual(candidate.count(remote.MARKERS["stranica.py"]), 1)
+        self.assertEqual(active.count(remote.MARKERS["stranica.py"]), 1)
+        self.assertLess(active.index("public_projection"), active.index("code ="))
+        self.assertEqual(remote.patch_stranica(candidate), candidate)
+
     def test_detail_contract_rejects_old_container(self):
         with self.assertRaises(remote.Task085Error):
             with __import__("tempfile").TemporaryDirectory() as raw:

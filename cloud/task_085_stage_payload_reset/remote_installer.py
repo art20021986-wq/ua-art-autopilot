@@ -244,15 +244,78 @@ def patch_cars_ui(source: str) -> str:
     )
 
 
-def patch_stranica(source: str) -> str:
-    needle = "    nom = nomer(m)\n"
-    insertion = (
-        "    # TASK085_PUBLIC_PROJECTION_V1\n"
-        "    from stage_payload_guard import public_projection as _task085_project\n"
-        "    m = _task085_project(m)\n" + needle
+def _inject_function_prologue(
+    source: str,
+    function_name: str,
+    argument_name: str,
+    statements: tuple[str, ...],
+    marker: str,
+) -> str:
+    """Inject into the active definition without relying on a drifting body line."""
+    tree = ast.parse(source)
+    matches = [
+        node for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == function_name
+    ]
+    if not matches:
+        raise Task085Error("FUNCTION_MISSING_%s" % function_name)
+    node = matches[-1]
+    lines = source.splitlines(keepends=True)
+    active = "".join(lines[node.lineno - 1 : getattr(node, "end_lineno", node.lineno)])
+    if marker in source:
+        if source.count(marker) == 1 and active.count(marker) == 1:
+            return source
+        raise Task085Error("MARKER_NOT_ACTIVE:" + marker)
+
+    arguments = list(getattr(node.args, "posonlyargs", ()))
+    arguments.extend(node.args.args)
+    arguments.extend(node.args.kwonlyargs)
+    names = {item.arg for item in arguments}
+    if node.args.vararg:
+        names.add(node.args.vararg.arg)
+    if node.args.kwarg:
+        names.add(node.args.kwarg.arg)
+    if argument_name not in names:
+        raise Task085Error(
+            "FUNCTION_ARGUMENT_%s:%s" % (function_name, argument_name)
+        )
+    if not node.body:
+        raise Task085Error("FUNCTION_BODY_EMPTY:" + function_name)
+
+    first = node.body[0]
+    is_docstring = (
+        isinstance(first, ast.Expr)
+        and isinstance(first.value, ast.Constant)
+        and isinstance(first.value.value, str)
     )
-    return _inject_function_line(
-        source, "sobrat_kartochku", needle, insertion, MARKERS["stranica.py"]
+    insert_at = (
+        getattr(first, "end_lineno", first.lineno)
+        if is_docstring else first.lineno - 1
+    )
+    reference = lines[first.lineno - 1]
+    indent = reference[: len(reference) - len(reference.lstrip())]
+    if len(indent) <= node.col_offset:
+        indent = " " * (node.col_offset + 4)
+    payload = "".join(indent + statement + "\n" for statement in statements)
+    candidate = "".join(lines[:insert_at] + [payload] + lines[insert_at:])
+    compile(candidate, function_name + ".candidate.py", "exec")
+    if candidate.count(marker) != 1:
+        raise Task085Error("CANDIDATE_MARKER:" + function_name)
+    return candidate
+
+
+def patch_stranica(source: str) -> str:
+    return _inject_function_prologue(
+        source,
+        "sobrat_kartochku",
+        "m",
+        (
+            "# TASK085_PUBLIC_PROJECTION_V1",
+            "from stage_payload_guard import public_projection as _task085_project",
+            "m = _task085_project(m)",
+        ),
+        MARKERS["stranica.py"],
     )
 
 
