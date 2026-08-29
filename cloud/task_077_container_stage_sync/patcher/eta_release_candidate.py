@@ -50,7 +50,7 @@ LIVE_FULL_FILE_SHA256 = {
     "cars_ui.py": "cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea",
     "konteyner.py": "2d56a970fb76c782f0d5caebd65b6a7ffd44fd3ad1278a775bf641cffd39080d",
     "stranica.py": "84a56024e185932c3f2af289db87d1b98558acdf9c4788256dfd36d544ec28b3",
-    "publikaciya.py": "7bb8b0e51b41d94ad305179c35bce20d89dee7f7704c844335a478f87499f0a4",
+    "publikaciya.py": "46d6ff20ca86ff911b168aefcf43e8b08b0de2efccf31590d7f275f124d15853",
 }
 
 # Statuses that must never be touched by ETA writes (protected real states).
