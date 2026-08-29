@@ -101,6 +101,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: task081-live-audit-v2-${{ github.run_id }}
-          path: cloud/task_081_publish_repair/evidence/live_audit_v2/
+          path: |
+            cloud/task_081_publish_repair/evidence/live_audit_v2/
+            cloud/task_081_publish_repair/evidence/gate_a_v2.json
           if-no-files-found: warn
           retention-days: 14
