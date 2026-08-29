@@ -16,12 +16,17 @@ import pathlib
 import re
 import shutil
 import sqlite3
+import sys
 import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
 
 import stage_sync
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "patcher"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "task_076_eta_sync"))
+import live_patcher
 
 
 CONTRACT_ID = "CRM-CONTAINER-STAGE-SYNC-004-V1.0"
@@ -379,6 +384,28 @@ def main() -> int:
         evidence["sources"] = {
             name: source_audit(name, blobs[name]) for name in SOURCE_NAMES
         }
+        # Apply the exact eight transforms only to a disposable source copy.
+        # This proves full-file + function anchors and resulting compilation;
+        # it cannot reach the live host because every remote method above is GET.
+        with tempfile.TemporaryDirectory(prefix="task077-patch-bundle-") as patch_dir:
+            patch_root = pathlib.Path(patch_dir)
+            for name in live_patcher.LIVE_FULL_FILE_SHA256:
+                (patch_root / name).write_bytes(blobs[name])
+            patched = live_patcher.prepare_patch_bundle(str(patch_root))
+            if len(live_patcher.PATCH_SPECS) != 8 or len(patched) != 5:
+                raise RuntimeError("PATCH_BUNDLE_COVERAGE_MISMATCH")
+            evidence["patch_bundle"] = {
+                "status": "PASS",
+                "function_transforms": len(live_patcher.PATCH_SPECS),
+                "files": {
+                    pathlib.Path(path).name: {
+                        "sha256": sha_text(source),
+                        "compiled": True,
+                    }
+                    for path, source in sorted(patched.items())
+                },
+                "production_write": False,
+            }
         evidence["database"] = database_audit_and_canary(
             blobs["crm.db"], blobs["crm.db-wal"]
         )

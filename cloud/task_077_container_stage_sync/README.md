@@ -1,68 +1,39 @@
-# TASK 079 — ETA/Status Synchronization Release Candidate
+# CRM-CONTAINER-STAGE-SYNC-004 v1.0 — release candidate
 
-Contract: `CRM-CONTAINER-STAGE-SYNC-004 v1.0`
-Scope: final safe continuation of TASK 077 / TASK 076.
-Mode: BACKUP -> SANDBOX/CANARY -> Gate A only. Production writes, CRM writes,
-site writes, process reloads, and Gate B execution are forbidden in this
-delivery.
+This package fixes the proven ETA/status split for current and future CRM
+cards without changing production during Gate A.
 
-MEMORY MARKERS (verbatim):
-`CONTEXT_BUNDLE_SHA256=2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c`
-`MEMORY_VERSION_READ=4`
+## Candidate behavior
 
-## Contents
+- Both ETA entry points are patched to one shared live function.
+- TASK 076 `eta_engine.compute_manual_eta` remains the sole ETA computation
+  engine; its earlier hold-open transaction controller is superseded and must
+  not be wired concurrently.
+- A short transaction commits `status + days_to_kyiv + eta_manual +
+  updated_at + audit` before any publication starts.
+- Fresh DB read-back precedes a six-target staged publication:
+  primary and diagnostic/placeholder in both roots plus both shared catalogs.
+- Any DB, publisher, install, delayed-overwrite or public verification failure
+  restores the exact row, only this operation's audit IDs, and exact file
+  bytes. The original `published` value is preserved.
+- Legacy `sea_transit` is removed from the active menu and can only normalize
+  forward to canonical `sea_loaded` (“На пароме”). Sold, Georgia, Kyiv and
+  archive states never move backward.
+- The renderer removes only an arrival/delivery sentence containing an
+  independent date; every unaffected byte remains unchanged.
+- `toggle_publish` emits “Машина видна…” only after publisher PASS.
 
-- `patcher/eta_release_candidate.py` — the shared ETA/status writer, the
-  bounded file stager, the compensating-rollback orchestrator
-  (`run_eta_sync_release`), and the narrow stale-arrival-sentence sanitizer.
-  This is the single code path intended to be called by both
-  `konteyner.prinyat` and `cars_ui.apply_value` once Gate A/B are
-  separately approved.
-- `patcher/live_patcher.py` — the fail-closed Gate A patch-application tool.
-  It verifies full-file SHA-256 anchors and per-function AST hashes before
-  ever considering a patch, and in this delivery it always fails closed
-  because no real production bytes or captured golden function source were
-  supplied to Claude/Cloud.
-- `tests/test_eta_release_candidate.py` — 22 sandbox test cases run only
-  against temporary SQLite databases and temporary files.
-- `sandbox/release_candidate_report.md` — full test report and the honest
-  fail-closed final verdict for this round.
-- `evidence/gate_a_findings.md` — restated findings from the TASK 076/077
-  live evidence that this release candidate is designed to fix.
-- `gate_b_manual_workflow.md` — the prepared-but-unexecuted Gate B plan and
-  the exact single owner approval token.
+## Files
 
-## Why this cannot be applied to production yet
+- `patcher/eta_release_candidate.py` — transaction, staging, verification and
+  compensating rollback, plus the inert-until-Gate-B live bridge.
+- `patcher/live_patcher.py` — exact full-file/function-SHA patch bundle with
+  eight concrete transforms, backup and auto-rollback.
+- `tests/test_eta_release_candidate.py` — stdlib Gate A suite.
+- `sandbox/release_candidate_report.md` — literal observed result.
+- `evidence/gate_a_findings.md` — live diagnosis and final Gate A state.
+- `gate_b_manual_workflow.md` — prepared, never automatically executed.
 
-1. The task supplies proven full-file SHA-256 anchors for the five live
-   files, but not their actual bytes. Claude/Cloud has no way to read real
-   production source in this environment, and is explicitly forbidden from
-   touching production directly.
-2. The contract requires fail-closed verification at the function-source
-   level, not just the full-file level, before any patch may be considered
-   for the real entry points. That requires a captured golden function
-   source, which is a separate evidence-backed Gate A action outside this
-   delivery's scope.
-3. Therefore `live_patcher.apply()` is written to always fail closed in
-   this delivery, and the sandbox report's final verdict is a specific
-   fail-closed result, not a false `PASS_READY_FOR_SEPARATE_PRODUCTION_APPROVAL`.
+Local controller result: **28 PASS / 0 FAIL**.
+Production touched: **NO**.
 
-## What is ready
-
-- The shared writer, rollback/compensation, file staging, and sanitizer
-  logic are implemented and pass a genuine sandbox test suite that
-  reproduces the documented live defect shape (mixed published states,
-  protected vs. ferry statuses, UA-0009's stale arrival sentence, and the
-  UA-0009/0010/0011/0012 target end-state).
-- The Gate B manual workflow and the single exact owner token are prepared
-  for a future, separately-approved round, per contract item 11.
-
-## Non-negotiable safety statements
-
-- Production touched: NO.
-- CRM/site touched: NO.
-- No process reload, publish, or Gate B action was performed.
-- `cloud/task_078_voice_watchdog/` was not modified or regenerated.
-- No second workflow watchdog was created; the existing
-  `task077-container-stage-sync-gate-a` workflow remains covered by
-  `.github/workflows/safe_workflow_watchdog.yml`.

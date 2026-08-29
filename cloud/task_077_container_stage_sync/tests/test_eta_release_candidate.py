@@ -1,406 +1,375 @@
-"""
-test_eta_release_candidate.py — sandbox test suite for TASK 079.
+"""Stdlib-only Gate A tests for CRM-CONTAINER-STAGE-SYNC-004 v1.0."""
 
-All tests operate exclusively on temporary SQLite databases and temporary
-files created within the test process. No production path, real CRM file,
-or real PythonAnywhere resource is ever touched.
-"""
+from __future__ import annotations
 
 import hashlib
 import os
+import pathlib
 import sqlite3
 import sys
 import tempfile
 import unittest
+from datetime import datetime, timezone
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "patcher"))
-import eta_release_candidate as rc  # noqa: E402
-import live_patcher  # noqa: E402
+HERE = pathlib.Path(__file__).resolve()
+PATCHER = HERE.parents[1] / "patcher"
+TASK076 = HERE.parents[2] / "task_076_eta_sync"
+sys.path.insert(0, str(PATCHER))
+sys.path.insert(0, str(TASK076))
 
+import eta_release_candidate as erc  # noqa: E402
+import live_patcher as lp  # noqa: E402
 
-SCHEMA = """
-CREATE TABLE cars (
-    id INTEGER PRIMARY KEY,
-    vin TEXT,
-    price INTEGER,
-    description TEXT,
-    days_to_kyiv INTEGER,
-    eta_manual TEXT,
-    status TEXT,
-    published INTEGER,
-    updated_at TEXT
-);
-CREATE TABLE audit (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    car_id INTEGER,
-    field TEXT,
-    old_value TEXT,
-    new_value TEXT,
-    actor TEXT,
-    created_at TEXT
-);
-"""
+FIXED_NOW = datetime(2026, 8, 29, 12, 0, tzinfo=timezone.utc)
 
 
-def make_db(rows):
-    fd, path = tempfile.mkstemp(suffix=".sqlite3")
-    os.close(fd)
-    conn = sqlite3.connect(path)
-    conn.executescript(SCHEMA)
-    for row in rows:
-        conn.execute(
-            "INSERT INTO cars(id, vin, price, description, days_to_kyiv, eta_manual, "
-            "status, published, updated_at) VALUES (?,?,?,?,?,?,?,?,?)",
-            row,
-        )
-    conn.commit()
-    conn.close()
-    return path
-
-
-def fetch_row(db_path, car_id):
-    conn = sqlite3.connect(db_path)
-    try:
-        cur = conn.cursor()
-        cur.execute(
-            "SELECT id, vin, price, description, days_to_kyiv, eta_manual, status, "
-            "published, updated_at FROM cars WHERE id=?",
-            (car_id,),
-        )
-        row = cur.fetchone()
-        cols = ["id", "vin", "price", "description", "days_to_kyiv", "eta_manual",
-                "status", "published", "updated_at"]
-        return dict(zip(cols, row))
-    finally:
-        conn.close()
-
-
-class WriteEtaSyncTests(unittest.TestCase):
+class EtaReleaseCandidateTests(unittest.TestCase):
     def setUp(self):
-        self.db_path = make_db([
-            (9, "VIN0009", 12000, "Опис авто. 9 вересня 2026 авто прибуде до клієнта.",
-             13, "2026-09-28", "ge_to_kyiv", 1, "2026-01-01T00:00:00+00:00"),
-            (10, "VIN0010", 13000, "Опис 10.", None, "2026-09-28", "ge_waiting", 0,
-             "2026-01-01T00:00:00+00:00"),
-            (11, "VIN0011", 14000, "Опис 11.", None, "2026-09-28", "korea_port", 1,
-             "2026-01-01T00:00:00+00:00"),
-            (12, "VIN0012", 15000, "Опис 12.", 5, "2026-08-01", "korea_port", 0,
-             "2026-01-01T00:00:00+00:00"),
-        ])
+        self.temp = tempfile.TemporaryDirectory(prefix="task077-gate-a-")
+        root = pathlib.Path(self.temp.name)
+        self.db_path = str(root / "crm.db")
+        self.stage = str(root / "staging")
+        self.video = str(root / "live-video")
+        self.site = str(root / "live-site")
+        setup = sqlite3.connect(self.db_path)
+        erc.init_sandbox_db(setup)
+        setup.close()
+        self.write = self._conn()
+        self.read = self._conn()
 
     def tearDown(self):
-        os.remove(self.db_path)
+        self.read.close()
+        self.write.close()
+        self.temp.cleanup()
 
-    def conn(self):
-        return sqlite3.connect(self.db_path)
+    def _conn(self):
+        conn = sqlite3.connect(self.db_path)
+        conn.isolation_level = None
+        return conn
 
-    def test_n_values_0_1_30_400(self):
-        for n in (0, 1, 30, 400):
-            c = self.conn()
-            result = rc.write_eta_sync(c, 12, n, "tester")
-            c.close()
-            self.assertEqual(result["postimage"]["days_to_kyiv"], n)
-            expected_eta = rc.compute_eta(n)
-            self.assertEqual(result["postimage"]["eta_manual"], expected_eta)
-
-    def test_invalid_negative_and_401(self):
-        for bad in (-1, 401):
-            c = self.conn()
-            with self.assertRaises(rc.InvalidInputError):
-                rc.write_eta_sync(c, 12, bad, "tester")
-            c.close()
-
-    def test_invalid_car_id_types(self):
-        c = self.conn()
-        with self.assertRaises(rc.InvalidInputError):
-            rc.write_eta_sync(c, "12", 30, "tester")
-        c.close()
-
-    def test_idempotence(self):
-        c = self.conn()
-        r1 = rc.write_eta_sync(c, 12, 30, "tester")
-        c.close()
-        c = self.conn()
-        r2 = rc.write_eta_sync(c, 12, 30, "tester")
-        c.close()
-        self.assertEqual(r1["postimage"]["days_to_kyiv"], r2["postimage"]["days_to_kyiv"])
-        self.assertEqual(r1["postimage"]["eta_manual"], r2["postimage"]["eta_manual"])
-
-    def test_protected_status_never_normalized(self):
-        c = self.conn()
-        result = rc.write_eta_sync(
-            c, 10, 30, "tester", normalize_status=True,
-            allowed_ferry_statuses=frozenset({"ge_waiting"}),
+    def _insert(self, car_id=1, code="UA-TEST", status="sea_loaded",
+                days=None, eta=None, published=0, description="desc",
+                price_uah=1000, vin="VIN", condition_text=""):
+        self.write.execute(
+            "INSERT INTO cars (id,auto_number,vin,status,days_to_kyiv,"
+            "eta_manual,published,condition_text,description,price_uah,updated_at) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            (car_id, code, vin, status, days, eta, published, condition_text, description,
+             price_uah, "2026-01-01T00:00:00+00:00"),
         )
-        c.close()
-        self.assertEqual(result["postimage"]["status"], "ge_waiting")
 
-    def test_allowed_ferry_normalization(self):
-        c = self.conn()
-        result = rc.write_eta_sync(
-            c, 11, 30, "tester", normalize_status=True,
-            allowed_ferry_statuses=frozenset({"korea_port"}),
+    def _apply(self, car_id=1, days=30, **kwargs):
+        return erc.apply_eta_change(
+            self.write, self.read, self.stage, self.video, self.site,
+            car_id, days, "tester", now_utc=FIXED_NOW, **kwargs)
+
+    def _targets(self, code="UA-TEST"):
+        return [
+            os.path.join(self.video, code + ".html"),
+            os.path.join(self.site, code + ".html"),
+            os.path.join(self.video, code + "-diag.html"),
+            os.path.join(self.site, code + "-diag.html"),
+            os.path.join(self.video, "katalog.html"),
+            os.path.join(self.site, "katalog.html"),
+        ]
+
+    def test_n_boundaries_and_exact_utc_date(self):
+        for index, n in enumerate((0, 1, 30, 400), 1):
+            self._insert(index, "UA-%04d" % index)
+            result = erc.write_eta_transaction(
+                self.write, index, n, "tester", now_utc=FIXED_NOW)
+            self.assertEqual(result.n_days, n)
+            expected = erc.compute_eta(n, FIXED_NOW.date())
+            self.assertEqual(result.eta, expected)
+        self.assertEqual(erc.compute_eta(30, FIXED_NOW.date()), "2026-09-28")
+
+    def test_invalid_days_fail_closed(self):
+        self._insert()
+        for invalid in (-1, 401, 3.5, "30", True, None):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(erc.ValidationError):
+                    erc.write_eta_transaction(
+                        self.write, 1, invalid, "tester", now_utc=FIXED_NOW)
+
+    def test_integer_id_required(self):
+        self._insert()
+        for invalid in ("1", 1.0, True, 0, -1):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(erc.ValidationError):
+                    erc.write_eta_transaction(
+                        self.write, invalid, 30, "tester", now_utc=FIXED_NOW)
+
+    def test_idempotence_and_audit_count(self):
+        self._insert()
+        first = erc.write_eta_transaction(
+            self.write, 1, 30, "tester", now_utc=FIXED_NOW)
+        second = erc.write_eta_transaction(
+            self.write, 1, 30, "tester", now_utc=FIXED_NOW)
+        self.assertEqual(first.eta, second.eta)
+        self.assertEqual(len(first.audit_ids), 2)
+        self.assertEqual(second.audit_ids, ())
+        self.assertEqual(self.write.execute(
+            "SELECT COUNT(*) FROM audit").fetchone()[0], 2)
+
+    def test_only_evidenced_ferry_statuses_normalize(self):
+        for index, status in enumerate(
+                ("kr_bought", "sea_transit", "sea_loaded"), 1):
+            self._insert(index, "UA-%04d" % index, status=status)
+            result = erc.write_eta_transaction(
+                self.write, index, 30, "tester", True, FIXED_NOW)
+            self.assertEqual(result.status_after, "sea_loaded")
+        self.assertEqual(
+            erc.ALLOWED_FERRY_NORMALIZATION_SOURCES,
+            {"kr_bought", "sea_transit", "sea_loaded"})
+
+    def test_real_protected_and_terminal_statuses_stay_unchanged(self):
+        statuses = (
+            "ge_waiting", "ge_to_kyiv", "ua_arrived",
+            "sold_transit", "sold_done", "archive", "archive_old",
         )
-        c.close()
-        self.assertEqual(result["postimage"]["status"], rc.CANONICAL_FERRY_STATUS)
+        for index, status in enumerate(statuses, 1):
+            self._insert(index, "UA-%04d" % index, status=status)
+            result = erc.write_eta_transaction(
+                self.write, index, 30, "tester", True, FIXED_NOW)
+            self.assertEqual(result.status_after, status)
 
-    def test_published_preimage_preserved_zero(self):
-        c = self.conn()
-        result = rc.write_eta_sync(c, 10, 30, "tester")
-        c.close()
-        self.assertEqual(result["postimage"]["published"], 0)
+    def test_concurrent_preimage_change_is_rejected(self):
+        self._insert()
+        preimage = erc.read_car_row(self.write, 1)
+        self.write.execute("UPDATE cars SET description='changed' WHERE id=1")
+        with self.assertRaises(erc.ValidationError):
+            erc.write_eta_transaction(
+                self.write, 1, 30, "tester", False, FIXED_NOW, preimage)
 
-    def test_published_preimage_preserved_one(self):
-        c = self.conn()
-        result = rc.write_eta_sync(c, 9, 30, "tester")
-        c.close()
-        self.assertEqual(result["postimage"]["published"], 1)
+    def test_commit_precedes_publisher(self):
+        self._insert()
+        seen = {}
 
-    def test_unrelated_fields_untouched(self):
-        before = fetch_row(self.db_path, 9)
-        c = self.conn()
-        rc.write_eta_sync(c, 9, 30, "tester")
-        c.close()
-        after = fetch_row(self.db_path, 9)
-        self.assertEqual(before["vin"], after["vin"])
-        self.assertEqual(before["price"], after["price"])
-        self.assertEqual(before["description"], after["description"])
+        def publisher(files):
+            row = erc.read_car_row(self.read, 1)
+            seen["pair"] = (row.days_to_kyiv, row.eta_manual)
+            return erc.default_publisher(files)
 
+        result = self._apply(publisher=publisher)
+        self.assertTrue(result.success, result.message)
+        self.assertEqual(seen["pair"], (30, "2026-09-28"))
 
-class ReleaseOrchestrationTests(unittest.TestCase):
-    def setUp(self):
-        self.db_path = make_db([
-            (9, "VIN0009", 12000, "Опис авто. 9 вересня 2026 авто прибуде до клієнта.",
-             13, "2026-09-28", "ge_to_kyiv", 1, "2026-01-01T00:00:00+00:00"),
-            (12, "VIN0012", 15000, "Опис 12.", 5, "2026-08-01", "korea_port", 0,
-             "2026-01-01T00:00:00+00:00"),
-        ])
-        self.tmpdir = tempfile.mkdtemp()
-        self.card_path = os.path.join(self.tmpdir, "card.html")
-        self.diag_path = os.path.join(self.tmpdir, "diag.html")
-        self.video_path = os.path.join(self.tmpdir, "video_catalog.html")
-        self.site_path = os.path.join(self.tmpdir, "site_catalog.html")
-        with open(self.card_path, "w", encoding="utf-8") as f:
-            f.write("OLD CARD")
-        with open(self.video_path, "w", encoding="utf-8") as f:
-            f.write("OLD VIDEO CATALOG")
-        with open(self.site_path, "w", encoding="utf-8") as f:
-            f.write("OLD SITE CATALOG")
-        # diag_path intentionally does not exist -> exercises placeholder path
-        self.file_paths = {
-            "card": self.card_path,
-            "diag": self.diag_path,
-            "video": self.video_path,
-            "site": self.site_path,
-        }
+    def test_published_preimage_preserved_on_success(self):
+        for published in (0, 1):
+            with self.subTest(published=published):
+                car_id = published + 1
+                self._insert(car_id, "UA-%04d" % car_id,
+                             published=published)
+                result = self._apply(car_id)
+                self.assertTrue(result.success, result.message)
+                self.assertEqual(
+                    erc.read_car_row(self.write, car_id).published, published)
 
-    def tearDown(self):
-        os.remove(self.db_path)
+    def test_exact_six_live_targets_and_distinct_staging(self):
+        self._insert()
+        result = self._apply()
+        self.assertTrue(result.success, result.message)
+        targets = self._targets()
+        self.assertEqual(len(targets), 6)
+        self.assertEqual(len(set(targets)), 6)
+        for target in targets:
+            self.assertTrue(os.path.isfile(target), target)
+            self.assertFalse(os.path.abspath(target).startswith(
+                os.path.abspath(self.stage) + os.sep))
+        staged = [p for p in pathlib.Path(self.stage).iterdir() if p.is_file()]
+        self.assertEqual(len(staged), 6)
 
-    def build_ok(self, row):
-        return {
-            "card": ("CARD days=%s eta=%s status=%s" % (
-                row["days_to_kyiv"], row["eta_manual"], row["status"])).encode("utf-8"),
-            "diag": b"DIAGNOSTIC PLACEHOLDER",
-            "video": b"VIDEO CATALOG UPDATED",
-            "site": b"SITE CATALOG UPDATED",
-        }
+    def test_publisher_failure_restores_db_files_and_audits(self):
+        self._insert(days=5, eta="2026-01-06", published=1)
+        for index, target in enumerate(self._targets()):
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            pathlib.Path(target).write_bytes(("ORIGINAL-%d" % index).encode())
+        before = {p: pathlib.Path(p).read_bytes() for p in self._targets()}
 
-    def test_commit_happens_before_publisher_runs(self):
-        observed = {}
+        def fail_with_unrelated_audit(files):
+            other = self._conn()
+            other.execute(
+                "INSERT INTO audit(actor_id,action,entity_type,entity_id,field,"
+                "old_value,new_value,created_at) VALUES(?,?,?,?,?,?,?,?)",
+                ("other", "other", "cars", 999, "x", None, "y", "now"))
+            other.close()
+            return False
 
-        def publisher(car_id, row):
-            observed["row"] = rc.read_back(self.db_path, car_id)
-            return True
+        result = self._apply(publisher=fail_with_unrelated_audit)
+        self.assertFalse(result.success)
+        self.assertTrue(result.rolled_back)
+        row = erc.read_car_row(self.write, 1)
+        self.assertEqual((row.days_to_kyiv, row.eta_manual, row.published),
+                         (5, "2026-01-06", 1))
+        self.assertEqual(
+            self.write.execute(
+                "SELECT actor_id,entity_id FROM audit").fetchall(),
+            [("other", 999)])
+        self.assertEqual(
+            {p: pathlib.Path(p).read_bytes() for p in self._targets()}, before)
 
-        result = rc.run_eta_sync_release(
-            self.db_path, 12, 30, "tester", self.file_paths, self.build_ok, publisher,
-        )
-        self.assertEqual(result["status"], "PASS")
-        self.assertEqual(observed["row"]["days_to_kyiv"], 30)
+    def test_readback_failure_rolls_back(self):
+        self._insert(days=5, eta="2026-01-06")
+        result = self._apply(inject_readback_failure=True)
+        self.assertFalse(result.success)
+        self.assertTrue(result.rolled_back)
+        self.assertEqual(erc.read_car_row(self.write, 1).days_to_kyiv, 5)
+        self.assertEqual(
+            self.write.execute("SELECT COUNT(*) FROM audit").fetchone()[0], 0)
 
-    def test_pass_produces_exactly_one_success_message(self):
-        result = rc.run_eta_sync_release(
-            self.db_path, 12, 30, "tester", self.file_paths, self.build_ok,
-            lambda car_id, row: True,
-        )
-        self.assertEqual(result["status"], "PASS")
-        self.assertTrue(result["message"].startswith("SUCCESS"))
-        self.assertEqual(result["message"].count("SUCCESS"), 1)
+    def test_partial_install_rolls_back(self):
+        self._insert(days=5, eta="2026-01-06")
+        result = self._apply(inject_install_partial_failure=True)
+        self.assertFalse(result.success)
+        self.assertTrue(result.rolled_back)
+        self.assertTrue(all(not os.path.exists(p) for p in self._targets()))
 
-    def test_publisher_failure_rolls_back_db_and_files(self):
-        before_row = fetch_row(self.db_path, 12)
-        with open(self.card_path, "rb") as f:
-            before_card = f.read()
+    def test_delayed_overwrite_is_detected_and_rolled_back(self):
+        self._insert(days=5, eta="2026-01-06")
+        card = self._targets()[0]
 
-        result = rc.run_eta_sync_release(
-            self.db_path, 12, 99, "tester", self.file_paths, self.build_ok,
-            lambda car_id, row: False,
-        )
-        self.assertEqual(result["status"], "FAIL")
-        self.assertTrue(result["message"].startswith("FAILURE"))
+        def overwrite():
+            pathlib.Path(card).write_bytes(b"CORRUPTED")
 
-        after_row = fetch_row(self.db_path, 12)
-        self.assertEqual(before_row["days_to_kyiv"], after_row["days_to_kyiv"])
-        self.assertEqual(before_row["eta_manual"], after_row["eta_manual"])
-        self.assertEqual(before_row["published"], after_row["published"])
+        result = self._apply(inject_delayed_overwrite=overwrite)
+        self.assertFalse(result.success)
+        self.assertTrue(result.rolled_back)
+        self.assertFalse(os.path.exists(card))
 
-        with open(self.card_path, "rb") as f:
-            after_card = f.read()
-        self.assertEqual(before_card, after_card)
-        self.assertFalse(os.path.exists(self.diag_path))
+    def test_target_cards_9_10_11_exact(self):
+        self._insert(
+            9, "UA-0009", days=13, eta="2026-09-28",
+            condition_text=(
+                "Перша частина. Орієнтовне прибуття — 9 вересня 2026 року. "
+                "Сервіс був 15 січня 2026."))
+        self._insert(10, "UA-0010", days=None, eta="2026-09-28")
+        self._insert(11, "UA-0011", days=None, eta="2026-09-28")
+        for car_id in (9, 10, 11):
+            result = self._apply(car_id)
+            self.assertTrue(result.success, result.message)
+            row = erc.read_car_row(self.write, car_id)
+            self.assertEqual(
+                (row.days_to_kyiv, row.eta_manual, row.status),
+                (30, "2026-09-28", "sea_loaded"))
+        ua9 = erc.read_car_row(self.write, 9)
+        self.assertNotIn("9 вересня 2026", ua9.condition_text)
+        self.assertIn("15 січня 2026", ua9.condition_text)
 
-    def test_partial_file_install_rolls_back(self):
-        def build_bad(row):
-            content = self.build_ok(row)
-            # Simulate a partial/broken install target (bad key not in file_paths)
-            content["nonexistent_logical_name"] = b"BAD"
-            return content
+    def test_ua0012_legacy_status_and_diag_placeholder(self):
+        self._insert(12, "UA-0012", status="sea_transit")
+        result = self._apply(
+            12, allow_ferry_normalization=True, include_diagnostic=False)
+        self.assertTrue(result.success, result.message)
+        row = erc.read_car_row(self.write, 12)
+        self.assertEqual(
+            (row.status, row.days_to_kyiv, row.eta_manual),
+            ("sea_loaded", 30, "2026-09-28"))
+        for target in self._targets("UA-0012")[2:4]:
+            self.assertIn(
+                "Материалы диагностики ожидаются",
+                pathlib.Path(target).read_text(encoding="utf-8"))
 
-        before_row = fetch_row(self.db_path, 12)
-        result = rc.run_eta_sync_release(
-            self.db_path, 12, 15, "tester", self.file_paths, build_bad,
-            lambda car_id, row: True,
-        )
-        self.assertEqual(result["status"], "FAIL")
-        after_row = fetch_row(self.db_path, 12)
-        self.assertEqual(before_row["days_to_kyiv"], after_row["days_to_kyiv"])
+    def test_unrelated_db_fields_unchanged(self):
+        self._insert(description="KEEP  EXACT\nTEXT", price_uah=11400,
+                     vin="VIN-KEEP")
+        result = self._apply()
+        self.assertTrue(result.success, result.message)
+        row = erc.read_car_row(self.write, 1)
+        self.assertEqual(
+            (row.description, row.price_uah, row.vin),
+            ("KEEP  EXACT\nTEXT", 11400, "VIN-KEEP"))
 
-    def test_readback_style_failure_rolls_back(self):
-        # Force a downstream failure after commit by making build_staged_content raise.
-        def build_fail(row):
-            raise RuntimeError("simulated delayed overwrite / build failure")
+    def test_toggle_publish_failure_restores_preimage_without_success(self):
+        self._insert(published=0)
+        result = erc.toggle_publish(
+            self.write, 1, 1, "tester", lambda files: False, [])
+        self.assertFalse(result.success)
+        self.assertNotIn("Машина видна", result.message)
+        self.assertEqual(erc.read_car_row(self.write, 1).published, 0)
 
-        before_row = fetch_row(self.db_path, 9)
-        result = rc.run_eta_sync_release(
-            self.db_path, 9, 30, "tester", self.file_paths, build_fail,
-            lambda car_id, row: True,
-        )
-        self.assertEqual(result["status"], "FAIL")
-        after_row = fetch_row(self.db_path, 9)
-        self.assertEqual(before_row["days_to_kyiv"], after_row["days_to_kyiv"])
-        self.assertEqual(before_row["published"], after_row["published"])
+    def test_toggle_publish_success_text_only_after_pass(self):
+        self._insert(published=0)
+        result = erc.toggle_publish(
+            self.write, 1, 1, "tester", lambda files: True, [])
+        self.assertTrue(result.success)
+        self.assertIn("Машина видна", result.message)
 
-    def test_exact_db_row_restoration(self):
-        before_row = fetch_row(self.db_path, 9)
-        rc.run_eta_sync_release(
-            self.db_path, 9, 30, "tester", self.file_paths, self.build_ok,
-            lambda car_id, row: False,
-        )
-        after_row = fetch_row(self.db_path, 9)
-        self.assertEqual(before_row, after_row)
+    def test_stale_sentence_removal_preserves_exact_other_bytes(self):
+        prefix = "Префикс  с  двумя пробелами. "
+        stale = "Орієнтовне прибуття — 9 вересня 2026 року."
+        suffix = "\n• Сервіс був 15 січня 2026.  Хвіст."
+        result = erc.sanitize_stale_arrival_sentence(prefix + stale + suffix)
+        self.assertEqual(result, prefix + suffix)
 
-    def test_exact_file_byte_restoration(self):
-        with open(self.video_path, "rb") as f:
-            before_bytes = f.read()
-        rc.run_eta_sync_release(
-            self.db_path, 9, 30, "tester", self.file_paths, self.build_ok,
-            lambda car_id, row: False,
-        )
-        with open(self.video_path, "rb") as f:
-            after_bytes = f.read()
-        self.assertEqual(before_bytes, after_bytes)
-
-    def test_ua0009_0010_0011_target_values(self):
-        # Independently confirm the required end-state for the sync group.
-        c = sqlite3.connect(self.db_path)
-        result = rc.write_eta_sync(
-            c, 9, 30, "tester", normalize_status=True,
-            allowed_ferry_statuses=frozenset(),
-        )
-        c.close()
-        self.assertEqual(result["postimage"]["eta_manual"], "2026-09-28")
-        self.assertEqual(result["postimage"]["days_to_kyiv"], 30)
-
-    def test_ua0012_diagnostic_placeholder_created(self):
-        result = rc.run_eta_sync_release(
-            self.db_path, 12, 30, "tester", self.file_paths, self.build_ok,
-            lambda car_id, row: True,
-            normalize_status=True, allowed_ferry_statuses=frozenset({"korea_port"}),
-        )
-        self.assertEqual(result["status"], "PASS")
-        self.assertTrue(os.path.exists(self.diag_path))
-        with open(self.diag_path, "rb") as f:
-            self.assertEqual(f.read(), b"DIAGNOSTIC PLACEHOLDER")
-        row = fetch_row(self.db_path, 12)
-        self.assertEqual(row["status"], rc.CANONICAL_FERRY_STATUS)
-        self.assertEqual(row["days_to_kyiv"], 30)
-        self.assertEqual(row["eta_manual"], "2026-09-28")
-
-
-class SanitizerTests(unittest.TestCase):
-    def test_removes_only_stale_arrival_sentence(self):
+    def test_unrelated_dates_are_byte_identical(self):
         text = (
-            "Автомобіль пройшов повне сервісне обслуговування 3 травня 2024 року. "
-            "9 вересня 2026 авто прибуде до клієнта. "
-            "Аукціонна дата продажу була 1 січня 2023 року."
-        )
-        sanitized, removed = rc.sanitize_stale_arrival_sentence(
-            text, must_contain_fragment="9 вересня 2026"
-        )
-        self.assertEqual(len(removed), 1)
-        self.assertIn("9 вересня 2026", removed[0])
-        self.assertIn("сервісне обслуговування", sanitized)
-        self.assertIn("Аукціонна дата", sanitized)
-        self.assertNotIn("9 вересня 2026", sanitized)
+            "Авто куплено 3 січня 2026.\n"
+            "  Реєстрацію планують 12 грудня 2026. "
+            "Сервіс: 15.01.2026; аукціон 01.02.2026.")
+        self.assertEqual(erc.sanitize_stale_arrival_sentence(text), text)
 
-    def test_preserves_unrelated_dates_without_arrival_keyword(self):
-        text = "Реєстрація закінчується 9 вересня 2026 року."
-        sanitized, removed = rc.sanitize_stale_arrival_sentence(
-            text, must_contain_fragment="9 вересня 2026"
-        )
-        self.assertEqual(removed, [])
-        self.assertIn("9 вересня 2026", sanitized)
+    def test_numeric_arrival_date_is_narrowly_removed(self):
+        text = "До. Доставка запланована 09.09.2026. Після."
+        self.assertEqual(
+            erc.sanitize_stale_arrival_sentence(text), "До. Після.")
 
-    def test_preserves_arrival_sentence_without_date(self):
-        text = "Авто скоро прибуде до клієнта."
-        sanitized, removed = rc.sanitize_stale_arrival_sentence(text)
-        self.assertEqual(removed, [])
-        self.assertIn("прибуде", sanitized)
+    def test_full_file_anchor_refuses_mismatch(self):
+        path = pathlib.Path(self.temp.name) / "db.py"
+        path.write_text("# wrong", encoding="utf-8")
+        with self.assertRaises(erc.AnchorMismatchError):
+            erc.verify_full_file_anchor(str(path), "db.py")
 
+    def test_function_hash_selects_one_definition_among_duplicates(self):
+        path = pathlib.Path(self.temp.name) / "many.py"
+        source = "def f():\n    return 1\n\ndef f():\n    return 2\n"
+        path.write_text(source, encoding="utf-8")
+        matches = lp._find_function_definitions(source, "f")
+        selected = lp.verify_function_anchor(
+            str(path), "f", matches[1].source_sha256)
+        self.assertIn("return 2", selected.source)
 
-class AnchorAndFunctionGuardTests(unittest.TestCase):
-    def test_verify_anchor_accepts_matching_bytes(self):
-        content = b"print('hello')"
-        digest = hashlib.sha256(content).hexdigest()
-        saved = dict(rc.ANCHOR_SHA256)
-        try:
-            rc.ANCHOR_SHA256["test_fixture.py"] = digest
-            self.assertTrue(rc.verify_anchor("test_fixture.py", content))
-        finally:
-            rc.ANCHOR_SHA256.clear()
-            rc.ANCHOR_SHA256.update(saved)
+    def test_zero_and_two_exact_function_matches_refuse(self):
+        path = pathlib.Path(self.temp.name) / "many.py"
+        one = "def f():\n    return 1\n"
+        source = one + "\n" + one
+        path.write_text(source, encoding="utf-8")
+        digest = hashlib.sha256(one.encode()).hexdigest()
+        with self.assertRaises(lp.PatchAbortedError):
+            lp.verify_function_anchor(str(path), "f", digest)
+        with self.assertRaises(lp.PatchAbortedError):
+            lp.verify_function_anchor(str(path), "f", "0" * 64)
 
-    def test_verify_anchor_rejects_mismatch(self):
-        with self.assertRaises(rc.AnchorMismatchError):
-            rc.verify_anchor("db.py", b"definitely not the real live db.py bytes")
+    def test_patch_specs_cover_all_live_anchors_with_concrete_transforms(self):
+        expected = {
+            ("db.py", "update_card_field"),
+            ("cars_ui.py", "apply_value"),
+            ("cars_ui.py", "stage_menu"),
+            ("cars_ui.py", "toggle_publish"),
+            ("konteyner.py", "prinyat"),
+            ("konteyner.py", "_peresobrat"),
+            ("stranica.py", "sobrat_kartochku"),
+            ("publikaciya.py", "opublikovat"),
+        }
+        self.assertEqual(
+            {(s.anchor_key, s.function_name) for s in lp.PATCH_SPECS}, expected)
+        self.assertEqual(len({s.function_sha256 for s in lp.PATCH_SPECS}), 8)
+        self.assertTrue(all(s.transform for s in lp.PATCH_SPECS))
 
-    def test_extract_function_sources_rejects_duplicates(self):
-        src = "def prinyat():\n    pass\n\ndef prinyat():\n    pass\n"
-        with self.assertRaises(rc.ETASyncError):
-            rc.extract_function_sources(src, ("prinyat",))
+    def test_gate_b_writer_has_three_independent_gates(self):
+        with self.assertRaises(lp.PatchAbortedError):
+            lp.apply_patch_bundle(
+                self.temp.name, self.temp.name + "-backup", "wrong", True)
+        with self.assertRaises(lp.PatchAbortedError):
+            lp.apply_patch_bundle(
+                self.temp.name, self.temp.name + "-backup",
+                lp.OWNER_TOKEN, False)
 
-    def test_extract_function_sources_single_definition(self):
-        src = "def apply_value():\n    return 1\n"
-        found = rc.extract_function_sources(src, ("apply_value",))
-        self.assertIn("return 1", found["apply_value"])
-
-    def test_live_patcher_fail_closed_on_arbitrary_local_content(self):
-        tmpdir = tempfile.mkdtemp()
-        fake_db_py = os.path.join(tmpdir, "db.py")
-        with open(fake_db_py, "w", encoding="utf-8") as f:
-            f.write("# arbitrary content, not real production bytes\n")
-        with self.assertRaises(rc.AnchorMismatchError):
-            live_patcher.verify_and_extract({"db.py": fake_db_py})
-
-    def test_live_patcher_apply_always_fail_closed(self):
-        tmpdir = tempfile.mkdtemp()
-        fake_konteyner = os.path.join(tmpdir, "konteyner.py")
-        with open(fake_konteyner, "w", encoding="utf-8") as f:
-            f.write("def prinyat():\n    pass\n")
-        with self.assertRaises(live_patcher.rc.ETASyncError):
-            live_patcher.apply({"konteyner.py": fake_konteyner}, tmpdir)
+    def test_validation_failure_returns_one_failure_message(self):
+        result = self._apply(days=401)
+        self.assertFalse(result.success)
+        self.assertTrue(result.message.startswith("FAIL:"))
+        self.assertNotIn("OK:", result.message)
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

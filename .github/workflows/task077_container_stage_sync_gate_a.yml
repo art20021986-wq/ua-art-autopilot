@@ -29,10 +29,15 @@ jobs:
 
       - name: Compile and run pure contract tests
         run: |
-          python3 -m py_compile \
+          python3 -W error -m py_compile \
+            cloud/task_076_eta_sync/eta_engine.py \
             cloud/task_077_container_stage_sync/stage_sync.py \
-            cloud/task_077_container_stage_sync/live_audit.py
+            cloud/task_077_container_stage_sync/live_audit.py \
+            cloud/task_077_container_stage_sync/patcher/eta_release_candidate.py \
+            cloud/task_077_container_stage_sync/patcher/live_patcher.py \
+            cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py
           python3 cloud/task_077_container_stage_sync/tests/test_stage_sync.py -v
+          python3 -W error cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py
 
       - name: Prove remote transport is GET-only
         run: |
@@ -71,6 +76,10 @@ jobs:
           assert value['database']['canary']['owner_label'] == 'На пароме'
           assert value['database']['canary']['media_hashes_unchanged'] is True
           assert value['database']['canary']['published_unchanged'] is True
+          assert value['patch_bundle']['status'] == 'PASS'
+          assert value['patch_bundle']['function_transforms'] == 8
+          assert len(value['patch_bundle']['files']) == 5
+          assert value['patch_bundle']['production_write'] is False
           print('TASK077_GATE_A_EVIDENCE_PASS')
           PY
 
