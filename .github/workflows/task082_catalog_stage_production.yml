@@ -46,6 +46,7 @@ jobs:
               'bounded production Gate B',
               'Новое подтверждение не требуется',
               'UA-0011',
+              'kr_bought -> sea_loaded',
           ]
           missing = [value for value in required if value not in source]
           if missing:
@@ -125,7 +126,11 @@ jobs:
                   'Исправление не прошло полный контроль и не оставлено в частично рабочем состоянии.'
               ),
               'ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО',
-              'БЕЗОПАСНОСТЬ: CRM rows, индивидуальные страницы и media не изменялись.',
+              'БЕЗОПАСНОСТЬ: ' + (
+                  'У UA-0011 изменён только status kr_bought → sea_loaded; остальные CRM-поля, индивидуальные страницы и media не изменялись.'
+                  if ok else
+                  'Частичные изменения не оставлены; при ошибке выполнен откат или запись не началась.'
+              ),
               'ОШИБКИ: ' + ('НЕТ' if not errors else '; '.join(errors)),
           ]) + '\n'
           Path('cloud/latest_status.md').write_text(latest, encoding='utf-8')
