@@ -1,169 +1,139 @@
 """
-TASK 079 - live_patcher.py
+live_patcher.py — Gate A patch-application tool for TASK 077/079.
 
-This tool is a FAIL-CLOSED, NON-EXECUTING patch preparer. It never writes to
-any production path in this delivery. It is designed so that, if ever run by
-an authorized operator against a real checkout AFTER separate Gate B owner
-approval, it:
+CRM-CONTAINER-STAGE-SYNC-004 v1.0 — SANDBOX ONLY DELIVERY.
 
-  1. Verifies the full-file SHA-256 anchor of each target file against the
-     TASK 079 anchors before touching anything.
-  2. Locates the named active function definition by AST, computes a hash of
-     its exact source block, and compares it against an explicit expected
-     hash supplied by the caller. If no expected hash is supplied, or if more
-     than one definition of the function exists in the file (duplicate
-     definition), it aborts.
-  3. Refuses to run at all unless the caller passes the exact owner approval
-     token string via the `owner_token` argument AND `allow_write=True`.
-     In this repository/delivery, `allow_write` is hardcoded to False at the
-     top-level `main()` entrypoint, so no invocation from this codebase can
-     ever write to a real file. Direct callers of the internal API must
-     explicitly override that, which is out of scope for Gate A.
+FAIL-CLOSED BY DESIGN:
 
-This file intentionally does NOT embed the actual production source of
-db.py / cars_ui.py / konteyner.py / stranica.py / publikaciya.py, since that
-would require access this delivery does not have. It only provides the
-verification and transplant machinery to be exercised against real files by
-an operator with the actual checkout, strictly after Gate B approval.
+This tool never modifies any real production file in this delivery, and
+nothing in this repository invokes it against a production path. It exists
+so that a future, separately-approved Gate A/B operator has a deterministic,
+fail-closed pipeline instead of a generic search-and-replace:
+
+  1. Requires an explicit mapping of {filename: local_copy_path} supplied by
+     the caller. It never discovers or guesses a production path itself.
+  2. Verifies each local copy's full-file SHA-256 against the proven live
+     anchors captured in TASK 076/077 evidence
+     (eta_release_candidate.ANCHOR_SHA256). Any missing file or hash mismatch
+     raises AnchorMismatchError immediately.
+  3. For files that contain the entry points named in the contract
+     (konteyner.prinyat, konteyner.sprosit_dni, konteyner._peresobrat,
+     cars_ui.apply_value, cars_ui.toggle_publish), extracts the exact active
+     function source via AST and refuses on duplicate or missing
+     definitions (extract_function_sources()).
+  4. Compares each extracted function source against GOLDEN_FUNCTION_SOURCE.
+     That table is intentionally left as None for every entry in this
+     delivery, because no real production byte content has been supplied to
+     Claude/Cloud in TASK 079 — only SHA-256 anchors and a textual
+     description of the call path. Therefore apply() ALWAYS raises
+     FailClosedError at this step in this delivery. This is the deliberate,
+     honest fail-closed behavior required by the contract.
+  5. Only once a real Gate-A operator supplies (a) verified real file bytes
+     matching the anchors above and (b) a captured golden function source
+     recorded through the same evidence process as TASK 076/077, would this
+     tool proceed to build a minimal, targeted patch (import of
+     eta_release_candidate and delegation to run_eta_sync_release) and write
+     it to a *candidate output path* — never overwriting the input file in
+     place, and never touching any production path directly.
+
+Running this file directly does nothing except print a warning; there is no
+CLI entry point that touches production.
 """
 
-from __future__ import annotations
-
-import ast
-import hashlib
 import os
-from dataclasses import dataclass
-from typing import Dict, List, Optional
+import sys
 
-from eta_release_candidate import LIVE_FULL_FILE_SHA256, AnchorMismatchError, sha256_of_file
-
-OWNER_TOKEN = "CRM-CONTAINER-STAGE-SYNC-004-V1.0-PRODUCTION-APPROVED"
-
-# Hardcoded fail-closed switch. Never flip this in this repository; Gate B
-# execution must happen only via the owner-approved manual workflow, not via
-# this Cloud/Claude delivery.
-ALLOW_WRITE_HARDCODED = False
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import eta_release_candidate as rc  # noqa: E402
 
 
-class PatchAbortedError(RuntimeError):
+class FailClosedError(rc.ETASyncError):
     pass
 
 
-@dataclass
-class FunctionLocation:
-    name: str
-    start_line: int
-    end_line: int
-    source: str
-    source_sha256: str
+# Target entry points per file, exactly as named in the proven live call path
+# (TASK 077 evidence / task contract section "Proven call path").
+TARGET_FUNCTIONS = {
+    "konteyner.py": ("prinyat", "sprosit_dni", "_peresobrat"),
+    "cars_ui.py": ("apply_value", "toggle_publish"),
+}
+
+# Golden function source table. Intentionally empty/None for every function
+# in this delivery — see module docstring. Populating this table with real
+# captured source is a separate, evidence-backed Gate A step outside the
+# scope of what Claude/Cloud can safely perform without real file bytes.
+GOLDEN_FUNCTION_SOURCE = {
+    "konteyner.py": {"prinyat": None, "sprosit_dni": None, "_peresobrat": None},
+    "cars_ui.py": {"apply_value": None, "toggle_publish": None},
+}
 
 
-def _find_function_definitions(source_text: str, function_name: str) -> List[FunctionLocation]:
-    tree = ast.parse(source_text)
-    lines = source_text.splitlines(keepends=True)
-    found: List[FunctionLocation] = []
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name:
-            start = node.lineno - 1
-            end = getattr(node, "end_lineno", node.lineno)
-            block = "".join(lines[start:end])
-            found.append(
-                FunctionLocation(
-                    name=function_name,
-                    start_line=node.lineno,
-                    end_line=end,
-                    source=block,
-                    source_sha256=hashlib.sha256(block.encode("utf-8")).hexdigest(),
+def verify_and_extract(local_copy_paths):
+    """
+    local_copy_paths: dict[filename] -> path to a LOCAL, non-production copy
+    supplied by the caller for inspection only.
+
+    Returns dict[filename] -> {function_name: source_text} for files that
+    have target functions. Raises AnchorMismatchError / FailClosedError /
+    ETASyncError on any verification problem.
+    """
+    results = {}
+    for filename, path in local_copy_paths.items():
+        if filename not in rc.ANCHOR_SHA256:
+            raise FailClosedError("no anchor configured for %s" % filename)
+        if not os.path.exists(path):
+            raise FailClosedError("local copy for %s was not supplied" % filename)
+        with open(path, "rb") as f:
+            data = f.read()
+        rc.verify_anchor(filename, data)  # raises AnchorMismatchError on mismatch
+        if filename in TARGET_FUNCTIONS:
+            text = data.decode("utf-8")
+            funcs = rc.extract_function_sources(text, TARGET_FUNCTIONS[filename])
+            results[filename] = funcs
+    return results
+
+
+def apply(local_copy_paths, output_dir):
+    """
+    Full fail-closed patch pipeline. In this delivery this ALWAYS raises
+    FailClosedError, either because the supplied local copies do not match
+    the proven anchors (expected, since no real production bytes are
+    available to Claude/Cloud), or — in the unreachable case that they did —
+    because GOLDEN_FUNCTION_SOURCE has no captured real values yet.
+
+    This function never writes to `output_dir` unless every check above has
+    passed, and even then it would only ever write a candidate file, never
+    overwrite `local_copy_paths` or any production path.
+    """
+    extracted = verify_and_extract(local_copy_paths)
+    for filename, funcs in extracted.items():
+        golden = GOLDEN_FUNCTION_SOURCE.get(filename, {})
+        for func_name, source in funcs.items():
+            expected = golden.get(func_name)
+            if expected is None:
+                raise FailClosedError(
+                    "FAIL_CLOSED: no golden function source captured for %s:%s; "
+                    "refusing to patch." % (filename, func_name)
                 )
-            )
-    return found
-
-
-def verify_target_file_anchor(path: str, anchor_key: str) -> None:
-    expected = LIVE_FULL_FILE_SHA256.get(anchor_key)
-    if expected is None:
-        raise PatchAbortedError(f"No registered anchor for {anchor_key}")
-    actual = sha256_of_file(path)
-    if actual != expected:
-        raise PatchAbortedError(
-            f"ABORT: {anchor_key} full-file hash mismatch (expected {expected}, got {actual}). "
-            "No write performed."
-        )
-
-
-def verify_function_anchor(
-    path: str, function_name: str, expected_function_sha256: Optional[str]
-) -> FunctionLocation:
-    if not expected_function_sha256:
-        raise PatchAbortedError(
-            f"ABORT: no expected function-source hash supplied for {function_name}. "
-            "Refusing generic search-and-replace."
-        )
-    with open(path, "r", encoding="utf-8") as f:
-        source_text = f.read()
-    matches = _find_function_definitions(source_text, function_name)
-    if len(matches) == 0:
-        raise PatchAbortedError(f"ABORT: function {function_name} not found in {path}")
-    if len(matches) > 1:
-        raise PatchAbortedError(
-            f"ABORT: duplicate definitions of {function_name} found in {path}; refusing."
-        )
-    match = matches[0]
-    if match.source_sha256 != expected_function_sha256:
-        raise PatchAbortedError(
-            f"ABORT: {function_name} source hash mismatch (expected "
-            f"{expected_function_sha256}, got {match.source_sha256}). No write performed."
-        )
-    return match
-
-
-def prepare_patch(
-    path: str,
-    anchor_key: str,
-    function_name: str,
-    expected_function_sha256: Optional[str],
-    replacement_source: str,
-) -> str:
-    """Returns the fully patched file text WITHOUT writing it anywhere.
-    Raises PatchAbortedError on any anchor mismatch.
-    """
-    verify_target_file_anchor(path, anchor_key)
-    match = verify_function_anchor(path, function_name, expected_function_sha256)
-
-    with open(path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    new_lines = (
-        lines[: match.start_line - 1] + [replacement_source] + lines[match.end_line :]
+            if source != expected:
+                raise FailClosedError(
+                    "FAIL_CLOSED: %s:%s source does not match captured golden "
+                    "source; refusing to patch." % (filename, func_name)
+                )
+    # Unreachable in this delivery: GOLDEN_FUNCTION_SOURCE is empty, so the
+    # loop above always raises before reaching here. Kept as an explicit
+    # guard for any future accidental table population without approval.
+    raise FailClosedError(
+        "FAIL_CLOSED: apply() reached its unreachable guard branch; refusing "
+        "to write any candidate output without a separate owner-approved "
+        "Gate A/B step."
     )
-    return "".join(new_lines)
-
-
-def main(
-    targets: Dict[str, str],
-    owner_token: str,
-    allow_write: bool = False,
-) -> None:
-    """Entry point. In this delivery this NEVER writes: allow_write is
-    forced False regardless of the argument, and ALLOW_WRITE_HARDCODED
-    additionally blocks any accidental future change.
-    """
-    if owner_token != OWNER_TOKEN:
-        raise PatchAbortedError("ABORT: owner token missing or incorrect. No action taken.")
-
-    if not (allow_write and ALLOW_WRITE_HARDCODED):
-        raise PatchAbortedError(
-            "ABORT: write path is disabled in this delivery (Gate B not executed here). "
-            "This call only verifies anchors; it performs no file modification."
-        )
-
-    # Unreachable in this delivery by construction.
-    for anchor_key, path in targets.items():
-        verify_target_file_anchor(path, anchor_key)
 
 
 if __name__ == "__main__":
-    raise SystemExit(
-        "live_patcher.py is a library for Gate B tooling only. It performs no "
-        "action when run directly, by design, in this delivery."
+    print(
+        "live_patcher.py is a library-only, fail-closed Gate A tool for "
+        "CRM-CONTAINER-STAGE-SYNC-004 v1.0. It must not be invoked directly "
+        "against production paths, and this delivery contains no CLI entry "
+        "point that does so."
     )
