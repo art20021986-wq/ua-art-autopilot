@@ -1,0 +1,123 @@
+name: task077-container-stage-sync-production-gate-b
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval_token:
+        description: Exact owner-issued TASK 077 production token
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  gate-b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verify bounded owner authorization
+        env:
+          APPROVAL_TOKEN: ${{ inputs.approval_token }}
+        run: |
+          test "$APPROVAL_TOKEN" = 'CRM-CONTAINER-STAGE-SYNC-004-V1.0-PRODUCTION-APPROVED'
+          echo TASK077_OWNER_PRODUCTION_APPROVAL_PASS
+
+      - name: Compile and test exact release
+        run: |
+          python3 -W error -m py_compile \
+            cloud/task_076_eta_sync/eta_engine.py \
+            cloud/task_077_container_stage_sync/patcher/eta_release_candidate.py \
+            cloud/task_077_container_stage_sync/patcher/live_patcher.py \
+            cloud/task_077_container_stage_sync/gate_b/remote.py \
+            cloud/task_077_container_stage_sync/gate_b/controller.py \
+            cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py \
+            cloud/task_077_container_stage_sync/tests/test_gate_b_release.py
+          python3 -W error cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py
+          python3 -W error cloud/task_077_container_stage_sync/tests/test_gate_b_release.py
+
+      - name: Backup, apply, restart and delayed verify
+        id: production
+        continue-on-error: true
+        env:
+          APPROVAL_TOKEN: ${{ inputs.approval_token }}
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 cloud/task_077_container_stage_sync/gate_b/controller.py
+
+      - name: Commit bounded production evidence
+        if: always()
+        run: |
+          for path in \
+            cloud/task_077_container_stage_sync/evidence/gate_b.json \
+            cloud/task_077_container_stage_sync/GATE_B_REPORT.md; do
+            test -f "$path" || continue
+            git add -- "$path"
+          done
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_077_container_stage_sync/evidence/gate_b.json|cloud/task_077_container_stage_sync/GATE_B_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task077-production-gate-b'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task077: record approved production Gate B evidence'
+            for attempt in 1 2 3 4 5 6; do
+              git fetch origin main
+              if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+              if git push origin HEAD:main; then break; fi
+              test "$attempt" -lt 6 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Require production PASS
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('cloud/task_077_container_stage_sync/evidence/gate_b.json')
+          if not path.exists():
+              raise SystemExit('TASK077_GATE_B_EVIDENCE_MISSING')
+          value = json.loads(path.read_text(encoding='utf-8'))
+          assert value['contract_id'] == 'CRM-CONTAINER-STAGE-SYNC-004-V1.0'
+          assert value['status'] == 'PASS', value
+          assert value['runtime_llm_tokens'] == 0
+          assert value['apply']['status'] == 'PASS'
+          assert value['postcheck']['status'] == 'PASS'
+          assert value['postcheck_delayed']['status'] == 'PASS'
+          assert value['rollback'] is None
+          for code in ('UA-0009', 'UA-0010'):
+              row = value['postcheck_delayed']['targets'][code]
+              assert int(row['days_to_kyiv']) == 30
+              assert row['eta_manual'] == '2026-09-28'
+              assert row['status'] == 'sea_loaded'
+          assert value['postcheck_delayed']['protected_ua0011']['auto_number'] == 'UA-0011'
+          print('TASK077_PRODUCTION_GATE_B_PASS')
+          PY
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task077-production-gate-b-${{ github.run_id }}
+          path: |
+            cloud/task_077_container_stage_sync/evidence/gate_b.json
+            cloud/task_077_container_stage_sync/GATE_B_REPORT.md
+          if-no-files-found: warn
+          retention-days: 30

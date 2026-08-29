@@ -33,6 +33,8 @@ cards without changing production during Gate A.
 - `sandbox/release_candidate_report.md` — literal observed result.
 - `evidence/gate_a_findings.md` — live diagnosis and final Gate A state.
 - `gate_b_manual_workflow.md` — prepared, never automatically executed.
+- `gate_b/remote.py` and `gate_b/controller.py` — owner-approved manual
+  production workflow with durable backup, exact rollback and delayed checks.
 
 Local controller result: **28 PASS / 0 FAIL**.
 Repository Gate A: **PASS**, run
@@ -42,3 +44,7 @@ Production touched: **NO**.
 The repository safe-workflow watchdog checks this Gate A and the other approved
 non-production workflows every five minutes. A timeout/stale run is retried at
 most three times; production/Gate B/deploy workflows are explicitly excluded.
+
+Production scope follows the newest owner state: UA-0009 and UA-0010 receive
+the 30-day atomic correction; UA-0011 is protected because its newer amendment
+returns it to Korea and clears its container/ETA.
