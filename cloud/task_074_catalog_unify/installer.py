@@ -232,20 +232,23 @@ def catalog_blocks(source: str) -> list[str]:
 
 
 def ferry_status_present(source: str) -> bool:
-    articles = re.findall(
-        r'<article\b(?=[^>]*data-stage=["\']sea["\'])[^>]*>.*?</article\s*>',
-        source, flags=re.I | re.S,
-    )
-    for article in articles:
-        # Only inspect content before the lower canonical VIN/ETA block, so
-        # the duplicate sentence itself can never satisfy this guard.
-        upper = article.split(CAT_START, 1)[0]
+    cursor = 0
+    while True:
+        marker = source.find(CAT_START, cursor)
+        if marker < 0:
+            break
+        # A canonical block belongs to one card.  Its upper UI is the segment
+        # after the previous canonical block and before this marker.  This is
+        # independent of the card tag/attribute schema used by production and
+        # excludes every lower VIN/ETA sentence by construction.
+        upper = source[:marker].rsplit(CAT_END, 1)[-1]
         visible = re.sub(
             r"\s+", " ",
             html_lib.unescape(upper).casefold().replace("\u00a0", " "),
         )
-        if "на пароме" in visible:
+        if "на пароме" in visible or "на поромі" in visible:
             return True
+        cursor = marker + len(CAT_START)
     return False
 
 
