@@ -10,7 +10,7 @@
   ],
   "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
   "errors": [],
-  "finished_at_utc": "2026-08-29T08:03:21Z",
+  "finished_at_utc": "2026-08-29T08:05:24Z",
   "guard_runtime": {},
   "http_methods": [
     "GET"
@@ -338,6 +338,27 @@
       },
       "functions": [
         {
+          "end_line": 632,
+          "line": 586,
+          "name": "db_clean_split",
+          "sha256": "7a5dfdd6968c0ce8d4ab7dc2ee978623474901d17a1ec6f1d6ea0f3ed2cecf85",
+          "source": "def db_clean_split():\n    \"\"\"Разово вычищает фразу 50/50 из описаний машин, стоящих в Грузии.\"\"\"\n    db = os.path.join(BASE, \"crm.db\")\n    if not os.path.exists(db):\n        return\n    try:\n        con = sqlite3.connect(db)\n        cur = con.cursor()\n        cols = [r[1] for r in cur.execute(\"PRAGMA table_info(cars)\").fetchall()]\n        if \"condition_text\" not in cols:\n            con.close()\n            return\n\n        keys = [\"rowid\", \"condition_text\"]\n        for extra in (\"status\", \"stage\"):\n            if extra in cols:\n                keys.append(extra)\n        rows = cur.execute(\"SELECT %s FROM cars\" % \", \".join(keys)).fetchall()\n\n        changed = []\n        for row in rows:\n            data = dict(zip(keys, row))\n            text = data.get(\"condition_text\") or \"\"\n            if \"50\" not in text:\n                continue\n            status = str(data.get(\"status\") or \"\")\n            stage = data.get(\"stage\")\n            in_georgia = (\"Грузи\" in status) or (\n                isinstance(stage, int) and stage >= 3\n            )\n            if not in_georgia:\n                continue\n            new = SPLIT_RE.sub(\"\", text)\n            new = re.sub(r\"\\n{3,}\", \"\\n\\n\", new).strip()\n            if new != text:\n                changed.append((new, data[\"rowid\"]))\n\n        if changed:\n            shutil.copy2(db, db + \".bak_split\")\n            cur.executemany(\n                \"UPDATE cars SET condition_text = ? WHERE rowid = ?\", changed\n            )\n            con.commit()\n            log.info(\"описание почищено от 50/50 у карточек: %d\", len(changed))\n        con.close()\n    except Exception as e:\n        log.warning(\"чистка базы не удалась: %r\", e)\n"
+        },
+        {
+          "end_line": 1334,
+          "line": 1316,
+          "name": "ubrat_musor",
+          "sha256": "0c1577048e9ed7ccf3aa12025f3b2c360a87684aeb0754fbd37668b86ff862a3",
+          "source": "def ubrat_musor():\n    \"\"\"Отработавшие скрипты и бэкапы уезжают в папку staroe.\"\"\"\n    ubrano = 0\n    try:\n        files = os.listdir(BASE)\n    except Exception:\n        return 0\n    for name in files:\n        if name in SVYATOE or name.startswith(\".\"):\n            continue\n        path = os.path.join(BASE, name)\n        if not os.path.isfile(path):\n            continue\n        musor = name.startswith(MUSOR) or any(k in name for k in MUSOR_KONCY)\n        if musor and _v_arhiv(name, \"отработал\"):\n            ubrano += 1\n    if ubrano:\n        log.info(\"убрано в staroe: %d файлов\", ubrano)\n    return ubrano\n"
+        },
+        {
+          "end_line": 1352,
+          "line": 1337,
+          "name": "apply_all",
+          "sha256": "35ec647d0c75b8ef4d40b2dc8c8a824dee07b11ee61b07af02298120f6a7de11",
+          "source": "def apply_all():\n    ok = True\n    for func in (\n        patch_request_timeouts,\n        patch_bot_methods,\n        patch_error_handlers,\n        patch_register_hook,\n        patch_card_html_budget,\n        patch_download_cache,\n    ):\n        try:\n            func()\n        except Exception as e:\n            ok = False\n            log.warning(\"не удалось применить %s: %r\", func.__name__, e)\n    return ok\n"
+        },
+        {
           "end_line": 1405,
           "line": 1380,
           "name": "avariynyy_rezhim",
@@ -537,6 +558,13 @@
           "source": "async def post_init(application):\n    db.init_db()\n    logging.info(\"ИИ-разбор: %s | расшифровка голосовых: %s\",\n                 \"включён\" if ai.enabled() else \"ВЫКЛЮЧЕН (нет anthropic_key.txt)\",\n                 \"включена\" if ai.voice_enabled() else \"выключена (нет openai_key.txt)\")\n    await application.bot.set_my_commands([\n        BotCommand(\"start\", \"Меню\"),\n        BotCommand(\"cancel\", \"Отменить текущее действие\"),\n    ])\n    logging.info(\"team_bot готов.\")\n"
         },
         {
+          "end_line": 1410,
+          "line": 1334,
+          "name": "build_application",
+          "sha256": "faa48866b5b436eb3de4fabb85ad07dfcab47d4d09d3ba9f82f20a2baccd09ef",
+          "source": "def build_application():\n    token = read_team_token()\n    if not token:\n        logging.error(\n            f\"Токен внутреннего бота не найден. Создайте {TEAM_TOKEN_FILE} \"\n            f\"и вставьте туда токен от BotFather.\"\n        )\n        return None\n\n    app = ApplicationBuilder().token(token).post_init(post_init).build()\n    ai_filter.register(app)\n\n    # Экраны карточки авто версии 5\n    cars_ui.register(app)\n\n    card_conv = ConversationHandler(\n        entry_points=[CallbackQueryHandler(mk_card_start, pattern=r\"^mk_(car|client):\")],\n        states={CARD_STEP: [MessageHandler(filters.TEXT & ~filters.COMMAND, mk_card_step)]},\n        fallbacks=[CommandHandler(\"cancel\", mk_card_cancel),\n                   CommandHandler(\"start\", mk_card_cancel)],\n        allow_reentry=True,\n    )\n    app.add_handler(card_conv)\n\n    # ИИ-исправление черновика — до общего перехвата сообщений\n    ai_fix_conv = ConversationHandler(\n        entry_points=[CallbackQueryHandler(ai_edit_start, pattern=r\"^ai_edit$\")],\n        states={AI_FIX: [MessageHandler(filters.TEXT & ~filters.COMMAND, ai_edit_apply)]},\n        fallbacks=[CommandHandler(\"cancel\", ai_edit_cancel),\n                   CommandHandler(\"start\", ai_edit_cancel)],\n        allow_reentry=True,\n    )\n    app.add_handler(ai_fix_conv)\n    app.add_handler(CallbackQueryHandler(ai_save, pattern=r\"^ai_ok$\"))\n    app.add_handler(CallbackQueryHandler(ai_reject, pattern=r\"^ai_no$\"))\n    app.add_handler(CallbackQueryHandler(ai_stop_cb, pattern=r\"^ai_stop$\"))\n    app.add_handler(CallbackQueryHandler(ai_resume_cb, pattern=r\"^ai_resume$\"))\n\n    app.add_handler(CommandHandler(\"start\", start))\n    app.add_handler(CallbackQueryHandler(menu_cb, pattern=r\"^menu$\"))\n    app.add_handler(CallbackQueryHandler(inbox_list, pattern=r\"^inbox_list$\"))\n    app.add_handler(CallbackQueryHandler(inbox_open, pattern=r\"^inbox_open:\"))\n    app.add_handler(CallbackQueryHandler(inbox_dup, pattern=r\"^inbox_dup:\"))\n    app.add_handler(CallbackQueryHandler(inbox_skip, pattern=r\"^inbox_skip:\"))\n    app.add_handler(CallbackQueryHandler(inbox_ask, pattern=r\"^inbox_ask:\"))\n    app.add_handler(CallbackQueryHandler(card_open, pattern=r\"^card_open:\"))\n    app.add_handler(CallbackQueryHandler(card_review_action,\n                                         pattern=r\"^card_(ok|back|no):\"))\n    app.add_handler(CallbackQueryHandler(card_log, pattern=r\"^card_log:\"))\n    app.add_handler(CallbackQueryHandler(cards_list, pattern=r\"^cards_(cars|clients)$\"))\n    app.add_handler(CallbackQueryHandler(review_list, pattern=r\"^review_list$\"))\n    app.add_handler(CallbackQueryHandler(staff_list, pattern=r\"^staff_list$\"))\n    app.add_handler(CallbackQueryHandler(invite_create, pattern=r\"^invite:\"))\n    app.add_handler(CallbackQueryHandler(staff_toggle, pattern=r\"^staff_toggle:\"))\n    app.add_handler(CallbackQueryHandler(search_start, pattern=r\"^search_start$\"))\n    app.add_handler(CallbackQueryHandler(stats, pattern=r\"^stats$\"))\n    app.add_handler(CallbackQueryHandler(audit_list, pattern=r\"^audit_list$\"))\n\n    # Приём любой информации — последним, чтобы не перехватывать диалоги\n    app.add_handler(MessageHandler(~filters.COMMAND, intake))\n    app.add_error_handler(error_handler)\n\n    # Ежедневная резервная копия базы\n    if app.job_queue:\n        # CRM-PHOTO-FASTPATH-001: DB drain is independent of update handling.\n        app.job_queue.run_repeating(\n            cars_ui.media_spool_worker_job, interval=1.0, first=0.2\n        )\n        app.job_queue.run_repeating(\n            backup_job, interval=timedelta(days=1), first=timedelta(minutes=2)\n        )\n        # Вводные владельцу сразу после запуска\n        app.job_queue.run_once(vvodnye_job, when=timedelta(seconds=5))\n    else:\n        logging.warning(\"job-queue не установлен — автобэкап отключён.\")\n\n    return app\n"
+        },
+        {
           "end_line": 1420,
           "line": 1413,
           "name": "main",
@@ -563,7 +591,7 @@
       "sha256": "bbd644eaf2c25802984df930459da6a36f137ef2b1519642b3d006ab57388a48"
     }
   },
-  "started_at_utc": "2026-08-29T08:03:17Z",
+  "started_at_utc": "2026-08-29T08:05:20Z",
   "status": "PASS_ROOT_CAUSE_CONFIRMED",
   "task_id": "task_084"
 }
