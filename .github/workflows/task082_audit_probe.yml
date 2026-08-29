@@ -1,0 +1,135 @@
+name: TASK082 read-only audit writer probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/task082_audit_probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task082-audit-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Read CRM audit trail
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import datetime as dt
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import sqlite3
+          import tempfile
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          base = "https://www.pythonanywhere.com/api/v0/user/Carix/files/path"
+          token = os.environ["PYTHONANYWHERE_API_TOKEN"]
+
+          def get(path, missing=False):
+              request = urllib.request.Request(
+                  base + urllib.parse.quote(path, safe="/"),
+                  headers={"Authorization": "Token " + token,
+                           "User-Agent": "ua-art-task082-audit-probe/1"},
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=70) as response:
+                      return response.read(80_000_001)
+              except urllib.error.HTTPError as exc:
+                  if missing and exc.code == 404:
+                      return None
+                  raise
+
+          evidence = {
+              "task_id": "task_082",
+              "mode": "GET_ONLY_AUDIT_WRITER_PROBE",
+              "production_touched": False,
+              "pythonanywhere_methods": ["GET"],
+              "started_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
+              "status": "FAIL",
+              "errors": [],
+          }
+          try:
+              db = get("/home/Carix/crm.db")
+              wal = get("/home/Carix/crm.db-wal", missing=True)
+              with tempfile.TemporaryDirectory(prefix="task082-audit-") as directory:
+                  path = pathlib.Path(directory) / "crm.db"
+                  path.write_bytes(db)
+                  if wal:
+                      pathlib.Path(str(path) + "-wal").write_bytes(wal)
+                  con = sqlite3.connect("file:%s?mode=ro" % path, uri=True)
+                  con.row_factory = sqlite3.Row
+                  con.execute("PRAGMA query_only=ON")
+                  quick = con.execute("PRAGMA quick_check").fetchone()[0]
+                  car = dict(con.execute(
+                      "SELECT id,auto_number,status,stage,published,review_status,"
+                      "sea_container,eta_manual,days_to_kyiv,updated_at "
+                      "FROM cars WHERE auto_number='UA-0011'"
+                  ).fetchone())
+                  tables = {row[0] for row in con.execute(
+                      "SELECT name FROM sqlite_master WHERE type='table'"
+                  )}
+                  audit = []
+                  staff = []
+                  if "audit" in tables:
+                      audit = [dict(row) for row in con.execute(
+                          "SELECT id,actor_id,action,entity_type,entity_id,field,"
+                          "old_value,new_value,created_at FROM audit "
+                          "WHERE entity_id=? AND entity_type IN ('car','cars') "
+                          "ORDER BY id DESC LIMIT 100", (car["id"],)
+                      )]
+                  actor_ids = sorted({row.get("actor_id") for row in audit
+                                      if row.get("actor_id") is not None})
+                  if actor_ids and "staff" in tables:
+                      marks = ",".join("?" for _ in actor_ids)
+                      staff = [dict(row) for row in con.execute(
+                          "SELECT user_id,full_name,username,role,active "
+                          "FROM staff WHERE user_id IN (" + marks + ")", actor_ids
+                      )]
+                  con.close()
+              evidence.update({
+                  "status": "PASS",
+                  "database_sha256": hashlib.sha256(db).hexdigest(),
+                  "wal_present": bool(wal),
+                  "quick_check": quick,
+                  "ua0011": car,
+                  "audit": audit,
+                  "actors": staff,
+              })
+          except Exception as exc:
+              evidence["errors"].append(type(exc).__name__ + ":" + str(exc))
+          evidence["finished_at_utc"] = dt.datetime.now(dt.timezone.utc).isoformat()
+          pathlib.Path("task082_audit_probe.json").write_text(
+              json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps({
+              "status": evidence["status"],
+              "ua0011": evidence.get("ua0011"),
+              "audit": (evidence.get("audit") or [])[:12],
+              "actors": evidence.get("actors"),
+              "errors": evidence["errors"],
+          }, ensure_ascii=False))
+          raise SystemExit(0 if evidence["status"] == "PASS" else 1)
+          PY
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task082-audit-probe-${{ github.run_id }}
+          path: task082_audit_probe.json
+          if-no-files-found: error
+          retention-days: 7
