@@ -49,7 +49,7 @@ def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def row_from(db: bytes, wal: bytes | None):
+def database_evidence(db: bytes, wal: bytes | None):
     with tempfile.TemporaryDirectory(prefix="task082-probe-") as directory:
         path = pathlib.Path(directory) / "crm.db"
         path.write_bytes(db)
@@ -61,6 +61,17 @@ def row_from(db: bytes, wal: bytes | None):
             con.execute("PRAGMA query_only=ON")
             quick = con.execute("PRAGMA quick_check").fetchone()[0]
             row = con.execute("SELECT * FROM cars WHERE auto_number='UA-0011'").fetchone()
+            tables = {item[0] for item in con.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+            audit = []
+            if "audit" in tables:
+                audit = [dict(item) for item in con.execute(
+                    "SELECT * FROM audit WHERE entity_type='cars' AND entity_id=? "
+                    "ORDER BY id DESC LIMIT 30", (row["id"],)
+                ).fetchall()]
+            triggers = [dict(item) for item in con.execute(
+                "SELECT name, tbl_name, sql FROM sqlite_master WHERE type='trigger' "
+                "AND tbl_name='cars' ORDER BY name").fetchall()]
         finally:
             con.close()
     if quick != "ok" or row is None:
@@ -72,12 +83,13 @@ def row_from(db: bytes, wal: bytes | None):
             r"status|stage|container|days|eta|date|sea_|ge_|kyiv|kiev|publish", key, re.I
         ):
             keep[key] = value
-    return keep
+    return {"ua0011": keep, "audit": audit, "triggers": triggers}
 
 
 def source_evidence(name: str, data: bytes):
     text = data.decode("utf-8", "replace")
-    result = {"sha256": sha(data), "bytes": len(data), "definitions": [], "snippets": []}
+    result = {"sha256": sha(data), "bytes": len(data), "definitions": [],
+              "module_statements": [], "snippets": []}
     try:
         tree = ast.parse(text)
     except SyntaxError as exc:
@@ -90,14 +102,30 @@ def source_evidence(name: str, data: bytes):
         end = getattr(node, "end_lineno", node.lineno)
         source = "\n".join(lines[node.lineno - 1:end])
         folded = source.casefold()
-        if ("status" in folded and any(token in folded for token in (
+        explicit = {
+            "migrate", "init_db", "set_field", "update_card_field", "card_of",
+            "main", "run", "start", "start_bot", "db_clean_split",
+        }
+        if node.name in explicit or ("status" in folded and any(token in folded for token in (
             "sea_loaded", "korea", "update", "execute", "container", "stage"
         ))) or "days_to_kyiv" in folded:
             result["definitions"].append({
                 "name": node.name, "lineno": node.lineno, "end_lineno": end,
                 "sha256": sha(source.encode()), "source": source[:12000],
             })
-    pattern = re.compile(r"sea_loaded|UPDATE\s+cars\s+SET\s+status|update_card_field|days_to_kyiv|eta_manual", re.I)
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef,
+                             ast.Import, ast.ImportFrom)):
+            continue
+        end = getattr(node, "end_lineno", node.lineno)
+        source = "\n".join(lines[node.lineno - 1:end])
+        if re.search(r"status|migrate|init_db|start|run|execute|connect", source, re.I):
+            result["module_statements"].append({
+                "lineno": node.lineno, "end_lineno": end, "source": source[:8000],
+            })
+    pattern = re.compile(
+        r"kr_bought|sea_loaded|UPDATE\s+cars|update_card_field|days_to_kyiv|"
+        r"eta_manual|sea_container", re.I)
     for index, line in enumerate(lines):
         if pattern.search(line):
             start, end = max(index - 3, 0), min(index + 4, len(lines))
@@ -119,7 +147,7 @@ def main() -> int:
         wal = get(ROOT + "/crm.db-wal", missing=True)
         evidence["database"] = {
             "sha256": sha(db), "wal_sha256": sha(wal) if wal else None,
-            "ua0011": row_from(db, wal),
+            **database_evidence(db, wal),
         }
         evidence["files"] = {}
         for name in FILES:
@@ -141,4 +169,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
