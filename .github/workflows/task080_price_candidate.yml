@@ -2,6 +2,18 @@ name: TASK 080 price candidate Gate A
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/task080_price_candidate.yml"
+      - "cloud/task_080_price_recognition/candidate_gate_a.py"
+      - "cloud/task_080_price_recognition/run_tests.py"
+      - "cloud/task_080_price_recognition/src/price_parser.py"
+      - "cloud/task_080_price_recognition/src/crm_price_atomic.py"
+      - "cloud/task_080_price_recognition/src/integration_patcher.py"
+      - "cloud/task_080_price_recognition/tests/test_price_parser.py"
+      - "cloud/task_080_price_recognition/tests/test_crm_price_atomic.py"
+      - "cloud/task_080_price_recognition/tests/test_integration_patcher.py"
 
 permissions:
   contents: write
