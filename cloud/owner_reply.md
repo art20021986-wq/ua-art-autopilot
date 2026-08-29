@@ -5,4 +5,4 @@
 ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО
 БЕЗОПАСНОСТЬ: backup до записи, один writer, автоматический rollback и перезапуск; media и остальные CRM-строки не изменяются.
 UA-0011 STATUS: не подтверждено
-ОШИБКИ: ControllerError:SHADOW_FAIL:Task085Error:SHADOW_DATABASE_OR_STATUS
+ОШИБКИ: ControllerError:SHADOW_FAIL:Task085Error:UA0009_CATALOG_COUNT:video

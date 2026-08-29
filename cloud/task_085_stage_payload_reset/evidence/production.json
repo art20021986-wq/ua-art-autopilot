@@ -3,25 +3,25 @@
   "bot_restarted": false,
   "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
   "errors": [
-    "ControllerError:SHADOW_FAIL:Task085Error:SHADOW_DATABASE_OR_STATUS"
+    "ControllerError:SHADOW_FAIL:Task085Error:UA0009_CATALOG_COUNT:video"
   ],
-  "finished_at_utc": "2026-08-29T08:53:44Z",
+  "finished_at_utc": "2026-08-29T08:58:33Z",
   "rollback": null,
   "runtime_llm_tokens": 0,
   "shadow": {
     "contract_id": "UA-0011-STAGE-PAYLOAD-RESET-005-V1.0",
     "crm_write": false,
     "errors": [
-      "Task085Error:SHADOW_DATABASE_OR_STATUS"
+      "Task085Error:UA0009_CATALOG_COUNT:video"
     ],
-    "finished_at_utc": "2026-08-29T08:53:12Z",
+    "finished_at_utc": "2026-08-29T08:58:10Z",
     "media_write": false,
     "mode": "SHADOW",
     "production_write": false,
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-08-29T08:53:12Z",
+    "started_at_utc": "2026-08-29T08:58:10Z",
     "status": "FAIL"
   },
-  "started_at_utc": "2026-08-29T08:52:40Z",
+  "started_at_utc": "2026-08-29T08:57:28Z",
   "status": "FAIL"
 }
