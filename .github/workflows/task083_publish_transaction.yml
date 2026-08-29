@@ -12,7 +12,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: ua-art-production-writer
+  group: task083-publish-transaction-production
   cancel-in-progress: false
 
 jobs:
@@ -89,7 +89,8 @@ jobs:
                   path = str(run.get('path') or '').casefold()
                   name = str(run.get('name') or '').casefold()
                   if ('production' in path or 'gate_b' in path or 'deploy' in path
-                          or 'production' in name or 'gate b' in name):
+                          or 'catalog_dedup' in path or 'production' in name
+                          or 'gate b' in name or 'catalog-dedup' in name):
                       blockers.append('%s:%s:%s' % (run.get('id'), run.get('name'), run.get('status')))
               if blockers:
                   stable = 0
