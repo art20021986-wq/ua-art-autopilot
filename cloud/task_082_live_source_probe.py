@@ -135,7 +135,7 @@ def main():
         db_raw = get(ROOT + "/crm.db")
         value.update({
             "status": "PASS",
-            "cars_ui": {"sha256": sha(source_raw), "bytes": len(source_raw), "definitions": definitions, "inventory": inventory},
+            "cars_ui": {"sha256": sha(source_raw), "bytes": len(source_raw), "definitions": definitions, "inventory": inventory, "header_definitions": header_defs},
             "db": db_audit(db_raw),
         })
     except Exception as exc:
