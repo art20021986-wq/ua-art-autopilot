@@ -677,6 +677,34 @@ def run_deploy() -> int:
     manifest = None
     try:
         api = API()
+        current_audit = json.loads(AUDIT.read_text(encoding="utf-8"))
+        current_root = current_audit.get("root_cause") or {}
+        already_installed = (
+            current_audit.get("status") == "PASS_STATE_CHANGED"
+            and current_root.get("fixed_deadline_4_65") is False
+            and current_root.get("non_killable_to_thread") is False
+            and current_root.get("killable_child_present") is True
+            and current_root.get("start_safe_singleton_present") is True
+        )
+        if already_installed:
+            evidence["existing_patch_verified"] = True
+            evidence["build"] = {
+                "audit_status": current_audit.get("status"),
+                "audit_started_at_utc": current_audit.get("started_at_utc"),
+                "root_cause": current_root,
+            }
+            evidence["launcher_immediate"] = api.wait_launcher_running()
+            immediate = api.run_remote("postcheck")
+            evidence["postcheck_immediate"] = immediate
+            validate_postcheck(immediate)
+            time.sleep(30)
+            evidence["launcher_delayed"] = api.wait_launcher_running()
+            delayed = api.run_remote("postcheck")
+            evidence["postcheck_delayed"] = delayed
+            validate_postcheck(delayed)
+            evidence["status"] = "PASS"
+            raise ControllerError("ALREADY_INSTALLED_VERIFIED")
+
         candidates, manifest, build = build_candidates(api)
         evidence["build"] = build
         api.ensure_remote_dir()
@@ -713,8 +741,11 @@ def run_deploy() -> int:
         validate_postcheck(delayed)
         evidence["status"] = "PASS"
     except Exception as exc:
-        evidence["errors"].append(type(exc).__name__ + ":" + str(exc))
-        if api is not None and install and install.get("status") == "PASS":
+        if isinstance(exc, ControllerError) and str(exc) == "ALREADY_INSTALLED_VERIFIED":
+            pass
+        else:
+            evidence["errors"].append(type(exc).__name__ + ":" + str(exc))
+        if evidence.get("status") != "PASS" and api is not None and install and install.get("status") == "PASS":
             try:
                 rollback = api.run_remote("rollback")
                 evidence["rollback"] = rollback
