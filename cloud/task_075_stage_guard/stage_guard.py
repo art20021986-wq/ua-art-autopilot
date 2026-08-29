@@ -163,6 +163,15 @@ def normalize_block(block: str, row: Mapping) -> str:
     )
     for pattern, replacement in replacements:
         block = re.sub(pattern, replacement, block, flags=re.I)
+    if stage == 2:
+        block = re.sub(
+            r"(?:Маршрут\s*:\s*)?Корея\s*(?:→|&rarr;|&#8594;|-)\s*Грузия",
+            "маршрут — Киев", block, flags=re.I,
+        )
+        block = re.sub(
+            r"(?:Маршрут\s*:\s*)?Корея\s*(?:→|&rarr;|&#8594;|-)\s*Грузія",
+            "маршрут — Київ", block, flags=re.I,
+        )
     for forbidden in FORBIDDEN_PUBLIC:
         block = re.sub(re.escape(forbidden) + r"[^<]*", "", block, flags=re.I)
     return block

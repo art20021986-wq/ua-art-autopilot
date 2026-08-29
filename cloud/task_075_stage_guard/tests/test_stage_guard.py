@@ -44,7 +44,8 @@ class StageGuardTests(unittest.TestCase):
 
     def test_stage_change_moves_category_without_duplication(self):
         source = """<!doctype html><html><head></head><body>
-        <a class="kat" href="UA-0011.html"><img src="x.jpg"><b>UA-0011</b></a>
+        <a class="kat" href="UA-0011.html"><img src="x.jpg"><b>UA-0011</b>
+        <span>На пароме</span><span>Маршрут: Корея → Грузия</span></a>
         <div class="empty-assist"></div></body></html>"""
         for status, expected in (("kr_verified", "korea"), ("sea_loaded", "more"),
                                  ("ge_arrived", "gruzia"), ("ua_delivered", "kiev")):
@@ -54,6 +55,9 @@ class StageGuardTests(unittest.TestCase):
             self.assertEqual(result["status"], "PASS", result["errors"])
             self.assertEqual(result["cards"]["UA-0011"]["category"], expected)
             self.assertEqual(candidate.count('href="UA-0011.html"'), 1)
+            if status == "sea_loaded":
+                self.assertNotIn("Корея → Грузия", candidate)
+                self.assertIn("маршрут — Киев", candidate)
 
 
 if __name__ == "__main__":

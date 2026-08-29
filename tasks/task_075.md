@@ -30,3 +30,6 @@ OWNER_APPROVAL: `УТВЕРЖДАЮ CRM-CATALOG-STAGE-GUARD-003 v1.0. В РАБ�
 - UA-0011: CRM-фото > 0, main photo разрешена, card count=1, stage/category совпадают.
 - 11/11 уникальных карточек; UA-0009 PASS.
 - Любая ошибка завершает sandbox FAIL. Production не затрагивается.
+
+ROUND 2: canary обязан заменить старый маршрут этапа 2 во всех существующих
+паромных карточках, а не только в UA-0011.
