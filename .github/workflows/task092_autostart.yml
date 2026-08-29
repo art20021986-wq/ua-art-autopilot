@@ -69,7 +69,11 @@ jobs:
           elif now > deadline:
               should_run = False
               reason = 'DEADLINE_REACHED'
-          elif int(state.get('attempts_started') or 0) >= 3:
+          # Keep the overnight retry window alive while the owner adjusts the
+          # Anthropic self-imposed spend limit. Failed HTTP 400 attempts do not
+          # touch production and are not billable, so a larger bounded count is
+          # safe and prevents the queue from exhausting before the limit change.
+          elif int(state.get('attempts_started') or 0) >= 50:
               should_run = False
               reason = 'MAX_ACTUAL_ATTEMPTS_REACHED'
           else:
