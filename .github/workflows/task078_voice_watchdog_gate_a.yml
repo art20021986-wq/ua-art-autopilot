@@ -1,0 +1,103 @@
+name: task078-voice-watchdog-gate-a
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task078_voice_watchdog_gate_a.yml'
+      - 'cloud/task_078_voice_watchdog/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task078-voice-watchdog-gate-a
+  cancel-in-progress: false
+
+jobs:
+  audit-and-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Compile and test watchdog
+        run: |
+          python3 -m py_compile \
+            cloud/task_078_voice_watchdog/voice_watchdog.py \
+            cloud/task_078_voice_watchdog/live_audit.py
+          python3 cloud/task_078_voice_watchdog/tests/test_voice_watchdog.py -v
+
+      - name: Prove GET-only transport
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('cloud/task_078_voice_watchdog/live_audit.py').read_text(encoding='utf-8')
+          assert 'method="GET"' in source
+          for forbidden in ('method="POST"', 'method="PUT"', 'method="PATCH"', 'method="DELETE"'):
+              assert forbidden not in source, forbidden
+          print('TASK078_GET_ONLY_STATIC_PASS')
+          PY
+
+      - name: Audit live voice and supervisor code
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        working-directory: cloud/task_078_voice_watchdog
+        run: python3 live_audit.py
+
+      - name: Validate evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          path='cloud/task_078_voice_watchdog/evidence/live_audit.json'
+          value=json.load(open(path,encoding='utf-8'))
+          assert value['status']=='PASS_AUDIT_ROOT_CAUSE_CONFIRMED', value['errors']
+          assert value['production_touched'] is False
+          assert value['http_methods']==['GET']
+          assert value['root_cause']['fixed_deadline_4_65'] is True
+          assert value['root_cause']['non_killable_to_thread'] is True
+          print('TASK078_LIVE_AUDIT_PASS')
+          PY
+
+      - name: Commit only sanitized evidence
+        if: always() && github.event_name == 'push'
+        run: |
+          git add -- \
+            cloud/task_078_voice_watchdog/evidence/live_audit.json \
+            cloud/task_078_voice_watchdog/VOICE_AUDIT_REPORT.md
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_078_voice_watchdog/evidence/live_audit.json|cloud/task_078_voice_watchdog/VOICE_AUDIT_REPORT.md) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -gt 0 ]; then
+            git config user.name 'task078-gate-a'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m 'task078: record voice watchdog audit evidence'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+              if git push origin HEAD:main; then exit 0; fi
+              test "$attempt" -lt 5 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task078-voice-watchdog-${{ github.run_id }}
+          path: |
+            cloud/task_078_voice_watchdog/evidence/live_audit.json
+            cloud/task_078_voice_watchdog/VOICE_AUDIT_REPORT.md
+          if-no-files-found: warn
+          retention-days: 14
