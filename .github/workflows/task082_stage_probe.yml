@@ -1,0 +1,40 @@
+name: TASK082 read-only stage regression probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "cloud/task_082_catalog_stage_repair/stage_probe.py"
+      - ".github/workflows/task082_stage_probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task082-stage-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile probe
+        run: python -m py_compile cloud/task_082_catalog_stage_repair/stage_probe.py
+      - name: Read current UA-0011 state and stage writers
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python cloud/task_082_catalog_stage_repair/stage_probe.py
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task082-stage-probe-${{ github.run_id }}
+          path: cloud/task_082_catalog_stage_repair/evidence/stage_probe.json
+          if-no-files-found: error
+          retention-days: 7
