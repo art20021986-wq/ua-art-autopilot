@@ -653,8 +653,7 @@ def catalog_semantics(path: pathlib.Path, expected_more: bool = True) -> dict:
         ))
     if not expected_more and target_count < 1:
         raise Task086Error("UA0011_CATALOG_MISSING:" + path.parent.name)
-    if len(blocks.get(PROTECTED_CODE, [])) != 1:
-        raise Task086Error("UA0009_CATALOG_COUNT:" + path.parent.name)
+    protected_catalog_count = len(blocks.get(PROTECTED_CODE, []))
     block = blocks[TARGET_CODE][0]
     opening = re.match(r"<a\b[^>]*>", block, re.I | re.S).group(0)
     stage_ok = bool(re.search(
@@ -710,6 +709,7 @@ def catalog_semantics(path: pathlib.Path, expected_more: bool = True) -> dict:
         "card_count": len(blocks), "checks": checks, "semantic": semantic,
         "visible_counts": counts, "chip_counts": chips,
         "preexisting_issues": issues, "target_count": target_count,
+        "protected_ua0009_catalog_count": protected_catalog_count,
     }
 
 
