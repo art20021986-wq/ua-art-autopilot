@@ -91,6 +91,14 @@ class InstallerTests(unittest.TestCase):
         )
         self.assertTrue(MOD.ferry_status_present(source))
 
+    def test_ferry_status_does_not_depend_on_card_tag_or_stage_attribute(self):
+        source = (
+            '<section class="vehicle"><div class="green-stage">На пароме</div>'
+            + MOD.CAT_START + '<div data-ua-card="UA-0009">eta</div>'
+            + MOD.CAT_END + '</section>'
+        )
+        self.assertTrue(MOD.ferry_status_present(source))
+
     def test_unknown_eta_keeps_timing_information_without_stage_duplicate(self):
         block = (
             MOD.CAT_START + '<div data-ua-card="UA-0009">' + MOD.RU_UNKNOWN_OLD
