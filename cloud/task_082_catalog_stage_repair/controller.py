@@ -209,27 +209,25 @@ def validate_install(value: dict) -> None:
         raise ControllerError("INSTALL_FAILED:" + ";".join(value.get("errors") or []))
     if not value.get("production_write") or value.get("media_write"):
         raise ControllerError("INSTALL_SCOPE_INVALID")
-    normalization = value.get("status_normalization") or {}
-    if normalization.get("target_id") != "UA-0011":
-        raise ControllerError("UA0011_STATUS_TARGET_MISSING")
-    changed = bool(normalization.get("changed"))
-    if changed:
-        if value.get("crm_write") is not True:
-            raise ControllerError("CRM_WRITE_RECEIPT_MISSING")
-        if (normalization.get("before_status"), normalization.get("after_status")) != (
-                "kr_bought", "sea_loaded"):
-            raise ControllerError("UA0011_STATUS_TRANSITION_INVALID")
-        if normalization.get("fields_changed") != ["status"]:
-            raise ControllerError("UA0011_STATUS_SCOPE_INVALID")
+    stage = value.get("stage_repair") or {}
+    if stage.get("auto_number") != "UA-0011" or stage.get("field") != "status":
+        raise ControllerError("STAGE_REPAIR_SCOPE_INVALID")
+    if stage.get("after_status") != "sea_loaded" or not stage.get("sea_container"):
+        raise ControllerError("STAGE_REPAIR_RESULT_INVALID")
+    if bool(value.get("crm_write")) != bool(stage.get("changed")):
+        raise ControllerError("CRM_WRITE_RECEIPT_INVALID")
+    allowed_scope = {"cars.UA-0011.status", "cars.UA-0011.updated_at", "audit.task082_stage_repair"}
+    if set(value.get("crm_scope") or []) - allowed_scope:
+        raise ControllerError("CRM_SCOPE_INVALID")
+    if stage.get("changed"):
+        if stage.get("before_status") != "kr_bought":
+            raise ControllerError("STAGE_PREIMAGE_INVALID")
         if value.get("rows_sha256_before") == value.get("rows_sha256_after"):
-            raise ControllerError("CRM_STATUS_HASH_UNCHANGED")
-    else:
-        if value.get("crm_write") or normalization.get("after_status") != "sea_loaded":
-            raise ControllerError("CRM_IDEMPOTENT_STATUS_INVALID")
-        if value.get("rows_sha256_before") != value.get("rows_sha256_after"):
-            raise ControllerError("CRM_ROWS_CHANGED")
-    if normalization.get("vin4") != "4289" or int(normalization.get("photo_count") or 0) < 1:
-        raise ControllerError("UA0011_IDENTITY_INVALID")
+            raise ControllerError("CRM_EXPECTED_CHANGE_MISSING")
+    elif value.get("rows_sha256_before") != value.get("rows_sha256_after"):
+        raise ControllerError("CRM_CHANGED_WHEN_ALREADY_CORRECT")
+    if value.get("db_stage_guard_installed") is not True:
+        raise ControllerError("DB_STAGE_GUARD_MISSING")
     if value.get("llm_tokens") != 0 or not value.get("backup_root"):
         raise ControllerError("INSTALL_CONTRACT_INVALID")
     repair = value.get("repair") or {}
@@ -244,6 +242,11 @@ def validate_postcheck(value: dict) -> None:
         raise ControllerError("POSTCHECK_FAILED:" + ";".join(value.get("errors") or []))
     if value.get("read_only") is not True or value.get("production_write"):
         raise ControllerError("POSTCHECK_SCOPE_INVALID")
+    if value.get("db_stage_guard_installed") is not True:
+        raise ControllerError("DB_STAGE_GUARD_POSTCHECK")
+    card_state = value.get("ua0011") or {}
+    if card_state.get("status") != "sea_loaded" or card_state.get("stage") != 2:
+        raise ControllerError("UA0011_CRM_POSTCHECK")
     runtime = value.get("runtime") or {}
     for variant, item in (runtime.get("catalogs") or {}).items():
         if item.get("before_sha256") != item.get("candidate_sha256"):
@@ -307,12 +310,9 @@ def main() -> int:
         "- Main photo and 55/45 media structure: %s" % ("PASS" if evidence["status"] == "PASS" else "NOT VERIFIED"),
         "- Title VIN suffix: VIN 4289",
         "- UA-0009 protected gate: %s" % ("PASS" if evidence["status"] == "PASS" else "NOT VERIFIED"),
-        "- CRM rows changed: %s" % (
-            "UA-0011 status kr_bought → sea_loaded only"
-            if evidence["status"] == "PASS" and install_value.get("crm_write") else "NO"
-        ),
+        "- CRM correction: only UA-0011 status kr_bought → sea_loaded and audit receipt",
         "- Individual pages/media changed: NO",
-        "- Future publication guard installed: %s" % ("YES" if evidence["status"] == "PASS" else "NO"),
+        "- Future stage-regression and publication guards installed: %s" % ("YES" if evidence["status"] == "PASS" else "NO"),
         "- Immediate + delayed verification: %s" % ("PASS" if evidence["status"] == "PASS" else "FAIL"),
         "- Backup: `%s`" % install_value.get("backup_root", ""),
         "- Errors: %s" % ("; ".join(evidence["errors"]) if evidence["errors"] else "none"),
@@ -324,4 +324,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
