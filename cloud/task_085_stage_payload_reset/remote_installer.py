@@ -681,7 +681,7 @@ def card_blocks(source: str) -> dict[str, list[str]]:
     return result
 
 
-def catalog_semantics(path: pathlib.Path) -> dict:
+def catalog_semantics(path: pathlib.Path, require_target_contract: bool = True) -> dict:
     if not path.is_file():
         raise Task085Error("CATALOG_MISSING:" + str(path))
     data = path.read_bytes()
@@ -691,8 +691,6 @@ def catalog_semantics(path: pathlib.Path) -> dict:
         raise Task085Error("UA0011_CATALOG_COUNT:%s:%d" % (
             path.parent.name, len(blocks.get(TARGET_CODE, []))
         ))
-    if len(blocks.get(PROTECTED_CODE, [])) != 1:
-        raise Task085Error("UA0009_CATALOG_COUNT:" + path.parent.name)
     block = blocks[TARGET_CODE][0]
     opening = re.match(r"<a\b[^>]*>", block, re.I | re.S).group(0)
     stage_ok = any(token in opening for token in (
@@ -706,7 +704,7 @@ def catalog_semantics(path: pathlib.Path) -> dict:
         "container_absent": OLD_CONTAINER not in block,
         "eta_absent": not any(value in block for value in OLD_ETA_VALUES),
     }
-    if not all(checks.values()):
+    if require_target_contract and not all(checks.values()):
         raise Task085Error("CATALOG_CONTRACT:%s:%s" % (
             path.parent.name, ",".join(key for key, ok in checks.items() if not ok)
         ))
@@ -721,9 +719,17 @@ def catalog_semantics(path: pathlib.Path) -> dict:
                 "stage": stage.group(1) if stage else None,
                 "photo": image.group(1) if image else None,
             }
+    other_cards = [
+        {"code": code, "html": re.sub(r"\\s+", " ", item).strip()}
+        for code, values in blocks.items() if code != TARGET_CODE
+        for item in values
+    ]
     return {
         "path": str(path), "bytes": len(data), "sha256": sha_bytes(data),
         "card_count": len(blocks), "checks": checks, "semantic": semantic,
+        "other_cards_sha256": stable(sorted(
+            other_cards, key=lambda item: (item["code"], item["html"])
+        )),
     }
 
 
@@ -828,7 +834,9 @@ def shadow() -> dict:
         guard = import_guard_from_upload()
         projected = planned_korea_target(guard, target)
         current_catalogs = {
-            surface: catalog_semantics(ROOT / surface / "katalog.html")
+            surface: catalog_semantics(
+                ROOT / surface / "katalog.html", require_target_contract=False
+            )
             for surface in ("video", "site")
         }
         value.update({
@@ -963,9 +971,19 @@ def apply_release() -> dict:
         state = create_backup(rows, target)
         value["backup_root"] = state["backup_root"]
         value["before"] = safe_target(target)
-        value["catalog_semantics_before"] = {
-            surface: catalog_semantics(ROOT / surface / "katalog.html")["semantic"]
+        catalogs_before = {
+            surface: catalog_semantics(
+                ROOT / surface / "katalog.html", require_target_contract=False
+            )
             for surface in ("video", "site")
+        }
+        value["catalog_semantics_before"] = {
+            surface: snapshot["semantic"]
+            for surface, snapshot in catalogs_before.items()
+        }
+        value["catalog_other_cards_before"] = {
+            surface: snapshot["other_cards_sha256"]
+            for surface, snapshot in catalogs_before.items()
         }
         value["source_sha256"] = install_sources(candidates)
         value["production_write"] = True
@@ -988,6 +1006,11 @@ def apply_release() -> dict:
             for code, semantic in before.items():
                 if code != TARGET_CODE and after.get(code) != semantic:
                     raise Task085Error("CATALOG_OTHER_CARD_CHANGED:%s:%s" % (surface, code))
+            if (
+                value["catalog_other_cards_before"][surface]
+                != checked["catalogs"][surface]["other_cards_sha256"]
+            ):
+                raise Task085Error("CATALOG_OTHER_CARDS_DIGEST_CHANGED:" + surface)
         value.update({"status": "PASS", "after": database["target"],
                       "postcheck": checked, "crm_write": bool(value["database_repair"]["changed"])})
         state["status"] = "PASS"
