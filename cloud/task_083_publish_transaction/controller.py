@@ -235,7 +235,7 @@ def validate_postcheck(value: dict[str, Any]) -> None:
         raise ControllerError("POSTCHECK_FAILED:" + ";".join(value.get("errors") or []))
     if value.get("read_only") is not True or value.get("production_write"):
         raise ControllerError("POSTCHECK_SCOPE_INVALID")
-    if value.get("markers") != {"publisher": 1, "cars_ui": 1}:
+    if value.get("markers") != {"publisher": 1, "cars_ui": 1, "master_card": 1}:
         raise ControllerError("PATCH_MARKERS_INVALID")
     for code in TARGETS:
         target = ((value.get("verification") or {}).get("targets") or {}).get(code) or {}
