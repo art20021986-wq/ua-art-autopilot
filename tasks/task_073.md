@@ -205,3 +205,70 @@ CLAUDE/Cloud не выполняет CRITICAL действия. Подготов
 10. Все Python-файлы compile + unit/integration tests внутри автопилота. Отчёт не может заявлять Gate A PASS, пока реальный secret-backed workflow не выполнен; допустимый результат генерации — `READY_TO_RUN_REAL_GATE_A_V2`.
 
 После этой коррекции production по-прежнему не трогать: Claude создаёт V2 release tooling, Codex копирует/запускает реальный Gate A, аудитирует evidence и только при PASS запускает уже одобренный Gate B.
+
+
+---
+
+## ROUND 4 — ОБЯЗАТЕЛЬНАЯ КОРРЕКЦИЯ ПО РЕЗУЛЬТАТАМ НЕЗАВИСИМОГО LIVE-АУДИТА CODEX
+
+Текущие V2-файлы из commit 5e65396 являются НЕВЫПУСКАЕМЫМ кандидатом. Их нельзя копировать в .github и нельзя запускать против production. Причины подтверждены exact live definitions в `cloud/task_073/evidence/live_probe.json`:
+
+1. `transform_gde_mashina_remove_outer` и `transform_stage_menu_remove_outer` ищут прямые строки `InlineKeyboardButton(...sea_loaded...)`, но live-функции строят кнопки comprehension из `S.STATUSES.items()`. Exact anchors:
+   - `konteyner.gde_mashina` definition SHA256 `d49710dbe1831353432c084439afc1ece9203eee116db9c42b0b00fcb7ca964c`; фильтр: `if stage_no == nomer_etapa`.
+   - `cars_ui.stage_menu` definition SHA256 `edf960e645680f758dd3cbfd071410067f6b4be2a94ec4c4ca97793fc9d8d795`; фильтр: `if stage_no == number`.
+   Корректная точечная семантика: добавить к каждому фильтру исключение `code not in ("sea_loaded", "sea_transit")`; не удалять статусы из `S.STATUSES` и не менять handler `car_setstage`.
+
+2. `konteyner._ekran` exact definition SHA256 `5e970dcedd8e29da0562dc2653c1b6173fd8d3007e0203fffc5e9f36bd196e6b`. Внутрь его `rows`, после controls номера/даты/дней и до очистки/навигации, добавить ровно две однострочные кнопки:
+   - `Загружено в контейнер` -> `car_setstage:%d:sea_loaded`
+   - `В пути` -> `car_setstage:%d:sea_transit`
+   Они обязаны использовать существующий рабочий handler; никаких новых status values/DB migrations.
+
+3. `transform_seo068_drop_stale_precondition` ищет `os.path.exists(...diag...)`, но live-код во всех трёх модулях одинаков и имеет definition SHA256 `30b706b49cbd0895631a8fd1dbe6908055016f0ef03fd30dd7338a7be0887566`:
+   `if not any(_ua_seo068_os.path.isfile(_ua_seo068_os.path.join(root, target)) for root in ('/home/Carix/video', '/home/Carix/site')):`
+   `    raise RuntimeError('SEO068_DIAGNOSTIC_TARGET_MISSING:' + identifier)`
+   Удалить только этот exact stale precondition в `stranica.py`, `master_card.py`, `yadro.py`; canonical/robots/exact href/CTA/insertion guards оставить.
+
+4. `transform_toggle_publish_respect_ok` ищет `ok, text = publikaciya.opublikovat(...)`, но live `cars_ui.toggle_publish` definition SHA256 `21c3f452813122f18247359259432bed2a23f12163ac36859bac0ffd594d8682` использует async `_ok_rem2, _txt_rem2 = await _aio_rem2.to_thread(_pub_rem2.opublikovat, ...)` и сейчас игнорирует `_ok_rem2`. Исправить exact live shape:
+   - сохранить `preimage_published` до update;
+   - при `_ok_rem2 is not True` либо exception вернуть published только если read-back всё ещё равен записанному `novoe`, проверить read-back;
+   - отправить реальную причину отказа;
+   - не отправлять `Машина видна клиентам в каталоге.`;
+   - success разрешён только после publisher `ok=True` и его bounded verification.
+   Скрытие (`novoe=0`) не ломать.
+
+5. Live `publikaciya.opublikovat` definition SHA256 `93f130c2542124b820eae2416984705ecbbc80019a298d2b3c40fdf58d93033f` пишет primary/diag, но не `katalog.html`. Исправить существующий publisher, а не создавать параллельную кнопку:
+   - перед любой записью собрать primary + mandatory diag/placeholder + полный catalog через существующий `_ua9_sobrat_katalog()`;
+   - добавить оба `katalog.html` (VIDEO/SITE) в тот же bounded backup/write-set;
+   - исправить `_otkat`: восстановить pre-existing target из backup, а newly-created target без preimage удалить;
+   - staged validation до commit: primary содержит только UA-0011 как card identity, exact CTA `UA-0011-diag.html`, diag существует, catalog содержит exact `href=UA-0011.html` ровно один раз;
+   - на любой записи/read-back/validation/regression ошибке откатить ВЕСЬ set primary+diag+catalog;
+   - не запускать полный `stranica.main()` и не пересобирать чужие карточки.
+   Итог: bounded per-card publish + один catalog, без LLM и без DB migration.
+
+6. `postcheck_v2.verify_card` сейчас игнорирует `revision_marker`, не проверяет body и controller не проверяет diagnostics overall. Исправить:
+   - exact requested URL == final URL, HTTP 200, без redirect;
+   - primary body содержит UA-0011 и expected semantic marker/CTA;
+   - diag URL exact 200 и содержит UA-0011/approved placeholder;
+   - catalog exact 200 и exact href UA-0011 ровно 1;
+   - immediate и delayed >=60s должны пройти все три страницы;
+   - protected UA-0001..UA-0010 primary/diag hashes не меняются (catalog — ожидаемое изменение);
+   - UA-0009 DB row SHA остаётся `b31572a4d321e40a8f8d07b7b127db4751f1cdaa8a1aa2369e27754f178dfbf7`; SQLite quick_check=ok; 11 unique cards.
+
+7. Gate B сейчас не исполним: workflow требует отсутствующий `gate_b_production_entrypoint.py` и незаданные repo vars. Создать ПОЛНОСТЬЮ ИСПОЛНИМЫЙ production комплект, используя реальный trigger/receipt/API/restart pattern из `cloud/task_069/gate_b_controller.py` и installer pattern из task069/task072:
+   - verified username/root: `Carix`, `/home/Carix`;
+   - safe remote: `/home/Carix/autopilot_inbox/cloud/task_073`;
+   - controller загружает reviewed patcher/installer/postcheck, GET read-back, запускает remote shadow через temporary always_on/schedule trigger, затем install/publish, restart exact active launcher `python3.10 /home/Carix/start_safe.py`, immediate+delayed postcheck;
+   - exclusive GitHub production-window guard;
+   - backup всех 6 code files (`konteyner.py`, `cars_ui.py`, `stranica.py`, `master_card.py`, `yadro.py`, `publikaciya.py`) и всех bounded public targets before write;
+   - source full-file SHA anchors из live_probe; fail closed on drift;
+   - DB не писать в Gate B (UA-0011 already published=1); DB full-file rollback запрещён;
+   - при любой ошибке после install выполнить explicit rollback code+public targets, restart и read-only verification;
+   - no `TASK073_PA_DOMAIN` / `TASK073_PA_REMOTE_DIR` variables; no placeholder entrypoint, no TODO, no NOT_IMPLEMENTED, no echo-only production step.
+
+8. Создать новую reviewable серию `patcher_v3.py`, `gate_a_v3.py`, `gate_b_installer_v3.py`, `gate_b_controller_v3.py`, `postcheck_v3.py`, exact unit/integration tests и два workflow-файла under `cloud/task_073/workflows/`. Не перезаписывать V2 так, чтобы было трудно сравнить.
+
+9. Gate A V3 должен реально GET-fetch все live source, проверять полные file SHA из `live_probe.json`, применять все transforms in memory, compile, semantic assertions и dry-run publisher bundle on a temporary filesystem/database copy. Production writes=0. Только live secret-backed run может дать PASS.
+
+10. Gate B workflow остаётся manual `workflow_dispatch` с exact token `CRM-UNIFIED-CATALOG-001-V1.0-APPROVED`. Claude НЕ запускает production. Codex после независимого аудита копирует Gate A V3 workflow в `.github/workflows`, запускает; при PASS запускает уже утверждённый Gate B.
+
+ROUND 4 результат считается готовым только если entrypoint реально существует, workflow не содержит условной заглушки, все tests проходят, а отчёт честно имеет `READY_TO_RUN_REAL_GATE_A_V3`. Production не трогать.
