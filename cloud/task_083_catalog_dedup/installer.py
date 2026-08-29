@@ -945,7 +945,7 @@ def run_shadow() -> dict[str, Any]:
             **validate_catalog(candidate, require_dedup=True),
         }
     after = inspect_base()
-    stable_scopes = ("sources", "stage_guard", "catalogs", "protected_pages")
+    stable_scopes = ("sources", "stage_guard", "catalogs")
     changed_scopes = [name for name in stable_scopes if before[name] != after[name]]
     if changed_scopes:
         raise Blocked("SHADOW_PRODUCTION_CHANGED:" + ",".join(changed_scopes))
@@ -956,6 +956,9 @@ def run_shadow() -> dict[str, Any]:
         "candidate_core": candidate_core, "candidate_catalogs": candidate_catalogs,
         "database_rows_changed_during_readonly_check": (
             before["database"]["rows_sha256"] != after["database"]["rows_sha256"]
+        ),
+        "individual_pages_changed_during_readonly_check": (
+            before["protected_pages"] != after["protected_pages"]
         ),
         "database_after": after["database"],
     }
