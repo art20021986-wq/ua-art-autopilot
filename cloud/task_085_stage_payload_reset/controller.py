@@ -316,19 +316,29 @@ def fetch_public(path: str, nonce: str) -> str:
     separator = "&" if "?" in path else "?"
     request = urllib.request.Request(
         "https://www.uaart.com.ua" + path + separator + "task085=" + nonce,
-        headers={"User-Agent": "ua-art-task085-public/1", "Cache-Control": "no-cache"},
+        headers={"User-Agent": "ua-art-task085-public/2", "Cache-Control": "no-cache"},
     )
     with urllib.request.urlopen(request, timeout=45) as response:
         data = response.read(5_000_001)
-        if response.status != 200 or len(data) > 5_000_000:
-            raise ControllerError("PUBLIC_HTTP:%s:%s" % (path, response.status))
+        final = urllib.parse.urlsplit(response.geturl())
+        expected_path = urllib.parse.urlsplit(path).path
+        canonical = (
+            final.scheme == "https"
+            and final.hostname in {"www.uaart.com.ua", "uaart.com.ua"}
+            and final.path == expected_path
+        )
+        if response.status != 200 or len(data) > 5_000_000 or not canonical:
+            raise ControllerError(
+                "PUBLIC_HTTP:%s:%s:%s" % (path, response.status, response.geturl())
+            )
     return data.decode("utf-8", "replace")
 
 
 def public_round(label: str) -> dict:
+    """Verify the one public /video route; /site remains a local mirror gate."""
     nonce = "%s-%d" % (label, time.time_ns())
     result = {}
-    for surface in ("video", "site"):
+    for surface in ("video",):
         detail = fetch_public("/%s/%s.html" % (surface, TARGET_CODE), nonce)
         visible = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", detail))
         countdown = bool(re.search(
@@ -347,25 +357,68 @@ def public_round(label: str) -> dict:
             raise ControllerError("PUBLIC_DETAIL:%s:%s" % (
                 surface, ",".join(key for key, ok in detail_checks.items() if not ok)
             ))
+
         catalog = fetch_public("/%s/katalog.html" % surface, nonce)
-        pattern = re.compile(
-            r"<a\b(?=[^>]*href=[\"'][^\"']*UA-0011\.html(?:\?[^\"']*)?[\"'])"
+        block_pattern = re.compile(
+            r"<a\b(?=[^>]*href=[\"'][^\"']*(UA-[0-9]{4,})\.html(?:\?[^\"']*)?[\"'])"
             r"[^>]*>.*?</a\s*>", re.I | re.S,
         )
-        blocks = pattern.findall(catalog)
-        if len(blocks) != 1:
-            raise ControllerError("PUBLIC_CATALOG_COUNT:%s:%d" % (surface, len(blocks)))
-        opening = re.match(r"<a\b[^>]*>", blocks[0], re.I | re.S).group(0)
+        blocks = list(block_pattern.finditer(catalog))
+        ids = [match.group(1).upper() for match in blocks]
+        if len(ids) != len(set(ids)):
+            raise ControllerError("PUBLIC_CATALOG_DUPLICATE_IDS:" + surface)
+        target_blocks = [match.group(0) for match in blocks if match.group(1).upper() == TARGET_CODE]
+        if len(target_blocks) != 1:
+            raise ControllerError("PUBLIC_CATALOG_COUNT:%s:%d" % (
+                surface, len(target_blocks)
+            ))
+        opening = re.match(r"<a\b[^>]*>", target_blocks[0], re.I | re.S).group(0)
         if not any(token in opening for token in (
             'data-ua-card-stage="korea"', "data-ua-card-stage='korea'",
             'data-stage="korea"', "data-stage='korea'",
+            'data-etap="korea"', "data-etap='korea'",
             'data-ua-stage="1"', "data-ua-stage='1'",
         )):
             raise ControllerError("PUBLIC_CATALOG_STAGE:" + surface)
-        if PROTECTED_CODE not in catalog:
+        if PROTECTED_CODE not in ids:
             raise ControllerError("PUBLIC_UA0009_MISSING:" + surface)
-        result[surface] = {"detail": detail_checks, "catalog_count": 1,
-                           "catalog_stage": "korea"}
+
+        stage_counts = {"korea": 0, "more": 0, "gruzia": 0, "kiev": 0}
+        for match in blocks:
+            card_opening = re.match(r"<a\b[^>]*>", match.group(0), re.I | re.S).group(0)
+            stage = re.search(
+                r"data-(?:ua-card-stage|stage|etap)=[\"'](korea|more|gruzia|kiev)[\"']",
+                card_opening, re.I,
+            )
+            if stage:
+                stage_counts[stage.group(1).lower()] += 1
+        chip_counts = {}
+        for key in ("all", "korea", "more", "gruzia", "kiev"):
+            chip = re.findall(
+                r"<a\b(?=[^>]*class=[\"'][^\"']*\bchip\b)(?=[^>]*data-f=[\"']"
+                + re.escape(key)
+                + r"[\"'])[^>]*>.*?<b[^>]*>\s*(\d+)\s*</b>.*?</a\s*>",
+                catalog, re.I | re.S,
+            )
+            if len(chip) != 1:
+                raise ControllerError("PUBLIC_CHIP_COUNT:%s:%s:%d" % (
+                    surface, key, len(chip)
+                ))
+            chip_counts[key] = int(chip[0])
+        expected_counts = {"all": len(ids), **stage_counts}
+        if chip_counts != expected_counts:
+            raise ControllerError(
+                "PUBLIC_VISIBLE_COUNTS:%s:%s:%s"
+                % (surface, json.dumps(chip_counts, sort_keys=True),
+                   json.dumps(expected_counts, sort_keys=True))
+            )
+        result[surface] = {
+            "detail": detail_checks,
+            "catalog_count": 1,
+            "catalog_stage": "korea",
+            "visible_counts": chip_counts,
+            "unique_cards": len(ids),
+        }
     return result
 
 
