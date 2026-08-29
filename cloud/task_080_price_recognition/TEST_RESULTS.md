@@ -2,7 +2,7 @@
 
 ## Result
 
-- Local independent runner: `56/56 PASS`, exit code `0`.
+- Local independent runner: `58/58 PASS`, exit code `0`.
 - GitHub Actions candidate Gate A: `PASS_IN_MEMORY_CANDIDATE`.
 - Fresh live whole-file hashes: all matched.
 - Fresh active-block hashes: all matched.
@@ -32,6 +32,7 @@ recognize the grammatical command `измени цену` and accepted
 - price + stage history + exactly one audit row in one transaction;
 - injected audit and read-back failures roll back all three changes;
 - stale CAS, immutable `auto_number`, and two-card concurrency isolation;
+- parallel stage-change refusal and bounded connection-failure handling;
 - all 13 current cards plus a synthetic future card use the same writer;
 - typed text, photo caption, and voice-transcript integration use the shared
   parser; a duplicate Telegram update produces no second write or message;
