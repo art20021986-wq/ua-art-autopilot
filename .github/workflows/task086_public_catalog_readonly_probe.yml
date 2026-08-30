@@ -34,6 +34,13 @@ jobs:
           print("CONTROL_COUNT", len(selected))
           for index, value in enumerate(selected[:30], 1):
               print("CONTROL_%02d %s" % (index, value))
+          for term in ("UA-0011", "На пароме", "Все", "catalog", "filter", "schet"):
+              positions = [match.start() for match in re.finditer(re.escape(term), source, re.I)]
+              print("TERM", term, "COUNT", len(positions))
+              for index, position in enumerate(positions[:5], 1):
+                  snippet = re.sub(r"\\s+", " ", source[max(0, position-900):position+1800]).strip()
+                  print("SNIPPET_%s_%02d %s" % (term.replace(" ", "_"), index, snippet[:2700]))
+          print("HEAD_SNIPPET", re.sub(r"\\s+", " ", source[:7000]).strip())
           scripts = re.findall(r"<script\\b[^>]*>.*?</script\\s*>", source, re.I | re.S)
           for index, block in enumerate(scripts, 1):
               lines = [
