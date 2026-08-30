@@ -22,16 +22,16 @@ from typing import Any
 
 CONTRACT_ID = "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0"
 ROOT = pathlib.Path("/home/Carix")
-REMOTE = ROOT / "autopilot_inbox/cloud/task_093_home_stage_counter_sync"
-GUARD_SOURCE = REMOTE / "home_counter_guard.py"
+REMOTE = ROOT / "autopilot_inbox/cloud/task_083_catalog_dedup"
+GUARD_SOURCE = REMOTE / "task093_home_counter_guard.py"
 DB = ROOT / "crm.db"
 VIDEO_HOME = ROOT / "video/index.html"
 SITE_HOME = ROOT / "site/index.html"
 VIDEO_CATALOG = ROOT / "video/katalog.html"
 LOCK = ROOT / ".ua_art_production_writer.lock"
 BACKUPS = ROOT / "backups/task_093_home_counters"
-LAST_SUCCESS = REMOTE / "last_successful_install.json"
-RECEIPTS = {mode: REMOTE / ("%s_receipt.json" % mode)
+LAST_SUCCESS = REMOTE / "task093_last_successful_install.json"
+RECEIPTS = {mode: REMOTE / ("task093_%s_receipt.json" % mode)
             for mode in ("install", "postcheck", "rollback")}
 PUBLIC_HOME = "https://www.uaart.com.ua/video/index.html"
 MAX_FILE = 8 * 1024 * 1024
