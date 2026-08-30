@@ -6,4 +6,4 @@
 БЕЗОПАСНОСТЬ: backup до записи, 10 canary, один writer, byte read-back, immediate/delayed проверки и автоматический rollback.
 UA-0011 STATUS: не подтверждено
 СЧЁТЧИКИ: {}
-ОШИБКИ: ControllerError:SHADOW_FAIL:Task086Error:PUBLISHER_COMPLETION_ANCHOR:0
+ОШИБКИ: ControllerError:APPLY_FAIL:Task086Error:PUBLISHER_FAILED:Публикация отменена: каталоги и счётчики не подтверждены (StageCounterError:CATALOG_STAGE_MISMATCH:UA-0001).

@@ -1,27 +1,793 @@
 {
+  "apply": {
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T001110Z_dd8823e0d2",
+    "before": {
+      "auto_number": "UA-0011",
+      "days_to_kyiv": null,
+      "eta_manual": "2026-09-28",
+      "ge_arrived": null,
+      "ge_port": null,
+      "ge_released": null,
+      "ge_to_kyiv_at": null,
+      "id": 18,
+      "published": 1,
+      "sea_container": "ONEYSELGB4471700",
+      "sea_date_out": null,
+      "sea_port_from": null,
+      "status": "sea_loaded",
+      "updated_at": "2026-08-29T08:28:32",
+      "vin": "KMHE341DBKA544289"
+    },
+    "catalog_semantics_before": {
+      "site": {
+        "UA-0001": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0001/m/001.jpg",
+          "stage": "gruzia"
+        },
+        "UA-0002": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0002/m/001.jpg",
+          "stage": "kiev"
+        },
+        "UA-0003": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0003/m/001.jpg",
+          "stage": "korea"
+        },
+        "UA-0004": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0004/m/001.jpg",
+          "stage": "korea"
+        },
+        "UA-0005": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0005/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0006": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0006/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0007": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0007/m/001.jpg",
+          "stage": "kiev"
+        },
+        "UA-0008": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0008/m/001.jpg",
+          "stage": "kiev"
+        },
+        "UA-0009": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0009/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0010": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0010/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0011": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0011/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0012": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0012/003.jpg",
+          "stage": "more"
+        },
+        "UA-0013": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0013/001.jpg",
+          "stage": "more"
+        }
+      },
+      "video": {
+        "UA-0001": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0001/m/001.jpg",
+          "stage": "gruzia"
+        },
+        "UA-0002": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0002/m/001.jpg",
+          "stage": "kiev"
+        },
+        "UA-0003": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0003/m/001.jpg",
+          "stage": "korea"
+        },
+        "UA-0004": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0004/m/001.jpg",
+          "stage": "korea"
+        },
+        "UA-0005": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0005/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0006": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0006/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0007": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0007/m/001.jpg",
+          "stage": "kiev"
+        },
+        "UA-0008": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0008/m/001.jpg",
+          "stage": "kiev"
+        },
+        "UA-0009": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0009/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0010": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0010/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0011": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0011/m/001.jpg",
+          "stage": "more"
+        },
+        "UA-0012": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0012/003.jpg",
+          "stage": "more"
+        },
+        "UA-0013": {
+          "photo": "https://www.uaart.com.ua/video/foto/UA-0013/001.jpg",
+          "stage": "more"
+        }
+      }
+    },
+    "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
+    "crm_write": true,
+    "database_repair": {
+      "changed": false,
+      "fields": {},
+      "removed_legacy_triggers": []
+    },
+    "errors": [
+      "Task086Error:PUBLISHER_FAILED:Публикация отменена: каталоги и счётчики не подтверждены (StageCounterError:CATALOG_STAGE_MISMATCH:UA-0001)."
+    ],
+    "finished_at_utc": "2026-08-30T00:11:27Z",
+    "media_write": false,
+    "mode": "APPROVED_PRODUCTION_APPLY",
+    "production_write": true,
+    "rollback": {
+      "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T001110Z_dd8823e0d2",
+      "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
+      "errors": [],
+      "finished_at_utc": "2026-08-30T00:11:27Z",
+      "mode": "ROLLBACK",
+      "production_write": true,
+      "quick_check": "ok",
+      "reason": "automatic_apply_failure",
+      "runtime_llm_tokens": 0,
+      "started_at_utc": "2026-08-30T00:11:26Z",
+      "status": "PASS",
+      "target": {
+        "auto_number": "UA-0011",
+        "days_to_kyiv": null,
+        "eta_manual": "2026-09-28",
+        "ge_arrived": null,
+        "ge_port": null,
+        "ge_released": null,
+        "ge_to_kyiv_at": null,
+        "id": 18,
+        "published": 1,
+        "sea_container": "ONEYSELGB4471700",
+        "sea_date_out": null,
+        "sea_port_from": null,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-29T08:28:32",
+        "vin": "KMHE341DBKA544289"
+      }
+    },
+    "runtime_llm_tokens": 0,
+    "source_sha256": {
+      "cars_schema.py": "7d4d8cf9e4753d2e292d3750ddbeda4fea88cdefc2e82e4515c41354922fc773",
+      "cars_ui.py": "fccded4d8eda6887d426ecde44def784e91a89c4dced89b693ef6a9af8cfe7fd",
+      "db.py": "7348376054cb2da9fead640c4cae9cdbda6424e69ffa3815a2b08556f398af37",
+      "publikaciya.py": "7fb9be6e48f21fceaebaff479682a5c6eea93ed5a929356232fe082a9408f2da",
+      "stage_counter_guard.py": "fa893f9cf82facd5a3c4bddb66afb13da117b3f77f4d10dbbf0e0675b0697de1",
+      "stranica.py": "4b188383182b63d38489b63224bce8a6fd07d9b06d67e3d17cb4729542f4635a"
+    },
+    "started_at_utc": "2026-08-30T00:11:09Z",
+    "status": "ROLLED_BACK"
+  },
   "automatic_remote_retry": true,
-  "bot_restarted": false,
+  "bot_restarted": true,
   "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
   "errors": [
-    "ControllerError:SHADOW_FAIL:Task086Error:PUBLISHER_COMPLETION_ANCHOR:0"
+    "ControllerError:APPLY_FAIL:Task086Error:PUBLISHER_FAILED:Публикация отменена: каталоги и счётчики не подтверждены (StageCounterError:CATALOG_STAGE_MISMATCH:UA-0001)."
   ],
-  "finished_at_utc": "2026-08-30T00:07:20Z",
-  "rollback": null,
+  "finished_at_utc": "2026-08-30T00:12:09Z",
+  "recovery_restart": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "restart_accepted": true,
+    "task_id": 266084
+  },
+  "rollback": {
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T001110Z_dd8823e0d2",
+    "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
+    "errors": [],
+    "finished_at_utc": "2026-08-30T00:11:27Z",
+    "mode": "ROLLBACK",
+    "production_write": true,
+    "quick_check": "ok",
+    "reason": "automatic_apply_failure",
+    "runtime_llm_tokens": 0,
+    "started_at_utc": "2026-08-30T00:11:26Z",
+    "status": "PASS",
+    "target": {
+      "auto_number": "UA-0011",
+      "days_to_kyiv": null,
+      "eta_manual": "2026-09-28",
+      "ge_arrived": null,
+      "ge_port": null,
+      "ge_released": null,
+      "ge_to_kyiv_at": null,
+      "id": 18,
+      "published": 1,
+      "sea_container": "ONEYSELGB4471700",
+      "sea_date_out": null,
+      "sea_port_from": null,
+      "status": "sea_loaded",
+      "updated_at": "2026-08-29T08:28:32",
+      "vin": "KMHE341DBKA544289"
+    }
+  },
   "runtime_llm_tokens": 0,
   "shadow": {
+    "canary": {
+      "runs": 10,
+      "sha256": "38b4f8d71266372d90b5d73e5b3b03568d7046f509911c6eeeccefbf49b9ae9d",
+      "stable": true
+    },
+    "candidate_sources": {
+      "cars_schema.py": "7d4d8cf9e4753d2e292d3750ddbeda4fea88cdefc2e82e4515c41354922fc773",
+      "cars_ui.py": "fccded4d8eda6887d426ecde44def784e91a89c4dced89b693ef6a9af8cfe7fd",
+      "db.py": "7348376054cb2da9fead640c4cae9cdbda6424e69ffa3815a2b08556f398af37",
+      "publikaciya.py": "7fb9be6e48f21fceaebaff479682a5c6eea93ed5a929356232fe082a9408f2da",
+      "stage_counter_guard.py": "fa893f9cf82facd5a3c4bddb66afb13da117b3f77f4d10dbbf0e0675b0697de1",
+      "stranica.py": "4b188383182b63d38489b63224bce8a6fd07d9b06d67e3d17cb4729542f4635a"
+    },
+    "catalogs_before": {
+      "site": {
+        "bytes": 42716,
+        "card_count": 13,
+        "checks": {
+          "own_media": true,
+          "photo": true
+        },
+        "chip_counts": {},
+        "path": "/home/Carix/site/katalog.html",
+        "preexisting_issues": [
+          "chips:CHIP_COUNT_all:0",
+          "preexisting_counter_drift"
+        ],
+        "protected_ua0009_catalog_count": 1,
+        "semantic": {
+          "UA-0001": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0001/m/001.jpg",
+            "stage": "gruzia"
+          },
+          "UA-0002": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0002/m/001.jpg",
+            "stage": "kiev"
+          },
+          "UA-0003": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0003/m/001.jpg",
+            "stage": "korea"
+          },
+          "UA-0004": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0004/m/001.jpg",
+            "stage": "korea"
+          },
+          "UA-0005": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0005/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0006": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0006/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0007": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0007/m/001.jpg",
+            "stage": "kiev"
+          },
+          "UA-0008": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0008/m/001.jpg",
+            "stage": "kiev"
+          },
+          "UA-0009": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0009/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0010": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0010/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0011": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0011/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0012": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0012/003.jpg",
+            "stage": "more"
+          },
+          "UA-0013": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0013/001.jpg",
+            "stage": "more"
+          }
+        },
+        "sha256": "d65deb8dfedc6f2b52dfbed76fca648c392a727d15a1c3967ce052aa0879542e",
+        "target_count": 1,
+        "visible_counts": {
+          "all": 13,
+          "gruzia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "more": 7
+        }
+      },
+      "video": {
+        "bytes": 42716,
+        "card_count": 13,
+        "checks": {
+          "own_media": true,
+          "photo": true
+        },
+        "chip_counts": {},
+        "path": "/home/Carix/video/katalog.html",
+        "preexisting_issues": [
+          "chips:CHIP_COUNT_all:0",
+          "preexisting_counter_drift"
+        ],
+        "protected_ua0009_catalog_count": 1,
+        "semantic": {
+          "UA-0001": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0001/m/001.jpg",
+            "stage": "gruzia"
+          },
+          "UA-0002": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0002/m/001.jpg",
+            "stage": "kiev"
+          },
+          "UA-0003": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0003/m/001.jpg",
+            "stage": "korea"
+          },
+          "UA-0004": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0004/m/001.jpg",
+            "stage": "korea"
+          },
+          "UA-0005": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0005/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0006": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0006/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0007": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0007/m/001.jpg",
+            "stage": "kiev"
+          },
+          "UA-0008": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0008/m/001.jpg",
+            "stage": "kiev"
+          },
+          "UA-0009": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0009/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0010": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0010/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0011": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0011/m/001.jpg",
+            "stage": "more"
+          },
+          "UA-0012": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0012/003.jpg",
+            "stage": "more"
+          },
+          "UA-0013": {
+            "photo": "https://www.uaart.com.ua/video/foto/UA-0013/001.jpg",
+            "stage": "more"
+          }
+        },
+        "sha256": "d65deb8dfedc6f2b52dfbed76fca648c392a727d15a1c3967ce052aa0879542e",
+        "target_count": 1,
+        "visible_counts": {
+          "all": 13,
+          "gruzia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "more": 7
+        }
+      }
+    },
     "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
     "crm_write": false,
-    "errors": [
-      "Task086Error:PUBLISHER_COMPLETION_ANCHOR:0"
-    ],
-    "finished_at_utc": "2026-08-30T00:07:10Z",
+    "database": {
+      "columns": [
+        "id",
+        "brand",
+        "model",
+        "year",
+        "vin",
+        "fuel",
+        "engine",
+        "color",
+        "mileage",
+        "trim",
+        "condition",
+        "accidents",
+        "auction_link",
+        "price_buy",
+        "price_extra",
+        "price_ship",
+        "price_customs",
+        "price_total",
+        "stage",
+        "photos",
+        "videos",
+        "docs",
+        "responsible",
+        "review_status",
+        "published",
+        "created_by",
+        "approved_by",
+        "created_at",
+        "updated_at",
+        "client_id",
+        "publish_pending",
+        "video_h",
+        "video_v",
+        "auto_number",
+        "engine_cc",
+        "gearbox",
+        "drive",
+        "mileage_km",
+        "condition_text",
+        "condition_photos",
+        "condition_videos",
+        "diag_report",
+        "diag_link",
+        "kr_buy_date",
+        "kr_parking",
+        "sea_container",
+        "sea_port_from",
+        "sea_date_out",
+        "ge_port",
+        "ge_arrived",
+        "ge_released",
+        "days_to_kyiv",
+        "ua_delivered",
+        "ua_handed",
+        "cost_purchase",
+        "cost_fees",
+        "cost_logistics",
+        "cost_total",
+        "price_uah",
+        "nbu_rate",
+        "status",
+        "owner_user",
+        "history",
+        "price_history",
+        "cover_photo",
+        "eta_manual",
+        "description",
+        "hidden_photos",
+        "diag_text",
+        "ge_to_kyiv_at"
+      ],
+      "protected_rows_sha256": "a9092fcbdc11990528b04127d7391985119b2ad9a3ea4e924d9a541bf625f26c",
+      "protected_ua0009": {
+        "auto_number": "UA-0009",
+        "days_to_kyiv": "13",
+        "eta_manual": "2026-09-28",
+        "ge_arrived": null,
+        "ge_port": null,
+        "ge_released": null,
+        "ge_to_kyiv_at": null,
+        "id": 15,
+        "published": 1,
+        "sea_container": "ONEYSELGB4471700",
+        "sea_date_out": null,
+        "sea_port_from": null,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-29T06:06:09",
+        "vin": "KNAGU416BJA242741"
+      },
+      "quick_check": "ok",
+      "row_count": 16,
+      "target": {
+        "auto_number": "UA-0011",
+        "days_to_kyiv": null,
+        "eta_manual": "2026-09-28",
+        "ge_arrived": null,
+        "ge_port": null,
+        "ge_released": null,
+        "ge_to_kyiv_at": null,
+        "id": 18,
+        "published": 1,
+        "sea_container": "ONEYSELGB4471700",
+        "sea_date_out": null,
+        "sea_port_from": null,
+        "status": "sea_loaded",
+        "updated_at": "2026-08-29T08:28:32",
+        "vin": "KMHE341DBKA544289"
+      },
+      "target_business_sha256": "b66d9ed94ae5acca7d15afe31d1a6496e391e7e072c356f3429c23b23459ca5c",
+      "target_media_sha256": "5e0e91f22c64c93a9eb23747e9effe6fbf2428524c30c4081caefd306f2b7395"
+    },
+    "database_files": {
+      "crm.db": {
+        "bytes": 3645440,
+        "sha256": "d9b215cc8c74a8a446874f29dfab06e0dda80e7926cfb0e63b7b2abdec2168c8"
+      }
+    },
+    "errors": [],
+    "finished_at_utc": "2026-08-30T00:10:15Z",
     "media_write": false,
     "mode": "SHADOW",
     "production_write": false,
+    "projected_target": {
+      "auto_number": "UA-0011",
+      "days_to_kyiv": null,
+      "eta_manual": "2026-09-28",
+      "ge_arrived": null,
+      "ge_port": null,
+      "ge_released": null,
+      "ge_to_kyiv_at": null,
+      "id": 18,
+      "published": 1,
+      "sea_container": "ONEYSELGB4471700",
+      "sea_date_out": null,
+      "sea_port_from": null,
+      "status": "sea_loaded",
+      "updated_at": "2026-08-29T08:28:32",
+      "vin": "KMHE341DBKA544289"
+    },
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-08-30T00:07:09Z",
-    "status": "FAIL"
+    "source_preimages": {
+      "cars_schema.py": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496",
+      "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
+      "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a",
+      "stranica.py": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244"
+    },
+    "started_at_utc": "2026-08-30T00:10:14Z",
+    "status": "PASS",
+    "visual_preview": {
+      "checks": {
+        "current_verified_cover_m001": true,
+        "desktop_viewport_1440": true,
+        "ferry_label": true,
+        "first_photo_is_cover": true,
+        "lower_duplicate_absent": true,
+        "mobile_viewport_390": true,
+        "own_media": true,
+        "photo_count": true,
+        "route": true,
+        "vin_4289": true
+      },
+      "html_sha256": "abbb2b59b3e8bcc49d2c359035bc6c86314bfaa0788f93e5c1ad9a1353eb5c3a",
+      "media_manifest": [
+        {
+          "bytes": 332961,
+          "exists": true,
+          "path": "foto/UA-0011/001.jpg",
+          "sha256": "f54de73015ad929fbd80343249c34977609907b4d02a748d916f7ab05142b7f1"
+        },
+        {
+          "bytes": 215788,
+          "exists": true,
+          "path": "foto/UA-0011/002.jpg",
+          "sha256": "3007ef3c78076f55a83d78a5fdf7f764ada5c5b70a615d1b286792ae32ad1db1"
+        },
+        {
+          "bytes": 182052,
+          "exists": true,
+          "path": "foto/UA-0011/003.jpg",
+          "sha256": "f1982353d8c33f5978476cf109ef4c3eb7c355f65ee4174dd92dd3c9c4928de6"
+        },
+        {
+          "bytes": 284497,
+          "exists": true,
+          "path": "foto/UA-0011/004.jpg",
+          "sha256": "a78bfe398c3825ed3f071db13449d4db8dd829db4c07ea330c00954b4f9ad590"
+        },
+        {
+          "bytes": 259635,
+          "exists": true,
+          "path": "foto/UA-0011/005.jpg",
+          "sha256": "93e472990acafab4b6ebd851d17141ff4c94a12e73b82e0edb2b68891d526e91"
+        },
+        {
+          "bytes": 260143,
+          "exists": true,
+          "path": "foto/UA-0011/006.jpg",
+          "sha256": "ad4f5f36ccb59020133710d49d47f3be28df30c02489066c8d4f49b624ef4558"
+        },
+        {
+          "bytes": 332961,
+          "exists": true,
+          "path": "foto/UA-0011/007.jpg",
+          "sha256": "f54de73015ad929fbd80343249c34977609907b4d02a748d916f7ab05142b7f1"
+        },
+        {
+          "bytes": 331935,
+          "exists": true,
+          "path": "foto/UA-0011/008.jpg",
+          "sha256": "cfccbc88453f3ddeabfcf6f7f982e122e4e91c287a0c78f6ca272df4691bbebc"
+        },
+        {
+          "bytes": 259622,
+          "exists": true,
+          "path": "foto/UA-0011/009.jpg",
+          "sha256": "339bf19d285a68cf15aa77a5028d0ebc6cdfe634c2f9790a19658d7ce07cbd1b"
+        },
+        {
+          "bytes": 215788,
+          "exists": true,
+          "path": "foto/UA-0011/010.jpg",
+          "sha256": "3007ef3c78076f55a83d78a5fdf7f764ada5c5b70a615d1b286792ae32ad1db1"
+        },
+        {
+          "bytes": 284497,
+          "exists": true,
+          "path": "foto/UA-0011/011.jpg",
+          "sha256": "a78bfe398c3825ed3f071db13449d4db8dd829db4c07ea330c00954b4f9ad590"
+        },
+        {
+          "bytes": 325249,
+          "exists": true,
+          "path": "foto/UA-0011/012.jpg",
+          "sha256": "03bb4ea7155671ba2423164c8968e9a52206fecb03caa9d1d8784f70cbbc6d2a"
+        },
+        {
+          "bytes": 182052,
+          "exists": true,
+          "path": "foto/UA-0011/013.jpg",
+          "sha256": "f1982353d8c33f5978476cf109ef4c3eb7c355f65ee4174dd92dd3c9c4928de6"
+        },
+        {
+          "bytes": 232132,
+          "exists": true,
+          "path": "foto/UA-0011/014.jpg",
+          "sha256": "0402af26c33f79c8e834cd5a2cf941cf9550c88733a9d69e946e42621cdb0ce6"
+        },
+        {
+          "bytes": 239643,
+          "exists": true,
+          "path": "foto/UA-0011/015.jpg",
+          "sha256": "e98f5bac6cd72450264acc1c07437ce39af24bb09884d661739b28d66f1e606b"
+        },
+        {
+          "bytes": 241789,
+          "exists": true,
+          "path": "foto/UA-0011/016.jpg",
+          "sha256": "783bc0a881b3c2440d57f92d8124a449340fde2cc81cebb4f528642466bdda9d"
+        },
+        {
+          "bytes": 203401,
+          "exists": true,
+          "path": "foto/UA-0011/017.jpg",
+          "sha256": "08db0a4c6a6396f0eda965891b66b830e446c48f3e126fafd312ce8c302fbf6f"
+        },
+        {
+          "bytes": 259940,
+          "exists": true,
+          "path": "foto/UA-0011/018.jpg",
+          "sha256": "a46dcc089a90e3118bfb773bc7448b3c12fc128c6a96f61be36c0ac921d85fe5"
+        },
+        {
+          "bytes": 355322,
+          "exists": true,
+          "path": "foto/UA-0011/019.jpg",
+          "sha256": "50ebaf9cf483fd779404bebb41770de9d833abfb9ab7995df04b7fde398471df"
+        },
+        {
+          "bytes": 349101,
+          "exists": true,
+          "path": "foto/UA-0011/020.jpg",
+          "sha256": "2a3cf7378cac1c78ced0834eed24e930f78318bc5225bb5acd5f465cb61e6ab7"
+        },
+        {
+          "bytes": 161851,
+          "exists": true,
+          "path": "foto/UA-0011/021.jpg",
+          "sha256": "69df8080ee2f926910d8e5abb1f2896a326b92c9fedbb9db402141b3ef39e920"
+        },
+        {
+          "bytes": 259635,
+          "exists": true,
+          "path": "foto/UA-0011/022.jpg",
+          "sha256": "93e472990acafab4b6ebd851d17141ff4c94a12e73b82e0edb2b68891d526e91"
+        },
+        {
+          "bytes": 254038,
+          "exists": true,
+          "path": "foto/UA-0011/023.jpg",
+          "sha256": "638dadea3b2584e4c4bd932faa8a58a584bba2f2226e952ac1d1d1fb86524488"
+        },
+        {
+          "bytes": 227632,
+          "exists": true,
+          "path": "foto/UA-0011/024.jpg",
+          "sha256": "8d6cb52e4d364d78247e79d8f1974206c7b0798a27b77554a6553de49224f054"
+        },
+        {
+          "bytes": 241865,
+          "exists": true,
+          "path": "foto/UA-0011/025.jpg",
+          "sha256": "a874885e30bb635ef8147d2ded8637f76e80bd14e4e685b7ad9024b9585d9fda"
+        },
+        {
+          "bytes": 163650,
+          "exists": true,
+          "path": "foto/UA-0011/026.jpg",
+          "sha256": "09cde11eeb54367de8536560917d48f8644d638a1c1cb9dbdf17ae30dce4168b"
+        },
+        {
+          "bytes": 184993,
+          "exists": true,
+          "path": "foto/UA-0011/027.jpg",
+          "sha256": "dac736c6e28cb00f876cc900408fd20adbceb9132bc1019cbefbe80ad33d4c62"
+        },
+        {
+          "bytes": 152947,
+          "exists": true,
+          "path": "foto/UA-0011/028.jpg",
+          "sha256": "ceee9d8b636ebcab81f315c879b3aa097dbc2db9083b40195d6ba749dc2d53c1"
+        },
+        {
+          "bytes": 266219,
+          "exists": true,
+          "path": "foto/UA-0011/029.jpg",
+          "sha256": "93d99399fdb00d08c42429928b0bb078669fd55b313d9a538a1388c75cd7b0d3"
+        },
+        {
+          "bytes": 193498,
+          "exists": true,
+          "path": "foto/UA-0011/030.jpg",
+          "sha256": "fb448d64bc538e031322bb8666b020f6c35e0f18acac81f8c6e6f67fc98b5f10"
+        },
+        {
+          "bytes": 184162,
+          "exists": true,
+          "path": "foto/UA-0011/031.jpg",
+          "sha256": "8462302e1bd5a5d5ec095a73b7b08aedba0bf50abe6c31d5f1ec6078b6dc3d9b"
+        },
+        {
+          "bytes": 216099,
+          "exists": true,
+          "path": "foto/UA-0011/032.jpg",
+          "sha256": "7e142eedc33f6e8100f8e38a9c3e1fd8e8dcdb85b7a0e0b0d407281bc11b0812"
+        },
+        {
+          "bytes": 234203,
+          "exists": true,
+          "path": "foto/UA-0011/033.jpg",
+          "sha256": "6a2c7e0b2d62b240a5c092145ddcff2d63ece1c87977549213ff993723295ff6"
+        },
+        {
+          "bytes": 189562,
+          "exists": true,
+          "path": "foto/UA-0011/034.jpg",
+          "sha256": "addda910aede3abd8e47b9eeafd147cd01d8ff82f8c5d1cf6c51492623d1845b"
+        },
+        {
+          "bytes": 199735,
+          "exists": true,
+          "path": "foto/UA-0011/035.jpg",
+          "sha256": "3f6b25568aa7c15716eec885aa29fb8b5f18886290b82c5adede4a019e83f193"
+        }
+      ],
+      "media_manifest_sha256": "a34b9a996512542cb5543f55db872b4647df9faec780b72089144eb24947a294",
+      "photo_count": 35,
+      "status": "PASS",
+      "verified_cover_from_task084_sha256_prefix": "86850437",
+      "viewports": [
+        390,
+        1440
+      ]
+    }
   },
-  "started_at_utc": "2026-08-30T00:06:13Z",
-  "status": "FAIL"
+  "started_at_utc": "2026-08-30T00:09:30Z",
+  "status": "ROLLED_BACK"
 }
