@@ -1,3 +1,4 @@
+# fresh: post-production-independent-2026-08-30
 # fresh: homepage-stage-blocks-regex-2026-08-30
 # fresh: homepage-stage-blocks-2026-08-30
 # fresh: homepage-and-catalog-2026-08-30
@@ -27,8 +28,8 @@ jobs:
           import urllib.request
 
           urls = {
-              "HOME": "https://www.uaart.com.ua/video/index.html?task086_probe=202608300054",
-              "CATALOG": "https://www.uaart.com.ua/video/katalog.html?task086_probe=202608300054",
+              "HOME": "https://www.uaart.com.ua/video/index.html?task086_probe=202608300105",
+              "CATALOG": "https://www.uaart.com.ua/video/katalog.html?task086_probe=202608300105",
           }
           for label, url in urls.items():
               request = urllib.request.Request(
