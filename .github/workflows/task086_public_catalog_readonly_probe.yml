@@ -1,3 +1,4 @@
+# fresh: homepage-stage-blocks-regex-2026-08-30
 # fresh: homepage-stage-blocks-2026-08-30
 # fresh: homepage-and-catalog-2026-08-30
 name: task086-public-catalog-readonly-probe
@@ -46,7 +47,7 @@ jobs:
               print(label + "_STAGE_V2", len(re.findall(r"ua-stage-card-v2", source, re.I)))
               if label == "HOME":
                   blocks = re.findall(
-                      r'<a\\b(?=[^>]*class=["\\'][^"\\']*stage-card)[^>]*>.*?</a\\s*>',
+                      r"<a\\b(?=[^>]*class=['\"][^'\"]*stage-card)[^>]*>.*?</a\\s*>",
                       source, re.I | re.S)
                   print("HOME_STAGE_BLOCKS", len(blocks))
                   for index, block in enumerate(blocks, 1):
