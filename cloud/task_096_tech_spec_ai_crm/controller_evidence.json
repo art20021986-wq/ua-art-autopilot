@@ -1,0 +1,184 @@
+{
+  "autopublication": false,
+  "backup": {
+    "quick_check": "ok",
+    "relative_path": "backups/crm_backup_20260830T171209Z.db",
+    "sha256": "4414a994b5e131772d7cef4f7a011f713f1ca0ea5567bff9fc5af9779234f3ac",
+    "size_bytes": 3649536
+  },
+  "bot_code_changed": false,
+  "canary": {
+    "additional_spec_heading": true,
+    "checkcar_absent": true,
+    "external_links": 0,
+    "independent_expertise_absent": true,
+    "noindex": true,
+    "non_public_banner": true,
+    "pass": true
+  },
+  "compatibility": {
+    "cards_found": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ],
+    "cards_missing": [],
+    "technical_points": {
+      "cars_schema.py": {
+        "exists": true,
+        "modified": false,
+        "sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496"
+      },
+      "cars_ui.py": {
+        "exists": true,
+        "modified": false,
+        "sha256": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15"
+      },
+      "db.py": {
+        "exists": true,
+        "modified": false,
+        "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
+      },
+      "master_card.py": {
+        "exists": true,
+        "modified": false,
+        "sha256": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74"
+      },
+      "publikaciya.py": {
+        "exists": true,
+        "modified": false,
+        "sha256": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
+      },
+      "stranica.py": {
+        "exists": true,
+        "modified": false,
+        "sha256": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244"
+      }
+    }
+  },
+  "contract_id": "TECH-SPEC-AI-CRM-017-V3.0-TASK096",
+  "controller": {
+    "backup_downloaded": false,
+    "fetched_at_utc": "2026-08-30T17:12:22Z",
+    "remote_stdout_downloaded": false,
+    "sandbox_db_downloaded": false,
+    "status": "PASS",
+    "uploaded_file_sha256": {
+      "canary_preview.html": "f38ccd8a910cda154817a5c8a84dde56517830c10a569105405cfb03548b3c7f",
+      "dedup_check.py": "71808a628811eaccc599a8d5f0d67513244164b2512f05fee7b6b3b22ae421bd",
+      "manual_field_protection.py": "c780d682e74588857c6baf21fdd156931bc9ed470fc8d3d6cb93615c1195e1d9",
+      "price_exclusion_guard.py": "fd9a9b8b18126ec7dd26a48d8736fa8e8c8b8f5565dbb917bc05219076dd4432",
+      "schema_additional_spec.sql": "649c114d7635c59c8938ec13f7fea7d0d13576804dad6b3c8d1369721e0ea928",
+      "selftest.py": "554db8f005acb78b37d6aa0e50488afa9e03b271fb0a06da39bafb2539256d2c",
+      "source_check.py": "fba0c5dacf776ed87c2b2e294b2a5af2be740e6648f21adc700ce2209f619024",
+      "task096_remote_controller.py": "b0c79f10082f0295c82d7fd1a4dd4a87a68dfbc48932994b5a204267e59e5e64"
+    }
+  },
+  "errors": [],
+  "finished_at_utc": "2026-08-30T17:12:12Z",
+  "live_crm": {
+    "connection_total_changes": 0,
+    "external_file_drift_observed": false,
+    "opened_mode": "ro",
+    "path": "/home/Carix/crm.db",
+    "query_only": true,
+    "quick_check": "ok",
+    "row_count": 16,
+    "safe_projection_sha256": "6333c553be44c5220da81338e602a8279458a8c3ec2e759a82fbd4a2dbe8b2d8"
+  },
+  "live_crm_write": false,
+  "main_fields_changed": false,
+  "owner_action_required": false,
+  "phase": "BACKUP_SANDBOX_CANARY_REPORT",
+  "production_authorized": false,
+  "production_touched": false,
+  "public_path_write": false,
+  "purchase_price_extracted": false,
+  "purchase_price_logged": false,
+  "purchase_price_uploaded": false,
+  "sandbox": {
+    "additional_spec_rows_initial": 0,
+    "cards_found": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ],
+    "cards_missing": [],
+    "cars_columns_preserved": true,
+    "cars_row_count": 16,
+    "cars_rows_preserved": true,
+    "price_denylist_rows": 12,
+    "primary_registry_rows": 174,
+    "quick_check": "ok",
+    "relative_path": "sandbox/crm_task096_sandbox_20260830T171209Z.db",
+    "sha256": "fee3a89d58b2f5f058770e840ef43353f1908c6cd616715ef90c43bc68bdc01a",
+    "size_bytes": 3702784,
+    "source_tables_preserved": true
+  },
+  "selftest": {
+    "ALL_TESTS_PASS": true,
+    "test1_manual_field_protected": {
+      "allowed": false,
+      "reason": "MANUAL_FIELD_PROTECTED"
+    },
+    "test2_new_fact_accepted": {
+      "allowed": true,
+      "reason": null
+    },
+    "test3_semantic_duplicate_rejected": {
+      "allowed": false,
+      "reason": "DUPLICATE"
+    },
+    "test4_price_field_rejected": {
+      "allowed": false,
+      "reason": "PRICE_FIELD_FORBIDDEN:field key 'auction_price' is a forbidden purchase-cost field"
+    },
+    "test4_price_key_detected": true,
+    "test5_primary_key_blocked": true,
+    "test6_primary_registry_untouched": true
+  },
+  "services_restarted": false,
+  "sources": {
+    "checked_at_utc": "2026-08-30T17:12:11.948883+00:00",
+    "sources": {
+      "auto_data": {
+        "reachable": true,
+        "status_code": 200
+      },
+      "automobile_catalog": {
+        "reachable": true,
+        "status_code": 403
+      }
+    }
+  },
+  "started_at_utc": "2026-08-30T17:12:08Z",
+  "status": "PASS",
+  "task_id": "task_096",
+  "warnings": []
+}
