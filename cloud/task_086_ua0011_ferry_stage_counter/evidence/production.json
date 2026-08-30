@@ -1,6 +1,6 @@
 {
   "apply": {
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T002210Z_e2e5076b48",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T002609Z_5d18ccef17",
     "before": {
       "auto_number": "UA-0011",
       "days_to_kyiv": null,
@@ -138,21 +138,21 @@
     "errors": [
       "Task086Error:PUBLISHER_FAILED:Публикация отменена: каталоги и счётчики не подтверждены (StageCounterError:CATALOG_STAGE_MISMATCH:UA-0001)."
     ],
-    "finished_at_utc": "2026-08-30T00:22:25Z",
+    "finished_at_utc": "2026-08-30T00:26:23Z",
     "media_write": false,
     "mode": "APPROVED_PRODUCTION_APPLY",
     "production_write": true,
     "rollback": {
-      "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T002210Z_e2e5076b48",
+      "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T002609Z_5d18ccef17",
       "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
       "errors": [],
-      "finished_at_utc": "2026-08-30T00:22:25Z",
+      "finished_at_utc": "2026-08-30T00:26:23Z",
       "mode": "ROLLBACK",
       "production_write": true,
       "quick_check": "ok",
       "reason": "automatic_apply_failure",
       "runtime_llm_tokens": 0,
-      "started_at_utc": "2026-08-30T00:22:25Z",
+      "started_at_utc": "2026-08-30T00:26:22Z",
       "status": "PASS",
       "target": {
         "auto_number": "UA-0011",
@@ -178,10 +178,10 @@
       "cars_ui.py": "fccded4d8eda6887d426ecde44def784e91a89c4dced89b693ef6a9af8cfe7fd",
       "db.py": "7348376054cb2da9fead640c4cae9cdbda6424e69ffa3815a2b08556f398af37",
       "publikaciya.py": "7fb9be6e48f21fceaebaff479682a5c6eea93ed5a929356232fe082a9408f2da",
-      "stage_counter_guard.py": "cb0efc86948953bf426197c30c8014adad2e2d26f873422b618e16e33223b257",
+      "stage_counter_guard.py": "2c0422294ba15e33239aeedec8dc50131c3d19deabf1672b2400fb89df44f2ff",
       "stranica.py": "4b188383182b63d38489b63224bce8a6fd07d9b06d67e3d17cb4729542f4635a"
     },
-    "started_at_utc": "2026-08-30T00:22:09Z",
+    "started_at_utc": "2026-08-30T00:26:08Z",
     "status": "ROLLED_BACK"
   },
   "automatic_remote_retry": true,
@@ -190,23 +190,23 @@
   "errors": [
     "ControllerError:APPLY_FAIL:Task086Error:PUBLISHER_FAILED:Публикация отменена: каталоги и счётчики не подтверждены (StageCounterError:CATALOG_STAGE_MISMATCH:UA-0001)."
   ],
-  "finished_at_utc": "2026-08-30T00:22:48Z",
+  "finished_at_utc": "2026-08-30T00:26:49Z",
   "recovery_restart": {
     "command": "python3.10 /home/Carix/start_safe.py",
     "restart_accepted": true,
     "task_id": 266084
   },
   "rollback": {
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T002210Z_e2e5076b48",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T002609Z_5d18ccef17",
     "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
     "errors": [],
-    "finished_at_utc": "2026-08-30T00:22:25Z",
+    "finished_at_utc": "2026-08-30T00:26:23Z",
     "mode": "ROLLBACK",
     "production_write": true,
     "quick_check": "ok",
     "reason": "automatic_apply_failure",
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-08-30T00:22:25Z",
+    "started_at_utc": "2026-08-30T00:26:22Z",
     "status": "PASS",
     "target": {
       "auto_number": "UA-0011",
@@ -238,7 +238,7 @@
       "cars_ui.py": "fccded4d8eda6887d426ecde44def784e91a89c4dced89b693ef6a9af8cfe7fd",
       "db.py": "7348376054cb2da9fead640c4cae9cdbda6424e69ffa3815a2b08556f398af37",
       "publikaciya.py": "7fb9be6e48f21fceaebaff479682a5c6eea93ed5a929356232fe082a9408f2da",
-      "stage_counter_guard.py": "cb0efc86948953bf426197c30c8014adad2e2d26f873422b618e16e33223b257",
+      "stage_counter_guard.py": "2c0422294ba15e33239aeedec8dc50131c3d19deabf1672b2400fb89df44f2ff",
       "stranica.py": "4b188383182b63d38489b63224bce8a6fd07d9b06d67e3d17cb4729542f4635a"
     },
     "catalogs_before": {
@@ -521,7 +521,7 @@
       }
     },
     "errors": [],
-    "finished_at_utc": "2026-08-30T00:21:08Z",
+    "finished_at_utc": "2026-08-30T00:25:12Z",
     "media_write": false,
     "mode": "SHADOW",
     "production_write": false,
@@ -550,7 +550,7 @@
       "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a",
       "stranica.py": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244"
     },
-    "started_at_utc": "2026-08-30T00:21:07Z",
+    "started_at_utc": "2026-08-30T00:25:11Z",
     "status": "PASS",
     "visual_preview": {
       "checks": {
@@ -565,7 +565,7 @@
         "route": true,
         "vin_4289": true
       },
-      "html_sha256": "3bda9e7170be0d41c8717a702cfa26a82994e1eac5f3246951080b7633b16488",
+      "html_sha256": "f8d89ee30a8806bb14df4d3c35e84019770aff6e8859911d135a604b4d74401d",
       "media_manifest": [
         {
           "bytes": 332961,
@@ -788,6 +788,6 @@
       ]
     }
   },
-  "started_at_utc": "2026-08-30T00:20:03Z",
+  "started_at_utc": "2026-08-30T00:24:07Z",
   "status": "ROLLED_BACK"
 }
