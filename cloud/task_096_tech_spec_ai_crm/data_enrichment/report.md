@@ -2,4 +2,6 @@
 
 **Status:** FAIL
 
-Production не затрагивался.
+Ошибка: `ControllerError:PYTHONANYWHERE_HTTP_412:/api/v0/user/Carix/consoles/47988911/send_input/`
+
+Production, рабочая CRM, бот и сайт не изменялись.
