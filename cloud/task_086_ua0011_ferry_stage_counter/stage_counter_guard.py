@@ -419,18 +419,64 @@ def rebuild_catalogs_live() -> Tuple[bool, str]:
         import publikaciya
         import stranica
 
-        cars = stranica.mashiny()
-        frames, light = {}, {}
-        for car in cars:
-            code = stranica.nomer(car)
-            card_frames = stranica.kadry_mashiny(car)
-            frames[code] = card_frames
-            light[code] = stranica.legkie(card_frames) if card_frames else ([], [])
-        html = stranica.sobrat_katalog(cars, frames, light)
+        cars = list(stranica.mashiny())
+        try:
+            import catalog_design_guard as design
+        except ImportError:
+            design = None
+
+        if (
+            design is not None
+            and hasattr(design, "build_from_golden_path")
+            and hasattr(design, "audit_catalog")
+            and hasattr(design, "extract_main_photo")
+        ):
+            photos = {}
+            for car in cars:
+                code = stranica.nomer(car)
+                primary = pathlib.Path(publikaciya.VIDEO, code + ".html")
+                if not primary.is_file():
+                    raise StageCounterError("PRIMARY_PAGE_MISSING:" + code)
+                page = primary.read_text(encoding="utf-8", errors="replace")
+                photos[code] = design.extract_main_photo(page, code)
+            html = design.build_from_golden_path(cars, photos)
+            golden_path = pathlib.Path(getattr(
+                design, "GOLDEN_PATH", pathlib.Path("/home/Carix/catalog_design_golden.html")
+            ))
+            if not golden_path.is_file():
+                raise StageCounterError("CATALOG_GOLDEN_MISSING")
+            audit = design.audit_catalog(
+                html, cars, golden_path.read_text(encoding="utf-8")
+            )
+            if audit.get("status") != "PASS":
+                raise StageCounterError(
+                    "CATALOG_DESIGN_AUDIT:" + ",".join(audit.get("errors") or [])
+                )
+            stages = _published_stage_map(cars)
+            entries = card_entries(html)
+            rendered = {code: stage for code, stage, _block in entries}
+            if len(entries) != len(rendered) or set(rendered) != set(stages):
+                raise StageCounterError("CATALOG_DESIGN_DB_SET_MISMATCH")
+            for code, stage in rendered.items():
+                if stage != stages[code]:
+                    raise StageCounterError("CATALOG_DESIGN_STAGE_MISMATCH:" + code)
+            detail = "catalog design guard"
+        else:
+            frames, light = {}, {}
+            for car in cars:
+                code = stranica.nomer(car)
+                card_frames = stranica.kadry_mashiny(car)
+                frames[code] = card_frames
+                light[code] = stranica.legkie(card_frames) if card_frames else ([], [])
+            html = stranica.sobrat_katalog(cars, frames, light)
+            if not isinstance(html, str) or "UA-" not in html:
+                raise StageCounterError("CATALOG_BUILDER_INVALID_HTML")
+            html = normalize_catalog_from_rows(html, cars)
+            verify_catalog(html)
+            detail = "legacy catalog guard"
+
         if not isinstance(html, str) or "UA-" not in html:
             raise StageCounterError("CATALOG_BUILDER_INVALID_HTML")
-        html = normalize_catalog_from_rows(html, cars)
-        verify_catalog(html)
         payload = html.encode("utf-8")
         targets = [
             os.path.join(publikaciya.VIDEO, "katalog.html"),
@@ -443,7 +489,7 @@ def rebuild_catalogs_live() -> Tuple[bool, str]:
             for target in targets:
                 if pathlib.Path(target).read_bytes() != payload:
                     raise StageCounterError("CATALOG_READBACK_MISMATCH")
-            return True, "both catalogs rebuilt from one CRM snapshot"
+            return True, "both catalogs rebuilt from one CRM snapshot via " + detail
         except Exception:
             _restore(preimage)
             raise
