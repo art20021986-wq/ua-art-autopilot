@@ -25,6 +25,7 @@ FILES = (
     "start_safe.py",
     "run_all.py",
     "team_bot.py",
+    "crm_voice_watchdog.py",
 )
 MAX_BYTES = 2_000_000
 
@@ -163,6 +164,10 @@ def source_facts(name: str, source: str) -> dict:
             "show_menu", "vvodnye_job",
             "build_application",
         },
+        "crm_voice_watchdog.py": {
+            "_terminate_process_group", "run_killable_attempt",
+            "transcribe_with_restart", "_worker",
+        },
     }.get(name, set())
     patterns = [
         r"Бот обновл[её]н",
@@ -296,13 +301,54 @@ def main() -> int:
         "legacy_launcher_count": len(legacy),
         "start_safe_singleton_present": bool(facts.get("start_safe.py", {}).get("counts", {}).get("singleton_lock")),
     }
-    status = "PASS_ROOT_CAUSE_CONFIRMED" if (
+    expected_after = {
+        "cars_ui.py": "8c8a69834247e58795aace02e768caa8d64f31c200abb1dca003b4af50758780",
+        "team_bot.py": "b640a4dd0dffcc249dbc0f7ce46fb977fca58babc6a3dd1d8c0cf10d3819f03f",
+        "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+        "crm_voice_watchdog.py": "d6c782b55309d3049472f15195935a113387eba1aec8c3365ef7d875a7303efc",
+    }
+    exact_targets = {
+        name: facts.get(name, {}).get("sha256") == expected
+        for name, expected in expected_after.items()
+    }
+    team = sources.get("team_bot.py", "")
+    safe = sources.get("start_safe.py", "")
+    voice = sources.get("crm_voice_watchdog.py", "")
+    remediation = {
+        "exact_target_sha256": exact_targets,
+        "exact_all_targets": all(exact_targets.values()),
+        "cars_killable_voice": "crm_voice_watchdog as _v178_voice" in cars,
+        "cars_old_fixed_deadline_removed": "hard_deadline = started + 4.65" not in cars,
+        "cars_old_nonkillable_stt_removed": "asyncio.to_thread(ai.transcribe" not in cars,
+        "team_killable_voice": "# UA-TASK084-KILLABLE-DRAFT-VOICE" in team,
+        "team_old_nonkillable_stt_removed": "asyncio.to_thread(ai.transcribe, audio)" not in team,
+        "menu_debounce": "# UA-TASK084-MENU-DEBOUNCE" in team,
+        "startup_notice_debounce": "# UA-TASK084-STARTUP-NOTICE-DEBOUNCE" in team,
+        "start_singleton": "# UA-TASK084-START-SINGLETON" in safe,
+        "worker_process_group": "start_new_session=True" in voice,
+        "worker_term_kill": "signal.SIGTERM" in voice and "signal.SIGKILL" in voice,
+        "worker_limit_two": "MAX_CONCURRENT_WORKERS = 2" in voice,
+        "single_running_launcher": (
+            len(launchers) == 1
+            and str(launchers[0].get("state", "")).lower() == "running"
+        ),
+    }
+    initial_cause = (
         root_cause["fixed_deadline_4_65"]
         and root_cause["non_killable_to_thread"]
         and not root_cause["killable_child_present"]
-    ) else "PASS_STATE_CHANGED"
+    )
+    remediation_ok = all(
+        value for value in remediation.values() if isinstance(value, bool)
+    )
     if errors:
         status = "FAIL"
+    elif initial_cause:
+        status = "PASS_ROOT_CAUSE_CONFIRMED"
+    elif remediation_ok:
+        status = "PASS_REMEDIATION_CONFIRMED"
+    else:
+        status = "PASS_STATE_CHANGED"
     result = {
         "task_id": "task_084",
         "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
@@ -315,6 +361,7 @@ def main() -> int:
         "status": status,
         "errors": errors,
         "root_cause": root_cause,
+        "remediation": remediation,
         "always_on_launchers": launchers,
         "legacy_launchers": legacy,
         "sources": facts,
@@ -322,7 +369,12 @@ def main() -> int:
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"status": status, "root_cause": root_cause, "errors": errors}, ensure_ascii=False))
+    print(json.dumps({
+        "status": status,
+        "root_cause": root_cause,
+        "remediation": remediation,
+        "errors": errors,
+    }, ensure_ascii=False))
     return 0 if status != "FAIL" else 1
 
 
