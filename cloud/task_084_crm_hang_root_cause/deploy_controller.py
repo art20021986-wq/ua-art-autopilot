@@ -689,7 +689,8 @@ def run_deploy() -> int:
         current_audit = json.loads(AUDIT.read_text(encoding="utf-8"))
         current_root = current_audit.get("root_cause") or {}
         already_installed = (
-            current_audit.get("status") == "PASS_STATE_CHANGED"
+            current_audit.get("status")
+            in ("PASS_STATE_CHANGED", "PASS_REMEDIATION_CONFIRMED")
             and current_root.get("fixed_deadline_4_65") is False
             and current_root.get("non_killable_to_thread") is False
             and current_root.get("killable_child_present") is True
