@@ -1,0 +1,43 @@
+{
+  "_comment": "TEMPLATE ONLY. Do not fill hashes from memory. Every hash below must be copied verbatim from audit_report.json produced by forensic_audit.py after a real, current audit run against production. If a hash cannot be proven from a verified backup, leave the entry out and mark that target BLOCKED in restore_controller output; do not invent a value.",
+  "schema_version": 1,
+  "task_ref": "task_094",
+  "owner_directive_ref": "UA-WEB-DESIGN-ROLLBACK-035 v1.0",
+  "context_bundle_sha256": "2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c",
+  "memory_version_read": 4,
+  "targets": [
+    {
+      "target_path": "/home/Carix/video/index.html",
+      "selected_backup_path": null,
+      "selected_backup_source": "UNVERIFIED_PLACEHOLDER",
+      "expected_source_sha256": null,
+      "current_production_sha256": null,
+      "expected_restored_sha256": null,
+      "status": "BLOCKED_AWAITING_FORENSIC_AUDIT"
+    },
+    {
+      "target_path": "/home/Carix/video/katalog.html",
+      "selected_backup_path": null,
+      "selected_backup_source": "UNVERIFIED_PLACEHOLDER",
+      "expected_source_sha256": null,
+      "current_production_sha256": null,
+      "expected_restored_sha256": null,
+      "status": "BLOCKED_AWAITING_FORENSIC_AUDIT"
+    }
+  ],
+  "additional_presentation_assets": [
+    "_comment": "Populate only if forensic_audit.py identifies CSS/JS files actually changed by the incident chain (TASK 086 / TASK 093)."
+  ],
+  "business_data_invariants": {
+    "total_vehicles": 13,
+    "stage_kyiv": 3,
+    "stage_georgia": 1,
+    "stage_ferry": 7,
+    "stage_korea": 2,
+    "required_ids_present": [
+      "UA-0001","UA-0002","UA-0003","UA-0004","UA-0005","UA-0006","UA-0007",
+      "UA-0008","UA-0009","UA-0010","UA-0011","UA-0012","UA-0013"
+    ],
+    "ua_0011_stage": "Ferry"
+  }
+}
