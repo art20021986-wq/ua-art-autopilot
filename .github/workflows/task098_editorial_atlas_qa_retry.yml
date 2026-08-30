@@ -7,6 +7,7 @@ on:
       - '.github/workflows/task098_editorial_atlas_qa_retry.yml'
       - 'automation/task098_collect_context.py'
       - 'automation/task098_validate.py'
+      - 'automation/task098_run_validator.py'
   workflow_dispatch:
 
 permissions:
@@ -142,7 +143,7 @@ jobs:
             echo "$unexpected"
             exit 1
           fi
-          python3 automation/task098_validate.py
+          python3 automation/task098_run_validator.py
 
       - name: Commit corrected QA package safely
         shell: bash
