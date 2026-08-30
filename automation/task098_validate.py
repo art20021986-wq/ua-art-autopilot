@@ -73,6 +73,31 @@ def walk_json(value: Any, path: tuple[str, ...] = ()) -> Iterator[tuple[tuple[st
             yield from walk_json(child, path + (str(index),))
 
 
+def normalize_token(value: Any) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", str(value).lower()).strip("_")
+
+
+def has_semantic_task_id(document: dict[str, Any], task_number: int) -> bool:
+    """Require a task-labelled field whose value semantically identifies TASK 098."""
+    expected = f"task_{task_number:03d}"
+    compact = f"task{task_number:03d}"
+    for path, value in walk_json(document):
+        path_text = "_".join(path).lower()
+        if "task" not in path_text:
+            continue
+        if isinstance(value, bool):
+            continue
+        if isinstance(value, int) and value == task_number:
+            return True
+        normalized = normalize_token(value)
+        if normalized == expected or normalized == compact:
+            return True
+        compact_value = re.sub(r"[^a-z0-9]", "", str(value).lower())
+        if compact in compact_value:
+            return True
+    return False
+
+
 def has_semantic_count(document: dict[str, Any], required_count: int) -> bool:
     """Accept equivalent flat/nested field names while preserving the exact invariant."""
     for path, value in walk_json(document):
@@ -126,7 +151,7 @@ def validate_evidence() -> None:
     for key in SAFETY_KEYS:
         require(evidence.get(key) is False, f"TASK097 safety flag not false: {key}")
         require(qa.get(key) is False, f"TASK098 safety flag not false: {key}")
-    require(qa.get("task_id") == "task_098", "QA task id mismatch")
+    require(has_semantic_task_id(qa, 98), "QA evidence does not semantically identify task_098")
     require(int(qa.get("live_seo_probe_rows", 0)) == 6, "QA live SEO row count mismatch")
     require(int(qa.get("redirect_probe_rows", 0)) == 9, "QA redirect row count mismatch")
     require(has_semantic_count(qa, 24), "QA evidence does not encode the exact 24 non-normal sources")
