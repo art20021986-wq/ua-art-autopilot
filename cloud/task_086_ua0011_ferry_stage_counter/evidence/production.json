@@ -1,6 +1,6 @@
 {
   "apply": {
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T003513Z_28e2ef8a21",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T003911Z_46236198b5",
     "before": {
       "auto_number": "UA-0011",
       "days_to_kyiv": null,
@@ -136,23 +136,23 @@
       "removed_legacy_triggers": []
     },
     "errors": [
-      "Task086Error:PUBLISHER_FAILED:Публикация отменена: каталоги и счётчики не подтверждены (StageCounterError:CHIP_REWRITE_COUNT:all,korea,more,gruzia,kiev)."
+      "Task086Error:PUBLISHER_FAILED:Публикация отменена: каталоги и счётчики не подтверждены (StageCounterError:CHIP_LABEL_MISSING:all)."
     ],
-    "finished_at_utc": "2026-08-30T00:35:27Z",
+    "finished_at_utc": "2026-08-30T00:39:26Z",
     "media_write": false,
     "mode": "APPROVED_PRODUCTION_APPLY",
     "production_write": true,
     "rollback": {
-      "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T003513Z_28e2ef8a21",
+      "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T003911Z_46236198b5",
       "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
       "errors": [],
-      "finished_at_utc": "2026-08-30T00:35:27Z",
+      "finished_at_utc": "2026-08-30T00:39:26Z",
       "mode": "ROLLBACK",
       "production_write": true,
       "quick_check": "ok",
       "reason": "automatic_apply_failure",
       "runtime_llm_tokens": 0,
-      "started_at_utc": "2026-08-30T00:35:27Z",
+      "started_at_utc": "2026-08-30T00:39:25Z",
       "status": "PASS",
       "target": {
         "auto_number": "UA-0011",
@@ -178,35 +178,35 @@
       "cars_ui.py": "fccded4d8eda6887d426ecde44def784e91a89c4dced89b693ef6a9af8cfe7fd",
       "db.py": "7348376054cb2da9fead640c4cae9cdbda6424e69ffa3815a2b08556f398af37",
       "publikaciya.py": "7fb9be6e48f21fceaebaff479682a5c6eea93ed5a929356232fe082a9408f2da",
-      "stage_counter_guard.py": "5d02321504b8618386b84f549fce6b7a137bb0c2b9892ddec63a74c31c33eaad",
+      "stage_counter_guard.py": "3678f7c6888b5a6f1d920694d54ab810ec5e8e1c6b39de9dc5a08ad6dffb147d",
       "stranica.py": "4b188383182b63d38489b63224bce8a6fd07d9b06d67e3d17cb4729542f4635a"
     },
-    "started_at_utc": "2026-08-30T00:35:12Z",
+    "started_at_utc": "2026-08-30T00:39:11Z",
     "status": "ROLLED_BACK"
   },
   "automatic_remote_retry": true,
   "bot_restarted": true,
   "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
   "errors": [
-    "ControllerError:APPLY_FAIL:Task086Error:PUBLISHER_FAILED:Публикация отменена: каталоги и счётчики не подтверждены (StageCounterError:CHIP_REWRITE_COUNT:all,korea,more,gruzia,kiev)."
+    "ControllerError:APPLY_FAIL:Task086Error:PUBLISHER_FAILED:Публикация отменена: каталоги и счётчики не подтверждены (StageCounterError:CHIP_LABEL_MISSING:all)."
   ],
-  "finished_at_utc": "2026-08-30T00:35:53Z",
+  "finished_at_utc": "2026-08-30T00:39:53Z",
   "recovery_restart": {
     "command": "python3.10 /home/Carix/start_safe.py",
     "restart_accepted": true,
     "task_id": 266084
   },
   "rollback": {
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T003513Z_28e2ef8a21",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/task086_backups/20260830T003911Z_46236198b5",
     "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
     "errors": [],
-    "finished_at_utc": "2026-08-30T00:35:27Z",
+    "finished_at_utc": "2026-08-30T00:39:26Z",
     "mode": "ROLLBACK",
     "production_write": true,
     "quick_check": "ok",
     "reason": "automatic_apply_failure",
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-08-30T00:35:27Z",
+    "started_at_utc": "2026-08-30T00:39:25Z",
     "status": "PASS",
     "target": {
       "auto_number": "UA-0011",
@@ -238,7 +238,7 @@
       "cars_ui.py": "fccded4d8eda6887d426ecde44def784e91a89c4dced89b693ef6a9af8cfe7fd",
       "db.py": "7348376054cb2da9fead640c4cae9cdbda6424e69ffa3815a2b08556f398af37",
       "publikaciya.py": "7fb9be6e48f21fceaebaff479682a5c6eea93ed5a929356232fe082a9408f2da",
-      "stage_counter_guard.py": "5d02321504b8618386b84f549fce6b7a137bb0c2b9892ddec63a74c31c33eaad",
+      "stage_counter_guard.py": "3678f7c6888b5a6f1d920694d54ab810ec5e8e1c6b39de9dc5a08ad6dffb147d",
       "stranica.py": "4b188383182b63d38489b63224bce8a6fd07d9b06d67e3d17cb4729542f4635a"
     },
     "catalogs_before": {
@@ -252,7 +252,7 @@
         "chip_counts": {},
         "path": "/home/Carix/site/katalog.html",
         "preexisting_issues": [
-          "chips:CHIP_COUNT_all:0",
+          "chips:CHIP_LABEL_COUNT_all:0",
           "preexisting_counter_drift"
         ],
         "protected_ua0009_catalog_count": 1,
@@ -330,7 +330,7 @@
         "chip_counts": {},
         "path": "/home/Carix/video/katalog.html",
         "preexisting_issues": [
-          "chips:CHIP_COUNT_all:0",
+          "chips:CHIP_LABEL_COUNT_all:0",
           "preexisting_counter_drift"
         ],
         "protected_ua0009_catalog_count": 1,
@@ -521,7 +521,7 @@
       }
     },
     "errors": [],
-    "finished_at_utc": "2026-08-30T00:34:08Z",
+    "finished_at_utc": "2026-08-30T00:38:09Z",
     "media_write": false,
     "mode": "SHADOW",
     "production_write": false,
@@ -550,7 +550,7 @@
       "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a",
       "stranica.py": "9c0aa07201ab4b5681a2f2e6d97bffab6f821c5c20d04ee4be57bf0748fcd244"
     },
-    "started_at_utc": "2026-08-30T00:34:07Z",
+    "started_at_utc": "2026-08-30T00:38:09Z",
     "status": "PASS",
     "visual_preview": {
       "checks": {
@@ -565,7 +565,7 @@
         "route": true,
         "vin_4289": true
       },
-      "html_sha256": "63c3f4f4eb2c8ae2ba987be109e8561e1d01f81ebcc8f8cd6ab9bdb8012e9eb6",
+      "html_sha256": "e7904ab041b1b6a77a28d0f19985a52af43af6da50997bbd056db335a01e538b",
       "media_manifest": [
         {
           "bytes": 332961,
@@ -788,6 +788,6 @@
       ]
     }
   },
-  "started_at_utc": "2026-08-30T00:33:05Z",
+  "started_at_utc": "2026-08-30T00:37:06Z",
   "status": "ROLLED_BACK"
 }
