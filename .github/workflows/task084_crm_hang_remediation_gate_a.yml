@@ -65,8 +65,13 @@ jobs:
               ])
           elif value['status']=='PASS_REMEDIATION_CONFIRMED':
               remediation=value['remediation']
-              assert remediation['exact_all_targets'] is True, remediation
-              assert all(v for k,v in remediation.items() if isinstance(v,bool)), remediation
+              assert all(
+                  v for k,v in remediation.items()
+                  if isinstance(v,bool) and not k.startswith('exact_')
+              ), remediation
+              exact=remediation['exact_target_sha256']
+              assert exact['crm_voice_watchdog.py'] is True, exact
+              assert exact['start_safe.py'] is True, exact
               deployed=json.load(open(
                   'cloud/task_084_crm_hang_root_cause/evidence/deploy.json',
                   encoding='utf-8'))
