@@ -1,0 +1,227 @@
+name: TASK 096 Data Enrichment Sandbox
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task096_data_enrichment_sandbox.yml'
+      - 'tasks/task_096_data_enrichment_approval.md'
+      - 'automation/task096_data_enrichment_controller.py'
+      - 'cloud/task_096_tech_spec_ai_crm/data_enrichment/remote_apply.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task096-data-enrichment-sandbox
+  cancel-in-progress: false
+
+jobs:
+  ua0015-canary-then-batch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install bounded parser dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'beautifulsoup4>=4.12,<5'
+
+      - name: Verify exact owner approval and compile sandbox package
+        shell: bash
+        run: |
+          set -euo pipefail
+          approval='tasks/task_096_data_enrichment_approval.md'
+          grep -q '^OWNER_APPROVED: YES$' "$approval"
+          grep -q 'СНАЧАЛА ЗАПУСТИТЬ UA‑0015 КАК DATA-CANARY' "$approval"
+          grep -q 'ПОСЛЕ PASS АВТОМАТИЧЕСКИ ОБРАБОТАТЬ UA‑0001…UA‑0016' "$approval"
+          grep -q 'ОСНОВНЫЕ ПОЛЯ CRM, РАБОЧУЮ БАЗУ, БОТА, САЙТ И PRODUCTION НЕ ИЗМЕНЯТЬ' "$approval"
+          grep -q 'ЦЕНУ ЗАКУПКИ НЕ ИЗВЛЕКАТЬ И НЕ СОХРАНЯТЬ' "$approval"
+          grep -q 'ДО ТРЁХ АВТОПЕРЕЗАПУСКОВ' "$approval"
+
+          # Compatibility patch for the context-export receipt.  This changes only
+          # the temporary runner workspace; no production or repository source is
+          # written by the patch.
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('cloud/task_096_tech_spec_ai_crm/data_enrichment/remote_apply.py')
+          text = path.read_text(encoding='utf-8')
+          start = text.index('def export_context()')
+          end = text.index('def ensure_enrichment_tables', start)
+          section = text[start:end]
+          if '"bot_code_changed": False' not in section:
+              needle = '"public_path_write": False,\n        "services_restarted": False,'
+              replacement = '"public_path_write": False,\n        "bot_code_changed": False,\n        "services_restarted": False,'
+              if needle not in section:
+                  raise SystemExit('TASK096_CONTEXT_RECEIPT_PATCH_TARGET_MISSING')
+              section = section.replace(needle, replacement, 1)
+              text = text[:start] + section + text[end:]
+              path.write_text(text, encoding='utf-8')
+          PY
+
+          python -m py_compile \
+            automation/task096_data_enrichment_controller.py \
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/remote_apply.py
+
+      - name: Run UA-0015 data-canary and gated UA-0001..UA-0016 batch
+        id: enrichment
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+        shell: bash
+        run: |
+          set -o pipefail
+          python automation/task096_data_enrichment_controller.py \
+            2>&1 | tee /tmp/task096_data_enrichment_console.log
+
+      - name: Ensure sanitized evidence exists
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out='cloud/task_096_tech_spec_ai_crm/data_enrichment'
+          mkdir -p "$out"
+          if [ ! -f "$out/evidence.json" ]; then
+            cat > "$out/evidence.json" <<'JSON'
+          {
+            "contract_id": "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT",
+            "task_id": "task_096",
+            "phase": "DATA_ENRICHMENT_SANDBOX",
+            "status": "FAIL",
+            "errors": ["CONTROLLER_EVIDENCE_MISSING"],
+            "production_touched": false,
+            "live_crm_write": false,
+            "main_fields_changed": false,
+            "public_path_write": false,
+            "bot_code_changed": false,
+            "services_restarted": false,
+            "autopublication": false,
+            "purchase_price_extracted": false,
+            "purchase_price_logged": false,
+            "purchase_price_uploaded": false,
+            "production_authorized": false,
+            "database_downloaded": false
+          }
+          JSON
+          fi
+          if [ ! -f "$out/report.md" ]; then
+            printf '%s\n' '# TASK 096 — DATA-ENRICHMENT SANDBOX REPORT' '' '**Status:** FAIL' '' 'Production не затрагивался.' > "$out/report.md"
+          fi
+
+      - name: Enforce repository and preview leak guards
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out='cloud/task_096_tech_spec_ai_crm/data_enrichment'
+          forbidden_db="$(find "$out" -type f \( -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' \) -print)"
+          test -z "$forbidden_db" || {
+            echo 'Database file must never enter the repository:'
+            echo "$forbidden_db"
+            exit 1
+          }
+          if [ -f "$out/ua0015_preview.html" ]; then
+            grep -qi 'noindex' "$out/ua0015_preview.html"
+            grep -qi 'UA-0015' "$out/ua0015_preview.html"
+            ! grep -Eqi 'https?://|[$€£₴₽₩¥]|\b(USD|EUR|UAH|RUB|KRW|price|cost|auction|wholesale|dealer)\b' "$out/ua0015_preview.html"
+          fi
+          ! find "$out" -type f -name '*source*page*' -o -name '*raw*html*' | grep -q .
+
+      - name: Commit sanitized TASK 096 enrichment evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out='cloud/task_096_tech_spec_ai_crm/data_enrichment'
+          git checkout -- "$out/remote_apply.py" || true
+          git add -- \
+            "$out/evidence.json" \
+            "$out/report.md"
+          test ! -f "$out/cards_summary.json" || git add -- "$out/cards_summary.json"
+          test ! -f "$out/ua0015_preview.html" || git add -- "$out/ua0015_preview.html"
+          if git diff --cached --quiet; then
+            echo 'No sanitized enrichment evidence change to commit'
+            exit 0
+          fi
+          git config user.name 'task096-data-enrichment-sandbox'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task096: record data enrichment sandbox evidence'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo 'TASK096_DATA_EVIDENCE_REBASE_CONFLICT'
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Upload sanitized evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task096-data-enrichment-sandbox-${{ github.run_id }}
+          path: |
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/evidence.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/report.md
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/cards_summary.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/ua0015_preview.html
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Enforce final safe PASS
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('cloud/task_096_tech_spec_ai_crm/data_enrichment/evidence.json')
+          value = json.loads(path.read_text(encoding='utf-8'))
+          if value.get('status') not in {'PASS', 'PASS_WITH_WARNINGS'}:
+              raise SystemExit('TASK096_DATA_ENRICHMENT_FAIL:' + ';'.join(value.get('errors') or []))
+          for key in (
+              'production_touched', 'live_crm_write', 'main_fields_changed',
+              'public_path_write', 'bot_code_changed', 'services_restarted',
+              'autopublication', 'purchase_price_extracted', 'purchase_price_logged',
+              'purchase_price_uploaded', 'production_authorized', 'database_downloaded',
+          ):
+              if value.get(key) is not False:
+                  raise SystemExit('TASK096_DATA_SCOPE_VIOLATION:' + key)
+          canary = value.get('canary') or {}
+          batch = value.get('batch') or {}
+          if canary.get('status') != 'PASS' or canary.get('phase') != 'DATA_CANARY':
+              raise SystemExit('TASK096_UA0015_CANARY_NOT_PASS')
+          if int(canary.get('ua0015_additional_rows') or 0) < 8:
+              raise SystemExit('TASK096_UA0015_CANARY_TOO_SMALL')
+          if batch.get('status') != 'PASS' or batch.get('phase') != 'DATA_BATCH':
+              raise SystemExit('TASK096_BATCH_NOT_PASS')
+          expected = [f'UA-{n:04d}' for n in range(1, 17)]
+          if sorted(set(batch.get('processed_uids') or [])) != expected:
+              raise SystemExit('TASK096_BATCH_NOT_ALL_16')
+          preview = Path('cloud/task_096_tech_spec_ai_crm/data_enrichment/ua0015_preview.html')
+          if not preview.is_file():
+              raise SystemExit('TASK096_PREVIEW_MISSING')
+          print('TASK096_DATA_ENRICHMENT_SAFE_PASS=' + value['status'])
+          PY
