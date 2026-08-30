@@ -1,0 +1,105 @@
+not os.environ.get("TASK096_LIVE_DB"):
+        raise Task096Error("LIVE_DB_PATH_DRIFT")
+    TASK_ROOT.mkdir(parents=True, exist_ok=True)
+    required_package_files()
+
+    started = utc_now()
+    warnings: list[str] = []
+    source_stat_before = LIVE_DB.stat()
+    source = open_read_only(LIVE_DB)
+    try:
+        live_qc = quick_check(source)
+        if live_qc != "ok":
+            raise Task096Error("LIVE_QUICK_CHECK_FAILED:" + live_qc)
+        source_tables = table_names(source)
+        if "cars" not in source_tables:
+            raise Task096Error("LIVE_CARS_TABLE_MISSING")
+        live_digest, live_count, cards_found, cards_missing, registry = safe_projection(source)
+        if cards_missing:
+            warnings.append("CARDS_NOT_PRESENT_IN_LIVE_CRM:" + ",".join(cards_missing))
+        source_total_changes_before = source.total_changes
+        stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        backup_path = BACKUP_ROOT / ("crm_backup_%s.db" % stamp)
+        backup_info = create_consistent_backup(source, backup_path)
+        source_total_changes_after = source.total_changes
+        if source_total_changes_before != 0 or source_total_changes_after != 0:
+            raise Task096Error("LIVE_CONNECTION_REPORTED_CHANGES")
+    finally:
+        source.close()
+
+    source_stat_after = LIVE_DB.stat()
+    # mtime/size drift can be caused by the running CRM; it is evidence, not proof
+    # of a task write.  Our connection remained query_only with total_changes=0.
+    external_drift = (
+        source_stat_before.st_size != source_stat_after.st_size
+        or source_stat_before.st_mtime_ns != source_stat_after.st_mtime_ns
+    )
+    if external_drift:
+        warnings.append("LIVE_DB_CHANGED_EXTERNALLY_DURING_READONLY_BACKUP")
+
+    sandbox_path = SANDBOX_ROOT / ("crm_task096_sandbox_%s.db" % stamp)
+    sandbox_info = apply_sandbox_schema(backup_path, sandbox_path, registry)
+
+    selftest = run_json_script(SELFTEST)
+    if selftest.get("ALL_TESTS_PASS") is not True:
+        raise Task096Error("SELFTEST_DID_NOT_PASS")
+
+    source_raw = run_json_script(SOURCE_CHECK, timeout=120)
+    sources = sanitize_source_result(source_raw)
+    unreachable = [
+        name
+        for name, item in sources["sources"].items()
+        if item.get("reachable") is not True
+    ]
+    if unreachable:
+        warnings.append("SOURCES_UNREACHABLE:" + ",".join(unreachable))
+
+    canary = validate_canary()
+    if canary.get("pass") is not True:
+        raise Task096Error("CANARY_VALIDATION_FAILED")
+
+    points = technical_points()
+    missing_points = [name for name, item in points.items() if not item["exists"]]
+    if missing_points:
+        warnings.append("TECHNICAL_POINTS_MISSING:" + ",".join(missing_points))
+
+    result = {
+        "contract_id": CONTRACT_ID,
+        "task_id": "task_096",
+        "phase": "BACKUP_SANDBOX_CANARY_REPORT",
+        "status": "PASS_WITH_WARNINGS" if warnings else "PASS",
+        "started_at_utc": started,
+        "finished_at_utc": utc_now(),
+        "live_crm": {
+            "path": str(LIVE_DB),
+            "opened_mode": "ro",
+            "query_only": True,
+            "quick_check": "ok",
+            "connection_total_changes": 0,
+            "row_count": live_count,
+            "safe_projection_sha256": live_digest,
+            "external_file_drift_observed": external_drift,
+        },
+        "backup": backup_info,
+        "sandbox": sandbox_info,
+        "selftest": selftest,
+        "sources": sources,
+        "canary": canary,
+        "compatibility": {
+            "technical_points": points,
+            "cards_found": cards_found,
+            "cards_missing": cards_missing,
+        },
+        "warnings": warnings,
+        "errors": [],
+        "production_touched": False,
+        "live_crm_write": False,
+        "main_fields_changed": False,
+        "public_path_write": False,
+        "bot_code_changed": False,
+        "services_restarted": False,
+        "autopublication": False,
+        "purchase_price_extracted": False,
+        "purchase_price_logged": False,
+        "purchase_price_uploaded": False,
+        "o

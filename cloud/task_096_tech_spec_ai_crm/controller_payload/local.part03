@@ -1,0 +1,86 @@
+        ("automobile_catalog", "Automobile-Catalog"),
+        ("auto_data", "Auto-Data"),
+    ):
+        item = sources.get(key) or {}
+        source_lines.append(
+            "- %s: reachable=%s, HTTP=%s"
+            % (label, item.get("reachable"), item.get("status_code"))
+        )
+    warning_block = "\n".join("- " + item for item in warnings) if warnings else "- Нет"
+    return """# TASK 096 — controller/PythonAnywhere sandbox report
+
+**Status:** {status}
+**Production touched:** NO
+**Live CRM write:** NO
+**Main CRM fields changed:** NO
+**Autopublication:** NO
+**Production authorized:** NO
+
+## Выполнено
+- Рабочая CRM открыта только через `mode=ro` и `PRAGMA query_only=ON`.
+- Создана закрытая backup-копия внутри разрешённой папки TASK 096.
+- Создана отдельная sandbox-копия; схема `Дополнительной спецификации` применена только к ней.
+- Основная таблица `cars`, её колонки и безопасная проекция строк сохранены без изменений.
+- Offline self-test защиты ручных полей, дедупликации и запрета закупочной цены выполнен.
+- Непубличный `noindex` HTML-canary проверен; в публичные пути не записывался.
+- Технические точки CRM/публикации проверялись только на наличие и хеш; код не изменялся.
+
+## Совместимость карточек
+- Найдено: {found}
+- Отсутствует в фактической CRM: {missing}
+- Строк в sandbox-реестре основных полей: {registry_rows}
+- Новых строк дополнительной спецификации на старте: {additional_rows}
+
+## Доступность источников
+{source_lines}
+
+## Предупреждения
+{warning_block}
+
+## Следующий барьер
+Production остаётся заблокированным. Данный отчёт не является командой на внедрение в рабочую CRM.
+""".format(
+        status=status,
+        found=", ".join(sandbox.get("cards_found") or []) or "нет",
+        missing=", ".join(sandbox.get("cards_missing") or []) or "нет",
+        registry_rows=sandbox.get("primary_registry_rows"),
+        additional_rows=sandbox.get("additional_spec_rows_initial"),
+        source_lines="\n".join(source_lines),
+        warning_block=warning_block,
+    )
+
+
+def run() -> dict[str, Any]:
+    for name in UPLOAD_NAMES:
+        path = PACKAGE / name
+        if not path.is_file():
+            raise ControllerError("LOCAL_FILE_MISSING:" + name)
+        compile(path.read_text(encoding="utf-8"), str(path), "exec") if path.suffix == ".py" else None
+
+    api = PythonAnywhereAPI()
+
+    # Step 1: create only the owner-approved closed directory.
+    api.delete_file(REMOTE_READY)
+    marker_payload = json.dumps(
+        {"task_id": "task_096", "ready": True, "created_at_utc": utc_now()},
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    mkdir_command = (
+        "set -e; mkdir -p {root}; printf %s {payload} > {marker}"
+        .format(
+            root=urllib.parse.quote(REMOTE_DIR, safe="/._-"),
+            payload=urllib.parse.quote(marker_payload, safe="{}\":,._-TZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            marker=urllib.parse.quote(REMOTE_READY, safe="/._-"),
+        )
+    )
+    # URL quoting is not shell quoting.  Replace with robust single-quoted command.
+    mkdir_command = (
+        "set -e; mkdir -p '" + REMOTE_DIR + "'; "
+        "printf '%s' '" + marker_payload.replace("'", "'\"'\"'") + "' > '" + REMOTE_READY + "'"
+    )
+    trigger = api.launch(mkdir_command, "TASK096 create approved sandbox directory")
+    try:
+        ready = api.wait_json(REMOTE_READY, 180)
+        if ready.get("ready") is not True or ready.get("task_id") != "task_096":
+            

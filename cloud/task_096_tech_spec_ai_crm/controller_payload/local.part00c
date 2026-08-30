@@ -1,0 +1,30 @@
+       request_headers = {
+            "Authorization": "Token " + self.token,
+            "User-Agent": "ua-art-task096-controller/1.0",
+        }
+        request_headers.update(headers or {})
+        request = urllib.request.Request(
+            url,
+            data=data,
+            headers=request_headers,
+            method=method,
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                status = int(response.status)
+                body = response.read(MAX_BYTES + 1)
+        except urllib.error.HTTPError as exc:
+            status = int(exc.code)
+            body = exc.read(MAX_BYTES + 1)
+        except Exception as exc:
+            raise ControllerError("NETWORK_ERROR:" + type(exc).__name__) from exc
+        if len(body) > MAX_BYTES:
+            raise ControllerError("RESPONSE_TOO_LARGE")
+        if status not in allowed:
+            path = urllib.parse.urlsplit(url).path
+            raise ControllerError("HTTP_%d:%s" % (status, path))
+        return status, body
+
+    @staticmethod
+    def file_url(path: str) -> str:
+        if path != REMO

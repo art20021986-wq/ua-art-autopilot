@@ -1,0 +1,39 @@
+wner_action_required": False,
+        "production_authorized": False,
+    }
+    return result
+
+
+def main() -> int:
+    TASK_ROOT.mkdir(parents=True, exist_ok=True)
+    try:
+        result = execute()
+    except Exception as exc:  # fail closed, always leave sanitized evidence
+        result = {
+            "contract_id": CONTRACT_ID,
+            "task_id": "task_096",
+            "phase": "BACKUP_SANDBOX_CANARY_REPORT",
+            "status": "FAIL",
+            "started_at_utc": None,
+            "finished_at_utc": utc_now(),
+            "warnings": [],
+            "errors": [type(exc).__name__ + ":" + str(exc)[:800]],
+            "production_touched": False,
+            "live_crm_write": False,
+            "main_fields_changed": False,
+            "public_path_write": False,
+            "bot_code_changed": False,
+            "services_restarted": False,
+            "autopublication": False,
+            "purchase_price_extracted": False,
+            "purchase_price_logged": False,
+            "purchase_price_uploaded": False,
+            "production_authorized": False,
+        }
+    atomic_json(RECEIPT, result)
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+    return 0 if result.get("status") in {"PASS", "PASS_WITH_WARNINGS"} else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,104 @@
+ 403, 404, 409),
+        )
+        identifier = self._object_id(body) if status in (200, 201, 202) else None
+        if not identifier:
+            raise ControllerError("SCHEDULE_CREATE_HTTP_%d" % status)
+        return ("schedule", identifier)
+
+    def launch(self, command: str, description: str) -> tuple[str, int]:
+        # Prefer a disposable Bash console (immediate); use a one-shot scheduled
+        # task only when the console endpoint is unavailable.
+        try:
+            trigger = self.create_console("bash")
+            self.send_console(trigger[1], command)
+            return trigger
+        except Exception:
+            return self.create_schedule(command, description)
+
+    def cleanup_trigger(self, trigger: tuple[str, int] | None) -> None:
+        if not trigger:
+            return
+        kind, identifier = trigger
+        if kind == "console":
+            self.request(
+                "DELETE",
+                BASE + "consoles/%d/" % identifier,
+                allowed=(200, 202, 204, 404),
+            )
+        else:
+            self.request(
+                "DELETE",
+                BASE + "schedule/%d/" % identifier,
+                allowed=(200, 202, 204, 404),
+            )
+
+    def wait_json(self, path: str, timeout_seconds: int) -> dict[str, Any]:
+        deadline = time.monotonic() + timeout_seconds
+        last_invalid = False
+        while time.monotonic() < deadline:
+            raw = self.read(path, missing_ok=True)
+            if raw:
+                try:
+                    value = json.loads(raw.decode("utf-8"))
+                except Exception:
+                    last_invalid = True
+                else:
+                    if isinstance(value, dict):
+                        return value
+            time.sleep(5)
+        raise ControllerError(
+            "REMOTE_JSON_TIMEOUT_INVALID" if last_invalid else "REMOTE_JSON_TIMEOUT"
+        )
+
+
+def validate_receipt(value: dict[str, Any]) -> None:
+    if value.get("contract_id") != CONTRACT_ID:
+        raise ControllerError("CONTRACT_MISMATCH")
+    if value.get("task_id") != "task_096":
+        raise ControllerError("TASK_ID_MISMATCH")
+    if value.get("status") not in {"PASS", "PASS_WITH_WARNINGS"}:
+        raise ControllerError(
+            "REMOTE_FAIL:" + ";".join(str(item) for item in (value.get("errors") or []))
+        )
+    required_false = (
+        "production_touched",
+        "live_crm_write",
+        "main_fields_changed",
+        "public_path_write",
+        "bot_code_changed",
+        "services_restarted",
+        "autopublication",
+        "purchase_price_extracted",
+        "purchase_price_logged",
+        "purchase_price_uploaded",
+        "production_authorized",
+    )
+    bad = [name for name in required_false if value.get(name) is not False]
+    if bad:
+        raise ControllerError("SCOPE_VIOLATION:" + ",".join(bad))
+    live = value.get("live_crm") or {}
+    if live.get("path") != "/home/Carix/crm.db":
+        raise ControllerError("LIVE_DB_PATH_MISMATCH")
+    if live.get("opened_mode") != "ro" or live.get("query_only") is not True:
+        raise ControllerError("LIVE_DB_NOT_READ_ONLY")
+    if live.get("connection_total_changes") != 0:
+        raise ControllerError("LIVE_CONNECTION_CHANGED")
+    backup = value.get("backup") or {}
+    sandbox = value.get("sandbox") or {}
+    if not str(backup.get("relative_path") or "").startswith("backups/"):
+        raise ControllerError("BACKUP_PATH_INVALID")
+    if not str(sandbox.get("relative_path") or "").startswith("sandbox/"):
+        raise ControllerError("SANDBOX_PATH_INVALID")
+    if (value.get("selftest") or {}).get("ALL_TESTS_PASS") is not True:
+        raise ControllerError("SELFTEST_NOT_PASS")
+    if (value.get("canary") or {}).get("pass") is not True:
+        raise ControllerError("CANARY_NOT_PASS")
+
+
+def report_text(value: dict[str, Any]) -> str:
+    status = str(value.get("status"))
+    warnings = [str(item) for item in (value.get("warnings") or [])]
+    sandbox = value.get("sandbox") or {}
+    sources = (value.get("sources") or {}).get("sources") or {}
+    source_lines = []
+    for key, label in (

@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+"""TASK 096 bounded PythonAnywhere controller.
+
+Owner-authorized scope:
+BACKUP -> SANDBOX -> CANARY -> REPORT only.
+
+The live CRM is opened via SQLite URI mode=ro and PRAGMA query_only=ON.  The
+only remote writes are beneath:
+/home/Carix/autopilot_inbox/cloud/task_096_tech_spec_ai_crm/
+
+No public path, service, bot code, publication pipeline, or live CRM row is
+modified.  Purchase/auction/wholesale values are never queried into evidence,
+logged, exported, or uploaded.  The sealed SQLite backup remains only inside
+the owner-approved closed TASK 096 directory and is never returned to GitHub.
+"""
+from __future__ import annotations
+
+import datetime as dt
+import hashlib
+import json
+import os
+import pathlib
+import re
+import shutil
+import sqlite3
+import subprocess
+import sys
+import tempfile
+import traceback
+from typing import Any, Iterable
+
+CONTRACT_ID = "TECH-SPEC-AI-CRM-017-V3.0-TASK096"
+APP_ROOT = pathlib.Path(os.environ.get("TASK096_APP_ROOT", "/home/Carix")).resolve()
+TASK_ROOT = pathlib.Path(
+    os.environ.get(
+        "TASK096_ROOT",
+        str(APP_ROOT / "autopilot_inbox/cloud/task_096_tech_spec_ai_crm"),
+    )
+).resolve()
+LIVE_DB = pathlib.Path(os.environ.get("TASK096_LIVE_DB", str(APP_ROOT / "crm.db"))).resolve()
+RECEIPT = TASK_ROOT / "controller_receipt.json"
+BACKUP_ROOT = TASK_ROOT / "backups"
+SANDBOX_ROOT = TASK_ROOT / "sandbox"
+SCHEMA = TASK_ROOT / "schema_additional_spec.sql"
+SELFTEST = TASK_ROOT / "selftest.py"
+SOURCE_CHECK = TASK_ROOT / "source_check.py"
+CANARY = TASK_ROOT / "canary_preview.html"
+EXPECTED_CODES = tuple(f"UA-{i:04d}" for i in range(1, 17))
+TECHNICAL_POINTS = (
+    "db.py",
+    "cars_ui.py",
+    "stranica.py",
+    "master_card.py",
+    "cars_schema.py",
+    "publikaciya.py",
+)
+MAX_EVIDENCE_BYTES = 2 * 1024 * 1024
+
+# Field names that must never be selected for evidence or copied into the
+# additional-spec registry.  This is intentionally broader than the app guard.
+FORBIDDEN_FIELD_RE = re.compile(
+    r"(?:purchase|auction|wholesale|dealer[_-]?price|buy[_-]?price|"
+    r"acquisition|internal[_-]?price|cost[_-]?price|себестоим|закуп|аукцион|опт)",
+    re.IGNORECASE,
+)
+
+# Actual CRM column -> canonical operator-only key.  Only these explicitly safe
+# columns are ever inspected.  Values are never written to evidence; the sandbox
+# registry stores only a presence marker so dedup can protect the operator field.
+SAFE_PRIMARY_COLUMN_MAP: dict[str, str] = {
+    "auto_number": "car_uid",
+    "vin": "vin",
+    "marka": "make",
+    "make": "make",
+    "brand": "make",
+    "model": "model",
+    "trim": "trim",
+    "komplektaciya": "trim",
+    "year": "year",
+    "god": "year",
+    "mileage": "mileage",
+    "probeg": "mileage",
+    "body_type": "body_type",
+    "kuzov": "body_type",
+    "color": "color_exterior",
+    "color_exterior": "color_exterior",
+    "color_interior": "color_interior",
+    "fuel": "fuel_type",
+    "fuel_type": "fuel_type",
+    "toplivo": "fuel_type",
+    "transmission": "transmission",
+    "gearbox": "transmission",
+    "korobka": "transmission",
+    "drive": "drivetrain",
+    "drivetrain": "drivetrain",
+    "privod": "drivetrain",
+    "engine": "engine",
+    "engine_volume": "engine_volume",
+    "volume": "engine_volume",
+    "obem": "engine_volume",
+    "power": "power_hp",
+    "power_hp": "power_hp",
+    "status": "status",
+    "published": "published",
+    "location": "location",
+}
+
+
+class Task096Error(RuntimeError):
+    pass
+
+
+def utc_now() -> str:
+    return (
+        dt.datetime.now(dt.timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+
+
+def assert_allowed_write(path: pathlib.Path) -> pathlib.Path:
+    resolved = path.resolve()
+    try:
+        resolved.relative_to(TASK_ROOT)
+    except ValueError as exc:
+        raise Task096Error("WRITE_PATH_OUTSIDE_TASK_ROOT") from exc
+    return resolved
+
+
+def atomic_bytes(path: pathlib.Path, payload: bytes) -> None:
+    path = assert_allowed_write(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, raw = tempfile.mkstemp(prefix="." + path.name + ".", dir=pa

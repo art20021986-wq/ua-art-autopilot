@@ -1,0 +1,72 @@
+raise ControllerError("REMOTE_DIR_MARKER_INVALID")
+    finally:
+        api.cleanup_trigger(trigger)
+
+    # Step 2: upload and read-back exactly the bounded package.
+    upload_hashes: dict[str, str] = {}
+    for name in UPLOAD_NAMES:
+        local = PACKAGE / name
+        payload = local.read_bytes()
+        api.upload(REMOTE_DIR + "/" + name, payload)
+        upload_hashes[name] = sha256_bytes(payload)
+
+    # Step 3: run the bounded remote controller and retrieve JSON evidence only.
+    api.delete_file(REMOTE_RECEIPT)
+    remote_stdout = REMOTE_DIR + "/controller_stdout.log"
+    command = (
+        "cd '" + REMOTE_DIR + "' && "
+        "python3.10 task096_remote_controller.py > controller_stdout.log 2>&1"
+    )
+    trigger = api.launch(command, "TASK096 backup sandbox canary report")
+    try:
+        receipt = api.wait_json(REMOTE_RECEIPT, 1500)
+    finally:
+        api.cleanup_trigger(trigger)
+
+    validate_receipt(receipt)
+    receipt["controller"] = {
+        "status": "PASS",
+        "fetched_at_utc": utc_now(),
+        "uploaded_file_sha256": upload_hashes,
+        "remote_stdout_downloaded": False,
+        "backup_downloaded": False,
+        "sandbox_db_downloaded": False,
+    }
+    return receipt
+
+
+def main() -> int:
+    try:
+        value = run()
+        atomic_json(EVIDENCE, value)
+        atomic_text(REPORT, report_text(value))
+        print(json.dumps(value, ensure_ascii=False, sort_keys=True))
+        return 0
+    except Exception as exc:
+        value = {
+            "contract_id": CONTRACT_ID,
+            "task_id": "task_096",
+            "status": "FAIL",
+            "controller_finished_at_utc": utc_now(),
+            "errors": [type(exc).__name__ + ":" + str(exc)[:800]],
+            "production_touched": False,
+            "live_crm_write": False,
+            "main_fields_changed": False,
+            "public_path_write": False,
+            "services_restarted": False,
+            "autopublication": False,
+            "production_authorized": False,
+        }
+        atomic_json(EVIDENCE, value)
+        atomic_text(
+            REPORT,
+            "# TASK 096 — controller report\n\n"
+            "**Status:** FAIL\n\n"
+            "Ошибка: `%s`\n\nProduction не затрагивался.\n" % value["errors"][0],
+        )
+        print(json.dumps(value, ensure_ascii=False, sort_keys=True))
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

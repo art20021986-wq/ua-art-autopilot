@@ -1,0 +1,98 @@
+not in expected:
+            continue
+        found.add(uid_value)
+        for actual, canonical in pairs:
+            value = by_actual.get(actual)
+            if value is None or str(value).strip() == "":
+                continue
+            # Store a presence marker only.  No operator value, VIN, mileage, price,
+            # or commercial number is copied into the new registry/evidence.
+            registry.append(
+                {
+                    "car_uid": uid_value,
+                    "field_key": canonical,
+                    "normalized_value": "__operator_value_present__",
+                }
+            )
+    missing = sorted(expected - found)
+    return stable_digest(digest_rows), len(digest_rows), sorted(found), missing, registry
+
+
+def create_consistent_backup(source: sqlite3.Connection, destination: pathlib.Path) -> dict[str, Any]:
+    destination = assert_allowed_write(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.exists():
+        raise Task096Error("BACKUP_DESTINATION_ALREADY_EXISTS")
+    target = sqlite3.connect(destination, timeout=45)
+    try:
+        source.backup(target, pages=2048, sleep=0.05)
+        target.commit()
+        result = quick_check(target)
+        if result != "ok":
+            raise Task096Error("BACKUP_QUICK_CHECK_FAILED:" + result)
+    finally:
+        target.close()
+    return {
+        "relative_path": str(destination.relative_to(TASK_ROOT)),
+        "size_bytes": destination.stat().st_size,
+        "sha256": sha256_file(destination),
+        "quick_check": "ok",
+    }
+
+
+def apply_sandbox_schema(backup: pathlib.Path, sandbox: pathlib.Path, registry: Iterable[dict[str, str]]) -> dict[str, Any]:
+    backup = assert_allowed_write(backup)
+    sandbox = assert_allowed_write(sandbox)
+    sandbox.parent.mkdir(parents=True, exist_ok=True)
+    if sandbox.exists():
+        raise Task096Error("SANDBOX_DESTINATION_ALREADY_EXISTS")
+    shutil.copy2(backup, sandbox)
+    before = sqlite3.connect(sandbox, timeout=45)
+    before.row_factory = sqlite3.Row
+    try:
+        before_tables = table_names(before)
+        before_columns = table_columns(before, "cars")
+        digest_before, count_before, found_before, missing_before, _ = safe_projection(before)
+    finally:
+        before.close()
+
+    schema_text = SCHEMA.read_text(encoding="utf-8")
+    connection = sqlite3.connect(sandbox, timeout=45)
+    connection.row_factory = sqlite3.Row
+    try:
+        connection.execute("PRAGMA busy_timeout=45000")
+        connection.executescript(schema_text)
+        for record in registry:
+            connection.execute(
+                "INSERT OR IGNORE INTO primary_field_registry "
+                "(car_uid, field_key, normalized_value) VALUES (?,?,?)",
+                (
+                    record["car_uid"],
+                    record["field_key"],
+                    record["normalized_value"],
+                ),
+            )
+        connection.commit()
+        qc = quick_check(connection)
+        if qc != "ok":
+            raise Task096Error("SANDBOX_QUICK_CHECK_FAILED:" + qc)
+        after_tables = table_names(connection)
+        after_columns = table_columns(connection, "cars")
+        digest_after, count_after, found_after, missing_after, _ = safe_projection(connection)
+        required = {
+            "primary_field_registry",
+            "price_denylist",
+            "additional_specification",
+            "additional_specification_rejections",
+        }
+        missing_tables = sorted(required - set(after_tables))
+        if missing_tables:
+            raise Task096Error("SANDBOX_TABLES_MISSING:" + ",".join(missing_tables))
+        if before_columns != after_columns:
+            raise Task096Error("PRIMARY_CARS_SCHEMA_CHANGED")
+        if digest_before != digest_after or count_before != count_after:
+            raise Task096Error("PRIMARY_CARS_DATA_CHANGED")
+        if found_before != found_after or missing_before != missing_after:
+            raise Task096Error("CARD_SET_CHANGED")
+        registry_count = int(
+            connection.execute("SELECT COUNT(*) FROM primary_field_re

@@ -1,0 +1,58 @@
+> str:
+    return (
+        dt.datetime.now(dt.timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+
+
+def atomic_text(path: pathlib.Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    handle = tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        dir=path.parent,
+        prefix="." + path.name + ".",
+        suffix=".tmp",
+        delete=False,
+    )
+    temporary = pathlib.Path(handle.name)
+    try:
+        with handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def atomic_json(path: pathlib.Path, value: dict[str, Any]) -> None:
+    atomic_text(
+        path,
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, default=str)
+        + "\n",
+    )
+
+
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+class PythonAnywhereAPI:
+    def __init__(self) -> None:
+        self.token = (os.environ.get("PYTHONANYWHERE_API_TOKEN") or "").strip()
+        if not self.token:
+            raise ControllerError("PYTHONANYWHERE_API_TOKEN_MISSING")
+
+    def request(
+        self,
+        method: str,
+        url: str,
+        data: bytes | None = None,
+        headers: dict[str, str] | None = None,
+        allowed: tuple[int, ...] = (200,),
+        timeout: int = 75,
+    ) -> tuple[int, bytes]:
+ 

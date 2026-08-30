@@ -1,0 +1,103 @@
+TE_DIR and not path.startswith(REMOTE_DIR + "/"):
+            raise ControllerError("REMOTE_PATH_NOT_ALLOWED")
+        return BASE + "files/path" + urllib.parse.quote(path, safe="/")
+
+    def read(self, path: str, missing_ok: bool = False) -> bytes | None:
+        status, body = self.request(
+            "GET",
+            self.file_url(path),
+            allowed=(200, 404),
+        )
+        if status == 404:
+            if missing_ok:
+                return None
+            raise ControllerError("REMOTE_FILE_MISSING:" + pathlib.PurePosixPath(path).name)
+        return body
+
+    def delete_file(self, path: str) -> None:
+        self.request("DELETE", self.file_url(path), allowed=(204, 404))
+
+    def upload(self, path: str, data: bytes) -> None:
+        boundary = "----uaart-task096-" + uuid.uuid4().hex
+        filename = pathlib.PurePosixPath(path).name
+        mime = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+        payload = bytearray()
+        payload.extend(("--%s\r\n" % boundary).encode())
+        payload.extend(
+            (
+                'Content-Disposition: form-data; name="content"; filename="%s"\r\n'
+                "Content-Type: %s\r\n\r\n" % (filename, mime)
+            ).encode()
+        )
+        payload.extend(data)
+        payload.extend(("\r\n--%s--\r\n" % boundary).encode())
+        for attempt in range(1, 6):
+            status, _ = self.request(
+                "POST",
+                self.file_url(path),
+                bytes(payload),
+                {"Content-Type": "multipart/form-data; boundary=" + boundary},
+                allowed=(200, 201, 429, 500, 502, 503, 504),
+            )
+            if status in (200, 201):
+                remote = self.read(path)
+                if remote is None or sha256_bytes(remote) != sha256_bytes(data):
+                    raise ControllerError("UPLOAD_READBACK_MISMATCH:" + filename)
+                return
+            if attempt < 5:
+                time.sleep(attempt * 3)
+        raise ControllerError("UPLOAD_FAILED:" + filename)
+
+    @staticmethod
+    def _object_id(body: bytes) -> int | None:
+        try:
+            value = json.loads(body.decode("utf-8"))
+        except Exception:
+            return None
+        if isinstance(value, list) and value:
+            value = value[0]
+        identifier = value.get("id") if isinstance(value, dict) else None
+        return identifier if isinstance(identifier, int) and identifier > 0 else None
+
+    def create_console(self, executable: str = "bash") -> tuple[str, int]:
+        form = urllib.parse.urlencode({"executable": executable}).encode()
+        status, body = self.request(
+            "POST",
+            BASE + "consoles/",
+            form,
+            {"Content-Type": "application/x-www-form-urlencoded"},
+            allowed=(200, 201, 400, 403, 404, 409),
+        )
+        identifier = self._object_id(body) if status in (200, 201) else None
+        if not identifier:
+            raise ControllerError("CONSOLE_CREATE_HTTP_%d" % status)
+        return ("console", identifier)
+
+    def send_console(self, console_id: int, command: str) -> None:
+        form = urllib.parse.urlencode({"input": command + "\n"}).encode()
+        self.request(
+            "POST",
+            BASE + "consoles/%d/send_input/" % console_id,
+            form,
+            {"Content-Type": "application/x-www-form-urlencoded"},
+            allowed=(200,),
+        )
+
+    def create_schedule(self, command: str, description: str) -> tuple[str, int]:
+        moment = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=1)
+        form = urllib.parse.urlencode(
+            {
+                "command": command,
+                "description": description,
+                "enabled": "true",
+                "interval": "daily",
+                "hour": moment.hour,
+                "minute": moment.minute,
+            }
+        ).encode()
+        status, body = self.request(
+            "POST",
+            BASE + "schedule/",
+            form,
+            {"Content-Type": "application/x-www-form-urlencoded"},
+            allowed=(200, 201, 202, 400,

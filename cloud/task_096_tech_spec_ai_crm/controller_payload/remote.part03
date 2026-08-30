@@ -1,0 +1,120 @@
+gistry").fetchone()[0]
+        )
+        denylist_count = int(
+            connection.execute("SELECT COUNT(*) FROM price_denylist").fetchone()[0]
+        )
+        additional_count = int(
+            connection.execute("SELECT COUNT(*) FROM additional_specification").fetchone()[0]
+        )
+    finally:
+        connection.close()
+
+    return {
+        "relative_path": str(sandbox.relative_to(TASK_ROOT)),
+        "size_bytes": sandbox.stat().st_size,
+        "sha256": sha256_file(sandbox),
+        "quick_check": "ok",
+        "source_tables_preserved": set(before_tables).issubset(set(after_tables)),
+        "cars_columns_preserved": True,
+        "cars_rows_preserved": True,
+        "cars_row_count": count_after,
+        "cards_found": found_after,
+        "cards_missing": missing_after,
+        "primary_registry_rows": registry_count,
+        "price_denylist_rows": denylist_count,
+        "additional_spec_rows_initial": additional_count,
+    }
+
+
+def run_json_script(path: pathlib.Path, timeout: int = 90) -> dict[str, Any]:
+    completed = subprocess.run(
+        [sys.executable, str(path)],
+        cwd=str(TASK_ROOT),
+        text=True,
+        capture_output=True,
+        timeout=timeout,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise Task096Error(
+            "%s_FAILED_RC_%d:%s"
+            % (path.name.upper(), completed.returncode, completed.stderr.strip()[:500])
+        )
+    try:
+        result = json.loads(completed.stdout)
+    except Exception as exc:
+        raise Task096Error(path.name.upper() + "_INVALID_JSON") from exc
+    if not isinstance(result, dict):
+        raise Task096Error(path.name.upper() + "_NOT_OBJECT")
+    return result
+
+
+def sanitize_source_result(value: dict[str, Any]) -> dict[str, Any]:
+    sanitized: dict[str, Any] = {"checked_at_utc": value.get("checked_at_utc"), "sources": {}}
+    sources = value.get("sources") or {}
+    for name in ("automobile_catalog", "auto_data"):
+        item = sources.get(name) or {}
+        safe = {
+            "reachable": bool(item.get("reachable")),
+            "status_code": item.get("status_code"),
+        }
+        if item.get("error"):
+            safe["error_type"] = str(item.get("error")).split(":", 1)[0][:120]
+        sanitized["sources"][name] = safe
+    return sanitized
+
+
+def validate_canary() -> dict[str, Any]:
+    text = CANARY.read_text(encoding="utf-8")
+    lower = text.lower()
+    external_links = re.findall(r"(?:href|src)\s*=\s*['\"]https?://", lower)
+    checks = {
+        "noindex": "noindex" in lower,
+        "additional_spec_heading": "дополнительная спецификация" in lower,
+        "non_public_banner": "не публикуется" in lower or "не публиковать" in lower,
+        "external_links": len(external_links),
+        "checkcar_absent": "checkcar" not in lower,
+        "independent_expertise_absent": "независим" not in lower,
+    }
+    checks["pass"] = all(
+        (
+            checks["noindex"],
+            checks["additional_spec_heading"],
+            checks["non_public_banner"],
+            checks["external_links"] == 0,
+            checks["checkcar_absent"],
+            checks["independent_expertise_absent"],
+        )
+    )
+    return checks
+
+
+def technical_points() -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for name in TECHNICAL_POINTS:
+        path = APP_ROOT / name
+        result[name] = {
+            "exists": path.is_file(),
+            "sha256": sha256_file(path) if path.is_file() else None,
+            "modified": False,
+        }
+    return result
+
+
+def required_package_files() -> None:
+    required = (
+        SCHEMA,
+        SELFTEST,
+        SOURCE_CHECK,
+        CANARY,
+        TASK_ROOT / "dedup_check.py",
+        TASK_ROOT / "manual_field_protection.py",
+        TASK_ROOT / "price_exclusion_guard.py",
+    )
+    missing = [item.name for item in required if not item.is_file()]
+    if missing:
+        raise Task096Error("PACKAGE_FILES_MISSING:" + ",".join(sorted(missing)))
+
+
+def execute() -> dict[str, Any]:
+    if LIVE_DB != (APP_ROOT / "crm.db").resolve() and 

@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+"""GitHub -> PythonAnywhere controller for owner-approved TASK 096.
+
+This controller uploads the already-reviewed sandbox package to the single
+allowed remote directory, launches a bounded read-only-backup/sandbox run, and
+downloads only sanitized JSON evidence.  It never downloads the CRM backup or
+sandbox database, never writes to the live CRM/public roots, and never restarts
+services.
+"""
+from __future__ import annotations
+
+import datetime as dt
+import hashlib
+import json
+import mimetypes
+import os
+import pathlib
+import tempfile
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+import uuid
+from typing import Any
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+PACKAGE = ROOT / "cloud/task_096_tech_spec_ai_crm"
+EVIDENCE = PACKAGE / "controller_evidence.json"
+REPORT = PACKAGE / "controller_report.md"
+REMOTE_DIR = "/home/Carix/autopilot_inbox/cloud/task_096_tech_spec_ai_crm"
+REMOTE_RECEIPT = REMOTE_DIR + "/controller_receipt.json"
+REMOTE_READY = REMOTE_DIR + "/controller_dir_ready.json"
+BASE = "https://www.pythonanywhere.com/api/v0/user/Carix/"
+CONTRACT_ID = "TECH-SPEC-AI-CRM-017-V3.0-TASK096"
+MAX_BYTES = 8 * 1024 * 1024
+UPLOAD_NAMES = (
+    "schema_additional_spec.sql",
+    "price_exclusion_guard.py",
+    "dedup_check.py",
+    "manual_field_protection.py",
+    "selftest.py",
+    "source_check.py",
+    "canary_preview.html",
+    "task096_remote_controller.py",
+)
+
+
+class ControllerError(RuntimeError):
+    pass
+
+
+def utc_now() -

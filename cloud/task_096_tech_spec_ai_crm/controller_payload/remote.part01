@@ -1,0 +1,115 @@
+th.parent)
+    temp = pathlib.Path(raw)
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp, path)
+    finally:
+        temp.unlink(missing_ok=True)
+
+
+def atomic_json(path: pathlib.Path, value: dict[str, Any]) -> None:
+    payload = (
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, default=str)
+        + "\n"
+    ).encode("utf-8")
+    if len(payload) > MAX_EVIDENCE_BYTES:
+        raise Task096Error("EVIDENCE_TOO_LARGE")
+    atomic_bytes(path, payload)
+
+
+def sha256_file(path: pathlib.Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def stable_digest(value: Any) -> str:
+    payload = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def quote_ident(name: str) -> str:
+    return '"' + name.replace('"', '""') + '"'
+
+
+def open_read_only(path: pathlib.Path) -> sqlite3.Connection:
+    if not path.is_file():
+        raise Task096Error("LIVE_CRM_DB_MISSING")
+    uri = "file:%s?mode=ro" % path.as_posix()
+    connection = sqlite3.connect(uri, uri=True, timeout=45)
+    connection.row_factory = sqlite3.Row
+    connection.execute("PRAGMA busy_timeout=45000")
+    connection.execute("PRAGMA query_only=ON")
+    query_only = int(connection.execute("PRAGMA query_only").fetchone()[0])
+    if query_only != 1:
+        connection.close()
+        raise Task096Error("LIVE_QUERY_ONLY_NOT_ENFORCED")
+    return connection
+
+
+def quick_check(connection: sqlite3.Connection) -> str:
+    rows = [str(row[0]) for row in connection.execute("PRAGMA quick_check")]
+    return "ok" if rows == ["ok"] else ";".join(rows[:20])
+
+
+def table_names(connection: sqlite3.Connection) -> list[str]:
+    return sorted(
+        str(row[0])
+        for row in connection.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+        )
+    )
+
+
+def table_columns(connection: sqlite3.Connection, table: str) -> list[str]:
+    return [str(row[1]) for row in connection.execute("PRAGMA table_info(%s)" % quote_ident(table))]
+
+
+def safe_primary_columns(connection: sqlite3.Connection) -> list[tuple[str, str]]:
+    columns = table_columns(connection, "cars")
+    lower_to_actual = {column.lower(): column for column in columns}
+    selected: list[tuple[str, str]] = []
+    seen_keys: set[str] = set()
+    for lower_name, canonical in SAFE_PRIMARY_COLUMN_MAP.items():
+        actual = lower_to_actual.get(lower_name)
+        if not actual or FORBIDDEN_FIELD_RE.search(actual):
+            continue
+        # Prefer one physical column per canonical key, except car_uid is mandatory.
+        if canonical in seen_keys and canonical != "car_uid":
+            continue
+        selected.append((actual, canonical))
+        seen_keys.add(canonical)
+    if not any(canonical == "car_uid" for _, canonical in selected):
+        raise Task096Error("CARS_AUTO_NUMBER_COLUMN_MISSING")
+    return selected
+
+
+def safe_projection(connection: sqlite3.Connection) -> tuple[str, int, list[str], list[str], list[dict[str, str]]]:
+    pairs = safe_primary_columns(connection)
+    actual_columns = [actual for actual, _ in pairs]
+    query = "SELECT %s FROM cars ORDER BY id" % ", ".join(quote_ident(c) for c in actual_columns)
+    expected = set(EXPECTED_CODES)
+    found: set[str] = set()
+    registry: list[dict[str, str]] = []
+    digest_rows: list[list[Any]] = []
+    for row in connection.execute(query):
+        values = [row[column] for column in actual_columns]
+        digest_rows.append(values)
+        by_actual = dict(zip(actual_columns, values))
+        uid_value = None
+        for actual, canonical in pairs:
+            if canonical == "car_uid":
+                uid_value = str(by_actual.get(actual) or "").strip().upper()
+                break
+        if uid_value 
