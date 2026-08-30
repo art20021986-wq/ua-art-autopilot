@@ -347,6 +347,32 @@ def normalize_catalog_from_rows(source: str, rows: Iterable[Mapping]) -> str:
         return updated + block[opening.end():]
 
     candidate = article_pattern.sub(rewrite_article, source)
+    anchor_pattern = re.compile(
+        r"<a\b(?=[^>]*href=[\"'][^\"']*(UA-[0-9]{4,})\.html(?:\?[^\"']*)?[\"'])"
+        r"[^>]*>.*?</a\s*>", re.I | re.S,
+    )
+
+    def rewrite_anchor(match: re.Match) -> str:
+        block = match.group(0)
+        code = match.group(1).upper()
+        if code not in stages:
+            return block
+        opening = re.match(r"<a\b[^>]*>", block, re.I | re.S)
+        if not opening:
+            raise StageCounterError("CATALOG_ANCHOR_OPENING_MISSING:" + code)
+        updated = re.sub(
+            r"\s+(?:data-ua-card-stage|data-ua-stage-tile|data-ua-stage|data-stage|data-etap)"
+            r"\s*=\s*[\"'][^\"']*[\"']",
+            "", opening.group(0), flags=re.I,
+        )
+        updated = _set_attribute(
+            updated, "data-stage", _ARTICLE_STAGE_VALUE[stages[code]]
+        )
+        stage_no = {value: number for number, value in PUBLIC_STAGE.items()}[stages[code]]
+        updated = _set_attribute(updated, "data-ua-stage", str(stage_no))
+        return updated + block[opening.end():]
+
+    candidate = anchor_pattern.sub(rewrite_anchor, candidate)
     entries = card_entries(candidate)
     rendered = [code for code, _stage, _block in entries]
     if len(rendered) != len(set(rendered)):
