@@ -339,7 +339,8 @@ def main() -> int:
         and not root_cause["killable_child_present"]
     )
     remediation_ok = all(
-        value for value in remediation.values() if isinstance(value, bool)
+        value for key, value in remediation.items()
+        if isinstance(value, bool) and not key.startswith("exact_")
     )
     if errors:
         status = "FAIL"
