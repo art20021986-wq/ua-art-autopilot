@@ -703,6 +703,16 @@ def run_deploy() -> int:
                 "audit_started_at_utc": current_audit.get("started_at_utc"),
                 "root_cause": current_root,
             }
+            # Refresh only the bounded read-only verifier in staging.  The
+            # already-installed production targets are not rewritten.
+            api.ensure_remote_dir()
+            installer_data = INSTALLER.read_bytes()
+            compile(installer_data.decode("utf-8"), "task084_remote_installer.py", "exec")
+            installer_path = REMOTE + "/task084_remote_installer.py"
+            api.upload(installer_path, installer_data)
+            if api.read(installer_path) != installer_data:
+                raise ControllerError("UPLOAD_READBACK:task084_remote_installer.py")
+            evidence["postcheck_verifier_refreshed"] = True
             evidence["launcher_immediate"] = api.wait_launcher_running()
             immediate = api.run_remote("postcheck")
             evidence["postcheck_immediate"] = immediate
