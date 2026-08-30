@@ -1,0 +1,226 @@
+name: task095-catalog-visual-repair-production
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task095_catalog_visual_repair.yml'
+      - 'automation/task095_production_controller.py'
+      - 'cloud/task_095_catalog_visual_repair/remote_repair.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Verify bounded owner authorization
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('tasks/task_095.md').read_text(encoding='utf-8')
+          required = [
+              'P0 / CRITICAL / immediate',
+              'Repair only the catalog presentation layer',
+              'Preserve exactly 13 published automobiles',
+              'automatic rollback',
+              'Broken main images: 0',
+          ]
+          missing = [value for value in required if value not in source]
+          if missing:
+              raise SystemExit('TASK095_AUTHORIZATION_MISSING:' + ','.join(missing))
+          print('TASK095_OWNER_AUTHORIZATION_PASS')
+          PY
+
+      - name: Compile bounded repair package
+        run: |
+          python -W error -m py_compile \
+            automation/task095_production_controller.py \
+            automation/task095_visual_probe.py \
+            cloud/task_095_catalog_visual_repair/remote_repair.py
+
+      - name: Backup and atomically repair production catalog
+        id: install
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python automation/task095_production_controller.py install
+
+      - name: Install real-browser acceptance probe
+        if: always()
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.55.0
+          python -m playwright install --with-deps chromium
+
+      - name: Immediate rendered mobile and desktop verification
+        if: always()
+        continue-on-error: true
+        run: |
+          python automation/task095_visual_probe.py
+          cp cloud/task_095_catalog_visual_repair/evidence/browser_probe.json \
+             cloud/task_095_catalog_visual_repair/evidence/browser_probe_immediate.json
+
+      - name: Preserve immediate evidence even on FAIL
+        if: always()
+        run: |
+          test -f cloud/task_095_catalog_visual_repair/evidence/browser_probe_immediate.json || \
+            cp cloud/task_095_catalog_visual_repair/evidence/browser_probe.json \
+               cloud/task_095_catalog_visual_repair/evidence/browser_probe_immediate.json || true
+
+      - name: Delayed rendered verification
+        if: always()
+        continue-on-error: true
+        run: |
+          sleep 45
+          python automation/task095_visual_probe.py
+          cp cloud/task_095_catalog_visual_repair/evidence/browser_probe.json \
+             cloud/task_095_catalog_visual_repair/evidence/browser_probe_delayed.json
+
+      - name: Finalize, postcheck, or rollback
+        if: always()
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          root = Path('cloud/task_095_catalog_visual_repair/evidence')
+          root.mkdir(parents=True, exist_ok=True)
+
+          def load(name):
+              path = root / name
+              if not path.exists():
+                  return {'status': 'FAIL', 'errors': [name + '_MISSING']}
+              try:
+                  return json.loads(path.read_text(encoding='utf-8'))
+              except Exception as exc:
+                  return {'status': 'FAIL', 'errors': [name + '_INVALID:' + type(exc).__name__]}
+
+          install = load('install.json')
+          immediate = load('browser_probe_immediate.json')
+          delayed = load('browser_probe_delayed.json')
+          errors = []
+          for label, value in (('install', install), ('immediate', immediate), ('delayed', delayed)):
+              if value.get('status') != 'PASS':
+                  errors.extend(label + ':' + item for item in (value.get('errors') or ['FAIL']))
+
+          postcheck = None
+          rollback = None
+          if not errors:
+              completed = subprocess.run(
+                  ['python', 'automation/task095_production_controller.py', 'postcheck'],
+                  text=True,
+                  capture_output=True,
+              )
+              postcheck = load('postcheck.json')
+              if completed.returncode or postcheck.get('status') != 'PASS':
+                  errors.extend('postcheck:' + item for item in (postcheck.get('errors') or ['FAIL']))
+
+          if errors and install.get('status') == 'PASS':
+              subprocess.run(
+                  ['python', 'automation/task095_production_controller.py', 'rollback'],
+                  text=True,
+                  capture_output=True,
+              )
+              rollback = load('rollback.json')
+              if rollback.get('status') != 'PASS':
+                  errors.extend('rollback:' + item for item in (rollback.get('errors') or ['FAIL']))
+
+          final = {
+              'contract_id': 'CATALOG-VISUAL-ACCEPTANCE-REPAIR-095-V1.0',
+              'status': 'PASS' if not errors else 'FAIL',
+              'errors': errors,
+              'install': install,
+              'immediate': immediate,
+              'delayed': delayed,
+              'postcheck': postcheck,
+              'rollback': rollback,
+              'crm_write': False,
+              'media_write': False,
+          }
+          (root / 'final.json').write_text(
+              json.dumps(final, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print('TASK095_FINAL_STATUS=' + final['status'])
+          print('TASK095_FINAL_ERRORS=' + ';'.join(errors))
+          PY
+
+      - name: Commit bounded machine evidence
+        if: always()
+        run: |
+          git add -- cloud/task_095_catalog_visual_repair/evidence/*.json
+          mapfile -t staged < <(git diff --cached --name-only)
+          for path in "${staged[@]}"; do
+            case "$path" in
+              cloud/task_095_catalog_visual_repair/evidence/*.json) ;;
+              *) echo "Unexpected staged path: $path"; exit 1 ;;
+            esac
+          done
+          if [ "${#staged[@]}" -eq 0 ]; then exit 0; fi
+          git config user.name 'task095-catalog-visual-repair'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task095: record rendered production repair'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task095-catalog-visual-repair-${{ github.run_id }}
+          path: |
+            cloud/task_095_catalog_visual_repair/evidence/*.json
+            cloud/task_095_catalog_visual_repair/evidence/*.png
+            cloud/task_095_catalog_visual_repair/evidence/*.html
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Enforce factual final result
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path(
+              'cloud/task_095_catalog_visual_repair/evidence/final.json'
+          ).read_text(encoding='utf-8'))
+          if value.get('status') != 'PASS':
+              raise SystemExit('TASK095_FAIL_CLOSED:' + ';'.join(value.get('errors') or []))
+          immediate = value.get('immediate') or {}
+          delayed = value.get('delayed') or {}
+          for label, probe in (('immediate', immediate), ('delayed', delayed)):
+              catalogs = [item for item in probe.get('probes', []) if str(item.get('label', '')).startswith('catalog-')]
+              if len(catalogs) != 2:
+                  raise SystemExit('TASK095_' + label.upper() + '_PROBE_COUNT')
+              for item in catalogs:
+                  if item.get('renderedCardCount') != 13 or item.get('brokenImageCount') != 0:
+                      raise SystemExit('TASK095_' + label.upper() + '_VISUAL_FAIL')
+          print('TASK095_RENDERED_PRODUCTION_PASS')
+          PY
