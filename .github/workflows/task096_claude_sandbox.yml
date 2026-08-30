@@ -1,0 +1,108 @@
+name: TASK 096 Claude Sandbox
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task096_claude_sandbox.yml'
+      - 'tasks/task_096.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task096-claude-sandbox
+  cancel-in-progress: false
+
+jobs:
+  sandbox-canary-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail closed unless TASK 096 is the newest task
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest="$(find tasks -maxdepth 1 -type f -name 'task_[0-9][0-9][0-9].md' -printf '%f\n' | sort -V | tail -n1)"
+          test "$latest" = "task_096.md" || {
+            echo "Refusing to run: newest task is $latest, expected task_096.md"
+            exit 1
+          }
+          grep -q 'PRODUCTION — ТОЛЬКО ПО ОТДЕЛЬНОЙ КОМАНДЕ' tasks/task_096.md
+          grep -q 'запись в рабочую CRM: запрещена' tasks/task_096.md
+          grep -q 'автопубликация: запрещена' tasks/task_096.md
+
+      - name: Run Claude worker for sandbox, canary and report only
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '1800'
+          ANTHROPIC_NETWORK_ATTEMPTS: '4'
+          ANTHROPIC_MAX_TOKENS: '128000'
+          ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
+        run: python3 automation/claude_worker.py
+
+      - name: Enforce sandbox-only output
+        shell: bash
+        run: |
+          set -euo pipefail
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^cloud/' || true)"
+          if [ -n "$unexpected" ]; then
+            echo 'Claude changed paths outside cloud/:'
+            echo "$unexpected"
+            exit 1
+          fi
+          test -f cloud/latest_status.md
+          test -f cloud/owner_reply.md
+          grep -q '^TASK_ID: task_096$' cloud/latest_status.md
+          grep -q '^PRODUCTION_TOUCHED: NO$' cloud/latest_status.md
+          test -d cloud/task_096_tech_spec_ai_crm_017 || test -d cloud/task_096_tech_spec_ai_crm
+
+      - name: Commit Claude sandbox outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- cloud/
+          if git diff --cached --quiet -- cloud/; then
+            echo 'Claude produced no cloud outputs'
+            exit 1
+          fi
+          git config user.name 'ua-art-claude-worker'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'Claude sandbox: TASK 096 deliverables'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              if [ "${#conflicts[@]}" -eq 0 ]; then
+                git rebase --abort || true
+                exit 1
+              fi
+              for path in "${conflicts[@]}"; do
+                case "$path" in
+                  cloud/latest_status.md|cloud/owner_reply.md) ;;
+                  *)
+                    echo "Unsafe conflict outside shared status files: $path"
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              for path in "${conflicts[@]}"; do
+                git checkout --theirs -- "$path"
+                git add -- "$path"
+              done
+              GIT_EDITOR=true git rebase --continue
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep $((attempt * 3))
+          done
+          exit 1
