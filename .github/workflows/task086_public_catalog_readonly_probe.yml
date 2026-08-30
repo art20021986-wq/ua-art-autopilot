@@ -1,3 +1,4 @@
+# fresh: homepage-stage-blocks-2026-08-30
 # fresh: homepage-and-catalog-2026-08-30
 name: task086-public-catalog-readonly-probe
 
@@ -43,6 +44,19 @@ jobs:
               print(label + "_STAGES", json.dumps(stages, sort_keys=True))
               print(label + "_ARTICLES", len(re.findall(r"<article\\b", source, re.I)))
               print(label + "_STAGE_V2", len(re.findall(r"ua-stage-card-v2", source, re.I)))
+              if label == "HOME":
+                  blocks = re.findall(
+                      r'<a\\b(?=[^>]*class=["\\'][^"\\']*stage-card)[^>]*>.*?</a\\s*>',
+                      source, re.I | re.S)
+                  print("HOME_STAGE_BLOCKS", len(blocks))
+                  for index, block in enumerate(blocks, 1):
+                      print("HOME_STAGE_BLOCK_%02d %s" % (
+                          index, re.sub(r"\\s+", " ", block).strip()[:3500]))
+                  for match in re.finditer(r"(?<![0-9])10(?![0-9])", source):
+                      snippet = re.sub(
+                          r"\\s+", " ", source[max(0, match.start()-500):match.start()+900]
+                      ).strip()
+                      print("HOME_TEN %s" % snippet[:1400])
               for term in ("На пароме", "На поромі", "UA-0011", "13 в подборке"):
                   positions = [m.start() for m in re.finditer(re.escape(term), source, re.I)]
                   print(label + "_TERM", term, len(positions))
