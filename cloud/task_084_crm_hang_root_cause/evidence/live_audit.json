@@ -5,12 +5,12 @@
       "description": "",
       "enabled": true,
       "id": 266084,
-      "state": "Starting"
+      "state": "Running"
     }
   ],
   "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
   "errors": [],
-  "finished_at_utc": "2026-08-29T09:04:11Z",
+  "finished_at_utc": "2026-08-30T00:06:55Z",
   "guard_runtime": {},
   "http_methods": [
     "GET"
@@ -21,22 +21,43 @@
       "description": "",
       "enabled": true,
       "id": 266084,
-      "state": "Starting"
+      "state": "Running"
     }
   ],
   "mode": "LIVE_GET_ONLY",
   "process_restart": false,
   "production_touched": false,
+  "remediation": {
+    "cars_killable_voice": true,
+    "cars_old_fixed_deadline_removed": true,
+    "cars_old_nonkillable_stt_removed": true,
+    "exact_all_targets": false,
+    "exact_target_sha256": {
+      "cars_ui.py": false,
+      "crm_voice_watchdog.py": true,
+      "start_safe.py": true,
+      "team_bot.py": false
+    },
+    "menu_debounce": true,
+    "single_running_launcher": true,
+    "start_singleton": true,
+    "startup_notice_debounce": true,
+    "team_killable_voice": true,
+    "team_old_nonkillable_stt_removed": true,
+    "worker_limit_two": true,
+    "worker_process_group": true,
+    "worker_term_kill": true
+  },
   "root_cause": {
-    "fixed_deadline_4_65": true,
-    "killable_child_present": false,
+    "fixed_deadline_4_65": false,
+    "killable_child_present": true,
     "launcher_count": 1,
     "legacy_launcher_count": 1,
-    "non_killable_to_thread": true,
-    "start_safe_singleton_present": false,
+    "non_killable_to_thread": false,
+    "start_safe_singleton_present": true,
     "startup_owner_greeting_sites": 0,
     "startup_ready_message_sites": 0,
-    "wait_for_only_cancels_await": true
+    "wait_for_only_cancels_await": false
   },
   "sources": {
     "ai.py": {
@@ -68,95 +89,87 @@
       "sha256": "5037fe26fb917875002ec4bc7ebc4362298d991a885b8e8536e4e0df25f8a41b"
     },
     "cars_ui.py": {
-      "bytes": 166212,
+      "bytes": 171590,
       "compiled": true,
       "contexts": [
         {
-          "line": 473,
+          "line": 488,
           "source": "\n\nasync def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)"
         },
         {
-          "line": 800,
+          "line": 815,
           "source": "\n\nasync def photo_remove_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"Выбор кадра для удаления по номеру.\"\"\"\n    q = update.callback_query"
         },
         {
-          "line": 1038,
+          "line": 1053,
           "source": "\n# UA-CARDS-STAGE-ANCHOR-001-V1.1 · canonical delivery submenu.\nasync def stage_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    import asyncio as _v168_asyncio\n    import crm_online_guard as _v168_guard"
         },
         {
-          "line": 2298,
+          "line": 2313,
           "source": "    _v165_os.makedirs(_v165_os.path.dirname(_V165_SPOOL), exist_ok=True)\n    with open(_V165_SPOOL_LOCK, \"a+\", encoding=\"utf-8\") as _v165_guard:\n        _v165_fcntl.flock(_v165_guard.fileno(), _v165_fcntl.LOCK_EX)\n        try:\n            try:"
         },
         {
-          "line": 2306,
+          "line": 2321,
           "source": "                _v165_lines = []\n        finally:\n            _v165_fcntl.flock(_v165_guard.fileno(), _v165_fcntl.LOCK_UN)\n    _v165_rows = []\n    for _v165_line in _v165_lines:"
         },
         {
-          "line": 2347,
+          "line": 2362,
           "source": "    }\n    with open(_V165_SPOOL_LOCK, \"a+\", encoding=\"utf-8\") as guard:\n        _v165_fcntl.flock(guard.fileno(), _v165_fcntl.LOCK_EX)\n        try:\n            try:"
         },
         {
-          "line": 2379,
+          "line": 2394,
           "source": "            return {\"state\": \"accepted\", \"queued\": same + 1, \"key\": event_key}\n        finally:\n            _v165_fcntl.flock(guard.fileno(), _v165_fcntl.LOCK_UN)\n\n"
         },
         {
-          "line": 2392,
+          "line": 2407,
           "source": "        return\n    with open(_V165_SPOOL_LOCK, \"a+\", encoding=\"utf-8\") as _v165_guard:\n        _v165_fcntl.flock(_v165_guard.fileno(), _v165_fcntl.LOCK_EX)\n        try:\n            try:"
         },
         {
-          "line": 2421,
+          "line": 2436,
           "source": "                    pass\n        finally:\n            _v165_fcntl.flock(_v165_guard.fileno(), _v165_fcntl.LOCK_UN)\n\n"
         },
         {
-          "line": 2460,
+          "line": 2475,
           "source": "    with open(_V165_DRAIN_LOCK, \"a+\", encoding=\"utf-8\") as _v166_guard:\n        try:\n            _v166_fcntl.flock(\n                _v166_guard.fileno(), _v166_fcntl.LOCK_EX | _v166_fcntl.LOCK_NB)\n        except BlockingIOError:"
         },
         {
-          "line": 2461,
+          "line": 2476,
           "source": "        try:\n            _v166_fcntl.flock(\n                _v166_guard.fileno(), _v166_fcntl.LOCK_EX | _v166_fcntl.LOCK_NB)\n        except BlockingIOError:\n            return {\"processed\": 0, \"remaining\": len(_v165_read_rows()),"
         },
         {
-          "line": 2468,
+          "line": 2483,
           "source": "            return _v166_drain_owned(max_items)\n        finally:\n            _v166_fcntl.flock(_v166_guard.fileno(), _v166_fcntl.LOCK_UN)\n\n"
         },
         {
-          "line": 2508,
+          "line": 2523,
           "source": "async def media_spool_worker_job(context):\n    import asyncio as _v165_asyncio\n    await _v165_asyncio.to_thread(_v165_spool_drain, 100)\n\n"
         },
         {
-          "line": 2516,
+          "line": 2531,
           "source": "    status = None\n    for _attempt in range(10):\n        status = await _v165_asyncio.to_thread(\n            _v165_status, data[\"card_id\"], data[\"target\"], data.get(\"session_ids\") or [])\n        if status[\"queued\"] == 0:"
         },
         {
-          "line": 2533,
+          "line": 2548,
           "source": "        if rejected:\n            text += \" · лимит: %d\" % rejected\n    await context.bot.send_message(\n        chat_id=data[\"chat_id\"], text=text,\n        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("
         },
         {
-          "line": 2678,
+          "line": 2693,
           "source": "            return\n        if file_id:\n            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)\n            if answer:\n                await msg.reply_text(answer)"
         },
         {
-          "line": 2718,
-          "source": "\n        started = time.monotonic()\n        hard_deadline = started + 4.65\n        thinking = await msg.reply_text(\"🎤 Распознаю, до 5 секунд...\")\n        if not ai.voice_enabled():"
+          "line": 3651,
+          "source": "        db.update_card_field(\"cars\", cid, \"published\", novoe, actor_id)\n        if novoe:\n            ok, detail = await _ua083_asyncio.to_thread(\n                _ua083_publisher.opublikovat, card.get(\"auto_number\"))\n            success_text = \"Машина видна клиентам в каталоге.\""
         },
         {
-          "line": 2750,
-          "source": "\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio_bytes = await asyncio.wait_for(\n                download_voice(file_id), timeout=min(1.1, remaining))"
-        },
-        {
-          "line": 2753,
-          "source": "            audio_bytes = await asyncio.wait_for(\n                download_voice(file_id), timeout=min(1.1, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            input_text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio_bytes, filename),"
-        },
-        {
-          "line": 2755,
-          "source": "            remaining = max(0.1, hard_deadline - time.monotonic())\n            input_text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio_bytes, filename),\n                timeout=remaining,\n            )"
+          "line": 3655,
+          "source": "            success_text = \"Машина видна клиентам в каталоге.\"\n        else:\n            ok, detail = await _ua083_asyncio.to_thread(_ua083_publisher.obnovit_katalog)\n            success_text = \"Машина скрыта от клиентов.\"\n        if ok is not True:"
         }
       ],
       "counts": {
         "application_builder": 0,
-        "fixed_deadline_4_65": 1,
-        "killable_voice_watchdog": 0,
-        "non_killable_transcribe": 1,
+        "fixed_deadline_4_65": 0,
+        "killable_voice_watchdog": 1,
+        "non_killable_transcribe": 0,
         "owner_greeting": 0,
         "post_init": 0,
         "process_exit_75": 0,
@@ -166,23 +179,15 @@
       },
       "functions": [
         {
-          "end_line": 2929,
-          "line": 2622,
+          "end_line": 2959,
+          "line": 2637,
           "name": "catch_message",
-          "sha256": "152d00158bcd097f61fad4e795340f45113724217b481d56ab32f358549a4fd5",
-          "source": "async def catch_message(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"CRM-VOICE-FILL-001: voice fills only the explicitly open card.\"\"\"\n    import asyncio\n    import time\n    import ai\n    import ai_fast_schema as fast\n    import ai_filter\n    import local_ocr\n\n    msg = update.effective_message\n    if not msg:\n        return\n    user_id = update.effective_user.id\n\n    wait = context.user_data.get(\"car_media_wait\")\n    if wait:\n        target = wait[\"target\"]\n        tag = \"\"\n        file_id = None\n        if msg.photo:\n            file_id = msg.photo[-1].file_id\n            if target in (\"photos\", \"condition_photos\"):\n                unique_id = getattr(msg.photo[-1], \"file_unique_id\", None) or file_id\n                _v166_result = _v165_spool_enqueue(\n                    wait[\"card_id\"], target, file_id, user_id, tag,\n                    unique_id=unique_id, message_id=msg.message_id)\n                _v166_session_ids = wait.setdefault(\"_fast_session_ids\", [])\n                state = _v166_result.get(\"state\")\n                if state == \"accepted\" and file_id not in _v166_session_ids:\n                    _v166_session_ids.append(file_id)\n                elif str(state).startswith(\"duplicate\"):\n                    wait[\"_fast_session_duplicates\"] = int(\n                        wait.get(\"_fast_session_duplicates\") or 0) + 1\n                elif state == \"limit\":\n                    wait[\"_fast_session_rejected\"] = int(\n                        wait.get(\"_fast_session_rejected\") or 0) + 1\n                _v165_schedule_progress(\n                    context, msg, wait[\"card_id\"], target, _v166_session_ids,\n                    wait.get(\"_fast_session_duplicates\", 0),\n                    wait.get(\"_fast_session_rejected\", 0))\n                raise ApplicationHandlerStop\n        elif msg.video:\n            file_id = msg.video.file_id\n            if target in (\"videos\", \"video_h\", \"video_v\"):\n                target = \"videos\"\n                slot = _orient(msg.video)\n                tag = {\"video_h\": \"гориз\", \"video_v\": \"вертик\"}.get(slot, \"\")\n        elif msg.video_note:\n            file_id = msg.video_note.file_id\n        elif msg.document:\n            file_id = msg.document.file_id\n        card = card_of(wait[\"card_id\"])\n        if not card:\n            context.user_data.pop(\"car_media_wait\", None)\n            return\n        if file_id:\n            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)\n            if answer:\n                await msg.reply_text(answer)\n            raise ApplicationHandlerStop\n        if msg.text and target == \"diag_report\":\n            pass\n        return\n\n    voice_object = msg.voice or msg.audio or msg.video_note\n    input_text = (msg.text or \"\").strip()\n    wait = context.user_data.get(\"car_wait\")\n    thinking = None\n    voice_elapsed = None\n\n    if voice_object:\n        active_id = wait.get(\"card_id\") if wait else context.user_data.get(\"car_voice_active\")\n        active_card = card_of(active_id) if active_id else None\n        if not active_card:\n            context.user_data.pop(\"car_last\", None)\n            context.user_data.pop(\"car_voice_active\", None)\n            await msg.reply_text(\n                \"Откройте нужную карточку автомобиля и повторите голосовое. \"\n                \"Новая карточка автоматически не создаётся.\"\n            )\n            raise ApplicationHandlerStop\n\n        chat_id = getattr(msg, \"chat_id\", None) or update.effective_chat.id\n        marker = \"%s:%s\" % (chat_id, msg.message_id)\n        seen = context.chat_data.get(\"crm_voice_seen\")\n        if not isinstance(seen, list):\n            seen = []\n            context.chat_data[\"crm_voice_seen\"] = seen\n        if marker in seen:\n            await msg.reply_text(\"Это голосовое уже обработано.\")\n            raise ApplicationHandlerStop\n        seen.append(marker)\n        del seen[:-20]\n        context.user_data.pop(\"voice_undo\", None)\n\n        started = time.monotonic()\n        hard_deadline = started + 4.65\n        thinking = await msg.reply_text(\"🎤 Распознаю, до 5 секунд...\")\n        if not ai.voice_enabled():\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\"Расшифровка голоса не настроена. Карточка не изменена.\")\n            raise ApplicationHandlerStop\n        try:\n            import crm_online_guard as _v168_guard\n            if not _v168_guard.circuit_allows(\"stt\"):\n                if marker in seen:\n                    seen.remove(marker)\n                await thinking.edit_text(\n                    \"Сервис распознавания восстанавливается. Карточка не изменена; повторите через 15 секунд.\")\n                raise ApplicationHandlerStop\n        except ApplicationHandlerStop:\n            raise\n        except Exception:\n            pass\n\n        if msg.voice:\n            file_id, filename = msg.voice.file_id, \"voice.ogg\"\n        elif msg.audio:\n            file_id, filename = msg.audio.file_id, \"audio.mp3\"\n        else:\n            file_id, filename = msg.video_note.file_id, \"video_note.mp4\"\n\n        async def download_voice(fid):\n            tg_file = await context.bot.get_file(fid)\n            return bytes(await tg_file.download_as_bytearray())\n\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio_bytes = await asyncio.wait_for(\n                download_voice(file_id), timeout=min(1.1, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            input_text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio_bytes, filename),\n                timeout=remaining,\n            )\n            input_text = (input_text or \"\").strip()\n        except asyncio.TimeoutError:\n            input_text = \"\"\n            log.warning(\"CRM voice timeout card=%s\", active_id)\n        except Exception as e:\n            input_text = \"\"\n            log.warning(\"CRM voice recognition failed card=%s error=%s\", active_id, e)\n        voice_elapsed = time.monotonic() - started\n        try:\n            import crm_online_guard as _v168_guard\n            _v168_guard.circuit_result(\"stt\", bool(input_text))\n            _v168_guard.record_timing(\n                \"crm_voice\", voice_elapsed, \"ok\" if input_text else \"empty\",\n                card_id=active_id)\n        except Exception:\n            pass\n        if not input_text:\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\n                \"Голос не распознан за 5 секунд. Карточка не изменена; повторите короче.\"\n            )\n            raise ApplicationHandlerStop\n\n    if not wait:\n        cid = (context.user_data.get(\"car_voice_active\") if voice_object\n               else context.user_data.get(\"car_last\"))\n        card = card_of(cid) if cid else None\n        if card and voice_object:\n            schema_allowed = set(fast.car_fields(ai_filter))\n            card = card_of(card[\"id\"]) or card\n            correction = _v168_is_correction(input_text)\n            if correction:\n                allowed = _v168_named_fields(input_text, schema_allowed)\n            else:\n                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}\n            data = {}\n            if allowed:\n                data.update(local_ocr.fields_from_text(input_text, allowed))\n                data.update(fast.fast_text_data(input_text, ai_filter))\n                if data:\n                    data = fast.clean_car(fast.parsed_from_data(data), ai_filter, \"\")\n                data = {key: value for key, value in (data or {}).items()\n                        if key in allowed and value not in (None, \"\", [])}\n                data.update(_v167_voice_explicit_fields(input_text, allowed))\n            changes, skipped = voice_change_plan(card, data, allowed, correction)\n            applied = []\n            for field, old, new in changes:\n                try:\n                    ok, reason = _v168_cas_write(\n                        card[\"id\"], field, old, new, user_id, correction)\n                    if ok:\n                        applied.append((field, old, new))\n                    elif reason in (\"filled\", \"conflict\"):\n                        skipped.append(field)\n                except Exception as e:\n                    log.warning(\"CRM voice write failed card=%s field=%s error=%s\",\n                                card[\"id\"], field, e)\n\n            number = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n            if applied:\n                token = str(msg.message_id)\n                context.user_data[\"voice_undo\"] = {\n                    \"card_id\": card[\"id\"], \"token\": token,\n                    \"changes\": [{\"field\": f, \"old\": old, \"new\": new}\n                                for f, old, new in applied],\n                }\n                value_names = {\n                    \"fwd\": \"передний\", \"rwd\": \"задний\", \"4wd\": \"полный\",\n                    \"automatic\": \"автомат\", \"manual\": \"механика\",\n                    \"gasoline\": \"бензин\", \"diesel\": \"дизель\",\n                    \"hybrid\": \"гибрид\", \"electric\": \"электро\", \"LPG\": \"газ\",\n                }\n                lines = []\n                for field, _, value in applied:\n                    shown = value_names.get(str(value), str(value))\n                    lines.append(\"• %s — %s\" % (LABELS_ALL.get(field, field), shown))\n                await thinking.edit_text(\n                    \"✅ %s дополнена:\\n%s\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\"\n                    % (number, \"\\n\".join(lines), voice_elapsed or 0.0),\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"↩️ Отменить изменение\",\n                                              callback_data=\"car_vundo:%d:%s\" % (\n                                                  card[\"id\"], token))],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % card[\"id\"])],\n                    ]),\n                )\n            elif data and skipped and not override:\n                await thinking.edit_text(\n                    \"%s: распознанные поля уже заполнены. \"\n                    \"Для замены скажите: «измени …». Новая карточка не создана.\" % number\n                )\n            elif data:\n                await thinking.edit_text(\"%s: новых значений нет. Карточка не изменена.\" % number)\n            else:\n                await thinking.edit_text(\n                    \"Не распознал поле CRM. Назовите поле и значение, например: \"\n                    \"«привод передний». Карточка не изменена.\"\n                )\n            raise ApplicationHandlerStop\n\n        if card:\n            done = await auto_catch(msg, card, user_id, context)\n            if done:\n                raise ApplicationHandlerStop\n\n    wait = context.user_data.get(\"car_wait\")\n    if wait and input_text and wait.get(\"client\"):\n        context.user_data.pop(\"car_wait\", None)\n        card = card_of(wait[\"card_id\"])\n        klient = client_of(card)\n        if klient:\n            db.update_card_field(\"clients\", klient[\"id\"], wait[\"field\"],\n                                 input_text, user_id)\n        answer = \"Записано.\"\n        if voice_object:\n            answer += \" · %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if thinking:\n            await thinking.edit_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        else:\n            await msg.reply_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        raise ApplicationHandlerStop\n\n    if wait and input_text:\n        context.user_data.pop(\"car_wait\", None)\n        field = wait[\"field\"]\n        nizhny = input_text.lower()\n        if field not in (\"price_uah\", \"condition_text\", \"diag_text\", \"diag_link\") \\\n                and (\"$\" in nizhny or \"цена\" in nizhny or \"стоимость\" in nizhny):\n            field = \"price_uah\"\n        elif field == \"eta_days\" and _re.search(r\"\\d{4,}\", nizhny):\n            field = \"price_uah\"\n        ok, answer = apply_value(wait[\"card_id\"], field, input_text, user_id)\n        card = card_of(wait[\"card_id\"])\n        if ok and field == \"price_uah\" and card:\n            remember_price(card, user_id)\n            answer = \"%s · цена этапа «%s»: %s\" % (\n                card.get(\"auto_number\") or \"\", S.status_label(card.get(\"status\")),\n                S.money(_int(card.get(\"price_uah\"))))\n        rows = [[InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % wait[\"card_id\"])]]\n        if ok and field in (\"condition_text\", \"diag_text\"):\n            zapisano = input_text\n            punktov = len([s for s in zapisano.split(\"\\n\") if s.strip()])\n            answer = (\"Описание сохранено · %d пунктов, %d знаков\\n\\n%s\"\n                      % (punktov, len(zapisano), zapisano))\n            rows.insert(0, [InlineKeyboardButton(\n                \"Изменить снова\",\n                callback_data=\"car_setf:%d:condition_text\" % wait[\"card_id\"])])\n        if voice_object:\n            answer += \"\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if not ok:\n            wait[\"field\"] = field\n            context.user_data[\"car_wait\"] = wait\n            rows.insert(0, [InlineKeyboardButton(\n                \"Отмена\", callback_data=\"car_open:%d\" % wait[\"card_id\"])])\n        if thinking:\n            await thinking.edit_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        else:\n            await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        raise ApplicationHandlerStop\n"
+          "sha256": "015168229aa2e3d4230c9d60f12ad20656aa0e1132641879c93d383b80c1f2f2",
+          "source": "async def catch_message(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"CRM-VOICE-FILL-001: voice fills only the explicitly open card.\"\"\"\n    import asyncio\n    import time\n    import ai\n    import ai_fast_schema as fast\n    import ai_filter\n    import local_ocr\n\n    msg = update.effective_message\n    if not msg:\n        return\n    user_id = update.effective_user.id\n\n    wait = context.user_data.get(\"car_media_wait\")\n    if wait:\n        target = wait[\"target\"]\n        tag = \"\"\n        file_id = None\n        if msg.photo:\n            file_id = msg.photo[-1].file_id\n            if target in (\"photos\", \"condition_photos\"):\n                unique_id = getattr(msg.photo[-1], \"file_unique_id\", None) or file_id\n                _v166_result = _v165_spool_enqueue(\n                    wait[\"card_id\"], target, file_id, user_id, tag,\n                    unique_id=unique_id, message_id=msg.message_id)\n                _v166_session_ids = wait.setdefault(\"_fast_session_ids\", [])\n                state = _v166_result.get(\"state\")\n                if state == \"accepted\" and file_id not in _v166_session_ids:\n                    _v166_session_ids.append(file_id)\n                elif str(state).startswith(\"duplicate\"):\n                    wait[\"_fast_session_duplicates\"] = int(\n                        wait.get(\"_fast_session_duplicates\") or 0) + 1\n                elif state == \"limit\":\n                    wait[\"_fast_session_rejected\"] = int(\n                        wait.get(\"_fast_session_rejected\") or 0) + 1\n                _v165_schedule_progress(\n                    context, msg, wait[\"card_id\"], target, _v166_session_ids,\n                    wait.get(\"_fast_session_duplicates\", 0),\n                    wait.get(\"_fast_session_rejected\", 0))\n                raise ApplicationHandlerStop\n        elif msg.video:\n            file_id = msg.video.file_id\n            if target in (\"videos\", \"video_h\", \"video_v\"):\n                target = \"videos\"\n                slot = _orient(msg.video)\n                tag = {\"video_h\": \"гориз\", \"video_v\": \"вертик\"}.get(slot, \"\")\n        elif msg.video_note:\n            file_id = msg.video_note.file_id\n        elif msg.document:\n            file_id = msg.document.file_id\n        card = card_of(wait[\"card_id\"])\n        if not card:\n            context.user_data.pop(\"car_media_wait\", None)\n            return\n        if file_id:\n            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)\n            if answer:\n                await msg.reply_text(answer)\n            raise ApplicationHandlerStop\n        if msg.text and target == \"diag_report\":\n            pass\n        return\n\n    voice_object = msg.voice or msg.audio or msg.video_note\n    input_text = (msg.text or \"\").strip()\n    wait = context.user_data.get(\"car_wait\")\n    thinking = None\n    voice_elapsed = None\n\n    if voice_object:\n        active_id = wait.get(\"card_id\") if wait else context.user_data.get(\"car_voice_active\")\n        active_card = card_of(active_id) if active_id else None\n        if not active_card:\n            context.user_data.pop(\"car_last\", None)\n            context.user_data.pop(\"car_voice_active\", None)\n            await msg.reply_text(\n                \"Откройте нужную карточку автомобиля и повторите голосовое. \"\n                \"Новая карточка автоматически не создаётся.\"\n            )\n            raise ApplicationHandlerStop\n\n        chat_id = getattr(msg, \"chat_id\", None) or update.effective_chat.id\n        marker = \"%s:%s\" % (chat_id, msg.message_id)\n        seen = context.chat_data.get(\"crm_voice_seen\")\n        if not isinstance(seen, list):\n            seen = []\n            context.chat_data[\"crm_voice_seen\"] = seen\n        if marker in seen:\n            await msg.reply_text(\"Это голосовое уже обработано.\")\n            raise ApplicationHandlerStop\n        seen.append(marker)\n        del seen[:-20]\n        context.user_data.pop(\"voice_undo\", None)\n\n        import crm_voice_watchdog as _v178_voice\n\n        started = time.monotonic()\n        duration_seconds = int(getattr(voice_object, \"duration\", 0) or 0)\n        timeout_seconds = _v178_voice.timeout_for_duration(duration_seconds)\n        thinking = await msg.reply_text(\n            \"🎤 Распознаю голосовое. Для этой длины лимит до %d секунд...\"\n            % timeout_seconds)\n        if not ai.voice_enabled():\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\"Расшифровка голоса не настроена. Карточка не изменена.\")\n            raise ApplicationHandlerStop\n        try:\n            import crm_online_guard as _v168_guard\n            if not _v168_guard.circuit_allows(\"stt\"):\n                if marker in seen:\n                    seen.remove(marker)\n                await thinking.edit_text(\n                    \"Сервис распознавания восстанавливается. Карточка не изменена; \"\n                    \"повторите через 15 секунд.\")\n                raise ApplicationHandlerStop\n        except ApplicationHandlerStop:\n            raise\n        except Exception:\n            pass\n\n        if msg.voice:\n            file_id, filename = msg.voice.file_id, \"voice.ogg\"\n        elif msg.audio:\n            file_id, filename = msg.audio.file_id, \"audio.mp3\"\n        else:\n            file_id, filename = msg.video_note.file_id, \"video_note.mp4\"\n\n        async def download_voice(fid):\n            tg_file = await context.bot.get_file(fid)\n            return bytes(await tg_file.download_as_bytearray())\n\n        _v178_result = None\n        try:\n            audio_bytes = await asyncio.wait_for(\n                download_voice(file_id),\n                timeout=_v178_voice.download_timeout_for_duration(duration_seconds),\n            )\n            _v178_result = await _v178_voice.transcribe_with_restart(\n                audio_bytes, filename, duration_seconds)\n            input_text = (_v178_result.text if _v178_result.ok else \"\").strip()\n        except asyncio.CancelledError:\n            raise\n        except asyncio.TimeoutError:\n            input_text = \"\"\n            log.warning(\"CRM voice download timeout card=%s\", active_id)\n        except Exception as e:\n            input_text = \"\"\n            log.warning(\"CRM voice watchdog failed card=%s error=%s\", active_id, e)\n        voice_elapsed = time.monotonic() - started\n        try:\n            import crm_online_guard as _v168_guard\n            _v168_guard.circuit_result(\"stt\", bool(input_text))\n            _v168_guard.record_timing(\n                \"crm_voice\", voice_elapsed, \"ok\" if input_text else \"empty\",\n                card_id=active_id)\n        except Exception:\n            pass\n        if not input_text:\n            if marker in seen:\n                seen.remove(marker)\n            attempts = getattr(_v178_result, \"attempts\", 0) if _v178_result else 0\n            restarts = (getattr(_v178_result, \"restarted_workers\", 0)\n                        if _v178_result else 0)\n            await thinking.edit_text(\n                \"Голосовое не распознано. Попыток: %d; автоматических \"\n                \"перезапусков: %d. Карточка не изменена; отправьте голосовое ещё раз.\"\n                % (max(attempts, 1), restarts),\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"🎤 Повторить голосовое\", callback_data=\"car_open:%d\" % active_id)]]))\n            raise ApplicationHandlerStop\n\n    if not wait:\n        cid = (context.user_data.get(\"car_voice_active\") if voice_object\n               else context.user_data.get(\"car_last\"))\n        card = card_of(cid) if cid else None\n        if card and voice_object:\n            schema_allowed = set(fast.car_fields(ai_filter))\n            card = card_of(card[\"id\"]) or card\n            correction = _v168_is_correction(input_text)\n            named_fields = _v168_named_fields(input_text, schema_allowed)\n            explicit_override = bool(correction or named_fields)\n            if named_fields:\n                allowed = named_fields\n            else:\n                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}\n            data = {}\n            if allowed:\n                data.update(local_ocr.fields_from_text(input_text, allowed))\n                data.update(fast.fast_text_data(input_text, ai_filter))\n                if data:\n                    data = fast.clean_car(fast.parsed_from_data(data), ai_filter, \"\")\n                data = {key: value for key, value in (data or {}).items()\n                        if key in allowed and value not in (None, \"\", [])}\n                data.update(_v167_voice_explicit_fields(input_text, allowed))\n            changes, skipped = voice_change_plan(card, data, allowed, explicit_override)\n            applied = []\n            for field, old, new in changes:\n                try:\n                    ok, reason = _v168_cas_write(\n                        card[\"id\"], field, old, new, user_id, explicit_override)\n                    if ok:\n                        applied.append((field, old, new))\n                    elif reason in (\"filled\", \"conflict\"):\n                        skipped.append(field)\n                except Exception as e:\n                    log.warning(\"CRM voice write failed card=%s field=%s error=%s\",\n                                card[\"id\"], field, e)\n\n            number = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n            if applied:\n                token = str(msg.message_id)\n                context.user_data[\"voice_undo\"] = {\n                    \"card_id\": card[\"id\"], \"token\": token,\n                    \"changes\": [{\"field\": f, \"old\": old, \"new\": new}\n                                for f, old, new in applied],\n                }\n                value_names = {\n                    \"fwd\": \"передний\", \"rwd\": \"задний\", \"4wd\": \"полный\",\n                    \"automatic\": \"автомат\", \"manual\": \"механика\",\n                    \"gasoline\": \"бензин\", \"diesel\": \"дизель\",\n                    \"hybrid\": \"гибрид\", \"electric\": \"электро\", \"LPG\": \"газ\",\n                }\n                lines = []\n                for field, _, value in applied:\n                    shown = value_names.get(str(value), str(value))\n                    lines.append(\"• %s — %s\" % (LABELS_ALL.get(field, field), shown))\n                await thinking.edit_text(\n                    \"✅ %s дополнена:\\n%s\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\"\n                    % (number, \"\\n\".join(lines), voice_elapsed or 0.0),\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"↩️ Отменить изменение\",\n                                              callback_data=\"car_vundo:%d:%s\" % (\n                                                  card[\"id\"], token))],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % card[\"id\"])],\n                    ]),\n                )\n            elif data and skipped and not explicit_override:\n                await thinking.edit_text(\n                    \"%s: распознанные поля уже заполнены. \"\n                    \"Для замены скажите: «измени …». Новая карточка не создана.\" % number\n                )\n            elif data:\n                await thinking.edit_text(\"%s: новых значений нет. Карточка не изменена.\" % number)\n            else:\n                await thinking.edit_text(\n                    \"Не распознал поле CRM. Назовите поле и значение, например: \"\n                    \"«привод передний». Карточка не изменена.\"\n                )\n            raise ApplicationHandlerStop\n\n        if card:\n            done = await auto_catch(msg, card, user_id, context)\n            if done:\n                raise ApplicationHandlerStop\n\n    wait = context.user_data.get(\"car_wait\")\n    if wait and input_text and wait.get(\"client\"):\n        context.user_data.pop(\"car_wait\", None)\n        card = card_of(wait[\"card_id\"])\n        klient = client_of(card)\n        if klient:\n            db.update_card_field(\"clients\", klient[\"id\"], wait[\"field\"],\n                                 input_text, user_id)\n        answer = \"Записано.\"\n        if voice_object:\n            answer += \" · %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if thinking:\n            await thinking.edit_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        else:\n            await msg.reply_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        raise ApplicationHandlerStop\n\n    if wait and input_text:\n        context.user_data.pop(\"car_wait\", None)\n        field = wait[\"field\"]\n        nizhny = input_text.lower()\n        if field not in (\"price_uah\", \"condition_text\", \"diag_text\", \"diag_link\") \\\n                and (\"$\" in nizhny or \"цена\" in nizhny or \"стоимость\" in nizhny):\n            field = \"price_uah\"\n        elif field == \"eta_days\" and _re.search(r\"\\d{4,}\", nizhny):\n            field = \"price_uah\"\n        ok, answer = apply_value(wait[\"card_id\"], field, input_text, user_id)\n        card = card_of(wait[\"card_id\"])\n        if ok and field == \"price_uah\" and card:\n            remember_price(card, user_id)\n            answer = \"%s · цена этапа «%s»: %s\" % (\n                card.get(\"auto_number\") or \"\", S.status_label(card.get(\"status\")),\n                S.money(_int(card.get(\"price_uah\"))))\n        rows = [[InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % wait[\"card_id\"])]]\n        if ok and field in (\"condition_text\", \"diag_text\"):\n            zapisano = input_text\n            punktov = len([s for s in zapisano.split(\"\\n\") if s.strip()])\n            answer = (\"Описание сохранено · %d пунктов, %d знаков\\n\\n%s\"\n                      % (punktov, len(zapisano), zapisano))\n            rows.insert(0, [InlineKeyboardButton(\n                \"Изменить снова\",\n                callback_data=\"car_setf:%d:condition_text\" % wait[\"card_id\"])])\n        if voice_object:\n            answer += \"\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if not ok:\n            wait[\"field\"] = field\n            context.user_data[\"car_wait\"] = wait\n            rows.insert(0, [InlineKeyboardButton(\n                \"Отмена\", callback_data=\"car_open:%d\" % wait[\"card_id\"])])\n        if thinking:\n            await thinking.edit_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        else:\n            await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        raise ApplicationHandlerStop\n"
         }
       ],
-      "marker_functions": [
-        {
-          "end_line": 2929,
-          "line": 2622,
-          "name": "catch_message",
-          "sha256": "152d00158bcd097f61fad4e795340f45113724217b481d56ab32f358549a4fd5",
-          "source": "async def catch_message(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"CRM-VOICE-FILL-001: voice fills only the explicitly open card.\"\"\"\n    import asyncio\n    import time\n    import ai\n    import ai_fast_schema as fast\n    import ai_filter\n    import local_ocr\n\n    msg = update.effective_message\n    if not msg:\n        return\n    user_id = update.effective_user.id\n\n    wait = context.user_data.get(\"car_media_wait\")\n    if wait:\n        target = wait[\"target\"]\n        tag = \"\"\n        file_id = None\n        if msg.photo:\n            file_id = msg.photo[-1].file_id\n            if target in (\"photos\", \"condition_photos\"):\n                unique_id = getattr(msg.photo[-1], \"file_unique_id\", None) or file_id\n                _v166_result = _v165_spool_enqueue(\n                    wait[\"card_id\"], target, file_id, user_id, tag,\n                    unique_id=unique_id, message_id=msg.message_id)\n                _v166_session_ids = wait.setdefault(\"_fast_session_ids\", [])\n                state = _v166_result.get(\"state\")\n                if state == \"accepted\" and file_id not in _v166_session_ids:\n                    _v166_session_ids.append(file_id)\n                elif str(state).startswith(\"duplicate\"):\n                    wait[\"_fast_session_duplicates\"] = int(\n                        wait.get(\"_fast_session_duplicates\") or 0) + 1\n                elif state == \"limit\":\n                    wait[\"_fast_session_rejected\"] = int(\n                        wait.get(\"_fast_session_rejected\") or 0) + 1\n                _v165_schedule_progress(\n                    context, msg, wait[\"card_id\"], target, _v166_session_ids,\n                    wait.get(\"_fast_session_duplicates\", 0),\n                    wait.get(\"_fast_session_rejected\", 0))\n                raise ApplicationHandlerStop\n        elif msg.video:\n            file_id = msg.video.file_id\n            if target in (\"videos\", \"video_h\", \"video_v\"):\n                target = \"videos\"\n                slot = _orient(msg.video)\n                tag = {\"video_h\": \"гориз\", \"video_v\": \"вертик\"}.get(slot, \"\")\n        elif msg.video_note:\n            file_id = msg.video_note.file_id\n        elif msg.document:\n            file_id = msg.document.file_id\n        card = card_of(wait[\"card_id\"])\n        if not card:\n            context.user_data.pop(\"car_media_wait\", None)\n            return\n        if file_id:\n            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)\n            if answer:\n                await msg.reply_text(answer)\n            raise ApplicationHandlerStop\n        if msg.text and target == \"diag_report\":\n            pass\n        return\n\n    voice_object = msg.voice or msg.audio or msg.video_note\n    input_text = (msg.text or \"\").strip()\n    wait = context.user_data.get(\"car_wait\")\n    thinking = None\n    voice_elapsed = None\n\n    if voice_object:\n        active_id = wait.get(\"card_id\") if wait else context.user_data.get(\"car_voice_active\")\n        active_card = card_of(active_id) if active_id else None\n        if not active_card:\n            context.user_data.pop(\"car_last\", None)\n            context.user_data.pop(\"car_voice_active\", None)\n            await msg.reply_text(\n                \"Откройте нужную карточку автомобиля и повторите голосовое. \"\n                \"Новая карточка автоматически не создаётся.\"\n            )\n            raise ApplicationHandlerStop\n\n        chat_id = getattr(msg, \"chat_id\", None) or update.effective_chat.id\n        marker = \"%s:%s\" % (chat_id, msg.message_id)\n        seen = context.chat_data.get(\"crm_voice_seen\")\n        if not isinstance(seen, list):\n            seen = []\n            context.chat_data[\"crm_voice_seen\"] = seen\n        if marker in seen:\n            await msg.reply_text(\"Это голосовое уже обработано.\")\n            raise ApplicationHandlerStop\n        seen.append(marker)\n        del seen[:-20]\n        context.user_data.pop(\"voice_undo\", None)\n\n        started = time.monotonic()\n        hard_deadline = started + 4.65\n        thinking = await msg.reply_text(\"🎤 Распознаю, до 5 секунд...\")\n        if not ai.voice_enabled():\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\"Расшифровка голоса не настроена. Карточка не изменена.\")\n            raise ApplicationHandlerStop\n        try:\n            import crm_online_guard as _v168_guard\n            if not _v168_guard.circuit_allows(\"stt\"):\n                if marker in seen:\n                    seen.remove(marker)\n                await thinking.edit_text(\n                    \"Сервис распознавания восстанавливается. Карточка не изменена; повторите через 15 секунд.\")\n                raise ApplicationHandlerStop\n        except ApplicationHandlerStop:\n            raise\n        except Exception:\n            pass\n\n        if msg.voice:\n            file_id, filename = msg.voice.file_id, \"voice.ogg\"\n        elif msg.audio:\n            file_id, filename = msg.audio.file_id, \"audio.mp3\"\n        else:\n            file_id, filename = msg.video_note.file_id, \"video_note.mp4\"\n\n        async def download_voice(fid):\n            tg_file = await context.bot.get_file(fid)\n            return bytes(await tg_file.download_as_bytearray())\n\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio_bytes = await asyncio.wait_for(\n                download_voice(file_id), timeout=min(1.1, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            input_text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio_bytes, filename),\n                timeout=remaining,\n            )\n            input_text = (input_text or \"\").strip()\n        except asyncio.TimeoutError:\n            input_text = \"\"\n            log.warning(\"CRM voice timeout card=%s\", active_id)\n        except Exception as e:\n            input_text = \"\"\n            log.warning(\"CRM voice recognition failed card=%s error=%s\", active_id, e)\n        voice_elapsed = time.monotonic() - started\n        try:\n            import crm_online_guard as _v168_guard\n            _v168_guard.circuit_result(\"stt\", bool(input_text))\n            _v168_guard.record_timing(\n                \"crm_voice\", voice_elapsed, \"ok\" if input_text else \"empty\",\n                card_id=active_id)\n        except Exception:\n            pass\n        if not input_text:\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text(\n                \"Голос не распознан за 5 секунд. Карточка не изменена; повторите короче.\"\n            )\n            raise ApplicationHandlerStop\n\n    if not wait:\n        cid = (context.user_data.get(\"car_voice_active\") if voice_object\n               else context.user_data.get(\"car_last\"))\n        card = card_of(cid) if cid else None\n        if card and voice_object:\n            schema_allowed = set(fast.car_fields(ai_filter))\n            card = card_of(card[\"id\"]) or card\n            correction = _v168_is_correction(input_text)\n            if correction:\n                allowed = _v168_named_fields(input_text, schema_allowed)\n            else:\n                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}\n            data = {}\n            if allowed:\n                data.update(local_ocr.fields_from_text(input_text, allowed))\n                data.update(fast.fast_text_data(input_text, ai_filter))\n                if data:\n                    data = fast.clean_car(fast.parsed_from_data(data), ai_filter, \"\")\n                data = {key: value for key, value in (data or {}).items()\n                        if key in allowed and value not in (None, \"\", [])}\n                data.update(_v167_voice_explicit_fields(input_text, allowed))\n            changes, skipped = voice_change_plan(card, data, allowed, correction)\n            applied = []\n            for field, old, new in changes:\n                try:\n                    ok, reason = _v168_cas_write(\n                        card[\"id\"], field, old, new, user_id, correction)\n                    if ok:\n                        applied.append((field, old, new))\n                    elif reason in (\"filled\", \"conflict\"):\n                        skipped.append(field)\n                except Exception as e:\n                    log.warning(\"CRM voice write failed card=%s field=%s error=%s\",\n                                card[\"id\"], field, e)\n\n            number = card.get(\"auto_number\") or \"#%d\" % card[\"id\"]\n            if applied:\n                token = str(msg.message_id)\n                context.user_data[\"voice_undo\"] = {\n                    \"card_id\": card[\"id\"], \"token\": token,\n                    \"changes\": [{\"field\": f, \"old\": old, \"new\": new}\n                                for f, old, new in applied],\n                }\n                value_names = {\n                    \"fwd\": \"передний\", \"rwd\": \"задний\", \"4wd\": \"полный\",\n                    \"automatic\": \"автомат\", \"manual\": \"механика\",\n                    \"gasoline\": \"бензин\", \"diesel\": \"дизель\",\n                    \"hybrid\": \"гибрид\", \"electric\": \"электро\", \"LPG\": \"газ\",\n                }\n                lines = []\n                for field, _, value in applied:\n                    shown = value_names.get(str(value), str(value))\n                    lines.append(\"• %s — %s\" % (LABELS_ALL.get(field, field), shown))\n                await thinking.edit_text(\n                    \"✅ %s дополнена:\\n%s\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\"\n                    % (number, \"\\n\".join(lines), voice_elapsed or 0.0),\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"↩️ Отменить изменение\",\n                                              callback_data=\"car_vundo:%d:%s\" % (\n                                                  card[\"id\"], token))],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % card[\"id\"])],\n                    ]),\n                )\n            elif data and skipped and not override:\n                await thinking.edit_text(\n                    \"%s: распознанные поля уже заполнены. \"\n                    \"Для замены скажите: «измени …». Новая карточка не создана.\" % number\n                )\n            elif data:\n                await thinking.edit_text(\"%s: новых значений нет. Карточка не изменена.\" % number)\n            else:\n                await thinking.edit_text(\n                    \"Не распознал поле CRM. Назовите поле и значение, например: \"\n                    \"«привод передний». Карточка не изменена.\"\n                )\n            raise ApplicationHandlerStop\n\n        if card:\n            done = await auto_catch(msg, card, user_id, context)\n            if done:\n                raise ApplicationHandlerStop\n\n    wait = context.user_data.get(\"car_wait\")\n    if wait and input_text and wait.get(\"client\"):\n        context.user_data.pop(\"car_wait\", None)\n        card = card_of(wait[\"card_id\"])\n        klient = client_of(card)\n        if klient:\n            db.update_card_field(\"clients\", klient[\"id\"], wait[\"field\"],\n                                 input_text, user_id)\n        answer = \"Записано.\"\n        if voice_object:\n            answer += \" · %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if thinking:\n            await thinking.edit_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        else:\n            await msg.reply_text(\n                answer,\n                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                    \"← К покупателю\", callback_data=\"car_client:%d\" % wait[\"card_id\"])],\n                    [InlineKeyboardButton(\"← К карточке авто\",\n                                          callback_data=\"car_open:%d\" % wait[\"card_id\"])]]))\n        raise ApplicationHandlerStop\n\n    if wait and input_text:\n        context.user_data.pop(\"car_wait\", None)\n        field = wait[\"field\"]\n        nizhny = input_text.lower()\n        if field not in (\"price_uah\", \"condition_text\", \"diag_text\", \"diag_link\") \\\n                and (\"$\" in nizhny or \"цена\" in nizhny or \"стоимость\" in nizhny):\n            field = \"price_uah\"\n        elif field == \"eta_days\" and _re.search(r\"\\d{4,}\", nizhny):\n            field = \"price_uah\"\n        ok, answer = apply_value(wait[\"card_id\"], field, input_text, user_id)\n        card = card_of(wait[\"card_id\"])\n        if ok and field == \"price_uah\" and card:\n            remember_price(card, user_id)\n            answer = \"%s · цена этапа «%s»: %s\" % (\n                card.get(\"auto_number\") or \"\", S.status_label(card.get(\"status\")),\n                S.money(_int(card.get(\"price_uah\"))))\n        rows = [[InlineKeyboardButton(\"← Вернуться к карточке\",\n                                      callback_data=\"car_open:%d\" % wait[\"card_id\"])]]\n        if ok and field in (\"condition_text\", \"diag_text\"):\n            zapisano = input_text\n            punktov = len([s for s in zapisano.split(\"\\n\") if s.strip()])\n            answer = (\"Описание сохранено · %d пунктов, %d знаков\\n\\n%s\"\n                      % (punktov, len(zapisano), zapisano))\n            rows.insert(0, [InlineKeyboardButton(\n                \"Изменить снова\",\n                callback_data=\"car_setf:%d:condition_text\" % wait[\"card_id\"])])\n        if voice_object:\n            answer += \"\\n\\n⏱ %.1f с · 1 расшифровка · 0 LLM-токенов\" % (voice_elapsed or 0.0)\n        if not ok:\n            wait[\"field\"] = field\n            context.user_data[\"car_wait\"] = wait\n            rows.insert(0, [InlineKeyboardButton(\n                \"Отмена\", callback_data=\"car_open:%d\" % wait[\"card_id\"])])\n        if thinking:\n            await thinking.edit_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        else:\n            await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        raise ApplicationHandlerStop\n"
-        }
-      ],
-      "sha256": "cb48fec2b66d45d8ef0ee62cf81fb62ef26e89df326471aa90ee7fb7bb8c9dea"
+      "marker_functions": [],
+      "sha256": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15"
     },
     "crm_online_guard.py": {
       "bytes": 16287,
@@ -251,6 +256,55 @@
       "marker_functions": [],
       "sha256": "bcbde472f9750ae3719e4af1059c5f4005366f7959cba7d522984f1bf9be2f5b"
     },
+    "crm_voice_watchdog.py": {
+      "bytes": 8479,
+      "compiled": true,
+      "contexts": [],
+      "counts": {
+        "application_builder": 0,
+        "fixed_deadline_4_65": 0,
+        "killable_voice_watchdog": 0,
+        "non_killable_transcribe": 0,
+        "owner_greeting": 0,
+        "post_init": 0,
+        "process_exit_75": 0,
+        "ready_message": 0,
+        "run_polling": 0,
+        "singleton_lock": 0
+      },
+      "functions": [
+        {
+          "end_line": 130,
+          "line": 116,
+          "name": "_terminate_process_group",
+          "sha256": "cf47ee76b4fc4913005b542c5793971fc8f34bc1b3619d4ea7cee3b4d0345062",
+          "source": "async def _terminate_process_group(process: asyncio.subprocess.Process) -> bool:\n    if process.returncode is not None:\n        return True\n    try:\n        os.killpg(process.pid, signal.SIGTERM)\n    except ProcessLookupError:\n        return True\n    try:\n        await asyncio.wait_for(process.wait(), timeout=TERM_GRACE_SECONDS)\n        return True\n    except asyncio.TimeoutError:\n        with contextlib.suppress(ProcessLookupError):\n            os.killpg(process.pid, signal.SIGKILL)\n        await process.wait()\n        return True\n"
+        },
+        {
+          "end_line": 182,
+          "line": 133,
+          "name": "run_killable_attempt",
+          "sha256": "f6acf9ab7db4206305adaa52feeffd9aa088c5fe97934a7bc3ccc9542400a60b",
+          "source": "async def run_killable_attempt(\n    audio_bytes: bytes,\n    filename: str,\n    timeout_seconds: int,\n    *,\n    python_executable: str = sys.executable,\n    worker_path: Optional[pathlib.Path] = None,\n) -> AttemptResult:\n    worker = pathlib.Path(worker_path or __file__).resolve()\n    safe_filename = pathlib.PurePath(filename or \"voice.ogg\").name\n    with tempfile.TemporaryDirectory(prefix=\"crm-voice-worker-\") as directory:\n        root = pathlib.Path(directory)\n        input_path = root / \"input.bin\"\n        output_path = root / \"output.json\"\n        input_path.write_bytes(audio_bytes)\n        process = await asyncio.create_subprocess_exec(\n            python_executable,\n            str(worker),\n            \"--worker\",\n            str(input_path),\n            str(output_path),\n            safe_filename,\n            stdout=asyncio.subprocess.DEVNULL,\n            stderr=asyncio.subprocess.PIPE,\n            start_new_session=True,\n        )\n        try:\n            _stdout, stderr = await asyncio.wait_for(\n                process.communicate(), timeout=timeout_seconds\n            )\n        except asyncio.TimeoutError:\n            terminated = await _terminate_process_group(process)\n            return AttemptResult(\n                False,\n                error=\"STT_TIMEOUT\",\n                timed_out=True,\n                child_terminated=terminated,\n            )\n        except asyncio.CancelledError:\n            await _terminate_process_group(process)\n            raise\n        if process.returncode != 0:\n            detail = (stderr or b\"\").decode(\"utf-8\", \"replace\")[-500:]\n            return AttemptResult(False, error=\"STT_CHILD_FAILED:\" + detail)\n        try:\n            value = json.loads(output_path.read_text(encoding=\"utf-8\"))\n            text = str(value.get(\"text\") or \"\").strip()\n        except Exception as exc:\n            return AttemptResult(False, error=\"STT_OUTPUT_INVALID:\" + type(exc).__name__)\n        return AttemptResult(bool(text), text=text, error=\"\" if text else \"STT_EMPTY\")\n"
+        },
+        {
+          "end_line": 229,
+          "line": 185,
+          "name": "transcribe_with_restart",
+          "sha256": "fa381004e51ee38828898933b96383d55019ab3c0c9da90e4215e160442f35c5",
+          "source": "async def transcribe_with_restart(\n    audio_bytes: bytes,\n    filename: str,\n    duration_seconds: object,\n    *,\n    run_attempt: Callable[[bytes, str, int], Awaitable[AttemptResult]] = run_killable_attempt,\n    budget: Optional[RestartBudget] = None,\n    clock: Callable[[], float] | None = None,\n    worker_limit: Optional[asyncio.Semaphore] = None,\n) -> VoiceResult:\n    loop = asyncio.get_running_loop()\n    now_fn = clock or loop.time\n    budget = budget or _GLOBAL_RESTART_BUDGET\n    worker_limit = worker_limit or _worker_limit_for_current_loop()\n    timeout = timeout_for_duration(duration_seconds)\n    last_error = \"STT_FAILED\"\n    restarted = 0\n    for attempt_number in range(1, MAX_ATTEMPTS + 1):\n        async with worker_limit:\n            result = await run_attempt(audio_bytes, filename, timeout)\n        if result.ok and result.text.strip():\n            return VoiceResult(True, result.text.strip(), attempt_number, restarted)\n        last_error = result.error or \"STT_FAILED\"\n        if attempt_number >= MAX_ATTEMPTS:\n            break\n        now = now_fn()\n        if not budget.allow(now):\n            return VoiceResult(\n                False,\n                \"\",\n                attempt_number,\n                restarted,\n                error=\"STT_COOLDOWN\",\n                retryable=True,\n            )\n        budget.record(now)\n        restarted += 1\n    return VoiceResult(\n        False,\n        \"\",\n        MAX_ATTEMPTS,\n        restarted,\n        error=last_error,\n        retryable=True,\n    )\n"
+        },
+        {
+          "end_line": 242,
+          "line": 232,
+          "name": "_worker",
+          "sha256": "d14cafe8563c3628102ac41c65f04c6112fdecedb3f6a3d2d071b697deaff5ca",
+          "source": "def _worker(input_path: str, output_path: str, filename: str) -> int:\n    \"\"\"Child-only entrypoint.  It cannot mutate CRM state.\"\"\"\n    import ai  # imported only inside the disposable worker\n\n    audio = pathlib.Path(input_path).read_bytes()\n    text = str(ai.transcribe(audio, pathlib.PurePath(filename).name) or \"\").strip()\n    target = pathlib.Path(output_path)\n    temporary = target.with_name(\".\" + target.name + \".tmp\")\n    temporary.write_text(json.dumps({\"text\": text}, ensure_ascii=False), encoding=\"utf-8\")\n    os.replace(temporary, target)\n    return 0\n"
+        }
+      ],
+      "marker_functions": [],
+      "sha256": "d6c782b55309d3049472f15195935a113387eba1aec8c3365ef7d875a7303efc"
+    },
     "run_all.py": {
       "bytes": 5823,
       "compiled": true,
@@ -272,7 +326,7 @@
       "sha256": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9"
     },
     "start_safe.py": {
-      "bytes": 60219,
+      "bytes": 60667,
       "compiled": true,
       "contexts": [
         {
@@ -322,6 +376,26 @@
         {
           "line": 1405,
           "source": "\n    app.post_init = pri_starte\n    app.run_polling(drop_pending_updates=True)\n\n"
+        },
+        {
+          "line": 1409,
+          "source": "\ndef main():\n    # UA-TASK084-START-SINGLETON\n    import fcntl as _v184_fcntl\n    _v184_singleton = open("
+        },
+        {
+          "line": 1411,
+          "source": "    # UA-TASK084-START-SINGLETON\n    import fcntl as _v184_fcntl\n    _v184_singleton = open(\n        os.path.join(BASE, \".start_safe.singleton.lock\"), \"a+\", encoding=\"utf-8\")\n    try:"
+        },
+        {
+          "line": 1412,
+          "source": "    import fcntl as _v184_fcntl\n    _v184_singleton = open(\n        os.path.join(BASE, \".start_safe.singleton.lock\"), \"a+\", encoding=\"utf-8\")\n    try:\n        _v184_fcntl.flock("
+        },
+        {
+          "line": 1414,
+          "source": "        os.path.join(BASE, \".start_safe.singleton.lock\"), \"a+\", encoding=\"utf-8\")\n    try:\n        _v184_fcntl.flock(\n            _v184_singleton.fileno(), _v184_fcntl.LOCK_EX | _v184_fcntl.LOCK_NB)\n    except BlockingIOError:"
+        },
+        {
+          "line": 1415,
+          "source": "    try:\n        _v184_fcntl.flock(\n            _v184_singleton.fileno(), _v184_fcntl.LOCK_EX | _v184_fcntl.LOCK_NB)\n    except BlockingIOError:\n        log.warning(\"start_safe.py уже запущен; второй экземпляр остановлен\")"
         }
       ],
       "counts": {
@@ -334,7 +408,7 @@
         "process_exit_75": 0,
         "ready_message": 0,
         "run_polling": 1,
-        "singleton_lock": 0
+        "singleton_lock": 4
       },
       "functions": [
         {
@@ -373,18 +447,18 @@
           "source": "    async def pri_starte(application):\n        try:\n            hozyain = None\n            put = os.path.join(BASE, \"vladelec.txt\")\n            if os.path.exists(put):\n                with open(put, \"r\", encoding=\"utf-8\") as fh:\n                    hozyain = int(fh.read().strip())\n            if hozyain:\n                await application.bot.send_message(\n                    hozyain,\n                    \"Один из ботов не поднялся: в файле %s негодный токен.\\n\\n\"\n                    \"Пришли новый сюда одной командой:\\n/token НОВЫЙ_ТОКЕН\\n\\n\"\n                    \"Я сам пойму, чей он. Потом Tasks → Restart.\" % slomannyy_fayl)\n        except Exception as e:\n            log.warning(\"не предупредил владельца: %r\", e)\n"
         },
         {
-          "end_line": 1468,
+          "end_line": 1478,
           "line": 1408,
           "name": "main",
-          "sha256": "9b69b8d16ee7d43f5df7e4bddbda1f134144e54fe7753a2fdd921be7d8e0f2ee",
-          "source": "def main():\n    if not os.path.exists(TARGET):\n        log.error(\"не найден %s — проверь имя файла\", TARGET)\n        raise SystemExit(1)\n\n    os.chdir(BASE)\n    if BASE not in sys.path:\n        sys.path.insert(0, BASE)\n\n    novye = pochinit_imena()\n    ubrat_musor()\n    if novye:\n        log.warning(\"обновились файлы: %s — если что-то ведёт себя странно, \"\n                    \"нажми Restart ещё раз\", \", \".join(novye))\n\n    apply_all()\n    db_clean_split()\n\n    # проверяем токены до запуска: один битый больше не роняет обоих\n    klient = _token_iz(\"bot_token.txt\")\n    krm = _token_iz(\"team_token.txt\")\n    ok_klient = _zhivoy_token(klient)\n    ok_krm = _zhivoy_token(krm)\n\n    if ok_krm is False and ok_klient is not False:\n        avariynyy_rezhim(klient, \"team_token.txt\")\n        return\n    if ok_klient is False and ok_krm is not False:\n        avariynyy_rezhim(krm, \"bot_token.txt\")\n        return\n    if ok_klient is False and ok_krm is False:\n        log.error(\"оба токена негодны — впиши их в bot_token.txt и team_token.txt\")\n\n    log.info(\"защита включена, запускаю run_all.py\")\n\n    while True:\n        try:\n            runpy.run_path(TARGET, run_name=\"__main__\")\n            log.warning(\"run_all.py завершился сам, перезапуск через 10 c\")\n        except SystemExit:\n            raise\n        except KeyboardInterrupt:\n            raise\n        except Exception as e:\n            tekst = \"%r\" % e\n            if \"InvalidToken\" in tekst or \"Unauthorized\" in tekst:\n                # какой именно токен отвергли — видно в тексте ошибки\n                klient = _token_iz(\"bot_token.txt\")\n                krm = _token_iz(\"team_token.txt\")\n                if klient and klient in tekst and krm and krm not in tekst:\n                    avariynyy_rezhim(krm, \"bot_token.txt\")\n                    return\n                if krm and krm in tekst and klient and klient not in tekst:\n                    avariynyy_rezhim(klient, \"team_token.txt\")\n                    return\n                log.error(\"Оба токена не приняты. Впиши действующие в \"\n                          \"bot_token.txt и team_token.txt через редактор.\")\n                time.sleep(60)\n                continue\n            log.exception(\"run_all.py упал: %r — перезапуск через 10 c\", e)\n        time.sleep(10)\n"
+          "sha256": "e41e01862a3b03d175d50662ebef62de253942853125a9386f22fc42dbf2bf40",
+          "source": "def main():\n    # UA-TASK084-START-SINGLETON\n    import fcntl as _v184_fcntl\n    _v184_singleton = open(\n        os.path.join(BASE, \".start_safe.singleton.lock\"), \"a+\", encoding=\"utf-8\")\n    try:\n        _v184_fcntl.flock(\n            _v184_singleton.fileno(), _v184_fcntl.LOCK_EX | _v184_fcntl.LOCK_NB)\n    except BlockingIOError:\n        log.warning(\"start_safe.py уже запущен; второй экземпляр остановлен\")\n        return\n    if not os.path.exists(TARGET):\n        log.error(\"не найден %s — проверь имя файла\", TARGET)\n        raise SystemExit(1)\n\n    os.chdir(BASE)\n    if BASE not in sys.path:\n        sys.path.insert(0, BASE)\n\n    novye = pochinit_imena()\n    ubrat_musor()\n    if novye:\n        log.warning(\"обновились файлы: %s — если что-то ведёт себя странно, \"\n                    \"нажми Restart ещё раз\", \", \".join(novye))\n\n    apply_all()\n    db_clean_split()\n\n    # проверяем токены до запуска: один битый больше не роняет обоих\n    klient = _token_iz(\"bot_token.txt\")\n    krm = _token_iz(\"team_token.txt\")\n    ok_klient = _zhivoy_token(klient)\n    ok_krm = _zhivoy_token(krm)\n\n    if ok_krm is False and ok_klient is not False:\n        avariynyy_rezhim(klient, \"team_token.txt\")\n        return\n    if ok_klient is False and ok_krm is not False:\n        avariynyy_rezhim(krm, \"bot_token.txt\")\n        return\n    if ok_klient is False and ok_krm is False:\n        log.error(\"оба токена негодны — впиши их в bot_token.txt и team_token.txt\")\n\n    log.info(\"защита включена, запускаю run_all.py\")\n\n    while True:\n        try:\n            runpy.run_path(TARGET, run_name=\"__main__\")\n            log.warning(\"run_all.py завершился сам, перезапуск через 10 c\")\n        except SystemExit:\n            raise\n        except KeyboardInterrupt:\n            raise\n        except Exception as e:\n            tekst = \"%r\" % e\n            if \"InvalidToken\" in tekst or \"Unauthorized\" in tekst:\n                # какой именно токен отвергли — видно в тексте ошибки\n                klient = _token_iz(\"bot_token.txt\")\n                krm = _token_iz(\"team_token.txt\")\n                if klient and klient in tekst and krm and krm not in tekst:\n                    avariynyy_rezhim(krm, \"bot_token.txt\")\n                    return\n                if krm and krm in tekst and klient and klient not in tekst:\n                    avariynyy_rezhim(klient, \"team_token.txt\")\n                    return\n                log.error(\"Оба токена не приняты. Впиши действующие в \"\n                          \"bot_token.txt и team_token.txt через редактор.\")\n                time.sleep(60)\n                continue\n            log.exception(\"run_all.py упал: %r — перезапуск через 10 c\", e)\n        time.sleep(10)\n"
         }
       ],
       "marker_functions": [],
-      "sha256": "2daefa4e6cee8054452ff61200f1cb4b89284a23289370bd24c8a8053674d007"
+      "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
     },
     "team_bot.py": {
-      "bytes": 62703,
+      "bytes": 65247,
       "compiled": true,
       "contexts": [
         {
@@ -409,164 +483,160 @@
         },
         {
           "line": 190,
-          "source": "\n\nasync def show_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, staff, text=None):\n    msg = update.effective_message\n    header = text or ("
+          "source": "\n\nasync def show_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, staff, text=None):\n    # UA-TASK084-MENU-DEBOUNCE\n    import time as _v184_time"
         },
         {
-          "line": 200,
+          "line": 207,
           "source": "                   \"ИИ сам распознает только поля CRM и покажет предпросмотр.\")\n    await msg.reply_text(cars_ui.menu_header(header), parse_mode=\"HTML\",\n                         reply_markup=cars_ui.with_stats_button(main_menu(staff)))\n\n"
         },
         {
-          "line": 210,
+          "line": 217,
           "source": "    staff = who(update)\n    if staff:\n        await show_menu(update, context, staff)\n        return\n    await update.message.reply_text("
         },
         {
-          "line": 232,
+          "line": 239,
           "source": "        f\"✅ Доступ открыт.\\nВаша роль: {db.ROLE_LABELS.get(role, role)}\"\n    )\n    await show_menu(update, context, staff)\n    # Сообщаем владельцу, что человек вошёл\n    for oid in db.staff_ids_by_role(db.ROLE_OWNER):"
         },
         {
-          "line": 236,
+          "line": 243,
           "source": "    for oid in db.staff_ids_by_role(db.ROLE_OWNER):\n        try:\n            await context.bot.send_message(\n                oid,\n                f\"👤 Новый сотрудник в системе:\\n\""
         },
         {
-          "line": 325,
+          "line": 332,
           "source": "\n    started = time.monotonic()\n    hard_deadline = started + 15.0\n    data = {}\n    thinking = None"
         },
         {
-          "line": 340,
-          "source": "            return\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio = await asyncio.wait_for(download_bytes(file_id), timeout=min(3.0, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())"
+          "line": 347,
+          "source": "            return\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio = await asyncio.wait_for(download_bytes(file_id), timeout=min(3.0, remaining))\n            # UA-TASK084-KILLABLE-DRAFT-VOICE"
         },
         {
-          "line": 342,
-          "source": "            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio = await asyncio.wait_for(download_bytes(file_id), timeout=min(3.0, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio), timeout=remaining"
-        },
-        {
-          "line": 344,
-          "source": "            remaining = max(0.1, hard_deadline - time.monotonic())\n            text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio), timeout=remaining\n            )\n        except asyncio.TimeoutError:"
-        },
-        {
-          "line": 369,
+          "line": 391,
           "source": "        thinking = await msg.reply_text(\"🖼 ИИ распознаёт, до 15 секунд...\")\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            image = await asyncio.wait_for(download_bytes(file_id), timeout=remaining)\n            remaining = max(0.5, hard_deadline - time.monotonic())"
         },
         {
-          "line": 371,
+          "line": 393,
           "source": "            remaining = max(0.1, hard_deadline - time.monotonic())\n            image = await asyncio.wait_for(download_bytes(file_id), timeout=remaining)\n            remaining = max(0.5, hard_deadline - time.monotonic())\n            image_data = await asyncio.wait_for(\n                asyncio.to_thread(local_ocr.fields_from_image, image, allowed, remaining),"
         },
         {
-          "line": 373,
+          "line": 395,
           "source": "            remaining = max(0.5, hard_deadline - time.monotonic())\n            image_data = await asyncio.wait_for(\n                asyncio.to_thread(local_ocr.fields_from_image, image, allowed, remaining),\n                timeout=remaining,\n            )"
         },
         {
-          "line": 551,
+          "line": 573,
           "source": "    await query.message.reply_text(\n        \"✅ Сохранено: %s%s\" % (db.card_title(table, card), note),\n        reply_markup=main_menu(staff),\n    )\n    context.user_data.pop(\"ai_draft\", None)"
         },
         {
-          "line": 635,
+          "line": 657,
           "source": "        for oid in db.staff_ids_by_role(db.ROLE_OWNER):\n            try:\n                await context.bot.send_message(\n                    oid,\n                    f\"⚠️ Запись #{inbox_id} сохранена, но менеджеров в системе нет. \""
         },
         {
-          "line": 646,
+          "line": 668,
           "source": "    for mid in managers:\n        try:\n            await context.bot.send_message(\n                mid,\n                f\"📥 <b>Новая информация от владельца</b>\\n\\n\""
         },
         {
-          "line": 843,
+          "line": 865,
           "source": "        f\"Статус: {db.STATUS_LABELS[db.ST_ON_REVIEW]}\\n\\n\"\n        f\"Администратор получил уведомление.\",\n        reply_markup=main_menu(staff),\n    )\n    await notify_admins_review(context, table, card_id, staff)"
         },
         {
-          "line": 854,
+          "line": 876,
           "source": "    staff = who(update)\n    await update.message.reply_text(\"Создание карточки отменено.\",\n                                    reply_markup=main_menu(staff) if staff else None)\n    return ConversationHandler.END\n"
         },
         {
-          "line": 863,
+          "line": 885,
           "source": "    for uid in set(targets):\n        try:\n            await context.bot.send_message(\n                uid,\n                f\"🔍 <b>Новая карточка на проверку</b>\\n\\n\""
         },
         {
-          "line": 973,
+          "line": 995,
           "source": "    if target:\n        try:\n            await context.bot.send_message(\n                target,\n                f\"{db.STATUS_LABELS[db.get_card(table, card_id)['review_status']]}\\n\""
         },
         {
-          "line": 1155,
+          "line": 1177,
           "source": "        await update.message.reply_text(\n            f\"По запросу «{text}» ничего не найдено.\",\n            reply_markup=main_menu(staff),\n        )\n        return"
         },
         {
-          "line": 1214,
+          "line": 1236,
           "source": "    staff = who(update)\n    if staff:\n        await show_menu(update, context, staff)\n\n"
         },
         {
-          "line": 1227,
+          "line": 1249,
           "source": "    for oid in db.staff_ids_by_role(db.ROLE_OWNER):\n        try:\n            await context.bot.send_message(\n                oid,\n                f\"❓ <b>Менеджер просит уточнить по записи #{inbox_id}</b>\\n\\n\""
         },
         {
-          "line": 1248,
+          "line": 1270,
           "source": "    for uid in db.staff_ids_by_role(db.ROLE_OWNER):\n        try:\n            await context.bot.send_message(\n                uid,\n                f\"⚠️ <b>Сбой во внутреннем боте</b>\\n\\n<code>{tb[-1000:]}</code>\","
         },
         {
-          "line": 1304,
+          "line": 1328,
+          "source": "    try:\n        with open(_v184_lock, \"a+\", encoding=\"utf-8\") as _v184_guard:\n            _v184_fcntl.flock(_v184_guard.fileno(), _v184_fcntl.LOCK_EX)\n            try:\n                with open(_v184_state, \"r\", encoding=\"utf-8\") as _v184_handle:"
+        },
+        {
+          "line": 1355,
           "source": "    for uid in ids or []:\n        try:\n            await context.bot.send_message(\n                uid, \"🟢 <b>Бот запущен и готов к работе.</b>\\n\\n\" + vvodnye_text(),\n                parse_mode=\"HTML\")"
         },
         {
-          "line": 1319,
+          "line": 1370,
           "source": "\n\nasync def post_init(application):\n    db.init_db()\n    logging.info(\"ИИ-разбор: %s | расшифровка голосовых: %s\","
         },
         {
-          "line": 1343,
+          "line": 1398,
           "source": "        return None\n\n    app = ApplicationBuilder().token(token).post_init(post_init).build()\n    ai_filter.register(app)\n"
         },
         {
-          "line": 1420,
+          "line": 1475,
           "source": "    if app:\n        print(\"Внутренний бот запущен.\")\n        app.run_polling(drop_pending_updates=False)\n\n"
         }
       ],
       "counts": {
         "application_builder": 2,
         "fixed_deadline_4_65": 0,
-        "killable_voice_watchdog": 0,
-        "non_killable_transcribe": 1,
+        "killable_voice_watchdog": 1,
+        "non_killable_transcribe": 0,
         "owner_greeting": 0,
         "post_init": 3,
         "process_exit_75": 0,
         "ready_message": 0,
         "run_polling": 1,
-        "singleton_lock": 0
+        "singleton_lock": 1
       },
       "functions": [
         {
-          "end_line": 200,
+          "end_line": 207,
           "line": 190,
           "name": "show_menu",
-          "sha256": "02ccb935c473fa811bda9bfb567b6b74519a6d2b0062cc9fc256964ff31c7906",
-          "source": "async def show_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, staff, text=None):\n    msg = update.effective_message\n    header = text or (\n        f\"{db.ROLE_LABELS.get(staff['role'], staff['role'])}\\n\"\n        f\"Здравствуйте, {staff.get('full_name') or 'коллега'}!\"\n    )\n    if is_owner(staff):\n        header += (\"\\n\\nОтправьте текст, фото, скриншот, голосовое или документ. \"\n                   \"ИИ сам распознает только поля CRM и покажет предпросмотр.\")\n    await msg.reply_text(cars_ui.menu_header(header), parse_mode=\"HTML\",\n                         reply_markup=cars_ui.with_stats_button(main_menu(staff)))\n"
+          "sha256": "9f49ca63c732c0c8cb2fdafc82afefcbed8074a88e310ac1fc5e4217f1075374",
+          "source": "async def show_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, staff, text=None):\n    # UA-TASK084-MENU-DEBOUNCE\n    import time as _v184_time\n    _v184_now = _v184_time.monotonic()\n    _v184_last = float(context.chat_data.get(\"_ua_menu_last_sent\", 0.0) or 0.0)\n    if _v184_now - _v184_last < 4.0:\n        return\n    context.chat_data[\"_ua_menu_last_sent\"] = _v184_now\n    msg = update.effective_message\n    header = text or (\n        f\"{db.ROLE_LABELS.get(staff['role'], staff['role'])}\\n\"\n        f\"Здравствуйте, {staff.get('full_name') or 'коллега'}!\"\n    )\n    if is_owner(staff):\n        header += (\"\\n\\nОтправьте текст, фото, скриншот, голосовое или документ. \"\n                   \"ИИ сам распознает только поля CRM и покажет предпросмотр.\")\n    await msg.reply_text(cars_ui.menu_header(header), parse_mode=\"HTML\",\n                         reply_markup=cars_ui.with_stats_button(main_menu(staff)))\n"
         },
         {
-          "end_line": 216,
-          "line": 207,
+          "end_line": 223,
+          "line": 214,
           "name": "start",
           "sha256": "7b2d150f3bdfb1db51b819f49f2af3752b48a4c35fc3dbe1db2b6066f1aad836",
           "source": "async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    staff = who(update)\n    if staff:\n        await show_menu(update, context, staff)\n        return\n    await update.message.reply_text(\n        \"Это внутренний бот UA Art Company LLC.\\n\\n\"\n        \"Доступ только для сотрудников. Отправьте код приглашения, \"\n        \"который вам выдал руководитель (шесть символов, например A1B2C3).\"\n    )\n"
         },
         {
-          "end_line": 1308,
-          "line": 1295,
+          "end_line": 1359,
+          "line": 1317,
           "name": "vvodnye_job",
-          "sha256": "81e87f7e3b6fa3d20acd80a47053da1befe1f8191c10a871fdabf0c768611e4d",
-          "source": "async def vvodnye_job(context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"После запуска бот сам присылает владельцу текущие вводные.\"\"\"\n    try:\n        ids = db.staff_ids_by_role(db.ROLE_OWNER)\n    except Exception as e:\n        logging.warning(\"владелец не найден: %s\", e)\n        return\n    for uid in ids or []:\n        try:\n            await context.bot.send_message(\n                uid, \"🟢 <b>Бот запущен и готов к работе.</b>\\n\\n\" + vvodnye_text(),\n                parse_mode=\"HTML\")\n        except Exception as e:\n            logging.warning(\"вводные не отправились %s: %s\", uid, e)\n"
+          "sha256": "ec2528052a56d68aa27887352fa9b640fdd55d725da15efa5dc06910c5dc38f6",
+          "source": "async def vvodnye_job(context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"После запуска бот сам присылает владельцу текущие вводные.\"\"\"\n    # UA-TASK084-STARTUP-NOTICE-DEBOUNCE\n    import fcntl as _v184_fcntl\n    import os as _v184_os\n    import time as _v184_time\n\n    _v184_state = \"/home/Carix/.team_bot_start_notice\"\n    _v184_lock = \"/home/Carix/.team_bot_start_notice.lock\"\n    try:\n        with open(_v184_lock, \"a+\", encoding=\"utf-8\") as _v184_guard:\n            _v184_fcntl.flock(_v184_guard.fileno(), _v184_fcntl.LOCK_EX)\n            try:\n                with open(_v184_state, \"r\", encoding=\"utf-8\") as _v184_handle:\n                    _v184_last = int((_v184_handle.read() or \"0\").strip())\n            except (FileNotFoundError, ValueError):\n                _v184_last = 0\n            _v184_now = int(_v184_time.time())\n            if _v184_now - _v184_last < 600:\n                logging.info(\"Повторное стартовое уведомление подавлено.\")\n                return\n            _v184_temp = \"%s.tmp.%d\" % (_v184_state, _v184_os.getpid())\n            with open(_v184_temp, \"w\", encoding=\"utf-8\") as _v184_handle:\n                _v184_handle.write(str(_v184_now))\n                _v184_handle.flush()\n                _v184_os.fsync(_v184_handle.fileno())\n            _v184_os.replace(_v184_temp, _v184_state)\n    except Exception as e:\n        logging.warning(\"Стартовое уведомление подавлено: защитный шлюз недоступен: %s\", e)\n        return\n\n    try:\n        ids = db.staff_ids_by_role(db.ROLE_OWNER)\n    except Exception as e:\n        logging.warning(\"владелец не найден: %s\", e)\n        return\n    for uid in ids or []:\n        try:\n            await context.bot.send_message(\n                uid, \"🟢 <b>Бот запущен и готов к работе.</b>\\n\\n\" + vvodnye_text(),\n                parse_mode=\"HTML\")\n        except Exception as e:\n            logging.warning(\"вводные не отправились %s: %s\", uid, e)\n"
         },
         {
-          "end_line": 1328,
-          "line": 1319,
+          "end_line": 1379,
+          "line": 1370,
           "name": "post_init",
           "sha256": "07dab72424c66febe80d9769e0660f0e4d200e4d5366bc08e00dba3fee1e5713",
           "source": "async def post_init(application):\n    db.init_db()\n    logging.info(\"ИИ-разбор: %s | расшифровка голосовых: %s\",\n                 \"включён\" if ai.enabled() else \"ВЫКЛЮЧЕН (нет anthropic_key.txt)\",\n                 \"включена\" if ai.voice_enabled() else \"выключена (нет openai_key.txt)\")\n    await application.bot.set_my_commands([\n        BotCommand(\"start\", \"Меню\"),\n        BotCommand(\"cancel\", \"Отменить текущее действие\"),\n    ])\n    logging.info(\"team_bot готов.\")\n"
         },
         {
-          "end_line": 1410,
-          "line": 1334,
+          "end_line": 1465,
+          "line": 1389,
           "name": "build_application",
-          "sha256": "faa48866b5b436eb3de4fabb85ad07dfcab47d4d09d3ba9f82f20a2baccd09ef",
-          "source": "def build_application():\n    token = read_team_token()\n    if not token:\n        logging.error(\n            f\"Токен внутреннего бота не найден. Создайте {TEAM_TOKEN_FILE} \"\n            f\"и вставьте туда токен от BotFather.\"\n        )\n        return None\n\n    app = ApplicationBuilder().token(token).post_init(post_init).build()\n    ai_filter.register(app)\n\n    # Экраны карточки авто версии 5\n    cars_ui.register(app)\n\n    card_conv = ConversationHandler(\n        entry_points=[CallbackQueryHandler(mk_card_start, pattern=r\"^mk_(car|client):\")],\n        states={CARD_STEP: [MessageHandler(filters.TEXT & ~filters.COMMAND, mk_card_step)]},\n        fallbacks=[CommandHandler(\"cancel\", mk_card_cancel),\n                   CommandHandler(\"start\", mk_card_cancel)],\n        allow_reentry=True,\n    )\n    app.add_handler(card_conv)\n\n    # ИИ-исправление черновика — до общего перехвата сообщений\n    ai_fix_conv = ConversationHandler(\n        entry_points=[CallbackQueryHandler(ai_edit_start, pattern=r\"^ai_edit$\")],\n        states={AI_FIX: [MessageHandler(filters.TEXT & ~filters.COMMAND, ai_edit_apply)]},\n        fallbacks=[CommandHandler(\"cancel\", ai_edit_cancel),\n                   CommandHandler(\"start\", ai_edit_cancel)],\n        allow_reentry=True,\n    )\n    app.add_handler(ai_fix_conv)\n    app.add_handler(CallbackQueryHandler(ai_save, pattern=r\"^ai_ok$\"))\n    app.add_handler(CallbackQueryHandler(ai_reject, pattern=r\"^ai_no$\"))\n    app.add_handler(CallbackQueryHandler(ai_stop_cb, pattern=r\"^ai_stop$\"))\n    app.add_handler(CallbackQueryHandler(ai_resume_cb, pattern=r\"^ai_resume$\"))\n\n    app.add_handler(CommandHandler(\"start\", start))\n    app.add_handler(CallbackQueryHandler(menu_cb, pattern=r\"^menu$\"))\n    app.add_handler(CallbackQueryHandler(inbox_list, pattern=r\"^inbox_list$\"))\n    app.add_handler(CallbackQueryHandler(inbox_open, pattern=r\"^inbox_open:\"))\n    app.add_handler(CallbackQueryHandler(inbox_dup, pattern=r\"^inbox_dup:\"))\n    app.add_handler(CallbackQueryHandler(inbox_skip, pattern=r\"^inbox_skip:\"))\n    app.add_handler(CallbackQueryHandler(inbox_ask, pattern=r\"^inbox_ask:\"))\n    app.add_handler(CallbackQueryHandler(card_open, pattern=r\"^card_open:\"))\n    app.add_handler(CallbackQueryHandler(card_review_action,\n                                         pattern=r\"^card_(ok|back|no):\"))\n    app.add_handler(CallbackQueryHandler(card_log, pattern=r\"^card_log:\"))\n    app.add_handler(CallbackQueryHandler(cards_list, pattern=r\"^cards_(cars|clients)$\"))\n    app.add_handler(CallbackQueryHandler(review_list, pattern=r\"^review_list$\"))\n    app.add_handler(CallbackQueryHandler(staff_list, pattern=r\"^staff_list$\"))\n    app.add_handler(CallbackQueryHandler(invite_create, pattern=r\"^invite:\"))\n    app.add_handler(CallbackQueryHandler(staff_toggle, pattern=r\"^staff_toggle:\"))\n    app.add_handler(CallbackQueryHandler(search_start, pattern=r\"^search_start$\"))\n    app.add_handler(CallbackQueryHandler(stats, pattern=r\"^stats$\"))\n    app.add_handler(CallbackQueryHandler(audit_list, pattern=r\"^audit_list$\"))\n\n    # Приём любой информации — последним, чтобы не перехватывать диалоги\n    app.add_handler(MessageHandler(~filters.COMMAND, intake))\n    app.add_error_handler(error_handler)\n\n    # Ежедневная резервная копия базы\n    if app.job_queue:\n        # CRM-PHOTO-FASTPATH-001: DB drain is independent of update handling.\n        app.job_queue.run_repeating(\n            cars_ui.media_spool_worker_job, interval=1.0, first=0.2\n        )\n        app.job_queue.run_repeating(\n            backup_job, interval=timedelta(days=1), first=timedelta(minutes=2)\n        )\n        # Вводные владельцу сразу после запуска\n        app.job_queue.run_once(vvodnye_job, when=timedelta(seconds=5))\n    else:\n        logging.warning(\"job-queue не установлен — автобэкап отключён.\")\n\n    return app\n"
+          "sha256": "eddd7ac7a8a1124fb3b062faa5ce1a3e76ff59dfee166433083bd015c8a0a66e",
+          "source": "def build_application():\n    token = read_team_token()\n    if not token:\n        logging.error(\n            f\"Токен внутреннего бота не найден. Создайте {TEAM_TOKEN_FILE} \"\n            f\"и вставьте туда токен от BotFather.\"\n        )\n        return None\n\n    app = ApplicationBuilder().token(token).post_init(post_init).build()\n    ai_filter.register(app)\n\n    # Экраны карточки авто версии 5\n    cars_ui.register(app)\n\n    card_conv = ConversationHandler(\n        entry_points=[CallbackQueryHandler(mk_card_start, pattern=r\"^mk_(car|client):\")],\n        states={CARD_STEP: [MessageHandler(filters.TEXT & ~filters.COMMAND, mk_card_step)]},\n        fallbacks=[CommandHandler(\"cancel\", mk_card_cancel),\n                   CommandHandler(\"start\", mk_card_cancel)],\n        allow_reentry=True,\n    )\n    app.add_handler(card_conv)\n\n    # ИИ-исправление черновика — до общего перехвата сообщений\n    ai_fix_conv = ConversationHandler(\n        entry_points=[CallbackQueryHandler(ai_edit_start, pattern=r\"^ai_edit$\")],\n        states={AI_FIX: [MessageHandler(filters.TEXT & ~filters.COMMAND, ai_edit_apply)]},\n        fallbacks=[CommandHandler(\"cancel\", ai_edit_cancel),\n                   CommandHandler(\"start\", ai_edit_cancel)],\n        allow_reentry=True,\n    )\n    app.add_handler(ai_fix_conv)\n    app.add_handler(CallbackQueryHandler(ai_save, pattern=r\"^ai_ok$\"))\n    app.add_handler(CallbackQueryHandler(ai_reject, pattern=r\"^ai_no$\"))\n    app.add_handler(CallbackQueryHandler(ai_stop_cb, pattern=r\"^ai_stop$\"))\n    app.add_handler(CallbackQueryHandler(ai_resume_cb, pattern=r\"^ai_resume$\"))\n\n    app.add_handler(CommandHandler(\"start\", start))\n    app.add_handler(CallbackQueryHandler(menu_cb, pattern=r\"^menu$\"))\n    app.add_handler(CallbackQueryHandler(inbox_list, pattern=r\"^inbox_list$\"))\n    app.add_handler(CallbackQueryHandler(inbox_open, pattern=r\"^inbox_open:\"))\n    app.add_handler(CallbackQueryHandler(inbox_dup, pattern=r\"^inbox_dup:\"))\n    app.add_handler(CallbackQueryHandler(inbox_skip, pattern=r\"^inbox_skip:\"))\n    app.add_handler(CallbackQueryHandler(inbox_ask, pattern=r\"^inbox_ask:\"))\n    app.add_handler(CallbackQueryHandler(card_open, pattern=r\"^card_open:\"))\n    app.add_handler(CallbackQueryHandler(card_review_action,\n                                         pattern=r\"^card_(ok|back|no):\"))\n    app.add_handler(CallbackQueryHandler(card_log, pattern=r\"^card_log:\"))\n    app.add_handler(CallbackQueryHandler(cards_list, pattern=r\"^cards_(cars|clients)$\"))\n    app.add_handler(CallbackQueryHandler(review_list, pattern=r\"^review_list$\"))\n    app.add_handler(CallbackQueryHandler(staff_list, pattern=r\"^staff_list$\"))\n    app.add_handler(CallbackQueryHandler(invite_create, pattern=r\"^invite:\"))\n    app.add_handler(CallbackQueryHandler(staff_toggle, pattern=r\"^staff_toggle:\"))\n    app.add_handler(CallbackQueryHandler(search_start, pattern=r\"^search_start$\"))\n    app.add_handler(CallbackQueryHandler(stats, pattern=r\"^stats$\"))\n    app.add_handler(CallbackQueryHandler(audit_list, pattern=r\"^audit_list$\"))\n\n    # Приём любой информации — последним, чтобы не перехватывать диалоги\n    app.add_handler(MessageHandler(~filters.COMMAND, intake))\n    app.add_error_handler(error_handler)\n\n    # Ежедневная резервная копия базы\n    if app.job_queue:\n        # CRM-PHOTO-FASTPATH-001: DB drain is independent of update handling.\n        app.job_queue.run_repeating(\n            cars_ui.media_spool_worker_job, interval=2.0, first=0.2\n        )\n        app.job_queue.run_repeating(\n            backup_job, interval=timedelta(days=1), first=timedelta(minutes=2)\n        )\n        # Вводные владельцу сразу после запуска\n        app.job_queue.run_once(vvodnye_job, when=timedelta(seconds=5))\n    else:\n        logging.warning(\"job-queue не установлен — автобэкап отключён.\")\n\n    return app\n"
         },
         {
-          "end_line": 1420,
-          "line": 1413,
+          "end_line": 1475,
+          "line": 1468,
           "name": "main",
           "sha256": "8536f8b43d9bc3f580732e445e9fe1fcb40658d2abb08f744372c34ced8e5ebf",
           "source": "def main():\n    logging.basicConfig(\n        format=\"%(asctime)s [%(levelname)s] %(message)s\", level=logging.INFO\n    )\n    app = build_application()\n    if app:\n        print(\"Внутренний бот запущен.\")\n        app.run_polling(drop_pending_updates=False)\n"
@@ -574,24 +644,17 @@
       ],
       "marker_functions": [
         {
-          "end_line": 424,
-          "line": 312,
-          "name": "run_ai_draft",
-          "sha256": "56e11511e4a47e8314f50e9f6bfa25bb57690657d47c9de006726e0b7f004822",
-          "source": "async def run_ai_draft(update, context, inbox_id, kind, text, file_id):\n    \"\"\"Open a schema-closed CRM draft from photo, text, or voice.\"\"\"\n    import asyncio\n    import time\n    import ai_fast_schema as fast\n    import local_ocr\n\n    msg = update.message\n    if ai.is_stopped():\n        await msg.reply_text(\"🛑 ИИ остановлен. Включите ИИ в главном меню.\")\n        return\n\n    started = time.monotonic()\n    hard_deadline = started + 15.0\n    data = {}\n    thinking = None\n    allowed = fast.car_fields(ai_filter)\n\n    async def download_bytes(fid):\n        tg_file = await context.bot.get_file(fid)\n        return bytes(await tg_file.download_as_bytearray())\n\n    if kind in (\"voice\", \"audio\", \"video_note\") and file_id:\n        thinking = await msg.reply_text(\"🎤 ИИ распознаёт, до 15 секунд...\")\n        if not ai.voice_enabled():\n            await thinking.edit_text(\"🎤 Расшифровка голоса не настроена.\")\n            return\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            audio = await asyncio.wait_for(download_bytes(file_id), timeout=min(3.0, remaining))\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            text = await asyncio.wait_for(\n                asyncio.to_thread(ai.transcribe, audio), timeout=remaining\n            )\n        except asyncio.TimeoutError:\n            text = \"\"\n            logging.warning(\"AI voice hard timeout inbox=%s\", inbox_id)\n        except Exception as exc:\n            text = \"\"\n            logging.error(\"Voice recognition failed inbox=%s error=%s\", inbox_id, exc)\n        if text:\n            data.update(local_ocr.fields_from_text(text, allowed))\n            data.update(fast.fast_text_data(text, ai_filter))\n\n    elif kind in (\"photo\", \"document\") and file_id:\n        if kind == \"document\":\n            mime = (msg.document.mime_type or \"\") if msg.document else \"\"\n            if not mime.startswith(\"image/\"):\n                await msg.reply_text(\"📎 Нужен файл-изображение.\")\n                return\n        if msg.media_group_id:\n            marker = \"ai_mg_%s\" % msg.media_group_id\n            if context.chat_data.get(marker):\n                return\n            context.chat_data[marker] = True\n        thinking = await msg.reply_text(\"🖼 ИИ распознаёт, до 15 секунд...\")\n        try:\n            remaining = max(0.1, hard_deadline - time.monotonic())\n            image = await asyncio.wait_for(download_bytes(file_id), timeout=remaining)\n            remaining = max(0.5, hard_deadline - time.monotonic())\n            image_data = await asyncio.wait_for(\n                asyncio.to_thread(local_ocr.fields_from_image, image, allowed, remaining),\n                timeout=remaining,\n            )\n            data.update(image_data)\n            # A caption is explicit owner input and wins over an OCR ambiguity.\n            if (text or \"\").strip():\n                data.update(local_ocr.fields_from_text(text, allowed))\n                data.update(fast.fast_text_data(text, ai_filter))\n        except asyncio.TimeoutError:\n            data = {}\n            logging.warning(\"Local OCR hard timeout inbox=%s\", inbox_id)\n        except Exception as exc:\n            data = {}\n            logging.error(\"Local OCR failed inbox=%s error=%s\", inbox_id, exc)\n\n    elif (text or \"\").strip():\n        thinking = await msg.reply_text(\"🧠 ИИ распознаёт, до 15 секунд...\")\n        data.update(local_ocr.fields_from_text(text, allowed))\n        data.update(fast.fast_text_data(text, ai_filter))\n\n    if data:\n        parsed = fast.parsed_from_data(data)\n        data = fast.clean_car(parsed, ai_filter, \"\")\n    if data:\n        parsed = fast.parsed_from_data(data)\n        context.user_data[\"ai_draft\"] = {\n            \"inbox_id\": inbox_id,\n            \"parsed\": parsed,\n            \"clean_data\": data,\n            \"source_text\": \"\",\n            \"review\": None,\n        }\n        rows = [[InlineKeyboardButton(\"✅ Сохранить карточку\", callback_data=\"ai_ok\")], [\n            InlineKeyboardButton(\"✏️ Дополнить\", callback_data=\"ai_edit\"),\n            InlineKeyboardButton(\"❌ Отменить\", callback_data=\"ai_no\"),\n        ]]\n        elapsed = time.monotonic() - started\n        if thinking is None:\n            thinking = await msg.reply_text(\"🧠 ИИ распознаёт, до 15 секунд...\")\n        await thinking.edit_text(\n            \"✅ Новая карточка открыта\\n\\n\" + ai_filter.render(data)\n            + \"\\n\\n⏱ %.1f с · локально · 0 AI-токенов\" % elapsed,\n            parse_mode=\"HTML\",\n            reply_markup=InlineKeyboardMarkup(rows),\n        )\n        return\n\n    if thinking is None:\n        thinking = await msg.reply_text(\"🧠 ИИ распознаёт, до 15 секунд...\")\n    await thinking.edit_text(\n        \"Поля CRM не распознаны. Пришлите более чёткое фото, текст или голос.\"\n    )\n"
-        },
-        {
-          "end_line": 1308,
-          "line": 1295,
+          "end_line": 1359,
+          "line": 1317,
           "name": "vvodnye_job",
-          "sha256": "81e87f7e3b6fa3d20acd80a47053da1befe1f8191c10a871fdabf0c768611e4d",
-          "source": "async def vvodnye_job(context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"После запуска бот сам присылает владельцу текущие вводные.\"\"\"\n    try:\n        ids = db.staff_ids_by_role(db.ROLE_OWNER)\n    except Exception as e:\n        logging.warning(\"владелец не найден: %s\", e)\n        return\n    for uid in ids or []:\n        try:\n            await context.bot.send_message(\n                uid, \"🟢 <b>Бот запущен и готов к работе.</b>\\n\\n\" + vvodnye_text(),\n                parse_mode=\"HTML\")\n        except Exception as e:\n            logging.warning(\"вводные не отправились %s: %s\", uid, e)\n"
+          "sha256": "ec2528052a56d68aa27887352fa9b640fdd55d725da15efa5dc06910c5dc38f6",
+          "source": "async def vvodnye_job(context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"После запуска бот сам присылает владельцу текущие вводные.\"\"\"\n    # UA-TASK084-STARTUP-NOTICE-DEBOUNCE\n    import fcntl as _v184_fcntl\n    import os as _v184_os\n    import time as _v184_time\n\n    _v184_state = \"/home/Carix/.team_bot_start_notice\"\n    _v184_lock = \"/home/Carix/.team_bot_start_notice.lock\"\n    try:\n        with open(_v184_lock, \"a+\", encoding=\"utf-8\") as _v184_guard:\n            _v184_fcntl.flock(_v184_guard.fileno(), _v184_fcntl.LOCK_EX)\n            try:\n                with open(_v184_state, \"r\", encoding=\"utf-8\") as _v184_handle:\n                    _v184_last = int((_v184_handle.read() or \"0\").strip())\n            except (FileNotFoundError, ValueError):\n                _v184_last = 0\n            _v184_now = int(_v184_time.time())\n            if _v184_now - _v184_last < 600:\n                logging.info(\"Повторное стартовое уведомление подавлено.\")\n                return\n            _v184_temp = \"%s.tmp.%d\" % (_v184_state, _v184_os.getpid())\n            with open(_v184_temp, \"w\", encoding=\"utf-8\") as _v184_handle:\n                _v184_handle.write(str(_v184_now))\n                _v184_handle.flush()\n                _v184_os.fsync(_v184_handle.fileno())\n            _v184_os.replace(_v184_temp, _v184_state)\n    except Exception as e:\n        logging.warning(\"Стартовое уведомление подавлено: защитный шлюз недоступен: %s\", e)\n        return\n\n    try:\n        ids = db.staff_ids_by_role(db.ROLE_OWNER)\n    except Exception as e:\n        logging.warning(\"владелец не найден: %s\", e)\n        return\n    for uid in ids or []:\n        try:\n            await context.bot.send_message(\n                uid, \"🟢 <b>Бот запущен и готов к работе.</b>\\n\\n\" + vvodnye_text(),\n                parse_mode=\"HTML\")\n        except Exception as e:\n            logging.warning(\"вводные не отправились %s: %s\", uid, e)\n"
         }
       ],
-      "sha256": "bbd644eaf2c25802984df930459da6a36f137ef2b1519642b3d006ab57388a48"
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
     }
   },
-  "started_at_utc": "2026-08-29T09:04:05Z",
-  "status": "PASS_ROOT_CAUSE_CONFIRMED",
+  "started_at_utc": "2026-08-30T00:06:51Z",
+  "status": "PASS_STATE_CHANGED",
   "task_id": "task_084"
 }
