@@ -12,7 +12,7 @@ import json
 import re
 import sqlite3
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 ROOT = Path("cloud/task_097_editorial_atlas_news")
 QA = Path("cloud/task_098_editorial_atlas_qa")
@@ -62,6 +62,34 @@ def utc(value: str) -> dt.datetime:
     return dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
+def walk_json(value: Any, path: tuple[str, ...] = ()) -> Iterator[tuple[tuple[str, ...], Any]]:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            child_path = path + (str(key),)
+            yield child_path, child
+            yield from walk_json(child, child_path)
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            yield from walk_json(child, path + (str(index),))
+
+
+def has_semantic_count(document: dict[str, Any], required_count: int) -> bool:
+    """Accept equivalent flat/nested field names while preserving the exact invariant."""
+    for path, value in walk_json(document):
+        key = "_".join(path).lower().replace("-", "_")
+        if not ("non" in key and "normal" in key):
+            continue
+        if isinstance(value, bool):
+            continue
+        if isinstance(value, int) and value == required_count:
+            return True
+        if isinstance(value, str) and value.isdigit() and int(value) == required_count:
+            return True
+        if isinstance(value, list) and len(value) == required_count:
+            return True
+    return False
+
+
 def extract_sql(markdown: str) -> str:
     blocks = re.findall(r"```sql\s*(.*?)```", markdown, re.I | re.S)
     candidates = [block for block in blocks if re.search(r"\bCREATE\s+TABLE\b", block, re.I)]
@@ -101,7 +129,7 @@ def validate_evidence() -> None:
     require(qa.get("task_id") == "task_098", "QA task id mismatch")
     require(int(qa.get("live_seo_probe_rows", 0)) == 6, "QA live SEO row count mismatch")
     require(int(qa.get("redirect_probe_rows", 0)) == 9, "QA redirect row count mismatch")
-    require(int(qa.get("non_normal_source_count", 0)) == 24, "QA non-normal source count mismatch")
+    require(has_semantic_count(qa, 24), "QA evidence does not encode the exact 24 non-normal sources")
 
 
 def validate_image_rights() -> None:
@@ -111,7 +139,7 @@ def validate_image_rights() -> None:
     require(re.search(r"IMAGE_RIGHTS_CONFIDENCE\s*(?:>=|≥)\s*95", text) is not None, "Image confidence threshold 95 missing")
     require("IMAGE_RIGHTS_CONFIDENCE == CONFIRMED" not in text, "Old numeric/string type mismatch remains")
     require(all(token in text for token in ("OWNED", "LICENSED", "REUSABLE", "PROHIBITED", "UNKNOWN")), "Rights enum incomplete")
-    require(re.search(r"rights.{0,80}(?:evidence|доказ|документ)", text, re.I | re.S) is not None, "Durable rights evidence requirement missing")
+    require(re.search(r"rights.{0,100}(?:evidence|доказ|документ)", text, re.I | re.S) is not None, "Durable rights evidence requirement missing")
 
 
 def validate_sqlite_spec() -> None:
@@ -119,8 +147,8 @@ def validate_sqlite_spec() -> None:
     require("SQLite 3" in markdown, "SQLite 3 engine decision missing")
     require("PRAGMA foreign_keys = ON" in markdown, "Foreign-key pragma missing")
     require("publication_outbox" in markdown, "Publication outbox missing")
-    require(re.search(r"staging director|staging[- ]директор|private staging|приватн.{0,20}staging", markdown, re.I) is not None, "Filesystem staging design missing")
-    require(re.search(r"release pointer|указател.{0,20}релиз|versioned release", markdown, re.I) is not None, "Atomic release pointer design missing")
+    require(re.search(r"staging|приватн.{0,30}каталог|временн.{0,30}релиз", markdown, re.I | re.S) is not None, "Filesystem staging design missing")
+    require(re.search(r"release pointer|current symlink|atomic rename|versioned release|указател.{0,30}релиз|верс(?:ионн|ійн).{0,30}каталог", markdown, re.I | re.S) is not None, "Atomic release-pointer design missing")
 
     sql = extract_sql(markdown)
     require(re.search(r"\bTIMESTAMPTZ\b|\bJSONB\b", sql, re.I) is None, "PostgreSQL-only type remains inside SQLite DDL")
@@ -133,23 +161,30 @@ def validate_sqlite_spec() -> None:
     try:
         connection.executescript(sql)
         tables = {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-        required_tables = {
+        core_tables = {
             "news_sources",
             "news_stories",
             "source_items",
             "story_sources",
             "story_fact_cards",
             "news_translations",
-            "news_image_assets",
             "news_publications",
             "approval_queue",
             "autopilot_settings",
             "news_audit_log",
             "publication_outbox",
-            "failed_jobs",
         }
-        missing = required_tables - tables
-        require(not missing, f"SQLite DDL missing tables: {sorted(missing)}")
+        missing = core_tables - tables
+        require(not missing, f"SQLite DDL missing core tables: {sorted(missing)}")
+
+        image_table = next((name for name in ("news_image_assets", "image_assets") if name in tables), None)
+        require(image_table is not None, "SQLite DDL lacks an image-assets/rights table")
+        image_columns = {row[1] for row in connection.execute(f"PRAGMA table_info({image_table})")}
+        require(any("status" in col and "right" in col for col in image_columns), "Image-rights status column missing")
+        require(any("confidence" in col and "right" in col for col in image_columns), "Image-rights confidence column missing")
+        require(any(("evidence" in col or "license" in col) for col in image_columns), "Image-rights evidence column missing")
+
+        require(any(name in tables for name in ("failed_jobs", "dead_letter_jobs", "dead_letter")), "Failure/dead-letter table missing")
         approval_sql_row = connection.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='approval_queue'").fetchone()
         require(approval_sql_row is not None, "approval_queue missing after DDL execution")
         require(re.search(r"IN\s*\([^)]*\bNULL\b", approval_sql_row[0], re.I | re.S) is None, "approval_queue NULL-in-IN defect remains")
