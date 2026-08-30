@@ -55,10 +55,9 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          # Python 3.11 does not allow a backslash-containing expression inside
-          # an f-string. Fix only the temporary runner copy before compilation.
           controller = Path('automation/task096_data_enrichment_controller.py')
           text = controller.read_text(encoding='utf-8')
+
           bad_expression = '{"\\n\\n".join(source_blocks)}'
           if bad_expression in text:
               prompt_marker = '    prompt = f"""'
@@ -71,39 +70,29 @@ jobs:
               )
               text = text.replace(bad_expression, '{sources_text}', 1)
 
-          # PythonAnywhere may return HTTP 412 while a fresh console is still
-          # starting. Retry send_input on the same disposable console; the outer
-          # task stage still has the owner-approved maximum of three restarts.
-          old_send = '''    def send_console(self, console_id: int, command: str) -> None:
-        form = urllib.parse.urlencode({"input": command + "\\n"}).encode()
-        self.request(
-            "POST", BASE + f"consoles/{console_id}/send_input/", form,
-            {"Content-Type": "application/x-www-form-urlencoded"}, allowed=(200,),
-        )
-'''
-          new_send = '''    def send_console(self, console_id: int, command: str) -> None:
-        form = urllib.parse.urlencode({"input": command + "\\n"}).encode()
-        last_status = None
-        for attempt in range(1, 7):
-            status, _ = self.request(
-                "POST", BASE + f"consoles/{console_id}/send_input/", form,
-                {"Content-Type": "application/x-www-form-urlencoded"},
-                allowed=(200, 409, 412, 429, 500, 502, 503, 504),
-            )
-            last_status = status
-            if status == 200:
-                return
-            time.sleep(min(10, attempt * 2))
-        raise ControllerError(f"CONSOLE_SEND_INPUT_HTTP_{last_status}")
-'''
-          if old_send in text:
-              text = text.replace(old_send, new_send, 1)
-          elif 'CONSOLE_SEND_INPUT_HTTP_' not in text:
-              raise SystemExit('TASK096_CONSOLE_RETRY_PATCH_TARGET_MISSING')
+          if 'CONSOLE_SEND_INPUT_HTTP_' not in text:
+              method_start = text.index('    def send_console(self, console_id: int, command: str) -> None:')
+              method_end = text.index('\n    def cleanup_console', method_start)
+              replacement_lines = [
+                  '    def send_console(self, console_id: int, command: str) -> None:',
+                  '        form = urllib.parse.urlencode({"input": command + "\\n"}).encode()',
+                  '        last_status = None',
+                  '        for attempt in range(1, 7):',
+                  '            status, _ = self.request(',
+                  '                "POST", BASE + f"consoles/{console_id}/send_input/", form,',
+                  '                {"Content-Type": "application/x-www-form-urlencoded"},',
+                  '                allowed=(200, 409, 412, 429, 500, 502, 503, 504),',
+                  '            )',
+                  '            last_status = status',
+                  '            if status == 200:',
+                  '                return',
+                  '            time.sleep(min(10, attempt * 2))',
+                  '        raise ControllerError(f"CONSOLE_SEND_INPUT_HTTP_{last_status}")',
+                  '',
+              ]
+              text = text[:method_start] + '\n'.join(replacement_lines) + text[method_end:]
           controller.write_text(text, encoding='utf-8')
 
-          # Add the explicit false scope flag to the context receipt in the
-          # temporary remote payload. This never authorizes or performs a bot write.
           remote = Path('cloud/task_096_tech_spec_ai_crm/data_enrichment/remote_apply.py')
           text = remote.read_text(encoding='utf-8')
           start = text.index('def export_context()')
