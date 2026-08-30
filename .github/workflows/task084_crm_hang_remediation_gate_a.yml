@@ -36,6 +36,8 @@ jobs:
             cloud/task_084_crm_hang_root_cause/live_audit.py \
             cloud/task_084_crm_hang_root_cause/deploy_controller.py \
             cloud/task_084_crm_hang_root_cause/remote_installer.py \
+            cloud/task_084_crm_hang_root_cause/remote_orchestrator.py \
+            cloud/task_084_crm_hang_root_cause/single_task_controller.py \
             cloud/task_078_voice_watchdog/voice_watchdog.py \
             cloud/task_078_voice_watchdog/handler_patcher.py
 
@@ -51,6 +53,20 @@ jobs:
 
       - name: Test combined remediation candidate
         run: python3 cloud/task_084_crm_hang_root_cause/deploy_controller.py --self-test
+
+      - name: Prove single-task fail-closed transport
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          controller=Path('cloud/task_084_crm_hang_root_cause/single_task_controller.py').read_text()
+          remote=Path('cloud/task_084_crm_hang_root_cause/remote_orchestrator.py').read_text()
+          assert 'wait_for_file(FINAL, 1200)' in controller
+          assert 'task084_remote_orchestrator.py' in controller
+          assert 'run_rollback()' in remote
+          assert remote.count('run_postcheck()') == 2
+          assert 'bot_restarted' in remote
+          print('TASK084_SINGLE_TASK_STATIC_PASS')
+          PY
 
       - name: Prove Gate A did not touch production
         run: |
