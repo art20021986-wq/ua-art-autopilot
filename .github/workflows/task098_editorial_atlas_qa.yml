@@ -1,0 +1,427 @@
+name: TASK 098 Editorial Atlas QA Repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tasks/task_098.md'
+      - '.github/workflows/task098_editorial_atlas_qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task098-editorial-atlas-qa
+  cancel-in-progress: false
+
+jobs:
+  qa-repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail closed on scope and checkpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest="$(find tasks -maxdepth 1 -type f -name 'task_[0-9][0-9][0-9].md' -printf '%f\n' | sort -V | tail -n1)"
+          test "$latest" = 'task_098.md'
+          grep -q 'PRODUCTION — ТОЛЬКО ПО ОТДЕЛЬНОЙ КОМАНДЕ' tasks/task_098.md
+          grep -q 'production write: prohibited;' tasks/task_098.md
+          grep -q 'CRM write: prohibited;' tasks/task_098.md
+          grep -q 'autopilot/autopublication enablement: prohibited;' tasks/task_098.md
+          expected='0f603908dbd290a6b3a4d9c8e348554c69d42c8f'
+          actual="$(git ls-remote origin refs/heads/backup/editorial-atlas-news-001-post-audit-pre-qa-20260830 | awk '{print $1}')"
+          test "$actual" = "$expected" || { echo "QA backup mismatch: ${actual:-NONE}"; exit 1; }
+          for path in \
+            cloud/task_097_editorial_atlas_news/evidence.json \
+            cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md \
+            cloud/task_097_editorial_atlas_news/data_model_pipeline.md \
+            cloud/task_097_editorial_atlas_news/seo_routing_audit.md \
+            cloud/task_097_editorial_atlas_news/report.md \
+            cloud/task_097_editorial_atlas_news/source_registry.csv \
+            cloud/task_097_editorial_atlas_news/live_source_probe.tsv; do
+            test -s "$path" || { echo "Missing input: $path"; exit 1; }
+          done
+          date -u +%Y-%m-%dT%H:%M:%SZ | tee /tmp/task098_qa_started_at.txt
+
+      - name: Collect bounded live SEO and redirect evidence read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+          import csv
+          import datetime as dt
+          import html
+          import json
+          import re
+          import ssl
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from collections import Counter
+          from pathlib import Path
+
+          context = ssl.create_default_context()
+          headers = {
+              'User-Agent': 'UA-ART-Editorial-QA/1.0 (+https://www.uaart.com.ua/; read-only)',
+              'Accept': 'text/html,application/xhtml+xml,application/xml,text/plain;q=0.9,*/*;q=0.5',
+          }
+
+          class ChainHandler(urllib.request.HTTPRedirectHandler):
+              def __init__(self):
+                  super().__init__()
+                  self.chain = []
+              def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+                  self.chain.append({'status': code, 'from': req.full_url, 'to': newurl})
+                  return super().redirect_request(req, fp, code, msg, hdrs, newurl)
+
+          def fetch(url: str, limit: int = 524288) -> dict:
+              handler = ChainHandler()
+              opener = urllib.request.build_opener(handler, urllib.request.HTTPSHandler(context=context))
+              request = urllib.request.Request(url, headers=headers, method='GET')
+              try:
+                  with opener.open(request, timeout=15) as response:
+                      raw = response.read(limit)
+                      charset = response.headers.get_content_charset() or 'utf-8'
+                      body = raw.decode(charset, 'replace')
+                      return {
+                          'requested_url': url,
+                          'status': int(getattr(response, 'status', 200)),
+                          'final_url': response.geturl(),
+                          'redirect_chain': handler.chain,
+                          'headers': {k.lower(): v for k, v in response.headers.items()},
+                          'body': body,
+                          'body_bytes_captured': len(raw),
+                          'error': '',
+                      }
+              except urllib.error.HTTPError as exc:
+                  try:
+                      raw = exc.read(limit)
+                      charset = exc.headers.get_content_charset() if exc.headers else None
+                      body = raw.decode(charset or 'utf-8', 'replace')
+                  except Exception:
+                      raw, body = b'', ''
+                  return {
+                      'requested_url': url,
+                      'status': int(exc.code),
+                      'final_url': exc.geturl() or url,
+                      'redirect_chain': handler.chain,
+                      'headers': {k.lower(): v for k, v in exc.headers.items()} if exc.headers else {},
+                      'body': body,
+                      'body_bytes_captured': len(raw),
+                      'error': f'HTTPError:{exc.code}',
+                  }
+              except Exception as exc:
+                  return {
+                      'requested_url': url,
+                      'status': 'ERROR',
+                      'final_url': url,
+                      'redirect_chain': handler.chain,
+                      'headers': {},
+                      'body': '',
+                      'body_bytes_captured': 0,
+                      'error': f'{type(exc).__name__}:{str(exc)[:240]}',
+                  }
+
+          def first(pattern: str, body: str) -> str:
+              match = re.search(pattern, body, re.I | re.S)
+              if not match:
+                  return ''
+              return html.unescape(re.sub(r'\s+', ' ', match.group(1)).strip())[:1000]
+
+          def hrefs_for_rel(body: str, rel_value: str) -> list[dict]:
+              found = []
+              for tag in re.findall(r'<link\b[^>]*>', body, re.I):
+                  rel = first(r'\brel=["\']([^"\']+)', tag).lower().split()
+                  if rel_value not in rel:
+                      continue
+                  href = first(r'\bhref=["\']([^"\']+)', tag)
+                  lang = first(r'\bhreflang=["\']([^"\']+)', tag)
+                  found.append({'href': href, 'hreflang': lang})
+              return found
+
+          site_urls = [
+              'https://www.uaart.com.ua/',
+              'https://uaart.com.ua/',
+              'https://www.uaart.com.ua/video/index.html',
+              'https://www.uaart.com.ua/video/podbor.html',
+              'https://www.uaart.com.ua/robots.txt',
+              'https://www.uaart.com.ua/sitemap.xml',
+          ]
+          site_rows = []
+          raw_by_url = {}
+          for url in site_urls:
+              row = fetch(url)
+              body = row.pop('body')
+              raw_by_url[url] = body
+              parsed = urllib.parse.urlparse(row['final_url'])
+              headers_map = row.pop('headers')
+              site_rows.append({
+                  **row,
+                  'final_host': parsed.hostname or '',
+                  'content_type': headers_map.get('content-type', ''),
+                  'x_robots_tag': headers_map.get('x-robots-tag', ''),
+                  'cache_control': headers_map.get('cache-control', ''),
+                  'server': headers_map.get('server', ''),
+                  'title': first(r'<title[^>]*>(.*?)</title>', body),
+                  'canonical': first(r'<link[^>]+rel=["\'][^"\']*canonical[^"\']*["\'][^>]+href=["\']([^"\']+)', body) or first(r'<link[^>]+href=["\']([^"\']+)["\'][^>]+rel=["\'][^"\']*canonical', body),
+                  'meta_robots': first(r'<meta[^>]+name=["\']robots["\'][^>]+content=["\']([^"\']+)', body) or first(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+name=["\']robots', body),
+                  'hreflang_links': hrefs_for_rel(body, 'alternate'),
+                  'body_sha256': __import__('hashlib').sha256(body.encode('utf-8')).hexdigest(),
+              })
+
+          Path('/tmp/task098_live_site_probe.json').write_text(json.dumps(site_rows, ensure_ascii=False, indent=2), encoding='utf-8')
+          Path('/tmp/task098_robots_live.txt').write_text(raw_by_url.get('https://www.uaart.com.ua/robots.txt',''), encoding='utf-8')
+          sitemap_body = raw_by_url.get('https://www.uaart.com.ua/sitemap.xml','')
+          Path('/tmp/task098_sitemap_live_excerpt.xml').write_text(sitemap_body[:524288], encoding='utf-8')
+
+          redirect_urls = [
+              'https://www.motie.go.kr/',
+              'https://www.motir.go.kr/',
+              'https://english.motir.go.kr/',
+              'https://koreajoongangdaily.joins.com/',
+              'https://www.koreajoongangdaily.com/',
+              'https://europe.autonews.com/',
+              'https://www.autonews.com/europe/',
+              'https://www.hyundaimotorgroup.com/news/',
+              'https://www.hyundaimotorgroup.com/en/news/',
+          ]
+          redirect_rows = []
+          for url in redirect_urls:
+              row = fetch(url, limit=196608)
+              body = row.pop('body')
+              headers_map = row.pop('headers')
+              parsed = urllib.parse.urlparse(row['final_url'])
+              redirect_rows.append({
+                  **row,
+                  'final_host': parsed.hostname or '',
+                  'content_type': headers_map.get('content-type',''),
+                  'title': first(r'<title[^>]*>(.*?)</title>', body),
+                  'canonical': first(r'<link[^>]+rel=["\'][^"\']*canonical[^"\']*["\'][^>]+href=["\']([^"\']+)', body) or first(r'<link[^>]+href=["\']([^"\']+)["\'][^>]+rel=["\'][^"\']*canonical', body),
+              })
+          Path('/tmp/task098_redirect_probe.json').write_text(json.dumps(redirect_rows, ensure_ascii=False, indent=2), encoding='utf-8')
+
+          probe_path = Path('cloud/task_097_editorial_atlas_news/live_source_probe.tsv')
+          with probe_path.open(encoding='utf-8', newline='') as handle:
+              probe_rows = list(csv.DictReader(handle, delimiter='\t'))
+          if len(probe_rows) != 70:
+              raise SystemExit(f'ORIGINAL_PROBE_ROWS_INVALID:{len(probe_rows)}')
+          normal, non_normal = [], []
+          for row in probe_rows:
+              value = row.get('http_status','')
+              try:
+                  is_normal = int(value) < 400
+              except Exception:
+                  is_normal = False
+              (normal if is_normal else non_normal).append(row)
+
+          with Path('cloud/task_097_editorial_atlas_news/source_registry.csv').open(encoding='utf-8-sig', newline='') as handle:
+              registry_rows = list(csv.DictReader(handle))
+          if len(registry_rows) != 70:
+              raise SystemExit(f'REGISTRY_ROWS_INVALID:{len(registry_rows)}')
+          machine_qa = {
+              'checked_at_utc': dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
+              'rows': len(probe_rows),
+              'geo_counts': dict(Counter(row['geo'] for row in probe_rows)),
+              'normal_lt_400_count': len(normal),
+              'non_normal_count': len(non_normal),
+              'non_normal_source_ids': [row['source_id'] for row in non_normal],
+              'http_status_counts': dict(Counter(row.get('http_status','') for row in probe_rows)),
+              'decision_counts': dict(Counter(row.get('decision','') for row in registry_rows)),
+              'mvp_source_ids': [row['source_id'] for row in registry_rows if row.get('decision') == 'APPROVE_MVP'],
+          }
+          Path('/tmp/task098_source_probe_qa_machine.json').write_text(json.dumps(machine_qa, ensure_ascii=False, indent=2), encoding='utf-8')
+          assert len(non_normal) == 24, len(non_normal)
+          assert len(machine_qa['mvp_source_ids']) == 15, machine_qa['mvp_source_ids']
+          print(json.dumps({'site_rows':len(site_rows),'redirect_rows':len(redirect_rows),'non_normal':len(non_normal)}, ensure_ascii=False))
+          PY
+          test -s /tmp/task098_live_site_probe.json
+          test -s /tmp/task098_redirect_probe.json
+          test -s /tmp/task098_source_probe_qa_machine.json
+
+      - name: Attach current package and QA evidence to task temporarily
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp tasks/task_098.md /tmp/task_098.original.md
+          {
+            echo
+            echo '## WORKFLOW-ATTACHED QA EVIDENCE'
+            echo
+            echo "QA_STARTED_AT_UTC: $(cat /tmp/task098_qa_started_at.txt)"
+            echo 'TASK097_RESULT_COMMIT_AT_UTC: 2026-08-30T16:49:39Z'
+            echo 'TASK097_RESULT_COMMIT_SHA: 0f603908dbd290a6b3a4d9c8e348554c69d42c8f'
+            echo
+            for file in \
+              cloud/task_097_editorial_atlas_news/evidence.json \
+              cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md \
+              cloud/task_097_editorial_atlas_news/data_model_pipeline.md \
+              cloud/task_097_editorial_atlas_news/seo_routing_audit.md \
+              cloud/task_097_editorial_atlas_news/report.md \
+              cloud/task_097_editorial_atlas_news/source_audit_report.md; do
+              echo "### CURRENT FILE: $file"
+              echo '```text'
+              cat "$file"
+              echo '```'
+            done
+            echo '### LIVE SITE PROBE JSON'
+            echo '```json'
+            cat /tmp/task098_live_site_probe.json
+            echo '```'
+            echo '### ROBOTS.TXT LITERAL BODY'
+            echo '```text'
+            cat /tmp/task098_robots_live.txt
+            echo '```'
+            echo '### SITEMAP.XML BOUNDED BODY'
+            echo '```xml'
+            cat /tmp/task098_sitemap_live_excerpt.xml
+            echo '```'
+            echo '### REDIRECT PROBE JSON'
+            echo '```json'
+            cat /tmp/task098_redirect_probe.json
+            echo '```'
+            echo '### SOURCE PROBE QA MACHINE JSON'
+            echo '```json'
+            cat /tmp/task098_source_probe_qa_machine.json
+            echo '```'
+            echo '### SOURCE REGISTRY CSV'
+            echo '```csv'
+            cat cloud/task_097_editorial_atlas_news/source_registry.csv
+            echo '```'
+          } >> tasks/task_098.md
+
+      - name: Run Claude QA repair
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          ANTHROPIC_EFFORT: high
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '1800'
+          ANTHROPIC_NETWORK_ATTEMPTS: '4'
+          ANTHROPIC_MAX_TOKENS: '128000'
+          ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '180'
+        run: python3 automation/claude_worker.py
+
+      - name: Restore durable task and preserve machine QA evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f /tmp/task_098.original.md ]; then cp /tmp/task_098.original.md tasks/task_098.md; fi
+          if [ -d cloud/task_098_editorial_atlas_qa ]; then
+            cp /tmp/task098_qa_started_at.txt cloud/task_098_editorial_atlas_qa/workflow_qa_started_at.txt
+            cp /tmp/task098_live_site_probe.json cloud/task_098_editorial_atlas_qa/live_site_probe.json
+            cp /tmp/task098_robots_live.txt cloud/task_098_editorial_atlas_qa/robots_live.txt
+            cp /tmp/task098_sitemap_live_excerpt.xml cloud/task_098_editorial_atlas_qa/sitemap_live_excerpt.xml
+            cp /tmp/task098_redirect_probe.json cloud/task_098_editorial_atlas_qa/redirect_probe.json
+            cp /tmp/task098_source_probe_qa_machine.json cloud/task_098_editorial_atlas_qa/source_probe_qa_machine.json
+          fi
+
+      - name: Validate corrected package and enforce cloud-only scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^cloud/' || true)"
+          if [ -n "$unexpected" ]; then
+            echo 'Unexpected changes outside cloud/:'
+            echo "$unexpected"
+            exit 1
+          fi
+          required=(
+            cloud/task_097_editorial_atlas_news/evidence.json
+            cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md
+            cloud/task_097_editorial_atlas_news/data_model_pipeline.md
+            cloud/task_097_editorial_atlas_news/seo_routing_audit.md
+            cloud/task_097_editorial_atlas_news/report.md
+            cloud/task_098_editorial_atlas_qa/README.md
+            cloud/task_098_editorial_atlas_qa/evidence_qa.json
+            cloud/task_098_editorial_atlas_qa/live_seo_evidence.md
+            cloud/task_098_editorial_atlas_qa/redirect_domain_qa.md
+            cloud/task_098_editorial_atlas_qa/source_probe_qa.md
+            cloud/task_098_editorial_atlas_qa/qa_report.md
+            cloud/task_098_editorial_atlas_qa/workflow_qa_started_at.txt
+            cloud/task_098_editorial_atlas_qa/live_site_probe.json
+            cloud/task_098_editorial_atlas_qa/robots_live.txt
+            cloud/task_098_editorial_atlas_qa/sitemap_live_excerpt.xml
+            cloud/task_098_editorial_atlas_qa/redirect_probe.json
+            cloud/task_098_editorial_atlas_qa/source_probe_qa_machine.json
+            cloud/latest_status.md
+            cloud/owner_reply.md
+          )
+          for path in "${required[@]}"; do test -s "$path" || { echo "Missing/empty: $path"; exit 1; }; done
+          grep -q '^TASK_ID: task_098$' cloud/latest_status.md
+          grep -q '^PRODUCTION_TOUCHED: NO$' cloud/latest_status.md
+          grep -q 'IMAGE_RIGHTS_STATUS' cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md
+          grep -Eq 'IMAGE_RIGHTS_CONFIDENCE[^\n]*>= *95|IMAGE_RIGHTS_CONFIDENCE.*95' cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md
+          if grep -q 'IMAGE_RIGHTS_CONFIDENCE == CONFIRMED' cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md; then exit 1; fi
+          grep -q 'SQLite 3' cloud/task_097_editorial_atlas_news/data_model_pipeline.md
+          grep -q 'PRAGMA foreign_keys = ON' cloud/task_097_editorial_atlas_news/data_model_pipeline.md
+          grep -q 'story_fact_cards' cloud/task_097_editorial_atlas_news/data_model_pipeline.md
+          grep -q 'news_image_assets' cloud/task_097_editorial_atlas_news/data_model_pipeline.md
+          grep -q 'publication_outbox' cloud/task_097_editorial_atlas_news/data_model_pipeline.md
+          if grep -Eq '\bTIMESTAMPTZ\b|\bJSONB\b' cloud/task_097_editorial_atlas_news/data_model_pipeline.md; then exit 1; fi
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          import re
+          from pathlib import Path
+
+          qa_started = Path('cloud/task_098_editorial_atlas_qa/workflow_qa_started_at.txt').read_text().strip()
+          started_dt = dt.datetime.fromisoformat(qa_started.replace('Z','+00:00'))
+          task097_commit = dt.datetime.fromisoformat('2026-08-30T16:49:39+00:00')
+          evidence = json.loads(Path('cloud/task_097_editorial_atlas_news/evidence.json').read_text(encoding='utf-8'))
+          generated = dt.datetime.fromisoformat(str(evidence['generated_at_utc']).replace('Z','+00:00'))
+          assert generated >= task097_commit
+          assert generated <= started_dt + dt.timedelta(minutes=5)
+          assert evidence.get('task097_result_commit_at_utc') == '2026-08-30T16:49:39Z'
+          assert evidence.get('evidence_corrections')
+          safety = ('production_touched','crm_touched','catalog_touched','public_files_touched','autopublication_enabled')
+          for key in safety: assert evidence.get(key) is False, (key, evidence.get(key))
+
+          qa = json.loads(Path('cloud/task_098_editorial_atlas_qa/evidence_qa.json').read_text(encoding='utf-8'))
+          for key in safety: assert qa.get(key) is False, (key, qa.get(key))
+          assert int(qa.get('live_seo_probe_rows', 0)) == 6
+          assert int(qa.get('redirect_probe_rows', 0)) == 9
+          assert int(qa.get('non_normal_source_count', 0)) == 24
+
+          machine = json.loads(Path('cloud/task_098_editorial_atlas_qa/source_probe_qa_machine.json').read_text(encoding='utf-8'))
+          assert machine['rows'] == 70
+          assert machine['normal_lt_400_count'] == 46
+          assert machine['non_normal_count'] == 24
+          assert len(machine['non_normal_source_ids']) == 24
+          assert len(machine['mvp_source_ids']) == 15
+
+          ddl = Path('cloud/task_097_editorial_atlas_news/data_model_pipeline.md').read_text(encoding='utf-8')
+          assert not re.search(r'IN\s*\([^)]*\bNULL\b[^)]*\)', ddl, re.I | re.S)
+          print('TASK098_QA_VALIDATION_PASS')
+          PY
+
+      - name: Commit QA corrections safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- cloud/
+          if git diff --cached --quiet -- cloud/; then echo 'No QA outputs'; exit 1; fi
+          git config user.name 'ua-art-claude-worker'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'Claude QA: repair TASK 097 evidence and specifications'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              if [ "${#conflicts[@]}" -eq 0 ]; then git rebase --abort || true; exit 1; fi
+              for path in "${conflicts[@]}"; do
+                case "$path" in cloud/latest_status.md|cloud/owner_reply.md) ;; *) echo "Unsafe conflict: $path"; git rebase --abort || true; exit 1;; esac
+              done
+              for path in "${conflicts[@]}"; do git checkout --theirs -- "$path"; git add -- "$path"; done
+              GIT_EDITOR=true git rebase --continue
+            fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 3))
+          done
+          exit 1
