@@ -1,0 +1,1684 @@
+REPOSITORY_FULL_NAME=art20021986-wq/ua-art-autopilot
+WORKFLOW_INPUT_SHA=e70eae862e62a8d55760851fcaf18f9a0e4b239a
+WORKFLOW_INPUT_TREE=e7c7a62a01e1638d0e3ffe8512e4e4564cef4f5e
+BACKUP_BRANCH=backup/editorial-atlas-news-001-prelaunch-20260830
+--- RECENT COMMITS ---
+e70eae8 (HEAD -> main, origin/main) task097: launch Editorial Atlas read-only audit
+18491a4 (origin/backup/editorial-atlas-news-001-prelaunch-20260830) task096: add payload part 03
+d0f30cd Claude sandbox: TASK 096 deliverables
+a426ca0 task096: add payload part 02
+142a1da task096: add payload part 01
+3005a32 task096: add deterministic payload rebuilder
+0ce796f task096: launch isolated Claude sandbox and canary
+763b19a task096: record approved tech-spec sandbox contract
+0653f9a noop
+f47f278 task095: launch exact catalog visibility repair v3
+15098a1 task095: add PythonAnywhere controller v3
+ff4aa7f task095: add exact visibility-lock repair v3
+808d415 task095: launch corrected rendered catalog repair v2
+fb0e57d task095: add corrected production controller v2
+76d83ec task095: add corrected bounded catalog repair v2
+211bda5 task095: record rendered production repair
+d459028 task095: launch bounded rendered catalog repair
+a8eac5b task095: add PythonAnywhere production controller
+5ba6821 task095: add atomic rendered catalog repair
+4b8d23b task095: record rendered catalog evidence
+c8e9531 task095: launch browser-rendered catalog diagnostic
+f90d166 task095: add browser-rendered catalog diagnostic
+8cc3264 task095: record live catalog visual acceptance failure
+e83ef4b task090: record catalog design restoration
+6942e9d task094: Claude prepare approved design restoration
+80f8f6b task090: rerun owner-approved catalog design restoration
+65c4243 task094: record owner-approved full web design restoration
+3c06540 task094: add one-shot Claude autostart for approved design rollback
+ee5e479 Claude autopilot: process latest task
+e30a951 task093: independently verify corrected public counters
+--- TOP-LEVEL ---
+.git
+.github
+CLAUDE.md
+README.md
+automation
+cloud
+docs
+package.json
+src
+state
+tasks
+wrangler.jsonc
+--- BOUNDED FILE INVENTORY ---
+.github/workflows/claude_autopilot.yml
+.github/workflows/ferry_wording_gate_a.yml
+.github/workflows/ferry_wording_gate_b.yml
+.github/workflows/owner_ua0011_full_card_gate_a.yml
+.github/workflows/owner_ua0011_korea_now_production.yml
+.github/workflows/owner_ua0011_korea_slim_production.yml
+.github/workflows/pythonanywhere_sync.yml
+.github/workflows/safe_workflow_watchdog.yml
+.github/workflows/seo-rehab-068-production.yml
+.github/workflows/seo-watch-smoke.yml
+.github/workflows/task037_discovery.yml
+.github/workflows/task039_retry.yml
+.github/workflows/task039_safe_inbox_sync.yml
+.github/workflows/task049_gate_a.yml
+.github/workflows/task049_gate_b.yml
+.github/workflows/task049_gate_b_preflight.yml
+.github/workflows/task058_crm_ocr_readonly.yml
+.github/workflows/task059_ai_fast_schema.yml
+.github/workflows/task060_install_token_free_ocr.yml
+.github/workflows/task060_read_live_context.yml
+.github/workflows/task060_runtime_capabilities.yml
+.github/workflows/task061_crm_ai_card.yml
+.github/workflows/task062_crm_voice.yml
+.github/workflows/task062_read_voice_context.yml
+.github/workflows/task064_crm_db_lock_hotfix.yml
+.github/workflows/task064_diagnostics_permanent.yml
+.github/workflows/task064_emergency_crm_quiesce.yml
+.github/workflows/task064_read_crm_lock_context.yml
+.github/workflows/task064_trace_wrapper_probe.yml
+.github/workflows/task065_counter_v2_hotfix.yml
+.github/workflows/task065_crm_photo_fastpath.yml
+.github/workflows/task065_photo_path_probe.yml
+.github/workflows/task065_ua0011_probe.yml
+.github/workflows/task065_voice_path_probe.yml
+.github/workflows/task066_stage_anchor_deploy.yml
+.github/workflows/task066_stage_anchor_probe.yml
+.github/workflows/task067_crm_online_guard_deploy.yml
+.github/workflows/task067_health_probe.yml
+.github/workflows/task067_read_only_audit.yml
+.github/workflows/task068_catalog_structure_probe.yml
+.github/workflows/task068_ferry_vin_deploy.yml
+.github/workflows/task068_ferry_vin_probe.yml
+.github/workflows/task069_crm_container_gate_a.yml
+.github/workflows/task069_crm_container_gate_b.yml
+.github/workflows/task069_crm_container_readonly.yml
+.github/workflows/task070_real_context_probe.yml
+.github/workflows/task071_call_path_read.yml
+.github/workflows/task072_gate_a_v2.yml
+.github/workflows/task072_gate_b.yml
+.github/workflows/task073_gate_a_live_probe.yml
+.github/workflows/task073_gate_a_v5.yml
+.github/workflows/task073_gate_b_v5.yml
+.github/workflows/task074_catalog_card_unify.yml
+.github/workflows/task075_stage_guard_sandbox.yml
+.github/workflows/task076_eta_gate_a_live.yml
+.github/workflows/task077_container_stage_sync_gate_a.yml
+.github/workflows/task077_container_stage_sync_gate_b.yml
+.github/workflows/task078_voice_watchdog_gate_a.yml
+.github/workflows/task080_price_candidate.yml
+.github/workflows/task080_price_gate_a.yml
+.github/workflows/task081_publish_repair_gate_a_v2.yml
+.github/workflows/task081_publish_repair_gate_b_v2.yml
+.github/workflows/task081_publish_repair_live_audit_v2.yml
+.github/workflows/task082_audit_probe.yml
+.github/workflows/task082_audit_probe_persist.yml
+.github/workflows/task082_catalog_stage_production.yml
+.github/workflows/task082_live_source_probe.yml
+.github/workflows/task082_source_probe_persist.yml
+.github/workflows/task082_stage_probe.yml
+.github/workflows/task082_vin4_title_deploy.yml
+.github/workflows/task082_vin4_title_production.yml
+.github/workflows/task083_catalog_dedup.yml
+.github/workflows/task083_production_hold.yml
+.github/workflows/task083_publish_transaction.yml
+.github/workflows/task084_crm_hang_remediation_gate_a.yml
+.github/workflows/task084_crm_hang_root_cause.yml
+.github/workflows/task084_crm_hang_root_cause_production.yml
+.github/workflows/task084_gate_a_live_read_only.yml
+.github/workflows/task084_korea_reset_gate_a.yml
+.github/workflows/task085_stage_payload_reset_production.yml
+.github/workflows/task086_public_catalog_readonly_probe.yml
+.github/workflows/task086_renderer_gate_a.yml
+.github/workflows/task086_ua0011_ferry_stage_counter_production.yml
+.github/workflows/task087_ua0011_korea_stage_production.yml
+.github/workflows/task089_crm_voice_photo_live_audit.yml
+.github/workflows/task090_catalog_design_restore.yml
+.github/workflows/task091_numeric_claim_guard.yml
+.github/workflows/task092_anthropic_reset_autostart.yml
+.github/workflows/task092_autostart.yml
+.github/workflows/task092_launch_after_limit.yml
+.github/workflows/task093_home_stage_counter_sync_production.yml
+.github/workflows/task094_claude_autostart.yml
+.github/workflows/task095_catalog_visual_diagnostic.yml
+.github/workflows/task095_catalog_visual_repair.yml
+.github/workflows/task095_catalog_visual_repair_v2.yml
+.github/workflows/task095_catalog_visual_repair_v3.yml
+.github/workflows/task096_claude_sandbox.yml
+.github/workflows/task097_editorial_atlas_audit.yml
+CLAUDE.md
+README.md
+automation/claude_worker.py
+automation/production_queue.py
+automation/pythonanywhere_gate_a_controller.py
+automation/pythonanywhere_sync.py
+automation/pythonanywhere_sync_v2.py
+automation/task095_production_controller.py
+automation/task095_production_controller_v2.py
+automation/task095_production_controller_v3.py
+automation/task095_visual_probe.py
+cloud/approval_gate/OWNER_WORKFLOW.md
+cloud/approval_gate/claude_owner_approval_mcp.py
+cloud/approval_gate/github_workflow_install_plan.md
+cloud/approval_gate/install_readiness_checklist.md
+cloud/approval_gate/pythonanywhere_approval_gate.py
+cloud/approval_gate/release_manifest.example.json
+cloud/approval_gate/release_manifest_spec.md
+cloud/approval_gate/security_threat_model.md
+cloud/autopilot_runner.py
+cloud/bot_logistics/README.md
+cloud/bot_logistics/TASK_037_REPORT.md
+cloud/bot_logistics/TASK_039_DISCOVERY_CONTROLLER_REPORT.md
+cloud/bot_logistics/TASK_039_REPORT.md
+cloud/bot_logistics/TASK_049_GATE_A_REPORT.md
+cloud/bot_logistics/TASK_049_GATE_B_REPORT.md
+cloud/bot_logistics/bot_logistics_discovery.py
+cloud/bot_logistics/bot_logistics_gate_b.py
+cloud/bot_logistics/bot_logistics_transform.py
+cloud/bot_logistics/evidence/task_037_discovery.json
+cloud/bot_logistics/evidence/task_049_gate_a.json
+cloud/bot_logistics/evidence/task_049_gate_b.json
+cloud/bot_logistics/evidence/task_049_gate_b_preflight.json
+cloud/bot_logistics/pythonanywhere_discovery_controller.py
+cloud/bot_logistics/task037_discovery_workflow.yml.example
+cloud/bot_logistics/task039_sync_status.md
+cloud/bot_logistics/task049_gate_a.py
+cloud/bot_logistics/task049_gate_a_controller.py
+cloud/bot_logistics/task049_gate_b.py
+cloud/bot_logistics/task049_gate_b_controller.py
+cloud/bot_logistics/task049_gate_b_preflight.py
+cloud/bot_logistics/task049_transform.py
+cloud/bot_logistics/test_bot_logistics.py
+cloud/bot_logistics/test_discovery_controller.py
+cloud/bot_logistics/test_task049.py
+cloud/bot_logistics/test_task049_controller.py
+cloud/bot_logistics/test_task049_gate_b.py
+cloud/bot_logistics/test_task049_gate_b_controller.py
+cloud/bot_logistics/test_task049_gate_b_preflight.py
+cloud/claude_bridge_acceptance.md
+cloud/claude_provenance_lock.md
+cloud/claude_pythonanywhere_handoff_test.txt
+cloud/cloud_report_001.md
+cloud/cloud_report_003.md
+cloud/cloud_report_004.md
+cloud/cloud_report_005.md
+cloud/cloud_report_006.md
+cloud/cloud_report_009.md
+cloud/cloud_report_010.md
+cloud/cloud_report_012.md
+cloud/cloud_report_013.md
+cloud/cloud_report_015.md
+cloud/crm_speed_optimization/OPERATOR_INSTRUCTIONS.md
+cloud/crm_speed_optimization/ROLLBACK.md
+cloud/crm_speed_optimization/RUN_GATE_A_CRM_SPEED.py
+cloud/crm_speed_optimization/TASK_029_REPORT.md
+cloud/crm_speed_optimization/TASK_031_REPORT.md
+cloud/crm_speed_optimization/TASK_032_REPORT.md
+cloud/crm_speed_optimization/TASK_034_REPORT.md
+cloud/crm_speed_optimization/TASK_035_REPORT.md
+cloud/crm_speed_optimization/TASK_036_REPORT.md
+cloud/crm_speed_optimization/TASK_038_REPORT.md
+cloud/crm_speed_optimization/TASK_041_REPORT.md
+cloud/crm_speed_optimization/TASK_046_REPORT.md
+cloud/crm_speed_optimization/TASK_048_REPORT.md
+cloud/crm_speed_optimization/TASK_051_REPORT.md
+cloud/crm_speed_optimization/TASK_053_REPORT.md
+cloud/crm_speed_optimization/TASK_054_REPORT.md
+cloud/crm_speed_optimization/TASK_055_REPORT.md
+cloud/crm_speed_optimization/TASK_056_REPORT.md
+cloud/crm_speed_optimization/TEST_MATRIX.md
+cloud/crm_speed_optimization/build_manifest.py
+cloud/crm_speed_optimization/candidate_transforms.py
+cloud/crm_speed_optimization/canonical_modules.py
+cloud/crm_speed_optimization/cars_ui_transform.py
+cloud/crm_speed_optimization/cloud_report_020.md
+cloud/crm_speed_optimization/crm_speed_gate_a.py
+cloud/crm_speed_optimization/cross_process_lock.py
+cloud/crm_speed_optimization/media_call_graph.py
+cloud/crm_speed_optimization/rebuild_queue.py
+cloud/crm_speed_optimization/safe_writer.py
+cloud/crm_speed_optimization/singleton_guard.py
+cloud/crm_speed_optimization/sqlite_ownership.py
+cloud/crm_speed_optimization/test_canonical_integration.py
+cloud/crm_speed_optimization/test_cars_ui_transform.py
+cloud/crm_speed_optimization/test_crm_speed_gate_a.py
+cloud/crm_speed_optimization/test_task_031_concurrency.py
+cloud/crm_speed_optimization/test_task_032_orchestration.py
+cloud/crm_speed_optimization/test_task_034_evidence_modules.py
+cloud/crm_speed_optimization/test_task_035_integration.py
+cloud/crm_speed_optimization/test_task_038_real_candidates.py
+cloud/crm_speed_optimization/test_task_041_architecture_audit.py
+cloud/crm_speed_optimization/test_task_046_ast_sqlite.py
+cloud/crm_speed_optimization/test_task_048_candidate_restore.py
+cloud/crm_speed_optimization/test_task_051_sqlite_restore.py
+cloud/crm_speed_optimization/test_task_055_orchestrator_final.py
+cloud/crm_speed_optimization/ua0009_publication_check.py
+cloud/crm_speed_optimization/verify_gate_a.py
+cloud/latest_status.md
+cloud/owner_reply.md
+cloud/patch_manifest.example.json
+cloud/pythonanywhere_delivery_receipt.md
+cloud/runner_install.md
+cloud/scripts/task_093_homepage_counter_fix.py
+cloud/scripts/test_task_093_homepage_counter_fix.py
+cloud/security/GITHUB_HARDENING.md
+cloud/security/OWNER_3_STEPS.md
+cloud/security/PRODUCTION_HARDENING_PLAN.md
+cloud/security/SECURITY.md.proposed
+cloud/security/SECURITY_MASTER_PLAN.md
+cloud/security/gitignore_security.proposed
+cloud/security/security_release_manifest.example.json
+cloud/security/uaart_backup_gate.py
+cloud/security/uaart_public_security_check.py
+cloud/security/uaart_security_audit.py
+cloud/seo_rehab_guard_068/controller.py
+cloud/seo_rehab_guard_068/live_verify.py
+cloud/seo_rehab_guard_068/repair_remote.py
+cloud/shared_memory/README.md
+cloud/shared_memory/context_builder.py
+cloud/shared_memory/manifest.json
+cloud/shared_memory/memory_bootstrap.py
+cloud/shared_memory/memory_guard.py
+cloud/shared_memory/memory_healthcheck.py
+cloud/shared_memory/memory_merger.py
+cloud/shared_memory/records.jsonl
+cloud/shared_memory/schemas/proposal.schema.json
+cloud/shared_memory/schemas/record.schema.json
+cloud/shared_memory/state/current_status.json
+cloud/shared_memory/status_generator.py
+cloud/shared_memory/test_shared_memory.py
+cloud/task_042_ferry_wording/README.md
+cloud/task_042_ferry_wording/TASK_042_REPORT.md
+cloud/task_042_ferry_wording/acceptance_matrix.md
+cloud/task_042_ferry_wording/discover.py
+cloud/task_042_ferry_wording/ferry_wording.py
+cloud/task_042_ferry_wording/gate_a_preview.py
+cloud/task_042_ferry_wording/inventory.json
+cloud/task_042_ferry_wording/manifest_hashes.json
+cloud/task_042_ferry_wording/milestone_20.json
+cloud/task_042_ferry_wording/milestone_40.json
+cloud/task_042_ferry_wording/milestone_60.json
+cloud/task_042_ferry_wording/milestone_80.json
+cloud/task_042_ferry_wording/rollback_gate_b_plan.md
+cloud/task_042_ferry_wording/tests/test_ferry_wording.py
+cloud/task_042_ferry_wording/transform.py
+cloud/task_043_ferry_wording/AUDIT_RESPONSE_TABLE.md
+cloud/task_043_ferry_wording/OPERATOR_INSTRUCTIONS.md
+cloud/task_043_ferry_wording/README.md
+cloud/task_043_ferry_wording/ROLLBACK_AND_GATE_B_PLAN.md
+cloud/task_043_ferry_wording/TASK_043_REPORT.md
+cloud/task_043_ferry_wording/controller.py
+cloud/task_043_ferry_wording/discover.py
+cloud/task_043_ferry_wording/gate_a.py
+cloud/task_043_ferry_wording/run_tests.py
+cloud/task_043_ferry_wording/tests/test_controller.py
+cloud/task_043_ferry_wording/tests/test_discover.py
+cloud/task_043_ferry_wording/tests/test_gate_a.py
+cloud/task_043_ferry_wording/tests/test_transform.py
+cloud/task_043_ferry_wording/transform.py
+cloud/task_043_ferry_wording/workflow_template.yml
+cloud/task_047_ferry_discovery/FERRY_GATE_A_REPORT.md
+cloud/task_047_ferry_discovery/FERRY_GATE_B_REPORT.md
+cloud/task_047_ferry_discovery/FERRY_PHASE1_REPORT.md
+cloud/task_047_ferry_discovery/README.md
+cloud/task_047_ferry_discovery/TASK_047_REPORT.md
+cloud/task_047_ferry_discovery/TASK_050_REPORT.md
+cloud/task_047_ferry_discovery/TASK_052_REPORT.md
+cloud/task_047_ferry_discovery/TASK_063_REPORT.md
+cloud/task_047_ferry_discovery/discover.py
+cloud/task_047_ferry_discovery/evidence/ferry_gate_a.json
+cloud/task_047_ferry_discovery/evidence/ferry_gate_b.json
+cloud/task_047_ferry_discovery/evidence/ferry_gate_b_live.json
+cloud/task_047_ferry_discovery/gate_a_controller.py
+cloud/task_047_ferry_discovery/gate_a_remote.py
+cloud/task_047_ferry_discovery/gate_b_controller.py
+cloud/task_047_ferry_discovery/gate_b_live_verify.py
+cloud/task_047_ferry_discovery/gate_b_remote.py
+cloud/task_047_ferry_discovery/gate_b_tests.py
+cloud/task_047_ferry_discovery/run_tests.py
+cloud/task_047_ferry_discovery/tests/__init__.py
+cloud/task_047_ferry_discovery/tests/test_discover.py
+cloud/task_047_ferry_discovery/tests/test_gate_a.py
+cloud/task_047_ferry_discovery/tests/test_transform.py
+cloud/task_047_ferry_discovery/transform.py
+cloud/task_049_report.md
+cloud/task_057_ferry_gate_b/README.md
+cloud/task_057_ferry_gate_b/TASK_057_REPORT.md
+cloud/task_057_ferry_gate_b/build_manifest.py
+cloud/task_057_ferry_gate_b/exact_owner_approval.txt
+cloud/task_057_ferry_gate_b/gate_b_installer.py
+cloud/task_057_ferry_gate_b/release_manifest.json
+cloud/task_057_ferry_gate_b/run_tests.py
+cloud/task_057_ferry_gate_b/tests/test_gate_b_installer.py
+cloud/task_057_ferry_gate_b/verify_release.py
+cloud/task_058_crm_ocr_sync/OWNER_AUTHORIZATION_UA0010.md
+cloud/task_058_crm_ocr_sync/README.md
+cloud/task_058_crm_ocr_sync/TASK_058_CONTROLLER_REPORT.md
+cloud/task_058_crm_ocr_sync/TASK_058_REPORT.md
+cloud/task_058_crm_ocr_sync/allowlist.json
+cloud/task_058_crm_ocr_sync/evidence/task_058_live_discovery.json
+cloud/task_058_crm_ocr_sync/live_discovery.py
+cloud/task_058_crm_ocr_sync/run_tests.py
+cloud/task_058_crm_ocr_sync/task058_readonly_controller.py
+cloud/task_058_crm_ocr_sync/tests/__init__.py
+cloud/task_058_crm_ocr_sync/tests/test_live_discovery.py
+cloud/task_058_crm_ocr_sync/tests/test_readonly_controller.py
+cloud/task_059_ai_fast_schema/README.md
+cloud/task_059_ai_fast_schema/TASK_059_REPORT.md
+cloud/task_059_ai_fast_schema/TECH_SPEC.md
+cloud/task_059_ai_fast_schema/ai_fast_schema.py
+cloud/task_059_ai_fast_schema/evidence/task_059_install.json
+cloud/task_059_ai_fast_schema/patch_installer.py
+cloud/task_059_ai_fast_schema/patch_payload.py
+cloud/task_059_ai_fast_schema/task059_controller.py
+cloud/task_059_ai_fast_schema/tests/__init__.py
+cloud/task_059_ai_fast_schema/tests/test_task059.py
+cloud/task_060/INSTALL_REPORT.md
+cloud/task_060/ai_intake_patch.py
+cloud/task_060/evidence/install.json
+cloud/task_060/evidence/live_context.json
+cloud/task_060/evidence/runtime_capabilities.json
+cloud/task_060/install_controller.py
+cloud/task_060/local_ocr.py
+cloud/task_060/patch_installer.py
+cloud/task_060/patch_payload.py
+cloud/task_060/probe_runtime.py
+cloud/task_060/read_live_context.py
+cloud/task_060/report.md
+cloud/task_060/test_ai_intake_patch.py
+cloud/task_061/INSTALL_REPORT.md
+cloud/task_061/ai_card_recognition.py
+cloud/task_061/evidence/install.json
+cloud/task_061/install_controller.py
+cloud/task_061/local_ocr.py
+cloud/task_061/local_ocr_patch_notes.md
+cloud/task_061/patch_installer.py
+cloud/task_061/patch_payload.py
+cloud/task_061/report.md
+cloud/task_061/team_bot_integration_patch.md
+cloud/task_061/test_ai_card_recognition.py
+cloud/task_061/test_contract.py
+cloud/task_062/INSTALL_REPORT.md
+cloud/task_062/evidence/install.json
+cloud/task_062/evidence/voice_context.json
+cloud/task_062/install_controller.py
+cloud/task_062/patch_installer.py
+cloud/task_062/patch_payload.py
+cloud/task_062/postcheck.py
+cloud/task_062/read_voice_context.py
+cloud/task_062/test_contract.py
+cloud/task_064/HOTFIX_REPORT.md
+cloud/task_064/emergency_quiesce.py
+cloud/task_064/evidence/hotfix.json
+cloud/task_064/evidence/lock_context.json
+cloud/task_064/evidence/quiesce.json
+cloud/task_064/evidence/trace_wrapper.json
+cloud/task_064/hotfix_controller.py
+cloud/task_064/read_lock_context.py
+cloud/task_064/read_trace_wrapper.py
+cloud/task_064/sqlite_hotfix_installer.py
+cloud/task_064/sqlite_hotfix_postcheck.py
+cloud/task_064/test_sqlite_hotfix.py
+cloud/task_064_diagnostics/TASK_064_REPORT.md
+cloud/task_064_diagnostics/controller.py
+cloud/task_064_diagnostics/evidence/live.json
+cloud/task_064_diagnostics/evidence/repair.json
+cloud/task_064_diagnostics/live_verify.py
+cloud/task_064_diagnostics/repair_remote.py
+cloud/task_065/COUNTER_V2_REPORT.md
+cloud/task_065/CRM_REHABILITATION_TZ.md
+cloud/task_065/HOTFIX_REPORT.md
+cloud/task_065/counter_v2_controller.py
+cloud/task_065/counter_v2_installer.py
+cloud/task_065/counter_v2_postcheck.py
+cloud/task_065/evidence/counter_v2_hotfix.json
+cloud/task_065/evidence/hotfix.json
+cloud/task_065/evidence/photo_path.json
+cloud/task_065/evidence/ua0011_counts.json
+cloud/task_065/evidence/voice_path.json
+cloud/task_065/hotfix_controller.py
+cloud/task_065/photo_fastpath_installer.py
+cloud/task_065/photo_fastpath_postcheck.py
+cloud/task_065/read_photo_path.py
+cloud/task_065/read_ua0011_counts.py
+cloud/task_065/read_voice_path.py
+cloud/task_065/voice_fields_repair.py
+cloud/task_066_stage_anchor/TASK_066_REPORT.md
+cloud/task_066_stage_anchor/controller.py
+cloud/task_066_stage_anchor/evidence/current.json
+cloud/task_066_stage_anchor/evidence/deploy.json
+cloud/task_066_stage_anchor/evidence/live.json
+cloud/task_066_stage_anchor/live_verify.py
+cloud/task_066_stage_anchor/postcheck_remote.py
+cloud/task_066_stage_anchor/read_current.py
+cloud/task_066_stage_anchor/repair_remote.py
+cloud/task_067/CRM_ONLINE_GUARD_TZ_V1_3.md
+cloud/task_067/FINAL_REPORT.md
+cloud/task_067/audit.py
+cloud/task_067/controller.py
+cloud/task_067/crm_online_guard.py
+cloud/task_067/evidence/deploy.json
+cloud/task_067/evidence/read_only_audit.json
+cloud/task_067/installer.py
+cloud/task_067/postcheck.py
+cloud/task_067/soak.py
+cloud/task_068_ferry_vin/TASK_068_REPORT.md
+cloud/task_068_ferry_vin/UA_CARDS_UNIFIED_SHELL_001_V1_1_TZ.md
+cloud/task_068_ferry_vin/controller.py
+cloud/task_068_ferry_vin/evidence/catalog_structure_probe.json
+cloud/task_068_ferry_vin/evidence/current.json
+cloud/task_068_ferry_vin/evidence/deploy.json
+cloud/task_068_ferry_vin/evidence/live.json
+cloud/task_068_ferry_vin/live_verify.py
+cloud/task_068_ferry_vin/postcheck_remote.py
+cloud/task_068_ferry_vin/read_current.py
+cloud/task_068_ferry_vin/repair_remote.py
+cloud/task_068_ferry_vin/source_shadow.py
+cloud/task_069/FINAL_REPORT.md
+cloud/task_069/GATE_B_REPORT.md
+cloud/task_069/candidate/HASHES.txt
+cloud/task_069/candidate/container_module.py
+cloud/task_069/candidate/menu_patch_snippet.py
+cloud/task_069/evidence/current.json
+cloud/task_069/evidence/gate_a.json
+cloud/task_069/evidence/gate_b.json
+cloud/task_069/gate_a.py
+cloud/task_069/gate_b_controller.py
+cloud/task_069/gate_b_installer.py
+cloud/task_069/gate_b_postcheck.py
+cloud/task_069/read_current.py
+cloud/task_069/report.md
+cloud/task_069/tests/test_container_and_eta.py
+cloud/task_070/README.md
+cloud/task_070/candidate/db_writer_070.py
+cloud/task_070/candidate/trace_zhurnal.py
+cloud/task_070/evidence/real_context.json
+cloud/task_070/guard/canary_guard.py
+cloud/task_070/installer/apply_patches.py
+cloud/task_070/patches/cars_ui_py.diff
+cloud/task_070/patches/db_py.diff
+cloud/task_070/patches/trace_zhurnal_py.diff
+cloud/task_070/queue/durable_queue.py
+cloud/task_070/read_real_context.py
+cloud/task_070/report/REPORT_070.md
+cloud/task_070/report/task_070_gate_a_report.md
+cloud/task_070/rollback/ROLLBACK_070.md
+cloud/task_070/rollback/rollback.py
+cloud/task_070/tests/test_lock_fifo_070.py
+cloud/task_070/tests/test_matrix_100_070.py
+cloud/task_070/tests/test_no_traceback_070.py
+cloud/task_070/tests/test_price_11400_070.py
+cloud/task_070/tests/test_real_schema_gate_a.py
+cloud/task_070/tests/test_restart_persistence_070.py
+cloud/task_070/tests/test_trace_zhurnal_observer_only_070.py
+cloud/task_070/writer/safe_writer.py
+cloud/task_070_report.md
+cloud/task_071/GATE_A_REPORT.md
+cloud/task_071/README.md
+cloud/task_071/controller.py
+cloud/task_071/durable_queue.py
+cloud/task_071/evidence/call_path.json
+cloud/task_071/evidence/redacted_evidence.json
+cloud/task_071/installer.py
+cloud/task_071/patch_transformer.py
+cloud/task_071/read_call_path.py
+cloud/task_071/rollback.py
+cloud/task_071/tests/test_gate_a_local.py
+cloud/task_071/writer.py
+cloud/task_072/GATE_A_REPORT.md
+cloud/task_072/GATE_A_V2_REPORT.md
+cloud/task_072/GATE_B_PLAN.md
+cloud/task_072/README.md
+cloud/task_072/__init__.py
+cloud/task_072/crm_description_writer_v2.py
+cloud/task_072/evidence/README.md
+cloud/task_072/evidence/gate_a_v2.json
+cloud/task_072/evidence/synthetic_test_summary.txt
+cloud/task_072/gate_a_v2.py
+cloud/task_072/gate_b_controller_v2.py
+cloud/task_072/installer.py
+cloud/task_072/installer_v2.py
+cloud/task_072/live_controller.py
+cloud/task_072/patch_cars_ui_v2.py
+cloud/task_072/postcheck_v2.py
+cloud/task_072/queue_sidecar.py
+cloud/task_072/sha_ast_transformer.py
+cloud/task_072/tests/__init__.py
+cloud/task_072/tests/fixtures.py
+cloud/task_072/tests/test_call_path_stub.py
+cloud/task_072/tests/test_queue.py
+cloud/task_072/tests/test_writer.py
+cloud/task_072/writer.py
+cloud/task_073/GATE_A_REPORT.md
+cloud/task_073/GATE_A_V2_REPORT.md
+cloud/task_073/GATE_A_V3_REPORT.md
+cloud/task_073/GATE_A_V4_REPORT.md
+cloud/task_073/REJECTED_PROTOTYPES.md
+cloud/task_073/bundle_publisher_v3.py
+cloud/task_073/evidence/live_probe.json
+cloud/task_073/gate_a_live_probe.py
+cloud/task_073/gate_a_v3.py
+cloud/task_073/gate_a_v4.py
+cloud/task_073/gate_a_v5.py
+cloud/task_073/gate_b_controller_v3.py
+cloud/task_073/gate_b_controller_v4.py
+cloud/task_073/gate_b_controller_v5.py
+cloud/task_073/gate_b_installer_v3.py
+cloud/task_073/gate_b_installer_v4.py
+cloud/task_073/gate_b_installer_v5.py
+cloud/task_073/gate_b_postcheck_v4.py
+cloud/task_073/gate_b_postcheck_v5.py
+cloud/task_073/patcher_v3.py
+cloud/task_073/patcher_v4.py
+cloud/task_073/patcher_v5.py
+cloud/task_073/postcheck_v3.py
+cloud/task_073/tests/__init__.py
+cloud/task_073/tests/conftest.py
+cloud/task_073/tests/run_all_tests.py
+cloud/task_073/tests/test_bundle_publisher_v3.py
+cloud/task_073/tests/test_gate_a_v2.py
+cloud/task_073/tests/test_gate_a_v3.py
+cloud/task_073/tests/test_gate_a_v4.py
+cloud/task_073/tests/test_gate_b_controller_v2.py
+cloud/task_073/tests/test_gate_b_controller_v4.py
+cloud/task_073/tests/test_installer.py
+cloud/task_073/tests/test_installer_v2.py
+cloud/task_073/tests/test_installer_v3.py
+cloud/task_073/tests/test_installer_v4.py
+cloud/task_073/tests/test_keyboard_transformer.py
+cloud/task_073/tests/test_live_audit_controller.py
+cloud/task_073/tests/test_patcher_v2.py
+cloud/task_073/tests/test_patcher_v3.py
+cloud/task_073/tests/test_patcher_v4.py
+cloud/task_073/tests/test_patcher_v5.py
+cloud/task_073/tests/test_postcheck_v2.py
+cloud/task_073/tests/test_postcheck_v3.py
+cloud/task_073/tests/test_public_verifier.py
+cloud/task_073/tests/test_publish_guard.py
+cloud/task_073/tools/__init__.py
+cloud/task_073/tools/gate_a_v2.py
+cloud/task_073/tools/gate_b_controller_v2.py
+cloud/task_073/tools/gate_b_installer_v2.py
+cloud/task_073/tools/installer.py
+cloud/task_073/tools/keyboard_transformer.py
+cloud/task_073/tools/live_audit_controller.py
+cloud/task_073/tools/patcher_v2.py
+cloud/task_073/tools/postcheck_v2.py
+cloud/task_073/tools/public_verifier.py
+cloud/task_073/tools/publish_guard.py
+cloud/task_073/tools/pythonanywhere_write_client.py
+cloud/task_073/workflows/gate_a_v2_dispatch.yml
+cloud/task_073/workflows/gate_a_v3.yml
+cloud/task_073/workflows/gate_b_manual_dispatch.yml
+cloud/task_073/workflows/gate_b_manual_dispatch_v2.yml
+cloud/task_073/workflows/gate_b_v3.yml
+cloud/task_073/workflows/task073_gate_a_v4.yml
+cloud/task_073/workflows/task073_gate_a_v5.yml
+cloud/task_073/workflows/task073_gate_b_v4.yml
+cloud/task_073/workflows/task073_gate_b_v5.yml
+cloud/task_074_catalog_unify/TASK_074_REPORT.md
+cloud/task_074_catalog_unify/controller.py
+cloud/task_074_catalog_unify/evidence/controller.json
+cloud/task_074_catalog_unify/installer.py
+cloud/task_074_catalog_unify/tests/test_installer.py
+cloud/task_074_report.md
+cloud/task_075/report.md
+cloud/task_075/tests/test_stage_transform.py
+cloud/task_075/tools/audit_readonly.py
+cloud/task_075/tools/stage_transform.py
+cloud/task_075_stage_guard/TASK_075_REPORT.md
+cloud/task_075_stage_guard/evidence/sandbox.json
+cloud/task_075_stage_guard/live_sandbox.py
+cloud/task_075_stage_guard/stage_guard.py
+cloud/task_075_stage_guard/tests/test_stage_guard.py
+cloud/task_076_eta_sync/GATE_A_LIVE_REPORT.md
+cloud/task_076_eta_sync/README.md
+cloud/task_076_eta_sync/eta_engine.py
+cloud/task_076_eta_sync/eta_transaction.py
+cloud/task_076_eta_sync/evidence/canary_report.md
+cloud/task_076_eta_sync/evidence/gate_a_evidence.md
+cloud/task_076_eta_sync/evidence/gate_a_live.json
+cloud/task_076_eta_sync/fixtures/mock_crm.py
+cloud/task_076_eta_sync/fixtures/mock_publisher.py
+cloud/task_076_eta_sync/gate_a_live.py
+cloud/task_076_eta_sync/patch_notes.md
+cloud/task_076_eta_sync/run_tests.py
+cloud/task_076_eta_sync/sqlite_adapter_reference.py
+cloud/task_076_eta_sync/task_report.md
+cloud/task_076_eta_sync/tests/test_eta_engine.py
+cloud/task_076_eta_sync/tests/test_eta_transaction.py
+cloud/task_076_eta_sync/tests/test_regression_synthetic.py
+cloud/task_076_eta_sync/workflows/gate_a_readonly.yml
+cloud/task_076_eta_sync/workflows/gate_b_manual_production.yml
+cloud/task_077_container_stage_sync/README.md
+cloud/task_077_container_stage_sync/TASK_077_AUDIT.md
+cloud/task_077_container_stage_sync/evidence/gate_a_findings.md
+cloud/task_077_container_stage_sync/evidence/live_audit.json
+cloud/task_077_container_stage_sync/gate_a_audit.py
+cloud/task_077_container_stage_sync/gate_a_workflow.md
+cloud/task_077_container_stage_sync/gate_b/controller.py
+cloud/task_077_container_stage_sync/gate_b/remote.py
+cloud/task_077_container_stage_sync/gate_b_manual_workflow.md
+cloud/task_077_container_stage_sync/live_audit.py
+cloud/task_077_container_stage_sync/patcher/eta_release_candidate.py
+cloud/task_077_container_stage_sync/patcher/eta_transaction_controller.py
+cloud/task_077_container_stage_sync/patcher/installer.py
+cloud/task_077_container_stage_sync/patcher/live_patcher.py
+cloud/task_077_container_stage_sync/patcher/postcheck.py
+cloud/task_077_container_stage_sync/patcher/stage_sync_patch.py
+cloud/task_077_container_stage_sync/sandbox/canary_harness.py
+cloud/task_077_container_stage_sync/sandbox/canary_report.md
+cloud/task_077_container_stage_sync/sandbox/release_candidate_report.md
+cloud/task_077_container_stage_sync/stage_sync.py
+cloud/task_077_container_stage_sync/tests/test_eta_release_candidate.py
+cloud/task_077_container_stage_sync/tests/test_gate_b_release.py
+cloud/task_077_container_stage_sync/tests/test_stage_sync.py
+cloud/task_078_voice_watchdog/README.md
+cloud/task_078_voice_watchdog/VOICE_AUDIT_REPORT.md
+cloud/task_078_voice_watchdog/circuit_breaker.py
+cloud/task_078_voice_watchdog/controller.py
+cloud/task_078_voice_watchdog/evidence/live_audit.json
+cloud/task_078_voice_watchdog/gate_a_audit.md
+cloud/task_078_voice_watchdog/handler_patch.py
+cloud/task_078_voice_watchdog/handler_patcher.py
+cloud/task_078_voice_watchdog/installer.py
+cloud/task_078_voice_watchdog/job_marker.py
+cloud/task_078_voice_watchdog/killable_stt_worker.py
+cloud/task_078_voice_watchdog/live_audit.py
+cloud/task_078_voice_watchdog/sandbox_report.md
+cloud/task_078_voice_watchdog/tests/__init__.py
+cloud/task_078_voice_watchdog/tests/test_handler_patcher.py
+cloud/task_078_voice_watchdog/tests/test_voice_watchdog.py
+cloud/task_078_voice_watchdog/tests/test_watchdog.py
+cloud/task_078_voice_watchdog/voice_watchdog.py
+cloud/task_080_price_recognition/BACKUP_ROLLBACK.md
+cloud/task_080_price_recognition/BACKUP_ROLLBACK_PLAN.md
+cloud/task_080_price_recognition/CANDIDATE_GATE_A_REPORT.md
+cloud/task_080_price_recognition/GATE_B_PLAN.md
+cloud/task_080_price_recognition/LIVE_GATE_A_REPORT.md
+cloud/task_080_price_recognition/OWNER_REPLY.md
+cloud/task_080_price_recognition/README.md
+cloud/task_080_price_recognition/REPORT.md
+cloud/task_080_price_recognition/STATUS.md
+cloud/task_080_price_recognition/TECHNICAL_REPORT.md
+cloud/task_080_price_recognition/TEST_RESULTS.md
+cloud/task_080_price_recognition/audit/GATE_A_STATUS.md
+cloud/task_080_price_recognition/candidate_gate_a.py
+cloud/task_080_price_recognition/evidence/candidate_gate_a.json
+cloud/task_080_price_recognition/evidence/live_gate_a.json
+cloud/task_080_price_recognition/evidence/test_run.json
+cloud/task_080_price_recognition/live_gate_a.py
+cloud/task_080_price_recognition/run_tests.py
+cloud/task_080_price_recognition/src/crm_price_atomic.py
+cloud/task_080_price_recognition/src/integration_patcher.py
+cloud/task_080_price_recognition/src/patcher.py
+cloud/task_080_price_recognition/src/price_parser.py
+cloud/task_080_price_recognition/tests/test_crm_price_atomic.py
+cloud/task_080_price_recognition/tests/test_integration_patcher.py
+cloud/task_080_price_recognition/tests/test_price_parser.py
+cloud/task_081_publish_repair/LIVE_AUDIT_V2.md
+cloud/task_081_publish_repair/README.md
+cloud/task_081_publish_repair/RELEASE_STATUS_V2.md
+cloud/task_081_publish_repair/controller.py
+cloud/task_081_publish_repair/evidence/live_audit_v2.json
+cloud/task_081_publish_repair/gate_a_v2.py
+cloud/task_081_publish_repair/gate_a_workflow.yml
+cloud/task_081_publish_repair/gate_b_controller_v2.py
+cloud/task_081_publish_repair/gate_b_installer_v2.py
+cloud/task_081_publish_repair/gate_b_workflow.yml
+cloud/task_081_publish_repair/installer.py
+cloud/task_081_publish_repair/live_audit_v2.py
+cloud/task_081_publish_repair/live_probe.py
+cloud/task_081_publish_repair/live_probe_v2.py
+cloud/task_081_publish_repair/patcher.py
+cloud/task_081_publish_repair/patcher_v2.py
+cloud/task_081_publish_repair/postcheck.py
+cloud/task_081_publish_repair/postcheck_v2.py
+cloud/task_081_publish_repair/report.md
+cloud/task_081_publish_repair/sandbox/sandbox_report.md
+cloud/task_081_publish_repair/test_gate_b_v2.py
+cloud/task_081_publish_repair/test_release_candidate_v2.py
+cloud/task_081_publish_repair/tests/test_controller_fixtures.py
+cloud/task_081_publish_repair/tests/test_installer.py
+cloud/task_081_publish_repair/tests/test_seo068_normalize.py
+cloud/task_081_publish_repair/tests/test_toggle_publish.py
+cloud/task_082/catalog_guard.py
+cloud/task_082/install_procedure.md
+cloud/task_082/publikaciya_wrapper.py
+cloud/task_082/report.md
+cloud/task_082_catalog_stage_repair/TASK_082_REPORT.md
+cloud/task_082_catalog_stage_repair/controller.py
+cloud/task_082_catalog_stage_repair/evidence/audit_probe.json
+cloud/task_082_catalog_stage_repair/evidence/deploy.json
+cloud/task_082_catalog_stage_repair/evidence/public.json
+cloud/task_082_catalog_stage_repair/evidence/source_probe.json
+cloud/task_082_catalog_stage_repair/evidence/stage_probe.json
+cloud/task_082_catalog_stage_repair/public_verify.py
+cloud/task_082_catalog_stage_repair/remote_installer.py
+cloud/task_082_catalog_stage_repair/runtime.py
+cloud/task_082_catalog_stage_repair/stage_probe.py
+cloud/task_082_catalog_stage_repair/tests/test_contract.py
+cloud/task_082_live_source_probe.py
+cloud/task_082_probe/evidence.json
+cloud/task_082_vin4_title/README.md
+cloud/task_082_vin4_title/STATUS.md
+cloud/task_082_vin4_title/TASK_082_RESULT.md
+cloud/task_082_vin4_title/anchor_config.example.json
+cloud/task_082_vin4_title/controller.py
+cloud/task_082_vin4_title/evidence/deploy.json
+cloud/task_082_vin4_title/evidence/deploy_v2.json
+cloud/task_082_vin4_title/evidence/sanitized_evidence.md
+cloud/task_082_vin4_title/fetch_and_shadow.py
+cloud/task_082_vin4_title/installer.py
+cloud/task_082_vin4_title/patcher.py
+cloud/task_082_vin4_title/postcheck.py
+cloud/task_082_vin4_title/repair_remote.py
+cloud/task_082_vin4_title/report.md
+cloud/task_082_vin4_title/task082_deploy_controller.py
+cloud/task_082_vin4_title/task082_exact_patch.py
+cloud/task_082_vin4_title/task082_remote_health.py
+cloud/task_082_vin4_title/task082_remote_installer.py
+cloud/task_082_vin4_title/test_vin4_helper.py
+cloud/task_082_vin4_title/tests/test_repair_remote.py
+cloud/task_082_vin4_title/vin4_helper.py
+cloud/task_082_vin4_title/workflow/task082_vin4_title_deploy.yml
+cloud/task_083/catalog_stage_guard_core.py
+cloud/task_083/patches/cars_ui_toggle_publish_patch.py
+cloud/task_083/patches/catalog_stage_guard_core_patch.py
+cloud/task_083/patches/publikaciya_patch.py
+cloud/task_083/patches/publish_transaction_guard.py
+cloud/task_083/report.md
+cloud/task_083_catalog_dedup/TASK_083_REPORT.md
+cloud/task_083_catalog_dedup/controller.py
+cloud/task_083_catalog_dedup/evidence/controller.json
+cloud/task_083_catalog_dedup/installer.py
+cloud/task_083_catalog_dedup/tests/test_installer.py
+cloud/task_083_publish_transaction/README.md
+cloud/task_083_publish_transaction/TASK_083_REPORT.md
+cloud/task_083_publish_transaction/controller.py
+cloud/task_083_publish_transaction/evidence/deploy.json
+cloud/task_083_publish_transaction/evidence/public_live_verification_20260829T101830Z.json
+cloud/task_083_publish_transaction/public_verify.py
+cloud/task_083_publish_transaction/publish_transaction_guard.py
+cloud/task_083_publish_transaction/remote_installer.py
+cloud/task_083_publish_transaction/tests/test_contract.py
+cloud/task_084_crm_hang_root_cause/TASK_084_REPORT.md
+cloud/task_084_crm_hang_root_cause/deploy_controller.py
+cloud/task_084_crm_hang_root_cause/evidence/deploy.json
+cloud/task_084_crm_hang_root_cause/evidence/live_audit.json
+cloud/task_084_crm_hang_root_cause/live_audit.py
+cloud/task_084_crm_hang_root_cause/remote_installer.py
+cloud/task_084_crm_hang_root_cause/remote_orchestrator.py
+cloud/task_084_crm_hang_root_cause/single_task_controller.py
+cloud/task_084_ua0011_korea_reset/README.md
+cloud/task_084_ua0011_korea_reset/TASK_084_REPORT.md
+cloud/task_084_ua0011_korea_reset/before_after_matrix.md
+cloud/task_084_ua0011_korea_reset/evidence/live_gate_a.json
+cloud/task_084_ua0011_korea_reset/evidence/live_gate_a_inventory.json
+cloud/task_084_ua0011_korea_reset/fixtures/ua_cards_fixture.json
+cloud/task_084_ua0011_korea_reset/gate_a_fetch_ua0011.py
+cloud/task_084_ua0011_korea_reset/guards.py
+cloud/task_084_ua0011_korea_reset/live_gate_a.py
+cloud/task_084_ua0011_korea_reset/live_gate_a_probe.py
+cloud/task_084_ua0011_korea_reset/renderer_fix.py
+cloud/task_084_ua0011_korea_reset/sandbox_transform.py
+cloud/task_084_ua0011_korea_reset/tests/__init__.py
+cloud/task_084_ua0011_korea_reset/tests/test_gate_a_sandbox.py
+cloud/task_085_stage_payload_reset/TASK_085_REPORT.md
+cloud/task_085_stage_payload_reset/controller.py
+cloud/task_085_stage_payload_reset/evidence/production.json
+cloud/task_085_stage_payload_reset/remote_installer.py
+cloud/task_085_stage_payload_reset/stage_payload_guard.py
+cloud/task_085_stage_payload_reset/tests/test_remote_installer.py
+cloud/task_085_stage_payload_reset/tests/test_stage_payload_guard.py
+cloud/task_086_ua0011_ferry_stage_counter/TASK_086_REPORT.md
+cloud/task_086_ua0011_ferry_stage_counter/controller.py
+cloud/task_086_ua0011_ferry_stage_counter/evidence/production.json
+cloud/task_086_ua0011_ferry_stage_counter/remote_installer.py
+cloud/task_086_ua0011_ferry_stage_counter/stage_counter_guard.py
+cloud/task_086_ua0011_ferry_stage_counter/tests/test_remote_installer.py
+cloud/task_086_ua0011_ferry_stage_counter/tests/test_stage_counter_guard.py
+cloud/task_086_ua0011_korea_stage/evidence/active_renderers.json
+cloud/task_089_crm_voice_photo_repair/TASK_089_REPORT.md
+cloud/task_089_crm_voice_photo_repair/live_audit.py
+cloud/task_089_crm_voice_photo_repair/postcheck.py
+cloud/task_089_crm_voice_photo_repair/repair_installer.py
+cloud/task_090_catalog_design_restore/TASK_090_REPORT.md
+cloud/task_090_catalog_design_restore/catalog_design_guard.py
+cloud/task_090_catalog_design_restore/controller.py
+cloud/task_090_catalog_design_restore/evidence/deploy.json
+cloud/task_090_catalog_design_restore/public_verify.py
+cloud/task_090_catalog_design_restore/remote_installer.py
+cloud/task_090_catalog_design_restore/test_catalog_design_guard.py
+cloud/task_090_catalog_design_restore/test_remote_installer.py
+cloud/task_091_numeric_claim_guard/TASK_091_REPORT.md
+cloud/task_091_numeric_claim_guard/controller.py
+cloud/task_091_numeric_claim_guard/evidence/startup_blocker.json
+cloud/task_091_numeric_claim_guard/field_claim_guard.py
+cloud/task_091_numeric_claim_guard/patcher.py
+cloud/task_091_numeric_claim_guard/remote_installer.py
+cloud/task_091_numeric_claim_guard/test_field_claim_guard.py
+cloud/task_091_numeric_claim_guard/test_patcher.py
+cloud/task_091_numeric_claim_guard/test_remote_installer.py
+cloud/task_092/PRE_RECOVERY_MANIFEST_TEMPLATE.md
+cloud/task_092/README.md
+cloud/task_092/atomic_build_contract.md
+cloud/task_092/canonical_data_schema.json
+cloud/task_092/data_invariants_checklist.md
+cloud/task_092/progress_report.md
+cloud/task_092/rollback_plan.md
+cloud/task_092/root_cause_audit_plan.md
+cloud/task_092/ua0009_gate.md
+cloud/task_092/visual_test_matrix.md
+cloud/task_092_autostart_state.json
+cloud/task_092_overnight_autostart_status.md
+cloud/task_092_queue_checkpoint_20260829T1653Z.md
+cloud/task_092_queue_status.md
+cloud/task_093_home_stage_counter_sync/TASK_093_REPORT.md
+cloud/task_093_home_stage_counter_sync/controller.py
+cloud/task_093_home_stage_counter_sync/evidence/production.json
+cloud/task_093_home_stage_counter_sync/home_counter_guard.py
+cloud/task_093_home_stage_counter_sync/remote_installer.py
+cloud/task_093_home_stage_counter_sync/test_home_counter_guard.py
+cloud/task_093_report.md
+cloud/task_094_web_design_rollback/EVIDENCE_REQUIRED.md
+cloud/task_094_web_design_rollback/README.md
+cloud/task_094_web_design_rollback/forensic_audit.py
+cloud/task_094_web_design_rollback/restore_controller.py
+cloud/task_094_web_design_rollback/restore_map.template.json
+cloud/task_094_web_design_rollback/task_094_report.md
+cloud/task_094_web_design_rollback/verification_checks.py
+cloud/task_095_catalog_visual_repair/evidence/browser_probe.json
+cloud/task_095_catalog_visual_repair/evidence/browser_probe_immediate.json
+cloud/task_095_catalog_visual_repair/evidence/final.json
+cloud/task_095_catalog_visual_repair/remote_repair.py
+cloud/task_095_catalog_visual_repair/remote_repair_v2.py
+cloud/task_095_catalog_visual_repair/remote_repair_v3.py
+cloud/task_096_tech_spec_ai_crm/README.md
+cloud/task_096_tech_spec_ai_crm/canary_preview.html
+cloud/task_096_tech_spec_ai_crm/dedup_check.py
+cloud/task_096_tech_spec_ai_crm/evidence.json
+cloud/task_096_tech_spec_ai_crm/manual_field_protection.py
+cloud/task_096_tech_spec_ai_crm/payload/part01.b85
+cloud/task_096_tech_spec_ai_crm/payload/part02.b85
+cloud/task_096_tech_spec_ai_crm/payload/part03.b85
+cloud/task_096_tech_spec_ai_crm/price_exclusion_guard.py
+cloud/task_096_tech_spec_ai_crm/rebuild_task096.py
+cloud/task_096_tech_spec_ai_crm/report.md
+cloud/task_096_tech_spec_ai_crm/schema_additional_spec.sql
+cloud/task_096_tech_spec_ai_crm/selftest.py
+cloud/task_096_tech_spec_ai_crm/source_check.py
+cloud/task_CRM-VOICE-FILL-001/report.md
+cloud/task_CRM-VOICE-FILL-001/tests/test_voice_card_fill.py
+cloud/task_CRM-VOICE-FILL-001/voice_card_fill.py
+cloud/tools/task_049_gate_a.py
+cloud/ua0009_finish_runner.py
+cloud/ua0009_finish_spec.md
+cloud/ua0009_morning_instructions.md
+cloud/ua0009_publication_plan.md
+cloud/ua0009_release_probe.py
+cloud/ua0009_release_report_spec.md
+cloud/ua0009_task004_launcher.py
+cloud/ua0009_task004_spec.md
+cloud/ua_cards_unified/BLOCKED.md
+cloud/ua_cards_unified/LEGACY_CONFLICT_AUDIT.md
+cloud/ua_cards_unified/OPERATOR_INSTRUCTIONS.md
+cloud/ua_cards_unified/OWNER_NEXT_STEP.md
+cloud/ua_cards_unified/PRODUCTION_PATCH_PLAN.md
+cloud/ua_cards_unified/PROGRESS_20.md
+cloud/ua_cards_unified/PROGRESS_40.md
+cloud/ua_cards_unified/PROGRESS_60.md
+cloud/ua_cards_unified/PROGRESS_80.md
+cloud/ua_cards_unified/RUN_GATE_A_TASK016.py
+cloud/ua_cards_unified/START_UA_CARDS_UNIFIED.py
+cloud/ua_cards_unified/TASK_018_REPORT.md
+cloud/ua_cards_unified/TEST_MATRIX.md
+cloud/ua_cards_unified/UNIFIED_CARDS_SPEC.md
+cloud/ua_cards_unified/__init__.py
+cloud/ua_cards_unified/build_gate_a_manifest.py
+cloud/ua_cards_unified/cloud_report_016.md
+cloud/ua_cards_unified/cloud_report_021.md
+cloud/ua_cards_unified/common.py
+cloud/ua_cards_unified/launcher.py
+cloud/ua_cards_unified/manifest_builder.py
+cloud/ua_cards_unified/output/.gitkeep
+cloud/ua_cards_unified/preflight.py
+cloud/ua_cards_unified/preview_fixture/README.md
+cloud/ua_cards_unified/preview_fixture/UA-0001-diag.fixture.html
+cloud/ua_cards_unified/preview_fixture/UA-0009-track.fixture.html
+cloud/ua_cards_unified/preview_fixture/UA-9998-empty-future-card.fixture.html
+cloud/ua_cards_unified/preview_fixture/UA-9999-full-future-card.fixture.html
+cloud/ua_cards_unified/release_manifest_candidate.json
+cloud/ua_cards_unified/runner.py
+cloud/ua_cards_unified/tests/__init__.py
+cloud/ua_cards_unified/tests/test_gate_a.py
+cloud/ua_cards_unified/tests/test_pipeline.py
+cloud/ua_cards_unified/verifier.py
+cloud/uaart_card_factory_gate.py
+cloud/uaart_card_factory_morning.md
+cloud/uaart_card_factory_spec.md
+docs/UA_ART_AUTOPILOT_V1.md
+docs/pythonanywhere_autosync.md
+package.json
+src/worker.js
+state/current_status.md
+state/shared_memory_approval.md
+tasks/fixtures/task_058/IMG_8128.jpeg
+tasks/fixtures/task_058/IMG_8129.jpeg
+tasks/task_001.md
+tasks/task_002.md
+tasks/task_003.md
+tasks/task_004.md
+tasks/task_005.md
+tasks/task_006.md
+tasks/task_007.md
+tasks/task_008.md
+tasks/task_009.md
+tasks/task_010.md
+tasks/task_011.md
+tasks/task_012.md
+tasks/task_013.md
+tasks/task_014.md
+tasks/task_015.md
+tasks/task_015_owner_approval.marker
+tasks/task_016.md
+tasks/task_017.md
+tasks/task_018.md
+tasks/task_019.md
+tasks/task_020.md
+tasks/task_020_crm_speed.md
+tasks/task_021.md
+tasks/task_022.md
+tasks/task_023.md
+tasks/task_024.md
+tasks/task_025.md
+tasks/task_026.md
+tasks/task_027.md
+tasks/task_028.md
+tasks/task_029.md
+tasks/task_030.md
+tasks/task_031.md
+tasks/task_032.md
+tasks/task_033.md
+tasks/task_034.md
+tasks/task_035.md
+tasks/task_036.md
+tasks/task_037.md
+tasks/task_038.md
+tasks/task_039.md
+tasks/task_040.md
+tasks/task_041.md
+tasks/task_042.md
+tasks/task_043.md
+tasks/task_044.md
+tasks/task_045.md
+tasks/task_046.md
+tasks/task_047.md
+tasks/task_048.md
+tasks/task_049.md
+tasks/task_049_owner_approval.marker
+tasks/task_050.md
+tasks/task_051.md
+tasks/task_052.md
+tasks/task_053.md
+tasks/task_054.md
+tasks/task_055.md
+tasks/task_056.md
+tasks/task_057.md
+tasks/task_058.md
+tasks/task_060.md
+tasks/task_061.md
+tasks/task_062.md
+tasks/task_063.md
+tasks/task_069.md
+tasks/task_070.md
+tasks/task_071.md
+tasks/task_072.md
+tasks/task_073.md
+tasks/task_074.md
+tasks/task_075.md
+tasks/task_076.md
+tasks/task_077.md
+tasks/task_078.md
+tasks/task_079.md
+tasks/task_080.md
+tasks/task_081.md
+tasks/task_082.md
+tasks/task_083.md
+tasks/task_084.md
+tasks/task_085.md
+tasks/task_086.md
+tasks/task_087.md
+tasks/task_088.md
+tasks/task_090.md
+tasks/task_091.md
+tasks/task_092.md
+tasks/task_093.md
+tasks/task_094.md
+tasks/task_095.md
+tasks/task_096.md
+tasks/task_097.md
+wrangler.jsonc
+--- SEO/ROUTING-RELATED FILE NAMES ---
+./.github/workflows/ferry_wording_gate_a.yml
+./.github/workflows/ferry_wording_gate_b.yml
+./.github/workflows/task064_diagnostics_permanent.yml
+./.github/workflows/task066_stage_anchor_deploy.yml
+./.github/workflows/task068_catalog_structure_probe.yml
+./.github/workflows/task068_ferry_vin_deploy.yml
+./.github/workflows/task074_catalog_card_unify.yml
+./.github/workflows/task075_stage_guard_sandbox.yml
+./.github/workflows/task083_catalog_dedup.yml
+./.github/workflows/task083_publish_transaction.yml
+./.github/workflows/task086_public_catalog_readonly_probe.yml
+./.github/workflows/task086_ua0011_ferry_stage_counter_production.yml
+./.github/workflows/task097_editorial_atlas_audit.yml
+./automation/claude_worker.py
+./automation/pythonanywhere_gate_a_controller.py
+./automation/task095_visual_probe.py
+./cloud/approval_gate/pythonanywhere_approval_gate.py
+./cloud/approval_gate/release_manifest_spec.md
+./cloud/bot_logistics/README.md
+./cloud/bot_logistics/TASK_037_REPORT.md
+./cloud/bot_logistics/TASK_039_REPORT.md
+./cloud/bot_logistics/bot_logistics_transform.py
+./cloud/bot_logistics/evidence/task_037_discovery.json
+./cloud/bot_logistics/task049_gate_a.py
+./cloud/bot_logistics/test_bot_logistics.py
+./cloud/cloud_report_003.md
+./cloud/cloud_report_004.md
+./cloud/cloud_report_005.md
+./cloud/cloud_report_006.md
+./cloud/cloud_report_012.md
+./cloud/cloud_report_013.md
+./cloud/cloud_report_015.md
+./cloud/crm_speed_optimization/RUN_GATE_A_CRM_SPEED.py
+./cloud/crm_speed_optimization/TASK_029_REPORT.md
+./cloud/crm_speed_optimization/TASK_031_REPORT.md
+./cloud/crm_speed_optimization/TASK_032_REPORT.md
+./cloud/crm_speed_optimization/TASK_034_REPORT.md
+./cloud/crm_speed_optimization/TASK_035_REPORT.md
+./cloud/crm_speed_optimization/TASK_036_REPORT.md
+./cloud/crm_speed_optimization/TASK_038_REPORT.md
+./cloud/crm_speed_optimization/TASK_041_REPORT.md
+./cloud/crm_speed_optimization/TASK_046_REPORT.md
+./cloud/crm_speed_optimization/TASK_051_REPORT.md
+./cloud/crm_speed_optimization/TASK_053_REPORT.md
+./cloud/crm_speed_optimization/TASK_054_REPORT.md
+./cloud/crm_speed_optimization/TASK_055_REPORT.md
+./cloud/crm_speed_optimization/build_manifest.py
+./cloud/crm_speed_optimization/candidate_transforms.py
+./cloud/crm_speed_optimization/canonical_modules.py
+./cloud/crm_speed_optimization/cars_ui_transform.py
+./cloud/crm_speed_optimization/crm_speed_gate_a.py
+./cloud/crm_speed_optimization/cross_process_lock.py
+./cloud/crm_speed_optimization/rebuild_queue.py
+./cloud/crm_speed_optimization/safe_writer.py
+./cloud/crm_speed_optimization/singleton_guard.py
+./cloud/crm_speed_optimization/sqlite_ownership.py
+./cloud/crm_speed_optimization/test_canonical_integration.py
+./cloud/crm_speed_optimization/test_crm_speed_gate_a.py
+./cloud/crm_speed_optimization/test_task_031_concurrency.py
+./cloud/crm_speed_optimization/test_task_032_orchestration.py
+./cloud/crm_speed_optimization/test_task_034_evidence_modules.py
+./cloud/crm_speed_optimization/test_task_035_integration.py
+./cloud/crm_speed_optimization/test_task_038_real_candidates.py
+./cloud/crm_speed_optimization/test_task_041_architecture_audit.py
+./cloud/crm_speed_optimization/test_task_046_ast_sqlite.py
+./cloud/crm_speed_optimization/test_task_055_orchestrator_final.py
+./cloud/crm_speed_optimization/ua0009_publication_check.py
+./cloud/latest_status.md
+./cloud/owner_reply.md
+./cloud/security/uaart_security_audit.py
+./cloud/seo_rehab_guard_068/controller.py
+./cloud/seo_rehab_guard_068/live_verify.py
+./cloud/seo_rehab_guard_068/repair_remote.py
+./cloud/shared_memory/README.md
+./cloud/shared_memory/context_builder.py
+./cloud/shared_memory/manifest.json
+./cloud/shared_memory/memory_guard.py
+./cloud/shared_memory/memory_healthcheck.py
+./cloud/shared_memory/state/current_status.json
+./cloud/shared_memory/status_generator.py
+./cloud/shared_memory/test_shared_memory.py
+./cloud/task_042_ferry_wording/README.md
+./cloud/task_042_ferry_wording/TASK_042_REPORT.md
+./cloud/task_042_ferry_wording/acceptance_matrix.md
+./cloud/task_042_ferry_wording/ferry_wording.py
+./cloud/task_042_ferry_wording/gate_a_preview.py
+./cloud/task_042_ferry_wording/inventory.json
+./cloud/task_042_ferry_wording/milestone_60.json
+./cloud/task_042_ferry_wording/milestone_80.json
+./cloud/task_042_ferry_wording/rollback_gate_b_plan.md
+./cloud/task_042_ferry_wording/tests/test_ferry_wording.py
+./cloud/task_042_ferry_wording/transform.py
+./cloud/task_043_ferry_wording/AUDIT_RESPONSE_TABLE.md
+./cloud/task_043_ferry_wording/OPERATOR_INSTRUCTIONS.md
+./cloud/task_043_ferry_wording/ROLLBACK_AND_GATE_B_PLAN.md
+./cloud/task_043_ferry_wording/TASK_043_REPORT.md
+./cloud/task_043_ferry_wording/gate_a.py
+./cloud/task_043_ferry_wording/tests/test_gate_a.py
+./cloud/task_047_ferry_discovery/FERRY_PHASE1_REPORT.md
+./cloud/task_047_ferry_discovery/README.md
+./cloud/task_047_ferry_discovery/TASK_052_REPORT.md
+./cloud/task_047_ferry_discovery/discover.py
+./cloud/task_047_ferry_discovery/evidence/ferry_gate_a.json
+./cloud/task_047_ferry_discovery/evidence/ferry_gate_b_live.json
+./cloud/task_047_ferry_discovery/gate_a_controller.py
+./cloud/task_047_ferry_discovery/gate_a_remote.py
+./cloud/task_047_ferry_discovery/gate_b_tests.py
+./cloud/task_047_ferry_discovery/tests/test_gate_a.py
+./cloud/task_057_ferry_gate_b/README.md
+./cloud/task_057_ferry_gate_b/TASK_057_REPORT.md
+./cloud/task_057_ferry_gate_b/build_manifest.py
+./cloud/task_057_ferry_gate_b/gate_b_installer.py
+./cloud/task_057_ferry_gate_b/tests/test_gate_b_installer.py
+./cloud/task_057_ferry_gate_b/verify_release.py
+./cloud/task_058_crm_ocr_sync/allowlist.json
+./cloud/task_059_ai_fast_schema/ai_fast_schema.py
+./cloud/task_060/ai_intake_patch.py
+./cloud/task_060/evidence/live_context.json
+./cloud/task_060/install_controller.py
+./cloud/task_060/report.md
+./cloud/task_060/test_ai_intake_patch.py
+./cloud/task_061/report.md
+./cloud/task_062/evidence/voice_context.json
+./cloud/task_062/patch_payload.py
+./cloud/task_064_diagnostics/TASK_064_REPORT.md
+./cloud/task_064_diagnostics/controller.py
+./cloud/task_064_diagnostics/evidence/live.json
+./cloud/task_064_diagnostics/live_verify.py
+./cloud/task_064_diagnostics/repair_remote.py
+./cloud/task_065/evidence/photo_path.json
+./cloud/task_065/evidence/voice_path.json
+./cloud/task_066_stage_anchor/evidence/current.json
+./cloud/task_066_stage_anchor/live_verify.py
+./cloud/task_066_stage_anchor/read_current.py
+./cloud/task_066_stage_anchor/repair_remote.py
+./cloud/task_067/evidence/read_only_audit.json
+./cloud/task_067/installer.py
+./cloud/task_068_ferry_vin/evidence/catalog_structure_probe.json
+./cloud/task_068_ferry_vin/evidence/current.json
+./cloud/task_068_ferry_vin/live_verify.py
+./cloud/task_068_ferry_vin/read_current.py
+./cloud/task_068_ferry_vin/repair_remote.py
+./cloud/task_069/evidence/current.json
+./cloud/task_069/tests/test_container_and_eta.py
+./cloud/task_070/README.md
+./cloud/task_070/evidence/real_context.json
+./cloud/task_070/report/task_070_gate_a_report.md
+./cloud/task_072/GATE_A_REPORT.md
+./cloud/task_072/README.md
+./cloud/task_072/crm_description_writer_v2.py
+./cloud/task_072/evidence/gate_a_v2.json
+./cloud/task_072/gate_a_v2.py
+./cloud/task_072/writer.py
+./cloud/task_073/GATE_A_V2_REPORT.md
+./cloud/task_073/GATE_A_V3_REPORT.md
+./cloud/task_073/bundle_publisher_v3.py
+./cloud/task_073/evidence/live_probe.json
+./cloud/task_073/gate_a_live_probe.py
+./cloud/task_073/gate_b_postcheck_v4.py
+./cloud/task_073/patcher_v3.py
+./cloud/task_073/patcher_v5.py
+./cloud/task_073/tests/test_patcher_v2.py
+./cloud/task_073/tests/test_patcher_v3.py
+./cloud/task_073/tests/test_patcher_v5.py
+./cloud/task_073/tests/test_postcheck_v2.py
+./cloud/task_073/tests/test_postcheck_v3.py
+./cloud/task_073/tools/patcher_v2.py
+./cloud/task_073/tools/postcheck_v2.py
+./cloud/task_073/tools/publish_guard.py
+./cloud/task_074_catalog_unify/controller.py
+./cloud/task_074_catalog_unify/evidence/controller.json
+./cloud/task_074_catalog_unify/installer.py
+./cloud/task_074_report.md
+./cloud/task_075/report.md
+./cloud/task_075/tools/stage_transform.py
+./cloud/task_075_stage_guard/evidence/sandbox.json
+./cloud/task_075_stage_guard/live_sandbox.py
+./cloud/task_075_stage_guard/stage_guard.py
+./cloud/task_076_eta_sync/README.md
+./cloud/task_076_eta_sync/evidence/canary_report.md
+./cloud/task_076_eta_sync/evidence/gate_a_live.json
+./cloud/task_076_eta_sync/gate_a_live.py
+./cloud/task_076_eta_sync/task_report.md
+./cloud/task_077_container_stage_sync/README.md
+./cloud/task_077_container_stage_sync/evidence/gate_a_findings.md
+./cloud/task_077_container_stage_sync/evidence/live_audit.json
+./cloud/task_077_container_stage_sync/gate_b_manual_workflow.md
+./cloud/task_077_container_stage_sync/live_audit.py
+./cloud/task_077_container_stage_sync/sandbox/canary_harness.py
+./cloud/task_077_container_stage_sync/stage_sync.py
+./cloud/task_078_voice_watchdog/evidence/live_audit.json
+./cloud/task_078_voice_watchdog/tests/test_watchdog.py
+./cloud/task_080_price_recognition/REPORT.md
+./cloud/task_080_price_recognition/evidence/live_gate_a.json
+./cloud/task_080_price_recognition/src/price_parser.py
+./cloud/task_081_publish_repair/evidence/live_audit_v2.json
+./cloud/task_081_publish_repair/live_audit_v2.py
+./cloud/task_081_publish_repair/live_probe.py
+./cloud/task_081_publish_repair/live_probe_v2.py
+./cloud/task_081_publish_repair/patcher_v2.py
+./cloud/task_081_publish_repair/postcheck.py
+./cloud/task_081_publish_repair/postcheck_v2.py
+./cloud/task_081_publish_repair/report.md
+./cloud/task_081_publish_repair/sandbox/sandbox_report.md
+./cloud/task_082/catalog_guard.py
+./cloud/task_082/install_procedure.md
+./cloud/task_082/report.md
+./cloud/task_082_catalog_stage_repair/evidence/source_probe.json
+./cloud/task_082_catalog_stage_repair/evidence/stage_probe.json
+./cloud/task_082_probe/evidence.json
+./cloud/task_082_vin4_title/evidence/deploy_v2.json
+./cloud/task_082_vin4_title/evidence/sanitized_evidence.md
+./cloud/task_082_vin4_title/task082_deploy_controller.py
+./cloud/task_083/catalog_stage_guard_core.py
+./cloud/task_083_catalog_dedup/controller.py
+./cloud/task_083_catalog_dedup/evidence/controller.json
+./cloud/task_083_catalog_dedup/installer.py
+./cloud/task_083_catalog_dedup/tests/test_installer.py
+./cloud/task_083_publish_transaction/evidence/public_live_verification_20260829T101830Z.json
+./cloud/task_083_publish_transaction/public_verify.py
+./cloud/task_083_publish_transaction/publish_transaction_guard.py
+./cloud/task_083_publish_transaction/tests/test_contract.py
+./cloud/task_084_crm_hang_root_cause/evidence/live_audit.json
+./cloud/task_084_ua0011_korea_reset/evidence/live_gate_a.json
+./cloud/task_084_ua0011_korea_reset/evidence/live_gate_a_inventory.json
+./cloud/task_084_ua0011_korea_reset/guards.py
+./cloud/task_084_ua0011_korea_reset/live_gate_a.py
+./cloud/task_084_ua0011_korea_reset/live_gate_a_probe.py
+./cloud/task_084_ua0011_korea_reset/sandbox_transform.py
+./cloud/task_085_stage_payload_reset/controller.py
+./cloud/task_085_stage_payload_reset/evidence/production.json
+./cloud/task_085_stage_payload_reset/remote_installer.py
+./cloud/task_085_stage_payload_reset/stage_payload_guard.py
+./cloud/task_085_stage_payload_reset/tests/test_remote_installer.py
+./cloud/task_086_ua0011_ferry_stage_counter/controller.py
+./cloud/task_086_ua0011_ferry_stage_counter/evidence/production.json
+./cloud/task_086_ua0011_ferry_stage_counter/remote_installer.py
+./cloud/task_086_ua0011_ferry_stage_counter/stage_counter_guard.py
+./cloud/task_086_ua0011_ferry_stage_counter/tests/test_remote_installer.py
+./cloud/task_086_ua0011_ferry_stage_counter/tests/test_stage_counter_guard.py
+./cloud/task_089_crm_voice_photo_repair/repair_installer.py
+./cloud/task_090_catalog_design_restore/catalog_design_guard.py
+./cloud/task_090_catalog_design_restore/evidence/deploy.json
+./cloud/task_090_catalog_design_restore/public_verify.py
+./cloud/task_090_catalog_design_restore/test_catalog_design_guard.py
+./cloud/task_090_catalog_design_restore/test_remote_installer.py
+./cloud/task_092/PRE_RECOVERY_MANIFEST_TEMPLATE.md
+./cloud/task_092/README.md
+./cloud/task_092/atomic_build_contract.md
+./cloud/task_092/progress_report.md
+./cloud/task_092/rollback_plan.md
+./cloud/task_092/ua0009_gate.md
+./cloud/task_092_queue_status.md
+./cloud/task_093_home_stage_counter_sync/controller.py
+./cloud/task_093_home_stage_counter_sync/evidence/production.json
+./cloud/task_093_home_stage_counter_sync/remote_installer.py
+./cloud/task_094_web_design_rollback/README.md
+./cloud/task_094_web_design_rollback/forensic_audit.py
+./cloud/task_094_web_design_rollback/restore_map.template.json
+./cloud/task_094_web_design_rollback/verification_checks.py
+./cloud/task_095_catalog_visual_repair/evidence/browser_probe.json
+./cloud/task_095_catalog_visual_repair/evidence/browser_probe_immediate.json
+./cloud/task_095_catalog_visual_repair/evidence/final.json
+./cloud/task_095_catalog_visual_repair/remote_repair.py
+./cloud/task_095_catalog_visual_repair/remote_repair_v2.py
+./cloud/task_095_catalog_visual_repair/remote_repair_v3.py
+./cloud/task_096_tech_spec_ai_crm/README.md
+./cloud/task_096_tech_spec_ai_crm/canary_preview.html
+./cloud/task_096_tech_spec_ai_crm/dedup_check.py
+./cloud/task_096_tech_spec_ai_crm/evidence.json
+./cloud/task_096_tech_spec_ai_crm/report.md
+./cloud/task_096_tech_spec_ai_crm/selftest.py
+./cloud/ua0009_finish_runner.py
+./cloud/ua0009_finish_spec.md
+./cloud/ua0009_morning_instructions.md
+./cloud/ua0009_release_probe.py
+./cloud/ua0009_release_report_spec.md
+./cloud/ua0009_task004_launcher.py
+./cloud/ua0009_task004_spec.md
+./cloud/ua_cards_unified/BLOCKED.md
+./cloud/ua_cards_unified/LEGACY_CONFLICT_AUDIT.md
+./cloud/ua_cards_unified/OPERATOR_INSTRUCTIONS.md
+./cloud/ua_cards_unified/OWNER_NEXT_STEP.md
+./cloud/ua_cards_unified/PRODUCTION_PATCH_PLAN.md
+./cloud/ua_cards_unified/PROGRESS_20.md
+./cloud/ua_cards_unified/PROGRESS_40.md
+./cloud/ua_cards_unified/PROGRESS_60.md
+./cloud/ua_cards_unified/PROGRESS_80.md
+./cloud/ua_cards_unified/START_UA_CARDS_UNIFIED.py
+./cloud/ua_cards_unified/TEST_MATRIX.md
+./cloud/ua_cards_unified/UNIFIED_CARDS_SPEC.md
+./cloud/ua_cards_unified/build_gate_a_manifest.py
+./cloud/ua_cards_unified/cloud_report_016.md
+./cloud/ua_cards_unified/cloud_report_021.md
+./cloud/ua_cards_unified/common.py
+./cloud/ua_cards_unified/launcher.py
+./cloud/ua_cards_unified/manifest_builder.py
+./cloud/ua_cards_unified/preview_fixture/UA-0001-diag.fixture.html
+./cloud/ua_cards_unified/preview_fixture/UA-0009-track.fixture.html
+./cloud/ua_cards_unified/preview_fixture/UA-9998-empty-future-card.fixture.html
+./cloud/ua_cards_unified/preview_fixture/UA-9999-full-future-card.fixture.html
+./cloud/ua_cards_unified/release_manifest_candidate.json
+./cloud/ua_cards_unified/runner.py
+./cloud/ua_cards_unified/tests/test_gate_a.py
+./cloud/uaart_card_factory_morning.md
+./cloud/uaart_card_factory_spec.md
+./state/current_status.md
+./tasks/task_002.md
+./tasks/task_003.md
+./tasks/task_004.md
+./tasks/task_005.md
+./tasks/task_006.md
+./tasks/task_010.md
+./tasks/task_012.md
+./tasks/task_013.md
+./tasks/task_014.md
+./tasks/task_015.md
+./tasks/task_016.md
+./tasks/task_017.md
+./tasks/task_019.md
+./tasks/task_020.md
+./tasks/task_020_crm_speed.md
+./tasks/task_021.md
+./tasks/task_023.md
+./tasks/task_024.md
+./tasks/task_025.md
+./tasks/task_026.md
+./tasks/task_028.md
+./tasks/task_029.md
+./tasks/task_030.md
+./tasks/task_031.md
+./tasks/task_032.md
+./tasks/task_033.md
+./tasks/task_034.md
+./tasks/task_035.md
+./tasks/task_036.md
+./tasks/task_037.md
+./tasks/task_038.md
+./tasks/task_039.md
+./tasks/task_040.md
+./tasks/task_041.md
+./tasks/task_042.md
+./tasks/task_043.md
+./tasks/task_044.md
+./tasks/task_045.md
+./tasks/task_046.md
+./tasks/task_047.md
+./tasks/task_048.md
+./tasks/task_051.md
+./tasks/task_053.md
+./tasks/task_054.md
+./tasks/task_055.md
+./tasks/task_056.md
+./tasks/task_057.md
+./tasks/task_060.md
+./tasks/task_063.md
+./tasks/task_071.md
+./tasks/task_072.md
+./tasks/task_073.md
+./tasks/task_074.md
+./tasks/task_077.md
+./tasks/task_079.md
+./tasks/task_080.md
+./tasks/task_081.md
+./tasks/task_083.md
+./tasks/task_084.md
+./tasks/task_085.md
+./tasks/task_086.md
+./tasks/task_090.md
+./tasks/task_092.md
+./tasks/task_094.md
+./tasks/task_097.md
+--- FILE START: README.md ---
+# ua-art-autopilot
+UA ART automation bridge for ChatGPT, Cloud and PythonAnywhere
+Bridge test 2026-08-26
+--- FILE END: README.md ---
+--- FILE START: CLAUDE.md ---
+# UA ART AUTOPILOT — Cloud/Claude communication protocol
+
+This repository is the communication bridge between ChatGPT, Claude/Cloud, and PythonAnywhere.
+
+## Mandatory behavior for every task
+
+1. Read the newest `tasks/task_NNN.md` before doing anything.
+2. Never touch UA ART production directly from Claude/Cloud.
+3. Put all code, patches, and detailed reports under `cloud/`.
+4. Always update `cloud/latest_status.md` before finishing a task.
+5. Always create or replace `cloud/owner_reply.md` with a short owner-facing response in Russian.
+6. Always commit all task outputs to the task branch.
+7. Do not perform CRITICAL actions. Stop and request owner approval through status.
+
+## Required `cloud/latest_status.md` format
+
+```text
+TASK_ID: task_NNN
+ROUND: N
+CLAUDE_STATUS: WORKING | DONE | BLOCKED | WAITING_OWNER
+CURRENT_ACTION: <short sentence>
+FILES_CREATED: <comma-separated paths or NONE>
+PRODUCTION_TOUCHED: NO
+OWNER_ACTION_REQUIRED: YES | NO
+OWNER_QUESTION: <one short question or NONE>
+NEXT_FOR_CHATGPT: <what ChatGPT should inspect or do next>
+UPDATED_AT_UTC: <ISO timestamp>
+```
+
+## Required `cloud/owner_reply.md` format
+
+Write in clear Russian for the owner, without technical jargon:
+
+```text
+# Ответ Claude владельцу
+СТАТУС: PASS | FAIL | ЖДЁТ
+ЗАДАЧА: <what request was received>
+ЧТО СДЕЛАНО: <short factual result>
+СОЗДАННЫЕ ФАЙЛЫ: <paths or NONE>
+ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: <one action or НИЧЕГО>
+БЕЗОПАСНОСТЬ: production/CRM/PythonAnywhere changed or not
+```
+
+Do not claim that anything was uploaded to PythonAnywhere, executed on a server, published, or visually checked unless the task provides verifiable evidence. The detailed technical evidence remains in the task report under `cloud/`.
+
+## Request route
+
+The owner gives a request to ChatGPT/Codex. Codex writes the durable request as the newest `tasks/task_NNN.md`. GitHub Actions starts the Claude worker. Claude writes the requested deliverables, `cloud/latest_status.md`, and `cloud/owner_reply.md`. ChatGPT/Codex audits those files and relays the verified owner reply.
+
+## Communication rule
+
+Do not rely on ordinary Claude chat attachments as the durable handoff. The durable handoff is always GitHub: the newest task under `tasks/`, `cloud/latest_status.md`, `cloud/owner_reply.md`, and the detailed report under `cloud/`.
+
+## Owner interaction
+
+Ask the owner only when a visual check or CRITICAL approval is genuinely required. Otherwise continue through the GitHub workflow without owner involvement.
+--- FILE END: CLAUDE.md ---
+--- FILE START: docs/pythonanywhere_autosync.md ---
+# UA ART — Claude -> GitHub -> PythonAnywhere automatic file handoff
+
+## What is automated
+
+1. Owner/ChatGPT creates the newest task under `tasks/`.
+2. `Claude Autopilot` GitHub Action calls the Anthropic API.
+3. Claude API worker writes complete deliverables under `cloud/` and commits them to `main`.
+4. `PythonAnywhere Inbox Sync` starts automatically on every `cloud/**` change.
+5. The sync uploads all supported `cloud/` files to the safe PythonAnywhere inbox:
+   `/home/Carix/autopilot_inbox/cloud/...`
+6. A manifest is uploaded to:
+   `/home/Carix/autopilot_inbox/_sync_manifest.json`
+
+The transfer is automatic after one repository secret is configured.
+
+## One-time owner setup
+
+### 1. Get the PythonAnywhere API token
+
+PythonAnywhere -> Account -> API token -> create/copy token.
+
+Do not send the token in chat and do not put it in repository files.
+
+### 2. Put it into GitHub Actions Secrets
+
+Repository `art20021986-wq/ua-art-autopilot` -> Settings -> Secrets and variables -> Actions -> Secrets -> New repository secret.
+
+Name exactly:
+
+`PYTHONANYWHERE_API_TOKEN`
+
+Value: the PythonAnywhere API token.
+
+Save with `Add secret`.
+
+### 3. First run
+
+GitHub repository -> Actions -> `PythonAnywhere Inbox Sync` -> `Run workflow` -> branch `main` -> `Run workflow`.
+
+Expected result: green `Success`.
+
+### 4. Confirm on PythonAnywhere
+
+Open Files and go to:
+
+`/home/Carix/autopilot_inbox/cloud/`
+
+Claude-generated files should be present there. The transfer manifest is:
+
+`/home/Carix/autopilot_inbox/_sync_manifest.json`
+
+## Safety boundary
+
+This automation uploads files only to `/home/Carix/autopilot_inbox/`.
+
+It does NOT:
+
+- execute Claude-generated Python;
+- overwrite `/home/Carix/master_card.py`, `stranica.py`, CRM or existing production files;
+- reload the web application;
+- publish UA-0009 or any other card.
+
+This is intentional: automatic transport is safe; production execution remains a separate gated step.
+
+## Running the current UA-0009 gate after sync
+
+After automatic sync, the current file is available at:
+
+`/home/Carix/autopilot_inbox/cloud/uaart_card_factory_gate.py`
+
+Manual safe run for UA-0009:
+
+`python3.10 /home/Carix/autopilot_inbox/cloud/uaart_card_factory_gate.py UA-0009`
+
+When a stable allowlisted remote runner is approved, this final execution step can be automated separately without giving arbitrary Claude output direct production execution rights.
+--- FILE END: docs/pythonanywhere_autosync.md ---
+--- FILE START: cloud/latest_status.md ---
+TASK_ID: task_096
+ROUND: 1
+CLAUDE_STATUS: DONE
+CURRENT_ACTION: Delivered sandbox package for TECH-SPEC-AI-CRM-017 v3.0 (schema, dedup, manual-field protection, price exclusion, non-public HTML canary, source-check script, self-test harness, evidence, report). No real CRM/network/filesystem access was available in this environment, so backup creation, self-test execution, and source reachability checks are documented as PENDING_CONTROLLER_EXECUTION rather than fabricated.
+FILES_CREATED: cloud/task_096_tech_spec_ai_crm/README.md, cloud/task_096_tech_spec_ai_crm/schema_additional_spec.sql, cloud/task_096_tech_spec_ai_crm/price_exclusion_guard.py, cloud/task_096_tech_spec_ai_crm/dedup_check.py, cloud/task_096_tech_spec_ai_crm/manual_field_protection.py, cloud/task_096_tech_spec_ai_crm/selftest.py, cloud/task_096_tech_spec_ai_crm/source_check.py, cloud/task_096_tech_spec_ai_crm/canary_preview.html, cloud/task_096_tech_spec_ai_crm/evidence.json, cloud/task_096_tech_spec_ai_crm/report.md, cloud/latest_status.md, cloud/owner_reply.md
+PRODUCTION_TOUCHED: NO
+OWNER_ACTION_REQUIRED: NO
+OWNER_QUESTION: NONE
+NEXT_FOR_CHATGPT: Route this sandbox package to the controller/PythonAnywhere runner to (1) create the real CRM backup, (2) run selftest.py and source_check.py against real environments, (3) apply schema_additional_spec.sql to a sandbox DB copy only, and (4) attach real evidence before any production step is even considered. UA-0009 remains NOT safe to publish per canonical memory REC-0006/REC-0007. CONTEXT_BUNDLE_SHA256=2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c, MEMORY_VERSION_READ=4.
+UPDATED_AT_UTC: 2026-08-30T14:19:56Z
+MEMORY_VERSION_READ: 4
+CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+--- FILE END: cloud/latest_status.md ---
+--- FILE START: .github/workflows/claude_autopilot.yml ---
+name: Claude Autopilot
+
+on:
+  # Manual-only while the visible owner directive for UA-0011 is repaired.
+  # This prevents an inferred Korea target from racing the explicit ferry
+  # target and can be re-enabled after the bounded production verification.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: claude-autopilot
+  # Preserve task order. A newer task waits instead of cancelling an older
+  # Claude request, so TASK N cannot silently replace TASK N-1 mid-flight.
+  cancel-in-progress: false
+
+jobs:
+  run-claude:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run autonomous Claude worker
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          # Leave ten minutes of the job budget for validation, commit and rebase.
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '1500'
+          ANTHROPIC_NETWORK_ATTEMPTS: '4'
+          # Sonnet 5 adaptive thinking counts toward max_tokens; TASK 021 reached
+          # the former 64k ceiling before completing its structured deliverables.
+          ANTHROPIC_MAX_TOKENS: '128000'
+          # Streaming emits heartbeats during long structured generations; retry
+          # only when the stream itself is silent for two minutes.
+          ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
+        run: python3 automation/claude_worker.py
+      - name: Commit Claude outputs
+        run: |
+          git add -A -- cloud/
+          if git diff --cached --quiet -- cloud/; then
+            echo 'No cloud changes'
+            exit 0
+          fi
+          git config user.name 'ua-art-claude-worker'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'Claude autopilot: process latest task'
+
+          # Never force-push main. Rebase the generated cloud-only commit onto
+          # the newest main and retry if another safe automation advanced it.
+          for attempt in 1 2 3 4 5; do
+            echo "Push attempt ${attempt}/5"
+            git fetch origin main
+            if ! git rebase origin/main; then
+              # Concurrent tasks are allowed to update the two shared status
+              # files. During a rebase, keep the status produced by the task
+              # commit being applied ("theirs"). Any code/content conflict
+              # outside these two exact paths still aborts fail-closed.
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              if [ "${#conflicts[@]}" -eq 0 ]; then
+                echo 'Rebase failed without resolvable conflicts'
+                git rebase --abort || true
+                exit 1
+              fi
+              for path in "${conflicts[@]}"; do
+                case "${path}" in
+                  cloud/latest_status.md|cloud/owner_reply.md) ;;
+                  *)
+                    echo "Rebase conflict outside shared status files: ${path}"
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              for path in "${conflicts[@]}"; do
+                git checkout --theirs -- "${path}"
+                git add -- "${path}"
+              done
+              if ! GIT_EDITOR=true git rebase --continue; then
+                echo 'Rebase continuation failed after bounded status resolution'
+                git rebase --abort || true
+                exit 1
+              fi
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            if [ "${attempt}" -lt 5 ]; then
+              sleep $((attempt * 3))
+            fi
+          done
+          echo 'Push failed after 5 safe retries'
+          exit 1
+--- FILE END: .github/workflows/claude_autopilot.yml ---
