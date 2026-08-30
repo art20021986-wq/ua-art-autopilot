@@ -536,9 +536,14 @@ def rebuild_catalogs_live() -> Tuple[bool, str]:
             html = stranica.sobrat_katalog(cars, frames, light)
             if not isinstance(html, str) or "UA-" not in html:
                 raise StageCounterError("CATALOG_BUILDER_INVALID_HTML")
+            if not re.search(r"data-f\\s*=\\s*[\\\"']all[\\\"']", html, re.I):
+                approved = pathlib.Path(publikaciya.VIDEO, "katalog.html")
+                if not approved.is_file():
+                    raise StageCounterError("APPROVED_CATALOG_TEMPLATE_MISSING")
+                html = approved.read_text(encoding="utf-8")
             html = normalize_catalog_from_rows(html, cars)
             verify_catalog(html)
-            detail = "legacy catalog guard"
+            detail = "approved catalog shell guard"
 
         if not isinstance(html, str) or "UA-" not in html:
             raise StageCounterError("CATALOG_BUILDER_INVALID_HTML")
