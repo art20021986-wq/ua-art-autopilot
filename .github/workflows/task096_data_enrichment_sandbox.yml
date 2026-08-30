@@ -40,7 +40,7 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check 'beautifulsoup4>=4.12,<5'
 
-      - name: Verify exact owner approval and compile sandbox package
+      - name: Verify approval, apply bounded compatibility fixes, compile
         shell: bash
         run: |
           set -euo pipefail
@@ -52,13 +52,30 @@ jobs:
           grep -q 'ЦЕНУ ЗАКУПКИ НЕ ИЗВЛЕКАТЬ И НЕ СОХРАНЯТЬ' "$approval"
           grep -q 'ДО ТРЁХ АВТОПЕРЕЗАПУСКОВ' "$approval"
 
-          # Compatibility patch for the context-export receipt.  This changes only
-          # the temporary runner workspace; no production or repository source is
-          # written by the patch.
           python - <<'PY'
           from pathlib import Path
-          path = Path('cloud/task_096_tech_spec_ai_crm/data_enrichment/remote_apply.py')
-          text = path.read_text(encoding='utf-8')
+
+          # Fix the Python 3.11 f-string restriction in the temporary runner
+          # workspace. The tracked controller is restored before evidence commit.
+          controller = Path('automation/task096_data_enrichment_controller.py')
+          text = controller.read_text(encoding='utf-8')
+          bad_expression = '{"\\n\\n".join(source_blocks)}'
+          if bad_expression in text:
+              prompt_marker = '    prompt = f"""'
+              if prompt_marker not in text:
+                  raise SystemExit('TASK096_PROMPT_PATCH_TARGET_MISSING')
+              text = text.replace(
+                  prompt_marker,
+                  '    sources_text = "\\n\\n".join(source_blocks)\n' + prompt_marker,
+                  1,
+              )
+              text = text.replace(bad_expression, '{sources_text}', 1)
+              controller.write_text(text, encoding='utf-8')
+
+          # Add the explicit false scope flag to the context receipt in the
+          # temporary remote payload. This never authorizes or performs a bot write.
+          remote = Path('cloud/task_096_tech_spec_ai_crm/data_enrichment/remote_apply.py')
+          text = remote.read_text(encoding='utf-8')
           start = text.index('def export_context()')
           end = text.index('def ensure_enrichment_tables', start)
           section = text[start:end]
@@ -69,7 +86,7 @@ jobs:
                   raise SystemExit('TASK096_CONTEXT_RECEIPT_PATCH_TARGET_MISSING')
               section = section.replace(needle, replacement, 1)
               text = text[:start] + section + text[end:]
-              path.write_text(text, encoding='utf-8')
+              remote.write_text(text, encoding='utf-8')
           PY
 
           python -m py_compile \
@@ -140,7 +157,7 @@ jobs:
             grep -qi 'UA-0015' "$out/ua0015_preview.html"
             ! grep -Eqi 'https?://|[$€£₴₽₩¥]|\b(USD|EUR|UAH|RUB|KRW|price|cost|auction|wholesale|dealer)\b' "$out/ua0015_preview.html"
           fi
-          ! find "$out" -type f -name '*source*page*' -o -name '*raw*html*' | grep -q .
+          ! find "$out" -type f \( -name '*source*page*' -o -name '*raw*html*' \) -print | grep -q .
 
       - name: Commit sanitized TASK 096 enrichment evidence
         if: always()
@@ -148,10 +165,8 @@ jobs:
         run: |
           set -euo pipefail
           out='cloud/task_096_tech_spec_ai_crm/data_enrichment'
-          git checkout -- "$out/remote_apply.py" || true
-          git add -- \
-            "$out/evidence.json" \
-            "$out/report.md"
+          git checkout -- automation/task096_data_enrichment_controller.py "$out/remote_apply.py" || true
+          git add -- "$out/evidence.json" "$out/report.md"
           test ! -f "$out/cards_summary.json" || git add -- "$out/cards_summary.json"
           test ! -f "$out/ua0015_preview.html" || git add -- "$out/ua0015_preview.html"
           if git diff --cached --quiet; then
