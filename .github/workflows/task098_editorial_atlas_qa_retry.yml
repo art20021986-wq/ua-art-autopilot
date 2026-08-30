@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: task098-editorial-atlas-qa
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   qa-repair-retry:
