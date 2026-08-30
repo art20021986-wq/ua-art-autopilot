@@ -1,0 +1,352 @@
+{
+  "bot_restarted": false,
+  "contract_id": "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0",
+  "crm_write": false,
+  "errors": [],
+  "finished_at_utc": "2026-08-30T01:04:14Z",
+  "install": {
+    "backup_root": "/home/Carix/backups/task_093_home_counters/20260830T010212Z_7e621e5028",
+    "catalog": {
+      "cards": {
+        "UA-0001": "georgia",
+        "UA-0002": "kiev",
+        "UA-0003": "korea",
+        "UA-0004": "korea",
+        "UA-0005": "sea",
+        "UA-0006": "sea",
+        "UA-0007": "kiev",
+        "UA-0008": "kiev",
+        "UA-0009": "sea",
+        "UA-0010": "sea",
+        "UA-0011": "sea",
+        "UA-0012": "sea",
+        "UA-0013": "sea"
+      },
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "sha256": "d65deb8dfedc6f2b52dfbed76fca648c392a727d15a1c3967ce052aa0879542e"
+    },
+    "changed_files": [
+      "/home/Carix/video/index.html"
+    ],
+    "contract_id": "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0",
+    "crm_write": false,
+    "database_after": {
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "file_sha256": "d9b215cc8c74a8a446874f29dfab06e0dda80e7926cfb0e63b7b2abdec2168c8",
+      "quick_check": "ok",
+      "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+      "ua0011": {
+        "published": 1,
+        "status": "sea_loaded",
+        "vin": "KMHE341DBKA544289"
+      }
+    },
+    "database_before": {
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "file_sha256": "d9b215cc8c74a8a446874f29dfab06e0dda80e7926cfb0e63b7b2abdec2168c8",
+      "quick_check": "ok",
+      "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76",
+      "ua0011": {
+        "published": 1,
+        "status": "sea_loaded",
+        "vin": "KMHE341DBKA544289"
+      }
+    },
+    "errors": [],
+    "finished_at_utc": "2026-08-30T01:02:12Z",
+    "media_write": false,
+    "mode": "ATOMIC_HOME_COUNTER_INSTALL",
+    "production_write": true,
+    "public_preimage_sha256": "7e621e50282d240ab73ded3903c95490fc8145435061c69e49eca14c021910f4",
+    "runtime_llm_tokens": 0,
+    "started_at_utc": "2026-08-30T01:02:11Z",
+    "status": "PASS",
+    "targets": {
+      "/home/Carix/video/index.html": {
+        "audit": {
+          "contract_id": "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0",
+          "counts": {
+            "all": 13,
+            "georgia": 1,
+            "kiev": 3,
+            "korea": 2,
+            "sea": 7
+          },
+          "dynamic_script": true,
+          "errors": [],
+          "stage_cards": {
+            "georgia": 1,
+            "kiev": 1,
+            "korea": 1,
+            "sea": 1
+          },
+          "status": "PASS"
+        },
+        "bytes": 33785,
+        "sha256": "4086053ac3500874b536aa95fd915d4495849d1db8d83e64d9905d9be92b1c4b"
+      }
+    }
+  },
+  "installed": true,
+  "media_write": false,
+  "postcheck_delayed": {
+    "catalog": {
+      "cards": {
+        "UA-0001": "georgia",
+        "UA-0002": "kiev",
+        "UA-0003": "korea",
+        "UA-0004": "korea",
+        "UA-0005": "sea",
+        "UA-0006": "sea",
+        "UA-0007": "kiev",
+        "UA-0008": "kiev",
+        "UA-0009": "sea",
+        "UA-0010": "sea",
+        "UA-0011": "sea",
+        "UA-0012": "sea",
+        "UA-0013": "sea"
+      },
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "sha256": "d65deb8dfedc6f2b52dfbed76fca648c392a727d15a1c3967ce052aa0879542e"
+    },
+    "contract_id": "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0",
+    "counts": {
+      "all": 13,
+      "georgia": 1,
+      "kiev": 3,
+      "korea": 2,
+      "sea": 7
+    },
+    "crm_write": false,
+    "errors": [],
+    "finished_at_utc": "2026-08-30T01:04:09Z",
+    "mode": "READ_ONLY_POSTCHECK",
+    "production_write": false,
+    "runtime_llm_tokens": 0,
+    "status": "PASS",
+    "targets": {
+      "/home/Carix/video/index.html": {
+        "audit": {
+          "contract_id": "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0",
+          "counts": {
+            "all": 13,
+            "georgia": 1,
+            "kiev": 3,
+            "korea": 2,
+            "sea": 7
+          },
+          "dynamic_script": true,
+          "errors": [],
+          "stage_cards": {
+            "georgia": 1,
+            "kiev": 1,
+            "korea": 1,
+            "sea": 1
+          },
+          "status": "PASS"
+        },
+        "bytes": 33785,
+        "sha256": "4086053ac3500874b536aa95fd915d4495849d1db8d83e64d9905d9be92b1c4b"
+      }
+    }
+  },
+  "postcheck_immediate": {
+    "catalog": {
+      "cards": {
+        "UA-0001": "georgia",
+        "UA-0002": "kiev",
+        "UA-0003": "korea",
+        "UA-0004": "korea",
+        "UA-0005": "sea",
+        "UA-0006": "sea",
+        "UA-0007": "kiev",
+        "UA-0008": "kiev",
+        "UA-0009": "sea",
+        "UA-0010": "sea",
+        "UA-0011": "sea",
+        "UA-0012": "sea",
+        "UA-0013": "sea"
+      },
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "sha256": "d65deb8dfedc6f2b52dfbed76fca648c392a727d15a1c3967ce052aa0879542e"
+    },
+    "contract_id": "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0",
+    "counts": {
+      "all": 13,
+      "georgia": 1,
+      "kiev": 3,
+      "korea": 2,
+      "sea": 7
+    },
+    "crm_write": false,
+    "errors": [],
+    "finished_at_utc": "2026-08-30T01:03:11Z",
+    "mode": "READ_ONLY_POSTCHECK",
+    "production_write": false,
+    "runtime_llm_tokens": 0,
+    "status": "PASS",
+    "targets": {
+      "/home/Carix/video/index.html": {
+        "audit": {
+          "contract_id": "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0",
+          "counts": {
+            "all": 13,
+            "georgia": 1,
+            "kiev": 3,
+            "korea": 2,
+            "sea": 7
+          },
+          "dynamic_script": true,
+          "errors": [],
+          "stage_cards": {
+            "georgia": 1,
+            "kiev": 1,
+            "korea": 1,
+            "sea": 1
+          },
+          "status": "PASS"
+        },
+        "bytes": 33785,
+        "sha256": "4086053ac3500874b536aa95fd915d4495849d1db8d83e64d9905d9be92b1c4b"
+      }
+    }
+  },
+  "public_delayed": {
+    "catalog_bytes": 42716,
+    "checked_at_utc": "2026-08-30T01:04:14Z",
+    "counts": {
+      "all": 13,
+      "georgia": 1,
+      "kiev": 3,
+      "korea": 2,
+      "sea": 7
+    },
+    "home": {
+      "contract_id": "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0",
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "dynamic_script": true,
+      "errors": [],
+      "stage_cards": {
+        "georgia": 1,
+        "kiev": 1,
+        "korea": 1,
+        "sea": 1
+      },
+      "status": "PASS"
+    },
+    "home_bytes": 33785,
+    "http_methods": [
+      "GET"
+    ],
+    "ids": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013"
+    ],
+    "label": "delayed",
+    "production_write": false,
+    "status": "PASS",
+    "ua0011_full": true
+  },
+  "public_immediate": {
+    "catalog_bytes": 42716,
+    "checked_at_utc": "2026-08-30T01:03:15Z",
+    "counts": {
+      "all": 13,
+      "georgia": 1,
+      "kiev": 3,
+      "korea": 2,
+      "sea": 7
+    },
+    "home": {
+      "contract_id": "UA-HOME-STAGE-COUNTER-SYNC-093-V1.0",
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "dynamic_script": true,
+      "errors": [],
+      "stage_cards": {
+        "georgia": 1,
+        "kiev": 1,
+        "korea": 1,
+        "sea": 1
+      },
+      "status": "PASS"
+    },
+    "home_bytes": 33785,
+    "http_methods": [
+      "GET"
+    ],
+    "ids": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013"
+    ],
+    "label": "immediate",
+    "production_write": false,
+    "status": "PASS",
+    "ua0011_full": true
+  },
+  "started_at_utc": "2026-08-30T01:01:34Z",
+  "status": "PASS"
+}
