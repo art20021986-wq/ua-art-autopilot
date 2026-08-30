@@ -1,0 +1,406 @@
+name: TASK 097 Editorial Atlas Read-Only Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tasks/task_097.md'
+      - '.github/workflows/task097_editorial_atlas_audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task097-editorial-atlas-audit
+  cancel-in-progress: false
+
+jobs:
+  audit-source-pool-and-design:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail closed unless TASK 097 is newest and strictly read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest="$(find tasks -maxdepth 1 -type f -name 'task_[0-9][0-9][0-9].md' -printf '%f\n' | sort -V | tail -n1)"
+          test "$latest" = "task_097.md" || {
+            echo "Refusing to run: newest task is $latest, expected task_097.md"
+            exit 1
+          }
+          grep -q 'PRODUCTION — ТОЛЬКО ПО ОТДЕЛЬНОЙ КОМАНДЕ' tasks/task_097.md
+          grep -q 'запись в рабочую CRM: запрещена;' tasks/task_097.md
+          grep -q 'автопубликация: запрещена;' tasks/task_097.md
+          grep -q 'создание публичного раздела новостей на этом этапе: запрещено;' tasks/task_097.md
+          test "$(grep -c '^SOURCE|' tasks/task_097.md)" -eq 70
+          for geo in UA GE KR JP US EU CN; do
+            test "$(grep -c "^SOURCE|${geo}|" tasks/task_097.md)" -eq 10
+          done
+
+      - name: Verify immutable pre-launch backup reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='18491a4f83822c0385606b0406da2bae983b89ef'
+          actual="$(git ls-remote origin refs/heads/backup/editorial-atlas-news-001-prelaunch-20260830 | awk '{print $1}')"
+          test "$actual" = "$expected" || {
+            echo "Backup mismatch: expected $expected, got ${actual:-NONE}"
+            exit 1
+          }
+          echo "BACKUP_REFERENCE_PASS=$actual"
+
+      - name: Build bounded read-only repository inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo 'REPOSITORY_FULL_NAME=art20021986-wq/ua-art-autopilot'
+            echo "WORKFLOW_INPUT_SHA=$(git rev-parse HEAD)"
+            echo "WORKFLOW_INPUT_TREE=$(git rev-parse HEAD^{tree})"
+            echo 'BACKUP_BRANCH=backup/editorial-atlas-news-001-prelaunch-20260830'
+            echo '--- RECENT COMMITS ---'
+            git log --oneline --decorate -30
+            echo '--- TOP-LEVEL ---'
+            find . -maxdepth 1 -mindepth 1 -printf '%f\n' | sort
+            echo '--- BOUNDED FILE INVENTORY ---'
+            find . -path './.git' -prune -o -type f -maxdepth 4 -print | sed 's#^./##' | sort | head -n 1800
+            echo '--- SEO/ROUTING-RELATED FILE NAMES ---'
+            grep -RIlE 'canonical|hreflang|sitemap|robots|noindex|/video/|preview' . \
+              --exclude-dir=.git --include='*.py' --include='*.md' --include='*.html' --include='*.yml' --include='*.yaml' --include='*.json' \
+              2>/dev/null | sort | head -n 500 || true
+            for file in README.md CLAUDE.md docs/pythonanywhere_autosync.md cloud/latest_status.md .github/workflows/claude_autopilot.yml; do
+              if [ -f "$file" ]; then
+                echo "--- FILE START: $file ---"
+                sed -n '1,260p' "$file"
+                echo "--- FILE END: $file ---"
+              fi
+            done
+          } > /tmp/task097_repository_inventory.txt
+          test -s /tmp/task097_repository_inventory.txt
+
+      - name: Probe 70 candidate sources and current public routes read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+          import concurrent.futures
+          import csv
+          import datetime as dt
+          import html
+          import re
+          import ssl
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from collections import Counter
+          from pathlib import Path
+
+          TASK = Path('tasks/task_097.md')
+          raw_sources = []
+          for line in TASK.read_text(encoding='utf-8').splitlines():
+              if not line.startswith('SOURCE|'):
+                  continue
+              parts = line.split('|', 7)
+              if len(parts) != 8:
+                  raise SystemExit(f'BAD_SOURCE_LINE:{line}')
+              _, geo, sid, source_class, languages, name, url, topics = parts
+              raw_sources.append({
+                  'geo': geo, 'source_id': sid, 'source_class': source_class,
+                  'languages': languages, 'name': name, 'url': url, 'topics': topics,
+              })
+
+          if len(raw_sources) != 70:
+              raise SystemExit(f'SOURCE_COUNT_INVALID:{len(raw_sources)}')
+          counts = Counter(item['geo'] for item in raw_sources)
+          if counts != Counter({'UA':10,'GE':10,'KR':10,'JP':10,'US':10,'EU':10,'CN':10}):
+              raise SystemExit(f'GEO_COUNTS_INVALID:{dict(counts)}')
+
+          context = ssl.create_default_context()
+          headers = {
+              'User-Agent': 'UA-ART-Editorial-Audit/1.0 (+https://www.uaart.com.ua/; read-only)',
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.5',
+          }
+
+          def fetch(url: str, limit: int = 196608) -> dict:
+              parsed = urllib.parse.urlparse(url)
+              if parsed.scheme not in {'http', 'https'} or not parsed.hostname:
+                  return {'ok': False, 'http_status': 'INVALID_URL', 'final_url': '', 'content_type': '', 'body': '', 'error': 'invalid public URL'}
+              req = urllib.request.Request(url, headers=headers, method='GET')
+              try:
+                  with urllib.request.urlopen(req, timeout=10, context=context) as response:
+                      body = response.read(limit).decode('utf-8', 'replace')
+                      return {
+                          'ok': True,
+                          'http_status': str(getattr(response, 'status', 200)),
+                          'final_url': response.geturl(),
+                          'content_type': response.headers.get('content-type', ''),
+                          'body': body,
+                          'error': '',
+                      }
+              except urllib.error.HTTPError as exc:
+                  try:
+                      body = exc.read(limit).decode('utf-8', 'replace')
+                  except Exception:
+                      body = ''
+                  return {'ok': False, 'http_status': str(exc.code), 'final_url': exc.geturl() or url, 'content_type': exc.headers.get('content-type', '') if exc.headers else '', 'body': body, 'error': f'HTTPError:{exc.code}'}
+              except Exception as exc:
+                  return {'ok': False, 'http_status': 'ERROR', 'final_url': url, 'content_type': '', 'body': '', 'error': f'{type(exc).__name__}:{str(exc)[:180]}'}
+
+          def first(pattern: str, text: str) -> str:
+              match = re.search(pattern, text, re.I | re.S)
+              return html.unescape(re.sub(r'\s+', ' ', match.group(1)).strip())[:500] if match else ''
+
+          def audit_source(item: dict) -> dict:
+              page = fetch(item['url'])
+              body = page['body']
+              parsed_final = urllib.parse.urlparse(page['final_url'] or item['url'])
+              root = f'{parsed_final.scheme or "https"}://{parsed_final.netloc}' if parsed_final.netloc else item['url']
+              robots_url = urllib.parse.urljoin(root + '/', 'robots.txt')
+              robots = fetch(robots_url, limit=131072)
+              title = first(r'<title[^>]*>(.*?)</title>', body)
+              canonical = first(r'<link[^>]+rel=["\'][^"\']*canonical[^"\']*["\'][^>]+href=["\']([^"\']+)', body)
+              if not canonical:
+                  canonical = first(r'<link[^>]+href=["\']([^"\']+)["\'][^>]+rel=["\'][^"\']*canonical', body)
+              feeds = re.findall(r'<link[^>]+type=["\']application/(?:rss\+xml|atom\+xml)["\'][^>]+href=["\']([^"\']+)', body, re.I)
+              if not feeds:
+                  feeds = re.findall(r'<link[^>]+href=["\']([^"\']+)["\'][^>]+type=["\']application/(?:rss\+xml|atom\+xml)', body, re.I)
+              sitemap_lines = []
+              if robots['body']:
+                  sitemap_lines = re.findall(r'(?im)^\s*Sitemap:\s*(\S+)', robots['body'])[:8]
+              return {
+                  **item,
+                  'http_status': page['http_status'],
+                  'final_url': page['final_url'],
+                  'content_type': page['content_type'][:160],
+                  'page_title': title,
+                  'canonical_url': canonical,
+                  'rss_or_atom': ';'.join(feeds[:8]),
+                  'robots_url': robots_url,
+                  'robots_status': robots['http_status'],
+                  'robots_sitemaps': ';'.join(sitemap_lines),
+                  'probe_error': page['error'],
+                  'checked_at_utc': dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
+              }
+
+          with concurrent.futures.ThreadPoolExecutor(max_workers=14) as pool:
+              audited = list(pool.map(audit_source, raw_sources))
+          audited.sort(key=lambda row: row['source_id'])
+
+          fields = [
+              'source_id','geo','source_class','languages','name','url','topics',
+              'http_status','final_url','content_type','page_title','canonical_url',
+              'rss_or_atom','robots_url','robots_status','robots_sitemaps',
+              'probe_error','checked_at_utc'
+          ]
+          with Path('/tmp/task097_source_probe.tsv').open('w', encoding='utf-8', newline='') as handle:
+              writer = csv.DictWriter(handle, fieldnames=fields, delimiter='\t', extrasaction='ignore')
+              writer.writeheader()
+              writer.writerows(audited)
+
+          route_urls = [
+              'https://www.uaart.com.ua/',
+              'https://uaart.com.ua/',
+              'https://www.uaart.com.ua/robots.txt',
+              'https://www.uaart.com.ua/sitemap.xml',
+              'https://www.uaart.com.ua/video/podbor.html',
+          ]
+          route_rows = []
+          for url in route_urls:
+              result = fetch(url)
+              body = result['body']
+              route_rows.append({
+                  'url': url,
+                  'http_status': result['http_status'],
+                  'final_url': result['final_url'],
+                  'content_type': result['content_type'],
+                  'title': first(r'<title[^>]*>(.*?)</title>', body),
+                  'canonical': first(r'<link[^>]+rel=["\'][^"\']*canonical[^"\']*["\'][^>]+href=["\']([^"\']+)', body),
+                  'robots_meta': first(r'<meta[^>]+name=["\']robots["\'][^>]+content=["\']([^"\']+)', body),
+                  'error': result['error'],
+              })
+          lines = ['# TASK 097 live public-route probe', '', 'Read-only GET requests; this is point-in-time technical evidence, not a production write.', '', '| Requested URL | HTTP | Final URL | Content-Type | Title | Canonical | Robots meta | Error |', '|---|---:|---|---|---|---|---|---|']
+          for row in route_rows:
+              clean = {k: str(v).replace('|', '\\|').replace('\n', ' ')[:600] for k,v in row.items()}
+              lines.append(f"| {clean['url']} | {clean['http_status']} | {clean['final_url']} | {clean['content_type']} | {clean['title']} | {clean['canonical']} | {clean['robots_meta']} | {clean['error']} |")
+          Path('/tmp/task097_site_probe.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+
+          successful = sum(row['http_status'].isdigit() and int(row['http_status']) < 400 for row in audited)
+          summary = [
+              '# TASK 097 source probe summary', '',
+              f'- Candidate rows: {len(audited)}',
+              f'- Geo counts: {dict(counts)}',
+              f'- HTTP status below 400 at probe time: {successful}',
+              f'- Other/error responses: {len(audited)-successful}',
+              '- Scope: one candidate URL plus robots.txt per domain, read-only.',
+              '- Interpretation: reachability does not grant copyright or automation permission.',
+          ]
+          Path('/tmp/task097_probe_summary.md').write_text('\n'.join(summary) + '\n', encoding='utf-8')
+          print(f'PROBE_ROWS={len(audited)} SUCCESS_LT400={successful}')
+          PY
+          test "$(($(wc -l < /tmp/task097_source_probe.tsv)-1))" -eq 70
+          test -s /tmp/task097_site_probe.md
+          test -s /tmp/task097_probe_summary.md
+
+      - name: Attach machine context to Claude task temporarily
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp tasks/task_097.md /tmp/task_097.original.md
+          {
+            echo
+            echo '## WORKFLOW-ATTACHED READ-ONLY MACHINE EVIDENCE'
+            echo
+            echo 'The following evidence was generated by this GitHub Actions run. Treat it as point-in-time evidence. Do not reinterpret it as permission to publish or copy content.'
+            echo
+            echo '### Repository inventory'
+            echo '```text'
+            cat /tmp/task097_repository_inventory.txt
+            echo '```'
+            echo
+            echo '### Source probe summary'
+            cat /tmp/task097_probe_summary.md
+            echo
+            echo '### 70-row source probe TSV'
+            echo '```tsv'
+            cat /tmp/task097_source_probe.tsv
+            echo '```'
+            echo
+            echo '### Public-route probe'
+            cat /tmp/task097_site_probe.md
+          } >> tasks/task_097.md
+
+      - name: Run Claude for audit and design deliverables only
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          ANTHROPIC_EFFORT: high
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '1800'
+          ANTHROPIC_NETWORK_ATTEMPTS: '4'
+          ANTHROPIC_MAX_TOKENS: '128000'
+          ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '180'
+        run: python3 automation/claude_worker.py
+
+      - name: Restore durable task and preserve machine evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f /tmp/task_097.original.md ]; then
+            cp /tmp/task_097.original.md tasks/task_097.md
+          fi
+          if [ -d cloud/task_097_editorial_atlas_news ]; then
+            cp /tmp/task097_repository_inventory.txt cloud/task_097_editorial_atlas_news/repository_inventory.txt
+            cp /tmp/task097_source_probe.tsv cloud/task_097_editorial_atlas_news/live_source_probe.tsv
+            cp /tmp/task097_site_probe.md cloud/task_097_editorial_atlas_news/live_site_probe.md
+            cp /tmp/task097_probe_summary.md cloud/task_097_editorial_atlas_news/live_probe_summary.md
+          fi
+
+      - name: Enforce scope and validate complete audit package
+        shell: bash
+        run: |
+          set -euo pipefail
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^cloud/' || true)"
+          if [ -n "$unexpected" ]; then
+            echo 'Unexpected changes outside cloud/:'
+            echo "$unexpected"
+            exit 1
+          fi
+          required=(
+            cloud/task_097_editorial_atlas_news/README.md
+            cloud/task_097_editorial_atlas_news/current_architecture_audit.md
+            cloud/task_097_editorial_atlas_news/seo_routing_audit.md
+            cloud/task_097_editorial_atlas_news/source_registry.csv
+            cloud/task_097_editorial_atlas_news/source_audit_report.md
+            cloud/task_097_editorial_atlas_news/editorial_policy_ua_ru.md
+            cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md
+            cloud/task_097_editorial_atlas_news/design_system_grand_touring.md
+            cloud/task_097_editorial_atlas_news/information_architecture_and_wireframes.md
+            cloud/task_097_editorial_atlas_news/data_model_pipeline.md
+            cloud/task_097_editorial_atlas_news/risk_register.md
+            cloud/task_097_editorial_atlas_news/sandbox_implementation_plan.md
+            cloud/task_097_editorial_atlas_news/evidence.json
+            cloud/task_097_editorial_atlas_news/report.md
+            cloud/task_097_editorial_atlas_news/repository_inventory.txt
+            cloud/task_097_editorial_atlas_news/live_source_probe.tsv
+            cloud/task_097_editorial_atlas_news/live_site_probe.md
+            cloud/task_097_editorial_atlas_news/live_probe_summary.md
+            cloud/latest_status.md
+            cloud/owner_reply.md
+          )
+          for path in "${required[@]}"; do
+            test -s "$path" || { echo "Missing or empty: $path"; exit 1; }
+          done
+          grep -q '^TASK_ID: task_097$' cloud/latest_status.md
+          grep -q '^PRODUCTION_TOUCHED: NO$' cloud/latest_status.md
+          grep -q 'EDITORIAL GRAND TOURING' cloud/task_097_editorial_atlas_news/design_system_grand_touring.md
+          python3 - <<'PY'
+          import csv, json
+          from collections import Counter
+          from pathlib import Path
+          csv_path = Path('cloud/task_097_editorial_atlas_news/source_registry.csv')
+          with csv_path.open(encoding='utf-8-sig', newline='') as handle:
+              rows = list(csv.DictReader(handle))
+          assert len(rows) == 70, len(rows)
+          ids = [row.get('source_id','') for row in rows]
+          assert len(ids) == len(set(ids)) == 70
+          expected = Counter({'UA':10,'GE':10,'KR':10,'JP':10,'US':10,'EU':10,'CN':10})
+          assert Counter(row.get('geo','') for row in rows) == expected
+          evidence = json.loads(Path('cloud/task_097_editorial_atlas_news/evidence.json').read_text(encoding='utf-8'))
+          for key in ('production_touched','crm_touched','catalog_touched','public_files_touched','autopublication_enabled'):
+              assert evidence.get(key) is False, (key, evidence.get(key))
+          assert int(evidence.get('source_probe_rows', 0)) == 70
+          with Path('cloud/task_097_editorial_atlas_news/live_source_probe.tsv').open(encoding='utf-8', newline='') as handle:
+              probe_rows = list(csv.DictReader(handle, delimiter='\t'))
+          assert len(probe_rows) == 70
+          print('TASK097_VALIDATION_PASS')
+          PY
+
+      - name: Commit Cloud audit outputs safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- cloud/
+          if git diff --cached --quiet -- cloud/; then
+            echo 'Claude produced no cloud outputs'
+            exit 1
+          fi
+          git config user.name 'ua-art-claude-worker'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'Claude audit: TASK 097 Editorial Atlas stages 0-2'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              if [ "${#conflicts[@]}" -eq 0 ]; then
+                git rebase --abort || true
+                exit 1
+              fi
+              for path in "${conflicts[@]}"; do
+                case "$path" in
+                  cloud/latest_status.md|cloud/owner_reply.md) ;;
+                  *)
+                    echo "Unsafe rebase conflict: $path"
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              for path in "${conflicts[@]}"; do
+                git checkout --theirs -- "$path"
+                git add -- "$path"
+              done
+              GIT_EDITOR=true git rebase --continue
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep $((attempt * 3))
+          done
+          exit 1
