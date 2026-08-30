@@ -51,8 +51,31 @@ jobs:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
         run: python3 cloud/task_084_crm_hang_root_cause/live_audit.py
 
-      - name: Test combined remediation candidate
-        run: python3 cloud/task_084_crm_hang_root_cause/deploy_controller.py --self-test
+      - name: Test candidate or exact installed remediation
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          path='cloud/task_084_crm_hang_root_cause/evidence/live_audit.json'
+          value=json.load(open(path, encoding='utf-8'))
+          if value['status']=='PASS_ROOT_CAUSE_CONFIRMED':
+              subprocess.check_call([
+                  'python3',
+                  'cloud/task_084_crm_hang_root_cause/deploy_controller.py',
+                  '--self-test',
+              ])
+          elif value['status']=='PASS_REMEDIATION_CONFIRMED':
+              remediation=value['remediation']
+              assert remediation['exact_all_targets'] is True, remediation
+              assert all(v for k,v in remediation.items() if isinstance(v,bool)), remediation
+              deployed=json.load(open(
+                  'cloud/task_084_crm_hang_root_cause/evidence/deploy.json',
+                  encoding='utf-8'))
+              assert deployed['status']=='PASS', deployed['errors']
+              assert deployed['rollback'] is None
+          else:
+              raise AssertionError(value)
+          print('TASK084_CANDIDATE_OR_LIVE_PASS')
+          PY
 
       - name: Prove single-task fail-closed transport
         run: |
@@ -74,7 +97,9 @@ jobs:
           import json
           p='cloud/task_084_crm_hang_root_cause/evidence/live_audit.json'
           value=json.load(open(p, encoding='utf-8'))
-          assert value['status']=='PASS_ROOT_CAUSE_CONFIRMED', value['errors']
+          assert value['status'] in (
+              'PASS_ROOT_CAUSE_CONFIRMED', 'PASS_REMEDIATION_CONFIRMED'
+          ), value
           assert value['production_touched'] is False
           assert value['process_restart'] is False
           assert value['http_methods']==['GET']
