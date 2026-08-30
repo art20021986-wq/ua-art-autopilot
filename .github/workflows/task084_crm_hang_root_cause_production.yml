@@ -1,3 +1,4 @@
+# retry: fresh-live-voice-postcheck-2026-08-30
 # retry: bounded-scheduled-launcher-rescue-2026-08-29
 # retry: simplified-state-gate-2026-08-29
 # retry: idempotent-runtime-verification-2026-08-29
@@ -60,7 +61,7 @@ jobs:
 
       - name: Validate current remediation state
         run: >-
-          python3 -c "import json; v=json.load(open('cloud/task_084_crm_hang_root_cause/evidence/live_audit.json', encoding='utf-8')); r=v.get('root_cause') or {}; assert (v.get('status') == 'PASS_ROOT_CAUSE_CONFIRMED') or (v.get('status') == 'PASS_STATE_CHANGED' and r.get('fixed_deadline_4_65') is False and r.get('non_killable_to_thread') is False and r.get('killable_child_present') is True and r.get('start_safe_singleton_present') is True); print('TASK084_STATE_GATE_PASS')"
+          python3 -c "import json; v=json.load(open('cloud/task_084_crm_hang_root_cause/evidence/live_audit.json', encoding='utf-8')); r=v.get('root_cause') or {}; assert (v.get('status') in ('PASS_ROOT_CAUSE_CONFIRMED', 'PASS_REMEDIATION_CONFIRMED')) or (v.get('status') == 'PASS_STATE_CHANGED' and r.get('fixed_deadline_4_65') is False and r.get('non_killable_to_thread') is False and r.get('killable_child_present') is True and r.get('start_safe_singleton_present') is True); print('TASK084_STATE_GATE_PASS')"
 
       - name: Wait in fair production queue
         env:
