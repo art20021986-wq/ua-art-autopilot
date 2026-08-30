@@ -332,16 +332,18 @@ def patch_publikaciya(source: str) -> str:
         return source
     start, end, block = _function(source, "opublikovat")
     master_anchor = "        html, diag, m = _master(kod)"
-    if block.count(master_anchor) != 1:
-        raise Task086Error("PUBLISHER_MASTER_ANCHOR:%d" % block.count(master_anchor))
-    block = block.replace(
-        master_anchor,
-        master_anchor
-        + "\n        if not diag:\n"
-        + "            from stage_counter_guard import diagnostic_placeholder_html as _task086_diag\n"
-        + "            diag = _task086_diag(kod)",
-        1,
-    )
+    master_count = block.count(master_anchor)
+    if master_count > 1:
+        raise Task086Error("PUBLISHER_MASTER_ANCHOR:%d" % master_count)
+    if master_count == 1:
+        block = block.replace(
+            master_anchor,
+            master_anchor
+            + "\n        if not diag:\n"
+            + "            from stage_counter_guard import diagnostic_placeholder_html as _task086_diag\n"
+            + "            diag = _task086_diag(kod)",
+            1,
+        )
     anchor = "    stalo = dict((put, _sha(put)) for put in celi)"
     if block.count(anchor) != 1:
         raise Task086Error("PUBLISHER_COMPLETION_ANCHOR:%d" % block.count(anchor))
