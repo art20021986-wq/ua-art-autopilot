@@ -1,0 +1,179 @@
+name: TASK 098 Editorial Atlas QA Retry
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task098_editorial_atlas_qa_retry.yml'
+      - 'automation/task098_collect_context.py'
+      - 'automation/task098_validate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task098-editorial-atlas-qa
+  cancel-in-progress: false
+
+jobs:
+  qa-repair-retry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail closed and collect bounded read-only evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest="$(find tasks -maxdepth 1 -type f -name 'task_[0-9][0-9][0-9].md' -printf '%f\n' | sort -V | tail -n1)"
+          test "$latest" = 'task_098.md'
+          grep -q 'PRODUCTION — ТОЛЬКО ПО ОТДЕЛЬНОЙ КОМАНДЕ' tasks/task_098.md
+          grep -q 'production write: prohibited;' tasks/task_098.md
+          grep -q 'CRM write: prohibited;' tasks/task_098.md
+          grep -q 'autopilot/autopublication enablement: prohibited;' tasks/task_098.md
+          expected='0f603908dbd290a6b3a4d9c8e348554c69d42c8f'
+          actual="$(git ls-remote origin refs/heads/backup/editorial-atlas-news-001-post-audit-pre-qa-20260830 | awk '{print $1}')"
+          test "$actual" = "$expected" || { echo "QA backup mismatch: ${actual:-NONE}"; exit 1; }
+          for path in \
+            cloud/task_097_editorial_atlas_news/evidence.json \
+            cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md \
+            cloud/task_097_editorial_atlas_news/data_model_pipeline.md \
+            cloud/task_097_editorial_atlas_news/seo_routing_audit.md \
+            cloud/task_097_editorial_atlas_news/report.md \
+            cloud/task_097_editorial_atlas_news/source_audit_report.md \
+            cloud/task_097_editorial_atlas_news/source_registry.csv \
+            cloud/task_097_editorial_atlas_news/live_source_probe.tsv; do
+            test -s "$path" || { echo "Missing input: $path"; exit 1; }
+          done
+          python3 automation/task098_collect_context.py
+          test -s /tmp/task098_live_site_probe.json
+          test -s /tmp/task098_redirect_probe.json
+          test -s /tmp/task098_source_probe_qa_machine.json
+
+      - name: Attach QA evidence to TASK 098 temporarily
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp tasks/task_098.md /tmp/task_098.original.md
+          {
+            echo
+            echo '## WORKFLOW-ATTACHED QA EVIDENCE — RETRY'
+            echo
+            echo "QA_STARTED_AT_UTC: $(cat /tmp/task098_qa_started_at.txt)"
+            echo 'TASK097_RESULT_COMMIT_AT_UTC: 2026-08-30T16:49:39Z'
+            echo 'TASK097_RESULT_COMMIT_SHA: 0f603908dbd290a6b3a4d9c8e348554c69d42c8f'
+            echo 'PREVIOUS_QA_RUN: generated all required files but was rejected by an over-broad validator that matched explanatory prose; regenerate and preserve all substantive corrections.'
+            echo
+            for file in \
+              cloud/task_097_editorial_atlas_news/evidence.json \
+              cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md \
+              cloud/task_097_editorial_atlas_news/data_model_pipeline.md \
+              cloud/task_097_editorial_atlas_news/seo_routing_audit.md \
+              cloud/task_097_editorial_atlas_news/report.md \
+              cloud/task_097_editorial_atlas_news/source_audit_report.md; do
+              echo "### CURRENT FILE: $file"
+              echo '```text'
+              cat "$file"
+              echo '```'
+            done
+            echo '### LIVE SITE PROBE JSON'
+            echo '```json'
+            cat /tmp/task098_live_site_probe.json
+            echo '```'
+            echo '### ROBOTS.TXT LITERAL BODY'
+            echo '```text'
+            cat /tmp/task098_robots_live.txt
+            echo '```'
+            echo '### SITEMAP.XML BOUNDED BODY'
+            echo '```xml'
+            cat /tmp/task098_sitemap_live_excerpt.xml
+            echo '```'
+            echo '### REDIRECT PROBE JSON'
+            echo '```json'
+            cat /tmp/task098_redirect_probe.json
+            echo '```'
+            echo '### SOURCE PROBE QA MACHINE JSON'
+            echo '```json'
+            cat /tmp/task098_source_probe_qa_machine.json
+            echo '```'
+            echo '### SOURCE REGISTRY CSV'
+            echo '```csv'
+            cat cloud/task_097_editorial_atlas_news/source_registry.csv
+            echo '```'
+          } >> tasks/task_098.md
+
+      - name: Run Claude QA repair again
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          ANTHROPIC_EFFORT: high
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '1800'
+          ANTHROPIC_NETWORK_ATTEMPTS: '4'
+          ANTHROPIC_MAX_TOKENS: '128000'
+          ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '180'
+        run: python3 automation/claude_worker.py
+
+      - name: Restore durable task and preserve raw QA evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f /tmp/task_098.original.md ]; then cp /tmp/task_098.original.md tasks/task_098.md; fi
+          if [ -d cloud/task_098_editorial_atlas_qa ]; then
+            cp /tmp/task098_qa_started_at.txt cloud/task_098_editorial_atlas_qa/workflow_qa_started_at.txt
+            cp /tmp/task098_live_site_probe.json cloud/task_098_editorial_atlas_qa/live_site_probe.json
+            cp /tmp/task098_robots_live.txt cloud/task_098_editorial_atlas_qa/robots_live.txt
+            cp /tmp/task098_sitemap_live_excerpt.xml cloud/task_098_editorial_atlas_qa/sitemap_live_excerpt.xml
+            cp /tmp/task098_redirect_probe.json cloud/task_098_editorial_atlas_qa/redirect_probe.json
+            cp /tmp/task098_source_probe_qa_machine.json cloud/task_098_editorial_atlas_qa/source_probe_qa_machine.json
+          fi
+
+      - name: Validate semantic contracts and executable SQLite DDL
+        shell: bash
+        run: |
+          set -euo pipefail
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^cloud/' || true)"
+          if [ -n "$unexpected" ]; then
+            echo 'Unexpected generated changes outside cloud/:'
+            echo "$unexpected"
+            exit 1
+          fi
+          python3 automation/task098_validate.py
+
+      - name: Commit corrected QA package safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- cloud/
+          if git diff --cached --quiet -- cloud/; then
+            echo 'Claude produced no QA outputs'
+            exit 1
+          fi
+          git config user.name 'ua-art-claude-worker'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'Claude QA: repair TASK 097 evidence and specifications'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              if [ "${#conflicts[@]}" -eq 0 ]; then git rebase --abort || true; exit 1; fi
+              for path in "${conflicts[@]}"; do
+                case "$path" in
+                  cloud/latest_status.md|cloud/owner_reply.md) ;;
+                  *) echo "Unsafe rebase conflict: $path"; git rebase --abort || true; exit 1 ;;
+                esac
+              done
+              for path in "${conflicts[@]}"; do
+                git checkout --theirs -- "$path"
+                git add -- "$path"
+              done
+              GIT_EDITOR=true git rebase --continue
+            fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 3))
+          done
+          exit 1
