@@ -167,14 +167,23 @@ _ARTICLE_STAGE_VALUE = {
 
 
 def _rendered_stage(opening: str) -> str | None:
-    found = re.search(
-        r"data-(?:ua-card-stage|stage|etap)=[\"']([^\"']+)[\"']",
+    canonical = re.findall(
+        r"\bdata-stage\s*=\s*[\"']([^\"']+)[\"']", opening, re.I,
+    )
+    if canonical:
+        return _PUBLIC_STAGE_ALIASES.get(canonical[-1].strip().casefold())
+    for name in ("data-ua-card-stage", "data-etap"):
+        found = re.findall(
+            r"\b" + re.escape(name) + r"\s*=\s*[\"']([^\"']+)[\"']",
+            opening, re.I,
+        )
+        if found:
+            return _PUBLIC_STAGE_ALIASES.get(found[-1].strip().casefold())
+    tile = re.findall(
+        r"\bdata-(?:ua-stage|ua-stage-tile)\s*=\s*[\"']([1-4])[\"']",
         opening, re.I,
     )
-    if found:
-        return _PUBLIC_STAGE_ALIASES.get(found.group(1).strip().casefold())
-    tile = re.search(r"data-ua-stage-tile=[\"']([1-4])[\"']", opening, re.I)
-    return PUBLIC_STAGE.get(int(tile.group(1))) if tile else None
+    return PUBLIC_STAGE.get(int(tile[-1])) if tile else None
 
 
 def card_entries(source: str) -> list[tuple[str, str | None, str]]:
