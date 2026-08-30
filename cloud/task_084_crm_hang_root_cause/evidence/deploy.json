@@ -1,7 +1,7 @@
 {
   "bot_restarted": false,
   "build": {
-    "audit_started_at_utc": "2026-08-30T00:45:05Z",
+    "audit_started_at_utc": "2026-08-30T00:47:52Z",
     "audit_status": "PASS_REMEDIATION_CONFIRMED",
     "root_cause": {
       "fixed_deadline_4_65": false,
@@ -17,11 +17,16 @@
   },
   "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
   "crm_db_write": false,
-  "errors": [
-    "ControllerError:POSTCHECK_FAILED:InstallError:POSTCHECK_SHA:cars_ui.py"
-  ],
+  "errors": [],
   "existing_patch_verified": true,
-  "finished_at_utc": "2026-08-30T00:46:41Z",
+  "finished_at_utc": "2026-08-30T00:52:10Z",
+  "launcher_delayed": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "control_plane_lag": false,
+    "enabled": true,
+    "id": 266084,
+    "state": "Running"
+  },
   "launcher_immediate": {
     "command": "python3.10 /home/Carix/start_safe.py",
     "control_plane_lag": false,
@@ -30,18 +35,78 @@
     "state": "Running"
   },
   "media_write": false,
-  "postcheck_immediate": {
+  "postcheck_delayed": {
+    "bots": {
+      "client": true,
+      "crm": true
+    },
+    "checks": {
+      "cars_killable_voice": true,
+      "cars_old_fixed_deadline_removed": true,
+      "cars_old_nonkillable_stt_removed": true,
+      "menu_debounce": true,
+      "start_singleton": true,
+      "startup_notice_debounce": true,
+      "team_killable_voice": true,
+      "team_old_nonkillable_stt_removed": true,
+      "worker_limit_two": true,
+      "worker_process_group": true,
+      "worker_term_kill": true
+    },
     "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
     "crm_db_write": false,
-    "errors": [
-      "InstallError:POSTCHECK_SHA:cars_ui.py"
-    ],
-    "finished_at_utc": "2026-08-30T00:46:07Z",
-    "mode": "POSTCHECK",
+    "errors": [],
+    "finished_at_utc": "2026-08-30T00:51:06Z",
+    "live_sha256": {
+      "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
+      "crm_voice_watchdog.py": "d6c782b55309d3049472f15195935a113387eba1aec8c3365ef7d875a7303efc",
+      "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "team_bot.py": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "mode": "POST_RESTART_CHECK",
     "production_write": false,
-    "status": "FAIL"
+    "start_singleton_held": true,
+    "startup_notice_gate_active": true,
+    "startup_notice_state_mtime": 1788050583.9568532,
+    "status": "PASS"
   },
+  "postcheck_immediate": {
+    "bots": {
+      "client": true,
+      "crm": true
+    },
+    "checks": {
+      "cars_killable_voice": true,
+      "cars_old_fixed_deadline_removed": true,
+      "cars_old_nonkillable_stt_removed": true,
+      "menu_debounce": true,
+      "start_singleton": true,
+      "startup_notice_debounce": true,
+      "team_killable_voice": true,
+      "team_old_nonkillable_stt_removed": true,
+      "worker_limit_two": true,
+      "worker_process_group": true,
+      "worker_term_kill": true
+    },
+    "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
+    "crm_db_write": false,
+    "errors": [],
+    "finished_at_utc": "2026-08-30T00:49:12Z",
+    "live_sha256": {
+      "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
+      "crm_voice_watchdog.py": "d6c782b55309d3049472f15195935a113387eba1aec8c3365ef7d875a7303efc",
+      "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "team_bot.py": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "mode": "POST_RESTART_CHECK",
+    "production_write": false,
+    "start_singleton_held": true,
+    "startup_notice_gate_active": true,
+    "startup_notice_state_mtime": 1788050583.9568532,
+    "status": "PASS"
+  },
+  "postcheck_verifier_refreshed": true,
   "rollback": null,
-  "started_at_utc": "2026-08-30T00:45:36Z",
-  "status": "FAIL"
+  "started_at_utc": "2026-08-30T00:48:25Z",
+  "status": "PASS"
 }
