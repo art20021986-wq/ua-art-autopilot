@@ -306,6 +306,33 @@ def _rewrite_chip_counts(source: str, counts: Mapping[str, int]) -> str:
         return match.group(0)[:opening_end] + body + match.group(0)[closing_start:]
 
     candidate = pattern.sub(replace, source)
+    if not any(seen.values()):
+        labels = {
+            "all": r"(?:Все|Усі)",
+            "kiev": r"(?:В Киеве|У Києві)",
+            "gruzia": r"(?:В Грузии|У Грузії)",
+            "more": r"(?:На пароме|На поромі)",
+            "korea": r"(?:В Корее|У Кореї)",
+        }
+        for key, label in labels.items():
+            candidate, changed = re.subn(
+                r"(" + label + r"\s*·\s*)\d+",
+                lambda item, value=str(int(counts[key])): item.group(1) + value,
+                candidate, flags=re.I,
+            )
+            if not changed:
+                raise StageCounterError("CHIP_LABEL_MISSING:" + key)
+        candidate = re.sub(
+            r"(Показано\s*:?\s*)\d+",
+            lambda item: item.group(1) + str(int(counts["all"])),
+            candidate, flags=re.I,
+        )
+        candidate = re.sub(
+            r"\d+(\s+(?:в подборке|у добірці))",
+            lambda item: str(int(counts["all"])) + item.group(1),
+            candidate, flags=re.I,
+        )
+        return candidate
     invalid = [key for key, value in seen.items() if value != 1]
     if invalid:
         raise StageCounterError("CHIP_REWRITE_COUNT:" + ",".join(invalid))
@@ -439,6 +466,25 @@ def chip_counts(source: str) -> dict[str, int]:
         if not numbers or len(set(numbers)) != 1:
             raise StageCounterError("CHIP_VALUE_%s:%d" % (key, len(numbers)))
         values[key].append(numbers[0])
+    if not any(values.values()):
+        labels = {
+            "all": r"(?:Все|Усі)",
+            "kiev": r"(?:В Киеве|У Києві)",
+            "gruzia": r"(?:В Грузии|У Грузії)",
+            "more": r"(?:На пароме|На поромі)",
+            "korea": r"(?:В Корее|У Кореї)",
+        }
+        result = {}
+        for key, label in labels.items():
+            found = [
+                int(value) for value in re.findall(
+                    label + r"\s*·\s*(\d+)", source, re.I,
+                )
+            ]
+            if not found or len(set(found)) != 1:
+                raise StageCounterError("CHIP_LABEL_COUNT_%s:%d" % (key, len(found)))
+            result[key] = found[0]
+        return result
     result = {}
     for key, found in values.items():
         if len(found) != 1:
