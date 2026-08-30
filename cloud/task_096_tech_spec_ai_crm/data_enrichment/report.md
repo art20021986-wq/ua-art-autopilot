@@ -2,6 +2,6 @@
 
 **Status:** FAIL
 
-Ошибка: `ControllerError:PYTHONANYWHERE_HTTP_412:/api/v0/user/Carix/consoles/47988911/send_input/`
+Ошибка: `ControllerError:CONSOLE_SEND_INPUT_HTTP_412`
 
 Production, рабочая CRM, бот и сайт не изменялись.
