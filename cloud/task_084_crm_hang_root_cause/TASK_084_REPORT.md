@@ -10,4 +10,4 @@ STATUS: **FAIL**
 - One controlled restart: NO
 - Backup: ``
 - Immediate and delayed live checks: FAIL
-- Errors: ControllerError:AUDIT_NOT_PASS
+- Errors: ControllerError:POSTCHECK_FAILED:InstallError:POSTCHECK_SHA:cars_ui.py

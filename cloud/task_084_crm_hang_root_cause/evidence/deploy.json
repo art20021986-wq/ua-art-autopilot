@@ -1,13 +1,47 @@
 {
   "bot_restarted": false,
+  "build": {
+    "audit_started_at_utc": "2026-08-30T00:45:05Z",
+    "audit_status": "PASS_REMEDIATION_CONFIRMED",
+    "root_cause": {
+      "fixed_deadline_4_65": false,
+      "killable_child_present": true,
+      "launcher_count": 1,
+      "legacy_launcher_count": 1,
+      "non_killable_to_thread": false,
+      "start_safe_singleton_present": true,
+      "startup_owner_greeting_sites": 0,
+      "startup_ready_message_sites": 0,
+      "wait_for_only_cancels_await": false
+    }
+  },
   "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
   "crm_db_write": false,
   "errors": [
-    "ControllerError:AUDIT_NOT_PASS"
+    "ControllerError:POSTCHECK_FAILED:InstallError:POSTCHECK_SHA:cars_ui.py"
   ],
-  "finished_at_utc": "2026-08-30T00:44:18Z",
+  "existing_patch_verified": true,
+  "finished_at_utc": "2026-08-30T00:46:41Z",
+  "launcher_immediate": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "control_plane_lag": false,
+    "enabled": true,
+    "id": 266084,
+    "state": "Running"
+  },
   "media_write": false,
+  "postcheck_immediate": {
+    "contract_id": "CRM-HANG-ROOT-CAUSE-084-V1.0",
+    "crm_db_write": false,
+    "errors": [
+      "InstallError:POSTCHECK_SHA:cars_ui.py"
+    ],
+    "finished_at_utc": "2026-08-30T00:46:07Z",
+    "mode": "POSTCHECK",
+    "production_write": false,
+    "status": "FAIL"
+  },
   "rollback": null,
-  "started_at_utc": "2026-08-30T00:44:18Z",
+  "started_at_utc": "2026-08-30T00:45:36Z",
   "status": "FAIL"
 }
