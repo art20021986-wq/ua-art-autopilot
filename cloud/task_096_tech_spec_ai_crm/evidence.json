@@ -1,0 +1,40 @@
+{
+  "task_id": "task_096",
+  "spec_id": "TECH-SPEC-AI-CRM-017",
+  "spec_version": "3.0",
+  "delivery_round": 1,
+  "context_bundle_sha256": "2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c",
+  "memory_version_read": 4,
+  "generated_by": "CLAUDE_AUTOPILOT",
+  "production_write": "NO",
+  "crm_write": "NO",
+  "autopublication": "NO",
+  "purchase_price_extracted_or_stored": "NO",
+  "real_crm_db_accessed_by_claude": "NO_ACCESS_IN_THIS_ENVIRONMENT",
+  "backup_created_by_claude": "NO_ACCESS_IN_THIS_ENVIRONMENT",
+  "offline_selftest": {
+    "executed_by_claude": false,
+    "reason": "No code-execution capability available in this delivery channel; script provided at selftest.py for controller execution",
+    "expected_result_if_run_correctly": "ALL_TESTS_PASS: true (test1..test6 all pass per selftest.py logic)",
+    "status": "PENDING_CONTROLLER_EXECUTION"
+  },
+  "source_reachability_check": {
+    "executed_by_claude": false,
+    "reason": "No outbound network access in this delivery environment; script provided at source_check.py",
+    "sources": {
+      "automobile_catalog": "https://www.automobile-catalog.com/car/2017/2297795/mercedes-benz_e_220_d.html",
+      "auto_data": "https://www.auto-data.net/ru/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+    },
+    "status": "PENDING_CONTROLLER_EXECUTION"
+  },
+  "canary_html": {
+    "path": "cloud/task_096_tech_spec_ai_crm/canary_preview.html",
+    "public": false,
+    "noindex": true,
+    "linked_from_public_site": false
+  },
+  "schema_target": "sandbox copy only, never applied to production CRM by this delivery",
+  "scope_applied_to_cars": ["UA-0001","UA-0002","UA-0003","UA-0004","UA-0005","UA-0006","UA-0007","UA-0008","UA-0009","UA-0010","UA-0011","UA-0012","UA-0013","UA-0014","UA-0015","UA-0016"],
+  "ua0009_safe_to_publish": "NO",
+  "notes": "This evidence file records what Claude/Cloud actually produced (code, schema, canary HTML, self-test harness) versus what remains pending real execution by a controller with access to the live environment. No fabricated execution results are included."
+}

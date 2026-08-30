@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<title>TASK 096 — непубличный canary предпросмотр (не публиковать)</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#f5f5f5; padding:24px; }
+  .canary-banner { background:#fff3cd; border:1px solid #ffe08a; padding:10px 16px; margin-bottom:20px; font-weight:bold; }
+  .card { max-width:640px; background:#fff; border:1px solid #ddd; border-radius:8px; padding:20px; }
+  .spec-block { margin-top:20px; border-top:1px dashed #ccc; padding-top:16px; }
+  .spec-block h3 { margin:0 0 8px 0; font-size:16px; }
+  .spec-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f0f0f0; font-size:14px; }
+  .spec-source { font-size:11px; color:#999; margin-top:10px; }
+  .primary-block { color:#333; }
+</style>
+</head>
+<body>
+<div class="canary-banner">CANARY — не публикуется, только для внутренней технической проверки TASK 096</div>
+<div class="card">
+  <div class="primary-block">
+    <h2>UA-0009 (пример карточки, оператор CRM)</h2>
+    <p><em>Основную информацию (VIN, комплектация, пробег, цена продажи, статус) заполняет только оператор CRM. Этот блок не изменяется данным пайплайном.</em></p>
+  </div>
+  <div class="spec-block">
+    <h3>Дополнительная спецификация</h3>
+    <div class="spec-row"><span>Крутящий момент</span><span>400 Нм</span></div>
+    <div class="spec-row"><span>Расход топлива (комбинированный)</span><span>5.2 л/100км</span></div>
+    <div class="spec-row"><span>Разгон 0-100 км/ч</span><span>7.3 с</span></div>
+    <div class="spec-row"><span>Выбросы CO2</span><span>137 г/км</span></div>
+    <p class="spec-source">Источники (внутренние, не показываются клиенту): Automobile-Catalog, Auto-Data. Цена закупки/аукциона/опта не извлекается и не хранится.</p>
+  </div>
+</div>
+</body>
+</html>
