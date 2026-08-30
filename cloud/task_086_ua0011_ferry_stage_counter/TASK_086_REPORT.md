@@ -12,4 +12,4 @@ STATUS: **FAIL**
 - Bot restart: NOT CONFIRMED
 - Runtime LLM tokens: 0
 - Rollback: null
-- Errors: ControllerError:SHADOW_FAIL:Task086Error:PUBLISHER_MASTER_ANCHOR:0
+- Errors: ControllerError:SHADOW_FAIL:Task086Error:PUBLISHER_COMPLETION_ANCHOR:0

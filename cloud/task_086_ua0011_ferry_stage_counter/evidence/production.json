@@ -3,25 +3,25 @@
   "bot_restarted": false,
   "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
   "errors": [
-    "ControllerError:SHADOW_FAIL:Task086Error:PUBLISHER_MASTER_ANCHOR:0"
+    "ControllerError:SHADOW_FAIL:Task086Error:PUBLISHER_COMPLETION_ANCHOR:0"
   ],
-  "finished_at_utc": "2026-08-30T00:04:46Z",
+  "finished_at_utc": "2026-08-30T00:07:20Z",
   "rollback": null,
   "runtime_llm_tokens": 0,
   "shadow": {
     "contract_id": "UA-0011-FERRY-STAGE-COUNTER-SYNC-006-V1.0",
     "crm_write": false,
     "errors": [
-      "Task086Error:PUBLISHER_MASTER_ANCHOR:0"
+      "Task086Error:PUBLISHER_COMPLETION_ANCHOR:0"
     ],
-    "finished_at_utc": "2026-08-30T00:04:10Z",
+    "finished_at_utc": "2026-08-30T00:07:10Z",
     "media_write": false,
     "mode": "SHADOW",
     "production_write": false,
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-08-30T00:04:10Z",
+    "started_at_utc": "2026-08-30T00:07:09Z",
     "status": "FAIL"
   },
-  "started_at_utc": "2026-08-30T00:03:11Z",
+  "started_at_utc": "2026-08-30T00:06:13Z",
   "status": "FAIL"
 }
