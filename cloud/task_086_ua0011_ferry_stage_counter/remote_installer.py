@@ -345,8 +345,9 @@ def patch_publikaciya(source: str) -> str:
             1,
         )
     anchor = "    stalo = dict((put, _sha(put)) for put in celi)"
-    if block.count(anchor) != 1:
-        raise Task086Error("PUBLISHER_COMPLETION_ANCHOR:%d" % block.count(anchor))
+    completion_count = block.count(anchor)
+    if completion_count > 1:
+        raise Task086Error("PUBLISHER_COMPLETION_ANCHOR:%d" % completion_count)
     insertion = '''    # TASK086_CATALOG_COUNTER_TRANSACTION_V1
     try:
         from stage_counter_guard import rebuild_catalogs_live as _task086_rebuild
@@ -358,11 +359,52 @@ def patch_publikaciya(source: str) -> str:
         return False, "Публикация отменена: каталоги и счётчики не подтверждены (%s)." % _task086_detail
 
 '''
-    block = block.replace(anchor, insertion + anchor, 1)
     lines = source.splitlines(keepends=True)
     if not block.endswith("\n"):
         block += "\n"
-    return "".join(lines[:start] + [block] + lines[end:])
+    if completion_count == 1:
+        block = block.replace(anchor, insertion + anchor, 1)
+        return "".join(lines[:start] + [block] + lines[end:])
+
+    patched = "".join(lines[:start] + [block] + lines[end:])
+    _wrapper_start, wrapper_end, _wrapper_block = _function(patched, "opublikovat")
+    wrapper = '''
+# TASK086_CATALOG_COUNTER_TRANSACTION_V1
+_task086_opublikovat_original = opublikovat
+def opublikovat(*args, **kwargs):
+    import pathlib as _task086_pathlib
+    _task086_paths = [
+        _task086_pathlib.Path(VIDEO, "katalog.html"),
+        _task086_pathlib.Path(SITE, "katalog.html"),
+    ]
+    _task086_before = {
+        _task086_path: (_task086_path.read_bytes() if _task086_path.exists() else None)
+        for _task086_path in _task086_paths
+    }
+    _task086_result = _task086_opublikovat_original(*args, **kwargs)
+    _task086_success = (
+        _task086_result[0] is True
+        if isinstance(_task086_result, tuple) and _task086_result
+        else _task086_result is True
+    )
+    if not _task086_success:
+        return _task086_result
+    try:
+        from stage_counter_guard import rebuild_catalogs_live as _task086_rebuild
+        _task086_ok, _task086_detail = _task086_rebuild()
+    except Exception as _task086_exc:
+        _task086_ok, _task086_detail = False, str(_task086_exc)
+    if not _task086_ok:
+        for _task086_path, _task086_data in _task086_before.items():
+            if _task086_data is None:
+                _task086_path.unlink(missing_ok=True)
+            else:
+                _task086_path.write_bytes(_task086_data)
+        return False, "Публикация отменена: каталоги и счётчики не подтверждены (%s)." % _task086_detail
+    return _task086_result
+'''
+    patched_lines = patched.splitlines(keepends=True)
+    return "".join(patched_lines[:wrapper_end] + [wrapper] + patched_lines[wrapper_end:])
 
 
 PATCHERS = {
