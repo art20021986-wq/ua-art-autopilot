@@ -261,8 +261,7 @@ def _rewrite_chip_counts(source: str, counts: Mapping[str, int]) -> str:
     seen = {key: 0 for key in ("all", "korea", "more", "gruzia", "kiev")}
     pattern = re.compile(
         r"<(?P<tag>a|button)\b"
-        r"(?=[^>]*class=[\"'][^\"']*\bchip\b)"
-        r"(?=[^>]*data-f=[\"'](?P<bucket>all|korea|more|sea|gruzia|georgia|kiev|kyiv)[\"'])"
+        r"(?=[^>]*data-f\s*=\s*[\"'](?P<bucket>all|korea|more|sea|gruzia|georgia|kiev|kyiv)[\"'])"
         r"[^>]*>(?P<body>.*?)</(?P=tag)\s*>",
         re.I | re.S,
     )
@@ -271,13 +270,28 @@ def _rewrite_chip_counts(source: str, counts: Mapping[str, int]) -> str:
         key = _PUBLIC_STAGE_ALIASES.get(match.group("bucket").casefold(),
                                         match.group("bucket").casefold())
         seen[key] += 1
+        value = str(int(counts[key]))
+        body = match.group("body")
         body, changed = re.subn(
             r"(<b\b[^>]*>)\s*\d+\s*(</b\s*>)",
-            lambda item: item.group(1) + str(int(counts[key])) + item.group(2),
-            match.group("body"), count=1, flags=re.I | re.S,
+            lambda item: item.group(1) + value + item.group(2),
+            body, flags=re.I | re.S,
         )
-        if changed != 1:
-            raise StageCounterError("CHIP_VALUE_%s:%d" % (key, changed))
+        if not changed:
+            body, changed = re.subn(
+                r"(<span\b(?=[^>]*class=[\"'][^\"']*\bcount\b)[^>]*>)"
+                r"\s*\d+\s*(</span\s*>)",
+                lambda item: item.group(1) + value + item.group(2),
+                body, flags=re.I | re.S,
+            )
+        if not changed:
+            body, changed = re.subn(
+                r"([·:]\s*)\d+",
+                lambda item: item.group(1) + value,
+                body, flags=re.I,
+            )
+        if not changed:
+            raise StageCounterError("CHIP_VALUE_%s:0" % key)
         opening_end = match.group(0).find(">") + 1
         closing_start = match.group(0).lower().rfind("</")
         return match.group(0)[:opening_end] + body + match.group(0)[closing_start:]
@@ -311,9 +325,16 @@ def normalize_catalog_from_rows(source: str, rows: Iterable[Mapping]) -> str:
         opening = re.match(r"<article\b[^>]*>", block, re.I | re.S)
         if not opening:
             raise StageCounterError("CATALOG_CARD_OPENING_MISSING:" + code)
-        updated = _set_attribute(
-            opening.group(0), "data-stage", _ARTICLE_STAGE_VALUE[stages[code]]
+        updated = re.sub(
+            r"\s+(?:data-ua-card-stage|data-ua-stage-tile|data-ua-stage|data-stage|data-etap)"
+            r"=[\"'][^\"']*[\"']",
+            "", opening.group(0), flags=re.I,
         )
+        updated = _set_attribute(
+            updated, "data-stage", _ARTICLE_STAGE_VALUE[stages[code]]
+        )
+        stage_no = {value: number for number, value in PUBLIC_STAGE.items()}[stages[code]]
+        updated = _set_attribute(updated, "data-ua-stage", str(stage_no))
         return updated + block[opening.end():]
 
     candidate = article_pattern.sub(rewrite_article, source)
@@ -361,19 +382,28 @@ def chip_counts(source: str) -> dict[str, int]:
     }
     pattern = re.compile(
         r"<(?P<tag>a|button)\b"
-        r"(?=[^>]*class=[\"'][^\"']*\bchip\b)"
-        r"(?=[^>]*data-f=[\"'](?P<bucket>all|korea|more|sea|gruzia|georgia|kiev|kyiv)[\"'])"
+        r"(?=[^>]*data-f\s*=\s*[\"'](?P<bucket>all|korea|more|sea|gruzia|georgia|kiev|kyiv)[\"'])"
         r"[^>]*>(?P<body>.*?)</(?P=tag)\s*>",
         re.I | re.S,
     )
     for match in pattern.finditer(source):
         key = _PUBLIC_STAGE_ALIASES.get(match.group("bucket").casefold(),
                                         match.group("bucket").casefold())
+        body = match.group("body")
         found = re.findall(r"<b\b[^>]*>\s*(\d+)\s*</b\s*>",
-                           match.group("body"), re.I | re.S)
-        if len(found) != 1:
-            raise StageCounterError("CHIP_VALUE_%s:%d" % (key, len(found)))
-        values[key].append(int(found[0]))
+                           body, re.I | re.S)
+        if not found:
+            found = re.findall(
+                r"<span\b(?=[^>]*class=[\"'][^\"']*\bcount\b)[^>]*>"
+                r"\s*(\d+)\s*</span\s*>",
+                body, re.I | re.S,
+            )
+        if not found:
+            found = re.findall(r"[·:]\s*(\d+)", body, re.I)
+        numbers = [int(value) for value in found]
+        if not numbers or len(set(numbers)) != 1:
+            raise StageCounterError("CHIP_VALUE_%s:%d" % (key, len(numbers)))
+        values[key].append(numbers[0])
     result = {}
     for key, found in values.items():
         if len(found) != 1:
