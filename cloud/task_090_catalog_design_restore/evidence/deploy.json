@@ -1,0 +1,562 @@
+{
+  "bot_restarted": true,
+  "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+  "errors": [],
+  "install": {
+    "backup_root": "/home/Carix/rezerv_publikacii/TASK090/20260830T030214Z-62b2494e8bc6",
+    "catalog_sha256": "895058b520e016a71c51fbb3118f7275ccbc102ab29c6106f58859b9fc8bfbf0",
+    "catalogs": {
+      "/home/Carix/site/katalog.html": {
+        "article_cards": 13,
+        "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+        "counts": {
+          "all": 13,
+          "georgia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "sea": 7
+        },
+        "errors": [],
+        "filters": {
+          "all": 1,
+          "georgia": 1,
+          "kiev": 1,
+          "korea": 1,
+          "sea": 1
+        },
+        "ids": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0003",
+          "UA-0004"
+        ],
+        "shell_fingerprint": "10608f48b5fbe798e6595f2ee1fd8ab0d4740967643aca52a078c53d5c31b831",
+        "status": "PASS"
+      },
+      "/home/Carix/video/katalog.html": {
+        "article_cards": 13,
+        "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+        "counts": {
+          "all": 13,
+          "georgia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "sea": 7
+        },
+        "errors": [],
+        "filters": {
+          "all": 1,
+          "georgia": 1,
+          "kiev": 1,
+          "korea": 1,
+          "sea": 1
+        },
+        "ids": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0003",
+          "UA-0004"
+        ],
+        "shell_fingerprint": "10608f48b5fbe798e6595f2ee1fd8ab0d4740967643aca52a078c53d5c31b831",
+        "status": "PASS"
+      }
+    },
+    "completed_at_utc": "2026-08-30T03:02:15.399272+00:00",
+    "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+    "crm_write": false,
+    "db_after": {
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "file_sha256": "d9b215cc8c74a8a446874f29dfab06e0dda80e7926cfb0e63b7b2abdec2168c8",
+      "identifiers": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013"
+      ],
+      "quick_check": "ok",
+      "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76"
+    },
+    "db_before": {
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "file_sha256": "d9b215cc8c74a8a446874f29dfab06e0dda80e7926cfb0e63b7b2abdec2168c8",
+      "identifiers": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013"
+      ],
+      "quick_check": "ok",
+      "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76"
+    },
+    "errors": [],
+    "golden_source": {
+      "article_cards": 10,
+      "exact_known_good": true,
+      "path": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/backups/20260829T080211Z-5e9e91b7cbdc/video/katalog.html",
+      "rejected_candidates": 9,
+      "sha256": "34fb82b9ec1bc66b76fccbbaad9b440d01ea4d60fe5c195954e88251442ecdd0",
+      "shell_fingerprint": "10608f48b5fbe798e6595f2ee1fd8ab0d4740967643aca52a078c53d5c31b831",
+      "valid_candidates": 27
+    },
+    "production_write": true,
+    "protected_pages_changed": 0,
+    "rollback": null,
+    "runtime_llm_tokens": 0,
+    "shadow": {
+      "candidate_sha256": "895058b520e016a71c51fbb3118f7275ccbc102ab29c6106f58859b9fc8bfbf0",
+      "current": {
+        "article_cards": 13,
+        "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+        "counts": {
+          "all": 13,
+          "georgia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "sea": 7
+        },
+        "errors": [],
+        "filters": {
+          "all": 1,
+          "georgia": 1,
+          "kiev": 1,
+          "korea": 1,
+          "sea": 1
+        },
+        "ids": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0003",
+          "UA-0004"
+        ],
+        "shell_fingerprint": "10608f48b5fbe798e6595f2ee1fd8ab0d4740967643aca52a078c53d5c31b831",
+        "status": "PASS"
+      },
+      "future_card": {
+        "article_cards": 14,
+        "shell_fingerprint": "10608f48b5fbe798e6595f2ee1fd8ab0d4740967643aca52a078c53d5c31b831",
+        "status": "PASS"
+      },
+      "idempotent_runs": 10,
+      "status": "PASS"
+    },
+    "source_golden_path": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/backups/20260829T080211Z-5e9e91b7cbdc/video/katalog.html",
+    "status": "PASS"
+  },
+  "installed": true,
+  "postcheck_delayed": {
+    "catalog_sha256": "895058b520e016a71c51fbb3118f7275ccbc102ab29c6106f58859b9fc8bfbf0",
+    "catalogs": {
+      "/home/Carix/site/katalog.html": {
+        "article_cards": 13,
+        "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+        "counts": {
+          "all": 13,
+          "georgia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "sea": 7
+        },
+        "errors": [],
+        "filters": {
+          "all": 1,
+          "georgia": 1,
+          "kiev": 1,
+          "korea": 1,
+          "sea": 1
+        },
+        "ids": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0003",
+          "UA-0004"
+        ],
+        "shell_fingerprint": "10608f48b5fbe798e6595f2ee1fd8ab0d4740967643aca52a078c53d5c31b831",
+        "status": "PASS"
+      },
+      "/home/Carix/video/katalog.html": {
+        "article_cards": 13,
+        "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+        "counts": {
+          "all": 13,
+          "georgia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "sea": 7
+        },
+        "errors": [],
+        "filters": {
+          "all": 1,
+          "georgia": 1,
+          "kiev": 1,
+          "korea": 1,
+          "sea": 1
+        },
+        "ids": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0003",
+          "UA-0004"
+        ],
+        "shell_fingerprint": "10608f48b5fbe798e6595f2ee1fd8ab0d4740967643aca52a078c53d5c31b831",
+        "status": "PASS"
+      }
+    },
+    "completed_at_utc": "2026-08-30T03:08:13.056393+00:00",
+    "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+    "crm_write": false,
+    "database": {
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "file_sha256": "d9b215cc8c74a8a446874f29dfab06e0dda80e7926cfb0e63b7b2abdec2168c8",
+      "identifiers": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013"
+      ],
+      "quick_check": "ok",
+      "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76"
+    },
+    "errors": [],
+    "golden_sha256": "34fb82b9ec1bc66b76fccbbaad9b440d01ea4d60fe5c195954e88251442ecdd0",
+    "markers": {
+      "master": 1,
+      "publish_guard": 1
+    },
+    "production_write": false,
+    "read_only": true,
+    "runtime_llm_tokens": 0,
+    "status": "PASS"
+  },
+  "postcheck_immediate": {
+    "catalog_sha256": "895058b520e016a71c51fbb3118f7275ccbc102ab29c6106f58859b9fc8bfbf0",
+    "catalogs": {
+      "/home/Carix/site/katalog.html": {
+        "article_cards": 13,
+        "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+        "counts": {
+          "all": 13,
+          "georgia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "sea": 7
+        },
+        "errors": [],
+        "filters": {
+          "all": 1,
+          "georgia": 1,
+          "kiev": 1,
+          "korea": 1,
+          "sea": 1
+        },
+        "ids": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0003",
+          "UA-0004"
+        ],
+        "shell_fingerprint": "10608f48b5fbe798e6595f2ee1fd8ab0d4740967643aca52a078c53d5c31b831",
+        "status": "PASS"
+      },
+      "/home/Carix/video/katalog.html": {
+        "article_cards": 13,
+        "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+        "counts": {
+          "all": 13,
+          "georgia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "sea": 7
+        },
+        "errors": [],
+        "filters": {
+          "all": 1,
+          "georgia": 1,
+          "kiev": 1,
+          "korea": 1,
+          "sea": 1
+        },
+        "ids": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0003",
+          "UA-0004"
+        ],
+        "shell_fingerprint": "10608f48b5fbe798e6595f2ee1fd8ab0d4740967643aca52a078c53d5c31b831",
+        "status": "PASS"
+      }
+    },
+    "completed_at_utc": "2026-08-30T03:05:21.685854+00:00",
+    "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+    "crm_write": false,
+    "database": {
+      "counts": {
+        "all": 13,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 2,
+        "sea": 7
+      },
+      "file_sha256": "d9b215cc8c74a8a446874f29dfab06e0dda80e7926cfb0e63b7b2abdec2168c8",
+      "identifiers": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013"
+      ],
+      "quick_check": "ok",
+      "rows_sha256": "2f02464452a2ca6d7540e3536960f24312e130157921b5ae70361e0e0f4f4f76"
+    },
+    "errors": [],
+    "golden_sha256": "34fb82b9ec1bc66b76fccbbaad9b440d01ea4d60fe5c195954e88251442ecdd0",
+    "markers": {
+      "master": 1,
+      "publish_guard": 1
+    },
+    "production_write": false,
+    "read_only": true,
+    "runtime_llm_tokens": 0,
+    "status": "PASS"
+  },
+  "public": {
+    "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+    "errors": [],
+    "http_methods": [
+      "GET"
+    ],
+    "production_write": false,
+    "rounds": [
+      {
+        "article_cards": 13,
+        "bytes": 43181,
+        "checks": {
+          "article_cards_13": true,
+          "canonical_path": true,
+          "catalog_result": true,
+          "filters_once": true,
+          "footer": true,
+          "http_200": true,
+          "nav": true,
+          "ru_ua": true,
+          "stage_counts": true,
+          "ua0012_once": true,
+          "ua0013_once": true,
+          "unique_ids_13": true,
+          "whatsapp": true
+        },
+        "effective_path": "/video/katalog.html",
+        "errors": [],
+        "filters": {
+          "all": 1,
+          "georgia": 1,
+          "kiev": 1,
+          "korea": 1,
+          "sea": 1
+        },
+        "identifiers": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0003",
+          "UA-0004"
+        ],
+        "label": "immediate",
+        "sha256": "895058b520e016a71c51fbb3118f7275ccbc102ab29c6106f58859b9fc8bfbf0",
+        "stage_counts": {
+          "all": 13,
+          "georgia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "sea": 7
+        },
+        "status": "PASS",
+        "status_code": 200
+      },
+      {
+        "article_cards": 13,
+        "bytes": 43181,
+        "checks": {
+          "article_cards_13": true,
+          "canonical_path": true,
+          "catalog_result": true,
+          "filters_once": true,
+          "footer": true,
+          "http_200": true,
+          "nav": true,
+          "ru_ua": true,
+          "stage_counts": true,
+          "ua0012_once": true,
+          "ua0013_once": true,
+          "unique_ids_13": true,
+          "whatsapp": true
+        },
+        "effective_path": "/video/katalog.html",
+        "errors": [],
+        "filters": {
+          "all": 1,
+          "georgia": 1,
+          "kiev": 1,
+          "korea": 1,
+          "sea": 1
+        },
+        "identifiers": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0003",
+          "UA-0004"
+        ],
+        "label": "delayed-1",
+        "sha256": "895058b520e016a71c51fbb3118f7275ccbc102ab29c6106f58859b9fc8bfbf0",
+        "stage_counts": {
+          "all": 13,
+          "georgia": 1,
+          "kiev": 3,
+          "korea": 2,
+          "sea": 7
+        },
+        "status": "PASS",
+        "status_code": 200
+      }
+    ],
+    "status": "PASS"
+  },
+  "rollback": null,
+  "service": {
+    "restart_accepted": true,
+    "task_id": 266084
+  },
+  "status": "PASS"
+}
