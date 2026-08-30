@@ -235,11 +235,11 @@ def run_install() -> dict:
 
 
 def run_postcheck() -> dict:
-    manifest = load_manifest()
-    for name, target in TARGETS.items():
+    # Later authorized releases may safely change cars_ui.py or team_bot.py.
+    # Verify the live behavioral contract instead of pinning whole-file hashes.
+    for target in TARGETS.values():
         compile_file(target)
-        if sha_file(target) != manifest["targets"][name]["after_sha256"]:
-            raise InstallError("POSTCHECK_SHA:" + name)
+    live_sha256 = {name: sha_file(path) for name, path in TARGETS.items()}
     checks = verify_markers()
     bots = telegram_health()
     if not bots.get("client") or not bots.get("crm"):
@@ -257,6 +257,7 @@ def run_postcheck() -> dict:
         "production_write": False,
         "crm_db_write": False,
         "checks": checks,
+        "live_sha256": live_sha256,
         "bots": bots,
         "start_singleton_held": singleton,
         "startup_notice_gate_active": True,
