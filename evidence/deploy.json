@@ -1,18 +1,18 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
-  "generated_at_utc": "2026-08-31T06:23:36.234303+00:00",
+  "generated_at_utc": "2026-08-31T07:02:48.188837+00:00",
   "github_comment_published": false,
   "issue_35_closed": false,
   "issue_35_ready_to_close": false,
   "newer_fail_observed": true,
   "production_errors": [
-    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_PROCESS_FAIL:UA-0001:h_transaction_guard.py\\\", line 544, in publish_batch\\n    return _publish_locked(base_publish, list(codes), proba=proba)\\n  File \\\"/home/Carix/publish_transaction_guard.py\\\", line 476, in _publish_locked\\n    snapshot = Snapshot(codes)\\n  File \\\"/home/Carix/publish_transaction_guard.py\\\", line 177, in __init__\\n    _atomic(target, data, path.stat().st_mode & 0o777)\\n  File \\\"/home/Carix/publish_transaction_guard.py\\\", line 69, in _atomic\\n    os.fsync(handle.fileno())\\nOSError: [Errno 122] Disk quota exceeded\\n\"]"
+    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_BATCH_FAIL:Публикация отменена: BASE_PUBLISH_FAILED:UA-0001:Публикация отменена при записи (PUBLICATION BLOCKED UA-0001: VIN Guard blocks != 1; VIN buttons != 1; CarHistory target != 1; video count mismatch). Выполнен откат.. Выполнен полный откат.\"]"
   ],
   "production_status": "BLOCKED",
   "status": "FAIL",
   "task_id": "task_099",
   "visual_errors": [],
   "visual_status": "NOT_RUN",
-  "workflow_run_id": "33362686155",
-  "workflow_sha": "c94bd1304ee2146c0fef4013547507c581a3c03b"
+  "workflow_run_id": "33366117085",
+  "workflow_sha": "4f0d480e319074dd10c12a9118e83a50c2f2f0a4"
 }

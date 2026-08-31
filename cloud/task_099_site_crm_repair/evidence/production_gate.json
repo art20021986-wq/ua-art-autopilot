@@ -1,423 +1,241 @@
 {
-  "audit_finished_at_utc": "2026-08-31T05:30:27Z",
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "errors": [
-    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_PROCESS_FAIL:UA-0001:h_transaction_guard.py\\\", line 544, in publish_batch\\n    return _publish_locked(base_publish, list(codes), proba=proba)\\n  File \\\"/home/Carix/publish_transaction_guard.py\\\", line 476, in _publish_locked\\n    snapshot = Snapshot(codes)\\n  File \\\"/home/Carix/publish_transaction_guard.py\\\", line 177, in __init__\\n    _atomic(target, data, path.stat().st_mode & 0o777)\\n  File \\\"/home/Carix/publish_transaction_guard.py\\\", line 69, in _atomic\\n    os.fsync(handle.fileno())\\nOSError: [Errno 122] Disk quota exceeded\\n\"]"
+    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_BATCH_FAIL:Публикация отменена: BASE_PUBLISH_FAILED:UA-0001:Публикация отменена при записи (PUBLICATION BLOCKED UA-0001: VIN Guard blocks != 1; VIN buttons != 1; CarHistory target != 1; video count mismatch). Выполнен откат.. Выполнен полный откат.\"]"
   ],
-  "finished_at_utc": "2026-08-31T06:23:36Z",
+  "finished_at_utc": "2026-08-31T07:02:48Z",
   "github_comment_published": false,
   "install": {
     "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
     "errors": [
-      "Blocked:PUBLISH_PROCESS_FAIL:UA-0001:h_transaction_guard.py\", line 544, in publish_batch\n    return _publish_locked(base_publish, list(codes), proba=proba)\n  File \"/home/Carix/publish_transaction_guard.py\", line 476, in _publish_locked\n    snapshot = Snapshot(codes)\n  File \"/home/Carix/publish_transaction_guard.py\", line 177, in __init__\n    _atomic(target, data, path.stat().st_mode & 0o777)\n  File \"/home/Carix/publish_transaction_guard.py\", line 69, in _atomic\n    os.fsync(handle.fileno())\nOSError: [Errno 122] Disk quota exceeded\n"
+      "Blocked:PUBLISH_BATCH_FAIL:Публикация отменена: BASE_PUBLISH_FAILED:UA-0001:Публикация отменена при записи (PUBLICATION BLOCKED UA-0001: VIN Guard blocks != 1; VIN buttons != 1; CarHistory target != 1; video count mismatch). Выполнен откат.. Выполнен полный откат."
     ],
-    "finished_at_utc": "2026-08-31T06:23:15Z",
-    "mode": "RESUME",
+    "finished_at_utc": "2026-08-31T07:02:17Z",
+    "mode": "INSTALL",
     "status": "FAIL"
   },
   "issue_35_closed": false,
-  "mode": "EXACT_PARTIAL_RECOVERY",
-  "probe": {
-    "backups": [
-      {
-        "bytes": 710368,
-        "files": 72,
-        "manifest": true,
-        "name": "20260831T051610Z",
-        "path": "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/backups/20260831T051610Z"
-      }
-    ],
+  "mode": "OWNER_APPROVED_PRODUCTION",
+  "prerequisites": {
+    "audit_finished_at_utc": "2026-08-31T06:48:14Z",
+    "clean_rollback_schema_detected": true,
     "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
-    "database": {
-      "additional_by_uid": {
-        "UA-0015": 18
+    "source_sha256": {
+      "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
+      "master_card.py": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74",
+      "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a",
+      "publish_transaction_guard.py": "73cfe1a01b6e705587f574c4a1407291941da76dbe15a1fe577f90f874a1644e"
+    },
+    "status": "PASS",
+    "task096_canary_rows": 18,
+    "task096_processed_uids": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ],
+    "task096_run_id": "33354251767"
+  },
+  "shadow": {
+    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "contracts": {
+      "UA-0001": {
+        "additional_rows": 0,
+        "errors": []
       },
-      "additional_ids": [
-        55,
-        56,
-        57,
-        58,
-        59,
-        60,
-        61,
-        62,
-        63,
-        64,
-        65,
-        66,
-        67,
-        68,
-        69,
-        70,
-        71,
-        72
-      ],
-      "cars_count": 16,
-      "cars_ids": [
-        "UA-0001",
-        "UA-0002",
-        "UA-0003",
-        "UA-0004",
-        "UA-0005",
-        "UA-0006",
-        "UA-0007",
-        "UA-0008",
-        "UA-0009",
-        "UA-0010",
-        "UA-0011",
-        "UA-0012",
-        "UA-0013",
-        "UA-0014",
-        "UA-0015",
-        "UA-0016"
-      ],
-      "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
-      "latest_production_run": {
-        "finished_at": "2026-08-31T05:16:12Z",
-        "inserted_count": 18,
-        "processed_uids_json": "[\"UA-0001\", \"UA-0002\", \"UA-0003\", \"UA-0004\", \"UA-0005\", \"UA-0006\", \"UA-0007\", \"UA-0008\", \"UA-0009\", \"UA-0010\", \"UA-0011\", \"UA-0012\", \"UA-0013\", \"UA-0014\", \"UA-0015\", \"UA-0016\"]",
-        "run_id": "production-20260831T051612Z",
-        "source_contract": "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT",
-        "started_at": "2026-08-31T05:16:12Z",
-        "status": "PASS"
+      "UA-0002": {
+        "additional_rows": 0,
+        "errors": []
       },
-      "manual_rows": 0,
-      "price_violations": 0,
-      "quick_check": "ok",
-      "table_counts": {
-        "additional_specification": 18,
-        "additional_specification_audit": 0,
-        "additional_specification_import_runs": 4,
-        "additional_specification_meta": 18,
-        "additional_specification_rejections": 0,
-        "price_denylist": 12,
-        "primary_field_registry": 174
+      "UA-0003": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0004": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0005": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0006": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0007": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0008": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0009": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0010": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0011": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0012": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0013": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0014": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0015": {
+        "additional_rows": 21,
+        "errors": []
+      },
+      "UA-0016": {
+        "additional_rows": 0,
+        "errors": []
       }
     },
-    "disk": {
-      "free_bytes": 1164910264320,
-      "total_bytes": 6340085809152
-    },
-    "expected_live": {
-      "audit_finished_at_utc": "2026-08-31T05:10:55Z",
-      "clean_rollback_schema_detected": true,
-      "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "finished_at_utc": "2026-08-31T06:58:15Z",
+    "gate": {
+      "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "clean_rollback_schema": [
+        "primary_field_registry",
+        "price_denylist",
+        "additional_specification",
+        "additional_specification_meta",
+        "additional_specification_rejections",
+        "additional_specification_audit",
+        "additional_specification_import_runs"
+      ],
+      "residual_data_counts": {
+        "additional_specification": 0,
+        "additional_specification_audit": 0,
+        "additional_specification_meta": 0,
+        "additional_specification_rejections": 0
+      },
+      "row_count": 16,
       "source_sha256": {
         "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
         "master_card.py": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74",
-        "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
-      },
-      "status": "PASS",
-      "task096_canary_rows": 18,
-      "task096_processed_uids": [
-        "UA-0001",
-        "UA-0002",
-        "UA-0003",
-        "UA-0004",
-        "UA-0005",
-        "UA-0006",
-        "UA-0007",
-        "UA-0008",
-        "UA-0009",
-        "UA-0010",
-        "UA-0011",
-        "UA-0012",
-        "UA-0013",
-        "UA-0014",
-        "UA-0015",
-        "UA-0016"
-      ],
-      "task096_run_id": "33354251767"
-    },
-    "finished_at_utc": "2026-08-31T06:16:11Z",
-    "helper_sha256": "5dc38c74fd28cbd18317ea42f2df180451a389d943421430ed0633542c79a2b2",
-    "lock_free": true,
-    "mode": "PROBE",
-    "public": {
-      "UA-0001": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "b78b366dc12c05ba775e0597d29fc8c93c9082dfb8e5db113e5f74d6809726d7"
-      },
-      "UA-0002": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "0f552c1fb7b36fdb1e886044dac7dc6f4ddd845fad8b2c9b9b6c0a586f058abb"
-      },
-      "UA-0003": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "711c0743a2d3ab3560d860e0f914c3efc1fa48bdf3860fc4777e5e92ac15425c"
-      },
-      "UA-0004": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "8fdcaeb286ec4a35330ebae351fd42f88a1e5af063d9e8e759ba23afe14c14ce"
-      },
-      "UA-0005": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "4fa42a981006ba67c93a96250a9109d1e23e0250bba72d097b435d85affdeb5b"
-      },
-      "UA-0006": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "5a186533f479d74534130e9f2e1da12e221515c39c99cdaa0b8ca0f55c2a798b"
-      },
-      "UA-0007": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "aab60dc7c2fb2500e758ba4b15a0fbc846e86cb492f56bff6b2f2f99880f0d8d"
-      },
-      "UA-0008": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "8bfcd7fa3107e14067e6e7403ce452a5ac97a4c0d8cad2ec10300c07641f943a"
-      },
-      "UA-0009": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "2c3bfc8cc2db384e2df5c9227316e710673af9cfd76704036339362c34c51c92"
-      },
-      "UA-0010": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "aaaa96c5b5cecbe6441cc28786fac85636e23e18ff1c56e442d3a89b3859e76c"
-      },
-      "UA-0011": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "2d94067c2dea2ab990102188a8a9e90e08c8bd1c1f99f674231b930cfedf265e"
-      },
-      "UA-0012": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "7edcbc2a4ad44b30ddb42855cf02fa6a667dcbc5b4803f69bf97a8a10365a8f7"
-      },
-      "UA-0013": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "b72b385a8be6676bc290e0d9551de6c3c31bef9f0e3549956f92fa1e54e4cacd"
-      },
-      "UA-0014": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "caee211f8562c5353ef62af393c825422a1ca4c51f9d437920a56cd9f7d6df43"
-      },
-      "UA-0015": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "0d1d577f69c06f7b0e19b6efc1c8ed26aac07f86b27a9b8297bba5916e5b7960"
-      },
-      "UA-0016": {
-        "additional_blocks": 0,
-        "carhistory": true,
-        "clean_vin_blocks": 0,
-        "sha256": "97ad03a740c20f1178646b5b67312a8bf4f6e732e855001eccb6b25669996202"
+        "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a",
+        "publish_transaction_guard.py": "73cfe1a01b6e705587f574c4a1407291941da76dbe15a1fe577f90f874a1644e"
       }
     },
-    "shadow": {
-      "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
-      "contracts": {
-        "UA-0001": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0002": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0003": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0004": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0005": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0006": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0007": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0008": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0009": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0010": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0011": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0012": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0013": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0014": {
-          "additional_rows": 0,
-          "errors": []
-        },
-        "UA-0015": {
-          "additional_rows": 18,
-          "errors": []
-        },
-        "UA-0016": {
-          "additional_rows": 0,
-          "errors": []
-        }
-      },
-      "finished_at_utc": "2026-08-31T05:14:15Z",
-      "gate": {
-        "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
-        "clean_rollback_schema": [
-          "primary_field_registry",
-          "price_denylist",
-          "additional_specification",
-          "additional_specification_meta",
-          "additional_specification_rejections",
-          "additional_specification_audit",
-          "additional_specification_import_runs"
-        ],
-        "residual_data_counts": {
-          "additional_specification": 0,
-          "additional_specification_audit": 0,
-          "additional_specification_meta": 0,
-          "additional_specification_rejections": 0
-        },
-        "row_count": 16,
-        "source_sha256": {
-          "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
-          "master_card.py": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74",
-          "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
-        }
-      },
-      "live_crm_write": false,
-      "migration": {
-        "cars_sha256_after": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
-        "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
-        "inserted_count": 18,
-        "inserted_ids": [
-          55,
-          56,
-          57,
-          58,
-          59,
-          60,
-          61,
-          62,
-          63,
-          64,
-          65,
-          66,
-          67,
-          68,
-          69,
-          70,
-          71,
-          72
-        ],
-        "main_fields_changed": false,
-        "per_uid": {
-          "UA-0001": 0,
-          "UA-0002": 0,
-          "UA-0003": 0,
-          "UA-0004": 0,
-          "UA-0005": 0,
-          "UA-0006": 0,
-          "UA-0007": 0,
-          "UA-0008": 0,
-          "UA-0009": 0,
-          "UA-0010": 0,
-          "UA-0011": 0,
-          "UA-0012": 0,
-          "UA-0013": 0,
-          "UA-0014": 0,
-          "UA-0015": 18,
-          "UA-0016": 0
-        },
-        "run_id": "shadow-20260831T051414Z"
-      },
-      "mode": "SHADOW",
-      "patched": {
-        "cars_ui.py": {
-          "after": "0fb6993bb3b9737bbd0e78a7def376ac9c5ba872683af0fe4ce41ddb4c91d8ad",
-          "before": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15"
-        },
-        "master_card.py": {
-          "after": "f933d1f3f722be275459d58e335caec13c58de76a39aafe1189a27e1ddb6910e",
-          "before": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74"
-        },
-        "publikaciya.py": {
-          "after": "19efe385b8d2a6bc167f0f92b87ab435ea935037470d339a17387ad45fd689e1",
-          "before": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
-        }
-      },
-      "production_write": false,
-      "pruned_completed_task099_backups": [
-        "20260831T042110Z:complete"
+    "live_crm_write": false,
+    "migration": {
+      "cars_sha256_after": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "inserted_count": 21,
+      "inserted_ids": [
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
       ],
-      "public_write": false,
-      "status": "PASS",
-      "task096_canary_rows": 18,
-      "task096_processed": [
-        "UA-0001",
-        "UA-0002",
-        "UA-0003",
-        "UA-0004",
-        "UA-0005",
-        "UA-0006",
-        "UA-0007",
-        "UA-0008",
-        "UA-0009",
-        "UA-0010",
-        "UA-0011",
-        "UA-0012",
-        "UA-0013",
-        "UA-0014",
-        "UA-0015",
-        "UA-0016"
-      ]
+      "main_fields_changed": false,
+      "per_uid": {
+        "UA-0001": 0,
+        "UA-0002": 0,
+        "UA-0003": 0,
+        "UA-0004": 0,
+        "UA-0005": 0,
+        "UA-0006": 0,
+        "UA-0007": 0,
+        "UA-0008": 0,
+        "UA-0009": 0,
+        "UA-0010": 0,
+        "UA-0011": 0,
+        "UA-0012": 0,
+        "UA-0013": 0,
+        "UA-0014": 0,
+        "UA-0015": 21,
+        "UA-0016": 0
+      },
+      "run_id": "shadow-20260831T065813Z"
     },
-    "source_sha256": {
-      "cars_ui.py": "0fb6993bb3b9737bbd0e78a7def376ac9c5ba872683af0fe4ce41ddb4c91d8ad",
-      "master_card.py": "f933d1f3f722be275459d58e335caec13c58de76a39aafe1189a27e1ddb6910e",
-      "publikaciya.py": "19efe385b8d2a6bc167f0f92b87ab435ea935037470d339a17387ad45fd689e1"
+    "mode": "SHADOW",
+    "patched": {
+      "cars_ui.py": {
+        "after": "0fb6993bb3b9737bbd0e78a7def376ac9c5ba872683af0fe4ce41ddb4c91d8ad",
+        "before": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15"
+      },
+      "master_card.py": {
+        "after": "f933d1f3f722be275459d58e335caec13c58de76a39aafe1189a27e1ddb6910e",
+        "before": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74"
+      },
+      "publikaciya.py": {
+        "after": "19efe385b8d2a6bc167f0f92b87ab435ea935037470d339a17387ad45fd689e1",
+        "before": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
+      },
+      "publish_transaction_guard.py": {
+        "after": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+        "before": "73cfe1a01b6e705587f574c4a1407291941da76dbe15a1fe577f90f874a1644e"
+      }
     },
-    "status": "PASS"
+    "production_write": false,
+    "pruned_completed_task099_backups": [
+      "20260831T051610Z:complete"
+    ],
+    "public_write": false,
+    "status": "PASS",
+    "task096_canary_rows": 21,
+    "task096_processed": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ]
   },
-  "started_at_utc": "2026-08-31T06:13:33Z",
+  "started_at_utc": "2026-08-31T06:55:06Z",
   "status": "BLOCKED"
 }
