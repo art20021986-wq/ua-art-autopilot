@@ -7,6 +7,7 @@ on:
       - '.github/workflows/task096_recovery10.yml'
       - 'automation/task096_recovery10.py'
       - 'automation/task096_recovery10_schema.py'
+      - 'automation/task096_data_enrichment_controller.py'
       - 'tasks/task_096_recovery10_approval.md'
   workflow_dispatch:
 
@@ -106,7 +107,28 @@ jobs:
           git commit -m 'task096: record scheduled recovery10 evidence'
           for attempt in 1 2 3; do
             git fetch origin main
-            git rebase origin/main || { git rebase --abort; exit 1; }
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              if [ "${#conflicts[@]}" -eq 0 ]; then
+                git rebase --abort || true
+                exit 1
+              fi
+              for path in "${conflicts[@]}"; do
+                case "$path" in
+                  "$out/evidence.json"|"$out/report.md"|"$out/cards_summary.json"|"$out/ua0015_preview.html"|"$out/recovery10_status.json") ;;
+                  *)
+                    echo "Unsafe rebase conflict outside generated evidence: $path"
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              for path in "${conflicts[@]}"; do
+                git checkout --theirs -- "$path"
+                git add -- "$path"
+              done
+              GIT_EDITOR=true git rebase --continue
+            fi
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt * 5))
           done
