@@ -1,10 +1,19 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "errors": [
-    "Blocked:PARALLEL_PRODUCTION_GATE_BEFORE_INSTALL:[{\"id\": 33374677390, \"name\": \"TASK099 Site and CRM Production Completion\", \"status\": \"pending\"}]"
+    "Blocked:INSTALL_FAIL:[\"Blocked:HOME_CRM_CATALOG_MISMATCH:{\\\"catalog\\\": {\\\"counts\\\": {\\\"all\\\": 0, \\\"georgia\\\": 0, \\\"kiev\\\": 0, \\\"korea\\\": 0, \\\"sea\\\": 0}, \\\"ids\\\": []}, \\\"crm\\\": {\\\"all\\\": 16, \\\"georgia\\\": 1, \\\"kiev\\\": 3, \\\"korea\\\": 4, \\\"sea\\\": 8}}\"]"
   ],
-  "finished_at_utc": "2026-08-31T08:52:14Z",
+  "finished_at_utc": "2026-08-31T09:03:40Z",
   "github_comment_published": false,
+  "install": {
+    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "errors": [
+      "Blocked:HOME_CRM_CATALOG_MISMATCH:{\"catalog\": {\"counts\": {\"all\": 0, \"georgia\": 0, \"kiev\": 0, \"korea\": 0, \"sea\": 0}, \"ids\": []}, \"crm\": {\"all\": 16, \"georgia\": 1, \"kiev\": 3, \"korea\": 4, \"sea\": 8}}"
+    ],
+    "finished_at_utc": "2026-08-31T09:03:07Z",
+    "mode": "INSTALL",
+    "status": "FAIL"
+  },
   "issue_35_closed": false,
   "mode": "OWNER_APPROVED_PRODUCTION",
   "prerequisites": {
@@ -325,7 +334,7 @@
         "errors": []
       }
     },
-    "finished_at_utc": "2026-08-31T08:51:14Z",
+    "finished_at_utc": "2026-08-31T08:55:17Z",
     "gate": {
       "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "clean_rollback_schema": [
@@ -401,10 +410,10 @@
           "additional_specification_rejections": 0
         },
         "replaced": true,
-        "snapshot_path": "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/prior_additional_shadow-20260831T085111Z.json",
-        "snapshot_sha256": "ebaaa3a1cf861d0de304b7d4164ee32a9246e0b3667ed70b812161c8c2071da8"
+        "snapshot_path": "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/prior_additional_shadow-20260831T085514Z.json",
+        "snapshot_sha256": "f5fa6d2ebb3b9033d6772422d2ec1bb3743290a7c89caddf5ed7adbe6150713e"
       },
-      "run_id": "shadow-20260831T085111Z",
+      "run_id": "shadow-20260831T085514Z",
       "semantic_duplicates_rejected": 9,
       "semantic_rejections": [
         {
@@ -517,6 +526,6 @@
       "UA-0016"
     ]
   },
-  "started_at_utc": "2026-08-31T08:48:13Z",
+  "started_at_utc": "2026-08-31T08:52:28Z",
   "status": "BLOCKED"
 }
