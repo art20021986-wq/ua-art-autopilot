@@ -99,6 +99,7 @@ def main() -> int:
             "external_paid_vin_cta_present": False,
             "old_sea_wording_present": False,
             "duplicate_description_label_present": False,
+            "description_mileage_matches_operator_crm": True,
             "mobile_widths": [375, 390, 430],
             "desktop_width": 1440,
             "immediate_and_delayed": True,

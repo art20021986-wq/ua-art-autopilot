@@ -52,6 +52,11 @@ UNIT_ALIASES = {
     "l": ("l", "л"),
     "л": ("l", "л"),
 }
+SEMANTIC_LABEL_GENERIC_TOKENS = {
+    "auto", "car", "vehicle", "body", "overall",
+    "авто", "автомобиль", "автомобиля", "машина", "машины",
+    "общий", "общая", "общее", "габаритный", "габаритная",
+}
 START = "<!--UA099_ADD_SPEC_START-->"
 END = "<!--UA099_ADD_SPEC_END-->"
 VIN_START = "<!--UA099_CLEAN_VIN_START-->"
@@ -265,6 +270,22 @@ def _car_status(uid: str) -> str:
     return str(row[0] or "").strip() if row else ""
 
 
+def _car_mileage(uid: str) -> int | None:
+    if not DB_PATH.is_file():
+        return None
+    with connect(True) as conn:
+        columns = {str(row[1]) for row in conn.execute("PRAGMA table_info(cars)")}
+        if "mileage_km" not in columns:
+            return None
+        row = conn.execute("SELECT mileage_km FROM cars WHERE auto_number=?", (uid,)).fetchone()
+    if not row or row[0] is None:
+        return None
+    try:
+        return max(0, int(float(str(row[0]).replace(" ", "").replace(",", "."))))
+    except (TypeError, ValueError):
+        return None
+
+
 def crm_summary(value: Any) -> str:
     rows = fetch_specs(value, include_hidden=True)
     visible = sum(1 for row in rows if int(row.get("is_visible") or 0) == 1)
@@ -444,6 +465,51 @@ def _remove_duplicate_description_label(source: str) -> str:
     return pattern.sub(r"\1", source, count=1)
 
 
+DESCRIPTION_MILEAGE_RE = re.compile(
+    r"(?P<prefix>\b(?:Пробег|Пробіг)\b[\s:—–-]*)(?P<number>\d(?:[\d\s\u00a0.,]*\d)?)"
+    r"(?P<suffix>\s*км\b)", re.I,
+)
+
+
+def _description_tail(source: str) -> tuple[int, str] | None:
+    marker = re.search(
+        r"<div\s+class=['\"]zag['\"]>\s*(?:Описание|Опис)\s*</div>", source, re.I,
+    )
+    return (marker.end(), source[marker.end():]) if marker else None
+
+
+def _synchronize_description_mileage(source: str, uid: str) -> str:
+    mileage = _car_mileage(uid)
+    tail = _description_tail(source)
+    if mileage is None or not tail:
+        return source
+    start, fragment = tail
+    shown = f"{mileage:,}".replace(",", " ")
+    fragment = DESCRIPTION_MILEAGE_RE.sub(
+        lambda match: match.group("prefix") + shown + match.group("suffix"), fragment,
+    )
+    return source[:start] + fragment
+
+
+def _description_mileages(source: str) -> list[int]:
+    tail = _description_tail(source)
+    if not tail:
+        return []
+    result = []
+    for match in DESCRIPTION_MILEAGE_RE.finditer(tail[1]):
+        digits = re.sub(r"\D", "", match.group("number"))
+        if digits:
+            result.append(int(digits))
+    return result
+
+
+def _semantic_label_signature(value: Any) -> str:
+    words = re.findall(
+        r"[a-zа-яёіїєґ0-9]+", str(value or "").casefold().replace("ё", "е")
+    )
+    return " ".join(sorted(word for word in words if word not in SEMANTIC_LABEL_GENERIC_TOKENS))
+
+
 def _css() -> str:
     return """
 <style id="ua099-additional-spec-style">
@@ -467,6 +533,7 @@ def inject_public_spec(source: str, value: Any) -> str:
     source = re.sub(re.escape(VIN_START) + r"[\s\S]*?" + re.escape(VIN_END), "", source)
     source = _remove_original_vin(source)
     source = _remove_duplicate_description_label(source)
+    source = _synchronize_description_mileage(source, uid)
     source = re.sub(r"\bВ море\b", "На пароме", source, flags=re.I)
     source = source.replace(">Забронировать авто за 500 $<", ">Задаток 500 $<")
     source = source.replace(">Купить авто<", ">Купить<")
@@ -551,6 +618,10 @@ def public_contract_errors(source: str, value: Any) -> list[str]:
         source, re.I,
     ):
         errors.append("duplicate description label")
+    mileage = _car_mileage(uid)
+    description_mileages = _description_mileages(source)
+    if mileage is not None and any(value != mileage for value in description_mileages):
+        errors.append("description mileage differs from operator CRM")
     labels = [
         html.unescape(re.sub(r"<[^>]+>", "", label)).strip()
         for label in re.findall(
@@ -558,10 +629,7 @@ def public_contract_errors(source: str, value: Any) -> list[str]:
             source, re.I,
         )
     ]
-    signatures = [
-        " ".join(sorted(re.findall(r"[a-zа-яёіїєґ0-9]+", label.casefold().replace("ё", "е"))))
-        for label in labels
-    ]
+    signatures = [_semantic_label_signature(label) for label in labels]
     if len(signatures) != len(set(signatures)):
         errors.append("semantic duplicate additional labels")
     if "</html>" not in source.lower():

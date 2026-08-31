@@ -56,6 +56,11 @@ SPEC_UNIT_TOKENS = {
     "mm", "cm", "m", "km", "kg", "l", "kw", "hp", "rpm",
     "мм", "см", "м", "км", "кг", "л", "квт", "лс", "обмин",
 }
+SPEC_GENERIC_TOKENS = {
+    "auto", "car", "vehicle", "body", "overall",
+    "авто", "автомобиль", "автомобиля", "машина", "машины",
+    "общий", "общая", "общее", "габаритный", "габаритная",
+}
 SPEC_KEY_ALIASES = {
     "length": {"length", "overall_length", "vehicle_length", "body_length"},
     "width": {"width", "overall_width", "vehicle_width", "body_width"},
@@ -205,7 +210,10 @@ def sqlite_backup(source: pathlib.Path, target: pathlib.Path) -> None:
 
 def _spec_words(value: Any) -> list[str]:
     words = re.findall(r"[a-zа-яёіїєґ0-9]+", str(value or "").casefold().replace("ё", "е"))
-    return [word for word in words if word not in SPEC_UNIT_TOKENS]
+    return [
+        word for word in words
+        if word not in SPEC_UNIT_TOKENS and word not in SPEC_GENERIC_TOKENS
+    ]
 
 
 def _spec_property_key(item: dict[str, Any]) -> str:
