@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""TASK096 v6: direct sandbox repair without the broken v3 wrapper chain."""
+"""TASK096 v6: direct sandbox repair without the broken v3 wrapper chain.
+Owner-approved sandbox trigger: 2026-09-01.
+"""
 from __future__ import annotations
 import time
 import task096_data_enrichment_controller as ctl
