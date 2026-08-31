@@ -53,4 +53,5 @@ def load_fixed_legacy():
 schema.load_compatible_legacy = load_fixed_legacy
 
 if __name__ == "__main__":
+    # revision 2: explicit trigger after workflow installation
     sys.exit(schema.main())
