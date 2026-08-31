@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """TASK099: fresh GET-only audit of the 16-card CRM and public site.
 
-Run again after any blocked production attempt to attest rollback state before retry.
+Run again after any blocked production attempt to attest rollback state before retry.\nFresh retry audit marker: quota-block recovery v3.
 """
 from __future__ import annotations
 
