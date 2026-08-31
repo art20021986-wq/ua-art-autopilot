@@ -1,10 +1,14 @@
 name: Claude Autopilot
 
 on:
-  # Manual-only while the visible owner directive for UA-0011 is repaired.
-  # This prevents an inferred Korea target from racing the explicit ferry
-  # target and can be re-enabled after the bounded production verification.
   workflow_dispatch:
+  # One-time owner-approved auto-start for TASK 102.
+  # No other task file or repository change can trigger this workflow.
+  push:
+    branches:
+      - main
+    paths:
+      - 'tasks/task_102.start'
 
 permissions:
   contents: write
@@ -27,14 +31,9 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
-          # Leave ten minutes of the job budget for validation, commit and rebase.
           ANTHROPIC_TOTAL_BUDGET_SECONDS: '1500'
           ANTHROPIC_NETWORK_ATTEMPTS: '4'
-          # Sonnet 5 adaptive thinking counts toward max_tokens; TASK 021 reached
-          # the former 64k ceiling before completing its structured deliverables.
           ANTHROPIC_MAX_TOKENS: '128000'
-          # Streaming emits heartbeats during long structured generations; retry
-          # only when the stream itself is silent for two minutes.
           ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
         run: python3 automation/claude_worker.py
       - name: Commit Claude outputs
@@ -48,16 +47,10 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git commit -m 'Claude autopilot: process latest task'
 
-          # Never force-push main. Rebase the generated cloud-only commit onto
-          # the newest main and retry if another safe automation advanced it.
           for attempt in 1 2 3 4 5; do
             echo "Push attempt ${attempt}/5"
             git fetch origin main
             if ! git rebase origin/main; then
-              # Concurrent tasks are allowed to update the two shared status
-              # files. During a rebase, keep the status produced by the task
-              # commit being applied ("theirs"). Any code/content conflict
-              # outside these two exact paths still aborts fail-closed.
               mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
               if [ "${#conflicts[@]}" -eq 0 ]; then
                 echo 'Rebase failed without resolvable conflicts'
