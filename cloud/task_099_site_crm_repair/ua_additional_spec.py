@@ -39,6 +39,12 @@ START = "<!--UA099_ADD_SPEC_START-->"
 END = "<!--UA099_ADD_SPEC_END-->"
 VIN_START = "<!--UA099_CLEAN_VIN_START-->"
 VIN_END = "<!--UA099_CLEAN_VIN_END-->"
+PRIMARY_ACTION_RE = re.compile(
+    r"(?P<open><(?P<tag>a|button|div)\b"
+    r"(?=[^>]*(?:class=['\"][^'\"]*\bkn_kupit\b|data-ua-primary-action(?:=['\"][^'\"]*['\"])?))"
+    r"[^>]*>)(?P<inner>[\s\S]*?)(?P<close></(?P=tag)>)",
+    re.I,
+)
 
 
 def canonical_uid(value: Any) -> str | None:
@@ -319,6 +325,24 @@ def _stage_number(uid: str) -> int:
     return 1
 
 
+def _expected_action(uid: str) -> str:
+    return "Купить" if _stage_number(uid) == 4 else "Задаток 500 $"
+
+
+def _set_primary_action(source: str, expected: str) -> str:
+    return PRIMARY_ACTION_RE.sub(
+        lambda match: match.group("open") + html.escape(expected) + match.group("close"),
+        source,
+    )
+
+
+def _primary_action_texts(source: str) -> list[str]:
+    return [
+        re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", match.group("inner")))).strip()
+        for match in PRIMARY_ACTION_RE.finditer(source)
+    ]
+
+
 def _clean_vin_block(uid: str, stage: int | None = None, videos: int | None = None) -> str:
     vin = _car_vin(uid)
     if not vin:
@@ -389,6 +413,7 @@ def inject_public_spec(source: str, value: Any) -> str:
     source = re.sub(r"\bВ море\b", "На пароме", source, flags=re.I)
     source = source.replace(">Забронировать авто за 500 $<", ">Задаток 500 $<")
     source = source.replace(">Купить авто<", ">Купить<")
+    source = _set_primary_action(source, _expected_action(uid))
     block = render_public_block(uid) + _clean_vin_block(uid, stage, videos)
     source = _insert_before_stage(source, block)
     if "ua099-additional-spec-style" not in source:
@@ -404,13 +429,11 @@ def normalize_diagnostics(source: str, value: Any) -> str:
     if not source or not uid:
         return source
     source = re.sub(r"\bВ море\b", "На пароме", source, flags=re.I)
-    if _car_status(uid) == "ua_arrived":
-        source = source.replace(">Забронировать авто за 500 $<", ">Купить<")
-        source = source.replace(">Задаток 500 $<", ">Купить<")
-        source = source.replace(">Купить авто<", ">Купить<")
-    else:
-        source = source.replace(">Забронировать авто за 500 $<", ">Задаток 500 $<")
-        source = source.replace(">Купить авто<", ">Задаток 500 $<")
+    expected_action = _expected_action(uid)
+    source = source.replace(">Забронировать авто за 500 $<", ">" + expected_action + "<")
+    source = source.replace(">Задаток 500 $<", ">" + expected_action + "<")
+    source = source.replace(">Купить авто<", ">" + expected_action + "<")
+    source = _set_primary_action(source, expected_action)
     if re.search(r"carhistory\.kr", source, re.I):
         source = re.sub(
             r"<a\b[^>]*href=['\"][^'\"]*carhistory\.kr[^'\"]*['\"][^>]*>[\s\S]*?</a>",
@@ -432,6 +455,10 @@ def public_contract_errors(source: str, value: Any) -> list[str]:
         errors.append("external VIN CTA remains")
     if re.search(r"\bВ море\b", source, re.I):
         errors.append("old sea wording remains")
+    expected_action = _expected_action(uid)
+    actions = _primary_action_texts(source)
+    if actions != [expected_action]:
+        errors.append("primary action != 1 exact %s" % expected_action)
     if source.find(START) > source.find(VIN_START) or source.find(VIN_START) < 0:
         errors.append("additional spec/VIN order")
     stage = _contract_marker_span(source, "STAGE")

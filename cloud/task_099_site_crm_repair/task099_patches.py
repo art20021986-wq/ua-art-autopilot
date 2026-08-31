@@ -39,6 +39,7 @@ _UA099_OBSOLETE_VIN_ERRORS = {
     "CarHistory target != 1",
     "VIN copy helper missing",
     "video count mismatch",
+    "SEO068 CTA",
 }
 
 def obrabotat_kartochku(html, kod):

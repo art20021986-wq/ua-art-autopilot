@@ -534,6 +534,7 @@ def synthetic_html(uid: str) -> str:
         "<tr><td class='k'>VIN</td><td>TESTVIN</td></tr></table></div>"
         "<!--UA068-VIN-START--><a href='https://www.carhistory.kr/x'>Проверить VIN</a><!--UA068-VIN-END-->"
         "<!--UA068-STAGE-START--><div data-ua-stage='2'>Путь автомобиля</div><!--UA068-STAGE-END-->"
+        "<a class='dejstvie kn_kupit' href='#'>Устаревший CTA</a>"
         "<a class='mcf-diag-cta' href='%s-diag.html'>Открыть комплексную диагностику</a>"
         "</body></html>" % uid
     )
