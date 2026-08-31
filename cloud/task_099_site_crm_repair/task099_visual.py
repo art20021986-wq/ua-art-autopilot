@@ -67,11 +67,19 @@ async ({kind, expectedId, settleImages}) => {
   scrollTo(0, 0); await new Promise(r => setTimeout(r, 500));
   document.querySelectorAll('details.ua-additional-spec').forEach(el => { el.open = true; });
   const images = [...document.images];
+  const contentImages = images.filter(img => {
+    const candidates = ['src','srcset','data-src','data-srcset','data-lazy-src','data-original']
+      .map(name => (img.getAttribute(name) || '').trim());
+    const pictureSource = img.parentElement?.tagName === 'PICTURE' &&
+      [...img.parentElement.querySelectorAll('source')].some(source =>
+        Boolean((source.getAttribute('srcset') || source.getAttribute('data-srcset') || '').trim()));
+    return candidates.some(Boolean) || Boolean(pictureSource);
+  });
   const horizontalGalleries = [...document.querySelectorAll('.lenta,.mini_r,.catalog-grid,.gal')]
     .filter(el => el.scrollWidth > el.clientWidth + 1);
   let galleriesExercised = 0;
   if (settleImages) {
-    images.forEach(img => { img.loading = 'eager'; });
+    contentImages.forEach(img => { img.loading = 'eager'; });
     for (const gallery of horizontalGalleries) {
       const previous = gallery.scrollLeft;
       gallery.scrollLeft = gallery.scrollWidth;
@@ -79,7 +87,7 @@ async ({kind, expectedId, settleImages}) => {
       gallery.scrollLeft = previous;
       galleriesExercised += 1;
     }
-    const waits = images.map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
+    const waits = contentImages.map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
       let done = false;
       const finish = () => { if (!done) { done = true; resolve(); } };
       img.addEventListener('load', finish, {once:true});
@@ -88,8 +96,8 @@ async ({kind, expectedId, settleImages}) => {
     }));
     await Promise.all(waits);
   }
-  const pending = images.filter(img => !img.complete).map(img => img.currentSrc || img.src);
-  const broken = images.filter(img => img.complete && img.naturalWidth < 1).map(img => img.currentSrc || img.src);
+  const pending = contentImages.filter(img => !img.complete).map(img => img.currentSrc || img.src);
+  const broken = contentImages.filter(img => img.complete && img.naturalWidth < 1).map(img => img.currentSrc || img.src);
   if (settleImages) broken.push(...pending);
   const hrefIds = [...document.querySelectorAll('a[href]')].map(a => {
     const m = (a.getAttribute('href') || '').match(/(?:^|\/)(UA-[0-9]{4})\.html(?:[?#].*)?$/i);
@@ -121,7 +129,8 @@ async ({kind, expectedId, settleImages}) => {
     viewportWidth: innerWidth, documentWidth: document.documentElement.scrollWidth,
     bodyWidth: document.body ? document.body.scrollWidth : 0,
     horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 1 || (document.body && document.body.scrollWidth > innerWidth + 1),
-    imageCount: images.length, brokenImages: [...new Set(broken)], pendingImages: pending,
+    imageCount: contentImages.length, ignoredEmptyImagePlaceholders: images.length - contentImages.length,
+    brokenImages: [...new Set(broken)], pendingImages: pending,
     horizontalGalleryCount: horizontalGalleries.length, galleriesExercised,
     uniqueIds, visibleIds,
     homeStageCounts, homeStageVisible,
