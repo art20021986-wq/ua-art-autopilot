@@ -1,16 +1,16 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "errors": [
-    "Blocked:INSTALL_FAIL:[\"Blocked:HOME_CRM_CATALOG_MISMATCH:{\\\"catalog\\\": {\\\"counts\\\": {\\\"all\\\": 0, \\\"georgia\\\": 0, \\\"kiev\\\": 0, \\\"korea\\\": 0, \\\"sea\\\": 0}, \\\"ids\\\": []}, \\\"crm\\\": {\\\"all\\\": 16, \\\"georgia\\\": 1, \\\"kiev\\\": 3, \\\"korea\\\": 4, \\\"sea\\\": 8}}\"]"
+    "Blocked:INSTALL_FAIL:[\"HomeCounterError:STAGE_CARD_SET:{}\"]"
   ],
-  "finished_at_utc": "2026-08-31T09:03:40Z",
+  "finished_at_utc": "2026-08-31T09:15:18Z",
   "github_comment_published": false,
   "install": {
     "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
     "errors": [
-      "Blocked:HOME_CRM_CATALOG_MISMATCH:{\"catalog\": {\"counts\": {\"all\": 0, \"georgia\": 0, \"kiev\": 0, \"korea\": 0, \"sea\": 0}, \"ids\": []}, \"crm\": {\"all\": 16, \"georgia\": 1, \"kiev\": 3, \"korea\": 4, \"sea\": 8}}"
+      "HomeCounterError:STAGE_CARD_SET:{}"
     ],
-    "finished_at_utc": "2026-08-31T09:03:07Z",
+    "finished_at_utc": "2026-08-31T09:14:48Z",
     "mode": "INSTALL",
     "status": "FAIL"
   },
@@ -334,7 +334,7 @@
         "errors": []
       }
     },
-    "finished_at_utc": "2026-08-31T08:55:17Z",
+    "finished_at_utc": "2026-08-31T09:09:16Z",
     "gate": {
       "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "clean_rollback_schema": [
@@ -369,18 +369,18 @@
       "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "inserted_count": 12,
       "inserted_ids": [
-        178,
-        179,
-        180,
-        181,
-        182,
-        183,
-        184,
-        185,
-        186,
-        187,
-        188,
-        189
+        190,
+        191,
+        192,
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201
       ],
       "main_fields_changed": false,
       "per_uid": {
@@ -410,10 +410,10 @@
           "additional_specification_rejections": 0
         },
         "replaced": true,
-        "snapshot_path": "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/prior_additional_shadow-20260831T085514Z.json",
-        "snapshot_sha256": "f5fa6d2ebb3b9033d6772422d2ec1bb3743290a7c89caddf5ed7adbe6150713e"
+        "snapshot_path": "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/prior_additional_shadow-20260831T090913Z.json",
+        "snapshot_sha256": "265b803056e6b96c67d65985fb04f07c70033b222eae92504371d50a9b45b1c0"
       },
-      "run_id": "shadow-20260831T085514Z",
+      "run_id": "shadow-20260831T090913Z",
       "semantic_duplicates_rejected": 9,
       "semantic_rejections": [
         {
@@ -502,7 +502,9 @@
       }
     },
     "production_write": false,
-    "pruned_completed_task099_backups": [],
+    "pruned_completed_task099_backups": [
+      "20260831T085912Z:complete"
+    ],
     "public_write": false,
     "status": "PASS",
     "task096_canary_rows": 21,
@@ -526,6 +528,6 @@
       "UA-0016"
     ]
   },
-  "started_at_utc": "2026-08-31T08:52:28Z",
+  "started_at_utc": "2026-08-31T09:06:33Z",
   "status": "BLOCKED"
 }
