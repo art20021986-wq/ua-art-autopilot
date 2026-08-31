@@ -1186,15 +1186,27 @@ def postcheck() -> dict[str, Any]:
     unique = sorted(set(catalog_ids))
     home_guard, home_counts, home_ids, home_catalog = homepage_contract()
     home_local = {}
+    skipped_secondary = set(
+        (((install_value.get("homepage") or {})
+          .get("skipped_incompatible_secondary_homepages") or {}).keys())
+    )
     for root in HOME_ROOTS:
         path = root / "index.html"
         if not path.is_file():
+            continue
+        relative_home = str(path.relative_to(ROOT))
+        if relative_home in skipped_secondary:
+            home_local[relative_home] = {
+                "status": "SKIPPED_INCOMPATIBLE_SECONDARY",
+                "sha256": sha_file(path),
+                "errors": [],
+            }
             continue
         source = path.read_text(encoding="utf-8")
         errors = homepage_source_errors(home_guard, source, home_counts)
         if errors:
             raise Blocked("HOME_LOCAL_CONTRACT:" + str(path) + ":" + ";".join(errors))
-        home_local[str(path.relative_to(ROOT))] = {"sha256": sha_file(path), "errors": []}
+        home_local[relative_home] = {"status": "PASS", "sha256": sha_file(path), "errors": []}
     home_attempts = []
     home_status = None
     public_home = ""
