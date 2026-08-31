@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
-"""TASK 096 final sandbox recovery.
-
-Fixes a false-positive UA0015_PREVIEW_LEAK caused by the word `margin` in
-CSS while preserving an explicit semantic guard against internal margin /
-markup data in extracted candidate facts.
-"""
+"""TASK 096 final sandbox recovery with sanitized transport diagnostics."""
+import json
 import re
 import sys
 import task096_recovery10_schema as schema
@@ -24,6 +20,43 @@ def _semantic_margin_guard(candidate):
             raise RuntimeError("TASK096_INTERNAL_MARGIN_FORBIDDEN")
 
 
+def _transport_error_code(exc):
+    # Never log API responses, credentials, source content, or arbitrary text.
+    prefix = str(exc).partition(":")[0]
+    if re.fullmatch(r"PYTHONANYWHERE_HTTP_[1-5][0-9]{2}", prefix):
+        return prefix
+    allowed = {
+        "PYTHONANYWHERE_NETWORK_ERROR", "PYTHONANYWHERE_RESPONSE_TOO_LARGE",
+        "REMOTE_PATH_NOT_ALLOWED", "REMOTE_FILE_MISSING", "UPLOAD_FAILED",
+        "UPLOAD_READBACK_MISMATCH",
+    }
+    return prefix if prefix in allowed else "UNCLASSIFIED_TRANSPORT_ERROR"
+
+
+def _install_transport_diagnostics(mod):
+    original_upload = mod.PythonAnywhereAPI.upload
+
+    def upload(api, path, data):
+        try:
+            return original_upload(api, path, data)
+        except Exception as exc:
+            event = {
+                "stage": "UPLOAD",
+                "target": "remote_applier" if path == mod.REMOTE_APPLIER else "sandbox_file",
+                "error_code": _transport_error_code(exc),
+                "production_authorized": False,
+            }
+            print("TASK096_TRANSPORT_DIAGNOSTIC " + json.dumps(event, sort_keys=True), flush=True)
+            try:
+                mod.atomic_json(schema.recovery.OUT / "transport_diagnostic.json", event)
+            except Exception:
+                print("TASK096_TRANSPORT_DIAGNOSTIC_SAVE_FAILED", flush=True)
+            # Retain the original error and every integrity/scope guard.
+            raise
+
+    mod.PythonAnywhereAPI.upload = upload
+
+
 def load_fixed_legacy():
     mod = _original_loader()
     # PRICE_RE is also used against the full HTML preview. CSS legitimately
@@ -34,7 +67,7 @@ def load_fixed_legacy():
         cleaned = pattern.replace("|margin|markup", "").replace("margin|markup|", "")
         mod.PRICE_RE = re.compile(cleaned, flags)
 
-    # Preserve the business rule semantically at candidate level.
+    # Preserve the existing business rule at candidate level.
     for name in ("validate_candidate", "validate_ai_candidate", "validate_facts"):
         fn = getattr(mod, name, None)
         if not callable(fn) or getattr(fn, "_task096_margin_wrapped", False):
@@ -47,15 +80,20 @@ def load_fixed_legacy():
             return result
         wrapped._task096_margin_wrapped = True
         setattr(mod, name, wrapped)
+    _install_transport_diagnostics(mod)
     return mod
 
 
-# Install the fixed loader both on the schema module and on the recovery module
-# that actually executes TASK 096.
 schema.load_compatible_legacy = load_fixed_legacy
 schema.recovery.load_legacy = load_fixed_legacy
 
-if __name__ == "__main__":
-    # Run the schema/safety self-test first, then execute the real recovery entrypoint.
+
+def main():
     schema.selftest_actual_schema()
-    sys.exit(schema.recovery.main())
+    if "--selftest" in sys.argv:
+        return 0
+    return schema.recovery.main()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
