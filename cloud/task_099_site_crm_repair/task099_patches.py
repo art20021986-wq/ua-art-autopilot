@@ -333,6 +333,21 @@ def register(app):
 PUBLISH_BLOCK = r'''
 # >>> UA099 PUBLICATION CONTRACT V1
 _UA099_BASE_PROVERIT = proverit
+_UA099_BASE_WRITE = _zapisat_atomarno
+
+def _zapisat_atomarno(put, tekst):
+    import os as _ua099_os
+    import re as _ua099_re
+    name = _ua099_os.path.basename(str(put))
+    match = _ua099_re.search(r"(UA-[0-9]{4})-diag\.html$", name, _ua099_re.I)
+    if match and isinstance(tekst, str):
+        import ua_additional_spec as _ua099_spec
+        uid = match.group(1).upper()
+        tekst = _ua099_spec.normalize_diagnostics(tekst, uid)
+        errors = _ua099_spec.diagnostics_contract_errors(tekst, uid)
+        if errors:
+            raise RuntimeError("UA099_DIAGNOSTICS_WRITE:%s:%s" % (uid, ";".join(errors)))
+    return _UA099_BASE_WRITE(put, tekst)
 
 def proverit(html, kod):
     errors = [item for item in _UA099_BASE_PROVERIT(html, kod)
@@ -455,6 +470,8 @@ def patch_publikaciya(source: str) -> str:
         raise RuntimeError("PUBLISH_VALIDATOR_MISSING")
     if not re.search(r"^def\s+opublikovat\s*\(", source, re.M):
         raise RuntimeError("PUBLISH_ENTRYPOINT_MISSING")
+    if not re.search(r"^def\s+_zapisat_atomarno\s*\(", source, re.M):
+        raise RuntimeError("PUBLISH_WRITER_MISSING")
     return _compiled(source.rstrip() + "\n\n" + PUBLISH_BLOCK + "\n", "publikaciya.py")
 
 
@@ -478,7 +495,8 @@ def selftest() -> None:
     crm_twice = patch_cars_ui(crm_once)
     assert crm_once == crm_twice and crm_once.count(CRM_START) == 1
     sample_publish = ("def proverit(html,kod): return []\n"
-                      "def opublikovat(kod,proba=False): return True,''\n")
+                      "def opublikovat(kod,proba=False): return True,''\n"
+                      "def _zapisat_atomarno(put,tekst): return None\n")
     publish_once = patch_publikaciya(sample_publish)
     publish_twice = patch_publikaciya(publish_once)
     assert publish_once == publish_twice and publish_once.count(PUBLISH_START) == 1

@@ -343,6 +343,31 @@ def _primary_action_texts(source: str) -> list[str]:
     ]
 
 
+def _ensure_diagnostics_action(source: str, uid: str) -> str:
+    expected = _expected_action(uid)
+    source = _set_primary_action(source, expected)
+    if not _primary_action_texts(source):
+        stage = _stage_number(uid)
+        block = (
+            "<div class='blok ua-diagnostics-primary-action'>"
+            "<a class='dejstvie kn_kupit ua-primary-action-v1' "
+            "data-ua-primary-action='1' data-ua-stage-action='%d' "
+            "href='https://t.me/UA_artcompany_LLC_bot?start=kupit_%s'>%s</a></div>"
+            % (stage, html.escape(uid), html.escape(expected))
+        )
+        for anchor in ("</main>", "</body>"):
+            if anchor in source.lower():
+                position = source.lower().rfind(anchor)
+                source = source[:position] + block + source[position:]
+                break
+        else:
+            source += block
+    actions = _primary_action_texts(source)
+    if actions != [expected]:
+        raise RuntimeError("UA099_DIAGNOSTICS_ACTION:%s:%r" % (uid, actions))
+    return source
+
+
 def _clean_vin_block(uid: str, stage: int | None = None, videos: int | None = None) -> str:
     vin = _car_vin(uid)
     if not vin:
@@ -439,7 +464,25 @@ def normalize_diagnostics(source: str, value: Any) -> str:
             r"<a\b[^>]*href=['\"][^'\"]*carhistory\.kr[^'\"]*['\"][^>]*>[\s\S]*?</a>",
             "", source, flags=re.I,
         )
+    source = _ensure_diagnostics_action(source, uid)
+    errors = diagnostics_contract_errors(source, uid)
+    if errors:
+        raise RuntimeError("UA099_DIAGNOSTICS_CONTRACT:%s:%s" % (uid, ";".join(errors)))
     return source
+
+
+def diagnostics_contract_errors(source: str, value: Any) -> list[str]:
+    uid = canonical_uid(value) or str(value)
+    errors = []
+    if _primary_action_texts(source) != [_expected_action(uid)]:
+        errors.append("diagnostics primary action")
+    if re.search(r"carhistory\.kr|Проверить VIN", source, re.I):
+        errors.append("diagnostics external VIN CTA")
+    if re.search(r"\bВ море\b", source, re.I):
+        errors.append("diagnostics old sea wording")
+    if uid not in source or "</html>" not in source.lower():
+        errors.append("diagnostics identity or incomplete HTML")
+    return errors
 
 
 def public_contract_errors(source: str, value: Any) -> list[str]:
