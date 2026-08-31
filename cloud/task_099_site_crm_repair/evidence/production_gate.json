@@ -1,13 +1,11 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
-  "errors": [
-    "Blocked:POSTCHECK_FAIL:[\"Blocked:PUBLIC_CATALOG_16_CONTRACT\"]"
-  ],
-  "finished_at_utc": "2026-08-31T07:57:53Z",
+  "errors": [],
+  "finished_at_utc": "2026-08-31T08:44:11Z",
   "github_comment_published": false,
   "install": {
     "autopublication": false,
-    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/backups/20260831T074815Z",
+    "backup_root": "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/backups/20260831T081312Z",
     "cars_sha256_after": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
     "catalog": {
       "detail": "Страницы, диагностика и оба каталога опубликованы одним проверенным пакетом: UA-0001, UA-0002, UA-0003, UA-0004, UA-0005, UA-0006, UA-0007, UA-0008, UA-0009, UA-0010, UA-0011, UA-0012, UA-0013, UA-0014, UA-0015, UA-0016",
@@ -15,7 +13,7 @@
     },
     "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
     "explicit_republish": true,
-    "finished_at_utc": "2026-08-31T07:50:24Z",
+    "finished_at_utc": "2026-08-31T08:15:33Z",
     "gate": {
       "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "clean_rollback_schema": [
@@ -49,27 +47,27 @@
       "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "inserted_count": 21,
       "inserted_ids": [
-        136,
-        137,
-        138,
-        139,
-        140,
-        141,
-        142,
-        143,
-        144,
-        145,
-        146,
-        147,
-        148,
-        149,
-        150,
-        151,
-        152,
-        153,
-        154,
-        155,
-        156
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177
       ],
       "main_fields_changed": false,
       "per_uid": {
@@ -90,7 +88,7 @@
         "UA-0015": 21,
         "UA-0016": 0
       },
-      "run_id": "production-20260831T074818Z"
+      "run_id": "production-20260831T081314Z"
     },
     "mode": "INSTALL",
     "pages": {
@@ -99,112 +97,112 @@
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "6d0a0e8fd22846951ba159e71c6bfd84cdd94a01f3284dee65bf31374053464b"
+        "sha256": "ccd8d5dfff14295385614856b82213083b22b10ad6aa0567e19251b7baa6c45a"
       },
       "UA-0002": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "e7821f92b7febb3eaa4eccbafa6051551abf5d9a58630d19b792da7edf183e66"
+        "sha256": "d88714db294dfd57114a9f5808f4120a9316cc63b3778ed19ae920455809c997"
       },
       "UA-0003": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "912481e68ce652d03ad2d54bb4838140086afa097c1d29403c0a30686e6ada77"
+        "sha256": "426c6e350ac78d62e107c268dddb68758949085375636663f32b3cd6cc5e72f5"
       },
       "UA-0004": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "32c167554eb10dc0ebc0ec6e5d4fd38926f3d21ce2d03282e248468a0e080258"
+        "sha256": "e67b298a4e648c752f0d3bd2e81009595aeff784ca0cce7fbb6289322d30a2c9"
       },
       "UA-0005": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "388576001d360a80bae56b1a1d0bf46a04fb4f6ff7846526ad81fcd6ebc0f3f6"
+        "sha256": "9bac94e4c9be9757b275366547abfcb0db4f73d47ca7428c13be8239a72b91a7"
       },
       "UA-0006": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "f8d04f96b96ae8cc12fad2fb892ff80ca0814b26061dd8f27c29979c677b5b0f"
+        "sha256": "c6f330e0484e3e9d4f0a657664d9601147323ef69392d16c7213357c39159db3"
       },
       "UA-0007": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "42a80d37338e554a3ee7d3bb8edbfe3fb71d618f7c97a75fd13f8e4801da559a"
+        "sha256": "492e81ada7d6ae99ee2626ec6c541670769b472f99241dd68f27d914dc0c7493"
       },
       "UA-0008": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "ddd96bb4a53d3c6910538e5bb3be04689bc6b5c6ab5f33acad2caaae7d57188e"
+        "sha256": "6e362bb1fb7ab06d98887b2becb60996fe523408a3d59e54f1faec377734dc44"
       },
       "UA-0009": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "86ac2ed8e003e06f46d3e50343366c4598902de4c05c5d089ea1d6d16c728474"
+        "sha256": "6574e43d989e14ea229d5cd45a07870060e8f20502d0e4312bd3c738132cda45"
       },
       "UA-0010": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "e92c9e4d25241f3c156c9c1e934767697eb13b0b41c769abc32de06413edd09f"
+        "sha256": "8e9b258235ee764ca43166f0780e421474b0bd54b0190901dab47346c3996a76"
       },
       "UA-0011": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "11421abc3b3311611f82427dd185d3c6204a8f0f36715e8865fc870f4771de96"
+        "sha256": "328dab8db78949cdf449b711d0bf5237c3c6242711f13cfd266a923804cf368e"
       },
       "UA-0012": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "f9eab86dff1028fc8e365396ff0bdebdb38cc10649375fdf68adb897aba90b10"
+        "sha256": "cab280c75f1cbf6de7e28a567f60ef2b224ad71b2be1ebe25ec0b1315a15cc88"
       },
       "UA-0013": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "70a6c619ab69db3ef71b0ceb3e453bb5970a261299e03ae1343c06ef9a4ec29c"
+        "sha256": "ad7881f68e861b7fd6e688508340e5d6361a0576658eed18ea49bc0da8b6b97d"
       },
       "UA-0014": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "ccd3257354016b640eceab0c8c8d2ce729a16103f472493a6d4d2f90c66d85c9"
+        "sha256": "f31cf4c9277ba6a251eacd0f2155d3c94183f998b8753aee68fe7b04bbaddaa4"
       },
       "UA-0015": {
         "additional_blocks": 1,
         "additional_rows": 21,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "ec54120ce4606cb2c89114e53c22cf992296a94f732ac5c08083e2358730d868"
+        "sha256": "9f153b5a27f02eb545618007ee9572ab89ca81ac458b04e263f90312b3fcdf65"
       },
       "UA-0016": {
         "additional_blocks": 1,
         "additional_rows": 0,
         "clean_vin_blocks": 1,
         "external_vin_cta": false,
-        "sha256": "83404dc0a8423b7cb53c25f6fc0f71f66e718cc1ebfc759d356aad7951585038"
+        "sha256": "cd22c6f883e035c542f124a8eb6d5ab2c5b9f50dce620f7c279182dd7fb6d2fc"
       }
     },
     "patched": {
@@ -228,82 +226,82 @@
     "production_write": true,
     "publisher": [
       {
-        "detail": "Страница UA-0001 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0001.html?v=1788162518",
+        "detail": "Страница UA-0001 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0001.html?v=1788164014",
         "ok": true,
         "uid": "UA-0001"
       },
       {
-        "detail": "Страница UA-0002 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0002.html?v=1788162541",
+        "detail": "Страница UA-0002 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0002.html?v=1788164039",
         "ok": true,
         "uid": "UA-0002"
       },
       {
-        "detail": "Страница UA-0003 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0003.html?v=1788162545",
+        "detail": "Страница UA-0003 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0003.html?v=1788164043",
         "ok": true,
         "uid": "UA-0003"
       },
       {
-        "detail": "Страница UA-0004 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0004.html?v=1788162552",
+        "detail": "Страница UA-0004 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0004.html?v=1788164049",
         "ok": true,
         "uid": "UA-0004"
       },
       {
-        "detail": "Страница UA-0005 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0005.html?v=1788162557",
+        "detail": "Страница UA-0005 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0005.html?v=1788164054",
         "ok": true,
         "uid": "UA-0005"
       },
       {
-        "detail": "Страница UA-0006 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0006.html?v=1788162560",
+        "detail": "Страница UA-0006 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0006.html?v=1788164058",
         "ok": true,
         "uid": "UA-0006"
       },
       {
-        "detail": "Страница UA-0007 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0007.html?v=1788162564",
+        "detail": "Страница UA-0007 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0007.html?v=1788164062",
         "ok": true,
         "uid": "UA-0007"
       },
       {
-        "detail": "Страница UA-0008 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0008.html?v=1788162584",
+        "detail": "Страница UA-0008 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0008.html?v=1788164084",
         "ok": true,
         "uid": "UA-0008"
       },
       {
-        "detail": "Страница UA-0009 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0009.html?v=1788162588",
+        "detail": "Страница UA-0009 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0009.html?v=1788164088",
         "ok": true,
         "uid": "UA-0009"
       },
       {
-        "detail": "Страница UA-0010 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0010.html?v=1788162591",
+        "detail": "Страница UA-0010 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0010.html?v=1788164092",
         "ok": true,
         "uid": "UA-0010"
       },
       {
-        "detail": "Страница UA-0011 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0011.html?v=1788162595",
+        "detail": "Страница UA-0011 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0011.html?v=1788164096",
         "ok": true,
         "uid": "UA-0011"
       },
       {
-        "detail": "Страница UA-0012 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0012.html?v=1788162599",
+        "detail": "Страница UA-0012 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0012.html?v=1788164099",
         "ok": true,
         "uid": "UA-0012"
       },
       {
-        "detail": "Страница UA-0013 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0013.html?v=1788162604",
+        "detail": "Страница UA-0013 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0013.html?v=1788164104",
         "ok": true,
         "uid": "UA-0013"
       },
       {
-        "detail": "Страница UA-0014 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0014.html?v=1788162607",
+        "detail": "Страница UA-0014 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0014.html?v=1788164108",
         "ok": true,
         "uid": "UA-0014"
       },
       {
-        "detail": "Страница UA-0015 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0015.html?v=1788162613",
+        "detail": "Страница UA-0015 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0015.html?v=1788164116",
         "ok": true,
         "uid": "UA-0015"
       },
       {
-        "detail": "Страница UA-0016 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0016.html?v=1788162617",
+        "detail": "Страница UA-0016 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0016.html?v=1788164124",
         "ok": true,
         "uid": "UA-0016"
       }
@@ -312,74 +310,74 @@
       "live_media_removed": false,
       "reclaimed_bytes": 854574,
       "removed": [
-        "rezerv_publikacii/TASK083/20260831T072224Z-d8efd649fa23"
+        "rezerv_publikacii/TASK083/20260831T074828Z-3b79474985fb"
       ]
     },
     "publisher_batch": {
-      "backup_root": "/home/Carix/rezerv_publikacii/TASK083/20260831T074828Z-3b79474985fb",
+      "backup_root": "/home/Carix/rezerv_publikacii/TASK083/20260831T081324Z-eb9e7df618db",
       "base_results": {
         "UA-0001": {
-          "message": "Страница UA-0001 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0001.html?v=1788162518",
+          "message": "Страница UA-0001 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0001.html?v=1788164014",
           "ok": true
         },
         "UA-0002": {
-          "message": "Страница UA-0002 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0002.html?v=1788162541",
+          "message": "Страница UA-0002 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0002.html?v=1788164039",
           "ok": true
         },
         "UA-0003": {
-          "message": "Страница UA-0003 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0003.html?v=1788162545",
+          "message": "Страница UA-0003 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0003.html?v=1788164043",
           "ok": true
         },
         "UA-0004": {
-          "message": "Страница UA-0004 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0004.html?v=1788162552",
+          "message": "Страница UA-0004 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0004.html?v=1788164049",
           "ok": true
         },
         "UA-0005": {
-          "message": "Страница UA-0005 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0005.html?v=1788162557",
+          "message": "Страница UA-0005 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0005.html?v=1788164054",
           "ok": true
         },
         "UA-0006": {
-          "message": "Страница UA-0006 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0006.html?v=1788162560",
+          "message": "Страница UA-0006 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0006.html?v=1788164058",
           "ok": true
         },
         "UA-0007": {
-          "message": "Страница UA-0007 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0007.html?v=1788162564",
+          "message": "Страница UA-0007 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0007.html?v=1788164062",
           "ok": true
         },
         "UA-0008": {
-          "message": "Страница UA-0008 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0008.html?v=1788162584",
+          "message": "Страница UA-0008 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0008.html?v=1788164084",
           "ok": true
         },
         "UA-0009": {
-          "message": "Страница UA-0009 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0009.html?v=1788162588",
+          "message": "Страница UA-0009 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0009.html?v=1788164088",
           "ok": true
         },
         "UA-0010": {
-          "message": "Страница UA-0010 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0010.html?v=1788162591",
+          "message": "Страница UA-0010 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0010.html?v=1788164092",
           "ok": true
         },
         "UA-0011": {
-          "message": "Страница UA-0011 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0011.html?v=1788162595",
+          "message": "Страница UA-0011 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0011.html?v=1788164096",
           "ok": true
         },
         "UA-0012": {
-          "message": "Страница UA-0012 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0012.html?v=1788162599",
+          "message": "Страница UA-0012 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0012.html?v=1788164099",
           "ok": true
         },
         "UA-0013": {
-          "message": "Страница UA-0013 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0013.html?v=1788162604",
+          "message": "Страница UA-0013 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0013.html?v=1788164104",
           "ok": true
         },
         "UA-0014": {
-          "message": "Страница UA-0014 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0014.html?v=1788162607",
+          "message": "Страница UA-0014 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0014.html?v=1788164108",
           "ok": true
         },
         "UA-0015": {
-          "message": "Страница UA-0015 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0015.html?v=1788162613",
+          "message": "Страница UA-0015 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0015.html?v=1788164116",
           "ok": true
         },
         "UA-0016": {
-          "message": "Страница UA-0016 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0016.html?v=1788162617",
+          "message": "Страница UA-0016 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0016.html?v=1788164124",
           "ok": true
         }
       },
@@ -575,22 +573,22 @@
       "published_rows_sha256_before": "3d74693282e8a011145aa566d766bbe0fe38946a5b4d0578b9af1e994c84e64a",
       "rollback": null,
       "staged_diagnostics": {
-        "UA-0001": "29080b45c7fede8789ce2027e268334e4be0a761d08386a390b7ecd19adc9dd9",
-        "UA-0002": "7b12775ad63913727994b2c38bd552823e01eab79e769718a882ea9962074e8d",
-        "UA-0003": "fcaa979c1429cc980a228262aab0cc52885c5700b16350787796f0094e5c2fa6",
-        "UA-0004": "13dbb52df47ab794c6f13dda6230862b02122eb42346cf0cfc42488622f443f3",
-        "UA-0005": "0808fe9a2195f9911e59e01f6dd9574795c5beed0c6fa2306fd74a336f5adec5",
-        "UA-0006": "4c037721811427f24cbc5c9dca280521005fb3efd0054ed6838fa9dc19108733",
-        "UA-0007": "53792a7e3d79fc514d1c638a68d6e4b93d15b682526edfe181c3a26d4f1a8117",
-        "UA-0008": "f952021d8fd3d38d062abb0b216a46fd4426095ce5f81407257487528ae7600d",
-        "UA-0009": "c54dd85b5434f91f02f2b095b43e18e38b8268d0f8dcf8e5523458517182be5e",
-        "UA-0010": "c42d07179ac5a539fc13ce892c724e8057a2ebe0e0df9486df4325b34c725d96",
-        "UA-0011": "9691b74bb930900f6a7181423a61a34c5a3876812b238b06380f769ad5773155",
-        "UA-0012": "abe961eb9393f16b55109bafe2317c45611ebac278c8dd1b3761c045a866883d",
-        "UA-0013": "94b4233ee102fa8b944b874e8cffee87cb99dca6c911922c54d45cb7ac447790",
-        "UA-0014": "2b488780d0026d62a6e2cc7cf08dc3938d479273f5c4cade5e974d142731a596",
-        "UA-0015": "f977e20e291c27c3f89adb1812ad1a3da2b4bcb41806c5711201eddc6e197e1d",
-        "UA-0016": "886a6f887c1d4aa014d05689f5a1af0db7cd99e5ac8a511dca4d47da1da3519d"
+        "UA-0001": "a1cbe7b26390d95f578387db1e17c651a73167b003657ac9d0f53cdb0e9e9492",
+        "UA-0002": "838ed872530bef4c7f0e442374407657df1e300e2b775d9e5de68d964af24a3f",
+        "UA-0003": "726fc35830b0f2b19b7137780e6bd65eac707f330f7b2dc11b41946ae6c68c59",
+        "UA-0004": "3a061f9d550bbcd1c33b0ec50fa50536991827312abe7f74d3319f5331b7b90f",
+        "UA-0005": "3ed71ce2ffac211c2d1a4a09d57639dc3ded307c7c289d76c93e164bbe1aa2b2",
+        "UA-0006": "4ce5aa9e7ca7e890f66e72594472c9c98c99fca276b5baa82444a87cb061c446",
+        "UA-0007": "9ae2088d18dd107d324183b794aa06f6e8a00450f793a832017c2fab1d26e6cf",
+        "UA-0008": "ac229e3700418a878bc3a9178cad76176eed839e5dbf967f8e1a47d980526c3c",
+        "UA-0009": "46e57abba1f9c1efb22699589de89f84e95b121afab0a8c7e6ef7e6e05ba0311",
+        "UA-0010": "0152d279a363412d70568a5ff0f53b9de60159e1856627f31c1723af9be4f797",
+        "UA-0011": "01be94e85e42ac2d11f8fe202b99508680536d143ea0e5522b4eb40742bc51e7",
+        "UA-0012": "0f220eff57fae32d8249c170168cc5c73525fc44d372a9457a47b9b54f814fde",
+        "UA-0013": "df5c5833b60d2ae997551cc30e9b13c41388d4da98a2576326c559e5cf0bd61c",
+        "UA-0014": "90cc8caca1d80912d4032c81b41aed6285bc54a63a0db2533595d0a162685ea3",
+        "UA-0015": "1e6731d539483dfd9d1f275595e0236da1e035e600f874273b48480bb2abf447",
+        "UA-0016": "9f1b84d6672cba4c123c7be16ab49d1703c215322c4567c0f4085ac57182b89e"
       },
       "status": "PASS",
       "verification": {
@@ -680,22 +678,22 @@
             "category": "gruzia",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "bb141d6c5808562ac6f99ba01db8800c68b5ae72cfb6be1ae4bc17f38a5aa4a1",
+                "diag_sha256": "9293ddcee3ccd03b0ababe9d831b1ef4a39212d5d38ee98e5e24a20f0ee26386",
                 "primary": {
                   "bytes": 45773,
                   "diag_links": 1,
                   "stage": 3
                 },
-                "primary_sha256": "6d0a0e8fd22846951ba159e71c6bfd84cdd94a01f3284dee65bf31374053464b"
+                "primary_sha256": "ccd8d5dfff14295385614856b82213083b22b10ad6aa0567e19251b7baa6c45a"
               },
               "/home/Carix/video": {
-                "diag_sha256": "bb141d6c5808562ac6f99ba01db8800c68b5ae72cfb6be1ae4bc17f38a5aa4a1",
+                "diag_sha256": "9293ddcee3ccd03b0ababe9d831b1ef4a39212d5d38ee98e5e24a20f0ee26386",
                 "primary": {
                   "bytes": 45773,
                   "diag_links": 1,
                   "stage": 3
                 },
-                "primary_sha256": "6d0a0e8fd22846951ba159e71c6bfd84cdd94a01f3284dee65bf31374053464b"
+                "primary_sha256": "ccd8d5dfff14295385614856b82213083b22b10ad6aa0567e19251b7baa6c45a"
               }
             },
             "stage": 3,
@@ -705,22 +703,22 @@
             "category": "kiev",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "397373796074e55d86f9d12b3d7d5cca207ff68df230bd35d391e3dd2ae9ca05",
+                "diag_sha256": "10cb1b6d04d5a22fb07ccbe385484d55fc6e07f03c2866ec30dd5eabd8f13744",
                 "primary": {
                   "bytes": 45798,
                   "diag_links": 1,
                   "stage": 4
                 },
-                "primary_sha256": "e7821f92b7febb3eaa4eccbafa6051551abf5d9a58630d19b792da7edf183e66"
+                "primary_sha256": "d88714db294dfd57114a9f5808f4120a9316cc63b3778ed19ae920455809c997"
               },
               "/home/Carix/video": {
-                "diag_sha256": "397373796074e55d86f9d12b3d7d5cca207ff68df230bd35d391e3dd2ae9ca05",
+                "diag_sha256": "10cb1b6d04d5a22fb07ccbe385484d55fc6e07f03c2866ec30dd5eabd8f13744",
                 "primary": {
                   "bytes": 45798,
                   "diag_links": 1,
                   "stage": 4
                 },
-                "primary_sha256": "e7821f92b7febb3eaa4eccbafa6051551abf5d9a58630d19b792da7edf183e66"
+                "primary_sha256": "d88714db294dfd57114a9f5808f4120a9316cc63b3778ed19ae920455809c997"
               }
             },
             "stage": 4,
@@ -730,22 +728,22 @@
             "category": "korea",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "ed3c808afc67908e6075abeb19c65e0a5ac55987ef0afd2196bc73ba078e648c",
+                "diag_sha256": "edd39935c8c4853acc56abaae21009d50822c749e566ab6119bbd7b8a8cb3038",
                 "primary": {
                   "bytes": 45387,
                   "diag_links": 1,
                   "stage": 1
                 },
-                "primary_sha256": "912481e68ce652d03ad2d54bb4838140086afa097c1d29403c0a30686e6ada77"
+                "primary_sha256": "426c6e350ac78d62e107c268dddb68758949085375636663f32b3cd6cc5e72f5"
               },
               "/home/Carix/video": {
-                "diag_sha256": "ed3c808afc67908e6075abeb19c65e0a5ac55987ef0afd2196bc73ba078e648c",
+                "diag_sha256": "edd39935c8c4853acc56abaae21009d50822c749e566ab6119bbd7b8a8cb3038",
                 "primary": {
                   "bytes": 45387,
                   "diag_links": 1,
                   "stage": 1
                 },
-                "primary_sha256": "912481e68ce652d03ad2d54bb4838140086afa097c1d29403c0a30686e6ada77"
+                "primary_sha256": "426c6e350ac78d62e107c268dddb68758949085375636663f32b3cd6cc5e72f5"
               }
             },
             "stage": 1,
@@ -755,22 +753,22 @@
             "category": "korea",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "3d33ed5a2de662577922643a5dbf714038268246ac12bafeda095555dcfd2df4",
+                "diag_sha256": "4f7f8cd2c2e02774c7ac445ef35c649a7146a0813280d01546825090b2b7e6d3",
                 "primary": {
                   "bytes": 45713,
                   "diag_links": 1,
                   "stage": 1
                 },
-                "primary_sha256": "32c167554eb10dc0ebc0ec6e5d4fd38926f3d21ce2d03282e248468a0e080258"
+                "primary_sha256": "e67b298a4e648c752f0d3bd2e81009595aeff784ca0cce7fbb6289322d30a2c9"
               },
               "/home/Carix/video": {
-                "diag_sha256": "3d33ed5a2de662577922643a5dbf714038268246ac12bafeda095555dcfd2df4",
+                "diag_sha256": "4f7f8cd2c2e02774c7ac445ef35c649a7146a0813280d01546825090b2b7e6d3",
                 "primary": {
                   "bytes": 45713,
                   "diag_links": 1,
                   "stage": 1
                 },
-                "primary_sha256": "32c167554eb10dc0ebc0ec6e5d4fd38926f3d21ce2d03282e248468a0e080258"
+                "primary_sha256": "e67b298a4e648c752f0d3bd2e81009595aeff784ca0cce7fbb6289322d30a2c9"
               }
             },
             "stage": 1,
@@ -780,22 +778,22 @@
             "category": "more",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "38d747feb14011b085ca49f3b19028d67e23861db453aec49b828f50404c9ea1",
+                "diag_sha256": "4a90fa0542eb0eefa7860c6a878be68dea1067af58112c95662206c90ce92afe",
                 "primary": {
                   "bytes": 44223,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "388576001d360a80bae56b1a1d0bf46a04fb4f6ff7846526ad81fcd6ebc0f3f6"
+                "primary_sha256": "9bac94e4c9be9757b275366547abfcb0db4f73d47ca7428c13be8239a72b91a7"
               },
               "/home/Carix/video": {
-                "diag_sha256": "38d747feb14011b085ca49f3b19028d67e23861db453aec49b828f50404c9ea1",
+                "diag_sha256": "4a90fa0542eb0eefa7860c6a878be68dea1067af58112c95662206c90ce92afe",
                 "primary": {
                   "bytes": 44223,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "388576001d360a80bae56b1a1d0bf46a04fb4f6ff7846526ad81fcd6ebc0f3f6"
+                "primary_sha256": "9bac94e4c9be9757b275366547abfcb0db4f73d47ca7428c13be8239a72b91a7"
               }
             },
             "stage": 2,
@@ -805,22 +803,22 @@
             "category": "more",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "03b0615d9ca72793a49283c7d96eb33c3f3ebb437ce84f951fcdbeb9c0978707",
+                "diag_sha256": "334c51b842121194aa1a6ad3dda9abed6e514876cd375fe6ad53cc1a63f8d06d",
                 "primary": {
                   "bytes": 49185,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "f8d04f96b96ae8cc12fad2fb892ff80ca0814b26061dd8f27c29979c677b5b0f"
+                "primary_sha256": "c6f330e0484e3e9d4f0a657664d9601147323ef69392d16c7213357c39159db3"
               },
               "/home/Carix/video": {
-                "diag_sha256": "03b0615d9ca72793a49283c7d96eb33c3f3ebb437ce84f951fcdbeb9c0978707",
+                "diag_sha256": "334c51b842121194aa1a6ad3dda9abed6e514876cd375fe6ad53cc1a63f8d06d",
                 "primary": {
                   "bytes": 49185,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "f8d04f96b96ae8cc12fad2fb892ff80ca0814b26061dd8f27c29979c677b5b0f"
+                "primary_sha256": "c6f330e0484e3e9d4f0a657664d9601147323ef69392d16c7213357c39159db3"
               }
             },
             "stage": 2,
@@ -830,22 +828,22 @@
             "category": "kiev",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "6f48225e0902187a92bf137310fbafbbe64bcc5fdd9480a7abbffa27173839cd",
+                "diag_sha256": "74e72b40623b55f730a305c3da868affe7d2d3607254cbe969db9d0f18449f28",
                 "primary": {
                   "bytes": 45038,
                   "diag_links": 1,
                   "stage": 4
                 },
-                "primary_sha256": "42a80d37338e554a3ee7d3bb8edbfe3fb71d618f7c97a75fd13f8e4801da559a"
+                "primary_sha256": "492e81ada7d6ae99ee2626ec6c541670769b472f99241dd68f27d914dc0c7493"
               },
               "/home/Carix/video": {
-                "diag_sha256": "6f48225e0902187a92bf137310fbafbbe64bcc5fdd9480a7abbffa27173839cd",
+                "diag_sha256": "74e72b40623b55f730a305c3da868affe7d2d3607254cbe969db9d0f18449f28",
                 "primary": {
                   "bytes": 45038,
                   "diag_links": 1,
                   "stage": 4
                 },
-                "primary_sha256": "42a80d37338e554a3ee7d3bb8edbfe3fb71d618f7c97a75fd13f8e4801da559a"
+                "primary_sha256": "492e81ada7d6ae99ee2626ec6c541670769b472f99241dd68f27d914dc0c7493"
               }
             },
             "stage": 4,
@@ -855,22 +853,22 @@
             "category": "kiev",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "e0beaa404228552b8c82c7cdf3906e10c9fc8fbe8f83f66781b3dc101e24d5e5",
+                "diag_sha256": "3328820b9476f767352357d54997436e12069075fc363ca2c7fd73128cf0961f",
                 "primary": {
                   "bytes": 45438,
                   "diag_links": 1,
                   "stage": 4
                 },
-                "primary_sha256": "ddd96bb4a53d3c6910538e5bb3be04689bc6b5c6ab5f33acad2caaae7d57188e"
+                "primary_sha256": "6e362bb1fb7ab06d98887b2becb60996fe523408a3d59e54f1faec377734dc44"
               },
               "/home/Carix/video": {
-                "diag_sha256": "e0beaa404228552b8c82c7cdf3906e10c9fc8fbe8f83f66781b3dc101e24d5e5",
+                "diag_sha256": "3328820b9476f767352357d54997436e12069075fc363ca2c7fd73128cf0961f",
                 "primary": {
                   "bytes": 45438,
                   "diag_links": 1,
                   "stage": 4
                 },
-                "primary_sha256": "ddd96bb4a53d3c6910538e5bb3be04689bc6b5c6ab5f33acad2caaae7d57188e"
+                "primary_sha256": "6e362bb1fb7ab06d98887b2becb60996fe523408a3d59e54f1faec377734dc44"
               }
             },
             "stage": 4,
@@ -880,22 +878,22 @@
             "category": "more",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "07ba5310876166564166ff71bb7abfe8ebe000b888846be6f74622399b7676f1",
+                "diag_sha256": "826e6b710d83447edea7eb84d54cc9f3b10f1e213e9e6151c2fcb6279407ecc9",
                 "primary": {
                   "bytes": 44578,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "86ac2ed8e003e06f46d3e50343366c4598902de4c05c5d089ea1d6d16c728474"
+                "primary_sha256": "6574e43d989e14ea229d5cd45a07870060e8f20502d0e4312bd3c738132cda45"
               },
               "/home/Carix/video": {
-                "diag_sha256": "07ba5310876166564166ff71bb7abfe8ebe000b888846be6f74622399b7676f1",
+                "diag_sha256": "826e6b710d83447edea7eb84d54cc9f3b10f1e213e9e6151c2fcb6279407ecc9",
                 "primary": {
                   "bytes": 44578,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "86ac2ed8e003e06f46d3e50343366c4598902de4c05c5d089ea1d6d16c728474"
+                "primary_sha256": "6574e43d989e14ea229d5cd45a07870060e8f20502d0e4312bd3c738132cda45"
               }
             },
             "stage": 2,
@@ -905,22 +903,22 @@
             "category": "more",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "1c8941bc96ff93b4a949a5b52925ee43cd0eb45082d16a757bd308e0611acfbe",
+                "diag_sha256": "b1cb8e3618cdcf2e00b83f1325bd8535b61a38e4b2dacbdf429abae7c96121ac",
                 "primary": {
                   "bytes": 45561,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "e92c9e4d25241f3c156c9c1e934767697eb13b0b41c769abc32de06413edd09f"
+                "primary_sha256": "8e9b258235ee764ca43166f0780e421474b0bd54b0190901dab47346c3996a76"
               },
               "/home/Carix/video": {
-                "diag_sha256": "1c8941bc96ff93b4a949a5b52925ee43cd0eb45082d16a757bd308e0611acfbe",
+                "diag_sha256": "b1cb8e3618cdcf2e00b83f1325bd8535b61a38e4b2dacbdf429abae7c96121ac",
                 "primary": {
                   "bytes": 45561,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "e92c9e4d25241f3c156c9c1e934767697eb13b0b41c769abc32de06413edd09f"
+                "primary_sha256": "8e9b258235ee764ca43166f0780e421474b0bd54b0190901dab47346c3996a76"
               }
             },
             "stage": 2,
@@ -930,22 +928,22 @@
             "category": "more",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "307ce022a07960d6bba2c9c4649e727af9317b0108dc5b94c04210e71532edba",
+                "diag_sha256": "211aca6592733164694bdaa49d8d31f64553c09cc7d85515595a20a2083913a8",
                 "primary": {
                   "bytes": 46976,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "11421abc3b3311611f82427dd185d3c6204a8f0f36715e8865fc870f4771de96"
+                "primary_sha256": "328dab8db78949cdf449b711d0bf5237c3c6242711f13cfd266a923804cf368e"
               },
               "/home/Carix/video": {
-                "diag_sha256": "307ce022a07960d6bba2c9c4649e727af9317b0108dc5b94c04210e71532edba",
+                "diag_sha256": "211aca6592733164694bdaa49d8d31f64553c09cc7d85515595a20a2083913a8",
                 "primary": {
                   "bytes": 46976,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "11421abc3b3311611f82427dd185d3c6204a8f0f36715e8865fc870f4771de96"
+                "primary_sha256": "328dab8db78949cdf449b711d0bf5237c3c6242711f13cfd266a923804cf368e"
               }
             },
             "stage": 2,
@@ -955,22 +953,22 @@
             "category": "more",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "d3b87a97e8c7f4cb080f113b7837dadc8b36d3face1c1e44b6ed5dc10dfa337f",
+                "diag_sha256": "fdfb595af7a053e09c1ce4e4e6c7de7c9f87414e2a57d629412ea8b339637a7c",
                 "primary": {
                   "bytes": 43246,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "f9eab86dff1028fc8e365396ff0bdebdb38cc10649375fdf68adb897aba90b10"
+                "primary_sha256": "cab280c75f1cbf6de7e28a567f60ef2b224ad71b2be1ebe25ec0b1315a15cc88"
               },
               "/home/Carix/video": {
-                "diag_sha256": "d3b87a97e8c7f4cb080f113b7837dadc8b36d3face1c1e44b6ed5dc10dfa337f",
+                "diag_sha256": "fdfb595af7a053e09c1ce4e4e6c7de7c9f87414e2a57d629412ea8b339637a7c",
                 "primary": {
                   "bytes": 43246,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "f9eab86dff1028fc8e365396ff0bdebdb38cc10649375fdf68adb897aba90b10"
+                "primary_sha256": "cab280c75f1cbf6de7e28a567f60ef2b224ad71b2be1ebe25ec0b1315a15cc88"
               }
             },
             "stage": 2,
@@ -980,22 +978,22 @@
             "category": "more",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "1d08a213e64b5b39ed25f75fd86e214163eb90984858090866cb4c03a2fc4ff7",
+                "diag_sha256": "76b126e5c4410724b125439c5bfdbe15b48a359a6432d3f041b39b1cc46070d2",
                 "primary": {
                   "bytes": 49624,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "70a6c619ab69db3ef71b0ceb3e453bb5970a261299e03ae1343c06ef9a4ec29c"
+                "primary_sha256": "ad7881f68e861b7fd6e688508340e5d6361a0576658eed18ea49bc0da8b6b97d"
               },
               "/home/Carix/video": {
-                "diag_sha256": "1d08a213e64b5b39ed25f75fd86e214163eb90984858090866cb4c03a2fc4ff7",
+                "diag_sha256": "76b126e5c4410724b125439c5bfdbe15b48a359a6432d3f041b39b1cc46070d2",
                 "primary": {
                   "bytes": 49624,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "70a6c619ab69db3ef71b0ceb3e453bb5970a261299e03ae1343c06ef9a4ec29c"
+                "primary_sha256": "ad7881f68e861b7fd6e688508340e5d6361a0576658eed18ea49bc0da8b6b97d"
               }
             },
             "stage": 2,
@@ -1005,22 +1003,22 @@
             "category": "more",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "7e0b903117e136e57ca296dba57d76e7c87b0a02cc9cb6e7d5564487850186e8",
+                "diag_sha256": "96203e110e81616d6cd8deb9289792f4193aab1dc391b6a4234a875fd3f36c28",
                 "primary": {
                   "bytes": 47325,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "ccd3257354016b640eceab0c8c8d2ce729a16103f472493a6d4d2f90c66d85c9"
+                "primary_sha256": "f31cf4c9277ba6a251eacd0f2155d3c94183f998b8753aee68fe7b04bbaddaa4"
               },
               "/home/Carix/video": {
-                "diag_sha256": "7e0b903117e136e57ca296dba57d76e7c87b0a02cc9cb6e7d5564487850186e8",
+                "diag_sha256": "96203e110e81616d6cd8deb9289792f4193aab1dc391b6a4234a875fd3f36c28",
                 "primary": {
                   "bytes": 47325,
                   "diag_links": 1,
                   "stage": 2
                 },
-                "primary_sha256": "ccd3257354016b640eceab0c8c8d2ce729a16103f472493a6d4d2f90c66d85c9"
+                "primary_sha256": "f31cf4c9277ba6a251eacd0f2155d3c94183f998b8753aee68fe7b04bbaddaa4"
               }
             },
             "stage": 2,
@@ -1030,22 +1028,22 @@
             "category": "korea",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "ab83ce5ab955be9c32ecf600c11359ae137ba09449d44004e8448dbffeccf85f",
+                "diag_sha256": "bdf8ddc96f2de551dec1bebe631a270ae9c176dc2e0d30c3ac15101e38d6c04f",
                 "primary": {
                   "bytes": 50013,
                   "diag_links": 1,
                   "stage": 1
                 },
-                "primary_sha256": "ec54120ce4606cb2c89114e53c22cf992296a94f732ac5c08083e2358730d868"
+                "primary_sha256": "9f153b5a27f02eb545618007ee9572ab89ca81ac458b04e263f90312b3fcdf65"
               },
               "/home/Carix/video": {
-                "diag_sha256": "ab83ce5ab955be9c32ecf600c11359ae137ba09449d44004e8448dbffeccf85f",
+                "diag_sha256": "bdf8ddc96f2de551dec1bebe631a270ae9c176dc2e0d30c3ac15101e38d6c04f",
                 "primary": {
                   "bytes": 50013,
                   "diag_links": 1,
                   "stage": 1
                 },
-                "primary_sha256": "ec54120ce4606cb2c89114e53c22cf992296a94f732ac5c08083e2358730d868"
+                "primary_sha256": "9f153b5a27f02eb545618007ee9572ab89ca81ac458b04e263f90312b3fcdf65"
               }
             },
             "stage": 1,
@@ -1055,22 +1053,22 @@
             "category": "korea",
             "files": {
               "/home/Carix/site": {
-                "diag_sha256": "597c2117856d5bee8e2218a2c5864a9bee67dd106f90df1efb3fcd094067fb44",
+                "diag_sha256": "7a09cf925bd53af8f41b74ddcf0c4bd85b1d5f2f64b49d6f26a7289418e7170e",
                 "primary": {
                   "bytes": 45170,
                   "diag_links": 1,
                   "stage": 1
                 },
-                "primary_sha256": "83404dc0a8423b7cb53c25f6fc0f71f66e718cc1ebfc759d356aad7951585038"
+                "primary_sha256": "cd22c6f883e035c542f124a8eb6d5ab2c5b9f50dce620f7c279182dd7fb6d2fc"
               },
               "/home/Carix/video": {
-                "diag_sha256": "597c2117856d5bee8e2218a2c5864a9bee67dd106f90df1efb3fcd094067fb44",
+                "diag_sha256": "7a09cf925bd53af8f41b74ddcf0c4bd85b1d5f2f64b49d6f26a7289418e7170e",
                 "primary": {
                   "bytes": 45170,
                   "diag_links": 1,
                   "stage": 1
                 },
-                "primary_sha256": "83404dc0a8423b7cb53c25f6fc0f71f66e718cc1ebfc759d356aad7951585038"
+                "primary_sha256": "cd22c6f883e035c542f124a8eb6d5ab2c5b9f50dce620f7c279182dd7fb6d2fc"
               }
             },
             "stage": 1,
@@ -1165,22 +1163,22 @@
     "status": "PASS",
     "task096_evidence_source": "LIVE_TASK096_RECEIPTS",
     "transient_legacy_backups_removed": [
-      "UA-0001_20260831_074831",
-      "UA-0002_20260831_074838",
-      "UA-0003_20260831_074902",
-      "UA-0004_20260831_074906",
-      "UA-0005_20260831_074913",
-      "UA-0006_20260831_074917",
-      "UA-0007_20260831_074921",
-      "UA-0008_20260831_074925",
-      "UA-0009_20260831_074945",
-      "UA-0010_20260831_074948",
-      "UA-0011_20260831_074952",
-      "UA-0012_20260831_074956",
-      "UA-0013_20260831_075000",
-      "UA-0014_20260831_075004",
-      "UA-0015_20260831_075008",
-      "UA-0016_20260831_075013"
+      "UA-0001_20260831_081327",
+      "UA-0002_20260831_081334",
+      "UA-0003_20260831_081359",
+      "UA-0004_20260831_081404",
+      "UA-0005_20260831_081410",
+      "UA-0006_20260831_081415",
+      "UA-0007_20260831_081419",
+      "UA-0008_20260831_081422",
+      "UA-0009_20260831_081445",
+      "UA-0010_20260831_081448",
+      "UA-0011_20260831_081452",
+      "UA-0012_20260831_081456",
+      "UA-0013_20260831_081500",
+      "UA-0014_20260831_081505",
+      "UA-0015_20260831_081509",
+      "UA-0016_20260831_081518"
     ]
   },
   "issue_35_closed": false,
@@ -1200,6 +1198,626 @@
     "user": "Carix"
   },
   "mode": "OWNER_APPROVED_PRODUCTION",
+  "postcheck_delayed": {
+    "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+    "catalog_attempts": [
+      {
+        "attempt": 1,
+        "audit_status": "PASS",
+        "errors": [],
+        "http_status": 200,
+        "ids": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0014",
+          "UA-0003",
+          "UA-0004",
+          "UA-0015",
+          "UA-0016"
+        ],
+        "pass": true
+      }
+    ],
+    "catalog_design_audit": {
+      "article_cards": 16,
+      "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+      "counts": {
+        "all": 16,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 4,
+        "sea": 8
+      },
+      "errors": [],
+      "filters": {
+        "all": 1,
+        "georgia": 1,
+        "kiev": 1,
+        "korea": 1,
+        "sea": 1
+      },
+      "ids": [
+        "UA-0002",
+        "UA-0007",
+        "UA-0008",
+        "UA-0001",
+        "UA-0005",
+        "UA-0010",
+        "UA-0009",
+        "UA-0006",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013",
+        "UA-0014",
+        "UA-0003",
+        "UA-0004",
+        "UA-0015",
+        "UA-0016"
+      ],
+      "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+      "status": "PASS"
+    },
+    "catalog_href_counts": {
+      "UA-0001": 2,
+      "UA-0002": 2,
+      "UA-0003": 2,
+      "UA-0004": 2,
+      "UA-0005": 2,
+      "UA-0006": 2,
+      "UA-0007": 2,
+      "UA-0008": 2,
+      "UA-0009": 2,
+      "UA-0010": 2,
+      "UA-0011": 2,
+      "UA-0012": 2,
+      "UA-0013": 2,
+      "UA-0014": 2,
+      "UA-0015": 2,
+      "UA-0016": 2
+    },
+    "catalog_unique_ids": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ],
+    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "crm_write": false,
+    "files": {
+      "UA-0001": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "ccd8d5dfff14295385614856b82213083b22b10ad6aa0567e19251b7baa6c45a"
+      },
+      "UA-0002": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "d88714db294dfd57114a9f5808f4120a9316cc63b3778ed19ae920455809c997"
+      },
+      "UA-0003": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "426c6e350ac78d62e107c268dddb68758949085375636663f32b3cd6cc5e72f5"
+      },
+      "UA-0004": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "e67b298a4e648c752f0d3bd2e81009595aeff784ca0cce7fbb6289322d30a2c9"
+      },
+      "UA-0005": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "9bac94e4c9be9757b275366547abfcb0db4f73d47ca7428c13be8239a72b91a7"
+      },
+      "UA-0006": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "c6f330e0484e3e9d4f0a657664d9601147323ef69392d16c7213357c39159db3"
+      },
+      "UA-0007": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "492e81ada7d6ae99ee2626ec6c541670769b472f99241dd68f27d914dc0c7493"
+      },
+      "UA-0008": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "6e362bb1fb7ab06d98887b2becb60996fe523408a3d59e54f1faec377734dc44"
+      },
+      "UA-0009": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "6574e43d989e14ea229d5cd45a07870060e8f20502d0e4312bd3c738132cda45"
+      },
+      "UA-0010": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "8e9b258235ee764ca43166f0780e421474b0bd54b0190901dab47346c3996a76"
+      },
+      "UA-0011": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "328dab8db78949cdf449b711d0bf5237c3c6242711f13cfd266a923804cf368e"
+      },
+      "UA-0012": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "cab280c75f1cbf6de7e28a567f60ef2b224ad71b2be1ebe25ec0b1315a15cc88"
+      },
+      "UA-0013": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "ad7881f68e861b7fd6e688508340e5d6361a0576658eed18ea49bc0da8b6b97d"
+      },
+      "UA-0014": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "f31cf4c9277ba6a251eacd0f2155d3c94183f998b8753aee68fe7b04bbaddaa4"
+      },
+      "UA-0015": {
+        "additional_blocks": 1,
+        "additional_rows": 21,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "9f153b5a27f02eb545618007ee9572ab89ca81ac458b04e263f90312b3fcdf65"
+      },
+      "UA-0016": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "cd22c6f883e035c542f124a8eb6d5ab2c5b9f50dce620f7c279182dd7fb6d2fc"
+      }
+    },
+    "finished_at_utc": "2026-08-31T08:22:12Z",
+    "main_fields_changed": false,
+    "media_changed": false,
+    "mode": "POSTCHECK",
+    "production_write": false,
+    "public": {
+      "UA-0001": {
+        "errors": [],
+        "sha256": "ccd8d5dfff14295385614856b82213083b22b10ad6aa0567e19251b7baa6c45a",
+        "status": 200
+      },
+      "UA-0002": {
+        "errors": [],
+        "sha256": "d88714db294dfd57114a9f5808f4120a9316cc63b3778ed19ae920455809c997",
+        "status": 200
+      },
+      "UA-0003": {
+        "errors": [],
+        "sha256": "426c6e350ac78d62e107c268dddb68758949085375636663f32b3cd6cc5e72f5",
+        "status": 200
+      },
+      "UA-0004": {
+        "errors": [],
+        "sha256": "e67b298a4e648c752f0d3bd2e81009595aeff784ca0cce7fbb6289322d30a2c9",
+        "status": 200
+      },
+      "UA-0005": {
+        "errors": [],
+        "sha256": "9bac94e4c9be9757b275366547abfcb0db4f73d47ca7428c13be8239a72b91a7",
+        "status": 200
+      },
+      "UA-0006": {
+        "errors": [],
+        "sha256": "c6f330e0484e3e9d4f0a657664d9601147323ef69392d16c7213357c39159db3",
+        "status": 200
+      },
+      "UA-0007": {
+        "errors": [],
+        "sha256": "492e81ada7d6ae99ee2626ec6c541670769b472f99241dd68f27d914dc0c7493",
+        "status": 200
+      },
+      "UA-0008": {
+        "errors": [],
+        "sha256": "6e362bb1fb7ab06d98887b2becb60996fe523408a3d59e54f1faec377734dc44",
+        "status": 200
+      },
+      "UA-0009": {
+        "errors": [],
+        "sha256": "6574e43d989e14ea229d5cd45a07870060e8f20502d0e4312bd3c738132cda45",
+        "status": 200
+      },
+      "UA-0010": {
+        "errors": [],
+        "sha256": "8e9b258235ee764ca43166f0780e421474b0bd54b0190901dab47346c3996a76",
+        "status": 200
+      },
+      "UA-0011": {
+        "errors": [],
+        "sha256": "328dab8db78949cdf449b711d0bf5237c3c6242711f13cfd266a923804cf368e",
+        "status": 200
+      },
+      "UA-0012": {
+        "errors": [],
+        "sha256": "cab280c75f1cbf6de7e28a567f60ef2b224ad71b2be1ebe25ec0b1315a15cc88",
+        "status": 200
+      },
+      "UA-0013": {
+        "errors": [],
+        "sha256": "ad7881f68e861b7fd6e688508340e5d6361a0576658eed18ea49bc0da8b6b97d",
+        "status": 200
+      },
+      "UA-0014": {
+        "errors": [],
+        "sha256": "f31cf4c9277ba6a251eacd0f2155d3c94183f998b8753aee68fe7b04bbaddaa4",
+        "status": 200
+      },
+      "UA-0015": {
+        "errors": [],
+        "sha256": "9f153b5a27f02eb545618007ee9572ab89ca81ac458b04e263f90312b3fcdf65",
+        "status": 200
+      },
+      "UA-0016": {
+        "errors": [],
+        "sha256": "cd22c6f883e035c542f124a8eb6d5ab2c5b9f50dce620f7c279182dd7fb6d2fc",
+        "status": 200
+      }
+    },
+    "public_write": false,
+    "status": "PASS"
+  },
+  "postcheck_immediate": {
+    "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+    "catalog_attempts": [
+      {
+        "attempt": 1,
+        "audit_status": "PASS",
+        "errors": [],
+        "http_status": 200,
+        "ids": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0001",
+          "UA-0005",
+          "UA-0010",
+          "UA-0009",
+          "UA-0006",
+          "UA-0011",
+          "UA-0012",
+          "UA-0013",
+          "UA-0014",
+          "UA-0003",
+          "UA-0004",
+          "UA-0015",
+          "UA-0016"
+        ],
+        "pass": true
+      }
+    ],
+    "catalog_design_audit": {
+      "article_cards": 16,
+      "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+      "counts": {
+        "all": 16,
+        "georgia": 1,
+        "kiev": 3,
+        "korea": 4,
+        "sea": 8
+      },
+      "errors": [],
+      "filters": {
+        "all": 1,
+        "georgia": 1,
+        "kiev": 1,
+        "korea": 1,
+        "sea": 1
+      },
+      "ids": [
+        "UA-0002",
+        "UA-0007",
+        "UA-0008",
+        "UA-0001",
+        "UA-0005",
+        "UA-0010",
+        "UA-0009",
+        "UA-0006",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013",
+        "UA-0014",
+        "UA-0003",
+        "UA-0004",
+        "UA-0015",
+        "UA-0016"
+      ],
+      "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+      "status": "PASS"
+    },
+    "catalog_href_counts": {
+      "UA-0001": 2,
+      "UA-0002": 2,
+      "UA-0003": 2,
+      "UA-0004": 2,
+      "UA-0005": 2,
+      "UA-0006": 2,
+      "UA-0007": 2,
+      "UA-0008": 2,
+      "UA-0009": 2,
+      "UA-0010": 2,
+      "UA-0011": 2,
+      "UA-0012": 2,
+      "UA-0013": 2,
+      "UA-0014": 2,
+      "UA-0015": 2,
+      "UA-0016": 2
+    },
+    "catalog_unique_ids": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ],
+    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "crm_write": false,
+    "files": {
+      "UA-0001": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "ccd8d5dfff14295385614856b82213083b22b10ad6aa0567e19251b7baa6c45a"
+      },
+      "UA-0002": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "d88714db294dfd57114a9f5808f4120a9316cc63b3778ed19ae920455809c997"
+      },
+      "UA-0003": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "426c6e350ac78d62e107c268dddb68758949085375636663f32b3cd6cc5e72f5"
+      },
+      "UA-0004": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "e67b298a4e648c752f0d3bd2e81009595aeff784ca0cce7fbb6289322d30a2c9"
+      },
+      "UA-0005": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "9bac94e4c9be9757b275366547abfcb0db4f73d47ca7428c13be8239a72b91a7"
+      },
+      "UA-0006": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "c6f330e0484e3e9d4f0a657664d9601147323ef69392d16c7213357c39159db3"
+      },
+      "UA-0007": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "492e81ada7d6ae99ee2626ec6c541670769b472f99241dd68f27d914dc0c7493"
+      },
+      "UA-0008": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "6e362bb1fb7ab06d98887b2becb60996fe523408a3d59e54f1faec377734dc44"
+      },
+      "UA-0009": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "6574e43d989e14ea229d5cd45a07870060e8f20502d0e4312bd3c738132cda45"
+      },
+      "UA-0010": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "8e9b258235ee764ca43166f0780e421474b0bd54b0190901dab47346c3996a76"
+      },
+      "UA-0011": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "328dab8db78949cdf449b711d0bf5237c3c6242711f13cfd266a923804cf368e"
+      },
+      "UA-0012": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "cab280c75f1cbf6de7e28a567f60ef2b224ad71b2be1ebe25ec0b1315a15cc88"
+      },
+      "UA-0013": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "ad7881f68e861b7fd6e688508340e5d6361a0576658eed18ea49bc0da8b6b97d"
+      },
+      "UA-0014": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "f31cf4c9277ba6a251eacd0f2155d3c94183f998b8753aee68fe7b04bbaddaa4"
+      },
+      "UA-0015": {
+        "additional_blocks": 1,
+        "additional_rows": 21,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "9f153b5a27f02eb545618007ee9572ab89ca81ac458b04e263f90312b3fcdf65"
+      },
+      "UA-0016": {
+        "additional_blocks": 1,
+        "additional_rows": 0,
+        "clean_vin_blocks": 1,
+        "external_vin_cta": false,
+        "sha256": "cd22c6f883e035c542f124a8eb6d5ab2c5b9f50dce620f7c279182dd7fb6d2fc"
+      }
+    },
+    "finished_at_utc": "2026-08-31T08:19:12Z",
+    "main_fields_changed": false,
+    "media_changed": false,
+    "mode": "POSTCHECK",
+    "production_write": false,
+    "public": {
+      "UA-0001": {
+        "errors": [],
+        "sha256": "ccd8d5dfff14295385614856b82213083b22b10ad6aa0567e19251b7baa6c45a",
+        "status": 200
+      },
+      "UA-0002": {
+        "errors": [],
+        "sha256": "d88714db294dfd57114a9f5808f4120a9316cc63b3778ed19ae920455809c997",
+        "status": 200
+      },
+      "UA-0003": {
+        "errors": [],
+        "sha256": "426c6e350ac78d62e107c268dddb68758949085375636663f32b3cd6cc5e72f5",
+        "status": 200
+      },
+      "UA-0004": {
+        "errors": [],
+        "sha256": "e67b298a4e648c752f0d3bd2e81009595aeff784ca0cce7fbb6289322d30a2c9",
+        "status": 200
+      },
+      "UA-0005": {
+        "errors": [],
+        "sha256": "9bac94e4c9be9757b275366547abfcb0db4f73d47ca7428c13be8239a72b91a7",
+        "status": 200
+      },
+      "UA-0006": {
+        "errors": [],
+        "sha256": "c6f330e0484e3e9d4f0a657664d9601147323ef69392d16c7213357c39159db3",
+        "status": 200
+      },
+      "UA-0007": {
+        "errors": [],
+        "sha256": "492e81ada7d6ae99ee2626ec6c541670769b472f99241dd68f27d914dc0c7493",
+        "status": 200
+      },
+      "UA-0008": {
+        "errors": [],
+        "sha256": "6e362bb1fb7ab06d98887b2becb60996fe523408a3d59e54f1faec377734dc44",
+        "status": 200
+      },
+      "UA-0009": {
+        "errors": [],
+        "sha256": "6574e43d989e14ea229d5cd45a07870060e8f20502d0e4312bd3c738132cda45",
+        "status": 200
+      },
+      "UA-0010": {
+        "errors": [],
+        "sha256": "8e9b258235ee764ca43166f0780e421474b0bd54b0190901dab47346c3996a76",
+        "status": 200
+      },
+      "UA-0011": {
+        "errors": [],
+        "sha256": "328dab8db78949cdf449b711d0bf5237c3c6242711f13cfd266a923804cf368e",
+        "status": 200
+      },
+      "UA-0012": {
+        "errors": [],
+        "sha256": "cab280c75f1cbf6de7e28a567f60ef2b224ad71b2be1ebe25ec0b1315a15cc88",
+        "status": 200
+      },
+      "UA-0013": {
+        "errors": [],
+        "sha256": "ad7881f68e861b7fd6e688508340e5d6361a0576658eed18ea49bc0da8b6b97d",
+        "status": 200
+      },
+      "UA-0014": {
+        "errors": [],
+        "sha256": "f31cf4c9277ba6a251eacd0f2155d3c94183f998b8753aee68fe7b04bbaddaa4",
+        "status": 200
+      },
+      "UA-0015": {
+        "errors": [],
+        "sha256": "9f153b5a27f02eb545618007ee9572ab89ca81ac458b04e263f90312b3fcdf65",
+        "status": 200
+      },
+      "UA-0016": {
+        "errors": [],
+        "sha256": "cd22c6f883e035c542f124a8eb6d5ab2c5b9f50dce620f7c279182dd7fb6d2fc",
+        "status": 200
+      }
+    },
+    "public_write": false,
+    "status": "PASS"
+  },
   "prerequisites": {
     "audit_finished_at_utc": "2026-08-31T06:48:14Z",
     "clean_rollback_schema_detected": true,
@@ -1461,27 +2079,27 @@
     "database": {
       "preserved_manual_rows": [],
       "removed_imported_rows": [
-        136,
-        137,
-        138,
-        139,
-        140,
-        141,
-        142,
-        143,
-        144,
-        145,
-        146,
-        147,
-        148,
-        149,
-        150,
-        151,
-        152,
-        153,
-        154,
-        155,
-        156
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177
       ]
     },
     "files": {
@@ -1563,7 +2181,7 @@
         "video/katalog.html"
       ]
     },
-    "finished_at_utc": "2026-08-31T07:57:11Z",
+    "finished_at_utc": "2026-08-31T08:43:13Z",
     "main_fields_changed": false,
     "media_changed": false,
     "mode": "ROLLBACK",
@@ -1642,7 +2260,7 @@
         "errors": []
       }
     },
-    "finished_at_utc": "2026-08-31T07:45:24Z",
+    "finished_at_utc": "2026-08-31T08:09:15Z",
     "gate": {
       "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "clean_rollback_schema": [
@@ -1674,27 +2292,27 @@
       "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "inserted_count": 21,
       "inserted_ids": [
-        136,
-        137,
-        138,
-        139,
-        140,
-        141,
-        142,
-        143,
-        144,
-        145,
-        146,
-        147,
-        148,
-        149,
-        150,
-        151,
-        152,
-        153,
-        154,
-        155,
-        156
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177
       ],
       "main_fields_changed": false,
       "per_uid": {
@@ -1715,7 +2333,7 @@
         "UA-0015": 21,
         "UA-0016": 0
       },
-      "run_id": "shadow-20260831T074522Z"
+      "run_id": "shadow-20260831T080913Z"
     },
     "mode": "SHADOW",
     "patched": {
@@ -1737,7 +2355,9 @@
       }
     },
     "production_write": false,
-    "pruned_completed_task099_backups": [],
+    "pruned_completed_task099_backups": [
+      "20260831T074815Z:complete"
+    ],
     "public_write": false,
     "status": "PASS",
     "task096_canary_rows": 21,
@@ -1761,6 +2381,6 @@
       "UA-0016"
     ]
   },
-  "started_at_utc": "2026-08-31T07:42:49Z",
+  "started_at_utc": "2026-08-31T08:06:53Z",
   "status": "ROLLED_BACK"
 }
