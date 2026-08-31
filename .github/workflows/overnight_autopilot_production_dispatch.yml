@@ -1,0 +1,82 @@
+name: Overnight Autopilot Production Dispatch
+
+on:
+  workflow_run:
+    workflows: ['TASK096 Enrichment Repair v7']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: overnight-autopilot-production-dispatch
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify overnight owner authorization and downstream gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^OWNER_APPROVED: YES$' tasks/overnight_autopilot_production_approval_20260901.md
+          grep -q '^OVERNIGHT_PRODUCTION_AUTHORIZED: YES$' tasks/overnight_autopilot_production_approval_20260901.md
+          grep -q '^REQUIRE_SANDBOX_PASS: YES$' tasks/overnight_autopilot_production_approval_20260901.md
+          grep -q '^REQUIRE_CANARY_PASS: YES$' tasks/overnight_autopilot_production_approval_20260901.md
+          grep -q '^REQUIRE_SAFETY_PASS: YES$' tasks/overnight_autopilot_production_approval_20260901.md
+          grep -q '^OWNER_APPROVED: YES$' tasks/task_099_production_approval.md
+          grep -q '^PRODUCTION_AUTHORIZED: YES$' tasks/task_099_production_approval.md
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('cloud/task_096_tech_spec_ai_crm/data_enrichment/evidence.json')
+          e=json.loads(p.read_text())
+          ids=[f'UA-{n:04d}' for n in range(1,17)]
+          assert e.get('status') in ('PASS','PASS_WITH_WARNINGS')
+          assert (e.get('canary') or {}).get('status') == 'PASS'
+          assert sorted(set((e.get('batch') or {}).get('processed_uids') or [])) == ids
+          assert e.get('semantic_dedup_pass') is True
+          for key in ('production_touched','live_crm_write','main_fields_changed','public_path_write','bot_code_changed','services_restarted','autopublication','purchase_price_extracted','purchase_price_logged','purchase_price_uploaded','production_authorized'):
+              assert e.get(key) is False, (key,e.get(key))
+          print('OVERNIGHT_PRODUCTION_PREREQUISITES_PASS')
+          PY
+      - name: Refuse duplicate active production run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,urllib.request
+          base='https://api.github.com/repos/'+os.environ['GH_REPOSITORY']
+          h={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+          active=[]
+          for status in ('queued','in_progress','waiting','pending'):
+              r=urllib.request.Request(base+'/actions/runs?status='+status+'&per_page=100',headers=h)
+              with urllib.request.urlopen(r,timeout=30) as x: data=json.load(x)
+              for run in data.get('workflow_runs') or []:
+                  if run.get('name')=='TASK099 Site and CRM Production Completion': active.append((run.get('id'),status))
+          if active: raise SystemExit('ACTIVE_TASK099_PRODUCTION:'+repr(active))
+          print('NO_ACTIVE_TASK099_PRODUCTION')
+          PY
+      - name: Dispatch existing guarded TASK099 production workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,urllib.request
+          url='https://api.github.com/repos/'+os.environ['GH_REPOSITORY']+'/actions/workflows/task099_site_crm_production.yml/dispatches'
+          body=json.dumps({'ref':'main'}).encode()
+          req=urllib.request.Request(url,data=body,method='POST',headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'})
+          with urllib.request.urlopen(req,timeout=30) as r:
+              assert r.status==204, r.status
+          print('TASK099_PRODUCTION_DISPATCHED')
+          PY
