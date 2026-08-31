@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GitHub-side controller for the exact TASK099 partial-install recovery."""
+"""GitHub-side controller for the exact TASK099 partial-install recovery.\n\nRetry marker: compressed-backup partial v2.\n"""
 from __future__ import annotations
 
 import argparse
