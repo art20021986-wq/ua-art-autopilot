@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import unittest
 
-import home_counter_guard as guard
+try:
+    import home_counter_guard as guard
+except ModuleNotFoundError:  # package-mode unittest discovery in GitHub Actions
+    from . import home_counter_guard as guard
 
 
 def fixture() -> str:
