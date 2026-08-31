@@ -35,6 +35,23 @@ CATEGORY_TITLES = {
     "ecology": "Экология",
     "additional": "Дополнительно",
 }
+UNIT_ALIASES = {
+    "mm": ("mm", "мм"),
+    "мм": ("mm", "мм"),
+    "cm": ("cm", "см"),
+    "см": ("cm", "см"),
+    "km": ("km", "км"),
+    "км": ("km", "км"),
+    "kg": ("kg", "кг"),
+    "кг": ("kg", "кг"),
+    "kw": ("kw", "квт"),
+    "квт": ("kw", "квт"),
+    "hp": ("hp", "лс", "л.с"),
+    "лс": ("hp", "лс", "л.с"),
+    "л.с.": ("hp", "лс", "л.с"),
+    "l": ("l", "л"),
+    "л": ("l", "л"),
+}
 START = "<!--UA099_ADD_SPEC_START-->"
 END = "<!--UA099_ADD_SPEC_END-->"
 VIN_START = "<!--UA099_CLEAN_VIN_START-->"
@@ -150,6 +167,20 @@ def _ensure_safe_value(value: Any) -> str:
     return text
 
 
+def _value_with_unit(value: Any, unit: Any) -> str:
+    raw_value = str(value or "").strip()
+    raw_unit = str(unit or "").strip()
+    if not raw_unit:
+        return raw_value
+    aliases = UNIT_ALIASES.get(raw_unit.casefold(), (raw_unit.casefold(),))
+    normalized = raw_value.casefold().replace("\u00a0", " ")
+    for alias in aliases:
+        token = re.escape(alias).replace(r"\.", r"\.?\s*")
+        if re.search(r"(?<![a-zа-яёіїєґ])" + token + r"(?![a-zа-яёіїєґ])", normalized, re.I):
+            return raw_value
+    return raw_value + " " + raw_unit
+
+
 def set_visible(spec_id: int, car_uid: Any, visible: bool, actor_id: int | None = None) -> dict[str, Any]:
     item = get_spec(spec_id, car_uid)
     if not item:
@@ -259,9 +290,10 @@ def render_public_block(value: Any) -> str:
             continue
         rendered = []
         for row in items:
+            shown_value = _value_with_unit(row["field_value"], row.get("unit"))
             rendered.append(
                 "<div class='ua-addspec-row'><dt>%s</dt><dd>%s</dd></div>" % (
-                    html.escape(str(row["label_ru"])), html.escape(str(row["field_value"])),
+                    html.escape(str(row["label_ru"])), html.escape(shown_value),
                 )
             )
         body.append(
@@ -519,6 +551,19 @@ def public_contract_errors(source: str, value: Any) -> list[str]:
         source, re.I,
     ):
         errors.append("duplicate description label")
+    labels = [
+        html.unescape(re.sub(r"<[^>]+>", "", label)).strip()
+        for label in re.findall(
+            r"<div\s+class=['\"]ua-addspec-row['\"]>\s*<dt>([\s\S]*?)</dt>",
+            source, re.I,
+        )
+    ]
+    signatures = [
+        " ".join(sorted(re.findall(r"[a-zа-яёіїєґ0-9]+", label.casefold().replace("ё", "е"))))
+        for label in labels
+    ]
+    if len(signatures) != len(set(signatures)):
+        errors.append("semantic duplicate additional labels")
     if "</html>" not in source.lower():
         errors.append("html incomplete")
     return errors

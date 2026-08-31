@@ -46,6 +46,20 @@ TABLES = (
     "additional_specification_meta", "additional_specification_rejections",
     "additional_specification_audit", "additional_specification_import_runs",
 )
+SPEC_UNIT_TOKENS = {
+    "mm", "cm", "m", "km", "kg", "l", "kw", "hp", "rpm",
+    "мм", "см", "м", "км", "кг", "л", "квт", "лс", "обмин",
+}
+SPEC_KEY_ALIASES = {
+    "length": {"length", "overall_length", "vehicle_length", "body_length"},
+    "width": {"width", "overall_width", "vehicle_width", "body_width"},
+    "height": {"height", "overall_height", "vehicle_height", "body_height"},
+    "wheelbase": {"wheelbase", "wheel_base"},
+    "front_track": {"front_track", "track_front", "front_tread", "tread_front"},
+    "rear_track": {"rear_track", "track_rear", "rear_tread", "tread_rear"},
+    "max_power": {"max_power", "maximum_power", "engine_power", "power_output"},
+    "max_torque": {"max_torque", "maximum_torque", "engine_torque", "torque_output"},
+}
 
 
 class Blocked(RuntimeError):
@@ -145,6 +159,75 @@ def sqlite_backup(source: pathlib.Path, target: pathlib.Path) -> None:
         dst.commit()
     if quick_check(target) != "ok":
         raise Blocked("BACKUP_QUICK_CHECK_FAIL")
+
+
+def _spec_words(value: Any) -> list[str]:
+    words = re.findall(r"[a-zа-яёіїєґ0-9]+", str(value or "").casefold().replace("ё", "е"))
+    return [word for word in words if word not in SPEC_UNIT_TOKENS]
+
+
+def _spec_property_key(item: dict[str, Any]) -> str:
+    key_words = _spec_words(str(item.get("field_key") or "").replace("_", " "))
+    key = "_".join(key_words)
+    for canonical, aliases in SPEC_KEY_ALIASES.items():
+        if key in aliases or "_".join(sorted(key_words)) in {
+            "_".join(sorted(alias.split("_"))) for alias in aliases
+        }:
+            return canonical
+    label_words = _spec_words(item.get("label_ru"))
+    if not label_words:
+        return key
+    # Word order must not make "Задняя колея" and "Колея задняя"
+    # different properties.
+    return "label:" + "_".join(sorted(label_words))
+
+
+def _spec_value_key(value: Any) -> str:
+    text = str(value or "").casefold().replace("ё", "е").replace("\u00a0", " ")
+    text = text.replace(",", ".")
+    text = re.sub(r"(?<=\d)\s+(?=\d)", "", text)
+    return re.sub(r"[^a-zа-яіїєґ0-9.]+", "", text)
+
+
+def dedupe_spec_rows(rows: list[sqlite3.Row]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    groups: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+    for row in rows:
+        item = dict(row)
+        signature = (str(item.get("car_uid") or ""), str(item.get("category") or ""),
+                     _spec_property_key(item))
+        groups.setdefault(signature, []).append(item)
+    accepted = []
+    rejected = []
+    for signature, candidates in sorted(groups.items()):
+        manual = [item for item in candidates if int(item.get("is_manual") or 0) == 1]
+        pool = manual or candidates
+        values = {_spec_value_key(item.get("field_value")) for item in pool}
+        if len(values) != 1:
+            raise Blocked(
+                "SEMANTIC_SPEC_CONFLICT:%s:%s" % (signature[0], signature[2])
+            )
+        chosen = sorted(
+            pool,
+            key=lambda item: (
+                -int(item.get("is_manual") or 0),
+                -int(item.get("evidence_count") or 0),
+                -float(item.get("confidence") or 0.0),
+                -float(item.get("model_match_score") or 0.0),
+                str(item.get("field_key") or ""),
+            ),
+        )[0]
+        accepted.append(chosen)
+        for item in candidates:
+            if item is chosen:
+                continue
+            rejected.append({
+                "car_uid": signature[0],
+                "field_key": str(item.get("field_key") or ""),
+                "kept_field_key": str(chosen.get("field_key") or ""),
+                "semantic_property": signature[2],
+                "reason": "SEMANTIC_DUPLICATE",
+            })
+    return accepted, rejected
 
 
 def require_task096() -> tuple[pathlib.Path, dict[str, Any], dict[str, Any], str]:
@@ -260,7 +343,7 @@ def migrate(target: pathlib.Path, source: pathlib.Path, run_id: str) -> dict[str
         for required in ("additional_specification", "additional_specification_meta"):
             if not table_exists(src, required):
                 raise Blocked("SANDBOX_TABLE_MISSING:" + required)
-        rows = src.execute(
+        source_rows = src.execute(
             """
             SELECT a.car_uid,a.field_key,a.field_value,a.normalized_value,a.source,
                    a.source_url,a.confidence,a.is_price_field,
@@ -275,6 +358,7 @@ def migrate(target: pathlib.Path, source: pathlib.Path, run_id: str) -> dict[str
         primary = src.execute(
             "SELECT car_uid,field_key,normalized_value FROM primary_field_registry"
         ).fetchall() if table_exists(src, "primary_field_registry") else []
+    rows, semantic_rejections = dedupe_spec_rows(list(source_rows))
     with connect(target, False) as conn:
         conn.executescript("BEGIN IMMEDIATE;\n" + SCHEMA)
         before_hash, before_count, before_ids = cars_hash_conn(conn)
@@ -296,6 +380,13 @@ def migrate(target: pathlib.Path, source: pathlib.Path, run_id: str) -> dict[str
             "закупочная_цена", "оптовая_цена", "аукционная_цена", "себестоимость",
         ):
             conn.execute("INSERT OR IGNORE INTO price_denylist VALUES(?)", (key,))
+        for rejection in semantic_rejections:
+            conn.execute(
+                "INSERT INTO additional_specification_rejections"
+                "(car_uid,field_key,reason) VALUES(?,?,?)",
+                (rejection["car_uid"], rejection["field_key"],
+                 "SEMANTIC_DUPLICATE_OF:" + rejection["kept_field_key"]),
+            )
         for row in rows:
             item = dict(row)
             uid = str(item["car_uid"])
@@ -350,6 +441,9 @@ def migrate(target: pathlib.Path, source: pathlib.Path, run_id: str) -> dict[str
         conn.commit()
     return {
         "run_id": run_id, "inserted_count": len(inserted_ids), "inserted_ids": inserted_ids,
+        "source_row_count": len(source_rows),
+        "semantic_duplicates_rejected": len(semantic_rejections),
+        "semantic_rejections": semantic_rejections,
         "per_uid": per_uid, "cars_sha256_before": before_hash, "cars_sha256_after": after_hash,
         "main_fields_changed": False,
     }

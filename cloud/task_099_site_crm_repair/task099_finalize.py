@@ -62,6 +62,11 @@ def main() -> int:
         viewport: (visual["viewports"][viewport]["UA-0009.html"])
         for viewport in required_viewports
     }
+    production_pages = ((production.get("install") or {}).get("pages") or {})
+    spec_rows_by_card = {
+        uid: int((production_pages.get(uid) or {}).get("additional_rows") or 0)
+        for uid in IDS
+    }
     value = {
         "task_id": "task_099",
         "contract_id": CONTRACT,
@@ -76,6 +81,14 @@ def main() -> int:
             "main_fields_changed": False,
             "media_changed": False,
             "additional_specification_installed": True,
+            "additional_specification_rows_by_card": spec_rows_by_card,
+            "additional_specification_empty_state_cards": [
+                uid for uid, count in spec_rows_by_card.items() if count == 0
+            ],
+            "semantic_duplicates_rejected": int(
+                (((production.get("install") or {}).get("migration") or {})
+                 .get("semantic_duplicates_rejected") or 0)
+            ),
             "operator_manual_values_protected": True,
             "autopublication": False,
         },
