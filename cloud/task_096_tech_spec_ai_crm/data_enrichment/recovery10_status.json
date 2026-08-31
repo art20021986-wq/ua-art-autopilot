@@ -10,107 +10,107 @@
     {
       "stage": "PREFLIGHT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:13:53.011268+00:00",
+      "at_utc": "2026-08-31T03:26:54.096445+00:00",
       "no_browser_required": true,
       "hardcoded_fallback": false
     },
     {
       "stage": "TRANSPORT_PREFLIGHT",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:13:53.017136+00:00",
+      "at_utc": "2026-08-31T03:26:54.100899+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "TRANSPORT_PREFLIGHT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:13:53.595457+00:00"
+      "at_utc": "2026-08-31T03:26:54.679701+00:00"
     },
     {
       "stage": "UPLOAD_REMOTE_APPLIER",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:13:56.723431+00:00",
+      "at_utc": "2026-08-31T03:26:57.680464+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "UPLOAD_REMOTE_APPLIER",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:13:57.428802+00:00"
+      "at_utc": "2026-08-31T03:26:58.452227+00:00"
     },
     {
       "stage": "CONTEXT_EXPORT",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:13:57.429377+00:00",
+      "at_utc": "2026-08-31T03:26:58.556435+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "UPLOAD_EXPORT_ONESHOT",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:13:57.757842+00:00",
+      "at_utc": "2026-08-31T03:26:58.824524+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "UPLOAD_EXPORT_ONESHOT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:13:58.348582+00:00"
+      "at_utc": "2026-08-31T03:26:59.317939+00:00"
     },
     {
       "stage": "EXPORT_REMOTE",
       "status": "SCHEDULED",
-      "at_utc": "2026-08-31T03:13:58.682197+00:00",
-      "schedule_id": 1504293,
-      "operation": "recovery10_export_9104c8039de864a7bc76",
+      "at_utc": "2026-08-31T03:26:59.597879+00:00",
+      "schedule_id": 1504300,
+      "operation": "recovery10_export_11daf8d0ad582fb22f59",
       "scheduled_hour_utc": 3,
-      "scheduled_minute_utc": 15
+      "scheduled_minute_utc": 28
     },
     {
       "stage": "EXPORT_REMOTE",
       "status": "WAITING_FOR_RECEIPT",
-      "at_utc": "2026-08-31T03:14:19.763000+00:00",
-      "operation": "recovery10_export_9104c8039de864a7bc76"
+      "at_utc": "2026-08-31T03:27:20.419138+00:00",
+      "operation": "recovery10_export_11daf8d0ad582fb22f59"
     },
     {
       "stage": "EXPORT_REMOTE",
       "status": "WAITING_FOR_RECEIPT",
-      "at_utc": "2026-08-31T03:15:21.803806+00:00",
-      "operation": "recovery10_export_9104c8039de864a7bc76"
+      "at_utc": "2026-08-31T03:28:22.016242+00:00",
+      "operation": "recovery10_export_11daf8d0ad582fb22f59"
     },
     {
       "stage": "EXPORT_REMOTE",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:16:02.900222+00:00",
-      "schedule_id": 1504293
+      "at_utc": "2026-08-31T03:29:02.990570+00:00",
+      "schedule_id": 1504300
     },
     {
       "stage": "CLEANUP_EXPORT",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:16:02.900777+00:00",
+      "at_utc": "2026-08-31T03:29:02.991043+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "CLEANUP_EXPORT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:16:03.199971+00:00"
+      "at_utc": "2026-08-31T03:29:03.297234+00:00"
     },
     {
       "stage": "CONTEXT_EXPORT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:16:03.531099+00:00"
+      "at_utc": "2026-08-31T03:29:03.619132+00:00"
     },
     {
       "stage": "CANARY_AI_EXTRACTION",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:16:07.262674+00:00",
+      "at_utc": "2026-08-31T03:29:08.705344+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "CANARY_AI_EXTRACTION",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:16:29.590605+00:00"
+      "at_utc": "2026-08-31T03:29:28.426071+00:00"
     },
     {
       "stage": "FINAL",
       "status": "FAIL",
-      "at_utc": "2026-08-31T03:16:29.595482+00:00"
+      "at_utc": "2026-08-31T03:29:28.429999+00:00"
     }
   ]
 }

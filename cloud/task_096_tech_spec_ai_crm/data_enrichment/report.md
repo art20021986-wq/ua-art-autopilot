@@ -2,6 +2,6 @@
 
 **Status:** FAIL
 
-Ошибка: `ControllerError:CANARY_FACTS_INSUFFICIENT:0`
+Ошибка: `ControllerError:CANARY_FACTS_INSUFFICIENT:5`
 
 Production, рабочая CRM, бот и сайт не изменялись.
