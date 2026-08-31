@@ -1,0 +1,71 @@
+name: TASK 096 Final Sandbox Fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'automation/task096_final_fix.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  final-sandbox-pass:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install parser
+        run: python -m pip install --disable-pip-version-check beautifulsoup4==4.15.0
+      - name: Verify owner authorization and compile
+        run: |
+          set -euo pipefail
+          grep -q '^OWNER_APPROVED: YES$' tasks/task_096_recovery10_approval.md
+          grep -q '^MAX_TRANSIENT_RETRIES: 10$' tasks/task_096_recovery10_approval.md
+          grep -q '^PRODUCTION_AUTHORIZED: NO$' tasks/task_096_recovery10_approval.md
+          python -m py_compile automation/task096_final_fix.py automation/task096_recovery10_schema.py automation/task096_recovery10.py
+      - name: Execute repaired UA-0015 canary then gated 16-card sandbox batch
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          PYTHONPATH=automation python -u automation/task096_final_fix.py
+      - name: Enforce final PASS and safety boundaries
+        run: |
+          set -euo pipefail
+          out=cloud/task_096_tech_spec_ai_crm/data_enrichment
+          python - <<'PY'
+          import json, pathlib
+          out=pathlib.Path('cloud/task_096_tech_spec_ai_crm/data_enrichment')
+          e=json.loads((out/'evidence.json').read_text())
+          assert e.get('status') in ('PASS','PASS_WITH_WARNINGS'), e.get('errors')
+          for k in ('production_touched','live_crm_write','main_fields_changed','public_path_write','bot_code_changed','services_restarted','autopublication','purchase_price_extracted','purchase_price_logged','purchase_price_uploaded','production_authorized','database_downloaded'):
+              assert e.get(k) is False, k
+          c=e.get('canary') or {}; b=e.get('batch') or {}
+          assert c.get('status')=='PASS' and int(c.get('ua0015_additional_rows') or 0)>=8
+          assert b.get('status')=='PASS'
+          assert sorted(set(b.get('processed_uids') or [])) == [f'UA-{n:04d}' for n in range(1,17)]
+          assert (out/'ua0015_preview.html').is_file()
+          print('TASK096_FINAL_SANDBOX_PASS')
+          PY
+      - name: Upload final sanitized evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: task096-final-sandbox-${{ github.run_id }}
+          path: |
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/evidence.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/report.md
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/cards_summary.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/ua0015_preview.html
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/recovery10_status.json
+          if-no-files-found: error
+          retention-days: 14
