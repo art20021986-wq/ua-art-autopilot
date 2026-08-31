@@ -1,16 +1,16 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "errors": [
-    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_BATCH_FAIL:Публикация отменена: BASE_PUBLISH_FAILED:UA-0001:Публикация отменена при записи (PUBLICATION BLOCKED UA-0001: VIN Guard blocks != 1; VIN buttons != 1; CarHistory target != 1; video count mismatch). Выполнен откат.. Выполнен полный откат.\"]"
+    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_BATCH_FAIL:Публикация отменена: BASE_PUBLISH_FAILED:UA-0002:Публикация отменена при записи (PUBLICATION BLOCKED UA-0002: SEO068 CTA). Выполнен откат.. Выполнен полный откат.\"]"
   ],
-  "finished_at_utc": "2026-08-31T07:02:48Z",
+  "finished_at_utc": "2026-08-31T07:12:54Z",
   "github_comment_published": false,
   "install": {
     "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
     "errors": [
-      "Blocked:PUBLISH_BATCH_FAIL:Публикация отменена: BASE_PUBLISH_FAILED:UA-0001:Публикация отменена при записи (PUBLICATION BLOCKED UA-0001: VIN Guard blocks != 1; VIN buttons != 1; CarHistory target != 1; video count mismatch). Выполнен откат.. Выполнен полный откат."
+      "Blocked:PUBLISH_BATCH_FAIL:Публикация отменена: BASE_PUBLISH_FAILED:UA-0002:Публикация отменена при записи (PUBLICATION BLOCKED UA-0002: SEO068 CTA). Выполнен откат.. Выполнен полный откат."
     ],
-    "finished_at_utc": "2026-08-31T07:02:17Z",
+    "finished_at_utc": "2026-08-31T07:12:39Z",
     "mode": "INSTALL",
     "status": "FAIL"
   },
@@ -116,7 +116,7 @@
         "errors": []
       }
     },
-    "finished_at_utc": "2026-08-31T06:58:15Z",
+    "finished_at_utc": "2026-08-31T07:08:16Z",
     "gate": {
       "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "clean_rollback_schema": [
@@ -148,27 +148,27 @@
       "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "inserted_count": 21,
       "inserted_ids": [
-        73,
-        74,
-        75,
-        76,
-        77,
-        78,
-        79,
-        80,
-        81,
-        82,
-        83,
-        84,
-        85,
-        86,
-        87,
-        88,
-        89,
-        90,
-        91,
-        92,
-        93
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114
       ],
       "main_fields_changed": false,
       "per_uid": {
@@ -189,7 +189,7 @@
         "UA-0015": 21,
         "UA-0016": 0
       },
-      "run_id": "shadow-20260831T065813Z"
+      "run_id": "shadow-20260831T070814Z"
     },
     "mode": "SHADOW",
     "patched": {
@@ -198,7 +198,7 @@
         "before": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15"
       },
       "master_card.py": {
-        "after": "f933d1f3f722be275459d58e335caec13c58de76a39aafe1189a27e1ddb6910e",
+        "after": "39ffda2e6fc0ca3b28aa03fc0b76e2ba2fed87a0b2793c2aedc0b6a080fad6ec",
         "before": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74"
       },
       "publikaciya.py": {
@@ -212,7 +212,7 @@
     },
     "production_write": false,
     "pruned_completed_task099_backups": [
-      "20260831T051610Z:complete"
+      "20260831T070134Z:complete"
     ],
     "public_write": false,
     "status": "PASS",
@@ -236,6 +236,6 @@
       "UA-0016"
     ]
   },
-  "started_at_utc": "2026-08-31T06:55:06Z",
+  "started_at_utc": "2026-08-31T07:05:54Z",
   "status": "BLOCKED"
 }
