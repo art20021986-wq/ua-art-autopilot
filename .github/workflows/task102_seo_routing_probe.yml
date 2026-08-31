@@ -1,0 +1,37 @@
+name: TASK 102 SEO routing probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task102_seo_routing_probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read exact routing and sitemap sources
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, urllib.request, urllib.error, urllib.parse
+          token=os.environ['PYTHONANYWHERE_API_TOKEN']
+          base='https://www.pythonanywhere.com/api/v0/user/Carix'
+          paths=['/var/www/www_uaart_com_ua_wsgi.py','/home/Carix/video/sitemap.xml','/home/Carix/site/sitemap.xml','/home/Carix/video/robots.txt','/home/Carix/site/robots.txt']
+          for path in paths:
+              url=base+'/files/path'+urllib.parse.quote(path,safe='/')
+              req=urllib.request.Request(url,headers={'Authorization':'Token '+token,'User-Agent':'task102-routing-probe/1'})
+              print('\n===== '+path+' =====')
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r:
+                      print(r.read().decode('utf-8','replace'))
+              except urllib.error.HTTPError as e:
+                  print('HTTP',e.code,e.read().decode('utf-8','replace'))
+          PY
