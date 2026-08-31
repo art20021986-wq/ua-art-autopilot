@@ -1,0 +1,175 @@
+name: TASK099 Site and CRM Production Completion
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task099_site_crm_production.yml'
+      - 'cloud/task_099_site_crm_repair/task099_controller.py'
+      - 'cloud/task_099_site_crm_repair/task099_remote.py'
+      - 'cloud/task_099_site_crm_repair/task099_patches.py'
+      - 'cloud/task_099_site_crm_repair/ua_additional_spec.py'
+      - 'cloud/task_099_site_crm_repair/task099_visual.py'
+      - 'cloud/task_099_site_crm_repair/task099_finalize.py'
+      - 'tasks/task_099_production_approval.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task099-site-crm-production
+  cancel-in-progress: false
+
+jobs:
+  repair-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      TASK099_OWNER_APPROVAL: UA_ART_TASK099_SITE_CRM_PRODUCTION_APPROVED
+    steps:
+      - name: Checkout exact triggering revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Verify owner approval and deterministic payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^OWNER_APPROVED: YES$' tasks/task_099_production_approval.md
+          grep -q '^PRODUCTION_AUTHORIZED: YES$' tasks/task_099_production_approval.md
+          grep -q '^CARD_SCOPE: UA-0001..UA-0016$' tasks/task_099_production_approval.md
+          python -m py_compile \
+            cloud/task_099_site_crm_repair/task099_controller.py \
+            cloud/task_099_site_crm_repair/task099_remote.py \
+            cloud/task_099_site_crm_repair/task099_patches.py \
+            cloud/task_099_site_crm_repair/ua_additional_spec.py \
+            cloud/task_099_site_crm_repair/task099_visual.py \
+            cloud/task_099_site_crm_repair/task099_finalize.py
+          python cloud/task_099_site_crm_repair/task099_patches.py
+          python cloud/task_099_site_crm_repair/ua_additional_spec.py
+
+      - name: Run backup shadow canary production and GET postchecks
+        id: production
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -u cloud/task_099_site_crm_repair/task099_controller.py
+
+      - name: Install pinned browser verifier
+        if: steps.production.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check playwright==1.58.0
+          python -m playwright install --with-deps chromium
+
+      - name: Run all 16 browser-rendered mobile and desktop gates
+        if: steps.production.outcome == 'success'
+        id: visual
+        continue-on-error: true
+        run: python -u cloud/task_099_site_crm_repair/task099_visual.py
+
+      - name: Roll back production if browser gate failed
+        if: always() && steps.production.outcome == 'success' && steps.visual.outcome != 'success'
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -u cloud/task_099_site_crm_repair/task099_controller.py --rollback
+
+      - name: Create authoritative PASS evidence and closure draft
+        if: steps.production.outcome == 'success' && steps.visual.outcome == 'success'
+        id: finalize
+        continue-on-error: true
+        run: python cloud/task_099_site_crm_repair/task099_finalize.py
+
+      - name: Record current-run FAIL without a false PASS
+        if: always() && steps.finalize.outcome != 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import datetime,json,os,pathlib
+          root=pathlib.Path('.')
+          gate=root/'cloud/task_099_site_crm_repair/evidence/production_gate.json'
+          production=json.loads(gate.read_text()) if gate.exists() else {'status':'BLOCKED','errors':['PRODUCTION_GATE_NOT_COMPLETED']}
+          visual_path=root/'cloud/task_099_site_crm_repair/evidence/visual_evidence.json'
+          visual=json.loads(visual_path.read_text()) if visual_path.exists() else {'status':'NOT_RUN','errors':[]}
+          value={
+            'task_id':'task_099','contract_id':'UA-ART-16-SITE-CRM-COMPLETION-099-V1',
+            'status':'FAIL','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),'workflow_sha':os.environ.get('GITHUB_SHA'),
+            'production_status':production.get('status'),'production_errors':production.get('errors') or [],
+            'visual_status':visual.get('status'),'visual_errors':visual.get('errors') or [],
+            'issue_35_ready_to_close':False,'issue_35_closed':False,'github_comment_published':False,
+            'newer_fail_observed':True,
+          }
+          path=root/'evidence/deploy.json';path.parent.mkdir(parents=True,exist_ok=True)
+          path.write_text(json.dumps(value,ensure_ascii=False,indent=2,sort_keys=True)+'\n')
+          PY
+
+      - name: Commit current-run evidence and screenshots
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in \
+            evidence/deploy.json \
+            cloud/task_099_site_crm_repair/evidence/production_gate.json \
+            cloud/task_099_site_crm_repair/evidence/visual_evidence.json \
+            cloud/task_099_site_crm_repair/evidence/issue35_comment.md \
+            cloud/task_099_site_crm_repair/evidence/screenshots; do
+            if [ -e "$path" ]; then git add -A -- "$path"; fi
+          done
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name task099-production
+          git config user.email actions@users.noreply.github.com
+          git commit -m 'task099: record site and CRM production evidence'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              for path in "${conflicts[@]}"; do
+                case "$path" in
+                  evidence/deploy.json|cloud/task_099_site_crm_repair/evidence/*) ;;
+                  *) echo "Unsafe conflict: $path"; git rebase --abort || true; exit 1 ;;
+                esac
+              done
+              for path in "${conflicts[@]}"; do git checkout --theirs -- "$path"; git add -- "$path"; done
+              GIT_EDITOR=true git rebase --continue
+            fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 5))
+          done
+          exit 1
+
+      - name: Upload complete technical evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task099-site-crm-${{ github.run_id }}
+          path: |
+            evidence/deploy.json
+            cloud/task_099_site_crm_repair/evidence/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Require final PASS
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          value=json.loads(pathlib.Path('evidence/deploy.json').read_text())
+          assert value.get('status') == 'PASS', value
+          assert value.get('issue_35_closed') is False
+          assert value.get('github_comment_published') is False
+          print('TASK099_SITE_CRM_FINAL_PASS')
+          PY
