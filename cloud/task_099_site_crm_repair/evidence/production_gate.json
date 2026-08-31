@@ -2,10 +2,19 @@
   "audit_finished_at_utc": "2026-08-31T05:30:27Z",
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "errors": [
-    "Blocked:RECOVERY_RECEIPT_TIMEOUT:resume"
+    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_PROCESS_FAIL:UA-0001:h_transaction_guard.py\\\", line 544, in publish_batch\\n    return _publish_locked(base_publish, list(codes), proba=proba)\\n  File \\\"/home/Carix/publish_transaction_guard.py\\\", line 476, in _publish_locked\\n    snapshot = Snapshot(codes)\\n  File \\\"/home/Carix/publish_transaction_guard.py\\\", line 177, in __init__\\n    _atomic(target, data, path.stat().st_mode & 0o777)\\n  File \\\"/home/Carix/publish_transaction_guard.py\\\", line 69, in _atomic\\n    os.fsync(handle.fileno())\\nOSError: [Errno 122] Disk quota exceeded\\n\"]"
   ],
-  "finished_at_utc": "2026-08-31T06:13:18Z",
+  "finished_at_utc": "2026-08-31T06:23:36Z",
   "github_comment_published": false,
+  "install": {
+    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "errors": [
+      "Blocked:PUBLISH_PROCESS_FAIL:UA-0001:h_transaction_guard.py\", line 544, in publish_batch\n    return _publish_locked(base_publish, list(codes), proba=proba)\n  File \"/home/Carix/publish_transaction_guard.py\", line 476, in _publish_locked\n    snapshot = Snapshot(codes)\n  File \"/home/Carix/publish_transaction_guard.py\", line 177, in __init__\n    _atomic(target, data, path.stat().st_mode & 0o777)\n  File \"/home/Carix/publish_transaction_guard.py\", line 69, in _atomic\n    os.fsync(handle.fileno())\nOSError: [Errno 122] Disk quota exceeded\n"
+    ],
+    "finished_at_utc": "2026-08-31T06:23:15Z",
+    "mode": "RESUME",
+    "status": "FAIL"
+  },
   "issue_35_closed": false,
   "mode": "EXACT_PARTIAL_RECOVERY",
   "probe": {
@@ -86,7 +95,7 @@
       }
     },
     "disk": {
-      "free_bytes": 1164957450240,
+      "free_bytes": 1164910264320,
       "total_bytes": 6340085809152
     },
     "expected_live": {
@@ -120,7 +129,7 @@
       ],
       "task096_run_id": "33354251767"
     },
-    "finished_at_utc": "2026-08-31T05:33:12Z",
+    "finished_at_utc": "2026-08-31T06:16:11Z",
     "helper_sha256": "5dc38c74fd28cbd18317ea42f2df180451a389d943421430ed0633542c79a2b2",
     "lock_free": true,
     "mode": "PROBE",
@@ -409,6 +418,6 @@
     },
     "status": "PASS"
   },
-  "started_at_utc": "2026-08-31T05:31:07Z",
+  "started_at_utc": "2026-08-31T06:13:33Z",
   "status": "BLOCKED"
 }
