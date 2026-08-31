@@ -1,9 +1,9 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "errors": [
-    "Blocked:PARALLEL_PRODUCTION_GATE_BEFORE_INSTALL:[{\"id\": 33374579921, \"name\": \"TASK099 Site and CRM Production Completion\", \"status\": \"pending\"}]"
+    "Blocked:PARALLEL_PRODUCTION_GATE_BEFORE_INSTALL:[{\"id\": 33374677390, \"name\": \"TASK099 Site and CRM Production Completion\", \"status\": \"pending\"}]"
   ],
-  "finished_at_utc": "2026-08-31T08:47:49Z",
+  "finished_at_utc": "2026-08-31T08:52:14Z",
   "github_comment_published": false,
   "issue_35_closed": false,
   "mode": "OWNER_APPROVED_PRODUCTION",
@@ -325,7 +325,7 @@
         "errors": []
       }
     },
-    "finished_at_utc": "2026-08-31T08:47:15Z",
+    "finished_at_utc": "2026-08-31T08:51:14Z",
     "gate": {
       "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "clean_rollback_schema": [
@@ -401,10 +401,10 @@
           "additional_specification_rejections": 0
         },
         "replaced": true,
-        "snapshot_path": "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/prior_additional_shadow-20260831T084711Z.json",
-        "snapshot_sha256": "36df004dcdebb011b467f3b9cce28d9710246ab5cac34505d8b646bbe2c51ec9"
+        "snapshot_path": "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/prior_additional_shadow-20260831T085111Z.json",
+        "snapshot_sha256": "ebaaa3a1cf861d0de304b7d4164ee32a9246e0b3667ed70b812161c8c2071da8"
       },
-      "run_id": "shadow-20260831T084711Z",
+      "run_id": "shadow-20260831T085111Z",
       "semantic_duplicates_rejected": 9,
       "semantic_rejections": [
         {
@@ -493,9 +493,7 @@
       }
     },
     "production_write": false,
-    "pruned_completed_task099_backups": [
-      "20260831T081312Z:complete"
-    ],
+    "pruned_completed_task099_backups": [],
     "public_write": false,
     "status": "PASS",
     "task096_canary_rows": 21,
@@ -519,6 +517,6 @@
       "UA-0016"
     ]
   },
-  "started_at_utc": "2026-08-31T08:44:33Z",
+  "started_at_utc": "2026-08-31T08:48:13Z",
   "status": "BLOCKED"
 }
