@@ -874,7 +874,11 @@ def run() -> dict[str, Any]:
     preview_lower = preview.lower()
     if "noindex" not in preview_lower or "ua-0015" not in preview_lower:
         raise ControllerError("UA0015_PREVIEW_GUARD_MISSING")
-    if "http://" in preview_lower or "https://" in preview_lower or PRICE_RE.search(preview):
+    preview_dom = BeautifulSoup(preview, "html.parser")
+    for node in preview_dom(["style", "script", "noscript"]):
+        node.decompose()
+    visible_preview_text = preview_dom.get_text(" ", strip=True)
+    if "http://" in preview_lower or "https://" in preview_lower or PRICE_RE.search(visible_preview_text):
         raise ControllerError("UA0015_PREVIEW_LEAK")
 
     cards_summary = []
