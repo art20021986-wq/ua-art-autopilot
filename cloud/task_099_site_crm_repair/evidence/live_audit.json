@@ -2,7 +2,14 @@
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "crm_write": false,
   "database": {
-    "additional_table_counts": {},
+    "additional_table_counts": {
+      "additional_specification": 0,
+      "additional_specification_audit": 0,
+      "additional_specification_import_runs": 1,
+      "additional_specification_meta": 0,
+      "additional_specification_rejections": 0,
+      "primary_field_registry": 174
+    },
     "cards": [
       {
         "auto_number": "UA-0001",
@@ -966,8 +973,8 @@
       }
     ],
     "connection_total_changes": 0,
-    "database_bytes": 3653632,
-    "database_sha256": "6da4780c81618c198e4febba4a570feb812e127293782d3c432f40e7ffb90d4d",
+    "database_bytes": 3723264,
+    "database_sha256": "c637e43bf65e71c2beb5e01c8aa304c66b0f19320383795aa4270c1f3034ed9e",
     "ids": [
       "UA-0001",
       "UA-0002",
@@ -1009,6 +1016,58 @@
     "row_count": 16,
     "safe_projection_sha256": "0df0147cfef067ef890c63ec63159164544d3d42181be2219182e122637d43b2",
     "schemas": {
+      "additional_specification": [
+        "id",
+        "car_uid",
+        "field_key",
+        "field_value",
+        "normalized_value",
+        "source",
+        "source_url",
+        "confidence",
+        "is_price_field",
+        "created_at"
+      ],
+      "additional_specification_audit": [
+        "id",
+        "car_uid",
+        "field_key",
+        "action",
+        "old_value",
+        "new_value",
+        "actor_id",
+        "changed_at"
+      ],
+      "additional_specification_import_runs": [
+        "run_id",
+        "source_contract",
+        "started_at",
+        "finished_at",
+        "status",
+        "inserted_count",
+        "processed_uids_json"
+      ],
+      "additional_specification_meta": [
+        "car_uid",
+        "field_key",
+        "label_ru",
+        "category",
+        "unit",
+        "evidence_count",
+        "source_domains_json",
+        "verification_status",
+        "model_match_score",
+        "is_manual",
+        "is_visible",
+        "updated_at"
+      ],
+      "additional_specification_rejections": [
+        "id",
+        "car_uid",
+        "field_key",
+        "reason",
+        "rejected_at"
+      ],
       "cars": [
         "id",
         "brand",
@@ -1080,6 +1139,11 @@
         "hidden_photos",
         "diag_text",
         "ge_to_kyiv_at"
+      ],
+      "primary_field_registry": [
+        "car_uid",
+        "field_key",
+        "normalized_value"
       ]
     }
   },
@@ -6262,7 +6326,7 @@
       "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f"
     }
   },
-  "finished_at_utc": "2026-08-31T03:41:58Z",
+  "finished_at_utc": "2026-08-31T04:07:07Z",
   "http_methods": [
     "GET"
   ],
@@ -7197,7 +7261,7 @@
     ]
   },
   "site_write": false,
-  "started_at_utc": "2026-08-31T03:41:42Z",
+  "started_at_utc": "2026-08-31T04:06:50Z",
   "status": "PASS_READ_ONLY",
   "task_id": "task_099"
 }
