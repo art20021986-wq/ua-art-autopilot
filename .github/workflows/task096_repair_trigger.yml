@@ -1,0 +1,31 @@
+name: TASK 096 Repair Trigger
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tasks/task_096_repair_restart_20260831_014413.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  trigger-recovery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify repair authorization
+        run: |
+          set -euo pipefail
+          f=tasks/task_096_repair_restart_20260831_014413.md
+          grep -q '^OWNER_APPROVED: YES$' "$f"
+          grep -q 'Up to 10 automatic recovery attempts are authorized' "$f"
+          grep -q 'Production: FORBIDDEN' "$f"
+      - name: Trigger TASK 096 Recovery10
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run task096_recovery10.yml --ref main
