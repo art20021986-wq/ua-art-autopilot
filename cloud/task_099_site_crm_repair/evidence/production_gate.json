@@ -1,23 +1,24 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "errors": [
-    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_PROBE_FAIL:UA-0002:Публикация отменена: BASE_PUBLISH_FAILED:UA-0002:Публикация отменена, страница не прошла проверку:\\n· нет основной кнопки Задаток 500 $\\nПрежняя страница на сайте не тронута.. Выполнен полный откат.\"]"
+    "Blocked:INSTALL_FAIL:[\"OSError:[Errno 122] Disk quota exceeded\"]"
   ],
-  "finished_at_utc": "2026-08-31T04:05:10Z",
+  "finished_at_utc": "2026-08-31T04:13:08Z",
   "github_comment_published": false,
   "install": {
     "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
     "errors": [
-      "Blocked:PUBLISH_PROBE_FAIL:UA-0002:Публикация отменена: BASE_PUBLISH_FAILED:UA-0002:Публикация отменена, страница не прошла проверку:\n· нет основной кнопки Задаток 500 $\nПрежняя страница на сайте не тронута.. Выполнен полный откат."
+      "OSError:[Errno 122] Disk quota exceeded"
     ],
-    "finished_at_utc": "2026-08-31T04:04:44Z",
+    "finished_at_utc": "2026-08-31T04:12:26Z",
     "mode": "INSTALL",
     "status": "FAIL"
   },
   "issue_35_closed": false,
   "mode": "OWNER_APPROVED_PRODUCTION",
   "prerequisites": {
-    "audit_finished_at_utc": "2026-08-31T03:41:58Z",
+    "audit_finished_at_utc": "2026-08-31T04:07:07Z",
+    "clean_rollback_schema_detected": true,
     "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
     "source_sha256": {
       "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
@@ -114,9 +115,24 @@
         "errors": []
       }
     },
-    "finished_at_utc": "2026-08-31T04:01:34Z",
+    "finished_at_utc": "2026-08-31T04:10:20Z",
     "gate": {
       "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "clean_rollback_schema": [
+        "primary_field_registry",
+        "price_denylist",
+        "additional_specification",
+        "additional_specification_meta",
+        "additional_specification_rejections",
+        "additional_specification_audit",
+        "additional_specification_import_runs"
+      ],
+      "residual_data_counts": {
+        "additional_specification": 0,
+        "additional_specification_audit": 0,
+        "additional_specification_meta": 0,
+        "additional_specification_rejections": 0
+      },
       "row_count": 16,
       "source_sha256": {
         "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
@@ -130,24 +146,24 @@
       "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "inserted_count": 18,
       "inserted_ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
       ],
       "main_fields_changed": false,
       "per_uid": {
@@ -168,7 +184,7 @@
         "UA-0015": 18,
         "UA-0016": 0
       },
-      "run_id": "shadow-20260831T040132Z"
+      "run_id": "shadow-20260831T041018Z"
     },
     "mode": "SHADOW",
     "patched": {
@@ -208,6 +224,6 @@
       "UA-0016"
     ]
   },
-  "started_at_utc": "2026-08-31T03:59:48Z",
+  "started_at_utc": "2026-08-31T04:08:19Z",
   "status": "BLOCKED"
 }

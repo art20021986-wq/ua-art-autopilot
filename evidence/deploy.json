@@ -1,18 +1,18 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
-  "generated_at_utc": "2026-08-31T04:05:10.418039+00:00",
+  "generated_at_utc": "2026-08-31T04:13:08.594698+00:00",
   "github_comment_published": false,
   "issue_35_closed": false,
   "issue_35_ready_to_close": false,
   "newer_fail_observed": true,
   "production_errors": [
-    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_PROBE_FAIL:UA-0002:Публикация отменена: BASE_PUBLISH_FAILED:UA-0002:Публикация отменена, страница не прошла проверку:\\n· нет основной кнопки Задаток 500 $\\nПрежняя страница на сайте не тронута.. Выполнен полный откат.\"]"
+    "Blocked:INSTALL_FAIL:[\"OSError:[Errno 122] Disk quota exceeded\"]"
   ],
   "production_status": "BLOCKED",
   "status": "FAIL",
   "task_id": "task_099",
   "visual_errors": [],
   "visual_status": "NOT_RUN",
-  "workflow_run_id": "33355581045",
-  "workflow_sha": "2a2a6816c6a893bce43395c8e67b925a2679ec81"
+  "workflow_run_id": "33356041118",
+  "workflow_sha": "316d465ec94b2437c6e976613a7f5ae5e01054ff"
 }
