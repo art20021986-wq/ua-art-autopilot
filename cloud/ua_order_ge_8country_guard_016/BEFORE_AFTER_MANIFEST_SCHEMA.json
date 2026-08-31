@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UA ART Card Manifest Entry (BEFORE/AFTER comparison)",
+  "description": "Machine manifest schema used to prove UA-0001..UA-0016 remain unchanged across the Sandbox build. Used by sandbox_executor.compare_manifests().",
+  "type": "object",
+  "required": [
+    "id", "vin", "stage", "price",
+    "photo_count", "video_count", "diagnostics_count",
+    "container", "media_sha256"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^UA-00(0[1-9]|1[0-6])$",
+      "description": "Card id, must be one of UA-0001..UA-0016"
+    },
+    "vin": {"type": "string", "minLength": 1},
+    "stage": {
+      "type": "string",
+      "enum": ["kyiv", "georgia", "on_ferry", "korea"]
+    },
+    "price": {"type": "number"},
+    "photo_count": {"type": "integer", "minimum": 0},
+    "video_count": {"type": "integer", "minimum": 0},
+    "diagnostics_count": {"type": "integer", "minimum": 0},
+    "container": {"type": ["string", "null"]},
+    "media_sha256": {
+      "type": "string",
+      "description": "Combined/aggregate SHA-256 fingerprint of the card's media set, used to detect any accidental media change."
+    }
+  },
+  "additionalProperties": true,
+  "examples": [
+    {
+      "id": "UA-0009",
+      "vin": "EXAMPLE0000000001",
+      "stage": "on_ferry",
+      "price": 15900,
+      "photo_count": 24,
+      "video_count": 1,
+      "diagnostics_count": 1,
+      "container": "CONTAINER-EXAMPLE-01",
+      "media_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "countries": {
+    "korea": {
+      "code": "korea",
+      "name": {"uk": "Корея", "ru": "Корея", "ka": "კორეა"},
+      "models": [
+        {"name": "Kia K5"},
+        {"name": "Hyundai Sonata"},
+        {"name": "Hyundai Tucson"},
+        {"name": "Kia Sportage"},
+        {"name": "Hyundai Santa Fe"}
+      ]
+    },
+    "japan": {
+      "code": "japan",
+      "name": {"uk": "Японія", "ru": "Япония", "ka": "იაპონია"},
+      "models": [
+        {"name": "Nissan Note"},
+        {"name": "Toyota Aqua"},
+        {"name": "Mercedes-Benz B-Class"},
+        {"name": "Toyota Prius"},
+        {"name": "Раритетні авто 1980-1990-х років"}
+      ]
+    },
+    "usa": {
+      "code": "usa",
+      "name": {"uk": "Америка", "ru": "Америка", "ka": "აშშ"},
+      "models": [
+        {"name": "Tesla Model Y"},
+        {"name": "Tesla Model 3"},
+        {"name": "Ford Escape"},
+        {"name": "Nissan Rogue"},
+        {"name": "BMW X3"}
+      ]
+    },
+    "europe": {
+      "code": "europe",
+      "name": {"uk": "Європа", "ru": "Европа", "ka": "ევროპა"},
+      "models": [
+        {"name": "Volkswagen Golf"},
+        {"name": "Volkswagen Tiguan"},
+        {"name": "Audi Q5"},
+        {"name": "Škoda Octavia"},
+        {"name": "Renault Megane"}
+      ]
+    },
+    "china": {
+      "code": "china",
+      "name": {"uk": "Китай", "ru": "Китай", "ka": "ჩინეთი"},
+      "models": [
+        {"name": "BYD Song Plus"},
+        {"name": "Volkswagen ID.4"},
+        {"name": "BYD Yuan Plus (Atto 3)"},
+        {"name": "Zeekr 001"},
+        {"name": "BYD Seal"}
+      ]
+    },
+    "canada": {
+      "code": "canada",
+      "name": {"uk": "Канада", "ru": "Канада", "ka": "კანადა"},
+      "models": [
+        {"name": "Lexus RX 350"},
+        {"name": "Lexus RX 500"},
+        {"name": "Lexus TX"},
+        {"name": "Toyota Tacoma TRD Pro"},
+        {"name": "Toyota Tacoma Trailhunter"}
+      ]
+    },
+    "uae": {
+      "code": "uae",
+      "name": {"uk": "ОАЕ", "ru": "ОАЭ", "ka": "ემირატები"},
+      "models": [
+        {"name": "Tesla Model Y"},
+        {"name": "Tesla Model 3"},
+        {"name": "Ford Escape"},
+        {"name": "Nissan Rogue"},
+        {"name": "BMW X3"}
+      ]
+    },
+    "georgia": {
+      "code": "georgia",
+      "name": {"uk": "Грузія", "ru": "Грузия", "ka": "საქართველო"},
+      "models": [
+        {"name": "Ford Fusion / Fusion Hybrid"},
+        {"name": "Toyota Camry"},
+        {"name": "Volkswagen Jetta"},
+        {"name": "Toyota RAV4 / RAV4 Hybrid"},
+        {"name": "Subaru Forester"}
+      ]
+    }
+  },
+  "note": "UAE models are intentionally stored as a physically separate JSON array from USA, per spec Section 6, even though the owner-approved model names are currently identical."
+}
