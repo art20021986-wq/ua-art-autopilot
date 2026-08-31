@@ -6,6 +6,7 @@ import argparse
 import contextlib
 import datetime as dt
 import fcntl
+import gzip
 import hashlib
 import json
 import os
@@ -342,7 +343,15 @@ def public_targets() -> list[pathlib.Path]:
 
 
 def prune_completed_task_backups() -> list[str]:
-    """Remove only obsolete TASK099 recovery copies after a clean live gate."""
+    """Remove obsolete TASK099 recovery copies after a clean live gate.
+
+    A quota failure can interrupt ``make_backup`` before ``manifest.json`` is
+    written.  Those incomplete copies are still task-owned, can consume most
+    of the quota, and are not usable for rollback.  The caller has already
+    proved that live code and the protected CRM registry are back at the clean
+    baseline, so only exact timestamp-named children of TASK099/backups are
+    eligible here.
+    """
     root = (TASK / "backups").resolve()
     removed = []
     if not root.is_dir():
@@ -351,10 +360,11 @@ def prune_completed_task_backups() -> list[str]:
         resolved = child.resolve()
         if not child.is_dir() or resolved.parent != root:
             continue
-        if not (child / "manifest.json").is_file():
+        if not re.fullmatch(r"\d{8}T\d{6}Z", child.name):
             continue
+        state = "complete" if (child / "manifest.json").is_file() else "incomplete"
         shutil.rmtree(child)
-        removed.append(child.name)
+        removed.append(child.name + ":" + state)
     return removed
 
 
@@ -386,9 +396,14 @@ def make_backup() -> pathlib.Path:
         relative = str(path.relative_to(ROOT))
         record = {"existed": path.is_file(), "sha256": sha_file(path)}
         if path.is_file():
-            copy = backup / "files" / relative
-            copy.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(path, copy)
+            stored_relative = "files/" + relative + ".gz"
+            copy = backup / stored_relative
+            payload = gzip.compress(path.read_bytes(), compresslevel=9, mtime=0)
+            atomic_bytes(copy, payload)
+            record.update({
+                "storage": "gzip-v1", "stored_relative": stored_relative,
+                "stored_bytes": len(payload),
+            })
         manifest["files"][relative] = record
     atomic_json(backup / "manifest.json", manifest)
     return backup
@@ -403,8 +418,18 @@ def restore_files(backup: pathlib.Path) -> dict[str, Any]:
         if ROOT.resolve() not in target.parents:
             raise Blocked("RESTORE_PATH_SCOPE")
         if record.get("existed"):
-            source = backup / "files" / relative
-            atomic_bytes(target, source.read_bytes())
+            if record.get("storage") == "gzip-v1":
+                stored = str(record.get("stored_relative") or "")
+                source = (backup / stored).resolve()
+                if backup.resolve() not in source.parents or not source.is_file():
+                    raise Blocked("RESTORE_GZIP_SCOPE:" + relative)
+                data = gzip.decompress(source.read_bytes())
+            else:
+                source = backup / "files" / relative
+                data = source.read_bytes()
+            if sha_bytes(data) != record.get("sha256"):
+                raise Blocked("RESTORE_SHA_MISMATCH:" + relative)
+            atomic_bytes(target, data)
             restored.append(relative)
         elif target.is_file():
             target.unlink()

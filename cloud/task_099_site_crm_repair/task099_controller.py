@@ -338,7 +338,7 @@ def run_production() -> int:
         value["prerequisites"] = expected
         api = API()
         upload_payload(api, expected)
-        shadow = api.run("shadow")
+        shadow = api.run("shadow", timeout=600)
         require_pass(shadow, "SHADOW")
         if shadow.get("production_write") is not False or shadow.get("live_crm_write") is not False:
             raise Blocked("SHADOW_SCOPE")
@@ -346,7 +346,7 @@ def run_production() -> int:
         conflicts = active_production_conflicts()
         if conflicts:
             raise Blocked("PARALLEL_PRODUCTION_GATE_BEFORE_INSTALL:" + json.dumps(conflicts))
-        install = api.run("install", timeout=2400)
+        install = api.run("install", timeout=900)
         value["install"] = install
         require_pass(install, "INSTALL")
         installed = True
@@ -355,11 +355,11 @@ def run_production() -> int:
         value["restart"] = api.restart()
         time.sleep(18)
         value["launcher_after_restart"] = api.launcher()
-        immediate = api.run("postcheck")
+        immediate = api.run("postcheck", timeout=600)
         require_pass(immediate, "POSTCHECK")
         value["postcheck_immediate"] = immediate
         time.sleep(35)
-        delayed = api.run("postcheck")
+        delayed = api.run("postcheck", timeout=600)
         require_pass(delayed, "POSTCHECK")
         value["postcheck_delayed"] = delayed
         value["status"] = "PASS_READY_FOR_BROWSER_GATE"
