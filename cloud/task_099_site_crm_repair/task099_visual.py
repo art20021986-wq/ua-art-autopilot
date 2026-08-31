@@ -105,6 +105,17 @@ async ({kind, expectedId, settleImages}) => {
   const descriptionLabels = [...document.querySelectorAll('.zag,.tehstr>div:last-child,h2,h3')]
     .filter(el => (el.textContent || '').trim() === 'Описание').length;
   const bodyText = (document.body?.innerText || '').replace(/\s+/g, ' ').trim();
+  const homeStageCounts = {}, homeStageVisible = {};
+  document.querySelectorAll('.stage-card[data-stage]').forEach(card => {
+    const key = (card.getAttribute('data-stage') || '').toLowerCase();
+    const count = Number(card.getAttribute('data-count'));
+    if (['kiev','georgia','sea','korea'].includes(key) && Number.isFinite(count)) {
+      homeStageCounts[key] = count;
+      homeStageVisible[key] = visible(card);
+    }
+  });
+  const homeTotalNode = document.querySelector('.outline-cta i[data-ru*="Открыть все автомобили"]');
+  const homeTotalMatch = (homeTotalNode?.getAttribute('data-ru') || homeTotalNode?.textContent || '').match(/(\d+)\s*$/);
   return {
     kind, expectedId, title: document.title, bodyBytes: new TextEncoder().encode(bodyText).length,
     viewportWidth: innerWidth, documentWidth: document.documentElement.scrollWidth,
@@ -113,6 +124,8 @@ async ({kind, expectedId, settleImages}) => {
     imageCount: images.length, brokenImages: [...new Set(broken)], pendingImages: pending,
     horizontalGalleryCount: horizontalGalleries.length, galleriesExercised,
     uniqueIds, visibleIds,
+    homeStageCounts, homeStageVisible,
+    homeTotal: homeTotalMatch ? Number(homeTotalMatch[1]) : null,
     expectedIdentity: expectedId ? bodyText.includes(expectedId) : true,
     h1Visible: visible(document.querySelector('h1')),
     specCount: document.querySelectorAll('[data-ua-additional-spec="1"]').length,
@@ -154,8 +167,16 @@ def errors_for(kind: str, metrics: dict[str, Any]) -> list[str]:
         if metrics.get("imageCount", 0) < 16:
             errors.append("CATALOG_IMAGES_LT_16")
     elif kind == "home":
-        if not metrics.get("visibleIds"):
-            errors.append("HOME_VISIBLE_CARDS_ZERO")
+        counts = metrics.get("homeStageCounts") or {}
+        visible = metrics.get("homeStageVisible") or {}
+        if set(counts) != {"kiev", "georgia", "sea", "korea"}:
+            errors.append("HOME_STAGE_CARD_SET")
+        elif sum(int(value) for value in counts.values()) != 16:
+            errors.append("HOME_STAGE_COUNTS_NOT_16")
+        if metrics.get("homeTotal") != 16:
+            errors.append("HOME_TOTAL_NOT_16")
+        if set(visible) != {"kiev", "georgia", "sea", "korea"} or not all(visible.values()):
+            errors.append("HOME_STAGE_CARDS_NOT_VISIBLE")
         if metrics.get("imageCount", 0) < 1:
             errors.append("HOME_IMAGES_ZERO")
     elif kind == "card":

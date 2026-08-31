@@ -32,6 +32,7 @@ FILES = {
     "task099_remote.py": HERE / "task099_remote.py",
     "task099_patches.py": HERE / "task099_patches.py",
     "ua_additional_spec.py": HERE / "ua_additional_spec.py",
+    "home_counter_guard.py": ROOT / "cloud/task_093_home_stage_counter_sync/home_counter_guard.py",
 }
 MAX_BYTES = 20_000_000
 

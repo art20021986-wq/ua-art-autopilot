@@ -52,9 +52,12 @@ jobs:
             cloud/task_099_site_crm_repair/task099_patches.py \
             cloud/task_099_site_crm_repair/ua_additional_spec.py \
             cloud/task_099_site_crm_repair/task099_visual.py \
-            cloud/task_099_site_crm_repair/task099_finalize.py
+            cloud/task_099_site_crm_repair/task099_finalize.py \
+            cloud/task_093_home_stage_counter_sync/home_counter_guard.py
           python cloud/task_099_site_crm_repair/task099_patches.py
           python cloud/task_099_site_crm_repair/ua_additional_spec.py
+          PYTHONPATH=cloud/task_093_home_stage_counter_sync \
+            python -m unittest -v cloud/task_093_home_stage_counter_sync/test_home_counter_guard.py
 
       - name: Run backup shadow canary production and GET postchecks
         id: production

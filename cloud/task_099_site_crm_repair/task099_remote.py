@@ -8,6 +8,7 @@ import datetime as dt
 import fcntl
 import gzip
 import hashlib
+import importlib.util
 import json
 import os
 import pathlib
@@ -29,6 +30,7 @@ TASK096 = ROOT / "autopilot_inbox/cloud/task_096_tech_spec_ai_crm"
 DATA096 = TASK096 / "data_enrichment"
 DB = ROOT / "crm.db"
 HELPER = ROOT / "ua_additional_spec.py"
+HOME_GUARD = TASK / "home_counter_guard.py"
 CODE = {
     "cars_ui.py": ROOT / "cars_ui.py",
     "master_card.py": ROOT / "master_card.py",
@@ -71,6 +73,25 @@ SPEC_KEY_ALIASES = {
     "max_power": {"max_power", "maximum_power", "engine_power", "power_output"},
     "max_torque": {"max_torque", "maximum_torque", "engine_torque", "torque_output"},
 }
+HOME_ROOTS = (ROOT / "video", ROOT / "site")
+WA_START = "<!-- TASK099-WHATSAPP-OPACITY:START -->"
+WA_END = "<!-- TASK099-WHATSAPP-OPACITY:END -->"
+WA_SCRIPT = r'''<!-- TASK099-WHATSAPP-OPACITY:START -->
+<script id="task099-whatsapp-opacity">
+(function(){
+"use strict";
+function apply(){
+  var nodes=[].slice.call(document.querySelectorAll('a[href*="wa.me"],a[href*="whatsapp.com"]'));
+  var fixed=nodes.filter(function(a){
+    var s=getComputedStyle(a), r=a.getBoundingClientRect();
+    return s.position==="fixed" && r.width>=40 && r.height>=40 && r.width<=120 && r.height<=120;
+  });
+  if(fixed.length===1){fixed[0].style.opacity="0.90";fixed[0].setAttribute("data-task099-opacity","0.90");}
+}
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",apply,{once:true});}else{apply();}
+}());
+</script>
+<!-- TASK099-WHATSAPP-OPACITY:END -->'''
 
 
 class Blocked(RuntimeError):
@@ -780,6 +801,113 @@ def rollback_import(install: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def load_home_guard():
+    if not HOME_GUARD.is_file():
+        raise Blocked("HOME_COUNTER_GUARD_MISSING")
+    spec = importlib.util.spec_from_file_location("task099_home_counter_guard", HOME_GUARD)
+    if not spec or not spec.loader:
+        raise Blocked("HOME_COUNTER_GUARD_IMPORT")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def homepage_contract() -> tuple[Any, dict[str, int], list[str], dict[str, Any]]:
+    guard = load_home_guard()
+    with connect(DB, True) as conn:
+        rows = [dict(row) for row in conn.execute(
+            "SELECT * FROM cars WHERE published=1 ORDER BY auto_number,id"
+        ).fetchall()]
+    counts = guard.counts_from_rows(rows)
+    ids = sorted(str(row.get("auto_number") or "").strip().upper() for row in rows)
+    if counts.get("all") != 16 or ids != list(IDS):
+        raise Blocked("HOME_CRM_16_CONTRACT")
+    catalog_path = ROOT / "video" / "katalog.html"
+    catalog_source = catalog_path.read_text(encoding="utf-8")
+    openings = re.findall(
+        r'<(?:a|article)\b(?=[^>]*\bdata-ua-card\s*=)[^>]*>',
+        catalog_source, re.I | re.S,
+    )
+    aliases = {
+        "kiev": "kiev", "kyiv": "kiev", "georgia": "georgia", "gruzia": "georgia",
+        "sea": "sea", "more": "sea", "korea": "korea",
+    }
+    cards: dict[str, str] = {}
+    for opening in openings:
+        identity = re.search(r'\bdata-ua-card\s*=\s*["\'](UA-[0-9]{4,})["\']', opening, re.I)
+        stage = re.search(
+            r'\bdata-(?:ua-card-stage|etap|stage)\s*=\s*["\']([^"\']+)["\']',
+            opening, re.I,
+        )
+        if not identity or not stage:
+            continue
+        uid = identity.group(1).upper()
+        normalized = aliases.get(stage.group(1).casefold())
+        if not normalized or uid in cards:
+            raise Blocked("HOME_CATALOG_STAGE_OR_DUPLICATE:" + uid)
+        cards[uid] = normalized
+    catalog_counts = {"all": len(cards), "kiev": 0, "georgia": 0, "sea": 0, "korea": 0}
+    for stage in cards.values():
+        catalog_counts[stage] += 1
+    catalog = {"counts": catalog_counts, "ids": sorted(cards)}
+    if catalog_counts != counts or catalog["ids"] != ids:
+        raise Blocked(
+            "HOME_CRM_CATALOG_MISMATCH:"
+            + json.dumps({"crm": counts, "catalog": catalog}, ensure_ascii=False, sort_keys=True)
+        )
+    return guard, counts, ids, catalog
+
+
+def patch_whatsapp_opacity(source: str) -> str:
+    region = re.compile(re.escape(WA_START) + r"[\s\S]*?" + re.escape(WA_END))
+    if region.search(source):
+        return region.sub(WA_SCRIPT, source, count=1)
+    endings = list(re.finditer(r"</body\s*>", source, re.I))
+    if len(endings) != 1:
+        raise Blocked("HOME_BODY_END_COUNT:%d" % len(endings))
+    match = endings[0]
+    return source[:match.start()] + WA_SCRIPT + "\n" + source[match.start():]
+
+
+def homepage_source_errors(guard, source: str, counts: dict[str, int]) -> list[str]:
+    audit = guard.audit_home(source, counts)
+    errors = list(audit.get("errors") or []) if audit.get("status") != "PASS" else []
+    if source.count('id="task099-whatsapp-opacity"') != 1:
+        errors.append("WHATSAPP_OPACITY_SCRIPT_COUNT")
+    if 'style.opacity="0.90"' not in source:
+        errors.append("WHATSAPP_OPACITY_VALUE")
+    return errors
+
+
+def sync_homepages() -> dict[str, Any]:
+    guard, counts, ids, catalog = homepage_contract()
+    changed = []
+    audits = {}
+    for root in HOME_ROOTS:
+        path = root / "index.html"
+        if not path.is_file():
+            if root == ROOT / "video":
+                raise Blocked("VIDEO_HOME_MISSING")
+            continue
+        source = path.read_text(encoding="utf-8")
+        patched = patch_whatsapp_opacity(guard.patch_home(source, counts))
+        errors = homepage_source_errors(guard, patched, counts)
+        if errors:
+            raise Blocked("HOME_PATCH_CONTRACT:" + str(path) + ":" + ";".join(errors))
+        if patched != source:
+            atomic_bytes(path, patched.encode("utf-8"))
+            changed.append(str(path.relative_to(ROOT)))
+        audits[str(path.relative_to(ROOT))] = {
+            "sha256": sha_file(path), "errors": [],
+        }
+    return {
+        "status": "PASS", "counts": counts, "ids": ids, "catalog": catalog,
+        "changed_files": changed, "audits": audits, "whatsapp_opacity": 0.90,
+        "crm_write": False, "media_write": False,
+    }
+
+
 def patch_sources(destination: pathlib.Path | None = None) -> dict[str, Any]:
     sys.path.insert(0, str(TASK))
     import task099_patches as patches
@@ -943,6 +1071,7 @@ def install() -> dict[str, Any]:
                         and re.fullmatch(r"UA-[0-9]{4,}_\d{8}_\d{6}", child.name)):
                     shutil.rmtree(child)
                     legacy_removed.append(child.name)
+        homepage = sync_homepages()
         pages = validate_pages(helper)
         after_hash, count, identifiers = cars_hash(DB)
         if count != 16 or identifiers != list(IDS) or quick_check(DB) != "ok":
@@ -956,6 +1085,7 @@ def install() -> dict[str, Any]:
             "shadow_copy_removed_before_backup": shadow_removed_before_backup,
             "migration": migration, "publisher_probes": probes, "publisher": published,
             "catalog": {"ok": True, "detail": str(detail)[:400]}, "pages": pages,
+            "homepage": homepage,
             "publisher_batch": batch_evidence,
             "publisher_backup_prune": publisher_backup_prune,
             "transient_legacy_backups_removed": legacy_removed,
@@ -1043,6 +1173,40 @@ def postcheck() -> dict[str, Any]:
     )]
     catalog_counts = {uid: catalog_ids.count(uid) for uid in sorted(set(catalog_ids))}
     unique = sorted(set(catalog_ids))
+    home_guard, home_counts, home_ids, home_catalog = homepage_contract()
+    home_local = {}
+    for root in HOME_ROOTS:
+        path = root / "index.html"
+        if not path.is_file():
+            continue
+        source = path.read_text(encoding="utf-8")
+        errors = homepage_source_errors(home_guard, source, home_counts)
+        if errors:
+            raise Blocked("HOME_LOCAL_CONTRACT:" + str(path) + ":" + ";".join(errors))
+        home_local[str(path.relative_to(ROOT))] = {"sha256": sha_file(path), "errors": []}
+    home_attempts = []
+    home_status = None
+    public_home = ""
+    home_public_errors = []
+    for attempt in range(1, 7):
+        home_status, public_home = get_public(
+            "https://www.uaart.com.ua/video/index.html?v=%d-%d"
+            % (int(time.time()), attempt)
+        )
+        home_public_errors = (
+            homepage_source_errors(home_guard, public_home, home_counts)
+            if home_status == 200 else ["HTTP_%d" % home_status]
+        )
+        home_attempts.append({
+            "attempt": attempt, "http_status": home_status,
+            "errors": list(home_public_errors), "pass": not home_public_errors,
+        })
+        if not home_public_errors:
+            break
+        if attempt < 6:
+            time.sleep(10)
+    else:
+        raise Blocked("HOME_PUBLIC_CONTRACT:" + ";".join(home_public_errors))
     current_hash, count, identifiers = cars_hash(DB)
     if count != 16 or identifiers != list(IDS):
         raise Blocked("PRIMARY_CARS_POSTCHECK_REGISTRY")
@@ -1052,6 +1216,14 @@ def postcheck() -> dict[str, Any]:
         "main_fields_changed": False, "media_changed": False, "files": files,
         "public": public, "catalog_unique_ids": unique, "catalog_href_counts": catalog_counts,
         "catalog_design_audit": catalog_audit, "catalog_attempts": catalog_attempts,
+        "homepage": {
+            "status": "PASS", "counts": home_counts, "ids": home_ids,
+            "catalog": home_catalog, "local": home_local,
+            "public_http_status": home_status,
+            "public_sha256": sha_bytes(public_home.encode()),
+            "public_attempts": home_attempts,
+            "whatsapp_opacity": 0.90, "errors": [],
+        },
         "cars_sha256": current_hash,
         "finished_at_utc": utc_now(),
     }

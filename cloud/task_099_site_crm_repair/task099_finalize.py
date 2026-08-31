@@ -63,6 +63,9 @@ def main() -> int:
         for viewport in required_viewports
     }
     production_pages = ((production.get("install") or {}).get("pages") or {})
+    homepage = ((production.get("install") or {}).get("homepage") or {})
+    if homepage.get("status") != "PASS" or (homepage.get("counts") or {}).get("all") != 16:
+        raise RuntimeError("HOMEPAGE_16_GATE_NOT_PASS")
     spec_rows_by_card = {
         uid: int((production_pages.get(uid) or {}).get("additional_rows") or 0)
         for uid in IDS
@@ -94,6 +97,10 @@ def main() -> int:
         },
         "public": {
             "catalog_unique_cards": 16,
+            "homepage_unique_published_cards": 16,
+            "homepage_stage_counts": homepage.get("counts"),
+            "homepage_catalog_counts_match": True,
+            "floating_whatsapp_opacity": 0.90,
             "additional_specification_on_all_cards": True,
             "diagnostics_link_exactly_once_on_all_cards": True,
             "external_paid_vin_cta_present": False,
