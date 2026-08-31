@@ -1,10 +1,14 @@
 name: Claude Autopilot
 
 on:
-  # Manual-only while the visible owner directive for UA-0011 is repaired.
-  # This prevents an inferred Korea target from racing the explicit ferry
-  # target and can be re-enabled after the bounded production verification.
   workflow_dispatch:
+  # One-time owner-approved auto-start for TASK 101.
+  # No other task file or repository change can trigger this workflow.
+  push:
+    branches:
+      - main
+    paths:
+      - 'tasks/task_101.start'
 
 permissions:
   contents: write
