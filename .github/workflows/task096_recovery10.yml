@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/task096_recovery10.yml'
       - 'automation/task096_recovery10.py'
+      - 'automation/task096_recovery10_schema.py'
       - 'tasks/task_096_recovery10_approval.md'
   workflow_dispatch:
 
@@ -32,51 +33,16 @@ jobs:
           python-version: '3.11'
       - name: Install pinned parser
         run: python -m pip install --disable-pip-version-check beautifulsoup4==4.15.0
-      - name: Check approval and compile actual patched sources offline
+      - name: Verify approval and actual auto_number schema offline
         shell: bash
         run: |
           set -euo pipefail
           grep -q '^OWNER_APPROVED: YES$' tasks/task_096_recovery10_approval.md
           grep -q '^MAX_TRANSIENT_RETRIES: 10$' tasks/task_096_recovery10_approval.md
           grep -q '^PRODUCTION_AUTHORIZED: NO$' tasks/task_096_recovery10_approval.md
-          python -m py_compile automation/task096_recovery10.py
-          python automation/task096_recovery10.py --selftest
-          python - <<'PY'
-          import importlib.util, pathlib, sqlite3, types
-          path = pathlib.Path('automation/task096_recovery10.py')
-          spec = importlib.util.spec_from_file_location('recovery', path)
-          recovery = importlib.util.module_from_spec(spec)
-          spec.loader.exec_module(recovery)
-          legacy = recovery.load_legacy()
-          source = pathlib.Path('cloud/task_096_tech_spec_ai_crm/data_enrichment/remote_apply.py').read_text()
-          patched = recovery.patch_remote(source)
-          remote = types.ModuleType('remote_offline_test')
-          exec(compile(patched, 'remote_apply_patched.py', 'exec'), remote.__dict__)
-          db = sqlite3.connect(':memory:')
-          db.row_factory = sqlite3.Row
-          db.execute('CREATE TABLE cars(id TEXT, model TEXT, purchase_price TEXT)')
-          db.execute("INSERT INTO cars VALUES('UA-0015','SyntheticModel','FORBIDDEN_SENTINEL')")
-          db.commit()
-          db.set_authorizer(remote.recovery_authorizer)
-          assert 'purchase_price' not in remote.cars_snapshot(db)['rows'][0]
-          for sql in ('SELECT purchase_price FROM cars', "UPDATE cars SET model='changed'", 'DELETE FROM cars'):
-              try:
-                  db.execute(sql)
-              except sqlite3.DatabaseError:
-                  pass
-              else:
-                  raise SystemExit('PRIMARY_OR_PRICE_GUARD_FAILED')
-          db.execute('CREATE TABLE additional_specification(id INTEGER PRIMARY KEY, value TEXT)')
-          db.execute("INSERT INTO additional_specification(value) VALUES('synthetic technical value')")
-          assert db.execute('PRAGMA quick_check').fetchone()[0] == 'ok'
-          try:
-              legacy.canary_fallback()
-          except Exception as exc:
-              assert 'UNCONFIRMED_FALLBACK_FORBIDDEN' in str(exc)
-          else:
-              raise SystemExit('HARDCODED_FALLBACK_NOT_DISABLED')
-          print('TASK096_RECOVERY10_ACTUAL_SOURCE_AND_GUARD_TESTS_PASS')
-          PY
+          python -m py_compile automation/task096_recovery10.py automation/task096_recovery10_schema.py
+          python automation/task096_recovery10_schema.py --selftest
+          PYTHONPATH=automation python -c 'import task096_recovery10; task096_recovery10.load_legacy(); print("LEGACY_COMPILE_PASS")'
       - name: Start fresh attempt evidence in temporary workspace
         run: |
           out=cloud/task_096_tech_spec_ai_crm/data_enrichment
@@ -89,7 +55,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
           PYTHONUNBUFFERED: '1'
-        run: python -u automation/task096_recovery10.py
+        run: python -u automation/task096_recovery10_schema.py
       - name: Attach current-run evidence without claiming unexecuted PASS
         if: always()
         env:
