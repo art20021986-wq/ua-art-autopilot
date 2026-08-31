@@ -1,0 +1,76 @@
+name: TASK100 Homepage Live Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task100_home_live_sync.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify authorization and compile
+        run: |
+          set -euo pipefail
+          grep -q '^OWNER_APPROVED: YES$' tasks/task_100.md
+          grep -q 'opacity=0.90' tasks/task_100.md
+          grep -q 'никаких hardcoded 13' tasks/task_100.md
+          python -m py_compile cloud/task_100_home_live_sync/controller.py cloud/task_100_home_live_sync/remote_patch.py cloud/task_093_home_stage_counter_sync/home_counter_guard.py
+          python -m unittest -v cloud/task_093_home_stage_counter_sync/test_home_counter_guard.py
+      - name: Wait in production writer queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          python automation/production_queue.py self-test
+          python automation/production_queue.py wait --task 100 --timeout-seconds 1200 --stable-polls 2
+      - name: Backup, repair and verify locally
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python cloud/task_100_home_live_sync/controller.py
+      - name: Public cache-busted verification
+        run: |
+          python - <<'PY'
+          import json, pathlib, time, urllib.request
+          p=pathlib.Path('cloud/task_100_home_live_sync/evidence.json')
+          e=json.loads(p.read_text(encoding='utf-8'))
+          assert e.get('status')=='PASS', e.get('errors')
+          c=e['counts']; total=int(c['all'])
+          assert total>=16
+          assert total==sum(int(c[k]) for k in ('kiev','georgia','sea','korea'))
+          url='https://www.uaart.com.ua/video/index.html?task100_verify='+str(time.time_ns())
+          req=urllib.request.Request(url,headers={'User-Agent':'UA-ART-TASK100/1','Cache-Control':'no-cache'})
+          with urllib.request.urlopen(req,timeout=40) as r:
+              assert r.status==200
+              text=r.read(8*1024*1024).decode('utf-8','replace')
+          assert ('Открыть все автомобили · %d'%total) in text
+          assert text.count('id="task100-whatsapp-opacity"')==1
+          assert 'style.opacity="0.90"' in text
+          print('TASK100_PUBLIC_PASS',c)
+          PY
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task100-home-live-sync-${{ github.run_id }}
+          path: cloud/task_100_home_live_sync/evidence.json
+          if-no-files-found: warn
+          retention-days: 14
