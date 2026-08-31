@@ -825,33 +825,28 @@ def homepage_contract() -> tuple[Any, dict[str, int], list[str], dict[str, Any]]
         raise Blocked("HOME_CRM_16_CONTRACT")
     catalog_path = ROOT / "video" / "katalog.html"
     catalog_source = catalog_path.read_text(encoding="utf-8")
-    openings = re.findall(
-        r'<(?:a|article)\b(?=[^>]*\bdata-ua-card\s*=)[^>]*>',
-        catalog_source, re.I | re.S,
-    )
-    aliases = {
-        "kiev": "kiev", "kyiv": "kiev", "georgia": "georgia", "gruzia": "georgia",
-        "sea": "sea", "more": "sea", "korea": "korea",
+    # Use the approved catalog design guard as the single parser.  In the
+    # restored catalog the card identity lives in a nested VIN block while
+    # the stage lives on the enclosing <article>; requiring both attributes
+    # on one opening tag incorrectly reported an empty catalog after a valid
+    # 16-card publish.
+    sys.path.insert(0, str(ROOT))
+    import catalog_design_guard as catalog_guard
+    golden = catalog_guard.GOLDEN_PATH.read_text(encoding="utf-8")
+    catalog_audit = catalog_guard.audit_catalog(catalog_source, rows, golden)
+    catalog = {
+        "status": catalog_audit.get("status"),
+        "errors": list(catalog_audit.get("errors") or []),
+        "counts": dict(catalog_audit.get("counts") or {}),
+        "ids": sorted(str(value).upper() for value in (catalog_audit.get("ids") or [])),
+        "shell_fingerprint": catalog_audit.get("shell_fingerprint"),
     }
-    cards: dict[str, str] = {}
-    for opening in openings:
-        identity = re.search(r'\bdata-ua-card\s*=\s*["\'](UA-[0-9]{4,})["\']', opening, re.I)
-        stage = re.search(
-            r'\bdata-(?:ua-card-stage|etap|stage)\s*=\s*["\']([^"\']+)["\']',
-            opening, re.I,
+    if catalog["status"] != "PASS":
+        raise Blocked(
+            "HOME_CATALOG_DESIGN_CONTRACT:"
+            + json.dumps(catalog, ensure_ascii=False, sort_keys=True)[:1600]
         )
-        if not identity or not stage:
-            continue
-        uid = identity.group(1).upper()
-        normalized = aliases.get(stage.group(1).casefold())
-        if not normalized or uid in cards:
-            raise Blocked("HOME_CATALOG_STAGE_OR_DUPLICATE:" + uid)
-        cards[uid] = normalized
-    catalog_counts = {"all": len(cards), "kiev": 0, "georgia": 0, "sea": 0, "korea": 0}
-    for stage in cards.values():
-        catalog_counts[stage] += 1
-    catalog = {"counts": catalog_counts, "ids": sorted(cards)}
-    if catalog_counts != counts or catalog["ids"] != ids:
+    if catalog["counts"] != counts or catalog["ids"] != ids:
         raise Blocked(
             "HOME_CRM_CATALOG_MISMATCH:"
             + json.dumps({"crm": counts, "catalog": catalog}, ensure_ascii=False, sort_keys=True)
