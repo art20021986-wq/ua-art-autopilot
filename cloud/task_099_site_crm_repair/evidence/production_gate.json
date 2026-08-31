@@ -1,9 +1,9 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "errors": [
-    "Blocked:SHADOW_FAIL:[\"Blocked:MISSING:receipt_batch.json\"]"
+    "Blocked:PARALLEL_PRODUCTION_GATE_BEFORE_INSTALL:[{\"id\": 33369482693, \"name\": \"TASK099 Site and CRM Production Completion\", \"status\": \"pending\"}]"
   ],
-  "finished_at_utc": "2026-08-31T07:39:35Z",
+  "finished_at_utc": "2026-08-31T07:42:29Z",
   "github_comment_published": false,
   "issue_35_closed": false,
   "mode": "OWNER_APPROVED_PRODUCTION",
@@ -18,6 +18,223 @@
       "publish_transaction_guard.py": "73cfe1a01b6e705587f574c4a1407291941da76dbe15a1fe577f90f874a1644e"
     },
     "status": "PASS",
+    "task096_batch_fallback": {
+      "additional_spec_total_rows": 18,
+      "autopublication": false,
+      "bot_code_changed": false,
+      "contract_id": "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT",
+      "finished_at_utc": "2026-08-31T03:40:13Z",
+      "inserted_count": 0,
+      "live_crm_write": false,
+      "main_fields_changed": false,
+      "mode": "batch",
+      "per_car": [
+        {
+          "car_uid": "UA-0001",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0002",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0003",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0004",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0005",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0006",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0007",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0008",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0009",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0010",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0011",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0012",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0013",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0014",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        },
+        {
+          "car_uid": "UA-0015",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 1.0,
+          "rejected": 0,
+          "status": "ALREADY_CANARY"
+        },
+        {
+          "car_uid": "UA-0016",
+          "facts_received": 0,
+          "inserted": 0,
+          "match_score": 0.0,
+          "rejected": 0,
+          "status": "NO_CONFIDENT_MATCH"
+        }
+      ],
+      "phase": "DATA_BATCH",
+      "processed_uids": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013",
+        "UA-0014",
+        "UA-0015",
+        "UA-0016"
+      ],
+      "production_authorized": false,
+      "production_touched": false,
+      "public_path_write": false,
+      "purchase_price_extracted": false,
+      "purchase_price_logged": false,
+      "purchase_price_uploaded": false,
+      "rejected_count": 0,
+      "sandbox_db_name": "crm_task096_sandbox_20260830T171209Z.db",
+      "sandbox_quick_check": "ok",
+      "services_restarted": false,
+      "source_urls_exposed_in_preview": false,
+      "started_from_candidate": "candidate_batch.json",
+      "status": "PASS",
+      "task_id": "task_096",
+      "ua0015_additional_rows": 18,
+      "ua0015_preview_relative_path": "data_enrichment/ua0015_preview.html"
+    },
+    "task096_canary_fallback": {
+      "additional_spec_total_rows": 18,
+      "autopublication": false,
+      "bot_code_changed": false,
+      "contract_id": "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT",
+      "finished_at_utc": "2026-08-31T03:38:14Z",
+      "inserted_count": 2,
+      "live_crm_write": false,
+      "main_fields_changed": false,
+      "mode": "canary",
+      "per_car": [
+        {
+          "car_uid": "UA-0015",
+          "facts_received": 13,
+          "inserted": 2,
+          "match_score": 0.82,
+          "rejected": 11,
+          "status": "MATCHED"
+        }
+      ],
+      "phase": "DATA_CANARY",
+      "processed_uids": [
+        "UA-0015"
+      ],
+      "production_authorized": false,
+      "production_touched": false,
+      "public_path_write": false,
+      "purchase_price_extracted": false,
+      "purchase_price_logged": false,
+      "purchase_price_uploaded": false,
+      "rejected_count": 11,
+      "sandbox_db_name": "crm_task096_sandbox_20260830T171209Z.db",
+      "sandbox_quick_check": "ok",
+      "services_restarted": false,
+      "source_urls_exposed_in_preview": false,
+      "started_from_candidate": "candidate_canary.json",
+      "status": "PASS",
+      "task_id": "task_096",
+      "ua0015_additional_rows": 18,
+      "ua0015_preview_relative_path": "data_enrichment/ua0015_preview.html"
+    },
     "task096_canary_rows": 18,
     "task096_processed_uids": [
       "UA-0001",
@@ -37,8 +254,198 @@
       "UA-0015",
       "UA-0016"
     ],
-    "task096_run_id": "33354251767"
+    "task096_run_id": "33354251767",
+    "task096_sandbox_db_name": "crm_task096_sandbox_20260830T171209Z.db"
   },
-  "started_at_utc": "2026-08-31T07:36:49Z",
+  "shadow": {
+    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "contracts": {
+      "UA-0001": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0002": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0003": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0004": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0005": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0006": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0007": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0008": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0009": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0010": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0011": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0012": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0013": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0014": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0015": {
+        "additional_rows": 21,
+        "errors": []
+      },
+      "UA-0016": {
+        "additional_rows": 0,
+        "errors": []
+      }
+    },
+    "finished_at_utc": "2026-08-31T07:42:15Z",
+    "gate": {
+      "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "clean_rollback_schema": [
+        "primary_field_registry",
+        "price_denylist",
+        "additional_specification",
+        "additional_specification_meta",
+        "additional_specification_rejections",
+        "additional_specification_audit",
+        "additional_specification_import_runs"
+      ],
+      "residual_data_counts": {
+        "additional_specification": 0,
+        "additional_specification_audit": 0,
+        "additional_specification_meta": 0,
+        "additional_specification_rejections": 0
+      },
+      "row_count": 16,
+      "source_sha256": {
+        "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
+        "master_card.py": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74",
+        "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a",
+        "publish_transaction_guard.py": "73cfe1a01b6e705587f574c4a1407291941da76dbe15a1fe577f90f874a1644e"
+      }
+    },
+    "live_crm_write": false,
+    "migration": {
+      "cars_sha256_after": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "inserted_count": 21,
+      "inserted_ids": [
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156
+      ],
+      "main_fields_changed": false,
+      "per_uid": {
+        "UA-0001": 0,
+        "UA-0002": 0,
+        "UA-0003": 0,
+        "UA-0004": 0,
+        "UA-0005": 0,
+        "UA-0006": 0,
+        "UA-0007": 0,
+        "UA-0008": 0,
+        "UA-0009": 0,
+        "UA-0010": 0,
+        "UA-0011": 0,
+        "UA-0012": 0,
+        "UA-0013": 0,
+        "UA-0014": 0,
+        "UA-0015": 21,
+        "UA-0016": 0
+      },
+      "run_id": "shadow-20260831T074213Z"
+    },
+    "mode": "SHADOW",
+    "patched": {
+      "cars_ui.py": {
+        "after": "0fb6993bb3b9737bbd0e78a7def376ac9c5ba872683af0fe4ce41ddb4c91d8ad",
+        "before": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15"
+      },
+      "master_card.py": {
+        "after": "61cfd310a7cc9c857c09da775a74352b5d1b60bbe373fc14d39d9d984558e791",
+        "before": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74"
+      },
+      "publikaciya.py": {
+        "after": "29f391985885889781458d05b9bf4d882437083455098258d91abca2d367277c",
+        "before": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
+      },
+      "publish_transaction_guard.py": {
+        "after": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+        "before": "73cfe1a01b6e705587f574c4a1407291941da76dbe15a1fe577f90f874a1644e"
+      }
+    },
+    "production_write": false,
+    "pruned_completed_task099_backups": [
+      "20260831T072211Z:complete"
+    ],
+    "public_write": false,
+    "status": "PASS",
+    "task096_canary_rows": 21,
+    "task096_evidence_source": "LIVE_TASK096_RECEIPTS",
+    "task096_processed": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ]
+  },
+  "started_at_utc": "2026-08-31T07:39:50Z",
   "status": "BLOCKED"
 }
