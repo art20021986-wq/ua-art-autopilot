@@ -73,7 +73,7 @@ async ({kind, expectedId, settleImages}) => {
     const pictureSource = img.parentElement?.tagName === 'PICTURE' &&
       [...img.parentElement.querySelectorAll('source')].some(source =>
         Boolean((source.getAttribute('srcset') || source.getAttribute('data-srcset') || '').trim()));
-    return candidates.some(Boolean) || Boolean(pictureSource);
+    return candidates.some(Boolean) || Boolean(pictureSource) || visible(img);
   });
   const horizontalGalleries = [...document.querySelectorAll('.lenta,.mini_r,.catalog-grid,.gal')]
     .filter(el => el.scrollWidth > el.clientWidth + 1);
