@@ -4,9 +4,9 @@
   "contract_id": "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT",
   "database_downloaded": false,
   "errors": [
-    "ControllerError:CONSOLE_SEND_INPUT_HTTP_412"
+    "RuntimeError:REMOTE_EXIT_1:CAR_UID_COLUMN_NOT_FOUND"
   ],
-  "finished_at_utc": "2026-08-30T19:47:19Z",
+  "finished_at_utc": "2026-08-31T00:43:31Z",
   "live_crm_write": false,
   "main_fields_changed": false,
   "phase": "DATA_ENRICHMENT_SANDBOX",
@@ -18,5 +18,9 @@
   "purchase_price_uploaded": false,
   "services_restarted": false,
   "status": "FAIL",
-  "task_id": "task_096"
+  "task_id": "task_096",
+  "recovery_workflow_run_id": "33345327016",
+  "recovery_workflow_sha": "2b4c378544dc3bb4474c5fc42e710aba5ebcddf6",
+  "transport": "SCHEDULED_ONE_SHOT",
+  "max_transient_retries": 10
 }

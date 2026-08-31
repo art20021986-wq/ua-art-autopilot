@@ -2,6 +2,6 @@
 
 **Status:** FAIL
 
-Ошибка: `ControllerError:CONSOLE_SEND_INPUT_HTTP_412`
+Ошибка: `RuntimeError:REMOTE_EXIT_1:CAR_UID_COLUMN_NOT_FOUND`
 
 Production, рабочая CRM, бот и сайт не изменялись.
