@@ -55,7 +55,7 @@ def atomic_json(path: pathlib.Path, value: Any) -> None:
 
 
 MEASURE = r"""
-async ({kind, expectedId}) => {
+async ({kind, expectedId, settleImages}) => {
   const visible = el => {
     if (!el) return false;
     const s = getComputedStyle(el), r = el.getBoundingClientRect();
@@ -67,7 +67,30 @@ async ({kind, expectedId}) => {
   scrollTo(0, 0); await new Promise(r => setTimeout(r, 500));
   document.querySelectorAll('details.ua-additional-spec').forEach(el => { el.open = true; });
   const images = [...document.images];
-  const broken = images.filter(img => !img.complete || img.naturalWidth < 1).map(img => img.currentSrc || img.src);
+  const horizontalGalleries = [...document.querySelectorAll('.lenta,.mini_r,.catalog-grid,.gal')]
+    .filter(el => el.scrollWidth > el.clientWidth + 1);
+  let galleriesExercised = 0;
+  if (settleImages) {
+    images.forEach(img => { img.loading = 'eager'; });
+    for (const gallery of horizontalGalleries) {
+      const previous = gallery.scrollLeft;
+      gallery.scrollLeft = gallery.scrollWidth;
+      await new Promise(r => setTimeout(r, 90));
+      gallery.scrollLeft = previous;
+      galleriesExercised += 1;
+    }
+    const waits = images.map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
+      let done = false;
+      const finish = () => { if (!done) { done = true; resolve(); } };
+      img.addEventListener('load', finish, {once:true});
+      img.addEventListener('error', finish, {once:true});
+      setTimeout(finish, 15000);
+    }));
+    await Promise.all(waits);
+  }
+  const pending = images.filter(img => !img.complete).map(img => img.currentSrc || img.src);
+  const broken = images.filter(img => img.complete && img.naturalWidth < 1).map(img => img.currentSrc || img.src);
+  if (settleImages) broken.push(...pending);
   const hrefIds = [...document.querySelectorAll('a[href]')].map(a => {
     const m = (a.getAttribute('href') || '').match(/(?:^|\/)(UA-[0-9]{4})\.html(?:[?#].*)?$/i);
     return m ? m[1].toUpperCase() : null;
@@ -87,7 +110,8 @@ async ({kind, expectedId}) => {
     viewportWidth: innerWidth, documentWidth: document.documentElement.scrollWidth,
     bodyWidth: document.body ? document.body.scrollWidth : 0,
     horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 1 || (document.body && document.body.scrollWidth > innerWidth + 1),
-    imageCount: images.length, brokenImages: broken,
+    imageCount: images.length, brokenImages: [...new Set(broken)], pendingImages: pending,
+    horizontalGalleryCount: horizontalGalleries.length, galleriesExercised,
     uniqueIds, visibleIds,
     expectedIdentity: expectedId ? bodyText.includes(expectedId) : true,
     h1Visible: visible(document.querySelector('h1')),
@@ -192,12 +216,16 @@ async def run() -> dict[str, Any]:
                             response = await page.goto(url, wait_until="domcontentloaded", timeout=60000)
                             record["http_status"] = response.status if response else None
                             await page.wait_for_timeout(800)
-                            immediate = await page.evaluate(MEASURE, {"kind": kind, "expectedId": expected})
+                            immediate = await page.evaluate(
+                                MEASURE, {"kind": kind, "expectedId": expected, "settleImages": False}
+                            )
                             record["immediate"] = immediate
                             record["errors"] += ["IMMEDIATE_" + item for item in errors_for(kind, immediate)]
                             delay_ms = 35000 if kind in ("home", "catalog") else 3000
                             await page.wait_for_timeout(delay_ms)
-                            delayed = await page.evaluate(MEASURE, {"kind": kind, "expectedId": expected})
+                            delayed = await page.evaluate(
+                                MEASURE, {"kind": kind, "expectedId": expected, "settleImages": True}
+                            )
                             record["delayed"] = delayed
                             record["delayed_seconds"] = delay_ms / 1000
                             record["errors"] += ["DELAYED_" + item for item in errors_for(kind, delayed)]

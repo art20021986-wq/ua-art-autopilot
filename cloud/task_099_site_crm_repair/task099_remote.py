@@ -742,18 +742,51 @@ def postcheck() -> dict[str, Any]:
         if errors:
             raise Blocked("PUBLIC_HTTP_CONTRACT:" + uid + ":" + ";".join(errors))
         public[uid] = {"status": status, "sha256": sha_bytes(source.encode()), "errors": []}
-    status, catalog = get_public("https://www.uaart.com.ua/video/katalog.html?v=%d" % int(time.time()))
+    # The approved catalog deliberately has two links per card (photo and
+    # arrow).  Counting hrefs as cards caused a false rollback after a valid
+    # 16-card install.  Validate the rendered public HTML with the same
+    # design contract that built it, and allow a bounded propagation window.
+    import catalog_design_guard as catalog_guard
+    with connect(DB, True) as conn:
+        catalog_rows = [dict(row) for row in conn.execute(
+            "SELECT * FROM cars WHERE published=1 ORDER BY auto_number,id"
+        ).fetchall()]
+    golden = catalog_guard.GOLDEN_PATH.read_text(encoding="utf-8")
+    catalog_attempts = []
+    catalog_audit = None
+    catalog = ""
+    status = None
+    for attempt in range(1, 7):
+        status, catalog = get_public(
+            "https://www.uaart.com.ua/video/katalog.html?v=%d-%d"
+            % (int(time.time()), attempt)
+        )
+        try:
+            audit = catalog_guard.audit_catalog(catalog, catalog_rows, golden)
+        except Exception as exc:
+            audit = {"status": "FAIL", "errors": [type(exc).__name__ + ":" + str(exc)[:300]]}
+        ids = [str(value).upper() for value in audit.get("ids") or []]
+        ok = status == 200 and audit.get("status") == "PASS" and sorted(ids) == list(IDS)
+        catalog_attempts.append({
+            "attempt": attempt, "http_status": status, "audit_status": audit.get("status"),
+            "ids": ids, "errors": list(audit.get("errors") or []), "pass": ok,
+        })
+        catalog_audit = audit
+        if ok:
+            break
+        if attempt < 6:
+            time.sleep(10)
+    else:
+        raise Blocked(
+            "PUBLIC_CATALOG_16_CONTRACT:"
+            + json.dumps(catalog_attempts[-1], ensure_ascii=False, sort_keys=True)[:1200]
+        )
     catalog_ids = [value.upper() for value in re.findall(
         r"href\s*=\s*['\"](?:https?://[^'\"]+)?(?:[^'\"]*/)?"
-        r"(UA-[0-9]{4})\.html(?:\?[^'\"]*)?['\"]",
-        catalog,
-        re.I,
+        r"(UA-[0-9]{4})\.html(?:\?[^'\"]*)?['\"]", catalog, re.I,
     )]
     catalog_counts = {uid: catalog_ids.count(uid) for uid in sorted(set(catalog_ids))}
-    unique = sorted(catalog_counts)
-    if (status != 200 or unique != list(IDS)
-            or any(catalog_counts.get(uid) != 1 for uid in IDS)):
-        raise Blocked("PUBLIC_CATALOG_16_CONTRACT")
+    unique = sorted(set(catalog_ids))
     current_hash, count, identifiers = cars_hash(DB)
     if count != 16 or identifiers != list(IDS):
         raise Blocked("PRIMARY_CARS_POSTCHECK_REGISTRY")
@@ -762,6 +795,7 @@ def postcheck() -> dict[str, Any]:
         "production_write": False, "crm_write": False, "public_write": False,
         "main_fields_changed": False, "media_changed": False, "files": files,
         "public": public, "catalog_unique_ids": unique, "catalog_href_counts": catalog_counts,
+        "catalog_design_audit": catalog_audit, "catalog_attempts": catalog_attempts,
         "cars_sha256": current_hash,
         "finished_at_utc": utc_now(),
     }
