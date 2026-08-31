@@ -1,0 +1,131 @@
+name: TASK 102 SEO read-only audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task102_seo_audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task102-seo-readonly-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile generated executable
+        run: python3 -m py_compile cloud/seo_korea_kyiv_001/seo_korea_kyiv_001.py
+      - name: Read-only PythonAnywhere and public HTTPS audit
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, re, urllib.error, urllib.parse, urllib.request
+          from pathlib import Path
+
+          token=os.environ.get('PYTHONANYWHERE_API_TOKEN','')
+          if not token:
+              raise SystemExit('PYTHONANYWHERE_API_TOKEN missing')
+          base='https://www.pythonanywhere.com/api/v0/user/Carix'
+          origin='https://www.uaart.com.ua'
+
+          def pa_read(path):
+              url=base+'/files/path'+urllib.parse.quote(path,safe='/')
+              req=urllib.request.Request(url,headers={'Authorization':'Token '+token,'User-Agent':'task102-readonly-audit/1'})
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r:
+                      body=r.read(25*1024*1024)
+                      return {'status':int(r.status),'body':body}
+              except urllib.error.HTTPError as e:
+                  return {'status':int(e.code),'body':e.read(4096)}
+
+          def public_get(path):
+              url=origin+path
+              req=urllib.request.Request(url,headers={'User-Agent':'task102-readonly-audit/1'})
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r:
+                      body=r.read(3*1024*1024)
+                      return {'status':int(r.status),'url':r.geturl(),'content_type':r.headers.get('Content-Type',''),'body':body}
+              except urllib.error.HTTPError as e:
+                  return {'status':int(e.code),'url':url,'content_type':e.headers.get('Content-Type','') if e.headers else '', 'body':e.read(4096)}
+              except Exception as e:
+                  return {'status':0,'url':url,'error':type(e).__name__+':'+str(e),'content_type':'','body':b''}
+
+          def html_facts(raw):
+              text=raw.decode('utf-8','ignore')
+              def one(pat):
+                  m=re.search(pat,text,re.I|re.S)
+                  return re.sub(r'\s+',' ',m.group(1)).strip() if m else None
+              return {
+                  'title':one(r'<title[^>]*>(.*?)</title>'),
+                  'h1':one(r'<h1[^>]*>(.*?)</h1>'),
+                  'canonical':one(r'<link\b(?=[^>]*\brel=["\'][^"\']*canonical[^"\']*["\'])[^>]*\bhref=["\']([^"\']+)["\']'),
+                  'robots_meta':one(r'<meta\b(?=[^>]*\bname=["\'](?:robots|googlebot)["\'])[^>]*\bcontent=["\']([^"\']+)["\']'),
+                  'lang':one(r'<html[^>]*\blang=["\']([^"\']+)["\']'),
+              }
+
+          result={'contract':'SEO-KOREA-KYIV-001','mode':'READ_ONLY_AUDIT','production_write':False,'files':{},'public':{},'cards':[]}
+          paths=[
+              '/home/Carix/robots.txt','/home/Carix/sitemap.xml',
+              '/home/Carix/video/robots.txt','/home/Carix/video/sitemap.xml',
+              '/home/Carix/video/index.html','/home/Carix/video/katalog.html','/home/Carix/video/podbor.html','/home/Carix/video/info.html',
+              '/home/Carix/site/robots.txt','/home/Carix/site/sitemap.xml',
+              '/home/Carix/site/index.html','/home/Carix/site/katalog.html','/home/Carix/site/podbor.html','/home/Carix/site/info.html',
+              '/var/www/www_uaart_com_ua_wsgi.py',
+          ]
+          for p in paths:
+              r=pa_read(p); entry={'status':r['status']}
+              if r['status']==200:
+                  entry['bytes']=len(r['body']); entry['sha256']=hashlib.sha256(r['body']).hexdigest()
+                  if p.endswith(('.html','.py','.txt','.xml')):
+                      text=r['body'].decode('utf-8','ignore')
+                      entry['snippet']=re.sub(r'\s+',' ',text[:500]).strip()
+                  if p.endswith('.html'):
+                      entry['html']=html_facts(r['body'])
+                  if p.endswith('wsgi.py'):
+                      text=r['body'].decode('utf-8','ignore').lower()
+                      entry['routing_markers']={k:(k in text) for k in ['robots.txt','sitemap.xml','/video/','send_file','send_from_directory','static_file','redirect']}
+              result['files'][p]=entry
+
+          for n in range(1,51):
+              cid=f'UA-{n:04d}'
+              p=f'/home/Carix/video/{cid}.html'
+              r=pa_read(p)
+              if r['status']!=200:
+                  continue
+              text=r['body'].decode('utf-8','ignore')
+              vins=sorted(set(re.findall(r'\b[A-HJ-NPR-Z0-9]{17}\b',text.upper())))
+              result['cards'].append({'id':cid,'sha256':hashlib.sha256(r['body']).hexdigest(),'bytes':len(r['body']),'vins':vins,'html':html_facts(r['body'])})
+
+          for path in ['/','/robots.txt','/sitemap.xml','/video/robots.txt','/video/sitemap.xml','/video/index.html','/video/katalog.html','/video/podbor.html','/video/info.html','/site/index.html','/site/katalog.html']:
+              r=public_get(path)
+              entry={k:v for k,v in r.items() if k!='body'}
+              if r.get('body'):
+                  entry['bytes']=len(r['body']); entry['sha256']=hashlib.sha256(r['body']).hexdigest()
+                  if 'html' in entry.get('content_type','').lower() or path.endswith('.html') or path=='/':
+                      entry['html']=html_facts(r['body'])
+                  else:
+                      entry['snippet']=re.sub(r'\s+',' ',r['body'].decode('utf-8','ignore')[:1000]).strip()
+              result['public'][path]=entry
+
+          result['card_count']=len(result['cards'])
+          Path('cloud/seo_korea_kyiv_001/evidence').mkdir(parents=True,exist_ok=True)
+          Path('cloud/seo_korea_kyiv_001/evidence/read_only_audit.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('TASK102_AUDIT_JSON_BEGIN')
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          print('TASK102_AUDIT_JSON_END')
+          PY
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task102-seo-readonly-audit-${{ github.run_id }}
+          path: cloud/seo_korea_kyiv_001/evidence/read_only_audit.json
+          retention-days: 30
