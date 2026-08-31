@@ -2,6 +2,6 @@
 
 **Status:** FAIL
 
-Ошибка: `ControllerError:ANTHROPIC_HTTP_400`
+Ошибка: `ControllerError:UA0015_PREVIEW_LEAK`
 
 Production, рабочая CRM, бот и сайт не изменялись.
