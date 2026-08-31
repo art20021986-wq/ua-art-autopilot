@@ -1,0 +1,84 @@
+name: TASK099 16-card site and CRM live audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task099_live_audit.yml'
+      - 'automation/task099_live_audit.py'
+      - 'tasks/task_099.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task099-site-crm-completion
+  cancel-in-progress: false
+
+jobs:
+  fresh-get-only-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - name: Prove GET-only contract
+        run: |
+          python -W error -m py_compile automation/task099_live_audit.py
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('automation/task099_live_audit.py').read_text(encoding='utf-8')
+          assert 'method="GET"' in source
+          for forbidden in ('method="POST"','method="PUT"','method="PATCH"','method="DELETE"'):
+              assert forbidden not in source, forbidden
+          print('TASK099_GET_ONLY_STATIC_PASS')
+          PY
+      - name: Capture fresh 16-card production state
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python -u automation/task099_live_audit.py
+      - name: Validate read-only evidence
+        run: |
+          python - <<'PY'
+          import json
+          p='cloud/task_099_site_crm_repair/evidence/live_audit.json'
+          v=json.load(open(p,encoding='utf-8'))
+          assert v['status']=='PASS_READ_ONLY',v['errors']
+          assert v['http_methods']==['GET']
+          assert v['production_touched'] is False and v['crm_write'] is False and v['site_write'] is False
+          assert v['database']['quick_check']=='ok' and v['database']['row_count']==16
+          assert v['database']['ids']==[f'UA-{n:04d}' for n in range(1,17)]
+          print('TASK099_LIVE_AUDIT_PASS')
+          PY
+      - name: Persist bounded evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          summary=cloud/task_099_site_crm_repair/evidence/live_audit.json
+          test -f "$summary"
+          git add -- "$summary"
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name task099-audit
+          git config user.email actions@users.noreply.github.com
+          git commit -m 'task099: record fresh 16-card live audit'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort || true; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 3))
+          done
+          exit 1
+      - name: Upload exact source bundle
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task099-live-audit-${{ github.run_id }}
+          path: |
+            cloud/task_099_site_crm_repair/evidence/live_audit.json
+            cloud/task_099_site_crm_repair/evidence/source_bundle.json
+          if-no-files-found: error
+          retention-days: 14
