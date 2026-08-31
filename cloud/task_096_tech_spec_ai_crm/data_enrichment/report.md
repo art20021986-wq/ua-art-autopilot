@@ -2,6 +2,6 @@
 
 **Status:** FAIL
 
-Ошибка: `RuntimeError:REMOTE_EXIT_1:CAR_UID_COLUMN_NOT_FOUND`
+Ошибка: `ControllerError:ANTHROPIC_HTTP_400`
 
 Production, рабочая CRM, бот и сайт не изменялись.
