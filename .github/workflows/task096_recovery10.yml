@@ -1,0 +1,180 @@
+name: TASK 096 Recovery10 Scheduled Sandbox
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task096_recovery10.yml'
+      - 'automation/task096_recovery10.py'
+      - 'tasks/task_096_recovery10_approval.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task096-data-enrichment-sandbox
+  cancel-in-progress: false
+
+jobs:
+  scheduled-canary-and-batch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 125
+    steps:
+      - name: Checkout exact triggering revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install pinned parser
+        run: python -m pip install --disable-pip-version-check beautifulsoup4==4.15.0
+      - name: Check approval and compile actual patched sources offline
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^OWNER_APPROVED: YES$' tasks/task_096_recovery10_approval.md
+          grep -q '^MAX_TRANSIENT_RETRIES: 10$' tasks/task_096_recovery10_approval.md
+          grep -q '^PRODUCTION_AUTHORIZED: NO$' tasks/task_096_recovery10_approval.md
+          python -m py_compile automation/task096_recovery10.py
+          python automation/task096_recovery10.py --selftest
+          python - <<'PY'
+          import importlib.util, pathlib, sqlite3, types
+          path = pathlib.Path('automation/task096_recovery10.py')
+          spec = importlib.util.spec_from_file_location('recovery', path)
+          recovery = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(recovery)
+          legacy = recovery.load_legacy()
+          source = pathlib.Path('cloud/task_096_tech_spec_ai_crm/data_enrichment/remote_apply.py').read_text()
+          patched = recovery.patch_remote(source)
+          remote = types.ModuleType('remote_offline_test')
+          exec(compile(patched, 'remote_apply_patched.py', 'exec'), remote.__dict__)
+          db = sqlite3.connect(':memory:')
+          db.row_factory = sqlite3.Row
+          db.execute('CREATE TABLE cars(id TEXT, model TEXT, purchase_price TEXT)')
+          db.execute("INSERT INTO cars VALUES('UA-0015','SyntheticModel','FORBIDDEN_SENTINEL')")
+          db.commit()
+          db.set_authorizer(remote.recovery_authorizer)
+          assert 'purchase_price' not in remote.cars_snapshot(db)['rows'][0]
+          for sql in ('SELECT purchase_price FROM cars', "UPDATE cars SET model='changed'", 'DELETE FROM cars'):
+              try:
+                  db.execute(sql)
+              except sqlite3.DatabaseError:
+                  pass
+              else:
+                  raise SystemExit('PRIMARY_OR_PRICE_GUARD_FAILED')
+          db.execute('CREATE TABLE additional_specification(id INTEGER PRIMARY KEY, value TEXT)')
+          db.execute("INSERT INTO additional_specification(value) VALUES('synthetic technical value')")
+          assert db.execute('PRAGMA quick_check').fetchone()[0] == 'ok'
+          try:
+              legacy.canary_fallback()
+          except Exception as exc:
+              assert 'UNCONFIRMED_FALLBACK_FORBIDDEN' in str(exc)
+          else:
+              raise SystemExit('HARDCODED_FALLBACK_NOT_DISABLED')
+          print('TASK096_RECOVERY10_ACTUAL_SOURCE_AND_GUARD_TESTS_PASS')
+          PY
+      - name: Start fresh attempt evidence in temporary workspace
+        run: |
+          out=cloud/task_096_tech_spec_ai_crm/data_enrichment
+          rm -f "$out/evidence.json" "$out/report.md" "$out/cards_summary.json" "$out/ua0015_preview.html" "$out/recovery10_status.json"
+      - name: Execute scheduled UA-0015 canary then gated sandbox batch
+        id: execution
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          PYTHONUNBUFFERED: '1'
+        run: python -u automation/task096_recovery10.py
+      - name: Attach current-run evidence without claiming unexecuted PASS
+        if: always()
+        env:
+          EXECUTION_OUTCOME: ${{ steps.execution.outcome }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          out = pathlib.Path('cloud/task_096_tech_spec_ai_crm/data_enrichment')
+          out.mkdir(parents=True, exist_ok=True)
+          path = out / 'evidence.json'
+          value = json.loads(path.read_text()) if path.exists() else {'task_id':'task_096','status':'FAIL','errors':['RECOVERY_EXECUTION_NOT_COMPLETED']}
+          if os.environ.get('EXECUTION_OUTCOME') != 'success':
+              value['status'] = 'FAIL'
+          value['recovery_workflow_run_id'] = os.environ['GITHUB_RUN_ID']
+          value['recovery_workflow_sha'] = os.environ['GITHUB_SHA']
+          value['production_authorized'] = False
+          value['transport'] = 'SCHEDULED_ONE_SHOT'
+          value['max_transient_retries'] = 10
+          path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+          if not (out / 'report.md').exists():
+              (out / 'report.md').write_text('# TASK 096 Recovery10\n\nStatus: FAIL. See current-run evidence. No completed enrichment is claimed.\n')
+          PY
+      - name: Check bounded output paths and preview
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=cloud/task_096_tech_spec_ai_crm/data_enrichment
+          test -z "$(find "$out" -type f \( -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' \) -print)"
+          if [ -f "$out/ua0015_preview.html" ]; then
+            grep -qi noindex "$out/ua0015_preview.html"
+            ! grep -Eqi 'https?://|[$€£₴₽₩¥]' "$out/ua0015_preview.html"
+          fi
+      - name: Save sanitized recovery evidence to GitHub
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=cloud/task_096_tech_spec_ai_crm/data_enrichment
+          git restore -- "$out/remote_apply.py"
+          for name in evidence.json report.md cards_summary.json ua0015_preview.html recovery10_status.json; do
+            if [ -f "$out/$name" ]; then git add -- "$out/$name"; fi
+          done
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name task096-recovery10
+          git config user.email actions@users.noreply.github.com
+          git commit -m 'task096: record scheduled recovery10 evidence'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort; exit 1; }
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 5))
+          done
+          exit 1
+      - name: Upload sanitized recovery artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task096-recovery10-${{ github.run_id }}
+          path: |
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/evidence.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/report.md
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/cards_summary.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/ua0015_preview.html
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/recovery10_status.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Require actual data-canary and all 16 processed before PASS
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          out = pathlib.Path('cloud/task_096_tech_spec_ai_crm/data_enrichment')
+          value = json.loads((out / 'evidence.json').read_text())
+          assert value.get('recovery_workflow_run_id') == os.environ['GITHUB_RUN_ID']
+          assert value.get('status') in ('PASS','PASS_WITH_WARNINGS'), value.get('errors')
+          for key in ('production_touched','live_crm_write','main_fields_changed','public_path_write','bot_code_changed','services_restarted','autopublication','purchase_price_extracted','purchase_price_logged','purchase_price_uploaded','production_authorized','database_downloaded'):
+              assert value.get(key) is False, key
+          canary, batch = value.get('canary') or {}, value.get('batch') or {}
+          assert canary.get('status') == 'PASS' and canary.get('phase') == 'DATA_CANARY'
+          assert int(canary.get('ua0015_additional_rows') or 0) >= 8
+          assert batch.get('status') == 'PASS' and batch.get('phase') == 'DATA_BATCH'
+          assert sorted(set(batch.get('processed_uids') or [])) == [f'UA-{n:04d}' for n in range(1,17)]
+          assert (out / 'ua0015_preview.html').is_file()
+          print('TASK096_RECOVERY10_DATA_ENRICHMENT_PASS')
+          PY
