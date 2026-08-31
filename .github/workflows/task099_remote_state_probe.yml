@@ -1,0 +1,122 @@
+name: TASK099 Remote Read Only Probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task099_remote_state_probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Capture bounded PythonAnywhere task state
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          import pathlib
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          base = "https://www.pythonanywhere.com/api/v0/user/Carix/"
+          token = (os.environ.get("PYTHONANYWHERE_API_TOKEN") or "").strip()
+          if not token:
+              raise SystemExit("PYTHONANYWHERE_API_TOKEN missing")
+
+          def get(url, allowed=(200, 404)):
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "Authorization": "Token " + token,
+                      "User-Agent": "ua-art-task099-read-only-probe/1",
+                  },
+                  method="GET",
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      return int(response.status), response.read(2_000_001)
+              except urllib.error.HTTPError as exc:
+                  if int(exc.code) not in allowed:
+                      raise
+                  return int(exc.code), exc.read(2_000_001)
+
+          def objects(payload):
+              if isinstance(payload, list):
+                  return payload
+              if isinstance(payload, dict):
+                  for key in ("results", "objects", "tasks"):
+                      if isinstance(payload.get(key), list):
+                          return payload[key]
+              return []
+
+          def task_summary(item):
+              return {
+                  key: item.get(key)
+                  for key in (
+                      "id", "description", "enabled", "running", "status",
+                      "interval", "hour", "minute", "last_run_at", "next_run_at",
+                  )
+                  if key in item
+              }
+
+          report = {
+              "status": "PASS_READ_ONLY",
+              "captured_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
+              "http_methods": ["GET"],
+              "task_lists": {},
+              "receipts": {},
+          }
+          for kind in ("always_on", "schedule"):
+              status, raw = get(base + kind + "/", allowed=(200,))
+              payload = json.loads(raw.decode("utf-8"))
+              matching = []
+              for item in objects(payload):
+                  if not isinstance(item, dict):
+                      continue
+                  haystack = " ".join(str(item.get(key) or "") for key in ("description", "command"))
+                  if "TASK099" in haystack.upper() or "task099" in haystack:
+                      matching.append(task_summary(item))
+              report["task_lists"][kind] = {"http_status": status, "matching": matching}
+
+          remote = "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/"
+          for name in (
+              "partial_probe_receipt.json",
+              "partial_resume_receipt.json",
+              "install_receipt.json",
+              "postcheck_receipt.json",
+          ):
+              url = base + "files/path" + urllib.parse.quote(remote + name, safe="/")
+              status, raw = get(url)
+              record = {"http_status": status, "exists": status == 200}
+              if status == 200:
+                  value = json.loads(raw.decode("utf-8"))
+                  record.update({
+                      key: value.get(key)
+                      for key in ("status", "mode", "finished_at_utc", "errors")
+                      if key in value
+                  })
+              report["receipts"][name] = record
+
+          path = pathlib.Path("task099_remote_state.json")
+          path.write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(report, ensure_ascii=False, sort_keys=True))
+          PY
+
+      - name: Upload read-only state
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task099-remote-state-${{ github.run_id }}
+          path: task099_remote_state.json
+          if-no-files-found: error
+          retention-days: 7
