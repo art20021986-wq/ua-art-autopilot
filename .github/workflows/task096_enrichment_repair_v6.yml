@@ -1,0 +1,81 @@
+name: TASK096 Enrichment Repair v6
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task096_enrichment_repair_v6.yml'
+      - 'automation/task096_enrichment_repair_v6.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task096-autorun
+  cancel-in-progress: false
+
+jobs:
+  sandbox-repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Verify approval and repair legacy controller syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^OWNER_APPROVED: YES$' tasks/task096_autorun_orchestrator_v1_approval.md
+          grep -q '^PRODUCTION_AUTHORIZED: NO$' tasks/task096_autorun_orchestrator_v1_approval.md
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('automation/task096_data_enrichment_controller.py')
+          s=p.read_text(encoding='utf-8')
+          old='{"\\n\\n".join(source_blocks)}'
+          new='{(chr(10)*2).join(source_blocks)}'
+          if old in s:
+              s=s.replace(old,new,1)
+              p.write_text(s,encoding='utf-8')
+          PY
+          python -m py_compile automation/task096_data_enrichment_controller.py automation/task096_enrichment_repair_v2.py automation/task096_enrichment_repair_v6.py cloud/task_096_tech_spec_ai_crm/data_enrichment/remote_semantic_cleanup.py
+      - name: Install parser
+        run: python -m pip install --disable-pip-version-check beautifulsoup4==4.15.0
+      - name: Run autonomous sandbox repair
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: claude-sonnet-5
+        run: PYTHONPATH=automation python -u automation/task096_enrichment_repair_v6.py
+      - name: Require safe 16-card evidence
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('cloud/task_096_tech_spec_ai_crm/data_enrichment')
+          e=json.loads((root/'evidence.json').read_text())
+          s=json.loads((root/'cards_summary.json').read_text())
+          assert e.get('semantic_dedup_pass') is True, e
+          for key in ('production_touched','live_crm_write','public_path_write','purchase_price_extracted'):
+              assert e.get(key) is False,(key,e.get(key))
+          ids=sorted(set((e.get('batch') or {}).get('processed_uids') or []))
+          assert ids == [f'UA-{n:04d}' for n in range(1,17)], ids
+          assert len(s.get('cards') or []) == 16
+          print('TASK096_V6_BUSINESS_SANDBOX_PASS')
+          PY
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task096-enrichment-repair-v6-${{ github.run_id }}
+          path: |
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/evidence.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/cards_summary.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/report.md
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/ua0015_preview.html
+          if-no-files-found: error
+          retention-days: 14
