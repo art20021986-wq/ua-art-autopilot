@@ -375,9 +375,11 @@ def inject_public_spec(source: str, value: Any) -> str:
     uid = canonical_uid(value)
     if not source or not uid:
         return source
-    stage_match = re.search(r"data-ua-stage=['\"](\d+)['\"]", source, re.I)
     video_match = re.search(r"data-ua-video-count=['\"](\d+)['\"]", source, re.I)
-    stage = int(stage_match.group(1)) if stage_match else None
+    # The operator CRM status is authoritative.  Generated legacy HTML may
+    # contain more than one stale data-ua-stage attribute while wrappers are
+    # being normalized, so it must not decide the public CTA.
+    stage = _stage_number(uid)
     videos = int(video_match.group(1)) if video_match else None
     source = re.sub(re.escape(START) + r"[\s\S]*?" + re.escape(END), "", source)
     source = re.sub(re.escape(VIN_START) + r"[\s\S]*?" + re.escape(VIN_END), "", source)

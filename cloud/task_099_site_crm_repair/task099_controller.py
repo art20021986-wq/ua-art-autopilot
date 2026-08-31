@@ -109,8 +109,16 @@ def validate_prerequisites() -> dict[str, Any]:
         raise Blocked("TASK099_CRM_REGISTRY")
     if sorted(database.get("published_ids") or []) != ["UA-%04d" % n for n in range(1, 17)]:
         raise Blocked("TASK099_PUBLISHED_16")
-    if database.get("additional_table_counts"):
-        raise Blocked("TASK099_ADDITIONAL_TABLES_ALREADY_EXIST")
+    residual = database.get("additional_table_counts") or {}
+    forbidden_residual = {
+        name: int(count or 0) for name, count in residual.items()
+        if name in (
+            "additional_specification", "additional_specification_meta",
+            "additional_specification_rejections", "additional_specification_audit",
+        ) and int(count or 0) != 0
+    }
+    if forbidden_residual:
+        raise Blocked("TASK099_ADDITIONAL_DATA_ALREADY_EXISTS:" + json.dumps(forbidden_residual))
     files = audit.get("files") or {}
     expected = {}
     for name in ("cars_ui.py", "master_card.py", "publikaciya.py"):
@@ -142,6 +150,7 @@ def validate_prerequisites() -> dict[str, Any]:
         "task096_run_id": task096.get("recovery_workflow_run_id"),
         "task096_canary_rows": canary.get("ua0015_additional_rows"),
         "task096_processed_uids": batch.get("processed_uids"),
+        "clean_rollback_schema_detected": bool(residual),
     }
 
 

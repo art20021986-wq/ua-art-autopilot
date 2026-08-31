@@ -180,9 +180,19 @@ def require_live_gate() -> dict[str, Any]:
         raise Blocked("LIVE_CRM_REGISTRY")
     with connect(DB, True) as conn:
         existing = [name for name in TABLES if table_exists(conn, name)]
-    if existing:
-        raise Blocked("LIVE_ADDITIONAL_TABLES_UNEXPECTED:" + ",".join(existing))
-    return {"source_sha256": expected, "cars_sha256": current_hash, "row_count": count}
+        residual_counts = {}
+        for name in (
+            "additional_specification", "additional_specification_meta",
+            "additional_specification_rejections", "additional_specification_audit",
+        ):
+            residual_counts[name] = int(conn.execute('SELECT COUNT(*) FROM "' + name + '"').fetchone()[0]) if table_exists(conn, name) else 0
+    nonempty = {name: value for name, value in residual_counts.items() if value}
+    if nonempty:
+        raise Blocked("LIVE_ADDITIONAL_DATA_UNEXPECTED:" + json.dumps(nonempty, sort_keys=True))
+    return {
+        "source_sha256": expected, "cars_sha256": current_hash, "row_count": count,
+        "clean_rollback_schema": existing, "residual_data_counts": residual_counts,
+    }
 
 
 SCHEMA = """
