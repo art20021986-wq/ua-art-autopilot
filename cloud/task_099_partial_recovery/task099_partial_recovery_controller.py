@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""GitHub-side controller for the exact TASK099 partial-install recovery.\n\nRetry marker: compressed-backup partial v2.\n"""
+"""GitHub-side controller for the exact TASK099 partial-install recovery.
+
+Retry marker: compressed-backup partial v2.
+"""
 from __future__ import annotations
 
 import argparse
@@ -36,26 +39,39 @@ def run_custom(api: core.API, mode: str, timeout: int) -> dict[str, Any]:
     command = "cd %s && python3.10 %s %s" % (core.REMOTE, REMOTE_WORKER, mode)
     description = "TASK099 partial recovery %s %s" % (mode, os.environ.get("GITHUB_RUN_ID", ""))
     form = urllib.parse.urlencode({"command": command, "description": description, "enabled": "true"}).encode()
-    status, body = api.request(
-        "POST", core.BASE + "always_on/", form,
-        {"Content-Type": "application/x-www-form-urlencoded"}, allowed=(200, 201, 202, 400, 403, 404, 409),
-    )
-    identifier = api.object_id(body) if status in (200, 201, 202) else None
-    if identifier:
-        trigger = ("always_on", identifier)
-    else:
-        at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=2)
-        form = urllib.parse.urlencode({
-            "command": command, "description": description + " fallback", "enabled": "true",
-            "interval": "daily", "hour": at.hour, "minute": at.minute,
-        }).encode()
-        _, body = api.request("POST", core.BASE + "schedule/", form,
-                              {"Content-Type": "application/x-www-form-urlencoded"}, allowed=(200, 201, 202))
-        identifier = api.object_id(body)
-        if not identifier:
-            raise Blocked("RECOVERY_TRIGGER_MISSING")
-        trigger = ("schedule", identifier)
+    triggers: list[tuple[str, int]] = []
     try:
+        status, body = api.request(
+            "POST", core.BASE + "always_on/", form,
+            {"Content-Type": "application/x-www-form-urlencoded"},
+            allowed=(200, 201, 202, 400, 403, 404, 409),
+        )
+        identifier = api.object_id(body) if status in (200, 201, 202) else None
+        if identifier:
+            triggers.append(("always_on", identifier))
+        else:
+            # PythonAnywhere can occasionally miss a task created close to its
+            # target minute.  Three idempotent, spaced fallbacks prevent a
+            # silent 24-hour wait; the worker's lock/receipt guard makes extra
+            # invocations no-ops and every unused task is removed below.
+            origin = dt.datetime.now(dt.timezone.utc)
+            for sequence, minutes in enumerate((3, 7, 11), start=1):
+                at = origin + dt.timedelta(minutes=minutes)
+                scheduled = urllib.parse.urlencode({
+                    "command": command,
+                    "description": description + " fallback-%d" % sequence,
+                    "enabled": "true", "interval": "daily",
+                    "hour": at.hour, "minute": at.minute,
+                }).encode()
+                _, body = api.request(
+                    "POST", core.BASE + "schedule/", scheduled,
+                    {"Content-Type": "application/x-www-form-urlencoded"},
+                    allowed=(200, 201, 202),
+                )
+                identifier = api.object_id(body)
+                if not identifier:
+                    raise Blocked("RECOVERY_TRIGGER_MISSING:%d" % sequence)
+                triggers.append(("schedule", identifier))
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             raw = api.read(receipt, missing=True)
@@ -64,7 +80,11 @@ def run_custom(api: core.API, mode: str, timeout: int) -> dict[str, Any]:
             time.sleep(5)
         raise Blocked("RECOVERY_RECEIPT_TIMEOUT:" + mode)
     finally:
-        api.delete_trigger(trigger)
+        for trigger in triggers:
+            try:
+                api.delete_trigger(trigger)
+            except Exception:
+                pass
 
 
 def read_audit() -> dict[str, Any]:
@@ -86,7 +106,7 @@ def write(value: dict[str, Any]) -> None:
 
 
 def rollback(api: core.API, value: dict[str, Any]) -> None:
-    result = api.run("rollback", timeout=900)
+    result = run_custom(api, "rollback", timeout=1200)
     core.require_pass(result, "ROLLBACK")
     value["rollback"] = result
     value["rollback_restart"] = api.restart()
@@ -114,11 +134,11 @@ def run() -> int:
         worker = HERE / REMOTE_WORKER
         compile(worker.read_text(encoding="utf-8"), REMOTE_WORKER, "exec")
         api.upload(core.REMOTE + "/" + REMOTE_WORKER, worker.read_bytes())
-        probe = run_custom(api, "probe", 600)
+        probe = run_custom(api, "probe", 900)
         if probe.get("status") != "PASS" or probe.get("mode") != "PROBE" or probe.get("lock_free") is not True:
             raise Blocked("PARTIAL_PROBE_FAIL:" + json.dumps(probe.get("errors") or []))
         value["probe"] = probe
-        resume = run_custom(api, "resume", 2400)
+        resume = run_custom(api, "resume", 3900)
         value["install"] = resume
         core.require_pass(resume, "INSTALL")
         installed = True
@@ -128,11 +148,11 @@ def run() -> int:
         value["restart"] = api.restart()
         time.sleep(18)
         value["launcher_after_restart"] = api.launcher()
-        immediate = api.run("postcheck", timeout=600)
+        immediate = run_custom(api, "postcheck", timeout=1200)
         core.require_pass(immediate, "POSTCHECK")
         value["postcheck_immediate"] = immediate
         time.sleep(35)
-        delayed = api.run("postcheck", timeout=600)
+        delayed = run_custom(api, "postcheck", timeout=1200)
         core.require_pass(delayed, "POSTCHECK")
         value["postcheck_delayed"] = delayed
         value["status"] = "PASS_READY_FOR_BROWSER_GATE"

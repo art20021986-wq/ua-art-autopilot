@@ -240,7 +240,14 @@ def resume() -> dict[str, Any]:
         "main_fields_changed": False,
     }
     try:
-        published = [isolated_publish(uid) for uid in IDS]
+        published = []
+        for uid in IDS:
+            base.atomic_json(TASK / "partial_resume_progress.json", {
+                "contract_id": CONTRACT, "status": "RUNNING", "mode": "INSTALL",
+                "completed_ids": [item["uid"] for item in published],
+                "current_uid": uid, "updated_at_utc": base.utc_now(),
+            })
+            published.append(isolated_publish(uid))
         catalog = isolated_catalog()
         sys.path.insert(0, str(ROOT))
         import importlib
@@ -261,6 +268,11 @@ def resume() -> dict[str, Any]:
             "pages": pages, "cars_sha256_after": current_hash, "finished_at_utc": base.utc_now(),
         }
         base.atomic_json(TASK / "install_receipt.json", receipt)
+        base.atomic_json(TASK / "partial_resume_progress.json", {
+            "contract_id": CONTRACT, "status": "PASS", "mode": "INSTALL",
+            "completed_ids": list(IDS), "current_uid": None,
+            "updated_at_utc": base.utc_now(),
+        })
         return receipt
     except Exception:
         base.restore_files(backup)
@@ -270,13 +282,38 @@ def resume() -> dict[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("mode", choices=("probe", "resume"))
+    parser.add_argument("mode", choices=("probe", "resume", "postcheck", "rollback"))
     args = parser.parse_args()
     receipt = TASK / ("partial_" + args.mode + "_receipt.json")
+    expected_mode = {
+        "probe": "PROBE", "resume": "INSTALL",
+        "postcheck": "POSTCHECK", "rollback": "ROLLBACK",
+    }[args.mode]
+    if receipt.is_file():
+        try:
+            existing = base.read_json(receipt)
+        except Exception:
+            existing = {}
+        if existing.get("status") == "PASS" and existing.get("mode") == expected_mode:
+            print(json.dumps({"status": "PASS", "mode": expected_mode, "reused": True}))
+            return 0
     value = {"contract_id": CONTRACT, "status": "FAIL", "mode": args.mode.upper(), "errors": []}
     try:
         with task_lock_nonblocking():
-            value = probe() if args.mode == "probe" else resume()
+            value = {
+                "probe": probe,
+                "resume": resume,
+                "postcheck": base.postcheck,
+                "rollback": base.rollback,
+            }[args.mode]()
+    except Blocked as exc:
+        if str(exc) == "TASK099_LOCK_BUSY":
+            # A sibling fallback is already doing the work.  Do not replace
+            # its future PASS receipt with a synthetic lock failure.
+            print(json.dumps({"status": "WAITING", "mode": expected_mode, "lock_busy": True}))
+            return 75
+        value["errors"].append(type(exc).__name__ + ":" + str(exc)[:1400])
+        value["finished_at_utc"] = base.utc_now()
     except Exception as exc:
         value["errors"].append(type(exc).__name__ + ":" + str(exc)[:1400])
         value["finished_at_utc"] = base.utc_now()
