@@ -28,7 +28,7 @@ FILES = (
     "stranica.py", "yadro.py", "team_bot.py", "card_render.py", "konteyner.py",
 )
 FUNCTION_NAME = re.compile(
-    r"(?:card|car|kartoch|sobrat|html|menu|publish|spec|render|build|open|toggle|field|schema|status|stage|diag|diagnost|container|cta|opis|otpravit|additional|accordion)",
+    r"(?:card|car|kartoch|sobrat|html|menu|publish|publik|obnovit|peresobrat|register|handler|spec|render|build|open|toggle|field|schema|status|stage|diag|diagnost|container|cta|opis|otpravit|additional|accordion)",
     re.I,
 )
 MAX_BYTES = 15_000_000
