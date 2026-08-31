@@ -1,18 +1,18 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
-  "generated_at_utc": "2026-08-31T04:13:08.594698+00:00",
+  "generated_at_utc": "2026-08-31T04:59:41.092486+00:00",
   "github_comment_published": false,
   "issue_35_closed": false,
   "issue_35_ready_to_close": false,
   "newer_fail_observed": true,
   "production_errors": [
-    "Blocked:INSTALL_FAIL:[\"OSError:[Errno 122] Disk quota exceeded\"]"
+    "Blocked:REMOTE_RECEIPT_TIMEOUT:install"
   ],
   "production_status": "BLOCKED",
   "status": "FAIL",
   "task_id": "task_099",
   "visual_errors": [],
   "visual_status": "NOT_RUN",
-  "workflow_run_id": "33356041118",
-  "workflow_sha": "316d465ec94b2437c6e976613a7f5ae5e01054ff"
+  "workflow_run_id": "33356552705",
+  "workflow_sha": "9daec155a4a8ef2cc3ff1b6e3efa5d48f9685bad"
 }

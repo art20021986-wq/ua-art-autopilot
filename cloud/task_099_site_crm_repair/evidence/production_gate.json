@@ -1,23 +1,14 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
   "errors": [
-    "Blocked:INSTALL_FAIL:[\"OSError:[Errno 122] Disk quota exceeded\"]"
+    "Blocked:REMOTE_RECEIPT_TIMEOUT:install"
   ],
-  "finished_at_utc": "2026-08-31T04:13:08Z",
+  "finished_at_utc": "2026-08-31T04:59:41Z",
   "github_comment_published": false,
-  "install": {
-    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
-    "errors": [
-      "OSError:[Errno 122] Disk quota exceeded"
-    ],
-    "finished_at_utc": "2026-08-31T04:12:26Z",
-    "mode": "INSTALL",
-    "status": "FAIL"
-  },
   "issue_35_closed": false,
   "mode": "OWNER_APPROVED_PRODUCTION",
   "prerequisites": {
-    "audit_finished_at_utc": "2026-08-31T04:07:07Z",
+    "audit_finished_at_utc": "2026-08-31T04:16:13Z",
     "clean_rollback_schema_detected": true,
     "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
     "source_sha256": {
@@ -115,7 +106,7 @@
         "errors": []
       }
     },
-    "finished_at_utc": "2026-08-31T04:10:20Z",
+    "finished_at_utc": "2026-08-31T04:19:14Z",
     "gate": {
       "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "clean_rollback_schema": [
@@ -146,24 +137,24 @@
       "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
       "inserted_count": 18,
       "inserted_ids": [
-        19,
-        20,
-        21,
-        22,
-        23,
-        24,
-        25,
-        26,
-        27,
-        28,
-        29,
-        30,
-        31,
-        32,
-        33,
-        34,
-        35,
-        36
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54
       ],
       "main_fields_changed": false,
       "per_uid": {
@@ -184,7 +175,7 @@
         "UA-0015": 18,
         "UA-0016": 0
       },
-      "run_id": "shadow-20260831T041018Z"
+      "run_id": "shadow-20260831T041912Z"
     },
     "mode": "SHADOW",
     "patched": {
@@ -202,6 +193,10 @@
       }
     },
     "production_write": false,
+    "pruned_completed_task099_backups": [
+      "20260831T040411Z",
+      "20260831T041210Z"
+    ],
     "public_write": false,
     "status": "PASS",
     "task096_canary_rows": 18,
@@ -224,6 +219,6 @@
       "UA-0016"
     ]
   },
-  "started_at_utc": "2026-08-31T04:08:19Z",
+  "started_at_utc": "2026-08-31T04:17:28Z",
   "status": "BLOCKED"
 }
