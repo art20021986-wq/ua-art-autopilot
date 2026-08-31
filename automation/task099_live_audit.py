@@ -200,6 +200,14 @@ def public_record(api: ReadOnly, path: str) -> dict:
         counts[identifier] = counts.get(identifier, 0) + 1
     identity = re.search(r"/(UA-[0-9]{4,})(?:-diag)?\.html$", path, re.I)
     expected = identity.group(1).upper() if identity else None
+    contract_comments = []
+    for comment in re.findall(r"<!--[\s\S]{0,500}?-->", text):
+        if re.search(r"(?:UA0?68|VIN|DIAG|STAGE|MCF|UA-ART)", comment, re.I):
+            contract_comments.append(re.sub(r"\s+", " ", comment).strip()[:500])
+    carhistory_context = []
+    for match in re.finditer(r"carhistory", text, re.I):
+        fragment = text[max(0, match.start() - 450):min(len(text), match.end() + 450)]
+        carhistory_context.append(re.sub(r"\s+", " ", fragment).strip()[:1000])
     return {
         "status": status, "bytes": len(body), "sha256": sha(body), "final_url": final_url,
         "redirected": final_url.rstrip("/") != (PUBLIC + path).rstrip("/"),
@@ -210,6 +218,8 @@ def public_record(api: ReadOnly, path: str) -> dict:
         "complex_diagnostics_count": text.count("Комплексная диагностика"),
         "description_heading_count": len(re.findall(r">\s*Описание\s*<", text, re.I)),
         "old_sea_wording": bool(re.search(r"\b(?:В море|в море)\b", text)),
+        "contract_comments": contract_comments[:30],
+        "carhistory_context": carhistory_context[:5],
     }
 
 
