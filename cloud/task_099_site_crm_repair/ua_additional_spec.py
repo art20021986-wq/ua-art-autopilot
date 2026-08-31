@@ -49,6 +49,9 @@ UNIT_ALIASES = {
     "hp": ("hp", "лс", "л.с"),
     "лс": ("hp", "лс", "л.с"),
     "л.с.": ("hp", "лс", "л.с"),
+    "ps": ("ps", "hp", "лс", "л.с"),
+    "kgf·m": ("kgf·m", "kgfm", "кгс·м", "кгс м"),
+    "кгс·м": ("kgf·m", "kgfm", "кгс·м", "кгс м"),
     "l": ("l", "л"),
     "л": ("l", "л"),
 }
@@ -641,4 +644,6 @@ if __name__ == "__main__":
     assert canonical_uid("UA-9") == "UA-0009"
     assert canonical_uid("UA-0016") == "UA-0016"
     assert PRICE_RE.search("purchase price")
+    assert _value_with_unit("151 л.с. при 6200 об/мин", "PS") == "151 л.с. при 6200 об/мин"
+    assert _value_with_unit("19.8 кгс·м при 4200 об/мин", "kgf·m") == "19.8 кгс·м при 4200 об/мин"
     print("UA099_ADDITIONAL_SPEC_SELFTEST_PASS")
