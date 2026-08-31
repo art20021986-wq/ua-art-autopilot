@@ -50,8 +50,12 @@ def load_fixed_legacy():
     return mod
 
 
+# Install the fixed loader both on the schema module and on the recovery module
+# that actually executes TASK 096.
 schema.load_compatible_legacy = load_fixed_legacy
+schema.recovery.load_legacy = load_fixed_legacy
 
 if __name__ == "__main__":
-    # revision 2: explicit trigger after workflow installation
-    sys.exit(schema.main())
+    # Run the schema/safety self-test first, then execute the real recovery entrypoint.
+    schema.selftest_actual_schema()
+    sys.exit(schema.recovery.main())
