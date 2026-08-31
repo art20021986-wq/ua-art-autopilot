@@ -86,6 +86,14 @@ jobs:
               "bytes": len(guard_source),
               "sha256": hashlib.sha256(guard_source).hexdigest(),
           }
+          publisher_url = base + "files/path/home/Carix/publikaciya.py"
+          publisher_status, publisher_source = get(publisher_url, allowed=(200,))
+          pathlib.Path("publikaciya.py").write_bytes(publisher_source)
+          report["publikaciya"] = {
+              "http_status": publisher_status,
+              "bytes": len(publisher_source),
+              "sha256": hashlib.sha256(publisher_source).hexdigest(),
+          }
           for kind in ("always_on", "schedule"):
               status, raw = get(base + kind + "/", allowed=(200,))
               payload = json.loads(raw.decode("utf-8"))
@@ -132,5 +140,6 @@ jobs:
           path: |
             task099_remote_state.json
             publish_transaction_guard.py
+            publikaciya.py
           if-no-files-found: error
           retention-days: 7
