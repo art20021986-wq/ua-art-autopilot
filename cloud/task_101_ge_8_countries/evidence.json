@@ -1,0 +1,32 @@
+{
+  "task_id": "task_101",
+  "generated_by": "CLAUDE_AUTOPILOT",
+  "context_bundle_sha256": "2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c",
+  "memory_version_read": 4,
+  "execution_environment": "cloud-only, no production/CRM/PythonAnywhere access",
+  "safety_flags": {
+    "production_touched": false,
+    "crm_touched": false,
+    "public_files_touched": false,
+    "pythonanywhere_touched": false,
+    "services_reloaded": false,
+    "live_visual_check_performed": false,
+    "live_http_check_performed": false
+  },
+  "ua0009_safe_to_publish": "NO",
+  "ua0009_note": "Per canonical shared memory REC-0005/REC-0006/REC-0007, UA-0009 publication readiness is NOT_PROVEN. This task does not change that status. The card_guard_manifest.schema.json defines a dedicated UA-0009 gate that must independently read PASS with real evidence before any publish step, in a future task.",
+  "checks": [
+    { "item": "countries_models.json is valid JSON with 8 countries and 40 total models", "status": "VERIFIED", "method": "static authoring + manual count in this package" },
+    { "item": "localization_dictionary.json is valid JSON with ru/uk/ka fallback contract", "status": "VERIFIED", "method": "static authoring in this package" },
+    { "item": "card_guard_manifest.schema.json is valid JSON Schema", "status": "VERIFIED", "method": "static authoring in this package" },
+    { "item": "implementation.patch applies cleanly to live source files", "status": "PENDING", "method": "requires canonical source file evidence not available to Claude, see baseline_audit.md" },
+    { "item": "Homepage server HTML shows 16/3/1/8/4 without JS", "status": "PENDING", "method": "requires live HTML capture, not performed in this task" },
+    { "item": "All 16 cards UA-0001..UA-0016 unchanged after any future install", "status": "PENDING", "method": "requires BEFORE/AFTER manifest execution in Sandbox" },
+    { "item": "UA-0009 SAFE CHECK", "status": "PENDING", "method": "requires dedicated evidence run per card_guard_manifest.schema.json" },
+    { "item": "Telegram WebApp / deep-link backward compatibility", "status": "PENDING", "method": "requires Sandbox bot test, not performed in this task" },
+    { "item": "Viewport/device test matrix (360-1440px + iPhone Safari)", "status": "PENDING", "method": "requires Sandbox browser testing, not performed in this task" },
+    { "item": "Georgian native-language review of key strings", "status": "PENDING", "method": "requires human native speaker sign-off before Production" }
+  ],
+  "fabricated_results": "NONE — every PENDING item above genuinely was not executed in this task",
+  "generated_at_utc": "2026-08-31T00:00:00Z"
+}

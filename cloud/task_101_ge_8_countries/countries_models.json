@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "schema_note": "8 stable country codes for the Auto-under-order block. Grid layout is strict 4 top / 4 bottom in the order given by 'order'. USA and UAE are stored as independent arrays even though their launch model sets are identical, per explicit owner instruction.",
+  "grid": {
+    "row_1": ["korea", "japan", "usa", "europe"],
+    "row_2": ["china", "canada", "uae", "georgia"]
+  },
+  "countries": [
+    {
+      "code": "korea",
+      "order": 1,
+      "flag": "\uD83C\uDDF0\uD83C\uDDF7",
+      "names": { "ru": "Корея", "uk": "Корея", "ka": "კორეა" },
+      "models": [
+        "Kia K5",
+        "Hyundai Sonata",
+        "Hyundai Tucson",
+        "Kia Sportage",
+        "Hyundai Santa Fe"
+      ]
+    },
+    {
+      "code": "japan",
+      "order": 2,
+      "flag": "\uD83C\uDDEF\uD83C\uDDF5",
+      "names": { "ru": "Япония", "uk": "Японія", "ka": "იაპონია" },
+      "models": [
+        "Nissan Note",
+        "Toyota Aqua",
+        "Mercedes-Benz B-Class",
+        "Toyota Prius",
+        "Раритетные авто 1980-1990-х годов"
+      ]
+    },
+    {
+      "code": "usa",
+      "order": 3,
+      "flag": "\uD83C\uDDFA\uD83C\uDDF8",
+      "names": { "ru": "Америка", "uk": "Америка", "ka": "აშშ" },
+      "models": [
+        "Tesla Model Y",
+        "Tesla Model 3",
+        "Ford Escape",
+        "Nissan Rogue",
+        "BMW X3"
+      ]
+    },
+    {
+      "code": "europe",
+      "order": 4,
+      "flag": "\uD83C\uDDEA\uD83C\uDDFA",
+      "names": { "ru": "Европа", "uk": "Європа", "ka": "ევროპა" },
+      "models": [
+        "Volkswagen Golf",
+        "Volkswagen Tiguan",
+        "Audi Q5",
+        "Škoda Octavia",
+        "Renault Megane"
+      ]
+    },
+    {
+      "code": "china",
+      "order": 5,
+      "flag": "\uD83C\uDDE8\uD83C\uDDF3",
+      "names": { "ru": "Китай", "uk": "Китай", "ka": "ჩინეთი" },
+      "models": [
+        "BYD Song Plus",
+        "Volkswagen ID.4",
+        "BYD Yuan Plus (Atto 3)",
+        "Zeekr 001",
+        "BYD Seal"
+      ]
+    },
+    {
+      "code": "canada",
+      "order": 6,
+      "flag": "\uD83C\uDDE8\uD83C\uDDE6",
+      "names": { "ru": "Канада", "uk": "Канада", "ka": "კანადა" },
+      "models": [
+        "Lexus RX 350",
+        "Lexus RX 500",
+        "Lexus TX",
+        "Toyota Tacoma TRD Pro",
+        "Toyota Tacoma Trailhunter"
+      ]
+    },
+    {
+      "code": "uae",
+      "order": 7,
+      "flag": "\uD83C\uDDE6\uD83C\uDDEA",
+      "names": { "ru": "ОАЭ", "uk": "ОАЕ", "ka": "ემირატები" },
+      "models_note": "Identical to launch USA set per direct owner instruction, stored as an independent array.",
+      "models": [
+        "Tesla Model Y",
+        "Tesla Model 3",
+        "Ford Escape",
+        "Nissan Rogue",
+        "BMW X3"
+      ]
+    },
+    {
+      "code": "georgia",
+      "order": 8,
+      "flag": "\uD83C\uDDEC\uD83C\uDDEA",
+      "names": { "ru": "Грузия", "uk": "Грузія", "ka": "საქართველო" },
+      "namespace_note": "This 'georgia' entry is the COUNTRY-OF-ORIGIN selection code for podbor.html only. It is a separate namespace from the delivery STAGE 'В Грузии' used in the catalog/stage pipeline. They must never share the same state variable.",
+      "models": [
+        "Ford Fusion / Fusion Hybrid",
+        "Toyota Camry",
+        "Volkswagen Jetta",
+        "Toyota RAV4 / RAV4 Hybrid",
+        "Subaru Forester"
+      ]
+    }
+  ],
+  "total_countries": 8,
+  "total_models": 40
+}

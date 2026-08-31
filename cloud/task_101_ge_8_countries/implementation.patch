@@ -1,0 +1,117 @@
+# IMPLEMENTATION PATCH TEMPLATE — TASK 101
+# STATUS: NOT APPLICABLE AS-IS. This is a labeled integration template, not a real diff.
+#
+# Reason: baseline_audit.md item list #1-#6 shows the canonical source/template files
+# (homepage counter generator, i18n.js, .countries-inline block, podbor.html generator,
+# Telegram WebApp handler) are not present as evidence in this task. Fabricating exact
+# "before" context lines against unseen files is explicitly forbidden by the task.
+#
+# This template lists WHAT must change, at the level of named functions/blocks, and WHAT
+# evidence (exact file path + current SHA-256) is required before a real unified diff can
+# be produced and applied in a Sandbox task.
+#
+# ============================================================
+# REQUIRED EVIDENCE BEFORE THIS PATCH CAN BE MADE REAL
+# ============================================================
+# 1. path + sha256 of homepage template/generator that renders total/stage counters
+# 2. path + sha256 of i18n.js (or equivalent)
+# 3. path + sha256 of homepage .countries-inline block template
+# 4. path + sha256 of podbor.html (or its generator) incl. country->model binding
+# 5. path + sha256 of Telegram WebApp submission handler / deep-link parser (z_<country>)
+# 6. path + sha256 of the single source-of-truth catalog count generator (or confirmation
+#    that one must be newly created, and its intended canonical path)
+#
+# ============================================================
+# INTEGRATION UNIT 1 — i18n core: add 'ka' as third language
+# ============================================================
+# Target: i18n.js (path TBD from evidence #2)
+# Change type: ADD (non-destructive)
+# - Extend the accepted-language whitelist from ['ru','uk'] to ['ru','uk','ka'].
+# - Add lookup for data-ka / data-ka-content / data-ka-placeholder / data-ka-aria /
+#   data-ka-alt attributes, mirroring the existing data-uk-* handling exactly.
+# - Extend query-param and localStorage validation to accept 'ka' in addition to 'ru','uk'.
+# - Keep default language 'ru' unchanged.
+# - Fallback: if a ka-* attribute is missing on an element, fall back to the ru value
+#   (never render undefined/empty). Implement as the existing fallback chain extended by
+#   one more link, not rewritten.
+# - Do NOT remove or rename any existing ru/uk handling.
+#
+# PATCH FORM (to be produced once real file is in evidence):
+# --- a/<i18n.js path>
+# +++ b/<i18n.js path>
+# @@ <exact matched context from real file> @@
+# - const SUPPORTED_LANGS = ['ru', 'uk'];
+# + const SUPPORTED_LANGS = ['ru', 'uk', 'ka'];
+#   ... (same pattern for data-<lang>-* attribute readers, extended for 'ka')
+#
+# ============================================================
+# INTEGRATION UNIT 2 — Language switcher UI: RU | UA | GE
+# ============================================================
+# Target: header/nav template that currently renders RU | UA control (path TBD)
+# Change type: ADD one button/link
+# - Add a third switcher item with UI label "GE", internal code 'ka', identical markup
+#   pattern, styles, and event handler as the existing UA item (data-lang="ka").
+# - Do not alter RU or UA markup, ids, or classes.
+#
+# ============================================================
+# INTEGRATION UNIT 3 — Auto-under-order block: 5 -> 8 countries, 4x2 grid
+# ============================================================
+# Target: .countries-inline block template (path TBD from evidence #3)
+# Change type: REPLACE decorative <span> list with data-driven anchors
+# - Source of truth for country list/order/names/flags: countries_models.json in this
+#   package (to be copied/ported to the canonical data location agreed with owner/Codex).
+# - Render exactly 8 items in the fixed order: korea, japan, usa, europe, china, canada,
+#   uae, georgia — CSS grid 4 columns x 2 rows, no horizontal scroll.
+# - Each item becomes a real <a> (or button+router) to:
+#     podbor.html?strana=<code>&lang=<current_lang>
+# - Preserve existing visual language: flag + name, gold accents, background, CTA.
+# - Maintain existing decorative span markup as fallback ONLY behind a feature flag, so a
+#   failed data load never produces an empty block (fail-closed to previous 5-country view
+#   is NOT acceptable per spec; instead fail-closed to a static, hardcoded 8-item safe list
+#   embedded once in the template, sourced from the same JSON at build time).
+#
+# ============================================================
+# INTEGRATION UNIT 4 — podbor.html: 8-country selector + 5 models each
+# ============================================================
+# Target: podbor.html / its generator (path TBD from evidence #4)
+# Change type: EXTEND country whitelist and model source
+# - Whitelist exactly: korea, japan, usa, europe, china, canada, uae, georgia.
+# - Unknown/missing 'strana' param -> safe fallback 'korea' (unchanged behavior).
+# - Render a visible 8-item country selector (not only via URL) with focus/hover/active
+#   states, minimum 44px touch height.
+# - On selection: update active state, URL (?strana=<code>&lang=<lang>), and populate
+#   exactly the 5 models for that country from countries_models.json, WITHOUT discarding
+#   an already-entered budget, type, or free-text field.
+# - Keep "Другая модель / Other model" input field intact and passed exactly once in the
+#   payload.
+# - IMPORTANT NAMESPACE RULE: the 'georgia' country code here is a distinct state key
+#   (e.g. selectedCountry) from any delivery-stage variable that renders "В Грузии"
+#   (e.g. selectedStage). They must never read from or write to the same variable/DOM node.
+#
+# ============================================================
+# INTEGRATION UNIT 5 — Homepage counters: remove hardcoded fallback 13/3-1-7-2
+# ============================================================
+# Target: homepage server-side template/generator (path TBD from evidence #1) and the
+# single source-of-truth catalog generator (path TBD from evidence #6)
+# Change type: REPLACE hardcoded literals with a computed value from the same
+# source-of-truth used to build the catalog page, computed at generation time (server-side,
+# pre-JS), so server HTML already contains the live totals (16 total; stage breakdown per
+# current catalog) for UA-0001..UA-0016 and remains correct for UA-0017+ without further
+# code edits.
+# - Forbidden: writing a new hardcoded number (e.g. literal 16) into the template. The
+#   template must read from the generator/catalog data at build/render time.
+# - The existing client-side JS correction may remain as a defensive no-op once the
+#   server-rendered value is already correct.
+#
+# ============================================================
+# INTEGRATION UNIT 6 — Telegram WebApp / deep-link: canada, uae, georgia
+# ============================================================
+# Target: submission handler / deep-link parser (path TBD from evidence #5)
+# Change type: ADD only, no removal
+# - Extend accepted country codes for field 's' and deep-link 'z_<country>' with: canada,
+#   uae, georgia (in addition to the existing korea, japan, usa, europe, china).
+# - Keep full backward compatibility with all previously accepted codes and payload shape.
+# - See form_bot_contract.md in this package for the exact field-level contract.
+#
+# ============================================================
+# END OF TEMPLATE — no exact "before" context lines were fabricated anywhere above.

@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UA ART Card Guard Manifest (BEFORE/AFTER) — TASK 101",
+  "description": "Schema for capturing an immutable BEFORE and AFTER snapshot of all 16 catalog cards UA-0001..UA-0016 to prove no card was altered by the GE/8-country change. Must be produced/executed only in a future Sandbox task with real read access; not populated with data in this package.",
+  "type": "object",
+  "required": ["manifest_type", "generated_at_utc", "card_count", "cards", "ua0009_safe_check"],
+  "properties": {
+    "manifest_type": { "type": "string", "enum": ["BEFORE", "AFTER"] },
+    "generated_at_utc": { "type": "string", "format": "date-time" },
+    "card_count": { "type": "integer", "const": 16 },
+    "cards": {
+      "type": "array",
+      "minItems": 16,
+      "maxItems": 16,
+      "items": { "$ref": "#/definitions/card" }
+    },
+    "ua0009_safe_check": {
+      "type": "object",
+      "description": "Dedicated mandatory gate for UA-0009 per owner directive REC-0005.",
+      "required": ["id", "result", "evidence_ref"],
+      "properties": {
+        "id": { "type": "string", "const": "UA-0009" },
+        "result": { "type": "string", "enum": ["PASS", "FAIL", "NOT_RUN"] },
+        "evidence_ref": { "type": ["string", "null"] }
+      }
+    },
+    "comparison_summary": {
+      "type": "object",
+      "description": "Only meaningful when comparing a BEFORE manifest to an AFTER manifest.",
+      "properties": {
+        "all_16_ids_present_before_and_after": { "type": "boolean" },
+        "all_fields_unchanged": { "type": "boolean" },
+        "all_media_hashes_unchanged": { "type": "boolean" },
+        "all_urls_return_200_after": { "type": "boolean" },
+        "diff_list": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "definitions": {
+    "card": {
+      "type": "object",
+      "required": [
+        "id", "vin", "stage", "price", "mileage", "engine", "eta",
+        "container", "description_hash", "equipment_hash",
+        "photo_count", "video_count", "media_hashes",
+        "cta_present", "diagnostic_link", "vin_link", "container_link",
+        "public_url", "http_status"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^UA-00(0[1-9]|1[0-6])$" },
+        "vin": { "type": "string" },
+        "stage": { "type": "string", "enum": ["kyiv", "georgia_stage", "ferry", "korea_stage"] },
+        "price": { "type": ["number", "string"] },
+        "mileage": { "type": ["number", "string"] },
+        "engine": { "type": "string" },
+        "eta": { "type": ["string", "null"] },
+        "container": { "type": ["string", "null"] },
+        "description_hash": { "type": "string", "description": "SHA-256 of the card description text" },
+        "equipment_hash": { "type": "string", "description": "SHA-256 of the equipment/complectation list" },
+        "photo_count": { "type": "integer", "minimum": 0 },
+        "video_count": { "type": "integer", "minimum": 0 },
+        "media_hashes": {
+          "type": "array",
+          "items": { "type": "string", "description": "SHA-256 per media asset, order-preserving" }
+        },
+        "cta_present": { "type": "boolean" },
+        "diagnostic_link": { "type": ["string", "null"] },
+        "vin_link": { "type": ["string", "null"] },
+        "container_link": { "type": ["string", "null"] },
+        "public_url": { "type": "string" },
+        "http_status": { "type": "integer" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

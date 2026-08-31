@@ -1,12 +1,12 @@
-TASK_ID: task_097
+TASK_ID: task_101
 ROUND: 1
 CLAUDE_STATUS: DONE
-CURRENT_ACTION: Completed Stage 0-2 for UA-ART-EDITORIAL-ATLAS-NEWS-001 v2.0: confirmed the pre-launch backup checkpoint, performed a read-only architecture/SEO audit of the repository and the live site using only the attached machine evidence, audited the fixed 70-source candidate pool (10 per geo: UA/GE/KR/JP/US/EU/CN) with honest live-probe reporting, selected and justified 15 MVP sources (UA5/GE5/KR5), and specified (without building) the editorial policy, dedup/NEWS-SCORE/autopilot rules, the EDITORIAL GRAND TOURING design system with wireframes, the isolated data model/pipeline, a risk register, and the next-gate SANDBOX plan. No production, CRM, catalog, or public file was touched; no news section was created; autopilot and autopublication remain disabled/unbuilt.
-FILES_CREATED: cloud/task_097_editorial_atlas_news/README.md, cloud/task_097_editorial_atlas_news/current_architecture_audit.md, cloud/task_097_editorial_atlas_news/seo_routing_audit.md, cloud/task_097_editorial_atlas_news/source_registry.csv, cloud/task_097_editorial_atlas_news/source_audit_report.md, cloud/task_097_editorial_atlas_news/editorial_policy_ua_ru.md, cloud/task_097_editorial_atlas_news/dedup_scoring_autopilot.md, cloud/task_097_editorial_atlas_news/design_system_grand_touring.md, cloud/task_097_editorial_atlas_news/information_architecture_and_wireframes.md, cloud/task_097_editorial_atlas_news/data_model_pipeline.md, cloud/task_097_editorial_atlas_news/risk_register.md, cloud/task_097_editorial_atlas_news/sandbox_implementation_plan.md, cloud/task_097_editorial_atlas_news/evidence.json, cloud/task_097_editorial_atlas_news/report.md, cloud/latest_status.md, cloud/owner_reply.md
+CURRENT_ACTION: Prepared full safe implementation package for Georgian language + 8-country "Авто под заказ" grid + 16-card guard proposal, all under cloud/ only.
+FILES_CREATED: cloud/task_101_ge_8_countries/README.md, cloud/task_101_ge_8_countries/baseline_audit.md, cloud/task_101_ge_8_countries/countries_models.json, cloud/task_101_ge_8_countries/localization_dictionary.json, cloud/task_101_ge_8_countries/implementation.patch, cloud/task_101_ge_8_countries/form_bot_contract.md, cloud/task_101_ge_8_countries/card_guard_manifest.schema.json, cloud/task_101_ge_8_countries/test_matrix.md, cloud/task_101_ge_8_countries/evidence.json, cloud/task_101_ge_8_countries/report.md
 PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Audit cloud/task_097_editorial_atlas_news/report.md against the task's acceptance checklist, review the PENDING items in evidence.json (especially the literal robots.txt/sitemap.xml content of www.uaart.com.ua, and the KR-01/KR-08/EU-05/KR-10 domain-redirect anomalies), and — only if the owner separately approves — route the next step to Stage 3 (an isolated, non-indexed SANDBOX per sandbox_implementation_plan.md), which still requires no production/CRM/catalog write. CONTEXT_BUNDLE_SHA256=2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c, MEMORY_VERSION_READ=4.
-UPDATED_AT_UTC: 2026-08-30T16:49:38Z
-MEMORY_VERSION_READ: 4
+NEXT_FOR_CHATGPT: Independently audit the 10 files under cloud/task_101_ge_8_countries/ plus this status and owner_reply.md; if PASS, open a separate Sandbox install task supplying canonical source file paths/SHA-256 listed in baseline_audit.md before any real patch is applied.
 CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
+MEMORY_VERSION_READ: 4
+UPDATED_AT_UTC: 2026-08-31T10:03:43Z
