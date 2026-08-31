@@ -12,6 +12,8 @@ CRM_START = "# >>> UA099 ADDITIONAL SPEC CRM V1"
 CRM_END = "# <<< UA099 ADDITIONAL SPEC CRM V1"
 PUBLISH_START = "# >>> UA099 PUBLICATION CONTRACT V1"
 PUBLISH_END = "# <<< UA099 PUBLICATION CONTRACT V1"
+GUARD_START = "# >>> UA099 BOUNDED GZIP SNAPSHOT V1"
+GUARD_END = "# <<< UA099 BOUNDED GZIP SNAPSHOT V1"
 
 
 def _without(source: str, start: str, end: str) -> str:
@@ -327,6 +329,88 @@ def proverit(html, kod):
 '''.strip()
 
 
+GUARD_BLOCK = r'''
+# >>> UA099 BOUNDED GZIP SNAPSHOT V1
+# The publisher writes card HTML, diagnostic HTML and catalogs only.  Media
+# directories are operator-owned and are deliberately excluded from this
+# transaction snapshot.  A separate TASK099 outer backup protects every
+# public target before this guard is installed.
+import gzip as _ua099_gzip
+
+def _matching_paths(codes):
+    normalized = {_code(value) for value in codes}
+    paths = {root / "katalog.html" for root in ROOTS}
+    for code in normalized:
+        for root in ROOTS:
+            paths.add(root / (code + ".html"))
+            paths.add(root / (code + "-diag.html"))
+            if root.is_dir():
+                paths.update(path for path in root.glob(code + "*.html") if path.is_file())
+    return paths
+
+
+class Snapshot:
+    """Exact rollback snapshot, bounded to publisher-written HTML and gzip stored."""
+
+    def __init__(self, codes):
+        self.codes = {_code(value) for value in codes}
+        stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+        self.root = BACKUPS / (stamp + "-" + uuid.uuid4().hex[:12])
+        self.root.mkdir(parents=True, exist_ok=False)
+        self.before_paths = _matching_paths(self.codes)
+        self.present = {path for path in self.before_paths if path.is_file()}
+        manifest = {}
+        for path in sorted(self.before_paths):
+            item = {"exists": path in self.present, "path": str(path)}
+            if path in self.present:
+                data = _read(path)
+                relative = path.relative_to(ROOT)
+                stored_relative = pathlib.Path("files") / (str(relative) + ".gz")
+                target = self.root / stored_relative
+                packed = _ua099_gzip.compress(data, compresslevel=9, mtime=0)
+                _atomic(target, packed, 0o600)
+                item.update({
+                    "sha256": _sha(data), "mode": path.stat().st_mode & 0o777,
+                    "storage": "gzip-v1", "stored_relative": str(stored_relative),
+                    "stored_bytes": len(packed),
+                })
+            manifest[str(path)] = item
+        _atomic(
+            self.root / "manifest.json",
+            (json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode(),
+            0o600,
+        )
+
+    def restore(self):
+        current = _matching_paths(self.codes)
+        removed, restored = [], []
+        for path in sorted(current - self.present, reverse=True):
+            if path.is_file():
+                path.unlink()
+                removed.append(str(path))
+        manifest = json.loads((self.root / "manifest.json").read_text(encoding="utf-8"))
+        for path in sorted(self.present):
+            item = manifest[str(path)]
+            stored = (self.root / str(item["stored_relative"])).resolve()
+            if self.root.resolve() not in stored.parents or not stored.is_file():
+                raise PublishError("SNAPSHOT_GZIP_SCOPE:" + str(path))
+            data = _ua099_gzip.decompress(_read(stored))
+            if _sha(data) != item["sha256"]:
+                raise PublishError("SNAPSHOT_GZIP_SHA:" + str(path))
+            if not path.is_file() or _read(path) != data:
+                _atomic(path, data, int(item.get("mode") or 0o644))
+                restored.append(str(path))
+        mismatches = [
+            str(path) for path in self.present
+            if not path.is_file() or _sha(_read(path)) != manifest[str(path)]["sha256"]
+        ]
+        if mismatches:
+            raise PublishError("ROLLBACK_READBACK_MISMATCH:" + ",".join(mismatches))
+        return {"backup_root": str(self.root), "removed": removed, "restored": restored}
+# <<< UA099 BOUNDED GZIP SNAPSHOT V1
+'''.strip()
+
+
 def patch_master(source: str) -> str:
     source = _without(source, MASTER_START, MASTER_END)
     if not re.search(r"^def\s+obrabotat_kartochku\s*\(", source, re.M):
@@ -351,6 +435,14 @@ def patch_publikaciya(source: str) -> str:
     if not re.search(r"^def\s+opublikovat\s*\(", source, re.M):
         raise RuntimeError("PUBLISH_ENTRYPOINT_MISSING")
     return _compiled(source.rstrip() + "\n\n" + PUBLISH_BLOCK + "\n", "publikaciya.py")
+
+
+def patch_publish_transaction_guard(source: str) -> str:
+    source = _without(source, GUARD_START, GUARD_END)
+    for name in ("Snapshot", "_matching_paths", "publish_batch"):
+        if not re.search(r"^(?:class|def)\s+" + name + r"\b", source, re.M):
+            raise RuntimeError("PUBLISH_GUARD_ENTRYPOINT_MISSING:" + name)
+    return _compiled(source.rstrip() + "\n\n" + GUARD_BLOCK + "\n", "publish_transaction_guard.py")
 
 
 def selftest() -> None:

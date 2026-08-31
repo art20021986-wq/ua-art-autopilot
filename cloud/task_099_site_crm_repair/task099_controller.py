@@ -19,6 +19,7 @@ from typing import Any
 
 CONTRACT = "UA-ART-16-SITE-CRM-COMPLETION-099-V1"
 APPROVAL = "UA_ART_TASK099_SITE_CRM_PRODUCTION_APPROVED"
+EXPECTED_GUARD_SHA256 = "73cfe1a01b6e705587f574c4a1407291941da76dbe15a1fe577f90f874a1644e"
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 HERE = pathlib.Path(__file__).resolve().parent
 EVIDENCE = HERE / "evidence"
@@ -126,6 +127,7 @@ def validate_prerequisites() -> dict[str, Any]:
         if not isinstance(digest, str) or len(digest) != 64:
             raise Blocked("TASK099_SOURCE_HASH_MISSING:" + name)
         expected[name] = digest
+    expected["publish_transaction_guard.py"] = EXPECTED_GUARD_SHA256
 
     task096 = read_json(TASK096_EVIDENCE)
     if task096.get("status") not in ("PASS", "PASS_WITH_WARNINGS"):
@@ -242,21 +244,26 @@ class API:
         )
         identifier = self.object_id(body) if status in (200, 201, 202) else None
         if identifier:
-            return "always_on", identifier
-        at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=2)
-        form = urllib.parse.urlencode({
-            "command": command, "description": description + " fallback", "enabled": "true",
-            "interval": "daily", "hour": at.hour, "minute": at.minute,
-        }).encode()
-        status, body = self.request(
-            "POST", BASE + "schedule/", form,
-            {"Content-Type": "application/x-www-form-urlencoded"},
-            allowed=(200, 201, 202),
-        )
-        identifier = self.object_id(body)
-        if not identifier:
-            raise Blocked("REMOTE_TRIGGER_MISSING")
-        return "schedule", identifier
+            return [("always_on", identifier)]
+        triggers = []
+        origin = dt.datetime.now(dt.timezone.utc)
+        for sequence, minutes in enumerate((3, 7, 11), start=1):
+            at = origin + dt.timedelta(minutes=minutes)
+            scheduled = urllib.parse.urlencode({
+                "command": command, "description": description + " fallback-%d" % sequence,
+                "enabled": "true", "interval": "daily", "hour": at.hour, "minute": at.minute,
+            }).encode()
+            _, body = self.request(
+                "POST", BASE + "schedule/", scheduled,
+                {"Content-Type": "application/x-www-form-urlencoded"}, allowed=(200, 201, 202),
+            )
+            identifier = self.object_id(body)
+            if not identifier:
+                for trigger in triggers:
+                    self.delete_trigger(trigger)
+                raise Blocked("REMOTE_TRIGGER_MISSING:%d" % sequence)
+            triggers.append(("schedule", identifier))
+        return triggers
 
     def delete_trigger(self, trigger) -> None:
         kind, identifier = trigger
@@ -265,7 +272,7 @@ class API:
     def run(self, mode: str, timeout: int = 1800) -> dict[str, Any]:
         receipt = REMOTE + "/" + mode + "_receipt.json"
         self.delete(receipt)
-        trigger = self.trigger(mode)
+        triggers = self.trigger(mode)
         try:
             deadline = time.monotonic() + timeout
             while time.monotonic() < deadline:
@@ -275,7 +282,11 @@ class API:
                 time.sleep(5)
             raise Blocked("REMOTE_RECEIPT_TIMEOUT:" + mode)
         finally:
-            self.delete_trigger(trigger)
+            for trigger in triggers:
+                try:
+                    self.delete_trigger(trigger)
+                except Exception:
+                    pass
 
     def launcher(self) -> dict[str, Any]:
         _, body = self.request("GET", BASE + "always_on/")
@@ -338,7 +349,7 @@ def run_production() -> int:
         value["prerequisites"] = expected
         api = API()
         upload_payload(api, expected)
-        shadow = api.run("shadow", timeout=600)
+        shadow = api.run("shadow", timeout=900)
         require_pass(shadow, "SHADOW")
         if shadow.get("production_write") is not False or shadow.get("live_crm_write") is not False:
             raise Blocked("SHADOW_SCOPE")
@@ -346,7 +357,7 @@ def run_production() -> int:
         conflicts = active_production_conflicts()
         if conflicts:
             raise Blocked("PARALLEL_PRODUCTION_GATE_BEFORE_INSTALL:" + json.dumps(conflicts))
-        install = api.run("install", timeout=900)
+        install = api.run("install", timeout=2400)
         value["install"] = install
         require_pass(install, "INSTALL")
         installed = True
@@ -355,11 +366,11 @@ def run_production() -> int:
         value["restart"] = api.restart()
         time.sleep(18)
         value["launcher_after_restart"] = api.launcher()
-        immediate = api.run("postcheck", timeout=600)
+        immediate = api.run("postcheck", timeout=900)
         require_pass(immediate, "POSTCHECK")
         value["postcheck_immediate"] = immediate
         time.sleep(35)
-        delayed = api.run("postcheck", timeout=600)
+        delayed = api.run("postcheck", timeout=900)
         require_pass(delayed, "POSTCHECK")
         value["postcheck_delayed"] = delayed
         value["status"] = "PASS_READY_FOR_BROWSER_GATE"

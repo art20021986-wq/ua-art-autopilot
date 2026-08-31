@@ -47,7 +47,8 @@ def main() -> int:
         uid + "-diag.html" for uid in IDS
     }
     screenshot_count = 0
-    for viewport in ("mobile-390", "desktop-1440"):
+    required_viewports = ("mobile-375", "mobile-390", "mobile-430", "desktop-1440")
+    for viewport in required_viewports:
         records = (visual.get("viewports") or {}).get(viewport) or {}
         if set(records) != expected_targets:
             raise RuntimeError("VISUAL_TARGET_SET:" + viewport)
@@ -59,7 +60,7 @@ def main() -> int:
             screenshot_count += 1
     ua0009 = {
         viewport: (visual["viewports"][viewport]["UA-0009.html"])
-        for viewport in ("mobile-390", "desktop-1440")
+        for viewport in required_viewports
     }
     value = {
         "task_id": "task_099",
@@ -85,7 +86,7 @@ def main() -> int:
             "external_paid_vin_cta_present": False,
             "old_sea_wording_present": False,
             "duplicate_description_label_present": False,
-            "mobile_width": 390,
+            "mobile_widths": [375, 390, 430],
             "desktop_width": 1440,
             "immediate_and_delayed": True,
             "broken_images": 0,
@@ -95,8 +96,7 @@ def main() -> int:
         "ua_0009_gate": {
             "status": "PASS",
             "safe_to_publish": True,
-            "mobile_immediate_errors": ua0009["mobile-390"].get("errors"),
-            "desktop_immediate_errors": ua0009["desktop-1440"].get("errors"),
+            "viewport_errors": {viewport: ua0009[viewport].get("errors") for viewport in required_viewports},
         },
         "current_run_contradictory_evidence": False,
         "newer_fail_observed": False,
@@ -110,7 +110,7 @@ def main() -> int:
     comment = (
         "Проверка завершена: production workflow `%s` — success; `evidence/deploy.json` — `PASS`. "
         "CRM содержит 16 карточек без изменений основных полей и media. Главная, каталог и UA‑0001…UA‑0016 "
-        "прошли browser-rendered mobile 390 px и desktop 1440 px immediate/delayed: 16 видимых карточек в каталоге, "
+        "прошли browser-rendered mobile 375/390/430 px и desktop 1440 px immediate/delayed: 16 видимых карточек в каталоге, "
         "изображения без ошибок, горизонтального overflow нет, диагностика и «Дополнительная спецификация» присутствуют, "
         "mobile/desktop screenshots сохранены. Более нового FAIL в текущем контуре нет. Issue #35 готова к закрытию; "
         "не закрываю без подтверждения владельца."

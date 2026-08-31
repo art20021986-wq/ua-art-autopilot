@@ -22,7 +22,12 @@ EVIDENCE = HERE / "evidence" / "visual_evidence.json"
 SHOTS = HERE / "evidence" / "screenshots"
 BASE = "https://www.uaart.com.ua/video/"
 IDS = tuple("UA-%04d" % number for number in range(1, 17))
-VIEWPORTS = {"mobile-390": {"width": 390, "height": 844}, "desktop-1440": {"width": 1440, "height": 1000}}
+VIEWPORTS = {
+    "mobile-375": {"width": 375, "height": 812},
+    "mobile-390": {"width": 390, "height": 844},
+    "mobile-430": {"width": 430, "height": 932},
+    "desktop-1440": {"width": 1440, "height": 1000},
+}
 TARGETS = (
     [("home", "index.html"), ("catalog", "katalog.html")]
     + [("card", uid + ".html") for uid in IDS]

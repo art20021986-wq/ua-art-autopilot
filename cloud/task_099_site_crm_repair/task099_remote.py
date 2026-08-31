@@ -33,6 +33,7 @@ CODE = {
     "cars_ui.py": ROOT / "cars_ui.py",
     "master_card.py": ROOT / "master_card.py",
     "publikaciya.py": ROOT / "publikaciya.py",
+    "publish_transaction_guard.py": ROOT / "publish_transaction_guard.py",
 }
 IDS = tuple("UA-%04d" % number for number in range(1, 17))
 PUBLIC_ROOTS = (ROOT / "video", ROOT / "site")
@@ -368,6 +369,40 @@ def prune_completed_task_backups() -> list[str]:
     return removed
 
 
+def prune_redundant_publisher_backups(outer_backup: pathlib.Path) -> dict[str, Any]:
+    """Remove only old publisher-owned copies after a complete outer backup.
+
+    The live HTML, CRM and media are never targets.  TASK099's gzip backup is
+    the current rollback authority and must describe every public target and
+    every patched source before any obsolete copy is removed.
+    """
+    manifest = read_json(outer_backup / "manifest.json")
+    records = manifest.get("files") or {}
+    required = [str(path.relative_to(ROOT)) for path in list(CODE.values()) + [HELPER] + public_targets()]
+    missing = [relative for relative in required if relative not in records]
+    if missing:
+        raise Blocked("OUTER_BACKUP_SCOPE_INCOMPLETE:" + ",".join(missing[:8]))
+
+    roots = [
+        ((ROOT / "rezerv_publikacii" / "TASK083").resolve(), r"\d{8}T\d{6}Z-[0-9a-f]{12}"),
+        ((ROOT / "rezerv_publikacii").resolve(), r"UA-[0-9]{4,}_(?:URGENT_CATALOG_)?\d{8}_\d{6}"),
+    ]
+    removed = []
+    reclaimed = 0
+    for root, pattern in roots:
+        if not root.is_dir():
+            continue
+        for child in sorted(root.iterdir()):
+            resolved = child.resolve()
+            if not child.is_dir() or resolved.parent != root or not re.fullmatch(pattern, child.name):
+                continue
+            size = sum(path.stat().st_size for path in child.rglob("*") if path.is_file())
+            shutil.rmtree(child)
+            removed.append(str(child.relative_to(ROOT)))
+            reclaimed += size
+    return {"removed": removed, "reclaimed_bytes": reclaimed, "live_media_removed": False}
+
+
 def remove_shadow_copy() -> bool:
     folder = (TASK / "shadow").resolve()
     if folder.is_dir() and folder.parent == TASK.resolve():
@@ -478,8 +513,10 @@ def patch_sources(destination: pathlib.Path | None = None) -> dict[str, Any]:
             changed = patches.patch_cars_ui(source)
         elif name == "master_card.py":
             changed = patches.patch_master(source)
-        else:
+        elif name == "publikaciya.py":
             changed = patches.patch_publikaciya(source)
+        else:
+            changed = patches.patch_publish_transaction_guard(source)
         target = (destination / name) if destination else path
         atomic_bytes(target, changed.encode("utf-8"))
         outputs[name] = {"before": sha_bytes(source.encode()), "after": sha_bytes(changed.encode())}
@@ -573,6 +610,7 @@ def install() -> dict[str, Any]:
     migration = None
     pages = None
     try:
+        publisher_backup_prune = prune_redundant_publisher_backups(backup)
         patched = patch_sources(None)
         run_id = "production-" + dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         migration = migrate(DB, source_db, run_id)
@@ -582,21 +620,50 @@ def install() -> dict[str, Any]:
             sys.modules.pop(name, None)
         helper = importlib.import_module("ua_additional_spec")
         publisher = importlib.import_module("publikaciya")
+        guard = importlib.import_module("publish_transaction_guard")
+        base_publish = getattr(publisher, "_UA083_BASE_PUBLISH", None)
+        if not callable(base_publish):
+            raise Blocked("BOUNDED_BASE_PUBLISHER_MISSING")
         probes = []
         for uid in IDS:
-            ok, detail = publisher.opublikovat(uid, proba=True)
+            ok, detail = base_publish(uid, proba=True)
             probes.append({"uid": uid, "ok": ok is True, "detail": str(detail)[:400]})
             if ok is not True:
                 raise Blocked("PUBLISH_PROBE_FAIL:" + uid + ":" + str(detail)[:300])
-        published = []
-        for uid in IDS:
-            ok, detail = publisher.opublikovat(uid, proba=False)
-            published.append({"uid": uid, "ok": ok is True, "detail": str(detail)[:400]})
-            if ok is not True:
-                raise Blocked("PUBLISH_FAIL:" + uid + ":" + str(detail)[:300])
-        ok, detail = publisher.obnovit_katalog()
+        legacy_root = pathlib.Path(str(getattr(publisher, "REZERV_KORE", ROOT / "rezerv_publikacii"))).resolve()
+        legacy_before = {child.name for child in legacy_root.iterdir()} if legacy_root.is_dir() else set()
+        legacy_removed = []
+
+        def bounded_base_publish(uid: str, proba: bool = False):
+            before = {child.name for child in legacy_root.iterdir()} if legacy_root.is_dir() else set()
+            result = base_publish(uid, proba=proba)
+            if (not proba and isinstance(result, (tuple, list)) and result and result[0] is True
+                    and legacy_root == (ROOT / "rezerv_publikacii").resolve() and legacy_root.is_dir()):
+                for child in sorted(legacy_root.iterdir()):
+                    resolved = child.resolve()
+                    if (child.name not in before and child.is_dir() and resolved.parent == legacy_root
+                            and re.fullmatch(re.escape(uid) + r"_\d{8}_\d{6}", child.name)):
+                        shutil.rmtree(child)
+                        legacy_removed.append(child.name)
+            return result
+
+        ok, detail, batch_evidence = guard.publish_batch(bounded_base_publish, list(IDS), proba=False)
         if ok is not True:
-            raise Blocked("CATALOG_REBUILD_FAIL:" + str(detail)[:300])
+            raise Blocked("PUBLISH_BATCH_FAIL:" + str(detail)[:500])
+        published = [
+            {"uid": uid, "ok": bool((batch_evidence.get("base_results") or {}).get(uid, {}).get("ok")),
+             "detail": str((batch_evidence.get("base_results") or {}).get(uid, {}).get("message") or "")[:400]}
+            for uid in IDS
+        ]
+        if not all(item["ok"] for item in published):
+            raise Blocked("PUBLISH_BATCH_RESULT_SET")
+        if legacy_root.is_dir() and legacy_root == (ROOT / "rezerv_publikacii").resolve():
+            for child in sorted(legacy_root.iterdir()):
+                resolved = child.resolve()
+                if (child.name not in legacy_before and child.is_dir() and resolved.parent == legacy_root
+                        and re.fullmatch(r"UA-[0-9]{4,}_\d{8}_\d{6}", child.name)):
+                    shutil.rmtree(child)
+                    legacy_removed.append(child.name)
         pages = validate_pages(helper)
         after_hash, count, identifiers = cars_hash(DB)
         if count != 16 or identifiers != list(IDS) or quick_check(DB) != "ok":
@@ -609,6 +676,9 @@ def install() -> dict[str, Any]:
             "shadow_copy_removed_before_backup": shadow_removed_before_backup,
             "migration": migration, "publisher_probes": probes, "publisher": published,
             "catalog": {"ok": True, "detail": str(detail)[:400]}, "pages": pages,
+            "publisher_batch": batch_evidence,
+            "publisher_backup_prune": publisher_backup_prune,
+            "transient_legacy_backups_removed": legacy_removed,
             "cars_sha256_after": after_hash, "finished_at_utc": utc_now(),
         }
     except Exception:
@@ -633,12 +703,9 @@ def postcheck() -> dict[str, Any]:
         raise Blocked("INSTALL_RECEIPT_NOT_PASS")
     if quick_check(DB) != "ok":
         raise Blocked("LIVE_DB_QUICK_CHECK")
-    if sha_file(CODE["cars_ui.py"]) != (install_value.get("patched") or {}).get("cars_ui.py", {}).get("after"):
-        raise Blocked("CRM_PATCH_DRIFT")
-    if sha_file(CODE["master_card.py"]) != (install_value.get("patched") or {}).get("master_card.py", {}).get("after"):
-        raise Blocked("MASTER_PATCH_DRIFT")
-    if sha_file(CODE["publikaciya.py"]) != (install_value.get("patched") or {}).get("publikaciya.py", {}).get("after"):
-        raise Blocked("PUBLISHER_PATCH_DRIFT")
+    for name, path in CODE.items():
+        if sha_file(path) != (install_value.get("patched") or {}).get(name, {}).get("after"):
+            raise Blocked("SOURCE_PATCH_DRIFT:" + name)
     sys.path.insert(0, str(ROOT))
     import importlib
     sys.modules.pop("ua_additional_spec", None)
@@ -689,10 +756,31 @@ def main() -> int:
     parser.add_argument("mode", choices=("shadow", "install", "postcheck", "rollback"))
     args = parser.parse_args()
     receipt = TASK / (args.mode + "_receipt.json")
+    expected_mode = args.mode.upper()
+
+    def existing_result() -> dict[str, Any] | None:
+        if not receipt.is_file():
+            return None
+        try:
+            candidate = read_json(receipt)
+        except Exception:
+            return None
+        if candidate.get("contract_id") == CONTRACT and candidate.get("mode") == expected_mode:
+            return candidate
+        return None
+
+    existing = existing_result()
+    if existing is not None:
+        print(json.dumps({"status": existing.get("status"), "mode": expected_mode, "reused": True}))
+        return 0 if existing.get("status") == "PASS" else 1
     value = {"contract_id": CONTRACT, "status": "FAIL", "mode": args.mode.upper(), "errors": []}
     try:
         with locked():
-            value = {"shadow": shadow, "install": install, "postcheck": postcheck, "rollback": rollback}[args.mode]()
+            existing = existing_result()
+            if existing is not None:
+                value = existing
+            else:
+                value = {"shadow": shadow, "install": install, "postcheck": postcheck, "rollback": rollback}[args.mode]()
     except Exception as exc:
         value["errors"].append(type(exc).__name__ + ":" + str(exc)[:1000])
         value["finished_at_utc"] = utc_now()
