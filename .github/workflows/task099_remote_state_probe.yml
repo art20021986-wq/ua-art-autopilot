@@ -77,6 +77,8 @@ jobs:
               "http_methods": ["GET"],
               "task_lists": {},
               "receipts": {},
+              "source_files": {},
+              "photo_paths": {},
           }
           guard_url = base + "files/path/home/Carix/publish_transaction_guard.py"
           guard_status, guard_source = get(guard_url, allowed=(200,))
@@ -94,6 +96,87 @@ jobs:
               "bytes": len(publisher_source),
               "sha256": hashlib.sha256(publisher_source).hexdigest(),
           }
+          for source_name in (
+              "stranica.py", "master_card.py", "catalog_design_guard.py",
+              "catalog_stage_guard_core.py",
+          ):
+              source_url = base + "files/path/home/Carix/" + source_name
+              source_status, source_body = get(source_url)
+              record = {"http_status": source_status, "exists": source_status == 200}
+              if source_status == 200:
+                  pathlib.Path(source_name).write_bytes(source_body)
+                  record.update({
+                      "bytes": len(source_body),
+                      "sha256": hashlib.sha256(source_body).hexdigest(),
+                  })
+              report["source_files"][source_name] = record
+
+          # Read-only bounded media inventory.  PythonAnywhere's documented
+          # tree endpoint returns at most 1000 entries, which is sufficient for
+          # this exact 16-card photo root and avoids hundreds of per-file calls.
+          tree_status, tree_raw = get(
+              base + "files/tree/?" + urllib.parse.urlencode({
+                  "path": "/home/Carix/video/foto",
+              }),
+              allowed=(200,),
+          )
+          tree_value = json.loads(tree_raw.decode("utf-8"))
+          tree_items = tree_value if isinstance(tree_value, list) else []
+          tree_files = {
+              str(item) for item in tree_items
+              if isinstance(item, str) and not str(item).endswith("/")
+          }
+          report["photo_tree"] = {
+              "http_status": tree_status,
+              "entry_count": len(tree_items),
+              "file_count": len(tree_files),
+              "limit_reached": len(tree_items) >= 1000,
+              "items": sorted(tree_items),
+          }
+
+          # Compare the inventory with every reference emitted by the current
+          # 16 public cards; no database write or media mutation is performed.
+          card_image = __import__("re").compile(
+              rb"<(?:img|source)\b[^>]*(?:src|srcset)=[\"']([^\"']+)[\"']",
+              __import__("re").I,
+          )
+          for number in range(1, 17):
+              uid = "UA-%04d" % number
+              card_url = base + "files/path/home/Carix/video/" + uid + ".html"
+              card_status, card_body = get(card_url)
+              referenced = []
+              if card_status == 200:
+                  for raw_value in card_image.findall(card_body):
+                      value = raw_value.decode("utf-8", "replace").split()[0]
+                      if "/foto/%s/" % uid in value or value.startswith("foto/%s/" % uid):
+                          value = value.split("?", 1)[0].split("#", 1)[0]
+                          if value not in referenced:
+                              referenced.append(value)
+              records = []
+              for value in referenced:
+                  parsed = urllib.parse.urlsplit(value)
+                  relative = parsed.path
+                  if relative.startswith("/video/"):
+                      local = "/home/Carix/video/" + relative[len("/video/"):]
+                  elif relative.startswith("/site/"):
+                      local = "/home/Carix/site/" + relative[len("/site/"):]
+                  elif relative.startswith("/"):
+                      local = "/home/Carix/video" + relative
+                  else:
+                      local = "/home/Carix/video/" + relative.lstrip("./")
+                  exists = local in tree_files
+                  records.append({
+                      "src": value,
+                      "local_path": local,
+                      "exists": exists,
+                  })
+              report["photo_paths"][uid] = {
+                  "card_http_status": card_status,
+                  "referenced_count": len(referenced),
+                  "existing_count": sum(1 for item in records if item["exists"]),
+                  "missing_count": sum(1 for item in records if not item["exists"]),
+                  "items": records,
+              }
           for kind in ("always_on", "schedule"):
               status, raw = get(base + kind + "/", allowed=(200,))
               payload = json.loads(raw.decode("utf-8"))
@@ -159,5 +242,9 @@ jobs:
             task099_remote_state.json
             publish_transaction_guard.py
             publikaciya.py
+            stranica.py
+            master_card.py
+            catalog_design_guard.py
+            catalog_stage_guard_core.py
           if-no-files-found: error
           retention-days: 7
