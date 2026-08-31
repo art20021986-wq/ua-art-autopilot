@@ -152,6 +152,9 @@ def validate_prerequisites() -> dict[str, Any]:
         "task096_run_id": task096.get("recovery_workflow_run_id"),
         "task096_canary_rows": canary.get("ua0015_additional_rows"),
         "task096_processed_uids": batch.get("processed_uids"),
+        "task096_sandbox_db_name": batch.get("sandbox_db_name"),
+        "task096_canary_fallback": canary,
+        "task096_batch_fallback": batch,
         "clean_rollback_schema_detected": bool(residual),
     }
 

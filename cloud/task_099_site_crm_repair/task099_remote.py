@@ -147,9 +147,24 @@ def sqlite_backup(source: pathlib.Path, target: pathlib.Path) -> None:
         raise Blocked("BACKUP_QUICK_CHECK_FAIL")
 
 
-def require_task096() -> tuple[pathlib.Path, dict[str, Any], dict[str, Any]]:
-    canary = read_json(DATA096 / "receipt_canary.json")
-    batch = read_json(DATA096 / "receipt_batch.json")
+def require_task096() -> tuple[pathlib.Path, dict[str, Any], dict[str, Any], str]:
+    canary_path = DATA096 / "receipt_canary.json"
+    batch_path = DATA096 / "receipt_batch.json"
+    if canary_path.is_file() and batch_path.is_file():
+        canary = read_json(canary_path)
+        batch = read_json(batch_path)
+        evidence_source = "LIVE_TASK096_RECEIPTS"
+    elif canary_path.exists() or batch_path.exists():
+        raise Blocked("TASK096_PARTIAL_RECEIPT_SET")
+    else:
+        gate = read_json(TASK / "expected_live.json")
+        canary = gate.get("task096_canary_fallback")
+        batch = gate.get("task096_batch_fallback")
+        if not isinstance(canary, dict) or not isinstance(batch, dict):
+            raise Blocked("TASK096_PINNED_FALLBACK_MISSING")
+        if str(batch.get("sandbox_db_name") or "") != str(gate.get("task096_sandbox_db_name") or ""):
+            raise Blocked("TASK096_PINNED_SANDBOX_MISMATCH")
+        evidence_source = "PINNED_COMMITTED_TASK096_EVIDENCE"
     if canary.get("status") != "PASS" or canary.get("phase") != "DATA_CANARY":
         raise Blocked("TASK096_CANARY_NOT_PASS")
     if int(canary.get("ua0015_additional_rows") or 0) < 8:
@@ -166,7 +181,7 @@ def require_task096() -> tuple[pathlib.Path, dict[str, Any], dict[str, Any]]:
         raise Blocked("TASK096_SANDBOX_MISSING")
     if quick_check(path) != "ok":
         raise Blocked("TASK096_SANDBOX_QUICK_CHECK")
-    return path, canary, batch
+    return path, canary, batch, evidence_source
 
 
 def require_live_gate() -> dict[str, Any]:
@@ -541,7 +556,7 @@ def synthetic_html(uid: str) -> str:
 
 
 def shadow() -> dict[str, Any]:
-    source_db, canary, batch = require_task096()
+    source_db, canary, batch, task096_source = require_task096()
     gate = require_live_gate()
     pruned = prune_completed_task_backups()
     folder = TASK / "shadow"
@@ -575,6 +590,7 @@ def shadow() -> dict[str, Any]:
         "production_write": False, "live_crm_write": False, "public_write": False,
         "gate": gate, "task096_canary_rows": canary.get("ua0015_additional_rows"),
         "task096_processed": batch.get("processed_uids"), "migration": migration,
+        "task096_evidence_source": task096_source,
         "patched": patched, "contracts": contracts, "finished_at_utc": utc_now(),
         "pruned_completed_task099_backups": pruned,
     }
@@ -601,7 +617,7 @@ def validate_pages(helper) -> dict[str, Any]:
 
 
 def install() -> dict[str, Any]:
-    source_db, canary, batch = require_task096()
+    source_db, canary, batch, task096_source = require_task096()
     gate = require_live_gate()
     shadow_receipt = read_json(TASK / "shadow_receipt.json")
     if shadow_receipt.get("status") != "PASS" or shadow_receipt.get("mode") != "SHADOW":
@@ -674,6 +690,7 @@ def install() -> dict[str, Any]:
             "production_write": True, "live_crm_write": True, "main_fields_changed": False,
             "media_changed": False, "explicit_republish": True, "autopublication": False,
             "backup_root": str(backup), "gate": gate, "patched": patched,
+            "task096_evidence_source": task096_source,
             "shadow_copy_removed_before_backup": shadow_removed_before_backup,
             "migration": migration, "publisher_probes": probes, "publisher": published,
             "catalog": {"ok": True, "detail": str(detail)[:400]}, "pages": pages,
