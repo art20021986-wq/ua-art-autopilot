@@ -720,8 +720,16 @@ def postcheck() -> dict[str, Any]:
             raise Blocked("PUBLIC_HTTP_CONTRACT:" + uid + ":" + ";".join(errors))
         public[uid] = {"status": status, "sha256": sha_bytes(source.encode()), "errors": []}
     status, catalog = get_public("https://www.uaart.com.ua/video/katalog.html?v=%d" % int(time.time()))
-    unique = sorted(set(re.findall(r"(?:^|/)(UA-[0-9]{4})\.html", catalog, re.I)))
-    if status != 200 or unique != list(IDS):
+    catalog_ids = [value.upper() for value in re.findall(
+        r"href\s*=\s*['\"](?:https?://[^'\"]+)?(?:[^'\"]*/)?"
+        r"(UA-[0-9]{4})\.html(?:\?[^'\"]*)?['\"]",
+        catalog,
+        re.I,
+    )]
+    catalog_counts = {uid: catalog_ids.count(uid) for uid in sorted(set(catalog_ids))}
+    unique = sorted(catalog_counts)
+    if (status != 200 or unique != list(IDS)
+            or any(catalog_counts.get(uid) != 1 for uid in IDS)):
         raise Blocked("PUBLIC_CATALOG_16_CONTRACT")
     current_hash, count, identifiers = cars_hash(DB)
     if count != 16 or identifiers != list(IDS):
@@ -730,7 +738,8 @@ def postcheck() -> dict[str, Any]:
         "contract_id": CONTRACT, "status": "PASS", "mode": "POSTCHECK",
         "production_write": False, "crm_write": False, "public_write": False,
         "main_fields_changed": False, "media_changed": False, "files": files,
-        "public": public, "catalog_unique_ids": unique, "cars_sha256": current_hash,
+        "public": public, "catalog_unique_ids": unique, "catalog_href_counts": catalog_counts,
+        "cars_sha256": current_hash,
         "finished_at_utc": utc_now(),
     }
 
