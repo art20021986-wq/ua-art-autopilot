@@ -3,10 +3,10 @@
   "crm_write": false,
   "database": {
     "additional_table_counts": {
-      "additional_specification": 18,
+      "additional_specification": 0,
       "additional_specification_audit": 0,
       "additional_specification_import_runs": 3,
-      "additional_specification_meta": 18,
+      "additional_specification_meta": 0,
       "additional_specification_rejections": 0,
       "primary_field_registry": 174
     },
@@ -974,7 +974,7 @@
     ],
     "connection_total_changes": 0,
     "database_bytes": 3723264,
-    "database_sha256": "4fdc9e978c888f40f07edb51fb727ef138ea93a8d19a5e94bdd982935d84e7fa",
+    "database_sha256": "1d32ee440583cfbe6eef4110681e4ae3cd9bb3ca5c95f661c1a86c645b1d2e63",
     "ids": [
       "UA-0001",
       "UA-0002",
@@ -1460,9 +1460,9 @@
       "sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496"
     },
     "cars_ui.py": {
-      "bytes": 185054,
+      "bytes": 171590,
       "compiled": true,
-      "function_count": 139,
+      "function_count": 124,
       "functions": [
         {
           "end_line": 82,
@@ -2326,111 +2326,6 @@
           "sha256": "9a058a5b6170622cd7b9d6074a5bede1fa1af3ce3dffe23a0272f924e3844052"
         },
         {
-          "end_line": 3687,
-          "kind": "FunctionDef",
-          "line": 3686,
-          "name": "_ua099_uid",
-          "sha256": "d6ba8f272431a2d1bad88961b3e8cd9d64b3dc8036a38bc54c2d08321931edf9"
-        },
-        {
-          "end_line": 3694,
-          "kind": "FunctionDef",
-          "line": 3689,
-          "name": "render",
-          "sha256": "f685f7aa4cf8c0c5dc1a34bd6ff582fd8dfb35c1e46875b301bf2ca94c81f859"
-        },
-        {
-          "end_line": 3712,
-          "kind": "FunctionDef",
-          "line": 3696,
-          "name": "card_kb",
-          "sha256": "847afc1491bd5090527042833248515269c8c2cfb8d8baef74098c4d05ba76fe"
-        },
-        {
-          "end_line": 3721,
-          "kind": "AsyncFunctionDef",
-          "line": 3714,
-          "name": "_ua099_require_staff",
-          "sha256": "843b3010dfa1a9579c94dcd576f37744019be1bc5bef7f06bdc3dc87c48d4fd3"
-        },
-        {
-          "end_line": 3727,
-          "kind": "FunctionDef",
-          "line": 3723,
-          "name": "_ua099_card",
-          "sha256": "c707e7ce964dcd15bafee5feb29bfcf73d829ef54249e2fd0f514a5c6eb41141"
-        },
-        {
-          "end_line": 3732,
-          "kind": "FunctionDef",
-          "line": 3729,
-          "name": "_ua099_back",
-          "sha256": "68a221e87683c24a072f9f5a9a1ace638d1f86e9f02b5fde797ecacae59a6719"
-        },
-        {
-          "end_line": 3762,
-          "kind": "AsyncFunctionDef",
-          "line": 3734,
-          "name": "additional_spec_screen",
-          "sha256": "9b68112dcc6a7fab6f7dc640f5ca520a0367fa74630c17f25adbca6e5764d647"
-        },
-        {
-          "end_line": 3800,
-          "kind": "AsyncFunctionDef",
-          "line": 3764,
-          "name": "additional_spec_item",
-          "sha256": "4cce15d8dabbee83f2cb9f791eace204053672a5e2358d06f2d7128ad3a785e1"
-        },
-        {
-          "end_line": 3816,
-          "kind": "AsyncFunctionDef",
-          "line": 3802,
-          "name": "additional_spec_visibility",
-          "sha256": "513d217f16c352332e158e381cb2112bbea97ebd1dfb13c1f597f13263833933"
-        },
-        {
-          "end_line": 3834,
-          "kind": "AsyncFunctionDef",
-          "line": 3818,
-          "name": "additional_spec_edit",
-          "sha256": "fbb28e3ac48ab06b26d150dd28002e630729f27b915d27af23ff85ffd2f8925a"
-        },
-        {
-          "end_line": 3865,
-          "kind": "AsyncFunctionDef",
-          "line": 3836,
-          "name": "additional_spec_edit_message",
-          "sha256": "b0fe44de7eb85e5cde721e942c2765db4ed6a65bcf1f998f650daf8f26af0d31"
-        },
-        {
-          "end_line": 3882,
-          "kind": "AsyncFunctionDef",
-          "line": 3867,
-          "name": "additional_spec_category",
-          "sha256": "8ddb14c606df3a8f8d62cf9672db81ebd85de652c6c0d8acaf563c1b8b63b28e"
-        },
-        {
-          "end_line": 3894,
-          "kind": "AsyncFunctionDef",
-          "line": 3884,
-          "name": "additional_spec_set_category",
-          "sha256": "97bb1968d033318ee6b92153b03e72f13077b4ca1c413093360fc00f82529df2"
-        },
-        {
-          "end_line": 3911,
-          "kind": "AsyncFunctionDef",
-          "line": 3896,
-          "name": "additional_spec_publish",
-          "sha256": "8fdd84bf665afecf6ac9ba7b6db9c33b32454422e32e01304dfa82cd03f28860"
-        },
-        {
-          "end_line": 3931,
-          "kind": "FunctionDef",
-          "line": 3913,
-          "name": "register",
-          "sha256": "81975ab0574383e7f88943c81d023002dedd6b828805158afc0e32a6e306405b"
-        },
-        {
           "end_line": 2768,
           "kind": "AsyncFunctionDef",
           "line": 2766,
@@ -2443,9 +2338,9 @@
         "complex_diagnostics": 2,
         "sea_loaded": 0,
         "sea_transit": 0,
-        "Дополнительная спецификация": 2
+        "Дополнительная спецификация": 0
       },
-      "sha256": "0fb6993bb3b9737bbd0e78a7def376ac9c5ba872683af0fe4ce41ddb4c91d8ad"
+      "sha256": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15"
     },
     "db.py": {
       "bytes": 34721,
@@ -3073,9 +2968,9 @@
       "sha256": "56b8595de37fb46a7aad7ad10c494630ac31a3a84e2920a4a1d4bc495e971afa"
     },
     "master_card.py": {
-      "bytes": 149409,
+      "bytes": 148761,
       "compiled": true,
-      "function_count": 150,
+      "function_count": 148,
       "functions": [
         {
           "end_line": 31,
@@ -4023,20 +3918,6 @@
           "sha256": "6242c052bd53bf002be2b5b6e9bd1acc4f5a71bb40c203f696beb603b70ab126"
         },
         {
-          "end_line": 2914,
-          "kind": "FunctionDef",
-          "line": 2909,
-          "name": "obrabotat_kartochku",
-          "sha256": "597545970848b25fad4e7d18bace5e71c6b451acd3e04bc05736a5eba6c69e33"
-        },
-        {
-          "end_line": 2921,
-          "kind": "FunctionDef",
-          "line": 2916,
-          "name": "obrabotat_diagnostiku",
-          "sha256": "ee5aca024f2a9b3b5c1cf2c5144f11ddb5b69b9a8b0b6c24f5305ff9a7216ae6"
-        },
-        {
           "end_line": 275,
           "kind": "FunctionDef",
           "line": 267,
@@ -4135,12 +4016,12 @@
         "sea_transit": 0,
         "Дополнительная спецификация": 0
       },
-      "sha256": "f933d1f3f722be275459d58e335caec13c58de76a39aafe1189a27e1ddb6910e"
+      "sha256": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74"
     },
     "publikaciya.py": {
-      "bytes": 23065,
+      "bytes": 22172,
       "compiled": true,
-      "function_count": 23,
+      "function_count": 22,
       "functions": [
         {
           "end_line": 28,
@@ -4276,13 +4157,6 @@
           "sha256": "f86437ff21da2069c329bfeadf52a0b362bb579414c18ff8f3f765efaa73a4df"
         },
         {
-          "end_line": 527,
-          "kind": "FunctionDef",
-          "line": 515,
-          "name": "proverit",
-          "sha256": "68cf8239d98c1788a2742b11172fbe169e0cb1dd78398d1092e73d454fd70a5e"
-        },
-        {
           "end_line": 246,
           "kind": "FunctionDef",
           "line": 236,
@@ -4311,7 +4185,7 @@
         "sea_transit": 0,
         "Дополнительная спецификация": 0
       },
-      "sha256": "19efe385b8d2a6bc167f0f92b87ab435ea935037470d339a17387ad45fd689e1"
+      "sha256": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
     },
     "stranica.py": {
       "bytes": 203236,
@@ -6452,7 +6326,7 @@
       "sha256": "b2999eefa762d7bb3cbec94004b22433ed1d34ab9e313a831f37f791a6b6435f"
     }
   },
-  "finished_at_utc": "2026-08-31T05:00:50Z",
+  "finished_at_utc": "2026-08-31T05:10:55Z",
   "http_methods": [
     "GET"
   ],
@@ -7387,7 +7261,7 @@
     ]
   },
   "site_write": false,
-  "started_at_utc": "2026-08-31T05:00:32Z",
+  "started_at_utc": "2026-08-31T05:10:45Z",
   "status": "PASS_READ_ONLY",
   "task_id": "task_099"
 }
