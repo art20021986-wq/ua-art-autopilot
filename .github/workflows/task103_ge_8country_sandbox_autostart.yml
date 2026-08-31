@@ -1,0 +1,121 @@
+name: TASK103 GE 8 COUNTRY SANDBOX AUTOSTART
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tasks/task_103.md'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: claude-autopilot
+  cancel-in-progress: false
+
+jobs:
+  run-task103-sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gate exact TASK 103 and production deny
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f tasks/task_103.md
+          grep -q '^TASK_ID: task_103$' tasks/task_103.md
+          grep -q '^SPEC_CODE: UA-ORDER-GE-8COUNTRY-GUARD-016$' tasks/task_103.md
+          grep -q '^SPEC_VERSION: 1.2 — FINAL$' tasks/task_103.md
+          grep -q '^OWNER_APPROVED: YES$' tasks/task_103.md
+          grep -q '^DEFAULT_LANGUAGE: uk$' tasks/task_103.md
+          grep -q '^PRODUCTION_WRITE_AUTHORIZED: NO$' tasks/task_103.md
+          grep -q '^SANDBOX_PREVIEW_ONLY: YES$' tasks/task_103.md
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          tasks = list(Path('tasks').glob('task_*.md'))
+          def key(path):
+              match = re.fullmatch(r'task_(\d+)(.*)\.md', path.name)
+              if not match:
+                  return (-1, 0, path.name)
+              return (int(match.group(1)), 1 if match.group(2) == '' else 0, path.name)
+          latest = max(tasks, key=key)
+          print('LATEST_TASK', latest.name)
+          if latest.name != 'task_103.md':
+              raise SystemExit('TASK_103_NOT_LATEST')
+          PY
+          echo 'TASK103_SANDBOX_GATE_PASS'
+
+      - name: Run autonomous Claude worker
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '1500'
+          ANTHROPIC_NETWORK_ATTEMPTS: '4'
+          ANTHROPIC_MAX_TOKENS: '128000'
+          ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
+        run: python3 automation/claude_worker.py
+
+      - name: Verify sandbox-only output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f cloud/latest_status.md
+          test -f cloud/owner_reply.md
+          grep -q '^TASK_ID: task_103$' cloud/latest_status.md
+          grep -q '^PRODUCTION_TOUCHED: NO$' cloud/latest_status.md
+          if git diff --name-only | grep -Ev '^cloud/'; then
+            echo 'UNSAFE_OUTPUT_OUTSIDE_CLOUD'
+            exit 1
+          fi
+          echo 'TASK103_OUTPUT_SCOPE_PASS'
+
+      - name: Commit Claude sandbox outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- cloud/
+          if git diff --cached --quiet -- cloud/; then
+            echo 'No Claude output changes'
+            exit 1
+          fi
+          git config user.name 'ua-art-claude-worker'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task103: Claude prepare GE 8-country sandbox preview'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+              if [ "${#conflicts[@]}" -eq 0 ]; then
+                git rebase --abort || true
+                exit 1
+              fi
+              for path in "${conflicts[@]}"; do
+                case "${path}" in
+                  cloud/latest_status.md|cloud/owner_reply.md) ;;
+                  *)
+                    echo "Unsafe rebase conflict: ${path}"
+                    git rebase --abort || true
+                    exit 1
+                    ;;
+                esac
+              done
+              for path in "${conflicts[@]}"; do
+                git checkout --theirs -- "${path}"
+                git add -- "${path}"
+              done
+              GIT_EDITOR=true git rebase --continue
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            if [ "${attempt}" -lt 5 ]; then
+              sleep $((attempt * 3))
+            fi
+          done
+          exit 1
