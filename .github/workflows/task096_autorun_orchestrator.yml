@@ -1,0 +1,100 @@
+name: TASK096 Autorun Orchestrator
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tasks/task096_autorun_orchestrator_v1_approval.md'
+      - 'automation/task096_autorun_orchestrator.py'
+      - '.github/workflows/task096_autorun_orchestrator.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: task096-autorun-orchestrator
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  audit-and-sandbox-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify owner approval and production lock
+        run: |
+          set -euo pipefail
+          grep -q '^OWNER_APPROVED: YES$' tasks/task096_autorun_orchestrator_v1_approval.md
+          grep -q '^MAX_RECOVERY_ATTEMPTS: 10$' tasks/task096_autorun_orchestrator_v1_approval.md
+          grep -q '^PRODUCTION_AUTHORIZED: NO$' tasks/task096_autorun_orchestrator_v1_approval.md
+          grep -q '^LIVE_CRM_WRITE_AUTHORIZED: NO$' tasks/task096_autorun_orchestrator_v1_approval.md
+          grep -q '^BOT_WRITE_AUTHORIZED: NO$' tasks/task096_autorun_orchestrator_v1_approval.md
+          grep -q '^SITE_WRITE_AUTHORIZED: NO$' tasks/task096_autorun_orchestrator_v1_approval.md
+
+      - name: Compile and lifecycle self-tests
+        run: |
+          set -euo pipefail
+          python -m py_compile automation/task096_autorun_orchestrator.py
+          python automation/task096_autorun_orchestrator.py --selftest | tee /tmp/task096-selftest.log
+          grep -q 'AUTORUN_CHAIN_TEST: PASS' /tmp/task096-selftest.log
+          grep -q 'FAILURE_RECOVERY_TEST: PASS' /tmp/task096-selftest.log
+          grep -q 'CHECKPOINT_RESUME_TEST: PASS' /tmp/task096-selftest.log
+          grep -q 'SINGLE_INSTANCE_LOCK: WORKFLOW_CONCURRENCY' /tmp/task096-selftest.log
+
+      - name: Install parser for existing sandbox controller
+        run: python -m pip install --disable-pip-version-check beautifulsoup4==4.15.0
+
+      - name: Run existing sandbox canary and 16-card bounded batch
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+        run: |
+          set -euo pipefail
+          PYTHONPATH=automation python -u automation/task096_final_fix.py
+
+      - name: Advance state-machine automatically until next real blocker or COMPLETE
+        run: |
+          set -u
+          mkdir -p cloud/task_096_tech_spec_ai_crm/state
+          for n in $(seq 1 12); do
+            echo "TASK096_AUTORUN_CYCLE=$n"
+            python automation/task096_autorun_orchestrator.py
+            rc=$?
+            cat cloud/task_096_tech_spec_ai_crm/state/task096_state.json
+            if grep -q '"business_status": "COMPLETE"' cloud/task_096_tech_spec_ai_crm/state/task096_state.json; then
+              echo 'TASK096_BUSINESS_COMPLETE'
+              exit 0
+            fi
+            if [ "$rc" -ne 0 ]; then
+              echo "TASK096_AUTORUN_PAUSED_ON_CLASSIFIED_BLOCKER rc=$rc"
+              exit "$rc"
+            fi
+          done
+          echo 'TASK096_AUTORUN_LOOP_GUARD_REACHED'
+          exit 3
+
+      - name: Upload checkpoint and audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task096-autorun-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            cloud/task_096_tech_spec_ai_crm/state/task096_state.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/evidence.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/cards_summary.json
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/report.md
+            cloud/task_096_tech_spec_ai_crm/data_enrichment/ua0015_preview.html
+          if-no-files-found: warn
+          retention-days: 14
