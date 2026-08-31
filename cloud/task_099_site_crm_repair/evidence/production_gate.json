@@ -1,0 +1,213 @@
+{
+  "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+  "errors": [
+    "Blocked:INSTALL_FAIL:[\"Blocked:PUBLISH_PROBE_FAIL:UA-0002:Публикация отменена: BASE_PUBLISH_FAILED:UA-0002:Публикация отменена, страница не прошла проверку:\\n· нет основной кнопки Задаток 500 $\\nПрежняя страница на сайте не тронута.. Выполнен полный откат.\"]"
+  ],
+  "finished_at_utc": "2026-08-31T04:05:10Z",
+  "github_comment_published": false,
+  "install": {
+    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "errors": [
+      "Blocked:PUBLISH_PROBE_FAIL:UA-0002:Публикация отменена: BASE_PUBLISH_FAILED:UA-0002:Публикация отменена, страница не прошла проверку:\n· нет основной кнопки Задаток 500 $\nПрежняя страница на сайте не тронута.. Выполнен полный откат."
+    ],
+    "finished_at_utc": "2026-08-31T04:04:44Z",
+    "mode": "INSTALL",
+    "status": "FAIL"
+  },
+  "issue_35_closed": false,
+  "mode": "OWNER_APPROVED_PRODUCTION",
+  "prerequisites": {
+    "audit_finished_at_utc": "2026-08-31T03:41:58Z",
+    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "source_sha256": {
+      "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
+      "master_card.py": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74",
+      "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
+    },
+    "status": "PASS",
+    "task096_canary_rows": 18,
+    "task096_processed_uids": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ],
+    "task096_run_id": "33354251767"
+  },
+  "shadow": {
+    "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
+    "contracts": {
+      "UA-0001": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0002": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0003": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0004": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0005": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0006": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0007": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0008": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0009": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0010": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0011": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0012": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0013": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0014": {
+        "additional_rows": 0,
+        "errors": []
+      },
+      "UA-0015": {
+        "additional_rows": 18,
+        "errors": []
+      },
+      "UA-0016": {
+        "additional_rows": 0,
+        "errors": []
+      }
+    },
+    "finished_at_utc": "2026-08-31T04:01:34Z",
+    "gate": {
+      "cars_sha256": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "row_count": 16,
+      "source_sha256": {
+        "cars_ui.py": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15",
+        "master_card.py": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74",
+        "publikaciya.py": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
+      }
+    },
+    "live_crm_write": false,
+    "migration": {
+      "cars_sha256_after": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "cars_sha256_before": "fdd0690f4c9d7f0b2fbd8229a4d02cd78f5229b0cd01b5a51dcddcca00fd073c",
+      "inserted_count": 18,
+      "inserted_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "main_fields_changed": false,
+      "per_uid": {
+        "UA-0001": 0,
+        "UA-0002": 0,
+        "UA-0003": 0,
+        "UA-0004": 0,
+        "UA-0005": 0,
+        "UA-0006": 0,
+        "UA-0007": 0,
+        "UA-0008": 0,
+        "UA-0009": 0,
+        "UA-0010": 0,
+        "UA-0011": 0,
+        "UA-0012": 0,
+        "UA-0013": 0,
+        "UA-0014": 0,
+        "UA-0015": 18,
+        "UA-0016": 0
+      },
+      "run_id": "shadow-20260831T040132Z"
+    },
+    "mode": "SHADOW",
+    "patched": {
+      "cars_ui.py": {
+        "after": "0fb6993bb3b9737bbd0e78a7def376ac9c5ba872683af0fe4ce41ddb4c91d8ad",
+        "before": "85176c4ee2c31c63e5e24ec8537cc3f6f1a96caf35669269a5236a8b61172f15"
+      },
+      "master_card.py": {
+        "after": "f933d1f3f722be275459d58e335caec13c58de76a39aafe1189a27e1ddb6910e",
+        "before": "db8349c24ff20e94d7fd3a09d626518e74cc8eee2fba85f0d42fc0f0982baf74"
+      },
+      "publikaciya.py": {
+        "after": "19efe385b8d2a6bc167f0f92b87ab435ea935037470d339a17387ad45fd689e1",
+        "before": "3daa821c85938fa6dcb39d13beabc59c7d793b852a99e14d69d0b931294b619a"
+      }
+    },
+    "production_write": false,
+    "public_write": false,
+    "status": "PASS",
+    "task096_canary_rows": 18,
+    "task096_processed": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ]
+  },
+  "started_at_utc": "2026-08-31T03:59:48Z",
+  "status": "BLOCKED"
+}
