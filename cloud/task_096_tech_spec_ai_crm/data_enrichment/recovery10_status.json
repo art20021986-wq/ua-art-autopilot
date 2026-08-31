@@ -4,113 +4,255 @@
   "retries_used": 0,
   "transport": "SCHEDULED_ONE_SHOT",
   "last_stage": "FINAL",
-  "status": "FAIL",
+  "status": "PASS",
   "production_authorized": false,
   "events": [
     {
       "stage": "PREFLIGHT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:26:54.096445+00:00",
+      "at_utc": "2026-08-31T03:34:23.544736+00:00",
       "no_browser_required": true,
       "hardcoded_fallback": false
     },
     {
       "stage": "TRANSPORT_PREFLIGHT",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:26:54.100899+00:00",
+      "at_utc": "2026-08-31T03:34:23.550298+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "TRANSPORT_PREFLIGHT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:26:54.679701+00:00"
+      "at_utc": "2026-08-31T03:34:24.202091+00:00"
     },
     {
       "stage": "UPLOAD_REMOTE_APPLIER",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:26:57.680464+00:00",
+      "at_utc": "2026-08-31T03:34:27.203033+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "UPLOAD_REMOTE_APPLIER",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:26:58.452227+00:00"
+      "at_utc": "2026-08-31T03:34:27.931667+00:00"
     },
     {
       "stage": "CONTEXT_EXPORT",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:26:58.556435+00:00",
+      "at_utc": "2026-08-31T03:34:27.932212+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "UPLOAD_EXPORT_ONESHOT",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:26:58.824524+00:00",
+      "at_utc": "2026-08-31T03:34:28.216623+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "UPLOAD_EXPORT_ONESHOT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:26:59.317939+00:00"
+      "at_utc": "2026-08-31T03:34:28.829506+00:00"
     },
     {
       "stage": "EXPORT_REMOTE",
       "status": "SCHEDULED",
-      "at_utc": "2026-08-31T03:26:59.597879+00:00",
-      "schedule_id": 1504300,
-      "operation": "recovery10_export_11daf8d0ad582fb22f59",
+      "at_utc": "2026-08-31T03:34:29.158487+00:00",
+      "schedule_id": 1504308,
+      "operation": "recovery10_export_cb1e566bc1d6f95844f6",
       "scheduled_hour_utc": 3,
-      "scheduled_minute_utc": 28
+      "scheduled_minute_utc": 36
     },
     {
       "stage": "EXPORT_REMOTE",
       "status": "WAITING_FOR_RECEIPT",
-      "at_utc": "2026-08-31T03:27:20.419138+00:00",
-      "operation": "recovery10_export_11daf8d0ad582fb22f59"
+      "at_utc": "2026-08-31T03:34:49.996273+00:00",
+      "operation": "recovery10_export_cb1e566bc1d6f95844f6"
     },
     {
       "stage": "EXPORT_REMOTE",
       "status": "WAITING_FOR_RECEIPT",
-      "at_utc": "2026-08-31T03:28:22.016242+00:00",
-      "operation": "recovery10_export_11daf8d0ad582fb22f59"
+      "at_utc": "2026-08-31T03:35:51.895760+00:00",
+      "operation": "recovery10_export_cb1e566bc1d6f95844f6"
     },
     {
       "stage": "EXPORT_REMOTE",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:29:02.990570+00:00",
-      "schedule_id": 1504300
+      "at_utc": "2026-08-31T03:36:32.977021+00:00",
+      "schedule_id": 1504308
     },
     {
       "stage": "CLEANUP_EXPORT",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:29:02.991043+00:00",
+      "at_utc": "2026-08-31T03:36:32.977568+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "CLEANUP_EXPORT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:29:03.297234+00:00"
+      "at_utc": "2026-08-31T03:36:33.257749+00:00"
     },
     {
       "stage": "CONTEXT_EXPORT",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:29:03.619132+00:00"
+      "at_utc": "2026-08-31T03:36:33.609819+00:00"
     },
     {
       "stage": "CANARY_AI_EXTRACTION",
       "status": "RUNNING",
-      "at_utc": "2026-08-31T03:29:08.705344+00:00",
+      "at_utc": "2026-08-31T03:36:36.608828+00:00",
       "stage_attempt": 1
     },
     {
       "stage": "CANARY_AI_EXTRACTION",
       "status": "PASS",
-      "at_utc": "2026-08-31T03:29:28.426071+00:00"
+      "at_utc": "2026-08-31T03:36:55.447216+00:00"
+    },
+    {
+      "stage": "UPLOAD_CANARY_CANDIDATE",
+      "status": "RUNNING",
+      "at_utc": "2026-08-31T03:36:55.481713+00:00",
+      "stage_attempt": 1
+    },
+    {
+      "stage": "UPLOAD_CANARY_CANDIDATE",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:36:56.036132+00:00"
+    },
+    {
+      "stage": "APPLY_UA0015_CANARY",
+      "status": "RUNNING",
+      "at_utc": "2026-08-31T03:36:56.036920+00:00",
+      "stage_attempt": 1
+    },
+    {
+      "stage": "UPLOAD_CANARY_ONESHOT",
+      "status": "RUNNING",
+      "at_utc": "2026-08-31T03:36:56.294875+00:00",
+      "stage_attempt": 1
+    },
+    {
+      "stage": "UPLOAD_CANARY_ONESHOT",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:36:56.837846+00:00"
+    },
+    {
+      "stage": "CANARY_REMOTE",
+      "status": "SCHEDULED",
+      "at_utc": "2026-08-31T03:36:57.139874+00:00",
+      "schedule_id": 1504310,
+      "operation": "recovery10_canary_a534be124ce52a96b0f2",
+      "scheduled_hour_utc": 3,
+      "scheduled_minute_utc": 38
+    },
+    {
+      "stage": "CANARY_REMOTE",
+      "status": "WAITING_FOR_RECEIPT",
+      "at_utc": "2026-08-31T03:37:19.994432+00:00",
+      "operation": "recovery10_canary_a534be124ce52a96b0f2"
+    },
+    {
+      "stage": "CANARY_REMOTE",
+      "status": "WAITING_FOR_RECEIPT",
+      "at_utc": "2026-08-31T03:38:21.732479+00:00",
+      "operation": "recovery10_canary_a534be124ce52a96b0f2"
+    },
+    {
+      "stage": "CANARY_REMOTE",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:38:32.004146+00:00",
+      "schedule_id": 1504310
+    },
+    {
+      "stage": "CLEANUP_CANARY",
+      "status": "RUNNING",
+      "at_utc": "2026-08-31T03:38:32.004889+00:00",
+      "stage_attempt": 1
+    },
+    {
+      "stage": "CLEANUP_CANARY",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:38:32.354083+00:00"
+    },
+    {
+      "stage": "APPLY_UA0015_CANARY",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:38:32.612711+00:00"
+    },
+    {
+      "stage": "UPLOAD_BATCH_CANDIDATE",
+      "status": "RUNNING",
+      "at_utc": "2026-08-31T03:38:40.076573+00:00",
+      "stage_attempt": 1
+    },
+    {
+      "stage": "UPLOAD_BATCH_CANDIDATE",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:38:40.648898+00:00"
+    },
+    {
+      "stage": "APPLY_BATCH_UA0001_UA0016",
+      "status": "RUNNING",
+      "at_utc": "2026-08-31T03:38:40.649859+00:00",
+      "stage_attempt": 1
+    },
+    {
+      "stage": "UPLOAD_BATCH_ONESHOT",
+      "status": "RUNNING",
+      "at_utc": "2026-08-31T03:38:40.916939+00:00",
+      "stage_attempt": 1
+    },
+    {
+      "stage": "UPLOAD_BATCH_ONESHOT",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:38:41.495183+00:00"
+    },
+    {
+      "stage": "BATCH_REMOTE",
+      "status": "SCHEDULED",
+      "at_utc": "2026-08-31T03:38:41.802922+00:00",
+      "schedule_id": 1504312,
+      "operation": "recovery10_batch_f6f698907d5201538c33",
+      "scheduled_hour_utc": 3,
+      "scheduled_minute_utc": 40
+    },
+    {
+      "stage": "BATCH_REMOTE",
+      "status": "WAITING_FOR_RECEIPT",
+      "at_utc": "2026-08-31T03:39:02.573535+00:00",
+      "operation": "recovery10_batch_f6f698907d5201538c33"
+    },
+    {
+      "stage": "BATCH_REMOTE",
+      "status": "WAITING_FOR_RECEIPT",
+      "at_utc": "2026-08-31T03:40:06.532036+00:00",
+      "operation": "recovery10_batch_f6f698907d5201538c33"
+    },
+    {
+      "stage": "BATCH_REMOTE",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:40:16.831445+00:00",
+      "schedule_id": 1504312
+    },
+    {
+      "stage": "CLEANUP_BATCH",
+      "status": "RUNNING",
+      "at_utc": "2026-08-31T03:40:16.832052+00:00",
+      "stage_attempt": 1
+    },
+    {
+      "stage": "CLEANUP_BATCH",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:40:17.147391+00:00"
+    },
+    {
+      "stage": "APPLY_BATCH_UA0001_UA0016",
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:40:17.420511+00:00"
     },
     {
       "stage": "FINAL",
-      "status": "FAIL",
-      "at_utc": "2026-08-31T03:29:28.429999+00:00"
+      "status": "PASS",
+      "at_utc": "2026-08-31T03:40:17.708164+00:00"
     }
   ]
 }

@@ -1,26 +1,396 @@
 {
   "autopublication": false,
+  "batch": {
+    "additional_spec_total_rows": 18,
+    "autopublication": false,
+    "bot_code_changed": false,
+    "contract_id": "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT",
+    "finished_at_utc": "2026-08-31T03:40:13Z",
+    "inserted_count": 0,
+    "live_crm_write": false,
+    "main_fields_changed": false,
+    "mode": "batch",
+    "per_car": [
+      {
+        "car_uid": "UA-0001",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0002",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0003",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0004",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0005",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0006",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0007",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0008",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0009",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0010",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0011",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0012",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0013",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0014",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      },
+      {
+        "car_uid": "UA-0015",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 1.0,
+        "rejected": 0,
+        "status": "ALREADY_CANARY"
+      },
+      {
+        "car_uid": "UA-0016",
+        "facts_received": 0,
+        "inserted": 0,
+        "match_score": 0.0,
+        "rejected": 0,
+        "status": "NO_CONFIDENT_MATCH"
+      }
+    ],
+    "phase": "DATA_BATCH",
+    "processed_uids": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ],
+    "production_authorized": false,
+    "production_touched": false,
+    "public_path_write": false,
+    "purchase_price_extracted": false,
+    "purchase_price_logged": false,
+    "purchase_price_uploaded": false,
+    "rejected_count": 0,
+    "sandbox_db_name": "crm_task096_sandbox_20260830T171209Z.db",
+    "sandbox_quick_check": "ok",
+    "services_restarted": false,
+    "source_urls_exposed_in_preview": false,
+    "started_from_candidate": "candidate_batch.json",
+    "status": "PASS",
+    "task_id": "task_096",
+    "ua0015_additional_rows": 18,
+    "ua0015_preview_relative_path": "data_enrichment/ua0015_preview.html"
+  },
   "bot_code_changed": false,
+  "canary": {
+    "additional_spec_total_rows": 18,
+    "autopublication": false,
+    "bot_code_changed": false,
+    "contract_id": "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT",
+    "finished_at_utc": "2026-08-31T03:38:14Z",
+    "inserted_count": 2,
+    "live_crm_write": false,
+    "main_fields_changed": false,
+    "mode": "canary",
+    "per_car": [
+      {
+        "car_uid": "UA-0015",
+        "facts_received": 13,
+        "inserted": 2,
+        "match_score": 0.82,
+        "rejected": 11,
+        "status": "MATCHED"
+      }
+    ],
+    "phase": "DATA_CANARY",
+    "processed_uids": [
+      "UA-0015"
+    ],
+    "production_authorized": false,
+    "production_touched": false,
+    "public_path_write": false,
+    "purchase_price_extracted": false,
+    "purchase_price_logged": false,
+    "purchase_price_uploaded": false,
+    "rejected_count": 11,
+    "sandbox_db_name": "crm_task096_sandbox_20260830T171209Z.db",
+    "sandbox_quick_check": "ok",
+    "services_restarted": false,
+    "source_urls_exposed_in_preview": false,
+    "started_from_candidate": "candidate_canary.json",
+    "status": "PASS",
+    "task_id": "task_096",
+    "ua0015_additional_rows": 18,
+    "ua0015_preview_relative_path": "data_enrichment/ua0015_preview.html"
+  },
+  "cards_summary": [
+    {
+      "car_uid": "UA-0001",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0002",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0003",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0004",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0005",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0006",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0007",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0008",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0009",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0010",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0011",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0012",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0013",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0014",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    },
+    {
+      "car_uid": "UA-0015",
+      "facts_accepted": 0,
+      "match_score": 1.0,
+      "source_domains": [],
+      "status": "ALREADY_CANARY"
+    },
+    {
+      "car_uid": "UA-0016",
+      "facts_accepted": 0,
+      "match_score": 0.0,
+      "source_domains": [],
+      "status": "NO_CONFIDENT_MATCH"
+    }
+  ],
+  "context": {
+    "cards_found": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ],
+    "sandbox_db_name": "crm_task096_sandbox_20260830T171209Z.db",
+    "status": "PASS"
+  },
   "contract_id": "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT",
   "database_downloaded": false,
-  "errors": [
-    "ControllerError:CANARY_FACTS_INSUFFICIENT:5"
-  ],
-  "finished_at_utc": "2026-08-31T03:29:28Z",
+  "finished_at_utc": "2026-08-31T03:40:17Z",
   "live_crm_write": false,
   "main_fields_changed": false,
-  "phase": "DATA_ENRICHMENT_SANDBOX",
+  "phase": "DATA_ENRICHMENT_SANDBOX_COMPLETE",
   "production_authorized": false,
   "production_touched": false,
   "public_path_write": false,
   "purchase_price_extracted": false,
   "purchase_price_logged": false,
   "purchase_price_uploaded": false,
+  "raw_source_pages_committed": false,
   "services_restarted": false,
-  "status": "FAIL",
+  "source_urls_exposed_in_preview": false,
+  "status": "PASS_WITH_WARNINGS",
   "task_id": "task_096",
-  "recovery_workflow_run_id": "33353866980",
-  "recovery_workflow_sha": "062e3fbe3fe72c469c6680f189e0e7eb289423ce",
+  "ua0015_candidate_facts": 13,
+  "warnings": [
+    "UA-0001: источники не найдены",
+    "UA-0002: источники не найдены",
+    "UA-0003: источники не найдены",
+    "UA-0004: источники не найдены",
+    "UA-0005: источники не найдены",
+    "UA-0006: источники не найдены",
+    "UA-0007: источники не найдены",
+    "UA-0008: источники не найдены",
+    "UA-0009: источники не найдены",
+    "UA-0010: источники не найдены",
+    "UA-0011: источники не найдены",
+    "UA-0012: источники не найдены",
+    "UA-0013: источники не найдены",
+    "UA-0014: источники не найдены",
+    "UA-0016: источники не найдены"
+  ],
+  "recovery_workflow_run_id": "33354251767",
+  "recovery_workflow_sha": "e6c33fb84a7e51524f28cebe044011397f744860",
   "transport": "SCHEDULED_ONE_SHOT",
   "max_transient_retries": 10
 }
