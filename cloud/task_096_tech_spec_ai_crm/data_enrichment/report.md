@@ -2,6 +2,6 @@
 
 **Status:** FAIL
 
-Ошибка: `ControllerError:UA0015_PREVIEW_LEAK`
+Ошибка: `ControllerError:CONSOLE_SEND_INPUT_HTTP_412`
 
 Production, рабочая CRM, бот и сайт не изменялись.

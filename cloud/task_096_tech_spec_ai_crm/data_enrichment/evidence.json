@@ -4,9 +4,9 @@
   "contract_id": "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT",
   "database_downloaded": false,
   "errors": [
-    "ControllerError:UA0015_PREVIEW_LEAK"
+    "ControllerError:CONSOLE_SEND_INPUT_HTTP_412"
   ],
-  "finished_at_utc": "2026-08-31T01:06:54Z",
+  "finished_at_utc": "2026-08-31T03:13:37Z",
   "live_crm_write": false,
   "main_fields_changed": false,
   "phase": "DATA_ENRICHMENT_SANDBOX",
@@ -18,9 +18,5 @@
   "purchase_price_uploaded": false,
   "services_restarted": false,
   "status": "FAIL",
-  "task_id": "task_096",
-  "recovery_workflow_run_id": "33346211212",
-  "recovery_workflow_sha": "02388ab0ad5795467d085dc0fb17d84d735b633e",
-  "transport": "SCHEDULED_ONE_SHOT",
-  "max_transient_retries": 10
+  "task_id": "task_096"
 }
