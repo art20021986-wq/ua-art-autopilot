@@ -1,15 +1,26 @@
 #!/usr/bin/env python3
-"""Use the already verified CRM auto_number identifier without changing CRM data."""
+"""Use verified CRM identifiers and model-compatible requests without changing CRM data."""
 from __future__ import annotations
 import sys
 import sqlite3
 import types
 from pathlib import Path
 import task096_recovery10 as recovery
+import task096_sonnet5_compat as api_compat
 
 EXTRA_SAFE_NAMES = {'auto_number','komplektaciya','korobka','drivetrain','power_hp','color_exterior','color_interior'}
 recovery.SAFE_NAMES.update(EXTRA_SAFE_NAMES)
 _original_patch = recovery.patch_remote
+_original_load = recovery.load_legacy
+
+
+def load_compatible_legacy():
+    mod = api_compat.install(_original_load(), recovery.ROOT)
+    api_compat.selftest(mod)
+    return mod
+
+
+recovery.load_legacy = load_compatible_legacy
 
 
 def patch_actual_schema(text):
@@ -79,6 +90,7 @@ def selftest_actual_schema():
         pass
     else:
         raise RuntimeError('PRIMARY_WRITE_GUARD_FAILED')
+    recovery.load_legacy()
     print('TASK096_AUTO_NUMBER_SCHEMA_TEST_PASS',flush=True)
 
 
