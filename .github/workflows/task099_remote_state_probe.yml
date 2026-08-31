@@ -66,7 +66,7 @@ jobs:
                   key: item.get(key)
                   for key in (
                       "id", "description", "enabled", "running", "status",
-                      "interval", "hour", "minute", "last_run_at", "next_run_at",
+                      "interval", "hour", "minute", "last_run_at", "next_run_at", "command",
                   )
                   if key in item
               }
@@ -102,9 +102,27 @@ jobs:
                   if not isinstance(item, dict):
                       continue
                   haystack = " ".join(str(item.get(key) or "") for key in ("description", "command"))
-                  if "TASK099" in haystack.upper() or "task099" in haystack:
+                  if "TASK099" in haystack.upper() or "task099" in haystack or "start_safe.py" in haystack:
                       matching.append(task_summary(item))
               report["task_lists"][kind] = {"http_status": status, "matching": matching}
+
+          public_request = urllib.request.Request(
+              "https://www.uaart.com.ua/video/UA-0001.html?probe="
+              + str(int(dt.datetime.now(dt.timezone.utc).timestamp())),
+              headers={"User-Agent": "ua-art-task099-read-only-probe/1"},
+              method="GET",
+          )
+          try:
+              with urllib.request.urlopen(public_request, timeout=30) as response:
+                  public_status = int(response.status)
+                  public_body = response.read(500)
+          except urllib.error.HTTPError as exc:
+              public_status = int(exc.code)
+              public_body = exc.read(500)
+          report["public_ua0001"] = {
+              "http_status": public_status,
+              "body_head": public_body.decode("utf-8", "replace")[:200],
+          }
 
           remote = "/home/Carix/autopilot_inbox/cloud/task_099_site_crm_repair/"
           for name in (
