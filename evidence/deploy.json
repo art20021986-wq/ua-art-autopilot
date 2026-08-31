@@ -1,18 +1,18 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
-  "generated_at_utc": "2026-08-31T07:42:29.883104+00:00",
+  "generated_at_utc": "2026-08-31T07:57:53.664680+00:00",
   "github_comment_published": false,
   "issue_35_closed": false,
   "issue_35_ready_to_close": false,
   "newer_fail_observed": true,
   "production_errors": [
-    "Blocked:PARALLEL_PRODUCTION_GATE_BEFORE_INSTALL:[{\"id\": 33369482693, \"name\": \"TASK099 Site and CRM Production Completion\", \"status\": \"pending\"}]"
+    "Blocked:POSTCHECK_FAIL:[\"Blocked:PUBLIC_CATALOG_16_CONTRACT\"]"
   ],
-  "production_status": "BLOCKED",
+  "production_status": "ROLLED_BACK",
   "status": "FAIL",
   "task_id": "task_099",
   "visual_errors": [],
   "visual_status": "NOT_RUN",
-  "workflow_run_id": "33369321788",
-  "workflow_sha": "e0eea05d60c1c0e21a965e36553054caee4b4fbe"
+  "workflow_run_id": "33369482693",
+  "workflow_sha": "8652b10c2bff9db920d5020ec26b729d52014f60"
 }
