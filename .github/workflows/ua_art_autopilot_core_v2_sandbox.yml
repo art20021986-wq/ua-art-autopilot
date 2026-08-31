@@ -1,0 +1,72 @@
+name: UA ART Autopilot Core v2 Sandbox
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'automation/autopilot_core_v2.py'
+      - 'cloud/autopilot_core_v2/**'
+      - 'tasks/ua_art_autopilot_core_v2_approval.md'
+      - '.github/workflows/ua_art_autopilot_core_v2_sandbox.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ua-art-autopilot-core-v2-sandbox
+  cancel-in-progress: false
+
+jobs:
+  audit-design-sandbox-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Verify production deny and compile
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^OWNER_APPROVED: YES$' tasks/ua_art_autopilot_core_v2_approval.md
+          grep -q '^PRODUCTION_CORE_AUTHORIZED: NO$' tasks/ua_art_autopilot_core_v2_approval.md
+          python -m py_compile automation/autopilot_core_v2.py
+      - name: Run failure injection suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python automation/autopilot_core_v2.py --failure-injection-tests
+      - name: Verify mandatory gates
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('cloud/autopilot_core_v2/state/failure_injection_report.json')
+          r=json.loads(p.read_text())
+          required=[
+            'GLOBAL_QUEUE_TEST','PERSISTENT_STATE_TEST','HEARTBEAT_PROGRESS_TEST',
+            'AUTOMATIC_RESUME_TEST','ERROR_CLASSIFICATION_TEST','BOUNDED_RETRY_TEST',
+            'REPAIR_PATH_TEST','SINGLE_INSTANCE_LOCK_TEST','RESOURCE_LOCK_TEST',
+            'PRODUCTION_DENY_DEFAULT_TEST','BUSINESS_COMPLETE_GATE_TEST',
+            'ROLLBACK_STATE_TEST','OWNER_BLOCKER_TEST','PYTHONANYWHERE_412_TEST'
+          ]
+          assert r['status']=='PASS', r
+          assert r['production_touched'] is False
+          assert r['core_production_authorized'] is False
+          assert all(r['tests'].get(k) is True for k in required), r
+          print('CORE_V2_SANDBOX_FAILURE_INJECTION_PASS')
+          PY
+      - name: Upload architecture evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ua-art-autopilot-core-v2-${{ github.run_id }}
+          path: |
+            cloud/autopilot_core_v2/AUDIT_DESIGN.md
+            cloud/autopilot_core_v2/state/failure_injection_report.json
+            cloud/autopilot_core_v2/state/queue.json
+            tasks/ua_art_autopilot_core_v2_approval.md
+          if-no-files-found: error
+          retention-days: 14
