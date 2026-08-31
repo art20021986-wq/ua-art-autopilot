@@ -31,6 +31,15 @@ MASTER_BLOCK = r'''
 # >>> UA099 ADDITIONAL SPEC MASTER V1
 _UA099_BASE_OBRABOTAT_KARTOCHKU = obrabotat_kartochku
 _UA099_BASE_OBRABOTAT_DIAGNOSTIKU = obrabotat_diagnostiku
+_UA099_BASE_PROVERIT = proverit
+
+_UA099_OBSOLETE_VIN_ERRORS = {
+    "VIN Guard blocks != 1",
+    "VIN buttons != 1",
+    "CarHistory target != 1",
+    "VIN copy helper missing",
+    "video count mismatch",
+}
 
 def obrabotat_kartochku(html, kod):
     html = _UA099_BASE_OBRABOTAT_KARTOCHKU(html, kod)
@@ -45,6 +54,18 @@ def obrabotat_diagnostiku(html, kod):
         return html
     import ua_additional_spec as _ua099_spec
     return _ua099_spec.normalize_diagnostics(html, kod)
+
+def proverit(html, kod=""):
+    # Keep every legacy safety check except the five checks whose subject was
+    # deliberately replaced by TASK099's local, non-paid VIN block.  Then run
+    # the new public contract, which is stricter about uniqueness and order.
+    errors = [item for item in list(_UA099_BASE_PROVERIT(html, kod) or [])
+              if item not in _UA099_OBSOLETE_VIN_ERRORS]
+    if kod:
+        import ua_additional_spec as _ua099_spec
+        errors.extend("TASK099: " + item
+                      for item in _ua099_spec.public_contract_errors(html or "", kod))
+    return list(dict.fromkeys(errors))
 # <<< UA099 ADDITIONAL SPEC MASTER V1
 '''.strip()
 
@@ -413,10 +434,9 @@ class Snapshot:
 
 def patch_master(source: str) -> str:
     source = _without(source, MASTER_START, MASTER_END)
-    if not re.search(r"^def\s+obrabotat_kartochku\s*\(", source, re.M):
-        raise RuntimeError("MASTER_ENTRYPOINT_MISSING")
-    if not re.search(r"^def\s+obrabotat_diagnostiku\s*\(", source, re.M):
-        raise RuntimeError("MASTER_DIAGNOSTICS_ENTRYPOINT_MISSING")
+    for name in ("obrabotat_kartochku", "obrabotat_diagnostiku", "proverit"):
+        if not re.search(r"^def\s+" + name + r"\s*\(", source, re.M):
+            raise RuntimeError("MASTER_ENTRYPOINT_MISSING:" + name)
     return _compiled(source.rstrip() + "\n\n" + MASTER_BLOCK + "\n", "master_card.py")
 
 
@@ -447,7 +467,8 @@ def patch_publish_transaction_guard(source: str) -> str:
 
 def selftest() -> None:
     sample_master = ("def obrabotat_kartochku(html,kod):\n    return html\n"
-                     "def obrabotat_diagnostiku(html,kod):\n    return html\n")
+                     "def obrabotat_diagnostiku(html,kod):\n    return html\n"
+                     "def proverit(html,kod=''):\n    return []\n")
     once = patch_master(sample_master)
     twice = patch_master(once)
     assert once == twice and once.count(MASTER_START) == 1

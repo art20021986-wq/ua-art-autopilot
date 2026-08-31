@@ -375,12 +375,13 @@ def inject_public_spec(source: str, value: Any) -> str:
     uid = canonical_uid(value)
     if not source or not uid:
         return source
-    video_match = re.search(r"data-ua-video-count=['\"](\d+)['\"]", source, re.I)
     # The operator CRM status is authoritative.  Generated legacy HTML may
     # contain more than one stale data-ua-stage attribute while wrappers are
     # being normalized, so it must not decide the public CTA.
     stage = _stage_number(uid)
-    videos = int(video_match.group(1)) if video_match else None
+    # Count what the browser will actually render.  Legacy metadata can be
+    # stale and was the source of a false publication block on UA-0001.
+    videos = len(re.findall(r"<video\b", source, re.I))
     source = re.sub(re.escape(START) + r"[\s\S]*?" + re.escape(END), "", source)
     source = re.sub(re.escape(VIN_START) + r"[\s\S]*?" + re.escape(VIN_END), "", source)
     source = _remove_original_vin(source)
