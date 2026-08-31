@@ -150,21 +150,23 @@ def sqlite_backup(source: pathlib.Path, target: pathlib.Path) -> None:
 def require_task096() -> tuple[pathlib.Path, dict[str, Any], dict[str, Any], str]:
     canary_path = DATA096 / "receipt_canary.json"
     batch_path = DATA096 / "receipt_batch.json"
-    if canary_path.is_file() and batch_path.is_file():
-        canary = read_json(canary_path)
-        batch = read_json(batch_path)
-        evidence_source = "LIVE_TASK096_RECEIPTS"
-    elif canary_path.exists() or batch_path.exists():
-        raise Blocked("TASK096_PARTIAL_RECEIPT_SET")
-    else:
-        gate = read_json(TASK / "expected_live.json")
-        canary = gate.get("task096_canary_fallback")
-        batch = gate.get("task096_batch_fallback")
-        if not isinstance(canary, dict) or not isinstance(batch, dict):
-            raise Blocked("TASK096_PINNED_FALLBACK_MISSING")
-        if str(batch.get("sandbox_db_name") or "") != str(gate.get("task096_sandbox_db_name") or ""):
-            raise Blocked("TASK096_PINNED_SANDBOX_MISMATCH")
-        evidence_source = "PINNED_COMMITTED_TASK096_EVIDENCE"
+    if ((canary_path.exists() and not canary_path.is_file())
+            or (batch_path.exists() and not batch_path.is_file())):
+        raise Blocked("TASK096_RECEIPT_PATH_TYPE")
+    gate = read_json(TASK / "expected_live.json")
+    pinned_canary = gate.get("task096_canary_fallback")
+    pinned_batch = gate.get("task096_batch_fallback")
+    if not isinstance(pinned_canary, dict) or not isinstance(pinned_batch, dict):
+        raise Blocked("TASK096_PINNED_FALLBACK_MISSING")
+    canary_live = canary_path.is_file()
+    batch_live = batch_path.is_file()
+    canary = read_json(canary_path) if canary_live else pinned_canary
+    batch = read_json(batch_path) if batch_live else pinned_batch
+    evidence_source = (
+        "LIVE_TASK096_RECEIPTS" if canary_live and batch_live else
+        "PINNED_COMMITTED_TASK096_EVIDENCE" if not canary_live and not batch_live else
+        "MIXED_VALID_LIVE_AND_PINNED_TASK096_EVIDENCE"
+    )
     if canary.get("status") != "PASS" or canary.get("phase") != "DATA_CANARY":
         raise Blocked("TASK096_CANARY_NOT_PASS")
     if int(canary.get("ua0015_additional_rows") or 0) < 8:
@@ -174,6 +176,10 @@ def require_task096() -> tuple[pathlib.Path, dict[str, Any], dict[str, Any], str
     if sorted(set(batch.get("processed_uids") or [])) != list(IDS):
         raise Blocked("TASK096_BATCH_SCOPE")
     name = str(batch.get("sandbox_db_name") or "")
+    if name != str(gate.get("task096_sandbox_db_name") or ""):
+        raise Blocked("TASK096_PINNED_SANDBOX_MISMATCH")
+    if str(canary.get("sandbox_db_name") or "") != name:
+        raise Blocked("TASK096_RECEIPT_SANDBOX_MISMATCH")
     if not re.fullmatch(r"crm_task096_sandbox_[A-Za-z0-9_.-]+\.db", name):
         raise Blocked("TASK096_SANDBOX_NAME")
     path = (TASK096 / "sandbox" / name).resolve()
