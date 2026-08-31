@@ -879,6 +879,7 @@ def sync_homepages() -> dict[str, Any]:
     guard, counts, ids, catalog = homepage_contract()
     changed = []
     audits = {}
+    skipped_incompatible = {}
     for root in HOME_ROOTS:
         path = root / "index.html"
         if not path.is_file():
@@ -886,7 +887,21 @@ def sync_homepages() -> dict[str, Any]:
                 raise Blocked("VIDEO_HOME_MISSING")
             continue
         source = path.read_text(encoding="utf-8")
-        patched = patch_whatsapp_opacity(guard.patch_home(source, counts))
+        try:
+            patched = patch_whatsapp_opacity(guard.patch_home(source, counts))
+        except guard.HomeCounterError as exc:
+            # TASK100 authorizes /site/index.html only when it is compatible
+            # with the approved homepage shell.  It is a secondary legacy
+            # root and must not block the canonical /video homepage.  The
+            # canonical public homepage remains strictly fail-closed.
+            if root != ROOT / "video":
+                skipped_incompatible[str(path.relative_to(ROOT))] = str(exc)
+                continue
+            raise Blocked(
+                "VIDEO_HOME_PATCH_CONTRACT:"
+                + str(exc)
+                + ":stage_card_tokens=%d" % source.count("stage-card")
+            ) from exc
         errors = homepage_source_errors(guard, patched, counts)
         if errors:
             raise Blocked("HOME_PATCH_CONTRACT:" + str(path) + ":" + ";".join(errors))
@@ -899,6 +914,7 @@ def sync_homepages() -> dict[str, Any]:
     return {
         "status": "PASS", "counts": counts, "ids": ids, "catalog": catalog,
         "changed_files": changed, "audits": audits, "whatsapp_opacity": 0.90,
+        "skipped_incompatible_secondary_homepages": skipped_incompatible,
         "crm_write": False, "media_write": False,
     }
 
