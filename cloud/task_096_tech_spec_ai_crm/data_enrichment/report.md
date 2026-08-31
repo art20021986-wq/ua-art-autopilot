@@ -2,6 +2,6 @@
 
 **Status:** FAIL
 
-Ошибка: `ControllerError:CONSOLE_SEND_INPUT_HTTP_412`
+Ошибка: `ControllerError:CANARY_FACTS_INSUFFICIENT:0`
 
 Production, рабочая CRM, бот и сайт не изменялись.
