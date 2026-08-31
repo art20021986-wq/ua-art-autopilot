@@ -46,6 +46,12 @@ TABLES = (
     "additional_specification_meta", "additional_specification_rejections",
     "additional_specification_audit", "additional_specification_import_runs",
 )
+ADDITIONAL_STATE_TABLES = (
+    "additional_specification", "additional_specification_meta",
+    "additional_specification_rejections", "additional_specification_audit",
+    "additional_specification_import_runs",
+)
+TASK096_SOURCE_CONTRACT = "TECH-SPEC-AI-CRM-017-V3.0-TASK096-DATA-ENRICHMENT"
 SPEC_UNIT_TOKENS = {
     "mm", "cm", "m", "km", "kg", "l", "kw", "hp", "rpm",
     "мм", "см", "м", "км", "кг", "л", "квт", "лс", "обмин",
@@ -127,6 +133,42 @@ def connect(path: pathlib.Path, readonly: bool = False) -> sqlite3.Connection:
 
 def table_exists(conn: sqlite3.Connection, name: str) -> bool:
     return conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)).fetchone() is not None
+
+
+def _table_snapshot(conn: sqlite3.Connection, name: str) -> list[dict[str, Any]]:
+    if not table_exists(conn, name):
+        return []
+    return [dict(row) for row in conn.execute('SELECT * FROM "' + name + '" ORDER BY rowid')]
+
+
+def inspect_replaceable_additional_state(conn: sqlite3.Connection) -> dict[str, Any]:
+    """Accept only a previous non-manual TASK099 import as upgrade input."""
+    rows = {name: _table_snapshot(conn, name) for name in ADDITIONAL_STATE_TABLES}
+    specs = rows["additional_specification"]
+    meta = rows["additional_specification_meta"]
+    audit = rows["additional_specification_audit"]
+    if audit:
+        raise Blocked("EXISTING_ADDITIONAL_AUDIT_REQUIRES_OPERATOR_REVIEW")
+    if any(int(item.get("is_manual") or 0) != 0 for item in meta):
+        raise Blocked("EXISTING_ADDITIONAL_MANUAL_ROW_REQUIRES_OPERATOR_REVIEW")
+    for item in specs:
+        if (str(item.get("car_uid") or "") not in IDS
+                or int(item.get("is_price_field") or 0) != 0
+                or str(item.get("source") or "") not in ("AI", "INDEXATION")):
+            raise Blocked("EXISTING_ADDITIONAL_ROW_OUT_OF_TASK099_SCOPE")
+    spec_keys = {(str(item.get("car_uid")), str(item.get("field_key"))) for item in specs}
+    meta_keys = {(str(item.get("car_uid")), str(item.get("field_key"))) for item in meta}
+    if spec_keys != meta_keys:
+        raise Blocked("EXISTING_ADDITIONAL_META_MISMATCH")
+    for item in rows["additional_specification_rejections"]:
+        if str(item.get("car_uid") or "") not in IDS:
+            raise Blocked("EXISTING_ADDITIONAL_REJECTION_OUT_OF_SCOPE")
+    for item in rows["additional_specification_import_runs"]:
+        if (str(item.get("source_contract") or "") != TASK096_SOURCE_CONTRACT
+                or str(item.get("status") or "") != "PASS"):
+            raise Blocked("EXISTING_ADDITIONAL_IMPORT_NOT_TASK099")
+    counts = {name: len(items) for name, items in rows.items()}
+    return {"present": any(counts.values()), "counts": counts, "rows": rows}
 
 
 def quick_check(path: pathlib.Path) -> str:
@@ -278,26 +320,52 @@ def require_live_gate() -> dict[str, Any]:
     if gate.get("contract_id") != CONTRACT or gate.get("status") != "PASS":
         raise Blocked("EXPECTED_LIVE_GATE")
     expected = gate.get("source_sha256") or {}
-    for name, path in CODE.items():
-        if expected.get(name) != sha_file(path):
-            raise Blocked("LIVE_SOURCE_DRIFT:" + name)
+    current = {name: sha_file(path) for name, path in CODE.items()}
+    source_mode = "EXPECTED_ORIGINAL"
+    prior_install = None
+    mismatched = [name for name in CODE if expected.get(name) != current.get(name)]
+    if mismatched:
+        receipt_path = TASK / "install_receipt.json"
+        prior_install = read_json(receipt_path) if receipt_path.is_file() else None
+        patched = (prior_install or {}).get("patched") or {}
+        valid_prior = (
+            isinstance(prior_install, dict)
+            and prior_install.get("contract_id") == CONTRACT
+            and prior_install.get("status") == "PASS"
+            and prior_install.get("mode") == "INSTALL"
+            and prior_install.get("main_fields_changed") is False
+            and prior_install.get("media_changed") is False
+            and all(
+                (patched.get(name) or {}).get("before") == expected.get(name)
+                and (patched.get(name) or {}).get("after") == current.get(name)
+                for name in CODE
+            )
+        )
+        if not valid_prior:
+            raise Blocked("LIVE_SOURCE_DRIFT:" + ",".join(mismatched))
+        source_mode = "PRIOR_TASK099_INSTALL"
     current_hash, count, identifiers = cars_hash(DB)
     if count != 16 or identifiers != list(IDS) or quick_check(DB) != "ok":
         raise Blocked("LIVE_CRM_REGISTRY")
     with connect(DB, True) as conn:
         existing = [name for name in TABLES if table_exists(conn, name)]
-        residual_counts = {}
-        for name in (
-            "additional_specification", "additional_specification_meta",
-            "additional_specification_rejections", "additional_specification_audit",
-        ):
-            residual_counts[name] = int(conn.execute('SELECT COUNT(*) FROM "' + name + '"').fetchone()[0]) if table_exists(conn, name) else 0
+        additional_state = inspect_replaceable_additional_state(conn)
+        residual_counts = additional_state["counts"]
     nonempty = {name: value for name, value in residual_counts.items() if value}
-    if nonempty:
+    live_content_rows = (
+        int(residual_counts.get("additional_specification") or 0)
+        + int(residual_counts.get("additional_specification_meta") or 0)
+        + int(residual_counts.get("additional_specification_audit") or 0)
+    )
+    if live_content_rows and source_mode != "PRIOR_TASK099_INSTALL":
         raise Blocked("LIVE_ADDITIONAL_DATA_UNEXPECTED:" + json.dumps(nonempty, sort_keys=True))
     return {
         "source_sha256": expected, "cars_sha256": current_hash, "row_count": count,
         "clean_rollback_schema": existing, "residual_data_counts": residual_counts,
+        "source_mode": source_mode,
+        "prior_task099_install_run_id": (
+            str((prior_install or {}).get("run_id") or "") if prior_install else None
+        ),
     }
 
 
@@ -336,6 +404,36 @@ CREATE TABLE IF NOT EXISTS additional_specification_import_runs(
 """
 
 
+def prepare_additional_target(conn: sqlite3.Connection, run_id: str) -> dict[str, Any]:
+    state = inspect_replaceable_additional_state(conn)
+    if not state["present"]:
+        return {"replaced": False, "counts": state["counts"], "snapshot_path": None}
+    safe_run_id = re.sub(r"[^A-Za-z0-9_.-]+", "_", run_id)
+    snapshot_path = (TASK / ("prior_additional_" + safe_run_id + ".json")).resolve()
+    if TASK.resolve() not in snapshot_path.parents:
+        raise Blocked("ADDITIONAL_SNAPSHOT_PATH_SCOPE")
+    snapshot = {
+        "contract_id": CONTRACT,
+        "created_at_utc": utc_now(),
+        "run_id": run_id,
+        "tables": state["rows"],
+    }
+    atomic_json(snapshot_path, snapshot)
+    snapshot_sha = sha_file(snapshot_path)
+    for name in (
+        "additional_specification_audit", "additional_specification_rejections",
+        "additional_specification_meta", "additional_specification",
+        "additional_specification_import_runs",
+    ):
+        conn.execute('DELETE FROM "' + name + '"')
+    return {
+        "replaced": True,
+        "counts": state["counts"],
+        "snapshot_path": str(snapshot_path),
+        "snapshot_sha256": snapshot_sha,
+    }
+
+
 def migrate(target: pathlib.Path, source: pathlib.Path, run_id: str) -> dict[str, Any]:
     inserted_ids = []
     per_uid = {uid: 0 for uid in IDS}
@@ -361,6 +459,7 @@ def migrate(target: pathlib.Path, source: pathlib.Path, run_id: str) -> dict[str
     rows, semantic_rejections = dedupe_spec_rows(list(source_rows))
     with connect(target, False) as conn:
         conn.executescript("BEGIN IMMEDIATE;\n" + SCHEMA)
+        prior_additional = prepare_additional_target(conn, run_id)
         before_hash, before_count, before_ids = cars_hash_conn(conn)
         conn.execute(
             "INSERT INTO additional_specification_import_runs"
@@ -444,6 +543,7 @@ def migrate(target: pathlib.Path, source: pathlib.Path, run_id: str) -> dict[str
         "source_row_count": len(source_rows),
         "semantic_duplicates_rejected": len(semantic_rejections),
         "semantic_rejections": semantic_rejections,
+        "prior_additional": prior_additional,
         "per_uid": per_uid, "cars_sha256_before": before_hash, "cars_sha256_after": after_hash,
         "main_fields_changed": False,
     }
@@ -590,9 +690,10 @@ def restore_files(backup: pathlib.Path) -> dict[str, Any]:
 def rollback_import(install: dict[str, Any]) -> dict[str, Any]:
     migration = install.get("migration") or {}
     ids = [int(value) for value in migration.get("inserted_ids") or []]
+    prior = migration.get("prior_additional") or {}
     preserved_manual = []
     removed = []
-    if not ids:
+    if not ids and not prior.get("replaced"):
         return {"removed_imported_rows": [], "preserved_manual_rows": []}
     with connect(DB, False) as conn:
         conn.execute("BEGIN IMMEDIATE")
@@ -614,8 +715,61 @@ def rollback_import(install: dict[str, Any]) -> dict[str, Any]:
             conn.execute("DELETE FROM additional_specification_meta WHERE car_uid=? AND field_key=?", (row[0], row[1]))
             conn.execute("DELETE FROM additional_specification WHERE id=?", (spec_id,))
             removed.append(spec_id)
+        restored_prior = {}
+        if prior.get("replaced"):
+            snapshot_path = pathlib.Path(str(prior.get("snapshot_path") or "")).resolve()
+            if (TASK.resolve() not in snapshot_path.parents or not snapshot_path.is_file()
+                    or sha_file(snapshot_path) != prior.get("snapshot_sha256")):
+                conn.rollback()
+                raise Blocked("ADDITIONAL_ROLLBACK_SNAPSHOT_INVALID")
+            snapshot = read_json(snapshot_path)
+            if snapshot.get("contract_id") != CONTRACT or not isinstance(snapshot.get("tables"), dict):
+                conn.rollback()
+                raise Blocked("ADDITIONAL_ROLLBACK_SNAPSHOT_CONTRACT")
+            manual_keys = {
+                (str(row[0]), str(row[1]))
+                for row in conn.execute(
+                    "SELECT car_uid,field_key FROM additional_specification_meta WHERE is_manual=1"
+                ).fetchall()
+            }
+            conn.execute(
+                "DELETE FROM additional_specification WHERE NOT EXISTS ("
+                "SELECT 1 FROM additional_specification_meta m "
+                "WHERE m.car_uid=additional_specification.car_uid "
+                "AND m.field_key=additional_specification.field_key AND m.is_manual=1)"
+            )
+            conn.execute("DELETE FROM additional_specification_meta WHERE is_manual=0")
+            conn.execute("DELETE FROM additional_specification_rejections")
+            conn.execute("DELETE FROM additional_specification_import_runs")
+            if not manual_keys:
+                conn.execute("DELETE FROM additional_specification_audit")
+            restored_prior = {name: 0 for name in ADDITIONAL_STATE_TABLES}
+            for name in (
+                "additional_specification", "additional_specification_meta",
+                "additional_specification_rejections", "additional_specification_audit",
+                "additional_specification_import_runs",
+            ):
+                for item in (snapshot["tables"].get(name) or []):
+                    if name in ("additional_specification", "additional_specification_meta"):
+                        pair = (str(item.get("car_uid")), str(item.get("field_key")))
+                        if pair in manual_keys:
+                            continue
+                    columns = list(item)
+                    if not columns:
+                        continue
+                    quoted = ",".join('"' + column.replace('"', '""') + '"' for column in columns)
+                    placeholders = ",".join("?" for _ in columns)
+                    conn.execute(
+                        'INSERT OR IGNORE INTO "' + name + '" (' + quoted + ") VALUES (" + placeholders + ")",
+                        tuple(item[column] for column in columns),
+                    )
+                    restored_prior[name] += 1
         conn.commit()
-    return {"removed_imported_rows": removed, "preserved_manual_rows": preserved_manual}
+    return {
+        "removed_imported_rows": removed,
+        "preserved_manual_rows": preserved_manual,
+        "restored_prior_rows": restored_prior,
+    }
 
 
 def patch_sources(destination: pathlib.Path | None = None) -> dict[str, Any]:
