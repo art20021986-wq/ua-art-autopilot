@@ -93,6 +93,7 @@ jobs:
           for name in (
               "partial_probe_receipt.json",
               "partial_resume_receipt.json",
+              "partial_resume_progress.json",
               "install_receipt.json",
               "postcheck_receipt.json",
           ):
@@ -122,3 +123,5 @@ jobs:
           retention-days: 7
 
 # Read-only progress capture for recovery run 33362686155 at 06:16 UTC.
+
+# Read-only per-card progress capture for recovery run 33362686155.
