@@ -1,18 +1,18 @@
 {
   "contract_id": "UA-ART-16-SITE-CRM-COMPLETION-099-V1",
-  "generated_at_utc": "2026-08-31T07:32:04.074011+00:00",
+  "generated_at_utc": "2026-08-31T07:36:34.590132+00:00",
   "github_comment_published": false,
   "issue_35_closed": false,
   "issue_35_ready_to_close": false,
   "newer_fail_observed": true,
   "production_errors": [
-    "Blocked:POSTCHECK_FAIL:[\"Blocked:PUBLIC_CATALOG_16_CONTRACT\"]"
+    "Blocked:SHADOW_FAIL:[\"Blocked:MISSING:receipt_canary.json\"]"
   ],
-  "production_status": "ROLLED_BACK",
+  "production_status": "BLOCKED",
   "status": "FAIL",
   "task_id": "task_099",
   "visual_errors": [],
   "visual_status": "NOT_RUN",
-  "workflow_run_id": "33367634424",
-  "workflow_sha": "62edf037eb24fdfac9e55a9cf8e710c3ad2fd8d7"
+  "workflow_run_id": "33368860830",
+  "workflow_sha": "1cfc26c45a291219774e76fb343bc8ffc0c964e9"
 }
