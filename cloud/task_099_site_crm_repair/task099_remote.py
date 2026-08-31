@@ -352,6 +352,7 @@ def require_live_gate() -> dict[str, Any]:
     current = {name: sha_file(path) for name, path in CODE.items()}
     source_mode = "EXPECTED_ORIGINAL"
     prior_install = None
+    prior_shadow_gate = None
     mismatched = [name for name in CODE if expected.get(name) != current.get(name)]
     if mismatched:
         receipt_path = TASK / "install_receipt.json"
@@ -370,8 +371,46 @@ def require_live_gate() -> dict[str, Any]:
                 for name in CODE
             )
         )
-        if not valid_prior:
+        # API.run("install") removes install_receipt.json before launching the
+        # remote command so it can wait for the new receipt.  On an approved
+        # idempotent re-run that deletion must not make our own installed
+        # TASK099 patch look like foreign source drift.  The immediately
+        # preceding shadow receipt already validated the old install receipt;
+        # accept it only while it is fresh and every source hash is still
+        # exactly the idempotent hash observed by that shadow run.
+        shadow_path = TASK / "shadow_receipt.json"
+        prior_shadow = read_json(shadow_path) if shadow_path.is_file() else None
+        shadow_gate = (prior_shadow or {}).get("gate") or {}
+        shadow_patched = (prior_shadow or {}).get("patched") or {}
+        shadow_age = None
+        try:
+            shadow_finished = dt.datetime.fromisoformat(
+                str((prior_shadow or {}).get("finished_at_utc") or "").replace("Z", "+00:00")
+            )
+            shadow_age = (dt.datetime.now(dt.timezone.utc) - shadow_finished).total_seconds()
+        except (TypeError, ValueError):
+            pass
+        valid_shadow_reentry = (
+            not valid_prior
+            and isinstance(prior_shadow, dict)
+            and prior_shadow.get("contract_id") == CONTRACT
+            and prior_shadow.get("status") == "PASS"
+            and prior_shadow.get("mode") == "SHADOW"
+            and prior_shadow.get("production_write") is False
+            and prior_shadow.get("live_crm_write") is False
+            and shadow_gate.get("source_mode") == "PRIOR_TASK099_INSTALL"
+            and shadow_gate.get("source_sha256") == expected
+            and shadow_age is not None and 0 <= shadow_age <= 7200
+            and all(
+                (shadow_patched.get(name) or {}).get("before") == current.get(name)
+                and (shadow_patched.get(name) or {}).get("after") == current.get(name)
+                for name in CODE
+            )
+        )
+        if not valid_prior and not valid_shadow_reentry:
             raise Blocked("LIVE_SOURCE_DRIFT:" + ",".join(mismatched))
+        if valid_shadow_reentry:
+            prior_shadow_gate = shadow_gate
         source_mode = "PRIOR_TASK099_INSTALL"
     current_hash, count, identifiers = cars_hash(DB)
     if count != 16 or identifiers != list(IDS) or quick_check(DB) != "ok":
@@ -393,7 +432,9 @@ def require_live_gate() -> dict[str, Any]:
         "clean_rollback_schema": existing, "residual_data_counts": residual_counts,
         "source_mode": source_mode,
         "prior_task099_install_run_id": (
-            str((prior_install or {}).get("run_id") or "") if prior_install else None
+            str((prior_install or {}).get("run_id") or "") if prior_install else
+            str((prior_shadow_gate or {}).get("prior_task099_install_run_id") or "")
+            if prior_shadow_gate else None
         ),
     }
 
