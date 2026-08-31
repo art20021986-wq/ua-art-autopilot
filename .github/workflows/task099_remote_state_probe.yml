@@ -22,6 +22,7 @@ jobs:
         run: |
           python - <<'PY'
           import datetime as dt
+          import hashlib
           import json
           import os
           import pathlib
@@ -77,6 +78,14 @@ jobs:
               "task_lists": {},
               "receipts": {},
           }
+          guard_url = base + "files/path/home/Carix/publish_transaction_guard.py"
+          guard_status, guard_source = get(guard_url, allowed=(200,))
+          pathlib.Path("publish_transaction_guard.py").write_bytes(guard_source)
+          report["publish_transaction_guard"] = {
+              "http_status": guard_status,
+              "bytes": len(guard_source),
+              "sha256": hashlib.sha256(guard_source).hexdigest(),
+          }
           for kind in ("always_on", "schedule"):
               status, raw = get(base + kind + "/", allowed=(200,))
               payload = json.loads(raw.decode("utf-8"))
@@ -118,12 +127,10 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: task099-remote-state-${{ github.run_id }}
-          path: task099_remote_state.json
+          # Source contains code only and is captured to diagnose the bounded
+          # duplicate-snapshot quota failure; no credentials are included.
+          path: |
+            task099_remote_state.json
+            publish_transaction_guard.py
           if-no-files-found: error
           retention-days: 7
-
-# Read-only progress capture for recovery run 33362686155 at 06:16 UTC.
-
-# Read-only per-card progress capture for recovery run 33362686155.
-
-# Read-only recovery progress sample at 06:19 UTC.
