@@ -341,14 +341,46 @@ def public_targets() -> list[pathlib.Path]:
     return result
 
 
+def prune_completed_task_backups() -> list[str]:
+    """Remove only obsolete TASK099 recovery copies after a clean live gate."""
+    root = (TASK / "backups").resolve()
+    removed = []
+    if not root.is_dir():
+        return removed
+    for child in sorted(root.iterdir()):
+        resolved = child.resolve()
+        if not child.is_dir() or resolved.parent != root:
+            continue
+        if not (child / "manifest.json").is_file():
+            continue
+        shutil.rmtree(child)
+        removed.append(child.name)
+    return removed
+
+
+def remove_shadow_copy() -> bool:
+    folder = (TASK / "shadow").resolve()
+    if folder.is_dir() and folder.parent == TASK.resolve():
+        shutil.rmtree(folder)
+        return True
+    return False
+
+
 def make_backup() -> pathlib.Path:
     stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     backup = TASK / "backups" / stamp
     if backup.exists():
         raise Blocked("BACKUP_COLLISION")
     backup.mkdir(parents=True)
-    sqlite_backup(DB, backup / "crm.db")
-    manifest = {"created_at_utc": utc_now(), "files": {}}
+    cars_digest, cars_count, cars_ids = cars_hash(DB)
+    manifest = {
+        "created_at_utc": utc_now(), "files": {},
+        "crm_scope_backup": {
+            "mode": "LOGICAL_AFFECTED_TABLES_PLUS_PRIMARY_HASH",
+            "cars_sha256": cars_digest, "cars_row_count": cars_count, "cars_ids": cars_ids,
+            "primary_database_file_replacement_on_rollback": False,
+        },
+    }
     targets = list(CODE.values()) + [HELPER] + public_targets()
     for path in targets:
         relative = str(path.relative_to(ROOT))
@@ -448,9 +480,9 @@ def synthetic_html(uid: str) -> str:
 def shadow() -> dict[str, Any]:
     source_db, canary, batch = require_task096()
     gate = require_live_gate()
+    pruned = prune_completed_task_backups()
     folder = TASK / "shadow"
-    if folder.exists():
-        shutil.rmtree(folder)
+    remove_shadow_copy()
     folder.mkdir(parents=True)
     shadow_db = folder / "crm.db"
     sqlite_backup(DB, shadow_db)
@@ -481,6 +513,7 @@ def shadow() -> dict[str, Any]:
         "gate": gate, "task096_canary_rows": canary.get("ua0015_additional_rows"),
         "task096_processed": batch.get("processed_uids"), "migration": migration,
         "patched": patched, "contracts": contracts, "finished_at_utc": utc_now(),
+        "pruned_completed_task099_backups": pruned,
     }
 
 
@@ -510,6 +543,7 @@ def install() -> dict[str, Any]:
     shadow_receipt = read_json(TASK / "shadow_receipt.json")
     if shadow_receipt.get("status") != "PASS" or shadow_receipt.get("mode") != "SHADOW":
         raise Blocked("SHADOW_NOT_PASS")
+    shadow_removed_before_backup = remove_shadow_copy()
     backup = make_backup()
     migration = None
     pages = None
@@ -547,6 +581,7 @@ def install() -> dict[str, Any]:
             "production_write": True, "live_crm_write": True, "main_fields_changed": False,
             "media_changed": False, "explicit_republish": True, "autopublication": False,
             "backup_root": str(backup), "gate": gate, "patched": patched,
+            "shadow_copy_removed_before_backup": shadow_removed_before_backup,
             "migration": migration, "publisher_probes": probes, "publisher": published,
             "catalog": {"ok": True, "detail": str(detail)[:400]}, "pages": pages,
             "cars_sha256_after": after_hash, "finished_at_utc": utc_now(),
