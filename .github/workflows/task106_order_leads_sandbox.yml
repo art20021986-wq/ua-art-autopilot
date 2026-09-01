@@ -1,0 +1,47 @@
+name: TASK106 Order Leads Sandbox
+
+on:
+  push:
+    branches: [task106-order-leads-sandbox]
+    paths:
+      - 'tasks/task_106.md'
+      - 'cloud/task_106_order_leads_sandbox/**'
+      - '.github/workflows/task106_order_leads_sandbox.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task106-order-leads-sandbox
+  cancel-in-progress: false
+
+jobs:
+  contract-and-mock-crm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify owner approval and production deny
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^TASK_ID: task_106$' tasks/task_106.md
+          grep -q '^OWNER_APPROVED: YES$' tasks/task_106.md
+          grep -q '^DEFAULT_LANGUAGE: uk$' tasks/task_106.md
+          grep -q '^PRODUCTION_WRITE_AUTHORIZED: NO$' tasks/task_106.md
+          grep -q '^CRM_WRITE_AUTHORIZED: NO$' tasks/task_106.md
+          grep -q '^BOT_PRODUCTION_WRITE_AUTHORIZED: NO$' tasks/task_106.md
+      - name: Compile and run isolated tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile cloud/task_106_order_leads_sandbox/mock_crm.py cloud/task_106_order_leads_sandbox/test_mock_crm.py
+          PYTHONPATH=cloud/task_106_order_leads_sandbox python3 -m unittest -v cloud/task_106_order_leads_sandbox/test_mock_crm.py
+      - name: Verify protected scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e cloud/task_106_order_leads_sandbox/cars.json
+          ! grep -R -n -E 'PRODUCTION_WRITE_AUTHORIZED: YES|CRM_WRITE_AUTHORIZED: YES' tasks/task_106.md cloud/task_106_order_leads_sandbox
+          echo 'TASK106 CONTRACT/MOCK PASS · ONE SUBMIT = ONE LEAD · PRODUCTION WRITE: NO'
