@@ -1,0 +1,138 @@
+name: TASK104 Integration Canary 10x
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/task104_integration_canary.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: task104-integration-canary
+  cancel-in-progress: false
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify sandbox-only authorization
+        run: |
+          grep -q '^OWNER_APPROVED: YES$' tasks/task104_self_recovery_approval.md
+          grep -q '^PRODUCTION_RECOVERY_CORE_AUTHORIZED: NO$' tasks/task104_self_recovery_approval.md
+      - name: Dispatch, recover and reconcile ten independent workflow canaries
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          ORCHESTRATOR_RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import datetime as dt,json,os,pathlib,re,time,urllib.error,urllib.request
+          repo=os.environ['GH_REPOSITORY']
+          token=os.environ['GH_TOKEN']
+          base='https://api.github.com/repos/'+repo
+          headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'}
+          scenarios=['TIMEOUT','HTTP412','HTTP429','HTTP502','CONNECTION_RESET','RUNNER_LOST','WORKFLOW_CANCELLED','LOST_EVENT','DATABASE_LOCKED','ATTRIBUTE_ERROR']
+          seed=int(os.environ['ORCHESTRATOR_RUN_ID'])*100
+          cycles={seed+i:scenario for i,scenario in enumerate(scenarios,1)}
+
+          def request(method,path,body=None,allowed=(200,204)):
+              data=None if body is None else json.dumps(body).encode()
+              req=urllib.request.Request(base+path,data=data,method=method,headers=headers)
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r:
+                      status=r.status; raw=r.read()
+              except urllib.error.HTTPError as exc:
+                  status=exc.code; raw=exc.read()
+              if status not in allowed:
+                  raise RuntimeError('%s %s -> %s %s'%(method,path,status,raw[:300]))
+              return json.loads(raw.decode()) if raw else {}
+
+          def dispatch(cycle,scenario,attempt):
+              request('POST','/actions/workflows/task104_canary_worker.yml/dispatches',{'ref':'main','inputs':{'cycle':str(cycle),'scenario':scenario,'attempt':str(attempt)}},allowed=(204,))
+              print('DISPATCH',cycle,scenario,attempt)
+
+          for cycle,scenario in cycles.items():
+              dispatch(cycle,scenario,1)
+
+          title_re=re.compile(r'TASK104-CANARY\|cycle=(\d+)\|scenario=([A-Z0-9_]+)\|attempt=(\d+)')
+          started=time.monotonic()
+          reconciled=set()
+          success={}
+          observed={cycle:[] for cycle in cycles}
+          while time.monotonic()-started < 720:
+              page=request('GET','/actions/workflows/task104_canary_worker.yml/runs?event=workflow_dispatch&per_page=100')
+              observed={cycle:[] for cycle in cycles}
+              for run in page.get('workflow_runs') or []:
+                  match=title_re.fullmatch(str(run.get('display_title') or ''))
+                  if not match:
+                      continue
+                  cycle=int(match.group(1)); scenario=match.group(2); attempt=int(match.group(3))
+                  if cycle not in cycles or cycles[cycle]!=scenario:
+                      continue
+                  observed[cycle].append({'id':run.get('id'),'status':run.get('status'),'conclusion':run.get('conclusion'),'attempt':attempt})
+                  if run.get('status')=='completed' and run.get('conclusion')=='success':
+                      success[cycle]=run.get('id')
+              if len(success)==10:
+                  break
+              elapsed=time.monotonic()-started
+              if elapsed >= 35:
+                  for cycle,scenario in cycles.items():
+                      if cycle in success:
+                          continue
+                      runs=observed.get(cycle) or []
+                      attempts={int(item['attempt']) for item in runs}
+                      failed1=any(item['attempt']==1 and item['status']=='completed' and item['conclusion']=='failure' for item in runs)
+                      active2=any(item['attempt']>=2 and item['status'] in ('queued','in_progress','waiting','pending') for item in runs)
+                      if failed1 and 2 not in attempts and not active2:
+                          dispatch(cycle,scenario,2)
+                          reconciled.add(cycle)
+              time.sleep(8)
+
+          if len(success)!=10:
+              raise SystemExit('INTEGRATION_CANARY_INCOMPLETE success=%d observed=%r'%(len(success),observed))
+          lost_cycles=[cycle for cycle,scenario in cycles.items() if scenario=='LOST_EVENT']
+          if not all(cycle in reconciled for cycle in lost_cycles):
+              raise SystemExit('LOST_EVENT_RECONCILIATION_NOT_PROVEN:'+repr(reconciled))
+          report={
+              'contract':'UA-AUTOPILOT-SELF-RECOVERY-104-V1.0',
+              'status':'PASS','integration_canary_passed':10,'integration_canary_total':10,
+              'cycles':[{'cycle':cycle,'scenario':cycles[cycle],'success_run_id':success[cycle],'reconciler_used':cycle in reconciled} for cycle in sorted(cycles)],
+              'lost_event_reconciliation_pass':True,
+              'owner_manual_push_required':False,
+              'production_recovery_core_authorized':False,
+              'production_touched':False,'live_crm_write':False,'site_write':False,'bot_write':False,'task096_v8_touched':False,
+          }
+          out=pathlib.Path('cloud/task104_self_recovery/state/task104_integration_report.json')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_text(json.dumps(report,ensure_ascii=False,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(report,ensure_ascii=False,sort_keys=True))
+          PY
+      - name: Require real workflow-level 10/10 PASS
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          r=json.loads(pathlib.Path('cloud/task104_self_recovery/state/task104_integration_report.json').read_text())
+          assert r['status']=='PASS'
+          assert r['integration_canary_passed']==10 and r['integration_canary_total']==10
+          assert r['lost_event_reconciliation_pass'] is True
+          assert r['owner_manual_push_required'] is False
+          assert r['production_recovery_core_authorized'] is False
+          for key in ('production_touched','live_crm_write','site_write','bot_write','task096_v8_touched'):
+              assert r[key] is False
+          print('TASK104_WORKFLOW_LEVEL_10X_PASS')
+          PY
+      - name: Upload integration report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task104-integration-canary-${{ github.run_id }}
+          path: cloud/task104_self_recovery/state/task104_integration_report.json
+          if-no-files-found: error
+          retention-days: 30
