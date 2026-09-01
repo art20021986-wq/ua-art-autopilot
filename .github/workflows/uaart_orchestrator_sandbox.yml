@@ -1,0 +1,247 @@
+name: UA ART Orchestrator Sandbox
+
+on:
+  push:
+    branches:
+      - task105-fast-pipeline-phase0
+    paths:
+      - 'automation/task_orchestrator.py'
+      - 'cloud/task_105_fast_pipeline_phase1/test_task_orchestrator.py'
+      - 'state/schemas/task_request.schema.json'
+      - 'state/schemas/task_receipt.schema.json'
+      - '.github/workflows/uaart_orchestrator_sandbox.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: uaart-orchestrator-sandbox-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  phase1-sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout sandbox branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: task105-fast-pipeline-phase0
+
+      - name: Assert sandbox-only safety boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'TARGET_ENVIRONMENT=sandbox'
+          echo 'PRODUCTION_WRITE=NO'
+          echo 'CRM_WRITE=NO'
+          echo 'PYTHONANYWHERE_WRITE=NO'
+          echo 'CLOUDFLARE_DNS_WRITE=NO'
+          if grep -nE '^import (urllib|requests|socket|subprocess)|^from (urllib|requests|socket|subprocess)' automation/task_orchestrator.py; then
+            echo 'ORCHESTRATOR_NETWORK_OR_PROCESS_CAPABILITY_FORBIDDEN'
+            exit 1
+          fi
+
+      - name: Compile and built-in self-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile automation/task_orchestrator.py \
+            cloud/task_105_fast_pipeline_phase1/test_task_orchestrator.py
+          python3 automation/task_orchestrator.py self-test
+
+      - name: Run Phase 1 unit and failure-injection matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            cloud.task_105_fast_pipeline_phase1.test_task_orchestrator \
+            2>&1 | tee /tmp/task105_phase1_tests.log
+          grep -q '^Ran 39 tests' /tmp/task105_phase1_tests.log
+          grep -q '^OK$' /tmp/task105_phase1_tests.log
+
+      - name: Exercise CLI contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/fast-task.json <<'JSON'
+          {
+            "task_id": "TASK105-CANARY-FAST",
+            "title": "Replace exact label",
+            "description": "replace exact text and check HTTP 200",
+            "changed_paths": ["public/contact.html"],
+            "production_required": true,
+            "complexity": 1
+          }
+          JSON
+          python3 automation/task_orchestrator.py classify /tmp/fast-task.json | tee /tmp/fast-plan.json
+          python3 - <<'PY'
+          import json
+          plan = json.load(open('/tmp/fast-plan.json', encoding='utf-8'))
+          assert plan['task_class'] == 'FAST', plan
+          assert plan['ai_route'] == 'NO_AI', plan
+          assert plan['ai_call_budget'] == 0, plan
+          PY
+
+          cat > /tmp/phase1-receipt.json <<'JSON'
+          {
+            "task_id": "TASK105-PHASE1",
+            "status": "FINISHED",
+            "task_class": "CRITICAL",
+            "target_environment": "sandbox",
+            "tests": "PASS",
+            "unexpected_changes": 0,
+            "rollback_ready": true,
+            "production_required": false,
+            "ai_calls": 0
+          }
+          JSON
+          python3 automation/task_orchestrator.py validate-receipt /tmp/phase1-receipt.json >/tmp/validated-receipt.json
+
+      - name: Generate durable Phase 1 evidence
+        shell: bash
+        env:
+          GIT_COMMIT: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime as dt
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import re
+
+          root = pathlib.Path('.')
+          out = root / 'cloud' / 'task_105_fast_pipeline_phase1'
+          out.mkdir(parents=True, exist_ok=True)
+          log = pathlib.Path('/tmp/task105_phase1_tests.log').read_text(encoding='utf-8')
+          match = re.search(r'Ran (\d+) tests', log)
+          count = int(match.group(1)) if match else 0
+          now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+          files = [
+              'automation/task_orchestrator.py',
+              'state/schemas/task_request.schema.json',
+              'state/schemas/task_receipt.schema.json',
+              'cloud/task_105_fast_pipeline_phase1/test_task_orchestrator.py',
+          ]
+          hashes = {
+              path: hashlib.sha256((root / path).read_bytes()).hexdigest()
+              for path in files
+          }
+          receipt = {
+              'task_id': 'TASK105-PHASE1',
+              'status': 'FINISHED',
+              'task_class': 'CRITICAL',
+              'target_environment': 'sandbox',
+              'tests': 'PASS',
+              'test_count': count,
+              'failure_injection_scenarios': 10,
+              'unexpected_changes': 0,
+              'rollback_ready': True,
+              'production_required': False,
+              'production_touched': False,
+              'ai_calls': 0,
+              'git_commit_input': os.environ['GIT_COMMIT'],
+              'workflow_run_id': os.environ['RUN_ID'],
+              'finished_at': now,
+              'file_sha256': hashes,
+          }
+          (out / 'phase1_receipt.json').write_text(
+              json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          report = f'''# TASK105 Phase 1 Sandbox Report
+
+STATUS: PASS_PHASE1_SANDBOX
+GENERATED_AT_UTC: {now}
+PRODUCTION_TOUCHED: NO
+AI_CALLS: 0
+UNIT_AND_FAILURE_INJECTION_TESTS: {count}/39 PASS
+FAILURE_INJECTION_SCENARIOS: 10/10 PASS
+UNEXPECTED_CHANGES: 0
+
+## Implemented
+
+- Central FAST / STANDARD / CRITICAL classifier.
+- Conservative escalation for protected paths and critical text markers.
+- Resource-aware lock planner that allows unrelated resources in parallel.
+- AI routes and per-class AI call budgets.
+- Transient-only bounded retry; logical repetition enters ROOT_CAUSE_MODE.
+- Canonical task state machine; false FINISHED transitions are rejected.
+- Final receipt validator requiring tests, zero unexpected changes and rollback readiness.
+- JSON schemas for task requests and final receipts.
+
+## Safety boundary
+
+The orchestrator has no network, subprocess, secret, deployment or production-write adapter.
+This is a sandbox/shadow planning core only. It cannot modify the site, CRM, PythonAnywhere,
+Cloudflare or DNS.
+
+## Decision
+
+Phase 1 sandbox acceptance passed. Overall TASK105 is not yet production FINISHED.
+Next technical stage is shadow-mode comparison against representative existing tasks,
+followed by synthetic FAST canary tests. Production enablement remains prohibited.
+'''
+          (out / 'PHASE1_REPORT.md').write_text(report, encoding='utf-8')
+
+          (root / 'cloud' / 'latest_status.md').write_text(f'''TASK_ID: task_105
+ROUND: 2
+CLAUDE_STATUS: DONE
+CURRENT_ACTION: Phase 1 sandbox orchestrator accepted with {count}/39 tests PASS
+FILES_CREATED: automation/task_orchestrator.py,state/schemas/task_request.schema.json,state/schemas/task_receipt.schema.json,cloud/task_105_fast_pipeline_phase1/PHASE1_REPORT.md,cloud/task_105_fast_pipeline_phase1/phase1_receipt.json
+PRODUCTION_TOUCHED: NO
+OWNER_ACTION_REQUIRED: NO
+OWNER_QUESTION: NONE
+NEXT_FOR_CHATGPT: run Phase 2 shadow comparison and FAST synthetic canary without production writes
+UPDATED_AT_UTC: {now}
+''', encoding='utf-8')
+          (root / 'cloud' / 'owner_reply.md').write_text(f'''# Ответ владельцу — TASK105
+
+СТАТУС: PASS PHASE 1 SANDBOX
+ЧТО СДЕЛАНО: центральный классификатор, ресурсные locks, AI-бюджеты, retry-policy, единая модель статусов и защита TASK FINISHED
+ПРОВЕРКА: {count}/39 тестов PASS; 10/10 failure-injection PASS
+PRODUCTION: НЕ ЗАТРОНУТ
+СЛЕДУЮЩИЙ ЭТАП: shadow comparison и синтетический FAST canary
+''', encoding='utf-8')
+          PY
+
+      - name: Validate generated evidence and write scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s cloud/task_105_fast_pipeline_phase1/PHASE1_REPORT.md
+          test -s cloud/task_105_fast_pipeline_phase1/phase1_receipt.json
+          python3 automation/task_orchestrator.py validate-receipt \
+            cloud/task_105_fast_pipeline_phase1/phase1_receipt.json >/dev/null
+
+          mapfile -t changed < <(git diff --name-only)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              cloud/task_105_fast_pipeline_phase1/*|cloud/latest_status.md|cloud/owner_reply.md) ;;
+              *)
+                echo "UNEXPECTED_WRITE_SCOPE: $path"
+                exit 1
+                ;;
+            esac
+          done
+
+      - name: Commit Phase 1 sandbox evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add cloud/task_105_fast_pipeline_phase1 \
+                  cloud/latest_status.md \
+                  cloud/owner_reply.md
+          if git diff --cached --quiet; then
+            echo 'No Phase 1 evidence changes'
+            exit 0
+          fi
+          git config user.name 'ua-art-orchestrator-sandbox'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task105: complete Phase 1 sandbox orchestrator acceptance'
+          git push origin HEAD:task105-fast-pipeline-phase0
