@@ -1,0 +1,47 @@
+name: TASK104 Canary Recovery
+
+on:
+  workflow_run:
+    workflows: ['TASK104 Canary Worker']
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: task104-canary-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Recover failed canary without owner input
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          TITLE: ${{ github.event.workflow_run.display_title }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,re,urllib.request
+          title=os.environ['TITLE']
+          m=re.fullmatch(r'TASK104-CANARY\|cycle=(\d+)\|scenario=([A-Z0-9_]+)\|attempt=(\d+)',title)
+          if not m:
+              raise SystemExit('UNRECOGNIZED_CANARY_TITLE:'+title)
+          cycle,scenario,attempt=m.group(1),m.group(2),int(m.group(3))
+          if scenario=='LOST_EVENT':
+              print('INTENTIONAL_EVENT_LOSS_FOR_RECONCILIATION_TEST')
+              raise SystemExit(0)
+          if attempt>=3:
+              raise SystemExit('CANARY_RECOVERY_EXHAUSTED')
+          url='https://api.github.com/repos/'+os.environ['GH_REPOSITORY']+'/actions/workflows/task104_canary_worker.yml/dispatches'
+          body=json.dumps({'ref':'main','inputs':{'cycle':cycle,'scenario':scenario,'attempt':str(attempt+1)}}).encode()
+          req=urllib.request.Request(url,data=body,method='POST',headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'})
+          with urllib.request.urlopen(req,timeout=30) as response:
+              assert response.status==204,response.status
+          print('EVENT_DRIVEN_RECOVERY_DISPATCHED',cycle,scenario,attempt+1)
+          PY
