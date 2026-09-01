@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uaart.com.ua/contracts/UA-ORDER-LEAD-CONTRACT-001.schema.json",
+  "title": "UA-ORDER-LEAD-CONTRACT-001",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "request_id",
+    "source_channel",
+    "client_name",
+    "order_country_code",
+    "budget_bucket",
+    "delivery_country",
+    "delivery_city",
+    "consent_at"
+  ],
+  "properties": {
+    "contract_version": {"const": 1},
+    "request_id": {"type": "string", "minLength": 8, "maxLength": 80},
+    "source_event_id": {"type": ["string", "null"], "maxLength": 160},
+    "source_channel": {"enum": ["site", "telegram_bot", "whatsapp", "manager"]},
+    "source_url": {"type": ["string", "null"], "maxLength": 1000},
+    "lang": {"enum": ["uk", "ru", "ka"]},
+    "client_name": {"type": "string", "minLength": 2, "maxLength": 80},
+    "phone": {"type": ["string", "null"], "maxLength": 40},
+    "whatsapp": {"type": ["string", "null"], "maxLength": 40},
+    "telegram_username": {"type": ["string", "null"], "maxLength": 64},
+    "tg_user_id": {"type": ["string", "integer", "null"]},
+    "order_country_code": {
+      "enum": ["korea", "japan", "usa", "europe", "china", "canada", "uae", "georgia"]
+    },
+    "order_country_label": {"type": ["string", "null"], "maxLength": 80},
+    "requested_model": {"type": ["string", "null"], "maxLength": 160},
+    "other_model": {"type": ["string", "null"], "maxLength": 160},
+    "vehicle_type": {"type": ["string", "null"], "maxLength": 80},
+    "budget_bucket": {"type": "string", "minLength": 1, "maxLength": 80},
+    "budget_min": {"type": ["integer", "null"], "minimum": 0},
+    "budget_max": {"type": ["integer", "null"], "minimum": 0},
+    "currency": {"enum": ["USD", "EUR", "UAH", "GEL"]},
+    "delivery_country": {"type": "string", "minLength": 2, "maxLength": 80},
+    "delivery_city": {"type": "string", "minLength": 2, "maxLength": 80},
+    "current_country": {"type": ["string", "null"], "maxLength": 80},
+    "current_city": {"type": ["string", "null"], "maxLength": 80},
+    "contact_preference": {"enum": ["phone", "whatsapp", "telegram", null]},
+    "comment": {"type": ["string", "null"], "maxLength": 4000},
+    "consent_at": {"type": "string", "minLength": 10, "maxLength": 40},
+    "utm": {"type": ["object", "null"], "additionalProperties": {"type": "string"}}
+  },
+  "anyOf": [
+    {"required": ["requested_model"]},
+    {"required": ["other_model"]},
+    {"required": ["vehicle_type"]}
+  ]
+}
+
