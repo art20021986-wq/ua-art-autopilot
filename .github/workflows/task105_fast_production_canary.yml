@@ -1,0 +1,296 @@
+name: TASK105 Controlled FAST Production Canary
+
+on:
+  push:
+    branches:
+      - task105-fast-pipeline-phase0
+    paths:
+      - 'tasks/task_105_fast_production_canary.md'
+      - 'cloud/task_105_fast_pipeline_phase3/production_canary_remote.py'
+      - 'cloud/task_105_fast_pipeline_phase3/production_canary_controller.py'
+      - 'cloud/task_105_fast_pipeline_phase3/test_production_canary.py'
+      - '.github/workflows/task105_fast_production_canary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  controlled-fast-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact authorized commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify exact owner authorization and bounded target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('tasks/task_105_fast_production_canary.md').read_text(encoding='utf-8')
+          required = [
+              'УТВЕРЖДАЮ КОНТРОЛИРУЕМЫЙ FAST PRODUCTION CANARY',
+              '/home/Carix/video/task105-fast-canary.txt',
+              'Existing site-page write: **NO**',
+              'CRM/database write: **NO**',
+              'Cloudflare write: **NO**',
+              'DNS write: **NO**',
+              'Production target count: **1**',
+              'Runtime LLM calls/tokens: **0**',
+          ]
+          missing = [item for item in required if item not in source]
+          if missing:
+              raise SystemExit('TASK105_CANARY_AUTHORIZATION_MISSING:' + '|'.join(missing))
+          print('TASK105_CANARY_AUTHORIZATION_PASS')
+          PY
+
+      - name: Compile and run deterministic canary tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile \
+            automation/task_orchestrator.py \
+            automation/production_queue.py \
+            cloud/task_105_fast_pipeline_phase3/production_canary_remote.py \
+            cloud/task_105_fast_pipeline_phase3/production_canary_controller.py \
+            cloud/task_105_fast_pipeline_phase3/test_production_canary.py
+          python3 -W error -m unittest -v \
+            cloud.task_105_fast_pipeline_phase3.test_production_canary \
+            2>&1 | tee /tmp/task105_fast_canary_tests.log
+          grep -q '^Ran 10 tests' /tmp/task105_fast_canary_tests.log
+          grep -q '^OK$' /tmp/task105_fast_canary_tests.log
+
+      - name: Require FAST and NO_AI routing
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >/tmp/task105_fast_request.json <<'JSON'
+          {
+            "task_id": "TASK105-FAST-PRODUCTION-CANARY",
+            "title": "Replace exact isolated static canary marker",
+            "description": "replace exact marker, backup, rollback and HTTP 200 validation",
+            "changed_paths": ["video/task105-fast-canary.txt"],
+            "production_required": true,
+            "complexity": 1
+          }
+          JSON
+          python3 automation/task_orchestrator.py classify \
+            /tmp/task105_fast_request.json | tee /tmp/task105_fast_plan.json
+          python3 - <<'PY'
+          import json
+          plan = json.load(open('/tmp/task105_fast_plan.json', encoding='utf-8'))
+          assert plan['task_class'] == 'FAST', plan
+          assert plan['ai_route'] == 'NO_AI', plan
+          assert plan['ai_call_budget'] == 0, plan
+          assert plan['resource_locks'] == ['CONTENT_SURFACE'], plan
+          print('TASK105_FAST_ROUTE_PASS')
+          PY
+
+      - name: Wait in the existing fair production queue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python3 -W error automation/production_queue.py self-test
+          python3 -W error automation/production_queue.py wait \
+            --task 105 --timeout-seconds 1200 --stable-polls 2
+
+      - name: Backup, write one marker and verify live
+        id: canary
+        continue-on-error: true
+        shell: bash
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          python3 -W error \
+            cloud/task_105_fast_pipeline_phase3/production_canary_controller.py
+
+      - name: Materialize canonical owner status
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+
+          evidence_path = Path('cloud/task_105_fast_pipeline_phase3/production_canary_evidence.json')
+          report_path = Path('cloud/task_105_fast_pipeline_phase3/PRODUCTION_CANARY_REPORT.md')
+          receipt_path = Path('state/receipts/TASK105-FAST-PRODUCTION-CANARY.json')
+          now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+
+          if evidence_path.exists():
+              evidence = json.loads(evidence_path.read_text(encoding='utf-8'))
+          else:
+              evidence = {
+                  'contract_id': 'UA-ART-FAST-PRODUCTION-CANARY-105-V1.0',
+                  'task_id': 'TASK105-FAST-PRODUCTION-CANARY',
+                  'status': 'FAIL',
+                  'production_touched': False,
+                  'errors': ['CONTROLLER_EVIDENCE_MISSING'],
+                  'finished_at_utc': now,
+              }
+              evidence_path.parent.mkdir(parents=True, exist_ok=True)
+              evidence_path.write_text(json.dumps(evidence, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+
+          if not report_path.exists():
+              report_path.write_text(
+                  '# TASK105 — Controlled FAST Production Canary\n\n'
+                  'STATUS: **FAIL**\n\n- Errors: CONTROLLER_EVIDENCE_MISSING\n',
+                  encoding='utf-8',
+              )
+
+          if not receipt_path.exists():
+              receipt_path.parent.mkdir(parents=True, exist_ok=True)
+              receipt_path.write_text(json.dumps({
+                  'task_id': 'TASK105-FAST-PRODUCTION-CANARY',
+                  'status': 'FAIL',
+                  'task_class': 'FAST',
+                  'target_environment': 'production',
+                  'tests': 'FAIL',
+                  'unexpected_changes': 1,
+                  'rollback_ready': False,
+                  'production_required': True,
+                  'ai_calls': 0,
+                  'errors': ['FINAL_RECEIPT_MISSING'],
+              }, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+
+          status = evidence.get('status', 'FAIL')
+          success = status == 'PASS'
+          touched = 'YES' if evidence.get('production_touched') else 'NO'
+          errors = ';'.join(evidence.get('errors') or []) or 'NONE'
+          latest = f'''TASK_ID: task_105
+          ROUND: 4
+          CLAUDE_STATUS: {'DONE' if success else 'BLOCKED'}
+          CURRENT_ACTION: {'controlled FAST production canary live verified' if success else 'production canary failed or rolled back'}
+          FILES_CREATED: cloud/task_105_fast_pipeline_phase3/production_canary_evidence.json,cloud/task_105_fast_pipeline_phase3/PRODUCTION_CANARY_REPORT.md,state/receipts/TASK105-FAST-PRODUCTION-CANARY.json
+          PRODUCTION_TOUCHED: {touched}
+          OWNER_ACTION_REQUIRED: {'NO' if success else 'YES'}
+          OWNER_QUESTION: {'NONE' if success else errors}
+          NEXT_FOR_CHATGPT: {'audit receipt and advance controlled FAST rollout' if success else 'inspect root cause; do not retry blindly'}
+          UPDATED_AT_UTC: {now}
+          '''
+          latest = '\n'.join(line.strip() for line in latest.splitlines() if line.strip()) + '\n'
+          Path('cloud/latest_status.md').write_text(latest, encoding='utf-8')
+
+          owner = f'''# Ответ владельцу — TASK105
+
+          СТАТУС: {'PASS — FAST PRODUCTION CANARY' if success else status}
+          ЧТО СДЕЛАНО: {'один изолированный production-маркер установлен и дважды проверен публично' if success else 'canary не принят; при записи выполнен автоматический откат согласно evidence'}
+          BACKUP: {(evidence.get('install') or {}).get('backup_root') or 'NONE'}
+          CRM/СУЩЕСТВУЮЩИЕ СТРАНИЦЫ/CLOUDFLARE/DNS: НЕ ИЗМЕНЯЛИСЬ
+          AI-ВЫЗОВЫ: 0
+          ОШИБКИ: {errors}
+          TASK FINISHED: {'ДА — только для production-canary' if success else 'НЕТ'}
+          '''
+          owner = '\n'.join(line.strip() for line in owner.splitlines()) + '\n'
+          Path('cloud/owner_reply.md').write_text(owner, encoding='utf-8')
+          PY
+
+      - name: Enforce bounded evidence write scope
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git diff --name-only)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              cloud/task_105_fast_pipeline_phase3/production_canary_evidence.json|\
+              cloud/task_105_fast_pipeline_phase3/PRODUCTION_CANARY_REPORT.md|\
+              state/receipts/TASK105-FAST-PRODUCTION-CANARY.json|\
+              cloud/latest_status.md|\
+              cloud/owner_reply.md) ;;
+              *) echo "UNEXPECTED_WORKSPACE_WRITE: $path"; exit 1 ;;
+            esac
+          done
+
+      - name: Commit bounded production evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- \
+            cloud/task_105_fast_pipeline_phase3/production_canary_evidence.json \
+            cloud/task_105_fast_pipeline_phase3/PRODUCTION_CANARY_REPORT.md \
+            state/receipts/TASK105-FAST-PRODUCTION-CANARY.json \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          if git diff --cached --quiet; then
+            echo 'No production evidence changes'
+            exit 0
+          fi
+          git config user.name 'ua-art-fast-production-canary'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task105: record controlled FAST production canary evidence'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin task105-fast-pipeline-phase0
+            if ! git rebase origin/task105-fast-pipeline-phase0; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:task105-fast-pipeline-phase0; then
+              exit 0
+            fi
+            test "$attempt" -lt 5 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Require truthful FINISHED production receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/task_orchestrator.py validate-receipt \
+            state/receipts/TASK105-FAST-PRODUCTION-CANARY.json >/tmp/validated_task105_receipt.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          evidence = json.loads(Path(
+              'cloud/task_105_fast_pipeline_phase3/production_canary_evidence.json'
+          ).read_text(encoding='utf-8'))
+          receipt = json.loads(Path(
+              'state/receipts/TASK105-FAST-PRODUCTION-CANARY.json'
+          ).read_text(encoding='utf-8'))
+          assert evidence['status'] == 'PASS', evidence.get('errors')
+          assert receipt['status'] == 'FINISHED'
+          assert receipt['production'] == 'PASS'
+          assert receipt['live_verify'] == 'PASS'
+          assert receipt['unexpected_changes'] == 0
+          assert receipt['rollback_ready'] is True
+          assert receipt['ai_calls'] == 0
+          print('TASK105_FAST_PRODUCTION_CANARY_PASS')
+          PY
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: task105-fast-production-canary-${{ github.run_id }}
+          path: |
+            cloud/task_105_fast_pipeline_phase3/production_canary_evidence.json
+            cloud/task_105_fast_pipeline_phase3/PRODUCTION_CANARY_REPORT.md
+            state/receipts/TASK105-FAST-PRODUCTION-CANARY.json
+            cloud/latest_status.md
+            cloud/owner_reply.md
+          if-no-files-found: warn
+          retention-days: 14
