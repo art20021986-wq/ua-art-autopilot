@@ -1,7 +1,8 @@
 # Ответ владельцу — TASK105
 
-СТАТУС: PASS PHASE 1 SANDBOX
-ЧТО СДЕЛАНО: центральный классификатор, ресурсные locks, AI-бюджеты, retry-policy, единая модель статусов и защита TASK FINISHED
-ПРОВЕРКА: 39/39 тестов PASS; 10/10 failure-injection PASS
+СТАТУС: PASS PHASE 2–3 SANDBOX
+SHADOW: 20/20 PASS
+СИНТЕТИЧЕСКИЙ FAST CANARY: 20/20 PASS
+AI-ВЫЗОВЫ: 0
 PRODUCTION: НЕ ЗАТРОНУТ
-СЛЕДУЮЩИЙ ЭТАП: shadow comparison и синтетический FAST canary
+СЛЕДУЮЩИЙ БАРЬЕР: отдельный контролируемый реальный FAST production canary
