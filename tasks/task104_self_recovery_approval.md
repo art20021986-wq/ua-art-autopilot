@@ -1,0 +1,20 @@
+# TASK104 — UA AUTOPILOT SELF-RECOVERY
+
+CONTRACT: UA-AUTOPILOT-SELF-RECOVERY-104-V1.0
+OWNER_APPROVED: YES
+PARALLEL_EXECUTION_AUTHORIZED: YES
+TASK096_V8_INTERRUPT_AUTHORIZED: NO
+PRODUCTION_RECOVERY_CORE_AUTHORIZED: NO
+AUDIT_REQUIRED: YES
+DESIGN_REQUIRED: YES
+SANDBOX_REQUIRED: YES
+FAILURE_INJECTION_REQUIRED: YES
+AUTONOMOUS_CANARY_REQUIRED: 10/10
+BUSINESS_COMPLETE_REQUIRED: YES
+MAX_RECOVERY_ATTEMPTS_PER_STAGE: 10
+
+Owner instruction:
+
+> УТВЕРЖДАЮ TASK104 UA-AUTOPILOT-SELF-RECOVERY-104 v1.0. Выполнить параллельно текущим работам. TASK096 v8 не прерывать. AUDIT → DESIGN → SANDBOX → FAILURE INJECTION → 10/10 AUTONOMOUS CANARY → REPORT. Production Recovery Core — только после отдельного подтверждения.
+
+Scope: architecture, sandbox state/recovery logic, failure injection and autonomous canary only. No live CRM, site, bot, public-card, media or production writes are authorized by this approval.
