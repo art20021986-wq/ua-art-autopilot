@@ -113,6 +113,13 @@ class ControllerContractTests(unittest.TestCase):
         self.assertEqual(len(first.decode().splitlines()), 7)
         self.assertNotEqual(first, second)
         self.assertIn(controller.CONTRACT_ID.encode(), first)
+        home = b"<html>fallback home</html>"
+        kind = controller.classify_public_target(200, home, 200, home)
+        self.assertEqual(kind, "ABSENT_HOME_FALLBACK")
+        controller.validate_baseline_mapping(
+            {"kind": kind, "status": 200, "sha256": controller.sha(home)},
+            {"existed": False},
+        )
 
     def test_validate_install_accepts_only_bounded_scope(self):
         payload = controller.build_payload("11", "a" * 40)

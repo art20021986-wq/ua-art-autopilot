@@ -273,11 +273,36 @@ def _public_fetch(url: str, label: str) -> tuple[int, bytes]:
     return status, body
 
 
+def classify_public_target(
+    marker_status: int,
+    marker_body: bytes,
+    home_status: int,
+    home_body: bytes,
+) -> str:
+    if home_status != 200:
+        raise ControllerError("PUBLIC_HOME_BASELINE_HTTP:%d" % home_status)
+    if marker_status == 404:
+        return "ABSENT_404"
+    if marker_status == 200 and marker_body == home_body:
+        return "ABSENT_HOME_FALLBACK"
+    if marker_status == 200:
+        return "EXISTING_FILE"
+    raise ControllerError("PUBLIC_BASELINE_HTTP:%d" % marker_status)
+
+
 def public_baseline() -> dict[str, Any]:
-    status, body = _public_fetch(PUBLIC_MARKER, "baseline")
-    if status not in (200, 404):
-        raise ControllerError("PUBLIC_BASELINE_HTTP:%d" % status)
-    return {"status": status, "sha256": sha(body), "bytes": len(body)}
+    marker_status, marker_body = _public_fetch(PUBLIC_MARKER, "baseline-marker")
+    home_status, home_body = _public_fetch(PUBLIC_CORE[0], "baseline-home")
+    kind = classify_public_target(marker_status, marker_body, home_status, home_body)
+    return {
+        "kind": kind,
+        "status": marker_status,
+        "sha256": sha(marker_body),
+        "bytes": len(marker_body),
+        "home_status": home_status,
+        "home_sha256": sha(home_body),
+        "home_bytes": len(home_body),
+    }
 
 
 def verify_marker(expected: bytes, label: str, attempts: int = 6) -> dict[str, Any]:
@@ -350,10 +375,11 @@ def validate_install(value: dict[str, Any], expected: bytes) -> None:
 
 
 def validate_baseline_mapping(baseline: dict[str, Any], before: dict[str, Any]) -> None:
+    kind = baseline.get("kind")
     if before.get("existed"):
-        if baseline.get("status") != 200 or baseline.get("sha256") != before.get("sha256"):
+        if kind != "EXISTING_FILE" or baseline.get("sha256") != before.get("sha256"):
             raise ControllerError("PUBLIC_LOCAL_PREIMAGE_MISMATCH")
-    elif baseline.get("status") != 404:
+    elif kind not in {"ABSENT_404", "ABSENT_HOME_FALLBACK"}:
         raise ControllerError("PUBLIC_LOCAL_ABSENCE_MISMATCH")
 
 
@@ -372,18 +398,21 @@ def validate_rollback(value: dict[str, Any]) -> None:
 
 def verify_rollback_public(before: dict[str, Any], baseline: dict[str, Any]) -> dict[str, Any]:
     for attempt in range(1, 7):
-        status, body = _public_fetch(PUBLIC_MARKER, "rollback-%d" % attempt)
+        status, body = _public_fetch(PUBLIC_MARKER, "rollback-marker-%d" % attempt)
+        home_status, home_body = _public_fetch(PUBLIC_CORE[0], "rollback-home-%d" % attempt)
+        kind = classify_public_target(status, body, home_status, home_body)
         if before.get("existed"):
-            ok = status == 200 and sha(body) == before.get("sha256")
+            ok = kind == "EXISTING_FILE" and sha(body) == before.get("sha256")
         else:
-            ok = status == 404
+            ok = kind in {"ABSENT_404", "ABSENT_HOME_FALLBACK"}
         if ok:
             return {
                 "status": "PASS",
                 "attempt": attempt,
                 "http": status,
+                "kind": kind,
                 "sha256": sha(body),
-                "baseline_http": baseline.get("status"),
+                "baseline_kind": baseline.get("kind"),
                 "checked_at_utc": utc_now(),
             }
         if attempt < 6:
