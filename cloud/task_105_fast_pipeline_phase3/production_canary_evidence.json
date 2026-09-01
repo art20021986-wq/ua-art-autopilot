@@ -4,21 +4,38 @@
   "contract_id": "UA-ART-FAST-PRODUCTION-CANARY-105-V1.0",
   "crm_write": false,
   "dns_write": false,
-  "errors": [
-    "ControllerError:PUBLIC_LOCAL_ABSENCE_MISMATCH",
-    "ROLLBACK_ControllerError:PUBLIC_ROLLBACK_VERIFY_FAILED"
-  ],
+  "errors": [],
   "existing_site_file_write": false,
-  "finished_at_utc": "2026-09-01T12:49:39Z",
+  "final_receipt": {
+    "ai_calls": 0,
+    "backup": "/home/Carix/backups/task_105_fast_canary/20260901T125609Z_d094177f1b",
+    "changed_files": [
+      "/home/Carix/video/task105-fast-canary.txt"
+    ],
+    "finished_at": "2026-09-01T12:56:54Z",
+    "live_verify": "PASS",
+    "production": "PASS",
+    "production_required": true,
+    "protected_files_unchanged": true,
+    "rollback_ready": true,
+    "started_at": "2026-09-01T12:55:33Z",
+    "status": "FINISHED",
+    "target_environment": "production",
+    "task_class": "FAST",
+    "task_id": "TASK105-FAST-PRODUCTION-CANARY",
+    "tests": "PASS",
+    "unexpected_changes": 0
+  },
+  "finished_at_utc": "2026-09-01T12:56:54Z",
   "install": {
     "after": {
       "bytes": 247,
       "existed": true,
       "mode": 420,
-      "sha256": "c1951bc9f0024d4a51e9d44101b198fbfb3d68f9162961e46f7240e030fbcb05"
+      "sha256": "cc24acba8e47d45dfc95627788a2497ef13d08626b239b15bd48eb0a070a1686"
     },
-    "backup_manifest": "/home/Carix/backups/task_105_fast_canary/20260901T124710Z_fa5c688855/manifest.json",
-    "backup_root": "/home/Carix/backups/task_105_fast_canary/20260901T124710Z_fa5c688855",
+    "backup_manifest": "/home/Carix/backups/task_105_fast_canary/20260901T125609Z_d094177f1b/manifest.json",
+    "backup_root": "/home/Carix/backups/task_105_fast_canary/20260901T125609Z_d094177f1b",
     "before": {
       "bytes": 0,
       "existed": false,
@@ -34,8 +51,8 @@
     "dns_write": false,
     "errors": [],
     "existing_site_file_write": false,
-    "expected_sha256": "c1951bc9f0024d4a51e9d44101b198fbfb3d68f9162961e46f7240e030fbcb05",
-    "finished_at_utc": "2026-09-01T12:47:10Z",
+    "expected_sha256": "cc24acba8e47d45dfc95627788a2497ef13d08626b239b15bd48eb0a070a1686",
+    "finished_at_utc": "2026-09-01T12:56:09Z",
     "mode": "INSTALL",
     "production_write": true,
     "protected_after": {
@@ -74,7 +91,7 @@
     },
     "rollback_ready": true,
     "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-09-01T12:47:10Z",
+    "started_at_utc": "2026-09-01T12:56:09Z",
     "status": "PASS",
     "target": "/home/Carix/video/task105-fast-canary.txt",
     "unexpected_changes": 0
@@ -82,68 +99,68 @@
   "production_touched": true,
   "public_baseline": {
     "bytes": 34488,
+    "home_bytes": 34488,
+    "home_sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
+    "home_status": 200,
+    "kind": "ABSENT_HOME_FALLBACK",
     "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
     "status": 200
   },
-  "rollback": {
-    "contract_id": "UA-ART-FAST-PRODUCTION-CANARY-105-V1.0",
-    "crm_write": false,
-    "errors": [],
-    "finished_at_utc": "2026-09-01T12:48:13Z",
-    "mode": "ROLLBACK",
-    "production_write": true,
-    "protected_after": {
-      "/home/Carix/crm.db": {
-        "bytes": 3723264,
-        "mode": 420,
-        "sha256": "d2377e9add5c848a96f8eacd7e40da64c1e666ea7bf1fe16fc528bd920c71df5"
-      },
-      "/home/Carix/video/index.html": {
+  "public_delayed": {
+    "core": [
+      {
         "bytes": 34488,
-        "mode": 384,
-        "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d"
+        "http": 200,
+        "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
+        "url_path": "/video/index.html"
       },
-      "/home/Carix/video/katalog.html": {
+      {
         "bytes": 46966,
-        "mode": 384,
-        "sha256": "1a6adb341eddb32463476e2377de0665d18daddf56503ec573c0d4f9bfa14d38"
+        "http": 200,
+        "sha256": "1a6adb341eddb32463476e2377de0665d18daddf56503ec573c0d4f9bfa14d38",
+        "url_path": "/video/katalog.html"
       }
-    },
-    "protected_before": {
-      "/home/Carix/crm.db": {
-        "bytes": 3723264,
-        "mode": 420,
-        "sha256": "d2377e9add5c848a96f8eacd7e40da64c1e666ea7bf1fe16fc528bd920c71df5"
-      },
-      "/home/Carix/video/index.html": {
-        "bytes": 34488,
-        "mode": 384,
-        "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d"
-      },
-      "/home/Carix/video/katalog.html": {
-        "bytes": 46966,
-        "mode": 384,
-        "sha256": "1a6adb341eddb32463476e2377de0665d18daddf56503ec573c0d4f9bfa14d38"
-      }
-    },
-    "restored": {
-      "bytes": 0,
-      "existed": false,
-      "mode": null,
-      "sha256": null
-    },
-    "rollback_source": "/home/Carix/backups/task_105_fast_canary/20260901T124710Z_fa5c688855",
-    "runtime_llm_tokens": 0,
-    "started_at_utc": "2026-09-01T12:48:12Z",
-    "status": "PASS",
-    "target": "/home/Carix/video/task105-fast-canary.txt",
-    "unexpected_changes": 0
+    ],
+    "marker": {
+      "attempt": 1,
+      "bytes": 247,
+      "checked_at_utc": "2026-09-01T12:56:53Z",
+      "http": 200,
+      "label": "delayed",
+      "sha256": "cc24acba8e47d45dfc95627788a2497ef13d08626b239b15bd48eb0a070a1686",
+      "status": "PASS"
+    }
   },
-  "started_at_utc": "2026-09-01T12:46:00Z",
-  "status": "FAIL_ROLLBACK",
+  "public_immediate": {
+    "core": [
+      {
+        "bytes": 34488,
+        "http": 200,
+        "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
+        "url_path": "/video/index.html"
+      },
+      {
+        "bytes": 46966,
+        "http": 200,
+        "sha256": "1a6adb341eddb32463476e2377de0665d18daddf56503ec573c0d4f9bfa14d38",
+        "url_path": "/video/katalog.html"
+      }
+    ],
+    "marker": {
+      "attempt": 1,
+      "bytes": 247,
+      "checked_at_utc": "2026-09-01T12:56:40Z",
+      "http": 200,
+      "label": "immediate",
+      "sha256": "cc24acba8e47d45dfc95627788a2497ef13d08626b239b15bd48eb0a070a1686",
+      "status": "PASS"
+    }
+  },
+  "started_at_utc": "2026-09-01T12:55:33Z",
+  "status": "PASS",
   "task_id": "TASK105-FAST-PRODUCTION-CANARY",
   "transport": {
-    "payload_sha256": "c1951bc9f0024d4a51e9d44101b198fbfb3d68f9162961e46f7240e030fbcb05",
+    "payload_sha256": "cc24acba8e47d45dfc95627788a2497ef13d08626b239b15bd48eb0a070a1686",
     "remote_root": "/home/Carix/autopilot_inbox/cloud/task_105_fast_pipeline_phase3",
     "remote_script_sha256": "6b88420a16aecfdf8ad01e24f58a9e525f487a822a938c3e13db2f07ec4ecb1f"
   }

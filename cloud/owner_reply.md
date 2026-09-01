@@ -1,9 +1,9 @@
 # Ответ владельцу — TASK105
 
-СТАТУС: FAIL_ROLLBACK
-ЧТО СДЕЛАНО: canary не принят; при записи выполнен автоматический откат согласно evidence
-BACKUP: /home/Carix/backups/task_105_fast_canary/20260901T124710Z_fa5c688855
+СТАТУС: PASS — FAST PRODUCTION CANARY
+ЧТО СДЕЛАНО: один изолированный production-маркер установлен и дважды проверен публично
+BACKUP: /home/Carix/backups/task_105_fast_canary/20260901T125609Z_d094177f1b
 CRM/СУЩЕСТВУЮЩИЕ СТРАНИЦЫ/CLOUDFLARE/DNS: НЕ ИЗМЕНЯЛИСЬ
 AI-ВЫЗОВЫ: 0
-ОШИБКИ: ControllerError:PUBLIC_LOCAL_ABSENCE_MISMATCH;ROLLBACK_ControllerError:PUBLIC_ROLLBACK_VERIFY_FAILED
-TASK FINISHED: НЕТ
+ОШИБКИ: NONE
+TASK FINISHED: ДА — только для production-canary
