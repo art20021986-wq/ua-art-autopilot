@@ -1,10 +1,10 @@
 TASK_ID: task_105
-ROUND: 3
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Phase 2 shadow 20/20 and Phase 3 synthetic FAST 20/20 PASS
-FILES_CREATED: cloud/task_105_fast_pipeline_phase2/PHASE2_SHADOW_REPORT.md,cloud/task_105_fast_pipeline_phase2/PHASE3_FAST_CANARY_REPORT.md,cloud/task_105_fast_pipeline_phase2/phase2_3_receipt.json
-PRODUCTION_TOUCHED: NO
+ROUND: 4
+CLAUDE_STATUS: BLOCKED
+CURRENT_ACTION: production canary failed or rolled back
+FILES_CREATED: cloud/task_105_fast_pipeline_phase3/production_canary_evidence.json,cloud/task_105_fast_pipeline_phase3/PRODUCTION_CANARY_REPORT.md,state/receipts/TASK105-FAST-PRODUCTION-CANARY.json
+PRODUCTION_TOUCHED: YES
 OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Approve controlled real FAST production canary only after review
-NEXT_FOR_CHATGPT: review shadow/canary evidence and prepare bounded production canary proposal
-UPDATED_AT_UTC: 2026-09-01T10:45:24Z
+OWNER_QUESTION: ControllerError:PUBLIC_LOCAL_ABSENCE_MISMATCH;ROLLBACK_ControllerError:PUBLIC_ROLLBACK_VERIFY_FAILED
+NEXT_FOR_CHATGPT: inspect root cause; do not retry blindly
+UPDATED_AT_UTC: 2026-09-01T12:49:39Z

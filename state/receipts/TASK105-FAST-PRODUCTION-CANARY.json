@@ -1,0 +1,17 @@
+{
+  "ai_calls": 0,
+  "errors": [
+    "ControllerError:PUBLIC_LOCAL_ABSENCE_MISMATCH",
+    "ROLLBACK_ControllerError:PUBLIC_ROLLBACK_VERIFY_FAILED"
+  ],
+  "finished_at": "2026-09-01T12:49:39Z",
+  "production_required": true,
+  "rollback_ready": false,
+  "started_at": "2026-09-01T12:46:00Z",
+  "status": "FAIL_ROLLBACK",
+  "target_environment": "production",
+  "task_class": "FAST",
+  "task_id": "TASK105-FAST-PRODUCTION-CANARY",
+  "tests": "FAIL",
+  "unexpected_changes": 1
+}

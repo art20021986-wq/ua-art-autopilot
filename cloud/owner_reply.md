@@ -1,8 +1,9 @@
 # Ответ владельцу — TASK105
 
-СТАТУС: PASS PHASE 2–3 SANDBOX
-SHADOW: 20/20 PASS
-СИНТЕТИЧЕСКИЙ FAST CANARY: 20/20 PASS
+СТАТУС: FAIL_ROLLBACK
+ЧТО СДЕЛАНО: canary не принят; при записи выполнен автоматический откат согласно evidence
+BACKUP: /home/Carix/backups/task_105_fast_canary/20260901T124710Z_fa5c688855
+CRM/СУЩЕСТВУЮЩИЕ СТРАНИЦЫ/CLOUDFLARE/DNS: НЕ ИЗМЕНЯЛИСЬ
 AI-ВЫЗОВЫ: 0
-PRODUCTION: НЕ ЗАТРОНУТ
-СЛЕДУЮЩИЙ БАРЬЕР: отдельный контролируемый реальный FAST production canary
+ОШИБКИ: ControllerError:PUBLIC_LOCAL_ABSENCE_MISMATCH;ROLLBACK_ControllerError:PUBLIC_ROLLBACK_VERIFY_FAILED
+TASK FINISHED: НЕТ
