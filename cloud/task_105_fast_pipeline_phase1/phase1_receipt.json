@@ -1,0 +1,24 @@
+{
+  "ai_calls": 0,
+  "failure_injection_scenarios": 10,
+  "file_sha256": {
+    "automation/task_orchestrator.py": "fb37093d45f5c6887b1452d07fc3be6693f1844cffe1e756eaccbd177f067f30",
+    "cloud/task_105_fast_pipeline_phase1/phase1_evidence.py": "a04f30eec6ab27a70840ae0ef8317c313bf8e4a6d8d9d72828aa9639376aebc9",
+    "cloud/task_105_fast_pipeline_phase1/test_task_orchestrator.py": "989c80961a387b95f53211408d40a39b1c1d961f3f22864d13736767f37d3519",
+    "state/schemas/task_receipt.schema.json": "ed18b339cc7e07eeb306d6e4b76f4cb4833674f9c0ed56bef5d62eb05dddb482",
+    "state/schemas/task_request.schema.json": "712074f3c3f0081ad4613b81dfa619209a43a310882045bb64245757845a9563"
+  },
+  "finished_at": "2026-09-01T10:40:26Z",
+  "git_commit_input": "596d4708be0e3e24c59b7566622e539bad3ea52d",
+  "production_required": false,
+  "production_touched": false,
+  "rollback_ready": true,
+  "status": "FINISHED",
+  "target_environment": "sandbox",
+  "task_class": "CRITICAL",
+  "task_id": "TASK105-PHASE1",
+  "test_count": 39,
+  "tests": "PASS",
+  "unexpected_changes": 0,
+  "workflow_run_id": "33498598553"
+}
