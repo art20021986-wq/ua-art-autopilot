@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uaart.local/schemas/task_receipt.schema.json",
+  "title": "UA ART Final Task Receipt",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "task_id",
+    "status",
+    "task_class",
+    "target_environment",
+    "tests",
+    "unexpected_changes",
+    "rollback_ready",
+    "production_required"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "status": {
+      "const": "FINISHED"
+    },
+    "task_class": {
+      "enum": ["FAST", "STANDARD", "CRITICAL"]
+    },
+    "target_environment": {
+      "enum": ["sandbox", "shadow", "preview", "test", "production"]
+    },
+    "tests": {
+      "const": "PASS"
+    },
+    "unexpected_changes": {
+      "type": "integer",
+      "const": 0
+    },
+    "rollback_ready": {
+      "const": true
+    },
+    "production_required": {
+      "type": "boolean"
+    },
+    "backup": {
+      "type": "string"
+    },
+    "production": {
+      "enum": ["PASS", "N/A"]
+    },
+    "live_verify": {
+      "enum": ["PASS", "N/A"]
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "finished_at": {
+      "type": "string"
+    },
+    "files_changed": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "ai_calls": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "production_required": {
+            "const": true
+          }
+        },
+        "required": ["production_required"]
+      },
+      "then": {
+        "required": ["backup", "production", "live_verify"],
+        "properties": {
+          "target_environment": {
+            "const": "production"
+          },
+          "backup": {
+            "type": "string",
+            "minLength": 1
+          },
+          "production": {
+            "const": "PASS"
+          },
+          "live_verify": {
+            "const": "PASS"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "target_environment": {
+            "enum": ["sandbox", "shadow", "preview", "test"]
+          }
+        }
+      }
+    }
+  ]
+}
