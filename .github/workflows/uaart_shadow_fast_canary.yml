@@ -1,0 +1,125 @@
+name: UA ART Shadow and FAST Canary
+
+on:
+  push:
+    branches:
+      - task105-fast-pipeline-phase0
+    paths:
+      - 'automation/task_orchestrator.py'
+      - 'cloud/task_105_fast_pipeline_phase2/shadow_canary.py'
+      - '.github/workflows/uaart_shadow_fast_canary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: uaart-shadow-fast-canary-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  shadow-fast-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout sandbox branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: task105-fast-pipeline-phase0
+
+      - name: Assert sandbox-only safety boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'TARGET_ENVIRONMENT=sandbox'
+          echo 'PRODUCTION_WRITE=NO'
+          echo 'CRM_WRITE=NO'
+          echo 'PYTHONANYWHERE_WRITE=NO'
+          echo 'CLOUDFLARE_DNS_WRITE=NO'
+          for file in automation/task_orchestrator.py cloud/task_105_fast_pipeline_phase2/shadow_canary.py; do
+            if grep -nE '^import (urllib|requests|socket|subprocess)|^from (urllib|requests|socket|subprocess)' "$file"; then
+              echo "NETWORK_OR_PROCESS_CAPABILITY_FORBIDDEN:$file"
+              exit 1
+            fi
+          done
+
+      - name: Compile sandbox components
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            automation/task_orchestrator.py \
+            cloud/task_105_fast_pipeline_phase2/shadow_canary.py
+
+      - name: Run shadow comparison and 20-case FAST canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 cloud/task_105_fast_pipeline_phase2/shadow_canary.py
+
+      - name: Validate evidence and final sandbox receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            PHASE2_SHADOW_REPORT.md
+            PHASE3_FAST_CANARY_REPORT.md
+            phase2_3_receipt.json
+            shadow_results.json
+            fast_canary_results.json
+            parallelism_results.json
+          )
+          for name in "${required[@]}"; do
+            test -s "cloud/task_105_fast_pipeline_phase2/${name}"
+          done
+          python3 automation/task_orchestrator.py validate-receipt \
+            cloud/task_105_fast_pipeline_phase2/phase2_3_receipt.json >/dev/null
+          python3 - <<'PY'
+          import json
+          import pathlib
+          root = pathlib.Path('cloud/task_105_fast_pipeline_phase2')
+          shadow = json.loads((root / 'shadow_results.json').read_text(encoding='utf-8'))
+          fast = json.loads((root / 'fast_canary_results.json').read_text(encoding='utf-8'))
+          parallel = json.loads((root / 'parallelism_results.json').read_text(encoding='utf-8'))
+          assert len(shadow) == 20 and all(x['pass'] for x in shadow), shadow
+          assert len(fast) == 20 and all(x['pass'] for x in fast), fast
+          assert parallel and all(parallel.values()), parallel
+          PY
+
+      - name: Enforce generated write scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git diff --name-only)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              cloud/task_105_fast_pipeline_phase2/*|cloud/latest_status.md|cloud/owner_reply.md) ;;
+              *)
+                echo "UNEXPECTED_WRITE_SCOPE:$path"
+                exit 1
+                ;;
+            esac
+          done
+          if grep -RIE 'PRODUCTION_TOUCHED: YES|PRODUCTION_WRITE[=: ]+YES|CRM_WRITE[=: ]+YES' \
+              cloud/task_105_fast_pipeline_phase2 cloud/latest_status.md cloud/owner_reply.md; then
+            echo 'SAFETY_MARKER_VIOLATION'
+            exit 1
+          fi
+
+      - name: Commit shadow and canary evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            cloud/task_105_fast_pipeline_phase2 \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          if git diff --cached --quiet; then
+            echo 'No Phase 2–3 evidence changes'
+            exit 0
+          fi
+          git config user.name 'ua-art-shadow-canary'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task105: complete shadow comparison and synthetic FAST canary'
+          git push origin HEAD:task105-fast-pipeline-phase0
