@@ -2,7 +2,7 @@ name: Overnight Autopilot Production Dispatch
 
 on:
   workflow_run:
-    workflows: ['TASK096 Enrichment Repair v7']
+    workflows: ['TASK096 Enrichment Repair v7', 'TASK096 Enrichment Repair v8']
     types: [completed]
   workflow_dispatch:
 
