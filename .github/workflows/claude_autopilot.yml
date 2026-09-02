@@ -43,6 +43,34 @@ jobs:
           echo 'SITE_HEALTH=FAIL — autopilot start blocked'
           exit 1
 
+      - name: Normalize task intake for worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for src in tasks/task_*.txt; do
+            base="${src%.txt}"
+            dst="${base}.md"
+            if [ ! -e "$dst" ] || [ "$src" -nt "$dst" ]; then
+              cp "$src" "$dst"
+              echo "Normalized $src -> $dst"
+            fi
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          files = list(Path('tasks').glob('task_*.md'))
+          def key(p):
+              m = re.fullmatch(r'task_(\d+)(.*)\.md', p.name)
+              if not m:
+                  return (-1, 0, p.name)
+              return (int(m.group(1)), 1 if m.group(2) == '' else 0, p.name)
+          if not files:
+              raise SystemExit('NO_TASK_AFTER_NORMALIZATION')
+          selected = max(files, key=key)
+          print(f'ROUTED_TASK={selected}')
+          PY
+
       - name: Run autonomous Claude worker
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -75,10 +103,10 @@ jobs:
                 exit 1
               fi
               for path in "${conflicts[@]}"; do
-                case "${path}" in
+                case "$path" in
                   cloud/latest_status.md|cloud/owner_reply.md) ;;
                   *)
-                    echo "Rebase conflict outside shared status files: ${path}"
+                    echo "Rebase conflict outside shared status files: $path"
                     git rebase --abort || true
                     exit 1
                     ;;
