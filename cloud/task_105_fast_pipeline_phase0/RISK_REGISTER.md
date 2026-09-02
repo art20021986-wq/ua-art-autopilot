@@ -1,19 +1,12 @@
-# RISK REGISTER — TASK105
+# RISK_REGISTER.md — TASK 105 Phase 0
 
-| ID | Risk | Evidence | Severity | Control |
+| # | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|---|
-| R1 | False `FINISHED` | Multiple intermediate completion vocabularies | Critical | Receipt-gated final state |
-| R2 | Hidden production writer | 107 workflows heuristically production-capable | Critical | Explicit capability manifest + deny-by-default |
-| R3 | PythonAnywhere transport drift | 109 workflows reference PythonAnywhere | High | One transport adapter with immutable SHA |
-| R4 | Excess AI cost/latency | 22 workflows reference Anthropic/Claude | High | AI router and per-task budgets |
-| R5 | Global serialization | Shared queue patterns can block unrelated resources | High | Resource-aware locks |
-| R6 | Retry storm | Versioned retry/recovery workflows exist | High | Transient allowlist, bounded retries, ROOT_CAUSE_MODE |
-| R7 | Workflow cleanup breaks recovery | Many task-specific workflows may still be rollback paths | High | Archive first; delete only after dependency proof |
-| R8 | New orchestrator misclassifies risk | Rule-based classifier may under-rank a change | Critical | Conservative default + protected-path escalation |
-| R9 | Token/secret exposure | Multiple automation layers consume credentials | Critical | Least privilege, no secret logging, no PR secrets |
-| R10 | Migration changes production too early | Pressure to speed up may bypass canary | Critical | Shadow mode and owner-controlled production gate |
-
-## Safety conclusion
-
-Speed must come from eliminating duplicated orchestration and unnecessary AI, not by removing
-backup, protected-path validation, live verification or rollback.
+| R1 | Workflow inventory used for Phase 1 planning is based on inferred/UNVERIFIED file list rather than a literal directory read | High (known, disclosed) | Medium — could mis-scope Phase 1 | Require controller/Codex to confirm literal `.github/workflows/` listing before any Stage 1 code is written; treat WORKFLOW_INVENTORY.md as provisional until confirmed |
+| R2 | Resource-aware locking incorrectly scopes a task's resource declaration, allowing two tasks touching the same production resource to run concurrently | Medium | High — could cause production race condition | Default-deny: unknown/undeclared resource touches fall back to the full global lock until the classifier's resource-declaration logic is proven reliable in shadow mode (Stage 2) |
+| R3 | Consolidating task-specific workflows into `worker-standard.yml` accidentally drops a safety check unique to one legacy workflow | Medium | High | Stage 4 requires explicit acceptance test coverage per legacy workflow before it is archived; legacy workflow stays available (not deleted) during transition |
+| R4 | ROOT_CAUSE_MODE threshold (3 failures) is too aggressive or too lax, either masking real transient issues as "root cause" or allowing TASK096-style repeated blind retries | Medium | Medium | Make threshold configurable per lane; monitor false-positive/negative rate during Stage 2 shadow run before any live cutover |
+| R5 | New canonical state machine (`TASK_STATE`) conflicts with existing `CLAUDE_STATUS`/memory `computed_status` vocabulary during transition, causing ambiguous reporting | Medium | Medium | Stage 1–4 treat `TASK_STATE` as additive metadata only; legacy fields remain authoritative until Phase 1 is formally accepted by owner |
+| R6 | AI routing budgets (token/call ceilings) are set without real historical usage data, risking either wasted spend or premature truncation of legitimate CRITICAL work | Medium | Low-Medium | Instrument AI call/token counts during Stage 2–3 shadow runs and calibrate budgets with real data before enforcing hard stops |
+| R7 | Owner or controller misreads Phase 0 deliverables as already-implemented production behavior | Low-Medium | High (trust/safety) | This risk register, PHASE0_REPORT.md, and owner_reply.md explicitly and repeatedly state audit/sandbox-only status and PRODUCTION_WRITE: NO |
+| R8 | Archiving TASK096 v3–v8 repair workflows without understanding their exact current safety role could remove an unrecognized safeguard | Medium | High | ARCHIVE only (never DELETE) in this phase; any DELETE_CANDIDATE requires explicit owner sign-off per task's hard safety boundaries, and only after literal file review |
