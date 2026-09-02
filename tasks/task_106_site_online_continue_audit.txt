@@ -1,0 +1,32 @@
+TASK_ID=task_106
+STATUS=SITE_ONLINE_CONFIRMED_BY_OWNER
+CONFIRMED_CHANNELS=Safari,Chrome,TikTok
+TIME_LOCAL=2026-09-02T21:49+07:00
+PRIORITY=P0
+
+OWNER_COMMAND=Continue audit immediately and optimize/autostart autopilot work.
+
+PRODUCTION_BASELINE_DO_NOT_CHANGE:
+- PythonAnywhere webapp: www.uaart.com.ua
+- static mapping: /video/ -> /home/Carix/video/
+- HTTPS certificate: auto-renewing Let's Encrypt
+- Force HTTPS: keep current working state
+- DNS www CNAME: webapp-3170682.pythonanywhere.com.
+- DNS apex A: 91.194.250.154
+- Rehost redirect: / -> 301 -> https://www.uaart.com.ua/video/index.html
+- Registrar/domain active; NS ns19.rehost.com.ua, ns20.rehost.com.ua
+
+NEXT_PHASE=READ_ONLY_AUDIT_AND_HARDENING
+REQUIRED:
+1. Snapshot current working production configuration as LAST_KNOWN_GOOD before any write.
+2. Storage audit: classify PythonAnywhere disk usage; no deletion until safe categories proven. Protect CRM, vehicle data, /home/Carix/video, media and newest valid backups.
+3. Storage guard thresholds: warning 70%, heavy-deploy gate 80%, emergency STOP 90%; preflight required free-space calculation before backup/deploy.
+4. Root-cause report covering storage pressure, recovery sequence, DNS/redirect topology, and why TASK106 execution stalled.
+5. Build SITE_HEALTH gate: external checks for Safari-compatible HTTPS endpoint, www, apex redirect, catalog/card representative URLs, CRM health read-only, TikTok/social-link compatible target.
+6. Development queue must STOP automatically on SITE_HEALTH FAIL.
+7. Backup and LAST_KNOWN_GOOD required before production write; automatic rollback on bounded deploy failure.
+8. Audit workflow must be an actual executable runner with visible GitHub Actions steps, not marker-only/Watchdog-only execution.
+9. Continue UA-ART-FAST-PIPELINE-001 only after recovery guard tests PASS. Do not mutate CRM or vehicle records.
+10. Produce progress/status artifacts and explicit TASK_FINISHED only after verified live PASS.
+
+NO_MANUAL_OWNER_ACTION_REQUIRED_UNLESS_EXTERNAL_ACCOUNT_PERMISSION_IS_PROVEN_MISSING.
