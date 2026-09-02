@@ -1,0 +1,22 @@
+{
+  "backup_plan_ready": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "manifest_sha256": "932a0d7b8519b29cec5789370270f853cafb1c00d922fba8f77d1f73f085a7d5",
+  "production_write": false,
+  "protected_snapshot": {
+    "crm.db": {
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "video/index.html": {
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "video/katalog.html": {
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  },
+  "rollback_plan_ready": true,
+  "status": "PASS",
+  "task_id": "TASK105-CRITICAL-ADAPTER-ACCEPTANCE",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
