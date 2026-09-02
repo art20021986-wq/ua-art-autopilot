@@ -1,7 +1,8 @@
 # Ответ владельцу — TASK105
 
-СТАТУС: PASS PHASE 6 / ГОТОВО К MAIN
+СТАТУС: PASS RELEASE CANDIDATE
 ПОСТОЯННЫЕ WORKFLOW: 8/8 PASS
-FAST / STANDARD / CRITICAL: ПРОВЕРЕНЫ
+ОБЩИЕ ТЕСТЫ: 88/88 PASS
+FAST / STANDARD / CRITICAL: PASS
 CRM И ДАННЫЕ АВТОМОБИЛЕЙ: НЕ ИЗМЕНЕНЫ
-СЛЕДУЮЩИЙ ЭТАП: merge, проверка main и общий TASK FINISHED
+СЛЕДУЮЩИЙ ЭТАП: удаление временного workflow, merge и проверка main
