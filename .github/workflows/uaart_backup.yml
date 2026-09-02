@@ -1,0 +1,83 @@
+name: UA ART Backup Evidence Gate
+
+on:
+  workflow_call:
+    inputs:
+      receipt_path:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      receipt_path:
+        description: FINISHED receipt under state/receipts
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify-backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RECEIPT_PATH: ${{ inputs.receipt_path }}
+    steps:
+      - name: Checkout receipt
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Validate backup and rollback readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path, PurePosixPath
+          import importlib.util
+          import sys
+
+          value = os.environ['RECEIPT_PATH']
+          path = PurePosixPath(value)
+          if path.is_absolute() or '..' in path.parts:
+              raise SystemExit('UNSAFE_RECEIPT_PATH')
+          if not value.startswith('state/receipts/') or not value.endswith('.json'):
+              raise SystemExit('RECEIPT_SCOPE')
+          disk = Path(value)
+          if disk.is_symlink() or not disk.is_file():
+              raise SystemExit('RECEIPT_MISSING')
+
+          spec = importlib.util.spec_from_file_location(
+              'uaart_backup_gate_orchestrator', Path('automation/task_orchestrator.py')
+          )
+          if spec is None or spec.loader is None:
+              raise SystemExit('ORCHESTRATOR_SPEC')
+          module = importlib.util.module_from_spec(spec)
+          sys.modules[spec.name] = module
+          spec.loader.exec_module(module)
+          receipt = module.validate_receipt(json.loads(disk.read_text(encoding='utf-8')))
+          if not str(receipt.get('backup') or '').strip():
+              raise SystemExit('BACKUP_PATH_MISSING')
+          if receipt.get('rollback_ready') is not True:
+              raise SystemExit('ROLLBACK_NOT_READY')
+          result = {
+              'status': 'PASS',
+              'task_id': receipt['task_id'],
+              'backup': receipt['backup'],
+              'rollback_ready': True,
+              'production_write': False,
+              'receipt_path': value,
+          }
+          Path('/tmp/uaart-backup-gate.json').write_text(
+              json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+          PY
+
+      - name: Upload backup-gate proof
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: uaart-backup-gate-${{ github.run_id }}
+          path: /tmp/uaart-backup-gate.json
+          retention-days: 14

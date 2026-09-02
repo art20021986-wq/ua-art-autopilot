@@ -1,0 +1,19 @@
+{
+  "backup_required": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "noop",
+      "path": ".github/workflows/uaart_critical.yml"
+    }
+  ],
+  "protected_paths": [
+    "crm.db",
+    "video/index.html",
+    "video/katalog.html"
+  ],
+  "rollback_required": true,
+  "task_class": "CRITICAL",
+  "task_id": "TASK105-CRITICAL-ADAPTER-ACCEPTANCE"
+}

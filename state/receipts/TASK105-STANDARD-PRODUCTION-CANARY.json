@@ -1,0 +1,29 @@
+{
+  "ai_calls": 0,
+  "backup": "/home/Carix/backups/task_105_standard_canary/20260902T074310Z_388b38ba99",
+  "changed_files": [
+    "/home/Carix/video/task105-standard-canary-a.txt",
+    "/home/Carix/video/task105-standard-canary-b.txt",
+    "/home/Carix/video/task105-standard-canary-c.txt"
+  ],
+  "crm_unchanged": true,
+  "final_state_restored": true,
+  "finished_at": "2026-09-02T07:46:30Z",
+  "live_verify": "PASS",
+  "production": "PASS",
+  "production_cases": 3,
+  "production_required": true,
+  "protected_files_unchanged": true,
+  "rollback": "PASS",
+  "rollback_public_verify": "PASS",
+  "rollback_ready": true,
+  "sandbox_cases": 10,
+  "started_at": "2026-09-02T07:41:41Z",
+  "status": "FINISHED",
+  "target_environment": "production",
+  "task_class": "STANDARD",
+  "task_id": "TASK105-STANDARD-PRODUCTION-CANARY",
+  "tests": "PASS",
+  "unexpected_changes": 0,
+  "vehicle_data_unchanged": true
+}

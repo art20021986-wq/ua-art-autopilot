@@ -1,0 +1,184 @@
+name: UA ART Explicit Rollback
+
+on:
+  workflow_call:
+    inputs:
+      task_id:
+        required: true
+        type: string
+      rollback_script_path:
+        required: true
+        type: string
+      rollback_script_sha256:
+        required: true
+        type: string
+      rollback_receipt_path:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      task_id:
+        description: Stable task identifier
+        required: true
+        type: string
+      rollback_script_path:
+        description: Python rollback script under cloud or automation/packages
+        required: true
+        type: string
+      rollback_script_sha256:
+        description: Immutable SHA-256 of rollback script
+        required: true
+        type: string
+      rollback_receipt_path:
+        description: Receipt path under state/receipts
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TASK_ID: ${{ inputs.task_id }}
+      ROLLBACK_SCRIPT_PATH: ${{ inputs.rollback_script_path }}
+      ROLLBACK_SCRIPT_SHA256: ${{ inputs.rollback_script_sha256 }}
+      ROLLBACK_RECEIPT_PATH: ${{ inputs.rollback_receipt_path }}
+    steps:
+      - name: Checkout exact rollback commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Validate immutable rollback script
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import importlib.util
+          import os
+          import pathlib
+          import re
+          import sys
+
+          script_text = os.environ['ROLLBACK_SCRIPT_PATH']
+          script = pathlib.PurePosixPath(script_text)
+          if script.is_absolute() or '..' in script.parts:
+              raise SystemExit('UNSAFE_ROLLBACK_SCRIPT_PATH')
+          if not (
+              script_text.startswith('cloud/')
+              or script_text.startswith('automation/packages/')
+          ) or not script_text.endswith('.py'):
+              raise SystemExit('ROLLBACK_SCRIPT_SCOPE')
+          disk = pathlib.Path(script_text)
+          if disk.is_symlink() or not disk.is_file():
+              raise SystemExit('ROLLBACK_SCRIPT_MISSING')
+          expected = os.environ['ROLLBACK_SCRIPT_SHA256'].lower()
+          if not re.fullmatch(r'[0-9a-f]{64}', expected):
+              raise SystemExit('ROLLBACK_SHA_FORMAT')
+          actual = hashlib.sha256(disk.read_bytes()).hexdigest()
+          if actual != expected:
+              raise SystemExit('ROLLBACK_SHA_MISMATCH')
+
+          spec = importlib.util.spec_from_file_location(
+              'uaart_rollback_contract', pathlib.Path('automation/execution_contract.py')
+          )
+          if spec is None or spec.loader is None:
+              raise SystemExit('EXECUTION_CONTRACT_SPEC')
+          module = importlib.util.module_from_spec(spec)
+          sys.modules[spec.name] = module
+          spec.loader.exec_module(module)
+          module.inspect_python(disk.resolve(strict=True))
+          compile(disk.read_text(encoding='utf-8'), str(disk), 'exec')
+
+          receipt_text = os.environ['ROLLBACK_RECEIPT_PATH']
+          receipt = pathlib.PurePosixPath(receipt_text)
+          if receipt.is_absolute() or '..' in receipt.parts:
+              raise SystemExit('UNSAFE_ROLLBACK_RECEIPT_PATH')
+          if not receipt_text.startswith('state/receipts/') or not receipt_text.endswith('.json'):
+              raise SystemExit('ROLLBACK_RECEIPT_SCOPE')
+          if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{1,79}', os.environ['TASK_ID']):
+              raise SystemExit('TASK_ID_INVALID')
+          PY
+
+      - name: Wait in strict production queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/production_queue.py self-test
+          python3 automation/production_queue.py wait \
+            --task 105 --timeout-seconds 1200 --stable-polls 2
+
+      - name: Execute explicit rollback
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          UAART_OPERATION: rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$ROLLBACK_SCRIPT_PATH"
+
+      - name: Require verified rollback receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ['ROLLBACK_RECEIPT_PATH'])
+          if path.is_symlink() or not path.is_file():
+              raise SystemExit('ROLLBACK_RECEIPT_MISSING')
+          value = json.loads(path.read_text(encoding='utf-8'))
+          if value.get('task_id') != os.environ['TASK_ID']:
+              raise SystemExit('ROLLBACK_TASK_ID_MISMATCH')
+          if value.get('status') not in {'ROLLED_BACK', 'PASS'}:
+              raise SystemExit('ROLLBACK_STATUS')
+          if value.get('rollback') != 'PASS' and value.get('restored') is not True:
+              raise SystemExit('ROLLBACK_NOT_PROVEN')
+          if int(value.get('unexpected_changes', -1)) != 0:
+              raise SystemExit('ROLLBACK_UNEXPECTED_CHANGES')
+          if value.get('protected_files_unchanged') is not True:
+              raise SystemExit('ROLLBACK_PROTECTED_DRIFT')
+          if value.get('crm_unchanged') is not True:
+              raise SystemExit('ROLLBACK_CRM_DRIFT')
+          if value.get('live_verify') != 'PASS':
+              raise SystemExit('ROLLBACK_LIVE_VERIFY')
+          PY
+          git add -- "$ROLLBACK_RECEIPT_PATH"
+
+      - name: Commit rollback receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ua-art-rollback'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m "uaart rollback: ${TASK_ID} ROLLED_BACK"
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin "${GITHUB_REF_NAME}"
+            if ! git rebase "origin/${GITHUB_REF_NAME}"; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done

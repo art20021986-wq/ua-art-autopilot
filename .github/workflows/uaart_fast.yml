@@ -1,0 +1,145 @@
+name: UA ART FAST Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      request_path:
+        required: true
+        type: string
+    outputs:
+      status:
+        value: ${{ jobs.execute.outputs.status }}
+      receipt_path:
+        value: ${{ jobs.execute.outputs.receipt_path }}
+  workflow_dispatch:
+    inputs:
+      request_path:
+        description: Repository path under tasks/requests
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      status: ${{ steps.final.outputs.status }}
+      receipt_path: ${{ steps.contract.outputs.receipt_path }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+    steps:
+      - name: Checkout exact intake commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Validate immutable FAST execution contract
+        id: contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile automation/task_ticket.py
+          python3 automation/execution_contract.py validate "$REQUEST_PATH" \
+            --expected-class FAST >/tmp/uaart-fast-contract.json
+          python3 automation/execution_contract.py outputs "$REQUEST_PATH" \
+            --expected-class FAST
+          python3 - <<'PY'
+          import json
+          value = json.load(open('/tmp/uaart-fast-contract.json', encoding='utf-8'))
+          assert value['task_class'] == 'FAST', value
+          assert value['plan']['ai_call_budget'] <= 1, value
+          PY
+
+      - name: Compile and test FAST package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py compile "$REQUEST_PATH" \
+            --expected-class FAST
+          python3 automation/execution_contract.py test "$REQUEST_PATH" \
+            --expected-class FAST
+
+      - name: Wait in fair production queue
+        if: steps.contract.outputs.production_required == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TICKET="$(python3 automation/task_ticket.py "$REQUEST_PATH")"
+          python3 automation/production_queue.py self-test
+          python3 automation/production_queue.py wait \
+            --task "$TICKET" --timeout-seconds 600 --stable-polls 2
+
+      - name: Execute FAST controller
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py run "$REQUEST_PATH" \
+            --expected-class FAST
+
+      - name: Require truthful FAST receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py receipt "$REQUEST_PATH" \
+            --expected-class FAST >/tmp/uaart-fast-receipt.json
+          python3 - <<'PY'
+          import json
+          value = json.load(open('/tmp/uaart-fast-receipt.json', encoding='utf-8'))
+          assert value['status'] == 'FINISHED', value
+          assert value['task_class'] == 'FAST', value
+          assert value['unexpected_changes'] == 0, value
+          PY
+
+      - name: Stage bounded evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py stage "$REQUEST_PATH" \
+            --expected-class FAST
+
+      - name: Commit FAST receipt and evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --cached --quiet; then
+            echo 'No FAST evidence changes'
+          else
+            git config user.name 'ua-art-fast-pipeline'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m "uaart fast: ${{ steps.contract.outputs.task_id }} FINISHED"
+            for attempt in 1 2 3 4 5 6; do
+              git fetch origin "${GITHUB_REF_NAME}"
+              if ! git rebase "origin/${GITHUB_REF_NAME}"; then
+                git rebase --abort || true
+                exit 1
+              fi
+              if git push origin "HEAD:${GITHUB_REF_NAME}"; then break; fi
+              test "$attempt" -lt 6 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Final workflow output
+        id: final
+        shell: bash
+        run: |
+          echo 'status=FINISHED' >>"$GITHUB_OUTPUT"

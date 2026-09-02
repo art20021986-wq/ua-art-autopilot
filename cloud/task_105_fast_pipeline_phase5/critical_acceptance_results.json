@@ -1,0 +1,154 @@
+{
+  "attempt": 2,
+  "blind_retry": false,
+  "classification_results": [
+    {
+      "ai_call_budget": 2,
+      "ai_route": "CLAUDE_REVIEW",
+      "expected_lock": "CONTROL_PLANE",
+      "locks": [
+        "CONTROL_PLANE"
+      ],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-01-WORKFLOW"
+    },
+    {
+      "ai_call_budget": 2,
+      "ai_route": "CLAUDE_REVIEW",
+      "expected_lock": "CONTROL_PLANE",
+      "locks": [
+        "CONTROL_PLANE"
+      ],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-02-QUEUE"
+    },
+    {
+      "ai_call_budget": 3,
+      "ai_route": "DUAL_REVIEW",
+      "expected_lock": "CRM_DB",
+      "locks": [
+        "CRM_DB"
+      ],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-03-DB"
+    },
+    {
+      "ai_call_budget": 3,
+      "ai_route": "DUAL_REVIEW",
+      "expected_lock": "SECURITY_CONTROL_PLANE",
+      "locks": [
+        "SECURITY_CONTROL_PLANE"
+      ],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-04-SECRET"
+    },
+    {
+      "ai_call_budget": 3,
+      "ai_route": "DUAL_REVIEW",
+      "expected_lock": "CLOUDFLARE_CONFIG",
+      "locks": [
+        "CLOUDFLARE_CONFIG"
+      ],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-05-CLOUDFLARE"
+    },
+    {
+      "ai_call_budget": 3,
+      "ai_route": "DUAL_REVIEW",
+      "expected_lock": "DNS",
+      "locks": [
+        "DNS"
+      ],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-06-DNS"
+    },
+    {
+      "ai_call_budget": 3,
+      "ai_route": "DUAL_REVIEW",
+      "expected_lock": "CATALOG_ALL_CARDS",
+      "locks": [
+        "CATALOG_ALL_CARDS",
+        "CATALOG_RENDERER"
+      ],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-07-ALL-CARDS"
+    },
+    {
+      "ai_call_budget": 3,
+      "ai_route": "DUAL_REVIEW",
+      "expected_lock": "SECURITY_CONTROL_PLANE",
+      "locks": [
+        "SECURITY_CONTROL_PLANE"
+      ],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-08-AUTH"
+    },
+    {
+      "ai_call_budget": 3,
+      "ai_route": "DUAL_REVIEW",
+      "expected_lock": "GLOBAL_PRODUCTION",
+      "locks": [
+        "GLOBAL_PRODUCTION"
+      ],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-09-DELETE"
+    },
+    {
+      "ai_call_budget": 2,
+      "ai_route": "CLAUDE_REVIEW",
+      "expected_lock": null,
+      "locks": [],
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "CRIT-10-READONLY"
+    }
+  ],
+  "completed_at_utc": "2026-09-02T08:00:11Z",
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "critical_classification_failed": 0,
+  "critical_classification_passed": 10,
+  "critical_classification_total": 10,
+  "crm_write": false,
+  "gate_a_validation": {
+    "manifest_sha256": "932a0d7b8519b29cec5789370270f853cafb1c00d922fba8f77d1f73f085a7d5",
+    "protected_count": 3,
+    "status": "PASS",
+    "task_id": "TASK105-CRITICAL-ADAPTER-ACCEPTANCE"
+  },
+  "gate_b_validation": {
+    "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+    "gate_a_manifest_sha256": "932a0d7b8519b29cec5789370270f853cafb1c00d922fba8f77d1f73f085a7d5",
+    "live_verify_required": true,
+    "manifest_sha256": "932a0d7b8519b29cec5789370270f853cafb1c00d922fba8f77d1f73f085a7d5",
+    "owner_approval_sha256": "466b5fa7724b24664b49a77814b936c1ca31b83c52370f24ecd15e759dd97774",
+    "production_write": false,
+    "rollback_required": true,
+    "status": "GATE_B_AUTHORIZED",
+    "task_id": "TASK105-CRITICAL-ADAPTER-ACCEPTANCE"
+  },
+  "manifest_validation": {
+    "manifest_sha256": "932a0d7b8519b29cec5789370270f853cafb1c00d922fba8f77d1f73f085a7d5",
+    "operation_count": 1,
+    "protected_count": 3,
+    "status": "PASS",
+    "task_id": "TASK105-CRITICAL-ADAPTER-ACCEPTANCE"
+  },
+  "owner_validation": {
+    "path": "tasks/task_105_full_completion.md",
+    "sha256": "466b5fa7724b24664b49a77814b936c1ca31b83c52370f24ecd15e759dd97774",
+    "status": "PASS"
+  },
+  "production_write": false,
+  "root_cause": "EMPTY_LOCK_TUPLE_COMPARED_TO_EMPTY_LIST",
+  "status": "PASS",
+  "unexpected_changes": 0
+}

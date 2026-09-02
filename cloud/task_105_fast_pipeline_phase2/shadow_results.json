@@ -1,0 +1,307 @@
+[
+  {
+    "actual_ai": "NO_AI",
+    "actual_class": "FAST",
+    "case_id": "TASK102-SEO-TEXT",
+    "expected_ai": "NO_AI",
+    "expected_class": "FAST",
+    "pass": true,
+    "resource_locks": [
+      "CONTENT_SURFACE"
+    ],
+    "risk_reasons": [
+      "LOW_RISK_DEFAULT"
+    ]
+  },
+  {
+    "actual_ai": "GPT_PRIMARY",
+    "actual_class": "STANDARD",
+    "case_id": "TASK103-COUNTRIES",
+    "expected_ai": "GPT_PRIMARY",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [
+      "APPLICATION_RUNTIME"
+    ],
+    "risk_reasons": [
+      "STANDARD_PATH:src/country_config.py",
+      "STANDARD_TEXT:catalog",
+      "STANDARD_TEXT:form"
+    ]
+  },
+  {
+    "actual_ai": "DUAL_REVIEW",
+    "actual_class": "CRITICAL",
+    "case_id": "TASK096-ALL-CARDS",
+    "expected_ai": "DUAL_REVIEW",
+    "expected_class": "CRITICAL",
+    "pass": true,
+    "resource_locks": [
+      "CATALOG_ALL_CARDS",
+      "CATALOG_RENDERER"
+    ],
+    "risk_reasons": [
+      "CRITICAL_TEXT:all cards",
+      "CRITICAL_TEXT:mass update"
+    ]
+  },
+  {
+    "actual_ai": "DUAL_REVIEW",
+    "actual_class": "CRITICAL",
+    "case_id": "TASK104-RECOVERY",
+    "expected_ai": "DUAL_REVIEW",
+    "expected_class": "CRITICAL",
+    "pass": true,
+    "resource_locks": [],
+    "risk_reasons": [
+      "CRITICAL_PATH:.github/workflows/task104_canary_worker.yml",
+      "CRITICAL_TEXT:deployment architecture"
+    ]
+  },
+  {
+    "actual_ai": "GPT_PRIMARY",
+    "actual_class": "STANDARD",
+    "case_id": "TASK095-CATALOG",
+    "expected_ai": "GPT_PRIMARY",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [
+      "CATALOG_RENDERER"
+    ],
+    "risk_reasons": [
+      "STANDARD_PATH:src/catalog_renderer.py",
+      "STANDARD_TEXT:catalog",
+      "STANDARD_TEXT:publication"
+    ]
+  },
+  {
+    "actual_ai": "GPT_PRIMARY",
+    "actual_class": "STANDARD",
+    "case_id": "TASK094-DESIGN",
+    "expected_ai": "GPT_PRIMARY",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [
+      "CATALOG_RENDERER"
+    ],
+    "risk_reasons": [
+      "STANDARD_PATH:public/catalog.html",
+      "STANDARD_TEXT:catalog"
+    ]
+  },
+  {
+    "actual_ai": "GPT_PRIMARY",
+    "actual_class": "STANDARD",
+    "case_id": "TASK093-COUNTERS",
+    "expected_ai": "GPT_PRIMARY",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [
+      "HOMEPAGE"
+    ],
+    "risk_reasons": [
+      "STANDARD_PATH:src/counters.py",
+      "STANDARD_TEXT:counter",
+      "STANDARD_TEXT:stage"
+    ]
+  },
+  {
+    "actual_ai": "GPT_PRIMARY",
+    "actual_class": "STANDARD",
+    "case_id": "TASK089-READONLY",
+    "expected_ai": "GPT_PRIMARY",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [],
+    "risk_reasons": [
+      "STANDARD_PATH:src/crm/photo.py",
+      "STANDARD_PATH:src/crm/voice.py",
+      "STANDARD_TEXT:crm",
+      "STANDARD_TEXT:photo",
+      "STANDARD_TEXT:voice"
+    ]
+  },
+  {
+    "actual_ai": "CLAUDE_REVIEW",
+    "actual_class": "STANDARD",
+    "case_id": "TASK084-CRM-HANG",
+    "expected_ai": "CLAUDE_REVIEW",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [
+      "CRM_DB"
+    ],
+    "risk_reasons": [
+      "HIGH_COMPLEXITY",
+      "STANDARD_PATH:src/crm/runtime.py",
+      "STANDARD_TEXT:crm"
+    ]
+  },
+  {
+    "actual_ai": "GPT_PRIMARY",
+    "actual_class": "STANDARD",
+    "case_id": "TASK082-CARD-TITLE",
+    "expected_ai": "GPT_PRIMARY",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [
+      "CRM_DB"
+    ],
+    "risk_reasons": [
+      "STANDARD_PATH:src/crm/cars_ui.py",
+      "STANDARD_TEXT:card",
+      "STANDARD_TEXT:crm"
+    ]
+  },
+  {
+    "actual_ai": "NO_AI",
+    "actual_class": "FAST",
+    "case_id": "FAST-CONTACT",
+    "expected_ai": "NO_AI",
+    "expected_class": "FAST",
+    "pass": true,
+    "resource_locks": [
+      "CONTENT_SURFACE"
+    ],
+    "risk_reasons": [
+      "LOW_RISK_DEFAULT"
+    ]
+  },
+  {
+    "actual_ai": "NO_AI",
+    "actual_class": "FAST",
+    "case_id": "FAST-SOCIAL",
+    "expected_ai": "NO_AI",
+    "expected_class": "FAST",
+    "pass": true,
+    "resource_locks": [
+      "HOMEPAGE"
+    ],
+    "risk_reasons": [
+      "LOW_RISK_DEFAULT"
+    ]
+  },
+  {
+    "actual_ai": "GPT_PRIMARY",
+    "actual_class": "STANDARD",
+    "case_id": "STD-CATALOG-TRANSLATION",
+    "expected_ai": "GPT_PRIMARY",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [
+      "CATALOG_RENDERER"
+    ],
+    "risk_reasons": [
+      "STANDARD_PATH:public/uk/catalog.html",
+      "STANDARD_TEXT:catalog"
+    ]
+  },
+  {
+    "actual_ai": "DUAL_REVIEW",
+    "actual_class": "CRITICAL",
+    "case_id": "CRIT-DB-MIGRATION",
+    "expected_ai": "DUAL_REVIEW",
+    "expected_class": "CRITICAL",
+    "pass": true,
+    "resource_locks": [
+      "CRM_DB"
+    ],
+    "risk_reasons": [
+      "CRITICAL_PATH:runtime/crm.db",
+      "CRITICAL_TEXT:database migration"
+    ]
+  },
+  {
+    "actual_ai": "DUAL_REVIEW",
+    "actual_class": "CRITICAL",
+    "case_id": "CRIT-SECURITY",
+    "expected_ai": "DUAL_REVIEW",
+    "expected_class": "CRITICAL",
+    "pass": true,
+    "resource_locks": [
+      "SECURITY_CONTROL_PLANE"
+    ],
+    "risk_reasons": [
+      "CRITICAL_TEXT:authentication",
+      "CRITICAL_TEXT:authorization",
+      "CRITICAL_TEXT:security"
+    ]
+  },
+  {
+    "actual_ai": "DUAL_REVIEW",
+    "actual_class": "CRITICAL",
+    "case_id": "CRIT-CLOUDFLARE",
+    "expected_ai": "DUAL_REVIEW",
+    "expected_class": "CRITICAL",
+    "pass": true,
+    "resource_locks": [
+      "CLOUDFLARE_CONFIG"
+    ],
+    "risk_reasons": [
+      "CRITICAL_PATH:wrangler.jsonc",
+      "CRITICAL_TEXT:cloudflare",
+      "CRITICAL_TEXT:security"
+    ]
+  },
+  {
+    "actual_ai": "GPT_PRIMARY",
+    "actual_class": "STANDARD",
+    "case_id": "STD-FORM",
+    "expected_ai": "GPT_PRIMARY",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [
+      "CRM_DB"
+    ],
+    "risk_reasons": [
+      "STANDARD_PATH:src/crm/order_form.py",
+      "STANDARD_TEXT:crm",
+      "STANDARD_TEXT:form"
+    ]
+  },
+  {
+    "actual_ai": "GPT_PRIMARY",
+    "actual_class": "STANDARD",
+    "case_id": "STD-PUBLISH",
+    "expected_ai": "GPT_PRIMARY",
+    "expected_class": "STANDARD",
+    "pass": true,
+    "resource_locks": [
+      "CATALOG_RENDERER"
+    ],
+    "risk_reasons": [
+      "STANDARD_PATH:src/publisher.py",
+      "STANDARD_TEXT:backend",
+      "STANDARD_TEXT:card",
+      "STANDARD_TEXT:publication"
+    ]
+  },
+  {
+    "actual_ai": "NO_AI",
+    "actual_class": "FAST",
+    "case_id": "FAST-ROBOTS",
+    "expected_ai": "NO_AI",
+    "expected_class": "FAST",
+    "pass": true,
+    "resource_locks": [
+      "CONTENT_SURFACE"
+    ],
+    "risk_reasons": [
+      "LOW_RISK_DEFAULT"
+    ]
+  },
+  {
+    "actual_ai": "NO_AI",
+    "actual_class": "FAST",
+    "case_id": "FAST-ARIA",
+    "expected_ai": "NO_AI",
+    "expected_class": "FAST",
+    "pass": true,
+    "resource_locks": [
+      "HOMEPAGE"
+    ],
+    "risk_reasons": [
+      "LOW_RISK_DEFAULT"
+    ]
+  }
+]
