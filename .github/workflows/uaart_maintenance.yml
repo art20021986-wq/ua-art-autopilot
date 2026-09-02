@@ -1,0 +1,101 @@
+name: UA ART Control-Plane Maintenance
+
+on:
+  schedule:
+    - cron: '31 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uaart-control-plane-maintenance
+  cancel-in-progress: true
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout control plane
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Compile permanent control-plane modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile \
+            automation/task_orchestrator.py \
+            automation/execution_contract.py \
+            automation/critical_adapter.py \
+            automation/production_queue.py
+          python3 automation/task_orchestrator.py self-test
+          python3 automation/critical_adapter.py self-test
+          python3 automation/production_queue.py self-test
+
+      - name: Audit permanent workflow set and repository hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import pathlib
+
+          permanent = {
+              'uaart_orchestrator.yml',
+              'uaart_fast.yml',
+              'uaart_standard.yml',
+              'uaart_critical.yml',
+              'uaart_monitor.yml',
+              'uaart_backup.yml',
+              'uaart_rollback.yml',
+              'uaart_maintenance.yml',
+          }
+          workflow_root = pathlib.Path('.github/workflows')
+          missing = sorted(
+              name for name in permanent if not (workflow_root / name).is_file()
+          )
+          if missing:
+              raise SystemExit('PERMANENT_WORKFLOW_MISSING:' + ','.join(missing))
+          tracked_cache = [
+              line.strip()
+              for line in __import__('subprocess').check_output(
+                  ['git', 'ls-files'], text=True
+              ).splitlines()
+              if '__pycache__/' in line or line.endswith('.pyc')
+          ]
+          if tracked_cache:
+              raise SystemExit('TRACKED_PYTHON_CACHE:' + ','.join(tracked_cache))
+          workflows = sorted(
+              path.name
+              for path in workflow_root.iterdir()
+              if path.suffix in {'.yml', '.yaml'}
+          )
+          result = {
+              'status': 'PASS',
+              'production_write': False,
+              'permanent_workflows': sorted(permanent),
+              'permanent_count': len(permanent),
+              'total_workflow_count': len(workflows),
+              'tracked_python_cache': [],
+          }
+          pathlib.Path('/tmp/uaart-maintenance.json').write_text(
+              json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+          PY
+
+      - name: Upload maintenance proof
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: uaart-maintenance-${{ github.run_id }}
+          path: /tmp/uaart-maintenance.json
+          retention-days: 14
