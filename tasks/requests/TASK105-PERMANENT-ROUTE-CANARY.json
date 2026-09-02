@@ -1,0 +1,29 @@
+{
+  "task_id": "TASK105-PERMANENT-ROUTE-CANARY",
+  "title": "Permanent route canary",
+  "description": "replace exact static route canary and checksum",
+  "changed_paths": [
+    "cloud/task_105_fast_pipeline_phase6/route-canary.txt"
+  ],
+  "production_required": false,
+  "read_only": false,
+  "complexity": 1,
+  "ai_requested": false,
+  "execution": {
+    "controller_path": "cloud/task_105_fast_pipeline_phase6/route_canary_controller.py",
+    "controller_sha256": "6a6adb8439ea55012aad024230885aa72608aa6170b2fd1911389ea9189c4bef",
+    "test_paths": [
+      "cloud/task_105_fast_pipeline_phase6/test_route_canary.py"
+    ],
+    "file_sha256": {
+      "cloud/task_105_fast_pipeline_phase6/test_route_canary.py": "0cac8f0ff7508b518b23ac728d7b4ee5881f392b7a395fa795b2497139ab4b1c"
+    },
+    "receipt_path": "state/receipts/TASK105-PERMANENT-ROUTE-CANARY.json",
+    "evidence_paths": [
+      "cloud/task_105_fast_pipeline_phase6/ROUTE_CANARY_REPORT.md",
+      "state/receipts/TASK105-PERMANENT-ROUTE-CANARY.json"
+    ],
+    "production_required": false,
+    "timeout_seconds": 300
+  }
+}
