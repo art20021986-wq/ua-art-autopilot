@@ -1,0 +1,253 @@
+name: TASK105 Permanent Route Acceptance V2
+
+on:
+  push:
+    branches:
+      - task105-fast-pipeline-phase0
+    paths:
+      - '.github/workflows/task105_phase6_acceptance_v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact TASK105 branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: task105-fast-pipeline-phase0
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Require FAST STANDARD and CRITICAL predecessor receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/task_orchestrator.py validate-receipt \
+            state/receipts/TASK105-FAST-PRODUCTION-CANARY.json >/tmp/fast.json
+          python3 automation/task_orchestrator.py validate-receipt \
+            state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json >/tmp/standard.json
+          python3 automation/task_orchestrator.py validate-receipt \
+            cloud/task_105_fast_pipeline_phase5/phase5_receipt.json >/tmp/critical.json
+          python3 - <<'PY'
+          import json
+          fast = json.load(open('/tmp/fast.json', encoding='utf-8'))
+          standard = json.load(open('/tmp/standard.json', encoding='utf-8'))
+          critical = json.load(open('/tmp/critical.json', encoding='utf-8'))
+          assert fast['task_class'] == 'FAST' and fast['production'] == 'PASS', fast
+          assert fast['live_verify'] == 'PASS' and fast['unexpected_changes'] == 0, fast
+          assert standard['task_class'] == 'STANDARD', standard
+          assert standard['production'] == 'PASS' and standard['live_verify'] == 'PASS', standard
+          assert standard['rollback'] == 'PASS' and standard['rollback_public_verify'] == 'PASS', standard
+          assert standard['final_state_restored'] is True, standard
+          assert standard['crm_unchanged'] is True and standard['vehicle_data_unchanged'] is True, standard
+          assert critical['task_class'] == 'CRITICAL', critical
+          assert critical['target_environment'] == 'sandbox', critical
+          assert critical['critical_classification_cases'] == 10, critical
+          assert critical['critical_gate_a'] == 'PASS', critical
+          assert critical['critical_gate_b'] == 'GATE_B_AUTHORIZED', critical
+          PY
+
+      - name: Compile control plane and parse exactly eight permanent workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile \
+            automation/task_orchestrator.py \
+            automation/execution_contract.py \
+            automation/critical_adapter.py \
+            automation/production_queue.py
+          python3 automation/task_orchestrator.py self-test
+          python3 automation/critical_adapter.py self-test
+          python3 automation/production_queue.py self-test
+          permanent=(
+            uaart_orchestrator.yml
+            uaart_fast.yml
+            uaart_standard.yml
+            uaart_critical.yml
+            uaart_monitor.yml
+            uaart_backup.yml
+            uaart_rollback.yml
+            uaart_maintenance.yml
+          )
+          for name in "${permanent[@]}"; do
+            file=".github/workflows/$name"
+            test -s "$file"
+            ruby -e 'require "yaml"; YAML.load_file(ARGV[0], aliases: true); puts "YAML_PASS #{ARGV[0]}"' "$file"
+          done
+          python3 - <<'PY'
+          import pathlib
+          actual = sorted(path.name for path in pathlib.Path('.github/workflows').glob('uaart_*.yml'))
+          expected = sorted([
+              'uaart_orchestrator.yml', 'uaart_fast.yml', 'uaart_standard.yml',
+              'uaart_critical.yml', 'uaart_monitor.yml', 'uaart_backup.yml',
+              'uaart_rollback.yml', 'uaart_maintenance.yml',
+          ])
+          assert actual == expected, (actual, expected)
+          PY
+          grep -q 'uses: ./.github/workflows/uaart_fast.yml' .github/workflows/uaart_orchestrator.yml
+          grep -q 'uses: ./.github/workflows/uaart_standard.yml' .github/workflows/uaart_orchestrator.yml
+          grep -q 'uses: ./.github/workflows/uaart_critical.yml' .github/workflows/uaart_orchestrator.yml
+
+      - name: Require repository hygiene and immutable route request
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git ls-files | grep -E '(^|/)__pycache__/|\.pyc$' || true)"
+          python3 automation/execution_contract.py validate \
+            tasks/requests/TASK105-PERMANENT-ROUTE-CANARY.json \
+            --expected-class FAST >/tmp/route-contract.json
+          python3 automation/execution_contract.py compile \
+            tasks/requests/TASK105-PERMANENT-ROUTE-CANARY.json \
+            --expected-class FAST
+          python3 - <<'PY'
+          import json
+          value = json.load(open('/tmp/route-contract.json', encoding='utf-8'))
+          assert value['task_class'] == 'FAST', value
+          assert value['production_required'] is False, value
+          assert value['plan']['ai_route'] == 'NO_AI', value
+          assert value['plan']['ai_call_budget'] == 0, value
+          PY
+
+  route-canary:
+    needs: preflight
+    uses: ./.github/workflows/uaart_fast.yml
+    with:
+      request_path: tasks/requests/TASK105-PERMANENT-ROUTE-CANARY.json
+    secrets: inherit
+
+  finalize:
+    needs: [preflight, route-canary]
+    if: needs.preflight.result == 'success' && needs.route-canary.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout latest TASK105 branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: task105-fast-pipeline-phase0
+          fetch-depth: 0
+
+      - name: Validate reusable FAST route receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/task_orchestrator.py validate-receipt \
+            state/receipts/TASK105-PERMANENT-ROUTE-CANARY.json >/tmp/route.json
+          python3 - <<'PY'
+          import json
+          value = json.load(open('/tmp/route.json', encoding='utf-8'))
+          assert value['task_id'] == 'TASK105-PERMANENT-ROUTE-CANARY', value
+          assert value['task_class'] == 'FAST', value
+          assert value['target_environment'] == 'sandbox', value
+          assert value['permanent_fast_workflow'] is True, value
+          assert value['tests'] == 'PASS', value
+          assert value['unexpected_changes'] == 0, value
+          PY
+
+      - name: Create Phase 6 acceptance evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+          now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+          out = Path('cloud/task_105_fast_pipeline_phase6')
+          receipt = {
+              'task_id': 'TASK105-PHASE6-PERMANENT-ROUTE',
+              'status': 'FINISHED',
+              'task_class': 'CRITICAL',
+              'target_environment': 'sandbox',
+              'tests': 'PASS',
+              'unexpected_changes': 0,
+              'rollback_ready': True,
+              'production_required': False,
+              'permanent_workflow_count': 8,
+              'route_canary': 'PASS',
+              'fast_predecessor': 'PASS',
+              'standard_predecessor': 'PASS_WITH_ROLLBACK',
+              'critical_adapter': 'PASS',
+              'main_switch_ready': True,
+              'finished_at': now,
+          }
+          (out / 'phase6_receipt.json').write_text(
+              json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          (out / 'PHASE6_REPORT.md').write_text('\n'.join([
+              '# TASK105 Phase 6 — Permanent Route Acceptance',
+              '',
+              'STATUS: **PASS_PHASE6_SANDBOX**',
+              '',
+              '- Permanent workflows: 8/8 present and YAML-parseable',
+              '- Central orchestrator routes FAST / STANDARD / CRITICAL',
+              '- Reusable FAST route canary: PASS / truthful FINISHED',
+              '- FAST production predecessor: PASS',
+              '- STANDARD production predecessor: 3/3 PASS with full public rollback',
+              '- CRITICAL Gate A/Gate B adapter: PASS',
+              '- Tracked Python cache files: 0',
+              '- Production touched by Phase 6: NO',
+              '- CRM and vehicle data touched: NO',
+              '- Main route switch readiness: PASS',
+              '',
+          ]), encoding='utf-8')
+          Path('cloud/latest_status.md').write_text('\n'.join([
+              'TASK_ID: task_105',
+              'ROUND: 7',
+              'CLAUDE_STATUS: DONE',
+              'CURRENT_ACTION: permanent workflows 8/8 and reusable FAST route canary PASS',
+              'FILES_CREATED: cloud/task_105_fast_pipeline_phase6/PHASE6_REPORT.md,cloud/task_105_fast_pipeline_phase6/phase6_receipt.json,state/receipts/TASK105-PERMANENT-ROUTE-CANARY.json',
+              'PRODUCTION_TOUCHED: NO',
+              'OWNER_ACTION_REQUIRED: NO',
+              'OWNER_QUESTION: NONE',
+              'NEXT_FOR_CHATGPT: final branch review, retire temporary workflows, merge and verify main intake',
+              'UPDATED_AT_UTC: ' + now,
+              '',
+          ]), encoding='utf-8')
+          Path('cloud/owner_reply.md').write_text('\n'.join([
+              '# Ответ владельцу — TASK105',
+              '',
+              'СТАТУС: PASS PHASE 6 / ГОТОВО К MAIN',
+              'ПОСТОЯННЫЕ WORKFLOW: 8/8 PASS',
+              'FAST / STANDARD / CRITICAL: ПРОВЕРЕНЫ',
+              'CRM И ДАННЫЕ АВТОМОБИЛЕЙ: НЕ ИЗМЕНЕНЫ',
+              'СЛЕДУЮЩИЙ ЭТАП: merge, проверка main и общий TASK FINISHED',
+              '',
+          ]), encoding='utf-8')
+          PY
+          python3 automation/task_orchestrator.py validate-receipt \
+            cloud/task_105_fast_pipeline_phase6/phase6_receipt.json >/dev/null
+
+      - name: Commit Phase 6 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- \
+            cloud/task_105_fast_pipeline_phase6/PHASE6_REPORT.md \
+            cloud/task_105_fast_pipeline_phase6/phase6_receipt.json \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          git config user.name 'ua-art-phase6-acceptance-v2'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task105: accept eight permanent routes in sandbox'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin task105-fast-pipeline-phase0
+            if ! git rebase origin/task105-fast-pipeline-phase0; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:task105-fast-pipeline-phase0; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
