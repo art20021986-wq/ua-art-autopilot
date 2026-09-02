@@ -1,47 +1,39 @@
-# TARGET_ARCHITECTURE.md — TASK 105 Phase 0
+# TARGET_ARCHITECTURE.md — TASK 105 Phase 0 (proposal only, not implemented)
 
 ## Goal
-Propose a target 6–8 workflow architecture built around a central UA ART Task Orchestrator that classifies work into FAST / STANDARD / CRITICAL lanes, reduces redundant GitHub Actions runs, AI calls, retries, and global queue blocking, while preserving rollback and production safety. This is a **proposal only** — nothing described here is implemented or activated in Phase 0.
+Reduce from the current (provisionally observed) sprawl of task-specific/ad hoc workflows down to a **6–8 workflow architecture**, centered on a UA ART Task Orchestrator that classifies work before spending AI calls, GitHub Actions minutes, or touching the production queue.
 
-## Target workflow set (6–8 workflows)
-1. **`orchestrator-classify.yml`** — triggered on any `tasks/task_NNN.md` push. Runs a deterministic (non-AI) classifier that reads task metadata/keywords and assigns lane: FAST (docs/reports/no production/no AI needed), STANDARD (worker + tests, no production write), CRITICAL (touches production/CRM/DNS/Cloudflare or requests owner approval). Writes `TASK_STATE=CLASSIFYING` then hands off.
-2. **`worker-fast.yml`** — for FAST lane only. NO_AI or minimal single-call AI routing, short timeout, no queue lock (does not touch `production_queue.py`), lightweight concurrency group scoped per-task (not global) so multiple FAST tasks can run in parallel.
-3. **`worker-standard.yml`** — parameterized shared pipeline for STANDARD lane (replaces the many task-specific ad-hoc workflows identified as DELETE_CANDIDATE/MERGE in WORKFLOW_INVENTORY.md). Runs Claude/GPT worker with a resource-scoped lock (see below), runs offline tests, writes SELF_VERIFIED state.
-4. **`controller-verify.yml`** — single shared verification workflow (Codex/controller equivalent) that independently re-checks deliverables for both STANDARD and CRITICAL lanes and writes CONTROLLER_VERIFIED. Replaces ad-hoc, per-task verification logic.
-5. **`critical-gate.yml`** — CRITICAL lane only. Enforces AWAITING_OWNER_APPROVAL → requires an explicit OWNER_DIRECTIVE record before any downstream production step can run. This is the only workflow permitted to move a task toward APPROVED_FOR_PRODUCTION.
-6. **`production-apply.yml`** — the only workflow with production-write / PythonAnywhere-production-write / Cloudflare-write / DNS-write capability. Runs only after `APPROVED_FOR_PRODUCTION`, requires Gate B evidence (per REC-0004), and always creates a rollback artifact before applying.
-7. **`queue-and-locks.yml`** (or a reusable composite action) — replaces global `production_queue.py` serialization with **resource-aware locks**: separate lock keys per affected resource (e.g. `lock:crm`, `lock:pythonanywhere`, `lock:cloudflare-dns`, `lock:site-content`) so unrelated FAST/STANDARD tasks are never blocked by an unrelated CRITICAL production apply.
-8. **`root-cause-mode.yml`** (optional 8th, could be folded into worker-standard as a mode flag) — triggered after N consecutive logical failures on the same task; switches from blind retry to structured root-cause diagnosis output (see MIGRATION_PLAN.md), preventing TASK096-style v3→v8 repair loops.
+## Proposed target workflow set (6–8 total)
+1. **`orchestrator_dispatch.yml`** — single entry point triggered by new `tasks/task_NNN.md`. Its only job is to classify the task (FAST / STANDARD / CRITICAL) using deterministic rules (file patterns touched, keywords like "production", "CRM", "PythonAnywhere", "Cloudflare", "DNS", presence of an owner-approval marker) and route to the correct downstream workflow. Replaces ad hoc task-specific workflows (WORKFLOW_INVENTORY DELETE_CANDIDATE rows).
+2. **`fast_lane.yml`** — no-AI or minimal-AI path for FAST classification (e.g., doc-only, audit-only, cloud/-only changes like this very task). No production queue interaction. Target: near-instant turnaround.
+3. **`standard_pipeline.yml`** — STANDARD classification: may call GPT_PRIMARY or CLAUDE_REVIEW, runs deterministic preflight checks (see ROOT_CAUSE_AUDIT_TASK096.md), writes to sandbox only.
+4. **`critical_pipeline.yml`** — CRITICAL classification: requires DUAL_REVIEW (GPT + Claude cross-check) and always stops at AWAITING_OWNER_APPROVAL before any production-queue interaction. Never auto-proceeds to production write.
+5. **`production_queue_gate.yml`** — the *only* workflow with production-write capability. Consumes `automation/production_queue.py` but with resource-aware locking (per-resource lock keys such as `pythonanywhere:crm`, `pythonanywhere:static-site`, `cloudflare:dns`) instead of one single global lock, so unrelated FAST/STANDARD tasks never queue behind a CRITICAL production deploy.
+6. **`watchdog_and_kpi.yml`** — scheduled, read-only. Computes the KPIs named in task scope point 11 (task-to-finished time, queue wait, GitHub runs/task, AI calls/task, retries/task, false-finished count, rollback rate) from status/receipt files and publishes a report artifact. Never writes production.
+7. **`ci_lint_test.yml`** — unchanged, PR-triggered lint/test, kept as-is (low risk, no production capability).
+8. *(optional 8th)* **`rollback.yml`** — explicit, owner-invoked, manual-dispatch-only rollback workflow that reverts a specific production-queue transaction using the receipt written by `production_queue_gate.yml`. Kept separate from the deploy path so rollback logic is never entangled with forward-deploy logic.
 
-If 6 is preferred over 8, items 7 and 8 can be implemented as reusable composite actions/scripts invoked by the other workflows rather than standalone workflow files, keeping the top-level count at 6.
-
-## AI routing rules (as required)
-| Lane | Routing | Budget |
+## AI routing rules (proposal)
+| Classification | Routing | Budget guidance |
 |---|---|---|
-| FAST | NO_AI (deterministic script) or single GPT_PRIMARY call only if text generation is unavoidable | ≤1 AI call, ≤4k tokens |
-| STANDARD | GPT_PRIMARY drafts, CLAUDE_REVIEW checks correctness/safety only when the task is code/logic-heavy | ≤2 AI calls total, ≤20k tokens combined |
-| CRITICAL | CLAUDE_PRIMARY performs the work, DUAL_REVIEW (a second independent AI or controller pass) required before AWAITING_OWNER_APPROVAL | ≤3 AI calls, explicit token ceiling per task type, hard stop + escalate to owner if exceeded |
+| FAST | NO_AI (pure deterministic/scripted) or single GPT_PRIMARY pass if drafting text | 0–1 AI call/task |
+| STANDARD | GPT_PRIMARY, with CLAUDE_REVIEW only if GPT confidence/checks fail | 1–3 AI calls/task |
+| CRITICAL | DUAL_REVIEW (GPT_PRIMARY + CLAUDE_REVIEW mandatory), plus owner Gate B | 2–5 AI calls/task, capped; excess triggers ROOT_CAUSE_MODE |
+| Repeated-failure (any class) | Escalate to CLAUDE_PRIMARY once, then ROOT_CAUSE_MODE (below) | hard stop after 2 failed automated retries |
 
-## Resource-aware locking (replacing global serialization)
-Instead of one global queue lock in `automation/production_queue.py`, define named resource locks:
-- `lock:site-content-cards`
-- `lock:crm`
-- `lock:pythonanywhere-production`
-- `lock:cloudflare-dns`
-- `lock:github-workflows` (for changes to workflows themselves)
+## Deterministic retry policy / ROOT_CAUSE_MODE (proposal)
+- Maximum 2 automated retries per task for the *same* logical failure signature (hash of error class + step).
+- On the 3rd occurrence of the same failure signature, the orchestrator must switch to **ROOT_CAUSE_MODE**: stop automated retries, write a `ROOT_CAUSE_MODE` marker to `cloud/latest_status.md`, and require a human/Codex-reviewed root-cause note (mirroring ROOT_CAUSE_AUDIT_TASK096.md) before any further automated attempt. This directly prevents another TASK096 v3–v8-style repair loop.
 
-A task only acquires the locks for resources it actually declares it will touch (declared during CLASSIFYING). Two tasks touching disjoint resources run concurrently; two tasks touching the same resource still serialize, preserving current safety guarantees without blocking unrelated FAST work.
+## Resource-aware locking (proposal, replaces global production queue serialization)
+Instead of one global lock in `automation/production_queue.py`, use per-resource lock keys, e.g.:
+```
+lock("pythonanywhere:crm-runtime")
+lock("pythonanywhere:static-site")
+lock("cloudflare:dns")
+lock("cloudflare:cache-purge")
+```
+A task only queues behind other tasks that touch the *same* lock key. This is expected to be the single largest reducer of "queue wait" KPI without weakening production safety, because CRITICAL and FAST tasks touching disjoint resources no longer block each other.
 
-## Deterministic retry policy
-- Max 2 automatic retries for transient failures (network/timeout) with exponential backoff.
-- On the 3rd consecutive failure of the *same logical step*, the task is switched into **ROOT_CAUSE_MODE**: no further blind retries; instead the workflow collects structured diagnostic evidence (exact error, environment snapshot, last successful state) and sets `TASK_STATE=BLOCKED` with `OWNER_ACTION_REQUIRED` only if the root cause requires an owner decision; otherwise it stays BLOCKED for controller/Codex follow-up.
-- This directly targets the TASK096 v3–v8 anti-pattern by capping repair rounds and forcing a diagnosis artifact after failure #3 instead of failure #8.
-
-## KPIs to measure after Phase 1 rollout (defined now, measured later)
-- Task-to-`CLOSED_FINISHED`/`APPLIED_TO_PRODUCTION` time, by lane.
-- Queue wait time, by lane (should approach zero for FAST once resource-aware locking is live).
-- GitHub Actions runs per task, by lane (target: 1 run for FAST, ≤3 for STANDARD, ≤5 for CRITICAL including gate + apply + rollback-ready).
-- AI calls per task, by lane (per budget table above).
-- Retries per task (target: ≤2 before ROOT_CAUSE_MODE).
-- False-"finished" count (tasks marked complete that were later reopened) — target trending to 0 once the canonical state machine removes ambiguous terminal states.
-- Rollback rate for `APPLIED_TO_PRODUCTION` events.
+## Explicit non-goals for Phase 0
+This document is a **proposal**. No orchestrator code, no new workflow YAML, and no changes to `automation/production_queue.py` were created or modified in Phase 0. Implementation is Phase 1, sandbox/shadow-mode only, per task instructions.

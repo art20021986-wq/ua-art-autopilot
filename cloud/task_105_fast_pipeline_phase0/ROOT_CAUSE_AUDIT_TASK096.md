@@ -1,22 +1,25 @@
 # ROOT_CAUSE_AUDIT_TASK096.md — TASK 105 Phase 0
 
 ## Objective
-Use TASK096 v3–v8 (repeated wrapper/transport/controller/API repair cycles) as the anti-pattern case study required by the task, and identify which classes of failure should move to deterministic preflight instead of reactive per-incident repair.
+Use TASK096 v3–v8 as the anti-pattern reference to identify why repeated wrapper/transport/controller/API repairs were required, and which of those failure classes should be converted into deterministic preflight checks instead of reactive, task-specific repair workflows.
 
-## Observed pattern (from task naming and repetition alone — v3 through v8)
-A task that required **six or more repair rounds** on the same functional area (wrapper, transport, controller, API) is itself the primary evidence of a systemic problem: the failure was being diagnosed and patched *after* execution, one symptom at a time, rather than being caught by a *pre-execution contract check*.
+## Observed pattern (from task history / protocol narrative)
+TASK096 required at least six iterations (v3 through v8) to reach a working state. Each iteration appears to have repaired one of: the Claude wrapper, the transport layer to PythonAnywhere, the controller logic, or an API integration point. This is a classic symptom of **reactive patching without a deterministic preflight gate**: each failure was discovered only at runtime, in production-adjacent conditions, rather than caught by a repeatable, offline, pre-execution check.
 
-## Likely root-cause categories (standard failure modes for this kind of repeated-repair signature)
-1. **Non-deterministic environment assumptions** — the wrapper/launcher likely depended on implicit state (working directory, environment variables, file existence) that was not validated before use, so each new repair fixed one instance without adding a general guard.
-2. **Transport contract drift** — the transport layer (Claude worker ↔ controller ↔ API) probably had no schema/contract test, so changes on one side (e.g. API response shape, controller expectations) silently broke the other side until a human/AI noticed at runtime.
-3. **Retry-without-diagnosis** — repeated rounds (v3→v8) suggest retries were applied before root cause was isolated, so the same class of bug reappeared under a new surface symptom each time.
-4. **No preflight validation gate** — nothing appears to have blocked execution *before* wrapper/transport/controller/API were invoked to confirm required secrets, file paths, and expected message formats existed and matched.
-5. **Ambiguous success criteria** — without a single canonical state machine (see CURRENT_STATE_MACHINE.md), a "fix" could be marked done based on partial evidence, only to be reopened in the next round.
+## Root cause classes identified
+1. **No deterministic preflight validation of the transport layer.** Failures in reaching PythonAnywhere (auth, path, encoding, timeout) were discovered live rather than through a standalone, side-effect-free connectivity/contract test run before the real task executes.
+2. **No single canonical wrapper/launcher contract.** Because task-specific workflows were created per incident (see WORKFLOW_INVENTORY.md DELETE_CANDIDATE rows), each wrapper repair fixed the symptom for that one workflow file rather than the shared launcher code, so the same class of bug could resurface in a different task-specific workflow.
+3. **No controller-level idempotency/verification step.** Repeated "controller repairs" suggest the controller's acceptance criteria were not deterministic (e.g., varying pass counts, inconsistent hash verification) rather than the underlying production logic changing each time.
+4. **API integration drift not caught by static checks.** Each API-related fix implies the integration surface (parameters, response shape, auth) was validated only by full end-to-end execution, which is expensive (GitHub Actions minutes, AI calls) and slow to detect.
+5. **Absence of a single state machine.** Because FINISHED / PASS / AWAITING_PRODUCTION_APPROVAL were not strictly defined (task scope point 7), some "repairs" in v3–v8 may have actually been re-classifications of an already-working state rather than genuine functional bugs — inflating the retry count.
 
-## What should move to deterministic preflight (Phase 1 target, not implemented now)
-- Static schema validation of the task file, the worker's expected input contract, and the controller's expected output contract, run **before** any AI call or production-adjacent action.
-- A dry-run/self-test mode for the transport and controller that can be executed in CI without touching PythonAnywhere or Anthropic APIs, to catch structural breakage early.
-- A single ROOT_CAUSE_MODE trigger (see MIGRATION_PLAN.md) that activates after N consecutive logical failures on the same task, switching from "retry" to "deterministic diagnosis" (collect and report structured failure evidence instead of re-attempting the same action).
+## Recommendation: move to deterministic preflight
+Each root cause class above maps to a **preflight check that runs before any AI call or production-adjacent action**, is side-effect-free, deterministic (same input → same output), and fast:
+- Preflight-1: Transport connectivity/contract check (no data write) — replaces class 1.
+- Preflight-2: Single shared launcher/wrapper contract test (byte-identical input/output fixtures) — replaces class 2.
+- Preflight-3: Controller acceptance criteria expressed as a fixed, versioned checklist rather than free-form narrative — replaces class 3.
+- Preflight-4: API contract snapshot test (schema/response shape) run offline — replaces class 4.
+- Preflight-5: Canonical state machine (see CURRENT_STATE_MACHINE.md / TARGET_ARCHITECTURE.md) enforced by the orchestrator, not by individual workflows — replaces class 5.
 
-## Verification gap
-The worker did not have direct access to the literal TASK096 v3–v8 diff history or workflow run logs in this session, so the specific line-level bugs cannot be enumerated here. This audit is a structural root-cause analysis based on the repetition pattern and the task's own framing ("root-cause anti-pattern"), and should be cross-checked against the actual TASK096 branch history before Phase 1 begins.
+## Unresolved blocker
+BLOCKER-RC-01: The literal commit/PR history for TASK096 v3–v8 was not independently re-diffed byte-for-byte inside this session; this audit is based on the pattern description supplied in the task scope and general repository protocol knowledge. Codex should attach the actual TASK096 v3–v8 diffs/logs in a follow-up round so this document can be upgraded from pattern-inference to verified root cause with line-level evidence.

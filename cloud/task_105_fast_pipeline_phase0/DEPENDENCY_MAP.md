@@ -1,32 +1,29 @@
 # DEPENDENCY_MAP.md — TASK 105 Phase 0
 
-## Purpose
-Map triggers → jobs → shared resources → production-write capability, based on durable memory history (task_015/019/021/096) and the architecture implied by this repository's protocol (README-level rules in this task's system context).
+## Core dependency chain (as understood from protocol + task096 history)
 
-## Core shared resources identified
-1. **`automation/production_queue.py`** — described as the central queue mechanism gating production-affecting work. Current design (per task text) appears to enforce **global serialization**: one task occupies the whole queue regardless of blast radius (FAST vs CRITICAL), which is the primary throughput bottleneck this Phase 0 is meant to diagnose.
-2. **Claude worker / launcher / transport** — the component that receives `tasks/task_NNN.md`, executes the worker, and writes `cloud/` deliverables + `cloud/latest_status.md` + `cloud/owner_reply.md`. TASK096 v3–v8 iterations indicate this transport layer was repeatedly patched (wrapper repairs), suggesting it lacks a deterministic preflight/contract test.
-3. **PythonAnywhere sync/production paths** — a separate transport that moves verified artifacts to the live PythonAnywhere environment. Per REC-0002/REC-0003/REC-0004, only *filtered safe-inbox sync* is currently authorized; actual production write remains behind an owner-bound Gate B, independent of memory sync state.
-4. **Status/receipt files** — `cloud/latest_status.md`, `cloud/owner_reply.md`, and per-task evidence files (e.g. Gate A evidence referenced in REC-0013) act as the source of truth for state, but the vocabulary (FINISHED / PASS / AWAITING_PRODUCTION_APPROVAL) is not a single canonical enum — see CURRENT_STATE_MACHINE.md.
-5. **Shared Memory bundle** (`bundle`, `MEMORY_VERSION`, `CONTEXT_BUNDLE_SHA256`) — canonical durable memory referenced by every task; workflows that read/write records must not silently diverge from the hash used for context construction.
-
-## Dependency chain (inferred, high-confidence based on task history)
 ```
-task_NNN.md (push) 
-  -> claude-worker workflow 
-     -> Claude worker/launcher/transport 
-        -> writes cloud/*, cloud/latest_status.md, cloud/owner_reply.md 
-           -> (optional) production_queue.py enqueue 
-              -> queue watchdog / retry workflow 
-                 -> (Gate B / owner approval) 
-                    -> PythonAnywhere production sync workflow 
-                       -> live production paths (OUT OF SCOPE for Phase 0 write access)
+owner request
+  -> Codex writes tasks/task_NNN.md (durable handoff, GitHub)
+    -> GitHub Actions trigger: claude-worker.yml
+      -> Claude worker reads newest tasks/task_NNN.md
+      -> Claude worker writes cloud/ deliverables + cloud/latest_status.md + cloud/owner_reply.md
+    -> (separate) production_queue.py enqueues/serializes any task marked for production write
+      -> PythonAnywhere transport step (sync/deploy)
+        -> PythonAnywhere production filesystem / CRM runtime
+    -> status/receipt files (cloud/latest_status.md, plus any *.receipt.json under automation/ or logs/) recorded
+    -> Codex/ChatGPT audits cloud/ outputs and relays to owner
 ```
 
-## Overlap / duplication risk points
-- Multiple task-specific repair workflows (TASK096 v3–v8) each independently touched wrapper/transport/controller/API layers instead of sharing one deterministic preflight step — this is the primary duplication risk (see ROOT_CAUSE_AUDIT_TASK096.md).
-- Watchdog/retry logic appears to exist in more than one place (queue-level and workflow-level), risking double-retry / conflicting recovery actions.
-- Status vocabulary is produced by multiple writers (Claude worker report vs Codex controller acceptance vs owner directive) without one canonical merge rule.
+## Shared dependencies identified
+1. **`automation/production_queue.py`** — named in scope as the single serialization point for production writes. This is the global lock referenced in KPI item "queue wait" and the target of the resource-aware locking proposal (see TARGET_ARCHITECTURE.md). It is a shared dependency for *every* task that eventually needs a production write, regardless of whether the task itself is FAST, STANDARD, or CRITICAL — this is the root cause of unnecessary global blocking called out in the task objective.
+2. **Claude worker/launcher/transport chain** — the same worker code path handles trivial doc-only tasks (like this Phase 0 audit) and CRITICAL production-affecting tasks. There is currently no classification step before invocation, so every task pays the same AI-call and retry cost.
+3. **PythonAnywhere sync/production paths** — a single transport mechanism is reused across tasks; TASK096 v3–v8 shows this transport was repeatedly repaired in-place rather than validated once with a deterministic preflight check.
+4. **Status/receipt files** — `cloud/latest_status.md` is overwritten per task rather than appended/versioned, which is one contributor to the FINISHED/PASS/AWAITING_PRODUCTION_APPROVAL ambiguity (task scope point 7): there is no single canonical state file separate from the human-readable status report.
 
-## Unresolved verification gap
-Exact YAML `concurrency:` group names, `needs:` job graphs, and `on:` trigger filters could not be read verbatim in this session (see WORKFLOW_INVENTORY.md verification gap). This map is therefore a **logical dependency map derived from documented behavior**, not a line-by-line static analysis of the YAML. It should be reconciled against the literal files before Phase 1 implementation begins.
+## Cross-task coupling risk
+- Any workflow that both (a) can trigger on a schedule/cron AND (b) shares the same concurrency group as the production queue creates unpredictable serialization: a low-priority scheduled healthcheck can block a FAST classification task. This is the primary technical justification for replacing global serialization with resource-aware locking.
+- Task-specific repair workflows (TASK096 v3–v8 pattern) each independently touched wrapper/transport/controller/API code, meaning the same underlying bug surface was patched multiple times through different one-off workflow files instead of once through a shared deterministic preflight. This created N workflows depending on the same fragile transport instead of 1 workflow depending on a validated transport.
+
+## Unresolved blocker
+BLOCKER-DEP-01: exact concurrency-group names and job-level `needs:` graphs could not be read from live YAML in this session (same root cause as BLOCKER-INV-01). The dependency chain above is derived from documented protocol behavior and task096 narrative evidence, not a byte-level YAML diff.

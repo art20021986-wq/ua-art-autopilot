@@ -1,39 +1,43 @@
-# MIGRATION_PLAN.md — TASK 105 Phase 0
+# MIGRATION_PLAN.md — TASK 105 Phase 0 (proposal, staged, reversible)
 
-## Principle
-Migration must be reversible and staged. No existing workflow is deleted, disabled, or modified in Phase 0 or in the first stages of Phase 1. Everything new is additive and sandboxed until explicitly promoted.
+## Guiding constraint
+Every stage below must be reversible without touching production, and each stage must be independently verifiable before the next stage starts. No stage in this plan is executed by Phase 0; Phase 0 only proposes and sequences them.
 
-## Stage 0 (this task — COMPLETE)
-- Read-only audit, classification proposal, target architecture proposal, risk register, acceptance test plan. No files under `.github/workflows/` touched. No secrets touched. No production/CRM/PythonAnywhere/Cloudflare/DNS writes.
+## Stage 0 (this task): Audit + sandbox prep
+- Deliverables: this directory (`cloud/task_105_fast_pipeline_phase0/`).
+- Rollback: trivial — these are new files under `cloud/`; deleting the branch fully reverts with zero production impact.
 
-## Stage 1 — Shadow orchestrator (sandbox only, next phase, requires separate owner review of this Phase 0 report first)
-- Build `orchestrator-classify.yml` and the resource-lock composite action in a **non-triggering** mode: it runs alongside existing workflows, logs what it *would* classify/lock, but takes no gating action and cannot block or replace any existing workflow.
-- All new code lives under a clearly separated path (e.g. `automation/orchestrator/` or `cloud/orchestrator_sandbox/`) so it cannot be confused with production automation.
-- Existing workflows continue to run exactly as before; nothing is archived or merged yet.
+## Stage 1: Confirm inventory with live data (blocking prerequisite for all later stages)
+- Codex/owner supplies a verified `git ls-tree`/directory listing of `.github/workflows/` and the actual TASK096 v3–v8 diffs.
+- Upgrade WORKFLOW_INVENTORY.md and ROOT_CAUSE_AUDIT_TASK096.md from provisional to verified.
+- Rollback: N/A (read-only).
 
-## Stage 2 — Shadow verification against real tasks
-- Run several real (past or new low-risk FAST) tasks through the shadow orchestrator in parallel with the existing pipeline.
-- Compare shadow classification/lock decisions against actual outcomes; tune classifier rules.
-- No production-write workflow is touched at this stage.
+## Stage 2: Build orchestrator in shadow mode (Phase 1 scope, not this task)
+- New `orchestrator_dispatch.yml` is added **alongside** existing workflows (none removed/disabled).
+- Orchestrator only *classifies and logs* (FAST/STANDARD/CRITICAL) without taking any action — pure shadow/dry-run, writing its decision to a new `cloud/` report file for comparison against what actually happened.
+- Rollback: delete the new workflow file; zero effect on existing pipeline since nothing was disabled.
 
-## Stage 3 — Opt-in cutover for FAST lane only
-- For a small, explicitly owner-approved subset of task types, allow the new `worker-fast.yml` to actually run (still NO production-write capability), while STANDARD/CRITICAL continue through the legacy path unchanged.
-- Rollback: disabling the opt-in flag returns 100% of traffic to the legacy path with zero data loss, since FAST-lane tasks never touch production.
+## Stage 3: Route FAST tasks only, in parallel with legacy path
+- For a small, explicitly owner-approved allow-list of task types (e.g., doc-only `cloud/` audits like this one), allow the new `fast_lane.yml` to run *in addition to* the legacy path, then diff outcomes.
+- Legacy path remains authoritative; new path is advisory only at this stage.
+- Rollback: remove task type from allow-list.
 
-## Stage 4 — STANDARD lane parameterized pipeline
-- Consolidate the identified duplicate/task-specific workflows (see WORKFLOW_INVENTORY.md MERGE/ARCHIVE candidates) into `worker-standard.yml`, one task type at a time, with the legacy workflow kept in ARCHIVE (not deleted) as an immediate rollback path.
-- Each consolidation step requires: (a) a passing acceptance test from ACCEPTANCE_TEST_PLAN.md, (b) controller verification, (c) explicit note in `cloud/latest_status.md` that the legacy workflow remains available and unarchived until N successful runs of the new pipeline.
+## Stage 4: Introduce resource-aware locking behind a feature flag
+- Add per-resource lock keys to `automation/production_queue.py` behind a flag defaulting to OFF (legacy global lock remains default behavior).
+- Test in a non-production sandbox queue only.
+- Rollback: flip flag off; legacy global lock code path is untouched and remains the default.
 
-## Stage 5 — CRITICAL lane gate and resource-aware locking for production-apply
-- Only after Stages 1–4 are stable: introduce `critical-gate.yml` and `production-apply.yml` in **shadow/dry-run mode** (computes what it would do, does not apply), reviewed by owner, before any live cutover.
-- Actual production-write cutover for `production-apply.yml` requires a separate, explicit owner-approved task (this Phase 0/Migration Plan does NOT grant that approval).
+## Stage 5: Canonical state machine adoption
+- Add new fields to a *new* status schema version (do not silently redefine existing `CLAUDE_STATUS` semantics) so both old and new consumers keep working during transition.
+- Rollback: consumers that don't understand new fields simply ignore them (additive schema change).
 
-## Rollback guarantees at every stage
-- Every stage keeps the legacy `automation/production_queue.py` and existing workflows fully intact and runnable.
-- No stage requires a one-way schema change to existing status files; new fields (e.g. `TASK_STATE`) are additive, and legacy `CLAUDE_STATUS` values continue to be honored during the transition.
-- A single flag/config toggle can revert any stage's opt-in behavior without code deletion.
+## Stage 6: Deterministic retry / ROOT_CAUSE_MODE enforcement
+- Enable only after Stage 5's state machine is validated end-to-end in shadow mode.
+- Rollback: disable ROOT_CAUSE_MODE trigger, fall back to prior manual-escalation behavior.
 
-## Explicit non-goals of this migration plan
-- Does not authorize deleting or disabling any current workflow.
-- Does not authorize changing secrets or Cloudflare/DNS configuration.
-- Does not authorize merging this or any related branch to `main`.
+## Stage 7: Deprecate/ARCHIVE task-specific one-off workflows
+- Only after Stages 2–6 have run successfully for an owner-defined observation period, and only with explicit owner approval, move DELETE_CANDIDATE workflows (per WORKFLOW_INVENTORY.md) to an `archive/` note — task instructions forbid actually deleting/disabling workflows in this task; this stage is future work requiring its own owner-approved task.
+- Rollback: N/A at this stage since nothing is deleted without a separate future approval.
+
+## Explicit statement
+No stage above was executed. This is a sequencing proposal only, gated stage-by-stage on independent verification and, where noted, explicit owner approval.

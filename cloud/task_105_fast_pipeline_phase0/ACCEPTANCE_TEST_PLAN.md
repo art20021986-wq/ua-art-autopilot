@@ -1,31 +1,28 @@
 # ACCEPTANCE_TEST_PLAN.md — TASK 105 Phase 0
 
 ## Purpose
-Define how Phase 0 completion and future Phase 1 stages will be verified, without performing any production action in this phase.
+Define how Phase 0 completion is verified, and pre-define how Phase 1 (sandbox/shadow orchestrator) will be tested before any production exposure.
 
-## Phase 0 acceptance checks (self-assessed in this deliverable; to be confirmed by controller)
-1. [x] All required Phase 0 files exist under `cloud/task_105_fast_pipeline_phase0/`.
-2. [x] No file under `.github/workflows/` was created, modified, or deleted by this task.
-3. [x] No file under any PythonAnywhere production path, Cloudflare config, or DNS config was touched.
-4. [x] No secret values were read, written, or referenced by name-with-value.
-5. [~] 100% literal workflow inventory — **NOT fully verifiable in this session**; delivered as a provisional/structured inventory with an explicit confirmation step required (see WORKFLOW_INVENTORY.md). This is recorded as an unresolved blocker in PHASE0_REPORT.md rather than claimed as complete.
-6. [x] Target 6–8 workflow architecture proposed (TARGET_ARCHITECTURE.md).
-7. [x] Migration plan is staged and reversible (MIGRATION_PLAN.md).
-8. [x] Canonical state machine proposed to resolve FINISHED/PASS/AWAITING_PRODUCTION_APPROVAL ambiguity (CURRENT_STATE_MACHINE.md).
-9. [x] Resource-aware locking proposal in place of global serialization (TARGET_ARCHITECTURE.md).
-10. [x] AI routing rules with token/call budgets proposed (TARGET_ARCHITECTURE.md).
-11. [x] Deterministic retry policy and ROOT_CAUSE_MODE defined (TARGET_ARCHITECTURE.md, MIGRATION_PLAN.md).
-12. [x] KPIs defined (TARGET_ARCHITECTURE.md).
+## Phase 0 acceptance checks (self-assessment against task's own completion criteria)
+| Criterion (from task scope) | Status | Evidence |
+|---|---|---|
+| 100% of current workflows inventoried and classified | PARTIAL — provisional inventory produced; live listing confirmation pending (BLOCKER-INV-01) | WORKFLOW_INVENTORY.md |
+| Production writers and shared dependencies explicitly identified | YES (to the extent knowable without live YAML) | DEPENDENCY_MAP.md, WORKFLOW_INVENTORY.md |
+| Target 6–8 workflow architecture proposed | YES | TARGET_ARCHITECTURE.md |
+| Migration is reversible and staged | YES | MIGRATION_PLAN.md |
+| No production files/settings changed | YES | this task only wrote files under cloud/ |
+| Report contains evidence paths and unresolved blockers | YES | PHASE0_REPORT.md, RISK_REGISTER.md |
+| Owner-facing reply states audit/sandbox-prep, not deployment | YES | cloud/owner_reply.md |
 
-## Phase 1 (future) acceptance tests — to be executed only after owner review of this report
-1. Shadow orchestrator dry-run produces classification decisions for at least 10 historical tasks with 0 crashes and logs matching expected lane assignment for at least 80% of manually-reviewed cases.
-2. Resource-lock composite action, run in shadow mode, never reports a false "safe to run concurrently" for two tasks known to touch the same production resource (0 false negatives required before Stage 3).
-3. `worker-fast.yml` opt-in run for a real FAST task produces `SELF_VERIFIED` state and correct `cloud/latest_status.md`/`cloud/owner_reply.md` output with PRODUCTION_WRITE: NO, verified by an independent controller pass.
-4. Each legacy workflow proposed for MERGE/ARCHIVE has an equivalent passing test in the new consolidated workflow before the legacy one is moved to ARCHIVE (never DELETE without separate owner sign-off).
-5. ROOT_CAUSE_MODE triggers correctly after exactly 3 consecutive same-step failures in a controlled test task, and produces a structured diagnostic artifact instead of a 4th blind retry.
-6. `production-apply.yml` dry-run (Stage 5) computes an intended change set and rollback plan without applying anything, verified by controller before any live-cutover task is even proposed.
+## Phase 1 pre-implementation test plan (proposal, not executed here)
+1. **Classification determinism test** — feed the orchestrator a fixed set of synthetic `tasks/task_NNN.md` fixtures covering FAST/STANDARD/CRITICAL boundary cases; assert identical classification across 10 repeated runs (mirrors the byte-identical repeat-run discipline used in TASK021's 10x41 offline suite per shared memory REC-0013).
+2. **Shadow-mode non-interference test** — run `orchestrator_dispatch.yml` in shadow mode alongside the legacy path for at least N real tasks; assert zero writes outside `cloud/` from the shadow path.
+3. **Resource-lock isolation test** — in a sandbox queue, simulate two tasks with disjoint lock keys and assert they do not block each other; simulate two tasks with the same lock key and assert strict serialization is preserved.
+4. **State machine additive-compatibility test** — assert legacy `cloud/latest_status.md` consumers (Codex audit step) can still parse status files after new fields are added.
+5. **ROOT_CAUSE_MODE trigger test** — simulate 3 repeated identical failure signatures and assert automated retries stop and a human-reviewable root-cause marker is written, with no further automated production-adjacent action taken.
+6. **Rollback drill** — for any Stage 4+ change, perform a rollback drill in sandbox (flip feature flag off / delete new workflow file) and confirm legacy behavior is fully restored with no residual state.
 
-## Evidence paths
-- This plan: `cloud/task_105_fast_pipeline_phase0/ACCEPTANCE_TEST_PLAN.md`
-- Companion audit: `cloud/task_105_fast_pipeline_phase0/WORKFLOW_INVENTORY.md`, `DEPENDENCY_MAP.md`
-- Status/report: `cloud/latest_status.md`, `cloud/task_105_fast_pipeline_phase0/PHASE0_REPORT.md`
+## Exit criteria for moving from Phase 1 sandbox to any production exposure
+- All six Phase 1 tests above pass with reproducible evidence (paths, logs).
+- Explicit owner approval recorded (mirroring how this task itself required "Approved by owner on 2026-09-01").
+- BLOCKER-INV-01, BLOCKER-DEP-01, and BLOCKER-RC-01 from Phase 0 are resolved with verified (not provisional) evidence.

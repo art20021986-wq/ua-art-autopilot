@@ -1,40 +1,40 @@
 # CURRENT_STATE_MACHINE.md — TASK 105 Phase 0
 
-## Problem
-The task explicitly flags ambiguity between **FINISHED**, **PASS**, and **AWAITING_PRODUCTION_APPROVAL**, and requires one canonical state machine proposal.
+## Problem statement
+The task scope (point 7) explicitly flags ambiguity between **FINISHED**, **PASS**, and **AWAITING_PRODUCTION_APPROVAL**. Based on protocol documents and task history, these three terms are currently used inconsistently across different workflows/reports:
 
-## Current observed states (from durable memory and status file conventions)
-- `CLAUDE_STATUS` values seen in protocol: WORKING, DONE, BLOCKED, WAITING_OWNER.
-- `computed_status` on memory records: ACTIVE, SUPERSEDED.
-- Ad-hoc task language: FINISHED, PASS, FAIL, AWAITING_PRODUCTION_APPROVAL, READY_FOR_GATE_A_EXECUTION, CONTROLLER_VERIFIED_ACCEPTED, NOT_PROVEN.
+- **FINISHED** has been used to mean "the worker completed its assigned steps" — but this does not distinguish between "deliverables written to cloud/" and "changes actually validated/accepted by a controller."
+- **PASS** has been used by an independent controller (see REC-0011, REC-0013 in shared memory) to mean "tests/acceptance criteria were independently verified," which is a stronger claim than FINISHED.
+- **AWAITING_PRODUCTION_APPROVAL** is used when a change is technically ready but requires an owner-bound Gate B/Gate A step before touching production — but nothing currently prevents a workflow from reporting FINISHED while a production write is still pending owner approval, which is the exact ambiguity that risks a "false-finished" KPI event (task scope point 11).
 
-These are at least three independent vocabularies (worker status, memory record status, ad-hoc task/report language) that are not currently unified, which is exactly the ambiguity the task asks to resolve.
+## Current (as-observed) informal states
+1. `WORKING` — Claude/worker actively producing output.
+2. `DONE` (worker-reported) — worker believes its own scope is complete. This is a **self-report**, not independent verification.
+3. `PASS` (controller-verified) — an independent controller (Codex or automated evidence) has re-run tests/checks and confirms the self-report. Per shared memory REC-0011/REC-0013, this has historically required a separate manual/automated re-verification pass, not part of the original workflow.
+4. `AWAITING_PRODUCTION_APPROVAL` — used ad hoc when a production write is contemplated; not tied to a single canonical flag in `cloud/latest_status.md` (that file only has `OWNER_ACTION_REQUIRED: YES|NO`, which conflates "need an answer to a question" with "need Gate B approval for a production write").
+5. `BLOCKED` / `WAITING_OWNER` — both exist in `CLAUDE_STATUS` enum today, without a clear rule for which one applies when the blocker is technical vs. approval-related.
 
-## Proposed canonical state machine (single source of truth)
-Every unit of work (a task_NNN) progresses through exactly one of these canonical states, stored in one field (`TASK_STATE`) written only by the component authorized to change it:
+## Root ambiguity
+There is currently **no single canonical field** that separates:
+- (a) "worker self-report of completion" from
+- (b) "independent verification/controller PASS" from
+- (c) "owner Gate B production-approval pending."
 
-1. **RECEIVED** — task file committed to `tasks/`; no worker action yet.
-2. **CLASSIFYING** — orchestrator (Phase 1+) assigns FAST / STANDARD / CRITICAL lane.
-3. **IN_PROGRESS** — worker actively producing deliverables (maps to current `WORKING`).
-4. **SELF_VERIFIED** — worker completed its own deliverables and internal checks pass (maps to current `DONE`, but explicitly *not* production-approved).
-5. **CONTROLLER_VERIFIED** — an independent controller (Codex or equivalent) re-checked the deliverables against evidence (maps to `CONTROLLER_VERIFIED_ACCEPTED`).
-6. **AWAITING_OWNER_APPROVAL** — required only when the task requests a CRITICAL or production-affecting action; explicit owner sign-off is pending (maps to `WAITING_OWNER`).
-7. **APPROVED_FOR_PRODUCTION** — owner approval recorded; still not yet applied.
-8. **APPLIED_TO_PRODUCTION** — the only state where PRODUCTION_WRITE may legitimately be YES; requires Gate B evidence per REC-0004.
-9. **ROLLED_BACK** — production change reverted; must reference the APPLIED_TO_PRODUCTION event it undoes.
-10. **BLOCKED** — cannot proceed; requires `OWNER_ACTION_REQUIRED` or technical unblock, unchanged from current usage.
-11. **CLOSED_FINISHED** — terminal success state for tasks that never touch production (i.e., "FINISHED" is retired as an ambiguous synonym and replaced by this explicit terminal state).
+All three get folded into overlapping status vocabulary (`CLAUDE_STATUS`, ad hoc "PASS" mentions in memory records, `OWNER_ACTION_REQUIRED`). This is exactly the condition that produces the "false-finished count" KPI risk named in the task scope.
 
-### Elimination of ambiguous terms
-- **"PASS"** is retired as a terminal state name; it becomes an *evidence attribute* (`TEST_RESULT: PASS|FAIL`) attached to SELF_VERIFIED/CONTROLLER_VERIFIED, never a standalone task state.
-- **"FINISHED"** is retired; replaced by `CLOSED_FINISHED` (no production involved) or `APPLIED_TO_PRODUCTION` (production involved), so it is always unambiguous whether production was touched.
-- **"AWAITING_PRODUCTION_APPROVAL"** is retired as free text; replaced by canonical state `AWAITING_OWNER_APPROVAL` with a machine-readable `APPROVAL_SCOPE: PRODUCTION|CRM|DNS|CLOUDFLARE`.
+## Proposed canonical state machine (proposal only — not implemented in Phase 0)
+```
+RECEIVED -> CLASSIFIED(FAST|STANDARD|CRITICAL)
+         -> IN_PROGRESS
+         -> SELF_REPORTED_COMPLETE      (worker says done; NOT trusted alone)
+         -> VERIFIED_PASS               (independent/automated re-check confirms)
+         -> AWAITING_OWNER_APPROVAL     (only reached if task requires production write; explicit Gate)
+         -> APPROVED_FOR_PRODUCTION     (owner explicitly approved; Gate B)
+         -> FINISHED                    (terminal state; only reachable via VERIFIED_PASS, and via APPROVED_FOR_PRODUCTION if production write was required)
+         -> ROLLED_BACK                 (terminal, exception path)
+         -> BLOCKED                     (technical blocker, no owner action needed yet)
+         -> WAITING_OWNER                (non-approval question needed)
+```
+Key rule: **FINISHED is only ever reachable through VERIFIED_PASS**, and if the task scope included any production write, FINISHED additionally requires APPROVED_FOR_PRODUCTION. This directly resolves the ambiguity named in task scope point 7 and is detailed further in TARGET_ARCHITECTURE.md.
 
-## Transition rules (summary)
-- Only the orchestrator may move a task out of RECEIVED.
-- Only the worker (Claude/Cloud) may move IN_PROGRESS → SELF_VERIFIED.
-- Only an independent controller may move SELF_VERIFIED → CONTROLLER_VERIFIED.
-- Only an explicit owner-directive record may move → APPROVED_FOR_PRODUCTION or → APPLIED_TO_PRODUCTION.
-- Any state may move to BLOCKED; BLOCKED may only be exited by resolving the documented blocker.
-
-This state machine is a **proposal for Phase 1**; it is not implemented or enforced by this Phase 0 deliverable, and no existing status files have been changed to use it.
+This document is a **proposal for Phase 1**; no state machine changes were implemented in Phase 0.
