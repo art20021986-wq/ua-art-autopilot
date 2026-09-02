@@ -1,0 +1,321 @@
+name: TASK105 Final Release Candidate V2
+
+on:
+  push:
+    branches:
+      - task105-fast-pipeline-phase0
+    paths:
+      - '.github/workflows/task105_release_candidate_v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task105-final-release-candidate
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - name: Checkout exact release candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: task105-fast-pipeline-phase0
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Verify same-task root-cause correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^STATUS: ROOT_CAUSE_IDENTIFIED$' \
+            cloud/task_105_fast_pipeline_final/ROOT_CAUSE_RELEASE_CANDIDATE_ATTEMPT1.md
+          grep -q '^BLIND_RETRY: NO$' \
+            cloud/task_105_fast_pipeline_final/ROOT_CAUSE_RELEASE_CANDIDATE_ATTEMPT1.md
+          grep -q 'sys.path' cloud/task_105_fast_pipeline_phase1/test_task_orchestrator.py
+
+      - name: Validate predecessor receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/task_orchestrator.py validate-receipt \
+            state/receipts/TASK105-FAST-PRODUCTION-CANARY.json >/tmp/fast.json
+          python3 automation/task_orchestrator.py validate-receipt \
+            state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json >/tmp/standard.json
+          python3 automation/task_orchestrator.py validate-receipt \
+            cloud/task_105_fast_pipeline_phase5/phase5_receipt.json >/tmp/critical.json
+          python3 automation/task_orchestrator.py validate-receipt \
+            cloud/task_105_fast_pipeline_phase6/phase6_receipt.json >/tmp/phase6.json
+          python3 - <<'PY'
+          import json
+          fast = json.load(open('/tmp/fast.json', encoding='utf-8'))
+          standard = json.load(open('/tmp/standard.json', encoding='utf-8'))
+          critical = json.load(open('/tmp/critical.json', encoding='utf-8'))
+          phase6 = json.load(open('/tmp/phase6.json', encoding='utf-8'))
+          assert fast['task_class'] == 'FAST'
+          assert fast['production'] == 'PASS' and fast['live_verify'] == 'PASS'
+          assert fast['unexpected_changes'] == 0
+          assert standard['task_class'] == 'STANDARD'
+          assert standard['production'] == 'PASS' and standard['live_verify'] == 'PASS'
+          assert standard['rollback'] == 'PASS'
+          assert standard['rollback_public_verify'] == 'PASS'
+          assert standard['final_state_restored'] is True
+          assert standard['crm_unchanged'] is True
+          assert standard['vehicle_data_unchanged'] is True
+          assert critical['task_class'] == 'CRITICAL'
+          assert critical['critical_classification_cases'] == 10
+          assert critical['critical_gate_a'] == 'PASS'
+          assert critical['critical_gate_b'] == 'GATE_B_AUTHORIZED'
+          assert phase6['permanent_workflow_count'] == 8
+          assert phase6['main_switch_ready'] is True
+          PY
+
+      - name: Run 88 deterministic regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile \
+            automation/task_orchestrator.py \
+            automation/execution_contract.py \
+            automation/critical_adapter.py \
+            automation/production_queue.py \
+            automation/task_ticket.py
+          python3 automation/task_orchestrator.py self-test
+          python3 automation/critical_adapter.py self-test
+          python3 automation/production_queue.py self-test
+          python3 cloud/task_105_fast_pipeline_phase1/test_task_orchestrator.py \
+            2>&1 | tee /tmp/t1.log
+          grep -q '^Ran 39 tests' /tmp/t1.log && grep -q '^OK$' /tmp/t1.log
+          python3 cloud/task_105_fast_pipeline_phase4/test_standard_canary.py \
+            2>&1 | tee /tmp/t2.log
+          grep -q '^Ran 15 tests' /tmp/t2.log && grep -q '^OK$' /tmp/t2.log
+          python3 cloud/task_105_fast_pipeline_phase4/test_standard_recovery.py \
+            2>&1 | tee /tmp/t3.log
+          grep -q '^Ran 8 tests' /tmp/t3.log && grep -q '^OK$' /tmp/t3.log
+          python3 cloud/task_105_fast_pipeline_phase5/test_critical_adapter.py \
+            2>&1 | tee /tmp/t4.log
+          grep -q '^Ran 21 tests' /tmp/t4.log && grep -q '^OK$' /tmp/t4.log
+          python3 cloud/task_105_fast_pipeline_phase6/test_route_canary.py \
+            2>&1 | tee /tmp/t5.log
+          grep -q '^Ran 5 tests' /tmp/t5.log && grep -q '^OK$' /tmp/t5.log
+
+      - name: Validate clean eight-workflow architecture
+        shell: bash
+        run: |
+          set -euo pipefail
+          permanent=(
+            uaart_orchestrator.yml
+            uaart_fast.yml
+            uaart_standard.yml
+            uaart_critical.yml
+            uaart_monitor.yml
+            uaart_backup.yml
+            uaart_rollback.yml
+            uaart_maintenance.yml
+          )
+          for name in "${permanent[@]}"; do
+            file=".github/workflows/$name"
+            test -s "$file"
+            ruby -e 'require "yaml"; YAML.load_file(ARGV[0], aliases: true)' "$file"
+          done
+          ruby -e 'require "yaml"; YAML.load_file(ARGV[0], aliases: true)' \
+            .github/workflows/task105_release_candidate_v2.yml
+          python3 - <<'PY'
+          import pathlib
+          root = pathlib.Path('.github/workflows')
+          permanent = sorted(p.name for p in root.glob('uaart_*.yml'))
+          expected = sorted([
+              'uaart_orchestrator.yml', 'uaart_fast.yml', 'uaart_standard.yml',
+              'uaart_critical.yml', 'uaart_monitor.yml', 'uaart_backup.yml',
+              'uaart_rollback.yml', 'uaart_maintenance.yml',
+          ])
+          assert permanent == expected, (permanent, expected)
+          temporary = sorted(p.name for p in root.glob('task105_*.yml'))
+          assert temporary == ['task105_release_candidate_v2.yml'], temporary
+          PY
+          test -z "$(git ls-files | grep -E '(^|/)__pycache__/|\.pyc$' || true)"
+          grep -q 'uses: ./.github/workflows/uaart_fast.yml' .github/workflows/uaart_orchestrator.yml
+          grep -q 'uses: ./.github/workflows/uaart_standard.yml' .github/workflows/uaart_orchestrator.yml
+          grep -q 'uses: ./.github/workflows/uaart_critical.yml' .github/workflows/uaart_orchestrator.yml
+          grep -q 'automation/task_ticket.py' .github/workflows/uaart_fast.yml
+          grep -q 'automation/task_ticket.py' .github/workflows/uaart_standard.yml
+          grep -q 'automation/task_ticket.py' .github/workflows/uaart_critical.yml
+
+      - name: Validate generic ticket and non-production route request
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import importlib.util
+          import pathlib
+          import sys
+          path = pathlib.Path('automation/task_ticket.py')
+          spec = importlib.util.spec_from_file_location('ticket_rc', path)
+          module = importlib.util.module_from_spec(spec)
+          sys.modules[spec.name] = module
+          spec.loader.exec_module(module)
+          assert module.ticket_from_task_id('TASK105-ANY') == 105
+          first = module.ticket_from_task_id('ALPHA-REQUEST')
+          assert first == module.ticket_from_task_id('ALPHA-REQUEST')
+          assert first != module.ticket_from_task_id('BETA-REQUEST')
+          assert 500_000_000 <= first < 900_000_000
+          PY
+          python3 automation/execution_contract.py validate \
+            tasks/requests/TASK105-PERMANENT-ROUTE-CANARY.json \
+            --expected-class FAST >/tmp/route-contract.json
+          python3 automation/execution_contract.py compile \
+            tasks/requests/TASK105-PERMANENT-ROUTE-CANARY.json \
+            --expected-class FAST
+          python3 - <<'PY'
+          import json
+          value = json.load(open('/tmp/route-contract.json', encoding='utf-8'))
+          assert value['task_class'] == 'FAST'
+          assert value['production_required'] is False
+          assert value['plan']['ai_route'] == 'NO_AI'
+          assert value['plan']['ai_call_budget'] == 0
+          PY
+
+  reusable-fast-route:
+    needs: preflight
+    uses: ./.github/workflows/uaart_fast.yml
+    with:
+      request_path: tasks/requests/TASK105-PERMANENT-ROUTE-CANARY.json
+    secrets: inherit
+
+  finalize:
+    needs: [preflight, reusable-fast-route]
+    if: needs.preflight.result == 'success' && needs.reusable-fast-route.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout latest branch after reusable route
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: task105-fast-pipeline-phase0
+          fetch-depth: 0
+
+      - name: Create truthful release-candidate evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/task_orchestrator.py validate-receipt \
+            state/receipts/TASK105-PERMANENT-ROUTE-CANARY.json >/tmp/route.json
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          import pathlib
+          route = json.load(open('/tmp/route.json', encoding='utf-8'))
+          assert route['task_id'] == 'TASK105-PERMANENT-ROUTE-CANARY'
+          assert route['task_class'] == 'FAST'
+          assert route['target_environment'] == 'sandbox'
+          assert route['permanent_fast_workflow'] is True
+          assert route['tests'] == 'PASS' and route['unexpected_changes'] == 0
+          now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+          out = pathlib.Path('cloud/task_105_fast_pipeline_final')
+          receipt = {
+              'task_id': 'TASK105-RELEASE-CANDIDATE',
+              'status': 'FINISHED',
+              'task_class': 'CRITICAL',
+              'target_environment': 'sandbox',
+              'tests': 'PASS',
+              'unexpected_changes': 0,
+              'rollback_ready': True,
+              'production_required': False,
+              'permanent_workflow_count': 8,
+              'temporary_workflows_remaining': 1,
+              'temporary_workflow': 'task105_release_candidate_v2.yml',
+              'regression_tests': 88,
+              'reusable_fast_route': 'PASS',
+              'fast_predecessor': 'PASS',
+              'standard_predecessor': 'PASS_WITH_PUBLIC_ROLLBACK',
+              'critical_adapter': 'PASS',
+              'production_touched': False,
+              'crm_unchanged': True,
+              'vehicle_data_unchanged': True,
+              'cloudflare_dns_unchanged': True,
+              'ready_to_remove_temp_and_merge': True,
+              'finished_at': now,
+          }
+          (out / 'release_candidate_receipt.json').write_text(
+              json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          (out / 'RELEASE_CANDIDATE_REPORT.md').write_text('\n'.join([
+              '# UA-ART-FAST-PIPELINE-001 — Final Release Candidate',
+              '',
+              'STATUS: **PASS_RELEASE_CANDIDATE**',
+              '',
+              '- Same-task import root cause corrected: PASS',
+              '- Latest deterministic regression tests: 88/88 PASS',
+              '- Permanent workflows: 8/8 YAML PASS',
+              '- Generic queue-ticket behavior: PASS',
+              '- Reusable FAST workflow route: PASS / truthful FINISHED',
+              '- FAST production predecessor: PASS',
+              '- STANDARD 10/10 sandbox + 3/3 production + public rollback: PASS',
+              '- CRITICAL 21/21 tests + 10/10 classification + Gate A/B: PASS',
+              '- Tracked Python cache: 0',
+              '- Production touched during release validation: NO',
+              '- CRM / vehicle data / Cloudflare / DNS changed: NO',
+              '- Next: remove this temporary workflow, merge PR #37, verify main intake',
+              '',
+          ]), encoding='utf-8')
+          pathlib.Path('cloud/latest_status.md').write_text('\n'.join([
+              'TASK_ID: task_105',
+              'ROUND: 8',
+              'CLAUDE_STATUS: DONE',
+              'CURRENT_ACTION: final release candidate V2 PASS; ready to remove temporary workflow and merge',
+              'FILES_CREATED: cloud/task_105_fast_pipeline_final/RELEASE_CANDIDATE_REPORT.md,cloud/task_105_fast_pipeline_final/release_candidate_receipt.json',
+              'PRODUCTION_TOUCHED: NO',
+              'OWNER_ACTION_REQUIRED: NO',
+              'OWNER_QUESTION: NONE',
+              'NEXT_FOR_CHATGPT: delete task105_release_candidate_v2.yml, merge PR 37, verify main orchestrator and issue overall FINISHED receipt',
+              'UPDATED_AT_UTC: ' + now,
+              '',
+          ]), encoding='utf-8')
+          pathlib.Path('cloud/owner_reply.md').write_text('\n'.join([
+              '# Ответ владельцу — TASK105',
+              '',
+              'СТАТУС: PASS RELEASE CANDIDATE',
+              'ПОСТОЯННЫЕ WORKFLOW: 8/8 PASS',
+              'ОБЩИЕ ТЕСТЫ: 88/88 PASS',
+              'FAST / STANDARD / CRITICAL: PASS',
+              'CRM И ДАННЫЕ АВТОМОБИЛЕЙ: НЕ ИЗМЕНЕНЫ',
+              'СЛЕДУЮЩИЙ ЭТАП: удаление временного workflow, merge и проверка main',
+              '',
+          ]), encoding='utf-8')
+          PY
+          python3 automation/task_orchestrator.py validate-receipt \
+            cloud/task_105_fast_pipeline_final/release_candidate_receipt.json >/dev/null
+
+      - name: Commit release-candidate evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- \
+            cloud/task_105_fast_pipeline_final/RELEASE_CANDIDATE_REPORT.md \
+            cloud/task_105_fast_pipeline_final/release_candidate_receipt.json \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          git config user.name 'ua-art-release-candidate-v2'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task105: final release candidate V2 PASS'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin task105-fast-pipeline-phase0
+            if ! git rebase origin/task105-fast-pipeline-phase0; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:task105-fast-pipeline-phase0; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
