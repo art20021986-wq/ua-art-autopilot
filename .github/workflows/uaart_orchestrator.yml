@@ -99,6 +99,7 @@ jobs:
               handle.write('request_path=%s\n' % request_path)
               handle.write('task_id=%s\n' % plan['task_id'])
               handle.write('task_class=%s\n' % task_class)
+          Path('/tmp/uaart-task-class').write_text(task_class + '\n', encoding='utf-8')
           state = {
               'task_id': plan['task_id'],
               'status': 'QUEUED',
@@ -119,8 +120,13 @@ jobs:
               encoding='utf-8',
           )
           PY
+          TASK_CLASS="$(tr -d '\r\n' </tmp/uaart-task-class)"
+          case "$TASK_CLASS" in
+            FAST|STANDARD|CRITICAL) ;;
+            *) echo "UAART_CLASS_INVALID_AFTER_SERIALIZATION: $TASK_CLASS"; exit 1 ;;
+          esac
           python3 automation/execution_contract.py validate "$REQUEST_PATH" \
-            --expected-class "$(python3 -c "import json; print(json.load(open('/tmp/uaart-plan.json'))['task_class'])")" \
+            --expected-class "$TASK_CLASS" \
             >/tmp/uaart-execution-contract.json
 
       - name: Commit visible queue plan
