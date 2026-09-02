@@ -51,6 +51,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 -W error -m py_compile automation/task_ticket.py
           python3 automation/execution_contract.py validate "$REQUEST_PATH" \
             --expected-class CRITICAL >/tmp/uaart-critical-contract.json
           python3 automation/execution_contract.py outputs "$REQUEST_PATH" \
@@ -137,9 +138,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          TICKET="$(python3 automation/task_ticket.py "$REQUEST_PATH")"
           python3 automation/production_queue.py self-test
           python3 automation/production_queue.py wait \
-            --task 105 --timeout-seconds 1800 --stable-polls 2
+            --task "$TICKET" --timeout-seconds 1800 --stable-polls 2
 
       - name: Execute explicitly authorized CRITICAL controller
         env:
