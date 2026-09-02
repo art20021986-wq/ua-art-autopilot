@@ -1,0 +1,116 @@
+{
+  "failed": 0,
+  "passed": 10,
+  "results": [
+    {
+      "actual_ai": "NO_AI",
+      "actual_class": "STANDARD",
+      "expected_ai": "NO_AI",
+      "expected_class": "STANDARD",
+      "locks": [
+        "APPLICATION_RUNTIME"
+      ],
+      "status": "PASS",
+      "task_id": "STD-01-FORM"
+    },
+    {
+      "actual_ai": "GPT_PRIMARY",
+      "actual_class": "STANDARD",
+      "expected_ai": "GPT_PRIMARY",
+      "expected_class": "STANDARD",
+      "locks": [
+        "CATALOG_RENDERER"
+      ],
+      "status": "PASS",
+      "task_id": "STD-02-CATALOG"
+    },
+    {
+      "actual_ai": "NO_AI",
+      "actual_class": "STANDARD",
+      "expected_ai": "NO_AI",
+      "expected_class": "STANDARD",
+      "locks": [
+        "APPLICATION_RUNTIME"
+      ],
+      "status": "PASS",
+      "task_id": "STD-03-COUNTER"
+    },
+    {
+      "actual_ai": "GPT_PRIMARY",
+      "actual_class": "STANDARD",
+      "expected_ai": "GPT_PRIMARY",
+      "expected_class": "STANDARD",
+      "locks": [
+        "APPLICATION_RUNTIME"
+      ],
+      "status": "PASS",
+      "task_id": "STD-04-PUBLISH"
+    },
+    {
+      "actual_ai": "CLAUDE_REVIEW",
+      "actual_class": "STANDARD",
+      "expected_ai": "CLAUDE_REVIEW",
+      "expected_class": "STANDARD",
+      "locks": [
+        "APPLICATION_RUNTIME"
+      ],
+      "status": "PASS",
+      "task_id": "STD-05-VOICE"
+    },
+    {
+      "actual_ai": "NO_AI",
+      "actual_class": "STANDARD",
+      "expected_ai": "NO_AI",
+      "expected_class": "STANDARD",
+      "locks": [
+        "APPLICATION_RUNTIME"
+      ],
+      "status": "PASS",
+      "task_id": "STD-06-CARD"
+    },
+    {
+      "actual_ai": "GPT_PRIMARY",
+      "actual_class": "STANDARD",
+      "expected_ai": "GPT_PRIMARY",
+      "expected_class": "STANDARD",
+      "locks": [
+        "APPLICATION_RUNTIME"
+      ],
+      "status": "PASS",
+      "task_id": "STD-07-PHOTO"
+    },
+    {
+      "actual_ai": "NO_AI",
+      "actual_class": "STANDARD",
+      "expected_ai": "NO_AI",
+      "expected_class": "STANDARD",
+      "locks": [
+        "CATALOG_RENDERER"
+      ],
+      "status": "PASS",
+      "task_id": "STD-08-GENERATOR"
+    },
+    {
+      "actual_ai": "GPT_PRIMARY",
+      "actual_class": "STANDARD",
+      "expected_ai": "GPT_PRIMARY",
+      "expected_class": "STANDARD",
+      "locks": [],
+      "status": "PASS",
+      "task_id": "STD-09-CRM-READONLY"
+    },
+    {
+      "actual_ai": "NO_AI",
+      "actual_class": "STANDARD",
+      "expected_ai": "NO_AI",
+      "expected_class": "STANDARD",
+      "locks": [
+        "APPLICATION_RUNTIME"
+      ],
+      "status": "PASS",
+      "task_id": "STD-10-MULTIFILE"
+    }
+  ],
+  "status": "PASS",
+  "total": 10
+}
