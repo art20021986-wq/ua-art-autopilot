@@ -1,18 +1,19 @@
 name: Claude Autopilot
 
 on:
-  # Manual-only while the visible owner directive for UA-0011 is repaired.
-  # This prevents an inferred Korea target from racing the explicit ferry
-  # target and can be re-enabled after the bounded production verification.
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tasks/task_*.md'
+      - 'tasks/task_*.txt'
 
 permissions:
   contents: write
 
 concurrency:
   group: claude-autopilot
-  # Preserve task order. A newer task waits instead of cancelling an older
-  # Claude request, so TASK N cannot silently replace TASK N-1 mid-flight.
   cancel-in-progress: false
 
 jobs:
@@ -23,20 +24,35 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: SITE HEALTH precheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://www.uaart.com.ua/video/index.html'
+          echo "Checking ${url}"
+          for attempt in 1 2 3; do
+            code="$(curl -L --connect-timeout 8 --max-time 20 -sS -o /tmp/site.html -w '%{http_code}' "$url" || true)"
+            if [ "$code" = '200' ] && [ -s /tmp/site.html ]; then
+              echo 'SITE_HEALTH=PASS'
+              exit 0
+            fi
+            echo "SITE_HEALTH attempt ${attempt}/3 failed: HTTP ${code:-000}"
+            sleep 5
+          done
+          echo 'SITE_HEALTH=FAIL — autopilot start blocked'
+          exit 1
+
       - name: Run autonomous Claude worker
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
-          # Leave ten minutes of the job budget for validation, commit and rebase.
           ANTHROPIC_TOTAL_BUDGET_SECONDS: '1500'
           ANTHROPIC_NETWORK_ATTEMPTS: '4'
-          # Sonnet 5 adaptive thinking counts toward max_tokens; TASK 021 reached
-          # the former 64k ceiling before completing its structured deliverables.
           ANTHROPIC_MAX_TOKENS: '128000'
-          # Streaming emits heartbeats during long structured generations; retry
-          # only when the stream itself is silent for two minutes.
           ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
         run: python3 automation/claude_worker.py
+
       - name: Commit Claude outputs
         run: |
           git add -A -- cloud/
@@ -48,16 +64,10 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git commit -m 'Claude autopilot: process latest task'
 
-          # Never force-push main. Rebase the generated cloud-only commit onto
-          # the newest main and retry if another safe automation advanced it.
           for attempt in 1 2 3 4 5; do
             echo "Push attempt ${attempt}/5"
             git fetch origin main
             if ! git rebase origin/main; then
-              # Concurrent tasks are allowed to update the two shared status
-              # files. During a rebase, keep the status produced by the task
-              # commit being applied ("theirs"). Any code/content conflict
-              # outside these two exact paths still aborts fail-closed.
               mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
               if [ "${#conflicts[@]}" -eq 0 ]; then
                 echo 'Rebase failed without resolvable conflicts'
@@ -75,8 +85,8 @@ jobs:
                 esac
               done
               for path in "${conflicts[@]}"; do
-                git checkout --theirs -- "${path}"
-                git add -- "${path}"
+                git checkout --theirs -- "$path"
+                git add -- "$path"
               done
               if ! GIT_EDITOR=true git rebase --continue; then
                 echo 'Rebase continuation failed after bounded status resolution'
@@ -87,7 +97,7 @@ jobs:
             if git push origin HEAD:main; then
               exit 0
             fi
-            if [ "${attempt}" -lt 5 ]; then
+            if [ "$attempt" -lt 5 ]; then
               sleep $((attempt * 3))
             fi
           done
