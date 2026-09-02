@@ -80,6 +80,10 @@ def validate_backup_compatible(
                 raise base.CanaryError("BACKUP_FILE_SHA:" + name)
 
 
+# All inherited restore/postcheck functions now use the compatible validator.
+base.validate_backup = validate_backup_compatible
+
+
 def rewrite_full_manifest() -> dict[str, Any] | None:
     if not base.LAST_SUCCESS.is_file():
         return None
