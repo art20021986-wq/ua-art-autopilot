@@ -1,0 +1,290 @@
+name: TASK105 STANDARD Root-Cause Recovery
+
+on:
+  push:
+    branches:
+      - task105-fast-pipeline-phase0
+    paths:
+      - 'cloud/task_105_fast_pipeline_phase4/standard_canary_remote_bridge.py'
+      - 'cloud/task_105_fast_pipeline_phase4/standard_canary_recovery_controller.py'
+      - 'cloud/task_105_fast_pipeline_phase4/test_standard_recovery.py'
+      - 'cloud/task_105_fast_pipeline_phase4/ROOT_CAUSE_STANDARD_ATTEMPT1.md'
+      - '.github/workflows/task105_standard_canary_recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  standard-root-cause-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact TASK105 branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: task105-fast-pipeline-phase0
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Verify same-TASK root-cause contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^STATUS: ROOT_CAUSE_IDENTIFIED$' \
+            cloud/task_105_fast_pipeline_phase4/ROOT_CAUSE_STANDARD_ATTEMPT1.md
+          grep -q '^BLIND_RETRY: NO$' \
+            cloud/task_105_fast_pipeline_phase4/ROOT_CAUSE_STANDARD_ATTEMPT1.md
+          grep -q 'BACKUP_MANIFEST_ENRICHMENT_NOT_PERSISTED' \
+            cloud/task_105_fast_pipeline_phase4/ROOT_CAUSE_STANDARD_ATTEMPT1.md
+          grep -q 'УТВЕРЖДАЮ ПРОДОЛЖЕНИЕ UA-ART-FAST-PIPELINE-001 ДО ПОЛНОГО TASK FINISHED' \
+            tasks/task_105_full_completion.md
+
+      - name: Compile and run all STANDARD regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile \
+            automation/task_orchestrator.py \
+            cloud/task_105_fast_pipeline_phase4/standard_canary_remote.py \
+            cloud/task_105_fast_pipeline_phase4/standard_canary_remote_bridge.py \
+            cloud/task_105_fast_pipeline_phase4/standard_canary_controller.py \
+            cloud/task_105_fast_pipeline_phase4/standard_canary_recovery_controller.py \
+            cloud/task_105_fast_pipeline_phase4/test_standard_canary.py \
+            cloud/task_105_fast_pipeline_phase4/test_standard_recovery.py \
+            cloud/task_105_fast_pipeline_phase4/standard_shadow.py
+          python3 cloud/task_105_fast_pipeline_phase4/test_standard_canary.py \
+            2>&1 | tee /tmp/task105-standard-base-tests.log
+          grep -q '^Ran 15 tests' /tmp/task105-standard-base-tests.log
+          grep -q '^OK$' /tmp/task105-standard-base-tests.log
+          python3 cloud/task_105_fast_pipeline_phase4/test_standard_recovery.py \
+            2>&1 | tee /tmp/task105-standard-recovery-tests.log
+          grep -q '^Ran 8 tests' /tmp/task105-standard-recovery-tests.log
+          grep -q '^OK$' /tmp/task105-standard-recovery-tests.log
+
+      - name: Re-run 10-case STANDARD sandbox matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 cloud/task_105_fast_pipeline_phase4/standard_shadow.py >/tmp/task105-standard-shadow.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path(
+              'cloud/task_105_fast_pipeline_phase4/standard_shadow_results.json'
+          ).read_text(encoding='utf-8'))
+          assert value['status'] == 'PASS', value
+          assert value['total'] == 10 and value['passed'] == 10 and value['failed'] == 0, value
+          PY
+
+      - name: Require STANDARD NO_AI production plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >/tmp/task105-standard-recovery-request.json <<'JSON'
+          {
+            "task_id": "TASK105-STANDARD-PRODUCTION-CANARY",
+            "title": "Multi-file STANDARD form fixture",
+            "description": "replace exact form fixtures, backup, rollback and http 200",
+            "changed_paths": [
+              "video/task105-standard-canary-a.txt",
+              "video/task105-standard-canary-b.txt",
+              "video/task105-standard-canary-c.txt"
+            ],
+            "production_required": true,
+            "complexity": 2
+          }
+          JSON
+          python3 automation/task_orchestrator.py classify \
+            /tmp/task105-standard-recovery-request.json >/tmp/task105-standard-plan.json
+          python3 - <<'PY'
+          import json
+          plan = json.load(open('/tmp/task105-standard-plan.json', encoding='utf-8'))
+          assert plan['task_class'] == 'STANDARD', plan
+          assert plan['ai_route'] == 'NO_AI', plan
+          assert plan['ai_call_budget'] == 0, plan
+          PY
+
+      - name: Wait in fair production queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error automation/production_queue.py self-test
+          python3 -W error automation/production_queue.py wait \
+            --task 105 --timeout-seconds 1200 --stable-polls 2
+
+      - name: Clean attempt 1, execute cases, verify live and rollback
+        id: recovery
+        continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 cloud/task_105_fast_pipeline_phase4/standard_canary_recovery_controller.py \
+            2>&1 | tee /tmp/task105-standard-recovery-controller.log
+
+      - name: Materialize canonical status
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+
+          evidence_path = Path('cloud/task_105_fast_pipeline_phase4/standard_canary_evidence.json')
+          receipt_path = Path('state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json')
+          evidence = json.loads(evidence_path.read_text(encoding='utf-8')) if evidence_path.exists() else {}
+          receipt = json.loads(receipt_path.read_text(encoding='utf-8')) if receipt_path.exists() else {}
+          finished = (
+              receipt.get('status') == 'FINISHED'
+              and receipt.get('task_class') == 'STANDARD'
+              and receipt.get('sandbox_cases') == 10
+              and receipt.get('production_cases') == 3
+              and receipt.get('live_verify') == 'PASS'
+              and receipt.get('rollback') == 'PASS'
+              and receipt.get('rollback_public_verify') == 'PASS'
+              and receipt.get('final_state_restored') is True
+              and receipt.get('crm_unchanged') is True
+              and receipt.get('vehicle_data_unchanged') is True
+              and receipt.get('unexpected_changes') == 0
+          )
+          now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+          if finished:
+              state = 'DONE'
+              current = 'STANDARD 10/10 sandbox and 3/3 production cases PASS; full rollback publicly verified'
+              next_action = 'CRITICAL adapter acceptance will start from this receipt'
+              owner_status = 'PASS STANDARD / FINISHED'
+          else:
+              state = 'BLOCKED'
+              current = 'STANDARD root-cause recovery did not reach truthful FINISHED'
+              next_action = 'continue ROOT_CAUSE_MODE on same TASK105; no blind retry'
+              owner_status = 'BLOCKED'
+          Path('cloud/latest_status.md').write_text('\n'.join([
+              'TASK_ID: task_105',
+              'ROUND: 5',
+              'CLAUDE_STATUS: ' + state,
+              'CURRENT_ACTION: ' + current,
+              'FILES_CREATED: cloud/task_105_fast_pipeline_phase4/standard_canary_evidence.json,cloud/task_105_fast_pipeline_phase4/STANDARD_CANARY_REPORT.md,state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json',
+              'PRODUCTION_TOUCHED: ' + ('YES' if evidence.get('production_touched') else 'NO'),
+              'OWNER_ACTION_REQUIRED: NO',
+              'OWNER_QUESTION: NONE',
+              'NEXT_FOR_CHATGPT: ' + next_action,
+              'UPDATED_AT_UTC: ' + now,
+              '',
+          ]), encoding='utf-8')
+          Path('cloud/owner_reply.md').write_text('\n'.join([
+              '# Ответ владельцу — TASK105',
+              '',
+              'СТАТУС: ' + owner_status,
+              'STANDARD SANDBOX: 10/10 PASS' if finished else 'STANDARD SANDBOX: ПРОВЕРИТЬ ОТЧЁТ',
+              'STANDARD PRODUCTION: 3/3 PASS' if finished else 'STANDARD PRODUCTION: НЕ ПРИНЯТ',
+              'ПОЛНЫЙ ОТКАТ И ПУБЛИЧНАЯ ПРОВЕРКА: PASS' if finished else 'ОТКАТ: СМОТРЕТЬ ОШИБКУ',
+              'CRM И ДАННЫЕ АВТОМОБИЛЕЙ: НЕ ИЗМЕНЕНЫ',
+              'СЛЕДУЮЩИЙ ЭТАП: ' + next_action,
+              '',
+          ]), encoding='utf-8')
+          PY
+
+      - name: Enforce bounded evidence scope
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git diff --name-only)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              cloud/task_105_fast_pipeline_phase4/standard_shadow_results.json|\
+              cloud/task_105_fast_pipeline_phase4/standard_canary_evidence.json|\
+              cloud/task_105_fast_pipeline_phase4/STANDARD_CANARY_REPORT.md|\
+              state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json|\
+              cloud/latest_status.md|\
+              cloud/owner_reply.md) ;;
+              *) echo "UNEXPECTED_WRITE_SCOPE: $path"; exit 1 ;;
+            esac
+          done
+
+      - name: Commit only evidence paths that exist
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          paths=(
+            cloud/task_105_fast_pipeline_phase4/standard_shadow_results.json
+            cloud/task_105_fast_pipeline_phase4/standard_canary_evidence.json
+            cloud/task_105_fast_pipeline_phase4/STANDARD_CANARY_REPORT.md
+            state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json
+            cloud/latest_status.md
+            cloud/owner_reply.md
+          )
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then git add -- "$path"; fi
+          done
+          if git diff --cached --quiet; then
+            echo 'No recovery evidence changes'
+            exit 0
+          fi
+          git config user.name 'ua-art-standard-root-cause-recovery'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task105: record corrected STANDARD canary and rollback evidence'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin task105-fast-pipeline-phase0
+            if ! git rebase origin/task105-fast-pipeline-phase0; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:task105-fast-pipeline-phase0; then exit 0; fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Require truthful STANDARD FINISHED receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json
+          python3 automation/task_orchestrator.py validate-receipt \
+            state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json >/tmp/task105-standard-final.json
+          python3 - <<'PY'
+          import json
+          value = json.load(open('/tmp/task105-standard-final.json', encoding='utf-8'))
+          assert value['task_class'] == 'STANDARD', value
+          assert value['sandbox_cases'] == 10, value
+          assert value['production_cases'] == 3, value
+          assert value['rollback'] == 'PASS', value
+          assert value['rollback_public_verify'] == 'PASS', value
+          assert value['final_state_restored'] is True, value
+          assert value['crm_unchanged'] is True, value
+          assert value['vehicle_data_unchanged'] is True, value
+          assert value['unexpected_changes'] == 0, value
+          print('TASK105_STANDARD_ROOT_CAUSE_RECOVERY_FINISHED_PASS')
+          PY
+
+      - name: Upload recovery evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task105-standard-recovery-${{ github.run_id }}
+          path: |
+            cloud/task_105_fast_pipeline_phase4/standard_shadow_results.json
+            cloud/task_105_fast_pipeline_phase4/standard_canary_evidence.json
+            cloud/task_105_fast_pipeline_phase4/STANDARD_CANARY_REPORT.md
+            state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json
+          if-no-files-found: warn
+          retention-days: 14
