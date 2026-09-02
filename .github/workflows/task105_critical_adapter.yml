@@ -1,0 +1,189 @@
+name: TASK105 CRITICAL Adapter Acceptance
+
+on:
+  push:
+    branches:
+      - task105-fast-pipeline-phase0
+    paths:
+      - 'state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task105-critical-adapter-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  critical-adapter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact continuation branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: task105-fast-pipeline-phase0
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Require truthful STANDARD predecessor receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json
+          python3 automation/task_orchestrator.py validate-receipt \
+            state/receipts/TASK105-STANDARD-PRODUCTION-CANARY.json >/tmp/standard-receipt.json
+          python3 - <<'PY'
+          import json
+          value = json.load(open("/tmp/standard-receipt.json", encoding="utf-8"))
+          assert value["task_class"] == "STANDARD", value
+          assert value["sandbox_cases"] == 10, value
+          assert value["production_cases"] == 3, value
+          assert value["crm_unchanged"] is True, value
+          assert value["protected_files_unchanged"] is True, value
+          PY
+
+      - name: Compile strict CRITICAL adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile \
+            automation/critical_adapter.py \
+            cloud/task_105_fast_pipeline_phase5/test_critical_adapter.py \
+            cloud/task_105_fast_pipeline_phase5/critical_acceptance.py
+          python3 automation/critical_adapter.py self-test
+
+      - name: Run CRITICAL failure-injection matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 cloud/task_105_fast_pipeline_phase5/test_critical_adapter.py \
+            2>&1 | tee /tmp/task105-critical-tests.log
+          grep -q '^Ran 21 tests' /tmp/task105-critical-tests.log
+          grep -q '^OK$' /tmp/task105-critical-tests.log
+
+      - name: Run Gate A Gate B and classification acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 cloud/task_105_fast_pipeline_phase5/critical_acceptance.py \
+            | tee /tmp/task105-critical-acceptance.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path(
+              "cloud/task_105_fast_pipeline_phase5/critical_acceptance_results.json"
+          ).read_text(encoding="utf-8"))
+          assert value["status"] == "PASS", value
+          assert value["critical_classification_total"] == 10, value
+          assert value["critical_classification_passed"] == 10, value
+          assert value["gate_b_validation"]["status"] == "GATE_B_AUTHORIZED", value
+          assert value["production_write"] is False, value
+          assert value["crm_write"] is False, value
+          PY
+          python3 automation/task_orchestrator.py validate-receipt \
+            cloud/task_105_fast_pipeline_phase5/phase5_receipt.json >/dev/null
+
+      - name: Materialize Phase 5 status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime as dt
+          from pathlib import Path
+          now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+          Path("cloud/latest_status.md").write_text("\n".join([
+              "TASK_ID: task_105",
+              "ROUND: 6",
+              "CLAUDE_STATUS: DONE",
+              "CURRENT_ACTION: CRITICAL adapter 21/21 tests and 10/10 classification cases PASS",
+              "FILES_CREATED: automation/critical_adapter.py,cloud/task_105_fast_pipeline_phase5/CRITICAL_ADAPTER_REPORT.md,cloud/task_105_fast_pipeline_phase5/phase5_receipt.json",
+              "PRODUCTION_TOUCHED: NO",
+              "OWNER_ACTION_REQUIRED: NO",
+              "OWNER_QUESTION: NONE",
+              "NEXT_FOR_CHATGPT: install permanent workflows, run main-route acceptance and switch intake",
+              "UPDATED_AT_UTC: " + now,
+              "",
+          ]), encoding="utf-8")
+          Path("cloud/owner_reply.md").write_text("\n".join([
+              "# Ответ владельцу — TASK105",
+              "",
+              "СТАТУС: PASS CRITICAL ADAPTER",
+              "ЧТО СДЕЛАНО: строгие Gate A/Gate B, SHA-манифест, запрет ложного FINISHED и обязательный rollback",
+              "ПРОВЕРКА: 21/21 тестов и 10/10 CRITICAL-сценариев PASS",
+              "PRODUCTION: НЕ ЗАТРОНУТ",
+              "CRM И ДАННЫЕ АВТОМОБИЛЕЙ: НЕ ИЗМЕНЕНЫ",
+              "СЛЕДУЮЩИЙ ЭТАП: установка постоянных workflow и переключение основного маршрута",
+              "",
+          ]), encoding="utf-8")
+          PY
+
+      - name: Enforce bounded Phase 5 write scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git diff --name-only)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              cloud/task_105_fast_pipeline_phase5/critical_acceptance_results.json|\
+              cloud/task_105_fast_pipeline_phase5/critical_manifest.json|\
+              cloud/task_105_fast_pipeline_phase5/critical_request.json|\
+              cloud/task_105_fast_pipeline_phase5/gate_a_receipt.json|\
+              cloud/task_105_fast_pipeline_phase5/gate_b_authorization.json|\
+              cloud/task_105_fast_pipeline_phase5/phase5_receipt.json|\
+              cloud/task_105_fast_pipeline_phase5/CRITICAL_ADAPTER_REPORT.md|\
+              cloud/latest_status.md|\
+              cloud/owner_reply.md) ;;
+              *)
+                echo "UNEXPECTED_WRITE_SCOPE: $path"
+                exit 1
+                ;;
+            esac
+          done
+
+      - name: Commit bounded CRITICAL evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- \
+            cloud/task_105_fast_pipeline_phase5/critical_acceptance_results.json \
+            cloud/task_105_fast_pipeline_phase5/critical_manifest.json \
+            cloud/task_105_fast_pipeline_phase5/critical_request.json \
+            cloud/task_105_fast_pipeline_phase5/gate_a_receipt.json \
+            cloud/task_105_fast_pipeline_phase5/gate_b_authorization.json \
+            cloud/task_105_fast_pipeline_phase5/phase5_receipt.json \
+            cloud/task_105_fast_pipeline_phase5/CRITICAL_ADAPTER_REPORT.md \
+            cloud/latest_status.md \
+            cloud/owner_reply.md
+          git config user.name 'ua-art-critical-adapter'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task105: accept strict CRITICAL adapter'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin task105-fast-pipeline-phase0
+            if ! git rebase origin/task105-fast-pipeline-phase0; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:task105-fast-pipeline-phase0; then
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Upload Phase 5 evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task105-critical-adapter-${{ github.run_id }}
+          path: |
+            cloud/task_105_fast_pipeline_phase5/critical_acceptance_results.json
+            cloud/task_105_fast_pipeline_phase5/CRITICAL_ADAPTER_REPORT.md
+            cloud/task_105_fast_pipeline_phase5/phase5_receipt.json
+          if-no-files-found: warn
+          retention-days: 14
