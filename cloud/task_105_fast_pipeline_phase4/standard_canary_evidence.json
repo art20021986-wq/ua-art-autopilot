@@ -1,0 +1,220 @@
+{
+  "artifact": {
+    "artifact_id": 9836727297,
+    "artifact_name": "task105-standard-recovery-33604804585",
+    "artifact_zip_sha256": "12a06a3fdfa7383d98095ee47c85a02b67766ca12511e3d8b773391829342e71",
+    "workflow_run_id": 33604804585
+  },
+  "attempt": 2,
+  "cleanup": {
+    "cleanup_needed": true,
+    "production_write": true,
+    "protected_files_unchanged": true,
+    "restored_to_absent": ["a", "b", "c"],
+    "status": "PASS"
+  },
+  "cloudflare_write": false,
+  "contract_id": "UA-ART-STANDARD-PRODUCTION-CANARY-105-V1.0",
+  "core_page_verification": {
+    "after_cleanup": {
+      "/video/index.html": {
+        "bytes": 34488,
+        "http": 200,
+        "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d"
+      },
+      "/video/katalog.html": {
+        "bytes": 46966,
+        "http": 200,
+        "sha256": "1a6adb341eddb32463476e2377de0665d18daddf56503ec573c0d4f9bfa14d38"
+      }
+    },
+    "after_rollback": {
+      "/video/index.html": {
+        "bytes": 34488,
+        "http": 200,
+        "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d"
+      },
+      "/video/katalog.html": {
+        "bytes": 46966,
+        "http": 200,
+        "sha256": "1a6adb341eddb32463476e2377de0665d18daddf56503ec573c0d4f9bfa14d38"
+      }
+    },
+    "delayed": {
+      "/video/index.html": {
+        "bytes": 34488,
+        "http": 200,
+        "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d"
+      },
+      "/video/katalog.html": {
+        "bytes": 46966,
+        "http": 200,
+        "sha256": "1a6adb341eddb32463476e2377de0665d18daddf56503ec573c0d4f9bfa14d38"
+      }
+    },
+    "immediate": {
+      "/video/index.html": {
+        "bytes": 34488,
+        "http": 200,
+        "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d"
+      },
+      "/video/katalog.html": {
+        "bytes": 46966,
+        "http": 200,
+        "sha256": "1a6adb341eddb32463476e2377de0665d18daddf56503ec573c0d4f9bfa14d38"
+      }
+    }
+  },
+  "crm_write": false,
+  "dns_write": false,
+  "errors": [],
+  "existing_site_file_write": false,
+  "final_receipt": {
+    "ai_calls": 0,
+    "backup": "/home/Carix/backups/task_105_standard_canary/20260902T074310Z_388b38ba99",
+    "changed_files": [
+      "/home/Carix/video/task105-standard-canary-a.txt",
+      "/home/Carix/video/task105-standard-canary-b.txt",
+      "/home/Carix/video/task105-standard-canary-c.txt"
+    ],
+    "crm_unchanged": true,
+    "final_state_restored": true,
+    "finished_at": "2026-09-02T07:46:30Z",
+    "live_verify": "PASS",
+    "production": "PASS",
+    "production_cases": 3,
+    "production_required": true,
+    "protected_files_unchanged": true,
+    "rollback": "PASS",
+    "rollback_public_verify": "PASS",
+    "rollback_ready": true,
+    "sandbox_cases": 10,
+    "started_at": "2026-09-02T07:41:41Z",
+    "status": "FINISHED",
+    "target_environment": "production",
+    "task_class": "STANDARD",
+    "task_id": "TASK105-STANDARD-PRODUCTION-CANARY",
+    "tests": "PASS",
+    "unexpected_changes": 0,
+    "vehicle_data_unchanged": true
+  },
+  "finished_at_utc": "2026-09-02T07:46:30Z",
+  "install": {
+    "backup_manifest": "/home/Carix/backups/task_105_standard_canary/20260902T074310Z_388b38ba99/manifest.json",
+    "backup_root": "/home/Carix/backups/task_105_standard_canary/20260902T074310Z_388b38ba99",
+    "case_count": 3,
+    "cases": [
+      {
+        "case_id": "STANDARD-CASE-1-MULTIFILE",
+        "status": "PASS"
+      },
+      {
+        "case_id": "STANDARD-CASE-2-UPDATE-AND-CREATE",
+        "status": "PASS"
+      },
+      {
+        "case_id": "STANDARD-CASE-3-ROLLBACK-DRILL",
+        "status": "PASS"
+      }
+    ],
+    "crm_write": false,
+    "existing_site_file_write": false,
+    "production_write": true,
+    "protected_files_unchanged": true,
+    "rollback_ready": true,
+    "status": "PASS",
+    "unexpected_changes": 0
+  },
+  "marker_verification": {
+    "after_cleanup": {
+      "a": "ABSENT_HOME_FALLBACK",
+      "b": "ABSENT_HOME_FALLBACK",
+      "c": "ABSENT_HOME_FALLBACK",
+      "status": "PASS"
+    },
+    "after_rollback": {
+      "a": "ABSENT_HOME_FALLBACK",
+      "b": "ABSENT_HOME_FALLBACK",
+      "c": "ABSENT_HOME_FALLBACK",
+      "status": "PASS"
+    },
+    "delayed": {
+      "a": {
+        "http": 200,
+        "sha256": "fd58bb12210afc5ceb883379aee49f65a992986fc1256b6123db35a76c94e81e",
+        "status": "PASS"
+      },
+      "b": {
+        "http": 200,
+        "sha256": "ec3f8a8c0964ec8d1a1ffbb71fba4dfe32dd6d7a39845d2c5ef17e03c68b4bce",
+        "status": "PASS"
+      },
+      "c": {
+        "http": 200,
+        "sha256": "569d861a66839fae8ae1bca7ee26c8d37557b880844e9141e66177284488d4a0",
+        "status": "PASS"
+      }
+    },
+    "immediate": {
+      "a": {
+        "http": 200,
+        "sha256": "fd58bb12210afc5ceb883379aee49f65a992986fc1256b6123db35a76c94e81e",
+        "status": "PASS"
+      },
+      "b": {
+        "http": 200,
+        "sha256": "ec3f8a8c0964ec8d1a1ffbb71fba4dfe32dd6d7a39845d2c5ef17e03c68b4bce",
+        "status": "PASS"
+      },
+      "c": {
+        "http": 200,
+        "sha256": "569d861a66839fae8ae1bca7ee26c8d37557b880844e9141e66177284488d4a0",
+        "status": "PASS"
+      }
+    }
+  },
+  "postcheck": {
+    "case_count": 3,
+    "crm_write": false,
+    "production_write": false,
+    "protected_files_unchanged": true,
+    "status": "PASS"
+  },
+  "production_touched": true,
+  "protected_files": {
+    "/home/Carix/crm.db": {
+      "bytes": 3723264,
+      "sha256": "d2377e9add5c848a96f8eacd7e40da64c1e666ea7bf1fe16fc528bd920c71df5",
+      "unchanged": true
+    },
+    "/home/Carix/video/index.html": {
+      "bytes": 34488,
+      "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
+      "unchanged": true
+    },
+    "/home/Carix/video/katalog.html": {
+      "bytes": 46966,
+      "sha256": "1a6adb341eddb32463476e2377de0665d18daddf56503ec573c0d4f9bfa14d38",
+      "unchanged": true
+    }
+  },
+  "rollback": {
+    "crm_write": false,
+    "production_write": true,
+    "protected_files_unchanged": true,
+    "public_verify": "PASS",
+    "restored_to_absent": ["a", "b", "c"],
+    "rollback_source": "/home/Carix/backups/task_105_standard_canary/20260902T074310Z_388b38ba99",
+    "status": "PASS",
+    "unexpected_changes": 0
+  },
+  "root_cause_mode": true,
+  "sandbox": {
+    "cases": 10,
+    "status": "PASS"
+  },
+  "started_at_utc": "2026-09-02T07:41:41Z",
+  "status": "PASS",
+  "task_id": "TASK105-STANDARD-PRODUCTION-CANARY",
+  "vehicle_data_write": false
+}
