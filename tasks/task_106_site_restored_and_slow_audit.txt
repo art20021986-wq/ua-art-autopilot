@@ -1,0 +1,34 @@
+TASK_ID=task_106
+STATUS=SITE_RESTORED_CONFIRMED_BY_OWNER
+CONFIRMED_CLIENTS=SAFARI,CHROME,TIKTOK
+MODE=SLOW_SAFE_AUDIT
+PRIORITY=P0_GUARD_THEN_PIPELINE
+PRODUCTION_FEATURE_WRITES=FROZEN
+DNS_WRITES=FROZEN
+REDIRECT_WRITES=FROZEN
+CRM_WRITE=NO
+VEHICLE_DATA_WRITE=NO
+
+KNOWN_RECOVERY_STATE:
+- PythonAnywhere storage capacity increased by owner.
+- PythonAnywhere webapp www.uaart.com.ua reloaded.
+- /video/ static mapping preserved at /home/Carix/video/.
+- Let's Encrypt certificate present.
+- Existing Force HTTPS state preserved.
+- REDO/Rehost DNS observed: apex A 91.194.250.154; www CNAME webapp-3170682.pythonanywhere.com.
+- Original redirect restored: / -> 301 -> https://www.uaart.com.ua/video/index.html
+- Owner confirms Safari, Chrome and TikTok all work after restoration.
+
+NEXT_PHASE_READ_ONLY:
+1. Capture LAST_KNOWN_GOOD manifest and current DNS/redirect/webapp baseline.
+2. Audit PythonAnywhere disk usage by directory; no deletion yet.
+3. Classify backups/temp/logs/artifacts vs protected site/CRM/media.
+4. Design storage guard thresholds: WARN 70%, DEPLOY_GUARD 80%, EMERGENCY 90%.
+5. Audit TASK105/TASK106 launch routing and why approval/marker did not create a real executor.
+6. Add requirement: every task must expose real workflow run/job/step or explicitly report NOT_RUNNING.
+7. Design external health checks for root URL, www, /video/index.html and critical site paths.
+8. Design automatic STOP on SITE_HEALTH fail; no feature deploy until consecutive PASS.
+9. No cleanup/deletion/production mutation until evidence report and protected manifest exist.
+10. Only after recovery guard acceptance resume UA-ART-FAST-PIPELINE-001 gradually with canaries.
+
+SUCCESS_GATE=READ_ONLY_AUDIT_REPORT + LAST_KNOWN_GOOD + STORAGE_REPORT + AUTOPILOT_EXECUTION_GAP_REPORT + RECOVERY_GUARD_PLAN
