@@ -1,0 +1,210 @@
+name: UA ART CRITICAL Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      request_path:
+        required: true
+        type: string
+    outputs:
+      status:
+        value: ${{ jobs.execute.outputs.status }}
+      receipt_path:
+        value: ${{ jobs.execute.outputs.receipt_path }}
+  workflow_dispatch:
+    inputs:
+      request_path:
+        description: Repository path under tasks/requests
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    outputs:
+      status: ${{ steps.final.outputs.status }}
+      receipt_path: ${{ steps.contract.outputs.receipt_path }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+    steps:
+      - name: Checkout exact intake commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Validate immutable CRITICAL execution contract
+        id: contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py validate "$REQUEST_PATH" \
+            --expected-class CRITICAL >/tmp/uaart-critical-contract.json
+          python3 automation/execution_contract.py outputs "$REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Materialize strict CRITICAL gate request
+        id: critical
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          source = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
+          critical = source.get('critical')
+          if not isinstance(critical, dict):
+              raise SystemExit('CRITICAL_GATE_OBJECT_REQUIRED')
+          flat = {
+              'task_id': source['task_id'],
+              'title': source['title'],
+              'description': source.get('description', ''),
+              'changed_paths': source.get('changed_paths', []),
+              'production_required': source.get('production_required', False),
+              'requested_min_class': source.get('requested_min_class'),
+              'owner_approval_path': critical['owner_approval_path'],
+              'owner_approval_sha256': critical['owner_approval_sha256'],
+              'manifest_path': critical['manifest_path'],
+              'manifest_sha256': critical['manifest_sha256'],
+              'gate_b_authorized': critical['gate_b_authorized'],
+              'allow_crm_vehicle_data': critical.get('allow_crm_vehicle_data', False),
+          }
+          Path('/tmp/uaart-critical-request.json').write_text(
+              json.dumps(flat, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          output = os.environ['GITHUB_OUTPUT']
+          with open(output, 'a', encoding='utf-8') as handle:
+              handle.write('owner_path=%s\n' % critical['owner_approval_path'])
+              handle.write('manifest_path=%s\n' % critical['manifest_path'])
+              handle.write('gate_a_path=%s\n' % critical['gate_a_path'])
+          PY
+
+      - name: Require Gate A and explicit Gate B authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/critical_adapter.py preflight \
+            /tmp/uaart-critical-request.json \
+            "${{ steps.critical.outputs.owner_path }}" \
+            "${{ steps.critical.outputs.manifest_path }}" \
+            >/tmp/uaart-critical-preflight.json
+          python3 automation/critical_adapter.py gate-b \
+            /tmp/uaart-critical-request.json \
+            "${{ steps.critical.outputs.owner_path }}" \
+            "${{ steps.critical.outputs.manifest_path }}" \
+            "${{ steps.critical.outputs.gate_a_path }}" \
+            >/tmp/uaart-critical-gate-b.json
+          python3 - <<'PY'
+          import json
+          value = json.load(open('/tmp/uaart-critical-gate-b.json', encoding='utf-8'))
+          assert value['status'] == 'GATE_B_AUTHORIZED', value
+          assert value['production_write'] is False, value
+          assert value['rollback_required'] is True, value
+          assert value['live_verify_required'] is True, value
+          PY
+
+      - name: Compile and test CRITICAL package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py compile "$REQUEST_PATH" \
+            --expected-class CRITICAL
+          python3 automation/execution_contract.py test "$REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Wait in strict production queue
+        if: steps.contract.outputs.production_required == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/production_queue.py self-test
+          python3 automation/production_queue.py wait \
+            --task 105 --timeout-seconds 1800 --stable-polls 2
+
+      - name: Execute explicitly authorized CRITICAL controller
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py run "$REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Require generic and CRITICAL final receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py receipt "$REQUEST_PATH" \
+            --expected-class CRITICAL >/tmp/uaart-critical-receipt.json
+          python3 automation/critical_adapter.py validate-final \
+            /tmp/uaart-critical-request.json \
+            "${{ steps.contract.outputs.receipt_path }}" \
+            >/tmp/uaart-critical-final.json
+          python3 - <<'PY'
+          import json
+          value = json.load(open('/tmp/uaart-critical-final.json', encoding='utf-8'))
+          assert value['status'] == 'FINISHED', value
+          assert value['task_class'] == 'CRITICAL', value
+          assert value['tests'] == 'PASS', value
+          assert value['production'] == 'PASS', value
+          assert value['live_verify'] == 'PASS', value
+          assert value['rollback'] == 'PASS', value
+          assert value['unexpected_changes'] == 0, value
+          assert value['protected_files_unchanged'] is True, value
+          assert value['crm_unchanged'] is True, value
+          PY
+
+      - name: Stage bounded CRITICAL evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py stage "$REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Commit CRITICAL receipt and evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --cached --quiet; then
+            echo 'No CRITICAL evidence changes'
+          else
+            git config user.name 'ua-art-critical-pipeline'
+            git config user.email 'actions@users.noreply.github.com'
+            git commit -m "uaart critical: ${{ steps.contract.outputs.task_id }} FINISHED"
+            for attempt in 1 2 3 4 5 6; do
+              git fetch origin "${GITHUB_REF_NAME}"
+              if ! git rebase "origin/${GITHUB_REF_NAME}"; then
+                git rebase --abort || true
+                exit 1
+              fi
+              if git push origin "HEAD:${GITHUB_REF_NAME}"; then break; fi
+              test "$attempt" -lt 6 || exit 1
+              sleep $((attempt * 3))
+            done
+          fi
+
+      - name: Final workflow output
+        id: final
+        shell: bash
+        run: |
+          echo 'status=FINISHED' >>"$GITHUB_OUTPUT"
