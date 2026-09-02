@@ -1,0 +1,38 @@
+TASK_ID=task_107
+CONTRACT=UA-ART-AUTOPILOT-SPEED-001
+PRIORITY=P0
+OWNER_APPROVED=YES
+AUTOSTART_REQUIRED=YES
+
+OBJECTIVE=Optimize task execution for fastest safe throughput without sacrificing SITE HEALTH or rollback protection.
+
+TARGET_SLA:
+FAST_TARGET=15-20_minutes
+STANDARD_TARGET<=60_minutes
+CRITICAL=bounded_by_safety; split into independently verifiable stages when forecast exceeds 60 minutes
+
+MANDATORY_SEQUENCE:
+1. Measure current end-to-end timings: TASK commit -> workflow start -> precheck -> worker -> validation -> result.
+2. Implement deterministic FAST/STANDARD/CRITICAL classifier using task scope/risk, not prose guesswork.
+3. FAST route: minimum sufficient checks; avoid redundant full-repo audits when bounded files are known.
+4. STANDARD route: sandbox + targeted regression + bounded production canary where authorized.
+5. CRITICAL route: backup/LAST_KNOWN_GOOD + sandbox + canary + live verify + rollback.
+6. If forecast >60m, automatically decompose into bounded sequential sub-tasks with visible progress rather than one long silent run.
+7. Add stall detector/timeout: no silent waiting; retry transient failures; fail visibly with exact blocker.
+8. Storage preflight: 70% warning, 80% heavy-deploy gate, 90% emergency STOP; calculate required temporary/backup space before heavy operation.
+9. Preserve SITE HEALTH precheck and add post-task live health verification.
+10. Never call TASK_FINISHED until verified result exists. Marker/workflow creation alone is not completion.
+11. Protect CRM, VIN, prices, vehicle data and media from unrelated mutation.
+12. Benchmark with one safe real task and record actual total duration.
+
+ACCEPTANCE:
+- autostart remains PASS
+- visible workflow starts within seconds of task push under normal GitHub availability
+- FAST benchmark target 15-20m or faster
+- STANDARD target <=60m where scope fits
+- tasks forecast >60m are decomposed instead of silently running indefinitely
+- SITE HEALTH PASS before/after
+- rollback path verified for production-capable routes
+- timing report produced
+
+OUTPUTS=cloud/latest_status.md,cloud/owner_reply.md,cloud/task107_speed_report.md
