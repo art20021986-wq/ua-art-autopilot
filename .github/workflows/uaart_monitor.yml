@@ -1,0 +1,85 @@
+name: UA ART Read-Only Monitor
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uaart-readonly-monitor
+  cancel-in-progress: true
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout control plane
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Read-only public health and control-plane checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import urllib.request
+
+          urls = (
+              'https://www.uaart.com.ua/video/index.html',
+              'https://www.uaart.com.ua/video/katalog.html',
+          )
+          checks = []
+          for url in urls:
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      'User-Agent': 'UA-ART-readonly-monitor/1',
+                      'Cache-Control': 'no-cache',
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=35) as response:
+                  body = response.read(10 * 1024 * 1024 + 1)
+                  status = int(response.status)
+              if status != 200 or len(body) < 500 or len(body) > 10 * 1024 * 1024:
+                  raise SystemExit('PUBLIC_HEALTH_FAIL:%s:%d:%d' % (url, status, len(body)))
+              checks.append({
+                  'url': url,
+                  'http': status,
+                  'bytes': len(body),
+                  'sha256': hashlib.sha256(body).hexdigest(),
+              })
+
+          required = (
+              pathlib.Path('automation/task_orchestrator.py'),
+              pathlib.Path('automation/execution_contract.py'),
+              pathlib.Path('automation/critical_adapter.py'),
+          )
+          for path in required:
+              if not path.is_file() or path.is_symlink():
+                  raise SystemExit('CONTROL_PLANE_FILE_MISSING:' + str(path))
+              compile(path.read_text(encoding='utf-8'), str(path), 'exec')
+          result = {
+              'status': 'PASS',
+              'production_write': False,
+              'public_checks': checks,
+              'control_plane_files': [str(path) for path in required],
+          }
+          pathlib.Path('/tmp/uaart-monitor.json').write_text(
+              json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+          PY
+
+      - name: Upload read-only result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: uaart-readonly-monitor-${{ github.run_id }}
+          path: /tmp/uaart-monitor.json
+          retention-days: 7
