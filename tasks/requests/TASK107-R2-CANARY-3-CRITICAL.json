@@ -1,0 +1,42 @@
+{
+  "ai_requested": false,
+  "canary_index": 3,
+  "changed_paths": [
+    ".github/workflows/uaart_orchestrator.yml"
+  ],
+  "complexity": 3,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": false,
+    "gate_a_path": "tasks/gates/TASK107-R2-CANARY-3-CRITICAL.json",
+    "gate_a_sha256": "b7725ae543972f425eb4655ddc55edce113c097263f1b7af0d7d3535924e0b15",
+    "gate_b_authorized": false,
+    "manifest_path": "tasks/manifests/TASK107-R2-CANARY-3-CRITICAL.json",
+    "manifest_sha256": "23136d352434b643a333d4d2203e8be3088691a6efcb964e4593e4cbef3445c5",
+    "owner_approval_path": "tasks/approvals/TASK107-R2-CANARY-3-CRITICAL.md",
+    "owner_approval_sha256": "c90108630cc5b6b5c8e1e71ace9c0292b956e0a724fb9fa648d6566908b52753"
+  },
+  "description": "deployment architecture control-plane canary with no production write",
+  "execution": {
+    "controller_path": "automation/packages/task107_r2/canary_controller.py",
+    "controller_sha256": "c7e30d7566bb5e2c5885ed8bd49e4ec7a320652a63d46073ee084ff258a497d8",
+    "evidence_paths": [
+      "state/receipts/TASK107-R2-CANARY-3-CRITICAL.json"
+    ],
+    "file_sha256": {
+      "automation/packages/task107_r2/test_canary_controller.py": "ba2a0c65fc3d8d8c24f9ccea0f0f4e1a72043e8f1b5aded4b890984addc0314e"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK107-R2-CANARY-3-CRITICAL.json",
+    "test_paths": [
+      "automation/packages/task107_r2/test_canary_controller.py"
+    ],
+    "timeout_seconds": 120
+  },
+  "production_required": false,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_required_bytes": 16777216,
+  "task_id": "TASK107-R2-CANARY-3-CRITICAL",
+  "title": "TASK107-R2 CRITICAL control-plane canary"
+}

@@ -1,0 +1,22 @@
+{
+  "backup_required": true,
+  "contract_id": "UA-ART-CONTROL-PLANE-R2.0",
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "noop",
+      "path": ".github/workflows/uaart_orchestrator.yml"
+    }
+  ],
+  "production_write": false,
+  "protected_paths": [
+    "crm.db",
+    "video/UA-0009.html",
+    "site/UA-0009.html",
+    "video/foto",
+    "wrangler.jsonc"
+  ],
+  "rollback_required": true,
+  "task_class": "CRITICAL",
+  "task_id": "TASK107-R2-CANARY-3-CRITICAL"
+}

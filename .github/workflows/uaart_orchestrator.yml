@@ -1,11 +1,11 @@
 name: UA ART Central Task Orchestrator
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'tasks/requests/*.json'
+  workflow_call:
+    inputs:
+      request_path:
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       request_path:
@@ -17,141 +17,96 @@ permissions:
   contents: write
   actions: read
 
+# Intake is a short branch-local critical section. Execution is queued by the
+# exact resource key in the FAST/STANDARD/CRITICAL reusable workflows.
 concurrency:
-  group: uaart-intake-${{ github.ref }}
+  group: uaart-intake-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      request_path: ${{ steps.plan.outputs.request_path }}
-      task_id: ${{ steps.plan.outputs.task_id }}
-      task_class: ${{ steps.plan.outputs.task_class }}
+      request_path: ${{ steps.claim.outputs.request_path }}
+      request_sha256: ${{ steps.claim.outputs.request_sha256 }}
+      task_id: ${{ steps.claim.outputs.task_id }}
+      task_class: ${{ steps.claim.outputs.task_class }}
+      lock_key: ${{ steps.claim.outputs.lock_key }}
+      claim_path: ${{ steps.claim.outputs.claim_path }}
+      production_required: ${{ steps.claim.outputs.production_required }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      RUN_ID: ${{ github.run_id }}
     steps:
-      - name: Checkout exact intake commit
+      - name: Checkout latest branch state
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
+          ref: ${{ github.ref_name }}
 
       - name: Set up Python 3.11
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
 
-      - name: Resolve one durable request
-        id: request
-        env:
-          DISPATCH_REQUEST: ${{ inputs.request_path }}
+      - name: Require manual mode and exact durable request
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
+          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
+          test -n "$REQUEST_PATH"
+          python3 -W error -m py_compile automation/control_plane.py
 
-          dispatch = (os.environ.get('DISPATCH_REQUEST') or '').strip()
-          if dispatch:
-              candidates = [dispatch]
-          else:
-              event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text(encoding='utf-8'))
-              candidates = []
-              for commit in event.get('commits') or []:
-                  for key in ('added', 'modified'):
-                      for path in commit.get(key) or []:
-                          if path.startswith('tasks/requests/') and path.endswith('.json'):
-                              candidates.append(path)
-              candidates = sorted(set(candidates))
-          if len(candidates) != 1:
-              raise SystemExit('UAART_INTAKE_REQUIRES_EXACTLY_ONE_REQUEST:' + repr(candidates))
-          request = candidates[0]
-          if request.startswith('/') or '..' in Path(request).parts:
-              raise SystemExit('UAART_INTAKE_UNSAFE_REQUEST_PATH')
-          if not request.startswith('tasks/requests/') or not request.endswith('.json'):
-              raise SystemExit('UAART_INTAKE_REQUEST_SCOPE')
-          if not Path(request).is_file():
-              raise SystemExit('UAART_INTAKE_REQUEST_MISSING')
-          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as handle:
-              handle.write('request_path=%s\n' % request)
-          PY
-
-      - name: Classify and validate execution contract
-        id: plan
-        env:
-          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+      - name: Atomically claim exact request identity
+        id: claim
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/task_orchestrator.py classify "$REQUEST_PATH" >/tmp/uaart-plan.json
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
+          SOURCE_COMMIT="$(git rev-parse HEAD)"
+          python3 automation/control_plane.py claim "$REQUEST_PATH" \
+            --run-id "$RUN_ID" \
+            --source-commit "$SOURCE_COMMIT" \
+            >/tmp/uaart-control-plane-claim.json
 
-          plan = json.load(open('/tmp/uaart-plan.json', encoding='utf-8'))
-          task_class = plan['task_class']
-          if task_class not in {'FAST', 'STANDARD', 'CRITICAL'}:
-              raise SystemExit('UAART_CLASS_INVALID')
-          request_path = os.environ['REQUEST_PATH']
-          output = os.environ['GITHUB_OUTPUT']
-          with open(output, 'a', encoding='utf-8') as handle:
-              handle.write('request_path=%s\n' % request_path)
-              handle.write('task_id=%s\n' % plan['task_id'])
-              handle.write('task_class=%s\n' % task_class)
-          Path('/tmp/uaart-task-class').write_text(task_class + '\n', encoding='utf-8')
-          state = {
-              'task_id': plan['task_id'],
-              'status': 'QUEUED',
-              'request_path': request_path,
-              'task_class': task_class,
-              'ai_route': plan['ai_route'],
-              'ai_call_budget': plan['ai_call_budget'],
-              'retry_budget': plan['retry_budget'],
-              'resource_locks': plan['resource_locks'],
-              'production_required': plan['production_required'],
-              'source_commit': os.environ['GITHUB_SHA'],
-              'orchestrator_run_id': os.environ['GITHUB_RUN_ID'],
-          }
-          target = Path('state/plans') / (plan['task_id'] + '.json')
-          target.parent.mkdir(parents=True, exist_ok=True)
-          target.write_text(
-              json.dumps(state, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
-              encoding='utf-8',
-          )
-          PY
-          TASK_CLASS="$(tr -d '\r\n' </tmp/uaart-task-class)"
-          case "$TASK_CLASS" in
-            FAST|STANDARD|CRITICAL) ;;
-            *) echo "UAART_CLASS_INVALID_AFTER_SERIALIZATION: $TASK_CLASS"; exit 1 ;;
-          esac
+      - name: Bind data-only planning and validate trusted execution package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "${{ steps.claim.outputs.request_sha256 }}" \
+            >/tmp/uaart-exact-request.json
+          python3 automation/control_plane.py planning "$REQUEST_PATH" \
+            --run-id "$RUN_ID" >/tmp/uaart-planning.json
           python3 automation/execution_contract.py validate "$REQUEST_PATH" \
-            --expected-class "$TASK_CLASS" \
+            --expected-class "${{ steps.claim.outputs.task_class }}" \
             >/tmp/uaart-execution-contract.json
 
-      - name: Commit visible queue plan
+      - name: Commit visible claim and plan to this branch
         shell: bash
         run: |
           set -euo pipefail
-          plan_path="state/plans/${{ steps.plan.outputs.task_id }}.json"
-          git add -- "$plan_path"
+          git add -- \
+            "${{ steps.claim.outputs.claim_path }}" \
+            "${{ steps.claim.outputs.plan_path }}"
           if git diff --cached --quiet; then
-            echo 'Plan already current'
-          else
-            git config user.name 'ua-art-orchestrator'
-            git config user.email 'actions@users.noreply.github.com'
-            git commit -m "uaart intake: ${{ steps.plan.outputs.task_id }} QUEUED as ${{ steps.plan.outputs.task_class }}"
-            for attempt in 1 2 3 4 5 6; do
-              git fetch origin main
-              if ! git rebase origin/main; then
-                git rebase --abort || true
-                exit 1
-              fi
-              if git push origin HEAD:main; then break; fi
-              test "$attempt" -lt 6 || exit 1
-              sleep $((attempt * 3))
-            done
+            echo 'Exact claim and plan already current'
+            exit 0
           fi
+          git config user.name 'ua-art-orchestrator'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m "uaart intake: ${{ steps.claim.outputs.task_id }} claimed as ${{ steps.claim.outputs.task_class }}"
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin "${GITHUB_REF_NAME}"
+            if ! git rebase "origin/${GITHUB_REF_NAME}"; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              break
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
 
   fast:
     needs: plan
@@ -159,6 +114,11 @@ jobs:
     uses: ./.github/workflows/uaart_fast.yml
     with:
       request_path: ${{ needs.plan.outputs.request_path }}
+      request_sha256: ${{ needs.plan.outputs.request_sha256 }}
+      lock_key: ${{ needs.plan.outputs.lock_key }}
+      claim_path: ${{ needs.plan.outputs.claim_path }}
+      run_id: ${{ github.run_id }}
+      production_required: ${{ needs.plan.outputs.production_required }}
     secrets: inherit
 
   standard:
@@ -167,6 +127,11 @@ jobs:
     uses: ./.github/workflows/uaart_standard.yml
     with:
       request_path: ${{ needs.plan.outputs.request_path }}
+      request_sha256: ${{ needs.plan.outputs.request_sha256 }}
+      lock_key: ${{ needs.plan.outputs.lock_key }}
+      claim_path: ${{ needs.plan.outputs.claim_path }}
+      run_id: ${{ github.run_id }}
+      production_required: ${{ needs.plan.outputs.production_required }}
     secrets: inherit
 
   critical:
@@ -175,4 +140,9 @@ jobs:
     uses: ./.github/workflows/uaart_critical.yml
     with:
       request_path: ${{ needs.plan.outputs.request_path }}
+      request_sha256: ${{ needs.plan.outputs.request_sha256 }}
+      lock_key: ${{ needs.plan.outputs.lock_key }}
+      claim_path: ${{ needs.plan.outputs.claim_path }}
+      run_id: ${{ github.run_id }}
+      production_required: ${{ needs.plan.outputs.production_required }}
     secrets: inherit

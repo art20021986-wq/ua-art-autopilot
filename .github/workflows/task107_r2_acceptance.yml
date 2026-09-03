@@ -1,0 +1,194 @@
+name: TASK107-R2 Manual Acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type RUN_TASK107_R2_3_CANARIES
+        required: true
+        type: string
+  push:
+    branches:
+      - task107-r2-control-plane-recovery
+    paths:
+      - 'tasks/approvals/TASK107-R2-ACCEPTANCE-RUN.json'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task107-r2-manual-acceptance
+  cancel-in-progress: false
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact acceptance commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Require explicit manual trigger
+        env:
+          DISPATCH_CONFIRMATION: ${{ inputs.confirmation }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
+          if test "$GITHUB_EVENT_NAME" = workflow_dispatch; then
+            test "$DISPATCH_CONFIRMATION" = RUN_TASK107_R2_3_CANARIES
+          else
+            python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          marker = json.loads(
+              Path('tasks/approvals/TASK107-R2-ACCEPTANCE-RUN.json').read_text(encoding='utf-8')
+          )
+          assert marker['task_id'] == 'TASK107-R2'
+          assert marker['action'] == 'RUN_3_CONSECUTIVE_CANARIES'
+          assert marker['production_allowed'] is False
+          assert marker['automatic_mode_allowed'] is False
+          assert marker['authorization_reference'] == 'tasks/task_107_r2.md'
+          PY
+          fi
+
+      - name: Prove branch scope has no site or data mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          python3 - <<'PY'
+          import pathlib
+          import subprocess
+
+          allowed_exact = {
+              '.github/workflows/autopilot_autostart_guard.yml',
+              '.github/workflows/task107_r2_acceptance.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              'automation/control_plane.py',
+              'state/schemas/task_request.schema.json',
+              'tasks/task_107_r2.md',
+          }
+          allowed_prefixes = (
+              'automation/packages/task107_r2/',
+              'tasks/requests/TASK107-R2-CANARY-',
+              'tasks/approvals/TASK107-R2-',
+              'tasks/manifests/TASK107-R2-',
+              'tasks/gates/TASK107-R2-',
+          )
+          changed = subprocess.check_output(
+              ['git', 'diff', '--name-only', 'origin/main...HEAD'], text=True
+          ).splitlines()
+          rejected = [
+              path for path in changed
+              if path not in allowed_exact and not path.startswith(allowed_prefixes)
+          ]
+          if rejected:
+              raise SystemExit('TASK107_R2_SCOPE_VIOLATION:' + repr(rejected))
+          print('TASK107_R2_PROTECTED_SCOPE_PASS', len(changed))
+          PY
+
+      - name: Run control-plane and workflow contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile \
+            automation/control_plane.py \
+            automation/packages/task107_r2/canary_controller.py \
+            automation/packages/task107_r2/test_control_plane.py \
+            automation/packages/task107_r2/test_canary_controller.py \
+            automation/packages/task107_r2/test_workflow_contracts.py
+          python3 automation/packages/task107_r2/test_control_plane.py
+          python3 automation/packages/task107_r2/test_canary_controller.py
+          python3 automation/packages/task107_r2/test_workflow_contracts.py
+          python3 automation/control_plane.py self-test
+
+  fast_canary:
+    needs: unit
+    uses: ./.github/workflows/uaart_orchestrator.yml
+    with:
+      request_path: tasks/requests/TASK107-R2-CANARY-1-FAST.json
+    secrets: inherit
+
+  standard_canary:
+    needs: fast_canary
+    uses: ./.github/workflows/uaart_orchestrator.yml
+    with:
+      request_path: tasks/requests/TASK107-R2-CANARY-2-STANDARD.json
+    secrets: inherit
+
+  critical_canary:
+    needs: standard_canary
+    uses: ./.github/workflows/uaart_orchestrator.yml
+    with:
+      request_path: tasks/requests/TASK107-R2-CANARY-3-CRITICAL.json
+    secrets: inherit
+
+  acceptance_receipt:
+    needs: critical_canary
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout latest three-canary evidence
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Build and validate TASK107-R2 aggregate receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/control_plane.py accept \
+            --requests \
+              tasks/requests/TASK107-R2-CANARY-1-FAST.json \
+              tasks/requests/TASK107-R2-CANARY-2-STANDARD.json \
+              tasks/requests/TASK107-R2-CANARY-3-CRITICAL.json \
+            --run-id "$GITHUB_RUN_ID" \
+            --task-contract tasks/task_107_r2.md \
+            --output state/receipts/TASK107-R2.json \
+            --report cloud/task_107_r2/TASK107_R2_ACCEPTANCE.md \
+            >/tmp/task107-r2-acceptance.json
+          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
+
+      - name: Commit acceptance evidence without enabling automatic mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- \
+            state/receipts/TASK107-R2.json \
+            cloud/task_107_r2/TASK107_R2_ACCEPTANCE.md
+          git config user.name 'ua-art-task107-r2-acceptance'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task107-r2: record 3/3 manual acceptance receipt'
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Publish concise run summary
+        shell: bash
+        run: |
+          {
+            echo '## TASK107-R2'
+            echo
+            echo '- End-to-end canaries: **3/3 PASS**'
+            echo '- Production/site/CRM/DNS/card/media writes: **none**'
+            echo '- Autopilot mode: **MANUAL**'
+            echo '- Automatic mode requires separate owner confirmation.'
+          } >>"$GITHUB_STEP_SUMMARY"
