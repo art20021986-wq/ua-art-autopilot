@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+  "domain": "www.yumpu.com",
+  "source_url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28",
+  "observed_urls": [
+    "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28",
+    "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/31"
+  ],
+  "document_title": "B-Class Price List June 2013.pdf - Mercedes-Benz",
+  "verification_status": "VERIFIED",
+  "verification_method": "manual_web_review",
+  "observed_at_utc": "2026-09-03T23:45:00Z",
+  "identity": {
+    "brand": "Mercedes-Benz",
+    "model_series": "B-Class W246",
+    "modification": "B 180 CDI 7G-DCT",
+    "engine_cc": 1796,
+    "fuel": "diesel",
+    "gearbox": "automatic"
+  },
+  "locator": "Technical specifications, document pages 28-31",
+  "claims": [
+    {"code":"max_power_kw","value":80,"unit":"кВт","note":"3 200–4 600 об/мин"},
+    {"code":"max_torque_nm","value":250,"unit":"Н·м","note":"1 400–2 800 об/мин"},
+    {"code":"cylinders_count","value":4,"unit":"","note":"рядное расположение"},
+    {"code":"transmission_gears","value":7,"unit":"ступ.","note":"7G-DCT"},
+    {"code":"acceleration_0_100_s","value":10.7,"unit":"с","note":""},
+    {"code":"length_mm","value":4359,"unit":"мм","note":""},
+    {"code":"width_mm","value":1786,"unit":"мм","note":""},
+    {"code":"height_mm","value":1557,"unit":"мм","note":""},
+    {"code":"wheelbase_mm","value":2699,"unit":"мм","note":""},
+    {"code":"curb_weight_kg","value":1505,"unit":"кг","note":""},
+    {"code":"gross_weight_kg","value":2025,"unit":"кг","note":""},
+    {"code":"fuel_tank_l","value":50,"unit":"л","note":"резерв 6 л"},
+    {"code":"turning_circle_m","value":11.0,"unit":"м","note":""}
+  ]
+}
