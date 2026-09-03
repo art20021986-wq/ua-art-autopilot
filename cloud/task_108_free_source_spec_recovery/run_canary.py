@@ -28,6 +28,7 @@ def main() -> int:
     print(report["status"])
     for item in report["canaries"]:
         print(item["auto_number"], item["status"], item["verified_fact_count"])
+    print("EVIDENCE_BACKED_CARDS", len(report["enriched_cards"]))
     print("SAFE_TO_PUBLISH_ANYTHING", report["safe_to_publish_anything"])
     return 0 if report["status"].startswith("CANARY_PASS") else 1
 
