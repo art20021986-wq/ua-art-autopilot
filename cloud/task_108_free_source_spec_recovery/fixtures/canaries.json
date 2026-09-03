@@ -26,18 +26,18 @@
         "decoded_vehicle_type": "PASSENGER CAR"
       },
       "facts": [
-        {"code":"max_power_kw","label_ru":"Максимальная мощность","category":"engine","value":80,"unit":"кВт","note":"3 200–4 600 об/мин","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
-        {"code":"max_torque_nm","label_ru":"Максимальный крутящий момент","category":"engine","value":250,"unit":"Н·м","note":"1 400–2 800 об/мин","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
-        {"code":"cylinders_count","label_ru":"Количество цилиндров","category":"engine","value":4,"unit":"","note":"рядное расположение","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
+        {"code":"max_power_kw","label_ru":"Максимальная мощность","category":"engine","value":80,"unit":"кВт","note":"3 200–4 600 об/мин","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
+        {"code":"max_torque_nm","label_ru":"Максимальный крутящий момент","category":"engine","value":250,"unit":"Н·м","note":"1 400–2 800 об/мин","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
+        {"code":"cylinders_count","label_ru":"Количество цилиндров","category":"engine","value":4,"unit":"","note":"рядное расположение","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
         {"code":"transmission_gears","label_ru":"Количество передач","category":"performance","value":7,"unit":"ступ.","note":"7G-DCT","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
-        {"code":"acceleration_0_100_s","label_ru":"Разгон 0–100 км/ч","category":"performance","value":10.7,"unit":"с","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
-        {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4359,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013","AUTOGIDAS_MB_2013"]},
-        {"code":"width_mm","label_ru":"Ширина без зеркал","category":"dimensions","value":1786,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013","AUTOGIDAS_MB_2013"]},
-        {"code":"height_mm","label_ru":"Высота","category":"dimensions","value":1557,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013","AUTOGIDAS_MB_2013"]},
+        {"code":"acceleration_0_100_s","label_ru":"Разгон 0–100 км/ч","category":"performance","value":10.7,"unit":"с","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
+        {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4359,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
+        {"code":"width_mm","label_ru":"Ширина без зеркал","category":"dimensions","value":1786,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","value":1557,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
         {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2699,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
         {"code":"curb_weight_kg","label_ru":"Снаряжённая масса","category":"weight","value":1505,"unit":"кг","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
         {"code":"gross_weight_kg","label_ru":"Разрешённая полная масса","category":"weight","value":2025,"unit":"кг","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
-        {"code":"fuel_tank_l","label_ru":"Объём топливного бака","category":"capacity","value":50,"unit":"л","note":"резерв 6 л","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
+        {"code":"fuel_tank_l","label_ru":"Объём топливного бака","category":"capacity","value":50,"unit":"л","note":"резерв 6 л","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
         {"code":"turning_circle_m","label_ru":"Диаметр разворота","category":"steering","value":11.0,"unit":"м","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]}
       ],
       "conflicts": [
@@ -72,9 +72,7 @@
         {"code":"transmission_gears","label_ru":"Количество передач","category":"performance","value":6,"unit":"ступ.","note":"автоматическая","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
         {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4855,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
         {"code":"width_mm","label_ru":"Ширина","category":"dimensions","value":1865,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
-        {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2805,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
-        {"code":"front_track_mm","label_ru":"Колея передняя","category":"dimensions","value":1614,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
-        {"code":"rear_track_mm","label_ru":"Колея задняя","category":"dimensions","value":1621,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]}
+        {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2805,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]}
       ],
       "conflicts": [
         {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1485,"unit":"мм","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":1475,"unit":"мм","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"},
