@@ -191,6 +191,46 @@ class Task108ContractTests(unittest.TestCase):
         issues = self.report["live_audit_gate"]["issues"]
         self.assertFalse(any(item.startswith("HOME_CATALOG_COUNT_MISMATCH") for item in issues))
 
+    def test_24_every_enrichment_source_has_valid_claim_evidence(self):
+        for source in self.policy["sources"]:
+            if not source["allow_enrichment"]:
+                continue
+            evidence, errors = task108.load_source_evidence(source)
+            self.assertEqual(errors, [], source["id"])
+            self.assertIsNotNone(evidence)
+            self.assertGreater(len(evidence["claims"]), 0)
+
+    def test_25_tampered_evidence_hash_rejects_all_dependent_facts(self):
+        policy = deepcopy(self.policy)
+        source = task108.policy_index(policy)["MB_UK_PRICE_LIST_2013_MIRROR"]
+        source["evidence_sha256"] = "0" * 64
+        result = task108.process_bundle(self.cards["UA-0005"], self.bundles["UA-0005"], policy)
+        self.assertEqual(result["status"], "REVIEW_REQUIRED_EMPTY")
+        reasons = [reason for item in result["rejected"] for reason in item["reasons"]]
+        self.assertIn("MB_UK_PRICE_LIST_2013_MIRROR:SOURCE_EVIDENCE_HASH_MISMATCH", reasons)
+
+    def test_26_source_must_contain_exact_claim_value(self):
+        bundle = deepcopy(self.bundles["UA-0005"])
+        bundle["facts"][0]["value"] = 81
+        result = task108.process_bundle(self.cards["UA-0005"], bundle, self.policy)
+        rejected = next(item for item in result["rejected"] if item["code"] == "max_power_kw")
+        self.assertIn(
+            "MB_UK_PRICE_LIST_2013_MIRROR:SOURCE_CLAIM_VALUE_MISMATCH",
+            rejected["reasons"],
+        )
+        self.assertNotIn("max_power_kw", [item["code"] for item in result["facts"]])
+
+    def test_27_source_evidence_cannot_escape_task_root(self):
+        source = deepcopy(task108.policy_index(self.policy)["AUTOGIDAS_MB_2013"])
+        source["evidence_path"] = "../../../../etc/passwd"
+        _, errors = task108.load_source_evidence(source)
+        self.assertEqual(errors, ["SOURCE_EVIDENCE_PATH_INVALID_OR_MISSING"])
+
+    def test_28_blocked_pages_cannot_enrich(self):
+        sources = task108.policy_index(self.policy)
+        self.assertFalse(sources["AUTOMOBILE_CATALOG_MB_2013"]["allow_enrichment"])
+        self.assertFalse(sources["DANAWA_SONATA_2018"]["allow_enrichment"])
+
 
 if __name__ == "__main__":
     unittest.main()
