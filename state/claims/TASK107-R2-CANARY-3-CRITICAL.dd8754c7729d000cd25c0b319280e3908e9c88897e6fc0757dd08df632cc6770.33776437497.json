@@ -2,21 +2,23 @@
   "ai_response_status": "NOT_REQUESTED",
   "automatic_mode_enabled": false,
   "created_at": "2026-09-03T16:06:11Z",
-  "critical_gate_status": "PENDING",
-  "heartbeat_at": "2026-09-03T16:06:11Z",
-  "heartbeat_sequence": 0,
+  "critical_gate_status": "PASS_NONPRODUCTION",
+  "finished_at": "2026-09-03T16:06:24Z",
+  "heartbeat_at": "2026-09-03T16:06:24Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "33776437497",
     "task_id": "TASK107-R2-CANARY-3-CRITICAL",
     "task_sha256": "dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770"
   },
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "control_plane-303aefff2e9f776c",
   "receipt_path": "state/receipts/TASK107-R2-CANARY-3-CRITICAL.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "a4e0fe67fb5069164230966b56d237a9faab3fcce3ac58219392b2d2f3cf9c4c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TASK107-R2-CANARY-3-CRITICAL.json",
   "request_sha256": "dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770",
   "resource_locks": [
@@ -24,8 +26,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "30ac0bbd5c7aa268dac8096ce41f3d26f19a3766",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 13726154752,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 16777216,
+    "status": "THROTTLE_80",
+    "usage_percent": 82.126
+  },
+  "storage_preflight_status": "THROTTLE_80",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-03T16:06:11Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "c7e30d7566bb5e2c5885ed8bd49e4ec7a320652a63d46073ee084ff258a497d8",
+    "file_sha256": {
+      "automation/packages/task107_r2/test_canary_controller.py": "ba2a0c65fc3d8d8c24f9ccea0f0f4e1a72043e8f1b5aded4b890984addc0314e"
+    }
+  },
+  "updated_at": "2026-09-03T16:06:24Z"
 }
