@@ -1,0 +1,28 @@
+{
+  "ai_calls": 0,
+  "automatic_mode_enabled": false,
+  "canary_index": 1,
+  "crm_vehicle_data_touched": false,
+  "dns_touched": false,
+  "finished_at": "2026-09-03T16:05:23Z",
+  "production_required": false,
+  "production_touched": false,
+  "request_sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5",
+  "rollback_drill": "PASS",
+  "rollback_evidence": {
+    "after_sha256": "44ed69f8f097ba5e6b70ce754a99ef0c4707b8c826bb85f0ccb01886cbd28d44",
+    "before_sha256": "44ed69f8f097ba5e6b70ce754a99ef0c4707b8c826bb85f0ccb01886cbd28d44",
+    "mutation_sha256": "b1c1f585ad789f1fe21b93505ddb5bcaa8a43d6e955637f4549d9b6c85c861aa",
+    "scope": "temporary_directory_only",
+    "status": "PASS"
+  },
+  "rollback_ready": true,
+  "run_id": "33776437497",
+  "site_touched": false,
+  "status": "FINISHED",
+  "target_environment": "sandbox",
+  "task_class": "FAST",
+  "task_id": "TASK107-R2-CANARY-1-FAST",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
