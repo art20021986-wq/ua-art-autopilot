@@ -1,0 +1,19 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "created_at": "2026-09-03T16:05:06Z",
+  "identity": {
+    "run_id": "33776437497",
+    "task_id": "TASK107-R2-CANARY-1-FAST",
+    "task_sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5"
+  },
+  "manual_mode": true,
+  "production_required": false,
+  "queue_key": "path_scope-dd103d2185f56ece-cecf28fd7100f08e",
+  "request_path": "tasks/requests/TASK107-R2-CANARY-1-FAST.json",
+  "resource_locks": [
+    "PATH_SCOPE:dd103d2185f56ece"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "FAST",
+  "task_execution_status": "CLAIMED"
+}

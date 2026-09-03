@@ -1,0 +1,31 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": false,
+  "created_at": "2026-09-03T16:05:06Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "heartbeat_at": "2026-09-03T16:05:06Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "33776437497",
+    "task_id": "TASK107-R2-CANARY-1-FAST",
+    "task_sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5"
+  },
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-dd103d2185f56ece-cecf28fd7100f08e",
+  "receipt_path": "state/receipts/TASK107-R2-CANARY-1-FAST.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK107-R2-CANARY-1-FAST.json",
+  "request_sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5",
+  "resource_locks": [
+    "PATH_SCOPE:dd103d2185f56ece"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "1603338faadeb78f35590273ea4ff45c57135dbf",
+  "storage_preflight_status": "PENDING",
+  "task_class": "FAST",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-03T16:05:06Z"
+}
