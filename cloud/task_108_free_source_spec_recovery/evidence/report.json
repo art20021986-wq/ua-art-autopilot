@@ -9,8 +9,8 @@
     },
     {
       "auto_number": "UA-0002",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 22
     },
     {
       "auto_number": "UA-0003",
@@ -34,13 +34,13 @@
     },
     {
       "auto_number": "UA-0007",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 22
     },
     {
       "auto_number": "UA-0008",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 22
     },
     {
       "auto_number": "UA-0009",
@@ -801,16 +801,2824 @@
     "pass": true,
     "runs": 10,
     "unique_hashes": [
-      "cccaad9f4256913bf99a0178c3da5be5f496e8357ccc775b4404cbd21b786575"
+      "673392a8f00959ae1ebc83bca4fbb40b0282e4f856510d8ab0ab26a023f028be"
     ]
   },
   "duplicate_rendered_codes": {
+    "UA-0002": [],
     "UA-0005": [],
+    "UA-0007": [],
+    "UA-0008": [],
     "UA-0015": []
   },
   "empty_cards_passed": [],
+  "enriched_cards": [
+    {
+      "auto_number": "UA-0002",
+      "category_count": 7,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "bore_mm",
+          "confidence": 0.98,
+          "display_value": "83 мм",
+          "label_ru": "Диаметр цилиндра",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 83.0
+        },
+        {
+          "category": "engine",
+          "code": "valves_per_cylinder",
+          "confidence": 0.98,
+          "display_value": "2",
+          "label_ru": "Клапанов на цилиндр",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 2
+        },
+        {
+          "category": "engine",
+          "code": "engine_code",
+          "confidence": 0.98,
+          "display_value": "M266.940",
+          "label_ru": "Код двигателя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "M266.940"
+        },
+        {
+          "category": "engine",
+          "code": "cylinders_count",
+          "confidence": 0.98,
+          "display_value": "4 · рядное расположение",
+          "label_ru": "Количество цилиндров",
+          "manual_override": false,
+          "note": "рядное расположение",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 4
+        },
+        {
+          "category": "engine",
+          "code": "max_power_ps",
+          "confidence": 0.98,
+          "display_value": "116 л.с. · 5 500 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "5 500 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л.с.",
+          "value": 116
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_nm",
+          "confidence": 0.98,
+          "display_value": "155 Н·м · 3 500–4 000 об/мин",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "3 500–4 000 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "Н·м",
+          "value": 155
+        },
+        {
+          "category": "engine",
+          "code": "compression_ratio",
+          "confidence": 0.98,
+          "display_value": "11:1",
+          "label_ru": "Степень сжатия",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "11:1"
+        },
+        {
+          "category": "engine",
+          "code": "stroke_mm",
+          "confidence": 0.98,
+          "display_value": "78.5 мм",
+          "label_ru": "Ход поршня",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 78.5
+        },
+        {
+          "category": "performance",
+          "code": "transmission_design",
+          "confidence": 0.98,
+          "display_value": "AUTOTRONIC (CVT) · вариатор",
+          "label_ru": "Конструкция трансмиссии",
+          "manual_override": false,
+          "note": "вариатор",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "AUTOTRONIC (CVT)"
+        },
+        {
+          "category": "performance",
+          "code": "acceleration_0_100_s",
+          "confidence": 0.98,
+          "display_value": "12 с",
+          "label_ru": "Разгон 0–100 км/ч",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "с",
+          "value": 12.0
+        },
+        {
+          "category": "dimensions",
+          "code": "height_mm",
+          "confidence": 0.98,
+          "display_value": "1 603 мм",
+          "label_ru": "Высота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1603
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 273 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4273
+        },
+        {
+          "category": "dimensions",
+          "code": "rear_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 551 мм",
+          "label_ru": "Колея задняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1551
+        },
+        {
+          "category": "dimensions",
+          "code": "front_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 556 мм",
+          "label_ru": "Колея передняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1556
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 778 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2778
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 777 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1777
+        },
+        {
+          "category": "capacity",
+          "code": "fuel_tank_l",
+          "confidence": 0.98,
+          "display_value": "54 л",
+          "label_ru": "Объём топливного бака",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л",
+          "value": 54
+        },
+        {
+          "category": "weight",
+          "code": "gross_weight_kg",
+          "confidence": 0.98,
+          "display_value": "1 830 кг",
+          "label_ru": "Разрешённая полная масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 1830
+        },
+        {
+          "category": "weight",
+          "code": "curb_weight_kg",
+          "confidence": 0.98,
+          "display_value": "1 360 кг",
+          "label_ru": "Снаряжённая масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 1360
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "вентилируемые дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "вентилируемые дисковые"
+        },
+        {
+          "category": "steering",
+          "code": "turning_circle_m",
+          "confidence": 0.98,
+          "display_value": "11.95 м",
+          "label_ru": "Диаметр разворота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "м",
+          "value": 11.95
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "MATCHED_BY_VIN_TYPE_PREFIX",
+      "publication_allowed": false,
+      "rejected": [],
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 22,
+      "vin": "WDD2452322J561014",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0005",
+      "category_count": 6,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "cylinders_count",
+          "confidence": 0.98,
+          "display_value": "4 · рядное расположение",
+          "label_ru": "Количество цилиндров",
+          "manual_override": false,
+          "note": "рядное расположение",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 4
+        },
+        {
+          "category": "engine",
+          "code": "max_power_kw",
+          "confidence": 0.98,
+          "display_value": "80 кВт · 3 200–4 600 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "3 200–4 600 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кВт",
+          "value": 80
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_nm",
+          "confidence": 0.98,
+          "display_value": "250 Н·м · 1 400–2 800 об/мин",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "1 400–2 800 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "Н·м",
+          "value": 250
+        },
+        {
+          "category": "performance",
+          "code": "transmission_gears",
+          "confidence": 0.98,
+          "display_value": "7 ступ. · 7G-DCT",
+          "label_ru": "Количество передач",
+          "manual_override": false,
+          "note": "7G-DCT",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "ступ.",
+          "value": 7
+        },
+        {
+          "category": "performance",
+          "code": "acceleration_0_100_s",
+          "confidence": 0.98,
+          "display_value": "10.7 с",
+          "label_ru": "Разгон 0–100 км/ч",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "с",
+          "value": 10.7
+        },
+        {
+          "category": "dimensions",
+          "code": "height_mm",
+          "confidence": 0.98,
+          "display_value": "1 557 мм",
+          "label_ru": "Высота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1557
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 359 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4359
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 699 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2699
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 786 мм",
+          "label_ru": "Ширина без зеркал",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1786
+        },
+        {
+          "category": "capacity",
+          "code": "fuel_tank_l",
+          "confidence": 0.98,
+          "display_value": "50 л · резерв 6 л",
+          "label_ru": "Объём топливного бака",
+          "manual_override": false,
+          "note": "резерв 6 л",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л",
+          "value": 50
+        },
+        {
+          "category": "weight",
+          "code": "gross_weight_kg",
+          "confidence": 0.98,
+          "display_value": "2 025 кг",
+          "label_ru": "Разрешённая полная масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 2025
+        },
+        {
+          "category": "weight",
+          "code": "curb_weight_kg",
+          "confidence": 0.98,
+          "display_value": "1 505 кг",
+          "label_ru": "Снаряжённая масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 1505
+        },
+        {
+          "category": "steering",
+          "code": "turning_circle_m",
+          "confidence": 0.98,
+          "display_value": "11 м",
+          "label_ru": "Диаметр разворота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "м",
+          "value": 11.0
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "MATCHED_BY_OPERATOR_FIELDS",
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "max_speed_kmh",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "unit": "км/ч",
+              "value": 190
+            },
+            {
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "unit": "км/ч",
+              "value": 195
+            }
+          ]
+        }
+      ],
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 13,
+      "vin": "WDDMH0BBXDV171918",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0007",
+      "category_count": 7,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "bore_mm",
+          "confidence": 0.98,
+          "display_value": "83 мм",
+          "label_ru": "Диаметр цилиндра",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 83.0
+        },
+        {
+          "category": "engine",
+          "code": "valves_per_cylinder",
+          "confidence": 0.98,
+          "display_value": "2",
+          "label_ru": "Клапанов на цилиндр",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 2
+        },
+        {
+          "category": "engine",
+          "code": "engine_code",
+          "confidence": 0.98,
+          "display_value": "M266.940",
+          "label_ru": "Код двигателя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "M266.940"
+        },
+        {
+          "category": "engine",
+          "code": "cylinders_count",
+          "confidence": 0.98,
+          "display_value": "4 · рядное расположение",
+          "label_ru": "Количество цилиндров",
+          "manual_override": false,
+          "note": "рядное расположение",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 4
+        },
+        {
+          "category": "engine",
+          "code": "max_power_ps",
+          "confidence": 0.98,
+          "display_value": "116 л.с. · 5 500 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "5 500 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л.с.",
+          "value": 116
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_nm",
+          "confidence": 0.98,
+          "display_value": "155 Н·м · 3 500–4 000 об/мин",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "3 500–4 000 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "Н·м",
+          "value": 155
+        },
+        {
+          "category": "engine",
+          "code": "compression_ratio",
+          "confidence": 0.98,
+          "display_value": "11:1",
+          "label_ru": "Степень сжатия",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "11:1"
+        },
+        {
+          "category": "engine",
+          "code": "stroke_mm",
+          "confidence": 0.98,
+          "display_value": "78.5 мм",
+          "label_ru": "Ход поршня",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 78.5
+        },
+        {
+          "category": "performance",
+          "code": "transmission_design",
+          "confidence": 0.98,
+          "display_value": "AUTOTRONIC (CVT) · вариатор",
+          "label_ru": "Конструкция трансмиссии",
+          "manual_override": false,
+          "note": "вариатор",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "AUTOTRONIC (CVT)"
+        },
+        {
+          "category": "performance",
+          "code": "acceleration_0_100_s",
+          "confidence": 0.98,
+          "display_value": "12 с",
+          "label_ru": "Разгон 0–100 км/ч",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "с",
+          "value": 12.0
+        },
+        {
+          "category": "dimensions",
+          "code": "height_mm",
+          "confidence": 0.98,
+          "display_value": "1 603 мм",
+          "label_ru": "Высота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1603
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 273 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4273
+        },
+        {
+          "category": "dimensions",
+          "code": "rear_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 551 мм",
+          "label_ru": "Колея задняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1551
+        },
+        {
+          "category": "dimensions",
+          "code": "front_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 556 мм",
+          "label_ru": "Колея передняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1556
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 778 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2778
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 777 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1777
+        },
+        {
+          "category": "capacity",
+          "code": "fuel_tank_l",
+          "confidence": 0.98,
+          "display_value": "54 л",
+          "label_ru": "Объём топливного бака",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л",
+          "value": 54
+        },
+        {
+          "category": "weight",
+          "code": "gross_weight_kg",
+          "confidence": 0.98,
+          "display_value": "1 830 кг",
+          "label_ru": "Разрешённая полная масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 1830
+        },
+        {
+          "category": "weight",
+          "code": "curb_weight_kg",
+          "confidence": 0.98,
+          "display_value": "1 360 кг",
+          "label_ru": "Снаряжённая масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 1360
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "вентилируемые дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "вентилируемые дисковые"
+        },
+        {
+          "category": "steering",
+          "code": "turning_circle_m",
+          "confidence": 0.98,
+          "display_value": "11.95 м",
+          "label_ru": "Диаметр разворота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "м",
+          "value": 11.95
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "MATCHED_BY_VIN_TYPE_PREFIX",
+      "publication_allowed": false,
+      "rejected": [],
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 22,
+      "vin": "WDD2452322J724006",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0008",
+      "category_count": 7,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "bore_mm",
+          "confidence": 0.98,
+          "display_value": "83 мм",
+          "label_ru": "Диаметр цилиндра",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 83.0
+        },
+        {
+          "category": "engine",
+          "code": "valves_per_cylinder",
+          "confidence": 0.98,
+          "display_value": "2",
+          "label_ru": "Клапанов на цилиндр",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 2
+        },
+        {
+          "category": "engine",
+          "code": "engine_code",
+          "confidence": 0.98,
+          "display_value": "M266.940",
+          "label_ru": "Код двигателя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "M266.940"
+        },
+        {
+          "category": "engine",
+          "code": "cylinders_count",
+          "confidence": 0.98,
+          "display_value": "4 · рядное расположение",
+          "label_ru": "Количество цилиндров",
+          "manual_override": false,
+          "note": "рядное расположение",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 4
+        },
+        {
+          "category": "engine",
+          "code": "max_power_ps",
+          "confidence": 0.98,
+          "display_value": "116 л.с. · 5 500 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "5 500 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л.с.",
+          "value": 116
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_nm",
+          "confidence": 0.98,
+          "display_value": "155 Н·м · 3 500–4 000 об/мин",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "3 500–4 000 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "Н·м",
+          "value": 155
+        },
+        {
+          "category": "engine",
+          "code": "compression_ratio",
+          "confidence": 0.98,
+          "display_value": "11:1",
+          "label_ru": "Степень сжатия",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "11:1"
+        },
+        {
+          "category": "engine",
+          "code": "stroke_mm",
+          "confidence": 0.98,
+          "display_value": "78.5 мм",
+          "label_ru": "Ход поршня",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 78.5
+        },
+        {
+          "category": "performance",
+          "code": "transmission_design",
+          "confidence": 0.98,
+          "display_value": "AUTOTRONIC (CVT) · вариатор",
+          "label_ru": "Конструкция трансмиссии",
+          "manual_override": false,
+          "note": "вариатор",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "AUTOTRONIC (CVT)"
+        },
+        {
+          "category": "performance",
+          "code": "acceleration_0_100_s",
+          "confidence": 0.98,
+          "display_value": "12 с",
+          "label_ru": "Разгон 0–100 км/ч",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "с",
+          "value": 12.0
+        },
+        {
+          "category": "dimensions",
+          "code": "height_mm",
+          "confidence": 0.98,
+          "display_value": "1 603 мм",
+          "label_ru": "Высота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1603
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 273 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4273
+        },
+        {
+          "category": "dimensions",
+          "code": "rear_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 551 мм",
+          "label_ru": "Колея задняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1551
+        },
+        {
+          "category": "dimensions",
+          "code": "front_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 556 мм",
+          "label_ru": "Колея передняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "www.encycarpedia.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "ENCYCARPEDIA_MB_W245_B180",
+              "url": "https://www.encycarpedia.com/mercedes/09-b-180-mpv"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1556
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 778 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2778
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 777 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1777
+        },
+        {
+          "category": "capacity",
+          "code": "fuel_tank_l",
+          "confidence": 0.98,
+          "display_value": "54 л",
+          "label_ru": "Объём топливного бака",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л",
+          "value": 54
+        },
+        {
+          "category": "weight",
+          "code": "gross_weight_kg",
+          "confidence": 0.98,
+          "display_value": "1 830 кг",
+          "label_ru": "Разрешённая полная масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 1830
+        },
+        {
+          "category": "weight",
+          "code": "curb_weight_kg",
+          "confidence": 0.98,
+          "display_value": "1 360 кг",
+          "label_ru": "Снаряжённая масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 1360
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "вентилируемые дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "вентилируемые дисковые"
+        },
+        {
+          "category": "steering",
+          "code": "turning_circle_m",
+          "confidence": 0.98,
+          "display_value": "11.95 м",
+          "label_ru": "Диаметр разворота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "mercedes-benz-publicarchive.com",
+              "kind": "manufacturer_archive",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "MERCEDES_PUBLIC_ARCHIVE_B180_W245",
+              "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/B-180-2009---2011.xhtml?oid=192213162"
+            },
+            {
+              "domain": "fastcarcheck.uk",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:58:00Z",
+              "runtime_fetch": false,
+              "source_id": "FASTCARCHECK_MB_W245_B170_AUTOTRONIC",
+              "url": "https://fastcarcheck.uk/specs/make/mercedes-benz/b-class/gen/w245-facelift-2008-2011"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "м",
+          "value": 11.95
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "MATCHED_BY_VIN_TYPE_PREFIX",
+      "publication_allowed": false,
+      "rejected": [],
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 22,
+      "vin": "WDD2452322J540158",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0015",
+      "category_count": 3,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "max_power_ps",
+          "confidence": 0.98,
+          "display_value": "151 л.с. · 6 200 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "6 200 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л.с.",
+          "value": 151
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_kgfm",
+          "confidence": 0.98,
+          "display_value": "19.8 кгс·м · 4 200 об/мин",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "4 200 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кгс·м",
+          "value": 19.8
+        },
+        {
+          "category": "performance",
+          "code": "transmission_gears",
+          "confidence": 0.98,
+          "display_value": "6 ступ. · автоматическая",
+          "label_ru": "Количество передач",
+          "manual_override": false,
+          "note": "автоматическая",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "ступ.",
+          "value": 6
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 855 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4855
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 805 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2805
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 865 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1865
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "REVIEW_REQUIRED",
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "co2_g_km",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "г/км",
+              "value": 139
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "г/км",
+              "value": 138
+            }
+          ]
+        },
+        {
+          "code": "combined_consumption_kmpl",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "км/л",
+              "value": 9.4
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "км/л",
+              "value": 9.5
+            }
+          ]
+        },
+        {
+          "code": "curb_weight_kg",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "кг",
+              "value": 1470
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "кг",
+              "value": 1465
+            }
+          ]
+        },
+        {
+          "code": "height_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "мм",
+              "value": 1485
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "мм",
+              "value": 1475
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 6,
+      "vin": "KMHE341DBJA475862",
+      "vpic_usable_for_detailed_facts": false
+    }
+  ],
   "invariant_checks": {
     "all_16_cards_snapshotted": true,
+    "all_bundles_target_known_cards": true,
     "autopublication_false": true,
     "json_ld_present": true,
     "mobile_wrap_rules_present": true,
@@ -886,7 +3694,10 @@
   "production_touched": false,
   "public_path_write": false,
   "public_source_url_leaks": {
+    "UA-0002": [],
     "UA-0005": [],
+    "UA-0007": [],
+    "UA-0008": [],
     "UA-0015": []
   },
   "russian_sources_used": false,
