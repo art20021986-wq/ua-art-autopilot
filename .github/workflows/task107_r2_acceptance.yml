@@ -47,6 +47,7 @@ jobs:
             test "$DISPATCH_CONFIRMATION" = RUN_TASK107_R2_3_CANARIES
           else
             python3 - <<'PY'
+          import hashlib
           import json
           from pathlib import Path
 
@@ -58,6 +59,16 @@ jobs:
           assert marker['production_allowed'] is False
           assert marker['automatic_mode_allowed'] is False
           assert marker['authorization_reference'] == 'tasks/task_107_r2.md'
+          assert marker['branch'] == 'task107-r2-control-plane-recovery'
+          expected = [
+              'tasks/requests/TASK107-R2-CANARY-1-FAST.json',
+              'tasks/requests/TASK107-R2-CANARY-2-STANDARD.json',
+              'tasks/requests/TASK107-R2-CANARY-3-CRITICAL.json',
+          ]
+          assert [item['path'] for item in marker['canary_requests']] == expected
+          for item in marker['canary_requests']:
+              actual = hashlib.sha256(Path(item['path']).read_bytes()).hexdigest()
+              assert actual == item['sha256'], (item['path'], actual)
           PY
           fi
 
