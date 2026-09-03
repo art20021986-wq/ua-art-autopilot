@@ -1,13 +1,11 @@
-name: Claude Autopilot
+name: Claude Autopilot — Manual Mode
 
+# Owner-directed manual mode activated after the four-day recovery trial.
+# No task-file push may start Claude automatically. A human-controlled
+# workflow_dispatch is required until the automation is redesigned and
+# independently accepted.
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'tasks/task_*.md'
-      - 'tasks/task_*.txt'
 
 permissions:
   contents: write
@@ -25,6 +23,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Confirm manual execution mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'EXECUTION_MODE=MANUAL'
+          echo 'AUTOSTART=DISABLED_BY_OWNER'
+
       - name: SITE HEALTH precheck
         shell: bash
         run: |
@@ -40,7 +45,7 @@ jobs:
             echo "SITE_HEALTH attempt ${attempt}/3 failed: HTTP ${code:-000}"
             sleep 5
           done
-          echo 'SITE_HEALTH=FAIL — autopilot start blocked'
+          echo 'SITE_HEALTH=FAIL — manual execution blocked'
           exit 1
 
       - name: Normalize task intake for worker
@@ -71,7 +76,7 @@ jobs:
           print(f'ROUTED_TASK={selected}')
           PY
 
-      - name: Run autonomous Claude worker
+      - name: Run autonomous Claude worker under manual dispatch
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
@@ -90,7 +95,7 @@ jobs:
           fi
           git config user.name 'ua-art-claude-worker'
           git config user.email 'actions@users.noreply.github.com'
-          git commit -m 'Claude autopilot: process latest task'
+          git commit -m 'Claude autopilot: process manually dispatched task'
 
           for attempt in 1 2 3 4 5; do
             echo "Push attempt ${attempt}/5"
