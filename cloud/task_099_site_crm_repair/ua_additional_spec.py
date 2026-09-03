@@ -303,6 +303,8 @@ def crm_summary(value: Any) -> str:
 def render_public_block(value: Any) -> str:
     uid = canonical_uid(value)
     rows = fetch_specs(uid) if uid else []
+    if not rows:
+        return ""
     grouped: dict[str, list[dict[str, Any]]] = {}
     for row in rows:
         category = row["category"] if row["category"] in CATEGORIES else "additional"
@@ -468,6 +470,27 @@ def _remove_duplicate_description_label(source: str) -> str:
     return pattern.sub(r"\1", source, count=1)
 
 
+_OPERATOR_PUBLIC_HINT_RE = re.compile(
+    r"Чтобы\s+изменить\s*[—–-]\s*пришлите\s+новый\s+текст"
+    r"|Пришлите\s+новое\s+значение\s+текстом\s+или\s+голосом",
+    re.I,
+)
+_OPERATOR_PUBLIC_ROW_RE = re.compile(
+    r"<div\s+class=['\"]tehstr['\"]>\s*"
+    r"<div\s+class=['\"]m['\"]>[^<]*</div>\s*"
+    r"<div>\s*(?:"
+    r"Чтобы\s+изменить\s*[—–-]\s*пришлите\s+новый\s+текст\."
+    r"[\s\S]{0,240}?Каждый\s+пункт\s+с\s+новой\s+строки\."
+    r"|Пришлите\s+новое\s+значение\s+текстом\s+или\s+голосом\."
+    r")\s*</div>\s*</div>",
+    re.I,
+)
+
+
+def _remove_operator_description_instructions(source: str) -> str:
+    return _OPERATOR_PUBLIC_ROW_RE.sub("", source)
+
+
 DESCRIPTION_MILEAGE_RE = re.compile(
     r"(?P<prefix>\b(?:Пробег|Пробіг)\b[\s:—–-]*)(?P<number>\d(?:[\d\s\u00a0.,]*\d)?)"
     r"(?P<suffix>\s*км\b)", re.I,
@@ -536,6 +559,7 @@ def inject_public_spec(source: str, value: Any) -> str:
     source = re.sub(re.escape(VIN_START) + r"[\s\S]*?" + re.escape(VIN_END), "", source)
     source = _remove_original_vin(source)
     source = _remove_duplicate_description_label(source)
+    source = _remove_operator_description_instructions(source)
     source = _synchronize_description_mileage(source, uid)
     source = re.sub(r"\bВ море\b", "На пароме", source, flags=re.I)
     source = source.replace(">Забронировать авто за 500 $<", ">Задаток 500 $<")
@@ -590,12 +614,13 @@ def diagnostics_contract_errors(source: str, value: Any) -> list[str]:
 def public_contract_errors(source: str, value: Any) -> list[str]:
     uid = canonical_uid(value) or str(value)
     errors = []
-    if source.count(START) != 1 or source.count(END) != 1:
-        errors.append("additional spec blocks != 1")
+    expected_spec_blocks = 1 if fetch_specs(uid) else 0
+    if source.count(START) != expected_spec_blocks or source.count(END) != expected_spec_blocks:
+        errors.append("additional spec marker count != %d" % expected_spec_blocks)
     if source.count(VIN_START) != 1 or source.count(VIN_END) != 1:
         errors.append("clean VIN blocks != 1")
-    if len(re.findall(r"data-ua-additional-spec=['\"]1['\"]", source, re.I)) != 1:
-        errors.append("additional spec element != 1")
+    if len(re.findall(r"data-ua-additional-spec=['\"]1['\"]", source, re.I)) != expected_spec_blocks:
+        errors.append("additional spec element count != %d" % expected_spec_blocks)
     if re.search(r"carhistory\.kr|Korea\s+CarHistory|Проверить VIN", source, re.I):
         errors.append("external VIN CTA remains")
     if re.search(r"\bВ море\b", source, re.I):
@@ -625,6 +650,8 @@ def public_contract_errors(source: str, value: Any) -> list[str]:
     description_mileages = _description_mileages(source)
     if mileage is not None and any(value != mileage for value in description_mileages):
         errors.append("description mileage differs from operator CRM")
+    if _OPERATOR_PUBLIC_HINT_RE.search(source):
+        errors.append("operator instruction leaked to public description")
     labels = [
         html.unescape(re.sub(r"<[^>]+>", "", label)).strip()
         for label in re.findall(
