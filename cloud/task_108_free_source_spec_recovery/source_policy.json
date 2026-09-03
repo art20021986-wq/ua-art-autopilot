@@ -1,9 +1,10 @@
 {
   "task_id": "TASK108",
-  "policy_version": 1,
+  "policy_version": 2,
   "paid_api_allowed": false,
   "russian_sites_allowed": false,
   "minimum_distinct_sources_per_fact": 2,
+  "maximum_distinct_sources_per_fact": 3,
   "minimum_distinct_categories_per_ready_card": 2,
   "minimum_verified_facts_per_ready_card": 5,
   "sources": [
@@ -16,7 +17,7 @@
       "role": "identity_only",
       "url": "https://vpic.nhtsa.dot.gov/api/",
       "runtime_fetch": true,
-      "allow_enrichment": true,
+      "allow_enrichment": false,
       "last_verified_at_utc": "2026-09-03T23:00:00Z",
       "notes": "Manufacturer-submitted VIN decoding. Any critical decoder error blocks use of decoded facts."
     },
@@ -30,6 +31,8 @@
       "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28",
       "runtime_fetch": false,
       "allow_enrichment": true,
+      "evidence_path": "evidence/sources/mb_uk_price_list_2013_mirror.json",
+      "evidence_sha256": "d3e556de29faba903d128476069dd318992f677d6d4abc1ed573adb0bcc809a8",
       "last_verified_at_utc": "2026-09-03T23:00:00Z",
       "notes": "Manual evidence snapshot of Mercedes-Benz UK B-Class price list, June 2013."
     },
@@ -42,7 +45,7 @@
       "role": "corroboration_only",
       "url": "https://www.automobile-catalog.com/car/2013/2025905/mercedes-benz_b_180_cdi_7g-dct.html",
       "runtime_fetch": false,
-      "allow_enrichment": true,
+      "allow_enrichment": false,
       "last_verified_at_utc": "2026-09-03T23:00:00Z",
       "notes": "Manual verification only; direct automated request was blocked."
     },
@@ -56,6 +59,8 @@
       "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377",
       "runtime_fetch": false,
       "allow_enrichment": true,
+      "evidence_path": "evidence/sources/autogidas_mb_2013.json",
+      "evidence_sha256": "a8840083593052b284aee63a16710c52f7f50323ec21b6c4e76d4d3b5c859c7e",
       "last_verified_at_utc": "2026-09-03T23:00:00Z",
       "notes": "Manual verification only."
     },
@@ -69,6 +74,8 @@
       "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a",
       "runtime_fetch": false,
       "allow_enrichment": true,
+      "evidence_path": "evidence/sources/hyundai_sonata_taxi_catalog_mirror.json",
+      "evidence_sha256": "8451e1094f456d6d43d4490aa3c31b69c5b82ba0153d557399f515f9179a226d",
       "last_verified_at_utc": "2026-09-03T23:00:00Z",
       "notes": "Manual evidence snapshot of a Hyundai Sonata Taxi LPi 2.0 catalogue. Exact trim still requires operator confirmation."
     },
@@ -82,6 +89,8 @@
       "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447",
       "runtime_fetch": false,
       "allow_enrichment": true,
+      "evidence_path": "evidence/sources/carfolio_sonata_lpi_2018.json",
+      "evidence_sha256": "e7ba475b9fcbf01610d5898dadb96cd3ce4e578759ba650804a934be5a33d953",
       "last_verified_at_utc": "2026-09-03T23:00:00Z",
       "notes": "Manual verification only; direct automated request was blocked."
     },
