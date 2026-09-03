@@ -1,12 +1,11 @@
-name: Autopilot Autostart Guard
+name: Autopilot Autostart Guard — Manual Mode
 
+# Automatic fallback dispatch is disabled by owner decision.
+# This workflow remains available only for a deliberate manual verification.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '*/5 * * * *'
 
 permissions:
-  actions: write
   contents: read
 
 concurrency:
@@ -14,57 +13,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verify-autostart:
+  verify-manual-mode:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Find newest task
-        id: task
+      - name: Confirm automatic dispatch is disabled
         shell: bash
         run: |
           set -euo pipefail
-          newest="$(find tasks -maxdepth 1 -type f \( -name 'task_*.md' -o -name 'task_*.txt' \) -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -1 | cut -d' ' -f2-)"
-          if [ -z "$newest" ]; then
-            echo 'No task files found'
-            echo 'has_task=false' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo "Newest task: $newest"
-          echo 'has_task=true' >> "$GITHUB_OUTPUT"
-          echo "task_path=$newest" >> "$GITHUB_OUTPUT"
-          task_sha="$(git log -1 --format=%H -- "$newest")"
-          task_epoch="$(git log -1 --format=%ct -- "$newest")"
-          echo "task_sha=$task_sha" >> "$GITHUB_OUTPUT"
-          echo "task_epoch=$task_epoch" >> "$GITHUB_OUTPUT"
-
-      - name: Verify Claude Autopilot run exists
-        if: steps.task.outputs.has_task == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TASK_SHA: ${{ steps.task.outputs.task_sha }}
-          TASK_EPOCH: ${{ steps.task.outputs.task_epoch }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          now="$(date +%s)"
-          age=$((now - TASK_EPOCH))
-          # Only self-heal recent tasks. Old tasks must never be replayed automatically.
-          if [ "$age" -gt 3600 ]; then
-            echo "Newest task is ${age}s old; no replay"
-            exit 0
-          fi
-
-          runs="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/claude_autopilot.yml/runs?per_page=50")"
-          found="$(printf '%s' "$runs" | jq --arg sha "$TASK_SHA" '[.workflow_runs[] | select(.head_sha == $sha or .created_at >= (now - 3600 | todateiso8601))] | length')"
-          if [ "$found" -gt 0 ]; then
-            echo "AUTOSTART_GUARD=PASS — Claude run exists"
-            exit 0
-          fi
-
-          echo 'AUTOSTART_GUARD=RECOVERY — no Claude run found for recent task; dispatching fallback'
-          gh workflow run claude_autopilot.yml --ref main
-          echo 'AUTOSTART_FALLBACK_DISPATCHED=YES'
+          echo 'EXECUTION_MODE=MANUAL'
+          echo 'AUTOSTART_FALLBACK=DISABLED'
+          echo 'NO_WORKFLOW_WILL_BE_DISPATCHED_BY_THIS_GUARD'
