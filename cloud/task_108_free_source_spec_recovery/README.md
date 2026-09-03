@@ -12,7 +12,7 @@ This package replaces the false-positive behaviour discovered in TASK096/TASK099
 - deterministic consensus and conflict quarantine;
 - denylist for every primary CRM, commercial, history, option, media and logistics field;
 - server-rendered `<details>` block plus `Vehicle.additionalProperty` JSON-LD;
-- canary fixtures and previews for UA-0005 and UA-0015;
+- canary fixtures for UA-0005/UA-0015 plus shared, VIN-type-bound W245 data for UA-0002/UA-0007/UA-0008;
 - strict publication gate, including the special UA-0009 gate;
 - ten-run determinism proof and standard-library tests.
 
@@ -33,7 +33,7 @@ python -m unittest discover -s tests -v
 python run_canary.py
 ```
 
-`run_canary.py` only reads package fixtures and writes package evidence/previews. It contains no production path, DB credential, deploy command or service restart. The current suite contains 28 tests.
+`run_canary.py` only reads package fixtures and writes package evidence/previews. It contains no production path, DB credential, deploy command or service restart. The current suite contains 32 tests.
 
 ## Interpretation
 
@@ -47,3 +47,5 @@ python run_canary.py
 Runtime automatic access is limited to explicitly allowed, free official endpoints. Pages whose rules are unclear, forbid automated processing or return a bot block are represented only by manually verified fact snapshots; the package never crawls them. Source URLs and evidence timestamps are stored internally but not rendered in the public component.
 
 Every enrichment source now points to a canonical evidence JSON file and its SHA-256. A candidate fact is accepted only when two distinct allowed domains each contain the exact semantic code, value, unit and note. The inaccessible Automobile Catalog page and the conflict-only Danawa page are explicitly disabled for enrichment.
+
+The source evidence must also match the bundle identity: brand, model, year/range, engine size, fuel, gearbox and—where the manufacturer exposes it—the factory VIN type prefix. Shared fact sets are immutable and reject inline overrides.
