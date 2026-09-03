@@ -1,0 +1,87 @@
+{
+  "task_id": "TASK108",
+  "captured_at_utc": "2026-09-03T23:00:00Z",
+  "production_touched": false,
+  "bundles": [
+    {
+      "auto_number": "UA-0005",
+      "vin": "WDDMH0BBXDV171918",
+      "identity": {
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "year": "2013",
+        "engine_cc": 1800,
+        "fuel": "Дизель",
+        "gearbox": "автомат",
+        "modification": "B 180 CDI 1.8 7G-DCT (W246)"
+      },
+      "identity_status": "MATCHED_BY_OPERATOR_FIELDS",
+      "identity_note": "The 2013 diesel B-Class with circa 1.8 l and automatic transmission maps to the 1,796 cc B 180 CDI 7G-DCT table. VIN API is advisory only and returned no detailed data.",
+      "vpic_audit": {
+        "url": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/WDDMH0BBXDV171918?format=json&modelyear=2013",
+        "error_codes": [1, 8],
+        "usable_for_detailed_facts": false,
+        "decoded_make": "MERCEDES-BENZ",
+        "decoded_model_year": "2013",
+        "decoded_vehicle_type": "PASSENGER CAR"
+      },
+      "facts": [
+        {"code":"max_power_kw","label_ru":"Максимальная мощность","category":"engine","value":80,"unit":"кВт","note":"3 200–4 600 об/мин","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
+        {"code":"max_torque_nm","label_ru":"Максимальный крутящий момент","category":"engine","value":250,"unit":"Н·м","note":"1 400–2 800 об/мин","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
+        {"code":"cylinders_count","label_ru":"Количество цилиндров","category":"engine","value":4,"unit":"","note":"рядное расположение","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
+        {"code":"transmission_gears","label_ru":"Количество передач","category":"performance","value":7,"unit":"ступ.","note":"7G-DCT","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
+        {"code":"acceleration_0_100_s","label_ru":"Разгон 0–100 км/ч","category":"performance","value":10.7,"unit":"с","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
+        {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4359,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013","AUTOGIDAS_MB_2013"]},
+        {"code":"width_mm","label_ru":"Ширина без зеркал","category":"dimensions","value":1786,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013","AUTOGIDAS_MB_2013"]},
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","value":1557,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013","AUTOGIDAS_MB_2013"]},
+        {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2699,"unit":"мм","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
+        {"code":"curb_weight_kg","label_ru":"Снаряжённая масса","category":"weight","value":1505,"unit":"кг","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
+        {"code":"gross_weight_kg","label_ru":"Разрешённая полная масса","category":"weight","value":2025,"unit":"кг","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]},
+        {"code":"fuel_tank_l","label_ru":"Объём топливного бака","category":"capacity","value":50,"unit":"л","note":"резерв 6 л","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOMOBILE_CATALOG_MB_2013"]},
+        {"code":"turning_circle_m","label_ru":"Диаметр разворота","category":"steering","value":11.0,"unit":"м","note":"","source_ids":["MB_UK_PRICE_LIST_2013_MIRROR","AUTOGIDAS_MB_2013"]}
+      ],
+      "conflicts": [
+        {"code":"max_speed_kmh","label_ru":"Максимальная скорость","category":"performance","variants":[{"value":190,"unit":"км/ч","source_id":"MB_UK_PRICE_LIST_2013_MIRROR"},{"value":195,"unit":"км/ч","source_id":"AUTOMOBILE_CATALOG_MB_2013"}],"resolution":"REVIEW_REQUIRED"}
+      ]
+    },
+    {
+      "auto_number": "UA-0015",
+      "vin": "KMHE341DBJA475862",
+      "identity": {
+        "brand": "Hyundai",
+        "model": "SONATA",
+        "year": "2018",
+        "engine_cc": 1999,
+        "fuel": "газ",
+        "gearbox": "автомат",
+        "modification": "Sonata LF/New Rise LPi 2.0 automatic"
+      },
+      "identity_status": "REVIEW_REQUIRED",
+      "identity_note": "The CRM signature matches Sonata LPi 2.0, but the exact taxi/rental trim is not proven by VIN. Only values shared by the two selected free sources are previewed; publication remains blocked.",
+      "vpic_audit": {
+        "url": "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/KMHE341DBJA475862?format=json&modelyear=2018",
+        "error_codes": [1, 4, 12, 14, 400],
+        "usable_for_detailed_facts": false,
+        "decoded_make": "HYUNDAI",
+        "decoded_model": "Sonata",
+        "decoded_model_year": "2018"
+      },
+      "facts": [
+        {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","value":151,"unit":"л.с.","note":"6 200 об/мин","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+        {"code":"max_torque_kgfm","label_ru":"Максимальный крутящий момент","category":"engine","value":19.8,"unit":"кгс·м","note":"4 200 об/мин","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+        {"code":"transmission_gears","label_ru":"Количество передач","category":"performance","value":6,"unit":"ступ.","note":"автоматическая","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+        {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4855,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+        {"code":"width_mm","label_ru":"Ширина","category":"dimensions","value":1865,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+        {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2805,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+        {"code":"front_track_mm","label_ru":"Колея передняя","category":"dimensions","value":1614,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+        {"code":"rear_track_mm","label_ru":"Колея задняя","category":"dimensions","value":1621,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]}
+      ],
+      "conflicts": [
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1485,"unit":"мм","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":1475,"unit":"мм","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"},
+        {"code":"combined_consumption_kmpl","label_ru":"Расход, смешанный цикл","category":"consumption","variants":[{"value":9.4,"unit":"км/л","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":9.5,"unit":"км/л","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"},
+        {"code":"curb_weight_kg","label_ru":"Снаряжённая масса","category":"weight","variants":[{"value":1470,"unit":"кг","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":1465,"unit":"кг","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"},
+        {"code":"co2_g_km","label_ru":"Выброс CO₂","category":"ecology","variants":[{"value":139,"unit":"г/км","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":138,"unit":"г/км","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"}
+      ]
+    }
+  ]
+}
