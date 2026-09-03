@@ -1,0 +1,931 @@
+{
+  "after_protected_sha256": "eda47234ac44e93f2509bc6edb711aa2c4bc26a27497b7b11e8d76955d283c37",
+  "autopublication": false,
+  "batch_status": [
+    {
+      "auto_number": "UA-0001",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0002",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0003",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0004",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0005",
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 13
+    },
+    {
+      "auto_number": "UA-0006",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0007",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0008",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0009",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0010",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0011",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0012",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0013",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0014",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    },
+    {
+      "auto_number": "UA-0015",
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 8
+    },
+    {
+      "auto_number": "UA-0016",
+      "status": "REVIEW_REQUIRED_EMPTY",
+      "verified_fact_count": 0
+    }
+  ],
+  "before_protected_sha256": "eda47234ac44e93f2509bc6edb711aa2c4bc26a27497b7b11e8d76955d283c37",
+  "canaries": [
+    {
+      "auto_number": "UA-0005",
+      "category_count": 6,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "cylinders_count",
+          "confidence": 0.98,
+          "display_value": "4 · рядное расположение",
+          "label_ru": "Количество цилиндров",
+          "manual_override": false,
+          "note": "рядное расположение",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "www.automobile-catalog.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "url": "https://www.automobile-catalog.com/car/2013/2025905/mercedes-benz_b_180_cdi_7g-dct.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 4
+        },
+        {
+          "category": "engine",
+          "code": "max_power_kw",
+          "confidence": 0.98,
+          "display_value": "80 кВт · 3 200–4 600 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "3 200–4 600 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "www.automobile-catalog.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "url": "https://www.automobile-catalog.com/car/2013/2025905/mercedes-benz_b_180_cdi_7g-dct.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кВт",
+          "value": 80
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_nm",
+          "confidence": 0.98,
+          "display_value": "250 Н·м · 1 400–2 800 об/мин",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "1 400–2 800 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "www.automobile-catalog.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "url": "https://www.automobile-catalog.com/car/2013/2025905/mercedes-benz_b_180_cdi_7g-dct.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "Н·м",
+          "value": 250
+        },
+        {
+          "category": "performance",
+          "code": "transmission_gears",
+          "confidence": 0.98,
+          "display_value": "7 ступ. · 7G-DCT",
+          "label_ru": "Количество передач",
+          "manual_override": false,
+          "note": "7G-DCT",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "ступ.",
+          "value": 7
+        },
+        {
+          "category": "performance",
+          "code": "acceleration_0_100_s",
+          "confidence": 0.98,
+          "display_value": "10.7 с",
+          "label_ru": "Разгон 0–100 км/ч",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "www.automobile-catalog.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "url": "https://www.automobile-catalog.com/car/2013/2025905/mercedes-benz_b_180_cdi_7g-dct.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "с",
+          "value": 10.7
+        },
+        {
+          "category": "dimensions",
+          "code": "height_mm",
+          "confidence": 0.98,
+          "display_value": "1 557 мм",
+          "label_ru": "Высота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "www.automobile-catalog.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "url": "https://www.automobile-catalog.com/car/2013/2025905/mercedes-benz_b_180_cdi_7g-dct.html"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1557
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 359 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "www.automobile-catalog.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "url": "https://www.automobile-catalog.com/car/2013/2025905/mercedes-benz_b_180_cdi_7g-dct.html"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4359
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 699 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2699
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 786 мм",
+          "label_ru": "Ширина без зеркал",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "www.automobile-catalog.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "url": "https://www.automobile-catalog.com/car/2013/2025905/mercedes-benz_b_180_cdi_7g-dct.html"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1786
+        },
+        {
+          "category": "capacity",
+          "code": "fuel_tank_l",
+          "confidence": 0.98,
+          "display_value": "50 л · резерв 6 л",
+          "label_ru": "Объём топливного бака",
+          "manual_override": false,
+          "note": "резерв 6 л",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "www.automobile-catalog.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "url": "https://www.automobile-catalog.com/car/2013/2025905/mercedes-benz_b_180_cdi_7g-dct.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л",
+          "value": 50
+        },
+        {
+          "category": "weight",
+          "code": "gross_weight_kg",
+          "confidence": 0.98,
+          "display_value": "2 025 кг",
+          "label_ru": "Разрешённая полная масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 2025
+        },
+        {
+          "category": "weight",
+          "code": "curb_weight_kg",
+          "confidence": 0.98,
+          "display_value": "1 505 кг",
+          "label_ru": "Снаряжённая масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 1505
+        },
+        {
+          "category": "steering",
+          "code": "turning_circle_m",
+          "confidence": 0.98,
+          "display_value": "11 м",
+          "label_ru": "Диаметр разворота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.yumpu.com",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "url": "https://www.yumpu.com/en/document/view/43869429/b-class-price-list-june-2013pdf-mercedes-benz/28"
+            },
+            {
+              "domain": "autogidas.lt",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOGIDAS_MB_2013",
+              "url": "https://autogidas.lt/en/auto-katalogas/mercedes-benz/b-180/cdi-7g-dct-2013-k99377"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "м",
+          "value": 11.0
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "MATCHED_BY_OPERATOR_FIELDS",
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "max_speed_kmh",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "MB_UK_PRICE_LIST_2013_MIRROR",
+              "unit": "км/ч",
+              "value": 190
+            },
+            {
+              "source_id": "AUTOMOBILE_CATALOG_MB_2013",
+              "unit": "км/ч",
+              "value": 195
+            }
+          ]
+        }
+      ],
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 13,
+      "vin": "WDDMH0BBXDV171918",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0015",
+      "category_count": 3,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "max_power_ps",
+          "confidence": 0.98,
+          "display_value": "151 л.с. · 6 200 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "6 200 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л.с.",
+          "value": 151
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_kgfm",
+          "confidence": 0.98,
+          "display_value": "19.8 кгс·м · 4 200 об/мин",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "4 200 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кгс·м",
+          "value": 19.8
+        },
+        {
+          "category": "performance",
+          "code": "transmission_gears",
+          "confidence": 0.98,
+          "display_value": "6 ступ. · автоматическая",
+          "label_ru": "Количество передач",
+          "manual_override": false,
+          "note": "автоматическая",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "ступ.",
+          "value": 6
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 855 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4855
+        },
+        {
+          "category": "dimensions",
+          "code": "rear_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 621 мм",
+          "label_ru": "Колея задняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1621
+        },
+        {
+          "category": "dimensions",
+          "code": "front_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 614 мм",
+          "label_ru": "Колея передняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1614
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 805 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2805
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 865 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1865
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "REVIEW_REQUIRED",
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "co2_g_km",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "г/км",
+              "value": 139
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "г/км",
+              "value": 138
+            }
+          ]
+        },
+        {
+          "code": "combined_consumption_kmpl",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "км/л",
+              "value": 9.4
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "км/л",
+              "value": 9.5
+            }
+          ]
+        },
+        {
+          "code": "curb_weight_kg",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "кг",
+              "value": 1470
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "кг",
+              "value": 1465
+            }
+          ]
+        },
+        {
+          "code": "height_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "мм",
+              "value": 1485
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "мм",
+              "value": 1475
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 8,
+      "vin": "KMHE341DBJA475862",
+      "vpic_usable_for_detailed_facts": false
+    }
+  ],
+  "determinism": {
+    "pass": true,
+    "runs": 10,
+    "unique_hashes": [
+      "46f9efabd8c0fae6224edde454268c0462e538a6d53e1d22169f492445a29af0"
+    ]
+  },
+  "duplicate_rendered_codes": {
+    "UA-0005": [],
+    "UA-0015": []
+  },
+  "empty_cards_passed": [],
+  "invariant_checks": {
+    "all_16_cards_snapshotted": true,
+    "autopublication_false": true,
+    "json_ld_present": true,
+    "mobile_wrap_rules_present": true,
+    "no_empty_card_passed": true,
+    "no_protected_code_accepted": true,
+    "no_semantic_duplicate_rendered": true,
+    "production_touched_false": true,
+    "protected_fields_unchanged": true,
+    "server_rendered_details_present": true,
+    "source_policy_valid": true,
+    "source_urls_not_public": true,
+    "ten_identical_runs": true
+  },
+  "live_crm_write": false,
+  "mode": "ISOLATED_BRANCH_SANDBOX",
+  "paid_api_used": false,
+  "policy_errors": {},
+  "production_authorized": false,
+  "production_touched": false,
+  "public_path_write": false,
+  "public_source_url_leaks": {
+    "UA-0005": [],
+    "UA-0015": []
+  },
+  "russian_sources_used": false,
+  "safe_to_publish_anything": "NO",
+  "safe_to_publish_ua0009": "NO",
+  "services_restarted": false,
+  "status": "CANARY_PASS_PRODUCTION_BLOCKED",
+  "task_id": "TASK108",
+  "ua0009_publication_readiness": "FAIL"
+}
