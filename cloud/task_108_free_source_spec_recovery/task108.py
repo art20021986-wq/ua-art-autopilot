@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parent
 POLICY_PATH = ROOT / "source_policy.json"
 FIXTURE_PATH = ROOT / "fixtures" / "canaries.json"
 BEFORE_PATH = ROOT / "evidence" / "before_protected_fields.json"
+LIVE_AUDIT_PATH = ROOT / "evidence" / "live_audit_2026-09-03.json"
 
 CATEGORY_ORDER = (
     "engine",
@@ -107,6 +108,26 @@ PROTECTED_PATTERNS = (
 
 CRITICAL_VPIC_ERRORS = {1, 4, 8, 12, 14, 400}
 
+# These are CRM/editor prompts, not customer-facing vehicle descriptions.  A
+# previous generator run exposed both strings on UA-0005.  Match only the
+# generated bullet row shape so ordinary customer prose is never removed.
+OPERATOR_INSTRUCTION_ROW_RE = re.compile(
+    r"<div\s+class=['\"]tehstr['\"]>\s*"
+    r"<div\s+class=['\"]m['\"]>[^<]*</div>\s*"
+    r"<div>\s*(?:"
+    r"Чтобы\s+изменить\s*[—–-]\s*пришлите\s+новый\s+текст\."
+    r"[\s\S]{0,240}?Каждый\s+пункт\s+с\s+новой\s+строки\."
+    r"|Пришлите\s+новое\s+значение\s+текстом\s+или\s+голосом\."
+    r")\s*</div>\s*</div>",
+    re.I,
+)
+
+OPERATOR_INSTRUCTION_TEXT_RE = re.compile(
+    r"Чтобы\s+изменить\s*[—–-]\s*пришлите\s+новый\s+текст"
+    r"|Пришлите\s+новое\s+значение\s+текстом\s+или\s+голосом",
+    re.I,
+)
+
 
 def load_json(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
@@ -143,6 +164,61 @@ def normalize_gearbox(value: Any) -> str:
     if token in {"механика", "manual", "mt"}:
         return "manual"
     return token
+
+
+def strip_operator_instruction_rows(source: str) -> tuple[str, int]:
+    """Remove exact generated CRM editor prompts from public card HTML."""
+    return OPERATOR_INSTRUCTION_ROW_RE.subn("", source or "")
+
+
+def has_operator_instruction_leak(source: str) -> bool:
+    return bool(OPERATOR_INSTRUCTION_TEXT_RE.search(source or ""))
+
+
+def assess_live_audit(audit: dict[str, Any]) -> dict[str, Any]:
+    """Fail closed when a rendered shell is mistaken for real specification data."""
+    issues: list[str] = []
+    expected = list(audit.get("expected_card_ids") or [])
+    cards = list(audit.get("cards") or [])
+    observed = [str(item.get("uid") or "") for item in cards]
+
+    if len(observed) != len(set(observed)):
+        issues.append("DUPLICATE_CARD_IDS")
+    if sorted(observed) != sorted(expected):
+        issues.append("CARD_SET_MISMATCH")
+
+    home = (audit.get("homepage") or {}).get("counts") or {}
+    catalog = (audit.get("catalog") or {}).get("counts") or {}
+    for key in ("all", "kiev", "georgia", "sea", "korea"):
+        if home.get(key) != catalog.get(key):
+            issues.append("HOME_CATALOG_COUNT_MISMATCH:" + key)
+
+    for item in cards:
+        uid = str(item.get("uid") or "UNKNOWN")
+        rows = int(item.get("spec_rows") or 0)
+        blocks = int(item.get("additional_blocks") or 0)
+        if rows <= 0:
+            issues.append("EMPTY_SPEC:" + uid)
+            if blocks:
+                issues.append("EMPTY_SPEC_BLOCK_VISIBLE:" + uid)
+        else:
+            if blocks != 1:
+                issues.append("POPULATED_SPEC_BLOCK_COUNT:%s:%d" % (uid, blocks))
+            if not item.get("json_ld_has_spec"):
+                issues.append("POPULATED_SPEC_JSON_LD_MISSING:" + uid)
+        if int(item.get("operator_instruction_leaks") or 0):
+            issues.append("OPERATOR_INSTRUCTION_LEAK:" + uid)
+        if item.get("old_sea_wording"):
+            issues.append("OLD_SEA_WORDING:" + uid)
+
+    return {
+        "status": "PASS" if not issues else "FAIL",
+        "card_count": len(cards),
+        "empty_spec_cards": [
+            str(item.get("uid")) for item in cards if int(item.get("spec_rows") or 0) <= 0
+        ],
+        "issues": issues,
+    }
 
 
 def is_protected_code(code: str) -> bool:
@@ -444,6 +520,8 @@ def run() -> dict[str, Any]:
     policy = load_json(POLICY_PATH)
     fixture = load_json(FIXTURE_PATH)
     before = load_json(BEFORE_PATH)
+    live_audit = load_json(LIVE_AUDIT_PATH)
+    live_audit_gate = assess_live_audit(live_audit)
     cards = {card["auto_number"]: card for card in before["cards"]}
     bundle_by_uid = {item["auto_number"]: item for item in fixture["bundles"]}
 
@@ -540,7 +618,11 @@ def run() -> dict[str, Any]:
     return {
         "task_id": "TASK108",
         "mode": "ISOLATED_BRANCH_SANDBOX",
-        "status": "CANARY_PASS_PRODUCTION_BLOCKED" if pipeline_pass else "FAIL",
+        "status": (
+            "CANARY_PASS_LIVE_REMEDIATION_REQUIRED"
+            if pipeline_pass and live_audit_gate["status"] == "FAIL"
+            else ("CANARY_PASS_PRODUCTION_BLOCKED" if pipeline_pass else "FAIL")
+        ),
         "paid_api_used": False,
         "russian_sources_used": False,
         "production_authorized": False,
@@ -558,6 +640,7 @@ def run() -> dict[str, Any]:
         "duplicate_rendered_codes": duplicate_rendered_codes,
         "public_source_url_leaks": public_source_url_leaks,
         "invariant_checks": invariant_checks,
+        "live_audit_gate": live_audit_gate,
         "determinism": {"runs": 10, "unique_hashes": sorted(set(run_hashes)), "pass": len(set(run_hashes)) == 1},
         "ua0009_publication_readiness": "PASS" if ua0009_ready else "FAIL",
         "safe_to_publish_ua0009": "YES" if ua0009_ready else "NO",
@@ -608,6 +691,14 @@ UA-0005 прошла структурный canary и готова только 
 - Конфликты не усредняются. Для UA-0005 из выдачи исключена максимальная скорость; для UA-0015 исключены высота, расход, масса и CO₂.
 - Публичный блок не содержит URL источников, но происхождение каждого факта сохраняется во внутреннем evidence.
 - HTML и JSON-LD сформированы на сервере; JavaScript для индексации не нужен.
+
+## Live-аудит 16 карточек
+
+- Статус: **{report['live_audit_gate']['status']}** — пока блокирует Production.
+- Проверено карточек: **{report['live_audit_gate']['card_count']}**.
+- Пустая спецификация: **{len(report['live_audit_gate']['empty_spec_cards'])}** карточек.
+- Пустой HTML-блок больше не считается наличием спецификации и не может дать общий PASS.
+- Служебные подсказки оператора CRM удаляются только по точным публично недопустимым шаблонам.
 
 ## Полный парк
 
