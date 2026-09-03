@@ -22,6 +22,7 @@ POLICY_PATH = ROOT / "source_policy.json"
 FIXTURE_PATH = ROOT / "fixtures" / "canaries.json"
 BEFORE_PATH = ROOT / "evidence" / "before_protected_fields.json"
 LIVE_AUDIT_PATH = ROOT / "evidence" / "live_audit_2026-09-03.json"
+SOURCE_EVIDENCE_ROOT = ROOT / "evidence" / "sources"
 
 CATEGORY_ORDER = (
     "engine",
@@ -230,6 +231,54 @@ def policy_index(policy: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {item["id"]: item for item in policy["sources"]}
 
 
+def _source_evidence_path(source: dict[str, Any]) -> Path | None:
+    relative = str(source.get("evidence_path") or "").strip()
+    if not relative:
+        return None
+    candidate = (ROOT / relative).resolve()
+    try:
+        candidate.relative_to(ROOT.resolve())
+    except ValueError:
+        return None
+    return candidate
+
+
+def load_source_evidence(source: dict[str, Any]) -> tuple[dict[str, Any] | None, list[str]]:
+    """Load and integrity-check the reviewed claim snapshot for one source."""
+    errors: list[str] = []
+    path = _source_evidence_path(source)
+    if path is None:
+        return None, ["SOURCE_EVIDENCE_PATH_INVALID_OR_MISSING"]
+    if path.suffix.lower() != ".json" or not path.is_file():
+        return None, ["SOURCE_EVIDENCE_FILE_MISSING"]
+    try:
+        evidence = load_json(path)
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return None, ["SOURCE_EVIDENCE_FILE_INVALID"]
+
+    expected_hash = normalize_text(source.get("evidence_sha256"))
+    actual_hash = sha256_json(evidence)
+    if not re.fullmatch(r"[0-9a-f]{64}", expected_hash):
+        errors.append("SOURCE_EVIDENCE_HASH_INVALID")
+    elif actual_hash != expected_hash:
+        errors.append("SOURCE_EVIDENCE_HASH_MISMATCH")
+    if evidence.get("schema_version") != 1:
+        errors.append("SOURCE_EVIDENCE_SCHEMA_UNSUPPORTED")
+    if evidence.get("source_id") != source.get("id"):
+        errors.append("SOURCE_EVIDENCE_ID_MISMATCH")
+    if normalize_text(evidence.get("domain")) != normalize_text(source.get("domain")):
+        errors.append("SOURCE_EVIDENCE_DOMAIN_MISMATCH")
+    if evidence.get("source_url") != source.get("url"):
+        errors.append("SOURCE_EVIDENCE_URL_MISMATCH")
+    if evidence.get("verification_status") != "VERIFIED":
+        errors.append("SOURCE_EVIDENCE_NOT_VERIFIED")
+    if not evidence.get("observed_at_utc"):
+        errors.append("SOURCE_EVIDENCE_TIMESTAMP_MISSING")
+    if not isinstance(evidence.get("claims"), list) or not evidence.get("claims"):
+        errors.append("SOURCE_EVIDENCE_CLAIMS_MISSING")
+    return evidence, errors
+
+
 def validate_source(source: dict[str, Any], *, for_enrichment: bool = True) -> list[str]:
     errors: list[str] = []
     domain = normalize_text(source.get("domain"))
@@ -242,7 +291,38 @@ def validate_source(source: dict[str, Any], *, for_enrichment: bool = True) -> l
         errors.append("PAID_SOURCE_FORBIDDEN")
     if for_enrichment and not source.get("allow_enrichment", False):
         errors.append("SOURCE_NOT_ALLOWED_FOR_ENRICHMENT")
+    if source.get("allow_enrichment", False):
+        _, evidence_errors = load_source_evidence(source)
+        errors.extend(evidence_errors)
     return errors
+
+
+def _claim_matches_fact(claim: dict[str, Any], fact: dict[str, Any]) -> bool:
+    return (
+        normalize_text(claim.get("code")).replace(" ", "_")
+        == normalize_text(fact.get("code")).replace(" ", "_")
+        and claim.get("value") == fact.get("value")
+        and normalize_text(claim.get("unit")) == normalize_text(fact.get("unit"))
+        and normalize_text(claim.get("note")) == normalize_text(fact.get("note"))
+    )
+
+
+def source_supports_fact(source: dict[str, Any], fact: dict[str, Any]) -> tuple[bool, list[str]]:
+    """Require an exact code/value/unit/note claim in the reviewed evidence file."""
+    evidence, errors = load_source_evidence(source)
+    if errors or evidence is None:
+        return False, errors
+    same_code = [
+        claim
+        for claim in evidence["claims"]
+        if normalize_text(claim.get("code")).replace(" ", "_")
+        == normalize_text(fact.get("code")).replace(" ", "_")
+    ]
+    if not same_code:
+        return False, ["SOURCE_CLAIM_MISSING"]
+    if not any(_claim_matches_fact(claim, fact) for claim in same_code):
+        return False, ["SOURCE_CLAIM_VALUE_MISMATCH"]
+    return True, []
 
 
 def identity_score(card: dict[str, Any], bundle: dict[str, Any]) -> tuple[float, list[str]]:
@@ -301,6 +381,9 @@ def process_bundle(
         source_ids = list(dict.fromkeys(fact.get("source_ids") or []))
         if len(source_ids) < minimum_sources:
             reasons.append("TOO_FEW_DISTINCT_SOURCES")
+        maximum_sources = int(policy.get("maximum_distinct_sources_per_fact", 3))
+        if len(source_ids) > maximum_sources:
+            reasons.append("TOO_MANY_DISTINCT_SOURCES")
         source_domains: set[str] = set()
         source_records: list[dict[str, Any]] = []
         for source_id in source_ids:
@@ -310,6 +393,9 @@ def process_bundle(
                 continue
             source_errors = validate_source(source)
             reasons.extend(f"{source_id}:{error}" for error in source_errors)
+            supported, claim_errors = source_supports_fact(source, fact)
+            if not supported:
+                reasons.extend(f"{source_id}:{error}" for error in claim_errors)
             source_domains.add(source["domain"])
             source_records.append(
                 {
@@ -690,6 +776,8 @@ UA-0005 прошла структурный canary и готова только 
 - Смысловой код уникален; повторяющиеся «Высота», «Длина» и другие дубли не попадают в HTML.
 - Конфликты не усредняются. Для UA-0005 из выдачи исключена максимальная скорость; для UA-0015 исключены высота, расход, масса и CO₂.
 - Публичный блок не содержит URL источников, но происхождение каждого факта сохраняется во внутреннем evidence.
+- URL сам по себе не считается доказательством: каждый источник обязан иметь проверенный JSON-снимок утверждений с SHA-256, а код/значение/единица/примечание должны совпасть точно.
+- Источник, который отвечает блокировкой или не имеет проверяемого снимка, не участвует в обогащении.
 - HTML и JSON-LD сформированы на сервере; JavaScript для индексации не нужен.
 
 ## Live-аудит 16 карточек
