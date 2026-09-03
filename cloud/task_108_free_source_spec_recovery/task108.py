@@ -135,6 +135,21 @@ def load_json(path: Path) -> dict[str, Any]:
         return json.load(handle)
 
 
+def expand_bundle(bundle: dict[str, Any], fixture: dict[str, Any]) -> dict[str, Any]:
+    """Resolve a reviewed shared fact set without allowing ambiguous overrides."""
+    result = deepcopy(bundle)
+    fact_set_id = result.get("fact_set_id")
+    if not fact_set_id:
+        return result
+    if result.get("facts"):
+        raise ValueError(f"AMBIGUOUS_INLINE_AND_SHARED_FACTS:{fact_set_id}")
+    fact_sets = fixture.get("fact_sets") or {}
+    if fact_set_id not in fact_sets:
+        raise ValueError(f"UNKNOWN_FACT_SET:{fact_set_id}")
+    result["facts"] = deepcopy(fact_sets[fact_set_id])
+    return result
+
+
 def canonical_json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
@@ -307,11 +322,66 @@ def _claim_matches_fact(claim: dict[str, Any], fact: dict[str, Any]) -> bool:
     )
 
 
-def source_supports_fact(source: dict[str, Any], fact: dict[str, Any]) -> tuple[bool, list[str]]:
+def _identity_token(value: Any) -> str:
+    return re.sub(r"[^0-9a-zа-яё]+", "", normalize_text(value))
+
+
+def source_identity_errors(evidence: dict[str, Any], bundle: dict[str, Any]) -> list[str]:
+    """Prove that a claim snapshot applies to this exact CRM identity."""
+    errors: list[str] = []
+    applies = evidence.get("identity") or {}
+    expected = bundle.get("identity") or {}
+    if not applies:
+        return ["SOURCE_IDENTITY_MISSING"]
+    if normalize_text(applies.get("brand")) != normalize_text(expected.get("brand")):
+        errors.append("SOURCE_IDENTITY_BRAND_MISMATCH")
+    source_model = _identity_token(applies.get("model_series") or applies.get("model"))
+    expected_model = _identity_token(expected.get("model"))
+    if not source_model or not expected_model or expected_model not in source_model:
+        errors.append("SOURCE_IDENTITY_MODEL_MISMATCH")
+
+    expected_year = int(expected.get("year") or 0)
+    if (
+        applies.get("year") is None
+        and applies.get("year_min") is None
+        and applies.get("year_max") is None
+    ):
+        errors.append("SOURCE_IDENTITY_YEAR_MISSING")
+    if applies.get("year") is not None and expected_year != int(applies["year"]):
+        errors.append("SOURCE_IDENTITY_YEAR_MISMATCH")
+    if applies.get("year_min") is not None and expected_year < int(applies["year_min"]):
+        errors.append("SOURCE_IDENTITY_YEAR_RANGE_MISMATCH")
+    if applies.get("year_max") is not None and expected_year > int(applies["year_max"]):
+        errors.append("SOURCE_IDENTITY_YEAR_RANGE_MISMATCH")
+    if applies.get("engine_cc") is not None and abs(
+        int(applies["engine_cc"]) - int(expected.get("engine_cc") or 0)
+    ) > 30:
+        errors.append("SOURCE_IDENTITY_ENGINE_MISMATCH")
+    if applies.get("fuel") is not None and normalize_fuel(applies["fuel"]) != normalize_fuel(
+        expected.get("fuel")
+    ):
+        errors.append("SOURCE_IDENTITY_FUEL_MISMATCH")
+    if applies.get("gearbox") is not None and normalize_gearbox(
+        applies["gearbox"]
+    ) != normalize_gearbox(expected.get("gearbox")):
+        errors.append("SOURCE_IDENTITY_GEARBOX_MISMATCH")
+
+    prefixes = [normalize_text(item).upper() for item in applies.get("vin_type_prefixes", [])]
+    if prefixes and not any(str(bundle.get("vin") or "").upper().startswith(item) for item in prefixes):
+        errors.append("SOURCE_IDENTITY_VIN_TYPE_MISMATCH")
+    return sorted(set(errors))
+
+
+def source_supports_fact(
+    source: dict[str, Any], fact: dict[str, Any], bundle: dict[str, Any]
+) -> tuple[bool, list[str]]:
     """Require an exact code/value/unit/note claim in the reviewed evidence file."""
     evidence, errors = load_source_evidence(source)
     if errors or evidence is None:
         return False, errors
+    identity_errors = source_identity_errors(evidence, bundle)
+    if identity_errors:
+        return False, identity_errors
     same_code = [
         claim
         for claim in evidence["claims"]
@@ -393,7 +463,7 @@ def process_bundle(
                 continue
             source_errors = validate_source(source)
             reasons.extend(f"{source_id}:{error}" for error in source_errors)
-            supported, claim_errors = source_supports_fact(source, fact)
+            supported, claim_errors = source_supports_fact(source, fact, bundle)
             if not supported:
                 reasons.extend(f"{source_id}:{error}" for error in claim_errors)
             source_domains.add(source["domain"])
@@ -464,7 +534,10 @@ def process_bundle(
     enough_facts = len(facts) >= int(policy["minimum_verified_facts_per_ready_card"])
     enough_categories = len(categories) >= int(policy["minimum_distinct_categories_per_ready_card"])
     identity_matched = score >= 0.95 and not mismatches
-    exact_trim_proven = bundle.get("identity_status") == "MATCHED_BY_OPERATOR_FIELDS"
+    exact_trim_proven = bundle.get("identity_status") in {
+        "MATCHED_BY_OPERATOR_FIELDS",
+        "MATCHED_BY_VIN_TYPE_PREFIX",
+    }
 
     if not facts:
         status = "REVIEW_REQUIRED_EMPTY"
@@ -483,9 +556,8 @@ def process_bundle(
         "identity_score": score,
         "identity_mismatches": mismatches,
         "identity_status": bundle.get("identity_status"),
-        "vpic_usable_for_detailed_facts": not bool(
-            set(bundle.get("vpic_audit", {}).get("error_codes", [])) & CRITICAL_VPIC_ERRORS
-        ),
+        "vpic_usable_for_detailed_facts": bool(bundle.get("vpic_audit"))
+        and not bool(set(bundle["vpic_audit"].get("error_codes", [])) & CRITICAL_VPIC_ERRORS),
         "status": status,
         "verified_fact_count": len(facts),
         "category_count": len(categories),
@@ -609,7 +681,10 @@ def run() -> dict[str, Any]:
     live_audit = load_json(LIVE_AUDIT_PATH)
     live_audit_gate = assess_live_audit(live_audit)
     cards = {card["auto_number"]: card for card in before["cards"]}
-    bundle_by_uid = {item["auto_number"]: item for item in fixture["bundles"]}
+    raw_bundle_by_uid = {item["auto_number"]: item for item in fixture["bundles"]}
+    bundle_by_uid = {
+        uid: expand_bundle(item, fixture) for uid, item in raw_bundle_by_uid.items()
+    }
 
     policy_errors: dict[str, list[str]] = {}
     for source in policy["sources"]:
@@ -617,12 +692,16 @@ def run() -> dict[str, Any]:
         if errors:
             policy_errors[source["id"]] = errors
 
-    canaries: list[dict[str, Any]] = []
+    enriched_cards: list[dict[str, Any]] = []
     previews: dict[str, str] = {}
-    for uid in ("UA-0005", "UA-0015"):
+    for uid in sorted(bundle_by_uid):
+        if uid not in cards:
+            continue
         result = process_bundle(cards[uid], bundle_by_uid[uid], policy)
-        canaries.append(result)
+        enriched_cards.append(result)
         previews[uid] = render_preview(cards[uid], result)
+    result_index = {item["auto_number"]: item for item in enriched_cards}
+    canaries = [result_index[uid] for uid in ("UA-0005", "UA-0015")]
 
     before_projection = [protected_projection(card) for card in before["cards"]]
     after_projection = deepcopy(before_projection)
@@ -630,9 +709,8 @@ def run() -> dict[str, Any]:
     after_hash = sha256_json(after_projection)
 
     batch_status: list[dict[str, Any]] = []
-    canary_index = {item["auto_number"]: item for item in canaries}
     for uid in sorted(cards):
-        item = canary_index.get(uid)
+        item = result_index.get(uid)
         if item is None:
             batch_status.append({"auto_number": uid, "status": "REVIEW_REQUIRED_EMPTY", "verified_fact_count": 0})
         else:
@@ -653,7 +731,7 @@ def run() -> dict[str, Any]:
         uid: sorted(
             {
                 source["url"]
-                for item in canary_index[uid]["facts"]
+                for item in result_index[uid]["facts"]
                 for source in item["sources"]
                 if source["url"] in previews[uid]
             }
@@ -672,7 +750,7 @@ def run() -> dict[str, Any]:
         "all_16_cards_snapshotted": len(cards) == 16 and sorted(cards) == [f"UA-{i:04d}" for i in range(1, 17)],
         "protected_fields_unchanged": before_hash == after_hash,
         "no_protected_code_accepted": not any(
-            is_protected_code(fact["code"]) for item in canaries for fact in item["facts"]
+            is_protected_code(fact["code"]) for item in enriched_cards for fact in item["facts"]
         ),
         "no_empty_card_passed": not empty_cards_passed,
         "no_semantic_duplicate_rendered": not any(duplicate_rendered_codes.values()),
@@ -683,12 +761,17 @@ def run() -> dict[str, Any]:
         ),
         "source_urls_not_public": not any(public_source_url_leaks.values()),
         "production_touched_false": before.get("production_touched") is False and fixture.get("production_touched") is False,
-        "autopublication_false": all(item["publication_allowed"] is False for item in canaries),
+        "autopublication_false": all(
+            item["publication_allowed"] is False for item in enriched_cards
+        ),
+        "all_bundles_target_known_cards": sorted(bundle_by_uid)
+        == sorted(uid for uid in bundle_by_uid if uid in cards),
         "source_policy_valid": not policy_errors,
     }
 
     deterministic_core = {
         "canaries": canaries,
+        "enriched_cards": enriched_cards,
         "batch_status": batch_status,
         "before_protected_sha256": before_hash,
         "after_protected_sha256": after_hash,
@@ -720,6 +803,7 @@ def run() -> dict[str, Any]:
         "before_protected_sha256": before_hash,
         "after_protected_sha256": after_hash,
         "canaries": canaries,
+        "enriched_cards": enriched_cards,
         "batch_status": batch_status,
         "policy_errors": policy_errors,
         "empty_cards_passed": empty_cards_passed,
@@ -745,6 +829,15 @@ def report_markdown(report: dict[str, Any]) -> str:
     checks = "\n".join(
         f"- {'PASS' if value else 'FAIL'} — `{name}`" for name, value in report["invariant_checks"].items()
     )
+    enriched_lines = []
+    for item in report["enriched_cards"]:
+        enriched_lines.append(
+            f"| {item['auto_number']} | {item['status']} | {item['verified_fact_count']} | "
+            f"{item['category_count']} |"
+        )
+    empty_count = sum(
+        1 for item in report["batch_status"] if item["verified_fact_count"] == 0
+    )
     return f"""# TASK108 — отчёт canary без платного API
 
 STATUS: **{report['status']}**
@@ -758,6 +851,14 @@ Production: **не разрешён и не затронут**. Live CRM write: 
 {chr(10).join(canary_lines)}
 
 UA-0005 прошла структурный canary и готова только к просмотру оператором. UA-0015 имеет безопасное превью, но остаётся `REVIEW_REQUIRED_EXACT_TRIM`: бесплатный NHTSA-декодер вернул критические ошибки, а точная модификация taxi/rental по VIN не подтверждена.
+
+## Подготовленные карточки
+
+| Карточка | Статус | Подтверждено фактов | Категорий |
+|---|---:|---:|---:|
+{chr(10).join(enriched_lines)}
+
+Три W245 (UA-0002, UA-0007 и UA-0008) привязаны к заводскому типу `245.232` по общему VIN-префиксу и получили по 22 одинаково проверенных технических параметра. Маркетинговое имя 2009 года не угадывается: привязка сделана к заводскому типу.
 
 ## Строгие проверки
 
@@ -790,7 +891,7 @@ UA-0005 прошла структурный canary и готова только 
 
 ## Полный парк
 
-TASK108 не выдаёт фиктивный общий PASS: 14 карточек без нового проверенного набора фактов остаются `REVIEW_REQUIRED_EMPTY`. UA-0016 дополнительно требует отдельного исправления ошибочных основных полей года/пробега; TASK108 их не меняет.
+TASK108 не выдаёт фиктивный общий PASS: {empty_count} карточек без нового проверенного набора фактов остаются `REVIEW_REQUIRED_EMPTY`. UA-0012, UA-0014 и UA-0016 имеют подозрительные операторские значения; TASK108 их фиксирует в аудите, но не меняет.
 
 UA-0009 PUBLICATION READINESS: **{report['ua0009_publication_readiness']}**
 
@@ -800,5 +901,5 @@ SAFE TO PUBLISH ANYTHING: **{report['safe_to_publish_anything']}**
 
 ## Следующий разрешённый шаг
 
-Просмотр двух sandbox-превью и ручное подтверждение точной модификации UA-0015. Массовое наполнение остальных 14 карточек и любое Production-применение требуют отдельной команды владельца после отчёта.
+Продолжить восстановление оставшихся 11 карточек группами по точной модификации. Ручное подтверждение точной модификации UA-0015 и любое Production-применение остаются отдельными шлюзами после итогового отчёта.
 """
