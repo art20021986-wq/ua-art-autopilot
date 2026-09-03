@@ -1,6 +1,6 @@
 # TASK108 — free-source additional specification recovery
 
-Status: **isolated branch / sandbox only**. Production, live CRM, public paths and services are untouched.
+Status: **isolated branch / remediation in progress**. Production, live CRM, public paths and services are untouched.
 
 This package replaces the false-positive behaviour discovered in TASK096/TASK099: a processed card with zero accepted facts can no longer receive `PASS`, and repeated labels such as two rows named «Высота» are collapsed by canonical semantic code before rendering.
 
@@ -15,6 +15,15 @@ This package replaces the false-positive behaviour discovered in TASK096/TASK099
 - strict publication gate, including the special UA-0009 gate;
 - ten-run determinism proof and standard-library tests.
 
+## Live baseline — 2026-09-03
+
+- Homepage and catalog agree: 16 total / Kyiv 3 / Georgia 1 / ferry 8 / Korea 4.
+- All five catalog filters and all 16 public card URLs work.
+- Fifteen cards render an empty «0 parameters» shell; only UA-0015 has 12 current rows.
+- UA-0005 exposes two CRM editor prompts inside the customer description.
+- The legacy TASK099 renderer, visual gate, finalizer and pre-write shadow gate are hardened on this branch so none of those states can pass again.
+- UA-0012, UA-0014 and UA-0016 contain operator-owned values that require operator review; TASK108 records but never changes them.
+
 ## Run locally
 
 ```bash
@@ -23,7 +32,7 @@ python -m unittest discover -s tests -v
 python run_canary.py
 ```
 
-`run_canary.py` only reads package fixtures and writes package evidence/previews. It contains no production path, DB credential, deploy command or service restart.
+`run_canary.py` only reads package fixtures and writes package evidence/previews. It contains no production path, DB credential, deploy command or service restart. The current suite contains 23 tests.
 
 ## Interpretation
 
