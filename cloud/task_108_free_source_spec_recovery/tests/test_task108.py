@@ -109,7 +109,7 @@ class Task108ContractTests(unittest.TestCase):
                 self.assertNotIn(source["url"], document)
 
     def test_12_renderer_has_one_row_per_semantic_code(self):
-        for item in self.report["canaries"]:
+        for item in self.report["enriched_cards"]:
             document = self.report["previews"][item["auto_number"]]
             codes = [fact["code"] for fact in item["facts"]]
             self.assertEqual(len(codes), len(set(codes)))
@@ -137,7 +137,7 @@ class Task108ContractTests(unittest.TestCase):
 
     def test_16_zero_fact_batch_cards_are_review_required(self):
         zero = [item for item in self.report["batch_status"] if item["verified_fact_count"] == 0]
-        self.assertEqual(len(zero), 14)
+        self.assertEqual(len(zero), 11)
         self.assertTrue(all(item["status"] == "REVIEW_REQUIRED_EMPTY" for item in zero))
         self.assertEqual(self.report["empty_cards_passed"], [])
 
@@ -230,6 +230,41 @@ class Task108ContractTests(unittest.TestCase):
         sources = task108.policy_index(self.policy)
         self.assertFalse(sources["AUTOMOBILE_CATALOG_MB_2013"]["allow_enrichment"])
         self.assertFalse(sources["DANAWA_SONATA_2018"]["allow_enrichment"])
+
+    def test_29_three_w245_cards_share_exact_vin_type_fact_set(self):
+        by_uid = {item["auto_number"]: item for item in self.report["enriched_cards"]}
+        expected_codes = {
+            item["code"] for item in self.fixture["fact_sets"]["MB_W245_245232_AUTOTRONIC"]
+        }
+        self.assertEqual(len(expected_codes), 22)
+        for uid in ("UA-0002", "UA-0007", "UA-0008"):
+            item = by_uid[uid]
+            self.assertEqual(item["status"], "READY_FOR_OPERATOR_REVIEW")
+            self.assertEqual(item["identity_status"], "MATCHED_BY_VIN_TYPE_PREFIX")
+            self.assertEqual(item["verified_fact_count"], 22)
+            self.assertEqual({fact["code"] for fact in item["facts"]}, expected_codes)
+            self.assertEqual(item["rejected"], [])
+
+    def test_30_shared_fact_set_refuses_inline_override(self):
+        bundle = deepcopy(self.bundles["UA-0002"])
+        bundle["facts"] = [{"code": "length_mm"}]
+        with self.assertRaisesRegex(ValueError, "AMBIGUOUS_INLINE_AND_SHARED_FACTS"):
+            task108.expand_bundle(bundle, self.fixture)
+
+    def test_31_source_year_range_mismatch_rejects_w245_claims(self):
+        bundle = task108.expand_bundle(self.bundles["UA-0002"], self.fixture)
+        card = deepcopy(self.cards["UA-0002"])
+        bundle["identity"]["year"] = "2012"
+        card["year"] = "2012"
+        result = task108.process_bundle(card, bundle, self.policy)
+        self.assertEqual(result["status"], "REVIEW_REQUIRED_EMPTY")
+        reasons = [reason for item in result["rejected"] for reason in item["reasons"]]
+        self.assertTrue(any("SOURCE_IDENTITY_YEAR_RANGE_MISMATCH" in reason for reason in reasons))
+
+    def test_32_w245_does_not_claim_a_vpic_decode(self):
+        by_uid = {item["auto_number"]: item for item in self.report["enriched_cards"]}
+        for uid in ("UA-0002", "UA-0007", "UA-0008"):
+            self.assertFalse(by_uid[uid]["vpic_usable_for_detailed_facts"])
 
 
 if __name__ == "__main__":
