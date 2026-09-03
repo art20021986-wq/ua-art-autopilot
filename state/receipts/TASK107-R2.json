@@ -1,0 +1,58 @@
+{
+  "ai_and_execution_status_separate": true,
+  "atomic_claim": "PASS",
+  "automatic_mode_enabled": false,
+  "autopilot_mode": "MANUAL",
+  "canaries": [
+    {
+      "index": 1,
+      "receipt_sha256": "3f7a03d398b54ab47234d4c31174cbf046e9ef4abd4ad720060569568876bd59",
+      "request_path": "tasks/requests/TASK107-R2-CANARY-1-FAST.json",
+      "request_sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5",
+      "status": "PASS",
+      "task_class": "FAST",
+      "task_id": "TASK107-R2-CANARY-1-FAST"
+    },
+    {
+      "index": 2,
+      "receipt_sha256": "02d802c324e96c089d0adff2e787b9f6c14e223176898f8e5053a0c8633617ba",
+      "request_path": "tasks/requests/TASK107-R2-CANARY-2-STANDARD.json",
+      "request_sha256": "1494882607a6e7fc8c06ed1f01d5d5d86c85d2ecaa3054aba1602c78f10a02a5",
+      "status": "PASS",
+      "task_class": "STANDARD",
+      "task_id": "TASK107-R2-CANARY-2-STANDARD"
+    },
+    {
+      "index": 3,
+      "receipt_sha256": "a4e0fe67fb5069164230966b56d237a9faab3fcce3ac58219392b2d2f3cf9c4c",
+      "request_path": "tasks/requests/TASK107-R2-CANARY-3-CRITICAL.json",
+      "request_sha256": "dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770",
+      "status": "PASS",
+      "task_class": "CRITICAL",
+      "task_id": "TASK107-R2-CANARY-3-CRITICAL"
+    }
+  ],
+  "canary_result": "3/3 PASS",
+  "crm_vehicle_data_touched": false,
+  "duplicate_protection": "PASS",
+  "exact_intake": "PASS",
+  "finished_at": "2026-09-03T16:06:39Z",
+  "health_guard": "PASS",
+  "production_required": false,
+  "production_touched": false,
+  "receipt_required_for_finished": true,
+  "request_sha256": "9a1ef34aa1e7bf520efadfa0a167f417d935dd0c7fce21fd5ce179511a2b1411",
+  "resource_queue": "PASS",
+  "rollback_drill": "PASS",
+  "rollback_ready": true,
+  "run_id": "33776437497",
+  "stall_detector": "PASS",
+  "status": "FINISHED",
+  "storage_guard": "PASS",
+  "target_environment": "sandbox",
+  "task_class": "CRITICAL",
+  "task_id": "TASK107-R2",
+  "tests": "PASS",
+  "trusted_package_compiler": "PASS",
+  "unexpected_changes": 0
+}
