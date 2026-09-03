@@ -8,6 +8,7 @@ This package replaces the false-positive behaviour discovered in TASK096/TASK099
 
 - immutable evidence snapshot for all 16 current cards;
 - explicit source/access policy with no paid API and no Russian sites;
+- integrity-checked source claim snapshots: a URL alone can never confirm a fact;
 - deterministic consensus and conflict quarantine;
 - denylist for every primary CRM, commercial, history, option, media and logistics field;
 - server-rendered `<details>` block plus `Vehicle.additionalProperty` JSON-LD;
@@ -32,7 +33,7 @@ python -m unittest discover -s tests -v
 python run_canary.py
 ```
 
-`run_canary.py` only reads package fixtures and writes package evidence/previews. It contains no production path, DB credential, deploy command or service restart. The current suite contains 23 tests.
+`run_canary.py` only reads package fixtures and writes package evidence/previews. It contains no production path, DB credential, deploy command or service restart. The current suite contains 28 tests.
 
 ## Interpretation
 
@@ -44,3 +45,5 @@ python run_canary.py
 ## Source model
 
 Runtime automatic access is limited to explicitly allowed, free official endpoints. Pages whose rules are unclear, forbid automated processing or return a bot block are represented only by manually verified fact snapshots; the package never crawls them. Source URLs and evidence timestamps are stored internally but not rendered in the public component.
+
+Every enrichment source now points to a canonical evidence JSON file and its SHA-256. A candidate fact is accepted only when two distinct allowed domains each contain the exact semantic code, value, unit and note. The inaccessible Automobile Catalog page and the conflict-only Danawa page are explicitly disabled for enrichment.
