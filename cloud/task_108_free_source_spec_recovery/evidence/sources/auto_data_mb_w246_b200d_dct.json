@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+  "domain": "www.auto-data.net",
+  "source_url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881",
+  "observed_urls": [
+    "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+  ],
+  "document_title": "Mercedes-Benz B-class W246 facelift B 200 CDI 136 Hp DCT specifications",
+  "verification_status": "VERIFIED",
+  "verification_method": "manual_web_review",
+  "observed_at_utc": "2026-09-04T02:00:00Z",
+  "identity": {
+    "brand": "Mercedes-Benz",
+    "model_series": "B-Class W246",
+    "modification": "B 200 CDI / B 200 d DCT",
+    "year_min": 2014,
+    "year_max": 2018,
+    "engine_cc": 2143,
+    "fuel": "diesel",
+    "gearbox": "automatic"
+  },
+  "locator": "Exact W246 facelift B 200 CDI 136 Hp DCT page; production range 2014 through 2018",
+  "claims": [
+    {"code":"max_power_ps","value":136,"unit":"л.с.","note":"3 200–4 000 об/мин"},
+    {"code":"max_torque_nm","value":300,"unit":"Н·м","note":"1 400–3 000 об/мин"},
+    {"code":"cylinders_count","value":4,"unit":"","note":"рядное расположение"},
+    {"code":"compression_ratio","value":"16.2:1","unit":"","note":""},
+    {"code":"engine_aspiration","value":"турбонаддув с интеркулером","unit":"","note":""},
+    {"code":"fuel_injection","value":"Common Rail","unit":"","note":""},
+    {"code":"transmission_gears","value":7,"unit":"ступ.","note":"автоматическая"},
+    {"code":"seats_count","value":5,"unit":"мест","note":""},
+    {"code":"doors_count","value":5,"unit":"","note":""},
+    {"code":"gross_weight_kg","value":2025,"unit":"кг","note":""},
+    {"code":"fuel_tank_l","value":50,"unit":"л","note":""},
+    {"code":"width_mm","value":1786,"unit":"мм","note":"без зеркал"},
+    {"code":"height_mm","value":1557,"unit":"мм","note":""},
+    {"code":"front_track_mm","value":1552,"unit":"мм","note":""},
+    {"code":"rear_track_mm","value":1549,"unit":"мм","note":""},
+    {"code":"front_brakes","value":"вентилируемые дисковые","unit":"","note":""},
+    {"code":"rear_brakes","value":"дисковые","unit":"","note":""},
+    {"code":"tire_size","value":"205/55 R16","unit":"","note":""},
+    {"code":"emission_standard","value":"Euro 6","unit":"","note":""},
+    {"code":"length_mm","value":4393,"unit":"мм","note":""},
+    {"code":"wheelbase_mm","value":2699,"unit":"мм","note":""},
+    {"code":"curb_weight_kg","value":1505,"unit":"кг","note":""},
+    {"code":"trunk_min_l","value":488,"unit":"л","note":""},
+    {"code":"max_speed_kmh","value":210,"unit":"км/ч","note":""},
+    {"code":"acceleration_0_100_s","value":9.8,"unit":"с","note":""},
+    {"code":"combined_consumption_l_100km","value":"4.0–4.2","unit":"л/100 км","note":"NEDC"}
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+  "domain": "www.bobaedream.co.kr",
+  "source_url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020",
+  "observed_urls": [
+    "https://www.bobaedream.co.kr/cyber/CyberCar_view.php?no=744579",
+    "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+  ],
+  "document_title": "Kia The New K5 second generation 2.0 LPi Prestige specifications",
+  "verification_status": "VERIFIED",
+  "verification_method": "manual_web_review",
+  "observed_at_utc": "2026-09-04T01:00:00Z",
+  "identity": {
+    "brand": "Kia",
+    "model_series": "K5 JF",
+    "modification": "2.0 LPi automatic",
+    "year_min": 2018,
+    "year_max": 2019,
+    "engine_cc": 1999,
+    "fuel": "lpg",
+    "gearbox": "automatic"
+  },
+  "locator": "Specification page states release period 2018-01 through 2019-12; linked listing is registered 2019-11 as a 2020 model. Only values corroborated on the exact 2019 K5 page are retained",
+  "claims": [
+    {"code":"length_mm","value":4855,"unit":"мм","note":""},
+    {"code":"width_mm","value":1860,"unit":"мм","note":""},
+    {"code":"wheelbase_mm","value":2805,"unit":"мм","note":""},
+    {"code":"front_brakes","value":"дисковые","unit":"","note":""},
+    {"code":"rear_brakes","value":"дисковые","unit":"","note":""}
+  ]
+}

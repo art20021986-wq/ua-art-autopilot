@@ -4,81 +4,131 @@
   "batch_status": [
     {
       "auto_number": "UA-0001",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 10
     },
     {
       "auto_number": "UA-0002",
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
       "status": "READY_FOR_OPERATOR_REVIEW",
       "verified_fact_count": 22
     },
     {
       "auto_number": "UA-0003",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 5
     },
     {
       "auto_number": "UA-0004",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 5
     },
     {
       "auto_number": "UA-0005",
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
       "status": "READY_FOR_OPERATOR_REVIEW",
       "verified_fact_count": 13
     },
     {
       "auto_number": "UA-0006",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 5
     },
     {
       "auto_number": "UA-0007",
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
       "status": "READY_FOR_OPERATOR_REVIEW",
       "verified_fact_count": 22
     },
     {
       "auto_number": "UA-0008",
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
       "status": "READY_FOR_OPERATOR_REVIEW",
       "verified_fact_count": 22
     },
     {
       "auto_number": "UA-0009",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 6
     },
     {
       "auto_number": "UA-0010",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 6
     },
     {
       "auto_number": "UA-0011",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 6
     },
     {
       "auto_number": "UA-0012",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "operator_review_fields": [
+        "mileage_km"
+      ],
+      "operator_review_reasons": [
+        "MILEAGE_342_REQUIRES_CONFIRMATION"
+      ],
+      "status": "REVIEW_REQUIRED_OPERATOR_FIELDS",
+      "verified_fact_count": 6
     },
     {
       "auto_number": "UA-0013",
-      "status": "REVIEW_REQUIRED_EMPTY",
-      "verified_fact_count": 0
+      "operator_review_fields": [
+        "year"
+      ],
+      "operator_review_reasons": [
+        "YEAR_2015_CONFLICTS_WITH_VIN_MODEL_YEAR_2016"
+      ],
+      "status": "REVIEW_REQUIRED_OPERATOR_FIELDS",
+      "verified_fact_count": 19
     },
     {
       "auto_number": "UA-0014",
+      "operator_review_fields": [
+        "engine_cc"
+      ],
+      "operator_review_reasons": [
+        "ENGINE_CC_1645_REQUIRES_CONFIRMATION"
+      ],
       "status": "REVIEW_REQUIRED_EMPTY",
       "verified_fact_count": 0
     },
     {
       "auto_number": "UA-0015",
+      "operator_review_fields": [],
+      "operator_review_reasons": [],
       "status": "REVIEW_REQUIRED_EXACT_TRIM",
       "verified_fact_count": 6
     },
     {
       "auto_number": "UA-0016",
+      "operator_review_fields": [
+        "mileage_km",
+        "year"
+      ],
+      "operator_review_reasons": [
+        "MILEAGE_353_REQUIRES_CONFIRMATION",
+        "YEAR_1999_REQUIRES_CONFIRMATION"
+      ],
       "status": "REVIEW_REQUIRED_EMPTY",
       "verified_fact_count": 0
     }
@@ -496,6 +546,7 @@
       "identity_mismatches": [],
       "identity_score": 1.0,
       "identity_status": "MATCHED_BY_OPERATOR_FIELDS",
+      "operator_review_reasons": [],
       "publication_allowed": false,
       "rejected": [
         {
@@ -716,6 +767,7 @@
       "identity_mismatches": [],
       "identity_score": 1.0,
       "identity_status": "REVIEW_REQUIRED",
+      "operator_review_reasons": [],
       "publication_allowed": false,
       "rejected": [
         {
@@ -801,18 +853,388 @@
     "pass": true,
     "runs": 10,
     "unique_hashes": [
-      "673392a8f00959ae1ebc83bca4fbb40b0282e4f856510d8ab0ab26a023f028be"
+      "7a9cc9dc2ca71ef119af7200d23e7ff003074a515d7ba524adb67ab38438ce23"
     ]
   },
   "duplicate_rendered_codes": {
+    "UA-0001": [],
     "UA-0002": [],
+    "UA-0003": [],
+    "UA-0004": [],
     "UA-0005": [],
+    "UA-0006": [],
     "UA-0007": [],
     "UA-0008": [],
+    "UA-0009": [],
+    "UA-0010": [],
+    "UA-0011": [],
+    "UA-0012": [],
+    "UA-0013": [],
     "UA-0015": []
   },
   "empty_cards_passed": [],
   "enriched_cards": [
+    {
+      "auto_number": "UA-0001",
+      "category_count": 5,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "cylinders_count",
+          "confidence": 0.98,
+          "display_value": "4 · рядное расположение",
+          "label_ru": "Количество цилиндров",
+          "manual_override": false,
+          "note": "рядное расположение",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 4
+        },
+        {
+          "category": "engine",
+          "code": "max_power_ps",
+          "confidence": 0.98,
+          "display_value": "194 л.с. · 3 800 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "3 800 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л.с.",
+          "value": 194
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_nm",
+          "confidence": 0.98,
+          "display_value": "400 Н·м",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "Н·м",
+          "value": 400
+        },
+        {
+          "category": "engine",
+          "code": "engine_aspiration",
+          "confidence": 0.98,
+          "display_value": "турбонаддув с интеркулером",
+          "label_ru": "Наддув",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "турбонаддув с интеркулером"
+        },
+        {
+          "category": "engine",
+          "code": "compression_ratio",
+          "confidence": 0.98,
+          "display_value": "15.5:1",
+          "label_ru": "Степень сжатия",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "15.5:1"
+        },
+        {
+          "category": "performance",
+          "code": "acceleration_0_100_s",
+          "confidence": 0.98,
+          "display_value": "7.3 с",
+          "label_ru": "Разгон 0–100 км/ч",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "с",
+          "value": 7.3
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 923 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4923
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 939 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2939
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "вентилируемые дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "вентилируемые дисковые"
+        },
+        {
+          "category": "steering",
+          "code": "steering_type",
+          "confidence": 0.98,
+          "display_value": "реечное, электрическое",
+          "label_ru": "Рулевой механизм",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "url": "https://www.auto-data.net/en/mercedes-benz-e-class-w213-e-220d-194hp-9g-tronic-22636"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/105196/Mercedes-Benz-E-Class-(W213)--220-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "реечное, электрическое"
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "MATCHED_BY_OPERATOR_FIELDS",
+      "operator_review_reasons": [],
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "combined_consumption_l_100km",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "unit": "л/100 км",
+              "value": "3.9–4.3"
+            },
+            {
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "unit": "л/100 км",
+              "value": 3.9
+            }
+          ]
+        },
+        {
+          "code": "rear_brakes",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "AUTO_DATA_MB_W213_E220D",
+              "value": "вентилируемые дисковые"
+            },
+            {
+              "source_id": "ULTIMATE_SPECS_MB_W213_E220D",
+              "value": "дисковые"
+            }
+          ]
+        }
+      ],
+      "status": "READY_FOR_OPERATOR_REVIEW",
+      "verified_fact_count": 10,
+      "vin": "WDDZF0EB7HA053001",
+      "vpic_usable_for_detailed_facts": false
+    },
     {
       "auto_number": "UA-0002",
       "category_count": 7,
@@ -1503,11 +1925,430 @@
       "identity_mismatches": [],
       "identity_score": 1.0,
       "identity_status": "MATCHED_BY_VIN_TYPE_PREFIX",
+      "operator_review_reasons": [],
       "publication_allowed": false,
       "rejected": [],
       "status": "READY_FOR_OPERATOR_REVIEW",
       "verified_fact_count": 22,
       "vin": "WDD2452322J561014",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0003",
+      "category_count": 2,
+      "facts": [
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 855 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4855
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 805 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2805
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 860 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1860
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "REVIEW_REQUIRED",
+      "operator_review_reasons": [],
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "height_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "unit": "мм",
+              "value": 1465
+            },
+            {
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "unit": "мм",
+              "value": 1475
+            }
+          ]
+        },
+        {
+          "code": "max_power_ps",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "note": "gasoline-default panel; not LPi evidence",
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "unit": "л.с.",
+              "value": 163
+            },
+            {
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "unit": "л.с.",
+              "value": 151
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 5,
+      "vin": "KNAGS416BLA375484",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0004",
+      "category_count": 2,
+      "facts": [
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 855 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4855
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 805 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2805
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 860 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1860
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "REVIEW_REQUIRED",
+      "operator_review_reasons": [],
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "height_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "unit": "мм",
+              "value": 1465
+            },
+            {
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "unit": "мм",
+              "value": 1475
+            }
+          ]
+        },
+        {
+          "code": "max_power_ps",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "note": "gasoline-default panel; not LPi evidence",
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "unit": "л.с.",
+              "value": 163
+            },
+            {
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "unit": "л.с.",
+              "value": 151
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 5,
+      "vin": "KNAGS416BLA363849",
       "vpic_usable_for_detailed_facts": false
     },
     {
@@ -1921,6 +2762,7 @@
       "identity_mismatches": [],
       "identity_score": 1.0,
       "identity_status": "MATCHED_BY_OPERATOR_FIELDS",
+      "operator_review_reasons": [],
       "publication_allowed": false,
       "rejected": [
         {
@@ -1945,6 +2787,215 @@
       "status": "READY_FOR_OPERATOR_REVIEW",
       "verified_fact_count": 13,
       "vin": "WDDMH0BBXDV171918",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0006",
+      "category_count": 2,
+      "facts": [
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 855 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4855
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 805 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2805
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 860 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1860
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "car.naver.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "url": "https://car.naver.com/spec?ncrId=car_129775"
+            },
+            {
+              "domain": "www.bobaedream.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T01:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "url": "https://www.bobaedream.co.kr/dealguide/carinfo.php?cat=spec&class_no=30394&level_no=13665&maker_no=3&model_no=1893&year_no=2020"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "REVIEW_REQUIRED",
+      "operator_review_reasons": [],
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "height_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "unit": "мм",
+              "value": 1465
+            },
+            {
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "unit": "мм",
+              "value": 1475
+            }
+          ]
+        },
+        {
+          "code": "max_power_ps",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "note": "gasoline-default panel; not LPi evidence",
+              "source_id": "NAVER_K5_2019_CHASSIS",
+              "unit": "л.с.",
+              "value": 163
+            },
+            {
+              "source_id": "BOBAEDREAM_K5_JF_2018_2019_LPI",
+              "unit": "л.с.",
+              "value": 151
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 5,
+      "vin": "KNAGS416BLA359954",
       "vpic_usable_for_detailed_facts": false
     },
     {
@@ -2637,6 +3688,7 @@
       "identity_mismatches": [],
       "identity_score": 1.0,
       "identity_status": "MATCHED_BY_VIN_TYPE_PREFIX",
+      "operator_review_reasons": [],
       "publication_allowed": false,
       "rejected": [],
       "status": "READY_FOR_OPERATOR_REVIEW",
@@ -3334,11 +4386,1864 @@
       "identity_mismatches": [],
       "identity_score": 1.0,
       "identity_status": "MATCHED_BY_VIN_TYPE_PREFIX",
+      "operator_review_reasons": [],
       "publication_allowed": false,
       "rejected": [],
       "status": "READY_FOR_OPERATOR_REVIEW",
       "verified_fact_count": 22,
       "vin": "WDD2452322J540158",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0009",
+      "category_count": 3,
+      "facts": [
+        {
+          "category": "performance",
+          "code": "transmission_gears",
+          "confidence": 0.98,
+          "display_value": "6 ступ. · автоматическая",
+          "label_ru": "Количество передач",
+          "manual_override": false,
+          "note": "автоматическая",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "ступ.",
+          "value": 6
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 855 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4855
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 805 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2805
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 860 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1860
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "REVIEW_REQUIRED",
+      "operator_review_reasons": [],
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "combined_consumption_kmpl",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "км/л",
+              "value": 9.4
+            }
+          ]
+        },
+        {
+          "code": "height_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "мм",
+              "value": 1465
+            },
+            {
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "unit": "мм",
+              "value": 1475
+            }
+          ]
+        },
+        {
+          "code": "max_power_ps",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "л.с.",
+              "value": 151
+            },
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "л.с.",
+              "value": 153
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 6,
+      "vin": "KNAGU416BJA242741",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0010",
+      "category_count": 3,
+      "facts": [
+        {
+          "category": "performance",
+          "code": "transmission_gears",
+          "confidence": 0.98,
+          "display_value": "6 ступ. · автоматическая",
+          "label_ru": "Количество передач",
+          "manual_override": false,
+          "note": "автоматическая",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "ступ.",
+          "value": 6
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 855 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4855
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 805 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2805
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 860 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1860
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "REVIEW_REQUIRED",
+      "operator_review_reasons": [],
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "combined_consumption_kmpl",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "км/л",
+              "value": 9.4
+            }
+          ]
+        },
+        {
+          "code": "height_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "мм",
+              "value": 1465
+            },
+            {
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "unit": "мм",
+              "value": 1475
+            }
+          ]
+        },
+        {
+          "code": "max_power_ps",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "л.с.",
+              "value": 151
+            },
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "л.с.",
+              "value": 153
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 6,
+      "vin": "KNAGU416BKA324445",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0011",
+      "category_count": 3,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "max_power_ps",
+          "confidence": 0.98,
+          "display_value": "151 л.с. · 6 200 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "6 200 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л.с.",
+          "value": 151
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_kgfm",
+          "confidence": 0.98,
+          "display_value": "19.8 кгс·м · 4 200 об/мин",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "4 200 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кгс·м",
+          "value": 19.8
+        },
+        {
+          "category": "performance",
+          "code": "transmission_gears",
+          "confidence": 0.98,
+          "display_value": "6 ступ. · автоматическая",
+          "label_ru": "Количество передач",
+          "manual_override": false,
+          "note": "автоматическая",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "ступ.",
+          "value": 6
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 855 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4855
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 805 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2805
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 865 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "manuals.plus",
+              "kind": "manufacturer_document_mirror",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+            },
+            {
+              "domain": "www.carfolio.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-03T23:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARFOLIO_SONATA_LPI_2018",
+              "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1865
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "REVIEW_REQUIRED",
+      "operator_review_reasons": [],
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "co2_g_km",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "г/км",
+              "value": 139
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "г/км",
+              "value": 138
+            }
+          ]
+        },
+        {
+          "code": "combined_consumption_kmpl",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "км/л",
+              "value": 9.4
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "км/л",
+              "value": 9.5
+            }
+          ]
+        },
+        {
+          "code": "curb_weight_kg",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "кг",
+              "value": 1470
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "кг",
+              "value": 1465
+            }
+          ]
+        },
+        {
+          "code": "height_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+              "unit": "мм",
+              "value": 1485
+            },
+            {
+              "source_id": "DANAWA_SONATA_2018",
+              "unit": "мм",
+              "value": 1475
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_EXACT_TRIM",
+      "verified_fact_count": 6,
+      "vin": "KMHE341DBKA544289",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0012",
+      "category_count": 3,
+      "facts": [
+        {
+          "category": "performance",
+          "code": "transmission_gears",
+          "confidence": 0.98,
+          "display_value": "6 ступ. · автоматическая",
+          "label_ru": "Количество передач",
+          "manual_override": false,
+          "note": "автоматическая",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "ступ.",
+          "value": 6
+        },
+        {
+          "category": "dimensions",
+          "code": "length_mm",
+          "confidence": 0.98,
+          "display_value": "4 855 мм",
+          "label_ru": "Длина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 4855
+        },
+        {
+          "category": "dimensions",
+          "code": "wheelbase_mm",
+          "confidence": 0.98,
+          "display_value": "2 805 мм",
+          "label_ru": "Колёсная база",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 2805
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 860 мм",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1860
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.carwiki.co.kr",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+            },
+            {
+              "domain": "powerknow.tistory.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T00:30:00Z",
+              "runtime_fetch": false,
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "url": "https://powerknow.tistory.com/3505"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "BLOCKED_OPERATOR_PRIMARY_FIELDS",
+      "operator_review_reasons": [
+        "MILEAGE_342_REQUIRES_CONFIRMATION"
+      ],
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "combined_consumption_kmpl",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "км/л",
+              "value": 9.4
+            }
+          ]
+        },
+        {
+          "code": "height_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "мм",
+              "value": 1465
+            },
+            {
+              "source_id": "POWERKNOW_K5_JF_LPI_2018",
+              "unit": "мм",
+              "value": 1475
+            }
+          ]
+        },
+        {
+          "code": "max_power_ps",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "л.с.",
+              "value": 151
+            },
+            {
+              "source_id": "CARWIKI_K5_JF_LPI_2018",
+              "unit": "л.с.",
+              "value": 153
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_OPERATOR_FIELDS",
+      "verified_fact_count": 6,
+      "vin": "KNAGU416BJA244187",
+      "vpic_usable_for_detailed_facts": false
+    },
+    {
+      "auto_number": "UA-0013",
+      "category_count": 8,
+      "facts": [
+        {
+          "category": "engine",
+          "code": "cylinders_count",
+          "confidence": 0.98,
+          "display_value": "4 · рядное расположение",
+          "label_ru": "Количество цилиндров",
+          "manual_override": false,
+          "note": "рядное расположение",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 4
+        },
+        {
+          "category": "engine",
+          "code": "max_power_ps",
+          "confidence": 0.98,
+          "display_value": "136 л.с. · 3 200–4 000 об/мин",
+          "label_ru": "Максимальная мощность",
+          "manual_override": false,
+          "note": "3 200–4 000 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л.с.",
+          "value": 136
+        },
+        {
+          "category": "engine",
+          "code": "max_torque_nm",
+          "confidence": 0.98,
+          "display_value": "300 Н·м · 1 400–3 000 об/мин",
+          "label_ru": "Максимальный крутящий момент",
+          "manual_override": false,
+          "note": "1 400–3 000 об/мин",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "Н·м",
+          "value": 300
+        },
+        {
+          "category": "engine",
+          "code": "engine_aspiration",
+          "confidence": 0.98,
+          "display_value": "турбонаддув с интеркулером",
+          "label_ru": "Наддув",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "турбонаддув с интеркулером"
+        },
+        {
+          "category": "engine",
+          "code": "fuel_injection",
+          "confidence": 0.98,
+          "display_value": "Common Rail",
+          "label_ru": "Система впрыска",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "Common Rail"
+        },
+        {
+          "category": "engine",
+          "code": "compression_ratio",
+          "confidence": 0.98,
+          "display_value": "16.2:1",
+          "label_ru": "Степень сжатия",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "16.2:1"
+        },
+        {
+          "category": "performance",
+          "code": "transmission_gears",
+          "confidence": 0.98,
+          "display_value": "7 ступ. · автоматическая",
+          "label_ru": "Количество передач",
+          "manual_override": false,
+          "note": "автоматическая",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "ступ.",
+          "value": 7
+        },
+        {
+          "category": "dimensions",
+          "code": "height_mm",
+          "confidence": 0.98,
+          "display_value": "1 557 мм",
+          "label_ru": "Высота",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1557
+        },
+        {
+          "category": "dimensions",
+          "code": "rear_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 549 мм",
+          "label_ru": "Колея задняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1549
+        },
+        {
+          "category": "dimensions",
+          "code": "front_track_mm",
+          "confidence": 0.98,
+          "display_value": "1 552 мм",
+          "label_ru": "Колея передняя",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1552
+        },
+        {
+          "category": "dimensions",
+          "code": "width_mm",
+          "confidence": 0.98,
+          "display_value": "1 786 мм · без зеркал",
+          "label_ru": "Ширина",
+          "manual_override": false,
+          "note": "без зеркал",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мм",
+          "value": 1786
+        },
+        {
+          "category": "capacity",
+          "code": "doors_count",
+          "confidence": 0.98,
+          "display_value": "5",
+          "label_ru": "Количество дверей",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": 5
+        },
+        {
+          "category": "capacity",
+          "code": "seats_count",
+          "confidence": 0.98,
+          "display_value": "5 мест",
+          "label_ru": "Количество мест",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "мест",
+          "value": 5
+        },
+        {
+          "category": "capacity",
+          "code": "fuel_tank_l",
+          "confidence": 0.98,
+          "display_value": "50 л",
+          "label_ru": "Объём топливного бака",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "л",
+          "value": 50
+        },
+        {
+          "category": "weight",
+          "code": "gross_weight_kg",
+          "confidence": 0.98,
+          "display_value": "2 025 кг",
+          "label_ru": "Разрешённая полная масса",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "кг",
+          "value": 2025
+        },
+        {
+          "category": "brakes",
+          "code": "rear_brakes",
+          "confidence": 0.98,
+          "display_value": "дисковые",
+          "label_ru": "Задние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "дисковые"
+        },
+        {
+          "category": "brakes",
+          "code": "front_brakes",
+          "confidence": 0.98,
+          "display_value": "вентилируемые дисковые",
+          "label_ru": "Передние тормоза",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "вентилируемые дисковые"
+        },
+        {
+          "category": "wheels",
+          "code": "tire_size",
+          "confidence": 0.98,
+          "display_value": "205/55 R16",
+          "label_ru": "Базовый размер шин",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.autoevolution.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "205/55 R16"
+        },
+        {
+          "category": "ecology",
+          "code": "emission_standard",
+          "confidence": 0.98,
+          "display_value": "Euro 6",
+          "label_ru": "Экологический стандарт",
+          "manual_override": false,
+          "note": "",
+          "public_candidate": true,
+          "sources": [
+            {
+              "domain": "www.auto-data.net",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-facelift-2014-b-200-cdi-136hp-dct-20881"
+            },
+            {
+              "domain": "www.ultimatespecs.com",
+              "kind": "independent_catalog",
+              "observed_at_utc": "2026-09-04T02:00:00Z",
+              "runtime_fetch": false,
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/73663/Mercedes-Benz-W246-Class-B-200-d.html"
+            }
+          ],
+          "status": "VERIFIED_FOR_REVIEW",
+          "unit": "",
+          "value": "Euro 6"
+        }
+      ],
+      "identity_mismatches": [],
+      "identity_score": 1.0,
+      "identity_status": "BLOCKED_OPERATOR_PRIMARY_FIELDS",
+      "operator_review_reasons": [
+        "YEAR_2015_CONFLICTS_WITH_VIN_MODEL_YEAR_2016"
+      ],
+      "publication_allowed": false,
+      "rejected": [
+        {
+          "code": "acceleration_0_100_s",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "unit": "с",
+              "value": 9.8
+            },
+            {
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "unit": "с",
+              "value": 9.4
+            }
+          ]
+        },
+        {
+          "code": "combined_consumption_l_100km",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "unit": "л/100 км",
+              "value": "4.0–4.2"
+            },
+            {
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "unit": "л/100 км",
+              "value": 4.2
+            }
+          ]
+        },
+        {
+          "code": "curb_weight_kg",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "unit": "кг",
+              "value": 1505
+            },
+            {
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "unit": "кг",
+              "value": 1485
+            }
+          ]
+        },
+        {
+          "code": "length_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "unit": "мм",
+              "value": 4393
+            },
+            {
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "unit": "мм",
+              "value": 4394
+            }
+          ]
+        },
+        {
+          "code": "max_speed_kmh",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "unit": "км/ч",
+              "value": 210
+            },
+            {
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "unit": "км/ч",
+              "value": 209
+            }
+          ]
+        },
+        {
+          "code": "trunk_min_l",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "unit": "л",
+              "value": 488
+            },
+            {
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "unit": "л",
+              "value": 487
+            },
+            {
+              "source_id": "ULTIMATE_SPECS_MB_W246_B200D",
+              "unit": "л",
+              "value": 486
+            }
+          ]
+        },
+        {
+          "code": "wheelbase_mm",
+          "reasons": [
+            "CONFLICT_QUARANTINE"
+          ],
+          "variants": [
+            {
+              "source_id": "AUTO_DATA_MB_W246_B200D_DCT",
+              "unit": "мм",
+              "value": 2699
+            },
+            {
+              "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+              "unit": "мм",
+              "value": 2700
+            }
+          ]
+        }
+      ],
+      "status": "REVIEW_REQUIRED_OPERATOR_FIELDS",
+      "verified_fact_count": 19,
+      "vin": "WDDMH0JB6GN142530",
       "vpic_usable_for_detailed_facts": false
     },
     {
@@ -3535,6 +6440,7 @@
       "identity_mismatches": [],
       "identity_score": 1.0,
       "identity_status": "REVIEW_REQUIRED",
+      "operator_review_reasons": [],
       "publication_allowed": false,
       "rejected": [
         {
@@ -3625,6 +6531,8 @@
     "no_empty_card_passed": true,
     "no_protected_code_accepted": true,
     "no_semantic_duplicate_rendered": true,
+    "operator_review_cards_blocked": true,
+    "operator_review_queue_valid": true,
     "production_touched_false": true,
     "protected_fields_unchanged": true,
     "server_rendered_details_present": true,
@@ -3688,16 +6596,83 @@
   },
   "live_crm_write": false,
   "mode": "ISOLATED_BRANCH_SANDBOX",
+  "operator_review_errors": [],
+  "operator_review_queue": {
+    "captured_at_utc": "2026-09-04T02:00:00Z",
+    "constraints": [
+      "NO_AUTOMATIC_CORRECTION",
+      "NO_SUGGESTED_REPLACEMENT",
+      "NO_CRM_WRITE",
+      "DOCUMENT_CONFIRMATION_REQUIRED"
+    ],
+    "items": [
+      {
+        "auto_number": "UA-0012",
+        "field": "mileage_km",
+        "observed_value": 342,
+        "operator_action_ru": "Сверить пробег с исходным документом или записью CRM; TASK108 значение не меняет.",
+        "reason_code": "MILEAGE_342_REQUIRES_CONFIRMATION",
+        "status": "REVIEW_REQUIRED"
+      },
+      {
+        "auto_number": "UA-0013",
+        "evidence_observation": "Карточка полного VIN WDDMH0JB6GN142530 указывает 2016 год; код модельного года VIN G также соответствует 2016 для данного поколения.",
+        "evidence_url": "https://plc.ua/ua/korea-auction/lot/mercedes-benz-b-class-2016-vin-wddmh0jb6gn142530-aj-01kvskjx1wmv822d7exd80f4kw/",
+        "field": "year",
+        "observed_value": "2015",
+        "operator_action_ru": "Сверить год с исходным аукционным или регистрационным документом; TASK108 значение не меняет.",
+        "reason_code": "YEAR_2015_CONFLICTS_WITH_VIN_MODEL_YEAR_2016",
+        "status": "REVIEW_REQUIRED"
+      },
+      {
+        "auto_number": "UA-0014",
+        "field": "engine_cc",
+        "observed_value": 1645,
+        "operator_action_ru": "Сверить объём двигателя с регистрационным документом; TASK108 значение не меняет.",
+        "reason_code": "ENGINE_CC_1645_REQUIRES_CONFIRMATION",
+        "status": "REVIEW_REQUIRED"
+      },
+      {
+        "auto_number": "UA-0016",
+        "field": "year",
+        "observed_value": "1999",
+        "operator_action_ru": "Сверить год с регистрационным документом и VIN-записью; TASK108 значение не меняет.",
+        "reason_code": "YEAR_1999_REQUIRES_CONFIRMATION",
+        "status": "REVIEW_REQUIRED"
+      },
+      {
+        "auto_number": "UA-0016",
+        "field": "mileage_km",
+        "observed_value": 353,
+        "operator_action_ru": "Сверить пробег с исходным документом или записью CRM; TASK108 значение не меняет.",
+        "reason_code": "MILEAGE_353_REQUIRES_CONFIRMATION",
+        "status": "REVIEW_REQUIRED"
+      }
+    ],
+    "mode": "READ_ONLY_REVIEW_QUEUE",
+    "production_touched": false,
+    "schema_version": 1,
+    "task_id": "TASK108"
+  },
   "paid_api_used": false,
   "policy_errors": {},
   "production_authorized": false,
   "production_touched": false,
   "public_path_write": false,
   "public_source_url_leaks": {
+    "UA-0001": [],
     "UA-0002": [],
+    "UA-0003": [],
+    "UA-0004": [],
     "UA-0005": [],
+    "UA-0006": [],
     "UA-0007": [],
     "UA-0008": [],
+    "UA-0009": [],
+    "UA-0010": [],
+    "UA-0011": [],
+    "UA-0012": [],
+    "UA-0013": [],
     "UA-0015": []
   },
   "russian_sources_used": false,

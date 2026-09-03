@@ -19,6 +19,7 @@ class Task108ContractTests(unittest.TestCase):
         cls.policy = task108.load_json(task108.POLICY_PATH)
         cls.fixture = task108.load_json(task108.FIXTURE_PATH)
         cls.before = task108.load_json(task108.BEFORE_PATH)
+        cls.operator_review_queue = task108.load_json(task108.OPERATOR_REVIEW_PATH)
         cls.report = task108.run()
         cls.cards = {item["auto_number"]: item for item in cls.before["cards"]}
         cls.bundles = {item["auto_number"]: item for item in cls.fixture["bundles"]}
@@ -137,7 +138,7 @@ class Task108ContractTests(unittest.TestCase):
 
     def test_16_zero_fact_batch_cards_are_review_required(self):
         zero = [item for item in self.report["batch_status"] if item["verified_fact_count"] == 0]
-        self.assertEqual(len(zero), 11)
+        self.assertEqual({item["auto_number"] for item in zero}, {"UA-0014", "UA-0016"})
         self.assertTrue(all(item["status"] == "REVIEW_REQUIRED_EMPTY" for item in zero))
         self.assertEqual(self.report["empty_cards_passed"], [])
 
@@ -265,6 +266,210 @@ class Task108ContractTests(unittest.TestCase):
         by_uid = {item["auto_number"]: item for item in self.report["enriched_cards"]}
         for uid in ("UA-0002", "UA-0007", "UA-0008"):
             self.assertFalse(by_uid[uid]["vpic_usable_for_detailed_facts"])
+
+    def test_33_operator_primary_field_block_has_priority_over_ready_thresholds(self):
+        bundle = deepcopy(self.bundles["UA-0005"])
+        bundle["identity_status"] = "BLOCKED_OPERATOR_PRIMARY_FIELDS"
+        bundle["operator_review_reasons"] = ["MILEAGE_REQUIRES_CONFIRMATION"]
+        result = task108.process_bundle(self.cards["UA-0005"], bundle, self.policy)
+        self.assertEqual(result["status"], "REVIEW_REQUIRED_OPERATOR_FIELDS")
+        self.assertEqual(result["operator_review_reasons"], ["MILEAGE_REQUIRES_CONFIRMATION"])
+        self.assertFalse(result["publication_allowed"])
+
+    def test_34_k5_2018_safe_common_facts_are_prepared_but_not_publishable(self):
+        by_uid = {item["auto_number"]: item for item in self.report["enriched_cards"]}
+        expected_codes = {
+            item["code"]
+            for item in self.fixture["fact_sets"]["KIA_K5_JF_LPI_AUTOMATIC_2018_SAFE_COMMON"]
+        }
+        self.assertEqual(len(expected_codes), 6)
+        self.assertEqual(by_uid["UA-0009"]["status"], "REVIEW_REQUIRED_EXACT_TRIM")
+        self.assertEqual(by_uid["UA-0009"]["verified_fact_count"], 6)
+        self.assertEqual({item["code"] for item in by_uid["UA-0009"]["facts"]}, expected_codes)
+        self.assertEqual(by_uid["UA-0012"]["status"], "REVIEW_REQUIRED_OPERATOR_FIELDS")
+        self.assertEqual(by_uid["UA-0012"]["verified_fact_count"], 6)
+        self.assertEqual(
+            by_uid["UA-0012"]["operator_review_reasons"],
+            ["MILEAGE_342_REQUIRES_CONFIRMATION"],
+        )
+        self.assertFalse(by_uid["UA-0009"]["publication_allowed"])
+        self.assertFalse(by_uid["UA-0012"]["publication_allowed"])
+
+    def test_35_k5_trim_dependent_values_stay_in_conflict_quarantine(self):
+        by_uid = {item["auto_number"]: item for item in self.report["enriched_cards"]}
+        for uid in ("UA-0009", "UA-0012"):
+            codes = {item["code"] for item in by_uid[uid]["facts"]}
+            self.assertNotIn("max_power_ps", codes)
+            self.assertNotIn("height_mm", codes)
+            self.assertNotIn("combined_consumption_kmpl", codes)
+            rejected = {item["code"] for item in by_uid[uid]["rejected"]}
+            self.assertTrue({"max_power_ps", "height_mm", "combined_consumption_kmpl"} <= rejected)
+
+    def test_36_operator_review_queue_matches_current_crm_values_exactly(self):
+        expected = {
+            ("UA-0012", "mileage_km", "342"),
+            ("UA-0013", "year", '"2015"'),
+            ("UA-0014", "engine_cc", "1645"),
+            ("UA-0016", "year", '"1999"'),
+            ("UA-0016", "mileage_km", "353"),
+        }
+        actual = {
+            (item["auto_number"], item["field"], task108.canonical_json(item["observed_value"]))
+            for item in self.operator_review_queue["items"]
+        }
+        self.assertEqual(actual, expected)
+        self.assertEqual(
+            task108.validate_operator_review_queue(self.operator_review_queue, self.cards), []
+        )
+
+    def test_37_operator_review_queue_cannot_contain_replacements(self):
+        forbidden = {
+            "replacement",
+            "replacement_value",
+            "suggested_value",
+            "normalized_value",
+            "new_value",
+        }
+        for item in self.operator_review_queue["items"]:
+            self.assertTrue(task108.is_protected_code(item["field"]))
+            self.assertFalse(forbidden.intersection(item))
+            self.assertEqual(item["status"], "REVIEW_REQUIRED")
+
+    def test_38_operator_review_cards_remain_blocked_and_visible_in_report(self):
+        by_uid = {item["auto_number"]: item for item in self.report["batch_status"]}
+        self.assertEqual(by_uid["UA-0012"]["status"], "REVIEW_REQUIRED_OPERATOR_FIELDS")
+        self.assertEqual(by_uid["UA-0013"]["status"], "REVIEW_REQUIRED_OPERATOR_FIELDS")
+        self.assertEqual(by_uid["UA-0014"]["status"], "REVIEW_REQUIRED_EMPTY")
+        self.assertEqual(by_uid["UA-0016"]["status"], "REVIEW_REQUIRED_EMPTY")
+        self.assertEqual(by_uid["UA-0013"]["operator_review_fields"], ["year"])
+        self.assertEqual(by_uid["UA-0014"]["operator_review_fields"], ["engine_cc"])
+        self.assertEqual(by_uid["UA-0016"]["operator_review_fields"], ["mileage_km", "year"])
+        self.assertTrue(self.report["invariant_checks"]["operator_review_queue_valid"])
+        self.assertTrue(self.report["invariant_checks"]["operator_review_cards_blocked"])
+        self.assertEqual(self.report["operator_review_errors"], [])
+
+    def test_39_three_2019_k5_cards_have_only_cross_checked_safe_facts(self):
+        by_uid = {item["auto_number"]: item for item in self.report["enriched_cards"]}
+        expected_codes = {
+            item["code"]
+            for item in self.fixture["fact_sets"][
+                "KIA_K5_JF_LPI_AUTOMATIC_2019_SAFE_COMMON"
+            ]
+        }
+        self.assertEqual(
+            expected_codes,
+            {"length_mm", "width_mm", "wheelbase_mm", "front_brakes", "rear_brakes"},
+        )
+        for uid in ("UA-0003", "UA-0004", "UA-0006"):
+            item = by_uid[uid]
+            self.assertEqual(item["status"], "REVIEW_REQUIRED_EXACT_TRIM")
+            self.assertEqual(item["verified_fact_count"], 5)
+            self.assertEqual({fact["code"] for fact in item["facts"]}, expected_codes)
+            self.assertFalse(item["publication_allowed"])
+
+    def test_40_2019_k5_ambiguous_engine_and_height_never_render(self):
+        by_uid = {item["auto_number"]: item for item in self.report["enriched_cards"]}
+        for uid in ("UA-0003", "UA-0004", "UA-0006"):
+            accepted = {item["code"] for item in by_uid[uid]["facts"]}
+            rejected = {item["code"] for item in by_uid[uid]["rejected"]}
+            self.assertNotIn("max_power_ps", accepted)
+            self.assertNotIn("height_mm", accepted)
+            self.assertTrue({"max_power_ps", "height_mm"} <= rejected)
+
+    def test_41_matching_2018_k5_reuses_only_the_safe_common_fact_set(self):
+        by_uid = {item["auto_number"]: item for item in self.report["enriched_cards"]}
+        reference_codes = {
+            fact["code"]
+            for fact in self.fixture["fact_sets"][
+                "KIA_K5_JF_LPI_AUTOMATIC_2018_SAFE_COMMON"
+            ]
+        }
+        item = by_uid["UA-0010"]
+        self.assertEqual(item["status"], "REVIEW_REQUIRED_EXACT_TRIM")
+        self.assertEqual(item["verified_fact_count"], 6)
+        self.assertEqual({fact["code"] for fact in item["facts"]}, reference_codes)
+        self.assertFalse(item["publication_allowed"])
+
+    def test_42_two_sonata_cards_share_an_immutable_safe_fact_set(self):
+        by_uid = {item["auto_number"]: item for item in self.report["enriched_cards"]}
+        expected_codes = {
+            fact["code"]
+            for fact in self.fixture["fact_sets"][
+                "HYUNDAI_SONATA_LF_LPI_AUTOMATIC_2018_SAFE_COMMON"
+            ]
+        }
+        self.assertEqual(len(expected_codes), 6)
+        for uid in ("UA-0011", "UA-0015"):
+            item = by_uid[uid]
+            self.assertEqual(item["status"], "REVIEW_REQUIRED_EXACT_TRIM")
+            self.assertEqual({fact["code"] for fact in item["facts"]}, expected_codes)
+            self.assertFalse(item["publication_allowed"])
+
+    def test_43_e220d_exact_operator_fields_prepare_ten_cross_checked_facts(self):
+        item = next(
+            item for item in self.report["enriched_cards"] if item["auto_number"] == "UA-0001"
+        )
+        expected_codes = {
+            fact["code"]
+            for fact in self.fixture["fact_sets"]["MB_W213_E220D_2016_2020_SAFE_COMMON"]
+        }
+        self.assertEqual(item["status"], "READY_FOR_OPERATOR_REVIEW")
+        self.assertEqual(item["identity_score"], 1.0)
+        self.assertEqual(item["verified_fact_count"], 10)
+        self.assertEqual({fact["code"] for fact in item["facts"]}, expected_codes)
+        self.assertFalse(item["publication_allowed"])
+
+    def test_44_e220d_consumption_and_rear_brake_conflicts_stay_quarantined(self):
+        item = next(
+            item for item in self.report["enriched_cards"] if item["auto_number"] == "UA-0001"
+        )
+        accepted = {fact["code"] for fact in item["facts"]}
+        rejected = {fact["code"] for fact in item["rejected"]}
+        self.assertNotIn("combined_consumption_l_100km", accepted)
+        self.assertNotIn("rear_brakes", accepted)
+        self.assertTrue({"combined_consumption_l_100km", "rear_brakes"} <= rejected)
+
+    def test_45_cyrillic_owner_model_matches_b_class_sources_without_crm_rewrite(self):
+        self.assertEqual(task108._identity_token("Б-КЛАССА"), "bclass")
+        self.assertEqual(task108._identity_token("B-Class W246"), "bclassw246")
+        card = self.cards["UA-0013"]
+        self.assertEqual(card["model"], "Б-КЛАССА")
+
+    def test_46_b200d_prepares_only_cross_checked_facts_and_stays_blocked(self):
+        item = next(
+            item for item in self.report["enriched_cards"] if item["auto_number"] == "UA-0013"
+        )
+        expected_codes = {
+            fact["code"]
+            for fact in self.fixture["fact_sets"]["MB_W246_B200D_DCT_2014_2018_SAFE_COMMON"]
+        }
+        self.assertEqual(item["status"], "REVIEW_REQUIRED_OPERATOR_FIELDS")
+        self.assertEqual(item["identity_score"], 1.0)
+        self.assertEqual(item["verified_fact_count"], 19)
+        self.assertEqual({fact["code"] for fact in item["facts"]}, expected_codes)
+        self.assertEqual(
+            item["operator_review_reasons"],
+            ["YEAR_2015_CONFLICTS_WITH_VIN_MODEL_YEAR_2016"],
+        )
+        self.assertFalse(item["publication_allowed"])
+
+    def test_47_b200d_source_conflicts_are_quarantined(self):
+        item = next(
+            item for item in self.report["enriched_cards"] if item["auto_number"] == "UA-0013"
+        )
+        accepted = {fact["code"] for fact in item["facts"]}
+        rejected = {fact["code"] for fact in item["rejected"]}
+        conflicts = {
+            "length_mm",
+            "wheelbase_mm",
+            "curb_weight_kg",
+            "trunk_min_l",
+            "max_speed_kmh",
+            "acceleration_0_100_s",
+            "combined_consumption_l_100km",
+        }
+        self.assertFalse(conflicts & accepted)
+        self.assertTrue(conflicts <= rejected)
 
 
 if __name__ == "__main__":

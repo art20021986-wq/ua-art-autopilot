@@ -26,9 +26,97 @@
       {"code":"turning_circle_m","label_ru":"Диаметр разворота","category":"steering","value":11.95,"unit":"м","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
       {"code":"front_brakes","label_ru":"Передние тормоза","category":"brakes","value":"вентилируемые дисковые","unit":"","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
       {"code":"rear_brakes","label_ru":"Задние тормоза","category":"brakes","value":"дисковые","unit":"","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]}
+    ],
+    "KIA_K5_JF_LPI_AUTOMATIC_2018_SAFE_COMMON": [
+      {"code":"transmission_gears","label_ru":"Количество передач","category":"performance","value":6,"unit":"ступ.","note":"автоматическая","source_ids":["CARWIKI_K5_JF_LPI_2018","POWERKNOW_K5_JF_LPI_2018"]},
+      {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4855,"unit":"мм","note":"","source_ids":["CARWIKI_K5_JF_LPI_2018","POWERKNOW_K5_JF_LPI_2018"]},
+      {"code":"width_mm","label_ru":"Ширина","category":"dimensions","value":1860,"unit":"мм","note":"","source_ids":["CARWIKI_K5_JF_LPI_2018","POWERKNOW_K5_JF_LPI_2018"]},
+      {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2805,"unit":"мм","note":"","source_ids":["CARWIKI_K5_JF_LPI_2018","POWERKNOW_K5_JF_LPI_2018"]},
+      {"code":"front_brakes","label_ru":"Передние тормоза","category":"brakes","value":"дисковые","unit":"","note":"","source_ids":["CARWIKI_K5_JF_LPI_2018","POWERKNOW_K5_JF_LPI_2018"]},
+      {"code":"rear_brakes","label_ru":"Задние тормоза","category":"brakes","value":"дисковые","unit":"","note":"","source_ids":["CARWIKI_K5_JF_LPI_2018","POWERKNOW_K5_JF_LPI_2018"]}
+    ],
+    "KIA_K5_JF_LPI_AUTOMATIC_2019_SAFE_COMMON": [
+      {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4855,"unit":"мм","note":"","source_ids":["NAVER_K5_2019_CHASSIS","BOBAEDREAM_K5_JF_2018_2019_LPI"]},
+      {"code":"width_mm","label_ru":"Ширина","category":"dimensions","value":1860,"unit":"мм","note":"","source_ids":["NAVER_K5_2019_CHASSIS","BOBAEDREAM_K5_JF_2018_2019_LPI"]},
+      {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2805,"unit":"мм","note":"","source_ids":["NAVER_K5_2019_CHASSIS","BOBAEDREAM_K5_JF_2018_2019_LPI"]},
+      {"code":"front_brakes","label_ru":"Передние тормоза","category":"brakes","value":"дисковые","unit":"","note":"","source_ids":["NAVER_K5_2019_CHASSIS","BOBAEDREAM_K5_JF_2018_2019_LPI"]},
+      {"code":"rear_brakes","label_ru":"Задние тормоза","category":"brakes","value":"дисковые","unit":"","note":"","source_ids":["NAVER_K5_2019_CHASSIS","BOBAEDREAM_K5_JF_2018_2019_LPI"]}
+    ],
+    "HYUNDAI_SONATA_LF_LPI_AUTOMATIC_2018_SAFE_COMMON": [
+      {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","value":151,"unit":"л.с.","note":"6 200 об/мин","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+      {"code":"max_torque_kgfm","label_ru":"Максимальный крутящий момент","category":"engine","value":19.8,"unit":"кгс·м","note":"4 200 об/мин","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+      {"code":"transmission_gears","label_ru":"Количество передач","category":"performance","value":6,"unit":"ступ.","note":"автоматическая","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+      {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4855,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+      {"code":"width_mm","label_ru":"Ширина","category":"dimensions","value":1865,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
+      {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2805,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]}
+    ],
+    "MB_W213_E220D_2016_2020_SAFE_COMMON": [
+      {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","value":194,"unit":"л.с.","note":"3 800 об/мин","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]},
+      {"code":"max_torque_nm","label_ru":"Максимальный крутящий момент","category":"engine","value":400,"unit":"Н·м","note":"","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]},
+      {"code":"cylinders_count","label_ru":"Количество цилиндров","category":"engine","value":4,"unit":"","note":"рядное расположение","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]},
+      {"code":"compression_ratio","label_ru":"Степень сжатия","category":"engine","value":"15.5:1","unit":"","note":"","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]},
+      {"code":"engine_aspiration","label_ru":"Наддув","category":"engine","value":"турбонаддув с интеркулером","unit":"","note":"","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]},
+      {"code":"acceleration_0_100_s","label_ru":"Разгон 0–100 км/ч","category":"performance","value":7.3,"unit":"с","note":"","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]},
+      {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4923,"unit":"мм","note":"","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]},
+      {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2939,"unit":"мм","note":"","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]},
+      {"code":"front_brakes","label_ru":"Передние тормоза","category":"brakes","value":"вентилируемые дисковые","unit":"","note":"","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]},
+      {"code":"steering_type","label_ru":"Рулевой механизм","category":"steering","value":"реечное, электрическое","unit":"","note":"","source_ids":["AUTO_DATA_MB_W213_E220D","ULTIMATE_SPECS_MB_W213_E220D"]}
+    ],
+    "MB_W246_B200D_DCT_2014_2018_SAFE_COMMON": [
+      {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","value":136,"unit":"л.с.","note":"3 200–4 000 об/мин","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"max_torque_nm","label_ru":"Максимальный крутящий момент","category":"engine","value":300,"unit":"Н·м","note":"1 400–3 000 об/мин","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"cylinders_count","label_ru":"Количество цилиндров","category":"engine","value":4,"unit":"","note":"рядное расположение","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"compression_ratio","label_ru":"Степень сжатия","category":"engine","value":"16.2:1","unit":"","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"engine_aspiration","label_ru":"Наддув","category":"engine","value":"турбонаддув с интеркулером","unit":"","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"fuel_injection","label_ru":"Система впрыска","category":"engine","value":"Common Rail","unit":"","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT"]},
+      {"code":"transmission_gears","label_ru":"Количество передач","category":"performance","value":7,"unit":"ступ.","note":"автоматическая","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT"]},
+      {"code":"width_mm","label_ru":"Ширина","category":"dimensions","value":1786,"unit":"мм","note":"без зеркал","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"height_mm","label_ru":"Высота","category":"dimensions","value":1557,"unit":"мм","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"front_track_mm","label_ru":"Колея передняя","category":"dimensions","value":1552,"unit":"мм","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"rear_track_mm","label_ru":"Колея задняя","category":"dimensions","value":1549,"unit":"мм","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"seats_count","label_ru":"Количество мест","category":"capacity","value":5,"unit":"мест","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"doors_count","label_ru":"Количество дверей","category":"capacity","value":5,"unit":"","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"fuel_tank_l","label_ru":"Объём топливного бака","category":"capacity","value":50,"unit":"л","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"gross_weight_kg","label_ru":"Разрешённая полная масса","category":"weight","value":2025,"unit":"кг","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT"]},
+      {"code":"front_brakes","label_ru":"Передние тормоза","category":"brakes","value":"вентилируемые дисковые","unit":"","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"rear_brakes","label_ru":"Задние тормоза","category":"brakes","value":"дисковые","unit":"","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"tire_size","label_ru":"Базовый размер шин","category":"wheels","value":"205/55 R16","unit":"","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","AUTOEVOLUTION_MB_W246_B200D_7AT","ULTIMATE_SPECS_MB_W246_B200D"]},
+      {"code":"emission_standard","label_ru":"Экологический стандарт","category":"ecology","value":"Euro 6","unit":"","note":"","source_ids":["AUTO_DATA_MB_W246_B200D_DCT","ULTIMATE_SPECS_MB_W246_B200D"]}
     ]
   },
   "bundles": [
+    {
+      "auto_number": "UA-0001",
+      "vin": "WDDZF0EB7HA053001",
+      "identity": {"brand":"Mercedes-Benz","model":"E 220","year":"2017","engine_cc":1950,"fuel":"дизель","gearbox":"автомат","modification":"E 220 d 9G-TRONIC (W213)"},
+      "identity_status": "MATCHED_BY_OPERATOR_FIELDS",
+      "identity_note": "The CRM combination E 220, 2017, 1,950 cc diesel, automatic gearbox and rear drive matches the W213 E 220 d record. Only facts identical on both free sources are prepared.",
+      "fact_set_id": "MB_W213_E220D_2016_2020_SAFE_COMMON",
+      "facts": [],
+      "conflicts": [
+        {"code":"rear_brakes","label_ru":"Задние тормоза","category":"brakes","variants":[{"value":"вентилируемые дисковые","source_id":"AUTO_DATA_MB_W213_E220D"},{"value":"дисковые","source_id":"ULTIMATE_SPECS_MB_W213_E220D"}],"resolution":"REVIEW_REQUIRED"},
+        {"code":"combined_consumption_l_100km","label_ru":"Расход, смешанный цикл","category":"consumption","variants":[{"value":"3.9–4.3","unit":"л/100 км","source_id":"AUTO_DATA_MB_W213_E220D"},{"value":3.9,"unit":"л/100 км","source_id":"ULTIMATE_SPECS_MB_W213_E220D"}],"resolution":"TRIM_AND_TEST_CYCLE_DEPENDENT"}
+      ]
+    },
+    {
+      "auto_number": "UA-0013",
+      "vin": "WDDMH0JB6GN142530",
+      "identity": {"brand":"Mercedes-Benz","model":"Б-КЛАССА","year":"2015","engine_cc":2143,"fuel":"diesel","gearbox":"автомат","modification":"B 200 d / B 200 CDI DCT (W246 facelift)"},
+      "identity_status": "BLOCKED_OPERATOR_PRIMARY_FIELDS",
+      "identity_note": "CRM says 2015, while an external listing for the exact full VIN and VIN model-year code G indicate 2016. TASK108 preserves the CRM value and blocks publication pending operator confirmation. The prepared technical facts are limited to values common to the 2014-2018 W246 B 200 d/DCT family.",
+      "operator_review_reasons": ["YEAR_2015_CONFLICTS_WITH_VIN_MODEL_YEAR_2016"],
+      "fact_set_id": "MB_W246_B200D_DCT_2014_2018_SAFE_COMMON",
+      "facts": [],
+      "conflicts": [
+        {"code":"length_mm","label_ru":"Длина","category":"dimensions","variants":[{"value":4393,"unit":"мм","source_id":"AUTO_DATA_MB_W246_B200D_DCT"},{"value":4394,"unit":"мм","source_id":"AUTOEVOLUTION_MB_W246_B200D_7AT"}],"resolution":"ROUNDING_CONFLICT"},
+        {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","variants":[{"value":2699,"unit":"мм","source_id":"AUTO_DATA_MB_W246_B200D_DCT"},{"value":2700,"unit":"мм","source_id":"AUTOEVOLUTION_MB_W246_B200D_7AT"}],"resolution":"ROUNDING_CONFLICT"},
+        {"code":"curb_weight_kg","label_ru":"Снаряжённая масса","category":"weight","variants":[{"value":1505,"unit":"кг","source_id":"AUTO_DATA_MB_W246_B200D_DCT"},{"value":1485,"unit":"кг","source_id":"ULTIMATE_SPECS_MB_W246_B200D"}],"resolution":"TRANSMISSION_DEPENDENT"},
+        {"code":"trunk_min_l","label_ru":"Объём багажника","category":"capacity","variants":[{"value":488,"unit":"л","source_id":"AUTO_DATA_MB_W246_B200D_DCT"},{"value":487,"unit":"л","source_id":"AUTOEVOLUTION_MB_W246_B200D_7AT"},{"value":486,"unit":"л","source_id":"ULTIMATE_SPECS_MB_W246_B200D"}],"resolution":"SOURCE_CONFLICT"},
+        {"code":"max_speed_kmh","label_ru":"Максимальная скорость","category":"performance","variants":[{"value":210,"unit":"км/ч","source_id":"AUTO_DATA_MB_W246_B200D_DCT"},{"value":209,"unit":"км/ч","source_id":"AUTOEVOLUTION_MB_W246_B200D_7AT"}],"resolution":"SOURCE_CONFLICT"},
+        {"code":"acceleration_0_100_s","label_ru":"Разгон 0–100 км/ч","category":"performance","variants":[{"value":9.8,"unit":"с","source_id":"AUTO_DATA_MB_W246_B200D_DCT"},{"value":9.4,"unit":"с","source_id":"ULTIMATE_SPECS_MB_W246_B200D"}],"resolution":"TRANSMISSION_DEPENDENT"},
+        {"code":"combined_consumption_l_100km","label_ru":"Расход, смешанный цикл","category":"consumption","variants":[{"value":"4.0–4.2","unit":"л/100 км","source_id":"AUTO_DATA_MB_W246_B200D_DCT"},{"value":4.2,"unit":"л/100 км","source_id":"AUTOEVOLUTION_MB_W246_B200D_7AT"}],"resolution":"TRIM_AND_TEST_CYCLE_DEPENDENT"}
+      ]
+    },
     {
       "auto_number": "UA-0002",
       "vin": "WDD2452322J561014",
@@ -58,6 +146,103 @@
       "fact_set_id": "MB_W245_245232_AUTOTRONIC",
       "facts": [],
       "conflicts": []
+    },
+    {
+      "auto_number": "UA-0003",
+      "vin": "KNAGS416BLA375484",
+      "identity": {"brand":"Kia","model":"K5","year":"2019","engine_cc":2000,"fuel":"LPI","gearbox":"автомат","modification":"K5 JF 2.0 LPi automatic"},
+      "identity_status": "REVIEW_REQUIRED",
+      "identity_note": "CRM year, 2.0-litre LPi fuel and automatic gearbox match the 2019 K5 JF family. Exact trim is not proven. Engine-panel values that default to a gasoline variant and trim-dependent height are excluded.",
+      "fact_set_id": "KIA_K5_JF_LPI_AUTOMATIC_2019_SAFE_COMMON",
+      "facts": [],
+      "conflicts": [
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1465,"unit":"мм","source_id":"NAVER_K5_2019_CHASSIS"},{"value":1475,"unit":"мм","source_id":"BOBAEDREAM_K5_JF_2018_2019_LPI"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"},
+        {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","variants":[{"value":163,"unit":"л.с.","source_id":"NAVER_K5_2019_CHASSIS","note":"gasoline-default panel; not LPi evidence"},{"value":151,"unit":"л.с.","source_id":"BOBAEDREAM_K5_JF_2018_2019_LPI"}],"resolution":"SOURCE_SELECTOR_AMBIGUITY"}
+      ]
+    },
+    {
+      "auto_number": "UA-0004",
+      "vin": "KNAGS416BLA363849",
+      "identity": {"brand":"Kia","model":"K5","year":"2019","engine_cc":2000,"fuel":"LPI","gearbox":"автомат","modification":"K5 JF 2.0 LPi automatic"},
+      "identity_status": "REVIEW_REQUIRED",
+      "identity_note": "CRM year, 2.0-litre LPi fuel and automatic gearbox match the 2019 K5 JF family. Exact trim is not proven. Engine-panel values that default to a gasoline variant and trim-dependent height are excluded.",
+      "fact_set_id": "KIA_K5_JF_LPI_AUTOMATIC_2019_SAFE_COMMON",
+      "facts": [],
+      "conflicts": [
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1465,"unit":"мм","source_id":"NAVER_K5_2019_CHASSIS"},{"value":1475,"unit":"мм","source_id":"BOBAEDREAM_K5_JF_2018_2019_LPI"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"},
+        {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","variants":[{"value":163,"unit":"л.с.","source_id":"NAVER_K5_2019_CHASSIS","note":"gasoline-default panel; not LPi evidence"},{"value":151,"unit":"л.с.","source_id":"BOBAEDREAM_K5_JF_2018_2019_LPI"}],"resolution":"SOURCE_SELECTOR_AMBIGUITY"}
+      ]
+    },
+    {
+      "auto_number": "UA-0006",
+      "vin": "KNAGS416BLA359954",
+      "identity": {"brand":"Kia","model":"K5","year":"2019","engine_cc":2000,"fuel":"LPI","gearbox":"автомат","modification":"K5 JF 2.0 LPi automatic"},
+      "identity_status": "REVIEW_REQUIRED",
+      "identity_note": "CRM year, 2.0-litre LPi fuel and automatic gearbox match the 2019 K5 JF family. Exact trim is not proven. Engine-panel values that default to a gasoline variant and trim-dependent height are excluded.",
+      "fact_set_id": "KIA_K5_JF_LPI_AUTOMATIC_2019_SAFE_COMMON",
+      "facts": [],
+      "conflicts": [
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1465,"unit":"мм","source_id":"NAVER_K5_2019_CHASSIS"},{"value":1475,"unit":"мм","source_id":"BOBAEDREAM_K5_JF_2018_2019_LPI"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"},
+        {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","variants":[{"value":163,"unit":"л.с.","source_id":"NAVER_K5_2019_CHASSIS","note":"gasoline-default panel; not LPi evidence"},{"value":151,"unit":"л.с.","source_id":"BOBAEDREAM_K5_JF_2018_2019_LPI"}],"resolution":"SOURCE_SELECTOR_AMBIGUITY"}
+      ]
+    },
+    {
+      "auto_number": "UA-0009",
+      "vin": "KNAGU416BJA242741",
+      "identity": {"brand":"Kia","model":"K5","year":"2018","engine_cc":2000,"fuel":"газ","gearbox":"автомат","modification":"K5 JF 2.0 LPi automatic"},
+      "identity_status": "REVIEW_REQUIRED",
+      "identity_note": "CRM year, 2.0-litre LPG fuel and automatic gearbox match the 2018 K5 JF LPi family. Exact rental/taxi/disability trim is not proven, so only values shared across the reviewed sources are prepared and publication remains blocked.",
+      "fact_set_id": "KIA_K5_JF_LPI_AUTOMATIC_2018_SAFE_COMMON",
+      "facts": [],
+      "conflicts": [
+        {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","variants":[{"value":151,"unit":"л.с.","source_id":"CARWIKI_K5_JF_LPI_2018"},{"value":153,"unit":"л.с.","source_id":"CARWIKI_K5_JF_LPI_2018"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"},
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1465,"unit":"мм","source_id":"CARWIKI_K5_JF_LPI_2018"},{"value":1475,"unit":"мм","source_id":"POWERKNOW_K5_JF_LPI_2018"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"},
+        {"code":"combined_consumption_kmpl","label_ru":"Расход, смешанный цикл","category":"consumption","variants":[{"value":9.4,"unit":"км/л","source_id":"CARWIKI_K5_JF_LPI_2018"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"}
+      ]
+    },
+    {
+      "auto_number": "UA-0012",
+      "vin": "KNAGU416BJA244187",
+      "identity": {"brand":"Kia","model":"K5","year":"2018","engine_cc":2000,"fuel":"LPI","gearbox":"автомат","modification":"K5 JF 2.0 LPi automatic"},
+      "identity_status": "BLOCKED_OPERATOR_PRIMARY_FIELDS",
+      "identity_note": "The technical family matches UA-0009, but CRM mileage is 342 km and must be confirmed by the operator before any publication transaction.",
+      "operator_review_reasons": ["MILEAGE_342_REQUIRES_CONFIRMATION"],
+      "fact_set_id": "KIA_K5_JF_LPI_AUTOMATIC_2018_SAFE_COMMON",
+      "facts": [],
+      "conflicts": [
+        {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","variants":[{"value":151,"unit":"л.с.","source_id":"CARWIKI_K5_JF_LPI_2018"},{"value":153,"unit":"л.с.","source_id":"CARWIKI_K5_JF_LPI_2018"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"},
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1465,"unit":"мм","source_id":"CARWIKI_K5_JF_LPI_2018"},{"value":1475,"unit":"мм","source_id":"POWERKNOW_K5_JF_LPI_2018"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"},
+        {"code":"combined_consumption_kmpl","label_ru":"Расход, смешанный цикл","category":"consumption","variants":[{"value":9.4,"unit":"км/л","source_id":"CARWIKI_K5_JF_LPI_2018"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"}
+      ]
+    },
+    {
+      "auto_number": "UA-0010",
+      "vin": "KNAGU416BKA324445",
+      "identity": {"brand":"Kia","model":"K5","year":"2018","engine_cc":2000,"fuel":"газ","gearbox":"автомат","modification":"K5 JF 2.0 LPi automatic"},
+      "identity_status": "REVIEW_REQUIRED",
+      "identity_note": "CRM year, 2.0-litre LPG fuel and automatic gearbox match the 2018 K5 JF LPi family. Exact rental/taxi/disability trim is not proven, so only values shared across the reviewed sources are prepared and publication remains blocked.",
+      "fact_set_id": "KIA_K5_JF_LPI_AUTOMATIC_2018_SAFE_COMMON",
+      "facts": [],
+      "conflicts": [
+        {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","variants":[{"value":151,"unit":"л.с.","source_id":"CARWIKI_K5_JF_LPI_2018"},{"value":153,"unit":"л.с.","source_id":"CARWIKI_K5_JF_LPI_2018"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"},
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1465,"unit":"мм","source_id":"CARWIKI_K5_JF_LPI_2018"},{"value":1475,"unit":"мм","source_id":"POWERKNOW_K5_JF_LPI_2018"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"},
+        {"code":"combined_consumption_kmpl","label_ru":"Расход, смешанный цикл","category":"consumption","variants":[{"value":9.4,"unit":"км/л","source_id":"CARWIKI_K5_JF_LPI_2018"}],"resolution":"REVIEW_REQUIRED_EXACT_TRIM"}
+      ]
+    },
+    {
+      "auto_number": "UA-0011",
+      "vin": "KMHE341DBKA544289",
+      "identity": {"brand":"Hyundai","model":"SONATA","year":"2018","engine_cc":2000,"fuel":"LPI","gearbox":"автомат","modification":"Sonata LF/New Rise LPi 2.0 automatic"},
+      "identity_status": "REVIEW_REQUIRED",
+      "identity_note": "The CRM signature matches the 2018 Sonata LF/New Rise LPi 2.0 automatic family, but the exact taxi/rental trim is not proven by VIN. Only values shared by the two selected free sources are prepared; publication remains blocked.",
+      "fact_set_id": "HYUNDAI_SONATA_LF_LPI_AUTOMATIC_2018_SAFE_COMMON",
+      "facts": [],
+      "conflicts": [
+        {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1485,"unit":"мм","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":1475,"unit":"мм","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"},
+        {"code":"combined_consumption_kmpl","label_ru":"Расход, смешанный цикл","category":"consumption","variants":[{"value":9.4,"unit":"км/л","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":9.5,"unit":"км/л","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"},
+        {"code":"curb_weight_kg","label_ru":"Снаряжённая масса","category":"weight","variants":[{"value":1470,"unit":"кг","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":1465,"unit":"кг","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"},
+        {"code":"co2_g_km","label_ru":"Выброс CO₂","category":"ecology","variants":[{"value":139,"unit":"г/км","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":138,"unit":"г/км","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"}
+      ]
     },
     {
       "auto_number": "UA-0005",
@@ -122,14 +307,8 @@
         "decoded_model": "Sonata",
         "decoded_model_year": "2018"
       },
-      "facts": [
-        {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","value":151,"unit":"л.с.","note":"6 200 об/мин","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
-        {"code":"max_torque_kgfm","label_ru":"Максимальный крутящий момент","category":"engine","value":19.8,"unit":"кгс·м","note":"4 200 об/мин","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
-        {"code":"transmission_gears","label_ru":"Количество передач","category":"performance","value":6,"unit":"ступ.","note":"автоматическая","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
-        {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4855,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
-        {"code":"width_mm","label_ru":"Ширина","category":"dimensions","value":1865,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]},
-        {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2805,"unit":"мм","note":"","source_ids":["HYUNDAI_SONATA_TAXI_CATALOG_MIRROR","CARFOLIO_SONATA_LPI_2018"]}
-      ],
+      "fact_set_id": "HYUNDAI_SONATA_LF_LPI_AUTOMATIC_2018_SAFE_COMMON",
+      "facts": [],
       "conflicts": [
         {"code":"height_mm","label_ru":"Высота","category":"dimensions","variants":[{"value":1485,"unit":"мм","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":1475,"unit":"мм","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"},
         {"code":"combined_consumption_kmpl","label_ru":"Расход, смешанный цикл","category":"consumption","variants":[{"value":9.4,"unit":"км/л","source_id":"HYUNDAI_SONATA_TAXI_CATALOG_MIRROR"},{"value":9.5,"unit":"км/л","source_id":"DANAWA_SONATA_2018"}],"resolution":"REVIEW_REQUIRED"},

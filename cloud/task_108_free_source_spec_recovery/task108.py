@@ -22,6 +22,7 @@ POLICY_PATH = ROOT / "source_policy.json"
 FIXTURE_PATH = ROOT / "fixtures" / "canaries.json"
 BEFORE_PATH = ROOT / "evidence" / "before_protected_fields.json"
 LIVE_AUDIT_PATH = ROOT / "evidence" / "live_audit_2026-09-03.json"
+OPERATOR_REVIEW_PATH = ROOT / "evidence" / "operator_review_queue.json"
 SOURCE_EVIDENCE_ROOT = ROOT / "evidence" / "sources"
 
 CATEGORY_ORDER = (
@@ -323,7 +324,10 @@ def _claim_matches_fact(claim: dict[str, Any], fact: dict[str, Any]) -> bool:
 
 
 def _identity_token(value: Any) -> str:
-    return re.sub(r"[^0-9a-zа-яё]+", "", normalize_text(value))
+    token = re.sub(r"[^0-9a-zа-яё]+", "", normalize_text(value))
+    # CRM keeps the owner-entered Cyrillic label for UA-0013.  Normalise only
+    # this literal B-Class spelling for source matching; never rewrite CRM.
+    return token.replace("бкласса", "bclass").replace("бкласс", "bclass")
 
 
 def source_identity_errors(evidence: dict[str, Any], bundle: dict[str, Any]) -> list[str]:
@@ -538,11 +542,14 @@ def process_bundle(
         "MATCHED_BY_OPERATOR_FIELDS",
         "MATCHED_BY_VIN_TYPE_PREFIX",
     }
+    operator_field_block = bundle.get("identity_status") == "BLOCKED_OPERATOR_PRIMARY_FIELDS"
 
     if not facts:
         status = "REVIEW_REQUIRED_EMPTY"
     elif not identity_matched:
         status = "REVIEW_REQUIRED_IDENTITY_MISMATCH"
+    elif operator_field_block:
+        status = "REVIEW_REQUIRED_OPERATOR_FIELDS"
     elif not enough_facts or not enough_categories:
         status = "REVIEW_REQUIRED_INSUFFICIENT_FACTS"
     elif not exact_trim_proven:
@@ -556,6 +563,7 @@ def process_bundle(
         "identity_score": score,
         "identity_mismatches": mismatches,
         "identity_status": bundle.get("identity_status"),
+        "operator_review_reasons": sorted(set(bundle.get("operator_review_reasons") or [])),
         "vpic_usable_for_detailed_facts": bool(bundle.get("vpic_audit"))
         and not bool(set(bundle["vpic_audit"].get("error_codes", [])) & CRITICAL_VPIC_ERRORS),
         "status": status,
@@ -674,13 +682,76 @@ def protected_projection(card: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in card.items() if key != "additional_specification"}
 
 
+def validate_operator_review_queue(
+    queue: dict[str, Any], cards: dict[str, dict[str, Any]]
+) -> list[str]:
+    """Validate read-only CRM review markers without proposing replacement values."""
+    errors: list[str] = []
+    forbidden_replacement_keys = {
+        "replacement",
+        "replacement_value",
+        "suggested_value",
+        "normalized_value",
+        "new_value",
+    }
+
+    if queue.get("schema_version") != 1:
+        errors.append("OPERATOR_QUEUE_SCHEMA_INVALID")
+    if queue.get("task_id") != "TASK108":
+        errors.append("OPERATOR_QUEUE_TASK_INVALID")
+    if queue.get("mode") != "READ_ONLY_REVIEW_QUEUE":
+        errors.append("OPERATOR_QUEUE_MODE_INVALID")
+    if queue.get("production_touched") is not False:
+        errors.append("OPERATOR_QUEUE_PRODUCTION_FLAG_INVALID")
+
+    seen: set[tuple[str, str]] = set()
+    items = queue.get("items")
+    if not isinstance(items, list) or not items:
+        return errors + ["OPERATOR_QUEUE_ITEMS_INVALID"]
+
+    for position, item in enumerate(items):
+        marker = f"OPERATOR_QUEUE_ITEM_{position + 1}"
+        if not isinstance(item, dict):
+            errors.append(f"{marker}_INVALID")
+            continue
+        uid = item.get("auto_number")
+        field = item.get("field")
+        key = (str(uid), str(field))
+        if key in seen:
+            errors.append(f"{marker}_DUPLICATE")
+        seen.add(key)
+        if uid not in cards:
+            errors.append(f"{marker}_UNKNOWN_CARD")
+            continue
+        if not isinstance(field, str) or field not in cards[uid]:
+            errors.append(f"{marker}_UNKNOWN_FIELD")
+            continue
+        if not is_protected_code(field):
+            errors.append(f"{marker}_FIELD_NOT_PROTECTED")
+        if canonical_json(item.get("observed_value")) != canonical_json(cards[uid][field]):
+            errors.append(f"{marker}_OBSERVED_VALUE_MISMATCH")
+        if item.get("status") != "REVIEW_REQUIRED":
+            errors.append(f"{marker}_STATUS_INVALID")
+        if not item.get("reason_code") or not item.get("operator_action_ru"):
+            errors.append(f"{marker}_REASON_OR_ACTION_MISSING")
+        if forbidden_replacement_keys.intersection(item):
+            errors.append(f"{marker}_CONTAINS_REPLACEMENT")
+    return sorted(set(errors))
+
+
 def run() -> dict[str, Any]:
     policy = load_json(POLICY_PATH)
     fixture = load_json(FIXTURE_PATH)
     before = load_json(BEFORE_PATH)
     live_audit = load_json(LIVE_AUDIT_PATH)
+    operator_review_queue = load_json(OPERATOR_REVIEW_PATH)
     live_audit_gate = assess_live_audit(live_audit)
     cards = {card["auto_number"]: card for card in before["cards"]}
+    operator_review_errors = validate_operator_review_queue(operator_review_queue, cards)
+    operator_review_by_uid: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for review_item in operator_review_queue.get("items", []):
+        if isinstance(review_item, dict) and review_item.get("auto_number") in cards:
+            operator_review_by_uid[review_item["auto_number"]].append(review_item)
     raw_bundle_by_uid = {item["auto_number"]: item for item in fixture["bundles"]}
     bundle_by_uid = {
         uid: expand_bundle(item, fixture) for uid, item in raw_bundle_by_uid.items()
@@ -711,14 +782,32 @@ def run() -> dict[str, Any]:
     batch_status: list[dict[str, Any]] = []
     for uid in sorted(cards):
         item = result_index.get(uid)
+        review_items = operator_review_by_uid.get(uid, [])
+        review_fields = sorted({review_item["field"] for review_item in review_items})
+        review_reasons = sorted(
+            {
+                *(review_item["reason_code"] for review_item in review_items),
+                *((item or {}).get("operator_review_reasons") or []),
+            }
+        )
         if item is None:
-            batch_status.append({"auto_number": uid, "status": "REVIEW_REQUIRED_EMPTY", "verified_fact_count": 0})
+            batch_status.append(
+                {
+                    "auto_number": uid,
+                    "status": "REVIEW_REQUIRED_EMPTY",
+                    "verified_fact_count": 0,
+                    "operator_review_fields": review_fields,
+                    "operator_review_reasons": review_reasons,
+                }
+            )
         else:
             batch_status.append(
                 {
                     "auto_number": uid,
                     "status": item["status"],
                     "verified_fact_count": item["verified_fact_count"],
+                    "operator_review_fields": review_fields,
+                    "operator_review_reasons": review_reasons,
                 }
             )
 
@@ -767,12 +856,20 @@ def run() -> dict[str, Any]:
         "all_bundles_target_known_cards": sorted(bundle_by_uid)
         == sorted(uid for uid in bundle_by_uid if uid in cards),
         "source_policy_valid": not policy_errors,
+        "operator_review_queue_valid": not operator_review_errors,
+        "operator_review_cards_blocked": all(
+            next(item for item in batch_status if item["auto_number"] == uid)["status"].startswith(
+                "REVIEW_REQUIRED"
+            )
+            for uid in operator_review_by_uid
+        ),
     }
 
     deterministic_core = {
         "canaries": canaries,
         "enriched_cards": enriched_cards,
         "batch_status": batch_status,
+        "operator_review_queue": operator_review_queue,
         "before_protected_sha256": before_hash,
         "after_protected_sha256": after_hash,
         "invariant_checks": invariant_checks,
@@ -805,6 +902,8 @@ def run() -> dict[str, Any]:
         "canaries": canaries,
         "enriched_cards": enriched_cards,
         "batch_status": batch_status,
+        "operator_review_queue": operator_review_queue,
+        "operator_review_errors": operator_review_errors,
         "policy_errors": policy_errors,
         "empty_cards_passed": empty_cards_passed,
         "duplicate_rendered_codes": duplicate_rendered_codes,
@@ -838,6 +937,20 @@ def report_markdown(report: dict[str, Any]) -> str:
     empty_count = sum(
         1 for item in report["batch_status"] if item["verified_fact_count"] == 0
     )
+    evidence_backed_count = sum(
+        1 for item in report["batch_status"] if item["verified_fact_count"] > 0
+    )
+    empty_ids = [
+        item["auto_number"]
+        for item in report["batch_status"]
+        if item["verified_fact_count"] == 0
+    ]
+    operator_review_lines = []
+    for item in report["operator_review_queue"]["items"]:
+        operator_review_lines.append(
+            f"| {item['auto_number']} | `{item['field']}` | `{item['observed_value']}` | "
+            f"`{item['reason_code']}` |"
+        )
     return f"""# TASK108 — отчёт canary без платного API
 
 STATUS: **{report['status']}**
@@ -891,7 +1004,15 @@ UA-0005 прошла структурный canary и готова только 
 
 ## Полный парк
 
-TASK108 не выдаёт фиктивный общий PASS: {empty_count} карточек без нового проверенного набора фактов остаются `REVIEW_REQUIRED_EMPTY`. UA-0012, UA-0014 и UA-0016 имеют подозрительные операторские значения; TASK108 их фиксирует в аудите, но не меняет.
+В Sandbox подготовлены подтверждённые наборы для **{evidence_backed_count} из {len(report['batch_status'])}** карточек. TASK108 не выдаёт фиктивный общий PASS. Карточек без нового проверенного набора фактов: **{empty_count}** ({', '.join(empty_ids)}); они остаются `REVIEW_REQUIRED_EMPTY`. UA-0012, UA-0013, UA-0014 и UA-0016 имеют операторские значения, требующие проверки; TASK108 их фиксирует в аудите, но не меняет.
+
+## Очередь проверки полей CRM
+
+| Карточка | Поле | Текущее значение | Причина остановки |
+|---|---|---:|---|
+{chr(10).join(operator_review_lines)}
+
+Очередь доступна только для чтения: она сохраняет точные текущие значения CRM, не содержит предлагаемой замены и не даёт права на запись. Ошибок целостности очереди: **{len(report['operator_review_errors'])}**.
 
 UA-0009 PUBLICATION READINESS: **{report['ua0009_publication_readiness']}**
 
@@ -901,5 +1022,5 @@ SAFE TO PUBLISH ANYTHING: **{report['safe_to_publish_anything']}**
 
 ## Следующий разрешённый шаг
 
-Продолжить восстановление оставшихся 11 карточек группами по точной модификации. Ручное подтверждение точной модификации UA-0015 и любое Production-применение остаются отдельными шлюзами после итогового отчёта.
+Получить ручное подтверждение отмеченных полей для UA-0012, UA-0013, UA-0014 и UA-0016 и точных модификаций карточек со статусом `REVIEW_REQUIRED_EXACT_TRIM`. Любое Production-применение остаётся отдельным шлюзом после итогового отчёта и резервного копирования.
 """

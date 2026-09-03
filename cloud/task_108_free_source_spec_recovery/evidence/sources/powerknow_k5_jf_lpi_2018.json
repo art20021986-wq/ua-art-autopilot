@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "source_id": "POWERKNOW_K5_JF_LPI_2018",
+  "domain": "powerknow.tistory.com",
+  "source_url": "https://powerknow.tistory.com/3505",
+  "observed_urls": [
+    "https://powerknow.tistory.com/3505"
+  ],
+  "document_title": "Kia 2018 The New K5 technical overview",
+  "verification_status": "VERIFIED",
+  "verification_method": "manual_web_review",
+  "observed_at_utc": "2026-09-04T00:30:00Z",
+  "identity": {
+    "brand": "Kia",
+    "model_series": "K5 JF",
+    "modification": "2.0 LPi automatic",
+    "year": 2018,
+    "engine_cc": 1999,
+    "fuel": "lpg",
+    "gearbox": "automatic"
+  },
+  "locator": "2.0 LPi section: dimensions and chassis",
+  "claims": [
+    {"code":"transmission_gears","value":6,"unit":"ступ.","note":"автоматическая"},
+    {"code":"length_mm","value":4855,"unit":"мм","note":""},
+    {"code":"width_mm","value":1860,"unit":"мм","note":""},
+    {"code":"wheelbase_mm","value":2805,"unit":"мм","note":""},
+    {"code":"front_brakes","value":"дисковые","unit":"","note":""},
+    {"code":"rear_brakes","value":"дисковые","unit":"","note":""}
+  ]
+}

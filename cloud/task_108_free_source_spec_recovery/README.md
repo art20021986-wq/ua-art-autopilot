@@ -1,6 +1,6 @@
 # TASK108 — free-source additional specification recovery
 
-Status: **isolated branch / remediation in progress**. Production, live CRM, public paths and services are untouched.
+Status: **isolated branch / owner review required**. Production, live CRM, public paths and services are untouched.
 
 This package replaces the false-positive behaviour discovered in TASK096/TASK099: a processed card with zero accepted facts can no longer receive `PASS`, and repeated labels such as two rows named «Высота» are collapsed by canonical semantic code before rendering.
 
@@ -12,7 +12,8 @@ This package replaces the false-positive behaviour discovered in TASK096/TASK099
 - deterministic consensus and conflict quarantine;
 - denylist for every primary CRM, commercial, history, option, media and logistics field;
 - server-rendered `<details>` block plus `Vehicle.additionalProperty` JSON-LD;
-- canary fixtures for UA-0005/UA-0015 plus shared, VIN-type-bound W245 data for UA-0002/UA-0007/UA-0008;
+- canary fixtures for UA-0005/UA-0015 plus reviewed shared fact sets for the current Mercedes-Benz, Kia and Hyundai model groups;
+- read-only review queue for suspicious protected CRM values, with no proposed replacement and no write path;
 - strict publication gate, including the special UA-0009 gate;
 - ten-run determinism proof and standard-library tests.
 
@@ -24,6 +25,15 @@ This package replaces the false-positive behaviour discovered in TASK096/TASK099
 - UA-0005 exposes two CRM editor prompts inside the customer description.
 - The legacy TASK099 renderer, visual gate, finalizer and pre-write shadow gate are hardened on this branch so none of those states can pass again.
 - UA-0012, UA-0014 and UA-0016 contain operator-owned values that require operator review; TASK108 records but never changes them.
+- UA-0013 is recorded as 2015 in CRM, while a full-VIN auction listing and VIN model-year code indicate 2016. Its 19 cross-checked family parameters are prepared, but the card is blocked pending owner confirmation.
+
+## Sandbox recovery result
+
+- 14 of 16 current cards have a non-empty evidence-backed candidate specification.
+- UA-0014 and UA-0016 remain empty because their protected identity fields must be confirmed before source matching.
+- UA-0012 and UA-0013 have prepared facts but remain blocked by protected-field review.
+- Trim-dependent Kia/Hyundai candidates remain `REVIEW_REQUIRED_EXACT_TRIM` and are not publishable.
+- Every accepted fact is supported by two or three distinct free non-Russian domains; conflicting facts stay in quarantine.
 
 ## Run locally
 
@@ -33,7 +43,7 @@ python -m unittest discover -s tests -v
 python run_canary.py
 ```
 
-`run_canary.py` only reads package fixtures and writes package evidence/previews. It contains no production path, DB credential, deploy command or service restart. The current suite contains 32 tests.
+`run_canary.py` only reads package fixtures and writes package evidence/previews. It contains no production path, DB credential, deploy command or service restart. The current suite contains 47 tests.
 
 ## Interpretation
 
