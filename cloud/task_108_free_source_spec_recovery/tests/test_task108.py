@@ -163,8 +163,33 @@ class Task108ContractTests(unittest.TestCase):
         self.assertTrue(self.report["invariant_checks"]["ten_identical_runs"])
 
     def test_20_canary_pipeline_pass_does_not_claim_production_ready(self):
-        self.assertEqual(self.report["status"], "CANARY_PASS_PRODUCTION_BLOCKED")
+        self.assertEqual(self.report["status"], "CANARY_PASS_LIVE_REMEDIATION_REQUIRED")
         self.assertEqual(self.report["safe_to_publish_anything"], "NO")
+
+    def test_21_operator_instruction_rows_are_removed_exactly(self):
+        source = (
+            '<div class="tehstr"><div class="m">•</div><div>Полезный текст.</div></div>'
+            '<div class="tehstr"><div class="m">•</div><div>Чтобы изменить — пришлите новый текст. '
+            'Он полностью заменит нынешний. Каждый пункт с новой строки.</div></div>'
+            '<div class="tehstr"><div class="m">•</div><div>Пришлите новое значение текстом или голосом.</div></div>'
+        )
+        cleaned, removed = task108.strip_operator_instruction_rows(source)
+        self.assertEqual(removed, 2)
+        self.assertIn("Полезный текст", cleaned)
+        self.assertFalse(task108.has_operator_instruction_leak(cleaned))
+
+    def test_22_live_audit_rejects_empty_shells_and_leaks(self):
+        gate = self.report["live_audit_gate"]
+        self.assertEqual(gate["status"], "FAIL")
+        self.assertEqual(gate["card_count"], 16)
+        self.assertEqual(len(gate["empty_spec_cards"]), 15)
+        self.assertIn("EMPTY_SPEC:UA-0005", gate["issues"])
+        self.assertIn("EMPTY_SPEC_BLOCK_VISIBLE:UA-0005", gate["issues"])
+        self.assertIn("OPERATOR_INSTRUCTION_LEAK:UA-0005", gate["issues"])
+
+    def test_23_live_home_and_catalog_counts_match(self):
+        issues = self.report["live_audit_gate"]["issues"]
+        self.assertFalse(any(item.startswith("HOME_CATALOG_COUNT_MISMATCH") for item in issues))
 
 
 if __name__ == "__main__":
