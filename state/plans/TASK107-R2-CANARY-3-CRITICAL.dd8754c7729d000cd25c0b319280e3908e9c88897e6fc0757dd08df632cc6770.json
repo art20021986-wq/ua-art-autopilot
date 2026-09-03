@@ -1,0 +1,19 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "created_at": "2026-09-03T16:06:11Z",
+  "identity": {
+    "run_id": "33776437497",
+    "task_id": "TASK107-R2-CANARY-3-CRITICAL",
+    "task_sha256": "dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770"
+  },
+  "manual_mode": true,
+  "production_required": false,
+  "queue_key": "control_plane-303aefff2e9f776c",
+  "request_path": "tasks/requests/TASK107-R2-CANARY-3-CRITICAL.json",
+  "resource_locks": [
+    "CONTROL_PLANE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
