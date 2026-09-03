@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "source_id": "CARFOLIO_SONATA_LPI_2018",
+  "domain": "www.carfolio.com",
+  "source_url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447",
+  "observed_urls": [
+    "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447"
+  ],
+  "document_title": "2018 Hyundai Sonata 2.0 LPi Automatic specifications",
+  "verification_status": "VERIFIED",
+  "verification_method": "public_search_index_snapshot",
+  "observed_at_utc": "2026-09-03T23:45:00Z",
+  "access_note": "The public search index exposed the listed values; a direct request returned HTTP 403, so no unindexed values are accepted from this source.",
+  "identity": {
+    "brand": "Hyundai",
+    "model_series": "Sonata LF/New Rise",
+    "modification": "2.0 LPi Automatic",
+    "year": 2018,
+    "engine_cc": 1999,
+    "fuel": "lpg",
+    "gearbox": "automatic"
+  },
+  "locator": "Public search-index title and specification snippets observed for the exact page",
+  "claims": [
+    {"code":"max_power_ps","value":151,"unit":"л.с.","note":"6 200 об/мин"},
+    {"code":"max_torque_kgfm","value":19.8,"unit":"кгс·м","note":"4 200 об/мин"},
+    {"code":"transmission_gears","value":6,"unit":"ступ.","note":"автоматическая"},
+    {"code":"length_mm","value":4855,"unit":"мм","note":""},
+    {"code":"width_mm","value":1865,"unit":"мм","note":""},
+    {"code":"wheelbase_mm","value":2805,"unit":"мм","note":""}
+  ]
+}
