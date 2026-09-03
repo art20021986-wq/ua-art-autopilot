@@ -2,7 +2,63 @@
   "task_id": "TASK108",
   "captured_at_utc": "2026-09-03T23:00:00Z",
   "production_touched": false,
+  "fact_sets": {
+    "MB_W245_245232_AUTOTRONIC": [
+      {"code":"engine_code","label_ru":"Код двигателя","category":"engine","value":"M266.940","unit":"","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","ENCYCARPEDIA_MB_W245_B180"]},
+      {"code":"max_power_ps","label_ru":"Максимальная мощность","category":"engine","value":116,"unit":"л.с.","note":"5 500 об/мин","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","ENCYCARPEDIA_MB_W245_B180"]},
+      {"code":"max_torque_nm","label_ru":"Максимальный крутящий момент","category":"engine","value":155,"unit":"Н·м","note":"3 500–4 000 об/мин","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"cylinders_count","label_ru":"Количество цилиндров","category":"engine","value":4,"unit":"","note":"рядное расположение","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","ENCYCARPEDIA_MB_W245_B180"]},
+      {"code":"valves_per_cylinder","label_ru":"Клапанов на цилиндр","category":"engine","value":2,"unit":"","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","ENCYCARPEDIA_MB_W245_B180"]},
+      {"code":"bore_mm","label_ru":"Диаметр цилиндра","category":"engine","value":83.0,"unit":"мм","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","ENCYCARPEDIA_MB_W245_B180"]},
+      {"code":"stroke_mm","label_ru":"Ход поршня","category":"engine","value":78.5,"unit":"мм","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","ENCYCARPEDIA_MB_W245_B180"]},
+      {"code":"compression_ratio","label_ru":"Степень сжатия","category":"engine","value":"11:1","unit":"","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","ENCYCARPEDIA_MB_W245_B180"]},
+      {"code":"transmission_design","label_ru":"Конструкция трансмиссии","category":"performance","value":"AUTOTRONIC (CVT)","unit":"","note":"вариатор","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"acceleration_0_100_s","label_ru":"Разгон 0–100 км/ч","category":"performance","value":12.0,"unit":"с","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"length_mm","label_ru":"Длина","category":"dimensions","value":4273,"unit":"мм","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"width_mm","label_ru":"Ширина","category":"dimensions","value":1777,"unit":"мм","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"height_mm","label_ru":"Высота","category":"dimensions","value":1603,"unit":"мм","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"wheelbase_mm","label_ru":"Колёсная база","category":"dimensions","value":2778,"unit":"мм","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"front_track_mm","label_ru":"Колея передняя","category":"dimensions","value":1556,"unit":"мм","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","ENCYCARPEDIA_MB_W245_B180"]},
+      {"code":"rear_track_mm","label_ru":"Колея задняя","category":"dimensions","value":1551,"unit":"мм","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","ENCYCARPEDIA_MB_W245_B180"]},
+      {"code":"fuel_tank_l","label_ru":"Объём топливного бака","category":"capacity","value":54,"unit":"л","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"curb_weight_kg","label_ru":"Снаряжённая масса","category":"weight","value":1360,"unit":"кг","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"gross_weight_kg","label_ru":"Разрешённая полная масса","category":"weight","value":1830,"unit":"кг","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"turning_circle_m","label_ru":"Диаметр разворота","category":"steering","value":11.95,"unit":"м","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"front_brakes","label_ru":"Передние тормоза","category":"brakes","value":"вентилируемые дисковые","unit":"","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]},
+      {"code":"rear_brakes","label_ru":"Задние тормоза","category":"brakes","value":"дисковые","unit":"","note":"","source_ids":["MERCEDES_PUBLIC_ARCHIVE_B180_W245","FASTCARCHECK_MB_W245_B170_AUTOTRONIC"]}
+    ]
+  },
   "bundles": [
+    {
+      "auto_number": "UA-0002",
+      "vin": "WDD2452322J561014",
+      "identity": {"brand":"Mercedes-Benz","model":"B-Class","year":"2010","engine_cc":1700,"fuel":"бензин","gearbox":"автомат","modification":"Type 245.232 / M266.940 / AUTOTRONIC (W245)"},
+      "identity_status": "MATCHED_BY_VIN_TYPE_PREFIX",
+      "identity_note": "VIN prefix WDD245232 matches Mercedes-Benz type 245.232; CRM year, 1.7-litre petrol engine and automatic gearbox match the official 2009-2011 B 180 AUTOTRONIC record.",
+      "fact_set_id": "MB_W245_245232_AUTOTRONIC",
+      "facts": [],
+      "conflicts": []
+    },
+    {
+      "auto_number": "UA-0007",
+      "vin": "WDD2452322J724006",
+      "identity": {"brand":"Mercedes-Benz","model":"B-Class","year":"2011","engine_cc":1700,"fuel":"бензин","gearbox":"автомат","modification":"Type 245.232 / M266.940 / AUTOTRONIC (W245)"},
+      "identity_status": "MATCHED_BY_VIN_TYPE_PREFIX",
+      "identity_note": "VIN prefix WDD245232 matches Mercedes-Benz type 245.232; CRM year, 1.7-litre petrol engine and automatic gearbox match the official 2009-2011 B 180 AUTOTRONIC record.",
+      "fact_set_id": "MB_W245_245232_AUTOTRONIC",
+      "facts": [],
+      "conflicts": []
+    },
+    {
+      "auto_number": "UA-0008",
+      "vin": "WDD2452322J540158",
+      "identity": {"brand":"Mercedes-Benz","model":"B-Class","year":"2009","engine_cc":1700,"fuel":"бензин","gearbox":"автомат","modification":"Type 245.232 / M266.940 / AUTOTRONIC (W245)"},
+      "identity_status": "MATCHED_BY_VIN_TYPE_PREFIX",
+      "identity_note": "VIN prefix WDD245232 matches Mercedes-Benz type 245.232. The marketing name changed from B 170 to B 180 during 2009, so the bundle is intentionally bound to the unchanged factory type rather than an unproven badge name.",
+      "fact_set_id": "MB_W245_245232_AUTOTRONIC",
+      "facts": [],
+      "conflicts": []
+    },
     {
       "auto_number": "UA-0005",
       "vin": "WDDMH0BBXDV171918",
