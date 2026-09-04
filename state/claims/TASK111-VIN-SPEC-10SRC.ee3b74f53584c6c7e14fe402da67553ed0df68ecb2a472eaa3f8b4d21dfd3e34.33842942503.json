@@ -2,17 +2,82 @@
   "ai_response_status": "NOT_REQUESTED",
   "automatic_mode_enabled": false,
   "created_at": "2026-09-04T06:05:49Z",
-  "critical_gate_status": "PENDING",
-  "heartbeat_at": "2026-09-04T06:05:49Z",
-  "heartbeat_sequence": 0,
+  "critical_gate_evidence_sha256": "8d33f320eb894c97a3306bb315a8d10e328939c9809d8c650287a0465187304c",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-04T06:12:36Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL pipeline failed; inspect GitHub Actions run 33842942503",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "e481532886ddef28"
+    }
+  ],
+  "heartbeat_at": "2026-09-04T06:06:37Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "33842942503",
     "task_id": "TASK111-VIN-SPEC-10SRC",
     "task_sha256": "ee3b74f53584c6c7e14fe402da67553ed0df68ecb2a472eaa3f8b4d21dfd3e34"
   },
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 1021.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 312.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0001.html",
+        "http_status": 200,
+        "latency_ms": 323.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0001.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0003.html",
+        "http_status": 200,
+        "latency_ms": 294.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0003.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0011.html",
+        "http_status": 200,
+        "latency_ms": 295.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0011.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0014.html",
+        "http_status": 200,
+        "latency_ms": 365.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0014.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/TASK111-VIN-SPEC-10SRC.json",
@@ -24,8 +89,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7ce36d2365a94532afb2dc9916c322e938ffebdb",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 282.268,
+    "allowed": true,
+    "evidence_path": "state/storage/TASK111-VIN-SPEC-10SRC.json",
+    "evidence_sha256": "385990aa0ca2902e5eb148194d8bbe21793c6abe5b324d6a88fc5dcacd7c5355",
+    "free_bytes": 32612536320,
+    "heavy": true,
+    "measured_at": "2026-09-04T06:01:28Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 13.220596313476562
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-04T06:05:49Z"
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "trusted_package": {
+    "controller_sha256": "b8f5c73712805862fc9da89555aa8c259a54e9fa60158652c501619ba60e1a37",
+    "file_sha256": {
+      "cloud/task_111_vin_spec_10src/integration_patcher.py": "6faac319989d52bc0a586121c21d802180082520072d8c43d1464699bed69010",
+      "cloud/task_111_vin_spec_10src/profile_library.py": "9dd01e2ed1502212f226cec07d32b69f14866b92f576c11c4d250f435daca27a",
+      "cloud/task_111_vin_spec_10src/remote_installer.py": "e91b67ed49b66d42bff70c6fa5ee0e9f5eb161449c07e11463ab3e29e9f16d4d",
+      "cloud/task_111_vin_spec_10src/source_policy.py": "e293598c282ae60ae4d8064ec11922a7ef323c5e6f66b2e9e7fbaa884e6139dd",
+      "cloud/task_111_vin_spec_10src/test_contract.py": "61af993c33488cc705ead695186671ff1125121dffdb2f2aa710a8ab0e502041",
+      "cloud/task_111_vin_spec_10src/vin_spec_service.py": "410cd0a3982d336dd8595d86ba0991c6a5bff30e672e4aa9ff205e1cca26f306"
+    }
+  },
+  "updated_at": "2026-09-04T06:12:36Z"
 }
