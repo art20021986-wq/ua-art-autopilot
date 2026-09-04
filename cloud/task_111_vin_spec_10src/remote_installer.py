@@ -616,7 +616,8 @@ def selftest() -> None:
         integration_patcher.patch_additional_spec(
             "import os,pathlib,sqlite3\nfrom typing import Any\nDB_PATH=pathlib.Path('/x')\n"
             "def connect(readonly=True): pass\ndef fetch_specs(value,include_hidden=False): return []\n"
-            "def crm_summary(value): return ''\ndef _car_vin(uid): return ''\ndef _car_status(uid): return ''\n"
+            "def crm_summary(value): return ''\ndef inject_public_spec(source,value): return source\n"
+            "def _car_vin(uid): return ''\ndef _car_status(uid): return ''\n"
         )
     ).count(integration_patcher.SPEC_START) == 1
     original_root = ROOT

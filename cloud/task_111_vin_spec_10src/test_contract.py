@@ -437,6 +437,16 @@ def run() -> None:
         require(rejected >= 4, "price/primary rejection audit")
 
         module = load_patched_spec(main, sidecar, root / "ua_additional_spec.py")
+        dirty = (
+            module.START + module.START + "nested" + module.END + module.END
+            + "<details class='old' data-ua-additional-spec='1'>stale</details>"
+        )
+        sanitized = module._ua110_sanitize_public_spec_fragments(dirty)
+        require(
+            module.START not in sanitized and module.END not in sanitized
+            and "data-ua-additional-spec" not in sanitized,
+            "orphan public spec sanitizer",
+        )
         page = module.render_public_block("UA-0001")
         require("4359 мм" in page and "488 л" in page, "public block values")
         require("auto-data.net" not in page and "http" not in page and "$" not in page, "public provenance/price leak")

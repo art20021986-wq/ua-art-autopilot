@@ -83,6 +83,35 @@ def _car_mileage(uid: str) -> int | None:
         return None
 
 _UA110_BASE_CRM_SUMMARY = crm_summary
+_UA110_BASE_INJECT_PUBLIC_SPEC = inject_public_spec
+
+def _ua110_sanitize_public_spec_fragments(source: str) -> str:
+    """Remove complete, nested and orphaned legacy spec fragments.
+
+    TASK099 already replaces one well-formed marker pair.  Interrupted or
+    concurrent publications can leave START/END markers nested or orphaned;
+    strip those remnants and any unmarked old spec element before invoking
+    TASK099's authoritative renderer.
+    """
+    import re as _ua110_re
+    if not isinstance(source, str) or not source:
+        return source
+    source = _ua110_re.sub(
+        _ua110_re.escape(START) + r"[\s\S]*?" + _ua110_re.escape(END),
+        "", source,
+    )
+    source = source.replace(START, "").replace(END, "")
+    source = _ua110_re.sub(
+        r"<details\b[^>]*\bdata-ua-additional-spec=['\"]1['\"][^>]*>"
+        r"[\s\S]*?</details>",
+        "", source, flags=_ua110_re.I,
+    )
+    return source
+
+def inject_public_spec(source: str, value: Any) -> str:
+    return _UA110_BASE_INJECT_PUBLIC_SPEC(
+        _ua110_sanitize_public_spec_fragments(source), value
+    )
 
 def crm_summary(value: Any) -> str:
     base = _UA110_BASE_CRM_SUMMARY(value)
@@ -180,7 +209,10 @@ def register(app):
 
 def patch_additional_spec(source: str) -> str:
     source = _without(source, SPEC_START, SPEC_END)
-    for name in ("connect", "fetch_specs", "crm_summary", "_car_vin", "_car_status"):
+    for name in (
+        "connect", "fetch_specs", "crm_summary", "_car_vin", "_car_status",
+        "inject_public_spec",
+    ):
         if not re.search(r"^def\s+" + name + r"\s*\(", source, re.MULTILINE):
             raise RuntimeError("SPEC_ENTRYPOINT_MISSING:" + name)
     return _compiled(source.rstrip() + "\n\n" + SPEC_BLOCK + "\n", "ua_additional_spec.py")
@@ -200,6 +232,7 @@ def selftest() -> None:
         "def connect(readonly=True): pass\n"
         "def fetch_specs(value,include_hidden=False): return []\n"
         "def crm_summary(value): return 'x'\n"
+        "def inject_public_spec(source,value): return source\n"
         "def _car_vin(uid): return ''\ndef _car_status(uid): return ''\n"
     )
     once = patch_additional_spec(spec)
