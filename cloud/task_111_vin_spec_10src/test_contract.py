@@ -447,6 +447,34 @@ def run() -> None:
             and "data-ua-additional-spec" not in sanitized,
             "orphan public spec sanitizer",
         )
+        publisher_source = (
+            "def _master(kod): return '<html>late-card-transform</html>',None,{}\n"
+            "def opublikovat(kod,proba=False): return True,''\n"
+        )
+        patched_publisher = integration_patcher.patch_publisher(publisher_source)
+        final_calls: list[tuple[str, str]] = []
+        fake_spec = types.ModuleType("ua_additional_spec")
+        fake_spec.inject_public_spec = lambda html, uid: (
+            final_calls.append((html, uid)) or html.replace(
+                "late-card-transform", "final-normalized-spec"
+            )
+        )
+        prior_spec = sys.modules.get("ua_additional_spec")
+        try:
+            sys.modules["ua_additional_spec"] = fake_spec
+            publisher_namespace: dict[str, object] = {}
+            exec(compile(patched_publisher, "publikaciya.py", "exec"), publisher_namespace)
+            final_html, _, _ = publisher_namespace["_master"]("UA-0015")
+        finally:
+            if prior_spec is None:
+                sys.modules.pop("ua_additional_spec", None)
+            else:
+                sys.modules["ua_additional_spec"] = prior_spec
+        require(
+            final_html == "<html>final-normalized-spec</html>"
+            and final_calls == [("<html>late-card-transform</html>", "UA-0015")],
+            "final publisher boundary normalization",
+        )
         page = module.render_public_block("UA-0001")
         require("4359 мм" in page and "488 л" in page, "public block values")
         require("auto-data.net" not in page and "http" not in page and "$" not in page, "public provenance/price leak")

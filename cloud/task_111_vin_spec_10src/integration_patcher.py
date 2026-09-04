@@ -10,6 +10,8 @@ SPEC_START = "# >>> UA110 SIDECAR SPEC STORAGE V1"
 SPEC_END = "# <<< UA110 SIDECAR SPEC STORAGE V1"
 CRM_START = "# >>> UA110 VIN SPEC AUTO QUEUE V1"
 CRM_END = "# <<< UA110 VIN SPEC AUTO QUEUE V1"
+PUBLISH_START = "# >>> UA111 FINAL PUBLIC SPEC NORMALIZER V1"
+PUBLISH_END = "# <<< UA111 FINAL PUBLIC SPEC NORMALIZER V1"
 
 
 def _without(source: str, start: str, end: str) -> str:
@@ -207,6 +209,23 @@ def register(app):
 '''.strip()
 
 
+PUBLISH_BLOCK = r'''
+# >>> UA111 FINAL PUBLIC SPEC NORMALIZER V1
+# Some legacy, card-specific _master wrappers run after master_card and may
+# alter HTML comments.  Normalize the completed primary page at the final
+# publisher boundary, immediately before the existing validation/transaction.
+_UA111_BASE_MASTER = _master
+
+def _master(kod):
+    html, diag, card = _UA111_BASE_MASTER(kod)
+    if isinstance(html, str) and html:
+        import ua_additional_spec as _ua111_spec
+        html = _ua111_spec.inject_public_spec(html, kod)
+    return html, diag, card
+# <<< UA111 FINAL PUBLIC SPEC NORMALIZER V1
+'''.strip()
+
+
 def patch_additional_spec(source: str) -> str:
     source = _without(source, SPEC_START, SPEC_END)
     for name in (
@@ -224,6 +243,14 @@ def patch_cars_ui(source: str) -> str:
         if marker not in source:
             raise RuntimeError("CRM_CONTRACT_MISSING:" + marker)
     return _compiled(source.rstrip() + "\n\n" + CRM_BLOCK + "\n", "cars_ui.py")
+
+
+def patch_publisher(source: str) -> str:
+    source = _without(source, PUBLISH_START, PUBLISH_END)
+    for marker in ("def _master(", "def opublikovat("):
+        if marker not in source:
+            raise RuntimeError("PUBLISH_CONTRACT_MISSING:" + marker)
+    return _compiled(source.rstrip() + "\n\n" + PUBLISH_BLOCK + "\n", "publikaciya.py")
 
 
 def selftest() -> None:
@@ -245,6 +272,12 @@ def selftest() -> None:
     )
     once = patch_cars_ui(crm)
     assert once == patch_cars_ui(once) and once.count(CRM_START) == 1
+    publisher = (
+        "def _master(kod): return '<html></html>',None,{}\n"
+        "def opublikovat(kod,proba=False): return True,''\n"
+    )
+    once = patch_publisher(publisher)
+    assert once == patch_publisher(once) and once.count(PUBLISH_START) == 1
     print("UA111_INTEGRATION_PATCHER_SELFTEST_PASS")
 
 
