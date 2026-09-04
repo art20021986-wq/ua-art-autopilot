@@ -394,12 +394,23 @@ def _drain_full_backfill(
             statuses[status] = statuses.get(status, 0) + 1
         active = sum(statuses.get(name, 0) for name in ("PENDING", "RUNNING", "PROCESSING"))
         terminal = statuses.get("FAILED", 0) + statuses.get("NEEDS_REVIEW", 0)
+        problem_rows = [
+            {
+                "car_uid": str(row.get("car_uid") or ""),
+                "status": str(row.get("status") or "UNKNOWN"),
+                "facts": int(row.get("facts_count") or 0),
+                "attempts": int(row.get("attempts") or 0),
+                "error": str(row.get("last_error") or "")[:120],
+            }
+            for row in rows
+            if row.get("status") != "READY" or int(row.get("facts_count") or 0) < 10
+        ]
         if len(rows) != expected and active == 0:
             raise InstallError("BACKFILL_INVENTORY:%d:%d" % (len(rows), expected))
         if terminal and active == 0:
-            raise InstallError("BACKFILL_TERMINAL:" + json.dumps(statuses, sort_keys=True))
+            raise InstallError("BACKFILL_TERMINAL:" + json.dumps(problem_rows, sort_keys=True))
         if len(rows) == expected and active == 0:
-            raise InstallError("BACKFILL_SHALLOW:" + json.dumps(statuses, sort_keys=True))
+            raise InstallError("BACKFILL_SHALLOW:" + json.dumps(problem_rows, sort_keys=True))
         if clock() >= deadline:
             raise InstallError("BACKFILL_WAIT_TIMEOUT:" + json.dumps(statuses, sort_keys=True))
         recovered += int(service.recover_interrupted_jobs(stale_after_seconds=360))
