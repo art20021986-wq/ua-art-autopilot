@@ -5,6 +5,7 @@ import datetime as dt
 import hashlib
 import json
 import pathlib
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -16,16 +17,26 @@ import autostart_intake as AI  # noqa: E402
 import control_plane as CP  # noqa: E402
 
 
-NOW = dt.datetime(2026, 9, 4, 14, 0, tzinfo=dt.timezone.utc)
+NOW = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
+
+
+def timestamp(delta: dt.timedelta = dt.timedelta()) -> str:
+    return (NOW + delta).isoformat().replace("+00:00", "Z")
 
 
 class AutostartIntakeTests(unittest.TestCase):
     def write_mode(self, root: pathlib.Path) -> None:
-        activated = "2026-09-04T13:51:01Z"
+        activated = timestamp(dt.timedelta(minutes=-9))
         for relative in CP.RUNTIME_PINNED_PATHS:
             path = root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text("fixture:" + relative + "\n", encoding="utf-8")
+            if relative in CP.ACTIVE_WORKFLOW_EVENT_POLICY:
+                # Reuse the canonical active workflow. The runtime policy is
+                # intentionally strict and stale hand-written workflow fixtures
+                # can otherwise fail before the intake behavior under test.
+                path.write_text((ROOT / relative).read_text(encoding="utf-8"), encoding="utf-8")
+            else:
+                path.write_text("fixture:" + relative + "\n", encoding="utf-8")
         runtime = {
             "files": {
                 relative: CP.sha256_file(root / relative)
@@ -146,15 +157,15 @@ class AutostartIntakeTests(unittest.TestCase):
         task_id: str = "TASK-AUTO-1",
         *,
         production_allowed: bool = False,
-        created_at: str = "2026-09-04T13:55:00Z",
-        expires_at: str = "2026-09-04T14:55:00Z",
+        created_at: str | None = None,
+        expires_at: str | None = None,
         nonce: str = "nonce-1234567890-abcd",
     ) -> str:
         rel = "tasks/launch/AUTO-%s.json" % task_id
         marker = {
             "action": "RUN_EXACT_TASK",
-            "created_at": created_at,
-            "expires_at": expires_at,
+            "created_at": created_at or timestamp(dt.timedelta(minutes=-5)),
+            "expires_at": expires_at or timestamp(dt.timedelta(minutes=55)),
             "nonce": nonce,
             "mode_epoch": "auto-20260904T135101Z-testfixture0001",
             "owner_authorized": True,
@@ -247,10 +258,10 @@ class AutostartIntakeTests(unittest.TestCase):
             "state/receipts/TASK-AUTO-PROD-BACKUP.json"
         )
         approval = {
-            "approved_at": "2026-09-04T13:53:00Z",
+            "approved_at": timestamp(dt.timedelta(minutes=-7)),
             "authorization_id": "prod-auth-task-auto-prod-0001",
             "authorized_environment": "production",
-            "expires_at": "2026-09-04T14:55:00Z",
+            "expires_at": timestamp(dt.timedelta(minutes=55)),
             "gate_a_sha256": raw["critical"]["gate_a_sha256"],
             "launch_nonce": "nonce-prod-1234567890",
             "manifest_sha256": manifest_sha,
@@ -298,6 +309,87 @@ class AutostartIntakeTests(unittest.TestCase):
             with self.assertRaisesRegex(AI.AutostartIntakeError, "AUTOSTART_REPLAY_BLOCKED"):
                 AI.validate_launch(launch, "run-2", "b" * 40, root=root, now=NOW)
 
+    def test_validate_only_is_read_only_and_isolated_cli_accepts_explicit_root(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            launch, request_sha = self.prepared_nonproduction(root)
+            result = AI.validate_launch(
+                launch, "run-validate", "a" * 40, root=root, now=NOW
+            )
+            self.assertEqual(result["request_sha256"], request_sha)
+            self.assertFalse((root / result["ledger_path"]).exists())
+            self.assertFalse((root / result["nonce_reservation_path"]).exists())
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-I",
+                    str(ROOT / "automation/autostart_intake.py"),
+                    launch,
+                    "--run-id",
+                    "run-isolated-cli",
+                    "--source-commit",
+                    "b" * 40,
+                    "--validate-only",
+                    "--root",
+                    str(root),
+                ],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('"request_sha256": "' + request_sha + '"', completed.stdout)
+            self.assertFalse((root / result["ledger_path"]).exists())
+            self.assertFalse((root / result["nonce_reservation_path"]).exists())
+
+    def test_launch_and_request_symlinks_are_rejected_before_read(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            launch, _ = self.prepared_nonproduction(root)
+            launch_path = root / launch
+            launch_target = root / "state/linked-launch.json"
+            launch_target.write_bytes(launch_path.read_bytes())
+            launch_path.unlink()
+            launch_path.symlink_to(launch_target)
+            with self.assertRaisesRegex(
+                AI.AutostartIntakeError, "AUTOSTART_SYMLINK_PATH:launch"
+            ):
+                AI.validate_launch(
+                    launch, "run-symlink", "a" * 40, root=root, now=NOW
+                )
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            launch, _ = self.prepared_nonproduction(root)
+            marker = CP.read_json(root / launch)
+            request_path = root / marker["request_path"]
+            request_target = root / "state/linked-request.json"
+            request_target.write_bytes(request_path.read_bytes())
+            request_path.unlink()
+            request_path.symlink_to(request_target)
+            with self.assertRaisesRegex(
+                AI.AutostartIntakeError, "AUTOSTART_SYMLINK_PATH:request"
+            ):
+                AI.validate_launch(
+                    launch, "run-symlink", "a" * 40, root=root, now=NOW
+                )
+
+    def test_consumed_ledger_directory_symlink_is_rejected_before_scan(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            launch, _ = self.prepared_nonproduction(root)
+            target = root / "state/untrusted-consumed-ledgers"
+            target.mkdir()
+            consumed = root / "state/autostart_consumed"
+            consumed.symlink_to(target, target_is_directory=True)
+            with self.assertRaisesRegex(
+                AI.AutostartIntakeError,
+                "AUTOSTART_CONSUMED_LEDGER_DIRECTORY_INVALID",
+            ):
+                AI.validate_launch(
+                    launch, "run-symlink-dir", "a" * 40, root=root, now=NOW
+                )
+
     def test_consumed_marker_expiry_is_rechecked_before_claim(self):
         with tempfile.TemporaryDirectory() as folder:
             root = pathlib.Path(folder)
@@ -342,8 +434,8 @@ class AutostartIntakeTests(unittest.TestCase):
                 root,
                 request_rel,
                 request_sha,
-                created_at="2026-09-04T13:50:00Z",
-                expires_at="2026-09-04T14:30:00Z",
+                created_at=timestamp(dt.timedelta(minutes=-10)),
+                expires_at=timestamp(dt.timedelta(minutes=30)),
             )
             with self.assertRaisesRegex(AI.AutostartIntakeError, "AUTOSTART_MARKER_PREDATES_ACTIVATION"):
                 AI.validate_launch(launch, "run-1", "a" * 40, root=root, now=NOW)
@@ -357,8 +449,8 @@ class AutostartIntakeTests(unittest.TestCase):
                 root,
                 request_rel,
                 request_sha,
-                created_at="2026-09-04T13:52:00Z",
-                expires_at="2026-09-04T13:59:00Z",
+                created_at=timestamp(dt.timedelta(minutes=-8)),
+                expires_at=timestamp(dt.timedelta(minutes=-1)),
             )
             with self.assertRaisesRegex(AI.AutostartIntakeError, "AUTOSTART_MARKER_EXPIRED"):
                 AI.validate_launch(launch, "run-1", "a" * 40, root=root, now=NOW)

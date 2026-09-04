@@ -14,8 +14,15 @@ class TicketError(ValueError):
 
 
 def safe_request_path(value: str) -> pathlib.Path:
-    path = pathlib.PurePosixPath(value)
-    if path.is_absolute() or ".." in path.parts:
+    text_value = str(value)
+    path = pathlib.PurePosixPath(text_value)
+    if (
+        path.is_absolute()
+        or not path.parts
+        or ".." in path.parts
+        or "//" in text_value
+        or not re.fullmatch(r"[A-Za-z0-9._/-]+", text_value)
+    ):
         raise TicketError("UNSAFE_REQUEST_PATH")
     text = path.as_posix()
     if not text.startswith("tasks/requests/") or not text.endswith(".json"):

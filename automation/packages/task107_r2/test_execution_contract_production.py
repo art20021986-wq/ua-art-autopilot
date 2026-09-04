@@ -200,7 +200,7 @@ class ProductionExecutionContractTests(unittest.TestCase):
         rollback_rel = package + "/rollback.py"
         test_rel = package + "/test_controller.py"
         main = self.write(main_rel, MAIN_CONTROLLER)
-        backup = self.write(backup_rel, BACKUP_CONTROLLER)
+        backup = self.write(backup_rel, BACKUP_CONTROLLER) if include_backup else None
         rollback = self.write(rollback_rel, ROLLBACK_CONTROLLER)
         test = self.write(test_rel, "assert True\n")
         task_id = "TASK-PRODUCTION-CONTRACT"
@@ -261,6 +261,109 @@ class ProductionExecutionContractTests(unittest.TestCase):
             EC.ExecutionContractError, "BACKUP_CONTROLLER_SHA_MISMATCH"
         ):
             EC.validate_execution(request_rel, "CRITICAL")
+
+    def test_undeclared_package_python_dependency_is_rejected(self):
+        request_rel, _, _ = self.create_request()
+        self.write(
+            "automation/packages/production_fixture/helper.py",
+            "VALUE = 'trusted'\n",
+        )
+        with self.assertRaisesRegex(
+            EC.ExecutionContractError, "PACKAGE_PYTHON_CLOSURE_MISMATCH"
+        ):
+            EC.validate_execution(request_rel, "CRITICAL")
+
+    def test_symlinked_package_directory_is_rejected(self):
+        request_rel, _, _ = self.create_request()
+        outside = self.root / "outside-package"
+        outside.mkdir()
+        (outside / "injected.py").write_text("VALUE = 'outside'\n", encoding="utf-8")
+        package = self.root / "automation/packages/production_fixture"
+        (package / "linked-package").symlink_to(outside, target_is_directory=True)
+        with self.assertRaisesRegex(
+            EC.ExecutionContractError, "PACKAGE_SYMLINK_ENTRY"
+        ):
+            EC.validate_execution(request_rel, "CRITICAL")
+
+    def test_sourceless_or_native_package_module_is_rejected(self):
+        request_rel, _, _ = self.create_request()
+        package = self.root / "automation/packages/production_fixture"
+        for filename in ("injected.pyc", "injected.so"):
+            with self.subTest(filename=filename):
+                (package / filename).write_bytes(b"untrusted-import-artifact")
+                with self.assertRaisesRegex(
+                    EC.ExecutionContractError, "PACKAGE_IMPORT_ARTIFACT_FORBIDDEN"
+                ):
+                    EC.validate_execution(request_rel, "CRITICAL")
+                (package / filename).unlink()
+
+    def test_dependency_closure_is_exact_hashed_and_canonical(self):
+        request_rel, request_path, request = self.create_request()
+        dependency_rel = "automation/packages/production_fixture/helper.py"
+        dependency = self.write(dependency_rel, "VALUE = 'trusted'\n")
+        request["execution"]["dependency_paths"] = [dependency_rel]
+        request["execution"]["file_sha256"][dependency_rel] = self.sha(dependency)
+        request_path.write_text(
+            json.dumps(request, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+
+        spec = EC.validate_execution(request_rel, "CRITICAL")
+        self.assertEqual(spec.dependency_paths, (dependency_rel,))
+        self.assertEqual(
+            spec.dependency_sha256,
+            EC.dependency_digest(spec.file_sha256),
+        )
+        dependency.write_text("VALUE = 'tampered'\n", encoding="utf-8")
+        with self.assertRaisesRegex(
+            EC.ExecutionContractError, "DEPENDENCY_SHA_MISMATCH"
+        ):
+            EC.validate_execution(request_rel, "CRITICAL")
+
+    def test_file_hash_map_cannot_smuggle_undeclared_dependency(self):
+        request_rel, request_path, request = self.create_request()
+        dependency_rel = "automation/packages/production_fixture/helper.py"
+        dependency = self.write(dependency_rel, "VALUE = 'trusted'\n")
+        request["execution"]["file_sha256"][dependency_rel] = self.sha(dependency)
+        request_path.write_text(
+            json.dumps(request, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        with self.assertRaisesRegex(
+            EC.ExecutionContractError, "FILE_SHA256_KEY_SET_MISMATCH"
+        ):
+            EC.validate_execution(request_rel, "CRITICAL")
+
+    def test_isolated_launcher_blocks_sitecustomize_and_keeps_sibling_imports(self):
+        request_rel, request_path, request = self.create_request()
+        package = "automation/packages/production_fixture"
+        helper_rel = package + "/helper.py"
+        hook_rel = package + "/sitecustomize.py"
+        helper = self.write(helper_rel, "VALUE = 'trusted'\n")
+        hook = self.write(
+            hook_rel,
+            "import os, pathlib\n"
+            "pathlib.Path(os.environ['HOOK_MARKER']).write_text('executed')\n",
+        )
+        controller_rel = request["execution"]["controller_path"]
+        controller = self.root / controller_rel
+        controller.write_text("import helper\n" + MAIN_CONTROLLER, encoding="utf-8")
+        request["execution"]["controller_sha256"] = self.sha(controller)
+        request["execution"]["dependency_paths"] = [helper_rel, hook_rel]
+        request["execution"]["file_sha256"].update(
+            {helper_rel: self.sha(helper), hook_rel: self.sha(hook)}
+        )
+        request_path.write_text(
+            json.dumps(request, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        spec = EC.validate_execution(request_rel, "CRITICAL")
+        marker = self.root / "hook-ran.txt"
+        environment = dict(self.environment)
+        environment["HOOK_MARKER"] = str(marker)
+        with mock.patch.dict(os.environ, environment, clear=True):
+            EC.run_backup(spec)
+            EC.run_controller(spec)
+        self.assertFalse(marker.exists())
+        self.assertFalse((self.root / package / "__pycache__").exists())
+        self.assertTrue((self.root / spec.receipt_path).is_file())
 
     def test_backup_execute_and_rollback_are_bound_to_one_transaction(self):
         request_rel, _, _ = self.create_request()
@@ -397,6 +500,7 @@ class ProductionExecutionContractTests(unittest.TestCase):
             "backup_controller_path",
             "backup_controller_sha256",
             "backup_receipt_path",
+            "dependency_paths",
         ):
             self.assertIn(key, execution_properties)
         production_required = set(

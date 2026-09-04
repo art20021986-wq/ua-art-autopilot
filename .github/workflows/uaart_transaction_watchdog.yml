@@ -3,120 +3,2715 @@ name: UA ART Production Transaction Watchdog
 on:
   schedule:
     - cron: '*/10 * * * *'
-  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ua-art-production-writer
   cancel-in-progress: false
 
 jobs:
-  recover:
+  discover:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      backup_manifest_sha256: ${{ steps.orphan.outputs.backup_manifest_sha256 }}
+      claim_path: ${{ steps.orphan.outputs.claim_path }}
+      halt_present: ${{ steps.safety.outputs.halt_present }}
+      request_path: ${{ steps.orphan.outputs.request_path }}
+      request_sha256: ${{ steps.orphan.outputs.request_sha256 }}
+      rollback_receipt_present: ${{ steps.safety.outputs.rollback_receipt_present }}
+      run_id: ${{ steps.orphan.outputs.run_id }}
+      source_commit: ${{ steps.orphan.outputs.source_commit }}
+      task_id: ${{ steps.orphan.outputs.task_id }}
+      transaction_id: ${{ steps.orphan.outputs.transaction_id }}
+      transaction_path: ${{ steps.orphan.outputs.transaction_path }}
+      transaction_status: ${{ steps.orphan.outputs.transaction_status }}
     steps:
-      - name: Checkout current durable transaction state
+      - name: Checkout authoritative main transaction state read-only
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           ref: main
+          persist-credentials: false
 
       - name: Set up Python 3.11
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
 
-      - name: Discover one orphan only after the writer lock is free
+      - name: Discover one recoverable transaction from authoritative main
         id: orphan
         shell: bash
         run: |
           set -euo pipefail
-          python3 -W error -m py_compile \
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test "$(git branch --show-current)" = 'main'
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 -I -W error -m py_compile \
             automation/control_plane.py \
             automation/execution_contract.py \
             automation/transaction_watchdog.py
-          python3 automation/transaction_watchdog.py discover
+          python3 -I automation/control_plane.py verify-mode \
+            --require AUTOMATIC \
+            --allow-halt-for-recovery
+          python3 -I automation/transaction_watchdog.py discover
 
-      - name: Execute exact pinned rollback for orphaned transaction
-        if: steps.orphan.outputs.has_pending == 'true'
+      - name: Reject ambiguous OPEN state before any rollback is armed
+        id: safety
+        if: steps.orphan.outputs.transaction_status != 'NONE'
         env:
-          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
-          UAART_BACKUP_MANIFEST_SHA256: ${{ steps.orphan.outputs.backup_manifest_sha256 }}
           UAART_REQUEST_PATH: ${{ steps.orphan.outputs.request_path }}
-          UAART_REQUEST_SHA256: ${{ steps.orphan.outputs.request_sha256 }}
-          UAART_RUN_ID: ${{ steps.orphan.outputs.run_id }}
-          UAART_TASK_CLASS: CRITICAL
-          UAART_TASK_ID: ${{ steps.orphan.outputs.task_id }}
-          UAART_TRANSACTION_ID: ${{ steps.orphan.outputs.transaction_id }}
+          UAART_TRANSACTION_STATUS: ${{ steps.orphan.outputs.transaction_status }}
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/execution_contract.py rollback "$UAART_REQUEST_PATH" \
+          python3 -I - <<'PY'
+          import os
+          import pathlib
+          import sys
+
+          root = pathlib.Path.cwd().resolve()
+          sys.path.insert(0, str(root / 'automation'))
+          import execution_contract as ec
+
+          status = os.environ['UAART_TRANSACTION_STATUS']
+          halt_path = root / 'state/AUTOPILOT_HALT.json'
+          if halt_path.is_symlink():
+              raise SystemExit('WATCHDOG_HALT_SYMLINK')
+          halt_present = halt_path.is_file()
+
+          spec = ec.validate_execution(os.environ['UAART_REQUEST_PATH'], 'CRITICAL')
+          if spec.rollback_receipt_path is None:
+              raise SystemExit('WATCHDOG_ROLLBACK_RECEIPT_PATH_MISSING')
+          rollback_path = ec.absolute_repo_path(spec.rollback_receipt_path)
+          if rollback_path.is_symlink():
+              raise SystemExit('WATCHDOG_ROLLBACK_RECEIPT_SYMLINK')
+          rollback_present = rollback_path.is_file()
+          if rollback_path.exists() and not rollback_present:
+              raise SystemExit('WATCHDOG_ROLLBACK_RECEIPT_NOT_REGULAR')
+
+          # OPEN must not have a rollback receipt. A receipt is created only
+          # after the durable OPEN -> ROLLING_BACK transition.
+          if status == 'OPEN' and rollback_present:
+              raise SystemExit('WATCHDOG_OPEN_HAS_ROLLBACK_RECEIPT')
+
+          with pathlib.Path(os.environ['GITHUB_OUTPUT']).open(
+              'a', encoding='utf-8'
+          ) as handle:
+              handle.write('halt_present=%s\n' % str(halt_present).lower())
+              handle.write(
+                  'rollback_receipt_present=%s\n'
+                  % str(rollback_present).lower()
+              )
+          PY
+
+  halt_discovery_failure:
+    needs: discover
+    if: always() && github.ref == 'refs/heads/main' && needs.discover.result == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout clean main for fail-closed system halt
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Bind source-pinned writer runtime before repo Python
+        env:
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          TARGET_COMMIT="$(/usr/bin/git rev-parse HEAD)"
+          /usr/bin/git merge-base --is-ancestor \
+            "$WORKFLOW_SOURCE_COMMIT" "$TARGET_COMMIT"
+          SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+          TARGET_COMMIT="$TARGET_COMMIT" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+
+      - name: Generate system halt after untrustworthy discovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 -I automation/control_plane.py halt-system \
+            --run-id "$GITHUB_RUN_ID" \
+            --reason "Production watchdog discovery failed in run ${GITHUB_RUN_ID}"
+          python3 -I - <<'PY'
+          import subprocess
+
+          raw = subprocess.check_output(
+              ['git', 'status', '--porcelain=v1', '-z', '--untracked-files=all']
+          )
+          actual = {item[3:].decode('utf-8') for item in raw.split(b'\0') if item}
+          if actual - {'state/AUTOPILOT_HALT.json'}:
+              raise SystemExit('WATCHDOG_HALT_UNEXPECTED_DIFF:' + ','.join(sorted(actual)))
+          PY
+
+      - name: Persist exact system halt to main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          unset GH_TOKEN
+          git_with_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_HEADER}" \
+              git "$@"
+          }
+          validate_writer_runtime() {
+            local target="$1"
+            [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$target" =~ ^[0-9a-f]{40}$ ]]
+            /usr/bin/git merge-base --is-ancestor \
+              "$WORKFLOW_SOURCE_COMMIT" "$target"
+            SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+            TARGET_COMMIT="$target" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+          }
+          RUNTIME_PATHS=(
+            state/AUTOPILOT_RUNTIME_MANIFEST.json
+            .github/workflows/uaart_autostart.yml
+            .github/workflows/uaart_orchestrator.yml
+            .github/workflows/uaart_fast.yml
+            .github/workflows/uaart_standard.yml
+            .github/workflows/uaart_critical.yml
+            .github/workflows/uaart_backup.yml
+            .github/workflows/uaart_maintenance.yml
+            .github/workflows/uaart_monitor.yml
+            .github/workflows/uaart_transaction_watchdog.yml
+            automation/autostart_intake.py
+            automation/control_plane.py
+            automation/critical_adapter.py
+            automation/execution_contract.py
+            automation/production_queue.py
+            automation/task_orchestrator.py
+            automation/task_ticket.py
+            automation/transaction_watchdog.py
+            state/schemas/task_request.schema.json
+          )
+          LAST_COMMIT='' # system-halt
+          for attempt in 1 2 3 4 5 6; do
+            if ! git_with_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'; then
+              test "$attempt" -lt 6 || exit 1
+              sleep "$((attempt * 3))"
+              continue
+            fi
+            PARENT="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$LAST_COMMIT" && \
+              git merge-base --is-ancestor "$LAST_COMMIT" "$PARENT"; then
+              mapfile -d '' ACCEPTED_PATHS < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$LAST_COMMIT")
+              test "${#ACCEPTED_PATHS[@]}" -gt 0
+              git diff --quiet "$LAST_COMMIT" "$PARENT" -- "${ACCEPTED_PATHS[@]}" || exit 1
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$PARENT" -- "${RUNTIME_PATHS[@]}"
+            validate_writer_runtime "$PARENT"
+            REBUILD="$RUNNER_TEMP/uaart-watchdog-system-halt-rebuild-${attempt}"
+            INDEX="$RUNNER_TEMP/uaart-watchdog-system-halt-index-${attempt}"
+            git -c core.hooksPath=/dev/null worktree add --detach "$REBUILD" "$PARENT"
+            cd "$REBUILD"
+            python3 -I automation/control_plane.py halt-system \
+              --run-id "$GITHUB_RUN_ID" \
+              --reason "Production watchdog discovery failed in run ${GITHUB_RUN_ID}"
+            rm -f -- "$INDEX"
+            GIT_INDEX_FILE="$INDEX" git read-tree "$PARENT"
+            BLOB="$(git hash-object -w -- state/AUTOPILOT_HALT.json)"
+            GIT_INDEX_FILE="$INDEX" git update-index --add \
+              --cacheinfo "100644,${BLOB},state/AUTOPILOT_HALT.json"
+            TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
+            if test "$TREE" = "$(git rev-parse "${PARENT}^{tree}")"; then
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            export GIT_AUTHOR_NAME='ua-art-production-watchdog'
+            export GIT_AUTHOR_EMAIL='actions@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            COMMIT="$(printf '%s\n' 'uaart watchdog: halt after invalid discovery' | \
+              git commit-tree "$TREE" -p "$PARENT")"
+            mapfile -d '' CHANGED < <(git diff-tree --no-commit-id --name-only \
+              -r -z "$PARENT" "$COMMIT")
+            test "${#CHANGED[@]}" -eq 1
+            test "${CHANGED[0]}" = 'state/AUTOPILOT_HALT.json'
+            cd "$GITHUB_WORKSPACE"
+            LAST_COMMIT="$COMMIT"
+            if git_with_auth push origin "$COMMIT:refs/heads/main"; then
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep "$((attempt * 3))"
+          done
+          unset AUTH_HEADER GH_TOKEN
+          exit 1
+
+  halt_preparing:
+    needs: discover
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      needs.discover.outputs.transaction_status == 'PREPARING' &&
+      needs.discover.outputs.halt_present == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout clean main to halt incomplete preparation
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Bind source-pinned writer runtime before repo Python
+        env:
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          TARGET_COMMIT="$(/usr/bin/git rev-parse HEAD)"
+          /usr/bin/git merge-base --is-ancestor \
+            "$WORKFLOW_SOURCE_COMMIT" "$TARGET_COMMIT"
+          SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+          TARGET_COMMIT="$TARGET_COMMIT" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+
+      - name: Revalidate PREPARING from fresh main
+        id: orphan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I automation/control_plane.py verify-mode \
+            --require AUTOMATIC \
+            --allow-halt-for-recovery
+          python3 -I automation/transaction_watchdog.py discover
+
+      - name: Generate halt for incomplete Production preparation
+        env:
+          ACTUAL_REQUEST_PATH: ${{ steps.orphan.outputs.request_path }}
+          ACTUAL_RUN_ID: ${{ steps.orphan.outputs.run_id }}
+          ACTUAL_TRANSACTION_ID: ${{ steps.orphan.outputs.transaction_id }}
+          ACTUAL_TRANSACTION_STATUS: ${{ steps.orphan.outputs.transaction_status }}
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$ACTUAL_TRANSACTION_STATUS" = 'PREPARING'
+          test "$ACTUAL_REQUEST_PATH" = "$EXPECTED_REQUEST_PATH"
+          test "$ACTUAL_RUN_ID" = "$EXPECTED_RUN_ID"
+          test "$ACTUAL_TRANSACTION_ID" = "$EXPECTED_TRANSACTION_ID"
+          python3 -I automation/control_plane.py halt "$EXPECTED_REQUEST_PATH" \
+            --run-id "$EXPECTED_RUN_ID" \
+            --reason 'Production backup preparation was interrupted; no write is allowed'
+          python3 -I - <<'PY'
+          import subprocess
+
+          raw = subprocess.check_output(
+              ['git', 'status', '--porcelain=v1', '-z', '--untracked-files=all']
+          )
+          actual = {item[3:].decode('utf-8') for item in raw.split(b'\0') if item}
+          if actual - {'state/AUTOPILOT_HALT.json'}:
+              raise SystemExit('WATCHDOG_PREPARING_HALT_UNEXPECTED_DIFF')
+          PY
+
+      - name: Persist exact PREPARING halt to main
+        env:
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.discover.outputs.task_id }}
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          unset GH_TOKEN
+          git_with_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_HEADER}" \
+              git "$@"
+          }
+          validate_writer_runtime() {
+            local target="$1"
+            [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$target" =~ ^[0-9a-f]{40}$ ]]
+            /usr/bin/git merge-base --is-ancestor \
+              "$WORKFLOW_SOURCE_COMMIT" "$target"
+            SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+            TARGET_COMMIT="$target" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+          }
+          RUNTIME_PATHS=(
+            state/AUTOPILOT_RUNTIME_MANIFEST.json
+            .github/workflows/uaart_autostart.yml
+            .github/workflows/uaart_orchestrator.yml
+            .github/workflows/uaart_fast.yml
+            .github/workflows/uaart_standard.yml
+            .github/workflows/uaart_critical.yml
+            .github/workflows/uaart_backup.yml
+            .github/workflows/uaart_maintenance.yml
+            .github/workflows/uaart_monitor.yml
+            .github/workflows/uaart_transaction_watchdog.yml
+            automation/autostart_intake.py
+            automation/control_plane.py
+            automation/critical_adapter.py
+            automation/execution_contract.py
+            automation/production_queue.py
+            automation/task_orchestrator.py
+            automation/task_ticket.py
+            automation/transaction_watchdog.py
+            state/schemas/task_request.schema.json
+          )
+          LAST_COMMIT='' # preparing-halt
+          for attempt in 1 2 3 4 5 6; do
+            if ! git_with_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'; then
+              test "$attempt" -lt 6 || exit 1
+              sleep "$((attempt * 3))"
+              continue
+            fi
+            PARENT="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$LAST_COMMIT" && \
+              git merge-base --is-ancestor "$LAST_COMMIT" "$PARENT"; then
+              mapfile -d '' ACCEPTED_PATHS < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$LAST_COMMIT")
+              test "${#ACCEPTED_PATHS[@]}" -gt 0
+              git diff --quiet "$LAST_COMMIT" "$PARENT" -- "${ACCEPTED_PATHS[@]}" || exit 1
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$PARENT" -- "${RUNTIME_PATHS[@]}"
+            validate_writer_runtime "$PARENT"
+            REBUILD="$RUNNER_TEMP/uaart-watchdog-preparing-halt-rebuild-${attempt}"
+            INDEX="$RUNNER_TEMP/uaart-watchdog-preparing-halt-index-${attempt}"
+            git -c core.hooksPath=/dev/null worktree add --detach "$REBUILD" "$PARENT"
+            cd "$REBUILD"
+            python3 -I automation/control_plane.py verify-mode \
+              --require AUTOMATIC --allow-halt-for-recovery
+            python3 -I - <<'PY'
+          import os
+          import pathlib
+          import sys
+
+          root = pathlib.Path.cwd().resolve()
+          sys.path.insert(0, str(root / 'automation'))
+          import transaction_watchdog as watchdog
+
+          value = watchdog.discover()
+          if (
+              value.get('transaction_status') != 'PREPARING'
+              or value.get('request_path') != os.environ['EXPECTED_REQUEST_PATH']
+              or str(value.get('run_id')) != os.environ['EXPECTED_RUN_ID']
+              or value.get('transaction_id') != os.environ['EXPECTED_TRANSACTION_ID']
+          ):
+              raise SystemExit('WATCHDOG_PREPARING_REVALIDATION')
+          PY
+            python3 -I automation/control_plane.py halt "$EXPECTED_REQUEST_PATH" \
+              --run-id "$EXPECTED_RUN_ID" \
+              --reason 'Production backup preparation was interrupted; no write is allowed'
+            rm -f -- "$INDEX"
+            GIT_INDEX_FILE="$INDEX" git read-tree "$PARENT"
+            BLOB="$(git hash-object -w -- state/AUTOPILOT_HALT.json)"
+            GIT_INDEX_FILE="$INDEX" git update-index --add \
+              --cacheinfo "100644,${BLOB},state/AUTOPILOT_HALT.json"
+            TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
+            if test "$TREE" = "$(git rev-parse "${PARENT}^{tree}")"; then
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            export GIT_AUTHOR_NAME='ua-art-production-watchdog'
+            export GIT_AUTHOR_EMAIL='actions@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            COMMIT="$(printf '%s\n' \
+              "uaart watchdog: halt incomplete ${TASK_ID} preparation" | \
+              git commit-tree "$TREE" -p "$PARENT")"
+            mapfile -d '' CHANGED < <(git diff-tree --no-commit-id --name-only \
+              -r -z "$PARENT" "$COMMIT")
+            test "${#CHANGED[@]}" -eq 1
+            test "${CHANGED[0]}" = 'state/AUTOPILOT_HALT.json'
+            cd "$GITHUB_WORKSPACE"
+            LAST_COMMIT="$COMMIT"
+            if git_with_auth push origin "$COMMIT:refs/heads/main"; then
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep "$((attempt * 3))"
+          done
+          unset AUTH_HEADER GH_TOKEN
+          exit 1
+
+  mark_rollback:
+    # A valid same-epoch HALT blocks forward work, not recovery. An OPEN
+    # transaction must still be durably reserved exactly once before rollback;
+    # the fresh/rebuild mode checks below validate any existing HALT.
+    needs: discover
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      github.run_attempt == 1 &&
+      needs.discover.outputs.transaction_status == 'OPEN' &&
+      needs.discover.outputs.rollback_receipt_present == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      marked: ${{ steps.persist.outputs.marked }}
+    steps:
+      - name: Checkout clean main before arming one rollback attempt
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Bind source-pinned writer runtime before repo Python
+        env:
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          TARGET_COMMIT="$(/usr/bin/git rev-parse HEAD)"
+          /usr/bin/git merge-base --is-ancestor \
+            "$WORKFLOW_SOURCE_COMMIT" "$TARGET_COMMIT"
+          SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+          TARGET_COMMIT="$TARGET_COMMIT" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+
+      - name: Revalidate OPEN from fresh main
+        id: orphan
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 -I automation/control_plane.py verify-mode \
+            --require AUTOMATIC \
+            --allow-halt-for-recovery
+          python3 -I automation/transaction_watchdog.py discover
+
+      - name: Resolve exact claim path without mutating the checkout
+        id: identity
+        env:
+          ACTUAL_REQUEST_PATH: ${{ steps.orphan.outputs.request_path }}
+          ACTUAL_RUN_ID: ${{ steps.orphan.outputs.run_id }}
+          ACTUAL_TRANSACTION_ID: ${{ steps.orphan.outputs.transaction_id }}
+          ACTUAL_TRANSACTION_PATH: ${{ steps.orphan.outputs.transaction_path }}
+          ACTUAL_TRANSACTION_STATUS: ${{ steps.orphan.outputs.transaction_status }}
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+          EXPECTED_TRANSACTION_PATH: ${{ needs.discover.outputs.transaction_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$ACTUAL_TRANSACTION_STATUS" = 'OPEN'
+          test "$ACTUAL_REQUEST_PATH" = "$EXPECTED_REQUEST_PATH"
+          test "$ACTUAL_RUN_ID" = "$EXPECTED_RUN_ID"
+          test "$ACTUAL_TRANSACTION_ID" = "$EXPECTED_TRANSACTION_ID"
+          test "$ACTUAL_TRANSACTION_PATH" = "$EXPECTED_TRANSACTION_PATH"
+          claim_path="$(python3 -I - <<'PY'
+          import pathlib
+          import sys
+
+          root = pathlib.Path.cwd().resolve()
+          sys.path.insert(0, str(root / 'automation'))
+          import transaction_watchdog as watchdog
+
+          value = watchdog.discover()
+          if value.get('transaction_status') != 'OPEN':
+              raise SystemExit('WATCHDOG_MARK_NOT_OPEN')
+          print(value['claim_path'])
+          PY
+          )"
+          echo "claim_path=$claim_path" >>"$GITHUB_OUTPUT"
+
+      - name: Persist ROLLING_BACK marker before exposing Production credential
+        id: persist
+        env:
+          EXPECTED_CLAIM_PATH: ${{ steps.identity.outputs.claim_path }}
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+          EXPECTED_TRANSACTION_PATH: ${{ needs.discover.outputs.transaction_path }}
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.discover.outputs.task_id }}
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          unset GH_TOKEN
+          git_with_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_HEADER}" \
+              git "$@"
+          }
+          validate_writer_runtime() {
+            local target="$1"
+            [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$target" =~ ^[0-9a-f]{40}$ ]]
+            /usr/bin/git merge-base --is-ancestor \
+              "$WORKFLOW_SOURCE_COMMIT" "$target"
+            SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+            TARGET_COMMIT="$target" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+          }
+          RUNTIME_PATHS=(
+            state/AUTOPILOT_RUNTIME_MANIFEST.json
+            .github/workflows/uaart_autostart.yml
+            .github/workflows/uaart_orchestrator.yml
+            .github/workflows/uaart_fast.yml
+            .github/workflows/uaart_standard.yml
+            .github/workflows/uaart_critical.yml
+            .github/workflows/uaart_backup.yml
+            .github/workflows/uaart_maintenance.yml
+            .github/workflows/uaart_monitor.yml
+            .github/workflows/uaart_transaction_watchdog.yml
+            automation/autostart_intake.py
+            automation/control_plane.py
+            automation/critical_adapter.py
+            automation/execution_contract.py
+            automation/production_queue.py
+            automation/task_orchestrator.py
+            automation/task_ticket.py
+            automation/transaction_watchdog.py
+            state/schemas/task_request.schema.json
+          )
+          LAST_COMMIT='' # rollback-mark
+          for attempt in 1 2 3 4 5 6; do
+            if ! git_with_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'; then
+              test "$attempt" -lt 6 || exit 1
+              sleep "$((attempt * 3))"
+              continue
+            fi
+            PARENT="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$LAST_COMMIT" && \
+              git merge-base --is-ancestor "$LAST_COMMIT" "$PARENT"; then
+              mapfile -d '' ACCEPTED_PATHS < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$LAST_COMMIT")
+              test "${#ACCEPTED_PATHS[@]}" -gt 0
+              git diff --quiet "$LAST_COMMIT" "$PARENT" -- "${ACCEPTED_PATHS[@]}" || exit 1
+              echo 'marked=true' >>"$GITHUB_OUTPUT"
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$PARENT" -- "${RUNTIME_PATHS[@]}"
+            validate_writer_runtime "$PARENT"
+            REBUILD="$RUNNER_TEMP/uaart-watchdog-mark-rebuild-${attempt}"
+            INDEX="$RUNNER_TEMP/uaart-watchdog-mark-index-${attempt}"
+            git -c core.hooksPath=/dev/null worktree add --detach "$REBUILD" "$PARENT"
+            cd "$REBUILD"
+            python3 -I automation/control_plane.py verify-mode \
+              --require AUTOMATIC --allow-halt-for-recovery
+            python3 -I - <<'PY'
+          import os
+          import pathlib
+          import sys
+
+          root = pathlib.Path.cwd().resolve()
+          sys.path.insert(0, str(root / 'automation'))
+          import execution_contract as ec
+          import transaction_watchdog as watchdog
+
+          value = watchdog.discover()
+          if (
+              value.get('transaction_status') != 'OPEN'
+              or value.get('request_path') != os.environ['EXPECTED_REQUEST_PATH']
+              or str(value.get('run_id')) != os.environ['EXPECTED_RUN_ID']
+              or value.get('transaction_id') != os.environ['EXPECTED_TRANSACTION_ID']
+              or value.get('transaction_path') != os.environ['EXPECTED_TRANSACTION_PATH']
+              or value.get('claim_path') != os.environ['EXPECTED_CLAIM_PATH']
+          ):
+              raise SystemExit('WATCHDOG_ROLLBACK_MARK_REVALIDATION')
+          spec = ec.validate_execution(os.environ['EXPECTED_REQUEST_PATH'], 'CRITICAL')
+          receipt = ec.absolute_repo_path(spec.rollback_receipt_path)
+          if receipt.exists() or receipt.is_symlink():
+              raise SystemExit('WATCHDOG_ROLLBACK_MARK_RECEIPT_EXISTS')
+          PY
+            python3 -I automation/control_plane.py transaction-rollback-start \
+              "$EXPECTED_REQUEST_PATH" \
+              --run-id "$EXPECTED_RUN_ID" \
+              --transaction-id "$EXPECTED_TRANSACTION_ID"
+            rm -f -- "$INDEX"
+            GIT_INDEX_FILE="$INDEX" git read-tree "$PARENT"
+            for path in "$EXPECTED_CLAIM_PATH" "$EXPECTED_TRANSACTION_PATH"; do
+              test -f "$path" && test ! -L "$path"
+              BLOB="$(git hash-object -w -- "$path")"
+              GIT_INDEX_FILE="$INDEX" git update-index --add \
+                --cacheinfo "100644,${BLOB},${path}"
+            done
+            TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
+            export GIT_AUTHOR_NAME='ua-art-production-watchdog'
+            export GIT_AUTHOR_EMAIL='actions@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            COMMIT="$(printf '%s\n' \
+              "uaart watchdog: arm rollback ${TASK_ID} ${GITHUB_RUN_ID}" | \
+              git commit-tree "$TREE" -p "$PARENT")"
+            COMMIT="$COMMIT" PARENT="$PARENT" python3 -I - <<'PY'
+          import os
+          import subprocess
+
+          expected = {
+              os.environ['EXPECTED_CLAIM_PATH'],
+              os.environ['EXPECTED_TRANSACTION_PATH'],
+          }
+          changed = {
+              item.decode('utf-8')
+              for item in subprocess.check_output([
+                  'git', 'diff-tree', '--no-commit-id', '--name-only', '-r', '-z',
+                  os.environ['PARENT'], os.environ['COMMIT'],
+              ]).split(b'\0')
+              if item
+          }
+          if changed != expected:
+              raise SystemExit('WATCHDOG_ROLLBACK_MARK_COMMIT_SCOPE')
+          PY
+            cd "$GITHUB_WORKSPACE"
+            LAST_COMMIT="$COMMIT"
+            if git_with_auth push origin "$COMMIT:refs/heads/main"; then
+              echo 'marked=true' >>"$GITHUB_OUTPUT"
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep "$((attempt * 3))"
+          done
+          unset AUTH_HEADER GH_TOKEN
+          exit 1
+
+  rollback_open:
+    needs: [discover, mark_rollback]
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      github.run_attempt == 1 &&
+      needs.discover.outputs.transaction_status == 'OPEN' &&
+      needs.mark_rollback.outputs.marked == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    environment:
+      name: production
+    outputs:
+      artifact_name: ${{ steps.artifact.outputs.artifact_name }}
+    env:
+      CLAIM_PATH: ${{ needs.discover.outputs.claim_path }}
+      EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+      EXPECTED_REQUEST_SHA256: ${{ needs.discover.outputs.request_sha256 }}
+      EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+      EXPECTED_TASK_ID: ${{ needs.discover.outputs.task_id }}
+      EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+      EXPECTED_TRANSACTION_PATH: ${{ needs.discover.outputs.transaction_path }}
+      PINNED_ROOT: ${{ runner.temp }}/uaart-watchdog-pinned-recovery
+      SOURCE_COMMIT: ${{ needs.discover.outputs.source_commit }}
+    steps:
+      - name: Checkout fresh ROLLING_BACK state without persisted credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Revalidate the one armed rollback identity
+        id: orphan
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "${SOURCE_COMMIT}^{commit}"
+          git merge-base --is-ancestor "$SOURCE_COMMIT" HEAD
+          test ! -e "$PINNED_ROOT"
+          git -c core.hooksPath=/dev/null worktree add --detach \
+            "$PINNED_ROOT" "$SOURCE_COMMIT"
+          test "$(git -C "$PINNED_ROOT" rev-parse HEAD)" = "$SOURCE_COMMIT"
+
+          python3 -I - <<'PY'
+          import json, os, pathlib, re
+
+          source_root = pathlib.Path.cwd().resolve()
+          pinned_root = pathlib.Path(os.environ['PINNED_ROOT']).resolve()
+
+          def load(relative, label):
+              if not isinstance(relative, str) or not re.fullmatch(r'[A-Za-z0-9._/-]+', relative):
+                  raise SystemExit(label + '_PATH')
+              pure = pathlib.PurePosixPath(relative)
+              if pure.is_absolute() or '..' in pure.parts:
+                  raise SystemExit(label + '_PATH')
+              path = source_root / pure
+              if path.is_symlink() or not path.is_file() or not path.resolve().is_relative_to(source_root):
+                  raise SystemExit(label + '_FILE')
+              if any(parent.is_symlink() for parent in path.parents if parent != source_root):
+                  raise SystemExit(label + '_SYMLINK')
+              data = path.read_bytes()
+              if len(data) > 2 * 1024 * 1024:
+                  raise SystemExit(label + '_SIZE')
+              try:
+                  value = json.loads(data.decode('utf-8'))
+              except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                  raise SystemExit(label + '_JSON') from exc
+              if not isinstance(value, dict):
+                  raise SystemExit(label + '_OBJECT')
+              return pure, data, value
+
+          claim_rel, claim_data, claim = load(os.environ['CLAIM_PATH'], 'PINNED_CLAIM')
+          tx_rel, tx_data, transaction = load(
+              os.environ['EXPECTED_TRANSACTION_PATH'], 'PINNED_TRANSACTION'
+          )
+          request_rel, request_data, _ = load(
+              os.environ['EXPECTED_REQUEST_PATH'], 'PINNED_REQUEST'
+          )
+          ledger_rel, ledger_data, _ = load(
+              claim.get('autostart_ledger_path'), 'PINNED_LEDGER'
+          )
+          backup_rel, backup_data, _ = load(
+              transaction.get('backup_receipt_path'), 'PINNED_BACKUP'
+          )
+          if claim.get('autostart_source_commit') != os.environ['SOURCE_COMMIT']:
+              raise SystemExit('PINNED_SOURCE_COMMIT_BINDING')
+          if transaction.get('request_path') != os.environ['EXPECTED_REQUEST_PATH']:
+              raise SystemExit('PINNED_REQUEST_BINDING')
+          items = {
+              claim_rel: claim_data,
+              tx_rel: tx_data,
+              request_rel: request_data,
+              ledger_rel: ledger_data,
+              backup_rel: backup_data,
+          }
+          if len(items) != 5:
+              raise SystemExit('PINNED_DURABLE_PATH_ALIAS')
+          for relative, data in items.items():
+              target = pinned_root / relative
+              target.parent.mkdir(parents=True, exist_ok=True)
+              if any(parent.is_symlink() for parent in target.parents if parent != pinned_root):
+                  raise SystemExit('PINNED_DESTINATION_SYMLINK')
+              target.write_bytes(data)
+          print('UAART_PINNED_DURABLE_STATE_COPIED')
+          PY
+
+          cd "$PINNED_ROOT"
+          python3 -I - <<'PY'
+          import hashlib, json, pathlib, re
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('PINNED_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+          root = pathlib.Path.cwd().resolve()
+          path = root / 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          if path.is_symlink() or not path.is_file():
+              raise SystemExit('PINNED_RUNTIME_MANIFEST_FILE')
+          manifest = json.loads(path.read_bytes(), object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('PINNED_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('PINNED_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('PINNED_RUNTIME_FILE_SET')
+          total = 0
+          for relative, expected in files.items():
+              pure = pathlib.PurePosixPath(relative)
+              if not re.fullmatch(r'[A-Za-z0-9._/-]+', relative) or pure.is_absolute() or '..' in pure.parts:
+                  raise SystemExit('PINNED_RUNTIME_PATH')
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('PINNED_RUNTIME_HASH')
+              target = root / pure
+              if target.is_symlink() or not target.is_file() or target.resolve() != target:
+                  raise SystemExit('PINNED_RUNTIME_TARGET:' + relative)
+              data = target.read_bytes()
+              total += len(data)
+              if len(data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('PINNED_RUNTIME_SIZE')
+              if hashlib.sha256(data).hexdigest() != expected:
+                  raise SystemExit('PINNED_RUNTIME_FILE_SHA:' + relative)
+          print('UAART_PINNED_RUNTIME_CLOSURE_VALIDATED')
+          PY
+          python3 -I automation/control_plane.py verify-mode \
+            --require AUTOMATIC --allow-halt-for-recovery
+          python3 -I automation/control_plane.py verify-request \
+            "$EXPECTED_REQUEST_PATH" --sha256 "$EXPECTED_REQUEST_SHA256"
+          python3 -I automation/execution_contract.py validate \
+            "$EXPECTED_REQUEST_PATH" --expected-class CRITICAL \
+            >"$RUNNER_TEMP/uaart-watchdog-contract.json"
+          python3 -I automation/transaction_watchdog.py discover
+          echo 'UAART_PINNED_RECOVERY_IDENTITY_VALIDATED'
+
+      - name: Confirm ROLLING_BACK identity has no durable receipt
+        id: pinned
+        env:
+          ACTUAL_REQUEST_PATH: ${{ steps.orphan.outputs.request_path }}
+          ACTUAL_RUN_ID: ${{ steps.orphan.outputs.run_id }}
+          ACTUAL_SOURCE_COMMIT: ${{ steps.orphan.outputs.source_commit }}
+          ACTUAL_TASK_ID: ${{ steps.orphan.outputs.task_id }}
+          ACTUAL_TRANSACTION_ID: ${{ steps.orphan.outputs.transaction_id }}
+          ACTUAL_TRANSACTION_PATH: ${{ steps.orphan.outputs.transaction_path }}
+          ACTUAL_TRANSACTION_STATUS: ${{ steps.orphan.outputs.transaction_status }}
+          EXPECTED_REQUEST_SHA256: ${{ needs.discover.outputs.request_sha256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$ACTUAL_TRANSACTION_STATUS" = 'ROLLING_BACK'
+          test "$ACTUAL_REQUEST_PATH" = "$EXPECTED_REQUEST_PATH"
+          test "$ACTUAL_RUN_ID" = "$EXPECTED_RUN_ID"
+          test "$ACTUAL_TASK_ID" = "$EXPECTED_TASK_ID"
+          test "$ACTUAL_TRANSACTION_ID" = "$EXPECTED_TRANSACTION_ID"
+          test "$ACTUAL_TRANSACTION_PATH" = "$EXPECTED_TRANSACTION_PATH"
+          test "$ACTUAL_SOURCE_COMMIT" = "$SOURCE_COMMIT"
+          cd "$PINNED_ROOT"
+          python3 -I - <<'PY'
+          import json, os, pathlib
+          value = json.load(open(
+              os.environ['RUNNER_TEMP'] + '/uaart-watchdog-contract.json',
+              encoding='utf-8',
+          ))
+          if value.get('request_sha256') != os.environ['EXPECTED_REQUEST_SHA256']:
+              raise SystemExit('WATCHDOG_PINNED_REQUEST_SHA')
+          relative = value.get('rollback_receipt_path')
+          if not isinstance(relative, str):
+              raise SystemExit('WATCHDOG_ROLLBACK_RECEIPT_PATH_MISSING')
+          receipt = pathlib.Path.cwd() / pathlib.PurePosixPath(relative)
+          if receipt.exists() or receipt.is_symlink():
+              raise SystemExit('WATCHDOG_ROLLBACK_RECEIPT_ALREADY_EXISTS')
+          PY
+          echo 'validated=true' >>"$GITHUB_OUTPUT"
+
+      # UAART_TRANSACTION_ID is the target-side idempotency key. The durable
+      # ROLLING_BACK state prevents later schedules and run reruns from invoking
+      # this generic controller again. A crash after this step is HALT/manual.
+      - name: Execute the single armed rollback attempt
+        if: >-
+          github.run_attempt == 1 &&
+          needs.mark_rollback.outputs.marked == 'true' &&
+          needs.discover.outputs.transaction_status == 'OPEN' &&
+          steps.orphan.outputs.transaction_status == 'ROLLING_BACK' &&
+          steps.orphan.outputs.source_commit == needs.discover.outputs.source_commit &&
+          steps.pinned.outputs.validated == 'true'
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          UAART_BACKUP_MANIFEST_SHA256: ${{ needs.discover.outputs.backup_manifest_sha256 }}
+          UAART_IDEMPOTENCY_KEY: ${{ needs.discover.outputs.transaction_id }}
+          UAART_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          UAART_REQUEST_SHA256: ${{ needs.discover.outputs.request_sha256 }}
+          UAART_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          UAART_TASK_CLASS: CRITICAL
+          UAART_TASK_ID: ${{ needs.discover.outputs.task_id }}
+          UAART_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          cd "$PINNED_ROOT"
+          python3 -I automation/execution_contract.py rollback "$UAART_REQUEST_PATH" \
             --expected-class CRITICAL
-          python3 automation/execution_contract.py rollback-receipt "$UAART_REQUEST_PATH" \
-            --expected-class CRITICAL >/tmp/uaart-watchdog-rollback.json
-          python3 automation/control_plane.py transaction-close "$UAART_REQUEST_PATH" \
+          python3 -I automation/execution_contract.py rollback-receipt "$UAART_REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Canonicalize rollback receipt as a data-only artifact
+        id: artifact
+        env:
+          ARTIFACT_NAME: uaart-watchdog-rollback-${{ needs.discover.outputs.transaction_id }}-${{ github.run_attempt }}
+          UAART_BACKUP_MANIFEST_SHA256: ${{ needs.discover.outputs.backup_manifest_sha256 }}
+          UAART_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          UAART_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          UAART_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_dir="$RUNNER_TEMP/uaart-watchdog-rollback"
+          mkdir -p -- "$artifact_dir"
+          cd "$PINNED_ROOT"
+          ARTIFACT_FILE="$artifact_dir/rollback-receipt.json" python3 -I - <<'PY'
+          import json
+          import os
+          import pathlib
+          import sys
+
+          root = pathlib.Path.cwd().resolve()
+          sys.path.insert(0, str(root / 'automation'))
+          import execution_contract as ec
+
+          spec = ec.validate_execution(os.environ['UAART_REQUEST_PATH'], 'CRITICAL')
+          value = ec.validate_rollback_receipt(spec)
+          canonical = (
+              json.dumps(value, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
+              + '\n'
+          ).encode('utf-8')
+          if len(canonical) > 65536:
+              raise SystemExit('WATCHDOG_ROLLBACK_RECEIPT_TOO_LARGE')
+          pathlib.Path(os.environ['ARTIFACT_FILE']).write_bytes(canonical)
+          PY
+          echo "artifact_name=$ARTIFACT_NAME" >>"$GITHUB_OUTPUT"
+
+      - name: Upload only the canonical rollback receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.artifact.outputs.artifact_name }}
+          path: ${{ runner.temp }}/uaart-watchdog-rollback/rollback-receipt.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+  finalize_rollback:
+    needs: [discover, mark_rollback, rollback_open]
+    if: >-
+      always() &&
+      github.ref == 'refs/heads/main' &&
+      needs.mark_rollback.outputs.marked == 'true' &&
+      needs.rollback_open.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Checkout fresh main for trusted recovery persistence
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Bind source-pinned writer runtime before repo Python
+        env:
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          TARGET_COMMIT="$(/usr/bin/git rev-parse HEAD)"
+          /usr/bin/git merge-base --is-ancestor \
+            "$WORKFLOW_SOURCE_COMMIT" "$TARGET_COMMIT"
+          SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+          TARGET_COMMIT="$TARGET_COMMIT" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+
+      - name: Download rollback receipt outside the workspace
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ needs.rollback_open.outputs.artifact_name }}
+          path: ${{ runner.temp }}/uaart-watchdog-download
+
+      - name: Strictly validate and install data-only rollback receipt
+        id: artifact
+        env:
+          ARTIFACT_FILE: ${{ runner.temp }}/uaart-watchdog-download/rollback-receipt.json
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+          EXPECTED_TRANSACTION_PATH: ${{ needs.discover.outputs.transaction_path }}
+          UAART_BACKUP_MANIFEST_SHA256: ${{ needs.discover.outputs.backup_manifest_sha256 }}
+          UAART_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          UAART_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          UAART_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 -I automation/control_plane.py verify-mode \
+            --require AUTOMATIC \
+            --allow-halt-for-recovery
+          python3 -I - <<'PY'
+          import json
+          import os
+          import pathlib
+          import sys
+
+          artifact = pathlib.Path(os.environ['ARTIFACT_FILE'])
+          if artifact.is_symlink() or not artifact.is_file():
+              raise SystemExit('WATCHDOG_ARTIFACT_NOT_REGULAR')
+          raw = artifact.read_bytes()
+          if not raw or len(raw) > 65536:
+              raise SystemExit('WATCHDOG_ARTIFACT_SIZE')
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise ValueError('duplicate key: ' + str(key))
+                  value[key] = item
+              return value
+
+          try:
+              value = json.loads(raw.decode('utf-8'), object_pairs_hook=strict_object)
+          except (UnicodeDecodeError, ValueError, json.JSONDecodeError) as exc:
+              raise SystemExit('WATCHDOG_ARTIFACT_JSON') from exc
+          if not isinstance(value, dict):
+              raise SystemExit('WATCHDOG_ARTIFACT_OBJECT')
+          canonical = (
+              json.dumps(value, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
+              + '\n'
+          ).encode('utf-8')
+          if raw != canonical:
+              raise SystemExit('WATCHDOG_ARTIFACT_NOT_CANONICAL')
+
+          root = pathlib.Path.cwd().resolve()
+          sys.path.insert(0, str(root / 'automation'))
+          import execution_contract as ec
+          import transaction_watchdog as watchdog
+
+          state = watchdog.discover()
+          if (
+              state.get('transaction_status') != 'ROLLING_BACK'
+              or state.get('request_path') != os.environ['EXPECTED_REQUEST_PATH']
+              or str(state.get('run_id')) != os.environ['EXPECTED_RUN_ID']
+              or state.get('transaction_id') != os.environ['EXPECTED_TRANSACTION_ID']
+              or state.get('transaction_path') != os.environ['EXPECTED_TRANSACTION_PATH']
+          ):
+              raise SystemExit('WATCHDOG_FINALIZE_TRANSACTION_MISMATCH')
+
+          spec = ec.validate_execution(os.environ['UAART_REQUEST_PATH'], 'CRITICAL')
+          if spec.rollback_receipt_path is None:
+              raise SystemExit('WATCHDOG_FINALIZE_RECEIPT_PATH_MISSING')
+          destination = ec.absolute_repo_path(spec.rollback_receipt_path)
+          if destination.is_symlink() or destination.exists():
+              raise SystemExit('WATCHDOG_FINALIZE_RECEIPT_PREEXISTING')
+          if destination.parent.is_symlink() or not destination.parent.is_dir():
+              raise SystemExit('WATCHDOG_FINALIZE_RECEIPT_PARENT')
+          with destination.open('xb') as handle:
+              handle.write(canonical)
+          with pathlib.Path(os.environ['GITHUB_OUTPUT']).open(
+              'a', encoding='utf-8'
+          ) as handle:
+              handle.write('rollback_receipt_path=%s\n' % spec.rollback_receipt_path)
+              handle.write('claim_path=%s\n' % state['claim_path'])
+          PY
+          python3 -I automation/execution_contract.py rollback-receipt \
+            "$UAART_REQUEST_PATH" --expected-class CRITICAL
+          echo 'UAART_DATA_ONLY_ARTIFACT_VALIDATED'
+
+      - name: Close ROLLING_BACK transaction and generate emergency halt
+        env:
+          EXPECTED_CLAIM_PATH: ${{ steps.artifact.outputs.claim_path }}
+          EXPECTED_RECEIPT_PATH: ${{ steps.artifact.outputs.rollback_receipt_path }}
+          EXPECTED_TRANSACTION_PATH: ${{ needs.discover.outputs.transaction_path }}
+          UAART_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          UAART_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          UAART_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I automation/control_plane.py transaction-close "$UAART_REQUEST_PATH" \
             --run-id "$UAART_RUN_ID" \
             --transaction-id "$UAART_TRANSACTION_ID" \
             --outcome ROLLED_BACK
-          python3 automation/control_plane.py fail "$UAART_REQUEST_PATH" \
+          python3 -I automation/control_plane.py halt "$UAART_REQUEST_PATH" \
             --run-id "$UAART_RUN_ID" \
-            --message "Orphaned Production transaction recovered by watchdog" \
-            --rollback-confirmed
-          python3 automation/control_plane.py halt "$UAART_REQUEST_PATH" \
-            --run-id "$UAART_RUN_ID" \
-            --reason "Orphaned Production transaction required watchdog rollback"
+            --reason 'Orphaned Production transaction required watchdog rollback'
+          python3 -I - <<'PY'
+          import os
+          import subprocess
 
-      - name: Persist rollback and emergency halt
-        if: steps.orphan.outputs.has_pending == 'true'
+          expected = {
+              os.environ['EXPECTED_CLAIM_PATH'],
+              os.environ['EXPECTED_RECEIPT_PATH'],
+              os.environ['EXPECTED_TRANSACTION_PATH'],
+              'state/AUTOPILOT_HALT.json',
+          }
+          raw = subprocess.check_output(
+              ['git', 'status', '--porcelain=v1', '-z', '--untracked-files=all']
+          )
+          actual = {item[3:].decode('utf-8') for item in raw.split(b'\0') if item}
+          if actual != expected:
+              raise SystemExit('WATCHDOG_FINALIZE_UNEXPECTED_DIFF:' + ','.join(sorted(actual)))
+          PY
+
+      - name: Persist exact rollback receipt transaction claim and halt
         env:
-          REQUEST_PATH: ${{ steps.orphan.outputs.request_path }}
-          TRANSACTION_PATH: ${{ steps.orphan.outputs.transaction_path }}
+          ARTIFACT_FILE: ${{ runner.temp }}/uaart-watchdog-download/rollback-receipt.json
+          CLAIM_PATH: ${{ steps.artifact.outputs.claim_path }}
+          EXPECTED_BACKUP_MANIFEST_SHA256: ${{ needs.discover.outputs.backup_manifest_sha256 }}
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+          GH_TOKEN: ${{ github.token }}
+          ROLLBACK_RECEIPT_PATH: ${{ steps.artifact.outputs.rollback_receipt_path }}
+          TASK_ID: ${{ needs.discover.outputs.task_id }}
+          TRANSACTION_PATH: ${{ needs.discover.outputs.transaction_path }}
+          UAART_BACKUP_MANIFEST_SHA256: ${{ needs.discover.outputs.backup_manifest_sha256 }}
+          UAART_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          UAART_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          UAART_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          claim_path="$(python3 - <<'PY'
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          unset GH_TOKEN
+          git_with_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_HEADER}" \
+              git "$@"
+          }
+          validate_writer_runtime() {
+            local target="$1"
+            [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$target" =~ ^[0-9a-f]{40}$ ]]
+            /usr/bin/git merge-base --is-ancestor \
+              "$WORKFLOW_SOURCE_COMMIT" "$target"
+            SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+            TARGET_COMMIT="$target" /usr/bin/python3 -I - <<'PY'
+          import hashlib
           import json
           import os
-          from pathlib import Path
-          transaction = json.loads(Path(os.environ['TRANSACTION_PATH']).read_text(encoding='utf-8'))
-          request = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
-          print('state/claims/%s.%s.%s.json' % (
-              request['task_id'], transaction['request_sha256'], transaction['run_id']))
-          PY
-          )"
-          rollback_receipt="$(python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-          request = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
-          print(request['execution']['rollback_receipt_path'])
-          PY
-          )"
-          git add -- "$TRANSACTION_PATH" "$claim_path" "$rollback_receipt" state/AUTOPILOT_HALT.json
-          git config user.name 'ua-art-production-watchdog'
-          git config user.email 'actions@users.noreply.github.com'
-          git commit -m "uaart watchdog: rollback ${{ steps.orphan.outputs.task_id }} and halt"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          import re
+          import subprocess
 
-      - name: Halt on watchdog rollback failure
-        if: failure() && steps.orphan.outputs.has_pending == 'true'
-        continue-on-error: true
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+          }
+          RUNTIME_PATHS=(
+            state/AUTOPILOT_RUNTIME_MANIFEST.json
+            .github/workflows/uaart_autostart.yml
+            .github/workflows/uaart_orchestrator.yml
+            .github/workflows/uaart_fast.yml
+            .github/workflows/uaart_standard.yml
+            .github/workflows/uaart_critical.yml
+            .github/workflows/uaart_backup.yml
+            .github/workflows/uaart_maintenance.yml
+            .github/workflows/uaart_monitor.yml
+            .github/workflows/uaart_transaction_watchdog.yml
+            automation/autostart_intake.py
+            automation/control_plane.py
+            automation/critical_adapter.py
+            automation/execution_contract.py
+            automation/production_queue.py
+            automation/task_orchestrator.py
+            automation/task_ticket.py
+            automation/transaction_watchdog.py
+            state/schemas/task_request.schema.json
+          )
+          LAST_COMMIT='' # finalize-rollback
+          for attempt in 1 2 3 4 5 6; do
+            if ! git_with_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'; then
+              test "$attempt" -lt 6 || exit 1
+              sleep "$((attempt * 3))"
+              continue
+            fi
+            PARENT="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$LAST_COMMIT" && \
+              git merge-base --is-ancestor "$LAST_COMMIT" "$PARENT"; then
+              mapfile -d '' ACCEPTED_PATHS < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$LAST_COMMIT")
+              test "${#ACCEPTED_PATHS[@]}" -gt 0
+              git diff --quiet "$LAST_COMMIT" "$PARENT" -- "${ACCEPTED_PATHS[@]}" || exit 1
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$PARENT" -- "${RUNTIME_PATHS[@]}"
+            validate_writer_runtime "$PARENT"
+            REBUILD="$RUNNER_TEMP/uaart-watchdog-finalize-rebuild-${attempt}"
+            INDEX="$RUNNER_TEMP/uaart-watchdog-finalize-index-${attempt}"
+            git -c core.hooksPath=/dev/null worktree add --detach "$REBUILD" "$PARENT"
+            cd "$REBUILD"
+            python3 -I automation/control_plane.py verify-mode \
+              --require AUTOMATIC --allow-halt-for-recovery
+            python3 -I - <<'PY'
+          import json
+          import os
+          import pathlib
+          import sys
+
+          root = pathlib.Path.cwd().resolve()
+          sys.path.insert(0, str(root / 'automation'))
+          import execution_contract as ec
+          import transaction_watchdog as watchdog
+
+          state = watchdog.discover()
+          if (
+              state.get('transaction_status') != 'ROLLING_BACK'
+              or state.get('request_path') != os.environ['EXPECTED_REQUEST_PATH']
+              or str(state.get('run_id')) != os.environ['EXPECTED_RUN_ID']
+              or state.get('transaction_id') != os.environ['EXPECTED_TRANSACTION_ID']
+              or state.get('transaction_path') != os.environ['TRANSACTION_PATH']
+              or state.get('claim_path') != os.environ['CLAIM_PATH']
+              or state.get('backup_manifest_sha256')
+                 != os.environ['EXPECTED_BACKUP_MANIFEST_SHA256']
+          ):
+              raise SystemExit('WATCHDOG_FINALIZE_REVALIDATION')
+
+          artifact = pathlib.Path(os.environ['ARTIFACT_FILE'])
+          if artifact.is_symlink() or not artifact.is_file():
+              raise SystemExit('WATCHDOG_REBUILD_ARTIFACT_NOT_REGULAR')
+          raw = artifact.read_bytes()
+          if not raw or len(raw) > 65536:
+              raise SystemExit('WATCHDOG_REBUILD_ARTIFACT_SIZE')
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise ValueError('duplicate key: ' + str(key))
+                  value[key] = item
+              return value
+
+          value = json.loads(raw.decode('utf-8'), object_pairs_hook=strict_object)
+          canonical = (
+              json.dumps(value, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
+              + '\n'
+          ).encode('utf-8')
+          if raw != canonical:
+              raise SystemExit('WATCHDOG_REBUILD_ARTIFACT_NOT_CANONICAL')
+          spec = ec.validate_execution(os.environ['UAART_REQUEST_PATH'], 'CRITICAL')
+          if spec.rollback_receipt_path != os.environ['ROLLBACK_RECEIPT_PATH']:
+              raise SystemExit('WATCHDOG_REBUILD_RECEIPT_PATH')
+          destination = ec.absolute_repo_path(spec.rollback_receipt_path)
+          if destination.exists() or destination.is_symlink():
+              raise SystemExit('WATCHDOG_REBUILD_RECEIPT_PREEXISTING')
+          if destination.parent.is_symlink() or not destination.parent.is_dir():
+              raise SystemExit('WATCHDOG_REBUILD_RECEIPT_PARENT')
+          destination.write_bytes(canonical)
+          PY
+            python3 -I automation/execution_contract.py rollback-receipt \
+              "$UAART_REQUEST_PATH" --expected-class CRITICAL >/dev/null
+            echo 'UAART_DATA_ONLY_ARTIFACT_VALIDATED'
+            python3 -I automation/control_plane.py transaction-close "$UAART_REQUEST_PATH" \
+              --run-id "$UAART_RUN_ID" \
+              --transaction-id "$UAART_TRANSACTION_ID" \
+              --outcome ROLLED_BACK
+            python3 -I automation/control_plane.py halt "$UAART_REQUEST_PATH" \
+              --run-id "$UAART_RUN_ID" \
+              --reason 'Orphaned Production transaction required watchdog rollback'
+            rm -f -- "$INDEX"
+            GIT_INDEX_FILE="$INDEX" git read-tree "$PARENT"
+            for path in \
+              "$TRANSACTION_PATH" \
+              "$CLAIM_PATH" \
+              "$ROLLBACK_RECEIPT_PATH" \
+              state/AUTOPILOT_HALT.json; do
+              test -f "$path" && test ! -L "$path"
+              BLOB="$(git hash-object -w -- "$path")"
+              GIT_INDEX_FILE="$INDEX" git update-index --add \
+                --cacheinfo "100644,${BLOB},${path}"
+            done
+            TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
+            export GIT_AUTHOR_NAME='ua-art-production-watchdog'
+            export GIT_AUTHOR_EMAIL='actions@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            COMMIT="$(printf '%s\n' \
+              "uaart watchdog: rollback ${TASK_ID} and halt" | \
+              git commit-tree "$TREE" -p "$PARENT")"
+            COMMIT="$COMMIT" PARENT="$PARENT" python3 -I - <<'PY'
+          import os
+          import subprocess
+
+          expected = {
+              os.environ['CLAIM_PATH'],
+              os.environ['ROLLBACK_RECEIPT_PATH'],
+              os.environ['TRANSACTION_PATH'],
+              'state/AUTOPILOT_HALT.json',
+          }
+          changed = {
+              item.decode('utf-8')
+              for item in subprocess.check_output([
+                  'git', 'diff-tree', '--no-commit-id', '--name-only', '-r', '-z',
+                  os.environ['PARENT'], os.environ['COMMIT'],
+              ]).split(b'\0')
+              if item
+          }
+          if changed != expected:
+              raise SystemExit('WATCHDOG_FINALIZE_COMMIT_SCOPE')
+          PY
+            cd "$GITHUB_WORKSPACE"
+            LAST_COMMIT="$COMMIT"
+            if git_with_auth push origin "$COMMIT:refs/heads/main"; then
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep "$((attempt * 3))"
+          done
+          unset AUTH_HEADER GH_TOKEN
+          exit 1
+
+  halt_rolling_back:
+    needs: discover
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (needs.discover.outputs.transaction_status == 'ROLLING_BACK' ||
+       (github.run_attempt > 1 &&
+        needs.discover.outputs.transaction_status == 'OPEN')) &&
+      needs.discover.outputs.halt_present == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout clean main for ambiguous rollback halt
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Bind source-pinned writer runtime before repo Python
         env:
-          UAART_REQUEST_PATH: ${{ steps.orphan.outputs.request_path }}
-          UAART_RUN_ID: ${{ steps.orphan.outputs.run_id }}
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/control_plane.py halt "$UAART_REQUEST_PATH" \
-            --run-id "$UAART_RUN_ID" \
-            --reason "Production watchdog rollback failed in run ${GITHUB_RUN_ID}"
-          git add -- state/AUTOPILOT_HALT.json
-          git config user.name 'ua-art-production-watchdog'
-          git config user.email 'actions@users.noreply.github.com'
-          git commit -m 'uaart watchdog: emergency halt after rollback failure'
-          git pull --rebase origin main
-          git push origin HEAD:main
+          test "$GITHUB_REF" = 'refs/heads/main'
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          TARGET_COMMIT="$(/usr/bin/git rev-parse HEAD)"
+          /usr/bin/git merge-base --is-ancestor \
+            "$WORKFLOW_SOURCE_COMMIT" "$TARGET_COMMIT"
+          SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+          TARGET_COMMIT="$TARGET_COMMIT" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+
+      - name: Revalidate ROLLING_BACK from fresh main
+        id: orphan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I automation/control_plane.py verify-mode \
+            --require AUTOMATIC \
+            --allow-halt-for-recovery
+          python3 -I automation/transaction_watchdog.py discover
+
+      - name: Halt ambiguous rollback without repeating Production operation
+        env:
+          ACTUAL_REQUEST_PATH: ${{ steps.orphan.outputs.request_path }}
+          ACTUAL_RUN_ID: ${{ steps.orphan.outputs.run_id }}
+          ACTUAL_TRANSACTION_ID: ${{ steps.orphan.outputs.transaction_id }}
+          ACTUAL_TRANSACTION_STATUS: ${{ steps.orphan.outputs.transaction_status }}
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+          EXPECTED_TRANSACTION_STATUS: ${{ needs.discover.outputs.transaction_status }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$ACTUAL_TRANSACTION_STATUS" = "$EXPECTED_TRANSACTION_STATUS"
+          test "$ACTUAL_REQUEST_PATH" = "$EXPECTED_REQUEST_PATH"
+          test "$ACTUAL_RUN_ID" = "$EXPECTED_RUN_ID"
+          test "$ACTUAL_TRANSACTION_ID" = "$EXPECTED_TRANSACTION_ID"
+          if test "$EXPECTED_TRANSACTION_STATUS" = 'OPEN'; then
+            test "$RUN_ATTEMPT" -gt 1
+          else
+            test "$EXPECTED_TRANSACTION_STATUS" = 'ROLLING_BACK'
+          fi
+          python3 -I automation/control_plane.py halt "$EXPECTED_REQUEST_PATH" \
+            --run-id "$EXPECTED_RUN_ID" \
+            --reason 'ROLLING_BACK outcome is ambiguous; manual reconciliation required and rollback will not repeat'
+          python3 -I - <<'PY'
+          import subprocess
+
+          raw = subprocess.check_output(
+              ['git', 'status', '--porcelain=v1', '-z', '--untracked-files=all']
+          )
+          actual = {item[3:].decode('utf-8') for item in raw.split(b'\0') if item}
+          if actual - {'state/AUTOPILOT_HALT.json'}:
+              raise SystemExit('WATCHDOG_ROLLING_BACK_HALT_UNEXPECTED_DIFF')
+          PY
+
+      - name: Persist exact ambiguous rollback halt to main
+        env:
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
+          EXPECTED_TRANSACTION_STATUS: ${{ needs.discover.outputs.transaction_status }}
+          GH_TOKEN: ${{ github.token }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          TASK_ID: ${{ needs.discover.outputs.task_id }}
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          unset GH_TOKEN
+          git_with_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_HEADER}" \
+              git "$@"
+          }
+          validate_writer_runtime() {
+            local target="$1"
+            [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$target" =~ ^[0-9a-f]{40}$ ]]
+            /usr/bin/git merge-base --is-ancestor \
+              "$WORKFLOW_SOURCE_COMMIT" "$target"
+            SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+            TARGET_COMMIT="$target" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+          }
+          RUNTIME_PATHS=(
+            state/AUTOPILOT_RUNTIME_MANIFEST.json
+            .github/workflows/uaart_autostart.yml
+            .github/workflows/uaart_orchestrator.yml
+            .github/workflows/uaart_fast.yml
+            .github/workflows/uaart_standard.yml
+            .github/workflows/uaart_critical.yml
+            .github/workflows/uaart_backup.yml
+            .github/workflows/uaart_maintenance.yml
+            .github/workflows/uaart_monitor.yml
+            .github/workflows/uaart_transaction_watchdog.yml
+            automation/autostart_intake.py
+            automation/control_plane.py
+            automation/critical_adapter.py
+            automation/execution_contract.py
+            automation/production_queue.py
+            automation/task_orchestrator.py
+            automation/task_ticket.py
+            automation/transaction_watchdog.py
+            state/schemas/task_request.schema.json
+          )
+          LAST_COMMIT='' # ambiguous-halt
+          for attempt in 1 2 3 4 5 6; do
+            if ! git_with_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'; then
+              test "$attempt" -lt 6 || exit 1
+              sleep "$((attempt * 3))"
+              continue
+            fi
+            PARENT="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$LAST_COMMIT" && \
+              git merge-base --is-ancestor "$LAST_COMMIT" "$PARENT"; then
+              mapfile -d '' ACCEPTED_PATHS < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$LAST_COMMIT")
+              test "${#ACCEPTED_PATHS[@]}" -gt 0
+              git diff --quiet "$LAST_COMMIT" "$PARENT" -- "${ACCEPTED_PATHS[@]}" || exit 1
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$PARENT" -- "${RUNTIME_PATHS[@]}"
+            validate_writer_runtime "$PARENT"
+            REBUILD="$RUNNER_TEMP/uaart-watchdog-ambiguous-halt-rebuild-${attempt}"
+            INDEX="$RUNNER_TEMP/uaart-watchdog-ambiguous-halt-index-${attempt}"
+            git -c core.hooksPath=/dev/null worktree add --detach "$REBUILD" "$PARENT"
+            cd "$REBUILD"
+            python3 -I automation/control_plane.py verify-mode \
+              --require AUTOMATIC --allow-halt-for-recovery
+            python3 -I - <<'PY'
+          import os
+          import pathlib
+          import sys
+
+          root = pathlib.Path.cwd().resolve()
+          sys.path.insert(0, str(root / 'automation'))
+          import transaction_watchdog as watchdog
+
+          value = watchdog.discover()
+          if (
+              value.get('transaction_status') != os.environ['EXPECTED_TRANSACTION_STATUS']
+              or value.get('request_path') != os.environ['EXPECTED_REQUEST_PATH']
+              or str(value.get('run_id')) != os.environ['EXPECTED_RUN_ID']
+              or value.get('transaction_id') != os.environ['EXPECTED_TRANSACTION_ID']
+          ):
+              raise SystemExit('WATCHDOG_ROLLING_BACK_REVALIDATION')
+          if value.get('transaction_status') == 'OPEN' and int(os.environ['RUN_ATTEMPT']) <= 1:
+              raise SystemExit('WATCHDOG_OPEN_FIRST_ATTEMPT_MUST_NOT_HALT_HERE')
+          if value.get('transaction_status') not in {'OPEN', 'ROLLING_BACK'}:
+              raise SystemExit('WATCHDOG_UNEXPECTED_HALT_STATUS')
+          PY
+            python3 -I automation/control_plane.py halt "$EXPECTED_REQUEST_PATH" \
+              --run-id "$EXPECTED_RUN_ID" \
+              --reason 'ROLLING_BACK outcome is ambiguous; manual reconciliation required and rollback will not repeat'
+            rm -f -- "$INDEX"
+            GIT_INDEX_FILE="$INDEX" git read-tree "$PARENT"
+            BLOB="$(git hash-object -w -- state/AUTOPILOT_HALT.json)"
+            GIT_INDEX_FILE="$INDEX" git update-index --add \
+              --cacheinfo "100644,${BLOB},state/AUTOPILOT_HALT.json"
+            TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
+            if test "$TREE" = "$(git rev-parse "${PARENT}^{tree}")"; then
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            export GIT_AUTHOR_NAME='ua-art-production-watchdog'
+            export GIT_AUTHOR_EMAIL='actions@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            COMMIT="$(printf '%s\n' \
+              "uaart watchdog: halt ambiguous ${TASK_ID} rollback" | \
+              git commit-tree "$TREE" -p "$PARENT")"
+            mapfile -d '' CHANGED < <(git diff-tree --no-commit-id --name-only \
+              -r -z "$PARENT" "$COMMIT")
+            test "${#CHANGED[@]}" -eq 1
+            test "${CHANGED[0]}" = 'state/AUTOPILOT_HALT.json'
+            cd "$GITHUB_WORKSPACE"
+            LAST_COMMIT="$COMMIT"
+            if git_with_auth push origin "$COMMIT:refs/heads/main"; then
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep "$((attempt * 3))"
+          done
+          unset AUTH_HEADER GH_TOKEN
+          exit 1
+
+  halt_recovery_failure:
+    needs: [discover, mark_rollback, rollback_open, finalize_rollback]
+    if: >-
+      always() &&
+      github.ref == 'refs/heads/main' &&
+      needs.discover.outputs.transaction_status == 'OPEN' &&
+      (needs.mark_rollback.result == 'failure' ||
+       needs.rollback_open.result == 'failure' ||
+       needs.rollback_open.result == 'cancelled' ||
+       needs.finalize_rollback.result == 'failure' ||
+       needs.finalize_rollback.result == 'cancelled')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout clean main after recovery failure
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Bind source-pinned writer runtime before repo Python
+        env:
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          TARGET_COMMIT="$(/usr/bin/git rev-parse HEAD)"
+          /usr/bin/git merge-base --is-ancestor \
+            "$WORKFLOW_SOURCE_COMMIT" "$TARGET_COMMIT"
+          SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+          TARGET_COMMIT="$TARGET_COMMIT" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+
+      - name: Generate fail-closed halt after recovery failure
+        env:
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 -I automation/control_plane.py halt "$EXPECTED_REQUEST_PATH" \
+            --run-id "$EXPECTED_RUN_ID" \
+            --reason "Production watchdog recovery failed in run ${GITHUB_RUN_ID}" || \
+          python3 -I automation/control_plane.py halt-system \
+            --run-id "$GITHUB_RUN_ID" \
+            --reason "Production watchdog recovery identity failed in run ${GITHUB_RUN_ID}"
+          python3 -I - <<'PY'
+          import subprocess
+
+          raw = subprocess.check_output(
+              ['git', 'status', '--porcelain=v1', '-z', '--untracked-files=all']
+          )
+          actual = {item[3:].decode('utf-8') for item in raw.split(b'\0') if item}
+          if actual - {'state/AUTOPILOT_HALT.json'}:
+              raise SystemExit('WATCHDOG_RECOVERY_HALT_UNEXPECTED_DIFF')
+          PY
+
+      - name: Persist exact recovery-failure halt to main
+        env:
+          EXPECTED_REQUEST_PATH: ${{ needs.discover.outputs.request_path }}
+          EXPECTED_RUN_ID: ${{ needs.discover.outputs.run_id }}
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          unset GH_TOKEN
+          git_with_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_HEADER}" \
+              git "$@"
+          }
+          validate_writer_runtime() {
+            local target="$1"
+            [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$target" =~ ^[0-9a-f]{40}$ ]]
+            /usr/bin/git merge-base --is-ancestor \
+              "$WORKFLOW_SOURCE_COMMIT" "$target"
+            SOURCE_COMMIT="$WORKFLOW_SOURCE_COMMIT" \
+            TARGET_COMMIT="$target" /usr/bin/python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('WATCHDOG_WRITER_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          def blob(commit, path):
+              entry = subprocess.check_output(
+                  ['/usr/bin/git', 'ls-tree', commit, '--', path], text=True
+              ).rstrip('\n')
+              header, separator, actual = entry.partition('\t')
+              if separator != '\t' or actual != path:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_PATH:' + path)
+              mode, kind, oid = header.split()
+              if mode != '100644' or kind != 'blob' or not re.fullmatch(r'[0-9a-f]{40}', oid):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_MODE:' + path)
+              return subprocess.check_output(['/usr/bin/git', 'cat-file', 'blob', oid])
+
+          source = os.environ['SOURCE_COMMIT']
+          target = os.environ['TARGET_COMMIT']
+          manifest_path = 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          source_manifest = blob(source, manifest_path)
+          if source_manifest != blob(target, manifest_path) or len(source_manifest) > 1024 * 1024:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(source_manifest, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_SET')
+          total = 0
+          for path in sorted(expected_paths):
+              expected = files[path]
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_HASH:' + path)
+              source_data = blob(source, path)
+              target_data = blob(target, path)
+              total += len(source_data)
+              if len(source_data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_SIZE:' + path)
+              if source_data != target_data or hashlib.sha256(source_data).hexdigest() != expected:
+                  raise SystemExit('WATCHDOG_WRITER_RUNTIME_FILE_BINDING:' + path)
+          print('UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED')
+          PY
+          }
+          RUNTIME_PATHS=(
+            state/AUTOPILOT_RUNTIME_MANIFEST.json
+            .github/workflows/uaart_autostart.yml
+            .github/workflows/uaart_orchestrator.yml
+            .github/workflows/uaart_fast.yml
+            .github/workflows/uaart_standard.yml
+            .github/workflows/uaart_critical.yml
+            .github/workflows/uaart_backup.yml
+            .github/workflows/uaart_maintenance.yml
+            .github/workflows/uaart_monitor.yml
+            .github/workflows/uaart_transaction_watchdog.yml
+            automation/autostart_intake.py
+            automation/control_plane.py
+            automation/critical_adapter.py
+            automation/execution_contract.py
+            automation/production_queue.py
+            automation/task_orchestrator.py
+            automation/task_ticket.py
+            automation/transaction_watchdog.py
+            state/schemas/task_request.schema.json
+          )
+          LAST_COMMIT='' # recovery-failure-halt
+          for attempt in 1 2 3 4 5 6; do
+            if ! git_with_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'; then
+              test "$attempt" -lt 6 || exit 1
+              sleep "$((attempt * 3))"
+              continue
+            fi
+            PARENT="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$LAST_COMMIT" && \
+              git merge-base --is-ancestor "$LAST_COMMIT" "$PARENT"; then
+              mapfile -d '' ACCEPTED_PATHS < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$LAST_COMMIT")
+              test "${#ACCEPTED_PATHS[@]}" -gt 0
+              git diff --quiet "$LAST_COMMIT" "$PARENT" -- "${ACCEPTED_PATHS[@]}" || exit 1
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$PARENT" -- "${RUNTIME_PATHS[@]}"
+            validate_writer_runtime "$PARENT"
+            REBUILD="$RUNNER_TEMP/uaart-watchdog-failure-halt-rebuild-${attempt}"
+            INDEX="$RUNNER_TEMP/uaart-watchdog-failure-halt-index-${attempt}"
+            git -c core.hooksPath=/dev/null worktree add --detach "$REBUILD" "$PARENT"
+            cd "$REBUILD"
+            python3 -I automation/control_plane.py verify-mode \
+              --require AUTOMATIC --allow-halt-for-recovery
+            python3 -I automation/control_plane.py halt "$EXPECTED_REQUEST_PATH" \
+              --run-id "$EXPECTED_RUN_ID" \
+              --reason "Production watchdog recovery failed in run ${GITHUB_RUN_ID}" || \
+            python3 -I automation/control_plane.py halt-system \
+              --run-id "$GITHUB_RUN_ID" \
+              --reason "Production watchdog recovery identity failed in run ${GITHUB_RUN_ID}"
+            rm -f -- "$INDEX"
+            GIT_INDEX_FILE="$INDEX" git read-tree "$PARENT"
+            BLOB="$(git hash-object -w -- state/AUTOPILOT_HALT.json)"
+            GIT_INDEX_FILE="$INDEX" git update-index --add \
+              --cacheinfo "100644,${BLOB},state/AUTOPILOT_HALT.json"
+            TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
+            if test "$TREE" = "$(git rev-parse "${PARENT}^{tree}")"; then
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            export GIT_AUTHOR_NAME='ua-art-production-watchdog'
+            export GIT_AUTHOR_EMAIL='actions@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            COMMIT="$(printf '%s\n' 'uaart watchdog: emergency halt after recovery failure' | \
+              git commit-tree "$TREE" -p "$PARENT")"
+            mapfile -d '' CHANGED < <(git diff-tree --no-commit-id --name-only \
+              -r -z "$PARENT" "$COMMIT")
+            test "${#CHANGED[@]}" -eq 1
+            test "${CHANGED[0]}" = 'state/AUTOPILOT_HALT.json'
+            cd "$GITHUB_WORKSPACE"
+            LAST_COMMIT="$COMMIT"
+            if git_with_auth push origin "$COMMIT:refs/heads/main"; then
+              unset AUTH_HEADER GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep "$((attempt * 3))"
+          done
+          unset AUTH_HEADER GH_TOKEN
+          exit 1
+
+  report_safety_stop:
+    needs: discover
+    if: >-
+      always() &&
+      github.ref == 'refs/heads/main' &&
+      (needs.discover.result == 'failure' ||
+       needs.discover.outputs.transaction_status != 'NONE')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    steps:
+      - name: Report watchdog intervention as a safety stop
+        shell: bash
+        run: |
+          echo 'Production transaction required watchdog intervention' >&2
+          exit 1

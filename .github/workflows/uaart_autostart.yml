@@ -8,7 +8,7 @@ on:
       - 'tasks/launch/AUTO-*.json'
 
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 concurrency:
@@ -16,45 +16,107 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    env:
+      EXPECTED_GITHUB_REF: ${{ github.ref }}
+      EXPECTED_RUN_ATTEMPT: ${{ github.run_attempt }}
+    steps:
+      - name: Reject non-main or replayed workflow attempts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$EXPECTED_GITHUB_REF" = 'refs/heads/main'
+          test "$EXPECTED_RUN_ATTEMPT" = '1'
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+
   intake:
+    needs: context
+    if: github.ref == 'refs/heads/main' && github.run_attempt == 1
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
     outputs:
+      launch_path: ${{ steps.launch.outputs.launch_path }}
       ledger_path: ${{ steps.consume.outputs.ledger_path }}
       nonce_reservation_path: ${{ steps.consume.outputs.nonce_reservation_path }}
       production_required: ${{ steps.consume.outputs.production_required }}
       request_path: ${{ steps.consume.outputs.request_path }}
       request_sha256: ${{ steps.consume.outputs.request_sha256 }}
+      runtime_manifest_sha256: ${{ steps.runtime.outputs.runtime_manifest_sha256 }}
       task_id: ${{ steps.consume.outputs.task_id }}
+    env:
+      BEFORE_SHA: ${{ github.event.before }}
+      AFTER_SHA: ${{ github.sha }}
+      EXPECTED_GITHUB_REF: ${{ github.ref }}
+      EXPECTED_RUN_ATTEMPT: ${{ github.run_attempt }}
+      RUN_ID: ${{ github.run_id }}
+      SOURCE_COMMIT: ${{ github.sha }}
     steps:
-      - name: Checkout exact triggering commit
+      - name: Checkout exact triggering commit without persisted credential
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
           ref: ${{ github.sha }}
+          persist-credentials: false
 
       - name: Set up Python 3.11
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
 
-      - name: Require global automatic mode
+      - name: Require exact main automatic runtime
+        id: runtime
         shell: bash
         run: |
           set -euo pipefail
-          python3 -W error -m py_compile automation/control_plane.py automation/autostart_intake.py
-          python3 automation/control_plane.py verify-mode --require AUTOMATIC
+          test "$EXPECTED_GITHUB_REF" = 'refs/heads/main'
+          test "$EXPECTED_RUN_ATTEMPT" = '1'
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"
+          test "$AFTER_SHA" = "$SOURCE_COMMIT"
+          test "$BEFORE_SHA" != '0000000000000000000000000000000000000000'
+          git cat-file -e "$BEFORE_SHA^{commit}"
+          git merge-base --is-ancestor "$BEFORE_SHA" "$SOURCE_COMMIT"
+          test "$(git rev-list --parents -n 1 "$SOURCE_COMMIT")" = \
+            "$SOURCE_COMMIT $BEFORE_SHA"
+          mapfile -d '' -t bootstrap_changes < <(
+            git diff --name-only -z "$BEFORE_SHA" "$SOURCE_COMMIT"
+          )
+          mapfile -d '' -t bootstrap_additions < <(
+            git diff --name-only -z --diff-filter=A "$BEFORE_SHA" "$SOURCE_COMMIT"
+          )
+          test "${#bootstrap_changes[@]}" -eq 1
+          test "${#bootstrap_additions[@]}" -eq 1
+          test "${bootstrap_changes[0]}" = "${bootstrap_additions[0]}"
+          [[ "${bootstrap_additions[0]}" =~ ^tasks/launch/AUTO-[A-Za-z0-9._-]+\.json$ ]]
+          test "$(git ls-tree "$SOURCE_COMMIT" -- \
+            "${bootstrap_additions[0]}" | awk '{print $1}')" = '100644'
+          test -f "${bootstrap_additions[0]}"
+          test ! -L "${bootstrap_additions[0]}"
+          python3 -I -W error -m py_compile \
+            automation/control_plane.py automation/autostart_intake.py
+          python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+          echo "runtime_manifest_sha256=$(sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json | cut -d' ' -f1)" \
+            >>"$GITHUB_OUTPUT"
 
       - name: Require a marker-only commit and discover its exact path
         id: launch
-        env:
-          BEFORE_SHA: ${{ github.event.before }}
-          AFTER_SHA: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          test "$AFTER_SHA" = "$SOURCE_COMMIT"
           test "$BEFORE_SHA" != '0000000000000000000000000000000000000000'
           git cat-file -e "$BEFORE_SHA^{commit}"
+          git merge-base --is-ancestor "$BEFORE_SHA" "$SOURCE_COMMIT"
+          test "$(git rev-list --parents -n 1 "$SOURCE_COMMIT")" = \
+            "$SOURCE_COMMIT $BEFORE_SHA"
           mapfile -d '' -t changes < <(git diff --name-only -z "$BEFORE_SHA" "$AFTER_SHA")
           mapfile -d '' -t additions < <(git diff --name-only -z --diff-filter=A "$BEFORE_SHA" "$AFTER_SHA")
           test "${#changes[@]}" -eq 1
@@ -65,52 +127,358 @@ jobs:
             echo "INVALID_AUTOSTART_LAUNCH_PATH=$path"
             exit 1
           }
+          test "$(git ls-tree "$SOURCE_COMMIT" -- "$path" | awk '{print $1}')" = \
+            '100644'
+          test -f "$path"
+          test ! -L "$path"
           echo "launch_path=$path" >>"$GITHUB_OUTPUT"
 
-      - name: Consume exact fresh launch marker
+      - name: Validate exact fresh launch marker without repository write access
         id: consume
         env:
           LAUNCH_PATH: ${{ steps.launch.outputs.launch_path }}
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/autostart_intake.py "$LAUNCH_PATH" \
-            --run-id "$GITHUB_RUN_ID" \
-            --source-commit "$GITHUB_SHA"
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          python3 -I automation/autostart_intake.py "$LAUNCH_PATH" \
+            --run-id "$RUN_ID" \
+            --source-commit "$SOURCE_COMMIT" \
+            --validate-only
 
-      - name: Commit anti-replay ledger before execution
+  persist:
+    needs: intake
+    if: github.ref == 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      ledger_path: ${{ steps.persist.outputs.ledger_path }}
+      nonce_reservation_path: ${{ steps.persist.outputs.nonce_reservation_path }}
+      production_required: ${{ steps.persist.outputs.production_required }}
+      request_path: ${{ steps.persist.outputs.request_path }}
+      request_sha256: ${{ steps.persist.outputs.request_sha256 }}
+      task_id: ${{ steps.persist.outputs.task_id }}
+    env:
+      BEFORE_SHA: ${{ github.event.before }}
+      EXPECTED_GITHUB_REF: ${{ github.ref }}
+      EXPECTED_LEDGER_PATH: ${{ needs.intake.outputs.ledger_path }}
+      EXPECTED_LAUNCH_PATH: ${{ needs.intake.outputs.launch_path }}
+      EXPECTED_NONCE_RESERVATION_PATH: ${{ needs.intake.outputs.nonce_reservation_path }}
+      EXPECTED_PRODUCTION_REQUIRED: ${{ needs.intake.outputs.production_required }}
+      EXPECTED_REQUEST_PATH: ${{ needs.intake.outputs.request_path }}
+      EXPECTED_REQUEST_SHA256: ${{ needs.intake.outputs.request_sha256 }}
+      EXPECTED_RUN_ATTEMPT: ${{ github.run_attempt }}
+      EXPECTED_RUNTIME_MANIFEST_SHA256: ${{ needs.intake.outputs.runtime_manifest_sha256 }}
+      EXPECTED_TASK_ID: ${{ needs.intake.outputs.task_id }}
+      RUN_ID: ${{ github.run_id }}
+      SOURCE_COMMIT: ${{ github.sha }}
+    steps:
+      - name: Checkout fresh trusted main persistence workspace
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Persist exact anti-replay ledger with a trusted isolated Git tree
+        id: persist
         env:
-          LEDGER_PATH: ${{ steps.consume.outputs.ledger_path }}
-          NONCE_RESERVATION_PATH: ${{ steps.consume.outputs.nonce_reservation_path }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          test -f "$LEDGER_PATH"
-          test -f "$NONCE_RESERVATION_PATH"
-          git add -- "$LEDGER_PATH" "$NONCE_RESERVATION_PATH"
-          git config user.name 'ua-art-global-autostart'
-          git config user.email 'actions@users.noreply.github.com'
-          git commit -m "uaart autostart: consume ${{ steps.consume.outputs.task_id }}"
+          test "$EXPECTED_GITHUB_REF" = 'refs/heads/main'
+          test "$EXPECTED_RUN_ATTEMPT" = '1'
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          [[ "$EXPECTED_LAUNCH_PATH" =~ ^tasks/launch/AUTO-[A-Za-z0-9._-]+\.json$ ]]
+          [[ "$EXPECTED_LEDGER_PATH" =~ ^state/autostart_consumed/[A-Za-z0-9][A-Za-z0-9._-]{1,79}\.[0-9a-f]{64}\.json$ ]]
+          [[ "$EXPECTED_NONCE_RESERVATION_PATH" =~ ^state/autostart_nonces/[A-Za-z0-9._-]{16,128}\.json$ ]]
+          [[ "$EXPECTED_REQUEST_PATH" =~ ^tasks/requests/[A-Za-z0-9._/-]+\.json$ ]]
+          [[ "$EXPECTED_REQUEST_PATH" != *'//'* ]]
+          [[ "$EXPECTED_REQUEST_PATH" != *'/../'* ]]
+          [[ "$EXPECTED_TASK_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{1,79}$ ]]
+          [[ "$EXPECTED_REQUEST_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          test "$EXPECTED_LEDGER_PATH" != "$EXPECTED_NONCE_RESERVATION_PATH"
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          unset GH_TOKEN
+          git_with_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_HEADER}" \
+              git "$@"
+          }
+          COMMIT=''
+          LAST_OUTPUTS=''
+          TRUSTED_RUNTIME="$RUNNER_TEMP/uaart-autostart-source-runtime"
           for attempt in 1 2 3 4 5 6; do
-            git fetch origin main
-            if ! git rebase origin/main; then
-              git rebase --abort || true
-              exit 1
+            if ! git_with_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'; then
+              test "$attempt" -lt 6 || exit 1
+              sleep $((attempt * 3))
+              continue
             fi
-            if git push origin HEAD:main; then
-              exit 0
+            if test -n "$COMMIT" && \
+              git merge-base --is-ancestor "$COMMIT" refs/remotes/origin/main; then
+              test -n "$LAST_OUTPUTS"
+              cat "$LAST_OUTPUTS" >>"$GITHUB_OUTPUT"
+              unset AUTH_HEADER GH_TOKEN
+              break
+            fi
+            PARENT="$(git rev-parse refs/remotes/origin/main)"
+            git merge-base --is-ancestor "$SOURCE_COMMIT" "$PARENT"
+            if test ! -d "$TRUSTED_RUNTIME"; then
+              git worktree add --detach "$TRUSTED_RUNTIME" "$SOURCE_COMMIT"
+              test ! -L "$TRUSTED_RUNTIME/state/AUTOPILOT_RUNTIME_MANIFEST.json"
+              test -f "$TRUSTED_RUNTIME/state/AUTOPILOT_RUNTIME_MANIFEST.json"
+              test "$(wc -c <"$TRUSTED_RUNTIME/state/AUTOPILOT_RUNTIME_MANIFEST.json")" \
+                -le 1048576
+              SOURCE_RUNTIME_MANIFEST_SHA256="$(
+                sha256sum "$TRUSTED_RUNTIME/state/AUTOPILOT_RUNTIME_MANIFEST.json" | \
+                  cut -d' ' -f1
+              )"
+              test "$SOURCE_RUNTIME_MANIFEST_SHA256" = \
+                "$EXPECTED_RUNTIME_MANIFEST_SHA256"
+              SOURCE_RUNTIME="$TRUSTED_RUNTIME" python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          def reject_duplicate_keys(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('AUTOSTART_SOURCE_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+          root = pathlib.Path(os.environ['SOURCE_RUNTIME']).resolve(strict=True)
+          manifest_path = root / 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          data = manifest_path.read_bytes()
+          manifest = json.loads(data, object_pairs_hook=reject_duplicate_keys)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('AUTOSTART_SOURCE_RUNTIME_MANIFEST_KEYS')
+          if manifest['schema_version'] != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('AUTOSTART_SOURCE_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('AUTOSTART_SOURCE_RUNTIME_FILE_SET')
+          total = 0
+          for relative, expected in files.items():
+              if (
+                  not re.fullmatch(r'[A-Za-z0-9._/-]+', relative)
+                  or '..' in pathlib.PurePosixPath(relative).parts
+                  or not isinstance(expected, str)
+                  or not re.fullmatch(r'[0-9a-f]{64}', expected)
+              ):
+                  raise SystemExit('AUTOSTART_SOURCE_RUNTIME_ENTRY')
+              path = root / relative
+              if (
+                  path.is_symlink()
+                  or not path.is_file()
+                  or path.resolve() != path
+              ):
+                  raise SystemExit('AUTOSTART_SOURCE_RUNTIME_FILE_INVALID:' + relative)
+              payload = path.read_bytes()
+              total += len(payload)
+              if len(payload) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('AUTOSTART_SOURCE_RUNTIME_SIZE')
+              if hashlib.sha256(payload).hexdigest() != expected:
+                  raise SystemExit('AUTOSTART_SOURCE_RUNTIME_SHA_MISMATCH:' + relative)
+          print('UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED')
+          PY
+              python3 -I -W error -m py_compile \
+                "$TRUSTED_RUNTIME/automation/control_plane.py" \
+                "$TRUSTED_RUNTIME/automation/autostart_intake.py" \
+                "$TRUSTED_RUNTIME/automation/critical_adapter.py"
+            fi
+            REBUILD="$RUNNER_TEMP/uaart-autostart-rebuild-${attempt}"
+            INDEX="$RUNNER_TEMP/uaart-autostart-index-${attempt}"
+            RESULT="$RUNNER_TEMP/uaart-autostart-result-${attempt}.json"
+            ATTEMPT_OUTPUTS="$RUNNER_TEMP/uaart-autostart-outputs-${attempt}"
+            rm -f "$ATTEMPT_OUTPUTS"
+            git worktree add --detach "$REBUILD" "$PARENT"
+            cd "$REBUILD"
+            CURRENT_RUNTIME_MANIFEST_SHA256="$(
+              sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json | cut -d' ' -f1
+            )"
+            test "$CURRENT_RUNTIME_MANIFEST_SHA256" = \
+              "$EXPECTED_RUNTIME_MANIFEST_SHA256"
+            test "$BEFORE_SHA" != '0000000000000000000000000000000000000000'
+            git cat-file -e "$BEFORE_SHA^{commit}"
+            git merge-base --is-ancestor "$BEFORE_SHA" "$SOURCE_COMMIT"
+            test "$(git rev-list --parents -n 1 "$SOURCE_COMMIT")" = \
+              "$SOURCE_COMMIT $BEFORE_SHA"
+            mapfile -d '' -t changes < <(
+              git diff --name-only -z "$BEFORE_SHA" "$SOURCE_COMMIT"
+            )
+            mapfile -d '' -t additions < <(
+              git diff --name-only -z --diff-filter=A "$BEFORE_SHA" "$SOURCE_COMMIT"
+            )
+            test "${#changes[@]}" -eq 1
+            test "${#additions[@]}" -eq 1
+            test "${changes[0]}" = "${additions[0]}"
+            test "${additions[0]}" = "$EXPECTED_LAUNCH_PATH"
+            SOURCE_LAUNCH_ENTRY="$(
+              git ls-tree "$SOURCE_COMMIT" -- "$EXPECTED_LAUNCH_PATH"
+            )"
+            PARENT_LAUNCH_ENTRY="$(
+              git ls-tree "$PARENT" -- "$EXPECTED_LAUNCH_PATH"
+            )"
+            test "$SOURCE_LAUNCH_ENTRY" = "$PARENT_LAUNCH_ENTRY"
+            test "${SOURCE_LAUNCH_ENTRY%% *}" = '100644'
+            test -f "$EXPECTED_LAUNCH_PATH"
+            test ! -L "$EXPECTED_LAUNCH_PATH"
+            GITHUB_OUTPUT="$ATTEMPT_OUTPUTS" \
+              python3 -I "$TRUSTED_RUNTIME/automation/autostart_intake.py" \
+              "$EXPECTED_LAUNCH_PATH" \
+              --run-id "$RUN_ID" \
+              --source-commit "$SOURCE_COMMIT" \
+              --root "$REBUILD" >"$RESULT"
+            RESULT="$RESULT" ATTEMPT_OUTPUTS="$ATTEMPT_OUTPUTS" python3 -I - <<'PY'
+          import json, os, pathlib, re
+          result = json.loads(pathlib.Path(os.environ['RESULT']).read_text(encoding='utf-8'))
+          expected_keys = {
+              'ledger', 'ledger_path', 'mode', 'nonce_reservation',
+              'nonce_reservation_path', 'production_required', 'request_path',
+              'request_sha256', 'task_id',
+          }
+          if set(result) != expected_keys:
+              raise SystemExit('AUTOSTART_RESULT_SCHEMA')
+          expected = {
+              'ledger_path': os.environ['EXPECTED_LEDGER_PATH'],
+              'nonce_reservation_path': os.environ['EXPECTED_NONCE_RESERVATION_PATH'],
+              'request_path': os.environ['EXPECTED_REQUEST_PATH'],
+              'request_sha256': os.environ['EXPECTED_REQUEST_SHA256'],
+              'task_id': os.environ['EXPECTED_TASK_ID'],
+          }
+          for key, value in expected.items():
+              if result.get(key) != value:
+                  raise SystemExit('AUTOSTART_RESULT_BINDING:' + key)
+          if str(result.get('production_required')).lower() != os.environ['EXPECTED_PRODUCTION_REQUIRED']:
+              raise SystemExit('AUTOSTART_RESULT_BINDING:production_required')
+          if not re.fullmatch(r'[0-9a-f]{64}', result['request_sha256']):
+              raise SystemExit('AUTOSTART_RESULT_REQUEST_SHA')
+          ledger = result['ledger']
+          reservation = result['nonce_reservation']
+          if (
+              ledger.get('run_id') != os.environ['RUN_ID']
+              or ledger.get('source_commit') != os.environ['SOURCE_COMMIT']
+              or ledger.get('nonce_reservation_path') != result['nonce_reservation_path']
+              or reservation.get('run_id') != os.environ['RUN_ID']
+              or reservation.get('source_commit') != os.environ['SOURCE_COMMIT']
+          ):
+              raise SystemExit('AUTOSTART_RESULT_IDENTITY')
+          output_lines = pathlib.Path(os.environ['ATTEMPT_OUTPUTS']).read_text(
+              encoding='utf-8'
+          ).splitlines()
+          output_keys = {
+              'ledger_path', 'nonce_reservation_path', 'production_required',
+              'request_path', 'request_sha256', 'task_id',
+          }
+          if len(output_lines) != len(output_keys):
+              raise SystemExit('AUTOSTART_OUTPUT_COUNT')
+          outputs = {}
+          for line in output_lines:
+              if not re.fullmatch(r'[a-z_]+=[^\r\n]+', line):
+                  raise SystemExit('AUTOSTART_OUTPUT_FORMAT')
+              key, value = line.split('=', 1)
+              if key in outputs:
+                  raise SystemExit('AUTOSTART_OUTPUT_DUPLICATE')
+              outputs[key] = value
+          expected_outputs = {
+              'ledger_path': result['ledger_path'],
+              'nonce_reservation_path': result['nonce_reservation_path'],
+              'production_required': str(result['production_required']).lower(),
+              'request_path': result['request_path'],
+              'request_sha256': result['request_sha256'],
+              'task_id': result['task_id'],
+          }
+          if set(outputs) != output_keys or outputs != expected_outputs:
+              raise SystemExit('AUTOSTART_OUTPUT_BINDING')
+          PY
+            LEDGER_PATH="$EXPECTED_LEDGER_PATH"
+            NONCE_RESERVATION_PATH="$EXPECTED_NONCE_RESERVATION_PATH"
+            rm -f "$INDEX"
+            GIT_INDEX_FILE="$INDEX" git read-tree "$PARENT"
+            for path in "$LEDGER_PATH" "$NONCE_RESERVATION_PATH"; do
+              test -f "$path" && test ! -L "$path"
+              BLOB="$(git hash-object -w -- "$path")"
+              GIT_INDEX_FILE="$INDEX" git update-index --add \
+                --cacheinfo "100644,${BLOB},${path}"
+            done
+            TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
+            export GIT_AUTHOR_NAME='ua-art-global-autostart'
+            export GIT_AUTHOR_EMAIL='actions@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            COMMIT="$(printf '%s\n' \
+              "uaart autostart: consume ${EXPECTED_TASK_ID}" | \
+              git commit-tree "$TREE" -p "$PARENT")"
+            COMMIT="$COMMIT" PARENT="$PARENT" \
+              LEDGER_PATH="$LEDGER_PATH" \
+              NONCE_RESERVATION_PATH="$NONCE_RESERVATION_PATH" \
+              python3 -I - <<'PY'
+          import os, subprocess
+          expected = {
+              os.environ['LEDGER_PATH'],
+              os.environ['NONCE_RESERVATION_PATH'],
+          }
+          raw = subprocess.check_output([
+              'git', 'diff-tree', '--no-commit-id', '--name-only', '-r', '-z',
+              os.environ['PARENT'], os.environ['COMMIT'],
+          ])
+          changed = set(filter(None, raw.decode().split('\0')))
+          if changed != expected:
+              raise SystemExit('AUTOSTART_COMMIT_PATH_SCOPE')
+          PY
+            cd "$GITHUB_WORKSPACE"
+            LAST_OUTPUTS="$ATTEMPT_OUTPUTS"
+            if git_with_auth push origin "$COMMIT:refs/heads/main"; then
+              cat "$ATTEMPT_OUTPUTS" >>"$GITHUB_OUTPUT"
+              unset AUTH_HEADER GH_TOKEN
+              break
             fi
             test "$attempt" -lt 6 || exit 1
             sleep $((attempt * 3))
           done
-          exit 1
 
   execute:
-    needs: intake
+    needs: persist
+    if: github.ref == 'refs/heads/main' && github.run_attempt == 1 && needs.persist.result == 'success'
+    permissions:
+      contents: write
+      actions: read
     uses: ./.github/workflows/uaart_orchestrator.yml
     with:
-      request_path: ${{ needs.intake.outputs.request_path }}
-      expected_request_sha256: ${{ needs.intake.outputs.request_sha256 }}
-      autostart_ledger_path: ${{ needs.intake.outputs.ledger_path }}
+      request_path: ${{ needs.persist.outputs.request_path }}
+      expected_request_sha256: ${{ needs.persist.outputs.request_sha256 }}
+      autostart_ledger_path: ${{ needs.persist.outputs.ledger_path }}
       autostart_source_commit: ${{ github.sha }}
     secrets: inherit

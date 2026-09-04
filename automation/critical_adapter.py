@@ -49,8 +49,15 @@ def sha256_json(value: Any) -> str:
 
 
 def safe_repo_path(value: str) -> str:
-    path = pathlib.PurePosixPath(str(value))
-    if path.is_absolute() or not path.parts or ".." in path.parts:
+    text = str(value)
+    path = pathlib.PurePosixPath(text)
+    if (
+        path.is_absolute()
+        or not path.parts
+        or ".." in path.parts
+        or "//" in text
+        or not re.fullmatch(r"[A-Za-z0-9._/-]+", text)
+    ):
         raise CriticalAdapterError("UNSAFE_REPO_PATH:" + str(value))
     return path.as_posix()
 

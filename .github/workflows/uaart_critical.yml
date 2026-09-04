@@ -23,41 +23,158 @@ on:
         type: string
     outputs:
       status:
-        value: ${{ jobs.execute.outputs.status }}
+        value: ${{ jobs.result.outputs.status }}
       receipt_path:
-        value: ${{ jobs.execute.outputs.receipt_path }}
+        value: ${{ jobs.result.outputs.receipt_path }}
 
 permissions:
-  contents: write
-  actions: read
+  contents: read
 
 concurrency:
   group: ${{ inputs.production_required == 'true' && 'ua-art-production-writer' || format('uaart-resource-{0}', inputs.lock_key) }}
   cancel-in-progress: false
 
+env:
+  UAART_RUNTIME_PINNED_PATHS: >-
+    .github/workflows/uaart_autostart.yml
+    .github/workflows/uaart_orchestrator.yml
+    .github/workflows/uaart_fast.yml
+    .github/workflows/uaart_standard.yml
+    .github/workflows/uaart_critical.yml
+    .github/workflows/uaart_backup.yml
+    .github/workflows/uaart_maintenance.yml
+    .github/workflows/uaart_monitor.yml
+    .github/workflows/uaart_transaction_watchdog.yml
+    automation/autostart_intake.py
+    automation/control_plane.py
+    automation/critical_adapter.py
+    automation/execution_contract.py
+    automation/production_queue.py
+    automation/task_orchestrator.py
+    automation/task_ticket.py
+    automation/transaction_watchdog.py
+    state/schemas/task_request.schema.json
+
 jobs:
-  execute:
+  main_only:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    steps:
+      - name: Require the immutable main branch route
+        shell: bash
+        env:
+          EXPECTED_REF: ${{ github.ref }}
+        run: test "$EXPECTED_REF" = 'refs/heads/main'
+
+  validate:
+    needs: main_only
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
     outputs:
-      status: ${{ steps.final.outputs.status }}
+      task_id: ${{ steps.contract.outputs.task_id }}
+      dependency_sha256: ${{ steps.contract.outputs.dependency_sha256 }}
       receipt_path: ${{ steps.contract.outputs.receipt_path }}
+      backup_receipt_path: ${{ steps.contract.outputs.backup_receipt_path }}
+      rollback_receipt_path: ${{ steps.contract.outputs.rollback_receipt_path }}
+      critical_manifest_sha256: ${{ steps.contract.outputs.critical_manifest_sha256 }}
+      source_commit: ${{ steps.attestation.outputs.source_commit }}
+      runtime_manifest_sha256: ${{ steps.attestation.outputs.runtime_manifest_sha256 }}
+      workflow_blob_oid: ${{ steps.workflow.outputs.workflow_blob_oid }}
+      workflow_source_commit: ${{ steps.workflow.outputs.workflow_source_commit }}
+      validation_artifact_sha256: ${{ steps.attestation.outputs.validation_artifact_sha256 }}
     env:
       REQUEST_PATH: ${{ inputs.request_path }}
       REQUEST_SHA256: ${{ inputs.request_sha256 }}
       CLAIM_PATH: ${{ inputs.claim_path }}
       RUN_ID: ${{ inputs.run_id }}
+      PRODUCTION_REQUIRED: ${{ inputs.production_required }}
     steps:
-      - name: Checkout latest claimed branch state
+      - name: Checkout clean main without persisted credentials
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
-          ref: ${{ github.ref_name }}
+          ref: main
+          clean: true
+          persist-credentials: false
 
       - name: Set up Python 3.11
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
+
+      - name: Bind executing CRITICAL workflow to checked runtime
+        id: workflow
+        shell: bash
+        env:
+          WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+          WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "${WORKFLOW_SOURCE_COMMIT}^{commit}"
+          git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" HEAD
+          source_entry="$(git ls-tree "$WORKFLOW_SOURCE_COMMIT" -- "$WORKFLOW_PATH")"
+          head_entry="$(git ls-tree HEAD -- "$WORKFLOW_PATH")"
+          test "$(awk '{print $1}' <<<"$source_entry")" = 100644
+          test "$(awk '{print $1}' <<<"$head_entry")" = 100644
+          workflow_blob_oid="$(awk '{print $3}' <<<"$source_entry")"
+          test "$workflow_blob_oid" = "$(awk '{print $3}' <<<"$head_entry")"
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json")" = \
+            "$(git rev-parse HEAD:state/AUTOPILOT_RUNTIME_MANIFEST.json)"
+          python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('CRITICAL_VALIDATION_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          expected_paths = os.environ['UAART_RUNTIME_PINNED_PATHS'].split()
+          if len(expected_paths) != 18 or len(set(expected_paths)) != 18:
+              raise SystemExit('CRITICAL_VALIDATION_RUNTIME_EXPECTED_PATHS')
+          root = pathlib.Path.cwd().resolve()
+          manifest_path = root / 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          if manifest_path.is_symlink() or not manifest_path.is_file():
+              raise SystemExit('CRITICAL_VALIDATION_RUNTIME_MANIFEST_FILE')
+          manifest = json.loads(
+              manifest_path.read_bytes(), object_pairs_hook=strict_object
+          )
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('CRITICAL_VALIDATION_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('CRITICAL_VALIDATION_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != set(expected_paths):
+              raise SystemExit('CRITICAL_VALIDATION_RUNTIME_FILE_SET')
+          total = 0
+          for relative in expected_paths:
+              expected = files[relative]
+              pure = pathlib.PurePosixPath(relative)
+              if not re.fullmatch(r'[A-Za-z0-9._/-]+', relative) or pure.is_absolute() or '..' in pure.parts:
+                  raise SystemExit('CRITICAL_VALIDATION_RUNTIME_PATH')
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('CRITICAL_VALIDATION_RUNTIME_HASH')
+              target = root / pure
+              if target.is_symlink() or not target.is_file() or target.resolve() != target:
+                  raise SystemExit('CRITICAL_VALIDATION_RUNTIME_TARGET:' + relative)
+              payload = target.read_bytes()
+              total += len(payload)
+              if len(payload) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('CRITICAL_VALIDATION_RUNTIME_SIZE')
+              if hashlib.sha256(payload).hexdigest() != expected:
+                  raise SystemExit('CRITICAL_VALIDATION_RUNTIME_SHA:' + relative)
+          print('UAART_CRITICAL_VALIDATION_RUNTIME_CLOSURE_VALIDATED')
+          PY
+          echo "workflow_blob_oid=$workflow_blob_oid" >>"$GITHUB_OUTPUT"
+          echo "workflow_source_commit=$WORKFLOW_SOURCE_COMMIT" >>"$GITHUB_OUTPUT"
 
       - name: Validate immutable CRITICAL execution contract
         id: contract
@@ -65,74 +182,373 @@ jobs:
         run: |
           set -euo pipefail
           test -f "$CLAIM_PATH"
-          python3 -W error -m py_compile automation/control_plane.py automation/task_ticket.py
-          python3 automation/control_plane.py verify-mode
-          python3 automation/control_plane.py verify-request "$REQUEST_PATH" \
+          python3 -I -W error -m py_compile \
+            automation/control_plane.py automation/execution_contract.py \
+            automation/task_ticket.py automation/transaction_watchdog.py
+          python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
             --sha256 "$REQUEST_SHA256"
-          python3 automation/execution_contract.py validate "$REQUEST_PATH" \
+          python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
             --expected-class CRITICAL >/tmp/uaart-critical-contract.json
-          python3 automation/execution_contract.py outputs "$REQUEST_PATH" \
+          python3 -I automation/execution_contract.py outputs "$REQUEST_PATH" \
             --expected-class CRITICAL
+          contract_production="$(python3 -I -c 'import json; print(str(json.load(open("/tmp/uaart-critical-contract.json"))["production_required"]).lower())')"
+          contract_task_id="$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-critical-contract.json"))["task_id"])')"
+          test "$contract_production" = "$PRODUCTION_REQUIRED"
+          python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$contract_task_id" \
+            --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+            --claim-path "$CLAIM_PATH"
 
-      - name: Verify exact claim identity and start heartbeat
+      - name: Compile and test package without repository write permission
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/control_plane.py verify-identity "$REQUEST_PATH" \
-            --task-id "${{ steps.contract.outputs.task_id }}" \
-            --sha256 "$REQUEST_SHA256" \
-            --run-id "$RUN_ID"
-          python3 automation/control_plane.py planning "$REQUEST_PATH" --run-id "$RUN_ID"
-          python3 automation/control_plane.py heartbeat "$REQUEST_PATH" \
+          python3 -I automation/execution_contract.py compile "$REQUEST_PATH" \
+            --expected-class CRITICAL
+          python3 -I automation/execution_contract.py test "$REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Create data-only validation attestation
+        id: attestation
+        shell: bash
+        env:
+          DEPENDENCY_SHA256: ${{ steps.contract.outputs.dependency_sha256 }}
+          TASK_ID: ${{ steps.contract.outputs.task_id }}
+          WORKFLOW_BLOB_OID: ${{ steps.workflow.outputs.workflow_blob_oid }}
+          WORKFLOW_SOURCE_COMMIT: ${{ steps.workflow.outputs.workflow_source_commit }}
+        run: |
+          set -euo pipefail
+          source_commit="$(git rev-parse HEAD)"
+          echo "source_commit=$source_commit" >>"$GITHUB_OUTPUT"
+          install -d -m 700 /tmp/uaart-critical-validation
+          python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          value = {
+              'compiled': 'PASS',
+              'dependency_sha256': os.environ['DEPENDENCY_SHA256'],
+              'production_required': os.environ['PRODUCTION_REQUIRED'] == 'true',
+              'request_path': os.environ['REQUEST_PATH'],
+              'request_sha256': os.environ['REQUEST_SHA256'],
+              'run_id': os.environ['RUN_ID'],
+              'runtime_manifest_sha256': hashlib.sha256(
+                  pathlib.Path('state/AUTOPILOT_RUNTIME_MANIFEST.json').read_bytes()
+              ).hexdigest(),
+              'schema_version': 'UA-ART-CRITICAL-VALIDATION-1',
+              'source_commit': subprocess.check_output(
+                  ['git', 'rev-parse', 'HEAD'], text=True
+              ).strip(),
+              'status': 'PASS',
+              'task_id': os.environ['TASK_ID'],
+              'tests': 'PASS',
+              'workflow_run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'workflow_run_id': os.environ['GITHUB_RUN_ID'],
+              'workflow_blob_oid': os.environ['WORKFLOW_BLOB_OID'],
+              'workflow_source_commit': os.environ['WORKFLOW_SOURCE_COMMIT'],
+          }
+          pathlib.Path('/tmp/uaart-critical-validation/validation.json').write_text(
+              json.dumps(value, ensure_ascii=False, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          echo "runtime_manifest_sha256=$(sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json | cut -d' ' -f1)" >>"$GITHUB_OUTPUT"
+          echo "validation_artifact_sha256=$(sha256sum /tmp/uaart-critical-validation/validation.json | cut -d' ' -f1)" >>"$GITHUB_OUTPUT"
+
+      - name: Upload data-only validation attestation
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: uaart-critical-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/uaart-critical-validation/validation.json
+          if-no-files-found: error
+          retention-days: 2
+
+  prepare:
+    needs: validate
+    if: >-
+      github.ref == 'refs/heads/main' && github.run_attempt == 1 &&
+      inputs.production_required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      prepared: ${{ steps.push.outputs.prepared }}
+      transaction_id: ${{ steps.identity.outputs.transaction_id }}
+      transaction_path: ${{ steps.prepare.outputs.transaction_path }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      TASK_ID: ${{ needs.validate.outputs.task_id }}
+      RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
+      WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
+    steps:
+      - name: Checkout clean authoritative main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Download validation attestation outside checkout
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: uaart-critical-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/uaart-critical-validation
+
+      - name: Strictly validate data-only test attestation
+        shell: bash
+        env:
+          DEPENDENCY_SHA256: ${{ needs.validate.outputs.dependency_sha256 }}
+          RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
+          SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+          VALIDATION_ARTIFACT_SHA256: ${{ needs.validate.outputs.validation_artifact_sha256 }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import re
+          import subprocess
+
+          folder = pathlib.Path(os.environ['RUNNER_TEMP']) / 'uaart-critical-validation'
+          entries = list(folder.iterdir())
+          if [item.name for item in entries] != ['validation.json']:
+              raise SystemExit('VALIDATION_ARTIFACT_INVENTORY')
+          path = entries[0]
+          if path.is_symlink() or not path.is_file() or path.stat().st_size > 8192:
+              raise SystemExit('VALIDATION_ARTIFACT_FILE')
+          payload = path.read_bytes()
+          if hashlib.sha256(payload).hexdigest() != os.environ['VALIDATION_ARTIFACT_SHA256']:
+              raise SystemExit('VALIDATION_ARTIFACT_SHA256')
+          value = json.loads(payload.decode('utf-8'))
+          keys = {
+              'compiled', 'dependency_sha256', 'production_required',
+              'request_path', 'request_sha256', 'run_id',
+              'runtime_manifest_sha256', 'schema_version', 'source_commit',
+              'status', 'task_id', 'tests', 'workflow_run_attempt',
+              'workflow_run_id', 'workflow_blob_oid', 'workflow_source_commit',
+          }
+          expected = {
+              'compiled': 'PASS',
+              'dependency_sha256': os.environ['DEPENDENCY_SHA256'],
+              'production_required': True,
+              'request_path': os.environ['REQUEST_PATH'],
+              'request_sha256': os.environ['REQUEST_SHA256'],
+              'run_id': os.environ['RUN_ID'],
+              'runtime_manifest_sha256': os.environ['RUNTIME_MANIFEST_SHA256'],
+              'schema_version': 'UA-ART-CRITICAL-VALIDATION-1',
+              'source_commit': os.environ['SOURCE_COMMIT'],
+              'status': 'PASS',
+              'task_id': os.environ['TASK_ID'],
+              'tests': 'PASS',
+              'workflow_run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'workflow_run_id': os.environ['GITHUB_RUN_ID'],
+              'workflow_blob_oid': os.environ['WORKFLOW_BLOB_OID'],
+              'workflow_source_commit': os.environ['WORKFLOW_SOURCE_COMMIT'],
+          }
+          if not isinstance(value, dict) or set(value) != keys or value != expected:
+              raise SystemExit('VALIDATION_ARTIFACT_BINDING')
+          if hashlib.sha256(
+              pathlib.Path('state/AUTOPILOT_RUNTIME_MANIFEST.json').read_bytes()
+          ).hexdigest() != os.environ['RUNTIME_MANIFEST_SHA256']:
+              raise SystemExit('VALIDATION_RUNTIME_MANIFEST_DRIFT')
+          if not re.fullmatch(r'[0-9a-f]{40}', value['source_commit']):
+              raise SystemExit('VALIDATION_SOURCE_COMMIT')
+          subprocess.run(
+              ['git', 'merge-base', '--is-ancestor', value['source_commit'], 'HEAD'],
+              check=True,
+          )
+          if not re.fullmatch(r'[0-9a-f]{40}', value['workflow_source_commit']):
+              raise SystemExit('VALIDATION_WORKFLOW_SOURCE_COMMIT')
+          subprocess.run(
+              ['git', 'merge-base', '--is-ancestor', value['workflow_source_commit'], 'HEAD'],
+              check=True,
+          )
+          source_blob = subprocess.check_output([
+              'git', 'rev-parse',
+              value['workflow_source_commit'] + ':' + os.environ['WORKFLOW_PATH'],
+          ], text=True).strip()
+          head_blob = subprocess.check_output([
+              'git', 'rev-parse', 'HEAD:' + os.environ['WORKFLOW_PATH'],
+          ], text=True).strip()
+          if source_blob != value['workflow_blob_oid'] or head_blob != source_blob:
+              raise SystemExit('VALIDATION_WORKFLOW_BLOB_BINDING')
+          print('UAART_DATA_ONLY_ARTIFACT_VALIDATED')
+          PY
+
+      - name: Wait in strict Production queue and refresh main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('CRITICAL_QUEUE_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+          root = pathlib.Path.cwd().resolve()
+          manifest_path = root / 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          if manifest_path.is_symlink() or not manifest_path.is_file():
+              raise SystemExit('CRITICAL_QUEUE_RUNTIME_MANIFEST_FILE')
+          payload = manifest_path.read_bytes()
+          if hashlib.sha256(payload).hexdigest() != os.environ['RUNTIME_MANIFEST_SHA256']:
+              raise SystemExit('CRITICAL_QUEUE_RUNTIME_MANIFEST_DRIFT')
+          manifest = json.loads(payload, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('CRITICAL_QUEUE_RUNTIME_MANIFEST_KEYS')
+          if manifest['schema_version'] != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('CRITICAL_QUEUE_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('CRITICAL_QUEUE_RUNTIME_FILE_SET')
+          total = 0
+          for relative, expected in files.items():
+              pure = pathlib.PurePosixPath(relative)
+              if not re.fullmatch(r'[A-Za-z0-9._/-]+', relative) or pure.is_absolute() or '..' in pure.parts:
+                  raise SystemExit('CRITICAL_QUEUE_RUNTIME_PATH')
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('CRITICAL_QUEUE_RUNTIME_HASH')
+              target = root / pure
+              if target.is_symlink() or not target.is_file() or target.resolve() != target:
+                  raise SystemExit('CRITICAL_QUEUE_RUNTIME_TARGET:' + relative)
+              data = target.read_bytes()
+              total += len(data)
+              if len(data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('CRITICAL_QUEUE_RUNTIME_SIZE')
+              if hashlib.sha256(data).hexdigest() != expected:
+                  raise SystemExit('CRITICAL_QUEUE_RUNTIME_FILE_SHA:' + relative)
+          print('UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED')
+          PY
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" HEAD
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          test "$(git show "$WORKFLOW_SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json" | sha256sum | cut -d' ' -f1)" = \
+            "$RUNTIME_MANIFEST_SHA256"
+          read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+          test "${#runtime_paths[@]}" -eq 18
+          test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+          git diff --quiet "$WORKFLOW_SOURCE_COMMIT" HEAD -- "${runtime_paths[@]}"
+          python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "$REQUEST_SHA256"
+          python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+            --claim-path "$CLAIM_PATH"
+          ticket="$(python3 -I automation/task_ticket.py "$REQUEST_PATH")"
+          python3 -I automation/production_queue.py self-test
+          python3 -I automation/production_queue.py wait \
+            --task "$ticket" --drain-before '2026-09-04T13:51:01Z' \
+            --timeout-seconds 1800 --stable-polls 2
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')"
+          unset GH_TOKEN
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${auth}" \
+            fetch origin main
+          unset auth GH_TOKEN
+          git reset --hard origin/main
+          git clean -fdx
+
+      - name: Rebuild trusted gates on refreshed main
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          test "$(sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json | cut -d' ' -f1)" = \
+            "$RUNTIME_MANIFEST_SHA256"
+          read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+          test "${#runtime_paths[@]}" -eq 18
+          test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+          git diff --quiet "$WORKFLOW_SOURCE_COMMIT" HEAD -- "${runtime_paths[@]}"
+          python3 -I -W error -m py_compile \
+            automation/control_plane.py automation/critical_adapter.py \
+            automation/execution_contract.py automation/transaction_watchdog.py
+          python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "$REQUEST_SHA256"
+          python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+            --claim-path "$CLAIM_PATH"
+          python3 -I automation/transaction_watchdog.py assert-clear
+          python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+            --expected-class CRITICAL >/tmp/uaart-critical-contract.json
+          python3 -I automation/control_plane.py planning "$REQUEST_PATH" --run-id "$RUN_ID"
+          python3 -I automation/control_plane.py heartbeat "$REQUEST_PATH" \
             --run-id "$RUN_ID" --status RUNNING
-
-      - name: Enforce target-aware storage preflight
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/control_plane.py storage "$REQUEST_PATH" \
+          python3 -I automation/control_plane.py storage "$REQUEST_PATH" \
             --run-id "$RUN_ID" --enforce
+          python3 -I automation/control_plane.py compiled "$REQUEST_PATH" --run-id "$RUN_ID"
+          echo "transaction_id=tx-${GITHUB_RUN_ID}-${REQUEST_SHA256:0:16}" >>"$GITHUB_OUTPUT"
 
-      - name: Compile and test trusted CRITICAL package
+      - name: Bind Gate A, Gate B, and pre-health
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/execution_contract.py compile "$REQUEST_PATH" \
-            --expected-class CRITICAL
-          python3 automation/execution_contract.py test "$REQUEST_PATH" \
-            --expected-class CRITICAL
-          python3 automation/control_plane.py compiled "$REQUEST_PATH" --run-id "$RUN_ID"
-
-      - name: Require isolated non-production CRITICAL gate
-        if: inputs.production_required != 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/control_plane.py critical-nonprod "$REQUEST_PATH" \
-            --run-id "$RUN_ID" >/tmp/uaart-critical-nonprod.json
-
-      - name: Materialize strict production CRITICAL gate request
-        if: inputs.production_required == 'true'
-        id: critical
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
+          python3 -I - <<'PY'
           import json
           import os
           from pathlib import Path
-
-          source = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
-          critical = source.get('critical')
-          if not isinstance(critical, dict):
-              raise SystemExit('CRITICAL_GATE_OBJECT_REQUIRED')
+          request = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
+          critical = request['critical']
           flat = {
-              'task_id': source['task_id'],
-              'title': source['title'],
-              'description': source.get('description', ''),
-              'changed_paths': source.get('changed_paths', []),
+              'task_id': request['task_id'], 'title': request['title'],
+              'description': request.get('description', ''),
+              'changed_paths': request.get('changed_paths', []),
               'production_required': True,
-              'requested_min_class': source.get('requested_min_class'),
+              'requested_min_class': request.get('requested_min_class'),
               'owner_approval_path': critical['owner_approval_path'],
               'owner_approval_sha256': critical['owner_approval_sha256'],
               'manifest_path': critical['manifest_path'],
@@ -141,416 +557,1819 @@ jobs:
               'allow_crm_vehicle_data': critical.get('allow_crm_vehicle_data', False),
           }
           Path('/tmp/uaart-critical-request.json').write_text(
-              json.dumps(flat, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
-              encoding='utf-8',
+              json.dumps(flat, sort_keys=True) + '\n', encoding='utf-8'
           )
-          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as handle:
-              handle.write('owner_path=%s\n' % critical['owner_approval_path'])
-              handle.write('manifest_path=%s\n' % critical['manifest_path'])
-              handle.write('gate_a_path=%s\n' % critical['gate_a_path'])
+          Path('/tmp/uaart-critical-paths.json').write_text(json.dumps({
+              'owner': critical['owner_approval_path'],
+              'manifest': critical['manifest_path'],
+              'gate_a': critical['gate_a_path'],
+          }, sort_keys=True) + '\n', encoding='utf-8')
           PY
+          owner="$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-critical-paths.json"))["owner"])')"
+          manifest="$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-critical-paths.json"))["manifest"])')"
+          gate_a="$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-critical-paths.json"))["gate_a"])')"
+          python3 -I automation/critical_adapter.py preflight \
+            /tmp/uaart-critical-request.json "$owner" "$manifest" \
+            >/tmp/uaart-critical-preflight.json
+          python3 -I automation/critical_adapter.py gate-b \
+            /tmp/uaart-critical-request.json "$owner" "$manifest" "$gate_a" \
+            >/tmp/uaart-critical-gate-b.json
+          python3 -I automation/control_plane.py critical-production "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --gate-b-evidence /tmp/uaart-critical-gate-b.json
+          python3 -I automation/control_plane.py health "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --phase pre
 
-      - name: Require Gate A and explicit Gate B for production
-        if: inputs.production_required == 'true'
+      - name: Create PREPARING before any Production credential
+        id: prepare
         shell: bash
+        env:
+          TRANSACTION_ID: ${{ steps.identity.outputs.transaction_id }}
         run: |
           set -euo pipefail
-          python3 automation/critical_adapter.py preflight \
-            /tmp/uaart-critical-request.json \
-            "${{ steps.critical.outputs.owner_path }}" \
-            "${{ steps.critical.outputs.manifest_path }}" \
-            >/tmp/uaart-critical-preflight.json
-          python3 automation/critical_adapter.py gate-b \
-            /tmp/uaart-critical-request.json \
-            "${{ steps.critical.outputs.owner_path }}" \
-            "${{ steps.critical.outputs.manifest_path }}" \
-            "${{ steps.critical.outputs.gate_a_path }}" \
-            >/tmp/uaart-critical-gate-b.json
-          python3 automation/control_plane.py critical-production "$REQUEST_PATH" \
-            --run-id "$RUN_ID" \
-            --gate-b-evidence /tmp/uaart-critical-gate-b.json
+          python3 -I automation/control_plane.py transaction-prepare "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --transaction-id "$TRANSACTION_ID"
 
-      - name: Wait in strict production queue
-        if: inputs.production_required == 'true'
+      - name: Commit and durably push PREPARING
+        id: push
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
-          CURRENT_RUN_ID: ${{ github.run_id }}
-        shell: bash
+          TRANSACTION_PATH: ${{ steps.prepare.outputs.transaction_path }}
+          TRANSACTION_ID: ${{ steps.identity.outputs.transaction_id }}
         run: |
           set -euo pipefail
-          TICKET="$(python3 automation/task_ticket.py "$REQUEST_PATH")"
-          python3 automation/production_queue.py self-test
-          python3 automation/production_queue.py wait \
-            --task "$TICKET" \
-            --drain-before '2026-09-04T13:51:01Z' \
-            --timeout-seconds 1800 --stable-polls 2
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')"
+          unset GH_TOKEN
+          git_auth() {
+            GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${auth}" git "$@"
+          }
+          last_commit=''
+          for attempt in 1 2 3 4 5 6; do
+            git_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'
+            parent="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$last_commit" && git merge-base --is-ancestor "$last_commit" "$parent"; then
+              mapfile -d '' accepted_paths < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$last_commit")
+              test "${#accepted_paths[@]}" -gt 0
+              git diff --quiet "$last_commit" "$parent" -- "${accepted_paths[@]}" || exit 1
+              echo 'prepared=true' >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            test "$(git rev-parse "$parent:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+            git show "$parent:state/AUTOPILOT_RUNTIME_MANIFEST.json" \
+              >"$RUNNER_TEMP/uaart-critical-prepare-runtime-${attempt}.json"
+            test "$(sha256sum "$RUNNER_TEMP/uaart-critical-prepare-runtime-${attempt}.json" | cut -d' ' -f1)" = \
+              "$RUNTIME_MANIFEST_SHA256"
+            read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+            test "${#runtime_paths[@]}" -eq 18
+            test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+            git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$parent" -- "${runtime_paths[@]}"
+            rebuild="$RUNNER_TEMP/uaart-critical-prepare-${attempt}"
+            index="$RUNNER_TEMP/uaart-critical-prepare-index-${attempt}"
+            git worktree add --detach "$rebuild" "$parent"
+            cd "$rebuild"
+            python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+            python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+              --sha256 "$REQUEST_SHA256"
+            python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+              --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+              --claim-path "$CLAIM_PATH"
+            python3 -I automation/transaction_watchdog.py assert-clear
+            python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+              --expected-class CRITICAL >/dev/null
+            python3 -I automation/control_plane.py planning "$REQUEST_PATH" --run-id "$RUN_ID"
+            python3 -I automation/control_plane.py heartbeat "$REQUEST_PATH" \
+              --run-id "$RUN_ID" --status RUNNING
+            python3 -I automation/control_plane.py storage "$REQUEST_PATH" \
+              --run-id "$RUN_ID" --enforce
+            python3 -I automation/control_plane.py compiled "$REQUEST_PATH" --run-id "$RUN_ID"
+            owner="$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-critical-paths.json"))["owner"])')"
+            manifest="$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-critical-paths.json"))["manifest"])')"
+            gate_a="$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-critical-paths.json"))["gate_a"])')"
+            python3 -I automation/critical_adapter.py preflight \
+              /tmp/uaart-critical-request.json "$owner" "$manifest" >/dev/null
+            python3 -I automation/critical_adapter.py gate-b \
+              /tmp/uaart-critical-request.json "$owner" "$manifest" "$gate_a" \
+              >/tmp/uaart-critical-gate-b-rebuild.json
+            python3 -I automation/control_plane.py critical-production "$REQUEST_PATH" \
+              --run-id "$RUN_ID" \
+              --gate-b-evidence /tmp/uaart-critical-gate-b-rebuild.json
+            python3 -I automation/control_plane.py health "$REQUEST_PATH" \
+              --run-id "$RUN_ID" --phase pre
+            python3 -I automation/control_plane.py transaction-prepare "$REQUEST_PATH" \
+              --run-id "$RUN_ID" --transaction-id "$TRANSACTION_ID"
+            rm -f "$index"
+            GIT_INDEX_FILE="$index" git read-tree "$parent"
+            for path in "$CLAIM_PATH" "$TRANSACTION_PATH"; do
+              test -f "$path" && test ! -L "$path"
+              blob="$(git hash-object -w -- "$path")"
+              GIT_INDEX_FILE="$index" git update-index --add \
+                --cacheinfo "100644,${blob},${path}"
+            done
+            tree="$(GIT_INDEX_FILE="$index" git write-tree)"
+            export GIT_AUTHOR_NAME=ua-art-production-transaction
+            export GIT_AUTHOR_EMAIL=actions@users.noreply.github.com
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            commit="$(printf '%s\n' "uaart production: prepare transaction $TASK_ID" | \
+              git commit-tree "$tree" -p "$parent")"
+            COMMIT="$commit"
+            mapfile -d '' changed < <(git diff-tree --no-commit-id --name-only -r -z "$parent" "$commit")
+            test "${#changed[@]}" -eq 2
+            printf '%s\n' "${changed[@]}" | sort >"$RUNNER_TEMP/prepare-changed"
+            printf '%s\n' "$CLAIM_PATH" "$TRANSACTION_PATH" | sort >"$RUNNER_TEMP/prepare-expected"
+            cmp "$RUNNER_TEMP/prepare-changed" "$RUNNER_TEMP/prepare-expected"
+            cd "$GITHUB_WORKSPACE"
+            last_commit="$commit"
+            if git_auth push origin "$COMMIT:refs/heads/main"; then
+              echo 'prepared=true' >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
 
-      - name: Revalidate immutable authorization after production queue
-        if: inputs.production_required == 'true'
+  backup:
+    needs: [validate, prepare]
+    if: >-
+      github.ref == 'refs/heads/main' && github.run_attempt == 1 &&
+      inputs.production_required == 'true' &&
+      needs.prepare.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    environment:
+      name: production
+    outputs:
+      backup_manifest_sha256: ${{ steps.receipt.outputs.backup_manifest_sha256 }}
+      backup_receipt_sha256: ${{ steps.receipt.outputs.backup_receipt_sha256 }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      TASK_ID: ${{ needs.validate.outputs.task_id }}
+      TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+      TRANSACTION_PATH: ${{ needs.prepare.outputs.transaction_path }}
+      BACKUP_RECEIPT_PATH: ${{ needs.validate.outputs.backup_receipt_path }}
+      DEPENDENCY_SHA256: ${{ needs.validate.outputs.dependency_sha256 }}
+      RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
+      SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+      WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
+    steps:
+      - name: Checkout clean authoritative PREPARING state
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Validate exact remote PREPARING transaction
+        id: preparing
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin "$GITHUB_REF_NAME"
-          python3 - <<'PY'
+          read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+          test "${#runtime_paths[@]}" -eq 18
+          test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+          git diff --quiet "$WORKFLOW_SOURCE_COMMIT" HEAD -- "${runtime_paths[@]}"
+          python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "$REQUEST_SHA256"
+          python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+            --claim-path "$CLAIM_PATH"
+          python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+            --expected-class CRITICAL >"$RUNNER_TEMP/uaart-backup-contract.json"
+          test "$(python3 -I -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/uaart-backup-contract.json"))["dependency_sha256"])')" = \
+            "$DEPENDENCY_SHA256"
+          test "$(sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json | cut -d' ' -f1)" = \
+            "$RUNTIME_MANIFEST_SHA256"
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git merge-base --is-ancestor "$SOURCE_COMMIT" HEAD
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          package_root="$(python3 -I -c 'import json,os,pathlib; print(pathlib.PurePosixPath(json.load(open(os.environ["RUNNER_TEMP"]+"/uaart-backup-contract.json"))["controller_path"]).parent.as_posix())')"
+          test -n "$package_root" && test "$package_root" != '.'
+          git diff --quiet "$SOURCE_COMMIT" HEAD -- "$package_root"
+          python3 -I automation/transaction_watchdog.py discover >/tmp/uaart-pending.json
+          python3 -I - <<'PY'
+          import json, os
+          value = json.load(open('/tmp/uaart-pending.json', encoding='utf-8'))
+          if not (
+              value.get('pending_count') == 1
+              and value.get('transaction_status') == 'PREPARING'
+              and value.get('transaction_id') == os.environ['TRANSACTION_ID']
+              and value.get('transaction_path') == os.environ['TRANSACTION_PATH']
+              and value.get('request_path') == os.environ['REQUEST_PATH']
+              and value.get('request_sha256') == os.environ['REQUEST_SHA256']
+              and str(value.get('run_id')) == os.environ['RUN_ID']
+              and value.get('task_id') == os.environ['TASK_ID']
+          ):
+              raise SystemExit('REMOTE_PREPARING_TRANSACTION_MISMATCH')
+          PY
+          echo 'validated=true' >>"$GITHUB_OUTPUT"
+
+      - name: Execute exact Production backup
+        if: >-
+          github.run_attempt == 1 && inputs.production_required == 'true' &&
+          steps.preparing.outputs.validated == 'true'
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          UAART_REQUEST_PATH: ${{ inputs.request_path }}
+          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_TASK_CLASS: CRITICAL
+          UAART_TASK_ID: ${{ needs.validate.outputs.task_id }}
+          UAART_TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+          UAART_MANIFEST_SHA256: ${{ needs.validate.outputs.critical_manifest_sha256 }}
+          UAART_BACKUP_RECEIPT_PATH: ${{ needs.validate.outputs.backup_receipt_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          python3 -I automation/execution_contract.py backup "$REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Validate and package only backup receipt
+        id: receipt
+        shell: bash
+        env:
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+        run: |
+          set -euo pipefail
+          python3 -I automation/execution_contract.py backup-receipt "$REQUEST_PATH" \
+            --expected-class CRITICAL >/tmp/uaart-backup-validation.json
+          install -d -m 700 /tmp/uaart-critical-backup
+          install -m 600 "$BACKUP_RECEIPT_PATH" /tmp/uaart-critical-backup/backup.json
+          echo "backup_manifest_sha256=$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-backup-validation.json"))["backup_manifest_sha256"])')" >>"$GITHUB_OUTPUT"
+          echo "backup_receipt_sha256=$(sha256sum /tmp/uaart-critical-backup/backup.json | cut -d' ' -f1)" >>"$GITHUB_OUTPUT"
+
+      - name: Upload data-only backup receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: uaart-critical-backup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/uaart-critical-backup/backup.json
+          if-no-files-found: error
+          retention-days: 2
+
+  open:
+    needs: [validate, prepare, backup]
+    if: >-
+      github.ref == 'refs/heads/main' && github.run_attempt == 1 &&
+      inputs.production_required == 'true' &&
+      needs.backup.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      opened: ${{ steps.push.outputs.opened }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      TASK_ID: ${{ needs.validate.outputs.task_id }}
+      TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+      TRANSACTION_PATH: ${{ needs.prepare.outputs.transaction_path }}
+      BACKUP_RECEIPT_PATH: ${{ needs.validate.outputs.backup_receipt_path }}
+      BACKUP_MANIFEST_SHA256: ${{ needs.backup.outputs.backup_manifest_sha256 }}
+      BACKUP_RECEIPT_SHA256: ${{ needs.backup.outputs.backup_receipt_sha256 }}
+      RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
+      WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
+    steps:
+      - name: Checkout clean authoritative PREPARING state
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Download backup receipt outside checkout
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: uaart-critical-backup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/uaart-critical-backup
+
+      - name: Strictly validate and materialize data-only backup receipt
+        shell: bash
+        env:
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          test "$(sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json | cut -d' ' -f1)" = \
+            "$RUNTIME_MANIFEST_SHA256"
+          read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+          test "${#runtime_paths[@]}" -eq 18
+          test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+          git diff --quiet "$WORKFLOW_SOURCE_COMMIT" HEAD -- "${runtime_paths[@]}"
+          python3 -I automation/transaction_watchdog.py discover >/tmp/uaart-pending.json
+          python3 -I - <<'PY'
           import hashlib
           import json
           import os
           import pathlib
-          import subprocess
 
-          ref = 'origin/' + os.environ['GITHUB_REF_NAME']
-          request_path = pathlib.PurePosixPath(os.environ['REQUEST_PATH'])
-          if request_path.is_absolute() or '..' in request_path.parts:
-              raise SystemExit('REQUEST_PATH_UNSAFE')
-          request = json.loads(pathlib.Path(request_path).read_text(encoding='utf-8'))
-          claim = json.loads(pathlib.Path(os.environ['CLAIM_PATH']).read_text(encoding='utf-8'))
-          critical = request['critical']
-          execution = request['execution']
-          paths = {
-              request_path.as_posix(),
-              str(critical['owner_approval_path']),
-              str(critical['manifest_path']),
-              str(critical['gate_a_path']),
-              str(execution['controller_path']),
-              *map(str, execution['test_paths']),
-              str(request['storage_probe']['evidence_path']),
-              str(execution['backup_controller_path']),
-              str(execution['rollback_controller_path']),
+          pending = json.load(open('/tmp/uaart-pending.json', encoding='utf-8'))
+          if not (
+              pending.get('transaction_status') == 'PREPARING'
+              and pending.get('transaction_id') == os.environ['TRANSACTION_ID']
+              and pending.get('transaction_path') == os.environ['TRANSACTION_PATH']
+          ):
+              raise SystemExit('REMOTE_PREPARING_TRANSACTION_MISMATCH')
+          folder = pathlib.Path(os.environ['RUNNER_TEMP']) / 'uaart-critical-backup'
+          entries = list(folder.iterdir())
+          if [item.name for item in entries] != ['backup.json']:
+              raise SystemExit('BACKUP_ARTIFACT_INVENTORY')
+          source = entries[0]
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 1048576:
+              raise SystemExit('BACKUP_ARTIFACT_FILE')
+          payload = source.read_bytes()
+          if hashlib.sha256(payload).hexdigest() != os.environ['BACKUP_RECEIPT_SHA256']:
+              raise SystemExit('BACKUP_ARTIFACT_SHA256')
+          value = json.loads(payload.decode('utf-8'))
+          if not isinstance(value, dict):
+              raise SystemExit('BACKUP_ARTIFACT_JSON')
+          rel = pathlib.PurePosixPath(os.environ['BACKUP_RECEIPT_PATH'])
+          if rel.is_absolute() or '..' in rel.parts:
+              raise SystemExit('BACKUP_TARGET_PATH')
+          target = pathlib.Path(rel)
+          if target.exists() or target.is_symlink():
+              raise SystemExit('BACKUP_TARGET_PREEXISTING')
+          if any(parent.is_symlink() for parent in target.parents):
+              raise SystemExit('BACKUP_TARGET_SYMLINK')
+          target.parent.mkdir(parents=True, exist_ok=True)
+          target.write_bytes(payload)
+          PY
+          python3 -I automation/execution_contract.py backup-receipt "$REQUEST_PATH" \
+            --expected-class CRITICAL >/tmp/uaart-backup-revalidated.json
+          test "$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-backup-revalidated.json"))["backup_manifest_sha256"])')" = \
+            "$BACKUP_MANIFEST_SHA256"
+          echo 'UAART_DATA_ONLY_ARTIFACT_VALIDATED'
+
+      - name: Commit and durably push OPEN
+        id: push
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')"
+          unset GH_TOKEN
+          git_auth() {
+            GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${auth}" git "$@"
           }
-          if claim.get('execution_mode') == 'AUTOMATIC':
-              paths.update({
-                  'state/EXECUTION_MODE.json',
-                  'state/MANUAL_MODE.md',
-                  'state/receipts/TASK107-R2.json',
-                  'tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json',
-                  str(claim['autostart_ledger_path']),
+          last_commit=''
+          for attempt in 1 2 3 4 5 6; do
+            git_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'
+            parent="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$last_commit" && git merge-base --is-ancestor "$last_commit" "$parent"; then
+              mapfile -d '' accepted_paths < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$last_commit")
+              test "${#accepted_paths[@]}" -gt 0
+              git diff --quiet "$last_commit" "$parent" -- "${accepted_paths[@]}" || exit 1
+              opened_value='true'
+              echo "opened=${opened_value}" >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            test "$(git rev-parse "$parent:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+            git show "$parent:state/AUTOPILOT_RUNTIME_MANIFEST.json" \
+              >"$RUNNER_TEMP/uaart-critical-open-runtime-${attempt}.json"
+            test "$(sha256sum "$RUNNER_TEMP/uaart-critical-open-runtime-${attempt}.json" | cut -d' ' -f1)" = \
+              "$RUNTIME_MANIFEST_SHA256"
+            read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+            test "${#runtime_paths[@]}" -eq 18
+            test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+            git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$parent" -- "${runtime_paths[@]}"
+            rebuild="$RUNNER_TEMP/uaart-critical-open-${attempt}"
+            index="$RUNNER_TEMP/uaart-critical-open-index-${attempt}"
+            git worktree add --detach "$rebuild" "$parent"
+            cd "$rebuild"
+            python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+            python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+              --sha256 "$REQUEST_SHA256"
+            python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+              --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+              --claim-path "$CLAIM_PATH"
+            python3 -I automation/transaction_watchdog.py discover >"$RUNNER_TEMP/uaart-open-preparing.json"
+            python3 -I - <<'PY'
+          import json, os
+          value = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-open-preparing.json', encoding='utf-8'))
+          if value.get('transaction_status') != 'PREPARING' or value.get('transaction_id') != os.environ['TRANSACTION_ID'] or value.get('transaction_path') != os.environ['TRANSACTION_PATH']:
+              raise SystemExit('OPEN_REBUILD_PREPARING_MISMATCH')
+          PY
+            source="$RUNNER_TEMP/uaart-critical-backup/backup.json"
+            test -f "$source" && test ! -L "$source"
+            test "$(sha256sum "$source" | cut -d' ' -f1)" = "$BACKUP_RECEIPT_SHA256"
+            test ! -e "$BACKUP_RECEIPT_PATH"
+            install -D -m 600 "$source" "$BACKUP_RECEIPT_PATH"
+            UAART_RUN_ID="$RUN_ID" UAART_TRANSACTION_ID="$TRANSACTION_ID" \
+              python3 -I automation/execution_contract.py backup-receipt "$REQUEST_PATH" \
+                --expected-class CRITICAL >"$RUNNER_TEMP/uaart-open-backup.json"
+            test "$(python3 -I -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/uaart-open-backup.json"))["backup_manifest_sha256"])')" = \
+              "$BACKUP_MANIFEST_SHA256"
+            python3 -I automation/control_plane.py transaction-open "$REQUEST_PATH" \
+              --run-id "$RUN_ID" --transaction-id "$TRANSACTION_ID" \
+              --backup-receipt-sha256 "$BACKUP_RECEIPT_SHA256" \
+              --backup-manifest-sha256 "$BACKUP_MANIFEST_SHA256"
+            rm -f "$index"
+            GIT_INDEX_FILE="$index" git read-tree "$parent"
+            for path in "$BACKUP_RECEIPT_PATH" "$CLAIM_PATH" "$TRANSACTION_PATH"; do
+              test -f "$path" && test ! -L "$path"
+              blob="$(git hash-object -w -- "$path")"
+              GIT_INDEX_FILE="$index" git update-index --add \
+                --cacheinfo "100644,${blob},${path}"
+            done
+            tree="$(GIT_INDEX_FILE="$index" git write-tree)"
+            export GIT_AUTHOR_NAME=ua-art-production-transaction
+            export GIT_AUTHOR_EMAIL=actions@users.noreply.github.com
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            commit="$(printf '%s\n' "uaart production: open transaction $TASK_ID" | \
+              git commit-tree "$tree" -p "$parent")"
+            COMMIT="$commit"
+            mapfile -d '' changed < <(git diff-tree --no-commit-id --name-only -r -z "$parent" "$commit")
+            test "${#changed[@]}" -eq 3
+            printf '%s\n' "${changed[@]}" | sort >"$RUNNER_TEMP/open-changed"
+            printf '%s\n' "$BACKUP_RECEIPT_PATH" "$CLAIM_PATH" "$TRANSACTION_PATH" | sort >"$RUNNER_TEMP/open-expected"
+            cmp "$RUNNER_TEMP/open-changed" "$RUNNER_TEMP/open-expected"
+            cd "$GITHUB_WORKSPACE"
+            last_commit="$commit"
+            if git_auth push origin "$COMMIT:refs/heads/main"; then
+              echo 'opened=true' >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+  controller_production:
+    needs: [validate, prepare, backup, open]
+    if: >-
+      github.ref == 'refs/heads/main' && github.run_attempt == 1 &&
+      inputs.production_required == 'true' &&
+      needs.open.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    permissions:
+      contents: read
+    environment:
+      name: production
+    outputs:
+      controller_artifact_sha256: ${{ steps.evidence.outputs.controller_artifact_sha256 }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      TASK_ID: ${{ needs.validate.outputs.task_id }}
+      TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+      TRANSACTION_PATH: ${{ needs.prepare.outputs.transaction_path }}
+      BACKUP_MANIFEST_SHA256: ${{ needs.backup.outputs.backup_manifest_sha256 }}
+      DEPENDENCY_SHA256: ${{ needs.validate.outputs.dependency_sha256 }}
+      RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
+      SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+      WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
+    steps:
+      - name: Checkout clean authoritative OPEN state
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Validate exact remote OPEN before credential exposure
+        id: open_state
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+          test "${#runtime_paths[@]}" -eq 18
+          test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+          git diff --quiet "$WORKFLOW_SOURCE_COMMIT" HEAD -- "${runtime_paths[@]}"
+          python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "$REQUEST_SHA256"
+          python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+            --claim-path "$CLAIM_PATH"
+          python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+            --expected-class CRITICAL >"$RUNNER_TEMP/uaart-controller-contract.json"
+          test "$(python3 -I -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/uaart-controller-contract.json"))["dependency_sha256"])')" = \
+            "$DEPENDENCY_SHA256"
+          test "$(sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json | cut -d' ' -f1)" = \
+            "$RUNTIME_MANIFEST_SHA256"
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git merge-base --is-ancestor "$SOURCE_COMMIT" HEAD
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          package_root="$(python3 -I -c 'import json,os,pathlib; print(pathlib.PurePosixPath(json.load(open(os.environ["RUNNER_TEMP"]+"/uaart-controller-contract.json"))["controller_path"]).parent.as_posix())')"
+          test -n "$package_root" && test "$package_root" != '.'
+          git diff --quiet "$SOURCE_COMMIT" HEAD -- "$package_root"
+          python3 -I automation/transaction_watchdog.py discover >/tmp/uaart-open.json
+          python3 -I - <<'PY'
+          import json, os
+          value = json.load(open('/tmp/uaart-open.json', encoding='utf-8'))
+          if not (
+              value.get('pending_count') == 1
+              and value.get('transaction_status') == 'OPEN'
+              and value.get('transaction_id') == os.environ['TRANSACTION_ID']
+              and value.get('transaction_path') == os.environ['TRANSACTION_PATH']
+              and value.get('request_path') == os.environ['REQUEST_PATH']
+              and value.get('request_sha256') == os.environ['REQUEST_SHA256']
+              and str(value.get('run_id')) == os.environ['RUN_ID']
+              and value.get('task_id') == os.environ['TASK_ID']
+          ):
+              raise SystemExit('REMOTE_OPEN_TRANSACTION_MISMATCH')
+          PY
+          echo 'validated=true' >>"$GITHUB_OUTPUT"
+
+      - name: Execute authorized CRITICAL Production controller
+        if: >-
+          github.run_attempt == 1 && inputs.production_required == 'true' &&
+          steps.open_state.outputs.validated == 'true'
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          UAART_REQUEST_PATH: ${{ inputs.request_path }}
+          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_TASK_CLASS: CRITICAL
+          UAART_TASK_ID: ${{ needs.validate.outputs.task_id }}
+          UAART_TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+          UAART_BACKUP_MANIFEST_SHA256: ${{ needs.backup.outputs.backup_manifest_sha256 }}
+          UAART_MANIFEST_SHA256: ${{ needs.validate.outputs.critical_manifest_sha256 }}
+          UAART_RECEIPT_PATH: ${{ needs.validate.outputs.receipt_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          python3 -I automation/execution_contract.py run "$REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Package bounded data-only controller evidence
+        id: evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 700 /tmp/uaart-critical-controller
+          python3 -I - <<'PY'
+          import base64, hashlib, json, os, pathlib, subprocess
+          request_bytes = subprocess.check_output(['git', 'show', 'HEAD:' + os.environ['REQUEST_PATH']])
+          if hashlib.sha256(request_bytes).hexdigest() != os.environ['REQUEST_SHA256']:
+              raise SystemExit('CONTROLLER_ENVELOPE_REQUEST_SHA')
+          execution = json.loads(request_bytes)['execution']
+          excluded = {
+              str(execution.get('backup_receipt_path') or ''),
+              str(execution.get('rollback_receipt_path') or ''),
+          }
+          allowed = sorted(set(map(str, execution['evidence_paths'])) - excluded)
+          files, total = [], 0
+          for raw in allowed:
+              rel = pathlib.PurePosixPath(raw)
+              if rel.is_absolute() or '..' in rel.parts:
+                  raise SystemExit('CONTROLLER_EVIDENCE_PATH')
+              path = pathlib.Path(rel)
+              if not path.exists():
+                  continue
+              if path.is_symlink() or not path.is_file():
+                  raise SystemExit('CONTROLLER_EVIDENCE_FILE')
+              data = path.read_bytes()
+              total += len(data)
+              if len(data) > 16 * 1024 * 1024 or total > 32 * 1024 * 1024:
+                  raise SystemExit('CONTROLLER_EVIDENCE_SIZE')
+              files.append({
+                  'content_base64': base64.b64encode(data).decode('ascii'),
+                  'path': raw, 'sha256': hashlib.sha256(data).hexdigest(),
+                  'size': len(data),
               })
-              mode = json.loads(pathlib.Path('state/EXECUTION_MODE.json').read_text(encoding='utf-8'))
-              runtime_path = str(mode['runtime_manifest_path'])
-              paths.add(runtime_path)
-              runtime = json.loads(pathlib.Path(runtime_path).read_text(encoding='utf-8'))
-              paths.update(map(str, runtime['files']))
-              ledger = json.loads(pathlib.Path(claim['autostart_ledger_path']).read_text(encoding='utf-8'))
-              paths.add(str(ledger['launch_path']))
-              paths.add(str(ledger['nonce_reservation_path']))
-              halted = subprocess.run(
-                  ['git', 'cat-file', '-e', ref + ':state/AUTOPILOT_HALT.json'],
-                  stdout=subprocess.DEVNULL,
-                  stderr=subprocess.DEVNULL,
-                  check=False,
-              )
-              if halted.returncode == 0:
-                  raise SystemExit('REMOTE_AUTOMATIC_MODE_HALTED')
-          for raw in sorted(paths):
-              path = pathlib.PurePosixPath(raw)
-              if path.is_absolute() or '..' in path.parts:
-                  raise SystemExit('PINNED_PATH_UNSAFE:' + raw)
-              local = pathlib.Path(raw)
-              if local.is_symlink() or not local.is_file():
-                  raise SystemExit('PINNED_FILE_INVALID:' + raw)
-              remote = subprocess.check_output(['git', 'show', ref + ':' + raw])
-              local_sha = hashlib.sha256(local.read_bytes()).hexdigest()
-              remote_sha = hashlib.sha256(remote).hexdigest()
-              if local_sha != remote_sha:
-                  raise SystemExit('PINNED_FILE_CHANGED_WHILE_QUEUED:' + raw)
-          print('QUEUED_AUTHORIZATION_STILL_EXACT')
+          if execution['receipt_path'] not in {item['path'] for item in files}:
+              raise SystemExit('CONTROLLER_RECEIPT_MISSING')
+          envelope = {
+              'files': files, 'request_sha256': os.environ['REQUEST_SHA256'],
+              'run_id': os.environ['RUN_ID'],
+              'schema_version': 'UA-ART-CONTROLLER-EVIDENCE-1',
+              'task_id': os.environ['TASK_ID'],
+              'transaction_id': os.environ['TRANSACTION_ID'],
+          }
+          pathlib.Path('/tmp/uaart-critical-controller/controller.json').write_text(
+              json.dumps(envelope, ensure_ascii=False, sort_keys=True) + '\n', encoding='utf-8'
+          )
           PY
-          python3 automation/control_plane.py verify-mode
-          python3 automation/control_plane.py verify-identity "$REQUEST_PATH" \
-            --task-id "${{ steps.contract.outputs.task_id }}" \
-            --sha256 "$REQUEST_SHA256" \
-            --run-id "$RUN_ID"
-          python3 automation/control_plane.py storage "$REQUEST_PATH" \
-            --run-id "$RUN_ID" --enforce
-          python3 - <<'PY'
-          import hashlib
-          import json
-          import os
-          from pathlib import Path, PurePosixPath
+          echo "controller_artifact_sha256=$(sha256sum /tmp/uaart-critical-controller/controller.json | cut -d' ' -f1)" >>"$GITHUB_OUTPUT"
 
-          request = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
+      - name: Upload data-only Production controller evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: uaart-critical-controller-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/uaart-critical-controller/controller.json
+          if-no-files-found: error
+          retention-days: 2
+
+  controller_nonproduction:
+    needs: validate
+    if: github.ref == 'refs/heads/main' && inputs.production_required != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    permissions:
+      contents: read
+    outputs:
+      controller_artifact_sha256: ${{ steps.evidence.outputs.controller_artifact_sha256 }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      RUN_ID: ${{ inputs.run_id }}
+      TASK_ID: ${{ needs.validate.outputs.task_id }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      DEPENDENCY_SHA256: ${{ needs.validate.outputs.dependency_sha256 }}
+      RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
+      SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+      WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
+    steps:
+      - name: Checkout clean authoritative main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Revalidate immutable non-Production contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+          test "${#runtime_paths[@]}" -eq 18
+          test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+          git diff --quiet "$WORKFLOW_SOURCE_COMMIT" HEAD -- "${runtime_paths[@]}"
+          python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "$REQUEST_SHA256"
+          python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+            --claim-path "$CLAIM_PATH"
+          python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+            --expected-class CRITICAL >/tmp/uaart-nonprod-contract.json
+          test "$(python3 -I -c 'import json; print(json.load(open("/tmp/uaart-nonprod-contract.json"))["dependency_sha256"])')" = \
+            "$DEPENDENCY_SHA256"
+          test "$(sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json | cut -d' ' -f1)" = \
+            "$RUNTIME_MANIFEST_SHA256"
+          git merge-base --is-ancestor "$SOURCE_COMMIT" HEAD
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          package_root="$(python3 -I -c 'import json,pathlib; print(pathlib.PurePosixPath(json.load(open("/tmp/uaart-nonprod-contract.json"))["controller_path"]).parent.as_posix())')"
+          test -n "$package_root" && test "$package_root" != '.'
+          git diff --quiet "$SOURCE_COMMIT" HEAD -- "$package_root"
+
+      - name: Execute authorized CRITICAL controller without Production credential
+        if: inputs.production_required != 'true'
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.UAART_NONPRODUCTION_PYTHONANYWHERE_TOKEN }}
+          UAART_REQUEST_PATH: ${{ inputs.request_path }}
+          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_TASK_CLASS: CRITICAL
+          UAART_TASK_ID: ${{ needs.validate.outputs.task_id }}
+          UAART_RECEIPT_PATH: ${{ needs.validate.outputs.receipt_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I automation/execution_contract.py run "$REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Package bounded data-only non-Production evidence
+        id: evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 700 /tmp/uaart-critical-controller
+          python3 -I - <<'PY'
+          import base64, hashlib, json, os, pathlib, subprocess
+          request_bytes = subprocess.check_output(['git', 'show', 'HEAD:' + os.environ['REQUEST_PATH']])
+          if hashlib.sha256(request_bytes).hexdigest() != os.environ['REQUEST_SHA256']:
+              raise SystemExit('CONTROLLER_ENVELOPE_REQUEST_SHA')
+          execution = json.loads(request_bytes)['execution']
+          excluded = {
+              str(execution.get('backup_receipt_path') or ''),
+              str(execution.get('rollback_receipt_path') or ''),
+          }
+          allowed = sorted(set(map(str, execution['evidence_paths'])) - excluded)
+          files, total = [], 0
+          for raw in allowed:
+              rel = pathlib.PurePosixPath(raw)
+              if rel.is_absolute() or '..' in rel.parts:
+                  raise SystemExit('CONTROLLER_EVIDENCE_PATH')
+              path = pathlib.Path(rel)
+              if not path.exists():
+                  continue
+              if path.is_symlink() or not path.is_file():
+                  raise SystemExit('CONTROLLER_EVIDENCE_FILE')
+              data = path.read_bytes()
+              total += len(data)
+              if len(data) > 16 * 1024 * 1024 or total > 32 * 1024 * 1024:
+                  raise SystemExit('CONTROLLER_EVIDENCE_SIZE')
+              files.append({
+                  'content_base64': base64.b64encode(data).decode('ascii'),
+                  'path': raw, 'sha256': hashlib.sha256(data).hexdigest(),
+                  'size': len(data),
+              })
+          if execution['receipt_path'] not in {item['path'] for item in files}:
+              raise SystemExit('CONTROLLER_RECEIPT_MISSING')
+          envelope = {
+              'files': files, 'request_sha256': os.environ['REQUEST_SHA256'],
+              'run_id': os.environ['RUN_ID'],
+              'schema_version': 'UA-ART-CONTROLLER-EVIDENCE-1',
+              'task_id': os.environ['TASK_ID'], 'transaction_id': '',
+          }
+          pathlib.Path('/tmp/uaart-critical-controller/controller.json').write_text(
+              json.dumps(envelope, ensure_ascii=False, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          PY
+          echo "controller_artifact_sha256=$(sha256sum /tmp/uaart-critical-controller/controller.json | cut -d' ' -f1)" >>"$GITHUB_OUTPUT"
+
+      - name: Upload data-only non-Production controller evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: uaart-critical-controller-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/uaart-critical-controller/controller.json
+          if-no-files-found: error
+          retention-days: 2
+
+  finalize:
+    needs: [validate, prepare, backup, open, controller_production, controller_nonproduction]
+    if: >-
+      always() && github.ref == 'refs/heads/main' &&
+      ((inputs.production_required == 'true' && github.run_attempt == 1 &&
+      needs.controller_production.result == 'success') ||
+      (inputs.production_required != 'true' && needs.controller_nonproduction.result == 'success'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      status: ${{ steps.persist.outputs.status }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      TASK_ID: ${{ needs.validate.outputs.task_id }}
+      RECEIPT_PATH: ${{ needs.validate.outputs.receipt_path }}
+      PRODUCTION_REQUIRED: ${{ inputs.production_required }}
+      TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+      TRANSACTION_PATH: ${{ needs.prepare.outputs.transaction_path }}
+      RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
+      WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
+    steps:
+      - name: Checkout clean authoritative main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Download validation attestation outside checkout
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: uaart-critical-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/uaart-critical-validation
+
+      - name: Download controller evidence outside checkout
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: uaart-critical-controller-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/uaart-critical-controller
+
+      - name: Strictly validate data-only finalization artifacts
+        shell: bash
+        env:
+          DEPENDENCY_SHA256: ${{ needs.validate.outputs.dependency_sha256 }}
+          RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
+          SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+          VALIDATION_ARTIFACT_SHA256: ${{ needs.validate.outputs.validation_artifact_sha256 }}
+          PRODUCTION_CONTROLLER_ARTIFACT_SHA256: ${{ needs.controller_production.outputs.controller_artifact_sha256 }}
+          NONPRODUCTION_CONTROLLER_ARTIFACT_SHA256: ${{ needs.controller_nonproduction.outputs.controller_artifact_sha256 }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+          test "${#runtime_paths[@]}" -eq 18
+          test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+          git diff --quiet "$WORKFLOW_SOURCE_COMMIT" HEAD -- "${runtime_paths[@]}"
+          python3 -I - <<'PY'
+          import base64, binascii, hashlib, json, os, pathlib, re
+
+          temp = pathlib.Path(os.environ['RUNNER_TEMP'])
+          validation_files = list((temp / 'uaart-critical-validation').iterdir())
+          if [item.name for item in validation_files] != ['validation.json']:
+              raise SystemExit('VALIDATION_ARTIFACT_INVENTORY')
+          validation_path = validation_files[0]
+          if validation_path.is_symlink() or not validation_path.is_file() or validation_path.stat().st_size > 8192:
+              raise SystemExit('VALIDATION_ARTIFACT_FILE')
+          validation_payload = validation_path.read_bytes()
+          if hashlib.sha256(validation_payload).hexdigest() != os.environ['VALIDATION_ARTIFACT_SHA256']:
+              raise SystemExit('VALIDATION_ARTIFACT_SHA256')
+          validation = json.loads(validation_payload.decode('utf-8'))
+          validation_keys = {
+              'compiled', 'dependency_sha256', 'production_required',
+              'request_path', 'request_sha256', 'run_id',
+              'runtime_manifest_sha256', 'schema_version', 'source_commit',
+              'status', 'task_id', 'tests', 'workflow_run_attempt',
+              'workflow_run_id', 'workflow_blob_oid', 'workflow_source_commit',
+          }
+          if not isinstance(validation, dict) or set(validation) != validation_keys:
+              raise SystemExit('VALIDATION_ARTIFACT_SCHEMA')
+          expected_production = os.environ['PRODUCTION_REQUIRED'] == 'true'
+          if not (
+              validation.get('compiled') == 'PASS'
+              and validation.get('dependency_sha256') == os.environ['DEPENDENCY_SHA256']
+              and validation.get('tests') == 'PASS'
+              and validation.get('status') == 'PASS'
+              and validation.get('production_required') is expected_production
+              and validation.get('request_path') == os.environ['REQUEST_PATH']
+              and validation.get('request_sha256') == os.environ['REQUEST_SHA256']
+              and validation.get('run_id') == os.environ['RUN_ID']
+              and validation.get('runtime_manifest_sha256') == os.environ['RUNTIME_MANIFEST_SHA256']
+              and validation.get('task_id') == os.environ['TASK_ID']
+              and validation.get('source_commit') == os.environ['SOURCE_COMMIT']
+              and validation.get('schema_version') == 'UA-ART-CRITICAL-VALIDATION-1'
+              and validation.get('workflow_run_id') == os.environ['GITHUB_RUN_ID']
+              and validation.get('workflow_run_attempt') == int(os.environ['GITHUB_RUN_ATTEMPT'])
+              and validation.get('workflow_blob_oid') == os.environ['WORKFLOW_BLOB_OID']
+              and validation.get('workflow_source_commit') == os.environ['WORKFLOW_SOURCE_COMMIT']
+              and re.fullmatch(r'[0-9a-f]{40}', validation.get('source_commit', ''))
+          ):
+              raise SystemExit('VALIDATION_ARTIFACT_BINDING')
+          if hashlib.sha256(
+              pathlib.Path('state/AUTOPILOT_RUNTIME_MANIFEST.json').read_bytes()
+          ).hexdigest() != os.environ['RUNTIME_MANIFEST_SHA256']:
+              raise SystemExit('VALIDATION_RUNTIME_MANIFEST_DRIFT')
+
+          controller_files = list((temp / 'uaart-critical-controller').iterdir())
+          if [item.name for item in controller_files] != ['controller.json']:
+              raise SystemExit('CONTROLLER_ARTIFACT_INVENTORY')
+          envelope_path = controller_files[0]
+          if envelope_path.is_symlink() or not envelope_path.is_file() or envelope_path.stat().st_size > 48 * 1024 * 1024:
+              raise SystemExit('CONTROLLER_ARTIFACT_FILE')
+          envelope_payload = envelope_path.read_bytes()
+          expected_envelope_sha = (
+              os.environ['PRODUCTION_CONTROLLER_ARTIFACT_SHA256']
+              if expected_production
+              else os.environ['NONPRODUCTION_CONTROLLER_ARTIFACT_SHA256']
+          )
+          if hashlib.sha256(envelope_payload).hexdigest() != expected_envelope_sha:
+              raise SystemExit('CONTROLLER_ARTIFACT_SHA256')
+          envelope = json.loads(envelope_payload.decode('utf-8'))
+          if not isinstance(envelope, dict) or set(envelope) != {
+              'files', 'request_sha256', 'run_id', 'schema_version',
+              'task_id', 'transaction_id',
+          }:
+              raise SystemExit('CONTROLLER_ARTIFACT_SCHEMA')
+          expected_transaction = os.environ['TRANSACTION_ID'] if expected_production else ''
+          if not (
+              envelope.get('request_sha256') == os.environ['REQUEST_SHA256']
+              and envelope.get('run_id') == os.environ['RUN_ID']
+              and envelope.get('task_id') == os.environ['TASK_ID']
+              and envelope.get('transaction_id') == expected_transaction
+              and envelope.get('schema_version') == 'UA-ART-CONTROLLER-EVIDENCE-1'
+          ):
+              raise SystemExit('CONTROLLER_ARTIFACT_BINDING')
+          request = json.loads(pathlib.Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
+          execution = request['execution']
+          excluded = {
+              str(execution.get('backup_receipt_path') or ''),
+              str(execution.get('rollback_receipt_path') or ''),
+          }
+          allowed = set(map(str, execution['evidence_paths'])) - excluded
+          entries = envelope['files']
+          if not isinstance(entries, list) or len(entries) > 30:
+              raise SystemExit('CONTROLLER_ARTIFACT_FILES')
+          seen, total = set(), 0
+          for entry in entries:
+              if not isinstance(entry, dict) or set(entry) != {
+                  'content_base64', 'path', 'sha256', 'size',
+              }:
+                  raise SystemExit('CONTROLLER_ARTIFACT_ENTRY')
+              raw = entry['path']
+              rel = pathlib.PurePosixPath(raw)
+              if raw not in allowed or raw in seen or rel.is_absolute() or '..' in rel.parts:
+                  raise SystemExit('CONTROLLER_ARTIFACT_PATH')
+              seen.add(raw)
+              try:
+                  data = base64.b64decode(entry['content_base64'], validate=True)
+              except (ValueError, binascii.Error) as exc:
+                  raise SystemExit('CONTROLLER_ARTIFACT_BASE64') from exc
+              total += len(data)
+              if entry['size'] != len(data) or len(data) > 16 * 1024 * 1024 or total > 32 * 1024 * 1024:
+                  raise SystemExit('CONTROLLER_ARTIFACT_SIZE')
+              if hashlib.sha256(data).hexdigest() != entry['sha256']:
+                  raise SystemExit('CONTROLLER_ARTIFACT_SHA256')
+          if execution['receipt_path'] not in seen:
+              raise SystemExit('CONTROLLER_ARTIFACT_RECEIPT_MISSING')
+          print('UAART_DATA_ONLY_ARTIFACT_VALIDATED')
+          PY
+
+      - name: Persist trusted FINISHED evidence with isolated Git trees
+        id: persist
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')"
+          unset GH_TOKEN
+          git_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${auth}" git "$@"
+          }
+          last_commit=''
+          for attempt in 1 2 3 4 5 6; do
+            git_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'
+            parent="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$last_commit" && git merge-base --is-ancestor "$last_commit" "$parent"; then
+              mapfile -d '' accepted_paths < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$last_commit")
+              test "${#accepted_paths[@]}" -gt 0
+              git diff --quiet "$last_commit" "$parent" -- "${accepted_paths[@]}" || exit 1
+              status_value='FINISHED'
+              echo "status=${status_value}" >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            test "$(git rev-parse "$parent:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+            git show "$parent:state/AUTOPILOT_RUNTIME_MANIFEST.json" \
+              >"$RUNNER_TEMP/uaart-critical-finalize-runtime-${attempt}.json"
+            test "$(sha256sum "$RUNNER_TEMP/uaart-critical-finalize-runtime-${attempt}.json" | cut -d' ' -f1)" = \
+              "$RUNTIME_MANIFEST_SHA256"
+            read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+            test "${#runtime_paths[@]}" -eq 18
+            test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+            git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$parent" -- "${runtime_paths[@]}"
+            rebuild="$RUNNER_TEMP/uaart-critical-finalize-${attempt}"
+            index="$RUNNER_TEMP/uaart-critical-finalize-index-${attempt}"
+            git worktree add --detach "$rebuild" "$parent"
+            cd "$rebuild"
+            python3 -I automation/control_plane.py verify-mode --require AUTOMATIC
+            python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+              --sha256 "$REQUEST_SHA256"
+            python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+              --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+              --claim-path "$CLAIM_PATH"
+            python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+              --expected-class CRITICAL >"$RUNNER_TEMP/uaart-final-contract.json"
+            python3 -I - <<'PY'
+          import base64, hashlib, json, os, pathlib
+          root = pathlib.Path.cwd().resolve()
+          envelope = json.load(open(pathlib.Path(os.environ['RUNNER_TEMP']) / 'uaart-critical-controller/controller.json', encoding='utf-8'))
+          spec = json.load(open(pathlib.Path(os.environ['RUNNER_TEMP']) / 'uaart-final-contract.json', encoding='utf-8'))
+          excluded = {spec.get('backup_receipt_path'), spec.get('rollback_receipt_path')}
+          allowed = set(spec['evidence_paths']) - excluded
+          if not (
+              envelope['request_sha256'] == spec['request_sha256'] == os.environ['REQUEST_SHA256']
+              and envelope['run_id'] == os.environ['RUN_ID']
+              and envelope['task_id'] == os.environ['TASK_ID']
+              and envelope['transaction_id'] == (os.environ['TRANSACTION_ID'] if os.environ['PRODUCTION_REQUIRED'] == 'true' else '')
+          ):
+              raise SystemExit('REBUILD_ARTIFACT_BINDING')
+          seen = set()
+          for entry in envelope['files']:
+              raw = entry['path']
+              if raw not in allowed or raw in seen:
+                  raise SystemExit('REBUILD_ARTIFACT_PATH')
+              seen.add(raw)
+              data = base64.b64decode(entry['content_base64'], validate=True)
+              if len(data) != entry['size'] or hashlib.sha256(data).hexdigest() != entry['sha256']:
+                  raise SystemExit('REBUILD_ARTIFACT_HASH')
+              target = root / pathlib.PurePosixPath(raw)
+              if not target.resolve(strict=False).is_relative_to(root) or target.is_symlink():
+                  raise SystemExit('REBUILD_TARGET_SCOPE')
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(data)
+              target.chmod(0o644)
+          if spec['receipt_path'] not in seen:
+              raise SystemExit('REBUILD_RECEIPT_MISSING')
+          PY
+            if test "$PRODUCTION_REQUIRED" = true; then
+              python3 -I automation/transaction_watchdog.py discover >"$RUNNER_TEMP/uaart-final-open.json"
+              python3 -I - <<'PY'
+          import json, os
+          value = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-final-open.json', encoding='utf-8'))
+          if value.get('transaction_status') != 'OPEN' or value.get('transaction_id') != os.environ['TRANSACTION_ID']:
+              raise SystemExit('FINALIZE_REMOTE_OPEN_MISMATCH')
+          PY
+              python3 -I automation/control_plane.py health "$REQUEST_PATH" \
+                --run-id "$RUN_ID" --phase post
+            else
+              python3 -I automation/control_plane.py planning "$REQUEST_PATH" --run-id "$RUN_ID"
+              python3 -I automation/control_plane.py storage "$REQUEST_PATH" \
+                --run-id "$RUN_ID" --enforce
+              python3 -I automation/control_plane.py compiled "$REQUEST_PATH" --run-id "$RUN_ID"
+              python3 -I automation/control_plane.py critical-nonprod "$REQUEST_PATH" \
+                --run-id "$RUN_ID"
+            fi
+            python3 -I automation/execution_contract.py receipt "$REQUEST_PATH" \
+              --expected-class CRITICAL >"$RUNNER_TEMP/uaart-final-receipt.json"
+            if test "$PRODUCTION_REQUIRED" = true; then
+              python3 -I - <<'PY'
+          import json, os, pathlib
+          request = json.load(open(os.environ['REQUEST_PATH'], encoding='utf-8'))
           critical = request['critical']
-          gate_text = str(critical['gate_a_path'])
-          gate = PurePosixPath(gate_text)
-          if gate.is_absolute() or '..' in gate.parts:
-              raise SystemExit('GATE_A_PATH_UNSAFE')
-          disk = Path(gate_text)
-          if disk.is_symlink() or not disk.is_file():
-              raise SystemExit('GATE_A_FILE_INVALID')
-          actual = hashlib.sha256(disk.read_bytes()).hexdigest()
-          if actual != str(critical['gate_a_sha256']).lower():
-              raise SystemExit('GATE_A_SHA_MISMATCH')
+          value = {
+              'task_id': request['task_id'], 'title': request['title'],
+              'description': request.get('description', ''),
+              'changed_paths': request.get('changed_paths', []),
+              'production_required': True,
+              'requested_min_class': request.get('requested_min_class'),
+              'owner_approval_path': critical['owner_approval_path'],
+              'owner_approval_sha256': critical['owner_approval_sha256'],
+              'manifest_path': critical['manifest_path'],
+              'manifest_sha256': critical['manifest_sha256'],
+              'gate_b_authorized': critical['gate_b_authorized'],
+              'allow_crm_vehicle_data': critical.get('allow_crm_vehicle_data', False),
+          }
+          pathlib.Path('/tmp/uaart-final-critical.json').write_text(json.dumps(value, sort_keys=True) + '\n')
           PY
-          python3 automation/critical_adapter.py gate-b \
-            /tmp/uaart-critical-request.json \
-            "${{ steps.critical.outputs.owner_path }}" \
-            "${{ steps.critical.outputs.manifest_path }}" \
-            "${{ steps.critical.outputs.gate_a_path }}" \
-            >/tmp/uaart-critical-gate-b.json
-          python3 automation/control_plane.py critical-production "$REQUEST_PATH" \
-            --run-id "$RUN_ID" \
-            --gate-b-evidence /tmp/uaart-critical-gate-b.json
-
-      - name: Require production health before execution
-        if: inputs.production_required == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/control_plane.py health "$REQUEST_PATH" \
-            --run-id "$RUN_ID" --phase pre
-
-      - name: Create and durably open guarded production transaction
-        id: transaction
-        if: inputs.production_required == 'true'
-        env:
-          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
-          BACKUP_RECEIPT_PATH: ${{ steps.contract.outputs.backup_receipt_path }}
-          UAART_MANIFEST_SHA256: ${{ steps.contract.outputs.critical_manifest_sha256 }}
-          UAART_REQUEST_PATH: ${{ inputs.request_path }}
-          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
-          UAART_RUN_ID: ${{ inputs.run_id }}
-          UAART_TASK_CLASS: CRITICAL
-          UAART_TASK_ID: ${{ steps.contract.outputs.task_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          transaction_id="tx-${GITHUB_RUN_ID}-${REQUEST_SHA256:0:16}"
-          export UAART_TRANSACTION_ID="$transaction_id"
-          python3 automation/execution_contract.py backup "$REQUEST_PATH" \
-            --expected-class CRITICAL
-          python3 automation/execution_contract.py backup-receipt "$REQUEST_PATH" \
-            --expected-class CRITICAL >/tmp/uaart-critical-backup-receipt.json
-          backup_manifest_sha256="$(python3 - <<'PY'
-          import json
-          from pathlib import Path
-          value = json.loads(Path('/tmp/uaart-critical-backup-receipt.json').read_text(encoding='utf-8'))
-          print(value['backup_manifest_sha256'])
+              python3 -I automation/critical_adapter.py validate-final \
+                /tmp/uaart-final-critical.json "$RECEIPT_PATH" >/dev/null
+            fi
+            python3 -I automation/control_plane.py finish "$REQUEST_PATH" \
+              --run-id "$RUN_ID" >/dev/null
+            if test "$PRODUCTION_REQUIRED" = true; then
+              python3 -I automation/control_plane.py transaction-close "$REQUEST_PATH" \
+                --run-id "$RUN_ID" --transaction-id "$TRANSACTION_ID" \
+                --outcome FINISHED >/dev/null
+            fi
+            rm -f "$index"
+            GIT_INDEX_FILE="$index" git read-tree "$parent"
+            mapfile -d '' paths < <(python3 -I - <<'PY'
+          import json, os, sys
+          spec = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-final-contract.json', encoding='utf-8'))
+          paths = set(spec['evidence_paths']) | {os.environ['CLAIM_PATH']}
+          if os.environ['PRODUCTION_REQUIRED'] == 'true':
+              paths.add(os.environ['TRANSACTION_PATH'])
+          for path in sorted(paths):
+              if path and __import__('pathlib').Path(path).is_file():
+                  sys.stdout.buffer.write(path.encode() + b'\0')
           PY
-          )"
-          backup_receipt_sha256="$(sha256sum "$BACKUP_RECEIPT_PATH" | cut -d' ' -f1)"
-          python3 automation/control_plane.py transaction-open "$REQUEST_PATH" \
-            --run-id "$RUN_ID" \
-            --transaction-id "$transaction_id" \
-            --backup-receipt-sha256 "$backup_receipt_sha256" \
-            --backup-manifest-sha256 "$backup_manifest_sha256"
-          transaction_path="$(python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-          request = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
-          print('state/transactions/%s.%s.%s.json' % (
-              request['task_id'], os.environ['REQUEST_SHA256'], os.environ['RUN_ID']))
+            )
+            for path in "${paths[@]}"; do
+              test -f "$path" && test ! -L "$path"
+              blob="$(git hash-object -w -- "$path")"
+              GIT_INDEX_FILE="$index" git update-index --add \
+                --cacheinfo "100644,${blob},${path}"
+            done
+            tree="$(GIT_INDEX_FILE="$index" git write-tree)"
+            export GIT_AUTHOR_NAME=ua-art-critical-pipeline
+            export GIT_AUTHOR_EMAIL=actions@users.noreply.github.com
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            commit="$(printf '%s\n' "uaart critical: $TASK_ID FINISHED" | \
+              git commit-tree "$tree" -p "$parent")"
+            COMMIT="$commit"
+            COMMIT="$commit" PARENT="$parent" python3 -I - <<'PY'
+          import json, os, subprocess
+          spec = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-final-contract.json', encoding='utf-8'))
+          allowed = set(spec['evidence_paths']) | {os.environ['CLAIM_PATH']}
+          required = {spec['receipt_path'], os.environ['CLAIM_PATH']}
+          if os.environ['PRODUCTION_REQUIRED'] == 'true':
+              allowed.add(os.environ['TRANSACTION_PATH'])
+              required.add(os.environ['TRANSACTION_PATH'])
+          raw = subprocess.check_output(['git', 'diff-tree', '--no-commit-id', '--name-only', '-r', '-z', os.environ['PARENT'], os.environ['COMMIT']])
+          changed = set(filter(None, raw.decode().split('\0')))
+          if not required.issubset(changed) or not changed.issubset(allowed):
+              raise SystemExit('FINAL_COMMIT_TREE_SCOPE')
           PY
-          )"
-          git add -- "$BACKUP_RECEIPT_PATH" "$transaction_path" "$CLAIM_PATH"
-          git config user.name 'ua-art-production-transaction'
-          git config user.email 'actions@users.noreply.github.com'
-          git commit -m "uaart production: open transaction ${{ steps.contract.outputs.task_id }}"
-          for attempt in 1 2 3 4 5 6; do
-            git fetch origin "${GITHUB_REF_NAME}"
-            if ! git rebase "origin/${GITHUB_REF_NAME}"; then
-              git rebase --abort || true
-              exit 1
-            fi
-            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
-              break
-            fi
-            test "$attempt" -lt 6 || exit 1
-            sleep $((attempt * 3))
-          done
-          python3 automation/control_plane.py verify-mode --require AUTOMATIC
-          python3 automation/control_plane.py verify-identity "$REQUEST_PATH" \
-            --task-id "${{ steps.contract.outputs.task_id }}" \
-            --sha256 "$REQUEST_SHA256" \
-            --run-id "$RUN_ID"
-          echo "backup_manifest_sha256=$backup_manifest_sha256" >>"$GITHUB_OUTPUT"
-          echo "transaction_id=$transaction_id" >>"$GITHUB_OUTPUT"
-          echo "transaction_path=$transaction_path" >>"$GITHUB_OUTPUT"
-          echo 'opened=true' >>"$GITHUB_OUTPUT"
-
-      - name: Execute authorized CRITICAL controller
-        env:
-          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
-          UAART_REQUEST_PATH: ${{ inputs.request_path }}
-          UAART_TASK_ID: ${{ steps.contract.outputs.task_id }}
-          UAART_TASK_CLASS: CRITICAL
-          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
-          UAART_RUN_ID: ${{ inputs.run_id }}
-          UAART_RECEIPT_PATH: ${{ steps.contract.outputs.receipt_path }}
-          UAART_BACKUP_MANIFEST_SHA256: ${{ steps.transaction.outputs.backup_manifest_sha256 }}
-          UAART_MANIFEST_SHA256: ${{ steps.contract.outputs.critical_manifest_sha256 }}
-          UAART_TRANSACTION_ID: ${{ steps.transaction.outputs.transaction_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/execution_contract.py run "$REQUEST_PATH" \
-            --expected-class CRITICAL
-          python3 automation/control_plane.py heartbeat "$REQUEST_PATH" \
-            --run-id "$RUN_ID" --status VERIFYING
-
-      - name: Require production health after execution
-        if: inputs.production_required == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/control_plane.py health "$REQUEST_PATH" \
-            --run-id "$RUN_ID" --phase post
-
-      - name: Require generic CRITICAL receipt
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/execution_contract.py receipt "$REQUEST_PATH" \
-            --expected-class CRITICAL >/tmp/uaart-critical-receipt.json
-
-      - name: Require production CRITICAL final receipt
-        if: inputs.production_required == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/critical_adapter.py validate-final \
-            /tmp/uaart-critical-request.json \
-            "${{ steps.contract.outputs.receipt_path }}" \
-            >/tmp/uaart-critical-final.json
-
-      - name: Finish only after exact receipt validation
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/control_plane.py finish "$REQUEST_PATH" \
-            --run-id "$RUN_ID" >/tmp/uaart-critical-finished.json
-
-      - name: Close successful Production transaction
-        if: inputs.production_required == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/control_plane.py transaction-close "$REQUEST_PATH" \
-            --run-id "$RUN_ID" \
-            --transaction-id "${{ steps.transaction.outputs.transaction_id }}" \
-            --outcome FINISHED
-
-      - name: Stage bounded receipt and durable claim
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/execution_contract.py stage "$REQUEST_PATH" \
-            --expected-class CRITICAL
-          git add -- "$CLAIM_PATH"
-          if test "${{ inputs.production_required }}" = 'true'; then
-            git add -- "${{ steps.transaction.outputs.transaction_path }}"
-          fi
-
-      - name: Commit CRITICAL receipt and claim
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git diff --cached --quiet; then
-            echo 'No CRITICAL evidence changes'
-            exit 0
-          fi
-          git config user.name 'ua-art-critical-pipeline'
-          git config user.email 'actions@users.noreply.github.com'
-          git commit -m "uaart critical: ${{ steps.contract.outputs.task_id }} FINISHED"
-          for attempt in 1 2 3 4 5 6; do
-            git fetch origin "${GITHUB_REF_NAME}"
-            if ! git rebase "origin/${GITHUB_REF_NAME}"; then
-              git rebase --abort || true
-              exit 1
-            fi
-            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
-              break
+            cd "$GITHUB_WORKSPACE"
+            last_commit="$commit"
+            if git_auth push origin "$COMMIT:refs/heads/main"; then
+              echo 'status=FINISHED' >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
             fi
             test "$attempt" -lt 6 || exit 1
             sleep $((attempt * 3))
           done
 
-      - name: Run exact automatic rollback after an opened transaction failure
-        id: rollback
-        if: always() && (failure() || cancelled()) && inputs.production_required == 'true' && steps.transaction.outputs.opened == 'true'
-        continue-on-error: true
-        env:
-          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
-          UAART_REQUEST_PATH: ${{ inputs.request_path }}
-          UAART_TASK_ID: ${{ steps.contract.outputs.task_id }}
-          UAART_TASK_CLASS: CRITICAL
-          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
-          UAART_RUN_ID: ${{ inputs.run_id }}
-          UAART_RECEIPT_PATH: ${{ steps.contract.outputs.receipt_path }}
-          UAART_BACKUP_MANIFEST_SHA256: ${{ steps.transaction.outputs.backup_manifest_sha256 }}
-          UAART_MANIFEST_SHA256: ${{ steps.contract.outputs.critical_manifest_sha256 }}
-          UAART_TRANSACTION_ID: ${{ steps.transaction.outputs.transaction_id }}
+  rollback_execute:
+    needs: [validate, prepare, backup, rollback_mark]
+    if: >-
+      always() && github.ref == 'refs/heads/main' &&
+      github.run_attempt == 1 && inputs.production_required == 'true' &&
+      needs.rollback_mark.outputs.marked == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    environment:
+      name: production
+    outputs:
+      performed: ${{ steps.receipt.outputs.performed }}
+      rollback_receipt_sha256: ${{ steps.receipt.outputs.rollback_receipt_sha256 }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      TASK_ID: ${{ needs.validate.outputs.task_id }}
+      TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+      TRANSACTION_PATH: ${{ needs.prepare.outputs.transaction_path }}
+      BACKUP_MANIFEST_SHA256: ${{ needs.backup.outputs.backup_manifest_sha256 }}
+      ROLLBACK_RECEIPT_PATH: ${{ needs.validate.outputs.rollback_receipt_path }}
+      DEPENDENCY_SHA256: ${{ needs.validate.outputs.dependency_sha256 }}
+      RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
+      SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+      PINNED_ROOT: ${{ runner.temp }}/uaart-critical-pinned-recovery
+      WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
+    steps:
+      - name: Checkout clean authoritative ROLLING_BACK state
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Validate durable one-shot rollback reservation
+        id: rolling_back
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/execution_contract.py rollback "$REQUEST_PATH" \
-            --expected-class CRITICAL
-          python3 automation/execution_contract.py rollback-receipt "$REQUEST_PATH" \
-            --expected-class CRITICAL >/tmp/uaart-critical-rollback-receipt.json
-          python3 automation/control_plane.py transaction-close "$REQUEST_PATH" \
-            --run-id "$RUN_ID" \
-            --transaction-id "$UAART_TRANSACTION_ID" \
-            --outcome ROLLED_BACK
-          rollback_receipt="$(python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "${SOURCE_COMMIT}^{commit}"
+          git merge-base --is-ancestor "$SOURCE_COMMIT" HEAD
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "$SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test ! -e "$PINNED_ROOT"
+          git -c core.hooksPath=/dev/null worktree add --detach \
+            "$PINNED_ROOT" "$SOURCE_COMMIT"
+          test "$(git -C "$PINNED_ROOT" rev-parse HEAD)" = "$SOURCE_COMMIT"
 
-          request = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
-          receipt = request['execution']['rollback_receipt_path']
-          print(receipt)
+          python3 -I - <<'PY'
+          import json, os, pathlib, re, shutil
+
+          source_root = pathlib.Path.cwd().resolve()
+          pinned_root = pathlib.Path(os.environ['PINNED_ROOT']).resolve()
+
+          def load(relative, label):
+              if not isinstance(relative, str) or not re.fullmatch(r'[A-Za-z0-9._/-]+', relative):
+                  raise SystemExit(label + '_PATH')
+              pure = pathlib.PurePosixPath(relative)
+              if pure.is_absolute() or '..' in pure.parts:
+                  raise SystemExit(label + '_PATH')
+              path = source_root / pure
+              if path.is_symlink() or not path.is_file() or not path.resolve().is_relative_to(source_root):
+                  raise SystemExit(label + '_FILE')
+              if any(parent.is_symlink() for parent in path.parents if parent != source_root):
+                  raise SystemExit(label + '_SYMLINK')
+              data = path.read_bytes()
+              if len(data) > 2 * 1024 * 1024:
+                  raise SystemExit(label + '_SIZE')
+              try:
+                  value = json.loads(data.decode('utf-8'))
+              except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                  raise SystemExit(label + '_JSON') from exc
+              if not isinstance(value, dict):
+                  raise SystemExit(label + '_OBJECT')
+              return pure, data, value
+
+          claim_rel, claim_data, claim = load(os.environ['CLAIM_PATH'], 'PINNED_CLAIM')
+          tx_rel, tx_data, transaction = load(os.environ['TRANSACTION_PATH'], 'PINNED_TRANSACTION')
+          request_rel, request_data, _ = load(os.environ['REQUEST_PATH'], 'PINNED_REQUEST')
+          ledger_rel, ledger_data, _ = load(claim.get('autostart_ledger_path'), 'PINNED_LEDGER')
+          backup_rel, backup_data, _ = load(transaction.get('backup_receipt_path'), 'PINNED_BACKUP')
+          if claim.get('autostart_source_commit') != os.environ['SOURCE_COMMIT']:
+              raise SystemExit('PINNED_SOURCE_COMMIT_BINDING')
+          if transaction.get('request_path') != os.environ['REQUEST_PATH']:
+              raise SystemExit('PINNED_REQUEST_BINDING')
+          items = {
+              claim_rel: claim_data,
+              tx_rel: tx_data,
+              request_rel: request_data,
+              ledger_rel: ledger_data,
+              backup_rel: backup_data,
+          }
+          if len(items) != 5:
+              raise SystemExit('PINNED_DURABLE_PATH_ALIAS')
+          for relative, data in items.items():
+              target = pinned_root / relative
+              target.parent.mkdir(parents=True, exist_ok=True)
+              if any(parent.is_symlink() for parent in target.parents if parent != pinned_root):
+                  raise SystemExit('PINNED_DESTINATION_SYMLINK')
+              target.write_bytes(data)
+          print('UAART_PINNED_DURABLE_STATE_COPIED')
           PY
-          )"
-          test -n "$rollback_receipt"
-          git add -- "$rollback_receipt"
-          git add -- "${{ steps.transaction.outputs.transaction_path }}"
-          echo "receipt_path=$rollback_receipt" >>"$GITHUB_OUTPUT"
-          echo 'status=PASS' >>"$GITHUB_OUTPUT"
 
-      - name: Persist fail-closed state
-        if: always() && (failure() || cancelled())
-        continue-on-error: true
+          cd "$PINNED_ROOT"
+          python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          def strict_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('PINNED_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+          root = pathlib.Path.cwd().resolve()
+          manifest_path = root / 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          if manifest_path.is_symlink() or not manifest_path.is_file():
+              raise SystemExit('PINNED_RUNTIME_MANIFEST_FILE')
+          payload = manifest_path.read_bytes()
+          if hashlib.sha256(payload).hexdigest() != os.environ['RUNTIME_MANIFEST_SHA256']:
+              raise SystemExit('PINNED_RUNTIME_MANIFEST_BINDING')
+          manifest = json.loads(payload, object_pairs_hook=strict_object)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('PINNED_RUNTIME_MANIFEST_KEYS')
+          if manifest.get('schema_version') != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('PINNED_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('PINNED_RUNTIME_FILE_SET')
+          total = 0
+          for relative, expected in files.items():
+              pure = pathlib.PurePosixPath(relative)
+              if not re.fullmatch(r'[A-Za-z0-9._/-]+', relative) or pure.is_absolute() or '..' in pure.parts:
+                  raise SystemExit('PINNED_RUNTIME_PATH')
+              if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+                  raise SystemExit('PINNED_RUNTIME_HASH')
+              target = root / pure
+              if target.is_symlink() or not target.is_file() or target.resolve() != target:
+                  raise SystemExit('PINNED_RUNTIME_TARGET:' + relative)
+              data = target.read_bytes()
+              total += len(data)
+              if len(data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('PINNED_RUNTIME_SIZE')
+              if hashlib.sha256(data).hexdigest() != expected:
+                  raise SystemExit('PINNED_RUNTIME_FILE_SHA:' + relative)
+          print('UAART_PINNED_RUNTIME_CLOSURE_VALIDATED')
+          PY
+          python3 -I automation/control_plane.py verify-mode --require AUTOMATIC \
+            --allow-halt-for-recovery
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "$REQUEST_SHA256"
+          python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+            --expected-class CRITICAL >"$RUNNER_TEMP/uaart-rollback-contract.json"
+          test "$(python3 -I -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/uaart-rollback-contract.json"))["dependency_sha256"])')" = \
+            "$DEPENDENCY_SHA256"
+          python3 -I automation/transaction_watchdog.py discover >"$RUNNER_TEMP/uaart-rolling-back.json"
+          python3 -I - <<'PY'
+          import json, os
+          value = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-rolling-back.json', encoding='utf-8'))
+          if not (
+              value.get('pending_count') == 1
+              and value.get('transaction_status') == 'ROLLING_BACK'
+              and value.get('transaction_id') == os.environ['TRANSACTION_ID']
+              and value.get('transaction_path') == os.environ['TRANSACTION_PATH']
+              and value.get('request_path') == os.environ['REQUEST_PATH']
+              and value.get('request_sha256') == os.environ['REQUEST_SHA256']
+              and str(value.get('run_id')) == os.environ['RUN_ID']
+              and value.get('task_id') == os.environ['TASK_ID']
+              and value.get('claim_path') == os.environ['CLAIM_PATH']
+              and value.get('source_commit') == os.environ['SOURCE_COMMIT']
+          ):
+              raise SystemExit('REMOTE_ROLLING_BACK_TRANSACTION_MISMATCH')
+          PY
+          echo 'validated=true' >>"$GITHUB_OUTPUT"
+
+      - name: Execute exact one-shot Production rollback
+        if: >-
+          github.run_attempt == 1 && inputs.production_required == 'true' &&
+          steps.rolling_back.outputs.validated == 'true'
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          UAART_REQUEST_PATH: ${{ inputs.request_path }}
+          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_TASK_CLASS: CRITICAL
+          UAART_TASK_ID: ${{ needs.validate.outputs.task_id }}
+          UAART_TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+          UAART_BACKUP_MANIFEST_SHA256: ${{ needs.backup.outputs.backup_manifest_sha256 }}
+          UAART_MANIFEST_SHA256: ${{ needs.validate.outputs.critical_manifest_sha256 }}
+          UAART_RECEIPT_PATH: ${{ needs.validate.outputs.receipt_path }}
+          UAART_ROLLBACK_RECEIPT_PATH: ${{ needs.validate.outputs.rollback_receipt_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          cd "$PINNED_ROOT"
+          python3 -I automation/execution_contract.py rollback "$REQUEST_PATH" \
+            --expected-class CRITICAL
+
+      - name: Validate and package only rollback receipt
+        id: receipt
+        shell: bash
+        env:
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+          UAART_BACKUP_MANIFEST_SHA256: ${{ needs.backup.outputs.backup_manifest_sha256 }}
+        run: |
+          set -euo pipefail
+          cd "$PINNED_ROOT"
+          python3 -I automation/execution_contract.py rollback-receipt "$REQUEST_PATH" \
+            --expected-class CRITICAL >"$RUNNER_TEMP/uaart-rollback-validation.json"
+          install -d -m 700 /tmp/uaart-critical-rollback
+          install -m 600 "$ROLLBACK_RECEIPT_PATH" /tmp/uaart-critical-rollback/rollback.json
+          echo "rollback_receipt_sha256=$(sha256sum /tmp/uaart-critical-rollback/rollback.json | cut -d' ' -f1)" >>"$GITHUB_OUTPUT"
+          echo 'performed=true' >>"$GITHUB_OUTPUT"
+
+      - name: Upload data-only rollback receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: uaart-critical-rollback-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/uaart-critical-rollback/rollback.json
+          if-no-files-found: error
+          retention-days: 2
+
+  recover:
+    needs: [validate, prepare, backup, open, controller_production, finalize, rollback_mark, rollback_execute]
+    if: >-
+      always() && github.ref == 'refs/heads/main' &&
+      inputs.production_required == 'true' &&
+      (failure() || cancelled() || needs.finalize.result != 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      halted: ${{ steps.persist.outputs.halted }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      TASK_ID: ${{ needs.validate.outputs.task_id }}
+      TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+      TRANSACTION_PATH: ${{ needs.prepare.outputs.transaction_path }}
+      ROLLBACK_RECEIPT_PATH: ${{ needs.validate.outputs.rollback_receipt_path }}
+      BACKUP_MANIFEST_SHA256: ${{ needs.backup.outputs.backup_manifest_sha256 }}
+      CRITICAL_MANIFEST_SHA256: ${{ needs.validate.outputs.critical_manifest_sha256 }}
+      ROLLBACK_PERFORMED: ${{ needs.rollback_execute.outputs.performed }}
+      ROLLBACK_RECEIPT_SHA256: ${{ needs.rollback_execute.outputs.rollback_receipt_sha256 }}
+      CONTRACT_VALIDATED: ${{ needs.validate.result == 'success' }}
+      ROLLBACK_MARKED: ${{ needs.rollback_mark.outputs.marked }}
+      SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+      WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
+    steps:
+      - name: Checkout clean authoritative recovery state
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Download rollback receipt outside checkout
+        if: >-
+          github.run_attempt == 1 &&
+          needs.rollback_execute.outputs.performed == 'true'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: uaart-critical-rollback-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/uaart-critical-rollback
+
+      - name: Strictly validate data-only rollback artifact
+        if: >-
+          github.run_attempt == 1 &&
+          needs.rollback_execute.outputs.performed == 'true'
+        id: rollback_receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          folder="$RUNNER_TEMP/uaart-critical-rollback"
+          test "$(find "$folder" -mindepth 1 -maxdepth 1 -printf '%f\n')" = rollback.json
+          test -f "$folder/rollback.json" && test ! -L "$folder/rollback.json"
+          test "$(stat -c %s "$folder/rollback.json")" -le 1048576
+          python3 -I - <<'PY'
+          import hashlib, json, os, pathlib
+          source = pathlib.Path(os.environ['RUNNER_TEMP']) / 'uaart-critical-rollback/rollback.json'
+          payload = source.read_bytes()
+          if hashlib.sha256(payload).hexdigest() != os.environ['ROLLBACK_RECEIPT_SHA256']:
+              raise SystemExit('ROLLBACK_ARTIFACT_SHA256')
+          value = json.loads(payload.decode('utf-8'))
+          keys = {
+              'backup_manifest_sha256', 'crm_unchanged', 'live_verify',
+              'manifest_sha256', 'operation', 'protected_files_unchanged',
+              'request_sha256', 'restored', 'rollback', 'run_id',
+              'schema_version', 'status', 'task_id', 'transaction_id',
+              'unexpected_changes',
+          }
+          if not isinstance(value, dict) or set(value) != keys:
+              raise SystemExit('ROLLBACK_ARTIFACT_SCHEMA')
+          if not (
+              value.get('request_sha256') == os.environ['REQUEST_SHA256']
+              and str(value.get('run_id')) == os.environ['RUN_ID']
+              and value.get('task_id') == os.environ['TASK_ID']
+              and value.get('transaction_id') == os.environ['TRANSACTION_ID']
+              and value.get('backup_manifest_sha256') == os.environ['BACKUP_MANIFEST_SHA256']
+              and value.get('manifest_sha256') == os.environ['CRITICAL_MANIFEST_SHA256']
+              and value.get('schema_version') == 'UA-ART-PRODUCTION-ROLLBACK-RECEIPT-1'
+              and value.get('operation') == 'rollback'
+              and value.get('status') in {'PASS', 'ROLLED_BACK'}
+              and value.get('rollback') == 'PASS'
+              and value.get('restored') is True
+              and type(value.get('unexpected_changes')) is int
+              and value.get('unexpected_changes') == 0
+              and value.get('protected_files_unchanged') is True
+              and value.get('crm_unchanged') is True
+              and value.get('live_verify') == 'PASS'
+          ):
+              raise SystemExit('ROLLBACK_ARTIFACT_BINDING')
+          print('UAART_DATA_ONLY_ARTIFACT_VALIDATED')
+          PY
+          echo 'validated=true' >>"$GITHUB_OUTPUT"
+
+      - name: Persist HALT and optional proven rollback with isolated Git trees
+        id: persist
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ROLLBACK_VALIDATED: ${{ steps.rollback_receipt.outputs.validated }}
+        run: |
+          set -euo pipefail
+          # Without a successful read-only attestation no trusted runtime exists;
+          # Production has not started, so fail without consuming write authority.
+          test "$CONTRACT_VALIDATED" = true
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')"
+          unset GH_TOKEN
+          git_auth() {
+            GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${auth}" git "$@"
+          }
+          last_commit=''
+          for attempt in 1 2 3 4 5 6; do
+            git_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'
+            parent="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$last_commit" && git merge-base --is-ancestor "$last_commit" "$parent"; then
+              mapfile -d '' accepted_paths < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$last_commit")
+              test "${#accepted_paths[@]}" -gt 0
+              git diff --quiet "$last_commit" "$parent" -- "${accepted_paths[@]}" || exit 1
+              echo 'halted=true' >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+            git merge-base --is-ancestor "$SOURCE_COMMIT" "$parent"
+            test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+              "$WORKFLOW_BLOB_OID"
+            test "$(git rev-parse "$parent:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+            test "$(git rev-parse "$SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json")" = \
+              "$(git rev-parse "$parent:state/AUTOPILOT_RUNTIME_MANIFEST.json")"
+            read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+            test "${#runtime_paths[@]}" -eq 18
+            test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+            git diff --quiet "$SOURCE_COMMIT" "$parent" -- "${runtime_paths[@]}"
+            echo 'UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED'
+            rebuild="$RUNNER_TEMP/uaart-critical-recover-${attempt}"
+            index="$RUNNER_TEMP/uaart-critical-recover-index-${attempt}"
+            git worktree add --detach "$rebuild" "$parent"
+            cd "$rebuild"
+            python3 -I automation/control_plane.py verify-mode --require AUTOMATIC \
+              --allow-halt-for-recovery
+            reason="CRITICAL Production pipeline failed; GitHub Actions run ${GITHUB_RUN_ID}; rollback reserved ${ROLLBACK_MARKED:-false}; rollback performed ${ROLLBACK_PERFORMED:-false}"
+            python3 -I automation/control_plane.py halt-system \
+              --run-id "$RUN_ID" --reason "$reason"
+            rollback_confirmed=false
+            if test "$ROLLBACK_VALIDATED" = true; then
+              receipt_source="$RUNNER_TEMP/uaart-critical-rollback/rollback.json"
+              test -f "$receipt_source" && test ! -L "$receipt_source"
+              test ! -e "$ROLLBACK_RECEIPT_PATH"
+              install -D -m 600 "$receipt_source" "$ROLLBACK_RECEIPT_PATH"
+              UAART_RUN_ID="$RUN_ID" \
+              UAART_TRANSACTION_ID="$TRANSACTION_ID" \
+              UAART_BACKUP_MANIFEST_SHA256="$BACKUP_MANIFEST_SHA256" \
+                python3 -I automation/execution_contract.py rollback-receipt "$REQUEST_PATH" \
+                  --expected-class CRITICAL >/dev/null
+              python3 -I automation/control_plane.py transaction-close "$REQUEST_PATH" \
+                --run-id "$RUN_ID" --transaction-id "$TRANSACTION_ID" \
+                --outcome ROLLED_BACK >/dev/null
+              rollback_confirmed=true
+            fi
+            failure_args=()
+            test "$rollback_confirmed" = true && failure_args+=(--rollback-confirmed)
+            if test "$CONTRACT_VALIDATED" = true && test -f "$REQUEST_PATH" && test -f "$CLAIM_PATH"; then
+              python3 -I automation/control_plane.py fail "$REQUEST_PATH" \
+                --run-id "$RUN_ID" \
+                --message "CRITICAL Production failed; inspect GitHub Actions run ${GITHUB_RUN_ID}" \
+                "${failure_args[@]}" || true
+              python3 -I automation/control_plane.py halt "$REQUEST_PATH" \
+                --run-id "$RUN_ID" --reason "$reason" || true
+            fi
+            rm -f "$index"
+            GIT_INDEX_FILE="$index" git read-tree "$parent"
+            paths=(state/AUTOPILOT_HALT.json)
+            test "$CONTRACT_VALIDATED" = true && test -f "$CLAIM_PATH" && paths+=("$CLAIM_PATH")
+            test "$CONTRACT_VALIDATED" = true && test -n "${TRANSACTION_PATH:-}" && test -f "$TRANSACTION_PATH" && paths+=("$TRANSACTION_PATH")
+            test "$rollback_confirmed" = true && paths+=("$ROLLBACK_RECEIPT_PATH")
+            for path in "${paths[@]}"; do
+              test -f "$path" && test ! -L "$path"
+              blob="$(git hash-object -w -- "$path")"
+              GIT_INDEX_FILE="$index" git update-index --add \
+                --cacheinfo "100644,${blob},${path}"
+            done
+            tree="$(GIT_INDEX_FILE="$index" git write-tree)"
+            if test "$tree" = "$(git rev-parse "${parent}^{tree}")"; then
+              git show "${parent}:state/AUTOPILOT_HALT.json" >/dev/null
+              cd "$GITHUB_WORKSPACE"
+              echo 'halted=true' >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            export GIT_AUTHOR_NAME=ua-art-critical-fail-closed
+            export GIT_AUTHOR_EMAIL=actions@users.noreply.github.com
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            commit="$(printf '%s\n' "uaart critical: HALT ${TASK_ID:-unknown}" | \
+              git commit-tree "$tree" -p "$parent")"
+            COMMIT="$commit"
+            COMMIT="$commit" PARENT="$parent" python3 -I - <<'PY'
+          import os, re, subprocess
+          raw = subprocess.check_output(['git', 'diff-tree', '--no-commit-id', '--name-only', '-r', '-z', os.environ['PARENT'], os.environ['COMMIT']])
+          changed = set(filter(None, raw.decode().split('\0')))
+          if 'state/AUTOPILOT_HALT.json' not in changed:
+              raise SystemExit('HALT_COMMIT_REQUIRED')
+          allowed = {
+              'state/AUTOPILOT_HALT.json', os.environ.get('CLAIM_PATH', ''),
+              os.environ.get('TRANSACTION_PATH', ''),
+              os.environ.get('ROLLBACK_RECEIPT_PATH', ''),
+          }
+          if not changed.issubset(allowed) or any(not re.fullmatch(r'state/(?:AUTOPILOT_HALT\.json|(?:claims|transactions|receipts)/[^/]+\.json)', path) for path in changed):
+              raise SystemExit('HALT_COMMIT_TREE_SCOPE')
+          PY
+            cd "$GITHUB_WORKSPACE"
+            last_commit="$commit"
+            if git_auth push origin "$COMMIT:refs/heads/main"; then
+              echo 'halted=true' >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+  result:
+    needs: [main_only, validate, prepare, backup, open, controller_production, controller_nonproduction, finalize, rollback_mark, rollback_execute, recover]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    outputs:
+      status: ${{ steps.outcome.outputs.status }}
+      receipt_path: ${{ steps.outcome.outputs.receipt_path }}
+    steps:
+      - name: Publish exact reusable workflow outcome
+        id: outcome
+        shell: bash
         env:
           PRODUCTION_REQUIRED: ${{ inputs.production_required }}
-          TRANSACTION_OPENED: ${{ steps.transaction.outputs.opened }}
-          ROLLBACK_OUTCOME: ${{ steps.rollback.outcome }}
-          ROLLBACK_RECEIPT_PATH: ${{ steps.rollback.outputs.receipt_path }}
-        shell: bash
+          RECEIPT_PATH: ${{ needs.validate.outputs.receipt_path }}
+          FINAL_RESULT: ${{ needs.finalize.result }}
+          EXPECTED_REF: ${{ github.ref }}
         run: |
           set -euo pipefail
-          test -f "$CLAIM_PATH" || exit 0
-          rollback_args=()
-          if test "$ROLLBACK_OUTCOME" = 'success'; then
-            rollback_args+=(--rollback-confirmed)
-          fi
-          python3 automation/control_plane.py fail "$REQUEST_PATH" \
-            --run-id "$RUN_ID" \
-            --message "CRITICAL pipeline failed; rollback outcome ${ROLLBACK_OUTCOME}; inspect GitHub Actions run ${GITHUB_RUN_ID}" \
-            "${rollback_args[@]}"
-          git add -- "$CLAIM_PATH"
-          if test -n "$ROLLBACK_RECEIPT_PATH" && test -f "$ROLLBACK_RECEIPT_PATH"; then
-            git add -- "$ROLLBACK_RECEIPT_PATH"
-          fi
-          if test "$PRODUCTION_REQUIRED" = 'true' \
-            && test "$TRANSACTION_OPENED" = 'true'; then
-            python3 automation/control_plane.py halt "$REQUEST_PATH" \
-              --run-id "$RUN_ID" \
-              --reason "Production transaction failed; rollback outcome ${ROLLBACK_OUTCOME}; GitHub Actions run ${GITHUB_RUN_ID}"
-            git add -- state/AUTOPILOT_HALT.json
-          fi
-          if test -n "${{ steps.transaction.outputs.transaction_path }}" \
-            && test -f "${{ steps.transaction.outputs.transaction_path }}"; then
-            git add -- "${{ steps.transaction.outputs.transaction_path }}"
-          fi
-          git diff --cached --quiet && exit 0
-          git config user.name 'ua-art-critical-pipeline'
-          git config user.email 'actions@users.noreply.github.com'
-          git commit -m "uaart critical: record ${{ steps.contract.outputs.task_id || 'unknown' }} failure"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "receipt_path=$RECEIPT_PATH" >>"$GITHUB_OUTPUT"
+          test "$EXPECTED_REF" = 'refs/heads/main'
+          test "$FINAL_RESULT" = success
+          echo 'status=FINISHED' >>"$GITHUB_OUTPUT"
 
-      - name: Final workflow output
-        id: final
+  rollback_mark:
+    # The legacy `steps.backup_open.outputs.opened == 'true'` check is replaced
+    # by a fresh-runner validation plus durable OPEN -> ROLLING_BACK reservation.
+    needs: [validate, prepare, backup, open, controller_production, finalize]
+    if: >-
+      always() && github.ref == 'refs/heads/main' &&
+      github.run_attempt == 1 && inputs.production_required == 'true' &&
+      needs.prepare.result == 'success' &&
+      needs.finalize.result != 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      marked: ${{ steps.reserve.outputs.marked }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      TASK_ID: ${{ needs.validate.outputs.task_id }}
+      TRANSACTION_ID: ${{ needs.prepare.outputs.transaction_id }}
+      TRANSACTION_PATH: ${{ needs.prepare.outputs.transaction_path }}
+      SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+      WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_critical.yml
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
+    steps:
+      - name: Checkout clean authoritative transaction state
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          clean: true
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Reserve one-shot rollback with isolated Git trees
+        id: reserve
         shell: bash
-        run: echo 'status=FINISHED' >>"$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')"
+          unset GH_TOKEN
+          git_auth() {
+            GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${auth}" git "$@"
+          }
+          last_commit=''
+          for attempt in 1 2 3 4 5 6; do
+            git_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'
+            parent="$(git rev-parse refs/remotes/origin/main)"
+            if test -n "$last_commit" && git merge-base --is-ancestor "$last_commit" "$parent"; then
+              mapfile -d '' accepted_paths < <(git diff-tree --no-commit-id \
+                --name-only -r -z "$last_commit")
+              test "${#accepted_paths[@]}" -gt 0
+              git diff --quiet "$last_commit" "$parent" -- "${accepted_paths[@]}" || exit 1
+              echo 'marked=true' >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+            git merge-base --is-ancestor "$SOURCE_COMMIT" "$parent"
+            test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+              "$WORKFLOW_BLOB_OID"
+            test "$(git rev-parse "$parent:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+            test "$(git rev-parse "$SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json")" = \
+              "$(git rev-parse "$parent:state/AUTOPILOT_RUNTIME_MANIFEST.json")"
+            read -r -a runtime_paths <<<"$UAART_RUNTIME_PINNED_PATHS"
+            test "${#runtime_paths[@]}" -eq 18
+            test "$(printf '%s\n' "${runtime_paths[@]}" | sort -u | wc -l)" -eq 18
+            git diff --quiet "$SOURCE_COMMIT" "$parent" -- "${runtime_paths[@]}"
+            echo 'UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED'
+            rebuild="$RUNNER_TEMP/uaart-critical-rollback-mark-${attempt}"
+            index="$RUNNER_TEMP/uaart-critical-rollback-mark-index-${attempt}"
+            git worktree add --detach "$rebuild" "$parent"
+            cd "$rebuild"
+            python3 -I automation/control_plane.py verify-mode --require AUTOMATIC \
+              --allow-halt-for-recovery
+            python3 -I automation/transaction_watchdog.py discover >"$RUNNER_TEMP/uaart-rollback-state.json"
+            status="$(python3 -I -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/uaart-rollback-state.json"))["transaction_status"])')"
+            if test "$status" != OPEN; then
+              echo 'marked=false' >>"$GITHUB_OUTPUT"
+              exit 0
+            fi
+            python3 -I - <<'PY'
+          import json, os
+          value = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-rollback-state.json', encoding='utf-8'))
+          if not (
+              value.get('pending_count') == 1
+              and value.get('transaction_status') == 'OPEN'
+              and value.get('transaction_id') == os.environ['TRANSACTION_ID']
+              and value.get('transaction_path') == os.environ['TRANSACTION_PATH']
+              and value.get('request_path') == os.environ['REQUEST_PATH']
+              and value.get('request_sha256') == os.environ['REQUEST_SHA256']
+              and str(value.get('run_id')) == os.environ['RUN_ID']
+              and value.get('task_id') == os.environ['TASK_ID']
+          ):
+              raise SystemExit('ROLLBACK_OPEN_IDENTITY_MISMATCH')
+          PY
+            python3 -I automation/control_plane.py transaction-rollback-start "$REQUEST_PATH" \
+              --run-id "$RUN_ID" --transaction-id "$TRANSACTION_ID"
+            rm -f "$index"
+            GIT_INDEX_FILE="$index" git read-tree "$parent"
+            for path in "$CLAIM_PATH" "$TRANSACTION_PATH"; do
+              blob="$(git hash-object -w -- "$path")"
+              GIT_INDEX_FILE="$index" git update-index --add \
+                --cacheinfo "100644,${blob},${path}"
+            done
+            tree="$(GIT_INDEX_FILE="$index" git write-tree)"
+            export GIT_AUTHOR_NAME=ua-art-production-rollback-guard
+            export GIT_AUTHOR_EMAIL=actions@users.noreply.github.com
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            commit="$(printf '%s\n' "uaart production: reserve rollback $TASK_ID" | \
+              git commit-tree "$tree" -p "$parent")"
+            COMMIT="$commit"
+            mapfile -d '' changed < <(git diff-tree --no-commit-id --name-only -r -z "$parent" "$commit")
+            test "${#changed[@]}" -eq 2
+            printf '%s\n' "${changed[@]}" | sort >"$RUNNER_TEMP/changed"
+            printf '%s\n' "$CLAIM_PATH" "$TRANSACTION_PATH" | sort >"$RUNNER_TEMP/expected"
+            cmp "$RUNNER_TEMP/changed" "$RUNNER_TEMP/expected"
+            cd "$GITHUB_WORKSPACE"
+            last_commit="$commit"
+            if git_auth push origin "$COMMIT:refs/heads/main"; then
+              echo 'marked=true' >>"$GITHUB_OUTPUT"
+              unset auth GH_TOKEN
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
