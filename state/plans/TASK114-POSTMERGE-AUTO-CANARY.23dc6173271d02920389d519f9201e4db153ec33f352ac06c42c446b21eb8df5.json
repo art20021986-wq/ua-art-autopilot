@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.json",
+  "autostart_ledger_sha256": "1fc6cf79ad40a6d018fd8571c6c05d368ddec1b4c54f54031753f1b1d038c004",
+  "autostart_source_commit": "117b7603e751de329c7d2aab742558fdb424cf9e",
+  "created_at": "2026-09-04T17:52:02Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "33902756545",
+    "task_id": "TASK114-POSTMERGE-AUTO-CANARY",
+    "task_sha256": "23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-e083ecf0eed19659-31244a30b087fa6a",
+  "request_path": "tasks/requests/TASK114-POSTMERGE-AUTO-CANARY.json",
+  "resource_locks": [
+    "PATH_SCOPE:e083ecf0eed19659"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "FAST",
+  "task_execution_status": "CLAIMED"
+}
