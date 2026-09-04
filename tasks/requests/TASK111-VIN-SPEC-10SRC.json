@@ -21,7 +21,7 @@
   "description": "Production completion for every existing and future car card. Preserve the familiar valid-VIN CRM card flow; automatically queue enrichment on each new valid VIN; use a ten-domain non-Russian source pool with exact VIN-family and powertrain matching; retain an audited deterministic catalogue when a site is blocked or JavaScript-only; and backfill all current cards. The release must leave all 16 published cards nonempty with at least 10 visible additional technical facts each. Refresh only cards already published, never create an initial publication, never write crm.db primary fields or prices, never expose source URLs publicly. Exact backup, automatic rollback, live verification of every public card and delayed verification are mandatory.",
   "execution": {
     "controller_path": "cloud/task_111_vin_spec_10src/controller.py",
-    "controller_sha256": "d50fce4f2b54adb861d854e70db0a09764db9fbe59a1d015315faa4ae59a75f6",
+    "controller_sha256": "b8f5c73712805862fc9da89555aa8c259a54e9fa60158652c501619ba60e1a37",
     "evidence_paths": [
       "cloud/task_111_vin_spec_10src/evidence.json",
       "state/receipts/TASK111-VIN-SPEC-10SRC.json"
@@ -31,8 +31,8 @@
       "cloud/task_111_vin_spec_10src/source_policy.py": "e293598c282ae60ae4d8064ec11922a7ef323c5e6f66b2e9e7fbaa884e6139dd",
       "cloud/task_111_vin_spec_10src/vin_spec_service.py": "c93129826401d641525623f37d889c4ea9ecd502bad697669ac58f3748edd232",
       "cloud/task_111_vin_spec_10src/integration_patcher.py": "6faac319989d52bc0a586121c21d802180082520072d8c43d1464699bed69010",
-      "cloud/task_111_vin_spec_10src/remote_installer.py": "1d61be381652a8ab17de190a6ebb9220e32d21469aa6ce0c3727895c0ad4dec7",
-      "cloud/task_111_vin_spec_10src/test_contract.py": "14f1e4eaa8811e92431e28fa5c2870e4bf8491be15b7c1395fd0689b401ee35c"
+      "cloud/task_111_vin_spec_10src/remote_installer.py": "e104cd18f073f7b1210cc766f9bbe86b04b85bf37d6991dcb6efe88d59bb8742",
+      "cloud/task_111_vin_spec_10src/test_contract.py": "2b84631ce89c7afdbf7d32a2963fa1b5db98f505c603ba214cff4609eaf1a9e5"
     },
     "production_required": true,
     "receipt_path": "state/receipts/TASK111-VIN-SPEC-10SRC.json",
@@ -60,7 +60,7 @@
   "storage_required_bytes": 268435456,
   "storage_probe": {
     "evidence_path": "state/storage/TASK111-VIN-SPEC-10SRC.json",
-    "evidence_sha256": "944beea53e5b6c2668db991b2faf27e50135d67829cc792a74eba10207794769"
+    "evidence_sha256": "3253d2ef0c85ac05eed6cce15417d4a96b697a6803b600dc139f0b3f515b6904"
   },
   "task_id": "TASK111-VIN-SPEC-10SRC",
   "title": "Ten-source VIN specifications for every car"
