@@ -462,9 +462,15 @@ def run() -> None:
         prior_spec = sys.modules.get("ua_additional_spec")
         try:
             sys.modules["ua_additional_spec"] = fake_spec
-            publisher_namespace: dict[str, object] = {}
-            exec(compile(patched_publisher, "publikaciya.py", "exec"), publisher_namespace)
-            final_html, _, _ = publisher_namespace["_master"]("UA-0015")
+            publisher_path = root / "publikaciya.py"
+            publisher_path.write_text(patched_publisher, encoding="utf-8")
+            publisher_spec = importlib.util.spec_from_file_location(
+                "ua111_test_publisher", publisher_path
+            )
+            assert publisher_spec and publisher_spec.loader
+            publisher_module = importlib.util.module_from_spec(publisher_spec)
+            publisher_spec.loader.exec_module(publisher_module)
+            final_html, _, _ = publisher_module._master("UA-0015")
         finally:
             if prior_spec is None:
                 sys.modules.pop("ua_additional_spec", None)
