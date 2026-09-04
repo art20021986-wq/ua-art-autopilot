@@ -1,0 +1,30 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/task114_postmerge_auto/evidence.json"
+  ],
+  "complexity": 1,
+  "control_plane_version": "TASK107-R2",
+  "description": "Deterministic isolated proof of the hardened post-merge automatic intake.",
+  "execution": {
+    "controller_path": "cloud/task114_postmerge_auto/canary_controller.py",
+    "controller_sha256": "350326fb57711db0efb26ddca6d798a44f2ae3783ec1727540b7ad5fe12bfbe8",
+    "evidence_paths": [
+      "cloud/task114_postmerge_auto/evidence.json",
+      "state/receipts/TASK114-POSTMERGE-AUTO-CANARY.json"
+    ],
+    "file_sha256": {
+      "cloud/task114_postmerge_auto/test_canary_controller.py": "d2687669681089fe43ffce6a51cc29a5ff23079ac98aec7c1922ae0b6f746408"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK114-POSTMERGE-AUTO-CANARY.json",
+    "test_paths": [
+      "cloud/task114_postmerge_auto/test_canary_controller.py"
+    ],
+    "timeout_seconds": 120
+  },
+  "production_required": false,
+  "read_only": false,
+  "task_id": "TASK114-POSTMERGE-AUTO-CANARY",
+  "title": "Hardened post-merge automatic intake canary"
+}
