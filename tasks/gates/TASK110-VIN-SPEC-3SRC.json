@@ -1,0 +1,33 @@
+{
+  "backup_plan_ready": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "manifest_sha256": "ab5e94c29603656ff9e4f03d0766d0ec1f0a2add1fdf3f7f0e94629d5c474033",
+  "production_write": false,
+  "protected_snapshot": {
+    "crm.db": {
+      "access": "READ_ONLY_CARS_HASH",
+      "write_permitted": false
+    },
+    "primary_fields_and_prices": {
+      "access": "MATCH_CONTEXT_ONLY_WITH_PRICE_FILTER",
+      "write_permitted": false
+    },
+    "runtime_sources": {
+      "access": "EXACT_BACKUP_AND_ATOMIC_REPLACE",
+      "write_permitted": true
+    },
+    "published_cards": {
+      "access": "EXACT_BACKUP_AND_ADDITIONAL_SPEC_REFRESH_ONLY",
+      "write_permitted": true
+    },
+    "media_and_dns": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    }
+  },
+  "rollback_plan_ready": true,
+  "status": "PASS",
+  "task_id": "TASK110-VIN-SPEC-3SRC",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
