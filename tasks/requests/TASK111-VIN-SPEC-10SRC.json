@@ -16,7 +16,7 @@
     "manifest_path": "tasks/manifests/TASK111-VIN-SPEC-10SRC.json",
     "manifest_sha256": "c13ff977e4dd900e6ba0aad538ea04a23f44e422dbcd9821f73832e9dfb487b6",
     "owner_approval_path": "tasks/approvals/TASK111-VIN-SPEC-10SRC.md",
-    "owner_approval_sha256": "7a0a6aa661f713e54c5c0815ebaa6de7331a823285d70011685b039886f8a384"
+    "owner_approval_sha256": "452b0761f7c4dacd8b9e04af03dafcf3f486084819710c6606e32bdbaf9c3c0e"
   },
   "description": "Production completion for every existing and future car card. Preserve the familiar valid-VIN CRM card flow; automatically queue enrichment on each new valid VIN; use a ten-domain non-Russian source pool with exact VIN-family and powertrain matching; retain an audited deterministic catalogue when a site is blocked or JavaScript-only; and backfill all current cards. The release must leave all 16 published cards nonempty with at least 10 visible additional technical facts each. Refresh only cards already published, never create an initial publication, never write crm.db primary fields or prices, never expose source URLs publicly. Exact backup, automatic rollback, live verification of every public card and delayed verification are mandatory.",
   "execution": {
