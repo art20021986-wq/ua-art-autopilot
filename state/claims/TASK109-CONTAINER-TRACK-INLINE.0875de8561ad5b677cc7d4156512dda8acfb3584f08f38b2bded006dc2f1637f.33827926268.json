@@ -3,8 +3,19 @@
   "automatic_mode_enabled": false,
   "created_at": "2026-09-04T02:01:32Z",
   "critical_gate_status": "PENDING",
-  "heartbeat_at": "2026-09-04T02:01:32Z",
-  "heartbeat_sequence": 0,
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-04T02:01:48Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL pipeline failed; inspect GitHub Actions run 33827926268",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "07fc9b97f94a4555"
+    }
+  ],
+  "heartbeat_at": "2026-09-04T02:01:48Z",
+  "heartbeat_sequence": 2,
   "identity": {
     "run_id": "33827926268",
     "task_id": "TASK109-CONTAINER-TRACK-INLINE",
@@ -25,8 +36,21 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "8495bdd4cd24aa19886c57abf230f11dece54bc1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 155.32,
+    "allowed": false,
+    "evidence_path": "state/storage/TASK109-CONTAINER-TRACK-INLINE.json",
+    "evidence_sha256": "0b8a13747296dd02f277c05359b144af57b14edaf68469dc45b8f3d1523ccb0e",
+    "free_bytes": 1140485783552,
+    "heavy": true,
+    "measured_at": "2026-09-04T01:59:13Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 134217728,
+    "status": "THROTTLE_80",
+    "usage_percent": 82.01150871009202
+  },
+  "storage_preflight_status": "THROTTLE_80",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-04T02:01:32Z"
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "updated_at": "2026-09-04T02:01:48Z"
 }
