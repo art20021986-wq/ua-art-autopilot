@@ -412,6 +412,20 @@ def run() -> None:
         require(sha(main) == cars_before, "enrichment changed CRM")
         require(service.scan_new_vins()["queued"] == 0, "idempotent scan")
 
+        with service.connect_spec(False) as conn:
+            conn.execute(
+                """UPDATE vin_spec_jobs SET status='NEEDS_REVIEW',facts_count=0
+                   WHERE car_uid='UA-0001' AND policy_version=?""",
+                (source_policy.POLICY_VERSION,),
+            )
+            conn.commit()
+        repaired = service.process_card_now("UA-0001", enricher=fake_enrich)
+        require(
+            repaired and repaired["status"] == "READY" and repaired["facts"] == 2,
+            "atomic terminal remediation",
+        )
+        require(published == ["UA-0001", "UA-0001"], "remediation publication")
+
         with service.connect_spec(True) as conn:
             keys = {row[0] for row in conn.execute(
                 "SELECT field_key FROM additional_specification WHERE car_uid='UA-0001'"
