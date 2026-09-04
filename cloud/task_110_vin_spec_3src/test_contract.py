@@ -122,6 +122,17 @@ def fake_enrich(car: dict[str, object]) -> dict[str, object]:
                 "source_urls": [url],
             },
             {
+                "field_key": "wheelbase",
+                "label_ru": "Колёсная база",
+                "category": "dimensions",
+                "display_value": "2699 мм",
+                "unit": "мм",
+                "confidence": 0.94,
+                "evidence_count": 1,
+                "source_domains": ["auto-data.net"],
+                "source_urls": [url],
+            },
+            {
                 "field_key": "price",
                 "label_ru": "Цена",
                 "category": "additional",
@@ -228,7 +239,7 @@ def run() -> None:
             rejected = conn.execute(
                 "SELECT COUNT(*) FROM additional_specification_rejections"
             ).fetchone()[0]
-        require(keys == {"legacy_boot", "length"}, "sidecar-only facts")
+        require(keys == {"legacy_boot", "length", "wheelbase"}, "sidecar-only facts")
         require(rejected >= 4, "price/primary rejection audit")
 
         module = load_patched_spec(main, sidecar, root / "ua_additional_spec.py")
@@ -249,6 +260,22 @@ def run() -> None:
         require(future["queued"] == 1 and "UA-0004" in future["card_uids"], "future VIN queue")
         require(sha(main) == future_baseline, "future scan changed CRM")
 
+        with sqlite3.connect(main) as conn:
+            conn.execute("UPDATE cars SET vin='WDDMH0BBXDV171919' WHERE auto_number='UA-0001'")
+        corrected_baseline = sha(main)
+        corrected = service.scan_new_vins()
+        require(corrected["queued"] == 1, "corrected VIN queue")
+        require(sha(main) == corrected_baseline, "corrected VIN scan changed CRM")
+        with service.connect_spec(True) as conn:
+            auto_count = conn.execute(
+                "SELECT COUNT(*) FROM additional_specification WHERE car_uid='UA-0001' AND field_key='wheelbase'"
+            ).fetchone()[0]
+            manual_state = conn.execute(
+                "SELECT is_visible,verification_status FROM additional_specification_meta WHERE car_uid='UA-0001' AND field_key='legacy_boot'"
+            ).fetchone()
+        require(auto_count == 0, "old VIN auto facts survived")
+        require(tuple(manual_state) == (0, "VIN_CHANGED_REVIEW"), "old VIN manual facts not quarantined")
+
         with service.connect_spec(True) as conn:
             quick = conn.execute("PRAGMA quick_check").fetchone()[0]
             prices = conn.execute(
@@ -262,6 +289,7 @@ def run() -> None:
             "valid_initial_vins": scan["valid_vins"],
             "processed_initial_cards": len(processed),
             "future_vin_queued": True,
+            "corrected_vin_quarantined": True,
             "published_refreshes": published,
             "source_domains": list(source_policy.SOURCE_DOMAINS),
             "price_rows": prices,
