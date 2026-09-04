@@ -1,5 +1,36 @@
 {
   "diagnostics": {
+    "kernel_quota": {
+      "attempts": [
+        {
+          "errno": 2,
+          "identity": "user",
+          "reason": "ENOENT",
+          "returncode": -1,
+          "special_kind": "source"
+        },
+        {
+          "errno": 15,
+          "identity": "user",
+          "reason": "ENOTBLK",
+          "returncode": -1,
+          "special_kind": "mountpoint"
+        }
+      ],
+      "mount": {
+        "filesystem": "nfs",
+        "major_minor": "0:59",
+        "mountpoint": "/home/Carix",
+        "source": "10.0.0.27:/mnt/user_storage/homedirs/Carix/home/Carix",
+        "status": "found"
+      },
+      "project": {
+        "errno": 25,
+        "reason": "ENOTTY",
+        "status": "unavailable"
+      },
+      "successes": []
+    },
     "official_du_bytes": {
       "argv": [
         "du",
@@ -12,7 +43,7 @@
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "22564864\t/tmp\n4918026240\t/home/Carix\n40960\t/var/www\n"
+      "stdout": "22564864\t/tmp\n4918083584\t/home/Carix\n40960\t/var/www\n"
     },
     "quota_bytes": {
       "argv": [
@@ -29,12 +60,12 @@
       "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
     }
   },
-  "free_bytes": 1135459958784,
-  "measured_at": "2026-09-04T02:06:06Z",
+  "free_bytes": 1141626634240,
+  "measured_at": "2026-09-04T02:15:23Z",
   "measurement": "shutil.disk_usage:/home/Carix;used=total-user_available_free",
   "read_only": true,
   "target_environment": "production",
   "task_id": "TASK109-CONTAINER-TRACK-INLINE",
   "total_bytes": 6340085809152,
-  "used_bytes": 5204625850368
+  "used_bytes": 5198459174912
 }
