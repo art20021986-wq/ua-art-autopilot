@@ -11,17 +11,17 @@
   "critical": {
     "allow_crm_vehicle_data": false,
     "gate_a_path": "tasks/gates/TASK111-VIN-SPEC-10SRC.json",
-    "gate_a_sha256": "5d0f8a4ceb544cf39a130c4750fca5459c3eaa7b0e27b1a182c6321700e24904",
+    "gate_a_sha256": "dec3fcbe33582127c317fe6a23129b9bee342a223390edfed1ffa9b41f7f8280",
     "gate_b_authorized": true,
     "manifest_path": "tasks/manifests/TASK111-VIN-SPEC-10SRC.json",
-    "manifest_sha256": "c13ff977e4dd900e6ba0aad538ea04a23f44e422dbcd9821f73832e9dfb487b6",
+    "manifest_sha256": "eb310b8af5d1101dae77ba4c9819c046c2555987d304e41450f4413abd3099a2",
     "owner_approval_path": "tasks/approvals/TASK111-VIN-SPEC-10SRC.md",
     "owner_approval_sha256": "452b0761f7c4dacd8b9e04af03dafcf3f486084819710c6606e32bdbaf9c3c0e"
   },
   "description": "Production completion for every existing and future car card. Preserve the familiar valid-VIN CRM card flow; automatically queue enrichment on each new valid VIN; use a ten-domain non-Russian source pool with exact VIN-family and powertrain matching; retain an audited deterministic catalogue when a site is blocked or JavaScript-only; and backfill all current cards. The release must leave all 16 published cards nonempty with at least 10 visible additional technical facts each. Refresh only cards already published, never create an initial publication, never write crm.db primary fields or prices, never expose source URLs publicly. Exact backup, automatic rollback, live verification of every public card and delayed verification are mandatory.",
   "execution": {
     "controller_path": "cloud/task_111_vin_spec_10src/controller.py",
-    "controller_sha256": "d71388c605cd13cbcf71eee755a6a1cb51d279bf209c82b66bfc305271b93751",
+    "controller_sha256": "d50fce4f2b54adb861d854e70db0a09764db9fbe59a1d015315faa4ae59a75f6",
     "evidence_paths": [
       "cloud/task_111_vin_spec_10src/evidence.json",
       "state/receipts/TASK111-VIN-SPEC-10SRC.json"
