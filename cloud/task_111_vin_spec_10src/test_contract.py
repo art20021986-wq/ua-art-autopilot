@@ -353,6 +353,37 @@ def run() -> None:
         require(scan["valid_vins"] == 2 and scan["queued"] == 2, "valid VIN scanner")
         require(sha(main) == cars_before, "scanner changed CRM")
 
+        with service.connect_spec(False) as conn:
+            conn.execute(
+                """UPDATE vin_spec_jobs SET status='RUNNING',attempts=3,
+                   started_at='2000-01-01T00:00:00Z'
+                   WHERE car_uid='UA-0001'"""
+            )
+            conn.commit()
+        require(service.recover_interrupted_jobs() == 1, "stale job recovery")
+        with service.connect_spec(True) as conn:
+            recovered = conn.execute(
+                "SELECT status,attempts FROM vin_spec_jobs WHERE car_uid='UA-0001'"
+            ).fetchone()
+        require(tuple(recovered) == ("PENDING", 0), "stale retry budget recovery")
+        with service.connect_spec(False) as conn:
+            conn.execute(
+                "UPDATE vin_spec_jobs SET status='PROCESSING',started_at=? WHERE car_uid='UA-0002'",
+                (service.utc_now(),),
+            )
+            conn.commit()
+        full_requeue = service.requeue_all_current_vins()
+        require(
+            full_requeue["valid_vins"] == 2 and full_requeue["queued"] == 2,
+            "full current VIN requeue",
+        )
+        with service.connect_spec(True) as conn:
+            statuses = {str(row[0]) for row in conn.execute(
+                "SELECT status FROM vin_spec_jobs WHERE policy_version=?",
+                (source_policy.POLICY_VERSION,),
+            )}
+        require(statuses == {"PENDING"}, "interrupted job remained outside queue")
+
         published: list[str] = []
         publisher = types.ModuleType("publikaciya")
         publisher.opublikovat = lambda uid: (published.append(uid) is None, "updated")

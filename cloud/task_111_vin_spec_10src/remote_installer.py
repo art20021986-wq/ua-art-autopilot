@@ -389,12 +389,20 @@ def run_install(invocation: str) -> dict[str, Any]:
         scan = service.scan_new_vins()
         if int(scan.get("valid_vins") or 0) < 16:
             raise InstallError("VALID_VIN_COVERAGE_TOO_SMALL")
-        with service.connect_spec(False) as conn:
-            conn.execute(
-                "UPDATE vin_spec_jobs SET requested_at='0000-00-00T00:00:00Z' WHERE car_uid='UA-0005' AND status='PENDING'"
-            )
-            conn.commit()
-        processed = service.process_backlog(limit=int(scan["valid_vins"]))
+        # A terminated remote run can leave current-policy rows in RUNNING.
+        # Full installation must deterministically revisit every current VIN,
+        # not just rows the periodic scanner considers new.
+        backfill = service.requeue_all_current_vins()
+        if (
+            int(backfill.get("valid_vins") or 0) != int(scan["valid_vins"])
+            or int(backfill.get("queued") or 0) != int(scan["valid_vins"])
+        ):
+            raise InstallError("FULL_REQUEUE_INCOMPLETE")
+        processed = service.process_backlog(limit=int(backfill["valid_vins"]))
+        if len(processed) != int(backfill["valid_vins"]):
+            raise InstallError("BACKFILL_PROCESS_COUNT:%d:%d" % (
+                len(processed), int(backfill["valid_vins"])
+            ))
         cards = service.read_cards()
         # process_one already refreshes published cards.  Only retry cards whose
         # two local public copies are not current; a second unconditional pass
@@ -422,12 +430,12 @@ def run_install(invocation: str) -> dict[str, Any]:
             ).fetchone()[0])
             job_rows = [dict(row) for row in conn.execute(
                 """SELECT car_uid,status,facts_count,site_sync_status FROM vin_spec_jobs
-                   WHERE policy_version=? ORDER BY car_uid""",
+                   WHERE policy_version=? AND status<>'SUPERSEDED' ORDER BY car_uid""",
                 (source_policy.POLICY_VERSION,),
             )]
         if quick != "ok" or price_rows != 0:
             raise InstallError("SIDECAR_INTEGRITY")
-        if len(job_rows) < int(scan["valid_vins"]) or any(
+        if len(job_rows) != int(scan["valid_vins"]) or any(
             row["status"] != "READY" or int(row["facts_count"] or 0) < 10
             for row in job_rows
         ):
@@ -437,7 +445,8 @@ def run_install(invocation: str) -> dict[str, Any]:
             "invocation": invocation,
             "phase": "INSTALL", "finished_at": utc_now(), "backup": backup,
             "source_audit": audit, "source_hashes": source_hashes,
-            "legacy_migration": migration, "scan": scan, "processed": processed,
+            "legacy_migration": migration, "scan": scan, "full_requeue": backfill,
+            "processed": processed,
             "jobs": job_rows, "refreshes": refreshes, "public": public,
             "sidecar_quick_check": quick, "price_rows": price_rows,
             "crm_write": False, "crm_unchanged": True,
@@ -469,10 +478,10 @@ def run_verify(invocation: str) -> dict[str, Any]:
         quick = str(conn.execute("PRAGMA quick_check").fetchone()[0])
         jobs = [dict(row) for row in conn.execute(
             """SELECT car_uid,status,facts_count,site_sync_status FROM vin_spec_jobs
-               WHERE policy_version=? ORDER BY car_uid""",
+               WHERE policy_version=? AND status<>'SUPERSEDED' ORDER BY car_uid""",
             (source_policy.POLICY_VERSION,),
         )]
-    if quick != "ok" or len(jobs) < 16 or any(
+    if quick != "ok" or len(jobs) != len(cards) or len(jobs) < 16 or any(
         row["status"] != "READY" or int(row["facts_count"] or 0) < 10 for row in jobs
     ):
         raise InstallError("VERIFY_SIDECAR")
