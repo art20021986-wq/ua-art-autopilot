@@ -4,6 +4,29 @@
   "title": "UA ART Task Request",
   "type": "object",
   "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "required": ["production_required"],
+        "properties": {"production_required": {"const": true}}
+      },
+      "then": {
+        "required": ["execution", "critical"],
+        "properties": {
+          "execution": {
+            "required": [
+              "backup_controller_path",
+              "backup_controller_sha256",
+              "backup_receipt_path",
+              "rollback_controller_path",
+              "rollback_controller_sha256",
+              "rollback_receipt_path"
+            ]
+          }
+        }
+      }
+    }
+  ],
   "required": ["task_id", "title"],
   "properties": {
     "task_id": {
@@ -169,6 +192,32 @@
         },
         "production_required": {
           "type": "boolean"
+        },
+        "backup_controller_path": {
+          "type": "string",
+          "minLength": 1,
+          "not": {"pattern": "(^/|(^|/)\\.\\.(/|$))"}
+        },
+        "backup_controller_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "backup_receipt_path": {
+          "type": "string",
+          "pattern": "^state/receipts/[A-Za-z0-9._-]+\\.json$"
+        },
+        "rollback_controller_path": {
+          "type": "string",
+          "minLength": 1,
+          "not": {"pattern": "(^/|(^|/)\\.\\.(/|$))"}
+        },
+        "rollback_controller_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "rollback_receipt_path": {
+          "type": "string",
+          "pattern": "^state/receipts/[A-Za-z0-9._-]+\\.json$"
         },
         "timeout_seconds": {
           "type": "integer",

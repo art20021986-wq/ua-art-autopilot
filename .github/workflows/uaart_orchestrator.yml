@@ -6,11 +6,27 @@ on:
       request_path:
         required: true
         type: string
+      expected_request_sha256:
+        required: false
+        default: ''
+        type: string
+      autostart_ledger_path:
+        required: false
+        default: ''
+        type: string
+      autostart_source_commit:
+        required: false
+        default: ''
+        type: string
   workflow_dispatch:
     inputs:
       request_path:
         description: Exact repository path under tasks/requests
         required: true
+        type: string
+      expected_request_sha256:
+        description: Optional exact SHA-256 binding for automatic intake
+        required: false
         type: string
 
 permissions:
@@ -36,6 +52,9 @@ jobs:
       production_required: ${{ steps.claim.outputs.production_required }}
     env:
       REQUEST_PATH: ${{ inputs.request_path }}
+      EXPECTED_REQUEST_SHA256: ${{ inputs.expected_request_sha256 }}
+      AUTOSTART_LEDGER_PATH: ${{ inputs.autostart_ledger_path }}
+      AUTOSTART_SOURCE_COMMIT: ${{ inputs.autostart_source_commit }}
       RUN_ID: ${{ github.run_id }}
     steps:
       - name: Checkout latest branch state
@@ -49,13 +68,13 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Require manual mode and exact durable request
+      - name: Require valid execution mode and exact durable request
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
           test -n "$REQUEST_PATH"
           python3 -W error -m py_compile automation/control_plane.py
+          python3 automation/control_plane.py verify-mode
 
       - name: Atomically claim exact request identity
         id: claim
@@ -63,9 +82,24 @@ jobs:
         run: |
           set -euo pipefail
           SOURCE_COMMIT="$(git rev-parse HEAD)"
+          expected_args=()
+          if test -n "$EXPECTED_REQUEST_SHA256"; then
+            expected_args+=(--expected-sha256 "$EXPECTED_REQUEST_SHA256")
+          fi
+          ledger_args=()
+          if test -n "$AUTOSTART_LEDGER_PATH"; then
+            ledger_args+=(--autostart-ledger "$AUTOSTART_LEDGER_PATH")
+          fi
+          source_args=()
+          if test -n "$AUTOSTART_SOURCE_COMMIT"; then
+            source_args+=(--autostart-source-commit "$AUTOSTART_SOURCE_COMMIT")
+          fi
           python3 automation/control_plane.py claim "$REQUEST_PATH" \
             --run-id "$RUN_ID" \
             --source-commit "$SOURCE_COMMIT" \
+            "${expected_args[@]}" \
+            "${ledger_args[@]}" \
+            "${source_args[@]}" \
             >/tmp/uaart-control-plane-claim.json
 
       - name: Bind data-only planning and validate trusted execution package

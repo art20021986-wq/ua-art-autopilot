@@ -64,9 +64,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
           test -f "$CLAIM_PATH"
           python3 -W error -m py_compile automation/control_plane.py automation/task_ticket.py
+          python3 automation/control_plane.py verify-mode
           python3 automation/control_plane.py verify-request "$REQUEST_PATH" \
             --sha256 "$REQUEST_SHA256"
           python3 automation/execution_contract.py validate "$REQUEST_PATH" \
@@ -182,7 +182,115 @@ jobs:
           TICKET="$(python3 automation/task_ticket.py "$REQUEST_PATH")"
           python3 automation/production_queue.py self-test
           python3 automation/production_queue.py wait \
-            --task "$TICKET" --timeout-seconds 1800 --stable-polls 2
+            --task "$TICKET" \
+            --drain-before '2026-09-04T13:51:01Z' \
+            --timeout-seconds 1800 --stable-polls 2
+
+      - name: Revalidate immutable authorization after production queue
+        if: inputs.production_required == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$GITHUB_REF_NAME"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          ref = 'origin/' + os.environ['GITHUB_REF_NAME']
+          request_path = pathlib.PurePosixPath(os.environ['REQUEST_PATH'])
+          if request_path.is_absolute() or '..' in request_path.parts:
+              raise SystemExit('REQUEST_PATH_UNSAFE')
+          request = json.loads(pathlib.Path(request_path).read_text(encoding='utf-8'))
+          claim = json.loads(pathlib.Path(os.environ['CLAIM_PATH']).read_text(encoding='utf-8'))
+          critical = request['critical']
+          execution = request['execution']
+          paths = {
+              request_path.as_posix(),
+              str(critical['owner_approval_path']),
+              str(critical['manifest_path']),
+              str(critical['gate_a_path']),
+              str(execution['controller_path']),
+              *map(str, execution['test_paths']),
+              str(request['storage_probe']['evidence_path']),
+              str(execution['backup_controller_path']),
+              str(execution['rollback_controller_path']),
+          }
+          if claim.get('execution_mode') == 'AUTOMATIC':
+              paths.update({
+                  'state/EXECUTION_MODE.json',
+                  'state/MANUAL_MODE.md',
+                  'state/receipts/TASK107-R2.json',
+                  'tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json',
+                  str(claim['autostart_ledger_path']),
+              })
+              mode = json.loads(pathlib.Path('state/EXECUTION_MODE.json').read_text(encoding='utf-8'))
+              runtime_path = str(mode['runtime_manifest_path'])
+              paths.add(runtime_path)
+              runtime = json.loads(pathlib.Path(runtime_path).read_text(encoding='utf-8'))
+              paths.update(map(str, runtime['files']))
+              ledger = json.loads(pathlib.Path(claim['autostart_ledger_path']).read_text(encoding='utf-8'))
+              paths.add(str(ledger['launch_path']))
+              paths.add(str(ledger['nonce_reservation_path']))
+              halted = subprocess.run(
+                  ['git', 'cat-file', '-e', ref + ':state/AUTOPILOT_HALT.json'],
+                  stdout=subprocess.DEVNULL,
+                  stderr=subprocess.DEVNULL,
+                  check=False,
+              )
+              if halted.returncode == 0:
+                  raise SystemExit('REMOTE_AUTOMATIC_MODE_HALTED')
+          for raw in sorted(paths):
+              path = pathlib.PurePosixPath(raw)
+              if path.is_absolute() or '..' in path.parts:
+                  raise SystemExit('PINNED_PATH_UNSAFE:' + raw)
+              local = pathlib.Path(raw)
+              if local.is_symlink() or not local.is_file():
+                  raise SystemExit('PINNED_FILE_INVALID:' + raw)
+              remote = subprocess.check_output(['git', 'show', ref + ':' + raw])
+              local_sha = hashlib.sha256(local.read_bytes()).hexdigest()
+              remote_sha = hashlib.sha256(remote).hexdigest()
+              if local_sha != remote_sha:
+                  raise SystemExit('PINNED_FILE_CHANGED_WHILE_QUEUED:' + raw)
+          print('QUEUED_AUTHORIZATION_STILL_EXACT')
+          PY
+          python3 automation/control_plane.py verify-mode
+          python3 automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "${{ steps.contract.outputs.task_id }}" \
+            --sha256 "$REQUEST_SHA256" \
+            --run-id "$RUN_ID"
+          python3 automation/control_plane.py storage "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --enforce
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path, PurePosixPath
+
+          request = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
+          critical = request['critical']
+          gate_text = str(critical['gate_a_path'])
+          gate = PurePosixPath(gate_text)
+          if gate.is_absolute() or '..' in gate.parts:
+              raise SystemExit('GATE_A_PATH_UNSAFE')
+          disk = Path(gate_text)
+          if disk.is_symlink() or not disk.is_file():
+              raise SystemExit('GATE_A_FILE_INVALID')
+          actual = hashlib.sha256(disk.read_bytes()).hexdigest()
+          if actual != str(critical['gate_a_sha256']).lower():
+              raise SystemExit('GATE_A_SHA_MISMATCH')
+          PY
+          python3 automation/critical_adapter.py gate-b \
+            /tmp/uaart-critical-request.json \
+            "${{ steps.critical.outputs.owner_path }}" \
+            "${{ steps.critical.outputs.manifest_path }}" \
+            "${{ steps.critical.outputs.gate_a_path }}" \
+            >/tmp/uaart-critical-gate-b.json
+          python3 automation/control_plane.py critical-production "$REQUEST_PATH" \
+            --run-id "$RUN_ID" \
+            --gate-b-evidence /tmp/uaart-critical-gate-b.json
 
       - name: Require production health before execution
         if: inputs.production_required == 'true'
@@ -191,6 +299,75 @@ jobs:
           set -euo pipefail
           python3 automation/control_plane.py health "$REQUEST_PATH" \
             --run-id "$RUN_ID" --phase pre
+
+      - name: Create and durably open guarded production transaction
+        id: transaction
+        if: inputs.production_required == 'true'
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          BACKUP_RECEIPT_PATH: ${{ steps.contract.outputs.backup_receipt_path }}
+          UAART_MANIFEST_SHA256: ${{ steps.contract.outputs.critical_manifest_sha256 }}
+          UAART_REQUEST_PATH: ${{ inputs.request_path }}
+          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_TASK_CLASS: CRITICAL
+          UAART_TASK_ID: ${{ steps.contract.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          transaction_id="tx-${GITHUB_RUN_ID}-${REQUEST_SHA256:0:16}"
+          export UAART_TRANSACTION_ID="$transaction_id"
+          python3 automation/execution_contract.py backup "$REQUEST_PATH" \
+            --expected-class CRITICAL
+          python3 automation/execution_contract.py backup-receipt "$REQUEST_PATH" \
+            --expected-class CRITICAL >/tmp/uaart-critical-backup-receipt.json
+          backup_manifest_sha256="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('/tmp/uaart-critical-backup-receipt.json').read_text(encoding='utf-8'))
+          print(value['backup_manifest_sha256'])
+          PY
+          )"
+          backup_receipt_sha256="$(sha256sum "$BACKUP_RECEIPT_PATH" | cut -d' ' -f1)"
+          python3 automation/control_plane.py transaction-open "$REQUEST_PATH" \
+            --run-id "$RUN_ID" \
+            --transaction-id "$transaction_id" \
+            --backup-receipt-sha256 "$backup_receipt_sha256" \
+            --backup-manifest-sha256 "$backup_manifest_sha256"
+          transaction_path="$(python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          request = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
+          print('state/transactions/%s.%s.%s.json' % (
+              request['task_id'], os.environ['REQUEST_SHA256'], os.environ['RUN_ID']))
+          PY
+          )"
+          git add -- "$BACKUP_RECEIPT_PATH" "$transaction_path" "$CLAIM_PATH"
+          git config user.name 'ua-art-production-transaction'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m "uaart production: open transaction ${{ steps.contract.outputs.task_id }}"
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin "${GITHUB_REF_NAME}"
+            if ! git rebase "origin/${GITHUB_REF_NAME}"; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              break
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+          python3 automation/control_plane.py verify-mode --require AUTOMATIC
+          python3 automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "${{ steps.contract.outputs.task_id }}" \
+            --sha256 "$REQUEST_SHA256" \
+            --run-id "$RUN_ID"
+          echo "backup_manifest_sha256=$backup_manifest_sha256" >>"$GITHUB_OUTPUT"
+          echo "transaction_id=$transaction_id" >>"$GITHUB_OUTPUT"
+          echo "transaction_path=$transaction_path" >>"$GITHUB_OUTPUT"
+          echo 'opened=true' >>"$GITHUB_OUTPUT"
 
       - name: Execute authorized CRITICAL controller
         env:
@@ -201,6 +378,9 @@ jobs:
           UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
           UAART_RUN_ID: ${{ inputs.run_id }}
           UAART_RECEIPT_PATH: ${{ steps.contract.outputs.receipt_path }}
+          UAART_BACKUP_MANIFEST_SHA256: ${{ steps.transaction.outputs.backup_manifest_sha256 }}
+          UAART_MANIFEST_SHA256: ${{ steps.contract.outputs.critical_manifest_sha256 }}
+          UAART_TRANSACTION_ID: ${{ steps.transaction.outputs.transaction_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -241,6 +421,16 @@ jobs:
           python3 automation/control_plane.py finish "$REQUEST_PATH" \
             --run-id "$RUN_ID" >/tmp/uaart-critical-finished.json
 
+      - name: Close successful Production transaction
+        if: inputs.production_required == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/control_plane.py transaction-close "$REQUEST_PATH" \
+            --run-id "$RUN_ID" \
+            --transaction-id "${{ steps.transaction.outputs.transaction_id }}" \
+            --outcome FINISHED
+
       - name: Stage bounded receipt and durable claim
         shell: bash
         run: |
@@ -248,6 +438,9 @@ jobs:
           python3 automation/execution_contract.py stage "$REQUEST_PATH" \
             --expected-class CRITICAL
           git add -- "$CLAIM_PATH"
+          if test "${{ inputs.production_required }}" = 'true'; then
+            git add -- "${{ steps.transaction.outputs.transaction_path }}"
+          fi
 
       - name: Commit CRITICAL receipt and claim
         shell: bash
@@ -273,17 +466,83 @@ jobs:
             sleep $((attempt * 3))
           done
 
-      - name: Persist fail-closed state
-        if: failure()
+      - name: Run exact automatic rollback after an opened transaction failure
+        id: rollback
+        if: always() && (failure() || cancelled()) && inputs.production_required == 'true' && steps.transaction.outputs.opened == 'true'
         continue-on-error: true
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          UAART_REQUEST_PATH: ${{ inputs.request_path }}
+          UAART_TASK_ID: ${{ steps.contract.outputs.task_id }}
+          UAART_TASK_CLASS: CRITICAL
+          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_RECEIPT_PATH: ${{ steps.contract.outputs.receipt_path }}
+          UAART_BACKUP_MANIFEST_SHA256: ${{ steps.transaction.outputs.backup_manifest_sha256 }}
+          UAART_MANIFEST_SHA256: ${{ steps.contract.outputs.critical_manifest_sha256 }}
+          UAART_TRANSACTION_ID: ${{ steps.transaction.outputs.transaction_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/execution_contract.py rollback "$REQUEST_PATH" \
+            --expected-class CRITICAL
+          python3 automation/execution_contract.py rollback-receipt "$REQUEST_PATH" \
+            --expected-class CRITICAL >/tmp/uaart-critical-rollback-receipt.json
+          python3 automation/control_plane.py transaction-close "$REQUEST_PATH" \
+            --run-id "$RUN_ID" \
+            --transaction-id "$UAART_TRANSACTION_ID" \
+            --outcome ROLLED_BACK
+          rollback_receipt="$(python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          request = json.loads(Path(os.environ['REQUEST_PATH']).read_text(encoding='utf-8'))
+          receipt = request['execution']['rollback_receipt_path']
+          print(receipt)
+          PY
+          )"
+          test -n "$rollback_receipt"
+          git add -- "$rollback_receipt"
+          git add -- "${{ steps.transaction.outputs.transaction_path }}"
+          echo "receipt_path=$rollback_receipt" >>"$GITHUB_OUTPUT"
+          echo 'status=PASS' >>"$GITHUB_OUTPUT"
+
+      - name: Persist fail-closed state
+        if: always() && (failure() || cancelled())
+        continue-on-error: true
+        env:
+          PRODUCTION_REQUIRED: ${{ inputs.production_required }}
+          TRANSACTION_OPENED: ${{ steps.transaction.outputs.opened }}
+          ROLLBACK_OUTCOME: ${{ steps.rollback.outcome }}
+          ROLLBACK_RECEIPT_PATH: ${{ steps.rollback.outputs.receipt_path }}
         shell: bash
         run: |
           set -euo pipefail
           test -f "$CLAIM_PATH" || exit 0
+          rollback_args=()
+          if test "$ROLLBACK_OUTCOME" = 'success'; then
+            rollback_args+=(--rollback-confirmed)
+          fi
           python3 automation/control_plane.py fail "$REQUEST_PATH" \
             --run-id "$RUN_ID" \
-            --message "CRITICAL pipeline failed; inspect GitHub Actions run ${GITHUB_RUN_ID}"
+            --message "CRITICAL pipeline failed; rollback outcome ${ROLLBACK_OUTCOME}; inspect GitHub Actions run ${GITHUB_RUN_ID}" \
+            "${rollback_args[@]}"
           git add -- "$CLAIM_PATH"
+          if test -n "$ROLLBACK_RECEIPT_PATH" && test -f "$ROLLBACK_RECEIPT_PATH"; then
+            git add -- "$ROLLBACK_RECEIPT_PATH"
+          fi
+          if test "$PRODUCTION_REQUIRED" = 'true' \
+            && test "$TRANSACTION_OPENED" = 'true'; then
+            python3 automation/control_plane.py halt "$REQUEST_PATH" \
+              --run-id "$RUN_ID" \
+              --reason "Production transaction failed; rollback outcome ${ROLLBACK_OUTCOME}; GitHub Actions run ${GITHUB_RUN_ID}"
+            git add -- state/AUTOPILOT_HALT.json
+          fi
+          if test -n "${{ steps.transaction.outputs.transaction_path }}" \
+            && test -f "${{ steps.transaction.outputs.transaction_path }}"; then
+            git add -- "${{ steps.transaction.outputs.transaction_path }}"
+          fi
           git diff --cached --quiet && exit 0
           git config user.name 'ua-art-critical-pipeline'
           git config user.email 'actions@users.noreply.github.com'

@@ -1,11 +1,7 @@
 name: task088-owner-ua0011-korea-now-production
+# RETIRED/QUARANTINED: automatic triggers moved to central exact autostart; manual dispatch only.
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/owner_ua0011_korea_now_production.yml'
-      - 'tasks/task_088.md'
   workflow_dispatch:
 
 permissions:

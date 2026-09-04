@@ -64,9 +64,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
           test -f "$CLAIM_PATH"
           python3 -W error -m py_compile automation/control_plane.py automation/task_ticket.py
+          python3 automation/control_plane.py verify-mode
           python3 automation/control_plane.py verify-request "$REQUEST_PATH" \
             --sha256 "$REQUEST_SHA256"
           python3 automation/execution_contract.py validate "$REQUEST_PATH" \

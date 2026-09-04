@@ -122,9 +122,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          ticket="$(python3 - <<'PY'
+          import os
+          import re
+          values = re.findall(r'\d+', os.environ['TASK_ID'])
+          print(int(values[-1]) if values else 0)
+          PY
+          )"
           python3 automation/production_queue.py self-test
           python3 automation/production_queue.py wait \
-            --task 105 --timeout-seconds 1200 --stable-polls 2
+            --task "$ticket" --timeout-seconds 1200 --stable-polls 2
 
       - name: Execute explicit rollback
         env:

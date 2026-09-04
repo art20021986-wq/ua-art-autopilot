@@ -1,0 +1,22 @@
+{
+  "activated_at": "2026-09-04T14:27:55Z",
+  "allow_replay_existing_launch_markers": false,
+  "automatic_nonproduction": true,
+  "automatic_production": true,
+  "mode_epoch": "auto-20260904T142755Z-90062b8c1cada131",
+  "mode": "AUTOMATIC",
+  "owner_approval_path": "tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json",
+  "owner_approval_sha256": "365a0793ea5e9b2e7aadf8e545cc079d97dbb4b10dbfb85d5f371ca6619fc4f5",
+  "production_requires_backup": true,
+  "production_requires_exact_launch": true,
+  "production_requires_gate_b": true,
+  "production_requires_live_receipt": true,
+  "production_requires_owner_approval": true,
+  "production_requires_pre_post_health": true,
+  "runtime_manifest_path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+  "runtime_manifest_sha256": "134e26692396b6cb5a43fdf70943d2a9082a2a4731b966c6367629eb04305d86",
+  "schema_version": "UA-ART-EXECUTION-MODE-1",
+  "stop_on_safety_failure": true,
+  "task107_receipt_path": "state/receipts/TASK107-R2.json",
+  "task107_receipt_sha256": "bdf5d474d2186b4d37190b7a74f3a31b868b504c7caaad7b8a99d4a6ca120e0c"
+}

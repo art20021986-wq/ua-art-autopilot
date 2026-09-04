@@ -1,0 +1,142 @@
+name: TASK113 Global Autopilot Activation Validation
+
+on:
+  push:
+    branches:
+      - task113-global-production-autopilot
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task113-global-autopilot-activation
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact activation commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Prove bounded control-plane-only scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          python3 - <<'PY'
+          import subprocess
+
+          allowed_exact = {
+              '.github/workflows/overnight_autopilot_production_dispatch.yml',
+              '.github/workflows/overnight_task099_transient_recovery.yml',
+              '.github/workflows/owner_ua0011_korea_now_production.yml',
+              '.github/workflows/pythonanywhere_sync.yml',
+              '.github/workflows/task059_ai_fast_schema.yml',
+              '.github/workflows/task113_global_autopilot_activation.yml',
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_rollback.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/transaction_watchdog.py',
+              'state/AUTOPILOT_RUNTIME_MANIFEST.json',
+              'state/EXECUTION_MODE.json',
+              'state/MANUAL_MODE.md',
+              'state/schemas/task_request.schema.json',
+              'tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json',
+              'tasks/requests/TASK113-GLOBAL-AUTO-CANARY.json',
+          }
+          allowed_prefixes = (
+              'automation/packages/task107_r2/',
+              'cloud/task113_auto/',
+          )
+          changed = subprocess.check_output(
+              ['git', 'diff', '--name-only', 'origin/main...HEAD'], text=True
+          ).splitlines()
+          rejected = [
+              path for path in changed
+              if path not in allowed_exact and not path.startswith(allowed_prefixes)
+          ]
+          if rejected:
+              raise SystemExit('TASK113_SCOPE_VIOLATION:' + repr(rejected))
+          forbidden = (
+              'crm.db', 'public/', 'media/', 'video/', 'diagnostic/',
+              'cars/', 'catalog/', 'cards/',
+          )
+          touched = [path for path in changed if path.startswith(forbidden) or path == 'crm.db']
+          if touched:
+              raise SystemExit('PROTECTED_SITE_OR_DATA_CHANGE:' + repr(touched))
+          print('TASK113_CONTROL_PLANE_SCOPE_PASS', len(changed))
+          PY
+
+      - name: Compile trusted runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile \
+            automation/autostart_intake.py \
+            automation/control_plane.py \
+            automation/critical_adapter.py \
+            automation/execution_contract.py \
+            automation/production_queue.py \
+            automation/task_orchestrator.py \
+            automation/task_ticket.py \
+            automation/transaction_watchdog.py \
+            cloud/task113_auto/canary_controller.py \
+            cloud/task113_auto/test_canary_controller.py
+
+      - name: Run complete activation test suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/packages/task107_r2/test_control_plane.py
+          python3 automation/packages/task107_r2/test_autostart_intake.py
+          python3 automation/packages/task107_r2/test_execution_contract_production.py
+          python3 automation/packages/task107_r2/test_production_queue.py
+          python3 automation/packages/task107_r2/test_transaction_watchdog.py
+          python3 automation/packages/task107_r2/test_canary_controller.py
+          python3 automation/packages/task107_r2/test_workflow_contracts.py
+          python3 cloud/task113_auto/test_canary_controller.py
+          python3 automation/control_plane.py self-test
+          python3 automation/critical_adapter.py self-test
+          python3 automation/production_queue.py self-test
+
+      - name: Verify exact automatic-mode authority and canary contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/control_plane.py verify-mode --require AUTOMATIC
+          python3 automation/execution_contract.py validate \
+            tasks/requests/TASK113-GLOBAL-AUTO-CANARY.json \
+            --expected-class FAST >/tmp/task113-canary-contract.json
+          test ! -e state/AUTOPILOT_HALT.json
+          git fetch origin main
+          test -z "$(git diff --name-only origin/main...HEAD -- tasks/launch)"
+
+      - name: Publish activation summary
+        shell: bash
+        run: |
+          {
+            echo '## TASK113 automatic-mode activation validation'
+            echo
+            echo '- Control-plane-only diff: **PASS**'
+            echo '- Runtime manifest and owner command: **PASS**'
+            echo '- Structured task-specific Production authorization: **PASS**'
+            echo '- Backup + durable transaction + rollback watchdog: **PASS**'
+            echo '- Production mutation in this validation: **NONE**'
+          } >>"$GITHUB_STEP_SUMMARY"

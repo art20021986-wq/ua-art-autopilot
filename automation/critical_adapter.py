@@ -117,10 +117,29 @@ def validate_owner_approval(request: CriticalRequest, content: bytes) -> dict[st
     if sha256_bytes(content) != request.owner_approval_sha256:
         raise CriticalAdapterError("OWNER_APPROVAL_SHA_MISMATCH")
     text = content.decode("utf-8")
-    if OWNER_MARKER not in text:
-        raise CriticalAdapterError("OWNER_APPROVAL_MARKER_MISSING")
-    if "CRITICAL" not in text or "rollback" not in text:
-        raise CriticalAdapterError("OWNER_APPROVAL_SCOPE_INCOMPLETE")
+    try:
+        structured = json.loads(text)
+    except json.JSONDecodeError:
+        structured = None
+    if isinstance(structured, dict):
+        if structured.get("schema_version") != "UA-ART-PRODUCTION-AUTHORIZATION-1":
+            raise CriticalAdapterError("OWNER_APPROVAL_SCHEMA")
+        if structured.get("task_id") != request.task_id:
+            raise CriticalAdapterError("OWNER_APPROVAL_TASK_ID")
+        if structured.get("manifest_sha256") != request.manifest_sha256:
+            raise CriticalAdapterError("OWNER_APPROVAL_MANIFEST_SHA")
+        if structured.get("authorized_environment") != "production":
+            raise CriticalAdapterError("OWNER_APPROVAL_ENVIRONMENT")
+        if structured.get("owner_authorized") is not True \
+                or structured.get("production_allowed") is not True:
+            raise CriticalAdapterError("OWNER_APPROVAL_PRODUCTION_DENIED")
+    else:
+        # Legacy MANUAL requests remain readable.  Automatic intake rejects
+        # this free-form format and accepts only the structured schema above.
+        if OWNER_MARKER not in text:
+            raise CriticalAdapterError("OWNER_APPROVAL_MARKER_MISSING")
+        if "CRITICAL" not in text or "rollback" not in text:
+            raise CriticalAdapterError("OWNER_APPROVAL_SCOPE_INCOMPLETE")
     return {
         "status": "PASS",
         "path": request.owner_approval_path,

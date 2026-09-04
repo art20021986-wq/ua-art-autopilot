@@ -1,9 +1,8 @@
 name: task059-ai-fast-schema
+# RETIRED/QUARANTINED: automatic triggers moved to central exact autostart; manual dispatch only.
 
 on:
-  workflow_run:
-    workflows: ['PythonAnywhere Inbox Sync']
-    types: [completed]
+  workflow_dispatch:
 
 permissions:
   contents: write
