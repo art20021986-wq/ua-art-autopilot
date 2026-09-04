@@ -1,0 +1,177 @@
+name: TASK112 GE 8 COUNTRY EXACT SANDBOX AUTOSTART
+
+on:
+  push:
+    branches:
+      - task112-ge-8country-sandbox-autostart
+    paths:
+      - 'tasks/launch/TASK112-GE-8COUNTRY-SANDBOX.json'
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type RUN_TASK112_GE_8COUNTRY_SANDBOX
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task112-ge-8country-exact-sandbox
+  cancel-in-progress: false
+
+jobs:
+  run-exact-task112-sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout isolated task branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: task112-ge-8country-sandbox-autostart
+
+      - name: Gate exact task, owner command, TASK107 receipt and production deny
+        env:
+          DISPATCH_CONFIRMATION: ${{ inputs.confirmation }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f tasks/task_112.md
+          test -f tasks/launch/TASK112-GE-8COUNTRY-SANDBOX.json
+          grep -Fx 'TASK_ID: task_112' tasks/task_112.md
+          grep -Fx 'SPEC_CODE: UA-ORDER-GE-8COUNTRY-GUARD-016' tasks/task_112.md
+          grep -Fx 'SPEC_VERSION: 1.2 — FINAL' tasks/task_112.md
+          grep -Fx 'OWNER_APPROVED: YES' tasks/task_112.md
+          grep -Fx 'DEFAULT_LANGUAGE: uk' tasks/task_112.md
+          grep -Fx 'SANDBOX_PREVIEW_ONLY: YES' tasks/task_112.md
+          grep -Fx 'PRODUCTION_WRITE_AUTHORIZED: NO' tasks/task_112.md
+          grep -Fx 'AUTOSTART_CONFIRMED_BY_OWNER: YES' tasks/task_112.md
+          grep -Fx 'AUTOSTART_SCOPE: TASK112_SANDBOX_BRANCH_ONLY' tasks/task_112.md
+          grep -Fx 'GLOBAL_AUTOMATIC_MODE: UNCHANGED_MANUAL' tasks/task_112.md
+          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
+          test "$(git hash-object tasks/task_112.md)" = '73dd438cc5331df60e2773d0da7cddd5eb5af2c3'
+          if test "$GITHUB_EVENT_NAME" = 'workflow_dispatch'; then
+            test "$DISPATCH_CONFIRMATION" = 'RUN_TASK112_GE_8COUNTRY_SANDBOX'
+          fi
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          launch = json.loads(Path('tasks/launch/TASK112-GE-8COUNTRY-SANDBOX.json').read_text(encoding='utf-8'))
+          receipt = json.loads(Path('state/receipts/TASK107-R2.json').read_text(encoding='utf-8'))
+          assert launch == {
+              'action': 'RUN_EXACT_SANDBOX_AUTOSTART',
+              'branch': 'task112-ge-8country-sandbox-autostart',
+              'global_automatic_mode_enabled': False,
+              'owner_authorized': True,
+              'production_allowed': False,
+              'spec_code': 'UA-ORDER-GE-8COUNTRY-GUARD-016',
+              'spec_version': '1.2 — FINAL',
+              'task_blob_sha': '73dd438cc5331df60e2773d0da7cddd5eb5af2c3',
+              'task_id': 'task_112',
+              'task_path': 'tasks/task_112.md',
+          }
+          assert receipt['task_id'] == 'TASK107-R2'
+          assert receipt['status'] == 'FINISHED'
+          assert receipt['canary_result'] == '3/3 PASS'
+          assert receipt['tests'] == 'PASS'
+          assert receipt['rollback_drill'] == 'PASS'
+          assert receipt['unexpected_changes'] == 0
+          assert receipt['production_touched'] is False
+          print('TASK112_EXACT_SANDBOX_GATE_PASS')
+          PY
+
+      - name: Site health read-only precheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://www.uaart.com.ua/video/index.html'
+          for attempt in 1 2 3; do
+            code="$(curl -L --connect-timeout 8 --max-time 25 -sS -o /tmp/task112-site.html -w '%{http_code}' "$url" || true)"
+            if test "$code" = '200' && test -s /tmp/task112-site.html; then
+              echo 'SITE_HEALTH_READONLY=PASS'
+              exit 0
+            fi
+            echo "SITE_HEALTH attempt $attempt/3 failed: HTTP ${code:-000}"
+            sleep 5
+          done
+          echo 'SITE_HEALTH_READONLY=FAIL'
+          exit 1
+
+      - name: Run Claude against exact TASK112 only
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '3000'
+          ANTHROPIC_NETWORK_ATTEMPTS: '4'
+          ANTHROPIC_MAX_TOKENS: '128000'
+          ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib
+          import subprocess
+          import automation.claude_worker as worker
+
+          exact = pathlib.Path('tasks/task_112.md')
+          actual = subprocess.check_output(['git', 'hash-object', str(exact)], text=True).strip()
+          assert actual == '73dd438cc5331df60e2773d0da7cddd5eb5af2c3', (actual, '73dd438cc5331df60e2773d0da7cddd5eb5af2c3')
+          worker.latest_task = lambda: exact
+          worker.main()
+          PY
+
+      - name: Verify task identity and cloud-only sandbox output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f cloud/latest_status.md
+          test -f cloud/owner_reply.md
+          grep -Fx 'TASK_ID: task_112' cloud/latest_status.md
+          grep -Fx 'PRODUCTION_TOUCHED: NO' cloud/latest_status.md
+          changed="$(git diff --name-only)"
+          test -n "$changed"
+          rejected="$(printf '%s\n' "$changed" | grep -Ev '^cloud/' || true)"
+          if test -n "$rejected"; then
+            echo 'UNSAFE_OUTPUT_OUTSIDE_CLOUD'
+            printf '%s\n' "$rejected"
+            exit 1
+          fi
+          echo 'TASK112_CLOUD_ONLY_OUTPUT_PASS'
+
+      - name: Run generated package tests when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -f cloud/ua_order_ge_8country_guard_016/test_sandbox_executor.py; then
+            python3 cloud/ua_order_ge_8country_guard_016/test_sandbox_executor.py
+          fi
+
+      - name: Commit Claude outputs to isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- cloud/
+          if git diff --cached --quiet -- cloud/; then
+            echo 'NO_TASK112_CLOUD_CHANGES'
+            exit 1
+          fi
+          git config user.name 'ua-art-claude-worker'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'task112: build GE 8-country sandbox package'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin task112-ge-8country-sandbox-autostart
+            if ! git rebase origin/task112-ge-8country-sandbox-autostart; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:task112-ge-8country-sandbox-autostart; then
+              exit 0
+            fi
+            if test "$attempt" -lt 5; then
+              sleep $((attempt * 3))
+            fi
+          done
+          exit 1
