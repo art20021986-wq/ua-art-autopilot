@@ -47,6 +47,37 @@ jobs:
           source = Path('state/storage/TASK109-CONTAINER-TRACK-INLINE.json')
           target = Path('state/storage/TASK111-VIN-SPEC-10SRC.json')
           value = json.loads(source.read_text(encoding='utf-8'))
+          # shutil.disk_usage reports the shared PythonAnywhere NFS volume, not
+          # this account's quota.  Keep that observation for diagnostics, but
+          # gate the release against the fixed 35 GiB account quota and a fresh,
+          # conservative sum of the target-side du measurements.
+          global_volume = {
+              'total_bytes': value['total_bytes'],
+              'used_bytes': value['used_bytes'],
+              'free_bytes': value['free_bytes'],
+              'measurement': value['measurement'],
+          }
+          du = value['diagnostics']['official_du_bytes']
+          if du.get('returncode') != 0:
+              raise SystemExit('official target-side du failed')
+          du_rows = [line.split('\t', 1) for line in du.get('stdout', '').splitlines() if line.strip()]
+          if not du_rows or any(len(row) != 2 or not row[0].isdigit() for row in du_rows):
+              raise SystemExit('official target-side du output is invalid')
+          used_bytes = sum(int(row[0]) for row in du_rows)
+          total_bytes = 35 * 1024 ** 3
+          if used_bytes <= 0 or used_bytes >= total_bytes:
+              raise SystemExit('account-scoped storage measurement is outside safe bounds')
+          value['global_volume_observation'] = global_volume
+          value['total_bytes'] = total_bytes
+          value['used_bytes'] = used_bytes
+          value['free_bytes'] = total_bytes - used_bytes
+          value['measurement'] = 'PythonAnywhere account quota (35.0 GiB) plus fresh official target-side du bytes'
+          value['quota_observation'] = {
+              'scope': 'account',
+              'total_display': '35.0 GiB',
+              'basis': 'fixed PythonAnywhere account storage quota',
+              'used_basis': 'fresh conservative sum of /tmp, /home/Carix, and /var/www du bytes',
+          }
           value['task_id'] = 'TASK111-VIN-SPEC-10SRC'
           target.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8')
           PY
