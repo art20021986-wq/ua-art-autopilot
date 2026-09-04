@@ -367,6 +367,8 @@ def run() -> dict[str, Any]:
             "unexpected_changes": 0, "protected_files_unchanged": True,
             "crm_unchanged": True, "manifest_sha256": MANIFEST_SHA256,
             "rollback_ready": True, "production_required": True,
+            "request_sha256": env["UAART_REQUEST_SHA256"],
+            "run_id": env["UAART_RUN_ID"],
             "source_count": 3, "valid_vins": int((install.get("scan") or {}).get("valid_vins") or 0),
             "public_card_count": len(expected), "nonempty_card_count": int(live_delayed["nonempty_cards"]),
             "initial_autopublication": False, "global_automatic_mode_enabled": False,
