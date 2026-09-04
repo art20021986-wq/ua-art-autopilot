@@ -43,6 +43,7 @@ jobs:
           python3 cloud/task109_container_inline/storage_probe_controller.py
           python3 - <<'PY'
           import json
+          import re
           from pathlib import Path
           source = Path('state/storage/TASK109-CONTAINER-TRACK-INLINE.json')
           target = Path('state/storage/TASK111-VIN-SPEC-10SRC.json')
@@ -58,11 +59,19 @@ jobs:
               'measurement': value['measurement'],
           }
           du = value['diagnostics']['official_du_bytes']
-          if du.get('returncode') != 0:
-              raise SystemExit('official target-side du failed')
           du_rows = [line.split('\t', 1) for line in du.get('stdout', '').splitlines() if line.strip()]
           if not du_rows or any(len(row) != 2 or not row[0].isdigit() for row in du_rows):
               raise SystemExit('official target-side du output is invalid')
+          stderr_rows = [line.strip() for line in du.get('stderr', '').splitlines() if line.strip()]
+          volatile_sqlite_race = re.compile(
+              r"^du: cannot access '/home/Carix/vin_specs\.db-(?:wal|shm)': No such file or directory$"
+          )
+          unexpected_stderr = [line for line in stderr_rows if not volatile_sqlite_race.fullmatch(line)]
+          if du.get('returncode') not in (0, 1) or unexpected_stderr:
+              raise SystemExit('official target-side du failed')
+          if du.get('returncode') == 1 and not stderr_rows:
+              raise SystemExit('official target-side du failed without a bounded volatile-file reason')
+          du['accepted_volatile_sqlite_race'] = bool(stderr_rows)
           used_bytes = sum(int(row[0]) for row in du_rows)
           total_bytes = 35 * 1024 ** 3
           if used_bytes <= 0 or used_bytes >= total_bytes:
