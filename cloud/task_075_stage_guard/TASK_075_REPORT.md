@@ -7,10 +7,12 @@ STATUS: **PASS**
 - CRM writes: **NO**
 - Site/media writes: **NO**
 - Backup manifest captured before transform: **PASS**
-- Current published cards: **11/11 unique**
+- Current published cards: **12/12 unique**
 - UA-0009 protected check: **PASS**
 - UA-0011 photo restored in both local canaries: **PASS**
-- Unified card template and absolute main photo: **11/11 PASS**
+- Unified card template and absolute main photo: **12/12 PASS**
+- Native stage filter compatibility and ordered placement: **12/12 PASS**
+- Public photo HTTP probes: **12/12 PASS**
 - Stage routing and universal category filter: **PASS**
 - Old ferry route / internal state leakage: **0**
 
