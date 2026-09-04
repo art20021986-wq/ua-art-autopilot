@@ -2,8 +2,9 @@
 """Fail-closed production installer for UA111 ten-source VIN enrichment.
 
 Runs only on PythonAnywhere through the CRITICAL controller.  Main crm.db is
-read-only.  The only durable data write is /home/Carix/vin_specs.db; source
-modules and existing published HTML are snapshotted for exact rollback.
+read-only.  The only durable data write is the isolated V3 specification
+sidecar; source modules and existing published HTML are snapshotted for exact
+rollback.
 """
 from __future__ import annotations
 
@@ -41,7 +42,11 @@ TARGET_PROFILE_LIBRARY = ROOT + "/profile_library.py"
 TARGET_SERVICE = ROOT + "/vin_spec_service.py"
 TARGET_SPEC = ROOT + "/ua_additional_spec.py"
 TARGET_CRM = ROOT + "/cars_ui.py"
-SOURCE_TARGETS = (TARGET_SOURCE_POLICY, TARGET_PROFILE_LIBRARY, TARGET_SERVICE, TARGET_SPEC, TARGET_CRM)
+TARGET_PUBLISHER = ROOT + "/publikaciya.py"
+SOURCE_TARGETS = (
+    TARGET_SOURCE_POLICY, TARGET_PROFILE_LIBRARY, TARGET_SERVICE,
+    TARGET_SPEC, TARGET_CRM, TARGET_PUBLISHER,
+)
 BACKUP_PARENT = REMOTE + "/task111_backups"
 LATEST_BACKUP = REMOTE + "/task111_latest_backup.txt"
 INSTALL_RECEIPT = REMOTE + "/task111_install_receipt.json"
@@ -249,14 +254,17 @@ def _candidate_sources() -> dict[str, bytes]:
     bundled_service = safe_read(BUNDLED + "/vin_spec_service.py") or b""
     deployed_spec = (safe_read(TARGET_SPEC) or b"").decode("utf-8")
     deployed_crm = (safe_read(TARGET_CRM) or b"").decode("utf-8")
+    deployed_publisher = (safe_read(TARGET_PUBLISHER) or b"").decode("utf-8")
     patched_spec = integration_patcher.patch_additional_spec(deployed_spec).encode("utf-8")
     patched_crm = integration_patcher.patch_cars_ui(deployed_crm).encode("utf-8")
+    patched_publisher = integration_patcher.patch_publisher(deployed_publisher).encode("utf-8")
     candidates = {
         TARGET_SOURCE_POLICY: bundled_policy,
         TARGET_PROFILE_LIBRARY: bundled_profiles,
         TARGET_SERVICE: bundled_service,
         TARGET_SPEC: patched_spec,
         TARGET_CRM: patched_crm,
+        TARGET_PUBLISHER: patched_publisher,
     }
     for path, raw in candidates.items():
         compile(raw.decode("utf-8"), path, "exec")
@@ -628,6 +636,7 @@ def run_rollback(backup: str | None, invocation: str) -> dict[str, Any]:
 def selftest() -> None:
     global ROOT
     assert len(source_policy.SOURCE_DOMAINS) == 10
+    assert TARGET_PUBLISHER in SOURCE_TARGETS
     assert integration_patcher.patch_additional_spec(
         integration_patcher.patch_additional_spec(
             "import os,pathlib,sqlite3\nfrom typing import Any\nDB_PATH=pathlib.Path('/x')\n"
