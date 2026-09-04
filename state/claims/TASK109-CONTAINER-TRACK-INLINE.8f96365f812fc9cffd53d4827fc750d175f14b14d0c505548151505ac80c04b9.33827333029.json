@@ -3,8 +3,19 @@
   "automatic_mode_enabled": false,
   "created_at": "2026-09-04T01:51:56Z",
   "critical_gate_status": "PENDING",
-  "heartbeat_at": "2026-09-04T01:51:56Z",
-  "heartbeat_sequence": 0,
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-04T01:52:10Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL pipeline failed; inspect GitHub Actions run 33827333029",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "dbad42fbdc6414dc"
+    }
+  ],
+  "heartbeat_at": "2026-09-04T01:52:10Z",
+  "heartbeat_sequence": 1,
   "identity": {
     "run_id": "33827333029",
     "task_id": "TASK109-CONTAINER-TRACK-INLINE",
@@ -27,6 +38,6 @@
   "source_commit": "f7d2bcf467b7ded4422330bbb72262e94fd59662",
   "storage_preflight_status": "PENDING",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-04T01:51:56Z"
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "updated_at": "2026-09-04T01:52:10Z"
 }
