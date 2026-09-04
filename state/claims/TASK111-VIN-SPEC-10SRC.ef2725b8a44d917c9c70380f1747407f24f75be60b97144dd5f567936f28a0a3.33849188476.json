@@ -1,0 +1,31 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": false,
+  "created_at": "2026-09-04T07:32:43Z",
+  "critical_gate_status": "PENDING",
+  "heartbeat_at": "2026-09-04T07:32:43Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "33849188476",
+    "task_id": "TASK111-VIN-SPEC-10SRC",
+    "task_sha256": "ef2725b8a44d917c9c70380f1747407f24f75be60b97144dd5f567936f28a0a3"
+  },
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/TASK111-VIN-SPEC-10SRC.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK111-VIN-SPEC-10SRC.json",
+  "request_sha256": "ef2725b8a44d917c9c70380f1747407f24f75be60b97144dd5f567936f28a0a3",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "601d28ebee11336c4aa6f2f66d4b0a7bf7ef745f",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-04T07:32:43Z"
+}
