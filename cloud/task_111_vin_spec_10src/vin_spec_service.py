@@ -28,6 +28,7 @@ MAIN_DB = pathlib.Path(os.environ.get("UA_ART_CRM_DB", "/home/Carix/crm.db"))
 SPEC_DB = pathlib.Path(os.environ.get("UA_ART_SPEC_DB", "/home/Carix/vin_specs.db"))
 SCAN_SECONDS = max(15, int(os.environ.get("UA_ART_VIN_SCAN_SECONDS", "30")))
 MAX_ATTEMPTS = 3
+STALE_JOB_SECONDS = max(300, int(os.environ.get("UA_ART_VIN_STALE_SECONDS", "1800")))
 WORKER_NAME = "uaart-vin-spec-v2"
 CARD_RE = re.compile(r"^UA[-‑–—]?0*(\d{1,6})$", re.IGNORECASE)
 
@@ -412,7 +413,7 @@ def scan_new_vins() -> dict[str, Any]:
     with connect_spec(False) as conn:
         conn.execute(
             """UPDATE vin_spec_jobs SET status='SUPERSEDED',finished_at=?
-               WHERE policy_version<>? AND status IN ('PENDING','RUNNING')""",
+               WHERE policy_version<>? AND status IN ('PENDING','RUNNING','PROCESSING')""",
             (utc_now(), source_policy.POLICY_VERSION),
         )
         conn.commit()
@@ -421,6 +422,46 @@ def scan_new_vins() -> dict[str, Any]:
     for card in cards:
         queued += int(enqueue_card(card))
     return {"valid_vins": len(cards), "queued": queued, "card_uids": [item["car_uid"] for item in cards]}
+
+
+def requeue_all_current_vins() -> dict[str, Any]:
+    """Queue every currently valid VIN for a complete, idempotent backfill.
+
+    This is intentionally stronger than the periodic scanner: it also resets
+    READY, FAILED and interrupted RUNNING/PROCESSING jobs for the current
+    policy.  Stored manual specification rows remain untouched and continue to
+    win in _store_facts().
+    """
+    cards = read_cards()
+    queued = 0
+    for card in cards:
+        queued += int(enqueue_card(card, force=True))
+    return {
+        "valid_vins": len(cards),
+        "queued": queued,
+        "card_uids": [item["car_uid"] for item in cards],
+    }
+
+
+def recover_interrupted_jobs(stale_after_seconds: int = STALE_JOB_SECONDS) -> int:
+    """Return abandoned current-policy jobs to PENDING for an automatic retry."""
+    ensure_schema()
+    seconds = max(0, int(stale_after_seconds))
+    cutoff = (
+        dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=seconds)
+    ).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    with connect_spec(False) as conn:
+        cursor = conn.execute(
+            """UPDATE vin_spec_jobs
+               SET status='PENDING',attempts=0,requested_at=?,started_at=NULL,finished_at=NULL,
+                   last_error='INTERRUPTED_RETRY',site_sync_status='NOT_REQUIRED',
+                   site_sync_detail=NULL
+               WHERE policy_version=? AND status IN ('RUNNING','PROCESSING')
+                 AND (started_at IS NULL OR started_at<=?)""",
+            (utc_now(), source_policy.POLICY_VERSION, cutoff),
+        )
+        conn.commit()
+        return max(0, int(cursor.rowcount))
 
 
 def _claim() -> dict[str, Any] | None:
@@ -634,6 +675,7 @@ def _worker_loop() -> None:
     while not _stop_event.is_set():
         try:
             migrate_legacy_once()
+            recover_interrupted_jobs()
             scan_new_vins()
             process_one()
         except Exception:
@@ -651,6 +693,7 @@ def start_worker() -> bool:
         _stop_event.clear()
         ensure_schema()
         migrate_legacy_once()
+        recover_interrupted_jobs()
         _worker = threading.Thread(target=_worker_loop, name=WORKER_NAME, daemon=True)
         _worker.start()
         return True
