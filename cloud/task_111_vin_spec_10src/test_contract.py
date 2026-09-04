@@ -216,6 +216,14 @@ def test_ten_source_profiles() -> None:
         "carfolio.com", "encycarpedia.com",
     }
     require(set(source_policy.SOURCE_DOMAINS) == expected_sources, "ten-source allowlist")
+    exact_profile_vins = {
+        vin
+        for profile in source_policy.profile_library.PROFILES
+        for vin in profile.get("exact_vins") or ()
+    }
+    require(len(exact_profile_vins) == 16, "complete exact fleet VIN inventory")
+    for vin in exact_profile_vins:
+        require(source_policy.match_profile({"vin": vin}) is not None, "VIN-only exact profile " + vin)
     fleet = (
         ("UA-0001", "WDDZF0EB7HA053001", "Mercedes-Benz", "E 220", 2017, "Дизель", 1950),
         ("UA-0002", "WDD2452322J561014", "Mercedes-Benz", "B-Class", 2010, "Бензин", 1700),
@@ -253,6 +261,16 @@ def test_ten_source_profiles() -> None:
             require(all(item in expected_sources for item in fact["source_domains"]), "provenance " + uid)
     require(source_policy.vin_model_year("KNAGS416BHA141028") == 2017, "VIN lookup year")
     require(source_policy.lookup_years({"vin": "KNAGS416BHA141028", "year": 1999})[0] == "2017", "year fallback")
+    exact_k5 = source_policy.match_profile({
+        "vin": "KNAGS416BLA375484", "brand": "Kia", "model": "K5",
+        "fuel": "неверная операторская метка", "engine_cc": 2000,
+    })
+    require(exact_k5 and exact_k5["id"] == "kia-jf-k5-20-lpi-6at", "exact VIN profile anchor")
+    future_k5 = source_policy.match_profile({
+        "vin": "KNAGS416BMA999999", "brand": "Kia", "model": "K5",
+        "fuel": "Бензин", "engine_cc": 1999,
+    })
+    require(future_k5 and future_k5["id"] == "kia-jf-k5-20-lpi-6at", "future LPi petrol label")
 
     high = source_policy.Fact(
         "maximum_power", "Максимальная мощность", "engine", "151 л.с.", "", .88,
