@@ -1,0 +1,60 @@
+name: TASK109 Inline Container Tracking
+
+on:
+  push:
+    branches:
+      - task109-container-tracking-inline
+    paths:
+      - tasks/launch/TASK109-CONTAINER-TRACK-INLINE.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task109-container-tracking-inline
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact launch branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Require recovered control plane and immutable launch identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
+          echo '3cdd93eaa6234185c507109a6becc054966857812d13b6c885f82ba72d44ac17  tasks/requests/TASK109-CONTAINER-TRACK-INLINE.json' | sha256sum -c -
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          recovered = json.loads(Path('state/receipts/TASK107-R2.json').read_text(encoding='utf-8'))
+          launch = json.loads(Path('tasks/launch/TASK109-CONTAINER-TRACK-INLINE.json').read_text(encoding='utf-8'))
+          assert recovered['status'] == 'FINISHED'
+          assert recovered['canary_result'] == '3/3 PASS'
+          assert recovered['autopilot_mode'] == 'MANUAL'
+          assert launch['task_id'] == 'TASK109-CONTAINER-TRACK-INLINE'
+          assert launch['request_sha256'] == '3cdd93eaa6234185c507109a6becc054966857812d13b6c885f82ba72d44ac17'
+          assert launch['scope'] == 'THIS_TASK_ONLY'
+          assert launch['owner_authorized'] is True
+          PY
+
+      - name: Run offline package tests before central intake
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile automation/packages/task109_container_inline/*.py
+          python3 automation/packages/task109_container_inline/remote_installer.py
+          python3 automation/packages/task109_container_inline/test_contract.py
+
+  execute:
+    needs: preflight
+    uses: ./.github/workflows/uaart_orchestrator.yml
+    with:
+      request_path: tasks/requests/TASK109-CONTAINER-TRACK-INLINE.json
+    secrets: inherit
