@@ -1,0 +1,100 @@
+{
+  "diagnostics": {
+    "kernel_quota": {
+      "attempts": [
+        {
+          "errno": 2,
+          "identity": "user",
+          "reason": "ENOENT",
+          "returncode": -1,
+          "special_kind": "source"
+        },
+        {
+          "errno": 15,
+          "identity": "user",
+          "reason": "ENOTBLK",
+          "returncode": -1,
+          "special_kind": "mountpoint"
+        }
+      ],
+      "mount": {
+        "filesystem": "nfs",
+        "major_minor": "0:59",
+        "mountpoint": "/home/Carix",
+        "status": "found"
+      },
+      "project": {
+        "errno": 25,
+        "reason": "ENOTTY",
+        "status": "unavailable"
+      },
+      "successes": []
+    },
+    "nfs_rquota": {
+      "phase": "portmap",
+      "reason": "PermissionError:[Errno 1] Operation not permitted",
+      "status": "unavailable"
+    },
+    "official_du_bytes": {
+      "argv": [
+        "du",
+        "-s",
+        "-B",
+        "1",
+        "/tmp",
+        "/home/Carix",
+        "/var/www"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "22564864\t/tmp\n4928978944\t/home/Carix\n40960\t/var/www\n"
+    },
+    "pythonanywhere_api_quota": {
+      "read_only": true,
+      "resources": [
+        {
+          "http_status": 404,
+          "resource": ""
+        },
+        {
+          "http_status": 404,
+          "resource": "account/"
+        },
+        {
+          "http_status": 404,
+          "resource": "files/"
+        },
+        {
+          "http_status": 404,
+          "resource": "files/quota/"
+        },
+        {
+          "http_status": 404,
+          "resource": "quota/"
+        }
+      ]
+    },
+    "quota_bytes": {
+      "argv": [
+        "quota",
+        "-w"
+      ],
+      "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
+    },
+    "quota_human": {
+      "argv": [
+        "quota",
+        "-s"
+      ],
+      "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
+    }
+  },
+  "free_bytes": 1140027555840,
+  "measured_at": "2026-09-04T05:04:10Z",
+  "measurement": "shutil.disk_usage:/home/Carix;global-volume-fallback",
+  "read_only": true,
+  "target_environment": "production",
+  "task_id": "TASK111-VIN-SPEC-10SRC",
+  "total_bytes": 6340085809152,
+  "used_bytes": 5200058253312
+}

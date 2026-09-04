@@ -1,0 +1,74 @@
+name: TASK111 VIN Specification 10 Sources
+
+on:
+  push:
+    branches:
+      - task111-vin-spec-10src-exec
+    paths:
+      - tasks/launch/TASK111-VIN-SPEC-10SRC.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task111-vin-spec-10src
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact launch branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Require bounded owner authorization and immutable inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
+          echo '8d1acffcc51e3641c4144c0042ce1bbbce998d35be2aa63c698d46001d8ec517  tasks/requests/TASK111-VIN-SPEC-10SRC.json' | sha256sum -c -
+          echo 'ac73568482e22a4f306c91a4a134990ca870a70ec379dd159b7b3885e8aac5d0  state/storage/TASK111-VIN-SPEC-10SRC.json' | sha256sum -c -
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+          recovered = json.loads(Path('state/receipts/TASK107-R2.json').read_text(encoding='utf-8'))
+          launch = json.loads(Path('tasks/launch/TASK111-VIN-SPEC-10SRC.json').read_text(encoding='utf-8'))
+          storage = json.loads(Path('state/storage/TASK111-VIN-SPEC-10SRC.json').read_text(encoding='utf-8'))
+          assert recovered['status'] == 'FINISHED'
+          assert recovered['canary_result'] == '3/3 PASS'
+          assert recovered['autopilot_mode'] == 'MANUAL'
+          assert launch['task_id'] == 'TASK111-VIN-SPEC-10SRC'
+          assert launch['request_sha256'] == '8d1acffcc51e3641c4144c0042ce1bbbce998d35be2aa63c698d46001d8ec517'
+          assert launch['scope'] == 'THIS_TASK_ONLY'
+          assert launch['owner_authorized'] is True
+          assert launch['global_automatic_mode_enabled'] is False
+          assert launch['vin_enrichment_autostart'] is True
+          assert storage['task_id'] == 'TASK111-VIN-SPEC-10SRC'
+          assert storage['target_environment'] == 'production' and storage['read_only'] is True
+          assert int(storage['free_bytes']) >= 268435456
+          measured = dt.datetime.fromisoformat(storage['measured_at'].replace('Z', '+00:00'))
+          age = (dt.datetime.now(dt.timezone.utc) - measured).total_seconds()
+          assert -300 <= age <= 1800
+          PY
+
+      - name: Run complete offline contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile cloud/task_111_vin_spec_10src/*.py
+          python3 cloud/task_111_vin_spec_10src/source_policy.py
+          python3 cloud/task_111_vin_spec_10src/vin_spec_service.py
+          python3 cloud/task_111_vin_spec_10src/integration_patcher.py
+          python3 cloud/task_111_vin_spec_10src/remote_installer.py
+          python3 cloud/task_111_vin_spec_10src/test_contract.py
+
+  execute:
+    needs: preflight
+    uses: ./.github/workflows/uaart_orchestrator.yml
+    with:
+      request_path: tasks/requests/TASK111-VIN-SPEC-10SRC.json
+    secrets: inherit

@@ -32,6 +32,14 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile cloud/task109_container_inline/storage_probe_controller.py cloud/task109_container_inline/storage_probe_remote.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('tasks/launch/TASK109-STORAGE-PROBE.json')
+          value = json.loads(path.read_text(encoding='utf-8'))
+          value['scope'] = 'PRODUCTION_TARGET_READ_ONLY_MEASUREMENT'
+          path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
           python3 cloud/task109_container_inline/storage_probe_controller.py
           python3 - <<'PY'
           import json
@@ -47,6 +55,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git restore -- tasks/launch/TASK109-STORAGE-PROBE.json
+          git restore -- state/storage/TASK109-CONTAINER-TRACK-INLINE.json
           git add -- state/storage/TASK111-VIN-SPEC-10SRC.json
           git config user.name 'ua-art-storage-probe'
           git config user.email 'actions@users.noreply.github.com'
