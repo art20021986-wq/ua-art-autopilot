@@ -1,0 +1,32 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": false,
+  "created_at": "2026-09-04T02:01:32Z",
+  "critical_gate_status": "PENDING",
+  "heartbeat_at": "2026-09-04T02:01:32Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "33827926268",
+    "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+    "task_sha256": "0875de8561ad5b677cc7d4156512dda8acfb3584f08f38b2bded006dc2f1637f"
+  },
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "catalog_all_cards-d08bf2c0d345665c",
+  "receipt_path": "state/receipts/TASK109-CONTAINER-TRACK-INLINE.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK109-CONTAINER-TRACK-INLINE.json",
+  "request_sha256": "0875de8561ad5b677cc7d4156512dda8acfb3584f08f38b2bded006dc2f1637f",
+  "resource_locks": [
+    "CATALOG_ALL_CARDS",
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "8495bdd4cd24aa19886c57abf230f11dece54bc1",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-04T02:01:32Z"
+}

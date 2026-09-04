@@ -1,0 +1,20 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "created_at": "2026-09-04T02:01:32Z",
+  "identity": {
+    "run_id": "33827926268",
+    "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+    "task_sha256": "0875de8561ad5b677cc7d4156512dda8acfb3584f08f38b2bded006dc2f1637f"
+  },
+  "manual_mode": true,
+  "production_required": true,
+  "queue_key": "catalog_all_cards-d08bf2c0d345665c",
+  "request_path": "tasks/requests/TASK109-CONTAINER-TRACK-INLINE.json",
+  "resource_locks": [
+    "CATALOG_ALL_CARDS",
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
