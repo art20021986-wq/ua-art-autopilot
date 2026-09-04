@@ -488,6 +488,36 @@ def run() -> None:
         module.set_manual_value(length["id"], "UA-0001", "4360 мм", actor_id=7)
         service._store_facts("UA-0001", fake_enrich({})["facts"])
         require(module.get_spec(length["id"], "UA-0001")["field_value"] == "4360 мм", "manual lock")
+        service._store_facts("UA-0001", [{
+            "field_key": "overall_length",
+            "label_ru": "Длина автомобиля",
+            "category": "dimensions",
+            "display_value": "4359 мм",
+            "unit": "мм",
+            "confidence": 0.99,
+            "evidence_count": 2,
+            "source_domains": ["auto-data.net"],
+            "source_urls": ["https://www.auto-data.net/en/verified-test"],
+        }])
+        with service.connect_spec(True) as conn:
+            duplicate_state = conn.execute(
+                """SELECT is_visible,verification_status
+                     FROM additional_specification_meta
+                    WHERE car_uid='UA-0001' AND field_key='overall_length'"""
+            ).fetchone()
+            visible_labels = [row[0] for row in conn.execute(
+                """SELECT label_ru FROM additional_specification_meta
+                    WHERE car_uid='UA-0001' AND is_visible=1"""
+            )]
+        require(
+            tuple(duplicate_state) == (0, "SEMANTIC_DUPLICATE_HIDDEN"),
+            "automatic semantic duplicate remained visible",
+        )
+        visible_signatures = [service._semantic_label_signature(label) for label in visible_labels]
+        require(
+            len(visible_signatures) == len(set(visible_signatures)),
+            "visible semantic label uniqueness",
+        )
 
         with sqlite3.connect(main) as conn:
             conn.execute(
