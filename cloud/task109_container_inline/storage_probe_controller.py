@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import importlib.util
+import html
 import json
 import pathlib
 import re
 import sys
+import urllib.error
+import urllib.request
 
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -19,9 +22,9 @@ LOCAL_EVIDENCE = ROOT / "state/storage/TASK109-CONTAINER-TRACK-INLINE.json"
 
 
 def api_quota_probe(api, module) -> dict:
-    """Try the two account-scoped read-only quota resources, sanitizing output."""
+    """Try plausible account-scoped read-only resources, sanitizing output."""
     results = []
-    for resource in ("files/quota/", "quota/"):
+    for resource in ("", "account/", "files/", "files/quota/", "quota/"):
         item = {"resource": resource}
         try:
             status, body = api.request(
@@ -42,6 +45,50 @@ def api_quota_probe(api, module) -> dict:
             item["error"] = type(exc).__name__ + ":" + str(exc)
         results.append(item)
     return {"read_only": True, "resources": results}
+
+
+def dashboard_quota_probe(api) -> dict:
+    """Check whether the API token also authenticates the Files web view."""
+    request = urllib.request.Request(
+        "https://www.pythonanywhere.com/user/Carix/files/home/Carix/",
+        headers={
+            "Authorization": "Token " + api.token,
+            "User-Agent": "ua-art-task109-storage-read-only/1",
+        },
+        method="GET",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            body = response.read(2_000_001)
+            final_url = response.geturl()
+            status = int(response.status)
+        if len(body) > 2_000_000:
+            raise RuntimeError("DASHBOARD_RESPONSE_TOO_LARGE")
+        text = html.unescape(body.decode("utf-8", "replace"))
+        visible = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text))
+        match = re.search(
+            r"(?:File storage:\s*)?(\d+(?:\.\d+)?)%\s*full\s*[–—-]\s*"
+            r"(\d+(?:\.\d+)?)\s*(MiB|MB|GiB|GB)\s*of your\s*"
+            r"(\d+(?:\.\d+)?)\s*(MiB|MB|GiB|GB)\s*quota",
+            visible,
+            re.I,
+        )
+        result = {
+            "read_only": True,
+            "http_status": status,
+            "authenticated_files_view": "/login/" not in final_url,
+        }
+        if match:
+            result["quota_display"] = {
+                "percent_full": float(match.group(1)),
+                "used_value": float(match.group(2)),
+                "used_unit": match.group(3),
+                "total_value": float(match.group(4)),
+                "total_unit": match.group(5),
+            }
+        return result
+    except Exception as exc:
+        return {"read_only": True, "error": type(exc).__name__ + ":" + str(exc)}
 
 
 def load_api_module():
@@ -72,6 +119,15 @@ def validate(value: dict) -> None:
 def main() -> int:
     module = load_api_module()
     api = module.API()
+    launch = json.loads((ROOT / "tasks/launch/TASK109-STORAGE-PROBE.json").read_text(encoding="utf-8"))
+    if "API_DISCOVERY" in str(launch.get("scope", "")):
+        value = json.loads(LOCAL_EVIDENCE.read_text(encoding="utf-8"))
+        diagnostics = value.setdefault("diagnostics", {})
+        diagnostics["pythonanywhere_api_quota"] = api_quota_probe(api, module)
+        diagnostics["pythonanywhere_files_view"] = dashboard_quota_probe(api)
+        module.atomic_text(LOCAL_EVIDENCE, json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+        print(json.dumps(value, ensure_ascii=False, sort_keys=True))
+        return 0
     payload = (HERE / "storage_probe_remote.py").read_bytes()
     compile(payload.decode("utf-8"), "storage_probe_remote.py", "exec")
     try:
