@@ -1,0 +1,849 @@
+{
+  "contract_id": "UA-VIN-SPEC-10SRC-V2.0",
+  "crm_unchanged": true,
+  "delayed_verify": {
+    "cards": {
+      "UA-0001": 43,
+      "UA-0002": 47,
+      "UA-0003": 25,
+      "UA-0004": 25,
+      "UA-0005": 44,
+      "UA-0006": 25,
+      "UA-0007": 47,
+      "UA-0008": 47,
+      "UA-0009": 25,
+      "UA-0010": 25,
+      "UA-0011": 29,
+      "UA-0012": 25,
+      "UA-0013": 40,
+      "UA-0014": 47,
+      "UA-0015": 31,
+      "UA-0016": 25
+    },
+    "minimum_specs_per_card": 25,
+    "nonempty_cards": 16,
+    "status": "PASS"
+  },
+  "finished_at": "2026-09-04T07:55:32Z",
+  "global_automatic_mode_enabled": false,
+  "install": {
+    "backfill_completion": {
+      "completed": 16,
+      "concurrent_worker_completed": 0,
+      "expected": 16,
+      "installer_completed": 16,
+      "polls": 1,
+      "recovered_interrupted": 0,
+      "terminal_remediation_rounds": 0
+    },
+    "backup": "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task111_backups/20260904T074721111832Z",
+    "contract_id": "UA-VIN-SPEC-10SRC-V2.0",
+    "crm_unchanged": true,
+    "crm_write": false,
+    "finished_at": "2026-09-04T07:51:45Z",
+    "full_requeue": {
+      "card_uids": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013",
+        "UA-0014",
+        "UA-0015",
+        "UA-0016"
+      ],
+      "queued": 16,
+      "valid_vins": 16
+    },
+    "global_automatic_mode_enabled": false,
+    "initial_autopublication": false,
+    "invocation": "33850054689-install-5d440af2a14449eca5f6c5c5d31993b7",
+    "jobs": [
+      {
+        "car_uid": "UA-0001",
+        "facts_count": 43,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0002",
+        "facts_count": 47,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0003",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0004",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0005",
+        "facts_count": 44,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0006",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0007",
+        "facts_count": 47,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0008",
+        "facts_count": 47,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0009",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0010",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0011",
+        "facts_count": 29,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0012",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0013",
+        "facts_count": 40,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0014",
+        "facts_count": 47,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0015",
+        "facts_count": 29,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0016",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      }
+    ],
+    "legacy_migration": {
+      "facts": 12,
+      "meta": 12
+    },
+    "phase": "INSTALL",
+    "price_rows": 0,
+    "processed": [
+      {
+        "car_uid": "UA-0001",
+        "facts": 43,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0002",
+        "facts": 47,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0003",
+        "facts": 25,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0004",
+        "facts": 25,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0005",
+        "facts": 44,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0006",
+        "facts": 25,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0007",
+        "facts": 47,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0008",
+        "facts": 47,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0009",
+        "facts": 25,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0010",
+        "facts": 25,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0011",
+        "facts": 29,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0012",
+        "facts": 25,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0013",
+        "facts": 40,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0014",
+        "facts": 47,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0015",
+        "facts": 29,
+        "site_sync": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0016",
+        "facts": 25,
+        "site_sync": "PASS",
+        "status": "READY"
+      }
+    ],
+    "public": {
+      "card_count": 16,
+      "cards": {
+        "UA-0001": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 43
+        },
+        "UA-0002": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 47
+        },
+        "UA-0003": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0004": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0005": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 44
+        },
+        "UA-0006": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0007": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 47
+        },
+        "UA-0008": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 47
+        },
+        "UA-0009": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0010": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0011": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 29
+        },
+        "UA-0012": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0013": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 40
+        },
+        "UA-0014": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 47
+        },
+        "UA-0015": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 31
+        },
+        "UA-0016": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        }
+      },
+      "minimum_specs_per_card": 25,
+      "nonempty_cards": 16,
+      "page_count": 32,
+      "status": "PASS"
+    },
+    "published_cards_refreshed": true,
+    "refreshes": [
+      {
+        "car_uid": "UA-0001",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0002",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0003",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0004",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0005",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0006",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0007",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0008",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0009",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0010",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0011",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0012",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0013",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0014",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0015",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      },
+      {
+        "car_uid": "UA-0016",
+        "detail": "already current after VIN processing",
+        "status": "PASS"
+      }
+    ],
+    "scan": {
+      "card_uids": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013",
+        "UA-0014",
+        "UA-0015",
+        "UA-0016"
+      ],
+      "queued": 16,
+      "valid_vins": 16
+    },
+    "sidecar_quick_check": "ok",
+    "source_audit": {
+      "audited_on": "2026-09-04",
+      "pass_count": 3,
+      "policy_version": "UA111-10SRC-V3",
+      "source_count": 10,
+      "sources": {
+        "auto-data.net": {
+          "bytes": 53578,
+          "status": "PASS"
+        },
+        "auto.danawa.com": {
+          "error": "SourcePolicyError",
+          "status": "FAIL"
+        },
+        "automobile-catalog.com": {
+          "error": "SourcePolicyError",
+          "status": "FAIL"
+        },
+        "carfolio.com": {
+          "error": "SourcePolicyError",
+          "status": "FAIL"
+        },
+        "carisyou.com": {
+          "error": "SourcePolicyError",
+          "status": "FAIL"
+        },
+        "cars-data.com": {
+          "error": "SourcePolicyError",
+          "status": "FAIL"
+        },
+        "carwiki.co.kr": {
+          "error": "SourcePolicyError",
+          "status": "FAIL"
+        },
+        "encycarpedia.com": {
+          "error": "SourcePolicyError",
+          "status": "FAIL"
+        },
+        "ultimatespecs.com": {
+          "bytes": 167142,
+          "status": "PASS"
+        },
+        "vpic.nhtsa.dot.gov": {
+          "bytes": 104408,
+          "status": "PASS"
+        }
+      }
+    },
+    "source_hashes": {
+      "/home/Carix/cars_ui.py": "f017477e2ee450d677d59f4cfa629b5c05c72e64fd30078acc703ccf667cddf4",
+      "/home/Carix/profile_library.py": "1211250019cf16c74f28d96539606803db92fe9a204eddfbb2a7339d174085db",
+      "/home/Carix/publikaciya.py": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
+      "/home/Carix/source_policy.py": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38",
+      "/home/Carix/ua_additional_spec.py": "93d6de2f0a96deaf94c10b858a0087a4673eea2cfa1f1381ebaaf484c563a729",
+      "/home/Carix/vin_spec_service.py": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae"
+    },
+    "source_urls_public": false,
+    "status": "PASS",
+    "task_id": "TASK111-VIN-SPEC-10SRC",
+    "vin_autostart_enabled": true
+  },
+  "live_verify": {
+    "cards": {
+      "UA-0001": 43,
+      "UA-0002": 47,
+      "UA-0003": 25,
+      "UA-0004": 25,
+      "UA-0005": 44,
+      "UA-0006": 25,
+      "UA-0007": 47,
+      "UA-0008": 47,
+      "UA-0009": 25,
+      "UA-0010": 25,
+      "UA-0011": 29,
+      "UA-0012": 25,
+      "UA-0013": 40,
+      "UA-0014": 47,
+      "UA-0015": 31,
+      "UA-0016": 25
+    },
+    "minimum_specs_per_card": 25,
+    "nonempty_cards": 16,
+    "status": "PASS"
+  },
+  "remote_verify": {
+    "contract_id": "UA-VIN-SPEC-10SRC-V2.0",
+    "crm_write": false,
+    "finished_at": "2026-09-04T07:54:10Z",
+    "invocation": "33850054689-verify-4f8cccd3a39542a384e4f45e96d48014",
+    "jobs": [
+      {
+        "car_uid": "UA-0001",
+        "facts_count": 43,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0002",
+        "facts_count": 47,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0003",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0004",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0005",
+        "facts_count": 44,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0006",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0007",
+        "facts_count": 47,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0008",
+        "facts_count": 47,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0009",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0010",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0011",
+        "facts_count": 29,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0012",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0013",
+        "facts_count": 40,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0014",
+        "facts_count": 47,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0015",
+        "facts_count": 29,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      },
+      {
+        "car_uid": "UA-0016",
+        "facts_count": 25,
+        "site_sync_status": "PASS",
+        "status": "READY"
+      }
+    ],
+    "phase": "VERIFY",
+    "public": {
+      "card_count": 16,
+      "cards": {
+        "UA-0001": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 43
+        },
+        "UA-0002": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 47
+        },
+        "UA-0003": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0004": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0005": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 44
+        },
+        "UA-0006": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0007": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 47
+        },
+        "UA-0008": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 47
+        },
+        "UA-0009": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0010": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0011": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 29
+        },
+        "UA-0012": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        },
+        "UA-0013": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 40
+        },
+        "UA-0014": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 47
+        },
+        "UA-0015": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 31
+        },
+        "UA-0016": {
+          "roots": [
+            "/home/Carix/video",
+            "/home/Carix/site"
+          ],
+          "visible_specs": 25
+        }
+      },
+      "minimum_specs_per_card": 25,
+      "nonempty_cards": 16,
+      "page_count": 32,
+      "status": "PASS"
+    },
+    "sidecar_quick_check": "ok",
+    "status": "PASS",
+    "task_id": "TASK111-VIN-SPEC-10SRC",
+    "vin_autostart_enabled": true
+  },
+  "restart": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "status": "PASS"
+  },
+  "rollback_drill": {
+    "after": "0603862ab4ed78a7d1e094d2b9f5b3e93b84ce5567b462f96042141544107029",
+    "before": "0603862ab4ed78a7d1e094d2b9f5b3e93b84ce5567b462f96042141544107029",
+    "during": "10bfd66cfb99c380d74ddc43d9b676e2248931a23ce34fc86157f89220e98d01",
+    "status": "PASS"
+  },
+  "stale_triggers_removed": [],
+  "status": "PASS",
+  "task_id": "TASK111-VIN-SPEC-10SRC",
+  "unexpected_changes": 0,
+  "uploads": {
+    "integration_patcher.py": {
+      "bytes": 11629,
+      "sha256": "1c3619976aa870cbf7be2245626e6705610b7cd78d1a332c9cb871072c30ee23"
+    },
+    "profile_library.py": {
+      "bytes": 24771,
+      "sha256": "1211250019cf16c74f28d96539606803db92fe9a204eddfbb2a7339d174085db"
+    },
+    "remote_installer.py": {
+      "bytes": 30843,
+      "sha256": "1d196a31284b5ffb8c10936c105a5899c5553f9a00de7cfad5970e573a995c65"
+    },
+    "source_policy.py": {
+      "bytes": 49018,
+      "sha256": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38"
+    },
+    "vin_spec_service.py": {
+      "bytes": 35956,
+      "sha256": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae"
+    }
+  },
+  "vin_autostart_enabled": true
+}
