@@ -86,7 +86,7 @@
   "production_required": true,
   "queue_key": "catalog_all_cards-517f6dd10cc48ae3",
   "receipt_path": "state/receipts/TASK110-VIN-SPEC-3SRC.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_validation_status": "FAIL_EXACT_IDENTITY_MISSING",
   "request_path": "tasks/requests/TASK110-VIN-SPEC-3SRC.json",
   "request_sha256": "49138842d8fb5909f57cfc622d7bb943ca90379a39702ef26b7ecc16d0540717",
   "resource_locks": [
@@ -110,7 +110,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "task_execution_status": "FAILED",
   "trusted_package": {
     "controller_sha256": "cf47c3cbd01b5cfd14a87fb5d3ba0b833a24660f6988c1fd27b4f4505183fafe",
     "file_sha256": {
@@ -121,5 +121,12 @@
       "cloud/task_110_vin_spec_3src/vin_spec_service.py": "04b5684943f5187eb32f57401ed4bfa8574cb4dd9651a828723ece2244accf80"
     }
   },
-  "updated_at": "2026-09-04T04:11:55Z"
+  "updated_at": "2026-09-04T04:20:15Z",
+  "closed_at": "2026-09-04T04:20:15Z",
+  "root_cause_resolution": {
+    "action": "CLOSED_AFTER_CONTROLLER_RECEIPT_FIX",
+    "production_rollback_required": false,
+    "reason": "The production controller completed successfully, but its repository receipt omitted request_sha256 and run_id. Runtime health, rollback readiness, protected-file checks, CRM immutability and live verification all passed. The superseding request fixes only receipt identity fields.",
+    "superseded_by_request_sha256": "4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95"
+  }
 }
