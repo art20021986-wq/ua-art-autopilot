@@ -1,0 +1,54 @@
+name: TASK111 Production Storage Probe
+
+on:
+  push:
+    branches:
+      - task111-vin-spec-10src
+    paths:
+      - tasks/launch/TASK111-STORAGE-PROBE.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task111-production-storage-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Collect read-only target measurement
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile cloud/task109_container_inline/storage_probe_controller.py cloud/task109_container_inline/storage_probe_remote.py
+          python3 cloud/task109_container_inline/storage_probe_controller.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          source = Path('state/storage/TASK109-CONTAINER-TRACK-INLINE.json')
+          target = Path('state/storage/TASK111-VIN-SPEC-10SRC.json')
+          value = json.loads(source.read_text(encoding='utf-8'))
+          value['task_id'] = 'TASK111-VIN-SPEC-10SRC'
+          target.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+
+      - name: Commit fresh immutable probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- state/storage/TASK111-VIN-SPEC-10SRC.json
+          git config user.name 'ua-art-storage-probe'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'TASK111: record fresh read-only production storage probe'
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
