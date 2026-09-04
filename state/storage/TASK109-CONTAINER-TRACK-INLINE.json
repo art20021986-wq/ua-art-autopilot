@@ -1,28 +1,100 @@
 {
-  "free_bytes": 32640151552,
-  "measured_at": "2026-09-04T02:24:07Z",
-  "measurement": "authenticated PythonAnywhere Files quota plus official target-side du bytes",
-  "quota_observation": {
-    "observed_at": "2026-09-04T02:29:45Z",
-    "percent_full_display": 13,
-    "read_only": true,
-    "source": "PythonAnywhere Files page",
-    "total_display": "35.0 GB",
-    "used_display": "4.6 GB"
+  "diagnostics": {
+    "kernel_quota": {
+      "attempts": [
+        {
+          "errno": 2,
+          "identity": "user",
+          "reason": "ENOENT",
+          "returncode": -1,
+          "special_kind": "source"
+        },
+        {
+          "errno": 15,
+          "identity": "user",
+          "reason": "ENOTBLK",
+          "returncode": -1,
+          "special_kind": "mountpoint"
+        }
+      ],
+      "mount": {
+        "filesystem": "nfs",
+        "major_minor": "0:59",
+        "mountpoint": "/home/Carix",
+        "status": "found"
+      },
+      "project": {
+        "errno": 25,
+        "reason": "ENOTTY",
+        "status": "unavailable"
+      },
+      "successes": []
+    },
+    "nfs_rquota": {
+      "phase": "portmap",
+      "reason": "PermissionError:[Errno 1] Operation not permitted",
+      "status": "unavailable"
+    },
+    "official_du_bytes": {
+      "argv": [
+        "du",
+        "-s",
+        "-B",
+        "1",
+        "/tmp",
+        "/home/Carix",
+        "/var/www"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "22564864\t/tmp\n4924600320\t/home/Carix\n40960\t/var/www\n"
+    },
+    "pythonanywhere_api_quota": {
+      "read_only": true,
+      "resources": [
+        {
+          "http_status": 404,
+          "resource": ""
+        },
+        {
+          "http_status": 404,
+          "resource": "account/"
+        },
+        {
+          "http_status": 404,
+          "resource": "files/"
+        },
+        {
+          "http_status": 404,
+          "resource": "files/quota/"
+        },
+        {
+          "http_status": 404,
+          "resource": "quota/"
+        }
+      ]
+    },
+    "quota_bytes": {
+      "argv": [
+        "quota",
+        "-w"
+      ],
+      "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
+    },
+    "quota_human": {
+      "argv": [
+        "quota",
+        "-s"
+      ],
+      "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
+    }
   },
+  "free_bytes": 1140575961088,
+  "measured_at": "2026-09-04T03:53:10Z",
+  "measurement": "shutil.disk_usage:/home/Carix;global-volume-fallback",
   "read_only": true,
   "target_environment": "production",
   "task_id": "TASK109-CONTAINER-TRACK-INLINE",
-  "total_bytes": 37580963840,
-  "used_bytes": 4940812288,
-  "used_measurement": {
-    "command": "du -s -B 1 /tmp /home/Carix /var/www",
-    "components_bytes": {
-      "/home/Carix": 4918206464,
-      "/tmp": 22564864,
-      "/var/www": 40960
-    },
-    "measured_at": "2026-09-04T02:24:07Z",
-    "source": "PythonAnywhere production scheduled task"
-  }
+  "total_bytes": 6340085809152,
+  "used_bytes": 5199509848064
 }
