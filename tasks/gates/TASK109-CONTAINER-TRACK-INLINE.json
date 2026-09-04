@@ -1,0 +1,33 @@
+{
+  "backup_plan_ready": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "manifest_sha256": "d8e7e895a3c2540a1b79ab3f69cdfb885c74c6c03dff396515f7f6dbfbc5b1cb",
+  "production_write": false,
+  "protected_snapshot": {
+    "crm.db": {
+      "access": "HASH_ONLY_DURING_EXECUTION",
+      "write_permitted": false
+    },
+    "cars_ui.py": {
+      "access": "HASH_ONLY_DURING_EXECUTION",
+      "write_permitted": false
+    },
+    "catalog_and_card_content_outside_stage": {
+      "access": "HASH_AND_BYTE_BOUNDARY_GUARD",
+      "write_permitted": false
+    },
+    "media": {
+      "access": "INVENTORY_ONLY",
+      "write_permitted": false
+    },
+    "vin_prices_dns": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    }
+  },
+  "rollback_plan_ready": true,
+  "status": "PASS",
+  "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
