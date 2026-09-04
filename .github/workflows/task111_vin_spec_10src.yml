@@ -3,7 +3,7 @@ name: TASK111 VIN Specification 10 Sources
 on:
   push:
     branches:
-      - task111-vin-spec-10src-exec
+      - task111-vin-spec-10src-exec2
     paths:
       - tasks/launch/TASK111-VIN-SPEC-10SRC.json
 
@@ -29,8 +29,8 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
-          echo '8d1acffcc51e3641c4144c0042ce1bbbce998d35be2aa63c698d46001d8ec517  tasks/requests/TASK111-VIN-SPEC-10SRC.json' | sha256sum -c -
-          echo 'ac73568482e22a4f306c91a4a134990ca870a70ec379dd159b7b3885e8aac5d0  state/storage/TASK111-VIN-SPEC-10SRC.json' | sha256sum -c -
+          echo '6ff5d2324936ce3fb4e73927cfaf9f07f98fee0c67dfc026d5fc5501454a2120  tasks/requests/TASK111-VIN-SPEC-10SRC.json' | sha256sum -c -
+          echo '944beea53e5b6c2668db991b2faf27e50135d67829cc792a74eba10207794769  state/storage/TASK111-VIN-SPEC-10SRC.json' | sha256sum -c -
           python3 - <<'PY'
           import datetime as dt
           import json
@@ -42,7 +42,7 @@ jobs:
           assert recovered['canary_result'] == '3/3 PASS'
           assert recovered['autopilot_mode'] == 'MANUAL'
           assert launch['task_id'] == 'TASK111-VIN-SPEC-10SRC'
-          assert launch['request_sha256'] == '8d1acffcc51e3641c4144c0042ce1bbbce998d35be2aa63c698d46001d8ec517'
+          assert launch['request_sha256'] == '6ff5d2324936ce3fb4e73927cfaf9f07f98fee0c67dfc026d5fc5501454a2120'
           assert launch['scope'] == 'THIS_TASK_ONLY'
           assert launch['owner_authorized'] is True
           assert launch['global_automatic_mode_enabled'] is False
