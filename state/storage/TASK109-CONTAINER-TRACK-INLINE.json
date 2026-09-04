@@ -21,7 +21,6 @@
         "filesystem": "nfs",
         "major_minor": "0:59",
         "mountpoint": "/home/Carix",
-        "source": "10.0.0.27:/mnt/user_storage/homedirs/Carix/home/Carix",
         "status": "found"
       },
       "project": {
@@ -30,6 +29,11 @@
         "status": "unavailable"
       },
       "successes": []
+    },
+    "nfs_rquota": {
+      "phase": "portmap",
+      "reason": "PermissionError:[Errno 1] Operation not permitted",
+      "status": "unavailable"
     },
     "official_du_bytes": {
       "argv": [
@@ -43,7 +47,7 @@
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "22564864\t/tmp\n4918083584\t/home/Carix\n40960\t/var/www\n"
+      "stdout": "22564864\t/tmp\n4918149120\t/home/Carix\n40960\t/var/www\n"
     },
     "quota_bytes": {
       "argv": [
@@ -60,12 +64,12 @@
       "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
     }
   },
-  "free_bytes": 1141626634240,
-  "measured_at": "2026-09-04T02:15:23Z",
-  "measurement": "shutil.disk_usage:/home/Carix;used=total-user_available_free",
+  "free_bytes": 1138544869376,
+  "measured_at": "2026-09-04T02:20:16Z",
+  "measurement": "shutil.disk_usage:/home/Carix;global-volume-fallback",
   "read_only": true,
   "target_environment": "production",
   "task_id": "TASK109-CONTAINER-TRACK-INLINE",
   "total_bytes": 6340085809152,
-  "used_bytes": 5198459174912
+  "used_bytes": 5201540939776
 }
