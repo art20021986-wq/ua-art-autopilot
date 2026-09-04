@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
-          echo '3cdd93eaa6234185c507109a6becc054966857812d13b6c885f82ba72d44ac17  tasks/requests/TASK109-CONTAINER-TRACK-INLINE.json' | sha256sum -c -
+          echo '8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9  tasks/requests/TASK109-CONTAINER-TRACK-INLINE.json' | sha256sum -c -
           python3 - <<'PY'
           import json
           from pathlib import Path
@@ -39,7 +39,7 @@ jobs:
           assert recovered['canary_result'] == '3/3 PASS'
           assert recovered['autopilot_mode'] == 'MANUAL'
           assert launch['task_id'] == 'TASK109-CONTAINER-TRACK-INLINE'
-          assert launch['request_sha256'] == '3cdd93eaa6234185c507109a6becc054966857812d13b6c885f82ba72d44ac17'
+          assert launch['request_sha256'] == '8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9'
           assert launch['scope'] == 'THIS_TASK_ONLY'
           assert launch['owner_authorized'] is True
           PY
@@ -48,9 +48,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m py_compile automation/packages/task109_container_inline/*.py
-          python3 automation/packages/task109_container_inline/remote_installer.py
-          python3 automation/packages/task109_container_inline/test_contract.py
+          python3 -m py_compile cloud/task109_container_inline/*.py
+          python3 cloud/task109_container_inline/remote_installer.py
+          python3 cloud/task109_container_inline/test_contract.py
 
   execute:
     needs: preflight
