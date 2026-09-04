@@ -48,7 +48,7 @@
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "22564864\t/tmp\n4965281792\t/home/Carix\n40960\t/var/www\n"
+      "stdout": "22564864\t/tmp\n4975747072\t/home/Carix\n40960\t/var/www\n"
     },
     "pythonanywhere_api_quota": {
       "read_only": true,
@@ -90,14 +90,14 @@
       "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
     }
   },
-  "free_bytes": 32593076224,
+  "free_bytes": 32582610944,
   "global_volume_observation": {
-    "free_bytes": 1138968494080,
+    "free_bytes": 1138645532672,
     "measurement": "shutil.disk_usage:/home/Carix;global-volume-fallback",
     "total_bytes": 6340085809152,
-    "used_bytes": 5201117315072
+    "used_bytes": 5201440276480
   },
-  "measured_at": "2026-09-04T06:56:10Z",
+  "measured_at": "2026-09-04T07:27:10Z",
   "measurement": "PythonAnywhere account quota (35.0 GiB) plus fresh official target-side du bytes",
   "quota_observation": {
     "basis": "fixed PythonAnywhere account storage quota",
@@ -109,5 +109,5 @@
   "target_environment": "production",
   "task_id": "TASK111-VIN-SPEC-10SRC",
   "total_bytes": 37580963840,
-  "used_bytes": 4987887616
+  "used_bytes": 4998352896
 }
