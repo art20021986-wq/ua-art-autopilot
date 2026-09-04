@@ -3,8 +3,19 @@
   "automatic_mode_enabled": false,
   "created_at": "2026-09-04T05:07:59Z",
   "critical_gate_status": "PENDING",
-  "heartbeat_at": "2026-09-04T05:07:59Z",
-  "heartbeat_sequence": 0,
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-04T05:08:13Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL pipeline failed; inspect GitHub Actions run 33839334764",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "7f8b08929e26278c"
+    }
+  ],
+  "heartbeat_at": "2026-09-04T05:08:13Z",
+  "heartbeat_sequence": 2,
   "identity": {
     "run_id": "33839334764",
     "task_id": "TASK111-VIN-SPEC-10SRC",
@@ -24,8 +35,21 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "75f410527591f25bf18aca14f52a27da66da62e4",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 243.176,
+    "allowed": false,
+    "evidence_path": "state/storage/TASK111-VIN-SPEC-10SRC.json",
+    "evidence_sha256": "ac73568482e22a4f306c91a4a134990ca870a70ec379dd159b7b3885e8aac5d0",
+    "free_bytes": 1140027555840,
+    "heavy": true,
+    "measured_at": "2026-09-04T05:04:10Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 268435456,
+    "status": "THROTTLE_80",
+    "usage_percent": 82.01873617870669
+  },
+  "storage_preflight_status": "THROTTLE_80",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-04T05:07:59Z"
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "updated_at": "2026-09-04T05:08:13Z"
 }
