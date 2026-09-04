@@ -43,7 +43,7 @@ EXECUTION_MODE_SCHEMA = "UA-ART-EXECUTION-MODE-1"
 AUTOMATIC_APPROVAL_SCHEMA = "UA-ART-AUTOMATIC-MODE-APPROVAL-1"
 RUNTIME_MANIFEST_SCHEMA = "UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1"
 AUTOSTART_LEDGER_SCHEMA = "UA-ART-AUTOSTART-LEDGER-1"
-PRODUCTION_TRANSACTION_SCHEMA = "UA-ART-PRODUCTION-TRANSACTION-1"
+PRODUCTION_TRANSACTION_SCHEMA = "UA-ART-PRODUCTION-TRANSACTION-2"
 EXECUTION_MODES = {"MANUAL", "AUTOMATIC"}
 RUNTIME_MANIFEST_PATH = "state/AUTOPILOT_RUNTIME_MANIFEST.json"
 RUNTIME_PINNED_PATHS = (
@@ -72,9 +72,7 @@ PRODUCTION_CREDENTIAL_WORKFLOW_ALLOWLIST = frozenset({
 })
 ACTIVE_WORKFLOW_EVENT_POLICY = {
     ".github/workflows/uaart_autostart.yml": frozenset({"push"}),
-    ".github/workflows/uaart_orchestrator.yml": frozenset({
-        "workflow_call", "workflow_dispatch",
-    }),
+    ".github/workflows/uaart_orchestrator.yml": frozenset({"workflow_call"}),
     ".github/workflows/uaart_fast.yml": frozenset({"workflow_call"}),
     ".github/workflows/uaart_standard.yml": frozenset({"workflow_call"}),
     ".github/workflows/uaart_critical.yml": frozenset({"workflow_call"}),
@@ -87,9 +85,7 @@ ACTIVE_WORKFLOW_EVENT_POLICY = {
     ".github/workflows/uaart_monitor.yml": frozenset({
         "schedule", "workflow_dispatch",
     }),
-    ".github/workflows/uaart_transaction_watchdog.yml": frozenset({
-        "schedule", "workflow_dispatch",
-    }),
+    ".github/workflows/uaart_transaction_watchdog.yml": frozenset({"schedule"}),
 }
 SECRETS_INHERIT_WORKFLOW_ALLOWLIST = frozenset({
     ".github/workflows/uaart_autostart.yml",
@@ -97,7 +93,8 @@ SECRETS_INHERIT_WORKFLOW_ALLOWLIST = frozenset({
 })
 PRODUCTION_CREDENTIAL_REFERENCE_RE = re.compile(
     r"secrets\s*(?:\.\s*PYTHONANYWHERE_API_TOKEN"
-    r"|\[\s*['\"]PYTHONANYWHERE_API_TOKEN['\"]\s*\])"
+    r"|\[\s*['\"]PYTHONANYWHERE_API_TOKEN['\"]\s*\])",
+    re.IGNORECASE,
 )
 SECRETS_BRACKET_REFERENCE_RE = re.compile(r"secrets\s*\[")
 SECRETS_INHERIT_RE = re.compile(r"(?m)^\s*secrets:\s*inherit\s*(?:#.*)?$")
@@ -106,6 +103,32 @@ WORKFLOW_REMOTE_DISPATCH_RE = re.compile(
     r"(?:gh\s+workflow\s+run|/actions/workflows/[^\s'\"]+/dispatches"
     r"|/actions/runs/[^\s'\"]+/rerun)",
     re.IGNORECASE,
+)
+TASK_EXECUTION_COMMAND_RE = re.compile(
+    r"(?<![A-Za-z0-9_./-])"
+    r"(?:(?:/usr/bin/)?python(?:3(?:\.\d+)?)?\s+(?:-I\s+)?)?"
+    r"(?:\./)?automation/execution_contract\.py\s+"
+    r"(test|run|backup|rollback)(?=\s|\\|$)",
+    re.MULTILINE,
+)
+GITHUB_WRITE_CREDENTIAL_RE = re.compile(
+    r"github\s*(?:\.\s*token|\[\s*['\"]token['\"]\s*\])"
+    r"|secrets\s*\.\s*GITHUB_TOKEN|\b(?:GH_TOKEN|GITHUB_TOKEN)\b",
+    re.IGNORECASE,
+)
+DATA_ONLY_ARTIFACT_VALIDATION_MARKER = "UAART_DATA_ONLY_ARTIFACT_VALIDATED"
+ORCHESTRATOR_WORKFLOW_SHA256 = (
+    "0bab939f235f3e03fd5c847814ae654e1ee585712b5d5c3b572f31a4779fd236"
+)
+CRITICAL_WORKFLOW_SHA256 = (
+    "8fe7676b336594126f6e65927f3710ec550355da0f0234aed79aa63e47337b44"
+)
+WATCHDOG_WORKFLOW_SHA256 = (
+    "20e65a0f952fbba4788509ede13bbf6069542fdf082e27f0297aa1a262669d1b"
+)
+PYTHON_INTERPRETER_RE = re.compile(
+    r"(?<![A-Za-z0-9_./-])(?:/usr/bin/)?python(?:3(?:\.\d+)?)?"
+    r"(?![A-Za-z0-9_./@-])"
 )
 
 
@@ -159,7 +182,10 @@ def require_sha(value: Any, label: str) -> str:
 
 
 def safe_repo_path(value: str) -> str:
-    path = pathlib.PurePosixPath(str(value))
+    raw = str(value)
+    if not re.fullmatch(r"[A-Za-z0-9._/-]+", raw) or "//" in raw:
+        raise ControlPlaneError("UNSAFE_REPO_PATH:" + raw)
+    path = pathlib.PurePosixPath(raw)
     if path.is_absolute() or not path.parts or ".." in path.parts:
         raise ControlPlaneError("UNSAFE_REPO_PATH:" + str(value))
     return path.as_posix()
@@ -229,6 +255,1343 @@ def _workflow_events(source: str, relative: str) -> frozenset[str]:
     return frozenset(events)
 
 
+def _named_workflow_step_blocks(source: str, relative: str) -> tuple[str, ...]:
+    """Return named step blocks without allowing one job to bleed into another."""
+    blocks = [
+        block
+        for _job_id, job in _workflow_job_blocks(source, relative)
+        for block in _named_job_step_blocks(job, relative, _job_id)
+    ]
+    if not blocks:
+        raise ControlPlaneError("WORKFLOW_NAMED_STEPS_MISSING:" + relative)
+    return tuple(blocks)
+
+
+def _workflow_job_blocks(source: str, relative: str) -> tuple[tuple[str, str], ...]:
+    """Return ``jobs.<id>`` blocks using only indentation guaranteed by Actions.
+
+    Loading workflow YAML through a generic parser is surprisingly fragile because
+    YAML 1.1 treats the key ``on`` as a boolean.  The active workflows are pinned,
+    so a deliberately small indentation parser is both deterministic and fail
+    closed: jobs must be ordinary two-space mapping keys under one top-level
+    ``jobs:`` block.
+    """
+    lines = source.splitlines()
+    job_roots = [index for index, line in enumerate(lines) if line == "jobs:"]
+    if len(job_roots) != 1:
+        raise ControlPlaneError("WORKFLOW_JOBS_BLOCK_INVALID:" + relative)
+    jobs_start = job_roots[0]
+    jobs_end = len(lines)
+    for index in range(jobs_start + 1, len(lines)):
+        line = lines[index]
+        if line and not line[0].isspace() and not line.lstrip().startswith("#"):
+            jobs_end = index
+            break
+    starts: list[tuple[int, str]] = []
+    for index in range(jobs_start + 1, jobs_end):
+        match = re.fullmatch(r"  ([A-Za-z0-9_-]+):\s*(?:#.*)?", lines[index])
+        if match:
+            starts.append((index, match.group(1)))
+    if not starts or len({job_id for _index, job_id in starts}) != len(starts):
+        raise ControlPlaneError("WORKFLOW_JOBS_INVALID:" + relative)
+    return tuple(
+        (
+            job_id,
+            "\n".join(
+                lines[
+                    start:(starts[offset + 1][0] if offset + 1 < len(starts) else jobs_end)
+                ]
+            ) + "\n",
+        )
+        for offset, (start, job_id) in enumerate(starts)
+    )
+
+
+def _named_job_step_blocks(
+    job: str,
+    relative: str,
+    job_id: str,
+) -> tuple[str, ...]:
+    lines = job.splitlines()
+    starts = [
+        index
+        for index, line in enumerate(lines)
+        if re.match(r"^      - name:\s*\S", line)
+    ]
+    if "\n    steps:\n" in job and not starts:
+        raise ControlPlaneError(
+            "WORKFLOW_NAMED_STEPS_MISSING:" + relative + ":" + job_id
+        )
+    return tuple(
+        "\n".join(
+            lines[start:(starts[offset + 1] if offset + 1 < len(starts) else len(lines))]
+        ) + "\n"
+        for offset, start in enumerate(starts)
+    )
+
+
+def _step_run_body(block: str, relative: str) -> str | None:
+    """Extract one named step's run scalar without including declarative env."""
+    lines = block.splitlines()
+    matches = [
+        (index, match)
+        for index, line in enumerate(lines)
+        if (match := re.match(r"^(\s*)run:\s*(.*)$", line))
+    ]
+    if not matches:
+        return None
+    if len(matches) != 1:
+        raise ControlPlaneError("WORKFLOW_STEP_RUN_INVALID:" + relative)
+    index, match = matches[0]
+    indentation = len(match.group(1))
+    scalar = match.group(2)
+    if not re.fullmatch(r"[|>][-+]?", scalar):
+        return scalar
+    body: list[str] = []
+    for line in lines[index + 1:]:
+        if line.strip() and len(line) - len(line.lstrip()) <= indentation:
+            break
+        body.append(line)
+    return "\n".join(body)
+
+
+def _job_contents_permission(job: str, relative: str, job_id: str) -> str | None:
+    """Read an explicit job-level ``permissions.contents`` value."""
+    lines = job.splitlines()
+    declarations = [
+        (index, line)
+        for index, line in enumerate(lines)
+        if re.match(r"^    permissions:\s*", line)
+    ]
+    if not declarations:
+        return None
+    if len(declarations) != 1 or declarations[0][1] != "    permissions:":
+        raise ControlPlaneError(
+            "WORKFLOW_JOB_PERMISSIONS_INVALID:" + relative + ":" + job_id
+        )
+    start = declarations[0][0]
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        line = lines[index]
+        if line.strip() and len(line) - len(line.lstrip()) <= 4:
+            end = index
+            break
+    values = []
+    for line in lines[start + 1:end]:
+        match = re.fullmatch(r"      contents:\s*(read|write|none)\s*(?:#.*)?", line)
+        if match:
+            values.append(match.group(1))
+    if len(values) != 1:
+        raise ControlPlaneError(
+            "WORKFLOW_JOB_CONTENTS_PERMISSION_INVALID:" + relative + ":" + job_id
+        )
+    return values[0]
+
+
+def _workflow_contents_permission(source: str, relative: str) -> str | None:
+    """Read the workflow-level contents default used by jobs without overrides."""
+    lines = source.splitlines()
+    declarations = [
+        (index, line)
+        for index, line in enumerate(lines)
+        if re.match(r"^permissions:\s*", line)
+    ]
+    if not declarations:
+        return None
+    if len(declarations) != 1 or declarations[0][1] != "permissions:":
+        raise ControlPlaneError("WORKFLOW_PERMISSIONS_INVALID:" + relative)
+    start = declarations[0][0]
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        line = lines[index]
+        if line.strip() and len(line) - len(line.lstrip()) == 0:
+            end = index
+            break
+    values = []
+    for line in lines[start + 1:end]:
+        match = re.fullmatch(r"  contents:\s*(read|write|none)\s*(?:#.*)?", line)
+        if match:
+            values.append(match.group(1))
+    if len(values) != 1:
+        raise ControlPlaneError("WORKFLOW_CONTENTS_PERMISSION_INVALID:" + relative)
+    return values[0]
+
+
+def _task_execution_commands(value: str) -> frozenset[str]:
+    """Find only controller commands, never similarly-prefixed receipt commands."""
+    return frozenset(TASK_EXECUTION_COMMAND_RE.findall(value))
+
+
+def _verify_fresh_runner_job_policy(source: str, relative: str) -> None:
+    jobs = _workflow_job_blocks(source, relative)
+    workflow_permission = _workflow_contents_permission(source, relative)
+    if re.search(r"github\s*\.\s*ref_name|\bGITHUB_REF_NAME\b", source, re.I):
+        raise ControlPlaneError("WORKFLOW_DYNAMIC_BRANCH_FORBIDDEN:" + relative)
+    if "github.ref == 'refs/heads/main'" not in source:
+        raise ControlPlaneError("WORKFLOW_MAIN_GUARD_MISSING:" + relative)
+    if re.search(r"(?m)^\s*git\s+rebase\b", source):
+        raise ControlPlaneError("WORKFLOW_REBASE_FORBIDDEN:" + relative)
+    checkout_count = 0
+    task_job_count = 0
+    privileged_push_count = 0
+    for job_id, job in jobs:
+        job_permission = _job_contents_permission(job, relative, job_id)
+        permission = job_permission if job_permission is not None else workflow_permission
+        task_commands = _task_execution_commands(job)
+        has_write = permission == "write"
+        has_production_secret = bool(PRODUCTION_CREDENTIAL_REFERENCE_RE.search(job))
+        if task_commands:
+            task_job_count += 1
+            if "github.ref == 'refs/heads/main'" not in job:
+                raise ControlPlaneError(
+                    "TASK_JOB_MAIN_GUARD_MISSING:" + relative + ":" + job_id
+                )
+            if job_permission != "read":
+                raise ControlPlaneError(
+                    "TASK_JOB_CONTENTS_NOT_READ_ONLY:" + relative + ":" + job_id
+                )
+            if GITHUB_WRITE_CREDENTIAL_RE.search(job):
+                raise ControlPlaneError(
+                    "TASK_JOB_GITHUB_CREDENTIAL_EXPOSURE:" + relative + ":" + job_id
+                )
+        if has_write and task_commands:
+            raise ControlPlaneError(
+                "PRIVILEGED_JOB_EXECUTES_TASK_CODE:" + relative + ":" + job_id
+            )
+        if has_write and has_production_secret:
+            raise ControlPlaneError(
+                "PRIVILEGED_JOB_PRODUCTION_SECRET_EXPOSURE:" + relative + ":" + job_id
+            )
+        if has_write and "github.ref == 'refs/heads/main'" not in job:
+            raise ControlPlaneError(
+                "PRIVILEGED_JOB_MAIN_GUARD_MISSING:" + relative + ":" + job_id
+            )
+
+        for match in PYTHON_INTERPRETER_RE.finditer(job):
+            suffix = job[match.end():]
+            if not re.match(r"\s+-I(?=\s|$)", suffix):
+                raise ControlPlaneError(
+                    "WORKFLOW_PYTHON_NOT_ISOLATED:" + relative + ":" + job_id
+                )
+
+        steps = _named_job_step_blocks(job, relative, job_id)
+        for block in steps:
+            if re.search(r"uses:\s*actions/checkout@", block):
+                checkout_count += 1
+                if block.count("persist-credentials: false") != 1:
+                    raise ControlPlaneError(
+                        "WORKFLOW_CHECKOUT_CREDENTIAL_POLICY:"
+                        + relative + ":" + job_id
+                    )
+                if "persist-credentials: true" in block:
+                    raise ControlPlaneError(
+                        "WORKFLOW_PERSISTED_CREDENTIAL_ENABLED:"
+                        + relative + ":" + job_id
+                    )
+                if len(re.findall(r"(?m)^\s+ref:\s*main\s*$", block)) != 1:
+                    raise ControlPlaneError(
+                        "WORKFLOW_CHECKOUT_NOT_MAIN:" + relative + ":" + job_id
+                    )
+            if re.search(r"uses:\s*actions/download-artifact@", block):
+                if re.search(r"(?:GITHUB_WORKSPACE|github\.workspace)", block, re.I):
+                    raise ControlPlaneError(
+                        "ARTIFACT_DOWNLOAD_WORKSPACE_FORBIDDEN:"
+                        + relative + ":" + job_id
+                    )
+                if not re.search(
+                    r"(?m)^\s+path:\s*(?:\$RUNNER_TEMP|\$\{\{\s*runner\.temp\s*\}\})/\S+\s*$",
+                    block,
+                ):
+                    raise ControlPlaneError(
+                        "ARTIFACT_DOWNLOAD_NOT_RUNNER_TEMP:"
+                        + relative + ":" + job_id
+                    )
+                if has_write and DATA_ONLY_ARTIFACT_VALIDATION_MARKER not in job:
+                    raise ControlPlaneError(
+                        "PRIVILEGED_ARTIFACT_NOT_DATA_ONLY_VALIDATED:"
+                        + relative + ":" + job_id
+                    )
+            if re.search(r"\bpush\s+origin\b", block):
+                privileged_push_count += 1
+                if permission != "write":
+                    raise ControlPlaneError(
+                        "GIT_PUSH_JOB_NOT_PRIVILEGED:" + relative + ":" + job_id
+                    )
+                required = (
+                    "GIT_INDEX_FILE",
+                    "RUNNER_TEMP",
+                    "git read-tree",
+                    "git commit-tree",
+                    "COMMIT:refs/heads/main",
+                )
+                if any(marker not in block for marker in required):
+                    raise ControlPlaneError(
+                        "PRIVILEGED_PUSH_NOT_ISOLATED_TREE:"
+                        + relative + ":" + job_id
+                    )
+                if re.search(r"\bpush\s+origin\s+[^\n]*\bHEAD(?::|\b)", block):
+                    raise ControlPlaneError(
+                        "PRIVILEGED_PUSH_HEAD_FORBIDDEN:"
+                        + relative + ":" + job_id
+                    )
+                push_lines = [
+                    line
+                    for line in block.splitlines()
+                    if re.search(r"\bpush\s+origin\b", line)
+                ]
+                if not push_lines or any(
+                    "COMMIT:refs/heads/main" not in line for line in push_lines
+                ):
+                    raise ControlPlaneError(
+                        "PRIVILEGED_PUSH_TARGET_NOT_MAIN:"
+                        + relative + ":" + job_id
+                    )
+    if checkout_count < 1:
+        raise ControlPlaneError("WORKFLOW_CHECKOUT_MISSING:" + relative)
+    if task_job_count < 1:
+        raise ControlPlaneError("WORKFLOW_TASK_JOB_MISSING:" + relative)
+    if privileged_push_count < 1:
+        raise ControlPlaneError("WORKFLOW_PRIVILEGED_PUSH_MISSING:" + relative)
+
+    if relative in {
+        ".github/workflows/uaart_fast.yml",
+        ".github/workflows/uaart_standard.yml",
+    }:
+        job_map = dict(jobs)
+        for job_id in ("execute", "persist"):
+            job = job_map.get(job_id, "")
+            header = job.split("\n    steps:", 1)[0]
+            if "github.run_attempt == 1" not in header:
+                raise ControlPlaneError(
+                    "NONPRODUCTION_RERUN_JOB_GATE:" + relative + ":" + job_id
+                )
+            if "test \"$GITHUB_RUN_ATTEMPT\" = '1'" not in job:
+                raise ControlPlaneError(
+                    "NONPRODUCTION_RERUN_SHELL_GATE:" + relative + ":" + job_id
+                )
+        execute = job_map.get("execute", "")
+        execute_blob_markers = (
+            "workflow_blob_oid: ${{ steps.contract.outputs.workflow_blob_oid }}",
+            "workflow_source_commit: ${{ steps.contract.outputs.workflow_source_commit }}",
+            "WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}",
+            "WORKFLOW_PATH: " + relative,
+            "fetch-depth: 0",
+            'git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" HEAD',
+            'git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH"',
+            "VALIDATION_WORKFLOW_BLOB_BINDING",
+            '"$WORKFLOW_SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json"',
+            'echo "workflow_blob_oid=${WORKFLOW_BLOB_OID}"',
+            'echo "workflow_source_commit=${WORKFLOW_SOURCE_COMMIT}"',
+        )
+        if any(marker not in execute for marker in execute_blob_markers):
+            raise ControlPlaneError(
+                "NONPRODUCTION_WORKFLOW_BLOB_BINDING:"
+                + relative + ":execute"
+            )
+        persist = job_map.get("persist", "")
+        persist_blob_markers = (
+            "WORKFLOW_SOURCE_COMMIT: ${{ needs.execute.outputs.workflow_source_commit }}",
+            "WORKFLOW_BLOB_OID: ${{ needs.execute.outputs.workflow_blob_oid }}",
+            "WORKFLOW_PATH: " + relative,
+            'git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" "$SOURCE_COMMIT"',
+            'git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH"',
+            'git rev-parse "$SOURCE_COMMIT:$WORKFLOW_PATH"',
+            'git rev-parse "$PARENT:$WORKFLOW_PATH"',
+            "'workflow_blob_oid'",
+            "'workflow_source_commit'",
+        )
+        if any(marker not in persist for marker in persist_blob_markers):
+            raise ControlPlaneError(
+                "NONPRODUCTION_WORKFLOW_BLOB_BINDING:"
+                + relative + ":persist"
+            )
+        accepted_persist_markers = (
+            "ACCEPTED_PATHS",
+            'git diff --quiet "$COMMIT" refs/remotes/origin/main --',
+            '"${ACCEPTED_PATHS[@]}"',
+            "ACCEPTED_PUSH_OWNED_PATHS_CHANGED",
+        )
+        if any(marker not in persist for marker in accepted_persist_markers):
+            raise ControlPlaneError(
+                "NONPRODUCTION_ACCEPTED_PUSH_OWNERSHIP:"
+                + relative + ":persist"
+            )
+        artifact_markers = (
+            "ARTIFACT_IMPORT_ROOT_INVALID",
+            "ARTIFACT_DUPLICATE_KEY",
+            "REBUILD_ARTIFACT_DUPLICATE_KEY",
+            "'workflow_blob_oid'",
+            "'workflow_source_commit'",
+            "ARTIFACT_SIZE_LIMIT",
+            "ARTIFACT_FILE_SET",
+            "ARTIFACT_TARGET_SYMLINK",
+        )
+        if any(marker not in persist for marker in artifact_markers):
+            raise ControlPlaneError(
+                "NONPRODUCTION_ARTIFACT_SCHEMA:" + relative + ":persist"
+            )
+        failure = job_map.get("persist_failure", "")
+        terminal_markers = (
+            'if test "$GITHUB_RUN_ATTEMPT" != \'1\'',
+            "FAILURE_MODE_ARGS+=(--terminal)",
+            '"${FAILURE_MODE_ARGS[@]}"',
+        )
+        if any(marker not in failure for marker in terminal_markers):
+            raise ControlPlaneError(
+                "NONPRODUCTION_RERUN_TERMINAL_GATE:" + relative
+            )
+        failure_blob_markers = (
+            "WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}",
+            "WORKFLOW_PATH: " + relative,
+            'git rev-parse "HEAD:$WORKFLOW_PATH"',
+            'git rev-parse "$PARENT:$WORKFLOW_PATH"',
+            '"$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH"',
+        )
+        if any(marker not in failure for marker in failure_blob_markers):
+            raise ControlPlaneError(
+                "NONPRODUCTION_WORKFLOW_BLOB_BINDING:"
+                + relative + ":persist_failure"
+            )
+        accepted_failure_markers = (
+            'git diff --quiet "$COMMIT" refs/remotes/origin/main --',
+            '"$CLAIM_PATH"',
+            "ACCEPTED_PUSH_OWNED_PATHS_CHANGED",
+        )
+        if any(marker not in failure for marker in accepted_failure_markers):
+            raise ControlPlaneError(
+                "NONPRODUCTION_ACCEPTED_PUSH_OWNERSHIP:"
+                + relative + ":persist_failure"
+            )
+        for block in _named_workflow_step_blocks(source, relative):
+            body = _step_run_body(block, relative)
+            if body is not None and "${{" in body:
+                raise ControlPlaneError(
+                    "WORKFLOW_RUN_EXPRESSION_FORBIDDEN:" + relative
+                )
+        for job_id in ("persist", "persist_failure"):
+            job = job_map.get(job_id, "")
+            runtime_markers = (
+                "UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED",
+                "AUTOPILOT_RUNTIME_MANIFEST.json",
+                "object_pairs_hook=reject_duplicate_keys",
+                "state/schemas/task_request.schema.json",
+                "target.resolve() != target",
+                "total > 16 * 1024 * 1024",
+            )
+            if job.count("UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED") < 2 or any(
+                marker not in job for marker in runtime_markers
+            ):
+                raise ControlPlaneError(
+                    "NONPRODUCTION_RUNTIME_BOOTSTRAP_MISSING:"
+                    + relative + ":" + job_id
+                )
+            repository_python = re.search(
+                r"(?m)^\s*(?:/usr/bin/)?python(?:3(?:\.\d+)?)?\s+-I\s+"
+                r"automation/(?:control_plane|execution_contract)\.py\b",
+                job,
+            )
+            if repository_python is None or job.find(
+                "UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED"
+            ) > repository_python.start():
+                raise ControlPlaneError(
+                    "NONPRODUCTION_RUNTIME_BOOTSTRAP_ORDER:"
+                    + relative + ":" + job_id
+                )
+            steps = _named_job_step_blocks(job, relative, job_id)
+            credential_steps = [
+                block for block in steps if GITHUB_WRITE_CREDENTIAL_RE.search(block)
+            ]
+            if len(credential_steps) != 1 or GITHUB_WRITE_CREDENTIAL_RE.search(
+                job.replace(credential_steps[0], "", 1)
+            ):
+                raise ControlPlaneError(
+                    "NONPRODUCTION_GITHUB_TOKEN_SCOPE:"
+                    + relative + ":" + job_id
+                )
+            credential_step = credential_steps[0]
+            first_python = PYTHON_INTERPRETER_RE.search(credential_step)
+            repository_python = re.search(
+                r"(?m)^\s*(?:/usr/bin/)?python(?:3(?:\.\d+)?)?\s+-I\s+"
+                r"automation/(?:control_plane|execution_contract)\.py\b",
+                credential_step,
+            )
+            if (
+                first_python is None
+                or repository_python is None
+                or "unset GH_TOKEN" not in credential_step
+                or credential_step.index("unset GH_TOKEN") > first_python.start()
+                or credential_step.find(
+                    "UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED"
+                ) > repository_python.start()
+            ):
+                raise ControlPlaneError(
+                    "NONPRODUCTION_TOKEN_BOOTSTRAP_ORDER:"
+                    + relative + ":" + job_id
+                )
+        for marker in (
+            "WORKFLOW_SOURCE_COMMIT",
+            "git cat-file blob",
+            "git merge-base --is-ancestor \"$WORKFLOW_SOURCE_COMMIT\"",
+        ):
+            if marker not in failure:
+                raise ControlPlaneError(
+                    "NONPRODUCTION_FAILURE_SOURCE_ANCHOR:"
+                    + relative
+                )
+
+
+def _verify_autostart_fresh_runner_policy(source: str, relative: str) -> None:
+    """Enforce one-shot marker validation and isolated anti-replay persistence."""
+    jobs = dict(_workflow_job_blocks(source, relative))
+    if set(jobs) != {"context", "intake", "persist", "execute"}:
+        raise ControlPlaneError("AUTOSTART_JOB_SET_INVALID")
+    if _workflow_contents_permission(source, relative) != "read":
+        raise ControlPlaneError("AUTOSTART_WORKFLOW_NOT_READ_ONLY_DEFAULT")
+    if "github.ref == 'refs/heads/main'" not in source:
+        raise ControlPlaneError("AUTOSTART_MAIN_GUARD_MISSING")
+    if re.search(r"github\s*\.\s*ref_name|\bGITHUB_REF_NAME\b", source, re.I):
+        raise ControlPlaneError("AUTOSTART_DYNAMIC_BRANCH_FORBIDDEN")
+    if re.search(r"(?m)^\s*git\s+rebase\b", source):
+        raise ControlPlaneError("AUTOSTART_REBASE_FORBIDDEN")
+    if re.search(r"(?m)^\s*git\s+add\b", source):
+        raise ControlPlaneError("AUTOSTART_GIT_ADD_FORBIDDEN")
+    if re.search(r"\bpush\s+origin\s+[^\n]*\bHEAD(?::|\b)", source):
+        raise ControlPlaneError("AUTOSTART_PUSH_HEAD_FORBIDDEN")
+
+    for block in _named_workflow_step_blocks(source, relative):
+        body = _step_run_body(block, relative)
+        if body is not None and "${{" in body:
+            raise ControlPlaneError("AUTOSTART_RUN_EXPRESSION_FORBIDDEN")
+
+    for job_id in ("intake", "persist", "execute"):
+        header = jobs[job_id].split("\n    steps:", 1)[0]
+        if (
+            "github.ref == 'refs/heads/main'" not in header
+            or "github.run_attempt == 1" not in header
+        ):
+            raise ControlPlaneError("AUTOSTART_JOB_REPLAY_GATE:" + job_id)
+    for job_id in ("context", "intake", "persist"):
+        if "test \"$GITHUB_RUN_ATTEMPT\" = '1'" not in jobs[job_id]:
+            raise ControlPlaneError("AUTOSTART_SHELL_REPLAY_GATE:" + job_id)
+    for job_id, job in jobs.items():
+        for match in PYTHON_INTERPRETER_RE.finditer(job):
+            if not re.match(r"\s+-I(?=\s|$)", job[match.end():]):
+                raise ControlPlaneError(
+                    "AUTOSTART_PYTHON_NOT_ISOLATED:" + job_id
+                )
+
+    expected_permissions = {
+        "context": "read",
+        "intake": "read",
+        "persist": "write",
+        "execute": "write",
+    }
+    for job_id, expected in expected_permissions.items():
+        if _job_contents_permission(jobs[job_id], relative, job_id) != expected:
+            raise ControlPlaneError("AUTOSTART_JOB_PERMISSION:" + job_id)
+    for job_id in ("context", "intake", "execute"):
+        if GITHUB_WRITE_CREDENTIAL_RE.search(jobs[job_id]):
+            raise ControlPlaneError("AUTOSTART_GITHUB_CREDENTIAL_EXPOSURE:" + job_id)
+    if PRODUCTION_CREDENTIAL_REFERENCE_RE.search(source):
+        raise ControlPlaneError("AUTOSTART_PRODUCTION_CREDENTIAL_EXPOSURE")
+
+    checkout_blocks: dict[str, list[str]] = {}
+    for job_id, job in jobs.items():
+        checkout_blocks[job_id] = [
+            block
+            for block in _named_job_step_blocks(job, relative, job_id)
+            if re.search(r"uses:\s*actions/checkout@", block)
+        ]
+        for block in checkout_blocks[job_id]:
+            if block.count("persist-credentials: false") != 1:
+                raise ControlPlaneError(
+                    "AUTOSTART_CHECKOUT_CREDENTIAL_POLICY:" + job_id
+                )
+    if len(checkout_blocks["intake"]) != 1 or not re.search(
+        r"(?m)^\s+ref:\s*\$\{\{\s*github\.sha\s*\}\}\s*$",
+        checkout_blocks["intake"][0],
+    ):
+        raise ControlPlaneError("AUTOSTART_INTAKE_CHECKOUT_NOT_SOURCE_COMMIT")
+    if len(checkout_blocks["persist"]) != 1 or not re.search(
+        r"(?m)^\s+ref:\s*main\s*$", checkout_blocks["persist"][0]
+    ):
+        raise ControlPlaneError("AUTOSTART_PERSIST_CHECKOUT_NOT_MAIN")
+    if checkout_blocks["context"] or checkout_blocks["execute"]:
+        raise ControlPlaneError("AUTOSTART_UNEXPECTED_CHECKOUT")
+
+    if "--validate-only" not in jobs["intake"]:
+        raise ControlPlaneError("AUTOSTART_READ_ONLY_VALIDATION_MISSING")
+    bootstrap_index = jobs["intake"].find("git diff --name-only -z")
+    python_index = jobs["intake"].find("python3 -I")
+    if bootstrap_index < 0 or python_index < 0 or bootstrap_index > python_index:
+        raise ControlPlaneError("AUTOSTART_BOOTSTRAP_ORDER")
+    if "needs: persist" not in jobs["execute"] or \
+            "uses: ./.github/workflows/uaart_orchestrator.yml" not in jobs["execute"]:
+        raise ControlPlaneError("AUTOSTART_DOWNSTREAM_BINDING")
+
+    persist_steps = _named_job_step_blocks(jobs["persist"], relative, "persist")
+    token_blocks = [
+        block
+        for block in persist_steps
+        if "github.token" in block
+    ]
+    if len(token_blocks) != 1:
+        raise ControlPlaneError("AUTOSTART_GITHUB_TOKEN_STEP_COUNT")
+    persist = token_blocks[0]
+    credential_blocks = [
+        block for block in persist_steps if GITHUB_WRITE_CREDENTIAL_RE.search(block)
+    ]
+    if credential_blocks != [persist] or GITHUB_WRITE_CREDENTIAL_RE.search(
+        jobs["persist"].replace(persist, "", 1)
+    ):
+        raise ControlPlaneError("AUTOSTART_GITHUB_TOKEN_SCOPE")
+    required = (
+        "python3 -I \"$TRUSTED_RUNTIME/automation/autostart_intake.py\"",
+        "--root \"$REBUILD\"",
+        "for attempt in 1 2 3 4 5 6",
+        "git merge-base --is-ancestor \"$BEFORE_SHA\" \"$SOURCE_COMMIT\"",
+        "git merge-base --is-ancestor \"$COMMIT\"",
+        "git rev-list --parents -n 1",
+        "SOURCE_LAUNCH_ENTRY",
+        "PARENT_LAUNCH_ENTRY",
+        "UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED",
+        "object_pairs_hook=reject_duplicate_keys",
+        "state/schemas/task_request.schema.json",
+        "total > 16 * 1024 * 1024",
+        "AUTOSTART_SOURCE_RUNTIME_SHA_MISMATCH",
+        "GITHUB_OUTPUT=\"$ATTEMPT_OUTPUTS\"",
+        "AUTOSTART_OUTPUT_BINDING",
+        "LAST_OUTPUTS=\"$ATTEMPT_OUTPUTS\"",
+        "cat \"$LAST_OUTPUTS\" >>\"$GITHUB_OUTPUT\"",
+        "^state/autostart_consumed/",
+        "^state/autostart_nonces/",
+        "GIT_INDEX_FILE",
+        "RUNNER_TEMP",
+        "git read-tree",
+        "git commit-tree",
+        "AUTOSTART_COMMIT_PATH_SCOPE",
+        "COMMIT:refs/heads/main",
+    )
+    if any(marker not in persist for marker in required):
+        raise ControlPlaneError("AUTOSTART_PRIVILEGED_PERSIST_CONTRACT")
+    if (
+        "unset GH_TOKEN" not in persist
+        or persist.index("unset GH_TOKEN") > persist.index("python3 -I")
+    ):
+        raise ControlPlaneError("AUTOSTART_TOKEN_LIFETIME")
+    push_lines = [
+        line for line in persist.splitlines() if re.search(r"\bpush\s+origin\b", line)
+    ]
+    if not push_lines or any("COMMIT:refs/heads/main" not in line for line in push_lines):
+        raise ControlPlaneError("AUTOSTART_PUSH_TARGET_NOT_MAIN")
+
+
+def _verify_orchestrator_fresh_runner_policy(source: str, relative: str) -> None:
+    """Keep intake validation separate from the one trusted state writer."""
+    jobs = dict(_workflow_job_blocks(source, relative))
+    if set(jobs) != {"validate", "plan", "fast", "standard", "critical"}:
+        raise ControlPlaneError("ORCHESTRATOR_JOB_SET_INVALID")
+    if _workflow_contents_permission(source, relative) != "read":
+        raise ControlPlaneError("ORCHESTRATOR_WORKFLOW_NOT_READ_ONLY_DEFAULT")
+    if re.search(r"github\s*\.\s*ref_name|\bGITHUB_REF_NAME\b", source, re.I):
+        raise ControlPlaneError("ORCHESTRATOR_DYNAMIC_BRANCH_FORBIDDEN")
+    if re.search(r"\bHEAD\b", source):
+        raise ControlPlaneError("ORCHESTRATOR_HEAD_FORBIDDEN")
+    for pattern, error in (
+        (r"(?m)^\s*git\s+add\b", "ORCHESTRATOR_GIT_ADD_FORBIDDEN"),
+        (r"(?m)^\s*git\s+commit(?:\s|$)", "ORCHESTRATOR_GIT_COMMIT_FORBIDDEN"),
+        (r"(?m)^\s*git\s+rebase\b", "ORCHESTRATOR_REBASE_FORBIDDEN"),
+        (r"\bpush\s+origin\s+[^\n]*\bHEAD(?::|\b)", "ORCHESTRATOR_PUSH_HEAD_FORBIDDEN"),
+    ):
+        if re.search(pattern, source):
+            raise ControlPlaneError(error)
+    if PRODUCTION_CREDENTIAL_REFERENCE_RE.search(source):
+        raise ControlPlaneError("ORCHESTRATOR_PRODUCTION_CREDENTIAL_EXPOSURE")
+
+    expected_guards = {
+        "validate": "github.ref == 'refs/heads/main' && github.run_attempt == 1",
+        "plan": "github.ref == 'refs/heads/main' && github.run_attempt == 1",
+        "fast": (
+            "github.ref == 'refs/heads/main' && github.run_attempt == 1 && "
+            "needs.plan.outputs.task_class == 'FAST'"
+        ),
+        "standard": (
+            "github.ref == 'refs/heads/main' && github.run_attempt == 1 && "
+            "needs.plan.outputs.task_class == 'STANDARD'"
+        ),
+        "critical": (
+            "github.ref == 'refs/heads/main' && github.run_attempt == 1 && "
+            "needs.plan.outputs.task_class == 'CRITICAL'"
+        ),
+    }
+    for job_id, job in jobs.items():
+        header = job.split("\n    steps:", 1)[0]
+        expected_if = "    if: " + expected_guards[job_id]
+        if len(re.findall(r"(?m)^    if:\s*.*$", header)) != 1 or expected_if not in header.splitlines():
+            raise ControlPlaneError("ORCHESTRATOR_JOB_REPLAY_GATE:" + job_id)
+        for block in _named_job_step_blocks(job, relative, job_id):
+            body = _step_run_body(block, relative)
+            if body is None:
+                continue
+            if "${{" in body:
+                raise ControlPlaneError(
+                    "ORCHESTRATOR_RUN_EXPRESSION_FORBIDDEN:" + job_id
+                )
+            for match in PYTHON_INTERPRETER_RE.finditer(body):
+                if not re.match(r"\s+-I(?=\s|$)", body[match.end():]):
+                    raise ControlPlaneError(
+                        "ORCHESTRATOR_PYTHON_NOT_ISOLATED:" + job_id
+                    )
+    for block in _named_job_step_blocks(jobs["plan"], relative, "plan"):
+        body = _step_run_body(block, relative)
+        if body is None:
+            continue
+        for line in body.splitlines():
+            command = line.strip()
+            interpreter = PYTHON_INTERPRETER_RE.search(command)
+            if interpreter is None:
+                continue
+            if interpreter.start() != 0 or not command.startswith("python3 -I"):
+                raise ControlPlaneError("ORCHESTRATOR_UNTRUSTED_PYTHON_COMMAND")
+            allowed = (
+                r"^python3 -I -(?:\s|$)",
+                r"^python3 -I -W error -m py_compile(?:\s|$)",
+                r"^python3 -I automation/control_plane\.py "
+                r"(?:verify-mode|claim|verify-request|planning|verify-identity)(?:\s|$)",
+                r"^python3 -I automation/execution_contract\.py validate(?:\s|$)",
+            )
+            if not any(re.match(pattern, command) for pattern in allowed):
+                raise ControlPlaneError("ORCHESTRATOR_UNTRUSTED_PYTHON_COMMAND")
+    for job_id in ("validate", "plan"):
+        if "test \"$GITHUB_RUN_ATTEMPT\" = '1'" not in jobs[job_id]:
+            raise ControlPlaneError("ORCHESTRATOR_SHELL_REPLAY_GATE:" + job_id)
+
+    expected_permissions = {
+        "validate": "read",
+        "plan": "write",
+        # Reusable callees cannot elevate the caller's permission ceiling. Their
+        # own task jobs still explicitly reduce themselves to contents:read.
+        "fast": "write",
+        "standard": "write",
+        "critical": "write",
+    }
+    for job_id, expected in expected_permissions.items():
+        if _job_contents_permission(jobs[job_id], relative, job_id) != expected:
+            raise ControlPlaneError("ORCHESTRATOR_JOB_PERMISSION:" + job_id)
+    if GITHUB_WRITE_CREDENTIAL_RE.search(jobs["validate"]):
+        raise ControlPlaneError("ORCHESTRATOR_VALIDATE_GITHUB_CREDENTIAL")
+    for job_id in ("validate", "plan"):
+        if _task_execution_commands(jobs[job_id]):
+            raise ControlPlaneError("ORCHESTRATOR_TASK_CODE_IN_LOCAL_JOB:" + job_id)
+        if re.search(
+            r"(?m)^\s*(?:(?:/usr/bin/)?python(?:3(?:\.\d+)?)?\s+(?:-I\s+)?)?"
+            r"(?:\./)?automation/task_orchestrator\.py(?:\s|$)",
+            jobs[job_id],
+        ):
+            raise ControlPlaneError("ORCHESTRATOR_CONTROLLER_IN_LOCAL_JOB:" + job_id)
+    expected_callees = {
+        "fast": "./.github/workflows/uaart_fast.yml",
+        "standard": "./.github/workflows/uaart_standard.yml",
+        "critical": "./.github/workflows/uaart_critical.yml",
+    }
+    for job_id, callee in expected_callees.items():
+        if (
+            len(re.findall(r"(?m)^    uses:\s*.*$", jobs[job_id])) != 1
+            or ("    uses: " + callee) not in jobs[job_id].splitlines()
+            or "    needs: plan" not in jobs[job_id].splitlines()
+        ):
+            raise ControlPlaneError("ORCHESTRATOR_ROUTE_CALLEE:" + job_id)
+
+    checkout_blocks: dict[str, list[str]] = {}
+    for job_id, job in jobs.items():
+        checkout_blocks[job_id] = [
+            block
+            for block in _named_job_step_blocks(job, relative, job_id)
+            if re.search(r"uses:\s*actions/checkout@", block)
+        ]
+        for block in checkout_blocks[job_id]:
+            if (
+                block.count("persist-credentials: false") != 1
+                or block.count("clean: true") != 1
+                or block.count("fetch-depth: 0") != 1
+                or len(re.findall(r"(?m)^\s+ref:\s*main\s*$", block)) != 1
+            ):
+                raise ControlPlaneError(
+                    "ORCHESTRATOR_CHECKOUT_POLICY:" + job_id
+                )
+    if len(checkout_blocks["validate"]) != 1 or len(checkout_blocks["plan"]) != 1:
+        raise ControlPlaneError("ORCHESTRATOR_CHECKOUT_COUNT")
+    if any(checkout_blocks[job_id] for job_id in ("fast", "standard", "critical")):
+        raise ControlPlaneError("ORCHESTRATOR_ROUTE_CHECKOUT_FORBIDDEN")
+
+    uses = re.findall(r"(?m)^\s+uses:\s*(\S+)\s*$", source)
+    expected_uses = [
+        "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+        "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+        "./.github/workflows/uaart_fast.yml",
+        "./.github/workflows/uaart_standard.yml",
+        "./.github/workflows/uaart_critical.yml",
+    ]
+    if sorted(uses) != sorted(expected_uses):
+        raise ControlPlaneError("ORCHESTRATOR_USES_ALLOWLIST")
+    plan_steps = _named_job_step_blocks(jobs["plan"], relative, "plan")
+    downloads = [
+        block for block in plan_steps
+        if re.search(r"uses:\s*actions/download-artifact@", block)
+    ]
+    if len(downloads) != 1 or not re.search(
+        r"(?m)^\s+path:\s*\$\{\{\s*runner\.temp\s*\}\}/uaart-intake-import\s*$",
+        downloads[0],
+    ):
+        raise ControlPlaneError("ORCHESTRATOR_ARTIFACT_DOWNLOAD_SCOPE")
+    if DATA_ONLY_ARTIFACT_VALIDATION_MARKER not in jobs["plan"]:
+        raise ControlPlaneError("ORCHESTRATOR_ARTIFACT_VALIDATION_MARKER")
+
+    token_steps = [block for block in plan_steps if "github.token" in block]
+    if len(token_steps) != 1 or source.count("github.token") != 1:
+        raise ControlPlaneError("ORCHESTRATOR_GITHUB_TOKEN_STEP_COUNT")
+    persist = token_steps[0]
+    if "Persist only the exact claim and plan" not in persist:
+        raise ControlPlaneError("ORCHESTRATOR_GITHUB_TOKEN_STEP_IDENTITY")
+    for job_id in ("validate", "fast", "standard", "critical"):
+        if GITHUB_WRITE_CREDENTIAL_RE.search(jobs[job_id]):
+            raise ControlPlaneError(
+                "ORCHESTRATOR_GITHUB_CREDENTIAL_EXPOSURE:" + job_id
+            )
+    plan_without_persist = jobs["plan"].replace(persist, "", 1)
+    if GITHUB_WRITE_CREDENTIAL_RE.search(plan_without_persist):
+        raise ControlPlaneError("ORCHESTRATOR_TOKEN_OUTSIDE_PERSIST_STEP")
+    if re.search(r"secrets\s*\.\s*GITHUB_TOKEN|\bGITHUB_TOKEN\b", persist, re.I):
+        raise ControlPlaneError("ORCHESTRATOR_GITHUB_TOKEN_ALIAS_FORBIDDEN")
+    if persist.count("unset GH_TOKEN") != 1:
+        raise ControlPlaneError("ORCHESTRATOR_TOKEN_LIFETIME")
+    first_python = persist.find("python3 -I")
+    if first_python < 0 or persist.index("unset GH_TOKEN") > first_python:
+        raise ControlPlaneError("ORCHESTRATOR_TOKEN_LIFETIME")
+    first_repo_python = persist.find("python3 -I automation/")
+    closure_marker = persist.find("UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED")
+    if first_repo_python < 0 or closure_marker < 0 or closure_marker > first_repo_python:
+        raise ControlPlaneError("ORCHESTRATOR_RUNTIME_BOOTSTRAP_ORDER")
+    validation_step_indexes = [
+        index
+        for index, block in enumerate(plan_steps)
+        if DATA_ONLY_ARTIFACT_VALIDATION_MARKER in block
+    ]
+    token_step_index = plan_steps.index(persist)
+    if validation_step_indexes != [token_step_index - 1]:
+        raise ControlPlaneError("ORCHESTRATOR_ARTIFACT_VALIDATION_ORDER")
+    required_persist = (
+        "python3 -I automation/control_plane.py verify-mode",
+        "python3 -I automation/control_plane.py claim",
+        "python3 -I automation/control_plane.py planning",
+        "python3 -I automation/execution_contract.py validate",
+        "for attempt in 1 2 3 4 5 6",
+        "if ! git_auth fetch",
+        "continue",
+        "git merge-base --is-ancestor \"$last_commit\" \"$parent\"",
+        'git merge-base --is-ancestor "$ATTESTED_WORKFLOW_SOURCE_COMMIT" "$parent"',
+        'git cat-file blob "$parent:state/AUTOPILOT_RUNTIME_MANIFEST.json"',
+        'git cat-file blob "$parent:$ATTESTED_REQUEST_PATH"',
+        'git rev-parse "$parent:.github/workflows/uaart_orchestrator.yml"',
+        "UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED",
+        "INTAKE_RUNTIME_FILE_SET",
+        "GIT_INDEX_FILE",
+        "RUNNER_TEMP",
+        "git read-tree",
+        "git hash-object",
+        "git update-index",
+        "git commit-tree",
+        'for path in "$CLAIM_PATH" "$PLAN_PATH"; do',
+        'test "${#changed[@]}" -eq 2',
+        'printf \'%s\\n\' "$CLAIM_PATH" "$PLAN_PATH"',
+        "COMMIT:refs/heads/main",
+    )
+    if any(marker not in persist for marker in required_persist):
+        raise ControlPlaneError("ORCHESTRATOR_PRIVILEGED_PERSIST_CONTRACT")
+    push_lines = [
+        line for line in persist.splitlines() if re.search(r"\bpush\s+origin\b", line)
+    ]
+    if not push_lines or any("COMMIT:refs/heads/main" not in line for line in push_lines):
+        raise ControlPlaneError("ORCHESTRATOR_PUSH_TARGET_NOT_MAIN")
+
+    required_artifact = (
+        "UA-ART-INTAKE-ATTESTATION-1",
+        "actual != ['attestation.json']",
+        "INTAKE_ATTESTATION_SHA256",
+        "INTAKE_ATTESTATION_INPUT_BINDING",
+        "INTAKE_ATTESTATION_STATE_PATH",
+        "INTAKE_ATTESTATION_RUNTIME_MANIFEST_SHA",
+        "INTAKE_ATTESTATION_ORCHESTRATOR_BLOB",
+    )
+    if any(marker not in jobs["plan"] for marker in required_artifact):
+        raise ControlPlaneError("ORCHESTRATOR_ARTIFACT_CONTRACT")
+    # Structural checks above provide targeted diagnostics. This final pin makes
+    # the privileged intake writer fail closed against shell/env/token-command
+    # obfuscation that a text-oriented policy cannot safely enumerate.
+    if sha256_bytes(source.encode("utf-8")) != ORCHESTRATOR_WORKFLOW_SHA256:
+        raise ControlPlaneError("ORCHESTRATOR_WORKFLOW_SHA256")
+
+
+def _verify_production_secret_step_policy(source: str, relative: str) -> None:
+    total = len(PRODUCTION_CREDENTIAL_REFERENCE_RE.findall(source))
+    blocks = _named_workflow_step_blocks(source, relative)
+    secret_blocks = tuple(
+        block for block in blocks if PRODUCTION_CREDENTIAL_REFERENCE_RE.search(block)
+    )
+    within_steps = sum(
+        len(PRODUCTION_CREDENTIAL_REFERENCE_RE.findall(block))
+        for block in secret_blocks
+    )
+    if within_steps != total:
+        raise ControlPlaneError("PRODUCTION_CREDENTIAL_OUTSIDE_NAMED_STEP:" + relative)
+
+    if relative == ".github/workflows/uaart_critical.yml":
+        expected_jobs = {
+            "backup": ("backup", "steps.preparing.outputs.validated == 'true'"),
+            "run": (
+                "controller_production",
+                "steps.open_state.outputs.validated == 'true'",
+            ),
+            "rollback": (
+                "rollback_execute",
+                "steps.rolling_back.outputs.validated == 'true'",
+            ),
+        }
+        if total != 3 or len(secret_blocks) != 3:
+            raise ControlPlaneError("CRITICAL_PRODUCTION_CREDENTIAL_COUNT")
+        secret_jobs = tuple(
+            (job_id, job)
+            for job_id, job in _workflow_job_blocks(source, relative)
+            if PRODUCTION_CREDENTIAL_REFERENCE_RE.search(job)
+        )
+        if len(secret_jobs) != 3:
+            raise ControlPlaneError("CRITICAL_PRODUCTION_CREDENTIAL_JOB_COUNT")
+        for job_id, job in secret_jobs:
+            header = job.split("\n    steps:", 1)[0]
+            commands = _task_execution_commands(job)
+            if len(commands) != 1 or not commands.issubset(expected_jobs):
+                raise ControlPlaneError(
+                    "CRITICAL_PRODUCTION_CREDENTIAL_JOB_COMMAND:" + job_id
+                )
+            command = next(iter(commands))
+            expected_job, _gate = expected_jobs[command]
+            if job_id != expected_job:
+                raise ControlPlaneError(
+                    "CRITICAL_PRODUCTION_CREDENTIAL_JOB_ID:" + job_id
+                )
+            if "\n    environment:\n      name: production\n" not in job:
+                raise ControlPlaneError(
+                    "CRITICAL_PRODUCTION_CREDENTIAL_ENVIRONMENT:" + job_id
+                )
+            if "github.run_attempt == 1" not in header:
+                raise ControlPlaneError(
+                    "CRITICAL_PRODUCTION_CREDENTIAL_JOB_RERUN_GATE:" + job_id
+                )
+        rollback_import_blocks = tuple(
+            block
+            for block in blocks
+            if (
+                "Download rollback receipt outside checkout" in block
+                or "Strictly validate data-only rollback artifact" in block
+            )
+        )
+        if len(rollback_import_blocks) != 2 or any(
+            "github.run_attempt == 1" not in block
+            for block in rollback_import_blocks
+        ):
+            raise ControlPlaneError("CRITICAL_ROLLBACK_ARTIFACT_RERUN_GATE")
+        seen: set[str] = set()
+        for block in secret_blocks:
+            commands = _task_execution_commands(block)
+            if (
+                "inputs.production_required == 'true'" not in block
+                or "github.run_attempt == 1" not in block
+                or "test \"$GITHUB_RUN_ATTEMPT\" = '1'" not in block
+            ):
+                raise ControlPlaneError("CRITICAL_PRODUCTION_CREDENTIAL_GATE")
+            if len(commands) != 1 or not commands.issubset(expected_jobs):
+                raise ControlPlaneError("CRITICAL_PRODUCTION_CREDENTIAL_PLACEMENT")
+            command = next(iter(commands))
+            if expected_jobs[command][1] not in block:
+                raise ControlPlaneError(
+                    "CRITICAL_PRODUCTION_CREDENTIAL_OUTPUT_GATE:" + command
+                )
+            seen.add(command)
+        if seen != set(expected_jobs):
+            raise ControlPlaneError("CRITICAL_PRODUCTION_CREDENTIAL_COMMAND_SET")
+    elif relative == ".github/workflows/uaart_transaction_watchdog.yml":
+        if total != 1 or len(secret_blocks) != 1:
+            raise ControlPlaneError("WATCHDOG_PRODUCTION_CREDENTIAL_COUNT")
+        block = secret_blocks[0]
+        if (
+            "needs.discover.outputs.transaction_status == 'OPEN'" not in block
+            or "needs.mark_rollback.outputs.marked == 'true'" not in block
+            or "steps.orphan.outputs.transaction_status == 'ROLLING_BACK'" not in block
+            or "steps.orphan.outputs.source_commit == needs.discover.outputs.source_commit" not in block
+            or "steps.pinned.outputs.validated == 'true'" not in block
+            or "github.run_attempt == 1" not in block
+            or "test \"$GITHUB_RUN_ATTEMPT\" = '1'" not in block
+            or 'cd "$PINNED_ROOT"' not in block
+            or "execution_contract.py rollback" not in block
+        ):
+            raise ControlPlaneError("WATCHDOG_PRODUCTION_CREDENTIAL_GATE")
+    else:
+        raise ControlPlaneError("PRODUCTION_CREDENTIAL_WORKFLOW_BYPASS:" + relative)
+
+
+def _verify_active_workflow_runtime_hygiene(source: str, relative: str) -> None:
+    """Reject ambient Python startup and checkout-persisted credentials globally."""
+    for job_id, job in _workflow_job_blocks(source, relative):
+        for match in PYTHON_INTERPRETER_RE.finditer(job):
+            if not re.match(r"\s+-I(?=\s|$)", job[match.end():]):
+                raise ControlPlaneError(
+                    "ACTIVE_WORKFLOW_PYTHON_NOT_ISOLATED:"
+                    + relative + ":" + job_id
+                )
+        for block in _named_job_step_blocks(job, relative, job_id):
+            body = _step_run_body(block, relative)
+            if body is not None and "${{" in body:
+                raise ControlPlaneError(
+                    "ACTIVE_WORKFLOW_RUN_EXPRESSION_FORBIDDEN:" + relative
+                )
+            if re.search(r"uses:\s*actions/checkout@", block):
+                if (
+                    block.count("persist-credentials: false") != 1
+                    or "persist-credentials: true" in block
+                ):
+                    raise ControlPlaneError(
+                        "ACTIVE_WORKFLOW_CHECKOUT_CREDENTIAL_POLICY:"
+                        + relative + ":" + job_id
+                    )
+                if relative in {
+                    ".github/workflows/uaart_maintenance.yml",
+                    ".github/workflows/uaart_monitor.yml",
+                } and (
+                    block.count("ref: main") != 1
+                    or block.count("clean: true") != 1
+                ):
+                    raise ControlPlaneError(
+                        "SCHEDULED_WORKFLOW_CHECKOUT_NOT_MAIN:"
+                        + relative + ":" + job_id
+                    )
+        if relative in {
+            ".github/workflows/uaart_maintenance.yml",
+            ".github/workflows/uaart_monitor.yml",
+        } and "github.ref == 'refs/heads/main'" not in job:
+            raise ControlPlaneError(
+                "SCHEDULED_WORKFLOW_MAIN_GUARD_MISSING:"
+                + relative + ":" + job_id
+            )
+
+
+def _verify_privileged_python_token_boundary(source: str, relative: str) -> None:
+    """Keep the Actions write token outside unverified repository Python."""
+    if relative not in {
+        ".github/workflows/uaart_critical.yml",
+        ".github/workflows/uaart_transaction_watchdog.yml",
+    }:
+        return
+    queue_seen = False
+    for block in _named_workflow_step_blocks(source, relative):
+        if "github.token" not in block:
+            continue
+        unset_at = block.find("unset GH_TOKEN")
+        if unset_at < 0 or block.count("unset GH_TOKEN") < 1:
+            raise ControlPlaneError("PRIVILEGED_GITHUB_TOKEN_NOT_UNSET:" + relative)
+        first_python = PYTHON_INTERPRETER_RE.search(block)
+        is_queue = (
+            relative == ".github/workflows/uaart_critical.yml"
+            and "Wait in strict Production queue and refresh main" in block
+        )
+        if is_queue:
+            if queue_seen:
+                raise ControlPlaneError("CRITICAL_QUEUE_TOKEN_STEP_DUPLICATE")
+            queue_seen = True
+            first_repo_python = block.find("python3 -I automation/")
+            closure_at = block.find("UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED")
+            queue_at = block.find("python3 -I automation/production_queue.py wait")
+            auth_at = block.find("auth=", queue_at)
+            if (
+                first_repo_python < 0
+                or closure_at < 0
+                or closure_at > first_repo_python
+                or "CRITICAL_QUEUE_RUNTIME_FILE_SET" not in block
+                or "RUNTIME_MANIFEST_SHA256" not in block
+                or "target.resolve() != target" not in block
+                or queue_at < first_repo_python
+                or auth_at < queue_at
+                or unset_at < auth_at
+            ):
+                raise ControlPlaneError("CRITICAL_QUEUE_RUNTIME_BOOTSTRAP_ORDER")
+        elif first_python is not None and unset_at > first_python.start():
+            raise ControlPlaneError(
+                "PRIVILEGED_GITHUB_TOKEN_PYTHON_EXPOSURE:" + relative
+            )
+    if relative == ".github/workflows/uaart_critical.yml" and not queue_seen:
+        raise ControlPlaneError("CRITICAL_QUEUE_TOKEN_STEP_MISSING")
+
+
+def _verify_critical_runtime_binding_policy(source: str, relative: str) -> None:
+    if relative != ".github/workflows/uaart_critical.yml":
+        return
+    jobs = dict(_workflow_job_blocks(source, relative))
+    validate = jobs.get("validate", "")
+    for marker in (
+        "dependency_sha256: ${{ steps.contract.outputs.dependency_sha256 }}",
+        "runtime_manifest_sha256: ${{ steps.attestation.outputs.runtime_manifest_sha256 }}",
+        "workflow_blob_oid: ${{ steps.workflow.outputs.workflow_blob_oid }}",
+        "workflow_source_commit: ${{ steps.workflow.outputs.workflow_source_commit }}",
+        "'dependency_sha256'",
+        "'runtime_manifest_sha256'",
+        "'workflow_blob_oid'",
+        "'workflow_source_commit'",
+        "AUTOPILOT_RUNTIME_MANIFEST.json",
+        "Bind executing CRITICAL workflow to checked runtime",
+        "git ls-tree \"$WORKFLOW_SOURCE_COMMIT\"",
+    ):
+        if marker not in validate:
+            raise ControlPlaneError("CRITICAL_VALIDATION_RUNTIME_BINDING")
+    if "VALIDATION_WORKFLOW_BLOB_BINDING" not in source:
+        raise ControlPlaneError("CRITICAL_VALIDATION_RUNTIME_BINDING")
+    if "UAART_RUNTIME_PINNED_PATHS" not in source or any(marker not in validate for marker in (
+        "UAART_CRITICAL_VALIDATION_RUNTIME_CLOSURE_VALIDATED",
+        "CRITICAL_VALIDATION_RUNTIME_FILE_SET",
+        "target.resolve() != target",
+    )):
+        raise ControlPlaneError("CRITICAL_VALIDATION_RUNTIME_CLOSURE")
+    closure_at = validate.find("UAART_CRITICAL_VALIDATION_RUNTIME_CLOSURE_VALIDATED")
+    first_repo_python = validate.find("python3 -I automation/")
+    if closure_at < 0 or first_repo_python < 0 or closure_at > first_repo_python:
+        raise ControlPlaneError("CRITICAL_VALIDATION_RUNTIME_CLOSURE_ORDER")
+    head_runtime_guard = (
+        'git diff --quiet "$WORKFLOW_SOURCE_COMMIT" HEAD -- "${runtime_paths[@]}"'
+    )
+    for job_id in (
+        "prepare", "backup", "open", "controller_production",
+        "controller_nonproduction", "finalize",
+    ):
+        if head_runtime_guard not in jobs.get(job_id, ""):
+            raise ControlPlaneError("CRITICAL_FULL_RUNTIME_DRIFT_GUARD:" + job_id)
+    for job_id in ("backup", "controller_production", "controller_nonproduction"):
+        job = jobs.get(job_id, "")
+        required = (
+            "DEPENDENCY_SHA256",
+            "RUNTIME_MANIFEST_SHA256",
+            "SOURCE_COMMIT",
+            "execution_contract.py validate",
+            "dependency_sha256",
+            "sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json",
+            'git diff --quiet "$SOURCE_COMMIT" HEAD -- "$package_root"',
+            "WORKFLOW_BLOB_OID",
+            "WORKFLOW_SOURCE_COMMIT",
+            'git rev-parse "HEAD:$WORKFLOW_PATH"',
+        )
+        if any(marker not in job for marker in required):
+            raise ControlPlaneError(
+                "CRITICAL_FORWARD_RUNTIME_DRIFT_GUARD:" + job_id
+            )
+    rollback = jobs.get("rollback_execute", "")
+    required_rollback = (
+        "PINNED_ROOT",
+        "SOURCE_COMMIT",
+        "DEPENDENCY_SHA256",
+        "RUNTIME_MANIFEST_SHA256",
+        'git -c core.hooksPath=/dev/null worktree add --detach',
+        'test "$(git -C "$PINNED_ROOT" rev-parse HEAD)" = "$SOURCE_COMMIT"',
+        "UAART_PINNED_DURABLE_STATE_COPIED",
+        "UAART_PINNED_RUNTIME_CLOSURE_VALIDATED",
+        "PINNED_SOURCE_COMMIT_BINDING",
+        "PINNED_RUNTIME_MANIFEST_BINDING",
+        "target.resolve() != target",
+        "dependency_sha256",
+        "value.get('source_commit') == os.environ['SOURCE_COMMIT']",
+        "WORKFLOW_BLOB_OID",
+        "WORKFLOW_SOURCE_COMMIT",
+        'git rev-parse "$SOURCE_COMMIT:$WORKFLOW_PATH"',
+        'cd "$PINNED_ROOT"',
+    )
+    if any(marker not in rollback for marker in required_rollback):
+        raise ControlPlaneError("CRITICAL_PINNED_ROLLBACK_RUNTIME_MISSING")
+    push_blocks = [
+        block for block in _named_workflow_step_blocks(source, relative)
+        if re.search(r"\bpush\s+origin\b", block)
+    ]
+    if len(push_blocks) != 5 or any(
+        'git diff --quiet "$last_commit" "$parent" -- "${accepted_paths[@]}"'
+        not in block
+        for block in push_blocks
+    ):
+        raise ControlPlaneError("CRITICAL_ACCEPTED_PUSH_PATH_DRIFT_GUARD")
+    for job_id in ("prepare", "open", "finalize"):
+        job = jobs.get(job_id, "")
+        if any(marker not in job for marker in (
+            "WORKFLOW_BLOB_OID",
+            "WORKFLOW_SOURCE_COMMIT",
+            "RUNTIME_MANIFEST_SHA256",
+            'git rev-parse "$parent:$WORKFLOW_PATH"',
+            'git show "$parent:state/AUTOPILOT_RUNTIME_MANIFEST.json"',
+            'git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$parent" -- "${runtime_paths[@]}"',
+        )):
+            raise ControlPlaneError(
+                "CRITICAL_PERSIST_WORKFLOW_RUNTIME_BINDING:" + job_id
+            )
+
+
+def _verify_watchdog_pinned_recovery_policy(source: str, relative: str) -> None:
+    if relative != ".github/workflows/uaart_transaction_watchdog.yml":
+        return
+    jobs = dict(_workflow_job_blocks(source, relative))
+    discover = jobs.get("discover", "")
+    rollback = jobs.get("rollback_open", "")
+    if (
+        "source_commit: ${{ steps.orphan.outputs.source_commit }}" not in discover
+        or "claim_path: ${{ steps.orphan.outputs.claim_path }}" not in discover
+    ):
+        raise ControlPlaneError("WATCHDOG_RECOVERY_SOURCE_OUTPUT_MISSING")
+    required = (
+        "PINNED_ROOT",
+        "SOURCE_COMMIT",
+        "fetch-depth: 0",
+        'git -c core.hooksPath=/dev/null worktree add --detach',
+        "UAART_PINNED_DURABLE_STATE_COPIED",
+        "UAART_PINNED_RUNTIME_CLOSURE_VALIDATED",
+        "UAART_PINNED_RECOVERY_IDENTITY_VALIDATED",
+        "PINNED_SOURCE_COMMIT_BINDING",
+        "target.resolve() != target",
+        "steps.orphan.outputs.transaction_status == 'ROLLING_BACK'",
+        "steps.orphan.outputs.source_commit == needs.discover.outputs.source_commit",
+        "steps.pinned.outputs.validated == 'true'",
+        'cd "$PINNED_ROOT"',
+    )
+    if any(marker not in rollback for marker in required):
+        raise ControlPlaneError("WATCHDOG_PINNED_RECOVERY_RUNTIME_MISSING")
+    push_blocks = [
+        block for block in _named_workflow_step_blocks(source, relative)
+        if re.search(r"\bpush\s+origin\b", block)
+    ]
+    if len(push_blocks) != 6 or any(
+        'git diff --quiet "$LAST_COMMIT" "$PARENT" -- "${ACCEPTED_PATHS[@]}"'
+        not in block
+        for block in push_blocks
+    ):
+        raise ControlPlaneError("WATCHDOG_ACCEPTED_PUSH_PATH_DRIFT_GUARD")
+
+
+def _verify_write_job_runtime_bootstrap_policy(source: str, relative: str) -> None:
+    """Reject write jobs that can run moving repository code before token use.
+
+    Step-scoped ``GH_TOKEN`` is not sufficient isolation: repository Python in
+    an earlier step can poison ``GITHUB_ENV``/``GITHUB_PATH``, while repository
+    Python in the token step can replace a writable PATH binary or Git config.
+    Every state writer therefore binds the complete runtime to an attested
+    source before its first repository Python and repeats that binding for each
+    moving-main retry parent.
+    """
+    expected_writers = {
+        ".github/workflows/uaart_critical.yml": {
+            "prepare", "open", "finalize", "recover", "rollback_mark",
+        },
+        ".github/workflows/uaart_transaction_watchdog.yml": {
+            "halt_discovery_failure", "halt_preparing", "mark_rollback",
+            "finalize_rollback", "halt_rolling_back", "halt_recovery_failure",
+        },
+    }.get(relative)
+    if expected_writers is None:
+        return
+    jobs = dict(_workflow_job_blocks(source, relative))
+    actual_writers = {
+        job_id for job_id, job in jobs.items() if "contents: write" in job
+    }
+    if actual_writers != expected_writers:
+        raise ControlPlaneError("WRITE_JOB_SET_INVALID:" + relative)
+    poison_markers = (
+        "GITHUB_ENV", "GITHUB_PATH", "BASH_ENV", "PYTHONSTARTUP",
+        "PYTHONPATH", "PYTHONHOME", "GIT_CONFIG_GLOBAL", ".gitconfig",
+    )
+    for job_id in sorted(expected_writers):
+        job = jobs[job_id]
+        if any(marker in job for marker in poison_markers) or re.search(
+            r"(?m)(?:^\s*|[;&|]\s*)git\s+config(?:\s|$)", job
+        ):
+            raise ControlPlaneError(
+                "WRITE_JOB_ENVIRONMENT_POISONING:" + relative + ":" + job_id
+            )
+        first_repo_python = job.find("python3 -I automation/")
+        if first_repo_python < 0:
+            raise ControlPlaneError(
+                "WRITE_JOB_REPOSITORY_PYTHON_MISSING:" + relative + ":" + job_id
+            )
+        candidate_guards = (
+            job.find("UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED"),
+            job.find(
+                'git diff --quiet "$WORKFLOW_SOURCE_COMMIT" HEAD -- '
+                '"${runtime_paths[@]}"'
+            ),
+            job.find("UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED"),
+        )
+        guards = [position for position in candidate_guards if position >= 0]
+        if not guards or min(guards) > first_repo_python:
+            raise ControlPlaneError(
+                "WRITE_JOB_RUNTIME_BOOTSTRAP_ORDER:" + relative + ":" + job_id
+            )
+        token_steps = [
+            block for block in _named_job_step_blocks(job, relative, job_id)
+            if "github.token" in block
+        ]
+        if not token_steps:
+            raise ControlPlaneError(
+                "WRITE_JOB_TOKEN_STEP_COUNT:" + relative + ":" + job_id
+            )
+        for token_step in token_steps:
+            unset_at = token_step.find("unset GH_TOKEN")
+            token_repo_python = token_step.find("python3 -I automation/")
+            queue_guard = token_step.find("UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED")
+            trusted_queue = (
+                relative.endswith("uaart_critical.yml")
+                and "Wait in strict Production queue and refresh main" in token_step
+                and queue_guard >= 0
+                and queue_guard < token_repo_python
+            )
+            if unset_at < 0 or (
+                token_repo_python >= 0
+                and unset_at > token_repo_python
+                and not trusted_queue
+            ):
+                raise ControlPlaneError(
+                    "WRITE_JOB_TOKEN_UNSET_ORDER:" + relative + ":" + job_id
+                )
+
+        if relative.endswith("uaart_critical.yml"):
+            parent_guards = (
+                'git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$parent" -- '
+                '"${runtime_paths[@]}"',
+                'git diff --quiet "$SOURCE_COMMIT" "$parent" -- '
+                '"${runtime_paths[@]}"',
+            )
+        else:
+            parent_guards = (
+                'git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$PARENT" -- '
+                '"${RUNTIME_PATHS[@]}"',
+                'git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$parent" -- '
+                '"${runtime_paths[@]}"',
+            )
+        if not any(marker in job for marker in parent_guards):
+            raise ControlPlaneError(
+                "WRITE_JOB_RETRY_RUNTIME_BINDING:" + relative + ":" + job_id
+            )
+    expected_source_sha = {
+        ".github/workflows/uaart_critical.yml": CRITICAL_WORKFLOW_SHA256,
+        ".github/workflows/uaart_transaction_watchdog.yml": WATCHDOG_WORKFLOW_SHA256,
+    }[relative]
+    actual_source_sha = sha256_bytes(source.encode("utf-8"))
+    if actual_source_sha != expected_source_sha:
+        raise ControlPlaneError("WRITE_WORKFLOW_EXACT_SHA256_MISMATCH:" + relative)
+
+
 def verify_production_credential_workflow_policy(
     *,
     root: pathlib.Path = ROOT,
@@ -295,6 +1658,7 @@ def verify_production_credential_workflow_policy(
             consumers.append(relative)
             if relative not in PRODUCTION_CREDENTIAL_WORKFLOW_ALLOWLIST:
                 raise ControlPlaneError("PRODUCTION_CREDENTIAL_WORKFLOW_BYPASS:" + relative)
+            _verify_production_secret_step_policy(source, relative)
         if SECRETS_BRACKET_REFERENCE_RE.search(source):
             raise ControlPlaneError("WORKFLOW_SECRET_BRACKET_BYPASS:" + relative)
         if SECRETS_SERIALIZATION_RE.search(source):
@@ -307,6 +1671,24 @@ def verify_production_credential_workflow_policy(
             raise ControlPlaneError("WORKFLOW_ACTIONS_WRITE_BYPASS:" + relative)
         if WORKFLOW_REMOTE_DISPATCH_RE.search(source):
             raise ControlPlaneError("WORKFLOW_REMOTE_DISPATCH_BYPASS:" + relative)
+        if relative == ".github/workflows/uaart_autostart.yml":
+            _verify_autostart_fresh_runner_policy(source, relative)
+        elif relative == ".github/workflows/uaart_orchestrator.yml":
+            _verify_orchestrator_fresh_runner_policy(source, relative)
+        elif relative in {
+            ".github/workflows/uaart_fast.yml",
+            ".github/workflows/uaart_standard.yml",
+            ".github/workflows/uaart_critical.yml",
+            ".github/workflows/uaart_transaction_watchdog.yml",
+        }:
+            _verify_fresh_runner_job_policy(source, relative)
+        _verify_active_workflow_runtime_hygiene(source, relative)
+        _verify_privileged_python_token_boundary(source, relative)
+        _verify_critical_runtime_binding_policy(source, relative)
+        _verify_watchdog_pinned_recovery_policy(source, relative)
+        _verify_write_job_runtime_bootstrap_policy(source, relative)
+    if set(consumers) != set(PRODUCTION_CREDENTIAL_WORKFLOW_ALLOWLIST):
+        raise ControlPlaneError("PRODUCTION_CREDENTIAL_CONSUMER_SET")
     return {
         "active_workflows": sorted(relatives),
         "allowlist": sorted(PRODUCTION_CREDENTIAL_WORKFLOW_ALLOWLIST),
@@ -321,6 +1703,7 @@ def verify_execution_mode(
     *,
     root: pathlib.Path = ROOT,
     required_mode: str | None = None,
+    allow_halt_for_recovery: bool = False,
 ) -> dict[str, Any]:
     """Validate the repository's single execution-mode authority.
 
@@ -350,8 +1733,14 @@ def verify_execution_mode(
         raise ControlPlaneError("EXECUTION_MODE_FILE_INVALID")
     mode = read_json(mode_path)
     halt_path = root / "state/AUTOPILOT_HALT.json"
-    if halt_path.exists():
+    halted = halt_path.exists()
+    if halted and not allow_halt_for_recovery:
         raise ControlPlaneError("AUTOMATIC_MODE_HALTED")
+    halt = None
+    if halted:
+        if halt_path.is_symlink() or not halt_path.is_file():
+            raise ControlPlaneError("AUTOMATIC_HALT_FILE_INVALID")
+        halt = read_json(halt_path)
     expected_mode_keys = {
         "activated_at",
         "allow_replay_existing_launch_markers",
@@ -380,6 +1769,11 @@ def verify_execution_mode(
         raise ControlPlaneError("EXECUTION_MODE_SCHEMA_OR_VALUE")
     if not re.fullmatch(r"auto-[A-Za-z0-9._-]{16,100}", str(mode.get("mode_epoch", ""))):
         raise ControlPlaneError("EXECUTION_MODE_EPOCH")
+    if halt is not None and (
+        halt.get("status") != "EMERGENCY_HALT"
+        or halt.get("mode_epoch") != mode.get("mode_epoch")
+    ):
+        raise ControlPlaneError("AUTOMATIC_HALT_IDENTITY_INVALID")
     try:
         require_mode_status(manual_path, "INACTIVE")
     except ControlPlaneError as exc:
@@ -931,6 +2325,8 @@ def verify_autostart_ledger(
     *,
     expected_source_commit: str = "",
     root: pathlib.Path = ROOT,
+    allow_expired_for_recovery: bool = False,
+    allow_halt_for_recovery: bool = False,
 ) -> dict[str, str]:
     if not str(ledger_path).strip():
         raise ControlPlaneError("AUTOSTART_LEDGER_PATH_MISMATCH")
@@ -979,7 +2375,11 @@ def verify_autostart_ledger(
         or str(ledger.get("run_id")) != str(run_id)
     ):
         raise ControlPlaneError("AUTOSTART_LEDGER_IDENTITY")
-    mode = verify_execution_mode(root=root, required_mode="AUTOMATIC")
+    mode = verify_execution_mode(
+        root=root,
+        required_mode="AUTOMATIC",
+        allow_halt_for_recovery=allow_halt_for_recovery,
+    )
     if ledger.get("mode_epoch") != mode.get("mode_epoch"):
         raise ControlPlaneError("AUTOSTART_LEDGER_MODE_EPOCH")
     production = bool(raw.get("production_required", False))
@@ -992,7 +2392,7 @@ def verify_autostart_ledger(
     expires_at = parse_utc(str(ledger.get("expires_at", "")))
     if created_at > consumed_at or expires_at <= created_at:
         raise ControlPlaneError("AUTOSTART_LEDGER_TIME_BINDING")
-    if dt.datetime.now(dt.timezone.utc) >= expires_at:
+    if not allow_expired_for_recovery and dt.datetime.now(dt.timezone.utc) >= expires_at:
         raise ControlPlaneError("AUTOSTART_LEDGER_EXPIRED")
     require_sha(ledger.get("launch_sha256"), "autostart_launch")
     if not re.fullmatch(r"[0-9a-f]{40}", str(ledger.get("source_commit", ""))):
@@ -1090,6 +2490,8 @@ def _load_exact_claim(
     if claim.get("execution_mode") != mode["mode"]:
         raise ControlPlaneError("EXACT_CLAIM_EXECUTION_MODE_MISMATCH")
     if mode["mode"] == "AUTOMATIC":
+        if claim.get("mode_epoch") != mode.get("mode_epoch"):
+            raise ControlPlaneError("EXACT_CLAIM_MODE_EPOCH_MISMATCH")
         binding = verify_autostart_ledger(
             str(claim.get("autostart_ledger_path", "")),
             normalized,
@@ -1611,8 +3013,17 @@ def record_failure(
     *,
     root: pathlib.Path = ROOT,
     rollback_confirmed: bool = False,
+    terminal: bool = False,
 ) -> dict[str, Any]:
     path, claim, _, _ = _load_claim_for_recovery(request_path, run_id, root=root)
+    current_status = str(claim.get("task_execution_status", ""))
+    if current_status in TERMINAL_EXECUTION_STATUSES:
+        return {
+            "action": "TERMINAL_UNCHANGED",
+            "retry_allowed": False,
+            "retries_remaining": 0,
+            "task_execution_status": current_status,
+        }
     failure_class = classify_failure(message)
     signature = sha256_bytes(message.strip().casefold().encode("utf-8"))[:16]
     history = claim.get("failure_history") or []
@@ -1624,6 +3035,9 @@ def record_failure(
     remaining = max(0, budgets[str(claim["task_class"])] - used)
     if rollback_confirmed:
         status, action, retry_allowed = "ROLLED_BACK", "STOP_AFTER_VERIFIED_ROLLBACK", False
+    elif terminal:
+        status, action, retry_allowed = "FAILED", "STOP_FAIL_CLOSED_TERMINAL", False
+        remaining = 0
     elif failure_class == "TRANSIENT" and remaining > 0:
         status, action, retry_allowed = "BLOCKED_RETRYABLE", "RETRY_SAME_IDENTITY", True
         remaining -= 1
@@ -1679,17 +3093,64 @@ def halt_automatic_mode(
     return value
 
 
-def open_production_transaction(
-    request_path: str,
+def halt_system_automatic_mode(
     run_id: str,
-    transaction_id: str,
-    backup_receipt_sha256: str,
-    backup_manifest_sha256: str,
+    reason: str,
     *,
     root: pathlib.Path = ROOT,
 ) -> dict[str, Any]:
-    """Persist the rollback lease before the first Production mutation."""
-    claim_path, claim, raw, request_sha = _load_exact_claim(request_path, run_id, root=root)
+    """Persist a recovery halt when no trustworthy task claim can be selected."""
+    if not re.fullmatch(r"[A-Za-z0-9._-]{1,100}", str(run_id)):
+        raise ControlPlaneError("INVALID_RUN_ID")
+    mode = read_json(root / "state/EXECUTION_MODE.json")
+    epoch = str(mode.get("mode_epoch", ""))
+    if mode.get("mode") != "AUTOMATIC" or not re.fullmatch(
+        r"auto-[A-Za-z0-9._-]{16,100}", epoch
+    ):
+        raise ControlPlaneError("SYSTEM_HALT_AUTOMATIC_MODE_REQUIRED")
+    halt_path = root / "state/AUTOPILOT_HALT.json"
+    if halt_path.exists():
+        if halt_path.is_symlink() or not halt_path.is_file():
+            raise ControlPlaneError("AUTOMATIC_HALT_FILE_INVALID")
+        existing = read_json(halt_path)
+        if (
+            existing.get("status") != "EMERGENCY_HALT"
+            or existing.get("mode_epoch") != epoch
+        ):
+            raise ControlPlaneError("AUTOMATIC_HALT_IDENTITY_INVALID")
+        return existing
+    value = {
+        "halted_at": utc_now(),
+        "mode_epoch": epoch,
+        "reason": str(reason)[:500],
+        "request_path": "",
+        "request_sha256": "0" * 64,
+        "run_id": str(run_id),
+        "status": "EMERGENCY_HALT",
+        "task_id": "SYSTEM-WATCHDOG",
+    }
+    atomic_json(halt_path, value, exclusive=True)
+    return value
+
+
+def _production_transaction_context(
+    request_path: str,
+    run_id: str,
+    transaction_id: str,
+    *,
+    root: pathlib.Path,
+) -> tuple[
+    pathlib.Path,
+    dict[str, Any],
+    dict[str, Any],
+    str,
+    str,
+    pathlib.Path,
+    str,
+]:
+    claim_path, claim, raw, request_sha = _load_exact_claim(
+        request_path, run_id, root=root
+    )
     if not bool(raw.get("production_required", False)):
         raise ControlPlaneError("TRANSACTION_REQUIRES_PRODUCTION")
     if claim.get("execution_mode") != "AUTOMATIC":
@@ -1709,13 +3170,9 @@ def open_production_transaction(
     if not isinstance(execution, dict):
         raise ControlPlaneError("TRANSACTION_EXECUTION_OBJECT")
     backup_rel = safe_repo_path(str(execution.get("backup_receipt_path", "")))
+    if not backup_rel.startswith("state/receipts/") or not backup_rel.endswith(".json"):
+        raise ControlPlaneError("TRANSACTION_BACKUP_RECEIPT_SCOPE")
     backup_path = repo_path(backup_rel, root)
-    if backup_path.is_symlink() or not backup_path.is_file():
-        raise ControlPlaneError("TRANSACTION_BACKUP_RECEIPT_MISSING")
-    backup_receipt_sha = require_sha(backup_receipt_sha256, "backup_receipt")
-    if sha256_file(backup_path) != backup_receipt_sha:
-        raise ControlPlaneError("TRANSACTION_BACKUP_RECEIPT_SHA")
-    backup_manifest_sha = require_sha(backup_manifest_sha256, "backup_manifest")
     identity = _identity(raw, request_sha, run_id)
     path_rel = transaction_relative_path(identity)
     path = repo_path(path_rel, root)
@@ -1724,27 +3181,211 @@ def open_production_transaction(
     expires_at = parse_utc(str(ledger.get("expires_at", "")))
     if dt.datetime.now(dt.timezone.utc) >= expires_at:
         raise ControlPlaneError("TRANSACTION_AUTHORIZATION_EXPIRED")
+    return claim_path, claim, raw, request_sha, backup_rel, backup_path, path_rel
+
+
+def prepare_production_transaction(
+    request_path: str,
+    run_id: str,
+    transaction_id: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> dict[str, Any]:
+    """Durably mark Production preparation before exposing any write credential."""
+    (
+        claim_path,
+        claim,
+        raw,
+        request_sha,
+        backup_rel,
+        backup_path,
+        path_rel,
+    ) = _production_transaction_context(
+        request_path, run_id, transaction_id, root=root
+    )
+    if backup_path.is_symlink() or backup_path.exists():
+        raise ControlPlaneError("TRANSACTION_BACKUP_RECEIPT_PREEXISTING")
+    path = repo_path(path_rel, root)
+    ledger_rel = safe_repo_path(str(claim.get("autostart_ledger_path", "")))
+    ledger = read_json(repo_path(ledger_rel, root))
+    prepared_at = utc_now()
     value = {
         "autostart_ledger_path": ledger_rel,
-        "backup_manifest_sha256": backup_manifest_sha,
+        "backup_manifest_sha256": None,
         "backup_receipt_path": backup_rel,
-        "backup_receipt_sha256": backup_receipt_sha,
+        "backup_receipt_sha256": None,
         "expires_at": str(ledger["expires_at"]),
         "mode_epoch": claim.get("mode_epoch"),
-        "opened_at": utc_now(),
+        "opened_at": None,
+        "prepared_at": prepared_at,
         "request_path": safe_repo_path(request_path),
         "request_sha256": request_sha,
         "run_id": str(run_id),
         "schema_version": PRODUCTION_TRANSACTION_SCHEMA,
-        "status": "OPEN",
+        "status": "PREPARING",
         "task_id": raw["task_id"],
         "transaction_id": str(transaction_id),
     }
     atomic_json(path, value, exclusive=True)
     claim["production_transaction_id"] = str(transaction_id)
     claim["production_transaction_path"] = path_rel
+    claim["production_transaction_status"] = "PREPARING"
+    _touch_claim(claim_path, claim, "RUNNING")
+    return value | {"transaction_path": path_rel}
+
+
+def open_production_transaction(
+    request_path: str,
+    run_id: str,
+    transaction_id: str,
+    backup_receipt_sha256: str,
+    backup_manifest_sha256: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> dict[str, Any]:
+    """Promote a durable PREPARING record after strict backup validation."""
+    (
+        claim_path,
+        claim,
+        raw,
+        request_sha,
+        backup_rel,
+        backup_path,
+        path_rel,
+    ) = _production_transaction_context(
+        request_path, run_id, transaction_id, root=root
+    )
+    if backup_path.is_symlink() or not backup_path.is_file():
+        raise ControlPlaneError("TRANSACTION_BACKUP_RECEIPT_MISSING")
+    backup_receipt_sha = require_sha(backup_receipt_sha256, "backup_receipt")
+    if sha256_file(backup_path) != backup_receipt_sha:
+        raise ControlPlaneError("TRANSACTION_BACKUP_RECEIPT_SHA")
+    backup_manifest_sha = require_sha(backup_manifest_sha256, "backup_manifest")
+    path = repo_path(path_rel, root)
+    if path.is_symlink() or not path.is_file():
+        raise ControlPlaneError("TRANSACTION_PREPARATION_MISSING")
+    value = read_json(path)
+    expected_keys = {
+        "autostart_ledger_path", "backup_manifest_sha256",
+        "backup_receipt_path", "backup_receipt_sha256", "expires_at",
+        "mode_epoch", "opened_at", "prepared_at", "request_path",
+        "request_sha256", "run_id", "schema_version", "status",
+        "task_id", "transaction_id",
+    }
+    if set(value) != expected_keys or (
+        value.get("schema_version") != PRODUCTION_TRANSACTION_SCHEMA
+        or value.get("status") != "PREPARING"
+        or value.get("request_path") != safe_repo_path(request_path)
+        or value.get("request_sha256") != request_sha
+        or str(value.get("run_id")) != str(run_id)
+        or value.get("task_id") != raw["task_id"]
+        or value.get("transaction_id") != str(transaction_id)
+        or value.get("backup_receipt_path") != backup_rel
+        or value.get("mode_epoch") != claim.get("mode_epoch")
+        or value.get("autostart_ledger_path") != claim.get("autostart_ledger_path")
+        or value.get("backup_manifest_sha256") is not None
+        or value.get("backup_receipt_sha256") is not None
+        or value.get("opened_at") is not None
+    ):
+        raise ControlPlaneError("TRANSACTION_PREPARATION_IDENTITY_MISMATCH")
+    parse_utc(str(value.get("prepared_at", "")))
+    critical = raw.get("critical")
+    if not isinstance(critical, dict):
+        raise ControlPlaneError("TRANSACTION_CRITICAL_OBJECT")
+    receipt = read_json(backup_path)
+    receipt_keys = {
+        "task_id", "request_sha256", "run_id", "transaction_id",
+        "manifest_sha256", "backup_manifest_sha256", "schema_version",
+        "operation", "status", "backup", "unexpected_changes",
+    }
+    if set(receipt) != receipt_keys or (
+        receipt.get("schema_version") != "UA-ART-PRODUCTION-BACKUP-RECEIPT-1"
+        or receipt.get("operation") != "backup"
+        or receipt.get("status") != "PASS"
+        or receipt.get("backup") != "PASS"
+        or type(receipt.get("unexpected_changes")) is not int
+        or receipt.get("unexpected_changes") != 0
+        or receipt.get("task_id") != raw["task_id"]
+        or receipt.get("request_sha256") != request_sha
+        or str(receipt.get("run_id")) != str(run_id)
+        or receipt.get("transaction_id") != str(transaction_id)
+        or receipt.get("manifest_sha256") != critical.get("manifest_sha256")
+        or receipt.get("backup_manifest_sha256") != backup_manifest_sha
+    ):
+        raise ControlPlaneError("TRANSACTION_BACKUP_RECEIPT_BINDING")
+    if (
+        claim.get("production_transaction_id") != str(transaction_id)
+        or claim.get("production_transaction_path") != path_rel
+        or claim.get("production_transaction_status") != "PREPARING"
+    ):
+        raise ControlPlaneError("TRANSACTION_CLAIM_PREPARATION_MISMATCH")
+    value["backup_manifest_sha256"] = backup_manifest_sha
+    value["backup_receipt_sha256"] = backup_receipt_sha
+    value["opened_at"] = utc_now()
+    value["status"] = "OPEN"
+    atomic_json(path, value)
     claim["production_transaction_status"] = "OPEN"
     _touch_claim(claim_path, claim, "RUNNING")
+    return value | {"transaction_path": path_rel}
+
+
+def start_production_rollback(
+    request_path: str,
+    run_id: str,
+    transaction_id: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> dict[str, Any]:
+    """Durably consume the one automatic rollback attempt for an OPEN write.
+
+    This transition is persisted before a runner receives the rollback
+    credential.  If anything crashes after the external side effect, the
+    remaining ``ROLLING_BACK`` record forces manual reconciliation instead of
+    an unsafe automatic retry.
+    """
+    claim_path, claim, raw, request_sha = _load_claim_for_recovery(
+        request_path, run_id, root=root
+    )
+    identity = _identity(raw, request_sha, run_id)
+    path_rel = transaction_relative_path(identity)
+    path = repo_path(path_rel, root)
+    if path.is_symlink() or not path.is_file():
+        raise ControlPlaneError("TRANSACTION_FILE_MISSING")
+    value = read_json(path)
+    expected_keys = {
+        "autostart_ledger_path", "backup_manifest_sha256",
+        "backup_receipt_path", "backup_receipt_sha256", "expires_at",
+        "mode_epoch", "opened_at", "prepared_at", "request_path",
+        "request_sha256", "run_id", "schema_version", "status",
+        "task_id", "transaction_id",
+    }
+    normalized = safe_repo_path(request_path)
+    if set(value) != expected_keys or (
+        value.get("schema_version") != PRODUCTION_TRANSACTION_SCHEMA
+        or value.get("status") != "OPEN"
+        or value.get("request_path") != normalized
+        or value.get("request_sha256") != request_sha
+        or str(value.get("run_id")) != str(run_id)
+        or value.get("task_id") != raw.get("task_id")
+        or value.get("transaction_id") != str(transaction_id)
+        or value.get("mode_epoch") != claim.get("mode_epoch")
+        or value.get("autostart_ledger_path") != claim.get("autostart_ledger_path")
+    ):
+        raise ControlPlaneError("TRANSACTION_ROLLBACK_START_IDENTITY_MISMATCH")
+    require_sha(value.get("backup_receipt_sha256"), "backup_receipt")
+    require_sha(value.get("backup_manifest_sha256"), "backup_manifest")
+    parse_utc(str(value.get("opened_at", "")))
+    if (
+        claim.get("production_transaction_id") != str(transaction_id)
+        or claim.get("production_transaction_path") != path_rel
+        or claim.get("production_transaction_status") != "OPEN"
+    ):
+        raise ControlPlaneError("TRANSACTION_CLAIM_OPEN_MISMATCH")
+    value["status"] = "ROLLING_BACK"
+    atomic_json(path, value)
+    claim["production_transaction_status"] = "ROLLING_BACK"
+    claim["updated_at"] = utc_now()
+    atomic_json(claim_path, claim)
     return value | {"transaction_path": path_rel}
 
 
@@ -1767,7 +3408,7 @@ def close_production_transaction(
     if expected not in {"FINISHED", "ROLLED_BACK"}:
         raise ControlPlaneError("TRANSACTION_OUTCOME")
     current_status = value.get("status")
-    allowed_current = {"OPEN", "FINISHED"} if expected == "ROLLED_BACK" else {"OPEN"}
+    allowed_current = {"ROLLING_BACK"} if expected == "ROLLED_BACK" else {"OPEN"}
     if (
         value.get("schema_version") != PRODUCTION_TRANSACTION_SCHEMA
         or current_status not in allowed_current
@@ -1905,6 +3546,7 @@ def verify_exact_identity(
     request_sha256: str,
     run_id: str,
     *,
+    expected_claim_path: str | None = None,
     root: pathlib.Path = ROOT,
 ) -> dict[str, Any]:
     normalized, _, raw, actual_sha = load_request(request_path, root)
@@ -1913,6 +3555,12 @@ def verify_exact_identity(
     if actual_sha != require_sha(request_sha256, "autostart_request"):
         raise ControlPlaneError("AUTOSTART_REQUEST_SHA_MISMATCH")
     claim_path, claim, _, _ = _load_exact_claim(normalized, run_id, root=root)
+    actual_claim_path = claim_path.relative_to(root).as_posix()
+    if (
+        expected_claim_path is not None
+        and safe_repo_path(expected_claim_path) != actual_claim_path
+    ):
+        raise ControlPlaneError("AUTOSTART_CLAIM_PATH_MISMATCH")
     expected_identity = _identity(raw, actual_sha, run_id)
     if claim.get("identity") != expected_identity:
         raise ControlPlaneError("AUTOSTART_CLAIM_IDENTITY_MISMATCH")
@@ -1924,7 +3572,7 @@ def verify_exact_identity(
         "status": "PASS",
         "request_path": normalized,
         "identity": expected_identity,
-        "claim_path": claim_path.relative_to(root).as_posix(),
+        "claim_path": actual_claim_path,
         "task_execution_status": claim.get("task_execution_status"),
         "generic_recent_run_accepted": False,
     }
@@ -2135,11 +3783,21 @@ def main() -> None:
     failure.add_argument("--run-id", required=True)
     failure.add_argument("--message", required=True)
     failure.add_argument("--rollback-confirmed", action="store_true")
+    failure.add_argument("--terminal", action="store_true")
 
     halt = sub.add_parser("halt")
     halt.add_argument("request_path")
     halt.add_argument("--run-id", required=True)
     halt.add_argument("--reason", required=True)
+
+    system_halt = sub.add_parser("halt-system")
+    system_halt.add_argument("--run-id", required=True)
+    system_halt.add_argument("--reason", required=True)
+
+    transaction_prepare = sub.add_parser("transaction-prepare")
+    transaction_prepare.add_argument("request_path")
+    transaction_prepare.add_argument("--run-id", required=True)
+    transaction_prepare.add_argument("--transaction-id", required=True)
 
     transaction_open = sub.add_parser("transaction-open")
     transaction_open.add_argument("request_path")
@@ -2147,6 +3805,11 @@ def main() -> None:
     transaction_open.add_argument("--transaction-id", required=True)
     transaction_open.add_argument("--backup-receipt-sha256", required=True)
     transaction_open.add_argument("--backup-manifest-sha256", required=True)
+
+    transaction_rollback_start = sub.add_parser("transaction-rollback-start")
+    transaction_rollback_start.add_argument("request_path")
+    transaction_rollback_start.add_argument("--run-id", required=True)
+    transaction_rollback_start.add_argument("--transaction-id", required=True)
 
     transaction_close = sub.add_parser("transaction-close")
     transaction_close.add_argument("request_path")
@@ -2169,6 +3832,7 @@ def main() -> None:
     identity.add_argument("--task-id", required=True)
     identity.add_argument("--sha256", required=True)
     identity.add_argument("--run-id", required=True)
+    identity.add_argument("--claim-path")
 
     accept = sub.add_parser("accept")
     accept.add_argument("--requests", nargs=3, required=True)
@@ -2179,6 +3843,7 @@ def main() -> None:
 
     mode = sub.add_parser("verify-mode")
     mode.add_argument("--require", choices=sorted(EXECUTION_MODES))
+    mode.add_argument("--allow-halt-for-recovery", action="store_true")
 
     sub.add_parser("self-test")
     args = parser.parse_args()
@@ -2234,6 +3899,7 @@ def main() -> None:
             args.run_id,
             args.message,
             rollback_confirmed=args.rollback_confirmed,
+            terminal=args.terminal,
         ))
     elif args.command == "halt":
         _dump(halt_automatic_mode(
@@ -2241,6 +3907,19 @@ def main() -> None:
             args.run_id,
             args.reason,
         ))
+    elif args.command == "halt-system":
+        _dump(halt_system_automatic_mode(
+            args.run_id,
+            args.reason,
+        ))
+    elif args.command == "transaction-prepare":
+        result = prepare_production_transaction(
+            args.request_path,
+            args.run_id,
+            args.transaction_id,
+        )
+        _write_github_outputs({"transaction_path": result["transaction_path"]})
+        _dump(result)
     elif args.command == "transaction-open":
         result = open_production_transaction(
             args.request_path,
@@ -2248,6 +3927,14 @@ def main() -> None:
             args.transaction_id,
             args.backup_receipt_sha256,
             args.backup_manifest_sha256,
+        )
+        _write_github_outputs({"transaction_path": result["transaction_path"]})
+        _dump(result)
+    elif args.command == "transaction-rollback-start":
+        result = start_production_rollback(
+            args.request_path,
+            args.run_id,
+            args.transaction_id,
         )
         _write_github_outputs({"transaction_path": result["transaction_path"]})
         _dump(result)
@@ -2264,7 +3951,11 @@ def main() -> None:
         _dump(finish_request(args.request_path, args.run_id))
     elif args.command == "verify-identity":
         _dump(verify_exact_identity(
-            args.request_path, args.task_id, args.sha256, args.run_id
+            args.request_path,
+            args.task_id,
+            args.sha256,
+            args.run_id,
+            expected_claim_path=args.claim_path,
         ))
     elif args.command == "accept":
         _dump(build_acceptance(
@@ -2275,7 +3966,10 @@ def main() -> None:
             args.report,
         ))
     elif args.command == "verify-mode":
-        _dump(verify_execution_mode(required_mode=args.require))
+        _dump(verify_execution_mode(
+            required_mode=args.require,
+            allow_halt_for_recovery=args.allow_halt_for_recovery,
+        ))
     else:
         self_test()
 

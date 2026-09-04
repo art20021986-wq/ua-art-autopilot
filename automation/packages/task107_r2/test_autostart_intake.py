@@ -5,6 +5,7 @@ import datetime as dt
 import hashlib
 import json
 import pathlib
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -30,41 +31,10 @@ class AutostartIntakeTests(unittest.TestCase):
             path = root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
             if relative in CP.ACTIVE_WORKFLOW_EVENT_POLICY:
-                name = pathlib.PurePosixPath(relative).name
-                if name == "uaart_autostart.yml":
-                    source = (
-                        "name: fixture\n"
-                        "on:\n"
-                        "  push:\n"
-                        "    branches:\n"
-                        "      - main\n"
-                        "    paths:\n"
-                        "      - 'tasks/launch/AUTO-*.json'\n"
-                    )
-                elif name in {
-                    "uaart_maintenance.yml",
-                    "uaart_monitor.yml",
-                    "uaart_transaction_watchdog.yml",
-                }:
-                    cron = {
-                        "uaart_maintenance.yml": "31 3 * * *",
-                        "uaart_monitor.yml": "17 */6 * * *",
-                        "uaart_transaction_watchdog.yml": "*/10 * * * *",
-                    }[name]
-                    source = (
-                        "name: fixture\n"
-                        "on:\n"
-                        "  schedule:\n"
-                        f"    - cron: '{cron}'\n"
-                        "  workflow_dispatch:\n"
-                    )
-                else:
-                    source = "name: fixture\non:\n" + "".join(
-                        f"  {event}:\n"
-                        for event in sorted(CP.ACTIVE_WORKFLOW_EVENT_POLICY[relative])
-                    )
-                source += "jobs:\n  fixture:\n    runs-on: ubuntu-latest\n"
-                path.write_text(source, encoding="utf-8")
+                # Reuse the canonical active workflow. The runtime policy is
+                # intentionally strict and stale hand-written workflow fixtures
+                # can otherwise fail before the intake behavior under test.
+                path.write_text((ROOT / relative).read_text(encoding="utf-8"), encoding="utf-8")
             else:
                 path.write_text("fixture:" + relative + "\n", encoding="utf-8")
         runtime = {
@@ -338,6 +308,87 @@ class AutostartIntakeTests(unittest.TestCase):
             self.assertEqual(claim["autostart_ledger_path"], result["ledger_path"])
             with self.assertRaisesRegex(AI.AutostartIntakeError, "AUTOSTART_REPLAY_BLOCKED"):
                 AI.validate_launch(launch, "run-2", "b" * 40, root=root, now=NOW)
+
+    def test_validate_only_is_read_only_and_isolated_cli_accepts_explicit_root(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            launch, request_sha = self.prepared_nonproduction(root)
+            result = AI.validate_launch(
+                launch, "run-validate", "a" * 40, root=root, now=NOW
+            )
+            self.assertEqual(result["request_sha256"], request_sha)
+            self.assertFalse((root / result["ledger_path"]).exists())
+            self.assertFalse((root / result["nonce_reservation_path"]).exists())
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-I",
+                    str(ROOT / "automation/autostart_intake.py"),
+                    launch,
+                    "--run-id",
+                    "run-isolated-cli",
+                    "--source-commit",
+                    "b" * 40,
+                    "--validate-only",
+                    "--root",
+                    str(root),
+                ],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn('"request_sha256": "' + request_sha + '"', completed.stdout)
+            self.assertFalse((root / result["ledger_path"]).exists())
+            self.assertFalse((root / result["nonce_reservation_path"]).exists())
+
+    def test_launch_and_request_symlinks_are_rejected_before_read(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            launch, _ = self.prepared_nonproduction(root)
+            launch_path = root / launch
+            launch_target = root / "state/linked-launch.json"
+            launch_target.write_bytes(launch_path.read_bytes())
+            launch_path.unlink()
+            launch_path.symlink_to(launch_target)
+            with self.assertRaisesRegex(
+                AI.AutostartIntakeError, "AUTOSTART_SYMLINK_PATH:launch"
+            ):
+                AI.validate_launch(
+                    launch, "run-symlink", "a" * 40, root=root, now=NOW
+                )
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            launch, _ = self.prepared_nonproduction(root)
+            marker = CP.read_json(root / launch)
+            request_path = root / marker["request_path"]
+            request_target = root / "state/linked-request.json"
+            request_target.write_bytes(request_path.read_bytes())
+            request_path.unlink()
+            request_path.symlink_to(request_target)
+            with self.assertRaisesRegex(
+                AI.AutostartIntakeError, "AUTOSTART_SYMLINK_PATH:request"
+            ):
+                AI.validate_launch(
+                    launch, "run-symlink", "a" * 40, root=root, now=NOW
+                )
+
+    def test_consumed_ledger_directory_symlink_is_rejected_before_scan(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            launch, _ = self.prepared_nonproduction(root)
+            target = root / "state/untrusted-consumed-ledgers"
+            target.mkdir()
+            consumed = root / "state/autostart_consumed"
+            consumed.symlink_to(target, target_is_directory=True)
+            with self.assertRaisesRegex(
+                AI.AutostartIntakeError,
+                "AUTOSTART_CONSUMED_LEDGER_DIRECTORY_INVALID",
+            ):
+                AI.validate_launch(
+                    launch, "run-symlink-dir", "a" * 40, root=root, now=NOW
+                )
 
     def test_consumed_marker_expiry_is_rechecked_before_claim(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -23,12 +23,12 @@ on:
         type: string
     outputs:
       status:
-        value: ${{ jobs.execute.outputs.status }}
+        value: ${{ jobs.persist.outputs.status }}
       receipt_path:
-        value: ${{ jobs.execute.outputs.receipt_path }}
+        value: ${{ jobs.persist.outputs.receipt_path }}
 
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 concurrency:
@@ -36,102 +36,135 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Require exact main branch context
+        env:
+          EXPECTED_GITHUB_REF: ${{ github.ref }}
+        shell: bash
+        run: test "$EXPECTED_GITHUB_REF" = 'refs/heads/main'
+
   execute:
+    needs: context
+    if: inputs.production_required == 'false' && github.ref == 'refs/heads/main' && github.run_attempt == 1
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
     outputs:
-      status: ${{ steps.final.outputs.status }}
-      receipt_path: ${{ steps.contract.outputs.receipt_path }}
+      source_commit: ${{ steps.contract.outputs.source_commit }}
+      runtime_manifest_sha256: ${{ steps.contract.outputs.runtime_manifest_sha256 }}
+      workflow_blob_oid: ${{ steps.contract.outputs.workflow_blob_oid }}
+      workflow_source_commit: ${{ steps.contract.outputs.workflow_source_commit }}
     env:
       REQUEST_PATH: ${{ inputs.request_path }}
       REQUEST_SHA256: ${{ inputs.request_sha256 }}
       CLAIM_PATH: ${{ inputs.claim_path }}
       RUN_ID: ${{ inputs.run_id }}
+      WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+      WORKFLOW_PATH: .github/workflows/uaart_fast.yml
     steps:
-      - name: Checkout latest claimed branch state
+      - name: Checkout isolated read-only FAST workspace
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
-          ref: ${{ github.ref_name }}
+          ref: main
+          persist-credentials: false
 
       - name: Set up Python 3.11
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
 
-      - name: Validate immutable FAST execution contract
+      - name: Validate immutable non-Production FAST execution contract
         id: contract
+        env:
+          PRODUCTION_REQUIRED: ${{ inputs.production_required }}
         shell: bash
         run: |
           set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          test "$PRODUCTION_REQUIRED" = 'false'
           test -f "$CLAIM_PATH"
-          python3 -W error -m py_compile automation/control_plane.py automation/task_ticket.py
-          python3 automation/control_plane.py verify-mode
-          python3 automation/control_plane.py verify-request "$REQUEST_PATH" \
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$WORKFLOW_SOURCE_COMMIT^{commit}"
+          git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" HEAD
+          test "$(git ls-tree "$WORKFLOW_SOURCE_COMMIT" -- "$WORKFLOW_PATH" | \
+            awk '{print $1}')" = '100644'
+          test "$(git ls-tree "$WORKFLOW_SOURCE_COMMIT" -- \
+            state/AUTOPILOT_RUNTIME_MANIFEST.json | awk '{print $1}')" = '100644'
+          WORKFLOW_BLOB_OID="$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")"
+          [[ "$WORKFLOW_BLOB_OID" =~ ^[0-9a-f]{40}$ ]]
+          if test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" != \
+              "$WORKFLOW_BLOB_OID"; then
+            echo 'VALIDATION_WORKFLOW_BLOB_BINDING' >&2
+            exit 1
+          fi
+          SOURCE_RUNTIME_MANIFEST_SHA256="$(
+            git cat-file blob \
+              "$WORKFLOW_SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json" | \
+              sha256sum | cut -d' ' -f1
+          )"
+          test "$(sha256sum state/AUTOPILOT_RUNTIME_MANIFEST.json | \
+            cut -d' ' -f1)" = "$SOURCE_RUNTIME_MANIFEST_SHA256"
+          python3 -I -W error -m py_compile automation/control_plane.py automation/task_ticket.py
+          python3 -I automation/control_plane.py verify-mode
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
             --sha256 "$REQUEST_SHA256"
-          python3 automation/execution_contract.py validate "$REQUEST_PATH" \
-            --expected-class FAST >/tmp/uaart-fast-contract.json
-          python3 automation/execution_contract.py outputs "$REQUEST_PATH" \
+          python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+            --expected-class FAST >"$RUNNER_TEMP/uaart-fast-contract.json"
+          python3 -I automation/execution_contract.py outputs "$REQUEST_PATH" \
             --expected-class FAST
-          python3 - <<'PY'
-          import json
-          value = json.load(open('/tmp/uaart-fast-contract.json', encoding='utf-8'))
+          echo "source_commit=$(git rev-parse HEAD)" >>"$GITHUB_OUTPUT"
+          echo "runtime_manifest_sha256=${SOURCE_RUNTIME_MANIFEST_SHA256}" >>"$GITHUB_OUTPUT"
+          echo "workflow_blob_oid=${WORKFLOW_BLOB_OID}" >>"$GITHUB_OUTPUT"
+          echo "workflow_source_commit=${WORKFLOW_SOURCE_COMMIT}" >>"$GITHUB_OUTPUT"
+          python3 -I - <<'PY'
+          import json, os
+          value = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-fast-contract.json', encoding='utf-8'))
           assert value['task_class'] == 'FAST', value
+          assert value['production_required'] is False, value
+          assert value['request_sha256'] == os.environ['REQUEST_SHA256'], value
           assert value['plan']['ai_call_budget'] <= 1, value
           PY
 
-      - name: Verify exact claim identity and start heartbeat
+      - name: Verify exact claim identity and start isolated heartbeat
+        env:
+          EXPECTED_TASK_ID: ${{ steps.contract.outputs.task_id }}
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/control_plane.py verify-identity "$REQUEST_PATH" \
-            --task-id "${{ steps.contract.outputs.task_id }}" \
-            --sha256 "$REQUEST_SHA256" \
-            --run-id "$RUN_ID"
-          python3 automation/control_plane.py planning "$REQUEST_PATH" --run-id "$RUN_ID"
-          python3 automation/control_plane.py heartbeat "$REQUEST_PATH" \
+          python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$EXPECTED_TASK_ID" \
+            --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+            --claim-path "$CLAIM_PATH"
+          python3 -I automation/control_plane.py planning "$REQUEST_PATH" --run-id "$RUN_ID"
+          python3 -I automation/control_plane.py heartbeat "$REQUEST_PATH" \
             --run-id "$RUN_ID" --status RUNNING
 
       - name: Enforce target-aware storage preflight
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/control_plane.py storage "$REQUEST_PATH" \
+          python3 -I automation/control_plane.py storage "$REQUEST_PATH" \
             --run-id "$RUN_ID" --enforce
 
-      - name: Compile and test trusted FAST package
+      - name: Compile and test isolated FAST package
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/execution_contract.py compile "$REQUEST_PATH" \
+          python3 -I automation/execution_contract.py compile "$REQUEST_PATH" \
             --expected-class FAST
-          python3 automation/execution_contract.py test "$REQUEST_PATH" \
+          python3 -I automation/execution_contract.py test "$REQUEST_PATH" \
             --expected-class FAST
-          python3 automation/control_plane.py compiled "$REQUEST_PATH" --run-id "$RUN_ID"
+          python3 -I automation/control_plane.py compiled "$REQUEST_PATH" --run-id "$RUN_ID"
 
-      - name: Wait in fair production queue
-        if: inputs.production_required == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
-          CURRENT_RUN_ID: ${{ github.run_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          TICKET="$(python3 automation/task_ticket.py "$REQUEST_PATH")"
-          python3 automation/production_queue.py self-test
-          python3 automation/production_queue.py wait \
-            --task "$TICKET" --timeout-seconds 600 --stable-polls 2
-
-      - name: Require production health before execution
-        if: inputs.production_required == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/control_plane.py health "$REQUEST_PATH" \
-            --run-id "$RUN_ID" --phase pre
-
-      - name: Execute FAST controller
+      - name: Execute FAST controller without repository write credential
         env:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.UAART_NONPRODUCTION_PYTHONANYWHERE_TOKEN }}
           UAART_REQUEST_PATH: ${{ inputs.request_path }}
@@ -143,79 +176,982 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/execution_contract.py run "$REQUEST_PATH" \
+          python3 -I automation/execution_contract.py run "$REQUEST_PATH" \
             --expected-class FAST
-          python3 automation/control_plane.py heartbeat "$REQUEST_PATH" \
+
+      - name: Export bounded data-only FAST evidence
+        env:
+          REQUEST_PATH: ${{ inputs.request_path }}
+          REQUEST_SHA256: ${{ inputs.request_sha256 }}
+          RUN_ID: ${{ inputs.run_id }}
+          SOURCE_COMMIT: ${{ steps.contract.outputs.source_commit }}
+          RUNTIME_MANIFEST_SHA256: ${{ steps.contract.outputs.runtime_manifest_sha256 }}
+          WORKFLOW_BLOB_OID: ${{ steps.contract.outputs.workflow_blob_oid }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, shutil
+          root = pathlib.Path.cwd().resolve()
+          runner_temp = pathlib.Path(os.environ['RUNNER_TEMP']).resolve(strict=True)
+          export = runner_temp / 'uaart-fast-export'
+          if export.exists() or export.is_symlink():
+              shutil.rmtree(export, ignore_errors=False)
+          payload = export / 'payload'
+          payload.mkdir(parents=True, mode=0o700)
+          spec = json.load(open(runner_temp / 'uaart-fast-contract.json', encoding='utf-8'))
+          allowed_suffixes = {
+              '.csv', '.gif', '.htm', '.html', '.jpeg', '.jpg', '.json',
+              '.jsonl', '.log', '.md', '.pdf', '.png', '.sha256', '.tsv',
+              '.txt', '.webp', '.xml',
+          }
+          evidence, total = [], 0
+          for relative in sorted(spec['evidence_paths']):
+              pure = pathlib.PurePosixPath(relative)
+              if pure.is_absolute() or '..' in pure.parts or pure.suffix.lower() not in allowed_suffixes:
+                  raise SystemExit('NON_DATA_EVIDENCE:' + relative)
+              source = root / pure
+              resolved = source.resolve(strict=True)
+              if source.is_symlink() or not source.is_file() or not resolved.is_relative_to(root):
+                  raise SystemExit('UNSAFE_EVIDENCE:' + relative)
+              cursor = source.parent
+              while cursor != root:
+                  if cursor.is_symlink():
+                      raise SystemExit('SYMLINK_PARENT:' + relative)
+                  cursor = cursor.parent
+              size = source.stat().st_size
+              if size > 16 * 1024 * 1024:
+                  raise SystemExit('EVIDENCE_FILE_TOO_LARGE:' + relative)
+              total += size
+              if total > 64 * 1024 * 1024:
+                  raise SystemExit('EVIDENCE_SET_TOO_LARGE')
+              target = payload / pure
+              target.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(source, target)
+              target.chmod(0o600)
+              evidence.append({
+                  'path': relative,
+                  'sha256': hashlib.sha256(target.read_bytes()).hexdigest(),
+                  'size': size,
+              })
+          manifest = {
+              'schema_version': 'UA-ART-DATA-EVIDENCE-1',
+              'task_class': 'FAST',
+              'request_path': spec['request_path'],
+              'request_sha256': spec['request_sha256'],
+              'run_id': os.environ['RUN_ID'],
+              'source_commit': os.environ['SOURCE_COMMIT'],
+              'workflow_source_commit': os.environ['WORKFLOW_SOURCE_COMMIT'],
+              'runtime_manifest_sha256': os.environ['RUNTIME_MANIFEST_SHA256'],
+              'workflow_blob_oid': os.environ['WORKFLOW_BLOB_OID'],
+              'workflow_run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'evidence': evidence,
+          }
+          (export / 'manifest.json').write_text(
+              json.dumps(manifest, ensure_ascii=False, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          PY
+
+      - name: Upload data-only FAST receipt and evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: uaart-fast-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/uaart-fast-export
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 9
+
+  persist:
+    needs: execute
+    if: needs.execute.result == 'success' && inputs.production_required == 'false' && github.ref == 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      status: ${{ steps.final.outputs.status }}
+      receipt_path: ${{ steps.contract.outputs.receipt_path }}
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      PRODUCTION_REQUIRED: ${{ inputs.production_required }}
+      SOURCE_COMMIT: ${{ needs.execute.outputs.source_commit }}
+      WORKFLOW_SOURCE_COMMIT: ${{ needs.execute.outputs.workflow_source_commit }}
+      RUNTIME_MANIFEST_SHA256: ${{ needs.execute.outputs.runtime_manifest_sha256 }}
+      WORKFLOW_BLOB_OID: ${{ needs.execute.outputs.workflow_blob_oid }}
+      WORKFLOW_PATH: .github/workflows/uaart_fast.yml
+      WORKFLOW_RUN_ATTEMPT: ${{ github.run_attempt }}
+    steps:
+      - name: Checkout fresh trusted FAST persistence workspace
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Validate clean pinned FAST persistence contract
+        id: contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          test "$PRODUCTION_REQUIRED" = 'false'
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$WORKFLOW_BLOB_OID" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$SOURCE_COMMIT^{commit}"
+          git cat-file -e "$WORKFLOW_SOURCE_COMMIT^{commit}"
+          git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" "$SOURCE_COMMIT"
+          git merge-base --is-ancestor "$SOURCE_COMMIT" HEAD
+          test "$(git ls-tree "$SOURCE_COMMIT" -- "$WORKFLOW_PATH" | \
+            awk '{print $1}')" = '100644'
+          test "$(git rev-parse "$SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          test "$(git cat-file blob \
+            "$SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json" | \
+            sha256sum | cut -d' ' -f1)" = "$RUNTIME_MANIFEST_SHA256"
+          test "$(git cat-file blob \
+            "$WORKFLOW_SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json" | \
+            sha256sum | cut -d' ' -f1)" = "$RUNTIME_MANIFEST_SHA256"
+          EXPECTED_RUNTIME_MANIFEST_SHA256="$RUNTIME_MANIFEST_SHA256" \
+            /usr/bin/python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          def reject_duplicate_keys(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('FAST_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+          root = pathlib.Path.cwd().resolve()
+          manifest_path = root / 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          if (
+              manifest_path.is_symlink()
+              or not manifest_path.is_file()
+              or manifest_path.resolve() != manifest_path
+              or manifest_path.stat().st_size > 1024 * 1024
+          ):
+              raise SystemExit('FAST_RUNTIME_MANIFEST_FILE')
+          data = manifest_path.read_bytes()
+          expected_manifest = os.environ['EXPECTED_RUNTIME_MANIFEST_SHA256']
+          if not re.fullmatch(r'[0-9a-f]{64}', expected_manifest):
+              raise SystemExit('FAST_RUNTIME_MANIFEST_EXPECTED_SHA')
+          if hashlib.sha256(data).hexdigest() != expected_manifest:
+              raise SystemExit('FAST_RUNTIME_MANIFEST_REBOUND')
+          manifest = json.loads(data, object_pairs_hook=reject_duplicate_keys)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('FAST_RUNTIME_MANIFEST_KEYS')
+          if manifest['schema_version'] != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('FAST_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('FAST_RUNTIME_FILE_SET')
+          total = 0
+          for relative, expected in files.items():
+              if (
+                  not re.fullmatch(r'[A-Za-z0-9._/-]+', relative)
+                  or '..' in pathlib.PurePosixPath(relative).parts
+                  or not isinstance(expected, str)
+                  or not re.fullmatch(r'[0-9a-f]{64}', expected)
+              ):
+                  raise SystemExit('FAST_RUNTIME_ENTRY')
+              target = root / pathlib.PurePosixPath(relative)
+              if (
+                  target.is_symlink()
+                  or not target.is_file()
+                  or target.resolve() != target
+              ):
+                  raise SystemExit('FAST_RUNTIME_TARGET:' + relative)
+              payload = target.read_bytes()
+              total += len(payload)
+              if len(payload) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('FAST_RUNTIME_SIZE')
+              if hashlib.sha256(payload).hexdigest() != expected:
+                  raise SystemExit('FAST_RUNTIME_FILE_SHA:' + relative)
+          print('UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED')
+          PY
+          python3 -I -W error -m py_compile automation/control_plane.py automation/execution_contract.py
+          python3 -I automation/control_plane.py verify-mode
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "$REQUEST_SHA256"
+          python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+            --expected-class FAST >"$RUNNER_TEMP/uaart-fast-clean-contract.json"
+          python3 -I automation/execution_contract.py outputs "$REQUEST_PATH" \
+            --expected-class FAST
+          python3 -I - <<'PY'
+          import json, os
+          value = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-fast-clean-contract.json', encoding='utf-8'))
+          assert value['task_class'] == 'FAST', value
+          assert value['production_required'] is False, value
+          assert value['request_sha256'] == os.environ['REQUEST_SHA256'], value
+          PY
+
+      - name: Download isolated FAST evidence artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: uaart-fast-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/uaart-fast-import
+
+      - name: Strictly validate and import data-only FAST evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re, subprocess
+
+          def reject_duplicate_keys(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('ARTIFACT_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          root = pathlib.Path.cwd().resolve()
+          runner_temp = pathlib.Path(os.environ['RUNNER_TEMP']).resolve(strict=True)
+          imported = runner_temp / 'uaart-fast-import'
+          if (
+              imported.is_symlink()
+              or not imported.is_dir()
+              or imported.resolve(strict=True) != imported
+          ):
+              raise SystemExit('ARTIFACT_IMPORT_ROOT_INVALID')
+          manifest_path = imported / 'manifest.json'
+          if (
+              manifest_path.is_symlink()
+              or not manifest_path.is_file()
+              or manifest_path.resolve(strict=True) != manifest_path
+          ):
+              raise SystemExit('ARTIFACT_MANIFEST_MISSING')
+          if manifest_path.stat().st_size > 1024 * 1024:
+              raise SystemExit('ARTIFACT_MANIFEST_TOO_LARGE')
+          manifest = json.loads(
+              manifest_path.read_text(encoding='utf-8'),
+              object_pairs_hook=reject_duplicate_keys,
+          )
+          if set(manifest) != {
+              'schema_version', 'task_class', 'request_path', 'request_sha256',
+              'run_id', 'source_commit', 'workflow_source_commit',
+              'runtime_manifest_sha256',
+              'workflow_blob_oid', 'workflow_run_attempt', 'evidence',
+          }:
+              raise SystemExit('ARTIFACT_MANIFEST_KEYS')
+          spec = json.load(open(runner_temp / 'uaart-fast-clean-contract.json', encoding='utf-8'))
+          expected_paths = sorted(spec['evidence_paths'])
+          allowed_suffixes = {
+              '.csv', '.gif', '.htm', '.html', '.jpeg', '.jpg', '.json',
+              '.jsonl', '.log', '.md', '.pdf', '.png', '.sha256', '.tsv',
+              '.txt', '.webp', '.xml',
+          }
+          if any(pathlib.PurePosixPath(path).suffix.lower() not in allowed_suffixes for path in expected_paths):
+              raise SystemExit('ARTIFACT_NON_DATA_PATH')
+          expected_header = {
+              'schema_version': 'UA-ART-DATA-EVIDENCE-1',
+              'task_class': 'FAST',
+              'request_path': spec['request_path'],
+              'request_sha256': spec['request_sha256'],
+              'run_id': os.environ['RUN_ID'],
+              'source_commit': os.environ['SOURCE_COMMIT'],
+              'workflow_source_commit': os.environ['WORKFLOW_SOURCE_COMMIT'],
+              'runtime_manifest_sha256': os.environ['RUNTIME_MANIFEST_SHA256'],
+              'workflow_blob_oid': os.environ['WORKFLOW_BLOB_OID'],
+              'workflow_run_attempt': int(os.environ['WORKFLOW_RUN_ATTEMPT']),
+          }
+          for key, value in expected_header.items():
+              if manifest.get(key) != value:
+                  raise SystemExit('ARTIFACT_BINDING:' + key)
+          entries = manifest.get('evidence')
+          if not isinstance(entries, list) or len(entries) != len(expected_paths):
+              raise SystemExit('ARTIFACT_EVIDENCE_COUNT')
+          if [entry.get('path') for entry in entries if isinstance(entry, dict)] != expected_paths:
+              raise SystemExit('ARTIFACT_EVIDENCE_PATHS')
+          expected_files = {'manifest.json'} | {'payload/' + path for path in expected_paths}
+          actual_files = set()
+          for path in imported.rglob('*'):
+              if path.is_symlink():
+                  raise SystemExit('ARTIFACT_SYMLINK')
+              if path.is_file():
+                  actual_files.add(path.relative_to(imported).as_posix())
+          if actual_files != expected_files:
+              raise SystemExit('ARTIFACT_FILE_SET')
+          total = 0
+          for entry in entries:
+              if set(entry) != {'path', 'sha256', 'size'}:
+                  raise SystemExit('ARTIFACT_ENTRY_KEYS')
+              relative = entry['path']
+              source = imported / 'payload' / pathlib.PurePosixPath(relative)
+              data = source.read_bytes()
+              total += len(data)
+              if len(data) > 16 * 1024 * 1024 or total > 64 * 1024 * 1024:
+                  raise SystemExit('ARTIFACT_SIZE_LIMIT')
+              if type(entry['size']) is not int or entry['size'] != len(data):
+                  raise SystemExit('ARTIFACT_SIZE:' + relative)
+              if entry['sha256'] != hashlib.sha256(data).hexdigest():
+                  raise SystemExit('ARTIFACT_SHA256:' + relative)
+              target = root / pathlib.PurePosixPath(relative)
+              if not target.resolve(strict=False).is_relative_to(root):
+                  raise SystemExit('ARTIFACT_TARGET_ESCAPE:' + relative)
+              cursor = target.parent
+              while cursor != root:
+                  if cursor.is_symlink():
+                      raise SystemExit('ARTIFACT_TARGET_SYMLINK:' + relative)
+                  cursor = cursor.parent
+              target.parent.mkdir(parents=True, exist_ok=True)
+              if target.is_symlink():
+                  raise SystemExit('ARTIFACT_TARGET_SYMLINK:' + relative)
+              target.write_bytes(data)
+              target.chmod(0o644)
+          PY
+          echo 'UAART_DATA_ONLY_ARTIFACT_VALIDATED'
+
+      - name: Rebuild trusted FAST state and verify truthful receipt
+        env:
+          EXPECTED_TASK_ID: ${{ steps.contract.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$EXPECTED_TASK_ID" \
+            --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+            --claim-path "$CLAIM_PATH"
+          python3 -I automation/control_plane.py planning "$REQUEST_PATH" --run-id "$RUN_ID"
+          python3 -I automation/control_plane.py heartbeat "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --status RUNNING
+          python3 -I automation/control_plane.py storage "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --enforce
+          python3 -I automation/execution_contract.py compile "$REQUEST_PATH" \
+            --expected-class FAST
+          python3 -I automation/control_plane.py compiled "$REQUEST_PATH" --run-id "$RUN_ID"
+          python3 -I automation/control_plane.py heartbeat "$REQUEST_PATH" \
             --run-id "$RUN_ID" --status VERIFYING
+          python3 -I automation/execution_contract.py receipt "$REQUEST_PATH" \
+            --expected-class FAST >"$RUNNER_TEMP/uaart-fast-receipt.json"
+          python3 -I automation/control_plane.py finish "$REQUEST_PATH" \
+            --run-id "$RUN_ID" >"$RUNNER_TEMP/uaart-fast-finished.json"
 
-      - name: Require production health after execution
-        if: inputs.production_required == 'true'
+      - name: Persist trusted FAST evidence with an isolated Git tree
+        env:
+          EXPECTED_TASK_ID: ${{ steps.contract.outputs.task_id }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          python3 automation/control_plane.py health "$REQUEST_PATH" \
-            --run-id "$RUN_ID" --phase post
-
-      - name: Require exact truthful FAST receipt
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/execution_contract.py receipt "$REQUEST_PATH" \
-            --expected-class FAST >/tmp/uaart-fast-receipt.json
-          python3 automation/control_plane.py finish "$REQUEST_PATH" \
-            --run-id "$RUN_ID" >/tmp/uaart-fast-finished.json
-
-      - name: Stage bounded receipt and durable claim
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 automation/execution_contract.py stage "$REQUEST_PATH" \
-            --expected-class FAST
-          git add -- "$CLAIM_PATH"
-
-      - name: Commit FAST receipt and claim
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git diff --cached --quiet; then
-            echo 'No FAST evidence changes'
-            exit 0
-          fi
-          git config user.name 'ua-art-fast-pipeline'
-          git config user.email 'actions@users.noreply.github.com'
-          git commit -m "uaart fast: ${{ steps.contract.outputs.task_id }} FINISHED"
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          unset GH_TOKEN
+          git_with_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_HEADER}" \
+              git "$@"
+          }
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$WORKFLOW_BLOB_OID" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$SOURCE_COMMIT^{commit}"
+          git cat-file -e "$WORKFLOW_SOURCE_COMMIT^{commit}"
+          git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" "$SOURCE_COMMIT"
+          test "$(git rev-parse "$SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git rev-parse "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")" = \
+            "$WORKFLOW_BLOB_OID"
+          test "$(git cat-file blob \
+            "$SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json" | \
+            sha256sum | cut -d' ' -f1)" = "$RUNTIME_MANIFEST_SHA256"
+          test "$(git cat-file blob \
+            "$WORKFLOW_SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json" | \
+            sha256sum | cut -d' ' -f1)" = "$RUNTIME_MANIFEST_SHA256"
           for attempt in 1 2 3 4 5 6; do
-            git fetch origin "${GITHUB_REF_NAME}"
-            if ! git rebase "origin/${GITHUB_REF_NAME}"; then
-              git rebase --abort || true
-              exit 1
+            if ! git_with_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'; then
+              test "$attempt" -lt 6 || exit 1
+              sleep $((attempt * 3))
+              continue
             fi
-            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+            if test -n "${COMMIT:-}" && \
+              git merge-base --is-ancestor "$COMMIT" refs/remotes/origin/main; then
+              mapfile -d '' -t ACCEPTED_PATHS < <(
+                git diff-tree --no-commit-id --name-only -r -z \
+                  "$COMMIT^" "$COMMIT"
+              )
+              test "${#ACCEPTED_PATHS[@]}" -gt 0
+              git diff --quiet "$COMMIT" refs/remotes/origin/main -- \
+                "${ACCEPTED_PATHS[@]}" || {
+                echo 'ACCEPTED_PUSH_OWNED_PATHS_CHANGED' >&2
+                exit 1
+              }
+              unset AUTH_HEADER GH_TOKEN
+              break
+            fi
+            PARENT="$(git rev-parse refs/remotes/origin/main)"
+            git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" "$PARENT"
+            git merge-base --is-ancestor "$SOURCE_COMMIT" "$PARENT"
+            test "$(git rev-parse "$PARENT:$WORKFLOW_PATH")" = \
+              "$WORKFLOW_BLOB_OID"
+            REBUILD="$RUNNER_TEMP/uaart-fast-rebuild-${attempt}"
+            INDEX="$RUNNER_TEMP/uaart-fast-index-${attempt}"
+            git worktree add --detach "$REBUILD" "$PARENT"
+            cd "$REBUILD"
+            EXPECTED_RUNTIME_MANIFEST_SHA256="$RUNTIME_MANIFEST_SHA256" \
+              /usr/bin/python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          def reject_duplicate_keys(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('FAST_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+          root = pathlib.Path.cwd().resolve()
+          manifest_path = root / 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          if (
+              manifest_path.is_symlink()
+              or not manifest_path.is_file()
+              or manifest_path.resolve() != manifest_path
+              or manifest_path.stat().st_size > 1024 * 1024
+          ):
+              raise SystemExit('FAST_RUNTIME_MANIFEST_FILE')
+          data = manifest_path.read_bytes()
+          expected_manifest = os.environ['EXPECTED_RUNTIME_MANIFEST_SHA256']
+          if not re.fullmatch(r'[0-9a-f]{64}', expected_manifest):
+              raise SystemExit('FAST_RUNTIME_MANIFEST_EXPECTED_SHA')
+          if hashlib.sha256(data).hexdigest() != expected_manifest:
+              raise SystemExit('FAST_RUNTIME_MANIFEST_REBOUND')
+          manifest = json.loads(data, object_pairs_hook=reject_duplicate_keys)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('FAST_RUNTIME_MANIFEST_KEYS')
+          if manifest['schema_version'] != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('FAST_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('FAST_RUNTIME_FILE_SET')
+          total = 0
+          for relative, expected in files.items():
+              if (
+                  not re.fullmatch(r'[A-Za-z0-9._/-]+', relative)
+                  or '..' in pathlib.PurePosixPath(relative).parts
+                  or not isinstance(expected, str)
+                  or not re.fullmatch(r'[0-9a-f]{64}', expected)
+              ):
+                  raise SystemExit('FAST_RUNTIME_ENTRY')
+              target = root / pathlib.PurePosixPath(relative)
+              if (
+                  target.is_symlink()
+                  or not target.is_file()
+                  or target.resolve() != target
+              ):
+                  raise SystemExit('FAST_RUNTIME_TARGET:' + relative)
+              payload = target.read_bytes()
+              total += len(payload)
+              if len(payload) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('FAST_RUNTIME_SIZE')
+              if hashlib.sha256(payload).hexdigest() != expected:
+                  raise SystemExit('FAST_RUNTIME_FILE_SHA:' + relative)
+          print('UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED')
+          PY
+            python3 -I automation/control_plane.py verify-mode
+            python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+              --sha256 "$REQUEST_SHA256"
+            python3 -I automation/execution_contract.py validate "$REQUEST_PATH" \
+              --expected-class FAST >"$RUNNER_TEMP/uaart-fast-rebuild-contract.json"
+          PARENT="$PARENT" python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re, subprocess
+
+          def reject_duplicate_keys(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('REBUILD_ARTIFACT_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          root = pathlib.Path.cwd().resolve()
+          temp = pathlib.Path(os.environ['RUNNER_TEMP'])
+          manifest = json.load(
+              open(temp / 'uaart-fast-import/manifest.json', encoding='utf-8'),
+              object_pairs_hook=reject_duplicate_keys,
+          )
+          spec = json.load(open(temp / 'uaart-fast-rebuild-contract.json', encoding='utf-8'))
+          if (
+              manifest.get('schema_version') != 'UA-ART-DATA-EVIDENCE-1'
+              or manifest.get('task_class') != 'FAST'
+              or manifest.get('request_path') != spec['request_path']
+              or manifest.get('request_sha256') != spec['request_sha256']
+              or manifest.get('run_id') != os.environ['RUN_ID']
+              or manifest.get('workflow_source_commit') != os.environ['WORKFLOW_SOURCE_COMMIT']
+              or manifest.get('runtime_manifest_sha256')
+                 != hashlib.sha256(pathlib.Path('state/AUTOPILOT_RUNTIME_MANIFEST.json').read_bytes()).hexdigest()
+              or manifest.get('workflow_blob_oid') != os.environ['WORKFLOW_BLOB_OID']
+              or manifest.get('workflow_run_attempt') != int(os.environ['GITHUB_RUN_ATTEMPT'])
+          ):
+              raise SystemExit('REBUILD_ARTIFACT_BINDING')
+          source_commit = manifest.get('source_commit')
+          if not isinstance(source_commit, str) or not re.fullmatch(r'[0-9a-f]{40}', source_commit):
+              raise SystemExit('REBUILD_SOURCE_COMMIT')
+          package_root = pathlib.PurePosixPath(spec['controller_path']).parent.as_posix()
+          subprocess.run(
+              ['git', 'merge-base', '--is-ancestor', source_commit, os.environ['PARENT']],
+              check=True,
+          )
+          subprocess.run(
+              ['git', 'diff', '--quiet', source_commit, os.environ['PARENT'], '--', package_root],
+              check=True,
+          )
+          entries = manifest.get('evidence')
+          expected = sorted(spec['evidence_paths'])
+          if not isinstance(entries, list) or [entry.get('path') for entry in entries] != expected:
+              raise SystemExit('REBUILD_ARTIFACT_PATHS')
+          for entry in entries:
+              source = temp / 'uaart-fast-import/payload' / pathlib.PurePosixPath(entry['path'])
+              data = source.read_bytes()
+              if entry.get('size') != len(data) or entry.get('sha256') != hashlib.sha256(data).hexdigest():
+                  raise SystemExit('REBUILD_ARTIFACT_HASH:' + entry['path'])
+              target = root / pathlib.PurePosixPath(entry['path'])
+              if not target.resolve(strict=False).is_relative_to(root) or target.is_symlink():
+                  raise SystemExit('REBUILD_TARGET_SCOPE:' + entry['path'])
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(data)
+              target.chmod(0o644)
+          PY
+            python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+              --task-id "$EXPECTED_TASK_ID" \
+              --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+              --claim-path "$CLAIM_PATH"
+            python3 -I automation/control_plane.py planning "$REQUEST_PATH" --run-id "$RUN_ID"
+            python3 -I automation/control_plane.py heartbeat "$REQUEST_PATH" \
+              --run-id "$RUN_ID" --status RUNNING
+            python3 -I automation/control_plane.py storage "$REQUEST_PATH" \
+              --run-id "$RUN_ID" --enforce
+            python3 -I automation/execution_contract.py compile "$REQUEST_PATH" \
+              --expected-class FAST
+            python3 -I automation/control_plane.py compiled "$REQUEST_PATH" --run-id "$RUN_ID"
+            python3 -I automation/control_plane.py heartbeat "$REQUEST_PATH" \
+              --run-id "$RUN_ID" --status VERIFYING
+            python3 -I automation/execution_contract.py receipt "$REQUEST_PATH" \
+              --expected-class FAST >/dev/null
+            python3 -I automation/control_plane.py finish "$REQUEST_PATH" \
+              --run-id "$RUN_ID" >/dev/null
+            rm -f "$INDEX"
+            GIT_INDEX_FILE="$INDEX" git read-tree "$PARENT"
+            mapfile -d '' PATHS < <(python3 -I - <<'PY'
+          import json, os, sys
+          spec = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-fast-rebuild-contract.json', encoding='utf-8'))
+          for path in sorted(set(spec['evidence_paths']) | {os.environ['CLAIM_PATH']}):
+              sys.stdout.buffer.write(path.encode('utf-8') + b'\0')
+          PY
+            )
+            for path in "${PATHS[@]}"; do
+              test -f "$path" && test ! -L "$path"
+              BLOB="$(git hash-object -w -- "$path")"
+              GIT_INDEX_FILE="$INDEX" git update-index --add \
+                --cacheinfo "100644,${BLOB},${path}"
+            done
+            TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
+            export GIT_AUTHOR_NAME='ua-art-fast-pipeline'
+            export GIT_AUTHOR_EMAIL='actions@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            COMMIT="$(printf '%s\n' \
+              "uaart fast: ${EXPECTED_TASK_ID} FINISHED" | \
+              git commit-tree "$TREE" -p "$PARENT")"
+            COMMIT="$COMMIT" PARENT="$PARENT" python3 -I - <<'PY'
+          import json, os, subprocess
+          spec = json.load(open(os.environ['RUNNER_TEMP'] + '/uaart-fast-rebuild-contract.json', encoding='utf-8'))
+          allowed = set(spec['evidence_paths']) | {os.environ['CLAIM_PATH']}
+          required = {spec['receipt_path'], os.environ['CLAIM_PATH']}
+          raw = subprocess.check_output([
+              'git', 'diff-tree', '--no-commit-id', '--name-only', '-r', '-z',
+              os.environ['PARENT'], os.environ['COMMIT'],
+          ])
+          changed = set(filter(None, raw.decode().split('\0')))
+          if not required.issubset(changed) or not changed.issubset(allowed):
+              raise SystemExit('COMMIT_TREE_PATH_SCOPE')
+          PY
+            cd "$GITHUB_WORKSPACE"
+            if git_with_auth push origin "$COMMIT:refs/heads/main"; then
+              unset AUTH_HEADER
               break
             fi
             test "$attempt" -lt 6 || exit 1
             sleep $((attempt * 3))
           done
 
-      - name: Persist fail-closed state
-        if: failure()
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f "$CLAIM_PATH" || exit 0
-          python3 automation/control_plane.py fail "$REQUEST_PATH" \
-            --run-id "$RUN_ID" \
-            --message "FAST pipeline failed; inspect GitHub Actions run ${GITHUB_RUN_ID}"
-          git add -- "$CLAIM_PATH"
-          git diff --cached --quiet && exit 0
-          git config user.name 'ua-art-fast-pipeline'
-          git config user.email 'actions@users.noreply.github.com'
-          git commit -m "uaart fast: record ${{ steps.contract.outputs.task_id || 'unknown' }} failure"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
-
       - name: Final workflow output
         id: final
         shell: bash
         run: echo 'status=FINISHED' >>"$GITHUB_OUTPUT"
+
+  persist_failure:
+    needs: [execute, persist]
+    if: ${{ always() && github.ref == 'refs/heads/main' && (needs.execute.result != 'success' || needs.persist.result != 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    env:
+      REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
+      WORKFLOW_SOURCE_COMMIT: ${{ github.sha }}
+      WORKFLOW_PATH: .github/workflows/uaart_fast.yml
+    steps:
+      - name: Checkout fresh trusted FAST failure workspace
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Validate fail-closed FAST identity with trusted code only
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$WORKFLOW_SOURCE_COMMIT^{commit}"
+          git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" HEAD
+          test "$(git ls-tree "$WORKFLOW_SOURCE_COMMIT" -- "$WORKFLOW_PATH" | \
+            awk '{print $1}')" = '100644'
+          WORKFLOW_BLOB_OID="$(git rev-parse \
+            "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")"
+          [[ "$WORKFLOW_BLOB_OID" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse "HEAD:$WORKFLOW_PATH")" = "$WORKFLOW_BLOB_OID"
+          test "$(git ls-tree "$WORKFLOW_SOURCE_COMMIT" -- \
+            state/AUTOPILOT_RUNTIME_MANIFEST.json | awk '{print $1}')" = '100644'
+          EXPECTED_RUNTIME_MANIFEST_SHA256="$(
+            git cat-file blob \
+              "$WORKFLOW_SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json" | \
+              sha256sum | cut -d' ' -f1
+          )"
+          EXPECTED_RUNTIME_MANIFEST_SHA256="$EXPECTED_RUNTIME_MANIFEST_SHA256" \
+            /usr/bin/python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          def reject_duplicate_keys(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('FAST_FAILURE_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+          root = pathlib.Path.cwd().resolve()
+          manifest_path = root / 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          if (
+              manifest_path.is_symlink()
+              or not manifest_path.is_file()
+              or manifest_path.resolve() != manifest_path
+              or manifest_path.stat().st_size > 1024 * 1024
+          ):
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_FILE')
+          data = manifest_path.read_bytes()
+          expected_manifest = os.environ['EXPECTED_RUNTIME_MANIFEST_SHA256']
+          if not re.fullmatch(r'[0-9a-f]{64}', expected_manifest):
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_EXPECTED_SHA')
+          if hashlib.sha256(data).hexdigest() != expected_manifest:
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_REBOUND')
+          manifest = json.loads(data, object_pairs_hook=reject_duplicate_keys)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_KEYS')
+          if manifest['schema_version'] != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('FAST_FAILURE_RUNTIME_FILE_SET')
+          total = 0
+          for relative, expected in files.items():
+              if (
+                  not re.fullmatch(r'[A-Za-z0-9._/-]+', relative)
+                  or '..' in pathlib.PurePosixPath(relative).parts
+                  or not isinstance(expected, str)
+                  or not re.fullmatch(r'[0-9a-f]{64}', expected)
+              ):
+                  raise SystemExit('FAST_FAILURE_RUNTIME_ENTRY')
+              target = root / pathlib.PurePosixPath(relative)
+              if (
+                  target.is_symlink()
+                  or not target.is_file()
+                  or target.resolve() != target
+              ):
+                  raise SystemExit('FAST_FAILURE_RUNTIME_TARGET:' + relative)
+              payload = target.read_bytes()
+              total += len(payload)
+              if len(payload) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('FAST_FAILURE_RUNTIME_SIZE')
+              if hashlib.sha256(payload).hexdigest() != expected:
+                  raise SystemExit('FAST_FAILURE_RUNTIME_FILE_SHA:' + relative)
+          print('UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED')
+          PY
+          python3 -I -W error -m py_compile automation/control_plane.py
+          python3 -I automation/control_plane.py verify-mode
+          python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "$REQUEST_SHA256"
+          TASK_ID="$(python3 -I - <<'PY'
+          import json, os
+          print(json.load(open(os.environ['REQUEST_PATH'], encoding='utf-8'))['task_id'])
+          PY
+          )"
+          python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+            --claim-path "$CLAIM_PATH"
+
+      - name: Persist fail-closed FAST state with an isolated Git tree
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          unset GH_TOKEN
+          git_with_auth() {
+            GIT_CONFIG_COUNT=1 \
+            GIT_CONFIG_KEY_0='http.https://github.com/.extraheader' \
+            GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_HEADER}" \
+              git "$@"
+          }
+          [[ "$WORKFLOW_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$WORKFLOW_SOURCE_COMMIT^{commit}"
+          test "$(git ls-tree "$WORKFLOW_SOURCE_COMMIT" -- "$WORKFLOW_PATH" | \
+            awk '{print $1}')" = '100644'
+          WORKFLOW_BLOB_OID="$(git rev-parse \
+            "$WORKFLOW_SOURCE_COMMIT:$WORKFLOW_PATH")"
+          [[ "$WORKFLOW_BLOB_OID" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git ls-tree "$WORKFLOW_SOURCE_COMMIT" -- \
+            state/AUTOPILOT_RUNTIME_MANIFEST.json | awk '{print $1}')" = '100644'
+          EXPECTED_RUNTIME_MANIFEST_SHA256="$(
+            git cat-file blob \
+              "$WORKFLOW_SOURCE_COMMIT:state/AUTOPILOT_RUNTIME_MANIFEST.json" | \
+              sha256sum | cut -d' ' -f1
+          )"
+          for attempt in 1 2 3 4 5 6; do
+            if ! git_with_auth fetch --force --no-tags origin \
+              'refs/heads/main:refs/remotes/origin/main'; then
+              test "$attempt" -lt 6 || exit 1
+              sleep $((attempt * 3))
+              continue
+            fi
+            if test -n "${COMMIT:-}" && \
+              git merge-base --is-ancestor "$COMMIT" refs/remotes/origin/main; then
+              git diff --quiet "$COMMIT" refs/remotes/origin/main -- \
+                "$CLAIM_PATH" || {
+                echo 'ACCEPTED_PUSH_OWNED_PATHS_CHANGED' >&2
+                exit 1
+              }
+              unset AUTH_HEADER GH_TOKEN
+              break
+            fi
+            PARENT="$(git rev-parse refs/remotes/origin/main)"
+            git merge-base --is-ancestor "$WORKFLOW_SOURCE_COMMIT" "$PARENT"
+            test "$(git rev-parse "$PARENT:$WORKFLOW_PATH")" = \
+              "$WORKFLOW_BLOB_OID"
+            REBUILD="$RUNNER_TEMP/uaart-fast-failure-rebuild-${attempt}"
+            INDEX="$RUNNER_TEMP/uaart-fast-failure-index-${attempt}"
+            git worktree add --detach "$REBUILD" "$PARENT"
+            cd "$REBUILD"
+            EXPECTED_RUNTIME_MANIFEST_SHA256="$EXPECTED_RUNTIME_MANIFEST_SHA256" \
+              /usr/bin/python3 -I - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          def reject_duplicate_keys(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise SystemExit('FAST_FAILURE_RUNTIME_DUPLICATE_KEY')
+                  value[key] = item
+              return value
+
+          expected_paths = {
+              '.github/workflows/uaart_autostart.yml',
+              '.github/workflows/uaart_orchestrator.yml',
+              '.github/workflows/uaart_fast.yml',
+              '.github/workflows/uaart_standard.yml',
+              '.github/workflows/uaart_critical.yml',
+              '.github/workflows/uaart_backup.yml',
+              '.github/workflows/uaart_maintenance.yml',
+              '.github/workflows/uaart_monitor.yml',
+              '.github/workflows/uaart_transaction_watchdog.yml',
+              'automation/autostart_intake.py',
+              'automation/control_plane.py',
+              'automation/critical_adapter.py',
+              'automation/execution_contract.py',
+              'automation/production_queue.py',
+              'automation/task_orchestrator.py',
+              'automation/task_ticket.py',
+              'automation/transaction_watchdog.py',
+              'state/schemas/task_request.schema.json',
+          }
+          root = pathlib.Path.cwd().resolve()
+          manifest_path = root / 'state/AUTOPILOT_RUNTIME_MANIFEST.json'
+          if (
+              manifest_path.is_symlink()
+              or not manifest_path.is_file()
+              or manifest_path.resolve() != manifest_path
+              or manifest_path.stat().st_size > 1024 * 1024
+          ):
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_FILE')
+          data = manifest_path.read_bytes()
+          expected_manifest = os.environ['EXPECTED_RUNTIME_MANIFEST_SHA256']
+          if not re.fullmatch(r'[0-9a-f]{64}', expected_manifest):
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_EXPECTED_SHA')
+          if hashlib.sha256(data).hexdigest() != expected_manifest:
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_REBOUND')
+          manifest = json.loads(data, object_pairs_hook=reject_duplicate_keys)
+          if set(manifest) != {'files', 'generated_at', 'mode_epoch', 'schema_version'}:
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_KEYS')
+          if manifest['schema_version'] != 'UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1':
+              raise SystemExit('FAST_FAILURE_RUNTIME_MANIFEST_SCHEMA')
+          files = manifest.get('files')
+          if not isinstance(files, dict) or set(files) != expected_paths:
+              raise SystemExit('FAST_FAILURE_RUNTIME_FILE_SET')
+          total = 0
+          for relative, expected in files.items():
+              if (
+                  not re.fullmatch(r'[A-Za-z0-9._/-]+', relative)
+                  or '..' in pathlib.PurePosixPath(relative).parts
+                  or not isinstance(expected, str)
+                  or not re.fullmatch(r'[0-9a-f]{64}', expected)
+              ):
+                  raise SystemExit('FAST_FAILURE_RUNTIME_ENTRY')
+              target = root / pathlib.PurePosixPath(relative)
+              if (
+                  target.is_symlink()
+                  or not target.is_file()
+                  or target.resolve() != target
+              ):
+                  raise SystemExit('FAST_FAILURE_RUNTIME_TARGET:' + relative)
+              payload = target.read_bytes()
+              total += len(payload)
+              if len(payload) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                  raise SystemExit('FAST_FAILURE_RUNTIME_SIZE')
+              if hashlib.sha256(payload).hexdigest() != expected:
+                  raise SystemExit('FAST_FAILURE_RUNTIME_FILE_SHA:' + relative)
+          print('UAART_TRUSTED_RUNTIME_CLOSURE_VALIDATED')
+          PY
+            python3 -I automation/control_plane.py verify-mode
+            python3 -I automation/control_plane.py verify-request "$REQUEST_PATH" \
+              --sha256 "$REQUEST_SHA256"
+            TASK_ID="$(python3 -I - <<'PY'
+          import json, os
+          print(json.load(open(os.environ['REQUEST_PATH'], encoding='utf-8'))['task_id'])
+          PY
+            )"
+            python3 -I automation/control_plane.py verify-identity "$REQUEST_PATH" \
+              --task-id "$TASK_ID" --sha256 "$REQUEST_SHA256" --run-id "$RUN_ID" \
+              --claim-path "$CLAIM_PATH"
+            FAILURE_MODE_ARGS=()
+            if test "$GITHUB_RUN_ATTEMPT" != '1'; then
+              FAILURE_MODE_ARGS+=(--terminal)
+            fi
+            python3 -I automation/control_plane.py fail "$REQUEST_PATH" \
+              --run-id "$RUN_ID" \
+              --message "FAST isolated execution/persistence failed or rejected Production; inspect GitHub Actions run ${GITHUB_RUN_ID}" \
+              "${FAILURE_MODE_ARGS[@]}"
+            rm -f "$INDEX"
+            GIT_INDEX_FILE="$INDEX" git read-tree "$PARENT"
+            test -f "$CLAIM_PATH" && test ! -L "$CLAIM_PATH"
+            BLOB="$(git hash-object -w -- "$CLAIM_PATH")"
+            GIT_INDEX_FILE="$INDEX" git update-index --add \
+              --cacheinfo "100644,${BLOB},${CLAIM_PATH}"
+            TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
+            export GIT_AUTHOR_NAME='ua-art-fast-pipeline'
+            export GIT_AUTHOR_EMAIL='actions@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            COMMIT="$(printf '%s\n' 'uaart fast: record isolated pipeline failure' | \
+              git commit-tree "$TREE" -p "$PARENT")"
+            mapfile -d '' CHANGED < <(git diff-tree --no-commit-id --name-only \
+              -r -z "$PARENT" "$COMMIT")
+            test "${#CHANGED[@]}" -eq 1
+            test "${CHANGED[0]}" = "$CLAIM_PATH"
+            cd "$GITHUB_WORKSPACE"
+            if git_with_auth push origin "$COMMIT:refs/heads/main"; then
+              unset AUTH_HEADER
+              break
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Keep rejected or failed FAST execution failed
+        shell: bash
+        run: exit 1

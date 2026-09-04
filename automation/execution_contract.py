@@ -87,7 +87,10 @@ orchestrator = load_orchestrator()
 
 
 def safe_repo_path(value: str) -> str:
-    path = pathlib.PurePosixPath(str(value))
+    raw = str(value)
+    if not re.fullmatch(r"[A-Za-z0-9._/-]+", raw) or "//" in raw:
+        raise ExecutionContractError("UNSAFE_REPO_PATH:" + raw)
+    path = pathlib.PurePosixPath(raw)
     if path.is_absolute() or not path.parts or ".." in path.parts:
         raise ExecutionContractError("UNSAFE_REPO_PATH:" + str(value))
     return path.as_posix()
@@ -172,6 +175,8 @@ class ExecutionSpec:
     controller_path: str
     controller_sha256: str
     test_paths: tuple[str, ...]
+    dependency_paths: tuple[str, ...]
+    dependency_sha256: str
     file_sha256: Mapping[str, str]
     receipt_path: str
     evidence_paths: tuple[str, ...]
@@ -195,6 +200,8 @@ class ExecutionSpec:
             "controller_path": self.controller_path,
             "controller_sha256": self.controller_sha256,
             "test_paths": list(self.test_paths),
+            "dependency_paths": list(self.dependency_paths),
+            "dependency_sha256": self.dependency_sha256,
             "file_sha256": dict(self.file_sha256),
             "receipt_path": self.receipt_path,
             "evidence_paths": list(self.evidence_paths),
@@ -222,6 +229,88 @@ def load_request(request_path: str) -> tuple[pathlib.Path, dict[str, Any]]:
     if not isinstance(raw, dict):
         raise ExecutionContractError("REQUEST_NOT_OBJECT")
     return path, raw
+
+
+def dependency_digest(file_hashes: Mapping[str, str]) -> str:
+    """Return one canonical binding for the complete declared dependency set."""
+    payload = (
+        json.dumps(
+            dict(sorted(file_hashes.items())),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        + "\n"
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def isolated_python_argv(script: pathlib.Path, package_root: pathlib.Path) -> list[str]:
+    """Build a Python command immune to repo ``sitecustomize``/``PYTHONPATH``.
+
+    ``-I`` completes interpreter startup without repository-controlled import
+    paths.  The tiny stdlib-only bootstrap then adds exactly the already
+    validated task package, preserving intentional sibling imports.
+    """
+    bootstrap = (
+        "import runpy,sys;"
+        "script=sys.argv[1];package=sys.argv[2];"
+        "sys.argv=[script,*sys.argv[3:]];"
+        "sys.path.insert(0,package);"
+        "runpy.run_path(script,run_name='__main__')"
+    )
+    return [
+        sys.executable,
+        "-I",
+        "-B",
+        "-c",
+        bootstrap,
+        str(script),
+        str(package_root),
+    ]
+
+
+def package_python_inventory(package_root: pathlib.Path) -> set[str]:
+    """Return every source module and reject alternate importable code paths.
+
+    The isolated launcher deliberately inserts ``package_root`` into ``sys.path``.
+    Therefore a symlink, bytecode-only module, or native extension anywhere below
+    that directory would be executable without participating in the source hash
+    closure.  Refuse those entries rather than attempting platform-specific
+    import resolution.
+    """
+    python_paths: set[str] = set()
+    forbidden_suffixes = {".pyc", ".pyo", ".so", ".pyd", ".dll", ".dylib"}
+    for current, directory_names, file_names in os.walk(
+        package_root, topdown=True, followlinks=False
+    ):
+        current_path = pathlib.Path(current)
+        for name in directory_names:
+            entry = current_path / name
+            if entry.is_symlink():
+                raise ExecutionContractError("PACKAGE_SYMLINK_ENTRY:" + str(entry))
+            if name == "__pycache__":
+                raise ExecutionContractError("PACKAGE_IMPORT_CACHE_FORBIDDEN:" + str(entry))
+        for name in file_names:
+            entry = current_path / name
+            if entry.is_symlink():
+                raise ExecutionContractError("PACKAGE_SYMLINK_ENTRY:" + str(entry))
+            if entry.suffix.lower() in forbidden_suffixes:
+                raise ExecutionContractError(
+                    "PACKAGE_IMPORT_ARTIFACT_FORBIDDEN:" + str(entry)
+                )
+            if entry.suffix != ".py":
+                continue
+            if not entry.is_file():
+                raise ExecutionContractError("PACKAGE_PYTHON_FILE_INVALID:" + str(entry))
+            resolved_python = entry.resolve(strict=True)
+            if not resolved_python.is_relative_to(package_root):
+                raise ExecutionContractError("PACKAGE_PYTHON_PATH_ESCAPE:" + str(entry))
+            try:
+                python_paths.add(resolved_python.relative_to(ROOT).as_posix())
+            except ValueError as exc:
+                raise ExecutionContractError("PACKAGE_PYTHON_PATH_ESCAPE") from exc
+    return python_paths
 
 
 def validate_auxiliary_contract(
@@ -301,9 +390,34 @@ def validate_execution(
     if not isinstance(tests_raw, list) or not tests_raw or len(tests_raw) > 20:
         raise ExecutionContractError("TEST_PATHS_RANGE")
     tests = tuple(safe_repo_path(str(value)) for value in tests_raw)
+    if len(set(tests)) != len(tests):
+        raise ExecutionContractError("TEST_PATHS_DUPLICATE")
+    dependencies_raw = execution.get("dependency_paths", [])
+    if not isinstance(dependencies_raw, list) or len(dependencies_raw) > 50:
+        raise ExecutionContractError("DEPENDENCY_PATHS_RANGE")
+    dependencies = tuple(
+        sorted(safe_repo_path(str(value)) for value in dependencies_raw)
+    )
+    if len(set(dependencies)) != len(dependencies):
+        raise ExecutionContractError("DEPENDENCY_PATHS_DUPLICATE")
     file_hashes_raw = execution.get("file_sha256")
-    if not isinstance(file_hashes_raw, dict):
+    if not isinstance(file_hashes_raw, dict) or len(file_hashes_raw) > 70:
         raise ExecutionContractError("FILE_SHA256_OBJECT_REQUIRED")
+    declared_hashes: dict[str, str] = {}
+    for raw_path, raw_hash in file_hashes_raw.items():
+        normalized_hash_path = safe_repo_path(str(raw_path))
+        if normalized_hash_path in declared_hashes:
+            raise ExecutionContractError("FILE_SHA256_NORMALIZED_DUPLICATE")
+        declared_hashes[normalized_hash_path] = require_sha(
+            raw_hash, "file:" + normalized_hash_path
+        )
+    expected_hash_paths = set(tests) | set(dependencies)
+    if set(declared_hashes) != expected_hash_paths:
+        missing = ",".join(sorted(expected_hash_paths - set(declared_hashes))) or "-"
+        extra = ",".join(sorted(set(declared_hashes) - expected_hash_paths)) or "-"
+        raise ExecutionContractError(
+            "FILE_SHA256_KEY_SET_MISMATCH:missing=" + missing + ":extra=" + extra
+        )
     file_hashes: dict[str, str] = {}
     package_root = controller.parent.resolve(strict=True)
     for item in tests:
@@ -312,11 +426,26 @@ def validate_execution(
             raise ExecutionContractError("TEST_FILE:" + item)
         if not test_path.resolve(strict=True).is_relative_to(package_root):
             raise ExecutionContractError("TEST_PACKAGE_SCOPE:" + item)
-        expected_sha = require_sha(file_hashes_raw.get(item), "test:" + item)
+        expected_sha = declared_hashes[item]
         if sha256_file(test_path) != expected_sha:
             raise ExecutionContractError("TEST_SHA_MISMATCH:" + item)
         file_hashes[item] = expected_sha
         inspect_python(test_path)
+    for item in dependencies:
+        dependency_path = absolute_repo_path(item)
+        if (
+            dependency_path.suffix != ".py"
+            or dependency_path.is_symlink()
+            or not dependency_path.is_file()
+            or not dependency_path.resolve(strict=True).is_relative_to(package_root)
+            or dependency_path.stat().st_size > 16 * 1024 * 1024
+        ):
+            raise ExecutionContractError("DEPENDENCY_FILE:" + item)
+        expected_sha = declared_hashes[item]
+        if sha256_file(dependency_path) != expected_sha:
+            raise ExecutionContractError("DEPENDENCY_SHA_MISMATCH:" + item)
+        file_hashes[item] = expected_sha
+        inspect_python(dependency_path)
 
     receipt_path = safe_repo_path(str(execution.get("receipt_path", "")))
     receipt = absolute_repo_path(receipt_path)
@@ -339,6 +468,32 @@ def validate_execution(
     ):
         raise ExecutionContractError("BACKUP_ROLLBACK_RECEIPT_COLLISION")
 
+    executable_paths = {
+        controller_path,
+        *tests,
+        *dependencies,
+        *(
+            (backup_controller_path,)
+            if backup_controller_path is not None
+            else ()
+        ),
+        *(
+            (rollback_controller_path,)
+            if rollback_controller_path is not None
+            else ()
+        ),
+    }
+    package_python_paths = package_python_inventory(package_root)
+    if package_python_paths != executable_paths:
+        missing = ",".join(sorted(executable_paths - package_python_paths)) or "-"
+        undeclared = ",".join(sorted(package_python_paths - executable_paths)) or "-"
+        raise ExecutionContractError(
+            "PACKAGE_PYTHON_CLOSURE_MISMATCH:missing="
+            + missing
+            + ":undeclared="
+            + undeclared
+        )
+
     evidence_raw = execution.get("evidence_paths")
     if not isinstance(evidence_raw, list) or not evidence_raw or len(evidence_raw) > 30:
         raise ExecutionContractError("EVIDENCE_PATHS_RANGE")
@@ -356,6 +511,11 @@ def validate_execution(
                 raise ExecutionContractError("EXTRA_RECEIPT_SCOPE:" + item)
         elif not path.is_relative_to(package_root):
             raise ExecutionContractError("EVIDENCE_PACKAGE_SCOPE:" + item)
+    overlap = set(evidence_paths) & executable_paths
+    if overlap:
+        raise ExecutionContractError(
+            "EVIDENCE_EXECUTABLE_COLLISION:" + ",".join(sorted(overlap))
+        )
 
     production_required = bool(raw.get("production_required", False))
     if bool(execution.get("production_required", production_required)) != production_required:
@@ -400,6 +560,8 @@ def validate_execution(
         controller_path=controller_path,
         controller_sha256=controller_sha,
         test_paths=tests,
+        dependency_paths=dependencies,
+        dependency_sha256=dependency_digest(file_hashes),
         file_sha256=file_hashes,
         receipt_path=receipt_path,
         evidence_paths=evidence_paths,
@@ -417,7 +579,7 @@ def validate_execution(
 
 
 def compile_spec(spec: ExecutionSpec) -> None:
-    items = [spec.controller_path, *spec.test_paths]
+    items = [spec.controller_path, *spec.test_paths, *spec.dependency_paths]
     if spec.backup_controller_path is not None:
         items.append(spec.backup_controller_path)
     if spec.rollback_controller_path is not None:
@@ -428,12 +590,16 @@ def compile_spec(spec: ExecutionSpec) -> None:
 
 
 def run_tests(spec: ExecutionSpec) -> None:
+    package_root = absolute_repo_path(spec.controller_path).parent.resolve(strict=True)
+    environment = dict(os.environ)
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
     for item in spec.test_paths:
         completed = subprocess.run(
-            [sys.executable, str(absolute_repo_path(item))],
+            isolated_python_argv(absolute_repo_path(item), package_root),
             cwd=ROOT,
             check=False,
             timeout=min(spec.timeout_seconds, 600),
+            env=environment,
         )
         if completed.returncode != 0:
             raise ExecutionContractError("TEST_FAILED:" + item)
@@ -503,8 +669,12 @@ def run_controller(spec: ExecutionSpec) -> None:
             spec.receipt_path,
             backup_manifest_sha256=backup_receipt["backup_manifest_sha256"],
         )
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
     completed = subprocess.run(
-        [sys.executable, str(absolute_repo_path(spec.controller_path))],
+        isolated_python_argv(
+            absolute_repo_path(spec.controller_path),
+            absolute_repo_path(spec.controller_path).parent.resolve(strict=True),
+        ),
         cwd=ROOT,
         check=False,
         timeout=spec.timeout_seconds,
@@ -521,9 +691,13 @@ def run_backup(spec: ExecutionSpec) -> None:
     environment = production_operation_environment(
         spec, "backup", str(spec.backup_receipt_path)
     )
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
     environment["UAART_BACKUP_RECEIPT_PATH"] = str(spec.backup_receipt_path)
     completed = subprocess.run(
-        [sys.executable, str(absolute_repo_path(spec.backup_controller_path))],
+        isolated_python_argv(
+            absolute_repo_path(spec.backup_controller_path),
+            absolute_repo_path(spec.controller_path).parent.resolve(strict=True),
+        ),
         cwd=ROOT,
         check=False,
         timeout=spec.timeout_seconds,
@@ -550,9 +724,13 @@ def run_rollback(spec: ExecutionSpec) -> None:
         str(spec.rollback_receipt_path),
         backup_manifest_sha256=supplied_backup_sha,
     )
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
     environment["UAART_ROLLBACK_RECEIPT_PATH"] = str(spec.rollback_receipt_path)
     completed = subprocess.run(
-        [sys.executable, str(absolute_repo_path(spec.rollback_controller_path))],
+        isolated_python_argv(
+            absolute_repo_path(spec.rollback_controller_path),
+            absolute_repo_path(spec.controller_path).parent.resolve(strict=True),
+        ),
         cwd=ROOT,
         check=False,
         timeout=spec.timeout_seconds,
@@ -713,6 +891,7 @@ def write_github_output(spec: ExecutionSpec) -> None:
         handle.write("controller_path=%s\n" % spec.controller_path)
         handle.write("receipt_path=%s\n" % spec.receipt_path)
         handle.write("request_sha256=%s\n" % spec.request_sha256)
+        handle.write("dependency_sha256=%s\n" % spec.dependency_sha256)
         handle.write("backup_controller_path=%s\n" % (spec.backup_controller_path or ""))
         handle.write("backup_receipt_path=%s\n" % (spec.backup_receipt_path or ""))
         handle.write("rollback_controller_path=%s\n" % (spec.rollback_controller_path or ""))

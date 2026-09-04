@@ -169,6 +169,17 @@
             "not": {"pattern": "(^/|(^|/)\\.\\.(/|$))"}
           }
         },
+        "dependency_paths": {
+          "type": "array",
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "\\.py$",
+            "not": {"pattern": "(^/|(^|/)\\.\\.(/|$))"}
+          },
+          "default": []
+        },
         "file_sha256": {
           "type": "object",
           "additionalProperties": {

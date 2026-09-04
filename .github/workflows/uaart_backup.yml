@@ -20,17 +20,21 @@ jobs:
   verify-backup:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
     env:
       RECEIPT_PATH: ${{ inputs.receipt_path }}
     steps:
       - name: Checkout receipt
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
 
       - name: Validate backup and rollback readiness
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
+          python3 -I - <<'PY'
           import json
           import os
           from pathlib import Path, PurePosixPath

@@ -5,17 +5,35 @@ from __future__ import annotations
 import argparse
 import copy
 import datetime as dt
+import importlib.util
 import json
 import os
 import pathlib
 import re
+import sys
 from typing import Any
 
-import control_plane as cp
-import critical_adapter as ca
+AUTOMATION_ROOT = pathlib.Path(__file__).resolve().parent
+ROOT = AUTOMATION_ROOT.parent
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+def _load_trusted_sibling(name: str):
+    """Load a pinned automation sibling explicitly, including under Python -I."""
+    existing = sys.modules.get(name)
+    if existing is not None:
+        return existing
+    path = AUTOMATION_ROOT / (name + ".py")
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("AUTOSTART_TRUSTED_MODULE_SPEC:" + name)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+cp = _load_trusted_sibling("control_plane")
+ca = _load_trusted_sibling("critical_adapter")
 LAUNCH_SCHEMA = "UA-ART-AUTOSTART-LAUNCH-1"
 PRODUCTION_AUTHORIZATION_SCHEMA = "UA-ART-PRODUCTION-AUTHORIZATION-1"
 NONCE_RE = re.compile(r"^[A-Za-z0-9._-]{16,128}$")
@@ -38,6 +56,25 @@ class AutostartIntakeError(ValueError):
     """A launch marker failed a mandatory automatic-mode guard."""
 
 
+def _unresolved_repo_path(
+    value: str,
+    *,
+    root: pathlib.Path,
+    label: str,
+    must_exist: bool = False,
+) -> pathlib.Path:
+    """Return the lexical path and reject every symlinked path component."""
+    normalized = cp.safe_repo_path(value)
+    base = root.resolve(strict=True)
+    candidate = base / normalized
+    resolved = cp.repo_path(normalized, base)
+    if candidate != resolved or candidate.is_symlink():
+        raise AutostartIntakeError("AUTOSTART_SYMLINK_PATH:" + label)
+    if must_exist and not candidate.is_file():
+        raise AutostartIntakeError("AUTOSTART_FILE_MISSING:" + label)
+    return candidate
+
+
 def _write_outputs(values: dict[str, Any]) -> None:
     target = os.environ.get("GITHUB_OUTPUT")
     if not target:
@@ -51,10 +88,11 @@ def _write_outputs(values: dict[str, Any]) -> None:
 
 
 def _ledger_rel(task_id: str, request_sha256: str) -> str:
-    safe_id = re.sub(r"[^A-Za-z0-9._-]+", "-", task_id).strip("-")
-    if not safe_id:
-        raise AutostartIntakeError("EMPTY_LEDGER_TASK_ID")
-    return f"state/autostart_consumed/{safe_id}.{request_sha256}.json"
+    if not cp.TASK_ID_RE.fullmatch(task_id):
+        raise AutostartIntakeError("AUTOSTART_LEDGER_TASK_ID_INVALID")
+    if not cp.SHA_RE.fullmatch(request_sha256):
+        raise AutostartIntakeError("AUTOSTART_LEDGER_REQUEST_SHA_INVALID")
+    return f"state/autostart_consumed/{task_id}.{request_sha256}.json"
 
 
 def _nonce_rel(nonce: str) -> str:
@@ -104,9 +142,12 @@ def _validate_production_authorization(
     }
     try:
         critical_request = ca.CriticalRequest.from_mapping(flat)
-        owner_path = cp.repo_path(critical_request.owner_approval_path, root)
-        if owner_path.is_symlink() or not owner_path.is_file():
-            raise AutostartIntakeError("AUTOSTART_OWNER_APPROVAL_FILE_INVALID")
+        owner_path = _unresolved_repo_path(
+            critical_request.owner_approval_path,
+            root=root,
+            label="owner_approval",
+            must_exist=True,
+        )
         owner_content = owner_path.read_bytes()
         if not critical_request.owner_approval_path.startswith("tasks/approvals/") \
                 or not critical_request.owner_approval_path.endswith(".production.json"):
@@ -165,14 +206,17 @@ def _validate_production_authorization(
             raise AutostartIntakeError("AUTOSTART_OWNER_APPROVAL_TIME_BINDING")
         if approval_expires != launch_expires or current >= approval_expires:
             raise AutostartIntakeError("AUTOSTART_OWNER_APPROVAL_EXPIRED")
-        manifest_path = cp.repo_path(critical_request.manifest_path, root)
-        if manifest_path.is_symlink() or not manifest_path.is_file():
-            raise AutostartIntakeError("AUTOSTART_MANIFEST_FILE_INVALID")
+        manifest_path = _unresolved_repo_path(
+            critical_request.manifest_path,
+            root=root,
+            label="manifest",
+            must_exist=True,
+        )
         manifest = cp.read_json(manifest_path)
         gate_rel = cp.safe_repo_path(str(critical.get("gate_a_path", "")))
-        gate_path = cp.repo_path(gate_rel, root)
-        if gate_path.is_symlink() or not gate_path.is_file():
-            raise AutostartIntakeError("AUTOSTART_GATE_A_FILE_INVALID")
+        gate_path = _unresolved_repo_path(
+            gate_rel, root=root, label="gate_a", must_exist=True
+        )
         if cp.sha256_file(gate_path) != cp.require_sha(critical.get("gate_a_sha256"), "gate_a"):
             raise AutostartIntakeError("AUTOSTART_GATE_A_SHA_MISMATCH")
         gate_a = cp.read_json(gate_path)
@@ -215,11 +259,12 @@ def _validate_production_recovery_contract(
             raise AutostartIntakeError(
                 f"AUTOSTART_{operation.upper()}_CONTROLLER_SCOPE"
             )
-        controller = cp.repo_path(controller_rel, root)
-        if controller.is_symlink() or not controller.is_file():
-            raise AutostartIntakeError(
-                f"AUTOSTART_{operation.upper()}_CONTROLLER_MISSING"
-            )
+        controller = _unresolved_repo_path(
+            controller_rel,
+            root=root,
+            label=f"{operation}_controller",
+            must_exist=True,
+        )
         if cp.sha256_file(controller) != cp.require_sha(
             execution.get(f"{operation}_controller_sha256"), f"{operation}_controller"
         ):
@@ -250,9 +295,9 @@ def validate_launch(
     launch_rel = cp.safe_repo_path(launch_path)
     if not launch_rel.startswith("tasks/launch/AUTO-") or not launch_rel.endswith(".json"):
         raise AutostartIntakeError("AUTOSTART_LAUNCH_PATH_SCOPE")
-    launch_file = cp.repo_path(launch_rel, root)
-    if launch_file.is_symlink() or not launch_file.is_file():
-        raise AutostartIntakeError("AUTOSTART_LAUNCH_FILE_MISSING")
+    launch_file = _unresolved_repo_path(
+        launch_rel, root=root, label="launch", must_exist=True
+    )
     marker = cp.read_json(launch_file)
     if set(marker) != ALLOWED_KEYS:
         raise AutostartIntakeError("AUTOSTART_LAUNCH_KEYS_MISMATCH")
@@ -283,7 +328,11 @@ def validate_launch(
     if current >= expires:
         raise AutostartIntakeError("AUTOSTART_MARKER_EXPIRED")
 
-    request_rel, _, request, request_sha = cp.load_request(str(marker.get("request_path", "")), root)
+    marker_request_rel = cp.safe_repo_path(str(marker.get("request_path", "")))
+    _unresolved_repo_path(
+        marker_request_rel, root=root, label="request", must_exist=True
+    )
+    request_rel, _, request, request_sha = cp.load_request(marker_request_rel, root)
     expected_sha = cp.require_sha(marker.get("request_sha256"), "autostart_request")
     if request_sha != expected_sha:
         raise AutostartIntakeError("AUTOSTART_REQUEST_SHA_MISMATCH")
@@ -325,8 +374,18 @@ def validate_launch(
         raise AutostartIntakeError("AUTOSTART_REQUEST_ALREADY_HAS_ROLLBACK_RECEIPT")
 
     consumed_dir = root / "state/autostart_consumed"
+    if (
+        consumed_dir.is_symlink()
+        or consumed_dir.resolve(strict=False) != consumed_dir
+        or (consumed_dir.exists() and not consumed_dir.is_dir())
+    ):
+        raise AutostartIntakeError("AUTOSTART_CONSUMED_LEDGER_DIRECTORY_INVALID")
     if consumed_dir.is_dir():
         for existing_path in consumed_dir.glob("*.json"):
+            if existing_path.is_symlink() or not existing_path.is_file():
+                raise AutostartIntakeError(
+                    "AUTOSTART_CONSUMED_LEDGER_FILE_INVALID:" + existing_path.name
+                )
             existing = cp.read_json(existing_path)
             if (
                 existing.get("request_sha256") == request_sha
@@ -395,11 +454,16 @@ def consume_launch(
     now: dt.datetime | None = None,
 ) -> dict[str, Any]:
     result = validate_launch(launch_path, run_id, source_commit, root=root, now=now)
-    nonce_path = cp.repo_path(result["nonce_reservation_path"], root)
+    nonce_path = _unresolved_repo_path(
+        result["nonce_reservation_path"], root=root, label="nonce_reservation"
+    )
     cp.atomic_json(nonce_path, result["nonce_reservation"], exclusive=True)
     result["ledger"]["nonce_reservation_path"] = result["nonce_reservation_path"]
     result["ledger"]["nonce_reservation_sha256"] = cp.sha256_file(nonce_path)
-    cp.atomic_json(cp.repo_path(result["ledger_path"], root), result["ledger"], exclusive=True)
+    ledger_path = _unresolved_repo_path(
+        result["ledger_path"], root=root, label="ledger"
+    )
+    cp.atomic_json(ledger_path, result["ledger"], exclusive=True)
     return result
 
 
@@ -408,8 +472,16 @@ def main() -> None:
     parser.add_argument("launch_path")
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--source-commit", required=True)
+    parser.add_argument("--validate-only", action="store_true")
+    parser.add_argument("--root", type=pathlib.Path, default=ROOT)
     args = parser.parse_args()
-    result = consume_launch(args.launch_path, args.run_id, args.source_commit)
+    operation = validate_launch if args.validate_only else consume_launch
+    result = operation(
+        args.launch_path,
+        args.run_id,
+        args.source_commit,
+        root=args.root.resolve(strict=True),
+    )
     _write_outputs({
         "ledger_path": result["ledger_path"],
         "nonce_reservation_path": result["nonce_reservation_path"],
