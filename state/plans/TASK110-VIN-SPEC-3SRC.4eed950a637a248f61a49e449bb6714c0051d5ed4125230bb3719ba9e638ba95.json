@@ -1,0 +1,20 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "created_at": "2026-09-04T04:20:39Z",
+  "identity": {
+    "run_id": "33836434535",
+    "task_id": "TASK110-VIN-SPEC-3SRC",
+    "task_sha256": "4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95"
+  },
+  "manual_mode": true,
+  "production_required": true,
+  "queue_key": "catalog_all_cards-517f6dd10cc48ae3",
+  "request_path": "tasks/requests/TASK110-VIN-SPEC-3SRC.json",
+  "resource_locks": [
+    "CATALOG_ALL_CARDS",
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

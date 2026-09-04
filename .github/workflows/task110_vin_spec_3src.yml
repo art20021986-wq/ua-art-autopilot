@@ -1,0 +1,65 @@
+name: TASK110 VIN Specification 3 Sources
+
+on:
+  push:
+    branches:
+      - task110-vin-spec-3src
+      - task110-vin-spec-3src-final
+    paths:
+      - tasks/launch/TASK110-VIN-SPEC-3SRC.json
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: task110-vin-spec-3src
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact launch branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Require manual mode and immutable launch identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
+          echo '4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95  tasks/requests/TASK110-VIN-SPEC-3SRC.json' | sha256sum -c -
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          recovered = json.loads(Path('state/receipts/TASK107-R2.json').read_text(encoding='utf-8'))
+          launch = json.loads(Path('tasks/launch/TASK110-VIN-SPEC-3SRC.json').read_text(encoding='utf-8'))
+          assert recovered['status'] == 'FINISHED'
+          assert recovered['canary_result'] == '3/3 PASS'
+          assert recovered['autopilot_mode'] == 'MANUAL'
+          assert launch['task_id'] == 'TASK110-VIN-SPEC-3SRC'
+          assert launch['request_sha256'] == '4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95'
+          assert launch['scope'] == 'THIS_TASK_ONLY'
+          assert launch['owner_authorized'] is True
+          assert launch['global_automatic_mode_enabled'] is False
+          PY
+
+      - name: Run complete offline contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile cloud/task_110_vin_spec_3src/*.py
+          python3 cloud/task_110_vin_spec_3src/source_policy.py
+          python3 cloud/task_110_vin_spec_3src/vin_spec_service.py
+          python3 cloud/task_110_vin_spec_3src/integration_patcher.py
+          python3 cloud/task_110_vin_spec_3src/remote_installer.py
+          python3 cloud/task_110_vin_spec_3src/test_contract.py
+
+  execute:
+    needs: preflight
+    uses: ./.github/workflows/uaart_orchestrator.yml
+    with:
+      request_path: tasks/requests/TASK110-VIN-SPEC-3SRC.json
+    secrets: inherit

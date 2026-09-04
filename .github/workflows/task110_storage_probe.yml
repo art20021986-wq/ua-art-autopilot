@@ -1,0 +1,45 @@
+name: TASK110 Production Storage Probe
+
+on:
+  push:
+    branches:
+      - task110-vin-spec-3src
+    paths:
+      - tasks/launch/TASK110-STORAGE-PROBE.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: task110-production-storage-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Collect read-only target measurement
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile cloud/task109_container_inline/storage_probe_controller.py cloud/task109_container_inline/storage_probe_remote.py
+          python3 cloud/task109_container_inline/storage_probe_controller.py
+
+      - name: Commit fresh immutable probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- state/storage/TASK109-CONTAINER-TRACK-INLINE.json
+          git config user.name 'ua-art-storage-probe'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'TASK110: record fresh read-only production storage probe'
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"

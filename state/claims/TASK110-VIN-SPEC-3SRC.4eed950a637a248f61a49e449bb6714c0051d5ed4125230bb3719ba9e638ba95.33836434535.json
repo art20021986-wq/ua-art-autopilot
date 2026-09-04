@@ -1,0 +1,116 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": false,
+  "created_at": "2026-09-04T04:20:39Z",
+  "critical_gate_evidence_sha256": "a6e2eacda86653c291dd5db710ec4b080e5ce4e62e6eba12f7fc871e1d1383d5",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "finished_at": "2026-09-04T04:26:05Z",
+  "heartbeat_at": "2026-09-04T04:26:05Z",
+  "heartbeat_sequence": 8,
+  "identity": {
+    "run_id": "33836434535",
+    "task_id": "TASK110-VIN-SPEC-3SRC",
+    "task_sha256": "4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95"
+  },
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 190.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 77.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0005.html",
+        "http_status": 200,
+        "latency_ms": 55.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0005.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 576.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 114.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0005.html",
+        "http_status": 200,
+        "latency_ms": 55.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0005.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "queue_key": "catalog_all_cards-517f6dd10cc48ae3",
+  "receipt_path": "state/receipts/TASK110-VIN-SPEC-3SRC.json",
+  "receipt_sha256": "f908b053560d7554ed409da3f0c6918e6c6c5657e103334bb1faaeb988afef71",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/TASK110-VIN-SPEC-3SRC.json",
+  "request_sha256": "4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95",
+  "resource_locks": [
+    "CATALOG_ALL_CARDS",
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "c8d153324777eb08f225730cabf3e306d8a36e7c",
+  "storage_preflight": {
+    "age_seconds": 1662.395,
+    "allowed": true,
+    "evidence_path": "state/storage/TASK110-VIN-SPEC-3SRC.json",
+    "evidence_sha256": "430078498a8a1a9b72b8ab825d84fbc99a639ae996f7608571538909f570e2ff",
+    "free_bytes": 32633757696,
+    "heavy": true,
+    "measured_at": "2026-09-04T03:53:10Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 13.164127894810267
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "ed12cfc3e9d84ab02e116fdc3e0e8530402a9b8666bf2867a185aa62ed382122",
+    "file_sha256": {
+      "cloud/task_110_vin_spec_3src/integration_patcher.py": "2decfd507780afcaa5f20b17e4b7448931aa5b5ed4aa37506a6c83dd0096c83e",
+      "cloud/task_110_vin_spec_3src/remote_installer.py": "1d3fb439c24fc4b48098d5e5359bde3807c069303eaaa03841393b075a4f2b6a",
+      "cloud/task_110_vin_spec_3src/source_policy.py": "b5c6b3ea262c8ea2bd64003cde0a3faaf2b602da5af0502b25de373c870ac314",
+      "cloud/task_110_vin_spec_3src/test_contract.py": "05ec68b32ea07a1a1b61d7da6af19dc02d6f7c02b1f1a10a4305a4d4840691a1",
+      "cloud/task_110_vin_spec_3src/vin_spec_service.py": "04b5684943f5187eb32f57401ed4bfa8574cb4dd9651a828723ece2244accf80"
+    }
+  },
+  "updated_at": "2026-09-04T04:26:05Z"
+}

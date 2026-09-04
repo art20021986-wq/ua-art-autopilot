@@ -1,0 +1,28 @@
+{
+  "free_bytes": 32633757696,
+  "measured_at": "2026-09-04T03:53:10Z",
+  "measurement": "authenticated PythonAnywhere Files quota plus official target-side du bytes",
+  "quota_observation": {
+    "observed_at": "2026-09-04T04:00:42Z",
+    "percent_full_display": 13,
+    "read_only": true,
+    "source": "PythonAnywhere Files page",
+    "total_display": "35.0 GB",
+    "used_display": "4.6 GB"
+  },
+  "read_only": true,
+  "target_environment": "production",
+  "task_id": "TASK110-VIN-SPEC-3SRC",
+  "total_bytes": 37580963840,
+  "used_bytes": 4947206144,
+  "used_measurement": {
+    "command": "du -s -B 1 /tmp /home/Carix /var/www",
+    "components_bytes": {
+      "/home/Carix": 4924600320,
+      "/tmp": 22564864,
+      "/var/www": 40960
+    },
+    "measured_at": "2026-09-04T03:53:10Z",
+    "source": "PythonAnywhere production scheduled task"
+  }
+}

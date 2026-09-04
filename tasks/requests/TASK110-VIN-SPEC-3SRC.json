@@ -1,0 +1,62 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/additional-spec-source-policy",
+    "production/additional-spec-sidecar",
+    "production/crm-vin-spec-worker",
+    "production/published-card-additional-spec"
+  ],
+  "complexity": 4,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": false,
+    "gate_a_path": "tasks/gates/TASK110-VIN-SPEC-3SRC.json",
+    "gate_a_sha256": "00c41d8714387e05c8083a783a8dfd914d3767afc9c5b899e0e7b46c79be9cb5",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/TASK110-VIN-SPEC-3SRC.json",
+    "manifest_sha256": "ab5e94c29603656ff9e4f03d0766d0ec1f0a2add1fdf3f7f0e94629d5c474033",
+    "owner_approval_path": "tasks/approvals/TASK110-VIN-SPEC-3SRC.md",
+    "owner_approval_sha256": "4f73b91a5c6831079dc16bc27004a745f10597c928b0a12f82cebcaf98e65a26"
+  },
+  "description": "Production implementation for all cards: preserve the existing valid-VIN card creation flow, automatically queue one enrichment job, store only additional technical specification in a separate sidecar, backfill all existing cards, refresh only cards that were already published, and make future operator publications consume the same data. Deterministic three-source policy after a five-candidate audit: NHTSA vPIC, Auto-Data and CarWiki. Never write crm.db primary fields or prices, never expose provenance publicly, never create the initial publication automatically. Exact backup, automatic rollback, live verification and delayed verification are mandatory.",
+  "execution": {
+    "controller_path": "cloud/task_110_vin_spec_3src/controller.py",
+    "controller_sha256": "ed12cfc3e9d84ab02e116fdc3e0e8530402a9b8666bf2867a185aa62ed382122",
+    "evidence_paths": [
+      "cloud/task_110_vin_spec_3src/evidence.json",
+      "state/receipts/TASK110-VIN-SPEC-3SRC.json"
+    ],
+    "file_sha256": {
+      "cloud/task_110_vin_spec_3src/source_policy.py": "b5c6b3ea262c8ea2bd64003cde0a3faaf2b602da5af0502b25de373c870ac314",
+      "cloud/task_110_vin_spec_3src/vin_spec_service.py": "04b5684943f5187eb32f57401ed4bfa8574cb4dd9651a828723ece2244accf80",
+      "cloud/task_110_vin_spec_3src/integration_patcher.py": "2decfd507780afcaa5f20b17e4b7448931aa5b5ed4aa37506a6c83dd0096c83e",
+      "cloud/task_110_vin_spec_3src/remote_installer.py": "1d3fb439c24fc4b48098d5e5359bde3807c069303eaaa03841393b075a4f2b6a",
+      "cloud/task_110_vin_spec_3src/test_contract.py": "05ec68b32ea07a1a1b61d7da6af19dc02d6f7c02b1f1a10a4305a4d4840691a1"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/TASK110-VIN-SPEC-3SRC.json",
+    "test_paths": [
+      "cloud/task_110_vin_spec_3src/source_policy.py",
+      "cloud/task_110_vin_spec_3src/vin_spec_service.py",
+      "cloud/task_110_vin_spec_3src/integration_patcher.py",
+      "cloud/task_110_vin_spec_3src/remote_installer.py",
+      "cloud/task_110_vin_spec_3src/test_contract.py"
+    ],
+    "timeout_seconds": 3600
+  },
+  "health_checks": [
+    "https://www.uaart.com.ua/",
+    "https://www.uaart.com.ua/video/katalog.html",
+    "https://www.uaart.com.ua/video/UA-0005.html"
+  ],
+  "production_required": true,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_required_bytes": 268435456,
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK110-VIN-SPEC-3SRC.json",
+    "evidence_sha256": "430078498a8a1a9b72b8ab825d84fbc99a639ae996f7608571538909f570e2ff"
+  },
+  "task_id": "TASK110-VIN-SPEC-3SRC",
+  "title": "VIN-triggered additional specification on all cards"
+}
