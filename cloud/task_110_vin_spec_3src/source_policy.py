@@ -325,6 +325,39 @@ def _discovery_query(car: dict[str, Any], domain: str) -> str:
     return f'site:{domain}/ru "{brand}" "{model}" "{year}" "{fuel}" "{cc}" технические характеристики'
 
 
+def known_urls(car: dict[str, Any], domain: str) -> list[str]:
+    """Small audited seeds for exact high-priority fleet matches.
+
+    Seeds remove search-engine availability as a single point of failure.  The
+    normal page matcher and all fact guards still run before any value is used.
+    """
+    tokens = _car_tokens(car)
+    brand = " ".join(tokens["brand"])
+    model = " ".join(tokens["model"])
+    fuel = " ".join(tokens["fuel"])
+    year = (tokens["year"] or [""])[0]
+    try:
+        cc = int(car.get("engine_cc") or 0)
+    except (TypeError, ValueError):
+        cc = 0
+    transmission = _norm(car.get("transmission") or car.get("gearbox"))
+    if (
+        domain == "auto-data.net" and "mercedes" in brand
+        and ("b class" in model or "b 180" in model)
+        and year in {"2011", "2012", "2013"} and 1700 <= cc <= 1850
+        and any(item in fuel for item in ("diesel", "дизель", "cdi"))
+    ):
+        suffix = "7g-dct-18833" if any(item in transmission for item in ("auto", "автомат", "dct")) else "18637"
+        return [
+            "https://www.auto-data.net/ru/mercedes-benz-b-class-w246-b-180-1.8-cdi-109hp-" + suffix
+        ]
+    if domain == "carwiki.co.kr" and "kia" in brand and "k5" in model and year == "2018":
+        return [
+            "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80"
+        ]
+    return []
+
+
 def _unwrap_result(href: str) -> str | None:
     href = html.unescape(href)
     if href.startswith("//"):
@@ -345,13 +378,18 @@ def discover_urls(
 ) -> list[str]:
     if domain not in SOURCE_DOMAINS[1:]:
         return []
+    urls = known_urls(car, domain)
     endpoint = "https://%s/html/?%s" % (
         DISCOVERY_DOMAIN,
         urllib.parse.urlencode({"q": _discovery_query(car, domain)}),
     )
-    body = _open_bytes(endpoint, opener=opener)
+    try:
+        body = _open_bytes(endpoint, opener=opener)
+    except Exception:
+        if urls:
+            return urls[:limit]
+        raise
     text = body.decode("utf-8", "replace")
-    urls: list[str] = []
     for href in re.findall(r"href=[\"']([^\"']+)[\"']", text, re.IGNORECASE):
         target = _unwrap_result(href)
         if target and source_domain(target) == domain and target not in urls:
@@ -406,6 +444,48 @@ FIELD_MAP = {
     "усилитель руля": ("power_steering", "Усилитель руля", "steering"),
     "размер шин": ("tyre_size", "Размер шин", "wheels"),
     "размер дисков": ("wheel_size", "Размер дисков", "wheels"),
+    # Auto-Data English labels (the site may canonicalize a localized URL).
+    "fuel consumption economy urban": ("urban_fuel_consumption", "Расход в городе", "consumption"),
+    "fuel consumption economy extra urban": ("highway_fuel_consumption", "Расход на трассе", "consumption"),
+    "fuel consumption economy combined": ("combined_fuel_consumption", "Смешанный расход", "consumption"),
+    "co2 emissions": ("co2_emissions", "Выбросы CO₂", "ecology"),
+    "acceleration 0 100 km h": ("acceleration_0_100", "Разгон 0–100 км/ч", "dynamics"),
+    "maximum speed": ("maximum_speed", "Максимальная скорость", "dynamics"),
+    "power": ("maximum_power", "Максимальная мощность", "engine"),
+    "torque": ("maximum_torque", "Максимальный крутящий момент", "engine"),
+    "engine layout": ("engine_layout", "Расположение двигателя", "engine"),
+    "engine model code": ("engine_code", "Код двигателя", "engine"),
+    "number of cylinders": ("cylinders", "Количество цилиндров", "engine"),
+    "engine configuration": ("engine_configuration", "Конфигурация двигателя", "engine"),
+    "cylinder bore": ("cylinder_bore", "Диаметр цилиндра", "engine"),
+    "piston stroke": ("piston_stroke", "Ход поршня", "engine"),
+    "compression ratio": ("compression_ratio", "Степень сжатия", "engine"),
+    "number of valves per cylinder": ("valves_per_cylinder", "Клапанов на цилиндр", "engine"),
+    "fuel injection system": ("fuel_injection", "Система впрыска", "engine"),
+    "engine aspiration": ("aspiration", "Тип наддува", "engine"),
+    "engine oil capacity": ("engine_oil_capacity", "Объём масла", "capacity"),
+    "coolant": ("coolant_capacity", "Объём охлаждающей жидкости", "capacity"),
+    "kerb weight": ("kerb_weight", "Снаряжённая масса", "weight"),
+    "maximum weight": ("gross_weight", "Допустимая полная масса", "weight"),
+    "maximum permissible weight": ("gross_weight", "Допустимая полная масса", "weight"),
+    "trunk boot space minimum": ("boot_capacity", "Объём багажника", "capacity"),
+    "fuel tank capacity": ("fuel_tank_capacity", "Объём топливного бака", "capacity"),
+    "length": ("length", "Длина", "dimensions"),
+    "width": ("width", "Ширина", "dimensions"),
+    "height": ("height", "Высота", "dimensions"),
+    "wheelbase": ("wheelbase", "Колёсная база", "dimensions"),
+    "front track": ("front_track", "Передняя колея", "dimensions"),
+    "rear back track": ("rear_track", "Задняя колея", "dimensions"),
+    "drag coefficient": ("drag_coefficient", "Коэффициент аэродинамического сопротивления", "dynamics"),
+    "minimum turning circle": ("turning_circle", "Диаметр разворота", "steering"),
+    "front suspension": ("front_suspension", "Передняя подвеска", "suspension"),
+    "rear suspension": ("rear_suspension", "Задняя подвеска", "suspension"),
+    "front brakes": ("front_brakes", "Передние тормоза", "brakes"),
+    "rear brakes": ("rear_brakes", "Задние тормоза", "brakes"),
+    "steering type": ("steering_type", "Рулевое управление", "steering"),
+    "power steering": ("power_steering", "Усилитель руля", "steering"),
+    "tires size": ("tyre_size", "Размер шин", "wheels"),
+    "wheel rims size": ("wheel_size", "Размер дисков", "wheels"),
     # CarWiki Korean labels.
     "전장": ("length", "Длина", "dimensions"),
     "전폭": ("width", "Ширина", "dimensions"),
@@ -758,4 +838,8 @@ if __name__ == "__main__":
         {"brand": "Kia", "model": "K5", "year": "2018"},
         {"Make": "HYUNDAI", "Model": "Sonata", "ModelYear": "2018", "ErrorCode": "0"},
     )
+    assert known_urls(
+        {"brand": "Mercedes-Benz", "model": "B 180", "year": "2013", "fuel": "Дизель", "engine_cc": 1800, "transmission": "автомат"},
+        "auto-data.net",
+    ) == ["https://www.auto-data.net/ru/mercedes-benz-b-class-w246-b-180-1.8-cdi-109hp-7g-dct-18833"]
     print("UA110_SOURCE_POLICY_SELFTEST_PASS")
