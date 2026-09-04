@@ -311,6 +311,24 @@ def _spec_fragment(page: str) -> str:
     return page[start:end]
 
 
+def _local_public_current(uid: str, expected: int) -> bool:
+    """Avoid a duplicate publication when process_one already updated both copies."""
+    if expected < 1:
+        return False
+    for public_root in (ROOT + "/video", ROOT + "/site"):
+        raw = safe_read(public_root + "/" + uid + ".html", required=False)
+        if raw is None:
+            return False
+        try:
+            fragment = _spec_fragment(raw.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError, InstallError):
+            return False
+        shown = len(re.findall(r"class=['\"]ua-addspec-row['\"]", fragment, re.I))
+        if shown != expected:
+            return False
+    return True
+
+
 def verify_local_public(cards: list[dict[str, Any]]) -> dict[str, Any]:
     checked: dict[str, Any] = {}
     pages = 0
@@ -378,15 +396,21 @@ def run_install() -> dict[str, Any]:
             conn.commit()
         processed = service.process_backlog(limit=int(scan["valid_vins"]))
         cards = service.read_cards()
-        # Republish every already-published card with at least one verified row.
-        # Initial publication remains strictly operator-controlled.
+        # process_one already refreshes published cards.  Only retry cards whose
+        # two local public copies are not current; a second unconditional pass
+        # can trip the publication layer's duplicate/rate guard.
         refreshes = []
         for card in cards:
             if card.get("published") and _visible_count(str(card["car_uid"])) > 0:
-                status, detail = service._refresh_published(card)
+                uid = str(card["car_uid"])
+                expected = _visible_count(uid)
+                if _local_public_current(uid, expected):
+                    status, detail = "PASS", "already current after VIN processing"
+                else:
+                    status, detail = service._refresh_published(card)
                 refreshes.append({"car_uid": card["car_uid"], "status": status, "detail": detail})
                 if status != "PASS":
-                    raise InstallError("PUBLIC_REFRESH_FAILED:" + str(card["car_uid"]))
+                    raise InstallError("PUBLIC_REFRESH_FAILED:%s:%s" % (uid, detail[:240]))
         public = verify_local_public(cards)
         crm_after = cars_hash()
         if crm_after != crm_before:
@@ -471,6 +495,7 @@ def run_rollback(backup: str | None) -> dict[str, Any]:
 
 
 def selftest() -> None:
+    global ROOT
     assert len(source_policy.SOURCE_DOMAINS) == 10
     assert integration_patcher.patch_additional_spec(
         integration_patcher.patch_additional_spec(
@@ -479,6 +504,20 @@ def selftest() -> None:
             "def crm_summary(value): return ''\ndef _car_vin(uid): return ''\ndef _car_status(uid): return ''\n"
         )
     ).count(integration_patcher.SPEC_START) == 1
+    original_root = ROOT
+    try:
+        with tempfile.TemporaryDirectory(prefix="ua111-current-pages-") as folder:
+            ROOT = folder
+            for name in ("video", "site"):
+                pathlib.Path(folder, name).mkdir()
+                pathlib.Path(folder, name, "UA-0005.html").write_text(
+                    SPEC_START + '<div class="ua-addspec-row"></div>' * 2 + SPEC_END,
+                    encoding="utf-8",
+                )
+            assert _local_public_current("UA-0005", 2) is True
+            assert _local_public_current("UA-0005", 3) is False
+    finally:
+        ROOT = original_root
     print("UA111_REMOTE_INSTALLER_SELFTEST_PASS")
 
 
