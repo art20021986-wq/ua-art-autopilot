@@ -47,7 +47,20 @@
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "22564864\t/tmp\n4918149120\t/home/Carix\n40960\t/var/www\n"
+      "stdout": "22564864\t/tmp\n4918206464\t/home/Carix\n40960\t/var/www\n"
+    },
+    "pythonanywhere_api_quota": {
+      "read_only": true,
+      "resources": [
+        {
+          "http_status": 404,
+          "resource": "files/quota/"
+        },
+        {
+          "http_status": 404,
+          "resource": "quota/"
+        }
+      ]
     },
     "quota_bytes": {
       "argv": [
@@ -64,12 +77,12 @@
       "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
     }
   },
-  "free_bytes": 1138544869376,
-  "measured_at": "2026-09-04T02:20:16Z",
+  "free_bytes": 1136537894912,
+  "measured_at": "2026-09-04T02:24:07Z",
   "measurement": "shutil.disk_usage:/home/Carix;global-volume-fallback",
   "read_only": true,
   "target_environment": "production",
   "task_id": "TASK109-CONTAINER-TRACK-INLINE",
   "total_bytes": 6340085809152,
-  "used_bytes": 5201540939776
+  "used_bytes": 5203547914240
 }
