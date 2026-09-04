@@ -16,7 +16,7 @@ PRIMARY_FIELDS_AND_PRICES: FORBIDDEN
 MEDIA_WRITE: FORBIDDEN
 GLOBAL_AUTOMATIC_MODE: UNCHANGED
 BACKUP: REQUIRED
-ROLLBACK: REQUIRED_AND_AUTOMATIC_ON_FAILURE
+ROLLBACK (rollback): REQUIRED_AND_AUTOMATIC_ON_FAILURE
 
 Owner instruction recorded on 2026-09-04: the result of two populated cards out
 of fourteen is unacceptable. Restore the ten-source plan, maximize additional
