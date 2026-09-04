@@ -1,0 +1,38 @@
+{
+  "backup_required": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "noop",
+      "path": "production/ten-source-spec-policy"
+    },
+    {
+      "action": "noop",
+      "path": "production/additional-spec-sidecar"
+    },
+    {
+      "action": "noop",
+      "path": "production/crm-vin-spec-autostart"
+    },
+    {
+      "action": "noop",
+      "path": "production/all-published-card-specs"
+    }
+  ],
+  "production_write": true,
+  "protected_paths": [
+    "crm.db",
+    "db.py",
+    "team_bot.py",
+    "start_safe.py",
+    "video/media",
+    "site/media",
+    "vin-primary-fields",
+    "prices",
+    "dns"
+  ],
+  "rollback_required": true,
+  "task_class": "CRITICAL",
+  "task_id": "TASK111-VIN-SPEC-10SRC"
+}
