@@ -1195,7 +1195,7 @@ jobs:
       EXPECTED_TASK_ID: ${{ needs.discover.outputs.task_id }}
       EXPECTED_TRANSACTION_ID: ${{ needs.discover.outputs.transaction_id }}
       EXPECTED_TRANSACTION_PATH: ${{ needs.discover.outputs.transaction_path }}
-      PINNED_ROOT: ${{ runner.temp }}/uaart-watchdog-pinned-recovery
+      PINNED_ROOT: ${{ github.workspace }}/../uaart-watchdog-pinned-recovery
       SOURCE_COMMIT: ${{ needs.discover.outputs.source_commit }}
     steps:
       - name: Checkout fresh ROLLING_BACK state without persisted credentials

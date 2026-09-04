@@ -72,6 +72,13 @@ class WorkflowContractTests(unittest.TestCase):
         }
         self.assertEqual(actual, ACTIVE)
 
+    def test_job_level_configuration_rejects_runner_context(self):
+        for name in sorted(ACTIVE):
+            for job_id, job in self.jobs(name).items():
+                with self.subTest(name=name, job_id=job_id):
+                    header = job.split("\n    steps:", 1)[0]
+                    self.assertNotRegex(header, r"\$\{\{\s*runner\.")
+
     def test_every_multiline_shell_step_parses(self):
         for name in sorted(ACTIVE):
             for index, source in enumerate(self.multiline_shell_blocks(name)):
