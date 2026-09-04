@@ -1,0 +1,860 @@
+{
+  "archive_preserves_exact_git_blob": true,
+  "archive_root": ".github/legacy-workflows/TASK113",
+  "archived_count": 138,
+  "archived_workflows": [
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/autopilot_autostart_guard.yml",
+      "git_blob_sha1": "118a35963f9ff74f4fa72378ed9980e88403e267",
+      "original_path": ".github/workflows/autopilot_autostart_guard.yml",
+      "size_bytes": 1998
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/claude_autopilot.yml",
+      "git_blob_sha1": "6d7dfc639bce3b9f85de3d5d15e1aaeceb3bbf45",
+      "original_path": ".github/workflows/claude_autopilot.yml",
+      "size_bytes": 4702
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/ferry_wording_gate_a.yml",
+      "git_blob_sha1": "7134adb76c0b8ee02f47eed7616cd3af70dffbc8",
+      "original_path": ".github/workflows/ferry_wording_gate_a.yml",
+      "size_bytes": 7894
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/ferry_wording_gate_b.yml",
+      "git_blob_sha1": "0503b2c4de2c809cec0f0ea3822f4a722237e77f",
+      "original_path": ".github/workflows/ferry_wording_gate_b.yml",
+      "size_bytes": 7237
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/overnight_autopilot_production_dispatch.yml",
+      "git_blob_sha1": "b75c805ebbd389ff4a8576ad03594a6adb9979bc",
+      "original_path": ".github/workflows/overnight_autopilot_production_dispatch.yml",
+      "size_bytes": 4263
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/overnight_task099_transient_recovery.yml",
+      "git_blob_sha1": "90a01d764591354e975f756a8944461d9f3e89cc",
+      "original_path": ".github/workflows/overnight_task099_transient_recovery.yml",
+      "size_bytes": 2760
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/owner_ua0011_full_card_gate_a.yml",
+      "git_blob_sha1": "ba060c9e00a7f2f7ac015ccbfa25da57e27819db",
+      "original_path": ".github/workflows/owner_ua0011_full_card_gate_a.yml",
+      "size_bytes": 4666
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/owner_ua0011_korea_now_production.yml",
+      "git_blob_sha1": "224401f5d56dfff469f1a7ac444f4eb31e22dca1",
+      "original_path": ".github/workflows/owner_ua0011_korea_now_production.yml",
+      "size_bytes": 9800
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/owner_ua0011_korea_slim_production.yml",
+      "git_blob_sha1": "9ba1c29c5812233c8f030675048310fec4bb23a2",
+      "original_path": ".github/workflows/owner_ua0011_korea_slim_production.yml",
+      "size_bytes": 9828
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/pythonanywhere_sync.yml",
+      "git_blob_sha1": "e5e34310857b21ec8450e2b985c02e9a26e900a3",
+      "original_path": ".github/workflows/pythonanywhere_sync.yml",
+      "size_bytes": 1372
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/safe_workflow_watchdog.yml",
+      "git_blob_sha1": "2a966834b9c922626c82aca470c3d023c3ad2a00",
+      "original_path": ".github/workflows/safe_workflow_watchdog.yml",
+      "size_bytes": 7072
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/seo-rehab-068-production.yml",
+      "git_blob_sha1": "7717cf6558ebbaaf4ced03af1bf718613df0ae6e",
+      "original_path": ".github/workflows/seo-rehab-068-production.yml",
+      "size_bytes": 5711
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/seo-watch-smoke.yml",
+      "git_blob_sha1": "3f3ac6ddba4ed936fe3a22d89089a4d3ee0f5154",
+      "original_path": ".github/workflows/seo-watch-smoke.yml",
+      "size_bytes": 1117
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task037_discovery.yml",
+      "git_blob_sha1": "02d0a221881d3705f9f2835ff4c3f2da2466396e",
+      "original_path": ".github/workflows/task037_discovery.yml",
+      "size_bytes": 2983
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task039_retry.yml",
+      "git_blob_sha1": "13d8740a67c6a3925a1b368d0cfc5fde60f577bd",
+      "original_path": ".github/workflows/task039_retry.yml",
+      "size_bytes": 3885
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task039_safe_inbox_sync.yml",
+      "git_blob_sha1": "d04996cb67d29d6a0978d6ddaf9f00883e0433ae",
+      "original_path": ".github/workflows/task039_safe_inbox_sync.yml",
+      "size_bytes": 1579
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task049_gate_a.yml",
+      "git_blob_sha1": "b8063dca347d5020ce6526857e6549fd413bf635",
+      "original_path": ".github/workflows/task049_gate_a.yml",
+      "size_bytes": 2742
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task049_gate_b.yml",
+      "git_blob_sha1": "2b8f9eb15a7673da742fa02a7f49c5864c96ba48",
+      "original_path": ".github/workflows/task049_gate_b.yml",
+      "size_bytes": 6081
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task049_gate_b_preflight.yml",
+      "git_blob_sha1": "d68c9281d96156d548a324fa50547a4196a0699a",
+      "original_path": ".github/workflows/task049_gate_b_preflight.yml",
+      "size_bytes": 2318
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task058_crm_ocr_readonly.yml",
+      "git_blob_sha1": "d27a17d25eee44704fc730980d18a2d6d43d0dae",
+      "original_path": ".github/workflows/task058_crm_ocr_readonly.yml",
+      "size_bytes": 3425
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task059_ai_fast_schema.yml",
+      "git_blob_sha1": "450695f1cb38358707b90b96ab072891860b8b9e",
+      "original_path": ".github/workflows/task059_ai_fast_schema.yml",
+      "size_bytes": 3575
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task060_install_token_free_ocr.yml",
+      "git_blob_sha1": "3bc0ea46cfe0119687c0fd37899299589c4db2b4",
+      "original_path": ".github/workflows/task060_install_token_free_ocr.yml",
+      "size_bytes": 3723
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task060_read_live_context.yml",
+      "git_blob_sha1": "4df8cf2b16248d8a9c20be01b81c6cd0f92adb0d",
+      "original_path": ".github/workflows/task060_read_live_context.yml",
+      "size_bytes": 1689
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task060_runtime_capabilities.yml",
+      "git_blob_sha1": "55c32a8161a3c3f826ece906eee12dba9bdd6d63",
+      "original_path": ".github/workflows/task060_runtime_capabilities.yml",
+      "size_bytes": 1706
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task061_crm_ai_card.yml",
+      "git_blob_sha1": "832e9b7850fcf64a8d05803746a3305deb915cd9",
+      "original_path": ".github/workflows/task061_crm_ai_card.yml",
+      "size_bytes": 3462
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task062_crm_voice.yml",
+      "git_blob_sha1": "30720d55b35b58f6f9731e8b4ba9a70b6774ebf9",
+      "original_path": ".github/workflows/task062_crm_voice.yml",
+      "size_bytes": 3382
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task062_read_voice_context.yml",
+      "git_blob_sha1": "921c56b042095639ef57daec2ec260f60b921018",
+      "original_path": ".github/workflows/task062_read_voice_context.yml",
+      "size_bytes": 1979
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task064_crm_db_lock_hotfix.yml",
+      "git_blob_sha1": "eea4e8b4c96e134a5042b0f1a4d21c509d4f9266",
+      "original_path": ".github/workflows/task064_crm_db_lock_hotfix.yml",
+      "size_bytes": 3293
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task064_diagnostics_permanent.yml",
+      "git_blob_sha1": "dcbd7300c16aa7bc0c514104624e78b7fcc27dae",
+      "original_path": ".github/workflows/task064_diagnostics_permanent.yml",
+      "size_bytes": 8135
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task064_emergency_crm_quiesce.yml",
+      "git_blob_sha1": "b28d9ca19b24a645227c814f17794ec196fe1e02",
+      "original_path": ".github/workflows/task064_emergency_crm_quiesce.yml",
+      "size_bytes": 2038
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task064_read_crm_lock_context.yml",
+      "git_blob_sha1": "4e53904e02723a85d5375c7f07a1b2dbe3063996",
+      "original_path": ".github/workflows/task064_read_crm_lock_context.yml",
+      "size_bytes": 1977
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task064_trace_wrapper_probe.yml",
+      "git_blob_sha1": "a66945d11ec51f3e7664e58a3c4ba4951a11a5c7",
+      "original_path": ".github/workflows/task064_trace_wrapper_probe.yml",
+      "size_bytes": 1260
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task065_counter_v2_hotfix.yml",
+      "git_blob_sha1": "07fd37635382a8e353396b99fc1798c97f4d0e00",
+      "original_path": ".github/workflows/task065_counter_v2_hotfix.yml",
+      "size_bytes": 2644
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task065_crm_photo_fastpath.yml",
+      "git_blob_sha1": "13da7ba1efe766a6304319adda2fbaaedec8dc1f",
+      "original_path": ".github/workflows/task065_crm_photo_fastpath.yml",
+      "size_bytes": 2245
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task065_photo_path_probe.yml",
+      "git_blob_sha1": "3573bdf630c754acc1fcf29b74abdb2e89022e94",
+      "original_path": ".github/workflows/task065_photo_path_probe.yml",
+      "size_bytes": 1218
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task065_ua0011_probe.yml",
+      "git_blob_sha1": "e17ee66f623785266972e932eab86db2bb8a0d7f",
+      "original_path": ".github/workflows/task065_ua0011_probe.yml",
+      "size_bytes": 1235
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task065_voice_path_probe.yml",
+      "git_blob_sha1": "d5bfb726c8bdaba40c73d582152a9bc016086e70",
+      "original_path": ".github/workflows/task065_voice_path_probe.yml",
+      "size_bytes": 1247
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task066_stage_anchor_deploy.yml",
+      "git_blob_sha1": "88d79e38c79628ffae3e2e9de639553624c980a1",
+      "original_path": ".github/workflows/task066_stage_anchor_deploy.yml",
+      "size_bytes": 9616
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task066_stage_anchor_probe.yml",
+      "git_blob_sha1": "419b064aa7a35421ca691aeda493570be8f0d350",
+      "original_path": ".github/workflows/task066_stage_anchor_probe.yml",
+      "size_bytes": 2479
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task067_crm_online_guard_deploy.yml",
+      "git_blob_sha1": "93adaaed99a9c8419ffd2e7af558392e4894076d",
+      "original_path": ".github/workflows/task067_crm_online_guard_deploy.yml",
+      "size_bytes": 9028
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task067_health_probe.yml",
+      "git_blob_sha1": "9814bb740e011cce4d048835d435c3fd52bb458e",
+      "original_path": ".github/workflows/task067_health_probe.yml",
+      "size_bytes": 12801
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task067_read_only_audit.yml",
+      "git_blob_sha1": "6af4c224b1d02a9dc22b4ba206c6f788794a1be5",
+      "original_path": ".github/workflows/task067_read_only_audit.yml",
+      "size_bytes": 2102
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task068_catalog_structure_probe.yml",
+      "git_blob_sha1": "12da76bf49899b54f893d38c8e8c162026a6867f",
+      "original_path": ".github/workflows/task068_catalog_structure_probe.yml",
+      "size_bytes": 4027
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task068_ferry_vin_deploy.yml",
+      "git_blob_sha1": "6853091dc696acdbe931fbe83cdbbd321ed40f34",
+      "original_path": ".github/workflows/task068_ferry_vin_deploy.yml",
+      "size_bytes": 12238
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task068_ferry_vin_probe.yml",
+      "git_blob_sha1": "ca78b8dd1c89393d3e85d87edf590fffaae2c829",
+      "original_path": ".github/workflows/task068_ferry_vin_probe.yml",
+      "size_bytes": 2445
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task069_crm_container_gate_a.yml",
+      "git_blob_sha1": "82740a31592e585e9de38141e9f8ca4751ce108c",
+      "original_path": ".github/workflows/task069_crm_container_gate_a.yml",
+      "size_bytes": 2476
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task069_crm_container_gate_b.yml",
+      "git_blob_sha1": "7605b05eea327a954313c9c6dd793ef3ef93dea9",
+      "original_path": ".github/workflows/task069_crm_container_gate_b.yml",
+      "size_bytes": 6705
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task069_crm_container_readonly.yml",
+      "git_blob_sha1": "e7af77707d4a9910df2365ef61137d605a28ad7e",
+      "original_path": ".github/workflows/task069_crm_container_readonly.yml",
+      "size_bytes": 2431
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task070_real_context_probe.yml",
+      "git_blob_sha1": "5e947f0e15d802c5c458dfc672505660f5f0d373",
+      "original_path": ".github/workflows/task070_real_context_probe.yml",
+      "size_bytes": 2481
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task071_call_path_read.yml",
+      "git_blob_sha1": "b94a91be5678973f0e374e7c24d03ac3ff0a3b62",
+      "original_path": ".github/workflows/task071_call_path_read.yml",
+      "size_bytes": 2351
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task072_gate_a_v2.yml",
+      "git_blob_sha1": "4cf1419fab34087ca77f3bbbb66d61f1406b6ad9",
+      "original_path": ".github/workflows/task072_gate_a_v2.yml",
+      "size_bytes": 2081
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task072_gate_b.yml",
+      "git_blob_sha1": "4fea08c55c4f17c8668502f5336802db021e46fb",
+      "original_path": ".github/workflows/task072_gate_b.yml",
+      "size_bytes": 4367
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task073_gate_a_live_probe.yml",
+      "git_blob_sha1": "be77f5fd5d95cd3208974b8a06d4ed53da19e87e",
+      "original_path": ".github/workflows/task073_gate_a_live_probe.yml",
+      "size_bytes": 2875
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task073_gate_a_v5.yml",
+      "git_blob_sha1": "76d198309abf4fa15b9058b89483c2bea894a938",
+      "original_path": ".github/workflows/task073_gate_a_v5.yml",
+      "size_bytes": 1501
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task073_gate_b_v5.yml",
+      "git_blob_sha1": "c67bb4113a450e9a3dbca162e9d06de66532da41",
+      "original_path": ".github/workflows/task073_gate_b_v5.yml",
+      "size_bytes": 2266
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task074_catalog_card_unify.yml",
+      "git_blob_sha1": "e226e9c7d55fca71a69fcdfc82d1bafc39dd434d",
+      "original_path": ".github/workflows/task074_catalog_card_unify.yml",
+      "size_bytes": 3677
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task075_stage_guard_sandbox.yml",
+      "git_blob_sha1": "901d250c0f75bc9c35ae09ea21f15fa0bae1f635",
+      "original_path": ".github/workflows/task075_stage_guard_sandbox.yml",
+      "size_bytes": 5678
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task076_eta_gate_a_live.yml",
+      "git_blob_sha1": "af986109d5cc0f53f65ef3f66b41f2a4b6dcc943",
+      "original_path": ".github/workflows/task076_eta_gate_a_live.yml",
+      "size_bytes": 4428
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task077_container_stage_sync_gate_a.yml",
+      "git_blob_sha1": "2e8bf31479c82b690a9fd1a100b2a6d1f45eadf0",
+      "original_path": ".github/workflows/task077_container_stage_sync_gate_a.yml",
+      "size_bytes": 5405
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task077_container_stage_sync_gate_b.yml",
+      "git_blob_sha1": "d48f9e3d959347b1c8d0515d99e47ee55e4a890f",
+      "original_path": ".github/workflows/task077_container_stage_sync_gate_b.yml",
+      "size_bytes": 4988
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task078_voice_watchdog_gate_a.yml",
+      "git_blob_sha1": "acdc9dec1a49e1d7d92a2e7fb88ac68bdcb38b39",
+      "original_path": ".github/workflows/task078_voice_watchdog_gate_a.yml",
+      "size_bytes": 4685
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task080_price_candidate.yml",
+      "git_blob_sha1": "1c2bcb6a985600625f3c64a398723ea3b064d369",
+      "original_path": ".github/workflows/task080_price_candidate.yml",
+      "size_bytes": 3301
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task080_price_gate_a.yml",
+      "git_blob_sha1": "54b6fdd34f132a5398853d08e892ce3e5f41e796",
+      "original_path": ".github/workflows/task080_price_gate_a.yml",
+      "size_bytes": 5508
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task081_publish_repair_gate_a_v2.yml",
+      "git_blob_sha1": "7d4ef045486fcc9975907bdaf2065e0860f6564d",
+      "original_path": ".github/workflows/task081_publish_repair_gate_a_v2.yml",
+      "size_bytes": 4842
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task081_publish_repair_gate_b_v2.yml",
+      "git_blob_sha1": "2e8c6aef415d3fc329826476bb3d74d5a4cea391",
+      "original_path": ".github/workflows/task081_publish_repair_gate_b_v2.yml",
+      "size_bytes": 2587
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task081_publish_repair_live_audit_v2.yml",
+      "git_blob_sha1": "97d4a486d9afb811c21b64f9dcd0c426e4129c84",
+      "original_path": ".github/workflows/task081_publish_repair_live_audit_v2.yml",
+      "size_bytes": 4693
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task082_audit_probe.yml",
+      "git_blob_sha1": "310b39c06a1aaba6c7bdd36de113cc405f268937",
+      "original_path": ".github/workflows/task082_audit_probe.yml",
+      "size_bytes": 5454
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task082_audit_probe_persist.yml",
+      "git_blob_sha1": "7a28ba82d131b33a13b703694e1bbbb9a3fad1e2",
+      "original_path": ".github/workflows/task082_audit_probe_persist.yml",
+      "size_bytes": 4262
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task082_catalog_stage_production.yml",
+      "git_blob_sha1": "9e31e1d5bbacf933fe4c6d899b6b473a2b6110ee",
+      "original_path": ".github/workflows/task082_catalog_stage_production.yml",
+      "size_bytes": 716
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task082_live_source_probe.yml",
+      "git_blob_sha1": "850023caf2bc46c0e298703e9d7d543c1a27e5da",
+      "original_path": ".github/workflows/task082_live_source_probe.yml",
+      "size_bytes": 3359
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task082_source_probe_persist.yml",
+      "git_blob_sha1": "6b1a2e3c05fba36bc6a71fbf1ffbf7d6968e3f98",
+      "original_path": ".github/workflows/task082_source_probe_persist.yml",
+      "size_bytes": 4319
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task082_stage_probe.yml",
+      "git_blob_sha1": "695a2470288e798fa0539e299de26781d0dfb001",
+      "original_path": ".github/workflows/task082_stage_probe.yml",
+      "size_bytes": 1735
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task082_vin4_title_deploy.yml",
+      "git_blob_sha1": "12467dad3f26b97a667b3f8fc8d728eda3e316c8",
+      "original_path": ".github/workflows/task082_vin4_title_deploy.yml",
+      "size_bytes": 1931
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task082_vin4_title_production.yml",
+      "git_blob_sha1": "62f8b299d6419363ece5b2c8d0d1609342d423f4",
+      "original_path": ".github/workflows/task082_vin4_title_production.yml",
+      "size_bytes": 3992
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task083_catalog_dedup.yml",
+      "git_blob_sha1": "66dd8b323723bdf9516906d0c7a74d1ec53ba1c6",
+      "original_path": ".github/workflows/task083_catalog_dedup.yml",
+      "size_bytes": 3904
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task083_production_hold.yml",
+      "git_blob_sha1": "b8f16282578f092c2a3cd81a22f6e574cb8eaee0",
+      "original_path": ".github/workflows/task083_production_hold.yml",
+      "size_bytes": 1808
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task083_publish_transaction.yml",
+      "git_blob_sha1": "2f549cd792a18d1830a14649213210f4f796d626",
+      "original_path": ".github/workflows/task083_publish_transaction.yml",
+      "size_bytes": 6416
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task084_crm_hang_remediation_gate_a.yml",
+      "git_blob_sha1": "05ceeebf3d655ed9d0961111c72fc7d7c96d5b50",
+      "original_path": ".github/workflows/task084_crm_hang_remediation_gate_a.yml",
+      "size_bytes": 4333
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task084_crm_hang_root_cause.yml",
+      "git_blob_sha1": "efe8876f0fcb446c0ec39f709eda9420158569af",
+      "original_path": ".github/workflows/task084_crm_hang_root_cause.yml",
+      "size_bytes": 2224
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task084_crm_hang_root_cause_production.yml",
+      "git_blob_sha1": "8ff4d4aa6abeb80277f65cf45457ee0bd737482a",
+      "original_path": ".github/workflows/task084_crm_hang_root_cause_production.yml",
+      "size_bytes": 5835
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task084_gate_a_live_read_only.yml",
+      "git_blob_sha1": "b8e095db5158b9aa132e01cbb38117d956e5f366",
+      "original_path": ".github/workflows/task084_gate_a_live_read_only.yml",
+      "size_bytes": 2543
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task084_korea_reset_gate_a.yml",
+      "git_blob_sha1": "2d7b46e7f9174c00c48dfb61d8f228dc3847fea9",
+      "original_path": ".github/workflows/task084_korea_reset_gate_a.yml",
+      "size_bytes": 7588
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task085_stage_payload_reset_production.yml",
+      "git_blob_sha1": "07d1f8732eab34274df33f5aafe3699f840af6f6",
+      "original_path": ".github/workflows/task085_stage_payload_reset_production.yml",
+      "size_bytes": 342
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task086_public_catalog_readonly_probe.yml",
+      "git_blob_sha1": "92c372b87f376d5c8bc247bac6b41463ea099b4d",
+      "original_path": ".github/workflows/task086_public_catalog_readonly_probe.yml",
+      "size_bytes": 3311
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task086_renderer_gate_a.yml",
+      "git_blob_sha1": "4e62a51c511b0c35cd5d3eb4e3f48d1423a15386",
+      "original_path": ".github/workflows/task086_renderer_gate_a.yml",
+      "size_bytes": 7234
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task086_ua0011_ferry_stage_counter_production.yml",
+      "git_blob_sha1": "073a52fea726f6186489f5e23c6c395ddec57d7e",
+      "original_path": ".github/workflows/task086_ua0011_ferry_stage_counter_production.yml",
+      "size_bytes": 11494
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task087_ua0011_korea_stage_production.yml",
+      "git_blob_sha1": "3b10ea5045c6a89c2d65479ad6df673748ef68cf",
+      "original_path": ".github/workflows/task087_ua0011_korea_stage_production.yml",
+      "size_bytes": 447
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task089_crm_voice_photo_live_audit.yml",
+      "git_blob_sha1": "978a18cee67ac73480d486bb7ce9fe4a5899fcad",
+      "original_path": ".github/workflows/task089_crm_voice_photo_live_audit.yml",
+      "size_bytes": 3316
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task090_catalog_design_restore.yml",
+      "git_blob_sha1": "5bdf1eaa17e232e03408254532ef48645eb68b80",
+      "original_path": ".github/workflows/task090_catalog_design_restore.yml",
+      "size_bytes": 5903
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task091_numeric_claim_guard.yml",
+      "git_blob_sha1": "2a5b5046830fb2d41f5207658e61e4b3b8424875",
+      "original_path": ".github/workflows/task091_numeric_claim_guard.yml",
+      "size_bytes": 5414
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task092_anthropic_reset_autostart.yml",
+      "git_blob_sha1": "24b0b7f6ea77bb732f78364e24788141d3243445",
+      "original_path": ".github/workflows/task092_anthropic_reset_autostart.yml",
+      "size_bytes": 5224
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task092_autostart.yml",
+      "git_blob_sha1": "4e8d9ee97d141bd1b49b49900a1bb301c0cb079e",
+      "original_path": ".github/workflows/task092_autostart.yml",
+      "size_bytes": 478
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task092_launch_after_limit.yml",
+      "git_blob_sha1": "109ec6e4bf83dcec20d22663bd6c76a09e3f986d",
+      "original_path": ".github/workflows/task092_launch_after_limit.yml",
+      "size_bytes": 3154
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task093_home_stage_counter_sync_production.yml",
+      "git_blob_sha1": "f0891a908f9c2819477a3bfdeec2ac4040734ed9",
+      "original_path": ".github/workflows/task093_home_stage_counter_sync_production.yml",
+      "size_bytes": 6481
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task094_claude_autostart.yml",
+      "git_blob_sha1": "b3b1826d65a60759cd20f839c41303be8ab764dc",
+      "original_path": ".github/workflows/task094_claude_autostart.yml",
+      "size_bytes": 2712
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task095_catalog_visual_diagnostic.yml",
+      "git_blob_sha1": "e1a1483ceba2fc72e23cce7504f454497b8fac36",
+      "original_path": ".github/workflows/task095_catalog_visual_diagnostic.yml",
+      "size_bytes": 3332
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task095_catalog_visual_repair.yml",
+      "git_blob_sha1": "b77dd11097beda99dd555d397bbbfc830503b992",
+      "original_path": ".github/workflows/task095_catalog_visual_repair.yml",
+      "size_bytes": 9015
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task095_catalog_visual_repair_v2.yml",
+      "git_blob_sha1": "40c7c41397ff2668590d2410b167664260c2d9b0",
+      "original_path": ".github/workflows/task095_catalog_visual_repair_v2.yml",
+      "size_bytes": 8410
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task095_catalog_visual_repair_v3.yml",
+      "git_blob_sha1": "0ac0f24cf4be0e986b9b76e200cd9b120e9b5e4a",
+      "original_path": ".github/workflows/task095_catalog_visual_repair_v3.yml",
+      "size_bytes": 7759
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_autorun_orchestrator.yml",
+      "git_blob_sha1": "c41ebab27263579459b023d962cca59e1a1fd642",
+      "original_path": ".github/workflows/task096_autorun_orchestrator.yml",
+      "size_bytes": 3977
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_claude_sandbox.yml",
+      "git_blob_sha1": "8dd15da43a32edd957a258528f65c9010492e052",
+      "original_path": ".github/workflows/task096_claude_sandbox.yml",
+      "size_bytes": 3791
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_controller_sandbox.yml",
+      "git_blob_sha1": "4fc8fdf6a0ff2c52218cbc220fdc938a25bdcd97",
+      "original_path": ".github/workflows/task096_controller_sandbox.yml",
+      "size_bytes": 7677
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_data_enrichment_sandbox.yml",
+      "git_blob_sha1": "0ebe7749a6488736ba0e57fb25707dd28ac4a103",
+      "original_path": ".github/workflows/task096_data_enrichment_sandbox.yml",
+      "size_bytes": 11741
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_enrichment_repair_v2.yml",
+      "git_blob_sha1": "21edfc2bb75cf5d39402960f1f7c82f1844da905",
+      "original_path": ".github/workflows/task096_enrichment_repair_v2.yml",
+      "size_bytes": 3890
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_enrichment_repair_v3.yml",
+      "git_blob_sha1": "8d199704f5260245a8d2ce65eb05c64a5f16306e",
+      "original_path": ".github/workflows/task096_enrichment_repair_v3.yml",
+      "size_bytes": 3783
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_enrichment_repair_v4.yml",
+      "git_blob_sha1": "cac07c672f1dc416e719d42c0b80bdb9e73b19d8",
+      "original_path": ".github/workflows/task096_enrichment_repair_v4.yml",
+      "size_bytes": 2984
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_enrichment_repair_v5.yml",
+      "git_blob_sha1": "8ee3adb0d87ff277a7d5ecc6977e6ffe2146a74b",
+      "original_path": ".github/workflows/task096_enrichment_repair_v5.yml",
+      "size_bytes": 3323
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_enrichment_repair_v6.yml",
+      "git_blob_sha1": "2bfa6698f68dff6ea58bf65a4e2e83efa307ebc1",
+      "original_path": ".github/workflows/task096_enrichment_repair_v6.yml",
+      "size_bytes": 3439
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_enrichment_repair_v7.yml",
+      "git_blob_sha1": "bce63f384cb084b87df8f72b2fd8d785d593c26f",
+      "original_path": ".github/workflows/task096_enrichment_repair_v7.yml",
+      "size_bytes": 4448
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_enrichment_repair_v8.yml",
+      "git_blob_sha1": "1567e68fef3077d8d64fb5765c3833b6bc3530bd",
+      "original_path": ".github/workflows/task096_enrichment_repair_v8.yml",
+      "size_bytes": 6607
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_final_fix.yml",
+      "git_blob_sha1": "220fa488795e745a3f6e75ebb3f70d3067e60f67",
+      "original_path": ".github/workflows/task096_final_fix.yml",
+      "size_bytes": 3716
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_recovery10.yml",
+      "git_blob_sha1": "dc3bcc773983d64b31157a70583cff9d1cbe9551",
+      "original_path": ".github/workflows/task096_recovery10.yml",
+      "size_bytes": 8122
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task096_repair_trigger.yml",
+      "git_blob_sha1": "b97acd229b26fdd157e91b493331efa6b36a4726",
+      "original_path": ".github/workflows/task096_repair_trigger.yml",
+      "size_bytes": 817
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task097_editorial_atlas_audit.yml",
+      "git_blob_sha1": "4d38bb5032f048a9430856195c25d6557a17e574",
+      "original_path": ".github/workflows/task097_editorial_atlas_audit.yml",
+      "size_bytes": 20008
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task098_editorial_atlas_qa.yml",
+      "git_blob_sha1": "7440245ef224ff2b3b3b34e134926dcb58e7fcac",
+      "original_path": ".github/workflows/task098_editorial_atlas_qa.yml",
+      "size_bytes": 21965
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task098_editorial_atlas_qa_retry.yml",
+      "git_blob_sha1": "30a666e941d20f068cf90888e04ba20d9e3a81d8",
+      "original_path": ".github/workflows/task098_editorial_atlas_qa_retry.yml",
+      "size_bytes": 7888
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task099_live_audit.yml",
+      "git_blob_sha1": "3f2280a314c4c045a8ffb90c656859f554097b17",
+      "original_path": ".github/workflows/task099_live_audit.yml",
+      "size_bytes": 3233
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task099_partial_recovery.yml",
+      "git_blob_sha1": "91ea87e358f304aec43cf4c12c8a8134ff2d1340",
+      "original_path": ".github/workflows/task099_partial_recovery.yml",
+      "size_bytes": 6481
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task099_remote_state_probe.yml",
+      "git_blob_sha1": "19d3bf75a119e1128b07e0566ab2bdd1959e087c",
+      "original_path": ".github/workflows/task099_remote_state_probe.yml",
+      "size_bytes": 10816
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task099_site_crm_production.yml",
+      "git_blob_sha1": "386f4810efd055331d59036def867d239b9bbd37",
+      "original_path": ".github/workflows/task099_site_crm_production.yml",
+      "size_bytes": 7901
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task100_home_live_sync.yml",
+      "git_blob_sha1": "efb6e53d4f291800be7bf3409e8dfce3b5770e19",
+      "original_path": ".github/workflows/task100_home_live_sync.yml",
+      "size_bytes": 3014
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task102_seo_audit.yml",
+      "git_blob_sha1": "f4313a7e0673a5e167a04a001ba580bc4ed5c30e",
+      "original_path": ".github/workflows/task102_seo_audit.yml",
+      "size_bytes": 6685
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task102_seo_routing_probe.yml",
+      "git_blob_sha1": "d3535c34098d0075790b07355274a75ebc691722",
+      "original_path": ".github/workflows/task102_seo_routing_probe.yml",
+      "size_bytes": 1407
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task103_ge_8country_sandbox_autostart.yml",
+      "git_blob_sha1": "37434afaafee3e889ba3e15dc8cd036afc44a7a3",
+      "original_path": ".github/workflows/task103_ge_8country_sandbox_autostart.yml",
+      "size_bytes": 4165
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task104_canary_recovery.yml",
+      "git_blob_sha1": "6607d9559beec9369255d08667cff59d7fb2b681",
+      "original_path": ".github/workflows/task104_canary_recovery.yml",
+      "size_bytes": 1925
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task104_canary_worker.yml",
+      "git_blob_sha1": "16d19fb110c2dbb455a311cf77351aa704d20ab8",
+      "original_path": ".github/workflows/task104_canary_worker.yml",
+      "size_bytes": 1786
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task104_integration_canary.yml",
+      "git_blob_sha1": "40100502cb7851faf43faf33f25916b5f79ba627",
+      "original_path": ".github/workflows/task104_integration_canary.yml",
+      "size_bytes": 7211
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task104_self_recovery_sandbox.yml",
+      "git_blob_sha1": "c61ca6f46f2e29b4c49151deaf1a31aaba046a11",
+      "original_path": ".github/workflows/task104_self_recovery_sandbox.yml",
+      "size_bytes": 3044
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task107_r2_acceptance.yml",
+      "git_blob_sha1": "a002269eebb672db8ab8b89fd4073338e99769d6",
+      "original_path": ".github/workflows/task107_r2_acceptance.yml",
+      "size_bytes": 7441
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task109_container_tracking_inline.yml",
+      "git_blob_sha1": "eb25f4cf7aa4aa7a60409a18aa7914e7d41ef817",
+      "original_path": ".github/workflows/task109_container_tracking_inline.yml",
+      "size_bytes": 2155
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task109_storage_probe.yml",
+      "git_blob_sha1": "dfb8a49e5deca0ffebecfba3d49623bd32c59813",
+      "original_path": ".github/workflows/task109_storage_probe.yml",
+      "size_bytes": 1409
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task110_storage_probe.yml",
+      "git_blob_sha1": "26580615c665dda9b240c2c0037e3eaf617f9ed6",
+      "original_path": ".github/workflows/task110_storage_probe.yml",
+      "size_bytes": 1403
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task110_vin_spec_3src.yml",
+      "git_blob_sha1": "9742b0fdc146958b988098a2463b76641b79ec73",
+      "original_path": ".github/workflows/task110_vin_spec_3src.yml",
+      "size_bytes": 2355
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task111_storage_probe.yml",
+      "git_blob_sha1": "f564b79f7acc1bd2ad934a88ef28ae25c0efc827",
+      "original_path": ".github/workflows/task111_storage_probe.yml",
+      "size_bytes": 4955
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task111_vin_spec_10src.yml",
+      "git_blob_sha1": "0e8063b3d6a69a3868d511a7c86ea5b3c43aec7a",
+      "original_path": ".github/workflows/task111_vin_spec_10src.yml",
+      "size_bytes": 3117
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/task113_global_autopilot_activation.yml",
+      "git_blob_sha1": "6c37f1f059efa6c468231a20dd22d60d15de6c7e",
+      "original_path": ".github/workflows/task113_global_autopilot_activation.yml",
+      "size_bytes": 5899
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/ua_art_autopilot_core_v2_sandbox.yml",
+      "git_blob_sha1": "bae9d25feac1764a69594dd855fab7f703a7f7bd",
+      "original_path": ".github/workflows/ua_art_autopilot_core_v2_sandbox.yml",
+      "size_bytes": 2761
+    },
+    {
+      "archive_path": ".github/legacy-workflows/TASK113/uaart_rollback.yml",
+      "git_blob_sha1": "da4f99fa698833f16560a5cb318e91c0a7b8698d",
+      "original_path": ".github/workflows/uaart_rollback.yml",
+      "size_bytes": 6925
+    }
+  ],
+  "active_count": 9,
+  "active_workflows": [
+    ".github/workflows/uaart_autostart.yml",
+    ".github/workflows/uaart_backup.yml",
+    ".github/workflows/uaart_critical.yml",
+    ".github/workflows/uaart_fast.yml",
+    ".github/workflows/uaart_maintenance.yml",
+    ".github/workflows/uaart_monitor.yml",
+    ".github/workflows/uaart_orchestrator.yml",
+    ".github/workflows/uaart_standard.yml",
+    ".github/workflows/uaart_transaction_watchdog.yml"
+  ],
+  "automatic_workflows_before": 125,
+  "created_at": "2026-09-04T15:03:28Z",
+  "legacy_direct_production_secret_consumers_before": 104,
+  "legacy_production_secret_expressions_archived": 118,
+  "production_touched": false,
+  "protected_site_crm_card_media_changes": 0,
+  "rollback": {
+    "action": "restore archived git blobs to original paths and remove archive paths",
+    "exact_source_commit": "5eabff87d3f6353f202652914c707d4d1c810a8d",
+    "exact_source_tree": "a728b9dc85b225da50e7f55706eee571fa9a8a7f"
+  },
+  "schema_version": "UA-ART-LEGACY-WORKFLOW-QUARANTINE-1",
+  "task_id": "TASK113-GLOBAL-PRODUCTION-AUTOPILOT-HARDENING"
+}

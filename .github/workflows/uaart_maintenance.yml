@@ -32,66 +32,25 @@ jobs:
         run: |
           set -euo pipefail
           python3 -W error -m py_compile \
+            automation/autostart_intake.py \
+            automation/control_plane.py \
             automation/task_orchestrator.py \
             automation/execution_contract.py \
             automation/critical_adapter.py \
-            automation/production_queue.py
+            automation/production_queue.py \
+            automation/transaction_watchdog.py
           python3 automation/task_orchestrator.py self-test
           python3 automation/critical_adapter.py self-test
           python3 automation/production_queue.py self-test
+          python3 -m unittest discover -s automation/packages/task107_r2 -p 'test_*.py' -v
 
       - name: Audit permanent workflow set and repository hygiene
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import pathlib
-
-          permanent = {
-              'uaart_orchestrator.yml',
-              'uaart_fast.yml',
-              'uaart_standard.yml',
-              'uaart_critical.yml',
-              'uaart_monitor.yml',
-              'uaart_backup.yml',
-              'uaart_rollback.yml',
-              'uaart_maintenance.yml',
-          }
-          workflow_root = pathlib.Path('.github/workflows')
-          missing = sorted(
-              name for name in permanent if not (workflow_root / name).is_file()
-          )
-          if missing:
-              raise SystemExit('PERMANENT_WORKFLOW_MISSING:' + ','.join(missing))
-          tracked_cache = [
-              line.strip()
-              for line in __import__('subprocess').check_output(
-                  ['git', 'ls-files'], text=True
-              ).splitlines()
-              if '__pycache__/' in line or line.endswith('.pyc')
-          ]
-          if tracked_cache:
-              raise SystemExit('TRACKED_PYTHON_CACHE:' + ','.join(tracked_cache))
-          workflows = sorted(
-              path.name
-              for path in workflow_root.iterdir()
-              if path.suffix in {'.yml', '.yaml'}
-          )
-          result = {
-              'status': 'PASS',
-              'production_write': False,
-              'permanent_workflows': sorted(permanent),
-              'permanent_count': len(permanent),
-              'total_workflow_count': len(workflows),
-              'tracked_python_cache': [],
-          }
-          pathlib.Path('/tmp/uaart-maintenance.json').write_text(
-              json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
-              encoding='utf-8',
-          )
-          print(json.dumps(result, ensure_ascii=False, sort_keys=True))
-          PY
+          python3 automation/control_plane.py verify-mode --require AUTOMATIC \
+            | tee /tmp/uaart-maintenance.json
+          test -z "$(git ls-files | grep -E '(^|/)__pycache__/|\.pyc$' || true)"
 
       - name: Upload maintenance proof
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

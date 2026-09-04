@@ -55,7 +55,44 @@ class ControlPlaneTests(unittest.TestCase):
         for relative in CP.RUNTIME_PINNED_PATHS:
             path = root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text("fixture:" + relative + "\n", encoding="utf-8")
+            if relative in CP.ACTIVE_WORKFLOW_EVENT_POLICY:
+                name = pathlib.PurePosixPath(relative).name
+                if name == "uaart_autostart.yml":
+                    source = (
+                        "name: fixture\n"
+                        "on:\n"
+                        "  push:\n"
+                        "    branches:\n"
+                        "      - main\n"
+                        "    paths:\n"
+                        "      - 'tasks/launch/AUTO-*.json'\n"
+                    )
+                elif name in {
+                    "uaart_maintenance.yml",
+                    "uaart_monitor.yml",
+                    "uaart_transaction_watchdog.yml",
+                }:
+                    cron = {
+                        "uaart_maintenance.yml": "31 3 * * *",
+                        "uaart_monitor.yml": "17 */6 * * *",
+                        "uaart_transaction_watchdog.yml": "*/10 * * * *",
+                    }[name]
+                    source = (
+                        "name: fixture\n"
+                        "on:\n"
+                        "  schedule:\n"
+                        f"    - cron: '{cron}'\n"
+                        "  workflow_dispatch:\n"
+                    )
+                else:
+                    events = CP.ACTIVE_WORKFLOW_EVENT_POLICY[relative]
+                    source = "name: fixture\non:\n" + "".join(
+                        f"  {event}:\n" for event in sorted(events)
+                    )
+                source += "jobs:\n  fixture:\n    runs-on: ubuntu-latest\n"
+                path.write_text(source, encoding="utf-8")
+            else:
+                path.write_text("fixture:" + relative + "\n", encoding="utf-8")
         runtime = {
             "files": {
                 relative: CP.sha256_file(root / relative)
@@ -226,6 +263,92 @@ class ControlPlaneTests(unittest.TestCase):
             (root / "state/MANUAL_MODE.md").write_text("STATUS: ACTIVE\n", encoding="utf-8")
             with self.assertRaisesRegex(CP.ControlPlaneError, "MANUAL_MODE_NOT_INACTIVE"):
                 CP.verify_execution_mode(root=root)
+
+    def test_automatic_mode_rejects_legacy_production_credential_reference(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            legacy = root / ".github/workflows/legacy.yml"
+            legacy.write_text(
+                "name: legacy\non:\n  workflow_dispatch:\njobs:\n  unsafe:\n"
+                "    runs-on: ubuntu-latest\n    steps:\n      - run: echo unsafe\n"
+                "        env:\n          TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                CP.ControlPlaneError,
+                "ACTIVE_WORKFLOW_SET_MISMATCH",
+            ):
+                CP.verify_execution_mode(root=root)
+
+    def test_workflow_policy_rejects_bracket_secret_reference(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            target = root / ".github/workflows/uaart_fast.yml"
+            target.write_text(
+                target.read_text(encoding="utf-8")
+                + "# ${{ secrets['PYTHONANYWHERE_API_TOKEN'] }}\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(CP.ControlPlaneError, "PRODUCTION_CREDENTIAL_WORKFLOW_BYPASS"):
+                CP.verify_production_credential_workflow_policy(root=root)
+
+    def test_workflow_policy_accepts_disabled_legacy_placeholder(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            target = root / ".github/workflows/uaart_fast.yml"
+            target.write_text(
+                target.read_text(encoding="utf-8")
+                + "# ${{ secrets.UAART_LEGACY_PYTHONANYWHERE_TOKEN_DISABLED }}\n",
+                encoding="utf-8",
+            )
+            result = CP.verify_production_credential_workflow_policy(root=root)
+            self.assertEqual(result["status"], "PASS")
+
+    def test_workflow_policy_rejects_real_token_in_fast(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            target = root / ".github/workflows/uaart_fast.yml"
+            target.write_text(
+                target.read_text(encoding="utf-8")
+                + "# ${{ secrets.PYTHONANYWHERE_API_TOKEN }}\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                CP.ControlPlaneError, "PRODUCTION_CREDENTIAL_WORKFLOW_BYPASS"
+            ):
+                CP.verify_production_credential_workflow_policy(root=root)
+
+    def test_workflow_policy_rejects_inherited_secrets_outside_central_callers(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            target = root / ".github/workflows/uaart_fast.yml"
+            target.write_text(
+                target.read_text(encoding="utf-8") + "  secrets: inherit\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                CP.ControlPlaneError, "WORKFLOW_SECRET_INHERIT_BYPASS"
+            ):
+                CP.verify_production_credential_workflow_policy(root=root)
+
+    def test_workflow_policy_rejects_extra_automatic_event(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            target = root / ".github/workflows/uaart_fast.yml"
+            source = target.read_text(encoding="utf-8").replace(
+                "  workflow_call:\n", "  workflow_call:\n  pull_request:\n"
+            )
+            target.write_text(source, encoding="utf-8")
+            with self.assertRaisesRegex(
+                CP.ControlPlaneError, "WORKFLOW_EVENT_POLICY_MISMATCH"
+            ):
+                CP.verify_production_credential_workflow_policy(root=root)
 
     def test_exact_intake_uses_requested_path_not_highest_task_number(self):
         with tempfile.TemporaryDirectory() as folder:

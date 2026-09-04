@@ -52,6 +52,9 @@ RUNTIME_PINNED_PATHS = (
     ".github/workflows/uaart_fast.yml",
     ".github/workflows/uaart_standard.yml",
     ".github/workflows/uaart_critical.yml",
+    ".github/workflows/uaart_backup.yml",
+    ".github/workflows/uaart_maintenance.yml",
+    ".github/workflows/uaart_monitor.yml",
     ".github/workflows/uaart_transaction_watchdog.yml",
     "automation/autostart_intake.py",
     "automation/control_plane.py",
@@ -62,6 +65,47 @@ RUNTIME_PINNED_PATHS = (
     "automation/task_ticket.py",
     "automation/transaction_watchdog.py",
     "state/schemas/task_request.schema.json",
+)
+PRODUCTION_CREDENTIAL_WORKFLOW_ALLOWLIST = frozenset({
+    ".github/workflows/uaart_critical.yml",
+    ".github/workflows/uaart_transaction_watchdog.yml",
+})
+ACTIVE_WORKFLOW_EVENT_POLICY = {
+    ".github/workflows/uaart_autostart.yml": frozenset({"push"}),
+    ".github/workflows/uaart_orchestrator.yml": frozenset({
+        "workflow_call", "workflow_dispatch",
+    }),
+    ".github/workflows/uaart_fast.yml": frozenset({"workflow_call"}),
+    ".github/workflows/uaart_standard.yml": frozenset({"workflow_call"}),
+    ".github/workflows/uaart_critical.yml": frozenset({"workflow_call"}),
+    ".github/workflows/uaart_backup.yml": frozenset({
+        "workflow_call", "workflow_dispatch",
+    }),
+    ".github/workflows/uaart_maintenance.yml": frozenset({
+        "schedule", "workflow_dispatch",
+    }),
+    ".github/workflows/uaart_monitor.yml": frozenset({
+        "schedule", "workflow_dispatch",
+    }),
+    ".github/workflows/uaart_transaction_watchdog.yml": frozenset({
+        "schedule", "workflow_dispatch",
+    }),
+}
+SECRETS_INHERIT_WORKFLOW_ALLOWLIST = frozenset({
+    ".github/workflows/uaart_autostart.yml",
+    ".github/workflows/uaart_orchestrator.yml",
+})
+PRODUCTION_CREDENTIAL_REFERENCE_RE = re.compile(
+    r"secrets\s*(?:\.\s*PYTHONANYWHERE_API_TOKEN"
+    r"|\[\s*['\"]PYTHONANYWHERE_API_TOKEN['\"]\s*\])"
+)
+SECRETS_BRACKET_REFERENCE_RE = re.compile(r"secrets\s*\[")
+SECRETS_INHERIT_RE = re.compile(r"(?m)^\s*secrets:\s*inherit\s*(?:#.*)?$")
+SECRETS_SERIALIZATION_RE = re.compile(r"toJSON\s*\(\s*secrets\s*\)", re.IGNORECASE)
+WORKFLOW_REMOTE_DISPATCH_RE = re.compile(
+    r"(?:gh\s+workflow\s+run|/actions/workflows/[^\s'\"]+/dispatches"
+    r"|/actions/runs/[^\s'\"]+/rerun)",
+    re.IGNORECASE,
 )
 
 
@@ -151,6 +195,126 @@ def require_mode_status(path: pathlib.Path, expected: str) -> None:
     wanted = "STATUS: " + expected
     if lines != [wanted]:
         raise ControlPlaneError("EXECUTION_MODE_STATUS_CONFLICT:" + expected)
+
+
+def _workflow_trigger_block(source: str, relative: str) -> str:
+    lines = source.splitlines()
+    starts = [index for index, line in enumerate(lines) if line.rstrip() == "on:"]
+    if len(starts) != 1:
+        raise ControlPlaneError("WORKFLOW_ON_BLOCK_INVALID:" + relative)
+    start = starts[0]
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        line = lines[index]
+        if line and not line[0].isspace() and not line.lstrip().startswith("#"):
+            end = index
+            break
+    block = lines[start:end]
+    while block and not block[-1].strip():
+        block.pop()
+    if len(block) < 2:
+        raise ControlPlaneError("WORKFLOW_ON_BLOCK_EMPTY:" + relative)
+    return "\n".join(block) + "\n"
+
+
+def _workflow_events(source: str, relative: str) -> frozenset[str]:
+    block = _workflow_trigger_block(source, relative)
+    events: list[str] = []
+    for line in block.splitlines()[1:]:
+        match = re.fullmatch(r"  ([a-zA-Z_][a-zA-Z0-9_-]*):(?:\s*.*)?", line)
+        if match:
+            events.append(match.group(1))
+    if not events or len(events) != len(set(events)):
+        raise ControlPlaneError("WORKFLOW_EVENTS_INVALID:" + relative)
+    return frozenset(events)
+
+
+def verify_production_credential_workflow_policy(
+    *,
+    root: pathlib.Path = ROOT,
+) -> dict[str, Any]:
+    """Keep the write-capable PythonAnywhere credential inside pinned recovery paths.
+
+    An automatic or manual legacy workflow with the real secret reference is a
+    control-plane bypass even when its current script claims to be read-only:
+    the same triggering change could alter that script.  Non-production and
+    quarantined workflows must use a separately provisioned least-privilege
+    secret name or an intentionally unset disabled placeholder.
+    """
+    workflow_root = root / ".github/workflows"
+    if workflow_root.is_symlink() or not workflow_root.is_dir():
+        raise ControlPlaneError("WORKFLOW_POLICY_DIRECTORY_INVALID")
+    paths = sorted((*workflow_root.glob("*.yml"), *workflow_root.glob("*.yaml")))
+    relatives = {path.relative_to(root).as_posix() for path in paths}
+    expected = set(ACTIVE_WORKFLOW_EVENT_POLICY)
+    if relatives != expected:
+        missing = ",".join(sorted(expected - relatives)) or "-"
+        unexpected = ",".join(sorted(relatives - expected)) or "-"
+        raise ControlPlaneError(
+            "ACTIVE_WORKFLOW_SET_MISMATCH:missing=" + missing + ":unexpected=" + unexpected
+        )
+
+    consumers: list[str] = []
+    inherited: list[str] = []
+    event_inventory: dict[str, list[str]] = {}
+    for path in paths:
+        if path.is_symlink() or not path.is_file():
+            raise ControlPlaneError("WORKFLOW_POLICY_FILE_INVALID:" + path.name)
+        relative = path.relative_to(root).as_posix()
+        try:
+            source = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError as exc:
+            raise ControlPlaneError("WORKFLOW_NOT_UTF8:" + relative) from exc
+        events = _workflow_events(source, relative)
+        if events != ACTIVE_WORKFLOW_EVENT_POLICY[relative]:
+            raise ControlPlaneError("WORKFLOW_EVENT_POLICY_MISMATCH:" + relative)
+        event_inventory[relative] = sorted(events)
+        trigger = _workflow_trigger_block(source, relative)
+        if relative.endswith("uaart_autostart.yml"):
+            required = (
+                "on:\n"
+                "  push:\n"
+                "    branches:\n"
+                "      - main\n"
+                "    paths:\n"
+                "      - 'tasks/launch/AUTO-*.json'\n"
+            )
+            if trigger != required:
+                raise ControlPlaneError("AUTOSTART_TRIGGER_SCOPE_MISMATCH")
+        schedules = re.findall(
+            r"(?m)^\s+-\s+cron:\s*['\"]([^'\"]+)['\"]\s*$", trigger
+        )
+        expected_schedule = {
+            ".github/workflows/uaart_maintenance.yml": ["31 3 * * *"],
+            ".github/workflows/uaart_monitor.yml": ["17 */6 * * *"],
+            ".github/workflows/uaart_transaction_watchdog.yml": ["*/10 * * * *"],
+        }.get(relative, [])
+        if schedules != expected_schedule:
+            raise ControlPlaneError("WORKFLOW_SCHEDULE_POLICY_MISMATCH:" + relative)
+        if PRODUCTION_CREDENTIAL_REFERENCE_RE.search(source):
+            consumers.append(relative)
+            if relative not in PRODUCTION_CREDENTIAL_WORKFLOW_ALLOWLIST:
+                raise ControlPlaneError("PRODUCTION_CREDENTIAL_WORKFLOW_BYPASS:" + relative)
+        if SECRETS_BRACKET_REFERENCE_RE.search(source):
+            raise ControlPlaneError("WORKFLOW_SECRET_BRACKET_BYPASS:" + relative)
+        if SECRETS_SERIALIZATION_RE.search(source):
+            raise ControlPlaneError("WORKFLOW_SECRET_SERIALIZATION_BYPASS:" + relative)
+        if SECRETS_INHERIT_RE.search(source):
+            inherited.append(relative)
+            if relative not in SECRETS_INHERIT_WORKFLOW_ALLOWLIST:
+                raise ControlPlaneError("WORKFLOW_SECRET_INHERIT_BYPASS:" + relative)
+        if re.search(r"(?m)^\s*actions:\s*write\s*(?:#.*)?$", source):
+            raise ControlPlaneError("WORKFLOW_ACTIONS_WRITE_BYPASS:" + relative)
+        if WORKFLOW_REMOTE_DISPATCH_RE.search(source):
+            raise ControlPlaneError("WORKFLOW_REMOTE_DISPATCH_BYPASS:" + relative)
+    return {
+        "active_workflows": sorted(relatives),
+        "allowlist": sorted(PRODUCTION_CREDENTIAL_WORKFLOW_ALLOWLIST),
+        "consumers": consumers,
+        "events": event_inventory,
+        "secrets_inherit": inherited,
+        "status": "PASS",
+    }
 
 
 def verify_execution_mode(
@@ -355,6 +519,8 @@ def verify_execution_mode(
             raise ControlPlaneError("RUNTIME_PINNED_FILE_INVALID:" + relative)
         if sha256_file(pinned) != require_sha(files.get(relative), "runtime:" + relative):
             raise ControlPlaneError("RUNTIME_PINNED_FILE_SHA_MISMATCH:" + relative)
+
+    verify_production_credential_workflow_policy(root=root)
 
     result = dict(mode)
     result["status"] = "PASS"

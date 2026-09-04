@@ -63,6 +63,17 @@ class TransactionWatchdogTests(unittest.TestCase):
             with self.assertRaisesRegex(TW.WatchdogError, "TRANSACTION_REQUEST_SHA"):
                 TW.discover(root=root)
 
+    def test_multiple_open_transactions_fail_closed(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            first = self.fixture(root)
+            second = root / "state/transactions/second.json"
+            CP.atomic_json(second, CP.read_json(first))
+            with self.assertRaisesRegex(
+                TW.WatchdogError, "MULTIPLE_OPEN_PRODUCTION_TRANSACTIONS"
+            ):
+                TW.discover(root=root)
+
 
 if __name__ == "__main__":
     unittest.main()

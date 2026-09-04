@@ -105,6 +105,8 @@ def discover(*, root: pathlib.Path = ROOT) -> dict[str, Any]:
             pending.append(validate_transaction(path, root=root))
     if not pending:
         return {"has_pending": False}
+    if len(pending) != 1:
+        raise WatchdogError("MULTIPLE_OPEN_PRODUCTION_TRANSACTIONS")
     result = dict(pending[0])
     result["has_pending"] = True
     result["pending_count"] = len(pending)

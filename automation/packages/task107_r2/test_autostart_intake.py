@@ -16,16 +16,57 @@ import autostart_intake as AI  # noqa: E402
 import control_plane as CP  # noqa: E402
 
 
-NOW = dt.datetime(2026, 9, 4, 14, 0, tzinfo=dt.timezone.utc)
+NOW = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
+
+
+def timestamp(delta: dt.timedelta = dt.timedelta()) -> str:
+    return (NOW + delta).isoformat().replace("+00:00", "Z")
 
 
 class AutostartIntakeTests(unittest.TestCase):
     def write_mode(self, root: pathlib.Path) -> None:
-        activated = "2026-09-04T13:51:01Z"
+        activated = timestamp(dt.timedelta(minutes=-9))
         for relative in CP.RUNTIME_PINNED_PATHS:
             path = root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text("fixture:" + relative + "\n", encoding="utf-8")
+            if relative in CP.ACTIVE_WORKFLOW_EVENT_POLICY:
+                name = pathlib.PurePosixPath(relative).name
+                if name == "uaart_autostart.yml":
+                    source = (
+                        "name: fixture\n"
+                        "on:\n"
+                        "  push:\n"
+                        "    branches:\n"
+                        "      - main\n"
+                        "    paths:\n"
+                        "      - 'tasks/launch/AUTO-*.json'\n"
+                    )
+                elif name in {
+                    "uaart_maintenance.yml",
+                    "uaart_monitor.yml",
+                    "uaart_transaction_watchdog.yml",
+                }:
+                    cron = {
+                        "uaart_maintenance.yml": "31 3 * * *",
+                        "uaart_monitor.yml": "17 */6 * * *",
+                        "uaart_transaction_watchdog.yml": "*/10 * * * *",
+                    }[name]
+                    source = (
+                        "name: fixture\n"
+                        "on:\n"
+                        "  schedule:\n"
+                        f"    - cron: '{cron}'\n"
+                        "  workflow_dispatch:\n"
+                    )
+                else:
+                    source = "name: fixture\non:\n" + "".join(
+                        f"  {event}:\n"
+                        for event in sorted(CP.ACTIVE_WORKFLOW_EVENT_POLICY[relative])
+                    )
+                source += "jobs:\n  fixture:\n    runs-on: ubuntu-latest\n"
+                path.write_text(source, encoding="utf-8")
+            else:
+                path.write_text("fixture:" + relative + "\n", encoding="utf-8")
         runtime = {
             "files": {
                 relative: CP.sha256_file(root / relative)
@@ -146,15 +187,15 @@ class AutostartIntakeTests(unittest.TestCase):
         task_id: str = "TASK-AUTO-1",
         *,
         production_allowed: bool = False,
-        created_at: str = "2026-09-04T13:55:00Z",
-        expires_at: str = "2026-09-04T14:55:00Z",
+        created_at: str | None = None,
+        expires_at: str | None = None,
         nonce: str = "nonce-1234567890-abcd",
     ) -> str:
         rel = "tasks/launch/AUTO-%s.json" % task_id
         marker = {
             "action": "RUN_EXACT_TASK",
-            "created_at": created_at,
-            "expires_at": expires_at,
+            "created_at": created_at or timestamp(dt.timedelta(minutes=-5)),
+            "expires_at": expires_at or timestamp(dt.timedelta(minutes=55)),
             "nonce": nonce,
             "mode_epoch": "auto-20260904T135101Z-testfixture0001",
             "owner_authorized": True,
@@ -247,10 +288,10 @@ class AutostartIntakeTests(unittest.TestCase):
             "state/receipts/TASK-AUTO-PROD-BACKUP.json"
         )
         approval = {
-            "approved_at": "2026-09-04T13:53:00Z",
+            "approved_at": timestamp(dt.timedelta(minutes=-7)),
             "authorization_id": "prod-auth-task-auto-prod-0001",
             "authorized_environment": "production",
-            "expires_at": "2026-09-04T14:55:00Z",
+            "expires_at": timestamp(dt.timedelta(minutes=55)),
             "gate_a_sha256": raw["critical"]["gate_a_sha256"],
             "launch_nonce": "nonce-prod-1234567890",
             "manifest_sha256": manifest_sha,
@@ -342,8 +383,8 @@ class AutostartIntakeTests(unittest.TestCase):
                 root,
                 request_rel,
                 request_sha,
-                created_at="2026-09-04T13:50:00Z",
-                expires_at="2026-09-04T14:30:00Z",
+                created_at=timestamp(dt.timedelta(minutes=-10)),
+                expires_at=timestamp(dt.timedelta(minutes=30)),
             )
             with self.assertRaisesRegex(AI.AutostartIntakeError, "AUTOSTART_MARKER_PREDATES_ACTIVATION"):
                 AI.validate_launch(launch, "run-1", "a" * 40, root=root, now=NOW)
@@ -357,8 +398,8 @@ class AutostartIntakeTests(unittest.TestCase):
                 root,
                 request_rel,
                 request_sha,
-                created_at="2026-09-04T13:52:00Z",
-                expires_at="2026-09-04T13:59:00Z",
+                created_at=timestamp(dt.timedelta(minutes=-8)),
+                expires_at=timestamp(dt.timedelta(minutes=-1)),
             )
             with self.assertRaisesRegex(AI.AutostartIntakeError, "AUTOSTART_MARKER_EXPIRED"):
                 AI.validate_launch(launch, "run-1", "a" * 40, root=root, now=NOW)

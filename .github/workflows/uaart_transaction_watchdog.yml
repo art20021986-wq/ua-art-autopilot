@@ -37,6 +37,7 @@ jobs:
             automation/control_plane.py \
             automation/execution_contract.py \
             automation/transaction_watchdog.py
+          python3 automation/control_plane.py verify-mode --require AUTOMATIC
           python3 automation/transaction_watchdog.py discover
 
       - name: Execute exact pinned rollback for orphaned transaction

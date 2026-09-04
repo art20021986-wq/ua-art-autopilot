@@ -133,7 +133,7 @@ jobs:
 
       - name: Execute FAST controller
         env:
-          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.UAART_NONPRODUCTION_PYTHONANYWHERE_TOKEN }}
           UAART_REQUEST_PATH: ${{ inputs.request_path }}
           UAART_TASK_ID: ${{ steps.contract.outputs.task_id }}
           UAART_TASK_CLASS: FAST
