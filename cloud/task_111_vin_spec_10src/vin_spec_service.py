@@ -598,10 +598,11 @@ def _refresh_published(
     return "FAIL", " | ".join(failures)[:500]
 
 
-def process_one(*, enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich) -> dict[str, Any] | None:
-    job = _claim()
-    if not job:
-        return None
+def _process_claimed(
+    job: dict[str, Any],
+    *,
+    enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich,
+) -> dict[str, Any]:
     uid, vin = str(job["car_uid"]), str(job["vin"])
     try:
         card = _current_card(uid, vin)
@@ -636,6 +637,57 @@ def process_one(*, enricher: Callable[[dict[str, Any]], dict[str, Any]] = source
             )
             conn.commit()
         return {"car_uid": uid, "status": final, "error": type(exc).__name__}
+
+
+def process_one(*, enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich) -> dict[str, Any] | None:
+    job = _claim()
+    return _process_claimed(job, enricher=enricher) if job else None
+
+
+def process_card_now(
+    value: Any,
+    *,
+    enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich,
+) -> dict[str, Any] | None:
+    """Atomically reclaim one terminal current job for installer remediation.
+
+    Unlike retry_card(), this creates no observable PENDING window.  It is
+    used only after the installer has observed that no worker still owns an
+    active job, preventing a hot-reloaded worker from reclaiming the row with
+    an older in-memory profile library.
+    """
+    uid = canonical_uid(value)
+    if not uid:
+        return None
+    card = next((item for item in read_cards() if item["car_uid"] == uid), None)
+    if not card:
+        return None
+    ensure_schema()
+    with connect_spec(False) as conn:
+        conn.execute("BEGIN IMMEDIATE")
+        row = conn.execute(
+            """SELECT * FROM vin_spec_jobs
+               WHERE car_uid=? AND vin=? AND policy_version=?
+                 AND status IN ('NEEDS_REVIEW','FAILED','READY')
+               ORDER BY id DESC LIMIT 1""",
+            (uid, card["vin"], source_policy.POLICY_VERSION),
+        ).fetchone()
+        if not row:
+            conn.commit()
+            return None
+        updated = conn.execute(
+            """UPDATE vin_spec_jobs SET status='RUNNING',attempts=1,
+               started_at=?,finished_at=NULL,last_error=NULL,
+               site_sync_status='NOT_REQUIRED',site_sync_detail=NULL
+               WHERE id=? AND status IN ('NEEDS_REVIEW','FAILED','READY')""",
+            (utc_now(), int(row["id"])),
+        )
+        claimed = (
+            dict(conn.execute("SELECT * FROM vin_spec_jobs WHERE id=?", (int(row["id"]),)).fetchone())
+            if updated.rowcount == 1 else None
+        )
+        conn.commit()
+    return _process_claimed(claimed, enricher=enricher) if claimed else None
 
 
 def card_state(value: Any) -> dict[str, Any]:
