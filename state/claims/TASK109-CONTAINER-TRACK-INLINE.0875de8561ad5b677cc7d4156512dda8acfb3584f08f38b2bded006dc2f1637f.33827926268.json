@@ -14,8 +14,8 @@
       "signature": "07fc9b97f94a4555"
     }
   ],
-  "heartbeat_at": "2026-09-04T02:01:48Z",
-  "heartbeat_sequence": 2,
+  "heartbeat_at": "2026-09-04T02:14:57Z",
+  "heartbeat_sequence": 3,
   "identity": {
     "run_id": "33827926268",
     "task_id": "TASK109-CONTAINER-TRACK-INLINE",
@@ -51,6 +51,11 @@
   },
   "storage_preflight_status": "THROTTLE_80",
   "task_class": "CRITICAL",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-09-04T02:01:48Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-09-04T02:14:57Z",
+  "production_touched": false,
+  "resolution": {
+    "at": "2026-09-04T02:14:57Z",
+    "reason": "Superseded by corrected target-account storage measurement; controller never executed and production was not touched."
+  }
 }
