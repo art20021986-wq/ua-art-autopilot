@@ -22,7 +22,8 @@ import sqlite3
 import stat
 import sys
 import tempfile
-from typing import Any, Iterable
+import time
+from typing import Any, Callable, Iterable
 
 import integration_patcher
 import source_policy
@@ -329,6 +330,82 @@ def _local_public_current(uid: str, expected: int) -> bool:
     return True
 
 
+def _current_job_rows(service: Any) -> list[dict[str, Any]]:
+    with service.connect_spec(True) as conn:
+        return [dict(row) for row in conn.execute(
+            """SELECT car_uid,status,facts_count,attempts,last_error
+               FROM vin_spec_jobs
+               WHERE policy_version=? AND status<>'SUPERSEDED'
+               ORDER BY car_uid""",
+            (source_policy.POLICY_VERSION,),
+        )]
+
+
+def _drain_full_backfill(
+    service: Any,
+    expected: int,
+    *,
+    timeout_seconds: int = 900,
+    state_reader: Callable[[], list[dict[str, Any]]] | None = None,
+    sleeper: Callable[[float], Any] = time.sleep,
+    clock: Callable[[], float] = time.monotonic,
+) -> dict[str, Any]:
+    """Finish or observe every current VIN even with concurrent CRM workers.
+
+    The CRM bot can legitimately claim some PENDING rows immediately after the
+    full requeue.  No single process therefore has to return all 16 results;
+    the durable invariant is 16 current rows in READY with at least ten facts.
+    """
+    if expected < 1:
+        raise InstallError("BACKFILL_EXPECTED_INVALID")
+    read_state = state_reader or (lambda: _current_job_rows(service))
+    deadline = clock() + max(1, int(timeout_seconds))
+    processed: list[dict[str, Any]] = []
+    recovered = 0
+    polls = 0
+    while True:
+        item = service.process_one()
+        if item is not None:
+            processed.append(item)
+            continue
+        rows = read_state()
+        polls += 1
+        ready = [
+            row for row in rows
+            if row.get("status") == "READY" and int(row.get("facts_count") or 0) >= 10
+        ]
+        if len(rows) == expected and len(ready) == expected:
+            installer_ready = {
+                str(item.get("car_uid")) for item in processed
+                if item.get("status") == "READY"
+            }
+            return {
+                "expected": expected,
+                "completed": len(ready),
+                "installer_completed": len(installer_ready),
+                "concurrent_worker_completed": expected - len(installer_ready),
+                "recovered_interrupted": recovered,
+                "polls": polls,
+                "processed": processed,
+            }
+        statuses: dict[str, int] = {}
+        for row in rows:
+            status = str(row.get("status") or "UNKNOWN")
+            statuses[status] = statuses.get(status, 0) + 1
+        active = sum(statuses.get(name, 0) for name in ("PENDING", "RUNNING", "PROCESSING"))
+        terminal = statuses.get("FAILED", 0) + statuses.get("NEEDS_REVIEW", 0)
+        if len(rows) != expected and active == 0:
+            raise InstallError("BACKFILL_INVENTORY:%d:%d" % (len(rows), expected))
+        if terminal and active == 0:
+            raise InstallError("BACKFILL_TERMINAL:" + json.dumps(statuses, sort_keys=True))
+        if len(rows) == expected and active == 0:
+            raise InstallError("BACKFILL_SHALLOW:" + json.dumps(statuses, sort_keys=True))
+        if clock() >= deadline:
+            raise InstallError("BACKFILL_WAIT_TIMEOUT:" + json.dumps(statuses, sort_keys=True))
+        recovered += int(service.recover_interrupted_jobs(stale_after_seconds=360))
+        sleeper(2)
+
+
 def verify_local_public(cards: list[dict[str, Any]]) -> dict[str, Any]:
     checked: dict[str, Any] = {}
     pages = 0
@@ -398,11 +475,8 @@ def run_install(invocation: str) -> dict[str, Any]:
             or int(backfill.get("queued") or 0) != int(scan["valid_vins"])
         ):
             raise InstallError("FULL_REQUEUE_INCOMPLETE")
-        processed = service.process_backlog(limit=int(backfill["valid_vins"]))
-        if len(processed) != int(backfill["valid_vins"]):
-            raise InstallError("BACKFILL_PROCESS_COUNT:%d:%d" % (
-                len(processed), int(backfill["valid_vins"])
-            ))
+        completion = _drain_full_backfill(service, int(backfill["valid_vins"]))
+        processed = completion.pop("processed")
         cards = service.read_cards()
         # process_one already refreshes published cards.  Only retry cards whose
         # two local public copies are not current; a second unconditional pass
@@ -446,7 +520,7 @@ def run_install(invocation: str) -> dict[str, Any]:
             "phase": "INSTALL", "finished_at": utc_now(), "backup": backup,
             "source_audit": audit, "source_hashes": source_hashes,
             "legacy_migration": migration, "scan": scan, "full_requeue": backfill,
-            "processed": processed,
+            "backfill_completion": completion, "processed": processed,
             "jobs": job_rows, "refreshes": refreshes, "public": public,
             "sidecar_quick_check": quick, "price_rows": price_rows,
             "crm_write": False, "crm_unchanged": True,
@@ -531,6 +605,27 @@ def selftest() -> None:
                 )
             assert _local_public_current("UA-0005", 2) is True
             assert _local_public_current("UA-0005", 3) is False
+        states = [
+            [
+                {"car_uid": "UA-%04d" % index,
+                 "status": "READY" if index <= 11 else "RUNNING",
+                 "facts_count": 20 if index <= 11 else 0}
+                for index in range(1, 17)
+            ],
+            [
+                {"car_uid": "UA-%04d" % index, "status": "READY", "facts_count": 20}
+                for index in range(1, 17)
+            ],
+        ]
+        fake = type("FakeService", (), {
+            "process_one": staticmethod(lambda: None),
+            "recover_interrupted_jobs": staticmethod(lambda **_kwargs: 0),
+        })()
+        completion = _drain_full_backfill(
+            fake, 16, state_reader=lambda: states.pop(0),
+            sleeper=lambda _seconds: None, clock=lambda: 0,
+        )
+        assert completion["completed"] == 16 and completion["polls"] == 2
     finally:
         ROOT = original_root
     print("UA111_REMOTE_INSTALLER_SELFTEST_PASS")
