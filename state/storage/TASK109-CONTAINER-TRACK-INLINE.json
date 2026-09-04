@@ -54,6 +54,18 @@
       "resources": [
         {
           "http_status": 404,
+          "resource": ""
+        },
+        {
+          "http_status": 404,
+          "resource": "account/"
+        },
+        {
+          "http_status": 404,
+          "resource": "files/"
+        },
+        {
+          "http_status": 404,
           "resource": "files/quota/"
         },
         {
@@ -61,6 +73,11 @@
           "resource": "quota/"
         }
       ]
+    },
+    "pythonanywhere_files_view": {
+      "authenticated_files_view": false,
+      "http_status": 200,
+      "read_only": true
     },
     "quota_bytes": {
       "argv": [
