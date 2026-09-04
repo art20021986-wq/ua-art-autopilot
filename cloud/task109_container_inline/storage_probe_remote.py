@@ -6,6 +6,7 @@ import datetime as dt
 import json
 import os
 import shutil
+import subprocess
 import tempfile
 
 
@@ -15,6 +16,20 @@ OUTPUT = "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task109_storage_p
 
 def main() -> int:
     usage = shutil.disk_usage(TARGET)
+    def run_read_only(argv):
+        try:
+            completed = subprocess.run(
+                argv, check=False, capture_output=True, text=True, timeout=120,
+            )
+            return {
+                "argv": argv,
+                "returncode": completed.returncode,
+                "stdout": completed.stdout[-4000:],
+                "stderr": completed.stderr[-2000:],
+            }
+        except Exception as exc:
+            return {"argv": argv, "error": type(exc).__name__ + ":" + str(exc)}
+
     # statvfs/shutil may report system-reserved blocks in ``used`` while
     # ``free`` is user-available capacity.  The control plane intentionally
     # reasons about the user-visible quota, so derive its matching used value.
@@ -28,6 +43,11 @@ def main() -> int:
         "free_bytes": int(usage.free),
         "measurement": "shutil.disk_usage:/home/Carix;used=total-user_available_free",
         "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+        "diagnostics": {
+            "quota_bytes": run_read_only(["quota", "-w"]),
+            "quota_human": run_read_only(["quota", "-s"]),
+            "official_du_bytes": run_read_only(["du", "-s", "-B", "1", "/tmp", "/home/Carix", "/var/www"]),
+        },
     }
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     handle = tempfile.NamedTemporaryFile(
