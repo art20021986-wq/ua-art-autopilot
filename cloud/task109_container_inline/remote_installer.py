@@ -42,6 +42,8 @@ PROTECTED_PATHS = (
     ROOT + "/start_safe.py",
     VIDEO_ROOT + "/index.html",
     VIDEO_ROOT + "/katalog.html",
+    SITE_ROOT + "/index.html",
+    SITE_ROOT + "/katalog.html",
 )
 SAFE_ROOT = ROOT + "/autopilot_inbox/cloud/task_068_ferry_vin"
 SOURCE_RECEIPT = SAFE_ROOT + "/task109_source_receipt.json"
