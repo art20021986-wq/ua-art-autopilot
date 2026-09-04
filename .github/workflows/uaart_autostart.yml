@@ -406,7 +406,7 @@ jobs:
               raise SystemExit('AUTOSTART_OUTPUT_COUNT')
           outputs = {}
           for line in output_lines:
-              if not re.fullmatch(r'[a-z_]+=[^\r\n]+', line):
+              if not re.fullmatch(r'[a-z0-9_]+=[^\r\n]+', line):
                   raise SystemExit('AUTOSTART_OUTPUT_FORMAT')
               key, value = line.split('=', 1)
               if key in outputs:

@@ -500,6 +500,8 @@ class WorkflowContractTests(unittest.TestCase):
         ]
         self.assertEqual(len(persist), 1)
         persist = persist[0]
+        self.assertIn(r"r'[a-z0-9_]+=[^\r\n]+'", persist)
+        self.assertNotIn(r"r'[a-z_]+=[^\r\n]+'", persist)
         for marker in (
             "python3 -I \"$TRUSTED_RUNTIME/automation/autostart_intake.py\"",
             "git merge-base --is-ancestor \"$BEFORE_SHA\" \"$SOURCE_COMMIT\"",
