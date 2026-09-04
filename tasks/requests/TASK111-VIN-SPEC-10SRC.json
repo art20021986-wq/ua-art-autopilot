@@ -1,0 +1,67 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/ten-source-spec-policy",
+    "production/additional-spec-sidecar",
+    "production/crm-vin-spec-autostart",
+    "production/all-published-card-specs"
+  ],
+  "complexity": 5,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": false,
+    "gate_a_path": "tasks/gates/TASK111-VIN-SPEC-10SRC.json",
+    "gate_a_sha256": "5d0f8a4ceb544cf39a130c4750fca5459c3eaa7b0e27b1a182c6321700e24904",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/TASK111-VIN-SPEC-10SRC.json",
+    "manifest_sha256": "c13ff977e4dd900e6ba0aad538ea04a23f44e422dbcd9821f73832e9dfb487b6",
+    "owner_approval_path": "tasks/approvals/TASK111-VIN-SPEC-10SRC.md",
+    "owner_approval_sha256": "7a0a6aa661f713e54c5c0815ebaa6de7331a823285d70011685b039886f8a384"
+  },
+  "description": "Production completion for every existing and future car card. Preserve the familiar valid-VIN CRM card flow; automatically queue enrichment on each new valid VIN; use a ten-domain non-Russian source pool with exact VIN-family and powertrain matching; retain an audited deterministic catalogue when a site is blocked or JavaScript-only; and backfill all current cards. The release must leave all 16 published cards nonempty with at least 10 visible additional technical facts each. Refresh only cards already published, never create an initial publication, never write crm.db primary fields or prices, never expose source URLs publicly. Exact backup, automatic rollback, live verification of every public card and delayed verification are mandatory.",
+  "execution": {
+    "controller_path": "cloud/task_111_vin_spec_10src/controller.py",
+    "controller_sha256": "d71388c605cd13cbcf71eee755a6a1cb51d279bf209c82b66bfc305271b93751",
+    "evidence_paths": [
+      "cloud/task_111_vin_spec_10src/evidence.json",
+      "state/receipts/TASK111-VIN-SPEC-10SRC.json"
+    ],
+    "file_sha256": {
+      "cloud/task_111_vin_spec_10src/profile_library.py": "9dd01e2ed1502212f226cec07d32b69f14866b92f576c11c4d250f435daca27a",
+      "cloud/task_111_vin_spec_10src/source_policy.py": "e293598c282ae60ae4d8064ec11922a7ef323c5e6f66b2e9e7fbaa884e6139dd",
+      "cloud/task_111_vin_spec_10src/vin_spec_service.py": "1d075745d595e6a7dd027787d5177b8514267bafd87bf9c37a406962295f71a1",
+      "cloud/task_111_vin_spec_10src/integration_patcher.py": "6faac319989d52bc0a586121c21d802180082520072d8c43d1464699bed69010",
+      "cloud/task_111_vin_spec_10src/remote_installer.py": "3b2182294339cae62d8b96ea7b6f6cfc8c58c9e39bdabe485763a3abe42da805",
+      "cloud/task_111_vin_spec_10src/test_contract.py": "14f1e4eaa8811e92431e28fa5c2870e4bf8491be15b7c1395fd0689b401ee35c"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/TASK111-VIN-SPEC-10SRC.json",
+    "test_paths": [
+      "cloud/task_111_vin_spec_10src/profile_library.py",
+      "cloud/task_111_vin_spec_10src/source_policy.py",
+      "cloud/task_111_vin_spec_10src/vin_spec_service.py",
+      "cloud/task_111_vin_spec_10src/integration_patcher.py",
+      "cloud/task_111_vin_spec_10src/remote_installer.py",
+      "cloud/task_111_vin_spec_10src/test_contract.py"
+    ],
+    "timeout_seconds": 3600
+  },
+  "health_checks": [
+    "https://www.uaart.com.ua/",
+    "https://www.uaart.com.ua/video/katalog.html",
+    "https://www.uaart.com.ua/video/UA-0001.html",
+    "https://www.uaart.com.ua/video/UA-0003.html",
+    "https://www.uaart.com.ua/video/UA-0011.html",
+    "https://www.uaart.com.ua/video/UA-0014.html"
+  ],
+  "production_required": true,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_required_bytes": 268435456,
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK111-VIN-SPEC-10SRC.json",
+    "evidence_sha256": "ac73568482e22a4f306c91a4a134990ca870a70ec379dd159b7b3885e8aac5d0"
+  },
+  "task_id": "TASK111-VIN-SPEC-10SRC",
+  "title": "Ten-source VIN specifications for every car"
+}
