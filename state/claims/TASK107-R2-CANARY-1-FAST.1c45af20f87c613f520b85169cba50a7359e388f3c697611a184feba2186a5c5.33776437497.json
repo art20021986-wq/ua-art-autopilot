@@ -1,0 +1,48 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": false,
+  "created_at": "2026-09-03T16:05:06Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "finished_at": "2026-09-03T16:05:24Z",
+  "heartbeat_at": "2026-09-03T16:05:24Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "33776437497",
+    "task_id": "TASK107-R2-CANARY-1-FAST",
+    "task_sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5"
+  },
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-dd103d2185f56ece-cecf28fd7100f08e",
+  "receipt_path": "state/receipts/TASK107-R2-CANARY-1-FAST.json",
+  "receipt_sha256": "3f7a03d398b54ab47234d4c31174cbf046e9ef4abd4ad720060569568876bd59",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/TASK107-R2-CANARY-1-FAST.json",
+  "request_sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5",
+  "resource_locks": [
+    "PATH_SCOPE:dd103d2185f56ece"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "1603338faadeb78f35590273ea4ff45c57135dbf",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 13726068736,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 16777216,
+    "status": "THROTTLE_80",
+    "usage_percent": 82.126
+  },
+  "storage_preflight_status": "THROTTLE_80",
+  "task_class": "FAST",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "c7e30d7566bb5e2c5885ed8bd49e4ec7a320652a63d46073ee084ff258a497d8",
+    "file_sha256": {
+      "automation/packages/task107_r2/test_canary_controller.py": "ba2a0c65fc3d8d8c24f9ccea0f0f4e1a72043e8f1b5aded4b890984addc0314e"
+    }
+  },
+  "updated_at": "2026-09-03T16:05:24Z"
+}

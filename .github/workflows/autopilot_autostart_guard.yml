@@ -1,26 +1,63 @@
-name: Autopilot Autostart Guard — Manual Mode
+name: Autopilot Exact-Identity Guard — Manual Mode
 
-# Automatic fallback dispatch is disabled by owner decision.
-# This workflow remains available only for a deliberate manual verification.
+# This guard verifies an already claimed identity.  It deliberately has no
+# schedule, push trigger or workflow-dispatch capability for another workflow.
 on:
   workflow_dispatch:
+    inputs:
+      request_path:
+        description: Exact repository path under tasks/requests
+        required: true
+        type: string
+      task_id:
+        description: Exact task id
+        required: true
+        type: string
+      task_sha256:
+        description: Exact 64-character request SHA-256
+        required: true
+        type: string
+      run_id:
+        description: Exact run id stored in the claim and receipt
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: autopilot-autostart-guard
+  group: autopilot-exact-identity-guard-${{ inputs.task_id }}-${{ inputs.run_id }}
   cancel-in-progress: true
 
 jobs:
-  verify-manual-mode:
+  verify-manual-exact-identity:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     steps:
-      - name: Confirm automatic dispatch is disabled
+      - name: Checkout selected branch state
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Require manual mode and exact durable identity
+        env:
+          REQUEST_PATH: ${{ inputs.request_path }}
+          TASK_ID: ${{ inputs.task_id }}
+          TASK_SHA256: ${{ inputs.task_sha256 }}
+          CLAIMED_RUN_ID: ${{ inputs.run_id }}
         shell: bash
         run: |
           set -euo pipefail
+          grep -Fqx 'STATUS: ACTIVE' state/MANUAL_MODE.md
+          python3 automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "$TASK_ID" \
+            --sha256 "$TASK_SHA256" \
+            --run-id "$CLAIMED_RUN_ID"
           echo 'EXECUTION_MODE=MANUAL'
-          echo 'AUTOSTART_FALLBACK=DISABLED'
-          echo 'NO_WORKFLOW_WILL_BE_DISPATCHED_BY_THIS_GUARD'
+          echo 'GENERIC_RECENT_RUN_ACCEPTED=NO'
+          echo 'NO_WORKFLOW_DISPATCHED=YES'

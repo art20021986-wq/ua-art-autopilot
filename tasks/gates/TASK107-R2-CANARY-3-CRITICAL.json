@@ -1,0 +1,33 @@
+{
+  "backup_plan_ready": true,
+  "contract_id": "UA-ART-CONTROL-PLANE-R2.0",
+  "manifest_sha256": "23136d352434b643a333d4d2203e8be3088691a6efcb964e4593e4cbef3445c5",
+  "production_write": false,
+  "protected_snapshot": {
+    "crm.db": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "site/UA-0009.html": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "video/UA-0009.html": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "video/foto": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "wrangler.jsonc": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    }
+  },
+  "rollback_plan_ready": true,
+  "status": "PASS",
+  "task_id": "TASK107-R2-CANARY-3-CRITICAL",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}

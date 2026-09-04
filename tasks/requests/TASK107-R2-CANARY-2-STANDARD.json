@@ -1,0 +1,31 @@
+{
+  "ai_requested": false,
+  "canary_index": 2,
+  "changed_paths": [
+    "automation/packages/task107_r2/standard_canary.py"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "backend trusted package validation in an isolated temporary sandbox",
+  "execution": {
+    "controller_path": "automation/packages/task107_r2/canary_controller.py",
+    "controller_sha256": "c7e30d7566bb5e2c5885ed8bd49e4ec7a320652a63d46073ee084ff258a497d8",
+    "evidence_paths": [
+      "state/receipts/TASK107-R2-CANARY-2-STANDARD.json"
+    ],
+    "file_sha256": {
+      "automation/packages/task107_r2/test_canary_controller.py": "ba2a0c65fc3d8d8c24f9ccea0f0f4e1a72043e8f1b5aded4b890984addc0314e"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK107-R2-CANARY-2-STANDARD.json",
+    "test_paths": [
+      "automation/packages/task107_r2/test_canary_controller.py"
+    ],
+    "timeout_seconds": 120
+  },
+  "production_required": false,
+  "read_only": false,
+  "storage_required_bytes": 16777216,
+  "task_id": "TASK107-R2-CANARY-2-STANDARD",
+  "title": "TASK107-R2 STANDARD package canary"
+}

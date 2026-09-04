@@ -6,24 +6,33 @@ on:
       request_path:
         required: true
         type: string
+      request_sha256:
+        required: true
+        type: string
+      lock_key:
+        required: true
+        type: string
+      claim_path:
+        required: true
+        type: string
+      run_id:
+        required: true
+        type: string
+      production_required:
+        required: true
+        type: string
     outputs:
       status:
         value: ${{ jobs.execute.outputs.status }}
       receipt_path:
         value: ${{ jobs.execute.outputs.receipt_path }}
-  workflow_dispatch:
-    inputs:
-      request_path:
-        description: Repository path under tasks/requests
-        required: true
-        type: string
 
 permissions:
   contents: write
   actions: read
 
 concurrency:
-  group: ua-art-production-writer
+  group: ${{ inputs.production_required == 'true' && 'ua-art-production-writer' || format('uaart-resource-{0}', inputs.lock_key) }}
   cancel-in-progress: false
 
 jobs:
@@ -35,11 +44,15 @@ jobs:
       receipt_path: ${{ steps.contract.outputs.receipt_path }}
     env:
       REQUEST_PATH: ${{ inputs.request_path }}
+      REQUEST_SHA256: ${{ inputs.request_sha256 }}
+      CLAIM_PATH: ${{ inputs.claim_path }}
+      RUN_ID: ${{ inputs.run_id }}
     steps:
-      - name: Checkout exact intake commit
+      - name: Checkout latest claimed branch state
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
+          ref: ${{ github.ref_name }}
 
       - name: Set up Python 3.11
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -51,7 +64,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -W error -m py_compile automation/task_ticket.py
+          grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
+          test -f "$CLAIM_PATH"
+          python3 -W error -m py_compile automation/control_plane.py automation/task_ticket.py
+          python3 automation/control_plane.py verify-request "$REQUEST_PATH" \
+            --sha256 "$REQUEST_SHA256"
           python3 automation/execution_contract.py validate "$REQUEST_PATH" \
             --expected-class STANDARD >/tmp/uaart-standard-contract.json
           python3 automation/execution_contract.py outputs "$REQUEST_PATH" \
@@ -63,7 +80,26 @@ jobs:
           assert value['plan']['ai_call_budget'] <= 2, value
           PY
 
-      - name: Compile and test STANDARD package
+      - name: Verify exact claim identity and start heartbeat
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/control_plane.py verify-identity "$REQUEST_PATH" \
+            --task-id "${{ steps.contract.outputs.task_id }}" \
+            --sha256 "$REQUEST_SHA256" \
+            --run-id "$RUN_ID"
+          python3 automation/control_plane.py planning "$REQUEST_PATH" --run-id "$RUN_ID"
+          python3 automation/control_plane.py heartbeat "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --status RUNNING
+
+      - name: Enforce target-aware storage preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/control_plane.py storage "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --enforce
+
+      - name: Compile and test trusted STANDARD package
         shell: bash
         run: |
           set -euo pipefail
@@ -71,9 +107,10 @@ jobs:
             --expected-class STANDARD
           python3 automation/execution_contract.py test "$REQUEST_PATH" \
             --expected-class STANDARD
+          python3 automation/control_plane.py compiled "$REQUEST_PATH" --run-id "$RUN_ID"
 
       - name: Wait in fair production queue
-        if: steps.contract.outputs.production_required == 'true'
+        if: inputs.production_required == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
@@ -86,60 +123,99 @@ jobs:
           python3 automation/production_queue.py wait \
             --task "$TICKET" --timeout-seconds 1200 --stable-polls 2
 
+      - name: Require production health before execution
+        if: inputs.production_required == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/control_plane.py health "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --phase pre
+
       - name: Execute STANDARD controller
         env:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          UAART_REQUEST_PATH: ${{ inputs.request_path }}
+          UAART_TASK_ID: ${{ steps.contract.outputs.task_id }}
+          UAART_TASK_CLASS: STANDARD
+          UAART_REQUEST_SHA256: ${{ inputs.request_sha256 }}
+          UAART_RUN_ID: ${{ inputs.run_id }}
+          UAART_RECEIPT_PATH: ${{ steps.contract.outputs.receipt_path }}
         shell: bash
         run: |
           set -euo pipefail
           python3 automation/execution_contract.py run "$REQUEST_PATH" \
             --expected-class STANDARD
+          python3 automation/control_plane.py heartbeat "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --status VERIFYING
 
-      - name: Require truthful STANDARD receipt
+      - name: Require production health after execution
+        if: inputs.production_required == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/control_plane.py health "$REQUEST_PATH" \
+            --run-id "$RUN_ID" --phase post
+
+      - name: Require exact truthful STANDARD receipt
         shell: bash
         run: |
           set -euo pipefail
           python3 automation/execution_contract.py receipt "$REQUEST_PATH" \
             --expected-class STANDARD >/tmp/uaart-standard-receipt.json
-          python3 - <<'PY'
-          import json
-          value = json.load(open('/tmp/uaart-standard-receipt.json', encoding='utf-8'))
-          assert value['status'] == 'FINISHED', value
-          assert value['task_class'] == 'STANDARD', value
-          assert value['unexpected_changes'] == 0, value
-          PY
+          python3 automation/control_plane.py finish "$REQUEST_PATH" \
+            --run-id "$RUN_ID" >/tmp/uaart-standard-finished.json
 
-      - name: Stage bounded evidence
+      - name: Stage bounded receipt and durable claim
         shell: bash
         run: |
           set -euo pipefail
           python3 automation/execution_contract.py stage "$REQUEST_PATH" \
             --expected-class STANDARD
+          git add -- "$CLAIM_PATH"
 
-      - name: Commit STANDARD receipt and evidence
+      - name: Commit STANDARD receipt and claim
         shell: bash
         run: |
           set -euo pipefail
           if git diff --cached --quiet; then
             echo 'No STANDARD evidence changes'
-          else
-            git config user.name 'ua-art-standard-pipeline'
-            git config user.email 'actions@users.noreply.github.com'
-            git commit -m "uaart standard: ${{ steps.contract.outputs.task_id }} FINISHED"
-            for attempt in 1 2 3 4 5 6; do
-              git fetch origin "${GITHUB_REF_NAME}"
-              if ! git rebase "origin/${GITHUB_REF_NAME}"; then
-                git rebase --abort || true
-                exit 1
-              fi
-              if git push origin "HEAD:${GITHUB_REF_NAME}"; then break; fi
-              test "$attempt" -lt 6 || exit 1
-              sleep $((attempt * 3))
-            done
+            exit 0
           fi
+          git config user.name 'ua-art-standard-pipeline'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m "uaart standard: ${{ steps.contract.outputs.task_id }} FINISHED"
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin "${GITHUB_REF_NAME}"
+            if ! git rebase "origin/${GITHUB_REF_NAME}"; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              break
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+
+      - name: Persist fail-closed state
+        if: failure()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$CLAIM_PATH" || exit 0
+          python3 automation/control_plane.py fail "$REQUEST_PATH" \
+            --run-id "$RUN_ID" \
+            --message "STANDARD pipeline failed; inspect GitHub Actions run ${GITHUB_RUN_ID}"
+          git add -- "$CLAIM_PATH"
+          git diff --cached --quiet && exit 0
+          git config user.name 'ua-art-standard-pipeline'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m "uaart standard: record ${{ steps.contract.outputs.task_id || 'unknown' }} failure"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
 
       - name: Final workflow output
         id: final
         shell: bash
-        run: |
-          echo 'status=FINISHED' >>"$GITHUB_OUTPUT"
+        run: echo 'status=FINISHED' >>"$GITHUB_OUTPUT"

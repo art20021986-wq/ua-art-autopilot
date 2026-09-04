@@ -1,0 +1,23 @@
+{
+  "action": "RUN_3_CONSECUTIVE_CANARIES",
+  "automatic_mode_allowed": false,
+  "authorization_reference": "tasks/task_107_r2.md",
+  "branch": "task107-r2-control-plane-recovery",
+  "canary_requests": [
+    {
+      "path": "tasks/requests/TASK107-R2-CANARY-1-FAST.json",
+      "sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5"
+    },
+    {
+      "path": "tasks/requests/TASK107-R2-CANARY-2-STANDARD.json",
+      "sha256": "1494882607a6e7fc8c06ed1f01d5d5d86c85d2ecaa3054aba1602c78f10a02a5"
+    },
+    {
+      "path": "tasks/requests/TASK107-R2-CANARY-3-CRITICAL.json",
+      "sha256": "dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770"
+    }
+  ],
+  "created_at": "2026-09-03T16:03:43Z",
+  "production_allowed": false,
+  "task_id": "TASK107-R2"
+}
