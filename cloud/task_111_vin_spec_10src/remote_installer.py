@@ -371,7 +371,7 @@ def verify_local_public(cards: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def run_install() -> dict[str, Any]:
+def run_install(invocation: str) -> dict[str, Any]:
     crm_before = cars_hash()
     audit = source_policy.audit_sources()
     detailed_pass = sum(
@@ -434,6 +434,7 @@ def run_install() -> dict[str, Any]:
             raise InstallError("BACKFILL_INCOMPLETE")
         result = {
             "task_id": TASK_ID, "contract_id": CONTRACT, "status": "PASS",
+            "invocation": invocation,
             "phase": "INSTALL", "finished_at": utc_now(), "backup": backup,
             "source_audit": audit, "source_hashes": source_hashes,
             "legacy_migration": migration, "scan": scan, "processed": processed,
@@ -450,6 +451,7 @@ def run_install() -> dict[str, Any]:
         rollback = restore_backup(backup)
         failure = {
             "task_id": TASK_ID, "contract_id": CONTRACT, "status": "FAIL",
+            "invocation": invocation,
             "phase": "INSTALL", "finished_at": utc_now(), "backup": backup,
             "error": type(exc).__name__ + ":" + str(exc), "rollback": rollback,
             "crm_write": False, "global_automatic_mode_enabled": False,
@@ -459,7 +461,7 @@ def run_install() -> dict[str, Any]:
         raise
 
 
-def run_verify() -> dict[str, Any]:
+def run_verify(invocation: str) -> dict[str, Any]:
     service = _fresh_modules()
     cards = service.read_cards()
     public = verify_local_public(cards)
@@ -476,6 +478,7 @@ def run_verify() -> dict[str, Any]:
         raise InstallError("VERIFY_SIDECAR")
     result = {
         "task_id": TASK_ID, "contract_id": CONTRACT, "status": "PASS", "phase": "VERIFY",
+        "invocation": invocation,
         "finished_at": utc_now(), "public": public, "jobs": jobs,
         "sidecar_quick_check": quick, "crm_write": False,
         "vin_autostart_enabled": True,
@@ -484,12 +487,15 @@ def run_verify() -> dict[str, Any]:
     return result
 
 
-def run_rollback(backup: str | None) -> dict[str, Any]:
+def run_rollback(backup: str | None, invocation: str) -> dict[str, Any]:
     if not backup:
         raw = safe_read(LATEST_BACKUP)
         backup = (raw or b"").decode().strip()
     result = restore_backup(str(backup))
-    result.update({"task_id": TASK_ID, "contract_id": CONTRACT, "phase": "ROLLBACK", "finished_at": utc_now()})
+    result.update({
+        "task_id": TASK_ID, "contract_id": CONTRACT, "phase": "ROLLBACK",
+        "invocation": invocation, "finished_at": utc_now(),
+    })
     atomic_json(ROLLBACK_RECEIPT, result)
     return result
 
@@ -527,18 +533,21 @@ def main() -> int:
     parser.add_argument("--verify", action="store_true")
     parser.add_argument("--rollback", action="store_true")
     parser.add_argument("--backup")
+    parser.add_argument("--invocation", default="")
     args = parser.parse_args()
     if not (args.install or args.verify or args.rollback):
         selftest()
         return 0
+    if not re.fullmatch(r"[A-Za-z0-9._-]{8,160}", args.invocation):
+        raise InstallError("INVOCATION_REQUIRED")
     with open(LOCK_PATH, "a+b") as lock:
         fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
         if args.install:
-            result = run_install()
+            result = run_install(args.invocation)
         elif args.verify:
-            result = run_verify()
+            result = run_verify(args.invocation)
         else:
-            result = run_rollback(args.backup)
+            result = run_rollback(args.backup, args.invocation)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0
 
