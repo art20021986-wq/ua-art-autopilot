@@ -3,14 +3,25 @@
   "automatic_mode_enabled": false,
   "created_at": "2026-09-04T05:15:40Z",
   "critical_gate_status": "PENDING",
-  "heartbeat_at": "2026-09-04T05:15:40Z",
-  "heartbeat_sequence": 0,
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-04T05:15:55Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL pipeline failed; inspect GitHub Actions run 33839810595",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "4b0421c2025a8a68"
+    }
+  ],
+  "heartbeat_at": "2026-09-04T05:15:54Z",
+  "heartbeat_sequence": 3,
   "identity": {
     "run_id": "33839810595",
     "task_id": "TASK111-VIN-SPEC-10SRC",
     "task_sha256": "6ff5d2324936ce3fb4e73927cfaf9f07f98fee0c67dfc026d5fc5501454a2120"
   },
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
   "pre_health_status": "REQUIRED",
   "production_required": true,
@@ -24,8 +35,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "2db0039facc3d0473c80184bd71fd24eaaca9c6e",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 160.767,
+    "allowed": true,
+    "evidence_path": "state/storage/TASK111-VIN-SPEC-10SRC.json",
+    "evidence_sha256": "944beea53e5b6c2668db991b2faf27e50135d67829cc792a74eba10207794769",
+    "free_bytes": 32629317632,
+    "heavy": true,
+    "measured_at": "2026-09-04T05:13:13Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 13.175942557198661
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-04T05:15:40Z"
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "trusted_package": {
+    "controller_sha256": "d71388c605cd13cbcf71eee755a6a1cb51d279bf209c82b66bfc305271b93751",
+    "file_sha256": {
+      "cloud/task_111_vin_spec_10src/integration_patcher.py": "6faac319989d52bc0a586121c21d802180082520072d8c43d1464699bed69010",
+      "cloud/task_111_vin_spec_10src/profile_library.py": "9dd01e2ed1502212f226cec07d32b69f14866b92f576c11c4d250f435daca27a",
+      "cloud/task_111_vin_spec_10src/remote_installer.py": "3b2182294339cae62d8b96ea7b6f6cfc8c58c9e39bdabe485763a3abe42da805",
+      "cloud/task_111_vin_spec_10src/source_policy.py": "e293598c282ae60ae4d8064ec11922a7ef323c5e6f66b2e9e7fbaa884e6139dd",
+      "cloud/task_111_vin_spec_10src/test_contract.py": "14f1e4eaa8811e92431e28fa5c2870e4bf8491be15b7c1395fd0689b401ee35c",
+      "cloud/task_111_vin_spec_10src/vin_spec_service.py": "1d075745d595e6a7dd027787d5177b8514267bafd87bf9c37a406962295f71a1"
+    }
+  },
+  "updated_at": "2026-09-04T05:15:55Z"
 }
