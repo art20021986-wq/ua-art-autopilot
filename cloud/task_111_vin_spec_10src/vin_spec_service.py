@@ -526,19 +526,35 @@ def _store_facts(uid: str, facts: Iterable[dict[str, Any]]) -> int:
     return written
 
 
-def _refresh_published(card: dict[str, Any]) -> tuple[str, str]:
+def _refresh_published(
+    card: dict[str, Any],
+    *,
+    publisher: Callable[[str], Any] | None = None,
+    sleeper: Callable[[float], Any] = time.sleep,
+) -> tuple[str, str]:
     if not card.get("published"):
         return "NOT_REQUIRED", "карточка ещё не опубликована"
-    try:
-        import publikaciya
-        result = publikaciya.opublikovat(card["car_uid"])
-        if isinstance(result, tuple):
-            ok, detail = result[0], result[1] if len(result) > 1 else ""
-        else:
-            ok, detail = bool(result), str(result)
-        return ("PASS", str(detail)[:500]) if ok is True else ("FAIL", str(detail)[:500])
-    except Exception as exc:  # publication is recorded but never hides stored facts
-        return "FAIL", type(exc).__name__ + ":" + str(exc)[:400]
+    failures: list[str] = []
+    for attempt in range(1, 4):
+        try:
+            if publisher is None:
+                import publikaciya
+                current_publisher = publikaciya.opublikovat
+            else:
+                current_publisher = publisher
+            result = current_publisher(card["car_uid"])
+            if isinstance(result, tuple):
+                ok, detail = result[0], result[1] if len(result) > 1 else ""
+            else:
+                ok, detail = bool(result), str(result)
+            if ok is True:
+                return "PASS", ("attempt %d: " % attempt + str(detail))[:500]
+            failures.append("attempt %d: %s" % (attempt, str(detail)[:140]))
+        except Exception as exc:  # stored facts stay available for a later retry
+            failures.append("attempt %d: %s:%s" % (attempt, type(exc).__name__, str(exc)[:120]))
+        if attempt < 3:
+            sleeper(attempt)
+    return "FAIL", " | ".join(failures)[:500]
 
 
 def process_one(*, enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich) -> dict[str, Any] | None:
@@ -653,4 +669,14 @@ if __name__ == "__main__":
     else:
         assert canonical_uid("UA-5") == "UA-0005"
         assert source_policy.normalize_vin("WDDMH0BBXDV171918") == "WDDMH0BBXDV171918"
+        calls: list[str] = []
+        def transient_publisher(uid: str) -> tuple[bool, str]:
+            calls.append(uid)
+            return (len(calls) > 1, "transient" if len(calls) == 1 else "published")
+        assert _refresh_published(
+            {"car_uid": "UA-0005", "published": True},
+            publisher=transient_publisher,
+            sleeper=lambda _seconds: None,
+        )[0] == "PASS"
+        assert calls == ["UA-0005", "UA-0005"]
         print("UA111_VIN_SPEC_SERVICE_SELFTEST_PASS")
