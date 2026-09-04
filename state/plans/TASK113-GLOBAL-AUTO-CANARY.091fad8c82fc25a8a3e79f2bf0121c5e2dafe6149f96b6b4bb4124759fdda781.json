@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK113-GLOBAL-AUTO-CANARY.091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781.json",
+  "autostart_ledger_sha256": "f3cd708c80ea405ae3c20eeef37cb6e31d9567ee238c41197f67b7c303b2c428",
+  "autostart_source_commit": "02d2cccdb66519025a7cf86cdb8c8ec82dcf5807",
+  "created_at": "2026-09-04T14:39:55Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "33885007450",
+    "task_id": "TASK113-GLOBAL-AUTO-CANARY",
+    "task_sha256": "091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T142755Z-90062b8c1cada131",
+  "production_required": false,
+  "queue_key": "path_scope-34afad063f5164e0-65c63137b7ef11db",
+  "request_path": "tasks/requests/TASK113-GLOBAL-AUTO-CANARY.json",
+  "resource_locks": [
+    "PATH_SCOPE:34afad063f5164e0"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "FAST",
+  "task_execution_status": "CLAIMED"
+}
