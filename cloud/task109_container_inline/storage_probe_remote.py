@@ -15,14 +15,18 @@ OUTPUT = "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task109_storage_p
 
 def main() -> int:
     usage = shutil.disk_usage(TARGET)
+    # statvfs/shutil may report system-reserved blocks in ``used`` while
+    # ``free`` is user-available capacity.  The control plane intentionally
+    # reasons about the user-visible quota, so derive its matching used value.
+    user_used = int(usage.total) - int(usage.free)
     value = {
         "target_environment": "production",
         "read_only": True,
         "measured_at": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "total_bytes": int(usage.total),
-        "used_bytes": int(usage.used),
+        "used_bytes": user_used,
         "free_bytes": int(usage.free),
-        "measurement": "shutil.disk_usage:/home/Carix",
+        "measurement": "shutil.disk_usage:/home/Carix;used=total-user_available_free",
         "task_id": "TASK109-CONTAINER-TRACK-INLINE",
     }
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
