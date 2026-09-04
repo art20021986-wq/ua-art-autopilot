@@ -40,6 +40,7 @@ PUBLIC_BASE = "https://www.uaart.com.ua/video/"
 MAX_BYTES = 64 * 1024 * 1024
 SPEC_START = "<!--UA099_ADD_SPEC_START-->"
 SPEC_END = "<!--UA099_ADD_SPEC_END-->"
+TRANSIENT_HTTP = {429, 500, 502, 503, 504}
 UPLOAD_FILES = (
     "remote_installer.py", "profile_library.py", "source_policy.py",
     "vin_spec_service.py", "integration_patcher.py",
@@ -148,17 +149,27 @@ class API:
             "User-Agent": "ua-art-task111-vin-spec/2",
         }
         request_headers.update(headers or {})
-        request = urllib.request.Request(url, data=data, headers=request_headers, method=method)
-        try:
-            with urllib.request.urlopen(request, timeout=90) as response:
-                status, body = int(response.status), response.read(MAX_BYTES + 1)
-        except urllib.error.HTTPError as exc:
-            status, body = int(exc.code), exc.read(MAX_BYTES + 1)
-        except Exception as exc:
-            raise ControllerError("NETWORK:" + type(exc).__name__) from exc
-        if len(body) > MAX_BYTES or status not in allowed:
-            raise ControllerError("HTTP_%d" % status)
-        return status, body
+        for attempt in range(1, 6):
+            request = urllib.request.Request(url, data=data, headers=request_headers, method=method)
+            try:
+                with urllib.request.urlopen(request, timeout=90) as response:
+                    status, body = int(response.status), response.read(MAX_BYTES + 1)
+            except urllib.error.HTTPError as exc:
+                status, body = int(exc.code), exc.read(MAX_BYTES + 1)
+            except Exception as exc:
+                if attempt < 5:
+                    time.sleep(min(2 * attempt, 8))
+                    continue
+                raise ControllerError("NETWORK:" + type(exc).__name__) from exc
+            if len(body) > MAX_BYTES:
+                raise ControllerError("RESPONSE_TOO_LARGE")
+            if status in TRANSIENT_HTTP and attempt < 5:
+                time.sleep(min(2 * attempt, 8))
+                continue
+            if status not in allowed:
+                raise ControllerError("HTTP_%d" % status)
+            return status, body
+        raise ControllerError("NETWORK_RETRY_EXHAUSTED")
 
     @staticmethod
     def file_url(path: str) -> str:
@@ -247,23 +258,62 @@ class API:
         endpoint = "always_on" if kind == "always_on" else "schedule"
         self.request("DELETE", BASE + "%s/%d/" % (endpoint, identifier), allowed=(200, 202, 204, 404))
 
+    def cleanup_stale_task_triggers(self) -> list[str]:
+        """Remove only stale TASK111 triggers; never touch the CRM bot task."""
+        removed: list[str] = []
+        prefixes = (INSTALL_COMMAND, VERIFY_COMMAND, ROLLBACK_COMMAND)
+        for kind, endpoint in (("always_on", "always_on"), ("schedule", "schedule")):
+            _, body = self.request("GET", BASE + endpoint + "/")
+            for item in self._objects(body):
+                if not isinstance(item, dict) or not isinstance(item.get("id"), int):
+                    continue
+                command = str(item.get("command") or "").strip()
+                description = str(item.get("description") or "").casefold()
+                if not command.startswith(prefixes) or "task111" not in description:
+                    continue
+                self.delete_trigger((kind, int(item["id"])))
+                removed.append("%s:%d" % (kind, int(item["id"])))
+        return removed
+
     def run_remote(self, command: str, description: str, receipt: str,
-                   seconds: int = 3300) -> dict[str, Any]:
+                   invocation: str, seconds: int = 3300) -> dict[str, Any]:
+        if not re.fullmatch(r"[A-Za-z0-9._-]{8,160}", invocation):
+            raise ControllerError("REMOTE_INVOCATION_INVALID")
         self.delete_file(receipt)
-        trigger = self.create_trigger(command, description)
+        trigger = self.create_trigger(command, description + " " + invocation)
+        result: dict[str, Any] | None = None
         try:
             deadline = time.monotonic() + seconds
             while time.monotonic() < deadline:
-                raw = self.read(receipt, missing=True)
+                try:
+                    raw = self.read(receipt, missing=True)
+                except ControllerError as exc:
+                    if re.fullmatch(r"HTTP_(?:429|500|502|503|504)", str(exc)):
+                        time.sleep(5)
+                        continue
+                    raise
                 if raw:
                     value = json.loads(raw.decode("utf-8"))
                     if not isinstance(value, dict):
                         raise ControllerError("REMOTE_RECEIPT_INVALID")
-                    return value
+                    if value.get("invocation") != invocation:
+                        self.delete_file(receipt)
+                        time.sleep(2)
+                        continue
+                    result = value
+                    break
                 time.sleep(5)
-            raise ControllerError("REMOTE_TIMEOUT:" + pathlib.PurePosixPath(receipt).name)
-        finally:
+            if result is None:
+                raise ControllerError("REMOTE_TIMEOUT:" + pathlib.PurePosixPath(receipt).name)
+        except Exception:
+            try:
+                self.delete_trigger(trigger)
+            except Exception:
+                pass
+            raise
+        else:
             self.delete_trigger(trigger)
+            return result
 
     def restart_bot(self) -> dict[str, Any]:
         _, body = self.request("GET", BASE + "always_on/")
@@ -278,11 +328,13 @@ class API:
         return {"status": "PASS", "command": "python3.10 /home/Carix/start_safe.py"}
 
 
-def validate_remote(value: Mapping[str, Any], phase: str) -> None:
+def validate_remote(value: Mapping[str, Any], phase: str, invocation: str) -> None:
     if value.get("task_id") != TASK_ID or value.get("contract_id") != CONTRACT:
         raise ControllerError("REMOTE_IDENTITY:" + phase)
     if value.get("status") != "PASS" or value.get("crm_write") is not False:
         raise ControllerError("REMOTE_FAILED:" + phase + ":" + str(value.get("error") or ""))
+    if value.get("invocation") != invocation:
+        raise ControllerError("REMOTE_INVOCATION:" + phase)
     if phase == "INSTALL":
         if value.get("crm_unchanged") is not True or value.get("initial_autopublication") is not False:
             raise ControllerError("REMOTE_SCOPE:INSTALL")
@@ -352,21 +404,31 @@ def run() -> dict[str, Any]:
     api = API(env["PYTHONANYWHERE_API_TOKEN"])
     install = verify = None
     try:
+        stale_triggers = api.cleanup_stale_task_triggers()
         for name in UPLOAD_FILES:
             api.upload(REMOTE + "/" + name, (HERE / name).read_bytes())
-        install = api.run_remote(INSTALL_COMMAND, "task111 ten-source install/backfill", INSTALL_RECEIPT, 3300)
-        validate_remote(install, "INSTALL")
+        install_invocation = env["UAART_RUN_ID"] + "-install-" + uuid.uuid4().hex
+        install = api.run_remote(
+            INSTALL_COMMAND + " --invocation " + install_invocation,
+            "task111 ten-source install/backfill", INSTALL_RECEIPT, install_invocation, 3300,
+        )
+        validate_remote(install, "INSTALL", install_invocation)
         restart = api.restart_bot()
         expected = ((install.get("public") or {}).get("cards") or {})
         live_now = public_verify(expected)
-        verify = api.run_remote(VERIFY_COMMAND, "task111 ten-source verify", VERIFY_RECEIPT, 900)
-        validate_remote(verify, "VERIFY")
+        verify_invocation = env["UAART_RUN_ID"] + "-verify-" + uuid.uuid4().hex
+        verify = api.run_remote(
+            VERIFY_COMMAND + " --invocation " + verify_invocation,
+            "task111 ten-source verify", VERIFY_RECEIPT, verify_invocation, 900,
+        )
+        validate_remote(verify, "VERIFY", verify_invocation)
         time.sleep(30)
         live_delayed = public_verify(expected)
         evidence = {
             "task_id": TASK_ID, "contract_id": CONTRACT, "status": "PASS",
             "finished_at": utc_now(), "uploads": uploads, "rollback_drill": drill,
             "install": install, "restart": restart, "remote_verify": verify,
+            "stale_triggers_removed": stale_triggers,
             "live_verify": live_now, "delayed_verify": live_delayed,
             "unexpected_changes": 0, "crm_unchanged": True,
             "global_automatic_mode_enabled": False,
@@ -394,9 +456,13 @@ def run() -> dict[str, Any]:
         rollback = None
         if install and install.get("status") == "PASS" and install.get("backup"):
             try:
-                rollback = api.run_remote(ROLLBACK_COMMAND, "task111 rollback", ROLLBACK_RECEIPT, 900)
+                rollback_invocation = env["UAART_RUN_ID"] + "-rollback-" + uuid.uuid4().hex
+                rollback = api.run_remote(
+                    ROLLBACK_COMMAND + " --invocation " + rollback_invocation,
+                    "task111 rollback", ROLLBACK_RECEIPT, rollback_invocation, 900,
+                )
                 api.restart_bot()
-                if rollback.get("status") != "PASS":
+                if rollback.get("status") != "PASS" or rollback.get("invocation") != rollback_invocation:
                     raise ControllerError("ROLLBACK_FAILED")
             except Exception as rollback_exc:
                 rollback = {"status": "FAIL", "error": type(rollback_exc).__name__ + ":" + str(rollback_exc)}
