@@ -47,6 +47,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git restore -- state/storage/TASK109-CONTAINER-TRACK-INLINE.json
           git add -- state/storage/TASK111-VIN-SPEC-10SRC.json
           git config user.name 'ua-art-storage-probe'
           git config user.email 'actions@users.noreply.github.com'
