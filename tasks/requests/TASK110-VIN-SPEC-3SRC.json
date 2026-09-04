@@ -21,7 +21,7 @@
   "description": "Production implementation for all cards: preserve the existing valid-VIN card creation flow, automatically queue one enrichment job, store only additional technical specification in a separate sidecar, backfill all existing cards, refresh only cards that were already published, and make future operator publications consume the same data. Deterministic three-source policy after a five-candidate audit: NHTSA vPIC, Auto-Data and CarWiki. Never write crm.db primary fields or prices, never expose provenance publicly, never create the initial publication automatically. Exact backup, automatic rollback, live verification and delayed verification are mandatory.",
   "execution": {
     "controller_path": "cloud/task_110_vin_spec_3src/controller.py",
-    "controller_sha256": "cf47c3cbd01b5cfd14a87fb5d3ba0b833a24660f6988c1fd27b4f4505183fafe",
+    "controller_sha256": "ed12cfc3e9d84ab02e116fdc3e0e8530402a9b8666bf2867a185aa62ed382122",
     "evidence_paths": [
       "cloud/task_110_vin_spec_3src/evidence.json",
       "state/receipts/TASK110-VIN-SPEC-3SRC.json"
