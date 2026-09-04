@@ -7,21 +7,23 @@
   "created_at": "2026-09-04T14:39:55Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-04T14:39:55Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-04T14:40:10Z",
+  "heartbeat_at": "2026-09-04T14:40:10Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "33885007450",
     "task_id": "TASK113-GLOBAL-AUTO-CANARY",
     "task_sha256": "091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781"
   },
   "mode_epoch": "auto-20260904T142755Z-90062b8c1cada131",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-34afad063f5164e0-65c63137b7ef11db",
   "receipt_path": "state/receipts/TASK113-GLOBAL-AUTO-CANARY.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "1f54e34917a74b4d6ba1abc8fcf9a054ed48d9d143db9c82bda059b3088cca3b",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TASK113-GLOBAL-AUTO-CANARY.json",
   "request_sha256": "091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "a4414320dbc01e940403a1959daaaeb80684e29c",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 14354333696,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "THROTTLE_80",
+    "usage_percent": 81.309
+  },
+  "storage_preflight_status": "THROTTLE_80",
   "task_class": "FAST",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-04T14:39:55Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "34bc1a692bafb6ce2a648246b321bfee2b9dafa19ccf1ebd5ee136239d6d148e",
+    "file_sha256": {
+      "cloud/task113_auto/test_canary_controller.py": "2fc8427229d62cc03caedd68508403e0213586877a504743a6eca61e62522bbc"
+    }
+  },
+  "updated_at": "2026-09-04T14:40:10Z"
 }
