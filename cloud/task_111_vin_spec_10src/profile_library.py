@@ -87,6 +87,7 @@ def _facts(default_sources: tuple[str, ...], **values: Any) -> dict[str, dict[st
 PROFILES: tuple[dict[str, Any], ...] = (
     {
         "id": "mercedes-w213-e220d-194-9g",
+        "exact_vins": ("WDDZF0EB7HA053001",),
         "vin_prefixes": ("WDDZF0EB",),
         "brand_tokens": ("mercedes",),
         "model_tokens": ("e 220", "e220", "e class"),
@@ -128,6 +129,9 @@ PROFILES: tuple[dict[str, Any], ...] = (
     },
     {
         "id": "mercedes-w245-b170-autotronic",
+        "exact_vins": (
+            "WDD2452322J561014", "WDD2452322J724006", "WDD2452322J540158",
+        ),
         "vin_prefixes": ("WDD245232",),
         "brand_tokens": ("mercedes",),
         "model_tokens": ("b class", "b-class", "b 170", "b170", "b 180", "b180"),
@@ -189,6 +193,7 @@ PROFILES: tuple[dict[str, Any], ...] = (
     },
     {
         "id": "mercedes-w246-b180-18-cdi-dct",
+        "exact_vins": ("WDDMH0BBXDV171918",),
         "vin_prefixes": ("WDDMH0BB",),
         "brand_tokens": ("mercedes",),
         "model_tokens": ("b class", "b-class", "b 180", "b180"),
@@ -229,6 +234,7 @@ PROFILES: tuple[dict[str, Any], ...] = (
     },
     {
         "id": "mercedes-w246-b200-cdi-dct",
+        "exact_vins": ("WDDMH0JB6GN142530",),
         "vin_prefixes": ("WDDMH0JB",),
         "brand_tokens": ("mercedes",),
         "model_tokens": ("b class", "b-class", "b 200", "b200"),
@@ -272,6 +278,7 @@ PROFILES: tuple[dict[str, Any], ...] = (
     },
     {
         "id": "kia-jf-k5-optima-17-crdi-dct",
+        "exact_vins": ("KNAGS415GGA068770",),
         "vin_prefixes": ("KNAGS415G",),
         "brand_tokens": ("kia", "киа"),
         "model_tokens": ("k5", "k 5", "optima", "оптима"),
@@ -317,10 +324,15 @@ PROFILES: tuple[dict[str, Any], ...] = (
     },
     {
         "id": "kia-jf-k5-20-lpi-6at",
+        "exact_vins": (
+            "KNAGS416BLA375484", "KNAGS416BLA363849", "KNAGS416BLA359954",
+            "KNAGU416BJA242741", "KNAGU416BKA324445", "KNAGU416BJA244187",
+            "KNAGS416BHA141028",
+        ),
         "vin_prefixes": ("KNAGS416", "KNAGU416"),
         "brand_tokens": ("kia", "киа"),
         "model_tokens": ("k5", "k 5", "optima", "оптима"),
-        "fuel_tokens": ("lpi", "lpg", "газ"),
+        "fuel_tokens": ("lpi", "lpg", "газ", "petrol", "gasoline", "бенз"),
         "cc_range": (1900, 2100),
         "urls": {
             "carwiki.co.kr": (
@@ -349,10 +361,11 @@ PROFILES: tuple[dict[str, Any], ...] = (
     },
     {
         "id": "hyundai-lf-sonata-20-lpi-6at",
+        "exact_vins": ("KMHE341DBKA544289", "KMHE341DBJA475862"),
         "vin_prefixes": ("KMHE341D",),
         "brand_tokens": ("hyundai", "хендай", "хюндай"),
         "model_tokens": ("sonata", "соната"),
-        "fuel_tokens": ("lpi", "lpg", "газ"),
+        "fuel_tokens": ("lpi", "lpg", "газ", "petrol", "gasoline", "бенз"),
         "cc_range": (1900, 2100),
         "urls": {
             "auto.danawa.com": (
@@ -391,11 +404,21 @@ PROFILES: tuple[dict[str, Any], ...] = (
 def validate_library(allowed_domains: tuple[str, ...], blocked_keys: set[str]) -> None:
     """Fail closed if a profile has incomplete metadata or unsafe provenance."""
     ids: set[str] = set()
+    exact_vins: set[str] = set()
     for profile in PROFILES:
         profile_id = str(profile.get("id") or "")
         if not profile_id or profile_id in ids or not profile.get("vin_prefixes"):
             raise ValueError("PROFILE_ID_OR_PREFIX")
         ids.add(profile_id)
+        for vin in profile.get("exact_vins") or ():
+            normalized = str(vin).strip().upper()
+            if (
+                len(normalized) != 17
+                or any(char in "IOQ" or not char.isalnum() for char in normalized)
+                or normalized in exact_vins
+            ):
+                raise ValueError("PROFILE_EXACT_VIN:" + profile_id)
+            exact_vins.add(normalized)
         urls = profile.get("urls") or {}
         for domain, items in urls.items():
             if domain not in allowed_domains or not items:
