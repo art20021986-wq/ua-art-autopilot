@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import io
 import json
 import os
 import pathlib
@@ -11,7 +12,9 @@ import sqlite3
 import sys
 import tempfile
 import types
+import urllib.error
 
+import controller
 import integration_patcher
 import source_policy
 import vin_spec_service as service
@@ -266,9 +269,76 @@ def test_ten_source_profiles() -> None:
     require(source_policy.deduplicate([low_a, low_b, high])[0]["display_value"] == "151 л.с.", "priority conflict")
 
 
+def test_controller_transport() -> None:
+    responses = [504, 504, 200]
+
+    class Response:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        @staticmethod
+        def read(_limit: int) -> bytes:
+            return b"ok"
+
+    def fake_open(request, timeout=0):
+        del timeout
+        code = responses.pop(0)
+        if code != 200:
+            raise urllib.error.HTTPError(
+                request.full_url, code, "transient", {}, io.BytesIO(b"transient")
+            )
+        return Response()
+
+    original_open, original_sleep = controller.urllib.request.urlopen, controller.time.sleep
+    try:
+        controller.urllib.request.urlopen = fake_open
+        controller.time.sleep = lambda _seconds: None
+        require(
+            controller.API("test-token").request("GET", "https://example.invalid") == (200, b"ok"),
+            "transient API retry",
+        )
+
+        class FakeAPI(controller.API):
+            def __init__(self):
+                self.deleted = []
+                self.reads = [
+                    json.dumps({"invocation": "old"}).encode(),
+                    json.dumps({"invocation": "run-12345678", "status": "PASS"}).encode(),
+                ]
+
+            def delete_file(self, path):
+                self.deleted.append(path)
+
+            def create_trigger(self, command, description):
+                del command, description
+                return "schedule", 7
+
+            def read(self, path, missing=False):
+                del path, missing
+                return self.reads.pop(0)
+
+            def delete_trigger(self, trigger):
+                self.deleted.append(trigger)
+
+        fake = FakeAPI()
+        receipt = "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/test.json"
+        result = fake.run_remote("cmd", "task111", receipt, "run-12345678", 30)
+        require(result["invocation"] == "run-12345678", "invocation receipt identity")
+        require(fake.deleted == [receipt, receipt, ("schedule", 7)], "stale receipt cleanup")
+    finally:
+        controller.urllib.request.urlopen = original_open
+        controller.time.sleep = original_sleep
+
+
 def run() -> None:
     test_synthetic_extractors()
     test_ten_source_profiles()
+    test_controller_transport()
     with tempfile.TemporaryDirectory(prefix="ua111-contract-") as folder:
         root = pathlib.Path(folder)
         main = root / "crm.db"
