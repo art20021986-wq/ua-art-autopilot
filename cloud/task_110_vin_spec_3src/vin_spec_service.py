@@ -237,6 +237,7 @@ def _card_from_row(row: dict[str, Any]) -> dict[str, Any] | None:
         "year": year,
         "fuel": fuel,
         "engine_cc": _engine_cc(row),
+        "transmission": _pick(row, "transmission", "gearbox", "korobka", "kpp"),
         "published": _published(row),
     }
 
@@ -342,6 +343,37 @@ def enqueue_card(card: dict[str, Any], *, force: bool = False) -> bool:
     ensure_schema()
     now = utc_now()
     with connect_spec(False) as conn:
+        prior = conn.execute(
+            """SELECT vin FROM vin_spec_jobs WHERE car_uid=? AND vin<>?
+               AND status<>'SUPERSEDED' ORDER BY id DESC LIMIT 1""",
+            (uid, vin),
+        ).fetchone()
+        if prior:
+            # A corrected/replaced VIN must never inherit facts from the old
+            # vehicle.  Automated rows are removed; operator rows are hidden
+            # and explicitly require review before they can be shown again.
+            conn.execute(
+                """DELETE FROM additional_specification WHERE car_uid=? AND field_key NOT IN
+                   (SELECT field_key FROM additional_specification_meta
+                    WHERE car_uid=? AND is_manual=1)""",
+                (uid, uid),
+            )
+            conn.execute(
+                """UPDATE additional_specification_meta SET is_visible=0,
+                   verification_status='VIN_CHANGED_REVIEW',updated_at=?
+                   WHERE car_uid=? AND is_manual=1""",
+                (now, uid),
+            )
+            conn.execute(
+                "UPDATE vin_spec_jobs SET status='SUPERSEDED',finished_at=? WHERE car_uid=? AND vin<>? AND status<>'SUPERSEDED'",
+                (now, uid, vin),
+            )
+            conn.execute(
+                """INSERT INTO additional_specification_audit
+                   (car_uid,field_key,action,old_value,new_value)
+                   VALUES(?,?,?,?,?)""",
+                (uid, "__vin__", "VIN_SUPERSEDED", str(prior["vin"]), vin),
+            )
         row = conn.execute(
             "SELECT id,status,attempts FROM vin_spec_jobs WHERE car_uid=? AND vin=? AND policy_version=?",
             (uid, vin, source_policy.POLICY_VERSION),
