@@ -31,7 +31,7 @@ SPEC_BLOCK = r'''
 # Main CRM remains the source of truth and is always opened read-only here.
 _UA110_MAIN_DB_PATH = DB_PATH
 _UA110_SPEC_DB_PATH = pathlib.Path(
-    os.environ.get("UA_ART_SPEC_DB", "/home/Carix/vin_specs.db")
+    os.environ.get("UA_ART_SPEC_DB", "/home/Carix/vin_specs_task111_v3.db")
 )
 
 def connect(readonly: bool = True) -> sqlite3.Connection:
