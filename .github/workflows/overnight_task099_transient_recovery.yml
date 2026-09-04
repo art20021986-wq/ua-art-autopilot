@@ -1,9 +1,8 @@
 name: Overnight TASK099 Transient Recovery
+# RETIRED/QUARANTINED: automatic triggers moved to central exact autostart; manual dispatch only.
 
 on:
-  workflow_run:
-    workflows: ['TASK099 Site and CRM Production Completion']
-    types: [completed]
+  workflow_dispatch:
 
 permissions:
   actions: write

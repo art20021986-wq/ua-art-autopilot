@@ -1,0 +1,30 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/task113_auto/evidence.json"
+  ],
+  "complexity": 1,
+  "control_plane_version": "TASK107-R2",
+  "description": "Deterministic isolated proof of exact automatic intake.",
+  "execution": {
+    "controller_path": "cloud/task113_auto/canary_controller.py",
+    "controller_sha256": "34bc1a692bafb6ce2a648246b321bfee2b9dafa19ccf1ebd5ee136239d6d148e",
+    "evidence_paths": [
+      "cloud/task113_auto/evidence.json",
+      "state/receipts/TASK113-GLOBAL-AUTO-CANARY.json"
+    ],
+    "file_sha256": {
+      "cloud/task113_auto/test_canary_controller.py": "2fc8427229d62cc03caedd68508403e0213586877a504743a6eca61e62522bbc"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK113-GLOBAL-AUTO-CANARY.json",
+    "test_paths": [
+      "cloud/task113_auto/test_canary_controller.py"
+    ],
+    "timeout_seconds": 120
+  },
+  "production_required": false,
+  "read_only": false,
+  "task_id": "TASK113-GLOBAL-AUTO-CANARY",
+  "title": "Exact automatic intake canary"
+}

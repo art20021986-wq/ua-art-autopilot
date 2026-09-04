@@ -1,0 +1,116 @@
+name: UA ART Global Production Autostart
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tasks/launch/AUTO-*.json'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: uaart-global-autostart-intake-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      ledger_path: ${{ steps.consume.outputs.ledger_path }}
+      nonce_reservation_path: ${{ steps.consume.outputs.nonce_reservation_path }}
+      production_required: ${{ steps.consume.outputs.production_required }}
+      request_path: ${{ steps.consume.outputs.request_path }}
+      request_sha256: ${{ steps.consume.outputs.request_sha256 }}
+      task_id: ${{ steps.consume.outputs.task_id }}
+    steps:
+      - name: Checkout exact triggering commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+
+      - name: Require global automatic mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -W error -m py_compile automation/control_plane.py automation/autostart_intake.py
+          python3 automation/control_plane.py verify-mode --require AUTOMATIC
+
+      - name: Require a marker-only commit and discover its exact path
+        id: launch
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$BEFORE_SHA" != '0000000000000000000000000000000000000000'
+          git cat-file -e "$BEFORE_SHA^{commit}"
+          mapfile -d '' -t changes < <(git diff --name-only -z "$BEFORE_SHA" "$AFTER_SHA")
+          mapfile -d '' -t additions < <(git diff --name-only -z --diff-filter=A "$BEFORE_SHA" "$AFTER_SHA")
+          test "${#changes[@]}" -eq 1
+          test "${#additions[@]}" -eq 1
+          test "${changes[0]}" = "${additions[0]}"
+          path="${additions[0]}"
+          [[ "$path" =~ ^tasks/launch/AUTO-[A-Za-z0-9._-]+\.json$ ]] || {
+            echo "INVALID_AUTOSTART_LAUNCH_PATH=$path"
+            exit 1
+          }
+          echo "launch_path=$path" >>"$GITHUB_OUTPUT"
+
+      - name: Consume exact fresh launch marker
+        id: consume
+        env:
+          LAUNCH_PATH: ${{ steps.launch.outputs.launch_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 automation/autostart_intake.py "$LAUNCH_PATH" \
+            --run-id "$GITHUB_RUN_ID" \
+            --source-commit "$GITHUB_SHA"
+
+      - name: Commit anti-replay ledger before execution
+        env:
+          LEDGER_PATH: ${{ steps.consume.outputs.ledger_path }}
+          NONCE_RESERVATION_PATH: ${{ steps.consume.outputs.nonce_reservation_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$LEDGER_PATH"
+          test -f "$NONCE_RESERVATION_PATH"
+          git add -- "$LEDGER_PATH" "$NONCE_RESERVATION_PATH"
+          git config user.name 'ua-art-global-autostart'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m "uaart autostart: consume ${{ steps.consume.outputs.task_id }}"
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep $((attempt * 3))
+          done
+          exit 1
+
+  execute:
+    needs: intake
+    uses: ./.github/workflows/uaart_orchestrator.yml
+    with:
+      request_path: ${{ needs.intake.outputs.request_path }}
+      expected_request_sha256: ${{ needs.intake.outputs.request_sha256 }}
+      autostart_ledger_path: ${{ needs.intake.outputs.ledger_path }}
+      autostart_source_commit: ${{ github.sha }}
+    secrets: inherit

@@ -9,6 +9,7 @@ import pathlib
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
@@ -43,6 +44,93 @@ class FakeResponse:
 
 
 class ControlPlaneTests(unittest.TestCase):
+    def write_manual_mode(self, root: pathlib.Path) -> None:
+        marker = root / "state/MANUAL_MODE.md"
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        if not (root / "state/EXECUTION_MODE.json").exists():
+            marker.write_text("# Test mode\n\nSTATUS: ACTIVE\n", encoding="utf-8")
+
+    def write_automatic_mode(self, root: pathlib.Path) -> dict:
+        activated_at = "2026-09-04T13:51:01Z"
+        for relative in CP.RUNTIME_PINNED_PATHS:
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("fixture:" + relative + "\n", encoding="utf-8")
+        runtime = {
+            "files": {
+                relative: CP.sha256_file(root / relative)
+                for relative in CP.RUNTIME_PINNED_PATHS
+            },
+            "generated_at": activated_at,
+            "mode_epoch": "auto-20260904T135101Z-testfixture0001",
+            "schema_version": CP.RUNTIME_MANIFEST_SCHEMA,
+        }
+        CP.atomic_json(root / CP.RUNTIME_MANIFEST_PATH, runtime)
+        runtime_sha = CP.sha256_file(root / CP.RUNTIME_MANIFEST_PATH)
+        receipt_rel = "state/receipts/TASK107-R2.json"
+        receipt = {
+            "task_id": "TASK107-R2",
+            "status": "FINISHED",
+            "canary_result": "3/3 PASS",
+            "tests": "PASS",
+            "rollback_drill": "PASS",
+            "unexpected_changes": 0,
+            "production_touched": False,
+        }
+        CP.atomic_json(root / receipt_rel, receipt)
+        approval_rel = "tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json"
+        approval = {
+            "allow_replay_existing_launch_markers": False,
+            "approved_at": activated_at,
+            "automatic_nonproduction": True,
+            "automatic_production": True,
+            "mode_epoch": "auto-20260904T135101Z-testfixture0001",
+            "owner": "Артём Бровинский / UA ART COMPANY LLC",
+            "owner_authorized": True,
+            "owner_command": "Включай глобальный продакшн автопилот.",
+            "production_requires_backup": True,
+            "production_requires_exact_launch": True,
+            "production_requires_gate_b": True,
+            "production_requires_live_receipt": True,
+            "production_requires_owner_approval": True,
+            "production_requires_pre_post_health": True,
+            "runtime_manifest_path": CP.RUNTIME_MANIFEST_PATH,
+            "runtime_manifest_sha256": runtime_sha,
+            "schema_version": CP.AUTOMATIC_APPROVAL_SCHEMA,
+            "stop_on_safety_failure": True,
+            "task107_receipt_path": receipt_rel,
+            "task107_receipt_sha256": CP.sha256_file(root / receipt_rel),
+            "task_id": "TASK107-R2-AUTOMATIC-MODE",
+        }
+        CP.atomic_json(root / approval_rel, approval)
+        mode = {
+            "activated_at": activated_at,
+            "allow_replay_existing_launch_markers": False,
+            "automatic_nonproduction": True,
+            "automatic_production": True,
+            "mode_epoch": "auto-20260904T135101Z-testfixture0001",
+            "mode": "AUTOMATIC",
+            "owner_approval_path": approval_rel,
+            "owner_approval_sha256": CP.sha256_file(root / approval_rel),
+            "production_requires_backup": True,
+            "production_requires_exact_launch": True,
+            "production_requires_gate_b": True,
+            "production_requires_live_receipt": True,
+            "production_requires_owner_approval": True,
+            "production_requires_pre_post_health": True,
+            "runtime_manifest_path": CP.RUNTIME_MANIFEST_PATH,
+            "runtime_manifest_sha256": runtime_sha,
+            "schema_version": CP.EXECUTION_MODE_SCHEMA,
+            "stop_on_safety_failure": True,
+            "task107_receipt_path": receipt_rel,
+            "task107_receipt_sha256": CP.sha256_file(root / receipt_rel),
+        }
+        manual = root / "state/MANUAL_MODE.md"
+        manual.parent.mkdir(parents=True, exist_ok=True)
+        manual.write_text("# Test mode\n\nSTATUS: INACTIVE\n", encoding="utf-8")
+        CP.atomic_json(root / "state/EXECUTION_MODE.json", mode)
+        return mode
+
     def write_request(
         self,
         root: pathlib.Path,
@@ -56,6 +144,7 @@ class ControlPlaneTests(unittest.TestCase):
         requested_min_class=None,
         critical=None,
     ) -> str:
+        self.write_manual_mode(root)
         controller_sha = "a" * 64
         test_sha = "b" * 64
         value = {
@@ -83,7 +172,9 @@ class ControlPlaneTests(unittest.TestCase):
             value["health_checks"] = health_checks
         if storage_probe is not None:
             value["storage_probe"] = storage_probe
-        if requested_min_class is not None:
+        if production and requested_min_class is None:
+            value["requested_min_class"] = "CRITICAL"
+        elif requested_min_class is not None:
             value["requested_min_class"] = requested_min_class
         if critical is not None:
             value["critical"] = critical
@@ -93,6 +184,49 @@ class ControlPlaneTests(unittest.TestCase):
         path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         return relative
 
+    def test_valid_automatic_mode_is_accepted(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            result = CP.verify_execution_mode(root=root, required_mode="AUTOMATIC")
+            self.assertEqual(result["mode"], "AUTOMATIC")
+            self.assertTrue(result["automatic_production"])
+
+    def test_automatic_mode_rejects_tampered_task107_receipt(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            receipt_path = root / "state/receipts/TASK107-R2.json"
+            receipt_path.write_text(receipt_path.read_text(encoding="utf-8") + " ", encoding="utf-8")
+            with self.assertRaisesRegex(CP.ControlPlaneError, "TASK107_RECEIPT_SHA_MISMATCH"):
+                CP.verify_execution_mode(root=root)
+
+    def test_automatic_mode_rejects_tampered_owner_approval(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            approval_path = root / "tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json"
+            approval_path.write_text(approval_path.read_text(encoding="utf-8") + " ", encoding="utf-8")
+            with self.assertRaisesRegex(CP.ControlPlaneError, "AUTOMATIC_APPROVAL_SHA_MISMATCH"):
+                CP.verify_execution_mode(root=root)
+
+    def test_automatic_mode_rejects_tampered_runtime(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            target = root / CP.RUNTIME_PINNED_PATHS[0]
+            target.write_text(target.read_text(encoding="utf-8") + "tampered\n", encoding="utf-8")
+            with self.assertRaisesRegex(CP.ControlPlaneError, "RUNTIME_PINNED_FILE_SHA_MISMATCH"):
+                CP.verify_execution_mode(root=root)
+
+    def test_automatic_mode_requires_manual_marker_inactive(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            self.write_automatic_mode(root)
+            (root / "state/MANUAL_MODE.md").write_text("STATUS: ACTIVE\n", encoding="utf-8")
+            with self.assertRaisesRegex(CP.ControlPlaneError, "MANUAL_MODE_NOT_INACTIVE"):
+                CP.verify_execution_mode(root=root)
+
     def test_exact_intake_uses_requested_path_not_highest_task_number(self):
         with tempfile.TemporaryDirectory() as folder:
             root = pathlib.Path(folder)
@@ -101,6 +235,18 @@ class ControlPlaneTests(unittest.TestCase):
             claim = CP.claim_request(first, "run-1", root=root)
             self.assertEqual(claim["identity"]["task_id"], "TASK-2")
             self.assertEqual(claim["request_path"], first)
+
+    def test_claim_rejects_changed_request_when_sha_is_pinned(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            request = self.write_request(root, "TASK-PINNED")
+            with self.assertRaisesRegex(CP.ControlPlaneError, "CLAIM_REQUEST_SHA_MISMATCH"):
+                CP.claim_request(
+                    request,
+                    "run-1",
+                    root=root,
+                    expected_request_sha256="f" * 64,
+                )
 
     def test_atomic_duplicate_protection_blocks_second_active_run(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -198,6 +344,16 @@ class ControlPlaneTests(unittest.TestCase):
             with self.assertRaisesRegex(CP.ControlPlaneError, "PRODUCTION_HEALTH_CHECKS_REQUIRED"):
                 CP.health_phase(request, "run-1", "pre", root=root)
 
+    def test_production_cannot_route_fast_or_standard(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            request = self.write_request(root, "TASK-PROD-CLASS", production=True)
+            raw = CP.read_json(root / request)
+            raw.pop("requested_min_class")
+            CP.atomic_json(root / request, raw)
+            with self.assertRaisesRegex(CP.ControlPlaneError, "PRODUCTION_MUST_ROUTE_CRITICAL"):
+                CP.claim_request(request, "run-1", root=root)
+
     def test_production_storage_requires_target_probe_not_runner_disk(self):
         with tempfile.TemporaryDirectory() as folder:
             root = pathlib.Path(folder)
@@ -264,6 +420,63 @@ class ControlPlaneTests(unittest.TestCase):
             state = CP.detect_stall(claim_path, 60, now=now)
             self.assertTrue(state["stalled"])
             self.assertEqual(state["task_execution_status"], "STALLED")
+
+    def test_durable_production_transaction_can_be_recovered_after_finish_state(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            request_rel = "tasks/requests/TASK-TX.json"
+            raw = {
+                "task_id": "TASK-TX",
+                "title": "Transaction test",
+                "production_required": True,
+                "execution": {
+                    "backup_receipt_path": "state/receipts/TASK-TX-BACKUP.json"
+                },
+            }
+            CP.atomic_json(root / request_rel, raw)
+            request_sha = CP.sha256_file(root / request_rel)
+            identity = CP._identity(raw, request_sha, "run-tx")
+            claim_path = root / CP.claim_relative_path(identity)
+            ledger_rel = "state/autostart_consumed/tx.json"
+            CP.atomic_json(root / ledger_rel, {"expires_at": "2099-01-01T00:00:00Z"})
+            backup_rel = raw["execution"]["backup_receipt_path"]
+            CP.atomic_json(root / backup_rel, {"status": "PASS"})
+            claim = {
+                "autostart_ledger_path": ledger_rel,
+                "critical_gate_status": "PASS_PRODUCTION",
+                "execution_mode": "AUTOMATIC",
+                "identity": identity,
+                "mode_epoch": "auto-test-1234567890123456",
+                "package_compile_status": "PASS",
+                "pre_health_status": "PASS",
+                "request_path": request_rel,
+                "storage_preflight": {"allowed": True},
+                "task_execution_status": "RUNNING",
+            }
+            CP.atomic_json(claim_path, claim)
+            transaction_id = "tx-run-tx-abcdef0123456789"
+            with mock.patch.object(
+                CP,
+                "_load_exact_claim",
+                return_value=(claim_path, claim, raw, request_sha),
+            ):
+                opened = CP.open_production_transaction(
+                    request_rel,
+                    "run-tx",
+                    transaction_id,
+                    CP.sha256_file(root / backup_rel),
+                    "a" * 64,
+                    root=root,
+                )
+            self.assertEqual(opened["status"], "OPEN")
+            finished = CP.close_production_transaction(
+                request_rel, "run-tx", transaction_id, "FINISHED", root=root
+            )
+            self.assertEqual(finished["status"], "FINISHED")
+            recovered = CP.close_production_transaction(
+                request_rel, "run-tx", transaction_id, "ROLLED_BACK", root=root
+            )
+            self.assertEqual(recovered["status"], "ROLLED_BACK")
 
     def test_retry_is_bounded_and_logical_failure_enters_root_cause(self):
         with tempfile.TemporaryDirectory() as folder:

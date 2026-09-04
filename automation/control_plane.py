@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """TASK107-R2 durable control plane for UA ART task execution.
 
-The module is intentionally limited to repository state, read-only health
-checks and validation.  It cannot deploy, mutate the website, write CRM data,
-change DNS, or enable automatic mode.
+The module validates repository state, exact task identity, execution mode,
+health evidence and receipts.  Website/CRM/DNS mutation remains delegated to
+an immutable, task-scoped controller after all applicable gates pass.
 """
 from __future__ import annotations
 
@@ -39,6 +39,30 @@ AI_STATUSES = {"NOT_REQUESTED", "PENDING", "RECEIVED", "FAILED"}
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 TASK_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{1,79}$")
 MAX_STORAGE_PROBE_AGE_SECONDS = 30 * 60
+EXECUTION_MODE_SCHEMA = "UA-ART-EXECUTION-MODE-1"
+AUTOMATIC_APPROVAL_SCHEMA = "UA-ART-AUTOMATIC-MODE-APPROVAL-1"
+RUNTIME_MANIFEST_SCHEMA = "UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1"
+AUTOSTART_LEDGER_SCHEMA = "UA-ART-AUTOSTART-LEDGER-1"
+PRODUCTION_TRANSACTION_SCHEMA = "UA-ART-PRODUCTION-TRANSACTION-1"
+EXECUTION_MODES = {"MANUAL", "AUTOMATIC"}
+RUNTIME_MANIFEST_PATH = "state/AUTOPILOT_RUNTIME_MANIFEST.json"
+RUNTIME_PINNED_PATHS = (
+    ".github/workflows/uaart_autostart.yml",
+    ".github/workflows/uaart_orchestrator.yml",
+    ".github/workflows/uaart_fast.yml",
+    ".github/workflows/uaart_standard.yml",
+    ".github/workflows/uaart_critical.yml",
+    ".github/workflows/uaart_transaction_watchdog.yml",
+    "automation/autostart_intake.py",
+    "automation/control_plane.py",
+    "automation/critical_adapter.py",
+    "automation/execution_contract.py",
+    "automation/production_queue.py",
+    "automation/task_orchestrator.py",
+    "automation/task_ticket.py",
+    "automation/transaction_watchdog.py",
+    "state/schemas/task_request.schema.json",
+)
 
 
 class ControlPlaneError(ValueError):
@@ -114,6 +138,229 @@ def read_json(path: pathlib.Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ControlPlaneError("JSON_OBJECT_REQUIRED:" + str(path))
     return value
+
+
+def require_mode_status(path: pathlib.Path, expected: str) -> None:
+    if not path.is_file() or path.is_symlink():
+        raise ControlPlaneError("EXECUTION_MODE_STATUS_FILE_MISSING")
+    lines = [
+        line.strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip().startswith("STATUS:")
+    ]
+    wanted = "STATUS: " + expected
+    if lines != [wanted]:
+        raise ControlPlaneError("EXECUTION_MODE_STATUS_CONFLICT:" + expected)
+
+
+def verify_execution_mode(
+    *,
+    root: pathlib.Path = ROOT,
+    required_mode: str | None = None,
+) -> dict[str, Any]:
+    """Validate the repository's single execution-mode authority.
+
+    MANUAL is accepted only while the legacy marker is explicitly ACTIVE.
+    AUTOMATIC is accepted only when the TASK107-R2 receipt and the owner's
+    separate global-production approval are both pinned by SHA-256.
+    """
+    required = str(required_mode or "").upper()
+    if required and required not in EXECUTION_MODES:
+        raise ControlPlaneError("INVALID_REQUIRED_EXECUTION_MODE")
+
+    manual_path = root / "state/MANUAL_MODE.md"
+    mode_path = root / "state/EXECUTION_MODE.json"
+    if not mode_path.is_file():
+        require_mode_status(manual_path, "ACTIVE")
+        result = {
+            "status": "PASS",
+            "mode": "MANUAL",
+            "automatic_nonproduction": False,
+            "automatic_production": False,
+        }
+        if required and required != "MANUAL":
+            raise ControlPlaneError("EXECUTION_MODE_REQUIRED:" + required)
+        return result
+
+    if mode_path.is_symlink() or not mode_path.is_file():
+        raise ControlPlaneError("EXECUTION_MODE_FILE_INVALID")
+    mode = read_json(mode_path)
+    halt_path = root / "state/AUTOPILOT_HALT.json"
+    if halt_path.exists():
+        raise ControlPlaneError("AUTOMATIC_MODE_HALTED")
+    expected_mode_keys = {
+        "activated_at",
+        "allow_replay_existing_launch_markers",
+        "automatic_nonproduction",
+        "automatic_production",
+        "mode",
+        "mode_epoch",
+        "owner_approval_path",
+        "owner_approval_sha256",
+        "production_requires_backup",
+        "production_requires_exact_launch",
+        "production_requires_gate_b",
+        "production_requires_live_receipt",
+        "production_requires_owner_approval",
+        "production_requires_pre_post_health",
+        "runtime_manifest_path",
+        "runtime_manifest_sha256",
+        "schema_version",
+        "stop_on_safety_failure",
+        "task107_receipt_path",
+        "task107_receipt_sha256",
+    }
+    if set(mode) != expected_mode_keys:
+        raise ControlPlaneError("EXECUTION_MODE_KEYS_MISMATCH")
+    if mode.get("schema_version") != EXECUTION_MODE_SCHEMA or mode.get("mode") != "AUTOMATIC":
+        raise ControlPlaneError("EXECUTION_MODE_SCHEMA_OR_VALUE")
+    if not re.fullmatch(r"auto-[A-Za-z0-9._-]{16,100}", str(mode.get("mode_epoch", ""))):
+        raise ControlPlaneError("EXECUTION_MODE_EPOCH")
+    try:
+        require_mode_status(manual_path, "INACTIVE")
+    except ControlPlaneError as exc:
+        raise ControlPlaneError("MANUAL_MODE_NOT_INACTIVE") from exc
+    for key in (
+        "automatic_nonproduction",
+        "automatic_production",
+        "production_requires_backup",
+        "production_requires_exact_launch",
+        "production_requires_gate_b",
+        "production_requires_live_receipt",
+        "production_requires_owner_approval",
+        "production_requires_pre_post_health",
+        "stop_on_safety_failure",
+    ):
+        if mode.get(key) is not True:
+            raise ControlPlaneError("EXECUTION_MODE_REQUIRED_TRUE:" + key)
+    if mode.get("allow_replay_existing_launch_markers") is not False:
+        raise ControlPlaneError("EXECUTION_MODE_REPLAY_MUST_BE_FALSE")
+    parse_utc(str(mode.get("activated_at", "")))
+
+    receipt_rel = safe_repo_path(str(mode.get("task107_receipt_path", "")))
+    if receipt_rel != "state/receipts/TASK107-R2.json":
+        raise ControlPlaneError("TASK107_RECEIPT_PATH_MISMATCH")
+    receipt_path = repo_path(receipt_rel, root)
+    if receipt_path.is_symlink() or not receipt_path.is_file():
+        raise ControlPlaneError("TASK107_RECEIPT_FILE_INVALID")
+    if sha256_file(receipt_path) != require_sha(mode.get("task107_receipt_sha256"), "task107_receipt"):
+        raise ControlPlaneError("TASK107_RECEIPT_SHA_MISMATCH")
+    receipt = read_json(receipt_path)
+    if (
+        receipt.get("task_id") != "TASK107-R2"
+        or receipt.get("status") != "FINISHED"
+        or receipt.get("canary_result") != "3/3 PASS"
+        or receipt.get("tests") != "PASS"
+        or receipt.get("rollback_drill") != "PASS"
+        or int(receipt.get("unexpected_changes", -1)) != 0
+        or receipt.get("production_touched") is not False
+    ):
+        raise ControlPlaneError("TASK107_RECEIPT_NOT_ACCEPTABLE")
+
+    approval_rel = safe_repo_path(str(mode.get("owner_approval_path", "")))
+    if approval_rel != "tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json":
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_PATH_MISMATCH")
+    approval_path = repo_path(approval_rel, root)
+    if approval_path.is_symlink() or not approval_path.is_file():
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_FILE_INVALID")
+    if sha256_file(approval_path) != require_sha(mode.get("owner_approval_sha256"), "automatic_approval"):
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_SHA_MISMATCH")
+    approval = read_json(approval_path)
+    expected_approval_keys = {
+        "allow_replay_existing_launch_markers",
+        "approved_at",
+        "automatic_nonproduction",
+        "automatic_production",
+        "mode_epoch",
+        "owner",
+        "owner_authorized",
+        "owner_command",
+        "production_requires_backup",
+        "production_requires_exact_launch",
+        "production_requires_gate_b",
+        "production_requires_live_receipt",
+        "production_requires_owner_approval",
+        "production_requires_pre_post_health",
+        "runtime_manifest_path",
+        "runtime_manifest_sha256",
+        "schema_version",
+        "stop_on_safety_failure",
+        "task107_receipt_path",
+        "task107_receipt_sha256",
+        "task_id",
+    }
+    if set(approval) != expected_approval_keys:
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_KEYS_MISMATCH")
+    if approval.get("schema_version") != AUTOMATIC_APPROVAL_SCHEMA:
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_SCHEMA")
+    if approval.get("task_id") != "TASK107-R2-AUTOMATIC-MODE":
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_TASK_ID")
+    if approval.get("owner") != "Артём Бровинский / UA ART COMPANY LLC":
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_OWNER")
+    if approval.get("owner_authorized") is not True:
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_MISSING")
+    if approval.get("owner_command") != "Включай глобальный продакшн автопилот.":
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_COMMAND_MISMATCH")
+    if approval.get("mode_epoch") != mode.get("mode_epoch"):
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_EPOCH_MISMATCH")
+    for key in (
+        "automatic_nonproduction",
+        "automatic_production",
+        "production_requires_backup",
+        "production_requires_exact_launch",
+        "production_requires_gate_b",
+        "production_requires_live_receipt",
+        "production_requires_owner_approval",
+        "production_requires_pre_post_health",
+        "stop_on_safety_failure",
+    ):
+        if approval.get(key) is not True or approval.get(key) != mode.get(key):
+            raise ControlPlaneError("AUTOMATIC_APPROVAL_POLICY_MISMATCH:" + key)
+    if approval.get("allow_replay_existing_launch_markers") is not False:
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_REPLAY_MUST_BE_FALSE")
+    if (
+        approval.get("task107_receipt_path") != receipt_rel
+        or approval.get("task107_receipt_sha256") != mode.get("task107_receipt_sha256")
+    ):
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_RECEIPT_BINDING")
+    if parse_utc(str(approval.get("approved_at", ""))) > parse_utc(str(mode["activated_at"])):
+        raise ControlPlaneError("AUTOMATIC_APPROVAL_AFTER_ACTIVATION")
+
+    runtime_rel = safe_repo_path(str(mode.get("runtime_manifest_path", "")))
+    if runtime_rel != RUNTIME_MANIFEST_PATH \
+            or approval.get("runtime_manifest_path") != runtime_rel:
+        raise ControlPlaneError("RUNTIME_MANIFEST_PATH_MISMATCH")
+    runtime_path = repo_path(runtime_rel, root)
+    if runtime_path.is_symlink() or not runtime_path.is_file():
+        raise ControlPlaneError("RUNTIME_MANIFEST_FILE_INVALID")
+    runtime_sha = require_sha(mode.get("runtime_manifest_sha256"), "runtime_manifest")
+    if approval.get("runtime_manifest_sha256") != runtime_sha:
+        raise ControlPlaneError("RUNTIME_MANIFEST_APPROVAL_BINDING")
+    if sha256_file(runtime_path) != runtime_sha:
+        raise ControlPlaneError("RUNTIME_MANIFEST_SHA_MISMATCH")
+    runtime = read_json(runtime_path)
+    if set(runtime) != {"files", "generated_at", "mode_epoch", "schema_version"}:
+        raise ControlPlaneError("RUNTIME_MANIFEST_SCHEMA")
+    if runtime.get("schema_version") != RUNTIME_MANIFEST_SCHEMA \
+            or runtime.get("mode_epoch") != mode.get("mode_epoch"):
+        raise ControlPlaneError("RUNTIME_MANIFEST_IDENTITY")
+    if parse_utc(str(runtime.get("generated_at", ""))) > parse_utc(str(mode["activated_at"])):
+        raise ControlPlaneError("RUNTIME_MANIFEST_AFTER_ACTIVATION")
+    files = runtime.get("files")
+    if not isinstance(files, dict) or set(files) != set(RUNTIME_PINNED_PATHS):
+        raise ControlPlaneError("RUNTIME_MANIFEST_FILE_SET")
+    for relative in RUNTIME_PINNED_PATHS:
+        pinned = repo_path(relative, root)
+        if pinned.is_symlink() or not pinned.is_file():
+            raise ControlPlaneError("RUNTIME_PINNED_FILE_INVALID:" + relative)
+        if sha256_file(pinned) != require_sha(files.get(relative), "runtime:" + relative):
+            raise ControlPlaneError("RUNTIME_PINNED_FILE_SHA_MISMATCH:" + relative)
+
+    result = dict(mode)
+    result["status"] = "PASS"
+    if required and required != "AUTOMATIC":
+        raise ControlPlaneError("EXECUTION_MODE_REQUIRED:" + required)
+    return result
 
 
 def atomic_json(path: pathlib.Path, value: Mapping[str, Any], *, exclusive: bool = False) -> None:
@@ -334,6 +581,12 @@ def plan_relative_path(identity: Mapping[str, str]) -> str:
     return "state/plans/%s.%s.json" % (identity["task_id"], identity["task_sha256"])
 
 
+def transaction_relative_path(identity: Mapping[str, str]) -> str:
+    return "state/transactions/%s.%s.%s.json" % (
+        identity["task_id"], identity["task_sha256"], identity["run_id"]
+    )
+
+
 def _claim_files(root: pathlib.Path) -> list[pathlib.Path]:
     folder = root / "state/claims"
     return sorted(folder.glob("*.json")) if folder.is_dir() else []
@@ -361,10 +614,34 @@ def claim_request(
     *,
     root: pathlib.Path = ROOT,
     source_commit: str = "",
+    expected_request_sha256: str = "",
+    autostart_ledger_path: str = "",
+    autostart_source_commit: str = "",
 ) -> dict[str, Any]:
+    mode = verify_execution_mode(root=root)
     normalized, _, raw, request_sha = load_request(request_path, root)
+    if expected_request_sha256:
+        expected = require_sha(expected_request_sha256, "claim_expected_request")
+        if request_sha != expected:
+            raise ControlPlaneError("CLAIM_REQUEST_SHA_MISMATCH")
+    if mode["mode"] == "AUTOMATIC":
+        ledger_binding = verify_autostart_ledger(
+            autostart_ledger_path,
+            normalized,
+            raw,
+            request_sha,
+            run_id,
+            expected_source_commit=autostart_source_commit,
+            root=root,
+        )
+    else:
+        if autostart_ledger_path or autostart_source_commit:
+            raise ControlPlaneError("MANUAL_MODE_REJECTS_AUTOSTART_LEDGER")
+        ledger_binding = None
     identity = _identity(raw, request_sha, run_id)
     task_class = classify_request(raw)
+    if bool(raw.get("production_required", False)) and task_class != "CRITICAL":
+        raise ControlPlaneError("PRODUCTION_MUST_ROUTE_CRITICAL")
     locks = resource_locks(raw)
     claim_rel = claim_relative_path(identity)
     claim_path = repo_path(claim_rel, root)
@@ -373,6 +650,15 @@ def claim_request(
         existing = read_json(claim_path)
         if existing.get("identity") != identity or existing.get("request_path") != normalized:
             raise ControlPlaneError("CLAIM_IDENTITY_COLLISION")
+        if existing.get("execution_mode") != mode["mode"]:
+            raise ControlPlaneError("CLAIM_EXECUTION_MODE_MISMATCH")
+        if mode["mode"] == "AUTOMATIC":
+            if (
+                existing.get("autostart_ledger_path") != ledger_binding["ledger_path"]
+                or existing.get("autostart_ledger_sha256") != ledger_binding["ledger_sha256"]
+                or existing.get("autostart_source_commit") != ledger_binding["source_commit"]
+            ):
+                raise ControlPlaneError("CLAIM_AUTOSTART_LEDGER_MISMATCH")
         result = dict(existing)
         result["claim_path"] = claim_rel
         result["plan_path"] = plan_relative_path(identity)
@@ -420,8 +706,14 @@ def claim_request(
         "created_at": now,
         "updated_at": now,
         "source_commit": str(source_commit),
-        "automatic_mode_enabled": False,
+        "execution_mode": mode["mode"],
+        "mode_epoch": mode.get("mode_epoch", "manual"),
+        "automatic_mode_enabled": mode["mode"] == "AUTOMATIC",
     }
+    if ledger_binding is not None:
+        claim["autostart_ledger_path"] = ledger_binding["ledger_path"]
+        claim["autostart_ledger_sha256"] = ledger_binding["ledger_sha256"]
+        claim["autostart_source_commit"] = ledger_binding["source_commit"]
     atomic_json(claim_path, claim, exclusive=True)
     plan_rel = plan_relative_path(identity)
     plan = {
@@ -434,9 +726,16 @@ def claim_request(
         "ai_response_status": ai_status,
         "task_execution_status": "CLAIMED",
         "production_required": claim["production_required"],
-        "manual_mode": True,
+        "execution_mode": mode["mode"],
+        "mode_epoch": mode.get("mode_epoch", "manual"),
+        "manual_mode": mode["mode"] == "MANUAL",
+        "automatic_mode_enabled": mode["mode"] == "AUTOMATIC",
         "created_at": now,
     }
+    if ledger_binding is not None:
+        plan["autostart_ledger_path"] = ledger_binding["ledger_path"]
+        plan["autostart_ledger_sha256"] = ledger_binding["ledger_sha256"]
+        plan["autostart_source_commit"] = ledger_binding["source_commit"]
     atomic_json(repo_path(plan_rel, root), plan)
     result = dict(claim)
     result.update({"claim_path": claim_rel, "plan_path": plan_rel, "idempotent": False})
@@ -457,6 +756,159 @@ def verify_request(request_path: str, expected_sha256: str, *, root: pathlib.Pat
     }
 
 
+def verify_autostart_ledger(
+    ledger_path: str,
+    request_path: str,
+    raw: Mapping[str, Any],
+    request_sha256: str,
+    run_id: str,
+    *,
+    expected_source_commit: str = "",
+    root: pathlib.Path = ROOT,
+) -> dict[str, str]:
+    if not str(ledger_path).strip():
+        raise ControlPlaneError("AUTOSTART_LEDGER_PATH_MISMATCH")
+    normalized = safe_repo_path(ledger_path)
+    expected_path = "state/autostart_consumed/%s.%s.json" % (
+        str(raw["task_id"]),
+        request_sha256,
+    )
+    if normalized != expected_path:
+        raise ControlPlaneError("AUTOSTART_LEDGER_PATH_MISMATCH")
+    path = repo_path(normalized, root)
+    if path.is_symlink() or not path.is_file():
+        raise ControlPlaneError("AUTOSTART_LEDGER_MISSING")
+    ledger = read_json(path)
+    expected_keys = {
+        "consumed_at",
+        "created_at",
+        "expires_at",
+        "launch_path",
+        "launch_sha256",
+        "nonce",
+        "mode_epoch",
+        "nonce_reservation_path",
+        "nonce_reservation_sha256",
+        "production_allowed",
+        "production_approval_path",
+        "production_approval_sha256",
+        "production_required",
+        "request_path",
+        "request_sha256",
+        "request_subject_sha256",
+        "run_id",
+        "schema_version",
+        "source_commit",
+        "status",
+        "task_id",
+    }
+    if set(ledger) != expected_keys or ledger.get("schema_version") != AUTOSTART_LEDGER_SCHEMA:
+        raise ControlPlaneError("AUTOSTART_LEDGER_SCHEMA")
+    if ledger.get("status") != "CONSUMED":
+        raise ControlPlaneError("AUTOSTART_LEDGER_STATUS")
+    if (
+        ledger.get("task_id") != raw["task_id"]
+        or ledger.get("request_path") != request_path
+        or ledger.get("request_sha256") != request_sha256
+        or str(ledger.get("run_id")) != str(run_id)
+    ):
+        raise ControlPlaneError("AUTOSTART_LEDGER_IDENTITY")
+    mode = verify_execution_mode(root=root, required_mode="AUTOMATIC")
+    if ledger.get("mode_epoch") != mode.get("mode_epoch"):
+        raise ControlPlaneError("AUTOSTART_LEDGER_MODE_EPOCH")
+    production = bool(raw.get("production_required", False))
+    if ledger.get("production_required") is not production:
+        raise ControlPlaneError("AUTOSTART_LEDGER_PRODUCTION_FLAG")
+    if ledger.get("production_allowed") is not production:
+        raise ControlPlaneError("AUTOSTART_LEDGER_PRODUCTION_AUTHORIZATION")
+    consumed_at = parse_utc(str(ledger.get("consumed_at", "")))
+    created_at = parse_utc(str(ledger.get("created_at", "")))
+    expires_at = parse_utc(str(ledger.get("expires_at", "")))
+    if created_at > consumed_at or expires_at <= created_at:
+        raise ControlPlaneError("AUTOSTART_LEDGER_TIME_BINDING")
+    if dt.datetime.now(dt.timezone.utc) >= expires_at:
+        raise ControlPlaneError("AUTOSTART_LEDGER_EXPIRED")
+    require_sha(ledger.get("launch_sha256"), "autostart_launch")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(ledger.get("source_commit", ""))):
+        raise ControlPlaneError("AUTOSTART_LEDGER_SOURCE_COMMIT")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(expected_source_commit)):
+        raise ControlPlaneError("AUTOSTART_EXPECTED_SOURCE_COMMIT")
+    if ledger.get("source_commit") != expected_source_commit:
+        raise ControlPlaneError("AUTOSTART_LEDGER_SOURCE_COMMIT_MISMATCH")
+    if not re.fullmatch(r"[A-Za-z0-9._-]{16,128}", str(ledger.get("nonce", ""))):
+        raise ControlPlaneError("AUTOSTART_LEDGER_NONCE")
+    nonce_rel = safe_repo_path(str(ledger.get("nonce_reservation_path", "")))
+    expected_nonce_rel = "state/autostart_nonces/%s.json" % ledger["nonce"]
+    if nonce_rel != expected_nonce_rel:
+        raise ControlPlaneError("AUTOSTART_NONCE_RESERVATION_PATH")
+    nonce_path = repo_path(nonce_rel, root)
+    if nonce_path.is_symlink() or not nonce_path.is_file():
+        raise ControlPlaneError("AUTOSTART_NONCE_RESERVATION_MISSING")
+    if sha256_file(nonce_path) != require_sha(
+        ledger.get("nonce_reservation_sha256"), "autostart_nonce_reservation"
+    ):
+        raise ControlPlaneError("AUTOSTART_NONCE_RESERVATION_SHA")
+    reservation = read_json(nonce_path)
+    if (
+        reservation.get("schema_version") != AUTOSTART_LEDGER_SCHEMA
+        or reservation.get("status") != "RESERVED"
+        or reservation.get("nonce") != ledger["nonce"]
+        or reservation.get("task_id") != raw["task_id"]
+        or reservation.get("request_sha256") != request_sha256
+        or str(reservation.get("run_id")) != str(run_id)
+        or reservation.get("source_commit") != ledger["source_commit"]
+    ):
+        raise ControlPlaneError("AUTOSTART_NONCE_RESERVATION_BINDING")
+    launch_rel = safe_repo_path(str(ledger.get("launch_path", "")))
+    if not launch_rel.startswith("tasks/launch/AUTO-") or not launch_rel.endswith(".json"):
+        raise ControlPlaneError("AUTOSTART_LEDGER_LAUNCH_SCOPE")
+    launch_path = repo_path(launch_rel, root)
+    if launch_path.is_symlink() or not launch_path.is_file():
+        raise ControlPlaneError("AUTOSTART_LEDGER_LAUNCH_MISSING")
+    if sha256_file(launch_path) != ledger["launch_sha256"]:
+        raise ControlPlaneError("AUTOSTART_LEDGER_LAUNCH_SHA")
+    marker = read_json(launch_path)
+    if (
+        marker.get("schema_version") != "UA-ART-AUTOSTART-LAUNCH-1"
+        or marker.get("action") != "RUN_EXACT_TASK"
+        or marker.get("owner_authorized") is not True
+        or marker.get("task_id") != raw["task_id"]
+        or marker.get("request_path") != request_path
+        or marker.get("request_sha256") != request_sha256
+        or marker.get("nonce") != ledger["nonce"]
+        or marker.get("mode_epoch") != ledger["mode_epoch"]
+        or marker.get("production_allowed") is not production
+        or marker.get("created_at") != ledger["created_at"]
+        or marker.get("expires_at") != ledger["expires_at"]
+    ):
+        raise ControlPlaneError("AUTOSTART_LEDGER_LAUNCH_BINDING")
+    if production:
+        critical = raw.get("critical")
+        if not isinstance(critical, dict):
+            raise ControlPlaneError("AUTOSTART_LEDGER_CRITICAL_BINDING")
+        if (
+            ledger.get("production_approval_path") != critical.get("owner_approval_path")
+            or ledger.get("production_approval_sha256") != critical.get("owner_approval_sha256")
+        ):
+            raise ControlPlaneError("AUTOSTART_LEDGER_APPROVAL_BINDING")
+        if not SHA_RE.fullmatch(str(ledger.get("request_subject_sha256", ""))):
+            raise ControlPlaneError("AUTOSTART_LEDGER_REQUEST_SUBJECT")
+    elif any(
+        str(ledger.get(key, ""))
+        for key in (
+            "production_approval_path",
+            "production_approval_sha256",
+            "request_subject_sha256",
+        )
+    ):
+        raise ControlPlaneError("AUTOSTART_LEDGER_NONPRODUCTION_APPROVAL_DATA")
+    return {
+        "ledger_path": normalized,
+        "ledger_sha256": sha256_file(path),
+        "source_commit": str(ledger["source_commit"]),
+    }
+
+
 def _load_exact_claim(
     request_path: str, run_id: str, *, root: pathlib.Path = ROOT
 ) -> tuple[pathlib.Path, dict[str, Any], dict[str, Any], str]:
@@ -468,8 +920,43 @@ def _load_exact_claim(
     claim = read_json(path)
     if claim.get("identity") != identity or claim.get("request_path") != normalized:
         raise ControlPlaneError("EXACT_CLAIM_IDENTITY_MISMATCH")
+    mode = verify_execution_mode(root=root)
+    if claim.get("execution_mode") != mode["mode"]:
+        raise ControlPlaneError("EXACT_CLAIM_EXECUTION_MODE_MISMATCH")
+    if mode["mode"] == "AUTOMATIC":
+        binding = verify_autostart_ledger(
+            str(claim.get("autostart_ledger_path", "")),
+            normalized,
+            raw,
+            request_sha,
+            run_id,
+            expected_source_commit=str(claim.get("autostart_source_commit", "")),
+            root=root,
+        )
+        if claim.get("autostart_ledger_sha256") != binding["ledger_sha256"]:
+            raise ControlPlaneError("EXACT_CLAIM_AUTOSTART_LEDGER_SHA")
     if claim.get("ai_response_status") not in AI_STATUSES:
         raise ControlPlaneError("INVALID_AI_RESPONSE_STATUS")
+    return path, claim, raw, request_sha
+
+
+def _load_claim_for_recovery(
+    request_path: str, run_id: str, *, root: pathlib.Path = ROOT
+) -> tuple[pathlib.Path, dict[str, Any], dict[str, Any], str]:
+    """Load immutable identity without requiring a still-live write grant.
+
+    Rollback bookkeeping and emergency halt must remain possible after a mode
+    revoke or authorization expiry.  This deliberately grants no execution or
+    finish capability.
+    """
+    normalized, _, raw, request_sha = load_request(request_path, root)
+    identity = _identity(raw, request_sha, run_id)
+    path = repo_path(claim_relative_path(identity), root)
+    if path.is_symlink() or not path.is_file():
+        raise ControlPlaneError("RECOVERY_CLAIM_MISSING")
+    claim = read_json(path)
+    if claim.get("identity") != identity or claim.get("request_path") != normalized:
+        raise ControlPlaneError("RECOVERY_CLAIM_IDENTITY_MISMATCH")
     return path, claim, raw, request_sha
 
 
@@ -479,6 +966,8 @@ def _touch_claim(path: pathlib.Path, claim: dict[str, Any], status: str | None =
             raise ControlPlaneError("INVALID_HEARTBEAT_STATUS")
         if str(claim.get("task_execution_status")) in TERMINAL_EXECUTION_STATUSES:
             raise ControlPlaneError("TERMINAL_CLAIM_CANNOT_HEARTBEAT")
+        if str(claim.get("task_execution_status")) in {"BLOCKED_ROOT_CAUSE", "STALLED"}:
+            raise ControlPlaneError("BLOCKED_CLAIM_CANNOT_HEARTBEAT")
         claim["task_execution_status"] = status
     claim["heartbeat_sequence"] = int(claim.get("heartbeat_sequence", 0)) + 1
     claim["heartbeat_at"] = utc_now()
@@ -957,7 +1446,7 @@ def record_failure(
     root: pathlib.Path = ROOT,
     rollback_confirmed: bool = False,
 ) -> dict[str, Any]:
-    path, claim, _, _ = _load_exact_claim(request_path, run_id, root=root)
+    path, claim, _, _ = _load_claim_for_recovery(request_path, run_id, root=root)
     failure_class = classify_failure(message)
     signature = sha256_bytes(message.strip().casefold().encode("utf-8"))[:16]
     history = claim.get("failure_history") or []
@@ -967,7 +1456,9 @@ def record_failure(
     budgets = {"FAST": 2, "STANDARD": 3, "CRITICAL": 1}
     used = sum(1 for item in history if isinstance(item, dict) and item.get("retry_allowed"))
     remaining = max(0, budgets[str(claim["task_class"])] - used)
-    if failure_class == "TRANSIENT" and remaining > 0:
+    if rollback_confirmed:
+        status, action, retry_allowed = "ROLLED_BACK", "STOP_AFTER_VERIFIED_ROLLBACK", False
+    elif failure_class == "TRANSIENT" and remaining > 0:
         status, action, retry_allowed = "BLOCKED_RETRYABLE", "RETRY_SAME_IDENTITY", True
         remaining -= 1
     elif failure_class == "SAFETY":
@@ -996,6 +1487,141 @@ def record_failure(
     claim["updated_at"] = entry["at"]
     atomic_json(path, claim)
     return entry | {"task_execution_status": status}
+
+
+def halt_automatic_mode(
+    request_path: str,
+    run_id: str,
+    reason: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> dict[str, Any]:
+    _, claim, raw, request_sha = _load_claim_for_recovery(request_path, run_id, root=root)
+    if claim.get("execution_mode") != "AUTOMATIC":
+        raise ControlPlaneError("HALT_REQUIRES_AUTOMATIC_CLAIM")
+    value = {
+        "halted_at": utc_now(),
+        "mode_epoch": claim.get("mode_epoch"),
+        "reason": str(reason)[:500],
+        "request_path": safe_repo_path(request_path),
+        "request_sha256": request_sha,
+        "run_id": str(run_id),
+        "status": "EMERGENCY_HALT",
+        "task_id": raw["task_id"],
+    }
+    atomic_json(root / "state/AUTOPILOT_HALT.json", value)
+    return value
+
+
+def open_production_transaction(
+    request_path: str,
+    run_id: str,
+    transaction_id: str,
+    backup_receipt_sha256: str,
+    backup_manifest_sha256: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> dict[str, Any]:
+    """Persist the rollback lease before the first Production mutation."""
+    claim_path, claim, raw, request_sha = _load_exact_claim(request_path, run_id, root=root)
+    if not bool(raw.get("production_required", False)):
+        raise ControlPlaneError("TRANSACTION_REQUIRES_PRODUCTION")
+    if claim.get("execution_mode") != "AUTOMATIC":
+        raise ControlPlaneError("TRANSACTION_REQUIRES_AUTOMATIC_MODE")
+    if claim.get("critical_gate_status") != "PASS_PRODUCTION":
+        raise ControlPlaneError("TRANSACTION_REQUIRES_GATE_B")
+    if claim.get("package_compile_status") != "PASS":
+        raise ControlPlaneError("TRANSACTION_REQUIRES_COMPILED_PACKAGE")
+    if claim.get("pre_health_status") != "PASS":
+        raise ControlPlaneError("TRANSACTION_REQUIRES_PRE_HEALTH")
+    storage = claim.get("storage_preflight")
+    if not isinstance(storage, dict) or storage.get("allowed") is not True:
+        raise ControlPlaneError("TRANSACTION_REQUIRES_STORAGE_PASS")
+    if not re.fullmatch(r"tx-[A-Za-z0-9._-]{16,120}", str(transaction_id)):
+        raise ControlPlaneError("TRANSACTION_ID_INVALID")
+    execution = raw.get("execution")
+    if not isinstance(execution, dict):
+        raise ControlPlaneError("TRANSACTION_EXECUTION_OBJECT")
+    backup_rel = safe_repo_path(str(execution.get("backup_receipt_path", "")))
+    backup_path = repo_path(backup_rel, root)
+    if backup_path.is_symlink() or not backup_path.is_file():
+        raise ControlPlaneError("TRANSACTION_BACKUP_RECEIPT_MISSING")
+    backup_receipt_sha = require_sha(backup_receipt_sha256, "backup_receipt")
+    if sha256_file(backup_path) != backup_receipt_sha:
+        raise ControlPlaneError("TRANSACTION_BACKUP_RECEIPT_SHA")
+    backup_manifest_sha = require_sha(backup_manifest_sha256, "backup_manifest")
+    identity = _identity(raw, request_sha, run_id)
+    path_rel = transaction_relative_path(identity)
+    path = repo_path(path_rel, root)
+    ledger_rel = safe_repo_path(str(claim.get("autostart_ledger_path", "")))
+    ledger = read_json(repo_path(ledger_rel, root))
+    expires_at = parse_utc(str(ledger.get("expires_at", "")))
+    if dt.datetime.now(dt.timezone.utc) >= expires_at:
+        raise ControlPlaneError("TRANSACTION_AUTHORIZATION_EXPIRED")
+    value = {
+        "autostart_ledger_path": ledger_rel,
+        "backup_manifest_sha256": backup_manifest_sha,
+        "backup_receipt_path": backup_rel,
+        "backup_receipt_sha256": backup_receipt_sha,
+        "expires_at": str(ledger["expires_at"]),
+        "mode_epoch": claim.get("mode_epoch"),
+        "opened_at": utc_now(),
+        "request_path": safe_repo_path(request_path),
+        "request_sha256": request_sha,
+        "run_id": str(run_id),
+        "schema_version": PRODUCTION_TRANSACTION_SCHEMA,
+        "status": "OPEN",
+        "task_id": raw["task_id"],
+        "transaction_id": str(transaction_id),
+    }
+    atomic_json(path, value, exclusive=True)
+    claim["production_transaction_id"] = str(transaction_id)
+    claim["production_transaction_path"] = path_rel
+    claim["production_transaction_status"] = "OPEN"
+    _touch_claim(claim_path, claim, "RUNNING")
+    return value | {"transaction_path": path_rel}
+
+
+def close_production_transaction(
+    request_path: str,
+    run_id: str,
+    transaction_id: str,
+    outcome: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> dict[str, Any]:
+    normalized, _, raw, request_sha = load_request(request_path, root)
+    identity = _identity(raw, request_sha, run_id)
+    path_rel = transaction_relative_path(identity)
+    path = repo_path(path_rel, root)
+    if path.is_symlink() or not path.is_file():
+        raise ControlPlaneError("TRANSACTION_FILE_MISSING")
+    value = read_json(path)
+    expected = str(outcome).upper()
+    if expected not in {"FINISHED", "ROLLED_BACK"}:
+        raise ControlPlaneError("TRANSACTION_OUTCOME")
+    current_status = value.get("status")
+    allowed_current = {"OPEN", "FINISHED"} if expected == "ROLLED_BACK" else {"OPEN"}
+    if (
+        value.get("schema_version") != PRODUCTION_TRANSACTION_SCHEMA
+        or current_status not in allowed_current
+        or value.get("request_path") != normalized
+        or value.get("request_sha256") != request_sha
+        or str(value.get("run_id")) != str(run_id)
+        or value.get("task_id") != raw["task_id"]
+        or value.get("transaction_id") != transaction_id
+    ):
+        raise ControlPlaneError("TRANSACTION_IDENTITY_MISMATCH")
+    value["status"] = expected
+    value["closed_at"] = utc_now()
+    atomic_json(path, value)
+    claim_path = repo_path(claim_relative_path(identity), root)
+    if claim_path.is_file():
+        claim = read_json(claim_path)
+        claim["production_transaction_status"] = expected
+        claim["updated_at"] = value["closed_at"]
+        atomic_json(claim_path, claim)
+    return value | {"transaction_path": path_rel}
 
 
 def detect_stall(
@@ -1176,8 +1802,10 @@ def build_acceptance(
         )
 
     manual_mode = root / "state/MANUAL_MODE.md"
-    if not manual_mode.is_file() or "STATUS: ACTIVE" not in manual_mode.read_text(encoding="utf-8"):
-        raise ControlPlaneError("MANUAL_MODE_NOT_ACTIVE")
+    try:
+        require_mode_status(manual_mode, "ACTIVE")
+    except ControlPlaneError as exc:
+        raise ControlPlaneError("MANUAL_MODE_NOT_ACTIVE") from exc
     contract_rel = safe_repo_path(task_contract_path)
     contract_path = repo_path(contract_rel, root)
     contract_text = contract_path.read_text(encoding="utf-8")
@@ -1290,6 +1918,9 @@ def main() -> None:
     claim.add_argument("request_path")
     claim.add_argument("--run-id", required=True)
     claim.add_argument("--source-commit", default="")
+    claim.add_argument("--expected-sha256", default="")
+    claim.add_argument("--autostart-ledger", default="")
+    claim.add_argument("--autostart-source-commit", default="")
 
     verify = sub.add_parser("verify-request")
     verify.add_argument("request_path")
@@ -1339,6 +1970,26 @@ def main() -> None:
     failure.add_argument("--message", required=True)
     failure.add_argument("--rollback-confirmed", action="store_true")
 
+    halt = sub.add_parser("halt")
+    halt.add_argument("request_path")
+    halt.add_argument("--run-id", required=True)
+    halt.add_argument("--reason", required=True)
+
+    transaction_open = sub.add_parser("transaction-open")
+    transaction_open.add_argument("request_path")
+    transaction_open.add_argument("--run-id", required=True)
+    transaction_open.add_argument("--transaction-id", required=True)
+    transaction_open.add_argument("--backup-receipt-sha256", required=True)
+    transaction_open.add_argument("--backup-manifest-sha256", required=True)
+
+    transaction_close = sub.add_parser("transaction-close")
+    transaction_close.add_argument("request_path")
+    transaction_close.add_argument("--run-id", required=True)
+    transaction_close.add_argument("--transaction-id", required=True)
+    transaction_close.add_argument(
+        "--outcome", required=True, choices=("FINISHED", "ROLLED_BACK")
+    )
+
     stall = sub.add_parser("stall")
     stall.add_argument("claim_path")
     stall.add_argument("--max-age-seconds", type=int, required=True)
@@ -1360,11 +2011,21 @@ def main() -> None:
     accept.add_argument("--output", required=True)
     accept.add_argument("--report", required=True)
 
+    mode = sub.add_parser("verify-mode")
+    mode.add_argument("--require", choices=sorted(EXECUTION_MODES))
+
     sub.add_parser("self-test")
     args = parser.parse_args()
 
     if args.command == "claim":
-        result = claim_request(args.request_path, args.run_id, source_commit=args.source_commit)
+        result = claim_request(
+            args.request_path,
+            args.run_id,
+            source_commit=args.source_commit,
+            expected_request_sha256=args.expected_sha256,
+            autostart_ledger_path=args.autostart_ledger,
+            autostart_source_commit=args.autostart_source_commit,
+        )
         _write_github_outputs({
             "request_path": result["request_path"],
             "request_sha256": result["request_sha256"],
@@ -1408,6 +2069,29 @@ def main() -> None:
             args.message,
             rollback_confirmed=args.rollback_confirmed,
         ))
+    elif args.command == "halt":
+        _dump(halt_automatic_mode(
+            args.request_path,
+            args.run_id,
+            args.reason,
+        ))
+    elif args.command == "transaction-open":
+        result = open_production_transaction(
+            args.request_path,
+            args.run_id,
+            args.transaction_id,
+            args.backup_receipt_sha256,
+            args.backup_manifest_sha256,
+        )
+        _write_github_outputs({"transaction_path": result["transaction_path"]})
+        _dump(result)
+    elif args.command == "transaction-close":
+        _dump(close_production_transaction(
+            args.request_path,
+            args.run_id,
+            args.transaction_id,
+            args.outcome,
+        ))
     elif args.command == "stall":
         _dump(detect_stall(repo_path(args.claim_path), args.max_age_seconds))
     elif args.command == "finish":
@@ -1424,6 +2108,8 @@ def main() -> None:
             args.output,
             args.report,
         ))
+    elif args.command == "verify-mode":
+        _dump(verify_execution_mode(required_mode=args.require))
     else:
         self_test()
 

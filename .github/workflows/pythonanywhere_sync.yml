@@ -1,15 +1,8 @@
 name: PythonAnywhere Inbox Sync
+# RETIRED/QUARANTINED: automatic triggers moved to central exact autostart; manual dispatch only.
 # TASK 059 P0 AI patch package sync trigger v7; installation runs only in the bounded follow-up workflow.
 
 on:
-  workflow_run:
-    workflows: ['Claude Autopilot']
-    types: [completed]
-  push:
-    branches: [main]
-    paths:
-      - 'automation/pythonanywhere_sync_v2.py'
-      - '.github/workflows/pythonanywhere_sync.yml'
   workflow_dispatch:
 
 permissions:

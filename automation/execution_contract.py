@@ -37,6 +37,34 @@ SPECIAL_EVIDENCE = {
 }
 DENIED_IMPORTS = {"pty", "telnetlib"}
 DENIED_CALLS = {"eval", "exec"}
+BACKUP_RECEIPT_SCHEMA = "UA-ART-PRODUCTION-BACKUP-RECEIPT-1"
+ROLLBACK_RECEIPT_SCHEMA = "UA-ART-PRODUCTION-ROLLBACK-RECEIPT-1"
+RECEIPT_BINDING_KEYS = {
+    "task_id",
+    "request_sha256",
+    "run_id",
+    "transaction_id",
+    "manifest_sha256",
+    "backup_manifest_sha256",
+}
+BACKUP_RECEIPT_KEYS = RECEIPT_BINDING_KEYS | {
+    "schema_version",
+    "operation",
+    "status",
+    "backup",
+    "unexpected_changes",
+}
+ROLLBACK_RECEIPT_KEYS = RECEIPT_BINDING_KEYS | {
+    "schema_version",
+    "operation",
+    "status",
+    "rollback",
+    "restored",
+    "unexpected_changes",
+    "protected_files_unchanged",
+    "crm_unchanged",
+    "live_verify",
+}
 
 
 class ExecutionContractError(ValueError):
@@ -138,6 +166,7 @@ def inspect_python(path: pathlib.Path) -> None:
 @dataclass(frozen=True)
 class ExecutionSpec:
     request_path: str
+    request_sha256: str
     task_id: str
     task_class: str
     controller_path: str
@@ -146,6 +175,13 @@ class ExecutionSpec:
     file_sha256: Mapping[str, str]
     receipt_path: str
     evidence_paths: tuple[str, ...]
+    backup_controller_path: str | None
+    backup_controller_sha256: str | None
+    backup_receipt_path: str | None
+    rollback_controller_path: str | None
+    rollback_controller_sha256: str | None
+    rollback_receipt_path: str | None
+    critical_manifest_sha256: str | None
     production_required: bool
     timeout_seconds: int
     plan: Mapping[str, Any]
@@ -153,6 +189,7 @@ class ExecutionSpec:
     def to_dict(self) -> dict[str, Any]:
         return {
             "request_path": self.request_path,
+            "request_sha256": self.request_sha256,
             "task_id": self.task_id,
             "task_class": self.task_class,
             "controller_path": self.controller_path,
@@ -161,6 +198,13 @@ class ExecutionSpec:
             "file_sha256": dict(self.file_sha256),
             "receipt_path": self.receipt_path,
             "evidence_paths": list(self.evidence_paths),
+            "backup_controller_path": self.backup_controller_path,
+            "backup_controller_sha256": self.backup_controller_sha256,
+            "backup_receipt_path": self.backup_receipt_path,
+            "rollback_controller_path": self.rollback_controller_path,
+            "rollback_controller_sha256": self.rollback_controller_sha256,
+            "rollback_receipt_path": self.rollback_receipt_path,
+            "critical_manifest_sha256": self.critical_manifest_sha256,
             "production_required": self.production_required,
             "timeout_seconds": self.timeout_seconds,
             "plan": dict(self.plan),
@@ -180,11 +224,53 @@ def load_request(request_path: str) -> tuple[pathlib.Path, dict[str, Any]]:
     return path, raw
 
 
+def validate_auxiliary_contract(
+    execution: Mapping[str, Any],
+    operation: str,
+    package_root: pathlib.Path,
+    primary_receipt_path: str,
+) -> tuple[str | None, str | None, str | None]:
+    prefix = operation.lower()
+    values = (
+        execution.get(prefix + "_controller_path"),
+        execution.get(prefix + "_controller_sha256"),
+        execution.get(prefix + "_receipt_path"),
+    )
+    if not any(value not in (None, "") for value in values):
+        return None, None, None
+    if any(value in (None, "") for value in values):
+        raise ExecutionContractError(operation.upper() + "_CONTRACT_INCOMPLETE")
+    controller_path = safe_repo_path(str(values[0]))
+    controller = absolute_repo_path(controller_path)
+    if not is_under(controller, ALLOWED_CONTROLLER_ROOTS):
+        raise ExecutionContractError(operation.upper() + "_CONTROLLER_SCOPE")
+    if (
+        controller.suffix != ".py"
+        or controller.is_symlink()
+        or not controller.is_file()
+        or not controller.resolve(strict=True).is_relative_to(package_root)
+    ):
+        raise ExecutionContractError(operation.upper() + "_CONTROLLER_FILE")
+    controller_sha256 = require_sha(values[1], prefix + "_controller")
+    if sha256_file(controller) != controller_sha256:
+        raise ExecutionContractError(operation.upper() + "_CONTROLLER_SHA_MISMATCH")
+    inspect_python(controller)
+    receipt_path = safe_repo_path(str(values[2]))
+    if (
+        not receipt_path.startswith("state/receipts/")
+        or not receipt_path.endswith(".json")
+        or receipt_path == primary_receipt_path
+    ):
+        raise ExecutionContractError(operation.upper() + "_RECEIPT_SCOPE")
+    return controller_path, controller_sha256, receipt_path
+
+
 def validate_execution(
     request_path: str,
     expected_class: str,
 ) -> ExecutionSpec:
-    _, raw = load_request(request_path)
+    request_file, raw = load_request(request_path)
+    request_sha256 = sha256_file(request_file)
     request = orchestrator.TaskRequest.from_mapping(raw)
     plan = orchestrator.build_plan(request).to_dict()
     expected = str(expected_class).upper()
@@ -237,6 +323,22 @@ def validate_execution(
     if not receipt_path.startswith("state/receipts/") or not receipt_path.endswith(".json"):
         raise ExecutionContractError("RECEIPT_SCOPE")
 
+    (
+        backup_controller_path,
+        backup_controller_sha256,
+        backup_receipt_path,
+    ) = validate_auxiliary_contract(execution, "backup", package_root, receipt_path)
+    (
+        rollback_controller_path,
+        rollback_controller_sha256,
+        rollback_receipt_path,
+    ) = validate_auxiliary_contract(execution, "rollback", package_root, receipt_path)
+    if (
+        backup_receipt_path is not None
+        and backup_receipt_path == rollback_receipt_path
+    ):
+        raise ExecutionContractError("BACKUP_ROLLBACK_RECEIPT_COLLISION")
+
     evidence_raw = execution.get("evidence_paths")
     if not isinstance(evidence_raw, list) or not evidence_raw or len(evidence_raw) > 30:
         raise ExecutionContractError("EVIDENCE_PATHS_RANGE")
@@ -250,7 +352,7 @@ def validate_execution(
         if not is_under(path, ALLOWED_EVIDENCE_ROOTS):
             raise ExecutionContractError("EVIDENCE_SCOPE:" + item)
         if path.is_relative_to((ROOT / "state/receipts").resolve(strict=False)):
-            if item != receipt_path:
+            if item not in {receipt_path, backup_receipt_path, rollback_receipt_path}:
                 raise ExecutionContractError("EXTRA_RECEIPT_SCOPE:" + item)
         elif not path.is_relative_to(package_root):
             raise ExecutionContractError("EVIDENCE_PACKAGE_SCOPE:" + item)
@@ -258,6 +360,16 @@ def validate_execution(
     production_required = bool(raw.get("production_required", False))
     if bool(execution.get("production_required", production_required)) != production_required:
         raise ExecutionContractError("EXECUTION_PRODUCTION_MISMATCH")
+    if production_required and expected != "CRITICAL":
+        raise ExecutionContractError("PRODUCTION_MUST_ROUTE_CRITICAL")
+    if production_required and backup_controller_path is None:
+        raise ExecutionContractError("PRODUCTION_BACKUP_CONTRACT_REQUIRED")
+    if production_required and rollback_controller_path is None:
+        raise ExecutionContractError("PRODUCTION_ROLLBACK_CONTRACT_REQUIRED")
+    if backup_receipt_path is not None and backup_receipt_path not in evidence_paths:
+        raise ExecutionContractError("BACKUP_RECEIPT_NOT_IN_EVIDENCE")
+    if rollback_receipt_path is not None and rollback_receipt_path not in evidence_paths:
+        raise ExecutionContractError("ROLLBACK_RECEIPT_NOT_IN_EVIDENCE")
     timeout_seconds = int(execution.get("timeout_seconds", 1200))
     if timeout_seconds < 10 or timeout_seconds > 3600:
         raise ExecutionContractError("TIMEOUT_RANGE")
@@ -266,9 +378,23 @@ def validate_execution(
     if expected == "CRITICAL" and not raw.get("critical"):
         raise ExecutionContractError("CRITICAL_GATE_OBJECT_REQUIRED")
 
+    critical_manifest_sha256 = None
+    if production_required:
+        critical = raw.get("critical")
+        if not isinstance(critical, dict):
+            raise ExecutionContractError("CRITICAL_GATE_OBJECT_REQUIRED")
+        critical_manifest_sha256 = require_sha(
+            critical.get("manifest_sha256"), "critical_manifest"
+        )
+
     file_hashes[controller_path] = controller_sha
+    if backup_controller_path is not None:
+        file_hashes[backup_controller_path] = str(backup_controller_sha256)
+    if rollback_controller_path is not None:
+        file_hashes[rollback_controller_path] = str(rollback_controller_sha256)
     return ExecutionSpec(
         request_path=safe_repo_path(request_path),
+        request_sha256=request_sha256,
         task_id=request.task_id,
         task_class=expected,
         controller_path=controller_path,
@@ -277,6 +403,13 @@ def validate_execution(
         file_sha256=file_hashes,
         receipt_path=receipt_path,
         evidence_paths=evidence_paths,
+        backup_controller_path=backup_controller_path,
+        backup_controller_sha256=backup_controller_sha256,
+        backup_receipt_path=backup_receipt_path,
+        rollback_controller_path=rollback_controller_path,
+        rollback_controller_sha256=rollback_controller_sha256,
+        rollback_receipt_path=rollback_receipt_path,
+        critical_manifest_sha256=critical_manifest_sha256,
         production_required=production_required,
         timeout_seconds=timeout_seconds,
         plan=plan,
@@ -284,7 +417,12 @@ def validate_execution(
 
 
 def compile_spec(spec: ExecutionSpec) -> None:
-    for item in (spec.controller_path, *spec.test_paths):
+    items = [spec.controller_path, *spec.test_paths]
+    if spec.backup_controller_path is not None:
+        items.append(spec.backup_controller_path)
+    if spec.rollback_controller_path is not None:
+        items.append(spec.rollback_controller_path)
+    for item in items:
         path = absolute_repo_path(item)
         compile(path.read_text(encoding="utf-8"), str(path), "exec")
 
@@ -301,16 +439,234 @@ def run_tests(spec: ExecutionSpec) -> None:
             raise ExecutionContractError("TEST_FAILED:" + item)
 
 
+def require_receipt_target_absent(receipt_path: str | None, operation: str) -> None:
+    if receipt_path is None:
+        raise ExecutionContractError(operation.upper() + "_RECEIPT_REQUIRED")
+    path = absolute_repo_path(receipt_path)
+    if path.is_symlink() or path.exists():
+        raise ExecutionContractError(operation.upper() + "_RECEIPT_PREEXISTING")
+
+
+def require_environment_value(environment: Mapping[str, str], key: str) -> str:
+    value = str(environment.get(key, ""))
+    if not value or len(value) > 256 or any(character in value for character in "\r\n\0"):
+        raise ExecutionContractError("RUNTIME_BINDING_INVALID:" + key)
+    return value
+
+
+def production_operation_environment(
+    spec: ExecutionSpec,
+    operation: str,
+    receipt_path: str,
+    *,
+    backup_manifest_sha256: str | None = None,
+) -> dict[str, str]:
+    if not spec.production_required or spec.critical_manifest_sha256 is None:
+        raise ExecutionContractError("PRODUCTION_OPERATION_REQUIRED:" + operation)
+    environment = dict(os.environ)
+    require_environment_value(environment, "UAART_RUN_ID")
+    require_environment_value(environment, "UAART_TRANSACTION_ID")
+    supplied_request_sha = environment.get("UAART_REQUEST_SHA256")
+    if supplied_request_sha not in (None, "") and supplied_request_sha != spec.request_sha256:
+        raise ExecutionContractError("RUNTIME_REQUEST_SHA256_MISMATCH")
+    supplied_manifest_sha = environment.get("UAART_MANIFEST_SHA256")
+    if (
+        supplied_manifest_sha not in (None, "")
+        and supplied_manifest_sha != spec.critical_manifest_sha256
+    ):
+        raise ExecutionContractError("RUNTIME_MANIFEST_SHA256_MISMATCH")
+    environment.update(
+        {
+            "UAART_OPERATION": operation,
+            "UAART_RECEIPT_PATH": receipt_path,
+            "UAART_REQUEST_PATH": spec.request_path,
+            "UAART_REQUEST_SHA256": spec.request_sha256,
+            "UAART_TASK_ID": spec.task_id,
+            "UAART_MANIFEST_SHA256": spec.critical_manifest_sha256,
+        }
+    )
+    if backup_manifest_sha256 is not None:
+        environment["UAART_BACKUP_MANIFEST_SHA256"] = require_sha(
+            backup_manifest_sha256, "runtime_backup_manifest"
+        )
+    return environment
+
+
 def run_controller(spec: ExecutionSpec) -> None:
+    require_receipt_target_absent(spec.receipt_path, "controller")
+    environment = dict(os.environ)
+    if spec.production_required:
+        backup_receipt = validate_backup_receipt(spec)
+        environment = production_operation_environment(
+            spec,
+            "execute",
+            spec.receipt_path,
+            backup_manifest_sha256=backup_receipt["backup_manifest_sha256"],
+        )
     completed = subprocess.run(
         [sys.executable, str(absolute_repo_path(spec.controller_path))],
         cwd=ROOT,
         check=False,
         timeout=spec.timeout_seconds,
-        env=dict(os.environ),
+        env=environment,
     )
     if completed.returncode != 0:
         raise ExecutionContractError("CONTROLLER_FAILED:%d" % completed.returncode)
+
+
+def run_backup(spec: ExecutionSpec) -> None:
+    if spec.backup_controller_path is None:
+        raise ExecutionContractError("BACKUP_CONTROLLER_REQUIRED")
+    require_receipt_target_absent(spec.backup_receipt_path, "backup")
+    environment = production_operation_environment(
+        spec, "backup", str(spec.backup_receipt_path)
+    )
+    environment["UAART_BACKUP_RECEIPT_PATH"] = str(spec.backup_receipt_path)
+    completed = subprocess.run(
+        [sys.executable, str(absolute_repo_path(spec.backup_controller_path))],
+        cwd=ROOT,
+        check=False,
+        timeout=spec.timeout_seconds,
+        env=environment,
+    )
+    if completed.returncode != 0:
+        raise ExecutionContractError("BACKUP_CONTROLLER_FAILED:%d" % completed.returncode)
+
+
+def run_rollback(spec: ExecutionSpec) -> None:
+    if spec.rollback_controller_path is None:
+        raise ExecutionContractError("ROLLBACK_CONTROLLER_REQUIRED")
+    require_receipt_target_absent(spec.rollback_receipt_path, "rollback")
+    backup_receipt = validate_backup_receipt(spec)
+    supplied_backup_sha = require_sha(
+        os.environ.get("UAART_BACKUP_MANIFEST_SHA256"),
+        "runtime_backup_manifest",
+    )
+    if supplied_backup_sha != backup_receipt["backup_manifest_sha256"]:
+        raise ExecutionContractError("RUNTIME_BACKUP_MANIFEST_SHA256_MISMATCH")
+    environment = production_operation_environment(
+        spec,
+        "rollback",
+        str(spec.rollback_receipt_path),
+        backup_manifest_sha256=supplied_backup_sha,
+    )
+    environment["UAART_ROLLBACK_RECEIPT_PATH"] = str(spec.rollback_receipt_path)
+    completed = subprocess.run(
+        [sys.executable, str(absolute_repo_path(spec.rollback_controller_path))],
+        cwd=ROOT,
+        check=False,
+        timeout=spec.timeout_seconds,
+        env=environment,
+    )
+    if completed.returncode != 0:
+        raise ExecutionContractError("ROLLBACK_CONTROLLER_FAILED:%d" % completed.returncode)
+
+
+def read_strict_receipt(
+    receipt_path: str | None,
+    operation: str,
+    expected_keys: set[str],
+) -> dict[str, Any]:
+    if receipt_path is None:
+        raise ExecutionContractError(operation.upper() + "_RECEIPT_REQUIRED")
+    path = absolute_repo_path(receipt_path)
+    if path.is_symlink() or not path.is_file():
+        raise ExecutionContractError(operation.upper() + "_RECEIPT_MISSING")
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ExecutionContractError(operation.upper() + "_RECEIPT_INVALID_JSON") from exc
+    if not isinstance(value, dict) or set(value) != expected_keys:
+        raise ExecutionContractError(operation.upper() + "_RECEIPT_SCHEMA_KEYS")
+    return value
+
+
+def validate_receipt_bindings(
+    spec: ExecutionSpec,
+    value: Mapping[str, Any],
+    operation: str,
+    *,
+    expected_backup_manifest_sha256: str | None = None,
+) -> str:
+    environment = dict(os.environ)
+    expected = {
+        "task_id": spec.task_id,
+        "request_sha256": spec.request_sha256,
+        "run_id": require_environment_value(environment, "UAART_RUN_ID"),
+        "transaction_id": require_environment_value(
+            environment, "UAART_TRANSACTION_ID"
+        ),
+        "manifest_sha256": spec.critical_manifest_sha256,
+    }
+    for key, expected_value in expected.items():
+        if not isinstance(value.get(key), str) or value.get(key) != expected_value:
+            raise ExecutionContractError(
+                operation.upper() + "_RECEIPT_BINDING_" + key.upper()
+            )
+    backup_manifest_sha256 = require_sha(
+        value.get("backup_manifest_sha256"), operation + "_backup_manifest"
+    )
+    if (
+        expected_backup_manifest_sha256 is not None
+        and backup_manifest_sha256 != expected_backup_manifest_sha256
+    ):
+        raise ExecutionContractError(
+            operation.upper() + "_RECEIPT_BACKUP_MANIFEST_SHA256_MISMATCH"
+        )
+    return backup_manifest_sha256
+
+
+def validate_backup_receipt(spec: ExecutionSpec) -> dict[str, Any]:
+    value = read_strict_receipt(
+        spec.backup_receipt_path, "backup", BACKUP_RECEIPT_KEYS
+    )
+    if value.get("schema_version") != BACKUP_RECEIPT_SCHEMA:
+        raise ExecutionContractError("BACKUP_RECEIPT_SCHEMA_VERSION")
+    if value.get("operation") != "backup":
+        raise ExecutionContractError("BACKUP_RECEIPT_OPERATION")
+    if value.get("status") != "PASS" or value.get("backup") != "PASS":
+        raise ExecutionContractError("BACKUP_RECEIPT_STATUS")
+    if type(value.get("unexpected_changes")) is not int or value.get(
+        "unexpected_changes"
+    ) != 0:
+        raise ExecutionContractError("BACKUP_RECEIPT_UNEXPECTED_CHANGES")
+    value["backup_manifest_sha256"] = validate_receipt_bindings(
+        spec, value, "backup"
+    )
+    return value
+
+
+def validate_rollback_receipt(spec: ExecutionSpec) -> dict[str, Any]:
+    value = read_strict_receipt(
+        spec.rollback_receipt_path, "rollback", ROLLBACK_RECEIPT_KEYS
+    )
+    if value.get("schema_version") != ROLLBACK_RECEIPT_SCHEMA:
+        raise ExecutionContractError("ROLLBACK_RECEIPT_SCHEMA_VERSION")
+    if value.get("operation") != "rollback":
+        raise ExecutionContractError("ROLLBACK_RECEIPT_OPERATION")
+    if value.get("status") not in {"PASS", "ROLLED_BACK"}:
+        raise ExecutionContractError("ROLLBACK_RECEIPT_STATUS")
+    if value.get("rollback") != "PASS" or value.get("restored") is not True:
+        raise ExecutionContractError("ROLLBACK_RECEIPT_NOT_PROVEN")
+    if type(value.get("unexpected_changes")) is not int or value.get(
+        "unexpected_changes"
+    ) != 0:
+        raise ExecutionContractError("ROLLBACK_RECEIPT_UNEXPECTED_CHANGES")
+    if value.get("protected_files_unchanged") is not True:
+        raise ExecutionContractError("ROLLBACK_RECEIPT_PROTECTED_DRIFT")
+    if value.get("crm_unchanged") is not True or value.get("live_verify") != "PASS":
+        raise ExecutionContractError("ROLLBACK_RECEIPT_LIVE_INTEGRITY")
+    expected_backup_manifest_sha256 = require_sha(
+        os.environ.get("UAART_BACKUP_MANIFEST_SHA256"),
+        "runtime_backup_manifest",
+    )
+    value["backup_manifest_sha256"] = validate_receipt_bindings(
+        spec,
+        value,
+        "rollback",
+        expected_backup_manifest_sha256=expected_backup_manifest_sha256,
+    )
+    return value
 
 
 def validate_receipt(spec: ExecutionSpec) -> dict[str, Any]:
@@ -356,6 +712,15 @@ def write_github_output(spec: ExecutionSpec) -> None:
         handle.write("task_class=%s\n" % spec.task_class)
         handle.write("controller_path=%s\n" % spec.controller_path)
         handle.write("receipt_path=%s\n" % spec.receipt_path)
+        handle.write("request_sha256=%s\n" % spec.request_sha256)
+        handle.write("backup_controller_path=%s\n" % (spec.backup_controller_path or ""))
+        handle.write("backup_receipt_path=%s\n" % (spec.backup_receipt_path or ""))
+        handle.write("rollback_controller_path=%s\n" % (spec.rollback_controller_path or ""))
+        handle.write("rollback_receipt_path=%s\n" % (spec.rollback_receipt_path or ""))
+        handle.write(
+            "critical_manifest_sha256=%s\n"
+            % (spec.critical_manifest_sha256 or "")
+        )
         handle.write("production_required=%s\n" % str(spec.production_required).lower())
         handle.write("timeout_seconds=%d\n" % spec.timeout_seconds)
         handle.write("ai_route=%s\n" % spec.plan["ai_route"])
@@ -370,7 +735,19 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=("validate", "compile", "test", "run", "receipt", "stage", "outputs"),
+        choices=(
+            "validate",
+            "compile",
+            "test",
+            "backup",
+            "backup-receipt",
+            "run",
+            "rollback",
+            "rollback-receipt",
+            "receipt",
+            "stage",
+            "outputs",
+        ),
     )
     parser.add_argument("request_path")
     parser.add_argument("--expected-class", required=True)
@@ -384,9 +761,19 @@ def main() -> None:
     elif args.command == "test":
         run_tests(spec)
         _dump({"status": "PASS", "tests": list(spec.test_paths)})
+    elif args.command == "backup":
+        run_backup(spec)
+        _dump({"status": "PASS", "backup_controller": spec.backup_controller_path})
+    elif args.command == "backup-receipt":
+        _dump(validate_backup_receipt(spec))
     elif args.command == "run":
         run_controller(spec)
         _dump({"status": "PASS", "controller": spec.controller_path})
+    elif args.command == "rollback":
+        run_rollback(spec)
+        _dump({"status": "PASS", "rollback_controller": spec.rollback_controller_path})
+    elif args.command == "rollback-receipt":
+        _dump(validate_rollback_receipt(spec))
     elif args.command == "receipt":
         _dump(validate_receipt(spec))
     elif args.command == "stage":

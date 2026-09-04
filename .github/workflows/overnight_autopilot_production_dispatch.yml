@@ -1,9 +1,7 @@
 name: Overnight Autopilot Production Dispatch
+# RETIRED/QUARANTINED: automatic triggers moved to central exact autostart; manual dispatch only.
 
 on:
-  workflow_run:
-    workflows: ['TASK096 Enrichment Repair v7', 'TASK096 Enrichment Repair v8']
-    types: [completed]
   workflow_dispatch:
 
 permissions:

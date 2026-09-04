@@ -25,6 +25,8 @@ PRODUCTION_MARKERS = (
     "deploy",
     "catalog_dedup",
     "catalog-dedup",
+    "uaart_critical",
+    "critical pipeline",
 )
 TASK_PATTERN = re.compile(r"(?i)task[_ -]?0*(\d+)")
 
@@ -113,18 +115,25 @@ def find_blockers(
 
 
 def fetch_runs(repository: str, token: str) -> list[dict]:
-    request = urllib.request.Request(
-        f"https://api.github.com/repos/{repository}/actions/runs?per_page=100",
-        headers={
-            "Authorization": "Bearer " + token,
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-            "User-Agent": "ua-art-fair-production-queue/1",
-        },
-        method="GET",
-    )
-    with urllib.request.urlopen(request, timeout=30) as response:
-        return list((json.load(response).get("workflow_runs") or []))
+    values: list[dict] = []
+    headers = {
+        "Authorization": "Bearer " + token,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "ua-art-fair-production-queue/2",
+    }
+    for page in range(1, 11):
+        request = urllib.request.Request(
+            f"https://api.github.com/repos/{repository}/actions/runs?per_page=100&page={page}",
+            headers=headers,
+            method="GET",
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            batch = list((json.load(response).get("workflow_runs") or []))
+        values.extend(batch)
+        if len(batch) < 100:
+            return values
+    raise RuntimeError("PRODUCTION_QUEUE_RUN_PAGINATION_LIMIT")
 
 
 def wait_for_turn(args: argparse.Namespace) -> None:
