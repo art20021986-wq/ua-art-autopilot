@@ -1,0 +1,45 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": false,
+  "created_at": "2026-09-04T01:51:56Z",
+  "critical_gate_status": "PENDING",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-04T01:52:10Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL pipeline failed; inspect GitHub Actions run 33827333029",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "dbad42fbdc6414dc"
+    }
+  ],
+  "heartbeat_at": "2026-09-04T01:52:10Z",
+  "heartbeat_sequence": 1,
+  "identity": {
+    "run_id": "33827333029",
+    "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+    "task_sha256": "8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9"
+  },
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "catalog_all_cards-d08bf2c0d345665c",
+  "receipt_path": "state/receipts/TASK109-CONTAINER-TRACK-INLINE.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK109-CONTAINER-TRACK-INLINE.json",
+  "request_sha256": "8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9",
+  "resource_locks": [
+    "CATALOG_ALL_CARDS",
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "f7d2bcf467b7ded4422330bbb72262e94fd59662",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-09-04T02:00:00Z",
+  "production_touched": false,
+  "resolution": "SUPERSEDED_BY_FRESH_STORAGE_PROBE_REQUEST"
+}

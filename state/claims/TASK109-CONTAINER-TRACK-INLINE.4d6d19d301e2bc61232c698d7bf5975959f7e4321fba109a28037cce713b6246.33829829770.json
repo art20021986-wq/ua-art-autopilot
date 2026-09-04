@@ -1,0 +1,113 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": false,
+  "created_at": "2026-09-04T02:31:48Z",
+  "critical_gate_evidence_sha256": "d37e494b973ac4ef4f6a191f33f21d4ae113a617a476e9c8e36097292bda8d10",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "finished_at": "2026-09-04T02:41:28Z",
+  "heartbeat_at": "2026-09-04T02:41:28Z",
+  "heartbeat_sequence": 8,
+  "identity": {
+    "run_id": "33829829770",
+    "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+    "task_sha256": "4d6d19d301e2bc61232c698d7bf5975959f7e4321fba109a28037cce713b6246"
+  },
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 209.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 113.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0005.html",
+        "http_status": 200,
+        "latency_ms": 107.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0005.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 652.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 129.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0005.html",
+        "http_status": 200,
+        "latency_ms": 125.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0005.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "queue_key": "catalog_all_cards-d08bf2c0d345665c",
+  "receipt_path": "state/receipts/TASK109-CONTAINER-TRACK-INLINE.json",
+  "receipt_sha256": "4cd8121d3fb746ed4c71dccc20dfe43af758a983edf0927b95b63d7ae9ef8358",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/TASK109-CONTAINER-TRACK-INLINE.json",
+  "request_sha256": "4d6d19d301e2bc61232c698d7bf5975959f7e4321fba109a28037cce713b6246",
+  "resource_locks": [
+    "CATALOG_ALL_CARDS",
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "461d99036e05ecdd020d9b46215dc2e9a89630e6",
+  "storage_preflight": {
+    "age_seconds": 475.277,
+    "allowed": true,
+    "evidence_path": "state/storage/TASK109-CONTAINER-TRACK-INLINE.json",
+    "evidence_sha256": "666871df727c7a489e11ee312dc2d881393dcd14d309c7d60fc3567d2d1741de",
+    "free_bytes": 32640151552,
+    "heavy": true,
+    "measured_at": "2026-09-04T02:24:07Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 134217728,
+    "status": "PASS",
+    "usage_percent": 13.14711434500558
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "632b66d87b382cf0d4c5550c141629be053850d297e372ae3dfa51f376222f25",
+    "file_sha256": {
+      "cloud/task109_container_inline/remote_installer.py": "3167c16f38193d5da180e0b90b4c50d3deecb77394123d6eb9e8b3b241c2beb6",
+      "cloud/task109_container_inline/test_contract.py": "1bc21c3575922e5f9fbe918689725082d10122f483946a35bf579a9f70f5be89"
+    }
+  },
+  "updated_at": "2026-09-04T02:41:28Z"
+}

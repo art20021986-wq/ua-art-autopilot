@@ -1,0 +1,34 @@
+{
+  "backup_required": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "noop",
+      "path": "production/card-generators/container-tracking-inline"
+    },
+    {
+      "action": "noop",
+      "path": "production/published-card-stage-regions/container-tracking-inline"
+    }
+  ],
+  "production_write": true,
+  "protected_paths": [
+    "crm.db",
+    "cars_ui.py",
+    "db.py",
+    "team_bot.py",
+    "start_safe.py",
+    "video/index.html",
+    "video/katalog.html",
+    "video/foto",
+    "site/index.html",
+    "site/katalog.html",
+    "vin",
+    "prices",
+    "dns"
+  ],
+  "rollback_required": true,
+  "task_class": "CRITICAL",
+  "task_id": "TASK109-CONTAINER-TRACK-INLINE"
+}
