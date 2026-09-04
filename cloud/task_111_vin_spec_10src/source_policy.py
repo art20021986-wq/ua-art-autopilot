@@ -24,7 +24,7 @@ from typing import Any, Callable, Iterable
 import profile_library
 
 
-POLICY_VERSION = "UA111-10SRC-V2"
+POLICY_VERSION = "UA111-10SRC-V3"
 SOURCE_DOMAINS = (
     "vpic.nhtsa.dot.gov",
     "auto-data.net",
@@ -185,6 +185,18 @@ def match_profile(car: dict[str, Any]) -> dict[str, Any] | None:
         vin = normalize_vin(car.get("vin"))
     except SourcePolicyError:
         return None
+    # The initial fleet was individually audited.  A complete VIN is a
+    # stronger identity anchor than free-text CRM labels (LPi is commonly
+    # entered as either gas or petrol), so these exact vehicles do not depend
+    # on an operator's fuel-label spelling.
+    exact = [
+        profile for profile in profile_library.PROFILES
+        if vin in set(profile.get("exact_vins") or ())
+    ]
+    if len(exact) == 1:
+        return exact[0]
+    if len(exact) > 1:
+        raise SourcePolicyError("AMBIGUOUS_EXACT_VIN_PROFILE")
     brand = _norm(car.get("brand") or car.get("make"))
     model = _norm(car.get("model"))
     fuel = _norm(car.get("fuel") or car.get("fuel_type"))
