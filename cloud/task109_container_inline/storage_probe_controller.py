@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import pathlib
+import re
 import sys
 
 
@@ -15,6 +16,32 @@ REMOTE_ROOT = "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin"
 REMOTE_SCRIPT = REMOTE_ROOT + "/task109_storage_probe.py"
 REMOTE_RECEIPT = REMOTE_ROOT + "/task109_storage_probe.json"
 LOCAL_EVIDENCE = ROOT / "state/storage/TASK109-CONTAINER-TRACK-INLINE.json"
+
+
+def api_quota_probe(api, module) -> dict:
+    """Try the two account-scoped read-only quota resources, sanitizing output."""
+    results = []
+    for resource in ("files/quota/", "quota/"):
+        item = {"resource": resource}
+        try:
+            status, body = api.request(
+                "GET", module.BASE + resource,
+                allowed=(200, 400, 401, 403, 404, 405),
+            )
+            item["http_status"] = int(status)
+            if status == 200:
+                parsed = json.loads(body.decode("utf-8"))
+                if isinstance(parsed, dict):
+                    item["quota_fields"] = {
+                        str(key): value
+                        for key, value in parsed.items()
+                        if re.search(r"quota|storage|space|used|free|total|limit", str(key), re.I)
+                        and isinstance(value, (str, int, float, bool, type(None)))
+                    }
+        except Exception as exc:
+            item["error"] = type(exc).__name__ + ":" + str(exc)
+        results.append(item)
+    return {"read_only": True, "resources": results}
 
 
 def load_api_module():
@@ -53,6 +80,7 @@ def main() -> int:
             raise RuntimeError("PROBE_UPLOAD_READBACK")
         command = "cd %s && python3.10 task109_storage_probe.py" % REMOTE_ROOT
         value = api.run_remote(command, "task109 read-only production storage probe", REMOTE_RECEIPT, seconds=300)
+        value.setdefault("diagnostics", {})["pythonanywhere_api_quota"] = api_quota_probe(api, module)
         validate(value)
         LOCAL_EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
         module.atomic_text(LOCAL_EVIDENCE, json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
