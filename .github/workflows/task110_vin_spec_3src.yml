@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fx 'STATUS: ACTIVE' state/MANUAL_MODE.md
-          echo '88fe073638bbe9659cdb45b77d91ac1450737cbfc353bee10ddeff8bf2d25e13  tasks/requests/TASK110-VIN-SPEC-3SRC.json' | sha256sum -c -
+          echo '49138842d8fb5909f57cfc622d7bb943ca90379a39702ef26b7ecc16d0540717  tasks/requests/TASK110-VIN-SPEC-3SRC.json' | sha256sum -c -
           python3 - <<'PY'
           import json
           from pathlib import Path
@@ -39,7 +39,7 @@ jobs:
           assert recovered['canary_result'] == '3/3 PASS'
           assert recovered['autopilot_mode'] == 'MANUAL'
           assert launch['task_id'] == 'TASK110-VIN-SPEC-3SRC'
-          assert launch['request_sha256'] == '88fe073638bbe9659cdb45b77d91ac1450737cbfc353bee10ddeff8bf2d25e13'
+          assert launch['request_sha256'] == '49138842d8fb5909f57cfc622d7bb943ca90379a39702ef26b7ecc16d0540717'
           assert launch['scope'] == 'THIS_TASK_ONLY'
           assert launch['owner_authorized'] is True
           assert launch['global_automatic_mode_enabled'] is False
