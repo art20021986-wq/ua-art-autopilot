@@ -1,10 +1,40 @@
 {
-  "free_bytes": 1140485783552,
-  "measured_at": "2026-09-04T01:59:13Z",
+  "diagnostics": {
+    "official_du_bytes": {
+      "argv": [
+        "du",
+        "-s",
+        "-B",
+        "1",
+        "/tmp",
+        "/home/Carix",
+        "/var/www"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "22564864\t/tmp\n4918026240\t/home/Carix\n40960\t/var/www\n"
+    },
+    "quota_bytes": {
+      "argv": [
+        "quota",
+        "-w"
+      ],
+      "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
+    },
+    "quota_human": {
+      "argv": [
+        "quota",
+        "-s"
+      ],
+      "error": "FileNotFoundError:[Errno 2] No such file or directory: 'quota'"
+    }
+  },
+  "free_bytes": 1135459958784,
+  "measured_at": "2026-09-04T02:06:06Z",
   "measurement": "shutil.disk_usage:/home/Carix;used=total-user_available_free",
   "read_only": true,
   "target_environment": "production",
   "task_id": "TASK109-CONTAINER-TRACK-INLINE",
   "total_bytes": 6340085809152,
-  "used_bytes": 5199600025600
+  "used_bytes": 5204625850368
 }
