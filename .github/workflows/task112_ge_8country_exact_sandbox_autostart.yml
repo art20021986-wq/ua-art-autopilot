@@ -6,6 +6,7 @@ on:
       - task112-ge-8country-sandbox-autostart
     paths:
       - 'tasks/launch/TASK112-GE-8COUNTRY-SANDBOX.json'
+      - '.github/workflows/task112_ge_8country_exact_sandbox_autostart.yml'
   workflow_dispatch:
     inputs:
       confirmation:
@@ -104,7 +105,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
-          ANTHROPIC_TOTAL_BUDGET_SECONDS: '3000'
+          ANTHROPIC_TOTAL_BUDGET_SECONDS: '1800'
           ANTHROPIC_NETWORK_ATTEMPTS: '4'
           ANTHROPIC_MAX_TOKENS: '128000'
           ANTHROPIC_STREAM_IDLE_TIMEOUT_SECONDS: '120'
