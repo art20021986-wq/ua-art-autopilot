@@ -35,7 +35,7 @@ ROOT = "/home/Carix"
 REMOTE = ROOT + "/autopilot_inbox/cloud/task_068_ferry_vin"
 BUNDLED = REMOTE
 MAIN_DB = ROOT + "/crm.db"
-SPEC_DB = ROOT + "/vin_specs.db"
+SPEC_DB = ROOT + "/vin_specs_task111_v3.db"
 TARGET_SOURCE_POLICY = ROOT + "/source_policy.py"
 TARGET_PROFILE_LIBRARY = ROOT + "/profile_library.py"
 TARGET_SERVICE = ROOT + "/vin_spec_service.py"
@@ -475,7 +475,9 @@ def verify_local_public(cards: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def run_install(invocation: str) -> dict[str, Any]:
+    stage = "CRM_BASELINE"
     crm_before = cars_hash()
+    stage = "SOURCE_AUDIT"
     audit = source_policy.audit_sources()
     detailed_pass = sum(
         1 for domain in source_policy.SOURCE_DOMAINS[1:]
@@ -483,26 +485,35 @@ def run_install(invocation: str) -> dict[str, Any]:
     )
     if audit.get("pass_count", 0) < 2 or detailed_pass < 1:
         raise InstallError("SOURCE_AUDIT_INSUFFICIENT")
+    stage = "SOURCE_CANDIDATES"
     candidates = _candidate_sources()
+    stage = "BACKUP"
     backup = create_backup(snapshot_paths())
     try:
+        stage = "SOURCE_INSTALL"
         source_hashes = _install_sources(candidates)
+        stage = "MODULE_LOAD"
         service = _fresh_modules()
+        stage = "LEGACY_MIGRATION"
         migration = service.migrate_legacy_once()
+        stage = "VIN_SCAN"
         scan = service.scan_new_vins()
         if int(scan.get("valid_vins") or 0) < 16:
             raise InstallError("VALID_VIN_COVERAGE_TOO_SMALL")
         # A terminated remote run can leave current-policy rows in RUNNING.
         # Full installation must deterministically revisit every current VIN,
         # not just rows the periodic scanner considers new.
+        stage = "FULL_REQUEUE"
         backfill = service.requeue_all_current_vins()
         if (
             int(backfill.get("valid_vins") or 0) != int(scan["valid_vins"])
             or int(backfill.get("queued") or 0) != int(scan["valid_vins"])
         ):
             raise InstallError("FULL_REQUEUE_INCOMPLETE")
+        stage = "BACKFILL_DRAIN"
         completion = _drain_full_backfill(service, int(backfill["valid_vins"]))
         processed = completion.pop("processed")
+        stage = "PUBLIC_REFRESH"
         cards = service.read_cards()
         # process_one already refreshes published cards.  Only retry cards whose
         # two local public copies are not current; a second unconditional pass
@@ -519,10 +530,13 @@ def run_install(invocation: str) -> dict[str, Any]:
                 refreshes.append({"car_uid": card["car_uid"], "status": status, "detail": detail})
                 if status != "PASS":
                     raise InstallError("PUBLIC_REFRESH_FAILED:%s:%s" % (uid, detail[:240]))
+        stage = "LOCAL_PUBLIC_VERIFY"
         public = verify_local_public(cards)
+        stage = "CRM_POSTCHECK"
         crm_after = cars_hash()
         if crm_after != crm_before:
             raise InstallError("MAIN_CRM_CHANGED")
+        stage = "SIDECAR_POSTCHECK"
         with service.connect_spec(True) as conn:
             quick = str(conn.execute("PRAGMA quick_check").fetchone()[0])
             price_rows = int(conn.execute(
@@ -540,6 +554,7 @@ def run_install(invocation: str) -> dict[str, Any]:
             for row in job_rows
         ):
             raise InstallError("BACKFILL_INCOMPLETE")
+        stage = "RECEIPT"
         result = {
             "task_id": TASK_ID, "contract_id": CONTRACT, "status": "PASS",
             "invocation": invocation,
@@ -562,7 +577,8 @@ def run_install(invocation: str) -> dict[str, Any]:
             "task_id": TASK_ID, "contract_id": CONTRACT, "status": "FAIL",
             "invocation": invocation,
             "phase": "INSTALL", "finished_at": utc_now(), "backup": backup,
-            "error": type(exc).__name__ + ":" + str(exc), "rollback": rollback,
+            "error": stage + ":" + type(exc).__name__ + ":" + str(exc),
+            "rollback": rollback,
             "crm_write": False, "global_automatic_mode_enabled": False,
             "vin_autostart_enabled": True,
         }
