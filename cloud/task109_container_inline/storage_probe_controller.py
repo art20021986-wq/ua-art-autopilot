@@ -91,6 +91,48 @@ def dashboard_quota_probe(api) -> dict:
         return {"read_only": True, "error": type(exc).__name__ + ":" + str(exc)}
 
 
+
+def apply_dashboard_quota(value: dict, dashboard: dict) -> None:
+    """Replace a shared-volume fallback with the authenticated account quota."""
+    diagnostics = value.setdefault("diagnostics", {})
+    diagnostics["pythonanywhere_files_view"] = dashboard
+    display = dashboard.get("quota_display") if isinstance(dashboard, dict) else None
+    if not dashboard.get("authenticated_files_view") or not isinstance(display, dict):
+        raise RuntimeError("DASHBOARD_QUOTA_UNAVAILABLE")
+
+    multipliers = {
+        "MIB": 1024 ** 2,
+        "MB": 1024 ** 2,
+        "GIB": 1024 ** 3,
+        "GB": 1024 ** 3,
+    }
+    unit = str(display.get("total_unit", "")).upper()
+    if unit not in multipliers:
+        raise RuntimeError("DASHBOARD_QUOTA_UNIT")
+    total = int(round(float(display["total_value"]) * multipliers[unit]))
+
+    du = diagnostics.get("official_du_bytes", {})
+    stdout = str(du.get("stdout", ""))
+    used = sum(
+        int(match.group(1))
+        for match in re.finditer(r"(?m)^(\d+)\s+", stdout)
+    )
+    if total <= 0 or used <= 0 or used > total:
+        raise RuntimeError("DASHBOARD_QUOTA_RANGE")
+
+    diagnostics["shared_volume_fallback"] = {
+        "total_bytes": value.get("total_bytes"),
+        "used_bytes": value.get("used_bytes"),
+        "free_bytes": value.get("free_bytes"),
+        "measurement": value.get("measurement"),
+    }
+    value["total_bytes"] = total
+    value["used_bytes"] = used
+    value["free_bytes"] = total - used
+    value["measurement"] = "authenticated-files-quota+official-du"
+    value["quota_observation"] = dict(display)
+
+
 def load_api_module():
     spec = importlib.util.spec_from_file_location("task068_api_for_task109_probe", TASK068_CONTROLLER)
     if spec is None or spec.loader is None:
@@ -137,6 +179,7 @@ def main() -> int:
         command = "cd %s && python3.10 task109_storage_probe.py" % REMOTE_ROOT
         value = api.run_remote(command, "task109 read-only production storage probe", REMOTE_RECEIPT, seconds=300)
         value.setdefault("diagnostics", {})["pythonanywhere_api_quota"] = api_quota_probe(api, module)
+        apply_dashboard_quota(value, dashboard_quota_probe(api))
         validate(value)
         LOCAL_EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
         module.atomic_text(LOCAL_EVIDENCE, json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
