@@ -25,7 +25,9 @@ import source_policy
 
 
 MAIN_DB = pathlib.Path(os.environ.get("UA_ART_CRM_DB", "/home/Carix/crm.db"))
-SPEC_DB = pathlib.Path(os.environ.get("UA_ART_SPEC_DB", "/home/Carix/vin_specs.db"))
+SPEC_DB = pathlib.Path(
+    os.environ.get("UA_ART_SPEC_DB", "/home/Carix/vin_specs_task111_v3.db")
+)
 SCAN_SECONDS = max(15, int(os.environ.get("UA_ART_VIN_SCAN_SECONDS", "30")))
 MAX_ATTEMPTS = 3
 STALE_JOB_SECONDS = max(300, int(os.environ.get("UA_ART_VIN_STALE_SECONDS", "1800")))
@@ -65,7 +67,10 @@ def _connect(path: pathlib.Path, readonly: bool) -> sqlite3.Connection:
         conn = sqlite3.connect(str(path.resolve()), timeout=30)
         conn.execute("PRAGMA foreign_keys=ON")
         conn.execute("PRAGMA busy_timeout=30000")
-        conn.execute("PRAGMA journal_mode=WAL")
+        # The production home directory is NFS-backed.  SQLite WAL relies on
+        # shared-memory semantics that are unsafe there; the default rollback
+        # journal plus FULL sync is slower but robust across CRM processes.
+        conn.execute("PRAGMA synchronous=FULL")
     conn.row_factory = sqlite3.Row
     return conn
 
