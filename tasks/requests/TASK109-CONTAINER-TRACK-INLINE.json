@@ -18,21 +18,21 @@
   },
   "description": "Mass update all cards: place the unchanged container number and a visibly underlined short tracking action on one nowrap line. Update the canonical generators for future cards. Preserve CRM, VIN, prices, catalogue, media and every byte outside the permanent delivery-stage region. Require backup, rollback, browser checks at 320/375/430 px, immediate live verification and delayed permanence verification.",
   "execution": {
-    "controller_path": "automation/packages/task109_container_inline/controller.py",
-    "controller_sha256": "0d2e9538c2b639ff93305c8aa18028d85e40570aea5e2dea3f95c9344264a63e",
+    "controller_path": "cloud/task109_container_inline/controller.py",
+    "controller_sha256": "632b66d87b382cf0d4c5550c141629be053850d297e372ae3dfa51f376222f25",
     "evidence_paths": [
-      "automation/packages/task109_container_inline/evidence.json",
+      "cloud/task109_container_inline/evidence.json",
       "state/receipts/TASK109-CONTAINER-TRACK-INLINE.json"
     ],
     "file_sha256": {
-      "automation/packages/task109_container_inline/remote_installer.py": "b0d3045d85c7528954dc7003fddac3a1525afe7fb7597b4722e5e49f683d2576",
-      "automation/packages/task109_container_inline/test_contract.py": "1bc21c3575922e5f9fbe918689725082d10122f483946a35bf579a9f70f5be89"
+      "cloud/task109_container_inline/remote_installer.py": "b0d3045d85c7528954dc7003fddac3a1525afe7fb7597b4722e5e49f683d2576",
+      "cloud/task109_container_inline/test_contract.py": "1bc21c3575922e5f9fbe918689725082d10122f483946a35bf579a9f70f5be89"
     },
     "production_required": true,
     "receipt_path": "state/receipts/TASK109-CONTAINER-TRACK-INLINE.json",
     "test_paths": [
-      "automation/packages/task109_container_inline/remote_installer.py",
-      "automation/packages/task109_container_inline/test_contract.py"
+      "cloud/task109_container_inline/remote_installer.py",
+      "cloud/task109_container_inline/test_contract.py"
     ],
     "timeout_seconds": 1800
   },
