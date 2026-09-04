@@ -33,6 +33,11 @@ MAX_ATTEMPTS = 3
 STALE_JOB_SECONDS = max(300, int(os.environ.get("UA_ART_VIN_STALE_SECONDS", "1800")))
 WORKER_NAME = "uaart-vin-spec-v2"
 CARD_RE = re.compile(r"^UA[-‑–—]?0*(\d{1,6})$", re.IGNORECASE)
+SEMANTIC_LABEL_GENERIC_TOKENS = {
+    "auto", "car", "vehicle", "body", "overall",
+    "авто", "автомобиль", "автомобиля", "машина", "машины",
+    "общий", "общая", "общее", "габаритный", "габаритная",
+}
 
 _worker_lock = threading.Lock()
 _worker: threading.Thread | None = None
@@ -264,6 +269,61 @@ def _safe_text(value: Any, maximum: int = 500) -> str:
     if not text or len(text) > maximum or source_policy.PRICE_RE.search(text):
         raise ServiceError("UNSAFE_ADDITIONAL_VALUE")
     return text
+
+
+def _semantic_label_signature(value: Any) -> str:
+    words = re.findall(
+        r"[a-zа-яёіїєґ0-9]+", str(value or "").casefold().replace("ё", "е")
+    )
+    return " ".join(sorted(
+        word for word in words if word not in SEMANTIC_LABEL_GENERIC_TOKENS
+    ))
+
+
+def _hide_semantic_duplicates(conn: sqlite3.Connection, uid: str) -> int:
+    """Keep one visible row per semantic label, with operator data first.
+
+    Legacy/manual rows can use a different field key from the audited V3
+    catalogue (for example, ``overall_width`` versus ``width``).  Both rows
+    remain in the sidecar and audit trail, but the automatic duplicate is
+    hidden so the public contract stays unambiguous.
+    """
+    rows = [dict(row) for row in conn.execute(
+        """SELECT a.id,a.field_key,a.confidence,m.label_ru,m.is_manual,
+                  m.evidence_count,m.is_visible
+             FROM additional_specification a
+             JOIN additional_specification_meta m
+               ON m.car_uid=a.car_uid AND m.field_key=a.field_key
+            WHERE a.car_uid=? AND a.is_price_field=0 AND m.is_visible=1
+            ORDER BY m.is_manual DESC,a.confidence DESC,m.evidence_count DESC,a.id""",
+        (uid,),
+    )]
+    keepers: dict[str, dict[str, Any]] = {}
+    hidden = 0
+    for row in rows:
+        signature = _semantic_label_signature(row.get("label_ru"))
+        if not signature or signature not in keepers:
+            if signature:
+                keepers[signature] = row
+            continue
+        keeper = keepers[signature]
+        conn.execute(
+            """UPDATE additional_specification_meta
+                  SET is_visible=0,verification_status='SEMANTIC_DUPLICATE_HIDDEN',
+                      updated_at=? WHERE car_uid=? AND field_key=?""",
+            (utc_now(), uid, str(row["field_key"])),
+        )
+        conn.execute(
+            """INSERT INTO additional_specification_audit
+               (car_uid,field_key,action,old_value,new_value)
+               VALUES(?,?,?,?,?)""",
+            (
+                uid, str(row["field_key"]), "SEMANTIC_DUPLICATE_HIDDEN",
+                str(row.get("label_ru") or ""), str(keeper["field_key"]),
+            ),
+        )
+        hidden += 1
+    return hidden
 
 
 def migrate_legacy_once() -> dict[str, int]:
@@ -568,6 +628,7 @@ def _store_facts(uid: str, facts: Iterable[dict[str, Any]]) -> int:
                 ),
             )
             written += 1
+        _hide_semantic_duplicates(conn, uid)
         conn.commit()
     return written
 
