@@ -363,6 +363,7 @@ def _drain_full_backfill(
     processed: list[dict[str, Any]] = []
     recovered = 0
     polls = 0
+    remediation_rounds = 0
     while True:
         item = service.process_one()
         if item is not None:
@@ -385,6 +386,7 @@ def _drain_full_backfill(
                 "installer_completed": len(installer_ready),
                 "concurrent_worker_completed": expected - len(installer_ready),
                 "recovered_interrupted": recovered,
+                "terminal_remediation_rounds": remediation_rounds,
                 "polls": polls,
                 "processed": processed,
             }
@@ -408,7 +410,20 @@ def _drain_full_backfill(
         if len(rows) != expected and active == 0:
             raise InstallError("BACKFILL_INVENTORY:%d:%d" % (len(rows), expected))
         if terminal and active == 0:
-            raise InstallError("BACKFILL_TERMINAL:" + json.dumps(problem_rows, sort_keys=True))
+            if remediation_rounds >= 2:
+                raise InstallError("BACKFILL_TERMINAL:" + json.dumps(problem_rows, sort_keys=True))
+            remediation_rounds += 1
+            reclaimed = 0
+            for row in problem_rows:
+                if row["status"] not in {"FAILED", "NEEDS_REVIEW", "READY"}:
+                    continue
+                item = service.process_card_now(row["car_uid"])
+                if item is not None:
+                    processed.append(item)
+                    reclaimed += 1
+            if reclaimed:
+                continue
+            raise InstallError("BACKFILL_RECLAIM_FAILED:" + json.dumps(problem_rows, sort_keys=True))
         if len(rows) == expected and active == 0:
             raise InstallError("BACKFILL_SHALLOW:" + json.dumps(problem_rows, sort_keys=True))
         if clock() >= deadline:
@@ -637,6 +652,33 @@ def selftest() -> None:
             sleeper=lambda _seconds: None, clock=lambda: 0,
         )
         assert completion["completed"] == 16 and completion["polls"] == 2
+        terminal_states = [
+            [
+                {"car_uid": "UA-%04d" % index,
+                 "status": "READY" if index <= 12 else "NEEDS_REVIEW",
+                 "facts_count": 20 if index <= 12 else 0,
+                 "attempts": 1, "last_error": ""}
+                for index in range(1, 17)
+            ],
+            [
+                {"car_uid": "UA-%04d" % index, "status": "READY", "facts_count": 20}
+                for index in range(1, 17)
+            ],
+        ]
+        reclaimed: list[str] = []
+        repair_fake = type("RepairService", (), {
+            "process_one": staticmethod(lambda: None),
+            "recover_interrupted_jobs": staticmethod(lambda **_kwargs: 0),
+            "process_card_now": staticmethod(
+                lambda uid: reclaimed.append(uid) or {"car_uid": uid, "status": "READY", "facts": 20}
+            ),
+        })()
+        repaired = _drain_full_backfill(
+            repair_fake, 16, state_reader=lambda: terminal_states.pop(0),
+            sleeper=lambda _seconds: None, clock=lambda: 0,
+        )
+        assert repaired["terminal_remediation_rounds"] == 1
+        assert reclaimed == ["UA-0013", "UA-0014", "UA-0015", "UA-0016"]
     finally:
         ROOT = original_root
     print("UA111_REMOTE_INSTALLER_SELFTEST_PASS")
