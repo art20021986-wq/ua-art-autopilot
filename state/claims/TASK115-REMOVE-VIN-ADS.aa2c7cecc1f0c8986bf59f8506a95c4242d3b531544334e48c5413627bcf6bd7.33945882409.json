@@ -5,20 +5,69 @@
   "autostart_ledger_sha256": "cd09ec229d1d6ca3a3b1ae4de06ceef06dbbf4734740bc09fadf45a0f5dae86c",
   "autostart_source_commit": "397dbad7b764de1d17a7fd91b7632dabcba4d9a3",
   "created_at": "2026-09-05T04:57:23Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "b7535be25a4810a741b227e2ba8d610182d8bb75d75d00ad1dadb808063273a8",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-05T04:57:23Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-09-05T04:58:31Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "33945882409",
     "task_id": "TASK115-REMOVE-VIN-ADS",
     "task_sha256": "aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 452.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 183.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0005.html",
+        "http_status": 200,
+        "latency_ms": 293.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0005.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0009.html",
+        "http_status": 200,
+        "latency_ms": 162.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0009.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0016.html",
+        "http_status": 200,
+        "latency_ms": 154.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0016.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-33945882409-aa2c7cecc1f0c898",
+  "production_transaction_path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "card-ua-0001-01627c902a8a1f5a",
   "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
   "receipt_validation_status": "PENDING",
@@ -30,8 +79,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "3a7f9db3dceb5a9bf350f973683ee5966e699b16",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 551.69,
+    "allowed": true,
+    "evidence_path": "state/storage/TASK115-REMOVE-VIN-ADS.json",
+    "evidence_sha256": "c93c078e126047a40f417af851464620dd9079a5b971a610729d2d6b31285c88",
+    "free_bytes": 32640151552,
+    "heavy": true,
+    "measured_at": "2026-09-05T04:49:17Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 134217728,
+    "status": "PASS",
+    "usage_percent": 13.14711434500558
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-05T04:57:23Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "27cf0cc4dbdd7ff37db3f9eb39ed60cb0c8d398fbd0bd09b2d6c9c88a0f27a2b",
+    "file_sha256": {
+      "cloud/task115_remove_vin_ads/remote_installer.py": "bcc0693e7a124a33ca0ed59c16b87e5783f33e35006110ce8a70eac524c13c48",
+      "cloud/task115_remove_vin_ads/test_contract.py": "582793f42af870c2e54d9b7d883627c852c3b7a5ea53383a1f8b82f6f2f15997"
+    }
+  },
+  "updated_at": "2026-09-05T04:58:31Z"
 }
