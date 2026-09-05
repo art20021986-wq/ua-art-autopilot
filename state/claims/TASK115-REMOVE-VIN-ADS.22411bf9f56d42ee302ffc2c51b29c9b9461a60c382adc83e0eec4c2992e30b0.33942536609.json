@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.json",
+  "autostart_ledger_sha256": "d4729e31b88c224c147ec7e07cce61a98b74380c0cc809f032650e6c811c5c4f",
+  "autostart_source_commit": "535846b2bdc9c2115c9180cd09bf9b0a706cda1d",
+  "created_at": "2026-09-05T03:42:03Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-05T03:42:03Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "33942536609",
+    "task_id": "TASK115-REMOVE-VIN-ADS",
+    "task_sha256": "22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK115-REMOVE-VIN-ADS.json",
+  "request_sha256": "22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "1544fa468fea8565f6d75cae4d8bb5c7b0599149",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-05T03:42:03Z"
+}
