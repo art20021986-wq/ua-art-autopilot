@@ -11,12 +11,12 @@
   "critical": {
     "allow_crm_vehicle_data": false,
     "gate_a_path": "tasks/gates/TASK115-REMOVE-VIN-ADS.json",
-    "gate_a_sha256": "c157f235e813965af5726ce76ce958f5f6024a4a952c7324df9ccc0e91c63d44",
+    "gate_a_sha256": "b5c8454289bc00d7323ae1bfbdd1a5b9e8b353980db17b6f2fe4997d9e1ddd73",
     "gate_b_authorized": true,
     "manifest_path": "tasks/manifests/TASK115-REMOVE-VIN-ADS.json",
-    "manifest_sha256": "da65dcd774e70d1af46ae97c9cc1589d36a057609fe98cbf819d97cfc526d665",
+    "manifest_sha256": "6cabe3bb045fd64a7787ce1851d02fbe185c2476f318918ea41b7e52509ca93c",
     "owner_approval_path": "tasks/approvals/TASK115-REMOVE-VIN-ADS.production.json",
-    "owner_approval_sha256": "79de7e0ae5c78d1c8fbc6ef58355d537163ad777309423c56a4f022ba3c39690"
+    "owner_approval_sha256": "2a6e37053fb0de5ce291eeb3102131b8c4aa9bdaa0f218ee70098046a3263c54"
   },
   "description": "Owner-directed emergency removal of the unsolicited Korea CarHistory and Check VIN advertisement from every published card. Restore the existing additional specification, retain VIN only as compact vehicle data, disable autonomous VIN enrichment, and enforce a fail-closed allowlist for external domains in future generated cards. Preserve all CRM vehicle data, prices, stages, media, diagnostics and every byte outside the targeted public regions.",
   "execution": {
@@ -24,7 +24,7 @@
     "backup_controller_sha256": "7cce4b5a6dfdf315bf93cb6e635cdec211759adf8f4be690d9053c710d83a0d7",
     "backup_receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS-BACKUP.json",
     "controller_path": "cloud/task115_remove_vin_ads/controller.py",
-    "controller_sha256": "c7b797147216faee0ce24edc7c07a773ed89ff90c2a4c597bd94162bdf8d3bde",
+    "controller_sha256": "237530d19057e6f106fc5d12029eda18b9fc4d8c8c1888a3abded45c0eca4549",
     "evidence_paths": [
       "cloud/task115_remove_vin_ads/evidence.json",
       "state/receipts/TASK115-REMOVE-VIN-ADS-BACKUP.json",
