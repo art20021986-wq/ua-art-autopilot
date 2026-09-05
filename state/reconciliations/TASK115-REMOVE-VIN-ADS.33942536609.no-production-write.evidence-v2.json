@@ -1,0 +1,124 @@
+{
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-EVIDENCE-2",
+  "task_id": "TASK115-REMOVE-VIN-ADS",
+  "semantic_outcome": "ABORTED_NO_PRODUCTION_WRITE",
+  "original_run_id": "33942536609",
+  "recovery_run_id": "33943450237",
+  "request_path": "tasks/requests/TASK115-REMOVE-VIN-ADS.json",
+  "request_sha256": "22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0",
+  "transaction_id": "tx-33942536609-22411bf9f56d42ee",
+  "transaction_path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+  "evidence_cutoff": "2026-09-05T04:04:27Z",
+  "backup_evidence": {
+    "artifact_id": 9962368369,
+    "artifact_name": "uaart-critical-backup-33942536609-1",
+    "artifact_zip_sha256": "653b8a0344918a3761e6aee9d1d174ed78f518c716ccf05a728e2131c676ff50",
+    "backup_manifest_sha256": "97d19410c275541a0c3b86ee361687f24f0640956e5a4dabd4f2efe2d440db41",
+    "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS-BACKUP.json",
+    "receipt_sha256": "1920e01ef6ae66079901210b223caecbe8ad99a4f5886aeb7a3551cebdac03cc",
+    "remote_backup_mode_executed": true
+  },
+  "job_assertions": [
+    {
+      "run_id": "33942536609",
+      "job_id": 101242943282,
+      "job_name": "execute / critical / backup",
+      "conclusion": "success",
+      "assertion": "Backup-only controller completed; canonical backup receipt artifact uploaded."
+    },
+    {
+      "run_id": "33942536609",
+      "job_id": 101243322408,
+      "job_name": "execute / critical / open",
+      "conclusion": "failure",
+      "assertion": "Step 'Commit and durably push OPEN' failed with AUTOMATIC_MODE_HALTED before controller_production."
+    },
+    {
+      "run_id": "33942536609",
+      "job_id": 101243348643,
+      "job_name": "execute / critical / controller_production",
+      "conclusion": "skipped",
+      "assertion": "No TASK115 install-mode Production controller command executed."
+    },
+    {
+      "run_id": "33942536609",
+      "job_id": 101243375823,
+      "job_name": "execute / critical / rollback_execute",
+      "conclusion": "skipped",
+      "assertion": "No rollback controller command executed."
+    },
+    {
+      "run_id": "33943450237",
+      "job_id": 101245119259,
+      "job_name": "discover",
+      "conclusion": "success",
+      "assertion": "OPEN transaction and exact backup receipt were discovered."
+    },
+    {
+      "run_id": "33943450237",
+      "job_id": 101245141455,
+      "job_name": "mark_rollback",
+      "conclusion": "success",
+      "assertion": "Repository metadata only was changed OPEN to ROLLING_BACK; no remote command ran in this job."
+    },
+    {
+      "run_id": "33943450237",
+      "job_id": 101245173715,
+      "job_name": "rollback_open",
+      "conclusion": "failure",
+      "assertion": "Identity revalidation failed with AUTOSTART_NONCE_RESERVATION_MISSING / TRANSACTION_LEDGER_INVALID; Production rollback execution step was skipped."
+    },
+    {
+      "run_id": "33943450237",
+      "job_id": 101245201893,
+      "job_name": "finalize_rollback",
+      "conclusion": "skipped",
+      "assertion": "No rollback receipt was installed and no normal ROLLED_BACK close ran."
+    },
+    {
+      "run_id": "33943450237",
+      "job_id": 101245201376,
+      "job_name": "halt_recovery_failure",
+      "conclusion": "success",
+      "assertion": "Fail-closed halt was persisted at commit f2a90a490ca2d31c0d4c1f456deebde43092ce6a."
+    }
+  ],
+  "no_production_write_assertion": {
+    "rollback_receipt_present": false,
+    "task115_install_mode_executed": false,
+    "task115_production_controller_executed": false,
+    "task115_public_or_crm_mutation": false,
+    "task115_rollback_controller_executed": false
+  },
+  "state_anchors": {
+    "pre_terminalization_head": "f2a90a490ca2d31c0d4c1f456deebde43092ce6a",
+    "pre_terminalization_transaction_sha256": "29c325d834684d03deee419d27ec87cd010d6489af582acfcebd1d0d74913364",
+    "pre_terminalization_claim_sha256": "26302859c110b76343fbbcf1e3ccb06874449646b4967de984b82362a22fe17e",
+    "terminalization_head": "740e0bfa37a344905d09b4ce5870b1fab7a41fba",
+    "terminal_transaction_sha256": "472eea4a28fac3808ad9cf3f2d0b45a10a6513ee10c070317ecaa56c81bebca2",
+    "terminal_claim_sha256": "153d1d58a9dea47ed23c243e99e3335286cd15abf31c259c103f6626ad86efa0",
+    "reconciliation_v1_path": "state/reconciliations/TASK115-REMOVE-VIN-ADS.33942536609.no-production-write.json",
+    "reconciliation_v1_sha256": "636b2993be25aab0988758bb41bf17aa10dac664ce0ccc704d93b020b74bf593"
+  },
+  "compatibility_terminalization": {
+    "active_transaction_status": "ROLLED_BACK",
+    "claim_execution_status": "FAILED",
+    "claim_transaction_status": "ROLLED_BACK",
+    "semantic_rollback_executed": false,
+    "explanation": "ROLLED_BACK is legacy watchdog terminal metadata only; authoritative semantic outcome is ABORTED_NO_PRODUCTION_WRITE."
+  },
+  "halt_snapshot": {
+    "path": "state/AUTOPILOT_HALT.json",
+    "sha256": "12a2b09081c10352dcaeba4f08505021e37095f61c4da167342827f9501e9b2d",
+    "value": {
+      "halted_at": "2026-09-05T04:02:39Z",
+      "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+      "reason": "Production watchdog recovery failed in run 33943450237",
+      "request_path": "tasks/requests/TASK115-REMOVE-VIN-ADS.json",
+      "request_sha256": "22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0",
+      "run_id": "33942536609",
+      "status": "EMERGENCY_HALT",
+      "task_id": "TASK115-REMOVE-VIN-ADS"
+    }
+  }
+}
