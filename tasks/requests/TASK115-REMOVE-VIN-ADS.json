@@ -16,7 +16,7 @@
     "manifest_path": "tasks/manifests/TASK115-REMOVE-VIN-ADS.json",
     "manifest_sha256": "6cabe3bb045fd64a7787ce1851d02fbe185c2476f318918ea41b7e52509ca93c",
     "owner_approval_path": "tasks/approvals/TASK115-REMOVE-VIN-ADS.production.json",
-    "owner_approval_sha256": "9900b680727c0caa3ef71a1da26567b4ddee526212d62df8c29be5583ed1c65d"
+    "owner_approval_sha256": "aa01cdc1bac9200014cbb5e0cd1bf2cc75e349c83f277e034fd936ea9adb9e93"
   },
   "description": "Owner-directed emergency removal of the unsolicited Korea CarHistory and Check VIN advertisement from every published card. Restore the existing additional specification, retain VIN only as compact vehicle data, disable autonomous VIN enrichment, and enforce a fail-closed allowlist for external domains in future generated cards. Preserve all CRM vehicle data, prices, stages, media, diagnostics and every byte outside the targeted public regions.",
   "execution": {
@@ -61,7 +61,7 @@
   "storage_required_bytes": 134217728,
   "storage_probe": {
     "evidence_path": "state/storage/TASK115-REMOVE-VIN-ADS.json",
-    "evidence_sha256": "6973d817ba6f38dbf0e4563c22e579703e448132f1d6d06dec71c3b37ffa86d1"
+    "evidence_sha256": "7d8506cddd1847016fd54b844bf4195f8017ca85fd7931c7c6180abba150de54"
   },
   "task_id": "TASK115-REMOVE-VIN-ADS",
   "title": "Remove unsolicited VIN advertising permanently"
