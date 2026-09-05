@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "252f9ee2916eb54b0ad9a1bd5fae99105b8a5e8cb50534569afbde0abf5f026d",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-05T03:47:30Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 33942536609",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "cc88d3aeb574c70b"
+    }
+  ],
   "heartbeat_at": "2026-09-05T03:43:51Z",
   "heartbeat_sequence": 6,
   "identity": {
@@ -93,7 +104,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "237530d19057e6f106fc5d12029eda18b9fc4d8c8c1888a3abded45c0eca4549",
     "file_sha256": {
@@ -101,5 +112,5 @@
       "cloud/task115_remove_vin_ads/test_contract.py": "1c1034f087329038146a2829957a2599e805727d458e847535c1296c0e005205"
     }
   },
-  "updated_at": "2026-09-05T03:43:51Z"
+  "updated_at": "2026-09-05T03:47:30Z"
 }
