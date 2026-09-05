@@ -7,6 +7,17 @@
   "created_at": "2026-09-05T03:37:25Z",
   "critical_gate_status": "PENDING",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-05T03:38:34Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 33942322588",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "0ff13eba208865e6"
+    }
+  ],
   "heartbeat_at": "2026-09-05T03:37:25Z",
   "heartbeat_sequence": 0,
   "identity": {
@@ -31,6 +42,6 @@
   "source_commit": "2145a7b79df450fae6eddb023c0f221815fd3c33",
   "storage_preflight_status": "PENDING",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-05T03:37:25Z"
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "updated_at": "2026-09-05T03:38:34Z"
 }
