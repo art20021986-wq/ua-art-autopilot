@@ -78,7 +78,7 @@
   "production_required": true,
   "production_transaction_id": "tx-33942536609-22411bf9f56d42ee",
   "production_transaction_path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
   "receipt_validation_status": "PENDING",
@@ -112,5 +112,5 @@
       "cloud/task115_remove_vin_ads/test_contract.py": "1c1034f087329038146a2829957a2599e805727d458e847535c1296c0e005205"
     }
   },
-  "updated_at": "2026-09-05T03:59:50Z"
+  "updated_at": "2026-09-05T04:02:12Z"
 }
