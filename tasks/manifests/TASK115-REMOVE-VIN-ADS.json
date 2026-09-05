@@ -1,0 +1,44 @@
+{
+  "backup_required": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "replace_targeted_region",
+      "path": "production/public-cards/vin-advertisement"
+    },
+    {
+      "action": "restore",
+      "path": "production/public-cards/additional-specification"
+    },
+    {
+      "action": "disable",
+      "path": "production/vin-enrichment/autonomous-worker"
+    },
+    {
+      "action": "guard",
+      "path": "production/card-generator/unapproved-external-domains"
+    }
+  ],
+  "production_write": true,
+  "protected_paths": [
+    "crm.db",
+    "db.py",
+    "team_bot.py",
+    "start_safe.py",
+    "video/index.html",
+    "video/katalog.html",
+    "video/foto",
+    "site/index.html",
+    "site/katalog.html",
+    "site/foto",
+    "vin-values",
+    "prices",
+    "vehicle-data",
+    "diagnostics",
+    "dns"
+  ],
+  "rollback_required": true,
+  "task_class": "CRITICAL",
+  "task_id": "TASK115-REMOVE-VIN-ADS"
+}
