@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "b7535be25a4810a741b227e2ba8d610182d8bb75d75d00ad1dadb808063273a8",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-05T04:58:31Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-05T05:02:09Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "33945882409",
     "task_id": "TASK115-REMOVE-VIN-ADS",
@@ -67,7 +67,7 @@
   "production_required": true,
   "production_transaction_id": "tx-33945882409-aa2c7cecc1f0c898",
   "production_transaction_path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0001-01627c902a8a1f5a",
   "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
   "receipt_validation_status": "PENDING",
@@ -102,5 +102,5 @@
       "cloud/task115_remove_vin_ads/test_contract.py": "582793f42af870c2e54d9b7d883627c852c3b7a5ea53383a1f8b82f6f2f15997"
     }
   },
-  "updated_at": "2026-09-05T04:58:31Z"
+  "updated_at": "2026-09-05T05:02:09Z"
 }
