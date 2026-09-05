@@ -115,25 +115,33 @@ def find_blockers(
 
 
 def fetch_runs(repository: str, token: str) -> list[dict]:
-    values: list[dict] = []
+    """Fetch only active runs, without walking the repository's full history."""
+    values: dict[int, dict] = {}
     headers = {
         "Authorization": "Bearer " + token,
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
         "User-Agent": "ua-art-fair-production-queue/2",
     }
-    for page in range(1, 11):
-        request = urllib.request.Request(
-            f"https://api.github.com/repos/{repository}/actions/runs?per_page=100&page={page}",
-            headers=headers,
-            method="GET",
-        )
-        with urllib.request.urlopen(request, timeout=30) as response:
-            batch = list((json.load(response).get("workflow_runs") or []))
-        values.extend(batch)
-        if len(batch) < 100:
-            return values
-    raise RuntimeError("PRODUCTION_QUEUE_RUN_PAGINATION_LIMIT")
+    for status in sorted(ACTIVE_STATES):
+        for page in range(1, 101):
+            request = urllib.request.Request(
+                f"https://api.github.com/repos/{repository}/actions/runs"
+                f"?status={status}&per_page=100&page={page}",
+                headers=headers,
+                method="GET",
+            )
+            with urllib.request.urlopen(request, timeout=30) as response:
+                batch = list((json.load(response).get("workflow_runs") or []))
+            for run in batch:
+                run_id = int(run.get("id") or 0)
+                if run_id:
+                    values[run_id] = run
+            if len(batch) < 100:
+                break
+        else:
+            raise RuntimeError("PRODUCTION_QUEUE_ACTIVE_RUN_PAGINATION_LIMIT:" + status)
+    return list(values.values())
 
 
 def wait_for_turn(args: argparse.Namespace) -> None:
