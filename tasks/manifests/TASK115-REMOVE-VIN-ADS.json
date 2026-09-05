@@ -4,19 +4,19 @@
   "live_verify_required": true,
   "operations": [
     {
-      "action": "replace_targeted_region",
+      "action": "noop",
       "path": "production/public-cards/vin-advertisement"
     },
     {
-      "action": "restore",
+      "action": "noop",
       "path": "production/public-cards/additional-specification"
     },
     {
-      "action": "disable",
+      "action": "noop",
       "path": "production/vin-enrichment/autonomous-worker"
     },
     {
-      "action": "guard",
+      "action": "noop",
       "path": "production/card-generator/unapproved-external-domains"
     }
   ],
