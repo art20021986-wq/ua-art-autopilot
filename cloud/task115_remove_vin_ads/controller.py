@@ -20,7 +20,7 @@ from typing import Any, Mapping
 TASK_ID = "TASK115-REMOVE-VIN-ADS"
 CONTRACT = "UA-ART-NO-VIN-ADS-V1.0"
 CRITICAL = "UA-ART-CRITICAL-ADAPTER-V1.0"
-MANIFEST_SHA256 = "da65dcd774e70d1af46ae97c9cc1589d36a057609fe98cbf819d97cfc526d665"
+MANIFEST_SHA256 = "6cabe3bb045fd64a7787ce1851d02fbe185c2476f318918ea41b7e52509ca93c"
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 REMOTE = "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin"
