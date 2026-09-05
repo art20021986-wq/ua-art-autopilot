@@ -1,0 +1,26 @@
+{
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+  "task_id": "TASK115-REMOVE-VIN-ADS",
+  "original_run_id": "33942536609",
+  "recovery_run_id": "33943450237",
+  "transaction_id": "tx-33942536609-22411bf9f56d42ee",
+  "request_sha256": "22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0",
+  "reconciled_at": "2026-09-05T04:04:27Z",
+  "outcome": "ABORTED_NO_PRODUCTION_WRITE",
+  "backup_receipt_sha256": "1920e01ef6ae66079901210b223caecbe8ad99a4f5886aeb7a3551cebdac03cc",
+  "backup_manifest_sha256": "97d19410c275541a0c3b86ee361687f24f0640956e5a4dabd4f2efe2d440db41",
+  "evidence": {
+    "original_production_job": "open job 101243322408 stopped at AUTOMATIC_MODE_HALTED before controller",
+    "recovery_job_id": "101245173715",
+    "recovery_failure": "AUTOSTART_NONCE_RESERVATION_MISSING / TRANSACTION_LEDGER_INVALID",
+    "rollback_execution_step": "SKIPPED",
+    "rollback_receipt_step": "SKIPPED",
+    "finalize_rollback_job": "SKIPPED"
+  },
+  "production_controller_executed": false,
+  "production_rollback_executed": false,
+  "production_write_performed": false,
+  "metadata_terminal_status": "ROLLED_BACK",
+  "halt_retained": true,
+  "owner_instruction_basis": "Current owner instruction requires TASK115 execution; reconciliation only clears stale non-writing transaction"
+}

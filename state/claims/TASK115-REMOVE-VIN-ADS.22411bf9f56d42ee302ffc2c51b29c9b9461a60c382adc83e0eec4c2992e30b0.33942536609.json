@@ -17,10 +17,19 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "cc88d3aeb574c70b"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-09-05T04:04:27Z",
+      "class": "CONTROL_PLANE_RECOVERY_BUG",
+      "message": "Watchdog run 33943450237 stopped before Production rollback step; no Production controller or rollback command executed",
+      "retries_remaining": 0,
+      "retry_allowed": false,
+      "signature": "watchdog-nonce-missing"
     }
   ],
-  "heartbeat_at": "2026-09-05T03:59:50Z",
-  "heartbeat_sequence": 7,
+  "heartbeat_at": "2026-09-05T04:04:27Z",
+  "heartbeat_sequence": 8,
   "identity": {
     "run_id": "33942536609",
     "task_id": "TASK115-REMOVE-VIN-ADS",
@@ -78,7 +87,7 @@
   "production_required": true,
   "production_transaction_id": "tx-33942536609-22411bf9f56d42ee",
   "production_transaction_path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
   "receipt_validation_status": "PENDING",
@@ -104,7 +113,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FAILED",
   "trusted_package": {
     "controller_sha256": "237530d19057e6f106fc5d12029eda18b9fc4d8c8c1888a3abded45c0eca4549",
     "file_sha256": {
@@ -112,5 +121,5 @@
       "cloud/task115_remove_vin_ads/test_contract.py": "1c1034f087329038146a2829957a2599e805727d458e847535c1296c0e005205"
     }
   },
-  "updated_at": "2026-09-05T04:02:12Z"
+  "updated_at": "2026-09-05T04:04:27Z"
 }
