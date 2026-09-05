@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import pathlib
+import re
 
 import controller
 
@@ -18,6 +19,9 @@ def main() -> int:
     value = api.run("backup")
     if value.get("status") != "PASS" or value.get("mode") != "BACKUP":
         raise RuntimeError("REMOTE_BACKUP_FAILED")
+    backup_manifest_sha256 = str(value.get("backup_manifest_sha256") or "")
+    if not re.fullmatch(r"[0-9a-f]{64}", backup_manifest_sha256):
+        raise RuntimeError("REMOTE_BACKUP_IDENTITY")
     receipt = {
         "schema_version": "UA-ART-PRODUCTION-BACKUP-RECEIPT-1",
         "operation": "backup",
@@ -26,7 +30,7 @@ def main() -> int:
         "run_id": os.environ["UAART_RUN_ID"],
         "transaction_id": os.environ["UAART_TRANSACTION_ID"],
         "manifest_sha256": os.environ["UAART_MANIFEST_SHA256"],
-        "backup_manifest_sha256": value["backup_manifest_sha256"],
+        "backup_manifest_sha256": backup_manifest_sha256,
         "status": "PASS",
         "backup": "PASS",
         "unexpected_changes": 0,

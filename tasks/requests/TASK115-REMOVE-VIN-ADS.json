@@ -1,30 +1,35 @@
 {
   "ai_requested": false,
   "changed_paths": [
-    "production/public-cards/vin-advertisement",
-    "production/public-cards/additional-specification",
-    "production/vin-enrichment/autonomous-worker",
-    "production/card-generator/unapproved-external-domains"
+    "production/source-generators/no-vin-ad-policy",
+    "production/source-specification/additional-specification",
+    "production/source-services/vin-spec-worker",
+    "production/public-cards/video/UA-0001-UA-0016",
+    "production/public-cards/site/UA-0001-UA-0016",
+    "production/operator-ui/cars-ui-vin-actions",
+    "production/client-ui/vin-actions",
+    "production/scheduler/legacy-vin-ad-triggers",
+    "production/remote-reinstallers/legacy-vin-ad-payloads"
   ],
   "complexity": 5,
   "control_plane_version": "TASK107-R2",
   "critical": {
     "allow_crm_vehicle_data": false,
     "gate_a_path": "tasks/gates/TASK115-REMOVE-VIN-ADS.json",
-    "gate_a_sha256": "b5c8454289bc00d7323ae1bfbdd1a5b9e8b353980db17b6f2fe4997d9e1ddd73",
+    "gate_a_sha256": "d460ae5e7db25d92fbeff889af8450e56b7a02ffe594eef4e31d6391f3adc9ab",
     "gate_b_authorized": true,
     "manifest_path": "tasks/manifests/TASK115-REMOVE-VIN-ADS.json",
-    "manifest_sha256": "6cabe3bb045fd64a7787ce1851d02fbe185c2476f318918ea41b7e52509ca93c",
+    "manifest_sha256": "684c7e18cacb684bc8f4e4e695924821bd5d815417f68a596f416a64c5220378",
     "owner_approval_path": "tasks/approvals/TASK115-REMOVE-VIN-ADS.production.json",
-    "owner_approval_sha256": "aa01cdc1bac9200014cbb5e0cd1bf2cc75e349c83f277e034fd936ea9adb9e93"
+    "owner_approval_sha256": "a4c25ca6b6c6aa2794048e608eea823c7a705c30716b4a257ce6cccf245fbb39"
   },
-  "description": "Owner-directed emergency removal of the unsolicited Korea CarHistory and Check VIN advertisement from every published card. Restore the existing additional specification, retain VIN only as compact vehicle data, disable autonomous VIN enrichment, and enforce a fail-closed allowlist for external domains in future generated cards. Preserve all CRM vehicle data, prices, stages, media, diagnostics and every byte outside the targeted public regions.",
+  "description": "Owner-directed emergency removal of the unsolicited Korea CarHistory, VINDecoderz, and every VIN-linked advertisement or Check VIN action from all current published cards, future source generators, the operator UI, and the client UI. Irreversibly delete every legacy TASK068 scheduler definition capable of restoring those advertisements, whether enabled or disabled, and irreversibly delete the three exact remote VIN-ad reinstaller payloads declared in the manifest. Both quarantines are excluded from backup and rollback and must remain in force after every failure rollback; a rollback PASS means only the seven declared reversible filesystem targets were restored while neither forbidden trigger nor reinstaller was recreated. Require SHA-256 inventories and incremental removal evidence for both quarantines. Restore and require the existing additional specification with at least 10 rows for every current and future published card. Preserve and keep enabled the autonomous VIN specification worker; remove only autonomous advertisement or CTA insertion paths. Retain VIN only as compact vehicle data and enforce fail-closed no-ad and external-domain controls. Preserve the CRM database and all vehicle data, prices, stages, media, diagnostics, index and catalog pages, and every byte outside the declared reversible target regions.",
   "execution": {
     "backup_controller_path": "cloud/task115_remove_vin_ads/backup_controller.py",
-    "backup_controller_sha256": "7cce4b5a6dfdf315bf93cb6e635cdec211759adf8f4be690d9053c710d83a0d7",
+    "backup_controller_sha256": "8bd7fe958ffaf309ad4365f8e3e2dab0e0b5e1d6ad079fcdd5f04d54e07aaae7",
     "backup_receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS-BACKUP.json",
     "controller_path": "cloud/task115_remove_vin_ads/controller.py",
-    "controller_sha256": "237530d19057e6f106fc5d12029eda18b9fc4d8c8c1888a3abded45c0eca4549",
+    "controller_sha256": "27cf0cc4dbdd7ff37db3f9eb39ed60cb0c8d398fbd0bd09b2d6c9c88a0f27a2b",
     "evidence_paths": [
       "cloud/task115_remove_vin_ads/evidence.json",
       "state/receipts/TASK115-REMOVE-VIN-ADS-BACKUP.json",
@@ -35,13 +40,13 @@
       "cloud/task115_remove_vin_ads/remote_installer.py"
     ],
     "file_sha256": {
-      "cloud/task115_remove_vin_ads/remote_installer.py": "ac681e9bcab6ce4ca2e8736f03a7607bcfad7ff6e77baf52ba2eab4044e92a2d",
-      "cloud/task115_remove_vin_ads/test_contract.py": "1c1034f087329038146a2829957a2599e805727d458e847535c1296c0e005205"
+      "cloud/task115_remove_vin_ads/remote_installer.py": "bcc0693e7a124a33ca0ed59c16b87e5783f33e35006110ce8a70eac524c13c48",
+      "cloud/task115_remove_vin_ads/test_contract.py": "582793f42af870c2e54d9b7d883627c852c3b7a5ea53383a1f8b82f6f2f15997"
     },
     "production_required": true,
     "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
     "rollback_controller_path": "cloud/task115_remove_vin_ads/rollback_controller.py",
-    "rollback_controller_sha256": "e3a82dbd3ad41a5b502d842bfe136f6d06a7027926a133d7fc1660056c02cbaa",
+    "rollback_controller_sha256": "cef166634ac28601962755459e6f4fc65b80a7a7c2d6c484c2b54a6177710341",
     "rollback_receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS-ROLLBACK.json",
     "test_paths": [
       "cloud/task115_remove_vin_ads/test_contract.py"
@@ -61,7 +66,7 @@
   "storage_required_bytes": 134217728,
   "storage_probe": {
     "evidence_path": "state/storage/TASK115-REMOVE-VIN-ADS.json",
-    "evidence_sha256": "7d8506cddd1847016fd54b844bf4195f8017ca85fd7931c7c6180abba150de54"
+    "evidence_sha256": "c93c078e126047a40f417af851464620dd9079a5b971a610729d2d6b31285c88"
   },
   "task_id": "TASK115-REMOVE-VIN-ADS",
   "title": "Remove unsolicited VIN advertising permanently"

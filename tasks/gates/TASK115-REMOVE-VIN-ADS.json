@@ -1,7 +1,28 @@
 {
   "backup_plan_ready": true,
+  "backup_scope_verified": [
+    "production/source-generators/no-vin-ad-policy",
+    "production/source-specification/additional-specification",
+    "production/source-services/vin-spec-worker",
+    "production/public-cards/video/UA-0001-UA-0016",
+    "production/public-cards/site/UA-0001-UA-0016",
+    "production/operator-ui/cars-ui-vin-actions",
+    "production/client-ui/vin-actions"
+  ],
   "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
-  "manifest_sha256": "6cabe3bb045fd64a7787ce1851d02fbe185c2476f318918ea41b7e52509ca93c",
+  "evaluated_at": "2026-09-05T04:49:17Z",
+  "irreversible_quarantine_scope_verified": [
+    "production/scheduler/legacy-vin-ad-triggers",
+    "production/remote-reinstallers/legacy-vin-ad-payloads"
+  ],
+  "manifest_sha256": "684c7e18cacb684bc8f4e4e695924821bd5d815417f68a596f416a64c5220378",
+  "package_sha256": {
+    "cloud/task115_remove_vin_ads/backup_controller.py": "8bd7fe958ffaf309ad4365f8e3e2dab0e0b5e1d6ad079fcdd5f04d54e07aaae7",
+    "cloud/task115_remove_vin_ads/controller.py": "27cf0cc4dbdd7ff37db3f9eb39ed60cb0c8d398fbd0bd09b2d6c9c88a0f27a2b",
+    "cloud/task115_remove_vin_ads/remote_installer.py": "bcc0693e7a124a33ca0ed59c16b87e5783f33e35006110ce8a70eac524c13c48",
+    "cloud/task115_remove_vin_ads/rollback_controller.py": "cef166634ac28601962755459e6f4fc65b80a7a7c2d6c484c2b54a6177710341",
+    "cloud/task115_remove_vin_ads/test_contract.py": "582793f42af870c2e54d9b7d883627c852c3b7a5ea53383a1f8b82f6f2f15997"
+  },
   "production_write": false,
   "protected_snapshot": {
     "crm.db": {
@@ -16,12 +37,60 @@
       "access": "NOT_OPENED",
       "write_permitted": false
     },
+    "non_target_source_files": {
+      "access": "NOT_WRITTEN",
+      "write_permitted": false
+    },
     "vehicle_business_data": {
       "access": "NOT_WRITTEN",
       "write_permitted": false
     }
   },
+  "quarantine_contracts": {
+    "remote_reinstallers": {
+      "files": [
+        "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task068_ferry_vin_repair.py",
+        "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/repair_remote.py",
+        "/home/Carix/autopilot_inbox/cloud/task_067/installer.py"
+      ],
+      "inventory": "CANDIDATE_INVENTORY_SHA256_AND_INCREMENTAL_REMOVAL_AUDIT",
+      "remaining": 0,
+      "rollback_policy": "NEVER_RESTORE_OWNER_FORBIDDEN_VIN_AD_REINSTALLER"
+    },
+    "rollback_success": "REVERSIBLE_TARGETS_ONLY_RESTORED_AND_BOTH_IRREVERSIBLE_QUARANTINES_RETAINED",
+    "scheduler": {
+      "definitions": "ALL_ENABLED_AND_DISABLED",
+      "inventory": "CANDIDATE_INVENTORY_SHA256_AND_INCREMENTAL_REMOVAL_AUDIT",
+      "remaining": 0,
+      "rollback_policy": "NEVER_RESTORE_OWNER_FORBIDDEN_VIN_AD_TRIGGER"
+    }
+  },
   "rollback_plan_ready": true,
+  "rollback_scope_verified": [
+    "production/source-generators/no-vin-ad-policy",
+    "production/source-specification/additional-specification",
+    "production/source-services/vin-spec-worker",
+    "production/public-cards/video/UA-0001-UA-0016",
+    "production/public-cards/site/UA-0001-UA-0016",
+    "production/operator-ui/cars-ui-vin-actions",
+    "production/client-ui/vin-actions"
+  ],
+  "scope_contract": {
+    "additional_specification": "REQUIRED_NONEMPTY_MINIMUM_10_ROWS_CURRENT_AND_FUTURE",
+    "client_ui_vin_advertising_actions": "FORBIDDEN",
+    "crm_vin_advertising_actions": "FORBIDDEN",
+    "legacy_vin_ad_reinstallers": "THREE_EXACT_REMOTE_FILES_ABSENT",
+    "legacy_vin_ad_triggers": "ALL_DEFINITIONS_ENABLED_OR_DISABLED_COUNT_ZERO",
+    "public_vin_advertising": "FORBIDDEN_FAIL_CLOSED",
+    "rollback_scope": "SEVEN_REVERSIBLE_FILESYSTEM_TARGETS_ONLY",
+    "rollback_success": "BOTH_IRREVERSIBLE_QUARANTINES_RETAINED",
+    "remote_reinstaller_quarantine_evidence": "CANDIDATE_INVENTORY_SHA256_AND_INCREMENTAL_REMOVAL_AUDIT",
+    "remote_reinstaller_quarantine_rollback_policy": "NEVER_RESTORE_OWNER_FORBIDDEN_VIN_AD_REINSTALLER",
+    "scheduler_quarantine_evidence": "CANDIDATE_INVENTORY_SHA256_AND_INCREMENTAL_REMOVAL_AUDIT",
+    "scheduler_quarantine_rollback_policy": "NEVER_RESTORE_OWNER_FORBIDDEN_VIN_AD_TRIGGER",
+    "vin_autoworker": "PRESERVED_ENABLED",
+    "vin_display": "COMPACT_VEHICLE_DATA_ONLY"
+  },
   "status": "PASS",
   "task_id": "TASK115-REMOVE-VIN-ADS",
   "tests": "PASS",

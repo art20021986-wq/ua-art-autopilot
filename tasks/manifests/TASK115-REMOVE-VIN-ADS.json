@@ -1,23 +1,127 @@
 {
   "backup_required": true,
+  "backup_scope": [
+    "production/source-generators/no-vin-ad-policy",
+    "production/source-specification/additional-specification",
+    "production/source-services/vin-spec-worker",
+    "production/public-cards/video/UA-0001-UA-0016",
+    "production/public-cards/site/UA-0001-UA-0016",
+    "production/operator-ui/cars-ui-vin-actions",
+    "production/client-ui/vin-actions"
+  ],
   "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "irreversible_quarantine_scope": [
+    "production/scheduler/legacy-vin-ad-triggers",
+    "production/remote-reinstallers/legacy-vin-ad-payloads"
+  ],
   "live_verify_required": true,
   "operations": [
     {
       "action": "noop",
-      "path": "production/public-cards/vin-advertisement"
+      "path": "production/source-generators/no-vin-ad-policy",
+      "postcondition": {
+        "additional_specification": "rendered_for_current_and_future_cards",
+        "external_vin_advertising": "forbidden_fail_closed",
+        "files": [
+          "master_card.py",
+          "publikaciya.py",
+          "stranica.py",
+          "yadro.py"
+        ],
+        "vin": "compact_vehicle_data_only"
+      }
     },
     {
       "action": "noop",
-      "path": "production/public-cards/additional-specification"
+      "path": "production/source-specification/additional-specification",
+      "postcondition": {
+        "file": "ua_additional_spec.py",
+        "minimum_rows_per_published_card": 10,
+        "scope": "current_and_future_published_cards",
+        "vin_advertising": "forbidden"
+      }
     },
     {
       "action": "noop",
-      "path": "production/vin-enrichment/autonomous-worker"
+      "path": "production/source-services/vin-spec-worker",
+      "postcondition": {
+        "file": "vin_spec_service.py",
+        "task115_disable_override": "absent",
+        "vin_advertising": "forbidden",
+        "vin_data": "additional_specification_only",
+        "worker": "preserved_enabled"
+      }
     },
     {
       "action": "noop",
-      "path": "production/card-generator/unapproved-external-domains"
+      "path": "production/public-cards/video/UA-0001-UA-0016",
+      "postcondition": {
+        "additional_specification_minimum_rows": 10,
+        "card_ids": "UA-0001-UA-0016",
+        "page_count": 16,
+        "vin": "compact_vehicle_data_only",
+        "vin_advertisement_count": 0
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/public-cards/site/UA-0001-UA-0016",
+      "postcondition": {
+        "additional_specification_minimum_rows": 10,
+        "card_ids": "UA-0001-UA-0016",
+        "page_count": 16,
+        "vin": "compact_vehicle_data_only",
+        "vin_advertisement_count": 0
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/operator-ui/cars-ui-vin-actions",
+      "postcondition": {
+        "file": "cars_ui.py",
+        "vin_advertising_actions": 0,
+        "vin_autoworker_registration": "exactly_one_preserved"
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/client-ui/vin-actions",
+      "postcondition": {
+        "file": "client_ui.py",
+        "vin_advertising_actions": 0,
+        "vin_in_external_urls": "forbidden"
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/scheduler/legacy-vin-ad-triggers",
+      "postcondition": {
+        "all_legacy_trigger_definitions_remaining": 0,
+        "definitions": "all_enabled_and_disabled",
+        "evidence": "candidate_inventory_sha256_and_incremental_removal_audit",
+        "match": "task068_ferry_vin_repair.py",
+        "operation": "irreversible_safety_quarantine",
+        "rollback_policy": "never_restore_owner_forbidden_vin_ad_trigger",
+        "scopes": [
+          "always_on",
+          "schedule"
+        ]
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/remote-reinstallers/legacy-vin-ad-payloads",
+      "postcondition": {
+        "evidence": "candidate_inventory_sha256_and_incremental_removal_audit",
+        "files": [
+          "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task068_ferry_vin_repair.py",
+          "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/repair_remote.py",
+          "/home/Carix/autopilot_inbox/cloud/task_067/installer.py"
+        ],
+        "files_remaining": 0,
+        "operation": "irreversible_executable_quarantine",
+        "rollback_policy": "never_restore_owner_forbidden_vin_ad_reinstaller"
+      }
     }
   ],
   "production_write": true,
@@ -36,9 +140,24 @@
     "prices",
     "vehicle-data",
     "diagnostics",
-    "dns"
+    "dns",
+    "production/vin-enrichment/autonomous-worker"
+  ],
+  "quarantine_inventory_required": [
+    "production/scheduler/legacy-vin-ad-triggers",
+    "production/remote-reinstallers/legacy-vin-ad-payloads"
   ],
   "rollback_required": true,
+  "rollback_scope": [
+    "production/source-generators/no-vin-ad-policy",
+    "production/source-specification/additional-specification",
+    "production/source-services/vin-spec-worker",
+    "production/public-cards/video/UA-0001-UA-0016",
+    "production/public-cards/site/UA-0001-UA-0016",
+    "production/operator-ui/cars-ui-vin-actions",
+    "production/client-ui/vin-actions"
+  ],
+  "rollback_success_definition": "reversible_targets_only_restored_and_both_irreversible_quarantines_retained",
   "task_class": "CRITICAL",
   "task_id": "TASK115-REMOVE-VIN-ADS"
 }
