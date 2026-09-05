@@ -1,0 +1,29 @@
+{
+  "backup_plan_ready": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "manifest_sha256": "da65dcd774e70d1af46ae97c9cc1589d36a057609fe98cbf819d97cfc526d665",
+  "production_write": false,
+  "protected_snapshot": {
+    "crm.db": {
+      "access": "READ_ONLY_HASH_AND_CARD_ID_VIN_INVENTORY",
+      "write_permitted": false
+    },
+    "card_html_outside_target_regions": {
+      "access": "BYTE_BOUNDARY_GUARD",
+      "write_permitted": false
+    },
+    "media": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "vehicle_business_data": {
+      "access": "NOT_WRITTEN",
+      "write_permitted": false
+    }
+  },
+  "rollback_plan_ready": true,
+  "status": "PASS",
+  "task_id": "TASK115-REMOVE-VIN-ADS",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
