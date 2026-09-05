@@ -1,0 +1,26 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.json",
+  "autostart_ledger_sha256": "cd09ec229d1d6ca3a3b1ae4de06ceef06dbbf4734740bc09fadf45a0f5dae86c",
+  "autostart_source_commit": "397dbad7b764de1d17a7fd91b7632dabcba4d9a3",
+  "created_at": "2026-09-05T04:57:23Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "33945882409",
+    "task_id": "TASK115-REMOVE-VIN-ADS",
+    "task_sha256": "aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "card-ua-0001-01627c902a8a1f5a",
+  "request_path": "tasks/requests/TASK115-REMOVE-VIN-ADS.json",
+  "resource_locks": [
+    "CARD:UA-0001",
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
