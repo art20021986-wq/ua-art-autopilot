@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "b7535be25a4810a741b227e2ba8d610182d8bb75d75d00ad1dadb808063273a8",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-05T05:02:09Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-05T05:11:37Z",
+  "heartbeat_at": "2026-09-05T05:11:37Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "33945882409",
     "task_id": "TASK115-REMOVE-VIN-ADS",
@@ -17,7 +18,52 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 1048.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 270.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0005.html",
+        "http_status": 200,
+        "latency_ms": 231.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0005.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0009.html",
+        "http_status": 200,
+        "latency_ms": 268.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0009.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/UA-0016.html",
+        "http_status": 200,
+        "latency_ms": 239.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/UA-0016.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -67,10 +113,11 @@
   "production_required": true,
   "production_transaction_id": "tx-33945882409-aa2c7cecc1f0c898",
   "production_transaction_path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0001-01627c902a8a1f5a",
   "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "bd63b24996d9931d04360f5e3854f77ce8d3ebc21ec33049501746e83e2b96a8",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TASK115-REMOVE-VIN-ADS.json",
   "request_sha256": "aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7",
   "resource_locks": [
@@ -94,7 +141,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "27cf0cc4dbdd7ff37db3f9eb39ed60cb0c8d398fbd0bd09b2d6c9c88a0f27a2b",
     "file_sha256": {
@@ -102,5 +149,5 @@
       "cloud/task115_remove_vin_ads/test_contract.py": "582793f42af870c2e54d9b7d883627c852c3b7a5ea53383a1f8b82f6f2f15997"
     }
   },
-  "updated_at": "2026-09-05T05:02:09Z"
+  "updated_at": "2026-09-05T05:11:37Z"
 }
