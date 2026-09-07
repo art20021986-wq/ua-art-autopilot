@@ -1,0 +1,106 @@
+{
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-EVIDENCE-2",
+  "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+  "semantic_outcome": "ABORTED_NO_PRODUCTION_DATA_WRITE",
+  "original_run_id": "34134692609",
+  "request_path": "tasks/requests/TASK120-PUBLISH-UA-0017-UA-0018.json",
+  "request_sha256": "a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442",
+  "transaction_id": "tx-34134692609-a4662a876b037595",
+  "transaction_path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+  "evidence_cutoff": "2026-09-07T15:04:00Z",
+  "job_assertions": [
+    {
+      "job_id": 101783419001,
+      "job_name": "execute / critical / backup",
+      "conclusion": "failure",
+      "assertion": "The task-owned transport file was uploaded; the first api.run('probe') stopped at MUTATING_ALWAYS_ON_UNAVAILABLE before a usable trigger, remote probe payload, or backup receipt."
+    },
+    {
+      "job_id": 101783481328,
+      "job_name": "execute / critical / open",
+      "conclusion": "skipped",
+      "assertion": "The Production transaction was never opened."
+    },
+    {
+      "job_id": 101783481085,
+      "job_name": "execute / critical / controller_production",
+      "conclusion": "skipped",
+      "assertion": "No TASK120 publish controller executed."
+    },
+    {
+      "job_id": 101783480840,
+      "job_name": "execute / critical / rollback_mark",
+      "conclusion": "success",
+      "assertion": "Rollback was not reserved because the transaction never reached OPEN."
+    },
+    {
+      "job_id": 101783543707,
+      "job_name": "execute / critical / rollback_execute",
+      "conclusion": "skipped",
+      "assertion": "No rollback controller executed."
+    },
+    {
+      "job_id": 101783542736,
+      "job_name": "execute / critical / recover",
+      "conclusion": "success",
+      "assertion": "The pipeline persisted EMERGENCY_HALT."
+    }
+  ],
+  "remote_cleanup_observation": {
+    "observed_at": "2026-09-07T15:04:00Z",
+    "authenticated": true,
+    "read_only": true,
+    "transport_path": "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task120_publish_17_18.py",
+    "transport_file_http_status": 404,
+    "always_on_commands": [
+      "python3.10 /home/Carix/start_safe.py"
+    ],
+    "task120_always_on_matches": 0,
+    "scheduled_total": 3,
+    "task120_scheduled_matches": 0,
+    "status": "PASS_NO_TASK120_RESIDUE"
+  },
+  "no_production_data_write_assertion": {
+    "ephemeral_transport_file_uploaded_then_cleaned": true,
+    "usable_remote_trigger_created": false,
+    "remote_probe_payload_executed": false,
+    "backup_receipt_present": false,
+    "task120_publish_controller_executed": false,
+    "task120_public_card_or_catalog_mutation": false,
+    "task120_crm_or_spec_database_mutation": false,
+    "task120_media_mutation": false,
+    "task120_rollback_controller_executed": false,
+    "production_write_performed": false
+  },
+  "state_anchors": {
+    "pre_terminalization_head": "ab85bfd43ceb9a09f299ce4844bde5af5c975b15",
+    "pre_terminalization_transaction_sha256": "18ebfab75275fab44dd85ae83fe2a41887fe71eb7074de3bbfd9e9b0c42a2fc0",
+    "pre_terminalization_claim_sha256": "2c04a466f9beaaf9611f72541c1a592da9341d07e9a5d5a6cf3b060cef72db6e",
+    "terminalization_head": "e902bf040a40a1656118140d5ab689f7b8266935",
+    "terminal_transaction_sha256": "edd6091730bc946a0091bc56e74209ed5248efd5b6aade40c69104d408981da4",
+    "terminal_claim_sha256": "160fd194e98c6135298b27d776c0a9e05379f9125cb68042c70a68bd15b9fb0b",
+    "reconciliation_v1_path": "state/reconciliations/TASK120-PUBLISH-UA-0017-UA-0018.34134692609.no-production-write.json",
+    "reconciliation_v1_sha256": "445496001516c52f273fa91f89f3ecca9b03e128b4fd6b2a107ba521f2b2332b"
+  },
+  "compatibility_terminalization": {
+    "active_transaction_status": "ROLLED_BACK",
+    "claim_execution_status": "FAILED",
+    "claim_transaction_status": "ROLLED_BACK",
+    "semantic_rollback_executed": false,
+    "explanation": "ROLLED_BACK is terminal watchdog metadata only; the authoritative outcome is ABORTED_NO_PRODUCTION_DATA_WRITE."
+  },
+  "watchdog_assertion": {
+    "pending_statuses": [
+      "PREPARING",
+      "OPEN",
+      "ROLLING_BACK"
+    ],
+    "pending_count": 0,
+    "expected_assert_clear_status": "PASS"
+  },
+  "halt_snapshot": {
+    "path": "state/AUTOPILOT_HALT.json",
+    "sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
+    "retained": true
+  }
+}
