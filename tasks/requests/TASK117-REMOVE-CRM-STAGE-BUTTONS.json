@@ -1,0 +1,62 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/operator-ui/cars_ui.py",
+    "production/operator-ui/konteyner.py"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": false,
+    "gate_a_path": "tasks/gates/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
+    "gate_a_sha256": "d969ed417b050dc2a7bfdbf2281e5113dba1a05ed9e24f725f06b0a8e0ddaa3c",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
+    "manifest_sha256": "7c0d5dd54f0a34c86b3798c5e373d67bbbd5cc1f05a82e3f6c7dc3926832d19f",
+    "owner_approval_path": "tasks/approvals/TASK117-REMOVE-CRM-STAGE-BUTTONS.production.json",
+    "owner_approval_sha256": "33e1f4da72b411f3e0c3cb77f18c4dcf51c2b2fd4b6d6dfc1f611ed00d99ccba"
+  },
+  "description": "Owner-directed removal of exactly four obsolete operator CRM stage buttons: Выкуплено, на нашей парковке; Загружено в контейнер; В пути; Передано клиенту. Hide them in both active Telegram keyboard renderers and block callbacks from already-sent keyboards without any database write. Preserve historical status definitions, current vehicle status values, all other stage buttons and their order, cards, VIN, prices, media, the public website, and every file outside cars_ui.py and konteyner.py. Require exact live preimage hashes, byte-for-byte backups, atomic install, compilation, post-restart verification, and exact rollback on any mismatch.",
+  "execution": {
+    "backup_controller_path": "cloud/task117_remove_crm_stage_buttons/backup_controller.py",
+    "backup_controller_sha256": "a610c6ce49bb1e88a36e424c979e1a01cfa69bdb894dac4cde987251034b19e4",
+    "backup_receipt_path": "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS-BACKUP.json",
+    "controller_path": "cloud/task117_remove_crm_stage_buttons/controller.py",
+    "controller_sha256": "f7686f1934feb14fd0609cd6083ec2a9f92d28ce6879dd2f90b943dc66abf4bf",
+    "dependency_paths": [
+      "cloud/task117_remove_crm_stage_buttons/remote_installer.py"
+    ],
+    "evidence_paths": [
+      "cloud/task117_remove_crm_stage_buttons/evidence.json",
+      "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS-BACKUP.json",
+      "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS-ROLLBACK.json",
+      "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS.json"
+    ],
+    "file_sha256": {
+      "cloud/task117_remove_crm_stage_buttons/remote_installer.py": "815c522b72fda702424fa72b82964fe5ffbc451fddb0208acb4059b68094cc66",
+      "cloud/task117_remove_crm_stage_buttons/test_contract.py": "60e4a20ba0bf1ec34abb3240d74e59921e7016633671af1af43263cf3bd14f6d"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
+    "rollback_controller_path": "cloud/task117_remove_crm_stage_buttons/rollback_controller.py",
+    "rollback_controller_sha256": "03f0b11c2a6e4d39772b88ba9b64bb23cc096bc1707d6a104cdb83ac90ae6078",
+    "rollback_receipt_path": "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS-ROLLBACK.json",
+    "test_paths": [
+      "cloud/task117_remove_crm_stage_buttons/test_contract.py"
+    ],
+    "timeout_seconds": 1200
+  },
+  "health_checks": [
+    "https://www.uaart.com.ua/"
+  ],
+  "production_required": true,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
+    "evidence_sha256": "babd19f423f64c72b9b0d5118b2da67a9c58bda8315585734ca9c19ed3c65df7"
+  },
+  "storage_required_bytes": 67108864,
+  "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+  "title": "Remove four obsolete CRM stage buttons"
+}

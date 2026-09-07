@@ -1,0 +1,61 @@
+{
+  "backup_required": true,
+  "backup_scope": [
+    "production/operator-ui/cars_ui.py",
+    "production/operator-ui/konteyner.py"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "replace",
+      "expected_after_sha256": "2b1ef0bcfa700b7c87ccfb164b69b8ca173d460481936225e41344096c92062f",
+      "expected_before_sha256": "bb9b4d278df8ecffdc6a33160d1d32f6ef53bb03cb35c75cda255a3cbcaa8e0f",
+      "path": "production/operator-ui/cars_ui.py",
+      "postcondition": {
+        "hidden_stage_codes": [
+          "kr_bought",
+          "sea_loaded",
+          "sea_transit",
+          "ua_handed"
+        ],
+        "legacy_callbacks": "acknowledged_without_write",
+        "renderer": "stage_menu"
+      }
+    },
+    {
+      "action": "replace",
+      "expected_after_sha256": "72c03a1b8ab14279b2a2adbc681e112594d88c766d2aae7cc40e08b8aa004230",
+      "expected_before_sha256": "56b8595de37fb46a7aad7ad10c494630ac31a3a84e2920a4a1d4bc495e971afa",
+      "path": "production/operator-ui/konteyner.py",
+      "postcondition": {
+        "hidden_stage_codes": [
+          "kr_bought",
+          "sea_loaded",
+          "sea_transit",
+          "ua_handed"
+        ],
+        "renderer": "gde_mashina"
+      }
+    }
+  ],
+  "production_write": true,
+  "protected_paths": [
+    "crm.db",
+    "cars_schema.py",
+    "db.py",
+    "start_safe.py",
+    "site",
+    "video",
+    "media",
+    "prices",
+    "vehicle-data"
+  ],
+  "rollback_required": true,
+  "rollback_scope": [
+    "production/operator-ui/cars_ui.py",
+    "production/operator-ui/konteyner.py"
+  ],
+  "task_class": "CRITICAL",
+  "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS"
+}

@@ -1,0 +1,73 @@
+{
+  "backup_plan_ready": true,
+  "backup_scope_verified": [
+    "production/operator-ui/cars_ui.py",
+    "production/operator-ui/konteyner.py"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "evaluated_at": "2026-09-07T09:34:04Z",
+  "fresh_live_snapshot": {
+    "cars_schema_py_sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496",
+    "cars_ui_candidate_sha256": "2b1ef0bcfa700b7c87ccfb164b69b8ca173d460481936225e41344096c92062f",
+    "cars_ui_preimage_sha256": "bb9b4d278df8ecffdc6a33160d1d32f6ef53bb03cb35c75cda255a3cbcaa8e0f",
+    "konteyner_candidate_sha256": "72c03a1b8ab14279b2a2adbc681e112594d88c766d2aae7cc40e08b8aa004230",
+    "konteyner_preimage_sha256": "56b8595de37fb46a7aad7ad10c494630ac31a3a84e2920a4a1d4bc495e971afa",
+    "source": "authenticated production snapshot"
+  },
+  "manifest_sha256": "7c0d5dd54f0a34c86b3798c5e373d67bbbd5cc1f05a82e3f6c7dc3926832d19f",
+  "package_sha256": {
+    "cloud/task117_remove_crm_stage_buttons/backup_controller.py": "a610c6ce49bb1e88a36e424c979e1a01cfa69bdb894dac4cde987251034b19e4",
+    "cloud/task117_remove_crm_stage_buttons/controller.py": "f7686f1934feb14fd0609cd6083ec2a9f92d28ce6879dd2f90b943dc66abf4bf",
+    "cloud/task117_remove_crm_stage_buttons/remote_installer.py": "815c522b72fda702424fa72b82964fe5ffbc451fddb0208acb4059b68094cc66",
+    "cloud/task117_remove_crm_stage_buttons/rollback_controller.py": "03f0b11c2a6e4d39772b88ba9b64bb23cc096bc1707d6a104cdb83ac90ae6078",
+    "cloud/task117_remove_crm_stage_buttons/test_contract.py": "60e4a20ba0bf1ec34abb3240d74e59921e7016633671af1af43263cf3bd14f6d"
+  },
+  "production_write": false,
+  "protected_snapshot": {
+    "crm.db": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "historical_status_definitions": {
+      "access": "READ_ONLY_HASH_AND_SEMANTIC_VALIDATION",
+      "write_permitted": false
+    },
+    "media_and_public_site": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "prices_and_vehicle_data": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "start_safe.py": {
+      "access": "READ_ONLY_HASH",
+      "write_permitted": false
+    }
+  },
+  "rollback_plan_ready": true,
+  "rollback_scope_verified": [
+    "production/operator-ui/cars_ui.py",
+    "production/operator-ui/konteyner.py"
+  ],
+  "scope_contract": {
+    "hidden_stage_codes": [
+      "kr_bought",
+      "sea_loaded",
+      "sea_transit",
+      "ua_handed"
+    ],
+    "historical_status_values": "PRESERVED",
+    "legacy_callbacks": "BLOCKED_WITHOUT_DATABASE_WRITE",
+    "other_stage_buttons": "PRESERVED_IN_ORIGINAL_ORDER",
+    "target_functions": [
+      "cars_ui.stage_menu",
+      "cars_ui.stage_set",
+      "konteyner.gde_mashina"
+    ]
+  },
+  "status": "PASS",
+  "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
