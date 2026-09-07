@@ -17,10 +17,19 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "14ddddab6457d3ef"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-09-07T14:57:16Z",
+      "class": "CONTROL_PLANE_TRANSPORT_UNAVAILABLE",
+      "message": "Backup job 101783419001 stopped at MUTATING_ALWAYS_ON_UNAVAILABLE before remote probe or backup; controller_production and rollback_execute were skipped",
+      "retries_remaining": 0,
+      "retry_allowed": false,
+      "signature": "580b5aa49ac266b5"
     }
   ],
-  "heartbeat_at": "2026-09-07T14:47:35Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-07T14:57:16Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "34134692609",
     "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
@@ -62,7 +71,7 @@
   "production_required": true,
   "production_transaction_id": "tx-34134692609-a4662a876b037595",
   "production_transaction_path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "card-ua-0017-87a9953b1acf98ee",
   "receipt_path": "state/receipts/TASK120-PUBLISH-UA-0017-UA-0018.json",
   "receipt_validation_status": "PENDING",
@@ -89,7 +98,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "task_execution_status": "FAILED",
   "trusted_package": {
     "controller_sha256": "c3930fce134eca8567859fa357b806342771e60ab416476215fa4846db51992d",
     "file_sha256": {
@@ -97,5 +106,5 @@
       "cloud/task120_publish_ua0017_ua0018/test_contract.py": "c32711fa572436f728510f06cf270baaa03f6d7cedd074b6b1a0aba5fa622f45"
     }
   },
-  "updated_at": "2026-09-07T14:48:16Z"
+  "updated_at": "2026-09-07T14:57:16Z"
 }
