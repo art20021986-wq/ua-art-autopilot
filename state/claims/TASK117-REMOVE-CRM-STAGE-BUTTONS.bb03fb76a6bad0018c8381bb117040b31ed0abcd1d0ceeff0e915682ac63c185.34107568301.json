@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.json",
+  "autostart_ledger_sha256": "a637b20a2a208e08f141fca4fe6f1013a5b2352857f7bd444f8fc512fd7b56ad",
+  "autostart_source_commit": "a4c0e79112896f7c722a638acb8dba6f10beef22",
+  "created_at": "2026-09-07T09:44:17Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-07T09:44:17Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "34107568301",
+    "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+    "task_sha256": "bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-99102478c07aca7f-98bb614ff66d7955",
+  "receipt_path": "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
+  "request_sha256": "bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185",
+  "resource_locks": [
+    "PATH_SCOPE:99102478c07aca7f"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "e5ae9de1076cea3ee0318c2b94649f90e118f4d1",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-07T09:44:17Z"
+}
