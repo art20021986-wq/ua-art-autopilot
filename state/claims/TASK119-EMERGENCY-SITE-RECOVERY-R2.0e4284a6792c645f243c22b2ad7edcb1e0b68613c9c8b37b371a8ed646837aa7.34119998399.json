@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.json",
+  "autostart_ledger_sha256": "a5dd43c07317325a3c0cb7ed18ab7ecd7b0fe25dcb5649270b4c5ead4a2e7ba0",
+  "autostart_source_commit": "cf754de2ef06e7a105bb4c1fd837fa8819f139a3",
+  "created_at": "2026-09-07T12:06:37Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-07T12:06:37Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "34119998399",
+    "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
+    "task_sha256": "0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-242e7709889e82d8-55e67661b455a7cc",
+  "receipt_path": "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
+  "request_sha256": "0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7",
+  "resource_locks": [
+    "PATH_SCOPE:242e7709889e82d8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "bb83ec5047ebe1a6606187cee686a70d06b9fa51",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-07T12:06:37Z"
+}
