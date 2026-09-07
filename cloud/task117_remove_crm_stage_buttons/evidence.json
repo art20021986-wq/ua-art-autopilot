@@ -1,0 +1,145 @@
+{
+  "contract_id": "UA-ART-CRM-STAGE-BUTTONS-REMOVE-001-V1.0",
+  "errors": [],
+  "finished_at": "2026-09-07T09:52:45Z",
+  "install": {
+    "after": {
+      "/home/Carix/cars_schema.py": {
+        "bytes": 24486,
+        "mode": 436,
+        "sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496"
+      },
+      "/home/Carix/cars_ui.py": {
+        "bytes": 189354,
+        "mode": 384,
+        "sha256": "2b1ef0bcfa700b7c87ccfb164b69b8ca173d460481936225e41344096c92062f"
+      },
+      "/home/Carix/konteyner.py": {
+        "bytes": 25921,
+        "mode": 436,
+        "sha256": "72c03a1b8ab14279b2a2adbc681e112594d88c766d2aae7cc40e08b8aa004230"
+      },
+      "/home/Carix/start_safe.py": {
+        "bytes": 60667,
+        "mode": 436,
+        "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+      }
+    },
+    "backup": "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task117_backups/20260907T094709995886Z",
+    "backup_manifest_sha256": "a35c44e5ffb893f803578fb2959356a6784992c2df37c6094f5781fd726f1d31",
+    "before": {
+      "/home/Carix/cars_schema.py": {
+        "bytes": 24486,
+        "mode": 436,
+        "sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496"
+      },
+      "/home/Carix/cars_ui.py": {
+        "bytes": 187875,
+        "mode": 384,
+        "sha256": "bb9b4d278df8ecffdc6a33160d1d32f6ef53bb03cb35c75cda255a3cbcaa8e0f"
+      },
+      "/home/Carix/konteyner.py": {
+        "bytes": 25727,
+        "mode": 436,
+        "sha256": "56b8595de37fb46a7aad7ad10c494630ac31a3a84e2920a4a1d4bc495e971afa"
+      },
+      "/home/Carix/start_safe.py": {
+        "bytes": 60667,
+        "mode": 436,
+        "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+      }
+    },
+    "contract_id": "UA-ART-CRM-STAGE-BUTTONS-REMOVE-001-V1.0",
+    "crm_write": false,
+    "media_write": false,
+    "mode": "INSTALL",
+    "site_write": false,
+    "status": "PASS",
+    "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+    "unexpected_changes": 0,
+    "verify": {
+      "fallback_menu": "PASS",
+      "hidden_codes": [
+        "kr_bought",
+        "sea_loaded",
+        "sea_transit",
+        "ua_handed"
+      ],
+      "old_callbacks": "BLOCKED_NO_WRITE",
+      "primary_menu": "PASS",
+      "schema_status_count": 10,
+      "visible_codes": [
+        "sold_transit",
+        "ge_waiting",
+        "ge_to_kyiv",
+        "ua_arrived",
+        "sold",
+        "archive"
+      ]
+    }
+  },
+  "production_required": true,
+  "restart": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "enabled": true,
+    "instances": 1,
+    "status": "PASS",
+    "task_id": 266084
+  },
+  "started_at": "2026-09-07T09:47:43Z",
+  "status": "PASS",
+  "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+  "verify": {
+    "backup_manifest_sha256": "a35c44e5ffb893f803578fb2959356a6784992c2df37c6094f5781fd726f1d31",
+    "contract_id": "UA-ART-CRM-STAGE-BUTTONS-REMOVE-001-V1.0",
+    "crm_write": false,
+    "files": {
+      "/home/Carix/cars_schema.py": {
+        "bytes": 24486,
+        "mode": 436,
+        "sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496"
+      },
+      "/home/Carix/cars_ui.py": {
+        "bytes": 189354,
+        "mode": 384,
+        "sha256": "2b1ef0bcfa700b7c87ccfb164b69b8ca173d460481936225e41344096c92062f"
+      },
+      "/home/Carix/konteyner.py": {
+        "bytes": 25921,
+        "mode": 436,
+        "sha256": "72c03a1b8ab14279b2a2adbc681e112594d88c766d2aae7cc40e08b8aa004230"
+      },
+      "/home/Carix/start_safe.py": {
+        "bytes": 60667,
+        "mode": 436,
+        "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+      }
+    },
+    "media_write": false,
+    "mode": "VERIFY",
+    "site_write": false,
+    "status": "PASS",
+    "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+    "unexpected_changes": 0,
+    "verify": {
+      "fallback_menu": "PASS",
+      "hidden_codes": [
+        "kr_bought",
+        "sea_loaded",
+        "sea_transit",
+        "ua_handed"
+      ],
+      "old_callbacks": "BLOCKED_NO_WRITE",
+      "primary_menu": "PASS",
+      "schema_status_count": 10,
+      "visible_codes": [
+        "sold_transit",
+        "ge_waiting",
+        "ge_to_kyiv",
+        "ua_arrived",
+        "sold",
+        "archive"
+      ]
+    }
+  }
+}

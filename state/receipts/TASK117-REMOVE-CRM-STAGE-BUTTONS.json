@@ -1,0 +1,48 @@
+{
+  "backup": "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task117_backups/20260907T094709995886Z",
+  "backup_manifest_sha256": "a35c44e5ffb893f803578fb2959356a6784992c2df37c6094f5781fd726f1d31",
+  "cards_unchanged": true,
+  "changed_files": [
+    "/home/Carix/cars_ui.py",
+    "/home/Carix/konteyner.py"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "crm_unchanged": true,
+  "fallback_menu": "PASS",
+  "finished_at": "2026-09-07T09:52:45Z",
+  "hidden_button_count": 4,
+  "hidden_codes": [
+    "kr_bought",
+    "sea_loaded",
+    "sea_transit",
+    "ua_handed"
+  ],
+  "live_verify": "PASS",
+  "manifest_sha256": "7c0d5dd54f0a34c86b3798c5e373d67bbbd5cc1f05a82e3f6c7dc3926832d19f",
+  "media_unchanged": true,
+  "prices_unchanged": true,
+  "primary_menu": "PASS",
+  "production": "PASS",
+  "production_required": true,
+  "production_write": "TASK117_TWO_RUNTIME_FILES_ONLY",
+  "protected_files_unchanged": true,
+  "request_sha256": "bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185",
+  "restart": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "enabled": true,
+    "instances": 1,
+    "status": "PASS",
+    "task_id": 266084
+  },
+  "rollback": "PASS",
+  "rollback_ready": true,
+  "run_id": "34107568301",
+  "stale_callbacks": "BLOCKED_NO_WRITE",
+  "status": "FINISHED",
+  "target_environment": "production",
+  "task_class": "CRITICAL",
+  "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+  "tests": "PASS",
+  "unexpected_changes": 0,
+  "website_unchanged": true
+}

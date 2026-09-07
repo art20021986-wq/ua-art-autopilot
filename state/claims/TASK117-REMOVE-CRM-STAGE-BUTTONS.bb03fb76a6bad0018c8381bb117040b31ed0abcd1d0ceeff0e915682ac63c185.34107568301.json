@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "20182837a36f1b023fd16d0d3a4a06b962716b6a243ee40361b63532cb3e8d0d",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-07T09:47:27Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-07T09:53:03Z",
+  "heartbeat_at": "2026-09-07T09:53:03Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "34107568301",
     "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
@@ -17,7 +18,20 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 759.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -35,10 +49,11 @@
   "production_required": true,
   "production_transaction_id": "tx-34107568301-bb03fb76a6bad001",
   "production_transaction_path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-99102478c07aca7f-98bb614ff66d7955",
   "receipt_path": "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "d96a25e5020af83e8a4d57de240ac7e6957e68c4f1d888955f93fb25d51c4f57",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
   "request_sha256": "bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185",
   "resource_locks": [
@@ -61,7 +76,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "f7686f1934feb14fd0609cd6083ec2a9f92d28ce6879dd2f90b943dc66abf4bf",
     "file_sha256": {
@@ -69,5 +84,5 @@
       "cloud/task117_remove_crm_stage_buttons/test_contract.py": "60e4a20ba0bf1ec34abb3240d74e59921e7016633671af1af43263cf3bd14f6d"
     }
   },
-  "updated_at": "2026-09-07T09:47:27Z"
+  "updated_at": "2026-09-07T09:53:03Z"
 }
