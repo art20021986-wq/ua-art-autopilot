@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "ff12814ee749faa09eb915a059542648a5331b2d61db694104dfcda4510c6e1d",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-07T12:08:12Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-07T12:09:25Z",
+  "heartbeat_at": "2026-09-07T12:09:25Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "34119998399",
     "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
@@ -17,7 +18,20 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.pythonanywhere.com/",
+        "http_status": 200,
+        "latency_ms": 113.3,
+        "status": "PASS",
+        "url": "https://www.pythonanywhere.com/"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -35,10 +49,11 @@
   "production_required": true,
   "production_transaction_id": "tx-34119998399-0e4284a6792c645f",
   "production_transaction_path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-242e7709889e82d8-55e67661b455a7cc",
   "receipt_path": "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "cc8a9f7e283cbd0aef55d8ad2c2be56850fd32d073ee80d68db25a372c5afb54",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
   "request_sha256": "0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7",
   "resource_locks": [
@@ -61,12 +76,12 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "61458d865f288dfca8202dc11c513893de4c03d35ca8b9c816ac7f9e9a12470c",
     "file_sha256": {
       "cloud/task119_emergency_site_recovery_r2/test_contract.py": "13f7228a66086984314d1d7a5db42deff0d9c42de3b9d1a89c1e420efddd8c01"
     }
   },
-  "updated_at": "2026-09-07T12:08:12Z"
+  "updated_at": "2026-09-07T12:09:25Z"
 }
