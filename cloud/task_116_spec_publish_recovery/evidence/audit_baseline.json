@@ -1,0 +1,59 @@
+{
+  "contract_id": "UA-ART-CRM-SPEC-PUBLISH-RECOVERY-001",
+  "contract_version": "1.0",
+  "evidence_class": "READ_ONLY_PUBLIC_SNAPSHOT_BASELINE",
+  "observed_at_utc": "2026-09-07T03:45:14Z",
+  "production_touched": false,
+  "production_write_attempts": 0,
+  "http_status_recorded": false,
+  "limitations": [
+    "HTTP response headers and status were not retained with these snapshots.",
+    "No CRM database or PythonAnywhere source file was read in this environment.",
+    "A generic fallback document cannot prove that a card was published, even if a server returned HTTP 200."
+  ],
+  "public_html_snapshots": [
+    {
+      "artifact": "UA-0002.html",
+      "bytes": 42725,
+      "sha256": "2b3ed1a1107e69172545e4a7430bc1ebf8ed8d5615a9534d6e4953a5a8f9aa52",
+      "identity_marker": "UA-0002",
+      "vin_last4": "1014",
+      "basic_spec_visible": true,
+      "additional_spec_row_count": 0,
+      "additional_spec_digest_marker": false,
+      "finding": "Existing public card is identifiable and shows the basic specification, but the immutable additional-spec block is absent."
+    },
+    {
+      "artifact": "UA-0017.html",
+      "bytes": 34488,
+      "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
+      "identity_marker": null,
+      "target_vin_present": false,
+      "additional_spec_row_count": 0,
+      "generic_catalog_copy_present": true,
+      "finding": "Snapshot is a generic catalog/landing document and does not prove publication of UA-0017."
+    }
+  ],
+  "owner_supplied_screenshots": [
+    {
+      "artifact": "IMG_8681.png",
+      "bytes": 999053,
+      "sha256": "b462f9263e066a9ad59ab0942367f6ced969700f4b5fc2cd27b7f754ecd16163",
+      "finding": "Public-card example showing basic specification and route block."
+    },
+    {
+      "artifact": "IMG_8680.jpeg",
+      "bytes": 559144,
+      "sha256": "4cb6ff4486a19907837bdeac4d1501756a1e33e6a59d12fc62115e9a52fa7865",
+      "finding": "CRM status menu contains the four duplicate/legacy choices named in the request."
+    },
+    {
+      "artifact": "IMG_8683.jpeg",
+      "bytes": 292790,
+      "sha256": "6a3c6ac2c844762bd53c04a61cf059be19c06cdcd94e8fc77d521f863d3538ba",
+      "finding": "Owner-visible publication failure contains UA115_ADDITIONAL_SPEC_INCOMPLETE for UA-0017 with 0 visible rows."
+    }
+  ],
+  "gate_a_status": "PARTIAL_PUBLIC_BASELINE_ONLY",
+  "remote_source_and_database_gate_a_required": true
+}

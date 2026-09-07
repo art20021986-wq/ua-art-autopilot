@@ -1,0 +1,118 @@
+{
+  "base_sha": "c0244c51c846a6370de943eb247496935125e677",
+  "candidate_file_sha256": {
+    "atomic_publish.py": "e57ac519e683f8da7418a179b6d3e5c3a52dab8b08380aa258b10a0e8b695fac",
+    "integration_patcher.py": "a59acdc3eb0dc2e81bf6b2bf0a44617429884ab0400274fcbc8bc18a88de1a74",
+    "preview_release.py": "9f7b4e3ac03f1badf088902ae5215ca03e47e8dee75a9327aafc0682edef6e2d",
+    "recovery_core.py": "22cdd097d4ee610aa904ee3ec9668b8e0dad25e79235c8d5059ed414909a9559",
+    "remote_gate_a.py": "3f4a2efc55c9e5798c566221f958e1391d7a5f571cbb48dc068feb168e90b6cd",
+    "sandbox_gate_b.py": "fcc93c5201d7ed99c23e51c0643c798e5559eaf929df386ca30bd5099ccfa94a",
+    "spec_revision_store.py": "ce437413eba3291cccedf48d4a46a9746b59b4d024b42420cfd28edca154790b",
+    "tests/atomic_publish_stdlib.py": "102380bc7e2a58844aca935e72b9839d94500cff92d76792084547dc204e3e3d",
+    "tests/conftest.py": "85b33ac9b5d5f6c746ac5bdaba43c1baf8ad27320a27dff52687a470040c68c1",
+    "tests/runtime_bridge_stdlib.py": "c86ee50c05fd65140029a84ce401b19f9c45f751d8821e0c0fb9250b26568e63",
+    "tests/test_atomic_publish.py": "b556cd1e88eb76882ba94001a1cbe7f7b01c095ac4cc83f580d016b4dc9bdddd",
+    "tests/test_integration_patcher.py": "a189c6df857dc60aee7e0efcc48bdb22f11552a32298c789635bc72643804520",
+    "tests/test_preview_release.py": "906a178a2975e3b6442169c46fb1319ad81fb39b9022be32c3a1de08c8007122",
+    "tests/test_recovery_core.py": "0f9c402454084c00f7b3e86b02fedf105f24af71621b60601c3bee344338618b",
+    "tests/test_runtime_bridge.py": "bc1bab67776010f206c9f0ed4bc923e500ddee5e0dbe6fd7fd2b7639456385d7",
+    "tests/test_stores.py": "85b2beb2f0d6e75ac64609377b7323a91601cf8a67d5392333b9dcba10eec074",
+    "tests/test_vin_ingestion.py": "fd659661dded8243b5a5df5488f20a8da9722019ee51c1594d54765b3aa4eb7f",
+    "tests/test_vin_primary_decoder.py": "60a14c5c5c5ccd5df45670f6a42222e2e47aed6d3741ffab4f7d756754cb515d",
+    "ua116_runtime_bridge.py": "a22aa63da17ea4e98287295ed2e0d4b017191905dd994f03bf67b312b53166a1",
+    "vin_base_spec_service.py": "c6c082aa3d40e11a98f4b621177f2561802cf9d54e9b2e3c65da13c3b755094f",
+    "vin_ingestion.py": "54913b902cf514979d6c2321fc4d3745ec08f509794e41f1d0e1504fbd2e8635",
+    "vin_primary_decoder.py": "8f9c049cf0d01dec0c725441ca7de3b151662667bfd822e54d35de92e0316d80"
+  },
+  "candidate_manifest_digest": "56a5f193be3113481576fb0e4a1b174279d61f796cfdee6d7c600f80bf26ce34",
+  "checks": [
+    {
+      "name": "shared_minimum_threshold",
+      "status": "PASS"
+    },
+    {
+      "name": "revision_immutability",
+      "status": "PASS"
+    },
+    {
+      "name": "store_tamper_and_backup_quick_check",
+      "status": "PASS"
+    },
+    {
+      "name": "old_and_new_specs_survive_unrelated_changes",
+      "status": "PASS"
+    },
+    {
+      "name": "primary_empty_only_cas",
+      "status": "PASS"
+    },
+    {
+      "name": "preflight_identity_duplicate_and_content",
+      "status": "PASS"
+    },
+    {
+      "name": "vpic_exact_identity_mismatch_and_outage",
+      "status": "PASS"
+    },
+    {
+      "name": "status_buttons_and_stale_callbacks",
+      "status": "PASS"
+    },
+    {
+      "name": "versioned_preview_atomicity_and_content",
+      "status": "PASS"
+    },
+    {
+      "name": "fresh_source_patcher",
+      "status": "PASS"
+    },
+    {
+      "name": "saved_task111_task115_source_candidate_compatibility",
+      "status": "PASS"
+    },
+    {
+      "name": "vin_immediate_publish_bridge",
+      "status": "PASS"
+    },
+    {
+      "name": "runtime_bridge_temp_sqlite_stdlib",
+      "status": "PASS"
+    },
+    {
+      "name": "atomic_publish_temp_roots_stdlib",
+      "status": "PASS"
+    }
+  ],
+  "contract_id": "UA-ART-CRM-SPEC-PUBLISH-RECOVERY-001",
+  "contract_version": "1.0",
+  "evidence_digest": "40acf6e94597fd90b6c627aecb220b82d478d126325324993a9fc1ca4145440d",
+  "expected_base_sha": "c0244c51c846a6370de943eb247496935125e677",
+  "expected_branch": "codex/ua-art-crm-spec-publish-recovery-001",
+  "gate": "B_LOCAL_CANDIDATE",
+  "gate_b_eligible": false,
+  "known_blockers": [
+    "AUTHORITATIVE_REMOTE_GATE_A_NOT_RUN",
+    "REMOTE_DERIVED_GATE_B_COPIES_NOT_AVAILABLE",
+    "EXTERNAL_TRUSTED_RELEASE_CONTROLLER_NOT_INSTALLED",
+    "DURABLE_ONE_TIME_OWNER_NONCE_NOT_INSTALLED",
+    "OS_PROCESS_WRITE_ALLOWLIST_NOT_ENFORCED",
+    "CRASH_DURABLE_SNAPSHOT_AND_RECOVERY_NOT_PROVEN",
+    "BROWSER_COMPUTED_CSS_VISIBILITY_NOT_PROVEN"
+  ],
+  "mode": "PREVIEW_ONLY",
+  "note": "Local candidate checks only. No Production URL, path, database, service or publisher was called. Remote Gate B was not executed.",
+  "observed_at_utc": "2026-09-07T04:46:03.929723Z",
+  "passed": 14,
+  "platform": "Linux-6.18.35-x86_64-with-glibc2.39",
+  "production_eligible": false,
+  "production_touched": false,
+  "production_write_attempts": 0,
+  "publication_state": "UNKNOWN_REMOTE_NOT_OBSERVED",
+  "python_version": "3.12.13",
+  "release_authorization": "BLOCKED",
+  "service_reloaded": false,
+  "status": "PASS",
+  "test_matrix_digest": "3efaef70c0065f49ca87e22b9744e47325f888d32a6ad006b3f2e257ee40a6e7",
+  "total": 14,
+  "ua0017_published_production": false
+}

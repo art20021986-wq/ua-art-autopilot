@@ -1,12 +1,29 @@
-TASK_ID: task_107
-ROUND: 1
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Defined and documented FAST/STANDARD/CRITICAL routing classifier, stall detector, storage preflight thresholds, and produced timing/benchmark report using this task as the safe FAST benchmark. No production or CRM contact made.
-FILES_CREATED: cloud/task107_speed_report.md, cloud/latest_status.md, cloud/owner_reply.md
-PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: NO
-OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Review cloud/task107_speed_report.md for the routing classifier and benchmark evidence; confirm FAST/STANDARD/CRITICAL policy is acceptable before wiring it into the actual workflow config in a follow-up task.
-UPDATED_AT_UTC: 2026-09-02T17:21:43Z
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
-MEMORY_VERSION_READ: 4
+# Latest status — TASK116
+
+**Updated:** 2026-09-07  
+**Contract:** `UA-ART-CRM-SPEC-PUBLISH-RECOVERY-001` v1.0
+
+- Документационный execution package A–F подготовлен.
+- Изменения runtime Python/Production: `0`.
+- Production не вызывался и не изменялся этим шагом.
+- Локальная candidate-матрица: 14/14 PASS, `PREVIEW_ONLY`; это **не Gate B**.
+- `evidence/gate_b_local.json` обновлён свежим manifest-bound результатом;
+  `gate_b_eligible=false`, `production_eligible=false`.
+- Remote Gate A: `NOT_RUN`.
+- Gate B: `NOT_RUN / NOT_ELIGIBLE`.
+- Candidate подготовлен в отдельной ветке
+  `codex/ua-art-crm-spec-publish-recovery-001`; точный head подтверждается
+  GitHub evidence, а не Production-root.
+- Exact VIN `UA-0017` пока `UNKNOWN`; использовать VIN `UA-0002` запрещено.
+- Выпуск `UA-0017`: `BLOCKED`; текущее Production-состояние:
+  `UNKNOWN_REMOTE_NOT_OBSERVED`.
+- Production gate: `CLOSED`.
+
+Следующий безопасный шаг: получить exact VIN из CRM read-only, выполнить
+`remote_gate_a.py`, получить
+фактический remote baseline, затем прогнать Gate B на свежих изолированных
+копиях и передать владельцу отдельный отчёт.
+
+Только после verified Gate B допустима отдельная точная команда владельца:
+
+`ПУБЛИКОВАТЬ UA-0017`
