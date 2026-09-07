@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "20182837a36f1b023fd16d0d3a4a06b962716b6a243ee40361b63532cb3e8d0d",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-07T09:45:22Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-07T09:47:27Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "34107568301",
     "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
@@ -35,7 +35,7 @@
   "production_required": true,
   "production_transaction_id": "tx-34107568301-bb03fb76a6bad001",
   "production_transaction_path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-99102478c07aca7f-98bb614ff66d7955",
   "receipt_path": "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
   "receipt_validation_status": "PENDING",
@@ -69,5 +69,5 @@
       "cloud/task117_remove_crm_stage_buttons/test_contract.py": "60e4a20ba0bf1ec34abb3240d74e59921e7016633671af1af43263cf3bd14f6d"
     }
   },
-  "updated_at": "2026-09-07T09:45:22Z"
+  "updated_at": "2026-09-07T09:47:27Z"
 }
