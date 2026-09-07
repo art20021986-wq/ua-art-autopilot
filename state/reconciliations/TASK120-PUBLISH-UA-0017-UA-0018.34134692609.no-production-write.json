@@ -1,0 +1,29 @@
+{
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+  "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+  "original_run_id": "34134692609",
+  "recovery_run_id": null,
+  "transaction_id": "tx-34134692609-a4662a876b037595",
+  "request_sha256": "a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442",
+  "reconciled_at": "2026-09-07T14:57:16Z",
+  "outcome": "ABORTED_NO_PRODUCTION_WRITE",
+  "backup_receipt_sha256": null,
+  "backup_manifest_sha256": null,
+  "evidence": {
+    "backup_job_id": "101783419001",
+    "backup_failure": "MUTATING_ALWAYS_ON_UNAVAILABLE before remote probe or backup payload",
+    "open_job_id": "101783481328 skipped",
+    "controller_production_job_id": "101783481085 skipped",
+    "rollback_mark_job_id": "101783480840 marked=false",
+    "rollback_execute_job_id": "101783543707 skipped",
+    "finalize_job_id": "101783482054 skipped",
+    "recover_job_id": "101783542736 completed and retained HALT"
+  },
+  "production_backup_executed": false,
+  "production_controller_executed": false,
+  "production_rollback_executed": false,
+  "production_card_or_crm_write_performed": false,
+  "metadata_terminal_status": "ROLLED_BACK",
+  "halt_retained": true,
+  "owner_instruction_basis": "Current owner instruction requires publishing UA-0017 and UA-0018; reconciliation only closes the stale non-writing transaction"
+}
