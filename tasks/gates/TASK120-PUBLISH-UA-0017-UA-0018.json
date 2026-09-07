@@ -1,0 +1,132 @@
+{
+  "backup_plan_ready": true,
+  "backup_scope_verified": [
+    "production/card-publication/UA-0017",
+    "production/card-publication/UA-0018",
+    "production/card-media/UA-0017",
+    "production/card-media/UA-0018"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "evaluated_at": "2026-09-07T14:40:43Z",
+  "fresh_live_snapshot": {
+    "source": "Authenticated TASK120 production snapshot retained from 2026-09-07T05:11:23Z plus current public 16-card observation; backup_controller repeats the exact authenticated CRM, runtime, database-mode, media, catalog and storage probe before backup or write.",
+    "specification_scope": {
+      "UA-0017": {
+        "crm_vehicle_year": "2015",
+        "prior_active_preview_exact": true,
+        "semantic_sha256": "7827f4cae692b7fed0329ded2da2f5f1f5abb63449eef8f7f9a7ca64002277cd",
+        "source_document_model_year_scope": "2016",
+        "scope": "LEGACY_MODEL_LEVEL_NOT_VIN_SPECIFIC_BOUND_BY_OWNER_PRODUCTION_AUTHORIZATION"
+      },
+      "UA-0018": {
+        "semantic_sha256": "51c0b8eedd263a6eae9b01d22f175d0019b2c914d23e7bbd272638c16e96e9a6",
+        "scope": "OFFICIAL_MODEL_LEVEL"
+      }
+    },
+    "target_environment": "production",
+    "targets": {
+      "UA-0017": {
+        "additional_specification_rows": 0,
+        "expected_additional_specification_rows_after": 18,
+        "exact_row_count": 1,
+        "media_rows": {
+          "foto": 39,
+          "video": 0
+        },
+        "published_before": false,
+        "publish_pending_before": false,
+        "vin_sha256": "bdc6d48c3d19b41916729cb3c207518bb1db0f06a1fe95b23fa461f6f557709b"
+      },
+      "UA-0018": {
+        "additional_specification_rows": 0,
+        "expected_additional_specification_rows_after": 12,
+        "exact_row_count": 1,
+        "media_rows": {
+          "foto": 36,
+          "video": 1
+        },
+        "published_before": false,
+        "publish_pending_before": false,
+        "vin_sha256": "9e254bb640fc6adbbc8434001726aaba3774ed3dd64378d5919ae1eade878f99"
+      }
+    },
+    "runtime_sha256": {
+      "catalog_design_golden.html": "34fb82b9ec1bc66b76fccbbaad9b440d01ea4d60fe5c195954e88251442ecdd0",
+      "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+      "master_card.py": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+      "publish_transaction_guard.py": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+      "publikaciya.py": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
+      "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc",
+      "ua_additional_spec.py": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
+      "vin_spec_service.py": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae",
+      "yadro.py": "1e92a22a3fc485ea2cfe3d00a50586e872b3f6e4f628923b2ab9744534406992"
+    },
+    "source_manifest": {
+      "authenticated": true,
+      "sha256": "25013bbc09b0f16bfadfd53001dd99bcbe06dce258d2b4485d68f641a04c99e8"
+    }
+  },
+  "manifest_sha256": "f142fce2fe6766df92094345f77ad687e33b8bf0dff0094b0dfcf24edeec5840",
+  "package_sha256": {
+    "cloud/task120_publish_ua0017_ua0018/backup_controller.py": "d68b69fa190cf5b005846707d799555d39a46807559f77ba026dbab471d30d74",
+    "cloud/task120_publish_ua0017_ua0018/controller.py": "c3930fce134eca8567859fa357b806342771e60ab416476215fa4846db51992d",
+    "cloud/task120_publish_ua0017_ua0018/remote_installer.py": "27a27bbbe436f9ab40003086c540276fc12ccf87afd939c312e662d74b139dc7",
+    "cloud/task120_publish_ua0017_ua0018/rollback_controller.py": "60014470b66c41b05937a56b215d17e5fe86fa9487d6e9d06a1439d990600c5f",
+    "cloud/task120_publish_ua0017_ua0018/test_contract.py": "c32711fa572436f728510f06cf270baaa03f6d7cedd074b6b1a0aba5fa622f45"
+  },
+  "production_write": false,
+  "protected_snapshot": {
+    "credential_team_token": {
+      "access": "READ_ONLY_FOR_EXACT_CRM_BOUND_TELEGRAM_MEDIA_FETCH",
+      "content_or_hash_disclosure_permitted": false,
+      "path": "/home/Carix/team_token.txt",
+      "write_permitted": false
+    },
+    "crm_primary_fields": {
+      "access": "READ_ONLY_HASH_AND_SEMANTIC_VALIDATION",
+      "write_permitted": false
+    },
+    "dns_and_tls": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "existing_cards_and_prices": {
+      "access": "READ_ONLY_HASH_INVENTORY",
+      "write_permitted": false
+    },
+    "media_outside_targets": {
+      "access": "READ_ONLY_HASH_INVENTORY",
+      "write_permitted": false
+    },
+    "publication_audit_log": {
+      "access": "PREIMAGE_PREFIX_CAPTURE_AND_BOUNDED_EXPECTED_APPEND_VERIFY",
+      "path": "/home/Carix/publish_log.txt",
+      "rollback_policy": "NEVER_TRUNCATE_SHARED_LOG",
+      "write_permitted": "EXPECTED_UA0017_UA0018_TASK083_APPEND_ONLY"
+    },
+    "runtime_control_plane": {
+      "access": "READ_ONLY_HASH_AND_SEMANTIC_VALIDATION_WITH_APPROVED_EPHEMERAL_TASK_TRANSPORT",
+      "approved_ephemeral_transport": {
+        "always_on_trigger": "SEQUENTIAL_CREATE_EXECUTE_STOP_DELETE_MAX_ONE_ACTIVE",
+        "completed_ledger": "DURABLE_STABLE_WORKFLOW_BOUND_NONSECRET_IDEMPOTENCY_EVIDENCE",
+        "on_stop_unconfirmed": "PRESERVE_AND_BLOCK_WITHOUT_FURTHER_REMOTE_MUTATION",
+        "path": "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task120_publish_17_18.py",
+        "persistent": false,
+        "remote_receipts": "IDENTITY_VERIFY_DELETE",
+        "scheduled_fallback": "FORBIDDEN"
+      },
+      "write_permitted": false
+    }
+  },
+  "rollback_plan_ready": true,
+  "rollback_scope_verified": [
+    "production/card-publication/UA-0017",
+    "production/card-publication/UA-0018",
+    "production/card-media/UA-0017",
+    "production/card-media/UA-0018"
+  ],
+  "status": "PASS",
+  "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}

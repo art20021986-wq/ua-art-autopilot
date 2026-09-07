@@ -1,0 +1,66 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/card-publication/UA-0017",
+    "production/card-publication/UA-0018",
+    "production/card-media/UA-0017",
+    "production/card-media/UA-0018"
+  ],
+  "complexity": 5,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": true,
+    "gate_a_path": "tasks/gates/TASK120-PUBLISH-UA-0017-UA-0018.json",
+    "gate_a_sha256": "6d8cc59b75379eaf1de521532a89060b3aadbbb07610ed582eb07ce2b6c1673b",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/TASK120-PUBLISH-UA-0017-UA-0018.json",
+    "manifest_sha256": "f142fce2fe6766df92094345f77ad687e33b8bf0dff0094b0dfcf24edeec5840",
+    "owner_approval_path": "tasks/approvals/TASK120-PUBLISH-UA-0017-UA-0018.production.json",
+    "owner_approval_sha256": "954407de004096b3d6cac61611133cbfd7077370e51d43572c5b20414bed5745"
+  },
+  "description": "Owner-directed immediate publication of exactly UA-0017 and UA-0018. Bind each target to one exact authenticated CRM row and its existing VIN; require exactly the prior 18-row UA-0017 legacy model-level specification (semantic SHA-256 7827f4cae692b7fed0329ded2da2f5f1f5abb63449eef8f7f9a7ca64002277cd), explicitly scoped to the 2016 Audi source document and not asserted as VIN-specific for the CRM year 2015 vehicle, and exactly 12 model-level rows for UA-0018; materialize exactly 39 UA-0017 JPEG photos, exactly 36 UA-0018 JPEG photos and exactly one UA-0018 MP4 video from the authenticated CRM media rows; publish matching card and diagnostic pages to both local render roots (/home/Carix/site and /home/Carix/video); add exactly one catalog card per render root; and verify the exact /home/Carix/video bytes through the sole public URL mapping https://www.uaart.com.ua/video/. After every privately verifiable prerequisite passes and while the global publication lock is held, atomically CAS each exact publication-flag preimage directly to published=1,publish_pending=0 for TASK083 renderer eligibility; retain those values only after guarded rendering and all database, specification, media, catalog, local-page and public verification pass. Preserve every non-target card, VIN, price, media asset, stage, container datum, design region, DNS/TLS setting and installed production runtime source. The pinned production renderer may append only its bounded UA-0017, UA-0018 and TASK083 transaction audit lines to /home/Carix/publish_log.txt; preserve the exact old byte prefix and never truncate or rollback this shared audit log. Read /home/Carix/team_token.txt only to fetch the exact CRM-bound Telegram media and never disclose or persist its content or hash. The exact task-owned transport script /home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task120_publish_17_18.py, ephemeral task120 receipt files and temporary always-on execution triggers, with at most one trigger active at a time, may be created, exact-hash or identity verified, executed, stopped and removed solely to invoke approved entrypoints; none may persist after a successful operation. Stable non-secret task120-completed ledgers derived from the workflow identity may persist solely as replay-safe idempotency evidence. Scheduled-task fallback is forbidden. If trigger stop cannot be confirmed, preserve the task-owned transport and ledger without further remote mutation and return a blocked result for manual recovery. Do not deploy or require the non-production UA116 revision-store candidate, inject VIN advertising, add external widgets or use generic fallback content. Require byte-exact backup, atomic two-card transaction, fail-closed verification, exact rollback and public post-verification.",
+  "execution": {
+    "backup_controller_path": "cloud/task120_publish_ua0017_ua0018/backup_controller.py",
+    "backup_controller_sha256": "d68b69fa190cf5b005846707d799555d39a46807559f77ba026dbab471d30d74",
+    "backup_receipt_path": "state/receipts/TASK120-PUBLISH-UA-0017-UA-0018-BACKUP.json",
+    "controller_path": "cloud/task120_publish_ua0017_ua0018/controller.py",
+    "controller_sha256": "c3930fce134eca8567859fa357b806342771e60ab416476215fa4846db51992d",
+    "dependency_paths": [
+      "cloud/task120_publish_ua0017_ua0018/remote_installer.py"
+    ],
+    "evidence_paths": [
+      "cloud/task120_publish_ua0017_ua0018/evidence.json",
+      "state/receipts/TASK120-PUBLISH-UA-0017-UA-0018-BACKUP.json",
+      "state/receipts/TASK120-PUBLISH-UA-0017-UA-0018-ROLLBACK.json",
+      "state/receipts/TASK120-PUBLISH-UA-0017-UA-0018.json"
+    ],
+    "file_sha256": {
+      "cloud/task120_publish_ua0017_ua0018/remote_installer.py": "27a27bbbe436f9ab40003086c540276fc12ccf87afd939c312e662d74b139dc7",
+      "cloud/task120_publish_ua0017_ua0018/test_contract.py": "c32711fa572436f728510f06cf270baaa03f6d7cedd074b6b1a0aba5fa622f45"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/TASK120-PUBLISH-UA-0017-UA-0018.json",
+    "rollback_controller_path": "cloud/task120_publish_ua0017_ua0018/rollback_controller.py",
+    "rollback_controller_sha256": "60014470b66c41b05937a56b215d17e5fe86fa9487d6e9d06a1439d990600c5f",
+    "rollback_receipt_path": "state/receipts/TASK120-PUBLISH-UA-0017-UA-0018-ROLLBACK.json",
+    "test_paths": [
+      "cloud/task120_publish_ua0017_ua0018/test_contract.py"
+    ],
+    "timeout_seconds": 3600
+  },
+  "health_checks": [
+    "https://www.uaart.com.ua/video/index.html",
+    "https://www.uaart.com.ua/video/katalog.html",
+    "https://www.uaart.com.ua/video/UA-0016.html"
+  ],
+  "production_required": true,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK120-PUBLISH-UA-0017-UA-0018.json",
+    "evidence_sha256": "08263f5546292eca01ddf8782004210b333a5cabb7a2dc080bb9a3b05c94a235"
+  },
+  "storage_required_bytes": 4294967296,
+  "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+  "title": "Publish UA-0017 and UA-0018"
+}
