@@ -9,11 +9,16 @@
 - Локальная candidate-матрица: 14/14 PASS, `PREVIEW_ONLY`; это **не Gate B**.
 - `evidence/gate_b_local.json` обновлён свежим manifest-bound результатом;
   `gate_b_eligible=false`, `production_eligible=false`.
-- Remote Gate A: `NOT_RUN`.
+- Remote Gate A: `PARTIAL`. Получена read-only копия фактической CRM с
+  `quick_check=ok`; точная строка `UA-0017` существует, `published=0`,
+  `publish_pending=0`, дополнительная спецификация `0/10`.
 - Gate B: `NOT_RUN / NOT_ELIGIBLE`.
 - Public read-only observation: каталог показывает 16 карточек
   `UA-0001..UA-0016`; ссылки `UA-0017` нет, прямой адрес `UA-0017.html`
   перенаправляет на главную. Это не заменяет CRM/server Gate A.
+- Аудит CRM подтверждает две неудачные попытки: в каждой `published` сначала
+  переключался `0->1`, затем через 1–2 секунды откатывался `1->0`. Candidate
+  блокирует этот временный publish-before-validation путь.
 - Candidate подготовлен в отдельной ветке
   `codex/ua-art-crm-spec-publish-recovery-001`; точный head подтверждается
   GitHub evidence, а не Production-root.

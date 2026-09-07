@@ -1,0 +1,49 @@
+{
+  "contract_id": "UA-ART-CRM-SPEC-PUBLISH-RECOVERY-001",
+  "observed_at_utc": "2026-09-07T05:11:23Z",
+  "scope": "AUTHENTICATED_REMOTE_CRM_READ_ONLY_SNAPSHOT",
+  "source": {
+    "platform": "PythonAnywhere",
+    "path": "/home/Carix/crm.db",
+    "sha256": "8139ff9cb251b19dee57777452c9f003cbd112bb2b6c43e0ed2a0260c04f1d4f",
+    "sqlite_quick_check": "ok"
+  },
+  "inventory": {
+    "cars_total": 18,
+    "published_total": 16,
+    "ua0017_rows": 1,
+    "ua0017_card_id": 26,
+    "ua0017_vin_length": 17,
+    "ua0017_vin_sha256": "bdc6d48c3d19b41916729cb3c207518bb1db0f06a1fe95b23fa461f6f557709b",
+    "ua0017_published": 0,
+    "ua0017_publish_pending": 0,
+    "ua0017_status": "ge_waiting",
+    "ua0017_required_base_spec_missing": [],
+    "ua0017_optional_blank_fields": ["engine", "trim"],
+    "ua0017_additional_spec_rows": 0,
+    "ua0017_verified_visible_spec_rows": 0,
+    "all_additional_spec_uids": {"UA-0015": 12},
+    "duplicate_published_vin_uids": []
+  },
+  "publication_audit": [
+    {"created_at": "2026-09-05T11:55:00", "transition": "0->1"},
+    {"created_at": "2026-09-05T11:55:02", "transition": "1->0"},
+    {"created_at": "2026-09-07T01:51:50", "transition": "0->1"},
+    {"created_at": "2026-09-07T01:51:51", "transition": "1->0"}
+  ],
+  "candidate_preflight": {
+    "ok": false,
+    "codes": ["SPEC_NOT_READY:0/10", "VIN_WORKER_HEARTBEAT_MISSING"],
+    "source_snapshot_unchanged": true
+  },
+  "production_touched": false,
+  "production_write_attempts": 0,
+  "remote_gate_a_status": "PARTIAL",
+  "gate_b_eligible": false,
+  "release_authorization": "BLOCKED",
+  "remaining_evidence": [
+    "SPEC_DATABASE_SNAPSHOT",
+    "EXACT_RUNTIME_SOURCE_SNAPSHOT",
+    "BOTH_WEB_ROOT_SNAPSHOTS"
+  ]
+}

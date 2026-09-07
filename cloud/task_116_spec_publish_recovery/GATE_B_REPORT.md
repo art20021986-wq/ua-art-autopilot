@@ -8,7 +8,7 @@
 
 ## Executive result
 
-Gate B не выполнялся на свежей копии фактического удалённого состояния.
+Gate B ещё не выполнялся на полном наборе свежих копий фактического удалённого состояния.
 Production URL, DB, runtime, service и publisher этим шагом не вызывались и не
 изменялись. Публиковать `UA-0017` на основании локальных проверок запрещено.
 
@@ -35,9 +35,15 @@ Remote Gate B не выполнялся. Свежий результат и cand
 | Уровень | Фактический статус | Разрешает Production |
 |---|---|---|
 | Local candidate | 14/14 PASS, manifest-bound evidence | Нет |
-| Remote Gate A | NOT_RUN | Нет |
+| Remote Gate A | PARTIAL — CRM snapshot verified | Нет |
 | Gate B на remote-derived копиях | NOT_RUN | Нет |
 | Owner Production command | NOT_GIVEN_FOR_RELEASE | Нет |
+
+Получена authenticated read-only копия `/home/Carix/crm.db` с SHA-256
+`8139ff9cb251b19dee57777452c9f003cbd112bb2b6c43e0ed2a0260c04f1d4f` и
+`quick_check=ok`. Для `UA-0017`: одна точная строка, `published=0`,
+`publish_pending=0`, дополнительная спецификация `0/10`. Поэтому Remote Gate A
+теперь `PARTIAL`; до полного Gate A ещё нужны spec DB, runtime и обе web-root.
 
 ## Матрица A–F
 
