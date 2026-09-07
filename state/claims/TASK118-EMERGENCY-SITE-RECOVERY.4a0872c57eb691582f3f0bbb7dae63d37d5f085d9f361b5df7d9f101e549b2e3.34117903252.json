@@ -5,20 +5,37 @@
   "autostart_ledger_sha256": "b9dc8e5a5d4ea069f3829edac926f0937a00ee341195d5efaec71cb81c425e44",
   "autostart_source_commit": "340fafed5f1f8a021fdf7f5434946a7cf96e7bf3",
   "created_at": "2026-09-07T11:42:30Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "9e033b509d47916b1d7ef7c1f127b3c0a6f639f1bec80607c421786f250366a5",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-07T11:42:30Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-09-07T11:43:35Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "34117903252",
     "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
     "task_sha256": "4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.pythonanywhere.com/",
+        "http_status": 200,
+        "latency_ms": 77.6,
+        "status": "PASS",
+        "url": "https://www.pythonanywhere.com/"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-34117903252-4a0872c57eb69158",
+  "production_transaction_path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-242e7709889e82d8-55e67661b455a7cc",
   "receipt_path": "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +46,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "64f5635ad54d72fbfdd09707d242862fcc4e3a7b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 903.103,
+    "allowed": true,
+    "evidence_path": "state/storage/TASK118-EMERGENCY-SITE-RECOVERY.json",
+    "evidence_sha256": "79402ee39ea8a27655663fc733d85307e5c216d13aca9f30e28405d49ec27a8d",
+    "free_bytes": 32640151552,
+    "heavy": true,
+    "measured_at": "2026-09-07T11:28:30Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 1048576,
+    "status": "PASS",
+    "usage_percent": 13.14711434500558
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-07T11:42:30Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "7a14c5bb43c913110c20557361760012367e86998ae5218273e10b8eb8f0edb9",
+    "file_sha256": {
+      "cloud/task118_emergency_site_recovery/test_contract.py": "b2907355d618de38e1f5241a6a33ec452050a303e60816b6719dbd38b00b7a1b"
+    }
+  },
+  "updated_at": "2026-09-07T11:43:35Z"
 }
