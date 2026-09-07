@@ -1,0 +1,173 @@
+{
+  "backup_required": true,
+  "approved_append_only_side_effects": [
+    {
+      "path": "/home/Carix/publish_log.txt",
+      "policy": "PRESERVE_EXACT_PREIMAGE_PREFIX_AND_ALLOW_ONLY_BOUNDED_UA0017_UA0018_TASK083_AUDIT_SUFFIX",
+      "rollback": "NEVER_TRUNCATE_SHARED_AUDIT_LOG"
+    }
+  ],
+  "backup_scope": [
+    "production/card-publication/UA-0017",
+    "production/card-publication/UA-0018",
+    "production/card-media/UA-0017",
+    "production/card-media/UA-0018"
+  ],
+  "backup_contract": {
+    "database_preimage": "SQLITE_SEMANTIC_BACKUP_PLUS_EXACT_TARGET_ROW_AND_FLAG_PREIMAGES",
+    "target_media": {
+      "UA-0017": {
+        "jpeg_photos": 39,
+        "mp4_videos": 0
+      },
+      "UA-0018": {
+        "jpeg_photos": 36,
+        "mp4_videos": 1
+      }
+    },
+    "target_media_preimage": "EXISTS_MODE_SIZE_SHA256_FOR_EVERY_TARGET_PATH",
+    "web_preimage": "EXISTS_MODE_SIZE_SHA256_AND_BYTES_FOR_EVERY_TARGET_PAGE_AND_BOTH_CATALOGS"
+  },
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "execution_transport": {
+    "always_on_trigger": "EPHEMERAL_SEQUENTIAL_CREATE_EXECUTE_STOP_DELETE_MAX_ONE_ACTIVE",
+    "completed_ledger": "DURABLE_STABLE_WORKFLOW_BOUND_NONSECRET_IDEMPOTENCY_EVIDENCE",
+    "on_stop_unconfirmed": "PRESERVE_TRANSPORT_AND_LEDGER_BLOCK_WITHOUT_FURTHER_REMOTE_MUTATION",
+    "path": "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task120_publish_17_18.py",
+    "persistent_runtime_mutation": false,
+    "remote_receipts": "EPHEMERAL_IDENTITY_VERIFY_DELETE",
+    "scheduled_fallback": "FORBIDDEN",
+    "script_lifecycle": "REQUIRE_ABSENT_CREATE_EXACT_HASH_VERIFY_EXECUTE_EXACT_HASH_DELETE"
+  },
+  "explicit_crm_vehicle_approval": true,
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "noop",
+      "path": "production/card-publication/UA-0017",
+      "postcondition": {
+        "additional_specification_exact_rows": 18,
+        "additional_specification_semantic_sha256": "7827f4cae692b7fed0329ded2da2f5f1f5abb63449eef8f7f9a7ca64002277cd",
+        "additional_specification_state": "EXACT_LEGACY_MODEL_LEVEL",
+        "crm_vehicle_year": "2015",
+        "source_document_model_year_scope": "2016",
+        "specification_scope": "LEGACY_MODEL_LEVEL_NOT_VIN_SPECIFIC_BOUND_BY_OWNER_PRODUCTION_AUTHORIZATION",
+        "catalog_cards_per_render_root": 1,
+        "catalog_hrefs_per_render_root": 2,
+        "diagnostic_page_bound": true,
+        "exact_card_id": "UA-0017",
+        "exact_vin_binding": true,
+        "generic_fallback": "FORBIDDEN",
+        "public_url_root": "https://www.uaart.com.ua/video/",
+        "render_roots": [
+          "site",
+          "video"
+        ],
+        "publication_flags": {
+          "atomic_target": {
+            "publish_pending": 0,
+            "published": 1
+          },
+          "commit_boundary": "AFTER_PRIVATE_PREREQUISITES_BEFORE_TASK083_RENDER",
+          "retention_condition": "TASK083_DATABASE_SPEC_MEDIA_CATALOG_LOCAL_AND_PUBLIC_VERIFICATION_PASS",
+          "rollback": "RESTORE_EXACT_PREIMAGE"
+        },
+        "vin_advertisement_count": 0
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/card-publication/UA-0018",
+      "postcondition": {
+        "additional_specification_exact_rows": 12,
+        "additional_specification_semantic_sha256": "51c0b8eedd263a6eae9b01d22f175d0019b2c914d23e7bbd272638c16e96e9a6",
+        "additional_specification_state": "EXACT_LEGACY_MODEL_LEVEL",
+        "catalog_cards_per_render_root": 1,
+        "catalog_hrefs_per_render_root": 2,
+        "diagnostic_page_bound": true,
+        "exact_card_id": "UA-0018",
+        "exact_vin_binding": true,
+        "generic_fallback": "FORBIDDEN",
+        "public_url_root": "https://www.uaart.com.ua/video/",
+        "render_roots": [
+          "site",
+          "video"
+        ],
+        "publication_flags": {
+          "atomic_target": {
+            "publish_pending": 0,
+            "published": 1
+          },
+          "commit_boundary": "AFTER_PRIVATE_PREREQUISITES_BEFORE_TASK083_RENDER",
+          "retention_condition": "TASK083_DATABASE_SPEC_MEDIA_CATALOG_LOCAL_AND_PUBLIC_VERIFICATION_PASS",
+          "rollback": "RESTORE_EXACT_PREIMAGE"
+        },
+        "vin_advertisement_count": 0
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/card-media/UA-0017",
+      "postcondition": {
+        "crm_media_rows_match_ordered_car_json": true,
+        "jpeg_directory": "video/foto/UA-0017",
+        "jpeg_filenames": "001.jpg..039.jpg",
+        "jpeg_photos_exact": 39,
+        "mp4_videos_exact": 0,
+        "unexpected_target_media": 0
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/card-media/UA-0018",
+      "postcondition": {
+        "crm_media_rows_match_ordered_car_json": true,
+        "jpeg_directory": "video/foto/UA-0018",
+        "jpeg_filenames": "001.jpg..036.jpg",
+        "jpeg_photos_exact": 36,
+        "mp4_path": "video/UA-0018.mp4",
+        "mp4_tag": "вертик",
+        "mp4_videos_exact": 1,
+        "unexpected_target_media": 0
+      }
+    }
+  ],
+  "production_write": true,
+  "protected_paths": [
+    "crm-primary-fields-outside-publication-flags",
+    "dns",
+    "production/card-media/UA-0001-UA-0016",
+    "production/card-media/UA-0019-plus",
+    "prices",
+    "production-credential-team-token-read-only-no-disclosure",
+    "production/public-cards/UA-0001-UA-0016",
+    "production/public-cards/UA-0019-plus",
+    "installed-production-runtime-sources",
+    "vin-values"
+  ],
+  "rollback_required": true,
+  "rollback_contract": {
+    "database": "CAS_CURRENT_EXACT_POSTIMAGE_TO_EXACT_PREIMAGE",
+    "target_media": {
+      "UA-0017": {
+        "jpeg_photos": 39,
+        "mp4_videos": 0
+      },
+      "UA-0018": {
+        "jpeg_photos": 36,
+        "mp4_videos": 1
+      }
+    },
+    "target_media_restore": "RESTORE_EXACT_BACKED_PREIMAGE_OR_REMOVE_EXACT_TASK_POSTIMAGE_ONLY",
+    "web_restore": "RESTORE_EXACT_BACKED_PREIMAGE",
+    "write_conflict_policy": "FAIL_CLOSED"
+  },
+  "rollback_scope": [
+    "production/card-publication/UA-0017",
+    "production/card-publication/UA-0018",
+    "production/card-media/UA-0017",
+    "production/card-media/UA-0018"
+  ],
+  "task_class": "CRITICAL",
+  "task_id": "TASK120-PUBLISH-UA-0017-UA-0018"
+}
