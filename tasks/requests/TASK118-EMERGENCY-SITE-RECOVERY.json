@@ -1,0 +1,58 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/webapp/www.uaart.com.ua/runtime"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": false,
+    "gate_a_path": "tasks/gates/TASK118-EMERGENCY-SITE-RECOVERY.json",
+    "gate_a_sha256": "5031ca7cd43934578f9368b6ac7fd6558988907fb27642ba57c5bcc8be8a3541",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/TASK118-EMERGENCY-SITE-RECOVERY.json",
+    "manifest_sha256": "6ca9a01300fc8fad6f26ccdd0c15c5fa8633c481df0344861052f560e33c8c34",
+    "owner_approval_path": "tasks/approvals/TASK118-EMERGENCY-SITE-RECOVERY.production.json",
+    "owner_approval_sha256": "005d24bd3d319b4cbb8768d785d3ad2961e8eee2414e2661b14f3ffb87c2a2f8"
+  },
+  "description": "Owner-directed emergency recovery of the public UA ART website after an intermittent outage. Inspect exactly the PythonAnywhere webapp www.uaart.com.ua, invoke only its official reload endpoint, then require three consecutive HTTP 200 HTML passes across the main page, catalog, selection page, information page, and one representative vehicle page. Do not open or modify CRM, VIN, vehicle cards, prices, media, public site files, runtime source files, credentials, DNS, or TLS. The operation is stateless and must fail closed on target ambiguity, API failure, or incomplete live verification.",
+  "execution": {
+    "backup_controller_path": "cloud/task118_emergency_site_recovery/backup_controller.py",
+    "backup_controller_sha256": "9076b17baa50a768755ab945711b8cc3c9d41b66b9e04fc92d95ec21c9fe850a",
+    "backup_receipt_path": "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY-BACKUP.json",
+    "controller_path": "cloud/task118_emergency_site_recovery/controller.py",
+    "controller_sha256": "7a14c5bb43c913110c20557361760012367e86998ae5218273e10b8eb8f0edb9",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/task118_emergency_site_recovery/evidence.json",
+      "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY-BACKUP.json",
+      "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY-ROLLBACK.json",
+      "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY.json"
+    ],
+    "file_sha256": {
+      "cloud/task118_emergency_site_recovery/test_contract.py": "b2907355d618de38e1f5241a6a33ec452050a303e60816b6719dbd38b00b7a1b"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY.json",
+    "rollback_controller_path": "cloud/task118_emergency_site_recovery/rollback_controller.py",
+    "rollback_controller_sha256": "2514cc7f3bf50f2d8718a68b7a44551b9bb7932647f9e204883336cfa9a9eef5",
+    "rollback_receipt_path": "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY-ROLLBACK.json",
+    "test_paths": [
+      "cloud/task118_emergency_site_recovery/test_contract.py"
+    ],
+    "timeout_seconds": 480
+  },
+  "health_checks": [
+    "https://www.pythonanywhere.com/"
+  ],
+  "production_required": true,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK118-EMERGENCY-SITE-RECOVERY.json",
+    "evidence_sha256": "79402ee39ea8a27655663fc733d85307e5c216d13aca9f30e28405d49ec27a8d"
+  },
+  "storage_required_bytes": 1048576,
+  "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
+  "title": "Emergency production webapp recovery"
+}

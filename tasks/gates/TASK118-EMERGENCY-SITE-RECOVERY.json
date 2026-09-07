@@ -1,0 +1,66 @@
+{
+  "backup_plan_ready": true,
+  "backup_scope_verified": [
+    "production/webapp/www.uaart.com.ua/runtime"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "evaluated_at": "2026-09-07T11:28:30Z",
+  "fresh_live_snapshot": {
+    "direct_main": "HTTP_200",
+    "dns_change_required": false,
+    "external_browser_pages_rendered": [
+      "https://www.uaart.com.ua/video/index.html",
+      "https://www.uaart.com.ua/video/katalog.html",
+      "https://www.uaart.com.ua/video/podbor.html",
+      "https://www.uaart.com.ua/video/info.html",
+      "https://www.uaart.com.ua/video/UA-0001.html"
+    ],
+    "github_monitor_attempt": 2,
+    "github_monitor_run_id": "34091674377",
+    "github_monitor_status": "PASS",
+    "monitor_completed_at": "2026-09-07T11:12:08Z",
+    "observed_condition": "intermittent high latency with successful recovery probes",
+    "tls_change_required": false
+  },
+  "manifest_sha256": "6ca9a01300fc8fad6f26ccdd0c15c5fa8633c481df0344861052f560e33c8c34",
+  "package_sha256": {
+    "cloud/task118_emergency_site_recovery/backup_controller.py": "9076b17baa50a768755ab945711b8cc3c9d41b66b9e04fc92d95ec21c9fe850a",
+    "cloud/task118_emergency_site_recovery/controller.py": "7a14c5bb43c913110c20557361760012367e86998ae5218273e10b8eb8f0edb9",
+    "cloud/task118_emergency_site_recovery/rollback_controller.py": "2514cc7f3bf50f2d8718a68b7a44551b9bb7932647f9e204883336cfa9a9eef5",
+    "cloud/task118_emergency_site_recovery/test_contract.py": "b2907355d618de38e1f5241a6a33ec452050a303e60816b6719dbd38b00b7a1b"
+  },
+  "production_write": false,
+  "protected_snapshot": {
+    "crm_and_vehicle_data": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "dns_and_tls": {
+      "access": "READ_ONLY_EXTERNAL_CHECKS",
+      "write_permitted": false
+    },
+    "public_site_files_and_media": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "runtime_code_and_configuration": {
+      "access": "WEBAPP_METADATA_ONLY",
+      "write_permitted": false
+    }
+  },
+  "rollback_plan_ready": true,
+  "rollback_scope_verified": [
+    "production/webapp/www.uaart.com.ua/runtime"
+  ],
+  "scope_contract": {
+    "allowed_api_get": "webapps_collection_exact_domain_validation",
+    "allowed_api_post": "webapps/www.uaart.com.ua/reload",
+    "content_mutation": "FORBIDDEN",
+    "control_plane_pre_post_health": "https://www.pythonanywhere.com/",
+    "required_postcondition": "three consecutive HTTP 200 HTML passes across five public pages"
+  },
+  "status": "PASS",
+  "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
