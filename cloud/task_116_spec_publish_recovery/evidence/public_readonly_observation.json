@@ -1,0 +1,23 @@
+{
+  "contract_id": "UA-ART-CRM-SPEC-PUBLISH-RECOVERY-001",
+  "observed_at_utc": "2026-09-07T04:54:18Z",
+  "scope": "PUBLIC_HTTP_READ_ONLY",
+  "production_touched": false,
+  "production_write_attempts": 0,
+  "findings": {
+    "catalog_url": "https://www.uaart.com.ua/video/katalog.html",
+    "catalog_visible_count": 16,
+    "catalog_visible_uids": "UA-0001..UA-0016",
+    "ua0017_catalog_links": 0,
+    "ua0017_direct_request": "https://www.uaart.com.ua/video/UA-0017.html",
+    "ua0017_direct_final_url": "https://www.uaart.com.ua/video/index.html",
+    "ua0017_publication_state": "NOT_LISTED_AND_CARD_URL_REDIRECTS_TO_INDEX"
+  },
+  "limitations": [
+    "NO_CRM_DATABASE_ACCESS",
+    "NO_SERVER_FILESYSTEM_ACCESS",
+    "NOT_REMOTE_GATE_A",
+    "NOT_GATE_B"
+  ],
+  "release_authorization": "BLOCKED"
+}

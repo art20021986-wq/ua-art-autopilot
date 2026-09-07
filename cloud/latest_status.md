@@ -11,6 +11,9 @@
   `gate_b_eligible=false`, `production_eligible=false`.
 - Remote Gate A: `NOT_RUN`.
 - Gate B: `NOT_RUN / NOT_ELIGIBLE`.
+- Public read-only observation: каталог показывает 16 карточек
+  `UA-0001..UA-0016`; ссылки `UA-0017` нет, прямой адрес `UA-0017.html`
+  перенаправляет на главную. Это не заменяет CRM/server Gate A.
 - Candidate подготовлен в отдельной ветке
   `codex/ua-art-crm-spec-publish-recovery-001`; точный head подтверждается
   GitHub evidence, а не Production-root.
