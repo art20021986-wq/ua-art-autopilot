@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.json",
+  "autostart_ledger_sha256": "b9dc8e5a5d4ea069f3829edac926f0937a00ee341195d5efaec71cb81c425e44",
+  "autostart_source_commit": "340fafed5f1f8a021fdf7f5434946a7cf96e7bf3",
+  "created_at": "2026-09-07T11:42:30Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "34117903252",
+    "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
+    "task_sha256": "4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-242e7709889e82d8-55e67661b455a7cc",
+  "request_path": "tasks/requests/TASK118-EMERGENCY-SITE-RECOVERY.json",
+  "resource_locks": [
+    "PATH_SCOPE:242e7709889e82d8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
