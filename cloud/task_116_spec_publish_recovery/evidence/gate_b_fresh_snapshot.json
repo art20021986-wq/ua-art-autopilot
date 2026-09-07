@@ -1,0 +1,78 @@
+{
+  "checks": [
+    {
+      "detail": "checked=1061 mismatches=0",
+      "name": "web_roots_byte_unchanged",
+      "status": "PASS"
+    },
+    {
+      "detail": "5/5",
+      "name": "patched_runtime_compile_and_invariants",
+      "status": "PASS"
+    },
+    {
+      "detail": "changed=cars_ui.py,konteyner.py,source_policy.py,ua_additional_spec.py,vin_spec_service.py",
+      "name": "patch_allowlist_exact",
+      "status": "PASS"
+    },
+    {
+      "detail": "immutable snapshot",
+      "name": "main_db_quick_check",
+      "status": "PASS"
+    },
+    {
+      "detail": "rows=1",
+      "name": "ua0017_exact_identity",
+      "status": "PASS"
+    },
+    {
+      "detail": "published=0 pending=0",
+      "name": "ua0017_still_unpublished",
+      "status": "PASS"
+    },
+    {
+      "detail": "immutable snapshot",
+      "name": "spec_db_quick_check",
+      "status": "PASS"
+    },
+    {
+      "detail": "main_rows=0 spec_rows=0",
+      "name": "ua0017_incomplete_spec_fail_closed",
+      "status": "PASS"
+    },
+    {
+      "detail": "site/video",
+      "name": "both_catalog_roots_present",
+      "status": "PASS"
+    },
+    {
+      "detail": "release remains blocked",
+      "name": "ua0017_not_materialized",
+      "status": "PASS"
+    },
+    {
+      "detail": "14/14",
+      "name": "local_failure_matrix_14_of_14",
+      "status": "PASS"
+    }
+  ],
+  "contract_id": "UA-ART-CRM-SPEC-PUBLISH-RECOVERY-001",
+  "contract_version": "1.0",
+  "gate": "B_FRESH_SNAPSHOT_COMPATIBILITY",
+  "gate_b_eligible": false,
+  "note": "Fresh remote-derived copies passed compatibility checks. This is not final Gate B and cannot authorize Production.",
+  "patch_bundle_digest": "61c9a3e4a58cfb341cc9902613ad5de169f057e45bbeba598f30ec98f474ecf6",
+  "production_eligible": false,
+  "production_touched": false,
+  "release_authorization": "BLOCKED",
+  "remaining_blockers": [
+    "EXTERNAL_TRUSTED_RELEASE_CONTROLLER_NOT_INSTALLED",
+    "DURABLE_ONE_TIME_OWNER_NONCE_NOT_INSTALLED",
+    "OS_PROCESS_WRITE_ALLOWLIST_NOT_ENFORCED",
+    "CRASH_DURABLE_SNAPSHOT_AND_RECOVERY_NOT_PROVEN",
+    "BROWSER_COMPUTED_CSS_VISIBILITY_NOT_PROVEN"
+  ],
+  "snapshot_zip_sha256": "b0b02613b2eaa4aa4ec1fa117c477415607a729c83d5057f3c5d4e967dc75a89",
+  "status": "PASS",
+  "ua0017_published_production": false
+}

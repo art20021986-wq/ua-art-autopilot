@@ -2,15 +2,19 @@
 
 **Contract:** `UA-ART-CRM-SPEC-PUBLISH-RECOVERY-001` v1.0  
 **Report date:** 2026-09-07  
-**Gate B verdict:** `NOT_RUN / NOT_ELIGIBLE`  
+**Gate B verdict:** `FRESH_SNAPSHOT_COMPATIBILITY PASS / NOT_ELIGIBLE`  
 **Production gate:** `CLOSED`  
-**UA-0017 release:** `BLOCKED`; **Production state:** `UNKNOWN_REMOTE_NOT_OBSERVED`
+**UA-0017 release:** `BLOCKED`; **Production state:** `OBSERVED UNPUBLISHED`
 
 ## Executive result
 
-Gate B ещё не выполнялся на полном наборе свежих копий фактического удалённого состояния.
-Production URL, DB, runtime, service и publisher этим шагом не вызывались и не
-изменялись. Публиковать `UA-0017` на основании локальных проверок запрещено.
+Получен свежий remote-derived snapshot двух DB, фактического runtime и web-root
+`/home/Carix/site` и `/home/Carix/video`. Compatibility-этап на его изолированной
+копии завершён 11/11 PASS: обе DB `quick_check=ok`, точная `UA-0017` совпала по
+VIN hash, patcher изменил ровно пять разрешённых runtime-файлов, а 1061 web-файл
+остался byte-for-byte неизменным. Production URL, DB, runtime, service и
+publisher не изменялись. Финальный Gate B всё ещё закрыт оставшимися системными
+контролями; публиковать `UA-0017` запрещено.
 
 Candidate фиксируется только в отдельной ветке
 `codex/ua-art-crm-spec-publish-recovery-001`; exact head проверяется через
@@ -35,15 +39,15 @@ Remote Gate B не выполнялся. Свежий результат и cand
 | Уровень | Фактический статус | Разрешает Production |
 |---|---|---|
 | Local candidate | 14/14 PASS, manifest-bound evidence | Нет |
-| Remote Gate A | PARTIAL — CRM snapshot verified | Нет |
-| Gate B на remote-derived копиях | NOT_RUN | Нет |
+| Remote Gate A | Probe FAIL/UNKNOWN из-за bounded inventory; exact paths bound read-only | Нет |
+| Gate B на remote-derived копиях | Compatibility 11/11 PASS; final controls pending | Нет |
 | Owner Production command | NOT_GIVEN_FOR_RELEASE | Нет |
 
-Получена authenticated read-only копия `/home/Carix/crm.db` с SHA-256
-`8139ff9cb251b19dee57777452c9f003cbd112bb2b6c43e0ed2a0260c04f1d4f` и
-`quick_check=ok`. Для `UA-0017`: одна точная строка, `published=0`,
-`publish_pending=0`, дополнительная спецификация `0/10`. Поэтому Remote Gate A
-теперь `PARTIAL`; до полного Gate A ещё нужны spec DB, runtime и обе web-root.
+Fresh snapshot ZIP имеет SHA-256
+`b0b02613b2eaa4aa4ec1fa117c477415607a729c83d5057f3c5d4e967dc75a89`.
+Для `UA-0017`: одна точная строка, `published=0`, `publish_pending=0`,
+дополнительная спецификация `0/10`; неполная спецификация корректно оставляет
+выпуск заблокированным. Evidence: `evidence/gate_b_fresh_snapshot.json`.
 
 ## Матрица A–F
 
@@ -58,21 +62,17 @@ Remote Gate B не выполнялся. Свежий результат и cand
 
 ## Обязательные блокеры до Gate B
 
-1. Выполнить `remote_gate_a.py` на согласованном remote-root и сохранить его
-   stdout внешним неизменяемым контуром доказательств.
-2. Установить фактические DB и два web-root. При наличии SQLite `-wal` immutable
-   probe может не видеть незачекпойнченные записи; нужна согласованная read-only
-   snapshot/copy, подготовленная платформой вне probe.
-3. Предъявить отдельную branch и exact commit через GitHub branch/commit/PR evidence.
-4. Связать candidate digest с этим commit; не использовать строку из кода как
-   замену Git evidence.
-5. Создать свежие восстановимые копии remote-state и применить patcher только к
-   ним.
-6. Проверить `UA-0017` и минимум по одной старой и новой карточке, не изменяя
-   Production.
-7. Установить внешний доверенный release-controller: durable одноразовый owner
-   nonce, OS-level write allowlist, crash-durable snapshot/restore и проверка
-   computed CSS в браузере. In-process callbacks и RAM-снимок этого не заменяют.
+Remote-derived snapshot и применение patcher к копии выполнены. Остались:
+
+1. Установить внешний доверенный release-controller.
+2. Добавить durable одноразовый owner nonce, связанный с exact UID/VIN,
+   candidate commit и свежим Gate B receipt.
+3. Включить OS-level write allowlist только для разрешённых target-артефактов.
+4. Доказать crash-durable snapshot/restore при аварийном завершении процесса.
+5. Выполнить computed-CSS browser-проверку на изолированном preview для старой,
+   новой и целевой карточки.
+6. Связать обновлённый candidate manifest и snapshot evidence с новым exact
+   commit отдельной ветки.
 
 ## Требуемые read-only доказательства Gate A
 

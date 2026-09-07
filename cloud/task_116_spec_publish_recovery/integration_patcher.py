@@ -68,7 +68,7 @@ def _verify_module_invariants(name: str, source: str) -> None:
             "prepare_for_publish_async(card)",
             "Production gate закрыт",
             "доверенным TASK116 release-controller",
-            "await _ua116_asyncio.wait_for(",
+            "_ua116_runtime.handle_saved_vin",
             "if code in _UA116_HIDDEN_STATUS_CODES:",
             "group=-10",
         ),
@@ -133,11 +133,14 @@ def _verify_module_invariants(name: str, source: str) -> None:
             for node in ast.walk(tree)
             if isinstance(node, ast.AsyncFunctionDef) and node.name == "toggle_publish"
         ]
-        if len(toggles) != 1:
+        if not toggles:
             raise RecoveryGuardError("PATCH_MARKER_INCOMPLETE", name + ":toggle_publish")
+        # The live module retains shadowed historical definitions.  Python uses
+        # the last top-level definition, so verify the active one explicitly.
+        active_toggle = max(toggles, key=lambda item: item.lineno)
         toggle_calls = [
             node
-            for node in ast.walk(toggles[0])
+            for node in ast.walk(active_toggle)
             if isinstance(node, ast.Call)
             and isinstance(node.func, ast.Attribute)
             and node.func.attr == "opublikovat"
@@ -253,10 +256,9 @@ def _remove_preview_publish_try(source: str) -> str:
     for node in preview.body:
         if not isinstance(node, ast.Try):
             continue
-        calls = [item for item in ast.walk(node) if isinstance(item, ast.Call)]
         if any(
-            isinstance(call.func, ast.Attribute) and call.func.attr == "opublikovat"
-            for call in calls
+            isinstance(item, ast.Attribute) and item.attr == "opublikovat"
+            for item in ast.walk(node)
         ):
             matches.append(node)
     if not matches:
@@ -288,17 +290,16 @@ def _replace_toggle_publish_try(source: str) -> str:
         for node in ast.walk(tree)
         if isinstance(node, ast.AsyncFunctionDef) and node.name == "toggle_publish"
     ]
-    if len(functions) != 1:
-        raise RecoveryGuardError("CARS_UI_TOGGLE_PUBLISH_SHAPE", str(len(functions)))
-    function = functions[0]
-    matches: list[ast.If] = []
+    if not functions:
+        raise RecoveryGuardError("CARS_UI_TOGGLE_PUBLISH_SHAPE", "0")
+    function = max(functions, key=lambda item: item.lineno)
+    matches: list[ast.If | ast.Try] = []
     for node in function.body:
-        if not isinstance(node, ast.If):
+        if not isinstance(node, (ast.If, ast.Try)):
             continue
-        calls = [item for item in ast.walk(node) if isinstance(item, ast.Call)]
         if any(
-            isinstance(call.func, ast.Attribute) and call.func.attr == "opublikovat"
-            for call in calls
+            isinstance(item, ast.Attribute) and item.attr == "opublikovat"
+            for item in ast.walk(node)
         ):
             matches.append(node)
     if len(matches) != 1:
@@ -307,13 +308,25 @@ def _replace_toggle_publish_try(source: str) -> str:
     lines = source.splitlines(keepends=True)
     indent = " " * node.col_offset
     body = " " * (node.col_offset + 4)
-    replacement = (
-        indent + "if novoe:\n"
-        + body + "await q.message.reply_text(\n"
-        + body + "    'Публикация через старый CRM-вызов отключена. Карточка осталась скрыта; '\n"
-        + body + "    'нужен доверенный TASK116 release-controller после Gate B.')\n"
-        + body + "raise ApplicationHandlerStop\n"
-    )
+    if isinstance(node, ast.Try):
+        # Current live shape performs both the CRM mutation and the publisher
+        # call inside one transaction block.  Replace that complete block so
+        # neither publish nor unpublish can bypass the trusted controller.
+        replacement = (
+            indent + "await q.message.reply_text(\n"
+            + body + "'Публикация через старый CRM-вызов отключена. '\n"
+            + body + "'Данные не изменены; нужен доверенный TASK116 release-controller после Gate B.',\n"
+            + body + "reply_markup=back)\n"
+            + indent + "raise ApplicationHandlerStop\n"
+        )
+    else:
+        replacement = (
+            indent + "if novoe:\n"
+            + body + "await q.message.reply_text(\n"
+            + body + "    'Публикация через старый CRM-вызов отключена. Карточка осталась скрыта; '\n"
+            + body + "    'нужен доверенный TASK116 release-controller после Gate B.')\n"
+            + body + "raise ApplicationHandlerStop\n"
+        )
     lines[node.lineno - 1 : node.end_lineno] = [replacement]
     return "".join(lines)
 
@@ -365,16 +378,33 @@ def patch_cars_ui(source: str) -> str:
         '        set_field(card_id, field, vin, actor_id)\n'
         '        return True, "Записано: %s" % vin\n'
     )
+    tree = ast.parse(source)
+    apply_functions = [
+        node for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == "apply_value"
+    ]
+    if len(apply_functions) != 1:
+        raise RecoveryGuardError("CARS_UI_APPLY_VALUE_SHAPE", str(len(apply_functions)))
+    if isinstance(apply_functions[0], ast.AsyncFunctionDef):
+        vin_call = (
+            "            import asyncio as _ua116_asyncio\n"
+            "            _ua116_state = await _ua116_asyncio.wait_for(\n"
+            "                _ua116_asyncio.to_thread(\n"
+            "                    _ua116_runtime.handle_saved_vin, card_id=card_id,\n"
+            "                    vin=vin, actor_id=actor_id), timeout=35.0)\n"
+        )
+    else:
+        vin_call = (
+            "            _ua116_state = _ua116_runtime.handle_saved_vin(\n"
+            "                card_id=card_id, vin=vin, actor_id=actor_id)\n"
+        )
     vin_hook = (
         '        set_field(card_id, field, vin, actor_id)\n'
         "        try:\n"
-        "            import asyncio as _ua116_asyncio\n"
         "            import ua116_runtime_bridge as _ua116_runtime\n"
-        "            _ua116_state = await _ua116_asyncio.wait_for(\n"
-        "                _ua116_asyncio.to_thread(\n"
-        "                    _ua116_runtime.handle_saved_vin, card_id=card_id,\n"
-        "                    vin=vin, actor_id=actor_id), timeout=35.0)\n"
-        "            return True, \"Записано: %s\\nСпецификация: %s\" % (\n"
+        + vin_call
+        + "            return True, \"Записано: %s\\nСпецификация: %s\" % (\n"
         "                vin, _ua116_state.get('owner_text', 'подготовка запущена'))\n"
         "        except Exception as _ua116_exc:\n"
         "            log.exception(\"TASK116 VIN preparation failed card=%s\", card_id)\n"

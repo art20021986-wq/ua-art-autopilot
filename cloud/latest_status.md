@@ -1,37 +1,40 @@
 # Latest status — TASK116
 
-**Updated:** 2026-09-07  
+**Updated:** 2026-09-07 05:59 UTC  
 **Contract:** `UA-ART-CRM-SPEC-PUBLISH-RECOVERY-001` v1.0
 
-- Документационный execution package A–F подготовлен.
-- Изменения runtime Python/Production: `0`.
-- Production не вызывался и не изменялся этим шагом.
-- Локальная candidate-матрица: 14/14 PASS, `PREVIEW_ONLY`; это **не Gate B**.
-- `evidence/gate_b_local.json` обновлён свежим manifest-bound результатом;
-  `gate_b_eligible=false`, `production_eligible=false`.
-- Remote Gate A: `PARTIAL`. Получена read-only копия фактической CRM с
-  `quick_check=ok`; точная строка `UA-0017` существует, `published=0`,
-  `publish_pending=0`, дополнительная спецификация `0/10`.
-- Gate B: `NOT_RUN / NOT_ELIGIBLE`.
-- Public read-only observation: каталог показывает 16 карточек
-  `UA-0001..UA-0016`; ссылки `UA-0017` нет, прямой адрес `UA-0017.html`
-  перенаправляет на главную. Это не заменяет CRM/server Gate A.
-- Аудит CRM подтверждает две неудачные попытки: в каждой `published` сначала
-  переключался `0->1`, затем через 1–2 секунды откатывался `1->0`. Candidate
-  блокирует этот временный publish-before-validation путь.
-- Candidate подготовлен в отдельной ветке
-  `codex/ua-art-crm-spec-publish-recovery-001`; точный head подтверждается
-  GitHub evidence, а не Production-root.
-- Exact VIN `UA-0017` пока `UNKNOWN`; использовать VIN `UA-0002` запрещено.
-- Выпуск `UA-0017`: `BLOCKED`; текущее Production-состояние:
-  `UNKNOWN_REMOTE_NOT_OBSERVED`.
-- Production gate: `CLOSED`.
+- Candidate выполняется только в ветке
+  `codex/ua-art-crm-spec-publish-recovery-001`.
+- Production runtime/CRM/site/reload/publisher: изменений `0`.
+- `UA-0017`: одна точная CRM-строка; VIN подтверждён по SHA-256
+  `bdc6d48c3d19b41916729cb3c207518bb1db0f06a1fe95b23fa461f6f557709b`;
+  `published=0`, `publish_pending=0`.
+- Remote Gate A probe выполнен read-only. Он честно вернул `FAIL/UNKNOWN`, так
+  как общий `/home/Carix` содержит 60 DB и 2333 HTML-кандидата, а его
+  диагностические списки ограничены 32/512. Probe подтвердил отсутствие
+  записей, reload и сетевых запросов.
+- Авторитетные входы установлены отдельно read-only:
+  `/home/Carix/crm.db`, `/home/Carix/vin_specs_task111_v3.db`,
+  `/home/Carix/site`, `/home/Carix/video`.
+- Получен fresh snapshot: две согласованные SQLite-копии и 1061 web-файл;
+  ZIP SHA-256
+  `b0b02613b2eaa4aa4ec1fa117c477415607a729c83d5057f3c5d4e967dc75a89`.
+- Patcher успешно применён только к fresh-копии после адаптации к фактической
+  active-форме `cars_ui.py`; изменены ровно 5 разрешённых runtime-файлов.
+- Fresh snapshot compatibility: 11/11 PASS; обе DB `quick_check=ok`, 1061/1061
+  web-файлов byte-for-byte неизменны, `UA-0017` не опубликована и не
+  материализована.
+- Локальная failure/rollback candidate-матрица: 14/14 PASS.
+- Gate B: `NOT_ELIGIBLE`; Production gate: `CLOSED`.
 
-Следующий безопасный шаг: получить exact VIN из CRM read-only, выполнить
-`remote_gate_a.py`, получить
-фактический remote baseline, затем прогнать Gate B на свежих изолированных
-копиях и передать владельцу отдельный отчёт.
+Остаток до verified Gate B:
 
-Только после verified Gate B допустима отдельная точная команда владельца:
+1. внешний trusted release-controller;
+2. durable одноразовый owner nonce;
+3. OS-level write allowlist;
+4. crash-durable snapshot/recovery;
+5. computed-CSS browser verification на изолированном preview.
+
+Даже после Gate B выпуск допустим только по отдельной точной команде:
 
 `ПУБЛИКОВАТЬ UA-0017`

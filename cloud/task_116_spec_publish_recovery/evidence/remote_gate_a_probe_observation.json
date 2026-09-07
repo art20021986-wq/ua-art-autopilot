@@ -1,0 +1,30 @@
+{
+  "contract_id": "UA-ART-CRM-SPEC-PUBLISH-RECOVERY-001",
+  "probe_schema": "task116.remote_gate_a/1.0",
+  "probe_output_sha256": "f29d43f8586e08075dc53fe71743cf66ea6ade1fbd61bc28bf8948271733c8cb",
+  "mode": "read_only",
+  "gate_a_status": "FAIL",
+  "gate_b_status": "NOT_RUN",
+  "inventory": {
+    "files_seen": 30766,
+    "code_candidates_seen": 91,
+    "database_candidates_seen": 60,
+    "html_candidates_seen": 2333,
+    "candidate_lists_truncated": true
+  },
+  "target": {
+    "uid": "UA-0017",
+    "vin_sha256": "bdc6d48c3d19b41916729cb3c207518bb1db0f06a1fe95b23fa461f6f557709b",
+    "rows_in_bounded_output": 0
+  },
+  "production": {
+    "mutated_by_probe": false,
+    "write_attempts": 0,
+    "service_reloads": 0,
+    "network_requests": 0,
+    "files_created": 0,
+    "application_modules_imported": 0
+  },
+  "interpretation": "The bounded diagnostic inventory omitted authoritative root-level candidates; exact paths were bound separately before the fresh snapshot compatibility run.",
+  "release_authorization": "BLOCKED"
+}
