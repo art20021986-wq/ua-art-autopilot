@@ -1,0 +1,58 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/webapp/www.uaart.com.ua/runtime"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": false,
+    "gate_a_path": "tasks/gates/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
+    "gate_a_sha256": "19aa9066695328e592ebb8b06c4e5f28ce4675ba0e41e39ef7e07796cae361f6",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
+    "manifest_sha256": "8d4590fec365ed97e6b855ad0fb90df47e513c409ca38cdd0456c0a957b35949",
+    "owner_approval_path": "tasks/approvals/TASK119-EMERGENCY-SITE-RECOVERY-R2.production.json",
+    "owner_approval_sha256": "39d1715856407ff84837df66f48b971647f605c72bed1d47e2039a9cb504c84e"
+  },
+  "description": "Owner-directed emergency recovery of the public UA ART website after a recurrent browser-specific outage. Inspect exactly the PythonAnywhere webapp www.uaart.com.ua, invoke only its official reload endpoint, then require three consecutive HTTP 200 HTML rounds at least 15 seconds apart. Every round checks five exact www pages and the apex https://uaart.com.ua/ redirect to exact HTTPS www.uaart.com.ua/video/index.html, with Cache-Control no-cache and a unique query value. Do not open or modify CRM, VIN, vehicle cards, prices, media, public site files, runtime source files, credentials, DNS, or TLS. The operation is stateless and must fail closed on target ambiguity, API failure, redirect mismatch, or incomplete live verification.",
+  "execution": {
+    "backup_controller_path": "cloud/task119_emergency_site_recovery_r2/backup_controller.py",
+    "backup_controller_sha256": "9076b17baa50a768755ab945711b8cc3c9d41b66b9e04fc92d95ec21c9fe850a",
+    "backup_receipt_path": "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2-BACKUP.json",
+    "controller_path": "cloud/task119_emergency_site_recovery_r2/controller.py",
+    "controller_sha256": "61458d865f288dfca8202dc11c513893de4c03d35ca8b9c816ac7f9e9a12470c",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/task119_emergency_site_recovery_r2/evidence.json",
+      "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2-BACKUP.json",
+      "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2-ROLLBACK.json",
+      "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2.json"
+    ],
+    "file_sha256": {
+      "cloud/task119_emergency_site_recovery_r2/test_contract.py": "13f7228a66086984314d1d7a5db42deff0d9c42de3b9d1a89c1e420efddd8c01"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
+    "rollback_controller_path": "cloud/task119_emergency_site_recovery_r2/rollback_controller.py",
+    "rollback_controller_sha256": "2514cc7f3bf50f2d8718a68b7a44551b9bb7932647f9e204883336cfa9a9eef5",
+    "rollback_receipt_path": "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2-ROLLBACK.json",
+    "test_paths": [
+      "cloud/task119_emergency_site_recovery_r2/test_contract.py"
+    ],
+    "timeout_seconds": 480
+  },
+  "health_checks": [
+    "https://www.pythonanywhere.com/"
+  ],
+  "production_required": true,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
+    "evidence_sha256": "25b8edcb04fb0ee17a8417148160b507fd6fda4bd06ee2bfc3674f906b625f66"
+  },
+  "storage_required_bytes": 1048576,
+  "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
+  "title": "Emergency production webapp recovery R2"
+}

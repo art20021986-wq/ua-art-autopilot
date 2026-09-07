@@ -1,0 +1,43 @@
+{
+  "backup_required": true,
+  "backup_scope": [
+    "production/webapp/www.uaart.com.ua/runtime"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "noop",
+      "path": "production/webapp/www.uaart.com.ua/runtime",
+      "postcondition": {
+        "apex_final_url": "https://www.uaart.com.ua/video/index.html",
+        "cache_busted_probes": true,
+        "consecutive_health_passes": 3,
+        "domain": "www.uaart.com.ua",
+        "operation": "pythonanywhere_webapp_reload_only",
+        "persistent_file_write": false,
+        "public_targets_per_round": 6,
+        "round_interval_seconds_minimum": 15
+      }
+    }
+  ],
+  "production_write": true,
+  "protected_paths": [
+    "crm.db",
+    "cars_schema.py",
+    "db.py",
+    "start_safe.py",
+    "site",
+    "video",
+    "media",
+    "prices",
+    "vehicle-data",
+    "dns"
+  ],
+  "rollback_required": true,
+  "rollback_scope": [
+    "production/webapp/www.uaart.com.ua/runtime"
+  ],
+  "task_class": "CRITICAL",
+  "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2"
+}

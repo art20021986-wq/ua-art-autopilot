@@ -1,0 +1,66 @@
+{
+  "backup_plan_ready": true,
+  "backup_scope_verified": [
+    "production/webapp/www.uaart.com.ua/runtime"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "evaluated_at": "2026-09-07T11:54:00Z",
+  "fresh_live_snapshot": {
+    "affected_clients": [
+      "Google Chrome",
+      "Safari"
+    ],
+    "dns_change_required": false,
+    "observed_condition": "owner-reported ERR_CONNECTION_FAILED for www.uaart.com.ua in Google Chrome and Safari while the TikTok in-app browser opens the site",
+    "owner_evidence_at": "2026-09-07T11:48:00Z",
+    "public_verification": {
+      "cache_busted": true,
+      "minimum_round_interval_seconds": 15,
+      "rounds": 3,
+      "targets_per_round": 6
+    },
+    "required_recovery_action": "reload exact PythonAnywhere webapp www.uaart.com.ua only",
+    "tls_change_required": false
+  },
+  "manifest_sha256": "8d4590fec365ed97e6b855ad0fb90df47e513c409ca38cdd0456c0a957b35949",
+  "package_sha256": {
+    "cloud/task119_emergency_site_recovery_r2/backup_controller.py": "9076b17baa50a768755ab945711b8cc3c9d41b66b9e04fc92d95ec21c9fe850a",
+    "cloud/task119_emergency_site_recovery_r2/controller.py": "61458d865f288dfca8202dc11c513893de4c03d35ca8b9c816ac7f9e9a12470c",
+    "cloud/task119_emergency_site_recovery_r2/rollback_controller.py": "2514cc7f3bf50f2d8718a68b7a44551b9bb7932647f9e204883336cfa9a9eef5",
+    "cloud/task119_emergency_site_recovery_r2/test_contract.py": "13f7228a66086984314d1d7a5db42deff0d9c42de3b9d1a89c1e420efddd8c01"
+  },
+  "production_write": false,
+  "protected_snapshot": {
+    "crm_and_vehicle_data": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "dns_and_tls": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "public_site_files_and_media": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "runtime_code_and_configuration": {
+      "access": "WEBAPP_METADATA_ONLY",
+      "write_permitted": false
+    }
+  },
+  "rollback_plan_ready": true,
+  "rollback_scope_verified": [
+    "production/webapp/www.uaart.com.ua/runtime"
+  ],
+  "scope_contract": {
+    "allowed_api_get": "webapps_collection_exact_domain_validation",
+    "allowed_api_post": "webapps/www.uaart.com.ua/reload",
+    "content_mutation": "FORBIDDEN",
+    "control_plane_pre_post_health": "https://www.pythonanywhere.com/",
+    "required_postcondition": "three consecutive HTTP 200 HTML passes at least 15 seconds apart across five www pages plus the apex redirect, using a unique no-cache query per round"
+  },
+  "status": "PASS",
+  "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
