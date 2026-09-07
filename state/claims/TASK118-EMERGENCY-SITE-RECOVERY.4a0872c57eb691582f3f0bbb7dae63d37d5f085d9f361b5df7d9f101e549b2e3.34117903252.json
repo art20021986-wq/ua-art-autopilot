@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "9e033b509d47916b1d7ef7c1f127b3c0a6f639f1bec80607c421786f250366a5",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-07T11:43:35Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-07T11:44:02Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "34117903252",
     "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
@@ -35,7 +35,7 @@
   "production_required": true,
   "production_transaction_id": "tx-34117903252-4a0872c57eb69158",
   "production_transaction_path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-242e7709889e82d8-55e67661b455a7cc",
   "receipt_path": "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY.json",
   "receipt_validation_status": "PENDING",
@@ -68,5 +68,5 @@
       "cloud/task118_emergency_site_recovery/test_contract.py": "b2907355d618de38e1f5241a6a33ec452050a303e60816b6719dbd38b00b7a1b"
     }
   },
-  "updated_at": "2026-09-07T11:43:35Z"
+  "updated_at": "2026-09-07T11:44:02Z"
 }
