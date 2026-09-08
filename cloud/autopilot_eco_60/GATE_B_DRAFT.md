@@ -22,6 +22,9 @@ TASK113 merged the centralized global control plane and reduced active workflows
 Provider token/call baseline: NOT_MEASURED (no provider usage evidence collected in this branch; no paid call was made to create a baseline).
 Claimed savings percentage: NOT_CLAIMED.
 
+## Validation status
+The acceptance test source is committed but has NOT yet been executed by CI or a runner in this task. Therefore no PASS claim is made for runtime tests.
+
 ## Still required before Gate B PASS
 - Wire every actual provider invocation in FAST/STANDARD/CRITICAL execution paths through this ledger.
 - Prove no bypass path exists for nested repair/retry provider calls.
