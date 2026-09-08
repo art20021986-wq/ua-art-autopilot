@@ -1,13 +1,61 @@
 {
-  "errors": [
-    "ControllerError:REMOTE_INSTALL_FAIL:InstallError:STATE_NOT_BACKED_UP"
+  "after_sha256": {
+    "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+    "cars_ui.py": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+    "konteyner.py": "bdf6b953e95cf5ae78d3d640b9ba438202e9708d48cb1c7f4e1556bb59921824"
+  },
+  "backup_manifest_sha256": "45822fc9d571f1782e6317de086a39fc66fc1c6eea5bf34bec63003dfa5e75e9",
+  "before_sha256": {
+    "cars_schema.py": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496",
+    "cars_ui.py": "2b1ef0bcfa700b7c87ccfb164b69b8ca173d460481936225e41344096c92062f",
+    "konteyner.py": "72c03a1b8ab14279b2a2adbc681e112594d88c766d2aae7cc40e08b8aa004230"
+  },
+  "button": {
+    "code": "kr_bought",
+    "count": 1,
+    "label": "В Корее"
+  },
+  "button_working": true,
+  "callback": "ENABLED",
+  "cards_unchanged": true,
+  "changed_files": [
+    "/home/Carix/cars_ui.py",
+    "/home/Carix/konteyner.py",
+    "/home/Carix/cars_schema.py"
   ],
-  "finished_at": "2026-09-08T06:50:39Z",
+  "contract_id": "UA-ART-CRM-KOREA-BUTTON-001-V1.0",
+  "crm_vehicle_data_unchanged": true,
+  "fallback_menu": "PASS",
+  "finished_at": "2026-09-08T07:07:42Z",
   "global_halt_preserved": true,
-  "production": "ROLLED_BACK",
-  "run_id": "34195489559",
-  "run_nonce": "task121-34195489559-8b31332b1d64",
+  "global_halt_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
+  "hidden_codes": [
+    "sea_loaded",
+    "sea_transit",
+    "ua_handed"
+  ],
+  "live_verify": "PASS",
+  "media_unchanged": true,
+  "other_removed_buttons_restored": false,
+  "primary_menu": "PASS",
+  "production": "PASS",
+  "restart": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "enabled": true,
+    "instances": 1,
+    "status": "PASS",
+    "task_id": 266084
+  },
+  "rollback_ready": true,
+  "run_id": "34196998338",
+  "run_nonce": "task121-34196998338-b656089e00cc",
   "schema_version": "UA-ART-TASK121-RECEIPT-1",
-  "status": "FAILED",
-  "task_id": "TASK121-KOREA-BUTTON"
+  "source_commit": "b656089e00cc4bde1d82dc29fdf8df328b99f12b",
+  "status": "FINISHED",
+  "target_environment": "production",
+  "task_class": "CRITICAL",
+  "task_id": "TASK121-KOREA-BUTTON",
+  "tests": "PASS",
+  "unexpected_changes": 0,
+  "website_unchanged": true
 }

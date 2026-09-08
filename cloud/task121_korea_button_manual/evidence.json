@@ -1,7 +1,7 @@
 {
   "backup": {
-    "backup_dir": "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task121_korea_backups/20260908T064230088966Z-8b31332b1d64",
-    "backup_manifest_sha256": "4b9c356eaa0fa369d02a703b30d64197de8fdbbba7d15dbecab739db753d961e",
+    "backup_dir": "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/task121_korea_backups/20260908T070050865318Z-b656089e00cc",
+    "backup_manifest_sha256": "45822fc9d571f1782e6317de086a39fc66fc1c6eea5bf34bec63003dfa5e75e9",
     "before": {
       "cars_schema.py": {
         "bytes": 24486,
@@ -25,22 +25,20 @@
       }
     },
     "contract_id": "UA-ART-CRM-KOREA-BUTTON-001-V1.0",
-    "finished_at": "2026-09-08T06:42:30Z",
+    "finished_at": "2026-09-08T07:00:51Z",
     "mode": "BACKUP",
     "production_write": false,
-    "run_nonce": "task121-34195489559-8b31332b1d64",
+    "run_nonce": "task121-34196998338-b656089e00cc",
     "status": "PASS",
     "task_id": "TASK121-KOREA-BUTTON",
     "unexpected_changes": 0
   },
   "contract_id": "UA-ART-CRM-KOREA-BUTTON-001-V1.0",
-  "errors": [
-    "ControllerError:REMOTE_INSTALL_FAIL:InstallError:STATE_NOT_BACKED_UP"
-  ],
-  "finished_at": "2026-09-08T06:50:39Z",
+  "errors": [],
+  "finished_at": "2026-09-08T07:07:42Z",
   "gate_a": {
     "approval_sha256": "461f1b9a99863d359e0fe84014e96e99e312dc0a49c8e6052e57ac77403a2b9f",
-    "checked_at": "2026-09-08T06:37:52Z",
+    "checked_at": "2026-09-08T06:57:47Z",
     "contract_id": "UA-ART-CRM-KOREA-BUTTON-001-V1.0",
     "files": {
       "cars_schema.py": {
@@ -84,35 +82,127 @@
       "primary_menu": "PASS",
       "schema_status_count": 10
     },
-    "remote_installer_sha256": "d551c39acf3986ebdcb9cb6e3608e391eba1ad20bb4208e4ddf3a5b3ccb152d9",
+    "remote_installer_sha256": "e4aede8d5fe87e85cf62fe57e9aa3f8bf9904000fbc29cfdd6c3c43463c9532d",
     "request_sha256": "18c2ab1a55171c92564c1ce014aa404da876693c1c31203fe447c2036cdab58c",
-    "run_nonce": "task121-34195489559-8b31332b1d64",
+    "run_nonce": "task121-34196998338-b656089e00cc",
     "schema_version": "UA-ART-TASK121-GATE-A-1",
-    "source_commit": "8b31332b1d64a2446411da9055e08e2902b09953",
+    "source_commit": "b656089e00cc4bde1d82dc29fdf8df328b99f12b",
     "status": "PASS",
     "task_id": "TASK121-KOREA-BUTTON"
   },
   "global_halt_after_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
   "global_halt_before_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
-  "rollback": {
-    "mode": "ROLLBACK",
-    "remote": {
-      "backup_manifest_sha256": "4b9c356eaa0fa369d02a703b30d64197de8fdbbba7d15dbecab739db753d961e",
-      "contract_id": "UA-ART-CRM-KOREA-BUTTON-001-V1.0",
-      "finished_at": "2026-09-08T06:50:33Z",
-      "mode": "ROLLBACK",
-      "production_write": "EXACT_ROLLBACK",
-      "restored_exact": true,
-      "restored_sha256": {
-        "cars_schema.py": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496",
-        "cars_ui.py": "2b1ef0bcfa700b7c87ccfb164b69b8ca173d460481936225e41344096c92062f",
-        "konteyner.py": "72c03a1b8ab14279b2a2adbc681e112594d88c766d2aae7cc40e08b8aa004230"
+  "install": {
+    "after": {
+      "cars_schema.py": {
+        "bytes": 24447,
+        "mode": 436,
+        "sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73"
       },
-      "run_nonce": "task121-34195489559-8b31332b1d64",
-      "status": "PASS",
-      "task_id": "TASK121-KOREA-BUTTON",
-      "unexpected_changes": 0
+      "cars_ui.py": {
+        "bytes": 189331,
+        "mode": 384,
+        "sha256": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5"
+      },
+      "konteyner.py": {
+        "bytes": 25908,
+        "mode": 436,
+        "sha256": "bdf6b953e95cf5ae78d3d640b9ba438202e9708d48cb1c7f4e1556bb59921824"
+      },
+      "start_safe.py": {
+        "bytes": 60667,
+        "mode": 436,
+        "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+      }
     },
+    "backup_manifest_sha256": "45822fc9d571f1782e6317de086a39fc66fc1c6eea5bf34bec63003dfa5e75e9",
+    "before": {
+      "cars_schema.py": {
+        "bytes": 24486,
+        "mode": 436,
+        "sha256": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496"
+      },
+      "cars_ui.py": {
+        "bytes": 189354,
+        "mode": 384,
+        "sha256": "2b1ef0bcfa700b7c87ccfb164b69b8ca173d460481936225e41344096c92062f"
+      },
+      "konteyner.py": {
+        "bytes": 25921,
+        "mode": 436,
+        "sha256": "72c03a1b8ab14279b2a2adbc681e112594d88c766d2aae7cc40e08b8aa004230"
+      },
+      "start_safe.py": {
+        "bytes": 60667,
+        "mode": 436,
+        "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+      }
+    },
+    "contract_id": "UA-ART-CRM-KOREA-BUTTON-001-V1.0",
+    "finished_at": "2026-09-08T07:03:23Z",
+    "mode": "INSTALL",
+    "production_write": "THREE_RUNTIME_FILES_ONLY",
+    "proof": {
+      "button_code": "kr_bought",
+      "button_count_added": 1,
+      "button_label": "В Корее",
+      "callback": "ENABLED",
+      "fallback_menu": "PASS",
+      "hidden_codes": [
+        "sea_loaded",
+        "sea_transit",
+        "ua_handed"
+      ],
+      "other_removed_buttons": "STILL_HIDDEN",
+      "primary_menu": "PASS",
+      "schema_status_count": 10
+    },
+    "run_nonce": "task121-34196998338-b656089e00cc",
+    "status": "PASS",
+    "task_id": "TASK121-KOREA-BUTTON",
+    "unexpected_changes": 0
+  },
+  "receipt": {
+    "after_sha256": {
+      "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+      "cars_ui.py": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+      "konteyner.py": "bdf6b953e95cf5ae78d3d640b9ba438202e9708d48cb1c7f4e1556bb59921824"
+    },
+    "backup_manifest_sha256": "45822fc9d571f1782e6317de086a39fc66fc1c6eea5bf34bec63003dfa5e75e9",
+    "before_sha256": {
+      "cars_schema.py": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496",
+      "cars_ui.py": "2b1ef0bcfa700b7c87ccfb164b69b8ca173d460481936225e41344096c92062f",
+      "konteyner.py": "72c03a1b8ab14279b2a2adbc681e112594d88c766d2aae7cc40e08b8aa004230"
+    },
+    "button": {
+      "code": "kr_bought",
+      "count": 1,
+      "label": "В Корее"
+    },
+    "button_working": true,
+    "callback": "ENABLED",
+    "cards_unchanged": true,
+    "changed_files": [
+      "/home/Carix/cars_ui.py",
+      "/home/Carix/konteyner.py",
+      "/home/Carix/cars_schema.py"
+    ],
+    "contract_id": "UA-ART-CRM-KOREA-BUTTON-001-V1.0",
+    "crm_vehicle_data_unchanged": true,
+    "fallback_menu": "PASS",
+    "finished_at": "2026-09-08T07:07:42Z",
+    "global_halt_preserved": true,
+    "global_halt_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
+    "hidden_codes": [
+      "sea_loaded",
+      "sea_transit",
+      "ua_handed"
+    ],
+    "live_verify": "PASS",
+    "media_unchanged": true,
+    "other_removed_buttons_restored": false,
+    "primary_menu": "PASS",
+    "production": "PASS",
     "restart": {
       "command": "python3.10 /home/Carix/start_safe.py",
       "enabled": true,
@@ -120,12 +210,78 @@
       "status": "PASS",
       "task_id": 266084
     },
-    "status": "PASS"
+    "rollback_ready": true,
+    "run_id": "34196998338",
+    "run_nonce": "task121-34196998338-b656089e00cc",
+    "schema_version": "UA-ART-TASK121-RECEIPT-1",
+    "source_commit": "b656089e00cc4bde1d82dc29fdf8df328b99f12b",
+    "status": "FINISHED",
+    "target_environment": "production",
+    "task_class": "CRITICAL",
+    "task_id": "TASK121-KOREA-BUTTON",
+    "tests": "PASS",
+    "unexpected_changes": 0,
+    "website_unchanged": true
   },
-  "run_nonce": "task121-34195489559-8b31332b1d64",
+  "restart": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "enabled": true,
+    "instances": 1,
+    "status": "PASS",
+    "task_id": 266084
+  },
+  "run_nonce": "task121-34196998338-b656089e00cc",
   "schema_version": "UA-ART-TASK121-EVIDENCE-1",
-  "source_commit": "8b31332b1d64a2446411da9055e08e2902b09953",
-  "started_at": "2026-09-08T06:37:52Z",
-  "status": "FAIL",
-  "task_id": "TASK121-KOREA-BUTTON"
+  "source_commit": "b656089e00cc4bde1d82dc29fdf8df328b99f12b",
+  "started_at": "2026-09-08T06:57:47Z",
+  "status": "PASS",
+  "task_id": "TASK121-KOREA-BUTTON",
+  "verify": {
+    "backup_manifest_sha256": "45822fc9d571f1782e6317de086a39fc66fc1c6eea5bf34bec63003dfa5e75e9",
+    "contract_id": "UA-ART-CRM-KOREA-BUTTON-001-V1.0",
+    "files": {
+      "cars_schema.py": {
+        "bytes": 24447,
+        "mode": 436,
+        "sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73"
+      },
+      "cars_ui.py": {
+        "bytes": 189331,
+        "mode": 384,
+        "sha256": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5"
+      },
+      "konteyner.py": {
+        "bytes": 25908,
+        "mode": 436,
+        "sha256": "bdf6b953e95cf5ae78d3d640b9ba438202e9708d48cb1c7f4e1556bb59921824"
+      },
+      "start_safe.py": {
+        "bytes": 60667,
+        "mode": 436,
+        "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+      }
+    },
+    "finished_at": "2026-09-08T07:07:35Z",
+    "mode": "VERIFY",
+    "production_write": false,
+    "proof": {
+      "button_code": "kr_bought",
+      "button_count_added": 1,
+      "button_label": "В Корее",
+      "callback": "ENABLED",
+      "fallback_menu": "PASS",
+      "hidden_codes": [
+        "sea_loaded",
+        "sea_transit",
+        "ua_handed"
+      ],
+      "other_removed_buttons": "STILL_HIDDEN",
+      "primary_menu": "PASS",
+      "schema_status_count": 10
+    },
+    "run_nonce": "task121-34196998338-b656089e00cc",
+    "status": "PASS",
+    "task_id": "TASK121-KOREA-BUTTON",
+    "unexpected_changes": 0
+  }
 }
