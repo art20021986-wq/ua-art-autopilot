@@ -156,6 +156,11 @@ class RemoteTransactionTests(unittest.TestCase):
             self.nonce, backup_sha, patcher_sha, after
         )
         self.assertEqual(installed["proof"]["button_count_added"], 1)
+        repeated = remote_installer.install(
+            self.nonce, backup_sha, patcher_sha, after
+        )
+        self.assertTrue(repeated["idempotent"])
+        self.assertFalse(repeated["production_write"])
         verified = remote_installer.verify(
             self.nonce, backup_sha, patcher_sha, after
         )
@@ -197,6 +202,34 @@ class ControllerScopeTests(unittest.TestCase):
             controller.nonce_value("task121-bad")
         with self.assertRaises(controller.ControllerError):
             controller.hash_value("x", "HASH")
+
+    def test_remote_command_cannot_repeat_before_trigger_cleanup(self):
+        nonce = "task121-123456-abcdef123456"
+        api = controller.API("secret", nonce)
+        captured = []
+        receipt = {
+            "task_id": controller.TASK_ID,
+            "run_nonce": nonce,
+            "mode": "BACKUP",
+            "status": "PASS",
+        }
+        with (
+            mock.patch.object(api, "delete_file"),
+            mock.patch.object(
+                api,
+                "create_trigger",
+                side_effect=lambda command: captured.append(command) or ("always_on", 9),
+            ),
+            mock.patch.object(api, "read", return_value=(
+                __import__("json").dumps(receipt).encode("utf-8")
+            )),
+            mock.patch.object(api, "delete_trigger") as deleted,
+        ):
+            value = api.run_remote("backup", timeout=1)
+        self.assertEqual(value, receipt)
+        self.assertIn("sleep 180", captured[0])
+        self.assertIn("task121_rc=$?", captured[0])
+        deleted.assert_called_once_with(("always_on", 9))
 
 
 if __name__ == "__main__":

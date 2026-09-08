@@ -380,6 +380,11 @@ class API:
         command = " ".join(
             token if token == "&&" else shlex.quote(token) for token in parts
         )
+        # PythonAnywhere always-on tasks restart short-lived commands.  Keep the
+        # first completed process alive long enough for the controller to read
+        # its receipt and delete the trigger, so a successful mode cannot run
+        # for a second time against its own postimage.
+        command += "; task121_rc=$?; sleep 180; exit $task121_rc"
         trigger = self.create_trigger(command)
         try:
             deadline = time.monotonic() + timeout

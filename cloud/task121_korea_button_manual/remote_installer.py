@@ -261,6 +261,34 @@ def install(
     after_hashes: dict[str, str],
 ) -> dict[str, Any]:
     state = load_state(run_nonce, backup_sha)
+    if state.get("status") in ("INSTALLED", "VERIFIED"):
+        current = snapshot()
+        for name, expected in after_hashes.items():
+            if current[name]["sha256"] != expected:
+                raise InstallError("IDEMPOTENT_INSTALL_DRIFT:" + name)
+        if current["start_safe.py"] != state["before"]["start_safe.py"]:
+            raise InstallError("IDEMPOTENT_PROTECTED_DRIFT")
+        patcher = load_patcher(patcher_sha)
+        values = target_bytes()
+        proof = patcher.verify(
+            values["cars_ui.py"].decode("utf-8"),
+            values["konteyner.py"].decode("utf-8"),
+            values["cars_schema.py"].decode("utf-8"),
+        )
+        return {
+            "task_id": TASK_ID,
+            "contract_id": CONTRACT,
+            "run_nonce": run_nonce,
+            "status": "PASS",
+            "mode": "INSTALL",
+            "backup_manifest_sha256": backup_sha,
+            "before": state["before"],
+            "after": current,
+            "proof": proof,
+            "production_write": False,
+            "idempotent": True,
+            "unexpected_changes": 0,
+        }
     if state.get("status") != "BACKED_UP":
         raise InstallError("STATE_NOT_BACKED_UP")
     current = snapshot()

@@ -56,9 +56,9 @@ jobs:
           test "$(sha256sum tasks/approvals/TASK121-KOREA-BUTTON.json | cut -d' ' -f1)" = "$UAART_APPROVAL_SHA256"
           test "$(sha256sum state/AUTOPILOT_HALT.json | cut -d' ' -f1)" = "$UAART_HALT_SHA256"
           test "$(sha256sum cloud/task121_korea_button_manual/patcher.py | cut -d' ' -f1)" = 96900bafe8bf2a32ce52f1000fdb7b7926d5117158ac03a34f1d8228fc40874b
-          test "$(sha256sum cloud/task121_korea_button_manual/remote_installer.py | cut -d' ' -f1)" = d551c39acf3986ebdcb9cb6e3608e391eba1ad20bb4208e4ddf3a5b3ccb152d9
-          test "$(sha256sum cloud/task121_korea_button_manual/controller.py | cut -d' ' -f1)" = 977529c364eb822e695251385101ab8cad469a1c4d835137c0fe7f7688d9b983
-          test "$(sha256sum cloud/task121_korea_button_manual/test_contract.py | cut -d' ' -f1)" = 57fcc2cf8cc7192afb9217fa8bb1726a9f327f639f65536cd7c7f05e5e89ee04
+          test "$(sha256sum cloud/task121_korea_button_manual/remote_installer.py | cut -d' ' -f1)" = e4aede8d5fe87e85cf62fe57e9aa3f8bf9904000fbc29cfdd6c3c43463c9532d
+          test "$(sha256sum cloud/task121_korea_button_manual/controller.py | cut -d' ' -f1)" = 97fccd409b3a4255adb8ec8f680d56619c2214480c36f5db20e45d0f86c4863f
+          test "$(sha256sum cloud/task121_korea_button_manual/test_contract.py | cut -d' ' -f1)" = 59854c2da7959858849c5e0c763047e93c43ce58d09cccdbc5680c049aaa1bd0
 
       - name: Run offline contract and rollback tests
         shell: bash
