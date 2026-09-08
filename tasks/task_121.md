@@ -3,6 +3,9 @@
 ## Owner approval
 Approved by owner on 2026-09-08: prepare publication of **UA-0017 only** in a separate branch and present Gate B. **Do not modify Production. Do not modify UA-0018 or any other card. Production requires a later explicit owner command: `ПУБЛИКОВАТЬ UA-0017`.**
 
+## Owner-confirmed vehicle year
+On 2026-09-08 the owner explicitly confirmed that UA-0017 is **year 2015**. The attached CRM screenshot also shows `UA-0017 · Audi A6 2015`, full VIN `WAUZZZ4GXGN069684`, mileage `118 000 km`, and 39 photos. The CRM warning that the 10th VIN character does not match year 2015 is a validation warning only and MUST NOT automatically overwrite the owner-confirmed year. For preparation and future publication, the authoritative display year is 2015 unless the owner later changes it.
+
 ## Branch scope
 This task is prepared on branch `ua0017-publish-only-001`, based on main commit `af683ac6236dcbf7a70e56183de7134d5af4b6b7`.
 
@@ -18,11 +21,11 @@ Prepare a verifiable, fail-closed, **single-card** execution package for UA-0017
   - internal id: 26
   - VIN: `WAUZZZ4GXGN069684`
   - brand/model: Audi A6
-  - CRM year: 2015
+  - owner-confirmed display year: 2015
   - mileage: 118000 km
   - current referenced status: `ge_waiting`
   - referenced media: 39 JPEG photos, 0 video
-- These values MUST be re-verified from the authenticated CRM snapshot before any future Production command. They are not authority to overwrite newer CRM data.
+- These values MUST be re-verified from the authenticated CRM snapshot before any future Production command, except that year 2015 is additionally confirmed directly by the owner. They are not authority to overwrite newer CRM data other than preserving the confirmed display year unless the owner directs otherwise.
 
 ## Hard exclusions
 1. UA-0018 must not be read as a publication target or changed.
@@ -45,7 +48,7 @@ Before Gate B, obtain a fresh authenticated read-only snapshot for UA-0017 and v
 - available storage and current transport/runtime capability relevant to a future single-card publish.
 
 ### B. Specification integrity
-The prior TASK120 reference contained 18 legacy model-level rows for UA-0017, derived from a 2016 Audi source document while the CRM vehicle year is 2015. Do not claim those rows as VIN-specific or as verified equipment of this exact vehicle unless independently supported. Separate verified vehicle facts from model-level reference facts. Do not invent rows to reach a target count.
+The prior TASK120 reference contained 18 legacy model-level rows for UA-0017, derived from a 2016 Audi source document while the owner-confirmed vehicle year is 2015. Do not claim those rows as VIN-specific or as verified equipment of this exact vehicle unless independently supported. Separate verified vehicle facts from model-level reference facts. Do not invent rows to reach a target count.
 
 ### C. Single-card execution package
 A future executable package must be newly bound to this task and UA-0017 only. It must not merely rename TASK120 while retaining UA-0018 constants, paths, backup scope, receipts, catalog assertions, or transaction semantics.
@@ -71,7 +74,7 @@ Gate B may be `PASS` only when all are true:
 3. New single-card package exists and passes its tests without Production write.
 4. Package contains no UA-0018 target/mutation path.
 5. Backup and rollback scope is UA-0017-only plus minimal shared catalog metadata required for atomic publication.
-6. Additional specification is truthful about provenance and 2015/2016 mismatch.
+6. Additional specification is truthful about provenance and the 2015/2016 source mismatch.
 7. Production authorization for this task is absent.
 8. The prior TASK120 Always-On failure is either demonstrably resolved for the future Production path or the package has an explicitly approved safe execution mechanism; no bypass.
 9. Non-target change count = 0 in sandbox/preview comparison.
