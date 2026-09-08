@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "source_id": "NAVER_K5_2019_CHASSIS",
+  "domain": "car.naver.com",
+  "source_url": "https://car.naver.com/spec?ncrId=car_129775",
+  "observed_urls": [
+    "https://car.naver.com/spec?ncrId=car_129775"
+  ],
+  "document_title": "2019 Kia K5 specifications",
+  "verification_status": "VERIFIED",
+  "verification_method": "manual_web_review",
+  "observed_at_utc": "2026-09-04T01:00:00Z",
+  "identity": {
+    "brand": "Kia",
+    "model_series": "K5 JF",
+    "year": 2019
+  },
+  "locator": "2019 K5 page, LPi listed in the powertrain selector; only generation-wide chassis and brake classifications are retained because the engine panel defaults to gasoline data",
+  "claims": [
+    {"code":"length_mm","value":4855,"unit":"мм","note":""},
+    {"code":"width_mm","value":1860,"unit":"мм","note":""},
+    {"code":"wheelbase_mm","value":2805,"unit":"мм","note":""},
+    {"code":"front_brakes","value":"дисковые","unit":"","note":""},
+    {"code":"rear_brakes","value":"дисковые","unit":"","note":""}
+  ]
+}

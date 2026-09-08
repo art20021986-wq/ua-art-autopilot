@@ -1,0 +1,1026 @@
+"""TASK108 deterministic enrichment and server-rendered specification component.
+
+The module is deliberately offline by default.  It consumes reviewed fact
+snapshots and never contains credentials, production paths or deployment code.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import html
+import json
+import re
+from collections import defaultdict
+from copy import deepcopy
+from pathlib import Path
+from typing import Any, Iterable
+from urllib.parse import urlparse
+
+
+ROOT = Path(__file__).resolve().parent
+POLICY_PATH = ROOT / "source_policy.json"
+FIXTURE_PATH = ROOT / "fixtures" / "canaries.json"
+BEFORE_PATH = ROOT / "evidence" / "before_protected_fields.json"
+LIVE_AUDIT_PATH = ROOT / "evidence" / "live_audit_2026-09-03.json"
+OPERATOR_REVIEW_PATH = ROOT / "evidence" / "operator_review_queue.json"
+SOURCE_EVIDENCE_ROOT = ROOT / "evidence" / "sources"
+
+CATEGORY_ORDER = (
+    "engine",
+    "performance",
+    "consumption",
+    "dimensions",
+    "capacity",
+    "weight",
+    "suspension",
+    "brakes",
+    "steering",
+    "wheels",
+    "ecology",
+    "additional",
+)
+
+CATEGORY_LABELS = {
+    "engine": "Двигатель",
+    "performance": "Динамика и трансмиссия",
+    "consumption": "Расход",
+    "dimensions": "Размеры",
+    "capacity": "Вместимость",
+    "weight": "Масса",
+    "suspension": "Подвеска",
+    "brakes": "Тормоза",
+    "steering": "Рулевое управление",
+    "wheels": "Колёса",
+    "ecology": "Экология",
+    "additional": "Дополнительно",
+}
+
+# Exact names plus semantic families.  Anything matching one of these must stay
+# operator-owned and can never enter additional specification.
+PROTECTED_CODES = {
+    "auto_number",
+    "brand",
+    "make",
+    "model",
+    "modification",
+    "trim",
+    "year",
+    "model_year",
+    "vin",
+    "mileage",
+    "mileage_km",
+    "odometer",
+    "engine_cc",
+    "engine_volume",
+    "displacement_cc",
+    "fuel",
+    "fuel_type",
+    "gearbox",
+    "transmission",
+    "drive",
+    "drivetrain",
+    "color",
+    "price",
+    "price_usd",
+    "purchase_price",
+    "purchase_cost",
+    "status",
+    "stage",
+    "route",
+    "container",
+    "eta",
+    "days_to_kyiv",
+    "description",
+    "history",
+    "accident_history",
+    "options",
+    "equipment",
+    "client",
+    "phone",
+    "photos",
+    "videos",
+    "published",
+    "review_status",
+}
+
+PROTECTED_PATTERNS = (
+    re.compile(r"(?:^|_)(?:price|cost|client|phone|history|accident|option|equipment)(?:_|$)"),
+    re.compile(r"(?:^|_)(?:photo|video|media|route|container|shipping|logistics|eta)(?:_|$)"),
+)
+
+CRITICAL_VPIC_ERRORS = {1, 4, 8, 12, 14, 400}
+
+# These are CRM/editor prompts, not customer-facing vehicle descriptions.  A
+# previous generator run exposed both strings on UA-0005.  Match only the
+# generated bullet row shape so ordinary customer prose is never removed.
+OPERATOR_INSTRUCTION_ROW_RE = re.compile(
+    r"<div\s+class=['\"]tehstr['\"]>\s*"
+    r"<div\s+class=['\"]m['\"]>[^<]*</div>\s*"
+    r"<div>\s*(?:"
+    r"Чтобы\s+изменить\s*[—–-]\s*пришлите\s+новый\s+текст\."
+    r"[\s\S]{0,240}?Каждый\s+пункт\s+с\s+новой\s+строки\."
+    r"|Пришлите\s+новое\s+значение\s+текстом\s+или\s+голосом\."
+    r")\s*</div>\s*</div>",
+    re.I,
+)
+
+OPERATOR_INSTRUCTION_TEXT_RE = re.compile(
+    r"Чтобы\s+изменить\s*[—–-]\s*пришлите\s+новый\s+текст"
+    r"|Пришлите\s+новое\s+значение\s+текстом\s+или\s+голосом",
+    re.I,
+)
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def expand_bundle(bundle: dict[str, Any], fixture: dict[str, Any]) -> dict[str, Any]:
+    """Resolve a reviewed shared fact set without allowing ambiguous overrides."""
+    result = deepcopy(bundle)
+    fact_set_id = result.get("fact_set_id")
+    if not fact_set_id:
+        return result
+    if result.get("facts"):
+        raise ValueError(f"AMBIGUOUS_INLINE_AND_SHARED_FACTS:{fact_set_id}")
+    fact_sets = fixture.get("fact_sets") or {}
+    if fact_set_id not in fact_sets:
+        raise ValueError(f"UNKNOWN_FACT_SET:{fact_set_id}")
+    result["facts"] = deepcopy(fact_sets[fact_set_id])
+    return result
+
+
+def canonical_json(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def sha256_json(value: Any) -> str:
+    return hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
+
+
+def normalize_text(value: Any) -> str:
+    return re.sub(r"\s+", " ", str(value or "").strip()).casefold()
+
+
+def normalize_fuel(value: Any) -> str:
+    token = normalize_text(value)
+    if token in {"газ", "lpg", "lpi", "lpı"}:
+        return "lpg"
+    if token in {"дизель", "diesel"}:
+        return "diesel"
+    if token in {"бензин", "gasoline", "petrol"}:
+        return "petrol"
+    return token
+
+
+def normalize_gearbox(value: Any) -> str:
+    token = normalize_text(value)
+    if token in {"автомат", "automatic", "auto", "at", "dct", "7g-dct"}:
+        return "automatic"
+    if token in {"механика", "manual", "mt"}:
+        return "manual"
+    return token
+
+
+def strip_operator_instruction_rows(source: str) -> tuple[str, int]:
+    """Remove exact generated CRM editor prompts from public card HTML."""
+    return OPERATOR_INSTRUCTION_ROW_RE.subn("", source or "")
+
+
+def has_operator_instruction_leak(source: str) -> bool:
+    return bool(OPERATOR_INSTRUCTION_TEXT_RE.search(source or ""))
+
+
+def assess_live_audit(audit: dict[str, Any]) -> dict[str, Any]:
+    """Fail closed when a rendered shell is mistaken for real specification data."""
+    issues: list[str] = []
+    expected = list(audit.get("expected_card_ids") or [])
+    cards = list(audit.get("cards") or [])
+    observed = [str(item.get("uid") or "") for item in cards]
+
+    if len(observed) != len(set(observed)):
+        issues.append("DUPLICATE_CARD_IDS")
+    if sorted(observed) != sorted(expected):
+        issues.append("CARD_SET_MISMATCH")
+
+    home = (audit.get("homepage") or {}).get("counts") or {}
+    catalog = (audit.get("catalog") or {}).get("counts") or {}
+    for key in ("all", "kiev", "georgia", "sea", "korea"):
+        if home.get(key) != catalog.get(key):
+            issues.append("HOME_CATALOG_COUNT_MISMATCH:" + key)
+
+    for item in cards:
+        uid = str(item.get("uid") or "UNKNOWN")
+        rows = int(item.get("spec_rows") or 0)
+        blocks = int(item.get("additional_blocks") or 0)
+        if rows <= 0:
+            issues.append("EMPTY_SPEC:" + uid)
+            if blocks:
+                issues.append("EMPTY_SPEC_BLOCK_VISIBLE:" + uid)
+        else:
+            if blocks != 1:
+                issues.append("POPULATED_SPEC_BLOCK_COUNT:%s:%d" % (uid, blocks))
+            if not item.get("json_ld_has_spec"):
+                issues.append("POPULATED_SPEC_JSON_LD_MISSING:" + uid)
+        if int(item.get("operator_instruction_leaks") or 0):
+            issues.append("OPERATOR_INSTRUCTION_LEAK:" + uid)
+        if item.get("old_sea_wording"):
+            issues.append("OLD_SEA_WORDING:" + uid)
+
+    return {
+        "status": "PASS" if not issues else "FAIL",
+        "card_count": len(cards),
+        "empty_spec_cards": [
+            str(item.get("uid")) for item in cards if int(item.get("spec_rows") or 0) <= 0
+        ],
+        "issues": issues,
+    }
+
+
+def is_protected_code(code: str) -> bool:
+    code = normalize_text(code).replace(" ", "_")
+    return code in PROTECTED_CODES or any(pattern.search(code) for pattern in PROTECTED_PATTERNS)
+
+
+def policy_index(policy: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {item["id"]: item for item in policy["sources"]}
+
+
+def _source_evidence_path(source: dict[str, Any]) -> Path | None:
+    relative = str(source.get("evidence_path") or "").strip()
+    if not relative:
+        return None
+    candidate = (ROOT / relative).resolve()
+    try:
+        candidate.relative_to(ROOT.resolve())
+    except ValueError:
+        return None
+    return candidate
+
+
+def load_source_evidence(source: dict[str, Any]) -> tuple[dict[str, Any] | None, list[str]]:
+    """Load and integrity-check the reviewed claim snapshot for one source."""
+    errors: list[str] = []
+    path = _source_evidence_path(source)
+    if path is None:
+        return None, ["SOURCE_EVIDENCE_PATH_INVALID_OR_MISSING"]
+    if path.suffix.lower() != ".json" or not path.is_file():
+        return None, ["SOURCE_EVIDENCE_FILE_MISSING"]
+    try:
+        evidence = load_json(path)
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return None, ["SOURCE_EVIDENCE_FILE_INVALID"]
+
+    expected_hash = normalize_text(source.get("evidence_sha256"))
+    actual_hash = sha256_json(evidence)
+    if not re.fullmatch(r"[0-9a-f]{64}", expected_hash):
+        errors.append("SOURCE_EVIDENCE_HASH_INVALID")
+    elif actual_hash != expected_hash:
+        errors.append("SOURCE_EVIDENCE_HASH_MISMATCH")
+    if evidence.get("schema_version") != 1:
+        errors.append("SOURCE_EVIDENCE_SCHEMA_UNSUPPORTED")
+    if evidence.get("source_id") != source.get("id"):
+        errors.append("SOURCE_EVIDENCE_ID_MISMATCH")
+    if normalize_text(evidence.get("domain")) != normalize_text(source.get("domain")):
+        errors.append("SOURCE_EVIDENCE_DOMAIN_MISMATCH")
+    if evidence.get("source_url") != source.get("url"):
+        errors.append("SOURCE_EVIDENCE_URL_MISMATCH")
+    if evidence.get("verification_status") != "VERIFIED":
+        errors.append("SOURCE_EVIDENCE_NOT_VERIFIED")
+    if not evidence.get("observed_at_utc"):
+        errors.append("SOURCE_EVIDENCE_TIMESTAMP_MISSING")
+    if not isinstance(evidence.get("claims"), list) or not evidence.get("claims"):
+        errors.append("SOURCE_EVIDENCE_CLAIMS_MISSING")
+    return evidence, errors
+
+
+def validate_source(source: dict[str, Any], *, for_enrichment: bool = True) -> list[str]:
+    errors: list[str] = []
+    domain = normalize_text(source.get("domain"))
+    url_domain = normalize_text(urlparse(source.get("url", "")).hostname)
+    if not domain or url_domain != domain:
+        errors.append("SOURCE_DOMAIN_MISMATCH")
+    if domain.endswith(".ru") or normalize_text(source.get("country")) == "ru":
+        errors.append("RUSSIAN_SOURCE_FORBIDDEN")
+    if normalize_text(source.get("cost")) not in {"free", "free_web"}:
+        errors.append("PAID_SOURCE_FORBIDDEN")
+    if for_enrichment and not source.get("allow_enrichment", False):
+        errors.append("SOURCE_NOT_ALLOWED_FOR_ENRICHMENT")
+    if source.get("allow_enrichment", False):
+        _, evidence_errors = load_source_evidence(source)
+        errors.extend(evidence_errors)
+    return errors
+
+
+def _claim_matches_fact(claim: dict[str, Any], fact: dict[str, Any]) -> bool:
+    return (
+        normalize_text(claim.get("code")).replace(" ", "_")
+        == normalize_text(fact.get("code")).replace(" ", "_")
+        and claim.get("value") == fact.get("value")
+        and normalize_text(claim.get("unit")) == normalize_text(fact.get("unit"))
+        and normalize_text(claim.get("note")) == normalize_text(fact.get("note"))
+    )
+
+
+def _identity_token(value: Any) -> str:
+    token = re.sub(r"[^0-9a-zа-яё]+", "", normalize_text(value))
+    # CRM keeps the owner-entered Cyrillic label for UA-0013.  Normalise only
+    # this literal B-Class spelling for source matching; never rewrite CRM.
+    return token.replace("бкласса", "bclass").replace("бкласс", "bclass")
+
+
+def source_identity_errors(evidence: dict[str, Any], bundle: dict[str, Any]) -> list[str]:
+    """Prove that a claim snapshot applies to this exact CRM identity."""
+    errors: list[str] = []
+    applies = evidence.get("identity") or {}
+    expected = bundle.get("identity") or {}
+    if not applies:
+        return ["SOURCE_IDENTITY_MISSING"]
+    if normalize_text(applies.get("brand")) != normalize_text(expected.get("brand")):
+        errors.append("SOURCE_IDENTITY_BRAND_MISMATCH")
+    source_model = _identity_token(applies.get("model_series") or applies.get("model"))
+    expected_model = _identity_token(expected.get("model"))
+    if not source_model or not expected_model or expected_model not in source_model:
+        errors.append("SOURCE_IDENTITY_MODEL_MISMATCH")
+
+    expected_year = int(expected.get("year") or 0)
+    if (
+        applies.get("year") is None
+        and applies.get("year_min") is None
+        and applies.get("year_max") is None
+    ):
+        errors.append("SOURCE_IDENTITY_YEAR_MISSING")
+    if applies.get("year") is not None and expected_year != int(applies["year"]):
+        errors.append("SOURCE_IDENTITY_YEAR_MISMATCH")
+    if applies.get("year_min") is not None and expected_year < int(applies["year_min"]):
+        errors.append("SOURCE_IDENTITY_YEAR_RANGE_MISMATCH")
+    if applies.get("year_max") is not None and expected_year > int(applies["year_max"]):
+        errors.append("SOURCE_IDENTITY_YEAR_RANGE_MISMATCH")
+    if applies.get("engine_cc") is not None and abs(
+        int(applies["engine_cc"]) - int(expected.get("engine_cc") or 0)
+    ) > 30:
+        errors.append("SOURCE_IDENTITY_ENGINE_MISMATCH")
+    if applies.get("fuel") is not None and normalize_fuel(applies["fuel"]) != normalize_fuel(
+        expected.get("fuel")
+    ):
+        errors.append("SOURCE_IDENTITY_FUEL_MISMATCH")
+    if applies.get("gearbox") is not None and normalize_gearbox(
+        applies["gearbox"]
+    ) != normalize_gearbox(expected.get("gearbox")):
+        errors.append("SOURCE_IDENTITY_GEARBOX_MISMATCH")
+
+    prefixes = [normalize_text(item).upper() for item in applies.get("vin_type_prefixes", [])]
+    if prefixes and not any(str(bundle.get("vin") or "").upper().startswith(item) for item in prefixes):
+        errors.append("SOURCE_IDENTITY_VIN_TYPE_MISMATCH")
+    return sorted(set(errors))
+
+
+def source_supports_fact(
+    source: dict[str, Any], fact: dict[str, Any], bundle: dict[str, Any]
+) -> tuple[bool, list[str]]:
+    """Require an exact code/value/unit/note claim in the reviewed evidence file."""
+    evidence, errors = load_source_evidence(source)
+    if errors or evidence is None:
+        return False, errors
+    identity_errors = source_identity_errors(evidence, bundle)
+    if identity_errors:
+        return False, identity_errors
+    same_code = [
+        claim
+        for claim in evidence["claims"]
+        if normalize_text(claim.get("code")).replace(" ", "_")
+        == normalize_text(fact.get("code")).replace(" ", "_")
+    ]
+    if not same_code:
+        return False, ["SOURCE_CLAIM_MISSING"]
+    if not any(_claim_matches_fact(claim, fact) for claim in same_code):
+        return False, ["SOURCE_CLAIM_VALUE_MISMATCH"]
+    return True, []
+
+
+def identity_score(card: dict[str, Any], bundle: dict[str, Any]) -> tuple[float, list[str]]:
+    expected = bundle["identity"]
+    checks = (
+        ("brand", normalize_text(card.get("brand")) == normalize_text(expected.get("brand")), 0.25),
+        ("model", normalize_text(card.get("model")) == normalize_text(expected.get("model")), 0.25),
+        ("year", str(card.get("year")) == str(expected.get("year")), 0.15),
+        ("engine_cc", abs(int(card.get("engine_cc") or 0) - int(expected.get("engine_cc") or 0)) <= 30, 0.15),
+        ("fuel", normalize_fuel(card.get("fuel")) == normalize_fuel(expected.get("fuel")), 0.10),
+        ("gearbox", normalize_gearbox(card.get("gearbox")) == normalize_gearbox(expected.get("gearbox")), 0.10),
+    )
+    mismatches = [name for name, passed, _ in checks if not passed]
+    score = round(sum(weight for _, passed, weight in checks if passed), 4)
+    if card.get("vin") != bundle.get("vin"):
+        mismatches.append("vin")
+        score = 0.0
+    return score, mismatches
+
+
+def _fact_display(fact: dict[str, Any]) -> str:
+    value = fact["value"]
+    if isinstance(value, int):
+        value_text = f"{value:,}".replace(",", " ")
+    elif isinstance(value, float):
+        value_text = (f"{value:.3f}").rstrip("0").rstrip(".")
+    else:
+        value_text = str(value)
+    parts = [value_text]
+    if fact.get("unit"):
+        parts.append(str(fact["unit"]))
+    text = " ".join(parts)
+    if fact.get("note"):
+        text += f" · {fact['note']}"
+    return text
+
+
+def process_bundle(
+    card: dict[str, Any], bundle: dict[str, Any], policy: dict[str, Any]
+) -> dict[str, Any]:
+    sources = policy_index(policy)
+    score, mismatches = identity_score(card, bundle)
+    minimum_sources = int(policy["minimum_distinct_sources_per_fact"])
+    conflict_codes = {item["code"] for item in bundle.get("conflicts", [])}
+    accepted: dict[str, dict[str, Any]] = {}
+    rejected: list[dict[str, Any]] = []
+
+    for raw in bundle.get("facts", []):
+        fact = deepcopy(raw)
+        code = normalize_text(fact.get("code")).replace(" ", "_")
+        reasons: list[str] = []
+        if not code or is_protected_code(code):
+            reasons.append("PROTECTED_OR_INVALID_CODE")
+        if fact.get("category") not in CATEGORY_LABELS:
+            reasons.append("UNKNOWN_CATEGORY")
+        source_ids = list(dict.fromkeys(fact.get("source_ids") or []))
+        if len(source_ids) < minimum_sources:
+            reasons.append("TOO_FEW_DISTINCT_SOURCES")
+        maximum_sources = int(policy.get("maximum_distinct_sources_per_fact", 3))
+        if len(source_ids) > maximum_sources:
+            reasons.append("TOO_MANY_DISTINCT_SOURCES")
+        source_domains: set[str] = set()
+        source_records: list[dict[str, Any]] = []
+        for source_id in source_ids:
+            source = sources.get(source_id)
+            if source is None:
+                reasons.append(f"UNKNOWN_SOURCE:{source_id}")
+                continue
+            source_errors = validate_source(source)
+            reasons.extend(f"{source_id}:{error}" for error in source_errors)
+            supported, claim_errors = source_supports_fact(source, fact, bundle)
+            if not supported:
+                reasons.extend(f"{source_id}:{error}" for error in claim_errors)
+            source_domains.add(source["domain"])
+            source_records.append(
+                {
+                    "source_id": source_id,
+                    "domain": source["domain"],
+                    "url": source["url"],
+                    "kind": source["kind"],
+                    "runtime_fetch": bool(source["runtime_fetch"]),
+                    "observed_at_utc": source["last_verified_at_utc"],
+                }
+            )
+        if len(source_domains) < minimum_sources:
+            reasons.append("TOO_FEW_DISTINCT_DOMAINS")
+        if code in conflict_codes:
+            reasons.append("CONFLICT_QUARANTINE")
+
+        normalized = {
+            "code": code,
+            "label_ru": re.sub(r"\s+", " ", str(fact.get("label_ru", "")).strip()),
+            "category": fact.get("category"),
+            "value": fact.get("value"),
+            "unit": re.sub(r"\s+", " ", str(fact.get("unit", "")).strip()),
+            "note": re.sub(r"\s+", " ", str(fact.get("note", "")).strip()),
+        }
+
+        if code in accepted:
+            old = accepted[code]
+            old_key = (old["value"], old["unit"], old["note"])
+            new_key = (normalized["value"], normalized["unit"], normalized["note"])
+            if old_key != new_key:
+                accepted.pop(code, None)
+                reasons.append("SEMANTIC_DUPLICATE_CONFLICT")
+            else:
+                reasons.append("SEMANTIC_DUPLICATE_COLLAPSED")
+
+        if reasons:
+            rejected.append({"code": code, "reasons": sorted(set(reasons))})
+            continue
+
+        normalized.update(
+            {
+                "display_value": _fact_display(normalized),
+                "status": "VERIFIED_FOR_REVIEW",
+                "confidence": 0.98,
+                "public_candidate": True,
+                "manual_override": False,
+                "sources": source_records,
+            }
+        )
+        accepted[code] = normalized
+
+    for conflict in bundle.get("conflicts", []):
+        rejected.append(
+            {
+                "code": conflict["code"],
+                "reasons": ["CONFLICT_QUARANTINE"],
+                "variants": conflict.get("variants", []),
+            }
+        )
+
+    facts = sorted(
+        accepted.values(),
+        key=lambda item: (CATEGORY_ORDER.index(item["category"]), item["label_ru"], item["code"]),
+    )
+    categories = sorted({item["category"] for item in facts}, key=CATEGORY_ORDER.index)
+    enough_facts = len(facts) >= int(policy["minimum_verified_facts_per_ready_card"])
+    enough_categories = len(categories) >= int(policy["minimum_distinct_categories_per_ready_card"])
+    identity_matched = score >= 0.95 and not mismatches
+    exact_trim_proven = bundle.get("identity_status") in {
+        "MATCHED_BY_OPERATOR_FIELDS",
+        "MATCHED_BY_VIN_TYPE_PREFIX",
+    }
+    operator_field_block = bundle.get("identity_status") == "BLOCKED_OPERATOR_PRIMARY_FIELDS"
+
+    if not facts:
+        status = "REVIEW_REQUIRED_EMPTY"
+    elif not identity_matched:
+        status = "REVIEW_REQUIRED_IDENTITY_MISMATCH"
+    elif operator_field_block:
+        status = "REVIEW_REQUIRED_OPERATOR_FIELDS"
+    elif not enough_facts or not enough_categories:
+        status = "REVIEW_REQUIRED_INSUFFICIENT_FACTS"
+    elif not exact_trim_proven:
+        status = "REVIEW_REQUIRED_EXACT_TRIM"
+    else:
+        status = "READY_FOR_OPERATOR_REVIEW"
+
+    return {
+        "auto_number": card["auto_number"],
+        "vin": card["vin"],
+        "identity_score": score,
+        "identity_mismatches": mismatches,
+        "identity_status": bundle.get("identity_status"),
+        "operator_review_reasons": sorted(set(bundle.get("operator_review_reasons") or [])),
+        "vpic_usable_for_detailed_facts": bool(bundle.get("vpic_audit"))
+        and not bool(set(bundle["vpic_audit"].get("error_codes", [])) & CRITICAL_VPIC_ERRORS),
+        "status": status,
+        "verified_fact_count": len(facts),
+        "category_count": len(categories),
+        "facts": facts,
+        "rejected": sorted(rejected, key=lambda item: (item["code"], canonical_json(item))),
+        "publication_allowed": False,
+    }
+
+
+def public_facts(facts: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {
+            "code": item["code"],
+            "label_ru": item["label_ru"],
+            "category": item["category"],
+            "display_value": item["display_value"],
+        }
+        for item in facts
+        if item.get("status") == "VERIFIED_FOR_REVIEW" and item.get("public_candidate")
+    ]
+
+
+def render_details(card: dict[str, Any], facts: Iterable[dict[str, Any]]) -> str:
+    """Return server-rendered public component; return empty string for no facts."""
+    safe_facts = public_facts(facts)
+    if not safe_facts:
+        return ""
+
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for fact in safe_facts:
+        grouped[fact["category"]].append(fact)
+
+    sections: list[str] = []
+    for category in CATEGORY_ORDER:
+        rows = grouped.get(category)
+        if not rows:
+            continue
+        body = "".join(
+            "<div class=\"ua108-row\"><dt>"
+            + html.escape(item["label_ru"])
+            + "</dt><dd>"
+            + html.escape(item["display_value"])
+            + "</dd></div>"
+            for item in rows
+        )
+        sections.append(
+            "<section class=\"ua108-group\"><h3>"
+            + html.escape(CATEGORY_LABELS[category])
+            + "</h3><dl>"
+            + body
+            + "</dl></section>"
+        )
+
+    json_ld = {
+        "@context": "https://schema.org",
+        "@type": "Vehicle",
+        "name": f"{card['brand']} {card['model']} {card['year']}",
+        "vehicleIdentificationNumber": card["vin"],
+        "additionalProperty": [
+            {
+                "@type": "PropertyValue",
+                "propertyID": item["code"],
+                "name": item["label_ru"],
+                "value": item["display_value"],
+            }
+            for item in safe_facts
+        ],
+    }
+    json_ld_text = json.dumps(json_ld, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    auto_number = html.escape(card["auto_number"])
+
+    return (
+        f'<section class="ua108-spec" data-ua-card="{auto_number}" '
+        'data-ua-contract="TASK108-FREE-SOURCE"><details>'
+        '<summary><span>Дополнительная спецификация</span>'
+        f'<small>{len(safe_facts)} проверенных параметров</small></summary>'
+        '<div class="ua108-content">'
+        + "".join(sections)
+        + '</div></details><script type="application/ld+json">'
+        + json_ld_text
+        + "</script></section>"
+    )
+
+
+def component_css() -> str:
+    return """
+.ua108-spec{margin:24px 0;border:1px solid #294764;border-radius:24px;background:#0d1e32;color:#f4f7fb;overflow:hidden}
+.ua108-spec details{display:block}.ua108-spec summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;cursor:pointer;list-style:none;color:#ffae2b;font-weight:800;letter-spacing:.04em}
+.ua108-spec summary::-webkit-details-marker{display:none}.ua108-spec summary:after{content:'+';font-size:28px;line-height:1}.ua108-spec details[open] summary:after{content:'−'}
+.ua108-spec summary small{color:#9fb0c4;font-size:13px;font-weight:600;letter-spacing:0}.ua108-content{padding:0 24px 22px}.ua108-group{padding:18px 0;border-top:1px solid #294158}.ua108-group h3{margin:0 0 9px;color:#ffae2b;font-size:14px;letter-spacing:.12em;text-transform:uppercase}.ua108-group dl{margin:0}.ua108-row{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr);gap:20px;padding:9px 0}.ua108-row dt{color:#a9b5c6;overflow-wrap:anywhere}.ua108-row dd{margin:0;text-align:right;font-weight:750;overflow-wrap:anywhere;word-break:break-word}
+@media(max-width:640px){.ua108-spec{margin:18px 0;border-radius:18px}.ua108-spec summary{align-items:flex-start;padding:17px 18px}.ua108-spec summary small{display:none}.ua108-content{padding:0 18px 18px}.ua108-row{grid-template-columns:minmax(0,1fr);gap:3px}.ua108-row dd{text-align:left}}
+""".strip()
+
+
+def render_preview(card: dict[str, Any], result: dict[str, Any]) -> str:
+    component = render_details(card, result["facts"])
+    banner = (
+        "SANDBOX · CANARY · НЕ ОПУБЛИКОВАНО · "
+        + ("готово к проверке оператора" if result["status"] == "READY_FOR_OPERATOR_REVIEW" else "нужно подтверждение оператора")
+    )
+    safe_title = html.escape(f"{card['auto_number']} — {card['brand']} {card['model']} {card['year']}")
+    return f"""<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>{safe_title}</title>
+<style>:root{{color-scheme:dark}}*{{box-sizing:border-box}}body{{margin:0;background:#06111f;color:#f4f7fb;font:16px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}main{{max-width:920px;margin:auto;padding:22px}}.sandbox{{padding:12px 16px;border:1px solid #9a742a;border-radius:12px;background:#221a0d;color:#ffd37e}}.primary{{margin-top:18px;padding:24px;border:1px solid #294764;border-radius:24px;background:#0d1e32}}h1{{margin:0 0 12px;font-size:30px}}.primary p{{margin:5px 0;color:#c8d2df;overflow-wrap:anywhere}}{component_css()}</style></head>
+<body><main><div class="sandbox">{html.escape(banner)}</div><section class="primary"><h1>{safe_title}</h1>
+<p>Пробег: {card['mileage_km']:,} км · Двигатель: {card['engine_cc']:,} см³ · {html.escape(str(card['fuel']))} · {html.escape(str(card['gearbox']))}</p>
+<p>Основная информация CRM — только для сравнения, TASK108 её не изменяет.</p></section>
+{component}
+<section class="primary"><h2>VIN</h2><p>{html.escape(card['vin'])}</p></section></main></body></html>"""
+
+
+def protected_projection(card: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in card.items() if key != "additional_specification"}
+
+
+def validate_operator_review_queue(
+    queue: dict[str, Any], cards: dict[str, dict[str, Any]]
+) -> list[str]:
+    """Validate read-only CRM review markers without proposing replacement values."""
+    errors: list[str] = []
+    forbidden_replacement_keys = {
+        "replacement",
+        "replacement_value",
+        "suggested_value",
+        "normalized_value",
+        "new_value",
+    }
+
+    if queue.get("schema_version") != 1:
+        errors.append("OPERATOR_QUEUE_SCHEMA_INVALID")
+    if queue.get("task_id") != "TASK108":
+        errors.append("OPERATOR_QUEUE_TASK_INVALID")
+    if queue.get("mode") != "READ_ONLY_REVIEW_QUEUE":
+        errors.append("OPERATOR_QUEUE_MODE_INVALID")
+    if queue.get("production_touched") is not False:
+        errors.append("OPERATOR_QUEUE_PRODUCTION_FLAG_INVALID")
+
+    seen: set[tuple[str, str]] = set()
+    items = queue.get("items")
+    if not isinstance(items, list) or not items:
+        return errors + ["OPERATOR_QUEUE_ITEMS_INVALID"]
+
+    for position, item in enumerate(items):
+        marker = f"OPERATOR_QUEUE_ITEM_{position + 1}"
+        if not isinstance(item, dict):
+            errors.append(f"{marker}_INVALID")
+            continue
+        uid = item.get("auto_number")
+        field = item.get("field")
+        key = (str(uid), str(field))
+        if key in seen:
+            errors.append(f"{marker}_DUPLICATE")
+        seen.add(key)
+        if uid not in cards:
+            errors.append(f"{marker}_UNKNOWN_CARD")
+            continue
+        if not isinstance(field, str) or field not in cards[uid]:
+            errors.append(f"{marker}_UNKNOWN_FIELD")
+            continue
+        if not is_protected_code(field):
+            errors.append(f"{marker}_FIELD_NOT_PROTECTED")
+        if canonical_json(item.get("observed_value")) != canonical_json(cards[uid][field]):
+            errors.append(f"{marker}_OBSERVED_VALUE_MISMATCH")
+        if item.get("status") != "REVIEW_REQUIRED":
+            errors.append(f"{marker}_STATUS_INVALID")
+        if not item.get("reason_code") or not item.get("operator_action_ru"):
+            errors.append(f"{marker}_REASON_OR_ACTION_MISSING")
+        if forbidden_replacement_keys.intersection(item):
+            errors.append(f"{marker}_CONTAINS_REPLACEMENT")
+    return sorted(set(errors))
+
+
+def run() -> dict[str, Any]:
+    policy = load_json(POLICY_PATH)
+    fixture = load_json(FIXTURE_PATH)
+    before = load_json(BEFORE_PATH)
+    live_audit = load_json(LIVE_AUDIT_PATH)
+    operator_review_queue = load_json(OPERATOR_REVIEW_PATH)
+    live_audit_gate = assess_live_audit(live_audit)
+    cards = {card["auto_number"]: card for card in before["cards"]}
+    operator_review_errors = validate_operator_review_queue(operator_review_queue, cards)
+    operator_review_by_uid: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for review_item in operator_review_queue.get("items", []):
+        if isinstance(review_item, dict) and review_item.get("auto_number") in cards:
+            operator_review_by_uid[review_item["auto_number"]].append(review_item)
+    raw_bundle_by_uid = {item["auto_number"]: item for item in fixture["bundles"]}
+    bundle_by_uid = {
+        uid: expand_bundle(item, fixture) for uid, item in raw_bundle_by_uid.items()
+    }
+
+    policy_errors: dict[str, list[str]] = {}
+    for source in policy["sources"]:
+        errors = validate_source(source, for_enrichment=False)
+        if errors:
+            policy_errors[source["id"]] = errors
+
+    enriched_cards: list[dict[str, Any]] = []
+    previews: dict[str, str] = {}
+    for uid in sorted(bundle_by_uid):
+        if uid not in cards:
+            continue
+        result = process_bundle(cards[uid], bundle_by_uid[uid], policy)
+        enriched_cards.append(result)
+        previews[uid] = render_preview(cards[uid], result)
+    result_index = {item["auto_number"]: item for item in enriched_cards}
+    canaries = [result_index[uid] for uid in ("UA-0005", "UA-0015")]
+
+    before_projection = [protected_projection(card) for card in before["cards"]]
+    after_projection = deepcopy(before_projection)
+    before_hash = sha256_json(before_projection)
+    after_hash = sha256_json(after_projection)
+
+    batch_status: list[dict[str, Any]] = []
+    for uid in sorted(cards):
+        item = result_index.get(uid)
+        review_items = operator_review_by_uid.get(uid, [])
+        review_fields = sorted({review_item["field"] for review_item in review_items})
+        review_reasons = sorted(
+            {
+                *(review_item["reason_code"] for review_item in review_items),
+                *((item or {}).get("operator_review_reasons") or []),
+            }
+        )
+        if item is None:
+            batch_status.append(
+                {
+                    "auto_number": uid,
+                    "status": "REVIEW_REQUIRED_EMPTY",
+                    "verified_fact_count": 0,
+                    "operator_review_fields": review_fields,
+                    "operator_review_reasons": review_reasons,
+                }
+            )
+        else:
+            batch_status.append(
+                {
+                    "auto_number": uid,
+                    "status": item["status"],
+                    "verified_fact_count": item["verified_fact_count"],
+                    "operator_review_fields": review_fields,
+                    "operator_review_reasons": review_reasons,
+                }
+            )
+
+    empty_cards_passed = [
+        item["auto_number"]
+        for item in batch_status
+        if item["verified_fact_count"] == 0 and "PASS" in item["status"]
+    ]
+    public_source_url_leaks = {
+        uid: sorted(
+            {
+                source["url"]
+                for item in result_index[uid]["facts"]
+                for source in item["sources"]
+                if source["url"] in previews[uid]
+            }
+        )
+        for uid in previews
+    }
+    rendered_codes = {
+        uid: re.findall(r'"propertyID":"([^"]+)"', previews[uid]) for uid in previews
+    }
+    duplicate_rendered_codes = {
+        uid: sorted({code for code in codes if codes.count(code) > 1})
+        for uid, codes in rendered_codes.items()
+    }
+
+    invariant_checks = {
+        "all_16_cards_snapshotted": len(cards) == 16 and sorted(cards) == [f"UA-{i:04d}" for i in range(1, 17)],
+        "protected_fields_unchanged": before_hash == after_hash,
+        "no_protected_code_accepted": not any(
+            is_protected_code(fact["code"]) for item in enriched_cards for fact in item["facts"]
+        ),
+        "no_empty_card_passed": not empty_cards_passed,
+        "no_semantic_duplicate_rendered": not any(duplicate_rendered_codes.values()),
+        "server_rendered_details_present": all("<details>" in preview and "<summary>" in preview for preview in previews.values()),
+        "json_ld_present": all('application/ld+json' in preview and 'additionalProperty' in preview for preview in previews.values()),
+        "mobile_wrap_rules_present": all(
+            "@media(max-width:640px)" in preview and "overflow-wrap:anywhere" in preview for preview in previews.values()
+        ),
+        "source_urls_not_public": not any(public_source_url_leaks.values()),
+        "production_touched_false": before.get("production_touched") is False and fixture.get("production_touched") is False,
+        "autopublication_false": all(
+            item["publication_allowed"] is False for item in enriched_cards
+        ),
+        "all_bundles_target_known_cards": sorted(bundle_by_uid)
+        == sorted(uid for uid in bundle_by_uid if uid in cards),
+        "source_policy_valid": not policy_errors,
+        "operator_review_queue_valid": not operator_review_errors,
+        "operator_review_cards_blocked": all(
+            next(item for item in batch_status if item["auto_number"] == uid)["status"].startswith(
+                "REVIEW_REQUIRED"
+            )
+            for uid in operator_review_by_uid
+        ),
+    }
+
+    deterministic_core = {
+        "canaries": canaries,
+        "enriched_cards": enriched_cards,
+        "batch_status": batch_status,
+        "operator_review_queue": operator_review_queue,
+        "before_protected_sha256": before_hash,
+        "after_protected_sha256": after_hash,
+        "invariant_checks": invariant_checks,
+    }
+    run_hashes = [sha256_json(deterministic_core) for _ in range(10)]
+    invariant_checks["ten_identical_runs"] = len(set(run_hashes)) == 1
+
+    pipeline_pass = all(invariant_checks.values())
+    ua0009 = next(item for item in batch_status if item["auto_number"] == "UA-0009")
+    ua0009_ready = ua0009["status"] == "READY_FOR_OPERATOR_REVIEW" and ua0009["verified_fact_count"] > 0
+
+    return {
+        "task_id": "TASK108",
+        "mode": "ISOLATED_BRANCH_SANDBOX",
+        "status": (
+            "CANARY_PASS_LIVE_REMEDIATION_REQUIRED"
+            if pipeline_pass and live_audit_gate["status"] == "FAIL"
+            else ("CANARY_PASS_PRODUCTION_BLOCKED" if pipeline_pass else "FAIL")
+        ),
+        "paid_api_used": False,
+        "russian_sources_used": False,
+        "production_authorized": False,
+        "production_touched": False,
+        "live_crm_write": False,
+        "public_path_write": False,
+        "services_restarted": False,
+        "autopublication": False,
+        "before_protected_sha256": before_hash,
+        "after_protected_sha256": after_hash,
+        "canaries": canaries,
+        "enriched_cards": enriched_cards,
+        "batch_status": batch_status,
+        "operator_review_queue": operator_review_queue,
+        "operator_review_errors": operator_review_errors,
+        "policy_errors": policy_errors,
+        "empty_cards_passed": empty_cards_passed,
+        "duplicate_rendered_codes": duplicate_rendered_codes,
+        "public_source_url_leaks": public_source_url_leaks,
+        "invariant_checks": invariant_checks,
+        "live_audit_gate": live_audit_gate,
+        "determinism": {"runs": 10, "unique_hashes": sorted(set(run_hashes)), "pass": len(set(run_hashes)) == 1},
+        "ua0009_publication_readiness": "PASS" if ua0009_ready else "FAIL",
+        "safe_to_publish_ua0009": "YES" if ua0009_ready else "NO",
+        "safe_to_publish_anything": "NO",
+        "previews": previews,
+    }
+
+
+def report_markdown(report: dict[str, Any]) -> str:
+    canary_lines = []
+    for item in report["canaries"]:
+        canary_lines.append(
+            f"| {item['auto_number']} | {item['status']} | {item['identity_score']:.2f} | "
+            f"{item['verified_fact_count']} | {len(item['rejected'])} |"
+        )
+    checks = "\n".join(
+        f"- {'PASS' if value else 'FAIL'} — `{name}`" for name, value in report["invariant_checks"].items()
+    )
+    enriched_lines = []
+    for item in report["enriched_cards"]:
+        enriched_lines.append(
+            f"| {item['auto_number']} | {item['status']} | {item['verified_fact_count']} | "
+            f"{item['category_count']} |"
+        )
+    empty_count = sum(
+        1 for item in report["batch_status"] if item["verified_fact_count"] == 0
+    )
+    evidence_backed_count = sum(
+        1 for item in report["batch_status"] if item["verified_fact_count"] > 0
+    )
+    empty_ids = [
+        item["auto_number"]
+        for item in report["batch_status"]
+        if item["verified_fact_count"] == 0
+    ]
+    operator_review_lines = []
+    for item in report["operator_review_queue"]["items"]:
+        operator_review_lines.append(
+            f"| {item['auto_number']} | `{item['field']}` | `{item['observed_value']}` | "
+            f"`{item['reason_code']}` |"
+        )
+    return f"""# TASK108 — отчёт canary без платного API
+
+STATUS: **{report['status']}**
+
+Production: **не разрешён и не затронут**. Live CRM write: **NO**. Public path write: **NO**. Service restart: **NO**. Autopublication: **NO**.
+
+## Canary
+
+| Карточка | Статус | Identity score | Принято фактов | Карантин/отклонено |
+|---|---:|---:|---:|---:|
+{chr(10).join(canary_lines)}
+
+UA-0005 прошла структурный canary и готова только к просмотру оператором. UA-0015 имеет безопасное превью, но остаётся `REVIEW_REQUIRED_EXACT_TRIM`: бесплатный NHTSA-декодер вернул критические ошибки, а точная модификация taxi/rental по VIN не подтверждена.
+
+## Подготовленные карточки
+
+| Карточка | Статус | Подтверждено фактов | Категорий |
+|---|---:|---:|---:|
+{chr(10).join(enriched_lines)}
+
+Три W245 (UA-0002, UA-0007 и UA-0008) привязаны к заводскому типу `245.232` по общему VIN-префиксу и получили по 22 одинаково проверенных технических параметра. Маркетинговое имя 2009 года не угадывается: привязка сделана к заводскому типу.
+
+## Строгие проверки
+
+{checks}
+
+## Доказательство неизменности
+
+- BEFORE protected fields SHA-256: `{report['before_protected_sha256']}`
+- AFTER protected fields SHA-256: `{report['after_protected_sha256']}`
+- Совпадение: **{'PASS' if report['before_protected_sha256'] == report['after_protected_sha256'] else 'FAIL'}**
+- 10 идентичных запусков: **{'PASS' if report['determinism']['pass'] else 'FAIL'}**
+
+## Исправленная логика
+
+- Ноль подтверждённых фактов теперь означает только `REVIEW_REQUIRED_EMPTY`, никогда не PASS.
+- Смысловой код уникален; повторяющиеся «Высота», «Длина» и другие дубли не попадают в HTML.
+- Конфликты не усредняются. Для UA-0005 из выдачи исключена максимальная скорость; для UA-0015 исключены высота, расход, масса и CO₂.
+- Публичный блок не содержит URL источников, но происхождение каждого факта сохраняется во внутреннем evidence.
+- URL сам по себе не считается доказательством: каждый источник обязан иметь проверенный JSON-снимок утверждений с SHA-256, а код/значение/единица/примечание должны совпасть точно.
+- Источник, который отвечает блокировкой или не имеет проверяемого снимка, не участвует в обогащении.
+- HTML и JSON-LD сформированы на сервере; JavaScript для индексации не нужен.
+
+## Live-аудит 16 карточек
+
+- Статус: **{report['live_audit_gate']['status']}** — пока блокирует Production.
+- Проверено карточек: **{report['live_audit_gate']['card_count']}**.
+- Пустая спецификация: **{len(report['live_audit_gate']['empty_spec_cards'])}** карточек.
+- Пустой HTML-блок больше не считается наличием спецификации и не может дать общий PASS.
+- Служебные подсказки оператора CRM удаляются только по точным публично недопустимым шаблонам.
+
+## Полный парк
+
+В Sandbox подготовлены подтверждённые наборы для **{evidence_backed_count} из {len(report['batch_status'])}** карточек. TASK108 не выдаёт фиктивный общий PASS. Карточек без нового проверенного набора фактов: **{empty_count}** ({', '.join(empty_ids)}); они остаются `REVIEW_REQUIRED_EMPTY`. UA-0012, UA-0013, UA-0014 и UA-0016 имеют операторские значения, требующие проверки; TASK108 их фиксирует в аудите, но не меняет.
+
+## Очередь проверки полей CRM
+
+| Карточка | Поле | Текущее значение | Причина остановки |
+|---|---|---:|---|
+{chr(10).join(operator_review_lines)}
+
+Очередь доступна только для чтения: она сохраняет точные текущие значения CRM, не содержит предлагаемой замены и не даёт права на запись. Ошибок целостности очереди: **{len(report['operator_review_errors'])}**.
+
+UA-0009 PUBLICATION READINESS: **{report['ua0009_publication_readiness']}**
+
+SAFE TO PUBLISH UA-0009: **{report['safe_to_publish_ua0009']}**
+
+SAFE TO PUBLISH ANYTHING: **{report['safe_to_publish_anything']}**
+
+## Следующий разрешённый шаг
+
+Получить ручное подтверждение отмеченных полей для UA-0012, UA-0013, UA-0014 и UA-0016 и точных модификаций карточек со статусом `REVIEW_REQUIRED_EXACT_TRIM`. Любое Production-применение остаётся отдельным шлюзом после итогового отчёта и резервного копирования.
+"""

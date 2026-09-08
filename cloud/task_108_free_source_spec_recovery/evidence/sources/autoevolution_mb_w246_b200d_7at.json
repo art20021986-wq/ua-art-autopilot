@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "source_id": "AUTOEVOLUTION_MB_W246_B200D_7AT",
+  "domain": "www.autoevolution.com",
+  "source_url": "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html",
+  "observed_urls": [
+    "https://www.autoevolution.com/cars/mercedes-benz-b-class-w246-2014.html"
+  ],
+  "document_title": "2015 Mercedes-Benz B-Class W246 specifications — 200 CDI 7AT FWD",
+  "verification_status": "VERIFIED",
+  "verification_method": "manual_web_review",
+  "observed_at_utc": "2026-09-04T02:00:00Z",
+  "identity": {
+    "brand": "Mercedes-Benz",
+    "model_series": "B-Class W246",
+    "modification": "200 CDI 7AT FWD 136 HP",
+    "year_min": 2014,
+    "year_max": 2018,
+    "engine_cc": 2143,
+    "fuel": "diesel",
+    "gearbox": "automatic"
+  },
+  "locator": "The dedicated 200 CDI 7AT FWD 136 HP section of the W246 facelift page",
+  "claims": [
+    {"code":"max_power_ps","value":136,"unit":"л.с.","note":"3 200–4 000 об/мин"},
+    {"code":"max_torque_nm","value":300,"unit":"Н·м","note":"1 400–3 000 об/мин"},
+    {"code":"cylinders_count","value":4,"unit":"","note":"рядное расположение"},
+    {"code":"fuel_injection","value":"Common Rail","unit":"","note":""},
+    {"code":"transmission_gears","value":7,"unit":"ступ.","note":"автоматическая"},
+    {"code":"gross_weight_kg","value":2025,"unit":"кг","note":""},
+    {"code":"width_mm","value":1786,"unit":"мм","note":"без зеркал"},
+    {"code":"height_mm","value":1557,"unit":"мм","note":""},
+    {"code":"front_track_mm","value":1552,"unit":"мм","note":""},
+    {"code":"rear_track_mm","value":1549,"unit":"мм","note":""},
+    {"code":"front_brakes","value":"вентилируемые дисковые","unit":"","note":""},
+    {"code":"rear_brakes","value":"дисковые","unit":"","note":""},
+    {"code":"tire_size","value":"205/55 R16","unit":"","note":""},
+    {"code":"length_mm","value":4394,"unit":"мм","note":""},
+    {"code":"wheelbase_mm","value":2700,"unit":"мм","note":""},
+    {"code":"curb_weight_kg","value":1505,"unit":"кг","note":""},
+    {"code":"trunk_min_l","value":487,"unit":"л","note":""},
+    {"code":"max_speed_kmh","value":209,"unit":"км/ч","note":""},
+    {"code":"acceleration_0_100_s","value":9.8,"unit":"с","note":""},
+    {"code":"combined_consumption_l_100km","value":4.2,"unit":"л/100 км","note":"NEDC"}
+  ]
+}

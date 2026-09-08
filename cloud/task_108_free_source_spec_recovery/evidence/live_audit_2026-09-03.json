@@ -1,0 +1,48 @@
+{
+  "task_id": "TASK108",
+  "observed_at_utc": "2026-09-03T16:54:36Z",
+  "mode": "PUBLIC_READ_ONLY_BROWSER_AUDIT",
+  "production_touched": false,
+  "expected_card_ids": [
+    "UA-0001", "UA-0002", "UA-0003", "UA-0004",
+    "UA-0005", "UA-0006", "UA-0007", "UA-0008",
+    "UA-0009", "UA-0010", "UA-0011", "UA-0012",
+    "UA-0013", "UA-0014", "UA-0015", "UA-0016"
+  ],
+  "homepage": {
+    "url": "https://www.uaart.com.ua/video/index.html",
+    "counts": {"all": 16, "kiev": 3, "georgia": 1, "sea": 8, "korea": 4},
+    "old_total_10_present": false,
+    "old_sea_wording_present": false
+  },
+  "catalog": {
+    "url": "https://www.uaart.com.ua/video/katalog.html",
+    "counts": {"all": 16, "kiev": 3, "georgia": 1, "sea": 8, "korea": 4},
+    "filter_gate": "PASS",
+    "unique_card_urls": 16
+  },
+  "cards": [
+    {"uid":"UA-0001","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0002","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0003","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0004","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0005","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":2,"old_sea_wording":false},
+    {"uid":"UA-0006","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0007","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0008","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0009","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0010","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0011","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0012","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0013","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0014","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0015","additional_blocks":1,"spec_rows":12,"json_ld_has_spec":true,"operator_instruction_leaks":0,"old_sea_wording":false},
+    {"uid":"UA-0016","additional_blocks":1,"spec_rows":0,"json_ld_has_spec":false,"operator_instruction_leaks":0,"old_sea_wording":false}
+  ],
+  "known_operator_field_anomalies_not_modified": [
+    {"uid":"UA-0012","field":"mileage_km","public_value":342,"status":"OPERATOR_REVIEW_REQUIRED"},
+    {"uid":"UA-0014","field":"engine_cc","public_value":1645,"status":"OPERATOR_REVIEW_REQUIRED"},
+    {"uid":"UA-0016","field":"year","public_value":1999,"status":"OPERATOR_REVIEW_REQUIRED"},
+    {"uid":"UA-0016","field":"mileage_km","public_value":353,"status":"OPERATOR_REVIEW_REQUIRED"}
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "task_id": "TASK108",
+  "captured_at_utc": "2026-09-03T23:00:00Z",
+  "mode": "READ_ONLY_EVIDENCE",
+  "production_touched": false,
+  "sources": [
+    "cloud/task_099_site_crm_repair/evidence/live_audit.json@d6a11f7fe42627bc735807faa41f2d254678607a",
+    "https://www.uaart.com.ua/video/katalog.html"
+  ],
+  "cards": [
+    {"auto_number":"UA-0001","brand":"Mercedes-Benz","model":"E 220","year":"2017","vin":"WDDZF0EB7HA053001","mileage_km":147962,"engine_cc":1950,"fuel":"дизель","gearbox":"автомат","drive":"задний","price_usd":23000,"status":"ge_waiting","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0002","brand":"Mercedes-Benz","model":"B-Class","year":"2010","vin":"WDD2452322J561014","mileage_km":104000,"engine_cc":1700,"fuel":"бензин","gearbox":"автомат","drive":"передний","price_usd":8700,"status":"ua_arrived","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0003","brand":"Kia","model":"K5","year":"2019","vin":"KNAGS416BLA375484","mileage_km":181000,"engine_cc":2000,"fuel":"LPI","gearbox":"автомат","drive":"передний","price_usd":11500,"status":"kr_bought","published":1,"review_status":"on_review"},
+    {"auto_number":"UA-0004","brand":"Kia","model":"K5","year":"2019","vin":"KNAGS416BLA363849","mileage_km":254590,"engine_cc":2000,"fuel":"LPI","gearbox":"автомат","drive":"передний","price_usd":11000,"status":"kr_bought","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0005","brand":"Mercedes-Benz","model":"B-Class","year":"2013","vin":"WDDMH0BBXDV171918","mileage_km":139000,"engine_cc":1800,"fuel":"Дизель","gearbox":"автомат","drive":"передний","price_usd":11500,"status":"sea_loaded","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0006","brand":"Kia","model":"K5","year":"2019","vin":"KNAGS416BLA359954","mileage_km":178000,"engine_cc":2000,"fuel":"LPI","gearbox":"автомат","drive":"передний","price_usd":10500,"status":"sea_loaded","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0007","brand":"Mercedes-Benz","model":"B-Class","year":"2011","vin":"WDD2452322J724006","mileage_km":50000,"engine_cc":1700,"fuel":"бензин","gearbox":"автомат","drive":"передний","price_usd":9300,"status":"ua_arrived","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0008","brand":"Mercedes-Benz","model":"B-Class","year":"2009","vin":"WDD2452322J540158","mileage_km":51000,"engine_cc":1700,"fuel":"бензин","gearbox":"автомат","drive":"передний","price_usd":9100,"status":"ua_arrived","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0009","brand":"Kia","model":"K5","year":"2018","vin":"KNAGU416BJA242741","mileage_km":300000,"engine_cc":2000,"fuel":"газ","gearbox":"автомат","drive":"передний","price_usd":11500,"status":"sea_loaded","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0010","brand":"Kia","model":"K5","year":"2018","vin":"KNAGU416BKA324445","mileage_km":198000,"engine_cc":2000,"fuel":"газ","gearbox":"автомат","drive":"передний","price_usd":11700,"status":"sea_loaded","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0011","brand":"Hyundai","model":"SONATA","year":"2018","vin":"KMHE341DBKA544289","mileage_km":163400,"engine_cc":2000,"fuel":"LPI","gearbox":"автомат","drive":"передний","price_usd":11400,"status":"sea_loaded","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0012","brand":"Kia","model":"K5","year":"2018","vin":"KNAGU416BJA244187","mileage_km":342,"engine_cc":2000,"fuel":"LPI","gearbox":"автомат","drive":"передний","price_usd":10500,"status":"sea_transit","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0013","brand":"Mercedes-Benz","model":"Б-КЛАССА","year":"2015","vin":"WDDMH0JB6GN142530","mileage_km":190010,"engine_cc":2143,"fuel":"diesel","gearbox":"автомат","drive":"передний","price_usd":14700,"status":"sea_loaded","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0014","brand":"Kia","model":"K5","year":"2016","vin":"KNAGS415GGA068770","mileage_km":124500,"engine_cc":1645,"fuel":"diesel","gearbox":"автомат","drive":"передний","price_usd":11500,"status":"sea_loaded","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0015","brand":"Hyundai","model":"SONATA","year":"2018","vin":"KMHE341DBJA475862","mileage_km":291400,"engine_cc":1999,"fuel":"газ","gearbox":"автомат","drive":"передний","price_usd":10000,"status":"kr_bought","published":1,"review_status":"approved_owner"},
+    {"auto_number":"UA-0016","brand":"Kia","model":"К5","year":"1999","vin":"KNAGS416BHA141028","mileage_km":353,"engine_cc":1999,"fuel":"газ","gearbox":"автомат","drive":"передний","price_usd":10500,"status":"kr_bought","published":1,"review_status":"approved_owner"}
+  ],
+  "observations": [
+    "UA-0012 mileage_km=342 is suspicious and remains unchanged.",
+    "UA-0016 year=1999 and mileage_km=353 are suspicious and remain unchanged pending a separate owner-approved correction."
+  ]
+}

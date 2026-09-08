@@ -141,6 +141,7 @@ async ({kind, expectedId, settleImages}) => {
     specVisible: visible(document.querySelector('[data-ua-additional-spec="1"]')),
     specRows: document.querySelectorAll('.ua-addspec-row').length,
     specEmpty: document.querySelectorAll('.ua-addspec-empty').length,
+    operatorInstructionLeak: /Чтобы\s+изменить\s*[—–-]\s*пришлите\s+новый\s+текст|Пришлите\s+новое\s+значение\s+текстом\s+или\s+голосом/i.test(bodyText),
     cleanVinCount: document.querySelectorAll('[data-ua-clean-vin="1"]').length,
     diagnosticLinks: [...document.querySelectorAll('a[href]')].filter(a => expectedId &&
       new RegExp('(?:^|/)' + expectedId + '-diag\\.html(?:[?#].*)?$', 'i').test(a.getAttribute('href') || '')).length,
@@ -193,10 +194,15 @@ def errors_for(kind: str, metrics: dict[str, Any]) -> list[str]:
             errors.append("CARD_IDENTITY_OR_H1")
         if metrics.get("imageCount", 0) < 1:
             errors.append("CARD_IMAGES_ZERO")
-        if metrics.get("specCount") != 1 or not metrics.get("specVisible"):
-            errors.append("ADDITIONAL_SPEC_NOT_VISIBLE_ONCE")
-        if not (metrics.get("specRows", 0) > 0 or metrics.get("specEmpty") == 1):
-            errors.append("ADDITIONAL_SPEC_NO_ROWS_OR_EMPTY_STATE")
+        if metrics.get("specRows", 0) > 0:
+            if metrics.get("specCount") != 1 or not metrics.get("specVisible"):
+                errors.append("POPULATED_ADDITIONAL_SPEC_NOT_VISIBLE_ONCE")
+        elif metrics.get("specCount") != 0:
+            errors.append("EMPTY_ADDITIONAL_SPEC_BLOCK_MUST_BE_HIDDEN")
+        if metrics.get("specEmpty") != 0:
+            errors.append("EMPTY_ADDITIONAL_SPEC_PLACEHOLDER_FORBIDDEN")
+        if metrics.get("operatorInstructionLeak"):
+            errors.append("OPERATOR_INSTRUCTION_LEAK")
         if metrics.get("cleanVinCount") != 1:
             errors.append("VIN_BLOCK_NOT_ONCE")
         if metrics.get("diagnosticLinks") != 1 or not metrics.get("diagnosticVisible"):

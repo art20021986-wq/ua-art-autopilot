@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "task_id": "TASK108",
+  "captured_at_utc": "2026-09-04T02:00:00Z",
+  "mode": "READ_ONLY_REVIEW_QUEUE",
+  "production_touched": false,
+  "constraints": [
+    "NO_AUTOMATIC_CORRECTION",
+    "NO_SUGGESTED_REPLACEMENT",
+    "NO_CRM_WRITE",
+    "DOCUMENT_CONFIRMATION_REQUIRED"
+  ],
+  "items": [
+    {
+      "auto_number": "UA-0012",
+      "field": "mileage_km",
+      "observed_value": 342,
+      "status": "REVIEW_REQUIRED",
+      "reason_code": "MILEAGE_342_REQUIRES_CONFIRMATION",
+      "operator_action_ru": "Сверить пробег с исходным документом или записью CRM; TASK108 значение не меняет."
+    },
+    {
+      "auto_number": "UA-0013",
+      "field": "year",
+      "observed_value": "2015",
+      "status": "REVIEW_REQUIRED",
+      "reason_code": "YEAR_2015_CONFLICTS_WITH_VIN_MODEL_YEAR_2016",
+      "operator_action_ru": "Сверить год с исходным аукционным или регистрационным документом; TASK108 значение не меняет.",
+      "evidence_url": "https://plc.ua/ua/korea-auction/lot/mercedes-benz-b-class-2016-vin-wddmh0jb6gn142530-aj-01kvskjx1wmv822d7exd80f4kw/",
+      "evidence_observation": "Карточка полного VIN WDDMH0JB6GN142530 указывает 2016 год; код модельного года VIN G также соответствует 2016 для данного поколения."
+    },
+    {
+      "auto_number": "UA-0014",
+      "field": "engine_cc",
+      "observed_value": 1645,
+      "status": "REVIEW_REQUIRED",
+      "reason_code": "ENGINE_CC_1645_REQUIRES_CONFIRMATION",
+      "operator_action_ru": "Сверить объём двигателя с регистрационным документом; TASK108 значение не меняет."
+    },
+    {
+      "auto_number": "UA-0016",
+      "field": "year",
+      "observed_value": "1999",
+      "status": "REVIEW_REQUIRED",
+      "reason_code": "YEAR_1999_REQUIRES_CONFIRMATION",
+      "operator_action_ru": "Сверить год с регистрационным документом и VIN-записью; TASK108 значение не меняет."
+    },
+    {
+      "auto_number": "UA-0016",
+      "field": "mileage_km",
+      "observed_value": 353,
+      "status": "REVIEW_REQUIRED",
+      "reason_code": "MILEAGE_353_REQUIRES_CONFIRMATION",
+      "operator_action_ru": "Сверить пробег с исходным документом или записью CRM; TASK108 значение не меняет."
+    }
+  ]
+}

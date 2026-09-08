@@ -70,6 +70,9 @@ def main() -> int:
         uid: int((production_pages.get(uid) or {}).get("additional_rows") or 0)
         for uid in IDS
     }
+    empty_spec_cards = [uid for uid, count in spec_rows_by_card.items() if count <= 0]
+    if empty_spec_cards:
+        raise RuntimeError("ADDITIONAL_SPEC_EMPTY_CARDS:" + ",".join(empty_spec_cards))
     value = {
         "task_id": "task_099",
         "contract_id": CONTRACT,
@@ -85,9 +88,7 @@ def main() -> int:
             "media_changed": False,
             "additional_specification_installed": True,
             "additional_specification_rows_by_card": spec_rows_by_card,
-            "additional_specification_empty_state_cards": [
-                uid for uid, count in spec_rows_by_card.items() if count == 0
-            ],
+            "additional_specification_empty_state_cards": empty_spec_cards,
             "semantic_duplicates_rejected": int(
                 (((production.get("install") or {}).get("migration") or {})
                  .get("semantic_duplicates_rejected") or 0)
@@ -101,7 +102,9 @@ def main() -> int:
             "homepage_stage_counts": homepage.get("counts"),
             "homepage_catalog_counts_match": True,
             "floating_whatsapp_opacity": 0.90,
-            "additional_specification_on_all_cards": True,
+            "additional_specification_on_all_cards": all(
+                count > 0 for count in spec_rows_by_card.values()
+            ),
             "diagnostics_link_exactly_once_on_all_cards": True,
             "external_paid_vin_cta_present": False,
             "old_sea_wording_present": False,

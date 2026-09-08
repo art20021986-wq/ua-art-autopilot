@@ -24,6 +24,7 @@ from typing import Any
 
 
 CONTRACT = "UA-ART-16-SITE-CRM-COMPLETION-099-V1"
+TASK108_GUARD = "TASK108-NONEMPTY-SPEC-AND-PUBLIC-HYGIENE-V1"
 ROOT = pathlib.Path("/home/Carix")
 TASK = ROOT / "autopilot_inbox/cloud/task_099_site_crm_repair"
 TASK096 = ROOT / "autopilot_inbox/cloud/task_096_tech_spec_ai_crm"
@@ -1053,6 +1054,12 @@ def shadow() -> dict[str, Any]:
             if errors:
                 raise Blocked("SHADOW_PUBLIC_CONTRACT:" + uid + ":" + ";".join(errors))
             contracts[uid] = {"additional_rows": len(helper.fetch_specs(uid)), "errors": []}
+        empty_spec_cards = [
+            uid for uid, result in contracts.items()
+            if int(result.get("additional_rows") or 0) <= 0
+        ]
+        if empty_spec_cards:
+            raise Blocked("SHADOW_EMPTY_ADDITIONAL_SPEC:" + ",".join(empty_spec_cards))
     finally:
         if old is None:
             os.environ.pop("UA_ART_CRM_DB", None)
@@ -1095,6 +1102,15 @@ def install() -> dict[str, Any]:
     shadow_receipt = read_json(TASK / "shadow_receipt.json")
     if shadow_receipt.get("status") != "PASS" or shadow_receipt.get("mode") != "SHADOW":
         raise Blocked("SHADOW_NOT_PASS")
+    if shadow_receipt.get("task108_guard") != TASK108_GUARD:
+        raise Blocked("SHADOW_TASK108_GUARD_MISSING")
+    shadow_contracts = shadow_receipt.get("contracts") or {}
+    empty_shadow_cards = [
+        uid for uid in IDS
+        if int((shadow_contracts.get(uid) or {}).get("additional_rows") or 0) <= 0
+    ]
+    if empty_shadow_cards:
+        raise Blocked("SHADOW_EMPTY_ADDITIONAL_SPEC:" + ",".join(empty_shadow_cards))
     shadow_removed_before_backup = remove_shadow_copy()
     backup = make_backup()
     migration = None
@@ -1355,7 +1371,11 @@ def main() -> int:
             candidate = read_json(receipt)
         except Exception:
             return None
-        if candidate.get("contract_id") == CONTRACT and candidate.get("mode") == expected_mode:
+        if (
+            candidate.get("contract_id") == CONTRACT
+            and candidate.get("mode") == expected_mode
+            and candidate.get("task108_guard") == TASK108_GUARD
+        ):
             return candidate
         return None
 
@@ -1374,6 +1394,7 @@ def main() -> int:
     except Exception as exc:
         value["errors"].append(type(exc).__name__ + ":" + str(exc)[:1000])
         value["finished_at_utc"] = utc_now()
+    value["task108_guard"] = TASK108_GUARD
     atomic_json(receipt, value)
     print(json.dumps({"status": value.get("status"), "mode": value.get("mode"), "errors": value.get("errors")}, ensure_ascii=False))
     return 0 if value.get("status") == "PASS" else 1

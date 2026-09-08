@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "source_id": "HYUNDAI_SONATA_TAXI_CATALOG_MIRROR",
+  "domain": "manuals.plus",
+  "source_url": "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a",
+  "observed_urls": [
+    "https://manuals.plus/m/d019a3e9e810ab7936fcc2986e7fd458105a3e9674801d7f27ed2cb18738d02a"
+  ],
+  "document_title": "Hyundai Sonata Taxi catalogue",
+  "verification_status": "VERIFIED",
+  "verification_method": "manual_web_review_of_manufacturer_document_mirror",
+  "observed_at_utc": "2026-09-03T23:45:00Z",
+  "identity": {
+    "brand": "Hyundai",
+    "model_series": "Sonata LF/New Rise",
+    "modification": "LPi 2.0 automatic",
+    "year_min": 2018,
+    "year_max": 2018,
+    "engine_cc": 1999,
+    "fuel": "lpg",
+    "gearbox": "automatic"
+  },
+  "locator": "Extracted manufacturer catalogue text, Performance, Dimensions and Specifications tables",
+  "claims": [
+    {"code":"max_power_ps","value":151,"unit":"л.с.","note":"6 200 об/мин"},
+    {"code":"max_torque_kgfm","value":19.8,"unit":"кгс·м","note":"4 200 об/мин"},
+    {"code":"transmission_gears","value":6,"unit":"ступ.","note":"автоматическая"},
+    {"code":"length_mm","value":4855,"unit":"мм","note":""},
+    {"code":"width_mm","value":1865,"unit":"мм","note":""},
+    {"code":"height_mm","value":1485,"unit":"мм","note":""},
+    {"code":"wheelbase_mm","value":2805,"unit":"мм","note":""},
+    {"code":"front_track_mm","value":1614,"unit":"мм","note":""},
+    {"code":"rear_track_mm","value":1621,"unit":"мм","note":""},
+    {"code":"combined_consumption_kmpl","value":9.4,"unit":"км/л","note":""},
+    {"code":"curb_weight_kg","value":1470,"unit":"кг","note":""},
+    {"code":"co2_g_km","value":139,"unit":"г/км","note":""}
+  ]
+}
