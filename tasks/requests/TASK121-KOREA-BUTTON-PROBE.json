@@ -1,0 +1,36 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/task121_korea_button_probe/evidence.json"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Read-only authenticated source probe. Compute exact before and candidate hashes for restoring only the kr_bought button with the exact label В Корее. Keep sea_loaded, sea_transit and ua_handed hidden. Do not write to the remote account, CRM data, cards, media or website.",
+  "execution": {
+    "controller_path": "cloud/task121_korea_button_probe/controller.py",
+    "controller_sha256": "37c08c5e6e025a528c350720f35dd95ac28ff14aca64c37d502963fe484c140b",
+    "dependency_paths": [
+      "cloud/task121_korea_button_probe/patcher.py"
+    ],
+    "evidence_paths": [
+      "state/receipts/TASK121-KOREA-BUTTON-PROBE.json"
+    ],
+    "file_sha256": {
+      "cloud/task121_korea_button_probe/patcher.py": "53dc231f6d983a807ce05d470b9e86b450e49c78297a9007ad8b54989d62b7c3",
+      "cloud/task121_korea_button_probe/test_contract.py": "1b91a466ea4c184d07549dfeea7038d28d67d11f202a6bf73d3fd33a1ad8c6b5"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK121-KOREA-BUTTON-PROBE.json",
+    "test_paths": [
+      "cloud/task121_korea_button_probe/test_contract.py"
+    ],
+    "timeout_seconds": 300
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "TASK121-KOREA-BUTTON-PROBE",
+  "title": "Probe exact Korea button patch"
+}
+
