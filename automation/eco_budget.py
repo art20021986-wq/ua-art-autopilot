@@ -49,10 +49,14 @@ def complete(data:dict[str,Any],applied:bool=False)->None:
  data['stage']='COMPLETE'; data['completed']=True; data['applied']=bool(applied); data['history'].append({'at':int(time.time()),'event':'COMPLETE','applied':bool(applied)})
 def main()->int:
  p=argparse.ArgumentParser(); p.add_argument('task_id'); p.add_argument('input_sha256'); p.add_argument('--reserve',type=int); p.add_argument('--actual',type=int); p.add_argument('--stage'); p.add_argument('--block',choices=sorted(BLOCKING_CLASSES)); p.add_argument('--complete',action='store_true'); a=p.parse_args(); d=load(a.task_id,a.input_sha256)
- if a.reserve is not None: reserve(d,a.reserve)
- if a.actual is not None: reconcile(d,a.actual)
- if a.stage: progress(d,a.stage)
- if a.block: block(d,a.block)
- if a.complete: complete(d)
+ try:
+  if a.reserve is not None: reserve(d,a.reserve)
+  if a.actual is not None: reconcile(d,a.actual)
+  if a.stage: progress(d,a.stage)
+  if a.block: block(d,a.block)
+  if a.complete: complete(d)
+ except EcoBudgetError as exc:
+  if str(exc)=='ECO_UNKNOWN_PAID_OUTCOME': block(d,'UNKNOWN_PAID_OUTCOME'); save(d)
+  raise
  path=save(d); print(json.dumps({'status':'OK','ledger':str(path),'data':d},sort_keys=True)); return 0
 if __name__=='__main__': raise SystemExit(main())
