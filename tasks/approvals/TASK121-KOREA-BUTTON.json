@@ -1,0 +1,31 @@
+{
+  "approval_status": "APPROVED",
+  "approved_at_utc": "2026-09-08T06:00:00Z",
+  "approved_by": "owner",
+  "button": {
+    "code": "kr_bought",
+    "count": 1,
+    "label": "В Корее"
+  },
+  "forbidden_scope": [
+    "restore sea_loaded",
+    "restore sea_transit",
+    "restore ua_handed",
+    "change vehicle card data",
+    "change VIN data",
+    "change prices",
+    "change media",
+    "change public website",
+    "clear or alter state/AUTOPILOT_HALT.json"
+  ],
+  "global_halt_must_remain": true,
+  "keep_hidden": [
+    "sea_loaded",
+    "sea_transit",
+    "ua_handed"
+  ],
+  "owner_instruction": "Добавляем кнопку рабочую, одну-единственную, под названием В Корее, которая показывает статус автомобилей в Корее. Остальное всё не восстанавливаем, не нужно. Нужна только одна рабочая кнопка.",
+  "production_authorized": true,
+  "schema_version": "UA-ART-OWNER-APPROVAL-1",
+  "task_id": "TASK121-KOREA-BUTTON"
+}

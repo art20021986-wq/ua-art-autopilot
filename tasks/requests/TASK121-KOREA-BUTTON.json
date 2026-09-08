@@ -1,0 +1,37 @@
+{
+  "button": {
+    "code": "kr_bought",
+    "count": 1,
+    "label": "В Корее"
+  },
+  "changed_production_files": [
+    "/home/Carix/cars_ui.py",
+    "/home/Carix/konteyner.py",
+    "/home/Carix/cars_schema.py"
+  ],
+  "description": "Restore exactly one working operator CRM stage button named В Корее. The button uses the existing kr_bought status, must be visible in both active stage menus, must save that status through the existing callback, and must display the exact status label В Корее. Keep the three previously removed buttons Загружено в контейнер, В пути, Передано клиенту hidden. Do not change cards, vehicle rows, VIN data, prices, media, the website, or any other runtime behavior.",
+  "execution": {
+    "controller_path": "cloud/task121_korea_button_manual/controller.py",
+    "evidence_path": "cloud/task121_korea_button_manual/evidence.json",
+    "gate_a_path": "cloud/task121_korea_button_manual/gate_a.json",
+    "patcher_path": "cloud/task121_korea_button_manual/patcher.py",
+    "receipt_path": "state/receipts/TASK121-KOREA-BUTTON.json",
+    "remote_installer_path": "cloud/task121_korea_button_manual/remote_installer.py"
+  },
+  "expected_before_sha256": {
+    "cars_schema.py": "87f20a57248c3483ccb09955431cd840bb57bfdef6d2705e5fc048c201e14496",
+    "cars_ui.py": "2b1ef0bcfa700b7c87ccfb164b69b8ca173d460481936225e41344096c92062f",
+    "konteyner.py": "72c03a1b8ab14279b2a2adbc681e112594d88c766d2aae7cc40e08b8aa004230"
+  },
+  "global_halt_policy": "PRESERVE_UNCHANGED",
+  "keep_hidden": [
+    "sea_loaded",
+    "sea_transit",
+    "ua_handed"
+  ],
+  "production_required": true,
+  "rollback_required": true,
+  "task_class": "CRITICAL",
+  "task_id": "TASK121-KOREA-BUTTON",
+  "title": "Restore only the working В Корее stage button"
+}
