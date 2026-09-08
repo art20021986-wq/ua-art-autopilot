@@ -319,12 +319,58 @@ class API:
 
     @staticmethod
     def _id(body: bytes) -> int | None:
+        """Extract an id from the documented object or common API wrappers."""
         try:
             value = json.loads(body.decode("utf-8"))
         except Exception:
             return None
-        identifier = value.get("id") if isinstance(value, dict) else None
-        return identifier if isinstance(identifier, int) and identifier > 0 else None
+
+        def walk(item: Any) -> int | None:
+            if isinstance(item, dict):
+                for key in ("id", "task_id", "always_on_id"):
+                    candidate = item.get(key)
+                    if isinstance(candidate, int) and candidate > 0:
+                        return candidate
+                for child in item.values():
+                    found = walk(child)
+                    if found:
+                        return found
+            elif isinstance(item, list):
+                for child in item:
+                    found = walk(child)
+                    if found:
+                        return found
+            return None
+
+        return walk(value)
+
+    def _find_always_on(self, command: str, description: str) -> list[int]:
+        status, body = self.request(
+            "GET", BASE + "always_on/", allowed=(200,)
+        )
+        try:
+            value = json.loads(body.decode("utf-8"))
+        except Exception as exc:
+            raise ControllerError("MUTATING_ALWAYS_ON_LIST_INVALID") from exc
+        rows = value.get("tasks") if isinstance(value, dict) else value
+        if not isinstance(rows, list):
+            rows = [value] if isinstance(value, dict) else []
+        matches: list[int] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            identifier = self._id(json.dumps(row).encode("utf-8"))
+            if (
+                identifier
+                and row.get("command") == command
+                and row.get("description") == description
+            ):
+                matches.append(identifier)
+        return sorted(set(matches))
+
+    @staticmethod
+    def _response_excerpt(body: bytes) -> str:
+        return body.decode("utf-8", "replace").replace("\\r", " ").replace("\\n", " ")[:400]
 
     def trigger(
         self, command: str, description: str, *, allow_schedule: bool
@@ -334,14 +380,26 @@ class API:
         ).encode()
         status, body = self.request(
             "POST", BASE + "always_on/", form,
-            {"Content-Type": "application/x-www-form-urlencoded"},
+            {"Content-Type": "application/x-www-form-urlencoded",
+             "Accept": "application/json"},
             allowed=(200, 201, 202, 400, 403, 404, 409),
         )
-        identifier = self._id(body) if status in (200, 201, 202) else None
-        if identifier:
-            return "always_on", identifier
+        if status in (200, 201, 202):
+            identifier = self._id(body)
+            if identifier:
+                return "always_on", identifier
+            # Some successful API responses contain no top-level id. Resolve
+            # the exact just-created task from the authoritative task list.
+            matches = self._find_always_on(command, description)
+            if len(matches) == 1:
+                return "always_on", matches[0]
+            if len(matches) > 1:
+                raise ControllerError("MUTATING_ALWAYS_ON_AMBIGUOUS")
         if not allow_schedule:
-            raise ControllerError("MUTATING_ALWAYS_ON_UNAVAILABLE")
+            detail = self._response_excerpt(body)
+            raise ControllerError(
+                "MUTATING_ALWAYS_ON_UNAVAILABLE:%d:%s" % (status, detail)
+            )
         when = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=2)
         form = urllib.parse.urlencode(
             {"command": command, "description": description + " fallback", "enabled": "true",
@@ -349,7 +407,8 @@ class API:
         ).encode()
         _, body = self.request(
             "POST", BASE + "schedule/", form,
-            {"Content-Type": "application/x-www-form-urlencoded"},
+            {"Content-Type": "application/x-www-form-urlencoded",
+             "Accept": "application/json"},
             allowed=(200, 201, 202),
         )
         identifier = self._id(body)
