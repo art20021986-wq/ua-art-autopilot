@@ -10,6 +10,9 @@
 - UA-0018 target changes: 0 planned
 - Production changes performed by TASK121 preparation: 0
 
+## Owner confirmation — PASS
+On 2026-09-08 the owner explicitly confirmed **UA-0017 year = 2015**. The supplied CRM screenshot shows UA-0017 as Audi A6 2015, VIN `WAUZZZ4GXGN069684`, mileage 118000 km and 39 photos. The CRM message about a 10th-character/year mismatch is retained as an internal validation warning only; it is not authority to change the owner-confirmed display year to 2016.
+
 ## Prior failure root cause — VERIFIED
 The previous two-card TASK120 ended `ABORTED_NO_PRODUCTION_WRITE`.
 - backup job conclusion: failure
@@ -31,15 +34,15 @@ TASK120 reference data binds UA-0017 to:
 - CRM internal id 26
 - VIN `WAUZZZ4GXGN069684`
 - Audi A6
-- CRM year 2015
+- owner-confirmed display year 2015
 - mileage 118000 km
 - referenced status `ge_waiting`
 - referenced media count: 39 JPEG photos, 0 video
 
-These are reference facts for preparation only. They MUST be refreshed from authenticated CRM immediately before any future Production authorization and MUST NOT overwrite newer values.
+These are reference facts for preparation only. Other mutable fields MUST be refreshed from authenticated CRM immediately before any future Production authorization and MUST NOT overwrite newer values.
 
 ## Additional specification integrity — HOLD
-Prior TASK120 planned 18 model-level rows using a 2016 Audi source document while the CRM vehicle is year 2015. Those rows cannot be represented as VIN-specific equipment of this exact UA-0017 unless independently verified. Future package must label model-level reference data honestly and preserve verified vehicle facts separately.
+Prior TASK120 planned 18 model-level rows using a 2016 Audi source document while the owner-confirmed vehicle year is 2015. Those rows cannot be represented as VIN-specific equipment of this exact UA-0017 unless independently verified. Future package must label model-level reference data honestly and preserve verified vehicle facts separately.
 
 ## Current preparation checks
 | Check | Result |
@@ -47,6 +50,7 @@ Prior TASK120 planned 18 model-level rows using a 2016 Audi source document whil
 | Separate branch created | PASS |
 | Main/Production modified by TASK121 preparation | PASS — 0 writes |
 | UA-0018 excluded by new task specification | PASS |
+| Owner-confirmed year 2015 recorded | PASS |
 | Prior TASK120 root cause identified | PASS |
 | Existing two-card controller safe to reuse as-is for single card | FAIL — prohibited |
 | Fresh authenticated CRM/media/spec snapshot | NOT YET VERIFIED |
