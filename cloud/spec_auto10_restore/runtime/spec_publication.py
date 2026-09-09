@@ -1,4 +1,4 @@
-"""Specification-only renderer and guarded page reconciliation.
+"""Canonical specification renderer and guarded single-VIN page reconciliation.
 
 No work happens at import. CRM data are never written. The normal publisher
 and this reconciler must share the existing publication lock. Installation
@@ -19,9 +19,14 @@ import tempfile
 import urllib.request
 from typing import Any, Callable, Iterable
 
+import card_shell
+
 START = "<!--UA099_ADD_SPEC_START-->"
 END = "<!--UA099_ADD_SPEC_END-->"
 MAX_PAGE_BYTES = 4 * 1024 * 1024
+# Reviewed against all 32 cached primary pages; changes require a new reviewed
+# template release. No environment switch or automatic learning of a new hash.
+PINNED_SHELL_ASSETS_SHA256 = "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed"
 UID_RE = re.compile(r"^UA-[0-9]{4,6}$")
 BAD_TEXT = re.compile(r"<[^>]*>|https?://|www\.|javascript:|data:|carhistory|vindecoderz|affiliate", re.I)
 PRICE = re.compile(r"price|cost|auction|advert|ц[еі]на|стоимость|вартість|реклам|₩|\$|€", re.I)
@@ -189,20 +194,28 @@ def _insert_at(source: str) -> int:
 
 def inject(source: str, card_uid: str, facts: Iterable[dict[str, Any]]) -> str:
     facts = list(facts)
-    span = _span(source)
+    card_uid = uid(card_uid)
+    _span(source)  # Validate legacy specification markers before any repair.
+    try:
+        normalized = card_shell.normalize_html(source, card_uid)
+    except card_shell.ShellError as exc:
+        raise SpecError(str(exc)) from exc
+    span = _span(normalized)
     block = render_block(card_uid, facts)
     if span:
-        output = source[:span[0]] + block + source[span[1]:]
+        output = normalized[:span[0]] + block + normalized[span[1]:]
     else:
-        at = _insert_at(source)
-        output = source[:at] + block + source[at:]
-    if strip_block(output) != strip_block(source):
-        raise SpecError("NON_SPECIFICATION_CHANGE")
+        at = _insert_at(normalized)
+        output = normalized[:at] + block + normalized[at:]
+    try:
+        card_shell.permitted_delta(source, output, card_uid)
+    except card_shell.ShellError as exc:
+        raise SpecError(str(exc)) from exc
     validate_page(output, card_uid, facts, previous=source)
     return output
 
 
-def validate_page(source: str, card_uid: str, facts: Iterable[dict[str, Any]], *, previous: str | None = None) -> dict[str, Any]:
+def _validate_specification(source: str, card_uid: str, facts: Iterable[dict[str, Any]], *, previous: str | None = None) -> dict[str, Any]:
     card_uid = uid(card_uid)
     facts = list(facts)
     rows = normalize_facts(facts)
@@ -228,15 +241,41 @@ def validate_page(source: str, card_uid: str, facts: Iterable[dict[str, Any]], *
     return {"status": "PASS", "rows": len(rows), "data_status": "READY" if rows else "NEEDS_REVIEW", "version": _digest(rows)}
 
 
+def validate_block(source: str, card_uid: str, facts: Iterable[dict[str, Any]]) -> dict[str, Any]:
+    """Validate a standalone specification fragment, never a publishable page."""
+    facts = list(facts)
+    result = _validate_specification(source, card_uid, facts)
+    if source != render_block(card_uid, facts):
+        raise SpecError("STANDALONE_SPECIFICATION_FRAGMENT_REQUIRED")
+    return result
+
+
+def validate_page(source: str, card_uid: str, facts: Iterable[dict[str, Any]], *, previous: str | None = None) -> dict[str, Any]:
+    """A full page needs one main VIN and unchanged or reviewed shell assets.
+
+    Existing-card CRUD may alter vehicle values and gallery data; assets must
+    match the existing page. With no existing page, the template must match the
+    reviewed pin. Specification-only reconciliation also uses permitted_delta.
+    """
+    result = _validate_specification(source, card_uid, facts, previous=previous)
+    try:
+        vin = card_shell.validate_one_visible_vin(source, uid(card_uid))
+        assets = card_shell.validate_shell_assets(previous if previous is not None else source, source)
+    except card_shell.ShellError as exc:
+        raise SpecError(str(exc)) from exc
+    if previous is None and assets["ordered_static_assets_sha256"] != PINNED_SHELL_ASSETS_SHA256:
+        raise SpecError("UNREVIEWED_NEW_CARD_SHELL_ASSETS")
+    return {**result, "visible_vin_count": vin["visible_vin_count"],
+            "shell_assets_sha256": assets["ordered_static_assets_sha256"],
+            "shell_reference": "existing_card" if previous is not None else "reviewed_template_pin"}
+
+
 def load_facts(card_uid: str) -> list[dict[str, Any]]:
     card_uid = uid(card_uid)
     # Legacy callbacks and common writers also pass here. Read the current
     # identity independently of queue status so READY/old manual facts cannot
     # bypass a newly discovered context conflict. This import starts no worker.
-    import vin_spec_service
-    card = next((row for row in vin_spec_service.read_cards() if row["car_uid"] == card_uid), None)
-    if card is None:
-        raise SpecError("CURRENT_CARD_IDENTITY_MISSING")
+    card = _read_current_identity(card_uid, require_published=False)
     _assert_identity_context(card)
     path = Path(os.environ.get("UA_ART_SPEC_DB", "/home/Carix/vin_specs_task111_v3.db"))
     if not path.is_file():
@@ -298,11 +337,29 @@ def _public_read(card_uid: str) -> str:
 
 def _current_state(card_uid: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     # Importing the module does not start its worker. read_cards is strictly RO.
+    return _read_current_identity(card_uid, require_published=True), load_facts(card_uid)
+
+
+def _read_current_identity(card_uid: str, *, require_published: bool) -> dict[str, Any]:
+    """Read-only duplicate-UID/tombstone fence; recovery writes happen elsewhere."""
     import vin_spec_service
+    import card_lifecycle
+    path = Path(vin_spec_service.MAIN_DB)
+    if not path.is_file() or path.is_symlink():
+        raise SpecError("CURRENT_CRM_DATABASE_MISSING_OR_SYMLINK")
+    with contextlib.closing(sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True, timeout=15)) as conn:
+        conn.execute("PRAGMA query_only=ON")
+        try:
+            identity = card_lifecycle.validate_publication_identity(
+                conn, uid(card_uid), require_published=require_published)
+        except card_lifecycle.LifecycleError as exc:
+            raise SpecError(str(exc)) from exc
     card = next((row for row in vin_spec_service.read_cards() if row["car_uid"] == card_uid), None)
     if card is None:
         raise SpecError("CURRENT_CARD_IDENTITY_MISSING")
-    return card, load_facts(card_uid)
+    if card.get("car_id") != identity["car_id"]:
+        raise SpecError("CURRENT_CARD_ID_CHANGED_DURING_READ")
+    return card
 
 
 def _assert_identity_context(card: dict[str, Any]) -> None:
@@ -315,7 +372,7 @@ def _assert_identity_context(card: dict[str, Any]) -> None:
 def _assert_current(card: dict[str, Any], facts: list[dict[str, Any]], reader: Callable) -> None:
     current, current_facts = reader(uid(card.get("car_uid", card.get("auto_number"))))
     _assert_identity_context(current)
-    keys = ("car_uid", "vin", "brand", "model", "year", "fuel", "engine_cc", "transmission", "published")
+    keys = ("car_id", "car_uid", "vin", "brand", "model", "year", "fuel", "engine_cc", "transmission", "published")
     if any(str(current.get(key) or "").strip().casefold() != str(card.get(key) or "").strip().casefold() for key in keys):
         raise SpecError("CARD_CHANGED_DURING_SPECIFICATION_SYNC")
     if normalize_facts(current_facts) != normalize_facts(facts):
@@ -376,7 +433,10 @@ def reconcile_published(card: dict[str, Any], facts: Iterable[dict[str, Any]], *
                         _atomic(path, before[path])
                 raise
             live = reader(code)
-            result = validate_page(live, code, facts)
+            result = validate_page(live, code, facts, previous=after[paths[0]].decode("utf-8"))
+            # Unpublish/delete/identity edits during the public GET must not
+            # be reported as a completed publication of the old card.
+            _assert_current(card, facts, state_reader)
             return {"status": "PASS" if changed else "UNCHANGED", "detail": "PUBLIC_SPEC_VERIFIED",
                     "rows": result["rows"], "version": result["version"], "data_status": result["data_status"]}
     except Exception as exc:

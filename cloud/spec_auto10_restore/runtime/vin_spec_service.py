@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Automatic VIN-triggered additional-specification service for UA ART.
 
-The live CRM is opened read-only.  Enrichment, provenance, job state and
+Collection opens the live CRM read-only. Enrichment, provenance, job state and
 operator edits live in a separate SQLite sidecar.  A valid VIN already saved
 by the existing CRM flow creates one idempotent job for this policy version.
 
-Only already-published cards may be refreshed automatically.  This service
-never creates the initial public listing and never changes price, status or
-any other primary CRM field.
+Only already-published cards may be refreshed automatically. Collection never
+creates the initial public listing or changes primary CRM fields. Before
+startup/publication, the reviewed lifecycle helper may compensate an archived
+interrupted transaction under the shared lock; this is recorded crash recovery.
 """
 from __future__ import annotations
 
@@ -40,7 +41,7 @@ RETRY_SECONDS = max(15, int(os.environ.get("UA_ART_SPEC_RETRY_SECONDS", "60")))
 RECONCILE_SECONDS = max(60, int(os.environ.get("UA_ART_SPEC_RECONCILE_SECONDS", "300")))
 BACKLOG_SECONDS = 1.0
 LOGGER = logging.getLogger(__name__)
-IDENTITY_FIELDS = ("vin", "brand", "model", "year", "fuel", "engine_cc", "transmission")
+IDENTITY_FIELDS = ("car_id", "vin", "brand", "model", "year", "fuel", "engine_cc", "transmission")
 CARD_RE = re.compile(r"^UA[-‑–—]?0*(\d{1,6})$", re.IGNORECASE)
 SEMANTIC_LABEL_GENERIC_TOKENS = {
     "auto", "car", "vehicle", "body", "overall",
@@ -283,13 +284,27 @@ def _card_from_row(row: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def read_cards() -> list[dict[str, Any]]:
+    import card_lifecycle
     with connect_main() as conn:
         if not _table_exists(conn, "cars"):
             raise ServiceError("CARS_TABLE_MISSING")
         rows = [dict(row) for row in conn.execute("SELECT rowid AS __rowid__, * FROM cars ORDER BY rowid")]
+        cards = []
+        for row in rows:
+            card = _card_from_row(row)
+            if card is None:
+                continue
+            try:
+                card_lifecycle.validate_publication_identity(conn, card["car_uid"],
+                    expected_card_id=card["car_id"], require_published=False)
+            except card_lifecycle.LifecycleError as exc:
+                # Preserve rows/facts for review, but never select one of
+                # duplicate or retired UIDs arbitrarily for either queue.
+                LOGGER.warning("Specification identity excluded: %s %s", card["car_uid"], str(exc))
+                continue
+            cards.append(card)
         if conn.total_changes != 0:
             raise ServiceError("MAIN_CRM_WRITE_GUARD")
-    cards = [card for row in rows if (card := _card_from_row(row)) is not None]
     return sorted(cards, key=lambda item: item["car_uid"])
 
 
@@ -469,10 +484,10 @@ def _block_identity_context(conn: sqlite3.Connection, card: dict[str, Any],
          json.dumps({"issues": issues, "input_hash": fingerprint, "preserved_facts": facts,
                      "fact_values_and_operator_flags_changed": False}, ensure_ascii=False)))
     conn.execute("""UPDATE vin_spec_jobs SET status='NEEDS_REVIEW',site_sync_status='NEEDS_REVIEW',
-        last_error=?,site_sync_detail=?,input_hash=?,generation=generation+1,
+        last_error=?,site_sync_detail=?,input_hash=?,car_id=?,generation=generation+1,
         claim_token=NULL,site_sync_token=NULL,next_attempt_at=NULL,site_sync_next_at=NULL,
         started_at=NULL,site_sync_started_at=NULL,finished_at=? WHERE id=?""",
-        (detail, detail, fingerprint, utc_now(), row["id"]))
+        (detail, detail, fingerprint, card.get("car_id"), utc_now(), row["id"]))
     return True
 
 
@@ -530,12 +545,12 @@ def enqueue_card(card: dict[str, Any], *, force: bool = False) -> bool:
             reset = force or changed or not row["input_hash"] or row["status"] == "SUPERSEDED"
             if reset:
                 conn.execute("""UPDATE vin_spec_jobs SET status='PENDING',attempts=0,last_error=NULL,
-                    input_hash=?,generation=generation+1,claim_token=NULL,next_attempt_at=NULL,
+                    input_hash=?,car_id=?,generation=generation+1,claim_token=NULL,next_attempt_at=NULL,
                     facts_count=(SELECT COUNT(*) FROM additional_specification_meta WHERE car_uid=? AND is_visible=1),
                     requested_at=?,started_at=NULL,finished_at=NULL,site_sync_status='PENDING',
                     site_sync_detail=NULL,site_sync_attempts=0,site_sync_next_at=NULL,
                     site_sync_token=NULL,site_sync_started_at=NULL WHERE id=?""",
-                    (fingerprint, uid, now, int(row["id"])))
+                    (fingerprint, card.get("car_id"), uid, now, int(row["id"])))
                 conn.commit()
                 return True
             return False
@@ -562,7 +577,30 @@ def scan_new_vins() -> dict[str, Any]:
     queued = 0
     for card in cards:
         queued += int(enqueue_card(card))
-    return {"valid_vins": len(cards), "queued": queued, "card_uids": [item["car_uid"] for item in cards]}
+    retired = _retire_absent_jobs(cards)
+    return {"valid_vins": len(cards), "queued": queued, "retired": retired,
+            "card_uids": [item["car_uid"] for item in cards]}
+
+
+def _retire_absent_jobs(cards: list[dict[str, Any]]) -> int:
+    """Invalidate both claims for removed/renamed identities; retain fact history.
+
+    This never deletes or creates a site page. A missing CRM identity is not a
+    request to regenerate it. Re-insertion is a new enqueue/generation decision.
+    """
+    current = {(card["car_uid"], card["vin"], card["car_id"]) for card in cards}
+    with connect_spec(False) as conn:
+        conn.execute("BEGIN IMMEDIATE")
+        stale_ids = [row["id"] for row in conn.execute("""SELECT id,car_uid,vin,car_id FROM vin_spec_jobs
+            WHERE policy_version=? AND (status<>'SUPERSEDED' OR site_sync_status<>'SUPERSEDED')""",
+            (source_policy.POLICY_VERSION,)) if (row["car_uid"], row["vin"], row["car_id"]) not in current]
+        for job_id in stale_ids:
+            conn.execute("""UPDATE vin_spec_jobs SET status='SUPERSEDED',site_sync_status='SUPERSEDED',
+                last_error='CRM_IDENTITY_REMOVED_OR_REPLACED',site_sync_detail='CRM_IDENTITY_REMOVED_OR_REPLACED',
+                claim_token=NULL,site_sync_token=NULL,started_at=NULL,site_sync_started_at=NULL,
+                next_attempt_at=NULL,site_sync_next_at=NULL,finished_at=? WHERE id=?""", (utc_now(), job_id))
+        conn.commit()
+    return len(stale_ids)
 
 
 def requeue_all_current_vins() -> dict[str, Any]:
@@ -830,9 +868,14 @@ def _process_claimed(job: dict[str, Any], *,
                 if stale:
                     final = "SUPERSEDED"
                 conn.execute("""UPDATE vin_spec_jobs SET status=?,last_error=?,finished_at=?,claim_token=NULL,
-                    next_attempt_at=? WHERE id=?""",
+                    next_attempt_at=?,
+                    site_sync_status=CASE WHEN ? THEN 'SUPERSEDED' ELSE site_sync_status END,
+                    site_sync_token=CASE WHEN ? THEN NULL ELSE site_sync_token END,
+                    site_sync_next_at=CASE WHEN ? THEN NULL ELSE site_sync_next_at END
+                    WHERE id=?""",
                     (final, type(exc).__name__ + ":" + str(exc)[:500], utc_now(),
-                     _later(RETRY_SECONDS * max(1, int(job.get("attempts") or 0))), int(job["id"])))
+                     None if stale else _later(RETRY_SECONDS * max(1, int(job.get("attempts") or 0))),
+                     stale, stale, stale, int(job["id"])))
                 conn.commit()
             else:
                 final = "STALE_DISCARDED"
@@ -851,6 +894,7 @@ def reconcile_published_cards() -> int:
     context. Successful checks get a fresh bounded budget on the next interval.
     """
     cards = read_cards()
+    _retire_absent_jobs(cards)
     count = 0
     with connect_spec(False) as conn:
         conn.execute("BEGIN IMMEDIATE")
@@ -878,8 +922,39 @@ def reconcile_published_cards() -> int:
     return count
 
 
-def sync_one(*, reconciler: Callable[[dict[str, Any], list[dict[str, Any]]], dict[str, Any]] | None = None) -> dict[str, Any] | None:
+def recover_lifecycle_pending(*, guard=None) -> dict[str, Any]:
+    """Recover interrupted lifecycle transactions before any worker writes.
+
+    The preliminary archive lookup is read-only. No application guard import
+    occurs when no recovery is pending (including isolated unit fixtures).
+    Actual compensation is delegated to the reviewed lifecycle helper under
+    the existing shared reentrant publication lock and matching CRM database.
+    """
+    import card_lifecycle
+    with connect_main() as conn:
+        if not _table_exists(conn, card_lifecycle.ARCHIVE_TABLE):
+            return {"status": "PASS", "recovered": []}
+        pending = conn.execute("SELECT 1 FROM ua_spec_lifecycle_archive "
+            "WHERE state IN ('APPLIED','ROLLBACK_DB_DONE') LIMIT 1").fetchone()
+    if not pending:
+        return {"status": "PASS", "recovered": []}
+    if guard is None:
+        import publish_transaction_guard as guard
+    if pathlib.Path(guard.DB).resolve() != MAIN_DB.resolve():
+        raise ServiceError("LIFECYCLE_RECOVERY_CRM_DATABASE_MISMATCH")
+    if (getattr(guard, "LIFECYCLE_REENTRANT_LOCK", False) is not True or
+            pathlib.Path(guard.LOCK).resolve() != pathlib.Path(guard.ROOT).resolve()/".ua_art_publish_transaction.lock"):
+        raise ServiceError("LIFECYCLE_RECOVERY_SHARED_LOCK_MISMATCH")
+    result = card_lifecycle.recover_pending(guard=guard)
+    if result.get("status") != "PASS":
+        raise ServiceError("LIFECYCLE_RECOVERY_NOT_VERIFIED")
+    return result
+
+
+def sync_one(*, reconciler: Callable[[dict[str, Any], list[dict[str, Any]]], dict[str, Any]] | None = None,
+             lifecycle_guard=None) -> dict[str, Any] | None:
     """Claim one durable publication attempt; the reconciler must verify output."""
+    recover_lifecycle_pending(guard=lifecycle_guard)
     ensure_schema()
     with connect_spec(False) as conn:
         conn.execute("BEGIN IMMEDIATE")
@@ -918,8 +993,10 @@ def sync_one(*, reconciler: Callable[[dict[str, Any], list[dict[str, Any]]], dic
             if status not in {"PASS", "UNCHANGED", "FAIL", "NOT_REQUIRED"}:
                 status, detail = "FAIL", "INVALID_RECONCILER_RESULT"
             latest = _current_card(job["car_uid"], job["vin"])
-            if not latest or not latest.get("published") or input_fingerprint(latest) != job["input_hash"]:
+            if not latest or input_fingerprint(latest) != job["input_hash"]:
                 status, detail = "SUPERSEDED", "CARD_OR_CONTEXT_CHANGED_DURING_SYNC"
+            elif not latest.get("published"):
+                status, detail = "NOT_REQUIRED", "CARD_UNPUBLISHED_DURING_SYNC"
     except Exception as exc:
         status, detail = "FAIL", (type(exc).__name__ + ":" + str(exc))[:500]
     attempt = int(job.get("site_sync_attempts") or 0) + 1
@@ -930,6 +1007,12 @@ def sync_one(*, reconciler: Callable[[dict[str, Any], list[dict[str, Any]]], dic
             site_sync_next_at=?,site_sync_token=NULL,site_sync_started_at=NULL
             WHERE id=? AND site_sync_token=? AND input_hash=?""",
             (durable_status, detail, next_at, job["id"], token, job["input_hash"]))
+        if cursor.rowcount and status == "SUPERSEDED":
+            # Fence the collection half as well; an absent identity must not
+            # remain READY/PENDING while only publication is retired.
+            conn.execute("""UPDATE vin_spec_jobs SET status='SUPERSEDED',claim_token=NULL,
+                next_attempt_at=NULL,site_sync_next_at=NULL,finished_at=? WHERE id=?""",
+                (utc_now(), job["id"]))
         conn.commit()
     return {"car_uid": job["car_uid"], "status": durable_status if cursor.rowcount else "STALE_DISCARDED",
             "attempt": attempt, "detail": detail}
@@ -990,11 +1073,12 @@ def process_backlog(limit: int | None = None, *, enricher: Callable[[dict[str, A
     return result
 
 
-def worker_cycle() -> dict[str, Any]:
+def worker_cycle(*, lifecycle_guard=None) -> dict[str, Any]:
     """One measurable cycle; at most one enrichment or one publication job."""
     ensure_schema()
     _record_state("worker_heartbeat", {"status": "RUNNING", "at": utc_now()})
     try:
+        lifecycle_recovery = recover_lifecycle_pending(guard=lifecycle_guard)
         migrate_legacy_once()
         recovered = recover_interrupted_jobs()
         scan = scan_new_vins()
@@ -1013,6 +1097,7 @@ def worker_cycle() -> dict[str, Any]:
                 _record_state("worker_last_kind", kind)
                 break
         state = {"status": "OK", "at": utc_now(), "scan": scan, "recovered": recovered,
+                 "lifecycle_recovery": lifecycle_recovery,
                  "job": result, "job_kind": kind}
         _record_state("worker_heartbeat", state)
         return state
@@ -1039,7 +1124,7 @@ def _worker_loop() -> None:
         _stop_event.wait(delay)
 
 
-def start_worker() -> bool:
+def start_worker(*, lifecycle_guard=None) -> bool:
     global _worker
     with _worker_lock:
         if _worker is not None and _worker.is_alive():
@@ -1048,6 +1133,7 @@ def start_worker() -> bool:
         try:
             ensure_schema()
             _record_state("worker_heartbeat", {"status": "STARTING", "at": utc_now()})
+            recover_lifecycle_pending(guard=lifecycle_guard)
             migrate_legacy_once()
             recover_interrupted_jobs()
         except Exception as exc:

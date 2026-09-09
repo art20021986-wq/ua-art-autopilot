@@ -34,7 +34,7 @@ class CandidateCompilerTests(unittest.TestCase):
             "ua_additional_spec.py": fixtures.spec_source(),
             "publikaciya.py": fixtures.publisher_source(),
             "publish_transaction_guard.py": fixtures.BASE_GUARD,
-            "cars_ui.py": fixtures.crm_source(),
+            "cars_ui.py": (HERE / "fixtures" / "lifecycle_current_handlers.py").read_text() + "\n" + fixtures.crm_source(),
         }
         for name, text in self.sources.items():
             (self.source / name).write_text(text, encoding="utf-8")
@@ -55,12 +55,14 @@ class CandidateCompilerTests(unittest.TestCase):
             report = compiler.prepare(self.source, self.output)
         after = {path: (path.read_bytes(), path.stat().st_mtime_ns) for path in paths}
         self.assertEqual(before, after)
-        self.assertEqual(report["module_count"], 8)
+        self.assertEqual(report["module_count"], 10)
         self.assertFalse(report["production_changed"])
         self.assertFalse(report["runtime_verified"])
         self.assertEqual(set(p.name for p in self.output.iterdir()), set(compiler.SNAPSHOT_FILES + compiler.RUNTIME_FILES) | {"manifest.json"})
         saved = json.loads((self.output / "manifest.json").read_text())
         self.assertEqual(saved, report)
+        self.assertIn("_ua_lifecycle.delete_card", (self.output / "cars_ui.py").read_text())
+        self.assertIn("LIFECYCLE_REENTRANT_LOCK = True", (self.output / "publish_transaction_guard.py").read_text())
         for name, item in report["files"].items():
             original = self.source / name if name in compiler.SNAPSHOT_FILES else runtime / name
             self.assertEqual(item["before_sha256"], hashlib.sha256(original.read_bytes()).hexdigest())

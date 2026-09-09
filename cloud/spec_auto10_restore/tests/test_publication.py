@@ -1,20 +1,30 @@
 import copy
 import importlib.util
 import re
+import sys
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 
 RUNTIME = Path(__file__).resolve().parents[1] / "runtime"
+sys.path.insert(0, str(RUNTIME))
 spec = importlib.util.spec_from_file_location("spec_publication_test", RUNTIME / "spec_publication.py")
 publication = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(publication)
 
-PAGE = '<!doctype html><html><head></head><body><h1>UA-0001</h1><p>Price 17849</p><video src="unchanged.mp4"></video><!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START --><div>VIN stays plain</div></body></html>'
+PAGE = ('<!doctype html><html><head><style>.card{color:white}</style></head><body><h1>UA-0001</h1>'
+        '<p>Price 17849</p><video src="unchanged.mp4"></video>'
+        "<table><tr><td class='k'>VIN</td><td>WDDZF0EB7HA053001</td></tr></table>"
+        '<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START --><div>Stage 2</div>'
+        '<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:END --></body></html>')
 CARD = {"car_uid": "UA-0001", "vin": "WDDZF0EB7HA053001", "published": True}
 FACTS = [{"field_key": "length", "label_ru": "Длина", "field_value": "4923", "unit": "мм",
           "category": "dimensions", "verification_status": "VERIFIED_10SRC", "is_visible": 1}]
+PANEL = ('<!-- UA-ART-VIN-GUARD-LITE-V1:START -->'
+         '<div class="blok ua-clean-vin" data-ua-clean-vin="1" data-ua-card="UA-0001" data-ua-stage="2" data-ua-video-count="1">'
+         '<div class="zag">VIN</div><div class="ua-vin-value">WDDZF0EB7HA053001</div></div>'
+         '<!-- UA-ART-VIN-GUARD-LITE-V1:END -->')
 
 
 class PublicationTests(unittest.TestCase):
@@ -43,9 +53,9 @@ class PublicationTests(unittest.TestCase):
 
     def test_partial_facts_allowed_and_empty_is_explicit_not_ready(self):
         ready = publication.inject(PAGE, "UA-0001", FACTS)
-        self.assertEqual(publication.validate_page(ready, "UA-0001", FACTS)["rows"], 1)
+        self.assertEqual(publication.validate_page(ready, "UA-0001", FACTS, previous=PAGE)["rows"], 1)
         empty = publication.inject(PAGE, "UA-0001", [])
-        self.assertEqual(publication.validate_page(empty, "UA-0001", [])["data_status"], "NEEDS_REVIEW")
+        self.assertEqual(publication.validate_page(empty, "UA-0001", [], previous=PAGE)["data_status"], "NEEDS_REVIEW")
 
     def test_no_confirmed_field_loss(self):
         old = publication.inject(PAGE, "UA-0001", FACTS)
@@ -153,6 +163,74 @@ class PublicationTests(unittest.TestCase):
                 with self.assertRaisesRegex(publication.SpecError, "BLOCK_MISSING"):
                     publication.guard_write(primary, PAGE.encode())
                 publication.guard_write(primary.with_name("UA-0001-diag.html"), b"diagnostics")
+
+    def test_common_inject_removes_proven_duplicate_before_every_rebuild(self):
+        source = PAGE.replace('</body>', PANEL + '</body>')
+        once = publication.inject(source, "UA-0001", FACTS)
+        self.assertEqual(publication.strip_block(once), PAGE)
+        self.assertEqual(publication.inject(once, "UA-0001", FACTS), once)
+        result = publication.validate_page(once, "UA-0001", FACTS, previous=source)
+        self.assertEqual(result["visible_vin_count"], 1)
+        self.assertEqual(publication.card_shell.permitted_delta(source, once, "UA-0001")["outside_permitted_regions_byte_changes"], 0)
+
+    def test_standalone_block_validation_never_substitutes_for_page_validation(self):
+        block = publication.render_block("UA-0001", FACTS)
+        self.assertEqual(publication.validate_block(block, "UA-0001", FACTS)["rows"], 1)
+        with self.assertRaisesRegex(publication.SpecError, "SHELL_MAIN_VIN"):
+            publication.validate_page(block, "UA-0001", FACTS)
+        full_page = publication.inject(PAGE, "UA-0001", FACTS)
+        with self.assertRaisesRegex(publication.SpecError, "STANDALONE_SPECIFICATION_FRAGMENT_REQUIRED"):
+            publication.validate_block(full_page, "UA-0001", FACTS)
+
+    def test_existing_writer_allows_card_values_and_gallery_but_blocks_shell_or_vin_regression(self):
+        before = publication.inject(PAGE, "UA-0001", FACTS)
+        with tempfile.TemporaryDirectory() as folder, patch.object(publication, "load_facts", return_value=FACTS):
+            path = Path(folder) / "UA-0001.html"
+            path.write_text(before)
+            edited = before.replace("Price 17849", "Price 19000").replace("unchanged.mp4", "new-gallery.mp4").replace("<h1>UA-0001</h1>", "<h1>Updated vehicle title</h1>")
+            publication.guard_write(path, edited.encode())
+            for invalid in (edited.replace("color:white", "color:red"), edited + PANEL,
+                            edited.replace('</body>', '<p>VIN: WDDZF0EB7HA053001</p></body>')):
+                with self.assertRaises(publication.SpecError):
+                    publication.guard_write(path, invalid.encode())
+            self.assertEqual(path.read_text(), before)
+
+    def test_new_writer_requires_reviewed_template_pin(self):
+        assets = (Path(__file__).parent / "fixtures/reviewed_shell_assets.html").read_text()
+        reviewed = PAGE.replace('<style>.card{color:white}</style>', assets)
+        candidate = publication.inject(reviewed, "UA-0001", FACTS)
+        with tempfile.TemporaryDirectory() as folder, patch.object(publication, "load_facts", return_value=FACTS):
+            path = Path(folder) / "UA-0001.html"
+            publication.guard_write(path, candidate.encode())
+            self.assertFalse(path.exists())
+            self.assertEqual(publication.validate_page(candidate, "UA-0001", FACTS)["shell_reference"], "reviewed_template_pin")
+            with self.assertRaisesRegex(publication.SpecError, "UNREVIEWED_NEW_CARD_SHELL_ASSETS"):
+                publication.guard_write(path, publication.inject(PAGE, "UA-0001", FACTS).encode())
+            with self.assertRaisesRegex(publication.SpecError, "UNREVIEWED_NEW_CARD_SHELL_ASSETS"):
+                publication.guard_write(path, candidate.replace("telegram-web-app.js", "unexpected.js").encode())
+
+    def test_reconciliation_rejects_public_shell_loss_even_if_specification_matches(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self._runtime(root)
+            result = publication.reconcile_published(CARD, FACTS, root=root,
+                public_reader=lambda code: (root / "video/UA-0001.html").read_text().replace("color:white", "color:red"),
+                state_reader=lambda code: (CARD, FACTS))
+            self.assertEqual(result["status"], "FAIL")
+            self.assertIn("SHELL_STATIC_ASSETS_CHANGED", result["detail"])
+
+    def test_reallocated_database_id_cannot_resume_old_uid_publication(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self._runtime(root)
+            original = {**CARD, "car_id": 1}
+            current = {**CARD, "car_id": 2}
+            result = publication.reconcile_published(original, FACTS, root=root,
+                public_reader=lambda code: self.fail("Reallocated UID must not reach public GET"),
+                state_reader=lambda code: (current, FACTS))
+            self.assertEqual(result["status"], "FAIL")
+            self.assertIn("CARD_CHANGED_DURING_SPECIFICATION_SYNC", result["detail"])
+            self.assertEqual((root / "video/UA-0001.html").read_text(), PAGE)
 
 
 if __name__ == "__main__":

@@ -1,14 +1,21 @@
 {
   "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
-  "round": 2,
-  "generated_at": "2026-09-09T04:35:25.188625+00:00",
-  "production_touched": false,
+  "created_at_utc": "2026-09-09T05:27:07.342829+00:00",
+  "scope": "REVIEW_PACKAGE_NOT_PRODUCTION_DEPLOYMENT",
+  "local_tests": 169,
+  "local_status": "PASS",
+  "server_status": "FAIL_BEFORE_TESTS_ERRNO_22",
   "gate_b": "NOT_READY_FOR_PRODUCTION",
   "files": [
     {
       "path": "cloud/spec_auto10_restore/Gate-B.md",
-      "sha256": "dd5e854b915d4d4f37760d1725346b6a80a50cd73ccd0e5848dae4d47e5460fc",
-      "bytes": 22640
+      "sha256": "7f77e93265e6e809aff6cbf7bbbb07e08db45ef76b087526c851eea688a64757",
+      "bytes": 23491
+    },
+    {
+      "path": "cloud/spec_auto10_restore/Lifecycle.md",
+      "sha256": "0792de6aad70c9d52072741ba13a485c52e754fe066dccb5818878077c207ecd",
+      "bytes": 7369
     },
     {
       "path": "cloud/spec_auto10_restore/Preview.html",
@@ -17,23 +24,33 @@
     },
     {
       "path": "cloud/spec_auto10_restore/README.md",
-      "sha256": "ecc081a74bd168242ac60e30aa6a579fde81b8a85771eac352a4a6e2b2bb13fb",
-      "bytes": 18793
+      "sha256": "bda6de782754fe52d4cac50475544dcea31f42590903e7fa56ef6aac2808d861",
+      "bytes": 17645
+    },
+    {
+      "path": "cloud/spec_auto10_restore/build_owner_preview.py",
+      "sha256": "c4e617fe5d8cc10abc02dcbfec237acda48ecf9b562b1ea5c466871d71eb412c",
+      "bytes": 4335
     },
     {
       "path": "cloud/spec_auto10_restore/build_preview.py",
-      "sha256": "ab4bc20cb4add1d8aaee08fcc8ba11e6e2c459b77989a72bce0fd0213aaed970",
-      "bytes": 6912
+      "sha256": "41dfeeee755b2af106f31f787ea6b370377444e47b2eaccfe71a30d53112afe9",
+      "bytes": 7121
     },
     {
       "path": "cloud/spec_auto10_restore/build_verified_specs.py",
-      "sha256": "60da77056cc332704bc0a7b0b05055d2019379a23685946a73672a4e7c42eb37",
-      "bytes": 13624
+      "sha256": "b0c3b551b20ce15f2aa37500dd5911c839bc694fc95f505ad0458860a806df1d",
+      "bytes": 18780
     },
     {
       "path": "cloud/spec_auto10_restore/check_all_card_rebuild.py",
-      "sha256": "67525c146b6e2fc8051135afe9b5f06895d720f064f018d6138bd394fa8438e7",
-      "bytes": 9454
+      "sha256": "ac0a4eaf16f58e4b7da3127f5e4aac19b5f789a13a56aa2be12c1f6039b12347",
+      "bytes": 11652
+    },
+    {
+      "path": "cloud/spec_auto10_restore/check_card_shell.py",
+      "sha256": "d1ce6e07defe03fa8d41b9c07fdef66d3eecfdd5598c0988bd6d77b23fd61b16",
+      "bytes": 5640
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/UA-0001-before.html",
@@ -46,14 +63,19 @@
       "bytes": 66799
     },
     {
+      "path": "cloud/spec_auto10_restore/evidence/all-card-rebuild-single-vin.json",
+      "sha256": "17ed5a47b5bc8f99dc8209a9083870af1f07204d8dee7238f7a79ab3dd888458",
+      "bytes": 61471
+    },
+    {
       "path": "cloud/spec_auto10_restore/evidence/all-card-rebuild.json",
-      "sha256": "6e8ab86a83624cfc86ae2bca3de6bf69b29384220be99c8fea7d3ed482e638e1",
-      "bytes": 38426
+      "sha256": "7295190bd852f585f3e33764ad11a00eb0df9f9a252df4b454a206afbbff5f5f",
+      "bytes": 42926
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/candidate-runtime-diff.json",
-      "sha256": "511422a2edf490f988e3490b3f549346e8ae723037d77e439610f7b84af345ae",
-      "bytes": 3059
+      "sha256": "f7580b1f5abbc5752c0e08c323cbf7215e5f61e19678be6ed6fbd6aa3a04568d",
+      "bytes": 3363
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/capture.json",
@@ -62,8 +84,23 @@
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/hosted-preview.json",
-      "sha256": "431a7e39d1d3968cca7a7a738035bb5ea7237a1ae50b1b50d668b778e5aa5a0e",
-      "bytes": 878
+      "sha256": "367c8a98c8991bf4a513cc6cf12e9e154bd60b1e5d5761bbb40666ccc00206ab",
+      "bytes": 508
+    },
+    {
+      "path": "cloud/spec_auto10_restore/evidence/lifecycle-current-integration.json",
+      "sha256": "39691d5131e67654cbca7c92f87684bd72f8f7a7757404e0bbb1294ba9cad024",
+      "bytes": 1207
+    },
+    {
+      "path": "cloud/spec_auto10_restore/evidence/lifecycle.json",
+      "sha256": "ee0fc0dfe5d55420696088b801e74de47aeb309129272f93300f64fc455ff0d5",
+      "bytes": 4461
+    },
+    {
+      "path": "cloud/spec_auto10_restore/evidence/owner-correction-UA-0016.json",
+      "sha256": "e40cef0f9f87b0d4841cec81945ae10b87d55507e4d85c8fe035e16a375da6dc",
+      "bytes": 312
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/preview-browser-all16.json",
@@ -74,6 +111,11 @@
       "path": "cloud/spec_auto10_restore/evidence/preview-browser-round2.json",
       "sha256": "7f3ec0906446b35d687c74e286986214461df67322dd0465418d1909e8367e68",
       "bytes": 781
+    },
+    {
+      "path": "cloud/spec_auto10_restore/evidence/preview-browser-v3.json",
+      "sha256": "773939fd31b6c60e76aa4731dfb65a7f4214a1dc3ae155476c5f8f71306b17e0",
+      "bytes": 732
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/preview-browser.json",
@@ -96,14 +138,24 @@
       "bytes": 606
     },
     {
+      "path": "cloud/spec_auto10_restore/evidence/production-release-control.json",
+      "sha256": "4c0ab63eb6a271068882e9249d7e4075b9031329a45d46e62f0b297e8fb493ad",
+      "bytes": 1177
+    },
+    {
+      "path": "cloud/spec_auto10_restore/evidence/publication-shell-integration.json",
+      "sha256": "f15aef2b5582d546f166024fde1433fd59c01931dc368701df0ca15240f458cd",
+      "bytes": 2729
+    },
+    {
       "path": "cloud/spec_auto10_restore/evidence/runtime-access-20260909.json",
       "sha256": "fe1af1a4606f777ed170c13af64dba85b96f1dfcfb71a081d85c0f1c45c14181",
       "bytes": 9712
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/runtime-changes.diff",
-      "sha256": "d2a8522d7473f89c9c05952121297f0d357b7233a77cf8ed213d5b4fa7267701",
-      "bytes": 70732
+      "sha256": "0279978174d438b835088c4a692d4713e81bddd2f29973a448baa69803e4819f",
+      "bytes": 161990
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/runtime-process-readonly.json",
@@ -121,6 +173,21 @@
       "bytes": 5865
     },
     {
+      "path": "cloud/spec_auto10_restore/evidence/server-gate-attempt-home.json",
+      "sha256": "b48cca38223919ea443b0478dde2f6961d8635417496e9ac7c220a8d3cfdd747",
+      "bytes": 1154
+    },
+    {
+      "path": "cloud/spec_auto10_restore/evidence/server-gate-python310.json",
+      "sha256": "2e007c434d6ac135ff34e5747dad4d14e5ce01fdeb14bd885683c1438ba1036a",
+      "bytes": 1643
+    },
+    {
+      "path": "cloud/spec_auto10_restore/evidence/single-vin-shell-cached32.json",
+      "sha256": "cec4cd9b5ab0cb3c717371f68339db4c9e86a49455addbd52bbd9fa2f5086e78",
+      "bytes": 41767
+    },
+    {
       "path": "cloud/spec_auto10_restore/evidence/sources-local-live-20260909.json",
       "sha256": "e6e130bafc469c186b96c8e0b9af66904bedb009143e1d7b9061eecb3f94a34f",
       "bytes": 6562
@@ -132,33 +199,53 @@
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/test-results.json",
-      "sha256": "1af5c890d48c8d383b7911ba551263badce2125375feff5a5a8e538379d6583e",
-      "bytes": 308
+      "sha256": "97e578da726b25e56a567f7baff266b5a609b080700972131a4c7097d3552174",
+      "bytes": 353
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/tests.log",
-      "sha256": "09b8822981daf32c64547996f3b631fcee5d80407307a1304a1e88fc76c889e0",
-      "bytes": 16344
+      "sha256": "d24ef710a500c064d0f1075e83feb37854b4e1fac10f3a8c17519dd0e49d71b2",
+      "bytes": 29044
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/verified-specs-report.json",
-      "sha256": "2862b84cd7c323ef9e8a997ef365b127c7720ea5da89f4a0a19288230f174beb",
-      "bytes": 26638
+      "sha256": "5a620206c16b0885a98522dfaa76c75cbfa5f3e55c0b429747d03b734f7e0917",
+      "bytes": 39240
     },
     {
       "path": "cloud/spec_auto10_restore/evidence/verified-specs.json",
-      "sha256": "bf1bdf81000ee6bde4fd3299825de457ca69416b13e0ef1469c687a05276c39d",
-      "bytes": 234805
+      "sha256": "c35e3a1057e7faeabafdf94892f059649c71df49d3bdf6904e069857ab1ce098",
+      "bytes": 237227
     },
     {
       "path": "cloud/spec_auto10_restore/integration.py",
-      "sha256": "4215fac32fba441011729714893d3b3fc5acb3164306bfbcc9fd37cf806acfea",
-      "bytes": 16314
+      "sha256": "173c3c45ced67ecfcc8fd91b489c05be501d77c603a2079a6df6547646161ecc",
+      "bytes": 16322
+    },
+    {
+      "path": "cloud/spec_auto10_restore/lifecycle_integration.py",
+      "sha256": "79c421a753de0a0a2e9fc9bcd4c00dffd9e3d8feaa8a8eac413895159a494096",
+      "bytes": 8987
+    },
+    {
+      "path": "cloud/spec_auto10_restore/package_server_gate.py",
+      "sha256": "08aeb5224cad52cdc849dbd94220db51466994e0a302a91a367a195fe67d57ab",
+      "bytes": 4358
     },
     {
       "path": "cloud/spec_auto10_restore/prepare_candidate.py",
-      "sha256": "16dbeb4bf249b219d2050a39b89f3b550d4ba1f32ddd2908c8b9bbaa6c86b07d",
-      "bytes": 8241
+      "sha256": "00ca8053f4d8b572992d2e5d726de6593e5b77b8fcab2ce5b6eabac55d4f0b4e",
+      "bytes": 8716
+    },
+    {
+      "path": "cloud/spec_auto10_restore/runtime/card_lifecycle.py",
+      "sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+      "bytes": 24999
+    },
+    {
+      "path": "cloud/spec_auto10_restore/runtime/card_shell.py",
+      "sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+      "bytes": 15141
     },
     {
       "path": "cloud/spec_auto10_restore/runtime/profile_library.py",
@@ -172,13 +259,13 @@
     },
     {
       "path": "cloud/spec_auto10_restore/runtime/spec_publication.py",
-      "sha256": "29096e2f258d7a4412ef3274ccee02fc6f20e05b5d99d6594003446d7e73d95a",
-      "bytes": 21064
+      "sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+      "bytes": 24389
     },
     {
       "path": "cloud/spec_auto10_restore/runtime/vin_spec_service.py",
-      "sha256": "64a29a518b219edc6cdac82c51110061a573561fd9dd14ba6160c32979b8e51f",
-      "bytes": 52912
+      "sha256": "6fd884619a104ea78073472cd54ef0802259ec1699506566e991041fe219b619",
+      "bytes": 57841
     },
     {
       "path": "cloud/spec_auto10_restore/runtime_probe.py",
@@ -186,9 +273,34 @@
       "bytes": 19375
     },
     {
+      "path": "cloud/spec_auto10_restore/server_gate.py",
+      "sha256": "9486b550125aff5a802cd81c843ae34fca5e335cfe297e4e874701be2aebe6d3",
+      "bytes": 17802
+    },
+    {
       "path": "cloud/spec_auto10_restore/source_probe.py",
       "sha256": "54454027bd6e70ce52d70862b8fd968be3341e890ece001b941d1f299f1eee4b",
       "bytes": 1167
+    },
+    {
+      "path": "cloud/spec_auto10_restore/tests/fixtures/lifecycle_current_handlers.py",
+      "sha256": "6613c880ee89b44f0bf5a02bf82040bf24044201993041ee6cf0618e7a7bb867",
+      "bytes": 5454
+    },
+    {
+      "path": "cloud/spec_auto10_restore/tests/fixtures/reviewed_shell_assets.html",
+      "sha256": "4e8a5b320da16b500fca3d25d8aa0d03ce9ae4b78bf619368894f420e7187bbe",
+      "bytes": 16595
+    },
+    {
+      "path": "cloud/spec_auto10_restore/tests/test_card_lifecycle.py",
+      "sha256": "9005f2f07e7a2dc00e0e22a4ef9f7abfe8fdda880a8f78c20686fad5b523b6ad",
+      "bytes": 23741
+    },
+    {
+      "path": "cloud/spec_auto10_restore/tests/test_card_shell.py",
+      "sha256": "7080dd1370960dff3537b60881c1db78f16b7053875b084cad46a6d73f6f0642",
+      "bytes": 10745
     },
     {
       "path": "cloud/spec_auto10_restore/tests/test_integration.py",
@@ -196,19 +308,29 @@
       "bytes": 20124
     },
     {
+      "path": "cloud/spec_auto10_restore/tests/test_lifecycle.py",
+      "sha256": "1827a87594e08d190732e2e412035244e8352c4f219de798cf2bdfe181e352be",
+      "bytes": 11325
+    },
+    {
       "path": "cloud/spec_auto10_restore/tests/test_prepare_candidate.py",
-      "sha256": "7a746bda8100828c8411ce03719dd1ee4b2318d03f12b1bd16f36457de229efe",
-      "bytes": 6809
+      "sha256": "2e6ed008eaa5026f5ab4ad67988107c364ef74c93fdc7b9d7667ec4a7e1c2954",
+      "bytes": 7095
     },
     {
       "path": "cloud/spec_auto10_restore/tests/test_publication.py",
-      "sha256": "ebfc39fcca0a17269f19dc0fea45c9a66e44b7c18dc653584230ac5d446b3ea3",
-      "bytes": 8818
+      "sha256": "7e78bd36f47476c791bf85a727be39ddb5eb9291031389930810e4ac57008695",
+      "bytes": 14051
     },
     {
       "path": "cloud/spec_auto10_restore/tests/test_runtime_probe.py",
       "sha256": "af8c8e5a06dbd04aef623aee338c70a03f7646bbb9404acbec316e83d0bb4885",
       "bytes": 12266
+    },
+    {
+      "path": "cloud/spec_auto10_restore/tests/test_server_gate.py",
+      "sha256": "046722b7da48086e18779956fbdd988d68fdad11e938aa97954c1388d5d4af4f",
+      "bytes": 8386
     },
     {
       "path": "cloud/spec_auto10_restore/tests/test_source_recovery.py",
@@ -217,13 +339,19 @@
     },
     {
       "path": "cloud/spec_auto10_restore/tests/test_verified_specs.py",
-      "sha256": "e663d2c9146f95d37ca61e0f6eff4a20976c07b70a5fb3b0c82018449cbf9050",
-      "bytes": 3673
+      "sha256": "0f4cd1c75c133895ea31d198b71cd61866a6f28507a61f4aaa69d6807beb6c08",
+      "bytes": 5411
+    },
+    {
+      "path": "cloud/spec_auto10_restore/tests/test_worker_lifecycle_wiring.py",
+      "sha256": "515c981f304f12dc51632bbd7d4fc02d3885a62c88ec8a2a2a28ac7e3febb00c",
+      "bytes": 7832
     },
     {
       "path": "cloud/spec_auto10_restore/tests/test_worker_recovery.py",
-      "sha256": "cd30135b9a04d67ff4f3821430684ab3ddaf12458a674d811ddb0f8c92aef19d",
-      "bytes": 23092
+      "sha256": "19f4e79916bfd40e4209028787b095b4341ef6d739d70df0642884e0ac1d4ce3",
+      "bytes": 23528
     }
-  ]
+  ],
+  "server_package_v5_sha256": "e412be2bc3131b035753150a4ebea62b6369feeb2951b6af05e1c91a482941e7"
 }

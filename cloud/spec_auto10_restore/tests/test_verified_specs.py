@@ -65,6 +65,29 @@ class VerifiedSpecExportTests(unittest.TestCase):
         self.assertIn("CRM_MODEL_DIFFERS_FROM_EXACT_VIN_PROFILE", quality["issues"])
         self.assertTrue(quality["inspection_only"])
 
+    def test_owner_overlay_changes_only_target_year_and_keeps_runtime_guard(self):
+        original = [self.card(), self.card(id=10, auto_number="UA-0010", year="2018")]
+        saved = list(original)
+        proposed = exporter.apply_owner_preview_overlay(original, dict(exporter.EXPECTED_OWNER_CORRECTION))
+        self.assertEqual(original, saved)
+        self.assertEqual(proposed[0][5], "2017")
+        self.assertEqual(proposed[0][:5] + proposed[0][6:], original[0][:5] + original[0][6:])
+        self.assertEqual(proposed[1], original[1])
+        self.assertEqual(exporter.identity_quality(proposed[0], self.policy)["status"], "STORED_CONTEXT_MATCH")
+        publication = exporter.renderer()
+        with self.assertRaisesRegex(publication.SpecError, "IDENTITY_CONTEXT_REQUIRES_REVIEW"):
+            publication._assert_identity_context(dict(zip(exporter.CRM_FIELDS.split(","), original[0])))
+        publication._assert_identity_context(dict(zip(exporter.CRM_FIELDS.split(","), proposed[0])))
+
+    def test_owner_overlay_rejects_other_identity_or_unapproved_change(self):
+        for changed in ({"uid": "UA-0010"}, {"new_year": 2018}, {"source_text": "2018 год"}):
+            with self.subTest(changed=changed):
+                with self.assertRaisesRegex(exporter.ExportError, "EXPLICIT_APPROVAL"):
+                    exporter.apply_owner_preview_overlay([self.card()], {**exporter.EXPECTED_OWNER_CORRECTION, **changed})
+        for card in (self.card(year="2000"), self.card(vin="KNAGU416BKA324445"), self.card(published=0)):
+            with self.assertRaisesRegex(exporter.ExportError, "TARGET_NO_LONGER_MATCHES"):
+                exporter.apply_owner_preview_overlay([card], dict(exporter.EXPECTED_OWNER_CORRECTION))
+
 
 if __name__ == "__main__":
     unittest.main()

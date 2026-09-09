@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "scope": "isolated_current_handler_compilation_and_lifecycle_fixtures",
+  "tests_passed": 26,
+  "files": {
+    "cars_ui.py": {
+      "input_sha256": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+      "compiled_candidate_sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+      "sequential_patches": "integration then lifecycle_integration",
+      "status": "PASS"
+    },
+    "publish_transaction_guard.py": {
+      "input_sha256": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+      "compiled_candidate_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+      "sequential_patches": "integration then lifecycle_integration",
+      "status": "PASS"
+    }
+  },
+  "production_changed": false,
+  "real_catalog_publisher_verified": false,
+  "telegram_messages_sent": false,
+  "recovery": "every_outer_publication_lock_entry_nested_safe",
+  "identity_checks": [
+    "canonical UID uniqueness",
+    "completed delete tombstones independent of car_id",
+    "pending operations fenced by current thread operation token",
+    "VIN and original row identity before compensation and readback"
+  ]
+}

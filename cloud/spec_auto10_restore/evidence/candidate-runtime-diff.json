@@ -1,66 +1,76 @@
 {
-  "status": "EXACT_CURRENT_SOURCE_CANDIDATE_COMPILED",
-  "created_at_utc": "2026-09-09T04:34:46.329245+00:00",
-  "source_module_count": 7,
-  "candidate_module_count": 8,
-  "server_source_byte_hashes_provided_by_root_console": true,
-  "runtime_import_bindings_verified": false,
-  "production_changed": false,
+  "contract_id": "UA-ART-SPEC-AUTO-10-RESTORE-001-v1.0",
   "files": {
+    "card_lifecycle.py": {
+      "after_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+      "before_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+      "changed": false,
+      "input_kind": "runtime_bundle"
+    },
+    "card_shell.py": {
+      "after_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+      "before_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+      "changed": false,
+      "input_kind": "runtime_bundle"
+    },
     "cars_ui.py": {
-      "server_before_sha256": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
-      "candidate_after_sha256": "a4f3b61a2e12842b8c0e869e8146df4bbdb9b949b4c7dcafde566081f7fbb5d0",
-      "new_module": false,
-      "candidate_bytes": 189963
+      "after_sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+      "before_sha256": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+      "changed": true,
+      "input_kind": "snapshot"
     },
     "profile_library.py": {
-      "server_before_sha256": "1211250019cf16c74f28d96539606803db92fe9a204eddfbb2a7339d174085db",
-      "candidate_after_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
-      "new_module": false,
-      "candidate_bytes": 24772
+      "after_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+      "before_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+      "changed": false,
+      "input_kind": "runtime_bundle"
     },
     "publikaciya.py": {
-      "server_before_sha256": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
-      "candidate_after_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
-      "new_module": false,
-      "candidate_bytes": 26228
+      "after_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+      "before_sha256": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
+      "changed": true,
+      "input_kind": "snapshot"
     },
     "publish_transaction_guard.py": {
-      "server_before_sha256": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
-      "candidate_after_sha256": "bd2ddb0b540022e3d68e9df3903a068f790f94485734f360a3bd557c3f960be3",
-      "new_module": false,
-      "candidate_bytes": 30869
+      "after_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+      "before_sha256": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+      "changed": true,
+      "input_kind": "snapshot"
     },
     "source_policy.py": {
-      "server_before_sha256": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38",
-      "candidate_after_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
-      "new_module": false,
-      "candidate_bytes": 61028
+      "after_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+      "before_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+      "changed": false,
+      "input_kind": "runtime_bundle"
     },
     "spec_publication.py": {
-      "server_before_sha256": null,
-      "candidate_after_sha256": "29096e2f258d7a4412ef3274ccee02fc6f20e05b5d99d6594003446d7e73d95a",
-      "new_module": true,
-      "candidate_bytes": 21064
+      "after_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+      "before_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+      "changed": false,
+      "input_kind": "runtime_bundle"
     },
     "ua_additional_spec.py": {
-      "server_before_sha256": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
-      "candidate_after_sha256": "086257ef791cbf3d3c2ef282d5f225b0bb6158365a91b7e92110f493a94ad7c3",
-      "new_module": false,
-      "candidate_bytes": 39628
+      "after_sha256": "5a03cb99d1f4514539956f32a75e09e119e2e9049a91da6326adb32877518e56",
+      "before_sha256": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
+      "changed": true,
+      "input_kind": "snapshot"
     },
     "vin_spec_service.py": {
-      "server_before_sha256": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae",
-      "candidate_after_sha256": "64a29a518b219edc6cdac82c51110061a573561fd9dd14ba6160c32979b8e51f",
-      "new_module": false,
-      "candidate_bytes": 52912
+      "after_sha256": "6fd884619a104ea78073472cd54ef0802259ec1699506566e991041fe219b619",
+      "before_sha256": "6fd884619a104ea78073472cd54ef0802259ec1699506566e991041fe219b619",
+      "changed": false,
+      "input_kind": "runtime_bundle"
     }
   },
-  "tests": {
-    "combined": 97,
-    "status": "PASS",
-    "receipt": "test-results.json"
-  },
-  "compatibility_adjustment": "Accept only the exact existing TASK117/TASK121 register wrapper that invokes the captured UA110 register once; preserve the sole worker start.",
-  "identity_guard": "Demonstrated brand/model/year conflict blocks source lookup, queue retry, canonical read and publication; fact values and manual/visibility/verification flags preserved."
+  "gate_b_remaining": [
+    "Verify consistent source snapshot and current process module bindings.",
+    "Map flattened modules to reviewed actual installation paths.",
+    "Validate current canonical data, every publication path and rollback route.",
+    "Close Gate B and use the existing authorized production/recovery route; owner's placement command is recorded."
+  ],
+  "module_count": 10,
+  "production_changed": false,
+  "runtime_verified": false,
+  "source_layout": "flattened_explicit_snapshot",
+  "status": "OFFLINE_CANDIDATE_COMPILED"
 }

@@ -27,6 +27,13 @@ SPEC_FIELDS = {
 CRM_FIELDS = "id,auto_number,vin,brand,model,year,fuel,engine_cc,engine,gearbox,published"
 EXPECTED_UIDS = [f"UA-{number:04d}" for number in range(1, 17)]
 HERE = Path(__file__).resolve().parent
+OWNER_CORRECTION_PATH = HERE / "evidence/owner-correction-UA-0016.json"
+EXPECTED_OWNER_CORRECTION = {
+    "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001", "uid": "UA-0016", "vin_last4": "1028",
+    "field": "year", "old_year": 1999, "new_year": 2017, "source": "owner_confirmation",
+    "source_text": "2017 год", "preview_overlay_only": True, "production_applied": False,
+    "pending_crm_update": True,
+}
 
 
 class ExportError(RuntimeError):
@@ -67,10 +74,17 @@ def read_only(path):
 
 
 def renderer():
-    module_spec = importlib.util.spec_from_file_location("spec_preview_renderer", HERE / "runtime/spec_publication.py")
-    module = importlib.util.module_from_spec(module_spec)
-    module_spec.loader.exec_module(module)
-    return module
+    runtime = HERE / "runtime"
+    sys.path.insert(0, str(runtime))
+    try:
+        module_spec = importlib.util.spec_from_file_location("spec_preview_renderer", runtime / "spec_publication.py")
+        module = importlib.util.module_from_spec(module_spec)
+        module_spec.loader.exec_module(module)
+        if Path(module.card_shell.__file__).resolve() != runtime / "card_shell.py":
+            raise ExportError("UNEXPECTED_CARD_SHELL_MODULE")
+        return module
+    finally:
+        sys.path.remove(str(runtime))
 
 
 def identity_policy():
@@ -143,7 +157,31 @@ def identity_quality(card, policy):
     return result
 
 
-def build(spec_db, crm_db):
+def apply_owner_preview_overlay(all_cards, correction):
+    """Apply the one explicit owner correction to copied rows, never SQLite."""
+    if correction != EXPECTED_OWNER_CORRECTION:
+        raise ExportError("OWNER_CORRECTION_DIFFERS_FROM_EXPLICIT_APPROVAL")
+    target_rows = [card for card in all_cards if card[1] == correction["uid"]]
+    if len(target_rows) != 1:
+        raise ExportError("OWNER_CORRECTION_TARGET_MISSING_OR_DUPLICATED")
+    target = dict(zip(CRM_FIELDS.split(","), target_rows[0]))
+    if (str(target["vin"] or "")[-4:] != correction["vin_last4"] or
+            str(target["year"]) != str(correction["old_year"]) or target["published"] != 1):
+        raise ExportError("OWNER_CORRECTION_TARGET_NO_LONGER_MATCHES")
+    proposed = []
+    for original in all_cards:
+        copied = dict(zip(CRM_FIELDS.split(","), original))
+        if copied["auto_number"] == correction["uid"]:
+            copied["year"] = str(correction["new_year"])
+        proposed.append(tuple(copied[field] for field in CRM_FIELDS.split(",")))
+    changed_cells = [(before[1], column) for before, after in zip(all_cards, proposed)
+                     for column, old, new in zip(CRM_FIELDS.split(","), before, after) if old != new]
+    if changed_cells != [(correction["uid"], "year")]:
+        raise ExportError("OWNER_OVERLAY_CHANGED_UNAPPROVED_FIELDS")
+    return proposed
+
+
+def build(spec_db, crm_db, *, owner_correction_path=OWNER_CORRECTION_PATH):
     spec_db, crm_db = Path(spec_db).absolute(), Path(crm_db).absolute()
     before = {"spec": fingerprint(spec_db), "crm": fingerprint(crm_db)}
     with read_only(spec_db) as conn:
@@ -160,15 +198,29 @@ def build(spec_db, crm_db):
     if len(all_cards) != 18 or [row[1] for row in published] != EXPECTED_UIDS:
         raise ExportError("PUBLISHED_CARD_SCOPE_MISMATCH")
 
+    correction_bytes = Path(owner_correction_path).read_bytes()
+    correction = json.loads(correction_bytes)
+    proposed_cards = apply_owner_preview_overlay(all_cards, correction)
+    proposed_published = [row for row in proposed_cards if row[-1] == 1]
+    original_by_uid = {card[1]: card for card in all_cards}
+
     publication = renderer()
     policy = identity_policy()
-    quality_by_uid = {card[1]: identity_quality(card, policy) for card in all_cards}
+    original_quality_by_uid = {card[1]: identity_quality(card, policy) for card in all_cards}
+    quality_by_uid = {card[1]: identity_quality(card, policy) for card in proposed_cards}
+    corrected_quality = quality_by_uid[correction["uid"]]
+    corrected_quality.update({"context_state": "proposed_preview_with_owner_confirmation",
+                              "original_crm_year": str(correction["old_year"]),
+                              "year_source": "owner_confirmation", "pending_crm_update": True,
+                              "original_server_status": original_quality_by_uid[correction["uid"]]["status"],
+                              "notice_uk": "Власник підтвердив 2017 рік. У Preview застосовано виправлення; у робочій CRM ще 1999 рік.",
+                              "notice_ru": "Владелец подтвердил 2017 год. В Preview применено исправление; в рабочей CRM пока 1999 год."})
     fact_columns = SPEC_FIELDS["additional_specification"].split(",")
     meta_columns = SPEC_FIELDS["additional_specification_meta"].split(",")
     metadata = {(row[0], row[1]): dict(zip(meta_columns, row))
                 for row in raw_spec["additional_specification_meta"]}
     cards, checks = [], []
-    for card in published:
+    for card in proposed_published:
         card_uid = publication.uid(card[1])
         raw_card = {table: [row for row in rows if row[0] == card_uid]
                     for table, rows in raw_spec.items()}
@@ -183,11 +235,14 @@ def build(spec_db, crm_db):
         if not normalized:
             raise ExportError("VISIBLE_SPECIFICATION_EMPTY:" + card_uid)
         block = publication.render_block(card_uid, facts)
-        validation = publication.validate_page(block, card_uid, facts)
+        validation = publication.validate_block(block, card_uid, facts)
         if re.search(r"<script\b|<a\b|https?://|onclick=", block, re.I):
             raise ExportError("EXTERNAL_OR_ACTIVE_SPECIFICATION_CONTENT:" + card_uid)
         per_card_sha = digest(raw_card, sort_keys=True)
         cards.append({"uid": card_uid, "brand": card[3], "model": card[4], "year": card[5],
+                      "original_crm_year": original_by_uid[card_uid][5],
+                      "year_source": "owner_confirmation" if card_uid == correction["uid"] else "server_matched_crm",
+                      "pending_crm_update": card_uid == correction["uid"],
                       "vin_last4": str(card[2] or "")[-4:], "rows": len(normalized),
                       "data_quality": quality_by_uid[card_uid],
                       "semantic_sha256": per_card_sha, "spec_html": block})
@@ -195,30 +250,44 @@ def build(spec_db, crm_db):
                        "hidden_rows": sum(not bool(f["is_visible"]) for f in facts),
                        "manual_rows": sum(bool(f["is_manual"]) and bool(f["is_visible"]) for f in facts),
                        "validation": validation["status"], "no_ads": True,
+                       "pending_crm_update": card_uid == correction["uid"],
+                       "original_crm_year": original_by_uid[card_uid][5], "proposed_year": card[5],
                        "data_quality": quality_by_uid[card_uid],
                        "semantic_sha256": per_card_sha, "render_sha256": file_text_digest(block)})
 
     after = {"spec": fingerprint(spec_db), "crm": fingerprint(crm_db)}
     if before != after:
         raise ExportError("INPUT_DATABASE_CHANGED_DURING_EXPORT")
+    if Path(owner_correction_path).read_bytes() != correction_bytes:
+        raise ExportError("OWNER_CORRECTION_CHANGED_DURING_EXPORT")
     dataset = {"task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001", "scope": "published_cards_only",
                "data_basis": "server_matched_stored_facts", "fresh_source_verification": False,
+               "context_state": "proposed_preview_with_owner_confirmation", "server_crm_updated": False,
+               "owner_correction": correction, "owner_correction_sha256": hashlib.sha256(correction_bytes).hexdigest(),
+               "pending_crm_update_count": 1,
+               "current_crm_needs_review_count": sum(original_quality_by_uid[card[1]]["inspection_only"] for card in published),
                "ready_count": sum(not card["data_quality"]["inspection_only"] for card in cards),
                "needs_review_count": sum(card["data_quality"]["inspection_only"] for card in cards),
                "spec_semantic_sha256": SPEC_SHA256, "crm_published_identity_sha256": CRM_PUBLISHED_SHA256,
+               "proposed_crm_published_identity_sha256": digest(proposed_published),
                "cards": cards}
     report = {"status": "PASS", "scope": "read_only_preview_export", "production_touched": False,
               "network_requests": 0, "fresh_source_verification": False,
               "spec_semantic_sha256": SPEC_SHA256, "crm_all_identity_sha256": CRM_ALL_SHA256,
               "crm_published_identity_sha256": CRM_PUBLISHED_SHA256,
+              "proposed_crm_published_identity_sha256": dataset["proposed_crm_published_identity_sha256"],
+              "owner_correction": correction, "owner_correction_sha256": dataset["owner_correction_sha256"],
+              "context_state": dataset["context_state"], "server_crm_updated": False,
+              "pending_crm_update_count": 1, "current_crm_needs_review_count": dataset["current_crm_needs_review_count"],
               "database_hashes_before": {key: val["database"] for key, val in before.items()},
               "database_hashes_after": {key: val["database"] for key, val in after.items()},
               "database_byte_changes": 0, "input_sidecars_unchanged": True,
               "published_cards": len(cards), "visible_rows": sum(card["rows"] for card in cards),
               "ready_count": dataset["ready_count"], "needs_review_count": dataset["needs_review_count"],
-              "ready_count_meaning": "Stored facts eligible for restoration after the remaining Gate B checks; not fresh trim verification.",
+              "ready_count_meaning": "Proposed contexts eligible after the owner-confirmed year overlay; actual CRM correction and the remaining Gate B checks are pending. Not fresh trim verification.",
               "excluded_drafts": ["UA-0017", "UA-0018"], "no_ads": True,
               "identity_checks_all_cards": [{"uid": card[1], "published": card[-1] == 1,
+                                            "original_server_data_quality": original_quality_by_uid[card[1]],
                                             "data_quality": quality_by_uid[card[1]]} for card in all_cards],
               "cards": checks}
     serialized = json.dumps([dataset, report], ensure_ascii=False)
@@ -238,8 +307,9 @@ def main():
     parser.add_argument("--spec-db", type=Path, required=True)
     parser.add_argument("--crm-db", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, default=HERE / "evidence")
+    parser.add_argument("--owner-correction", type=Path, default=OWNER_CORRECTION_PATH)
     args = parser.parse_args()
-    dataset, report = build(args.spec_db, args.crm_db)
+    dataset, report = build(args.spec_db, args.crm_db, owner_correction_path=args.owner_correction)
     outputs = [(args.output_dir / "verified-specs.json", dataset),
                (args.output_dir / "verified-specs-report.json", report)]
     if any(path.exists() for path, _ in outputs):

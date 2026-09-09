@@ -11,7 +11,7 @@ does not search, infer or install a nested layout. Preserve original provenance
 and verify actual module bindings separately at Gate B.
 
 No application module is imported or executed. No network, database, worker,
-installation, service restart or deployment operation is performed. All eight
+installation, service restart or deployment operation is performed. All ten
 candidate modules are compiled in memory before any output is published. Input
 files are read only. The new directory is published atomically without replacing
 an existing output (Linux renameat2 / RENAME_NOREPLACE is required).
@@ -39,6 +39,7 @@ SNAPSHOT_FILES = (
 )
 RUNTIME_FILES = (
     "vin_spec_service.py", "source_policy.py", "profile_library.py", "spec_publication.py",
+    "card_shell.py", "card_lifecycle.py",
 )
 MAX_MODULE_BYTES = 4 * 1024 * 1024
 
@@ -82,11 +83,16 @@ def _patch_functions():
     specification = importlib.util.spec_from_file_location("ua_auto10_candidate_integration", path)
     module = importlib.util.module_from_spec(specification)
     specification.loader.exec_module(module)
+    lifecycle_spec = importlib.util.spec_from_file_location(
+        "ua_auto10_candidate_lifecycle", _no_symlinks(HERE / "lifecycle_integration.py"))
+    lifecycle = importlib.util.module_from_spec(lifecycle_spec)
+    lifecycle_spec.loader.exec_module(lifecycle)
     return {
         "ua_additional_spec.py": module.patch_additional_spec,
         "publikaciya.py": module.patch_publisher,
-        "publish_transaction_guard.py": module.patch_publish_transaction_guard,
-        "cars_ui.py": module.patch_cars_ui,
+        "publish_transaction_guard.py": lambda source: lifecycle.patch_publish_transaction_guard(
+            module.patch_publish_transaction_guard(source)),
+        "cars_ui.py": lambda source: lifecycle.patch_cars_ui(module.patch_cars_ui(source)),
     }
 
 
@@ -159,7 +165,7 @@ def prepare(source: Path, output: Path) -> dict:
             "Verify consistent source snapshot and current process module bindings.",
             "Map flattened modules to reviewed actual installation paths.",
             "Validate current canonical data, every publication path and rollback route.",
-            "Review Preview and obtain the owner's separate production command.",
+            "Close Gate B and use the existing authorized production/recovery route; owner's placement command is recorded.",
         ],
     }
     # Recheck input bytes before publishing, without trusting a changing source.

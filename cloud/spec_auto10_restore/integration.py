@@ -92,8 +92,8 @@ def inject_public_spec(source, value):
     code = canonical_uid(value)
     if not code:
         raise _ua_auto10_publication.SpecError("INVALID_CARD_ID")
-    # Deliberately do not call the legacy injector: it also rewrites VIN,
-    # CTA, mileage and stages. This boundary may change only the spec block.
+    # The canonical injector changes the spec block and reviewed duplicate VIN
+    # spans, and validates that all remaining content and shell assets survive.
     facts = _ua_auto10_publication.load_facts(code)
     return _ua_auto10_publication.inject(source, code, facts)
 

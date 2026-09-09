@@ -27,14 +27,16 @@ def load_builder():
     return module
 
 
-def check(snapshot_root, dataset_path, spec_db, crm_db):
+def check(snapshot_root, dataset_path, spec_db, crm_db, *, owner_correction_path=None):
     snapshot_root, dataset_path = Path(snapshot_root).resolve(), Path(dataset_path).resolve()
     spec_db, crm_db = Path(spec_db).absolute(), Path(crm_db).absolute()
     builder = load_builder()
     databases_before = {"spec": builder.fingerprint(spec_db), "crm": builder.fingerprint(crm_db)}
     dataset_bytes = dataset_path.read_bytes()
     dataset = json.loads(dataset_bytes)
-    rebuilt_dataset, database_report = builder.build(spec_db, crm_db)
+    if owner_correction_path is None:
+        owner_correction_path = builder.OWNER_CORRECTION_PATH
+    rebuilt_dataset, database_report = builder.build(spec_db, crm_db, owner_correction_path=owner_correction_path)
     if dataset != rebuilt_dataset:
         raise RuntimeError("SAVED_DATASET_DIFFERS_FROM_PINNED_DATABASES")
     cards = {card["uid"]: card for card in dataset["cards"]}
@@ -68,20 +70,25 @@ def check(snapshot_root, dataset_path, spec_db, crm_db):
                 if relative not in entries or original_hashes[relative] != entries[relative]["sha256"]:
                     raise RuntimeError("SNAPSHOT_MANIFEST_HASH_MISMATCH:" + relative)
                 source = original_bytes.decode("utf-8")
-                outside = publication.strip_block(source).encode("utf-8")
+                original_outside = publication.strip_block(source).encode("utf-8")
+                outside = publication.card_shell.normalize_html(publication.strip_block(source), uid).encode("utf-8")
                 candidate = publication.inject(source, uid, facts)
                 repeated_once = publication.inject(candidate, uid, facts)
                 repeated_twice = publication.inject(repeated_once, uid, facts)
                 validation = publication.validate_page(candidate, uid, facts, previous=source)
+                delta = publication.card_shell.permitted_delta(source, candidate, uid)
+                assets = publication.card_shell.validate_shell_assets(source, candidate)
                 rebuilt_pages = (candidate, repeated_once, repeated_twice)
                 unchanged = all(publication.strip_block(page).encode("utf-8") == outside for page in rebuilt_pages)
                 idempotent = candidate == repeated_once == repeated_twice
                 if not unchanged or not idempotent:
-                    raise RuntimeError("NON_SPECIFICATION_CHANGE_OR_NON_IDEMPOTENT_REBUILD:" + relative)
+                    raise RuntimeError("UNAUTHORIZED_SHELL_CHANGE_OR_NON_IDEMPOTENT_REBUILD:" + relative)
                 if any(page.count('data-ua-additional-spec="1"') != 1 for page in rebuilt_pages):
                     raise RuntimeError("SPECIFICATION_BLOCK_DUPLICATED:" + relative)
                 checks.append({"uid": uid, "path": relative, "status": "PASS",
                                "inspection_only": card["data_quality"]["inspection_only"],
+                               "pending_crm_update": card["pending_crm_update"],
+                               "original_crm_year": card["original_crm_year"], "proposed_preview_year": card["year"],
                                "data_quality_status": card["data_quality"]["status"],
                                "rows": validation["rows"], "input_matches_snapshot_manifest": True,
                                "original_bytes": len(original_bytes), "candidate_bytes": len(candidate.encode()),
@@ -89,9 +96,13 @@ def check(snapshot_root, dataset_path, spec_db, crm_db):
                                "candidate_sha256": sha(candidate.encode()),
                                "first_rebuild_sha256": sha(repeated_once.encode()),
                                "second_rebuild_sha256": sha(repeated_twice.encode()),
-                               "outside_spec_sha256_before": sha(outside),
+                               "outside_spec_sha256_before": sha(original_outside),
                                "outside_spec_sha256_after": sha(publication.strip_block(candidate).encode()),
-                               "outside_spec_byte_changes": 0, "idempotence": True,
+                               "permitted_vin_bytes_removed": sum(item["utf8_bytes"] for item in delta["permitted_removals"]),
+                               "permitted_vin_removals": delta["permitted_removals"],
+                               "outside_permitted_regions_byte_changes": 0,
+                               "shell_assets": assets, "visible_vin_count": validation["visible_vin_count"],
+                               "idempotence": True,
                                "specification_block_count": 1,
                                "original_had_specification": publication._span(source) is not None,
                                "candidate_matches_saved_canonical_block": canonical_block in candidate,
@@ -115,16 +126,23 @@ def check(snapshot_root, dataset_path, spec_db, crm_db):
             "verified_dataset_sha256": sha(dataset_bytes),
             "spec_semantic_sha256": dataset["spec_semantic_sha256"],
             "crm_published_identity_sha256": dataset["crm_published_identity_sha256"],
+            "proposed_crm_published_identity_sha256": dataset["proposed_crm_published_identity_sha256"],
+            "context_state": dataset["context_state"], "owner_correction": dataset["owner_correction"],
+            "owner_correction_sha256": dataset["owner_correction_sha256"], "server_crm_updated": False,
+            "pending_crm_update_count": dataset["pending_crm_update_count"],
+            "current_crm_needs_review_count": dataset["current_crm_needs_review_count"],
             "unique_cards": len(cards), "html_pages": len(checks), "render_operations": len(checks) * 3,
             "repeat_rebuilds_per_page": 2, "all_pages_passed": all(check["status"] == "PASS" for check in checks),
-            "all_outside_spec_bytes_unchanged": True, "all_rebuilds_idempotent": True,
+            "all_outside_permitted_regions_bytes_unchanged": True, "all_rebuilds_idempotent": True,
+            "all_one_visible_vin": True, "all_static_shell_assets_preserved": True,
             "input_html_byte_changes": 0, "input_database_byte_changes": 0,
             "database_hashes_before": {name: value["database"] for name, value in databases_before.items()},
             "database_hashes_after": {name: value["database"] for name, value in databases_after.items()},
             "ready_count": database_report["ready_count"], "needs_review_count": database_report["needs_review_count"],
             "excluded_drafts": ["UA-0017", "UA-0018"],
             "limitations": ["Cached HTML compatibility only; current public HTML and the running writer are not verified here.",
-                            "UA-0016 is inspection-only because its CRM year conflicts with the inferred VIN model year.",
+                            "UA-0016 uses the explicit owner-confirmed 2017 year in Preview metadata only. The matched CRM still contains 1999 and the runtime guard must keep blocking that original context.",
+                            "The rebuild preserves cached main fields, including year, and all other bytes except canonical specification insertion and proven duplicate VIN removal; this is not rehearsal of the pending CRM year update.",
                             "Stored specification facts are not a fresh live verification of ten sources."],
             "cards": checks}
 
@@ -136,14 +154,17 @@ def main():
     parser.add_argument("--spec-db", type=Path, required=True)
     parser.add_argument("--crm-db", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=HERE / "evidence/all-card-rebuild.json")
+    parser.add_argument("--owner-correction", type=Path)
     args = parser.parse_args()
-    report = check(args.snapshot_root, args.verified_specs, args.spec_db, args.crm_db)
+    report = check(args.snapshot_root, args.verified_specs, args.spec_db, args.crm_db,
+                   owner_correction_path=args.owner_correction)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x", encoding="utf-8") as handle:
         json.dump(report, handle, ensure_ascii=False, indent=2)
         handle.write("\n")
     print(json.dumps({key: report[key] for key in ("status", "unique_cards", "html_pages", "render_operations",
-                                                  "all_outside_spec_bytes_unchanged", "all_rebuilds_idempotent")}))
+                                                  "all_outside_permitted_regions_bytes_unchanged", "all_rebuilds_idempotent",
+                                                  "all_one_visible_vin", "all_static_shell_assets_preserved")}))
 
 
 if __name__ == "__main__":

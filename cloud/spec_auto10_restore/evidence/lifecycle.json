@@ -1,0 +1,108 @@
+{
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "scope": "isolated worker and specification-publication lifecycle",
+  "execution_origin": "LOCAL_TEMPORARY_SQLITE_AND_FILES_NOT_LIVE_CRM",
+  "status": "PASS",
+  "started_at_utc": "2026-09-09T04:49:13.486443+00:00",
+  "finished_at_utc": "2026-09-09T04:49:13.613041+00:00",
+  "elapsed_seconds": 0.1266,
+  "tests_run": 12,
+  "scenarios": [
+    {
+      "name": "delete_after_first_local_write_does_not_restore_deleted_pages",
+      "status": "PASS",
+      "elapsed_seconds": 0.0139
+    },
+    {
+      "name": "delete_after_ready_never_recreates_page_and_retires_collection_too",
+      "status": "PASS",
+      "elapsed_seconds": 0.0088
+    },
+    {
+      "name": "delete_before_collection_retires_both_queues_and_claims",
+      "status": "PASS",
+      "elapsed_seconds": 0.0069
+    },
+    {
+      "name": "delete_during_collection_retires_both_queues_without_storing_results",
+      "status": "PASS",
+      "elapsed_seconds": 0.0063
+    },
+    {
+      "name": "missing_published_page_is_not_created_by_spec_reconciler",
+      "status": "PASS",
+      "elapsed_seconds": 0.008
+    },
+    {
+      "name": "model_edit_during_collection_enters_review_without_storing_old_facts",
+      "status": "PASS",
+      "elapsed_seconds": 0.0063
+    },
+    {
+      "name": "new_save_automatic_collect_then_normal_publish_and_sync_preserve_shell",
+      "status": "PASS",
+      "elapsed_seconds": 0.0192
+    },
+    {
+      "name": "retry_same_job_does_not_duplicate_section_or_change_shell",
+      "status": "PASS",
+      "elapsed_seconds": 0.0208
+    },
+    {
+      "name": "uid_edit_during_collection_discards_old_job_then_queues_new_uid",
+      "status": "PASS",
+      "elapsed_seconds": 0.0082
+    },
+    {
+      "name": "unpublish_during_public_verify_cannot_report_pass_or_recreate_page",
+      "status": "PASS",
+      "elapsed_seconds": 0.0118
+    },
+    {
+      "name": "unpublish_keeps_collected_facts_and_cancels_page_sync",
+      "status": "PASS",
+      "elapsed_seconds": 0.0082
+    },
+    {
+      "name": "vin_edit_during_collection_discards_old_job_and_never_publishes_it",
+      "status": "PASS",
+      "elapsed_seconds": 0.0076
+    }
+  ],
+  "failures": [],
+  "production_touched": false,
+  "live_crm_cycle_verified": false,
+  "network_requests": 0,
+  "source_policy_or_integration_changed_in_this_lifecycle_subtask": false,
+  "fixed_defects": [
+    "Deleted or renamed CRM identities now retire both collection/publication queues and invalidate both claim tokens.",
+    "Deletion during collection discards returned facts and retires the publication half as well.",
+    "Deletion discovered in direct synchronization retires collection; unpublication preserves READY facts and cancels only publication.",
+    "Public verification now rechecks current CRM identity/publication status after the public response, preventing a stale PASS."
+  ],
+  "preservation": {
+    "deleted_card_facts_retained_for_audit": true,
+    "existing_shell_outside_spec_byte_identical_in_test": true,
+    "draft_page_not_created": true,
+    "missing_or_deleted_page_not_recreated": true,
+    "ordinary_publish_fixture_requires_no_additional_spec_button": true
+  },
+  "limitations": [
+    "Source collection is an explicit deterministic test fixture; no live ten-source availability or VIN factory-options verification is established.",
+    "The ordinary CRM Publish action is represented by a fixture marking published=1 and creating the normal page; real Telegram handlers and deployed bot execution are not exercised here.",
+    "Delete and unpublish must use the same .ua_art_publish_transaction.lock as the reconciler. Integration with actual CRM handlers and other writers requires its own acceptance check.",
+    "These checks cover the specification worker and reconciler; they do not prove every external writer or server filesystem behavior.",
+    "UI preservation is byte comparison outside the specification block, not a visual browser test."
+  ],
+  "code_sha256": {
+    "runtime/vin_spec_service.py": "c9fbe371595706a39fda03b3a07d7b6989ee69ddc6ea599b46e667e83ae33069",
+    "runtime/spec_publication.py": "b35d98373b940dcfeda39db4c1851bba9143dd661baf560e563b13e5a08ce64a",
+    "tests/test_lifecycle.py": "f7fb660840e85e01449211daaccf3166e38f5bb6c15d56a12edc36b17e85d212"
+  },
+  "combined_suite_observed": {
+    "tests_run": 111,
+    "status": "PASS",
+    "elapsed_seconds": 1.404,
+    "not_a_deployed_end_to_end_run": true
+  }
+}

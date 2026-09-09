@@ -1,10 +1,13 @@
 {
-  "task": "UA-ART-SPEC-AUTO-10-RESTORE-001",
-  "started_at": "2026-09-09T04:33:29.394457+00:00",
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "checked_at_utc": "2026-09-09T05:26:36.570971+00:00",
   "status": "PASS",
-  "tests": 97,
-  "duration_seconds": 1.337,
-  "exit_code": 0,
-  "scope": "isolated local tests; no production execution, no live source availability claim",
-  "production_touched": false
+  "tests_run": 169,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "python_version": "3.12.14",
+  "scope": "LOCAL_ISOLATED_UNIT_AND_INTEGRATION_FIXTURES",
+  "production_changed": false,
+  "overall_gate_b": "NOT_EVALUATED"
 }

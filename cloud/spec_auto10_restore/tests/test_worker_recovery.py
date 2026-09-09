@@ -27,6 +27,16 @@ def ready(_card):
     return {'status': 'READY', 'sources': {'auto-data.net': {'status': 'PASS'}}, 'facts': [fact()]}
 
 
+def full_page(vin='KNAGN4AD5F5067209'):
+    return ("<!doctype html><html><head><style>.blok{padding:1rem}</style></head><body>"
+            "<p>Primary data preserved</p><div class='blok'><table>"
+            "<tr><td class='k'>VIN</td><td>" + vin + "</td></tr></table></div>"
+            "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START -->"
+            "<section>Delivery stage preserved</section>"
+            "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:END -->"
+            "</body></html>")
+
+
 class WorkerRecoveryTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -240,11 +250,12 @@ class WorkerRecoveryTests(unittest.TestCase):
             with self.assertRaisesRegex(spec_publication.SpecError, 'IDENTITY_CONTEXT_REQUIRES_REVIEW'):
                 spec_publication.load_facts('UA-0001')
             with self.assertRaisesRegex(spec_publication.SpecError, 'IDENTITY_CONTEXT_REQUIRES_REVIEW'):
-                spec_publication.guard_write(pathlib.Path(self.tmp.name)/'UA-0001.html', b'<html></html>')
+                spec_publication.guard_write(pathlib.Path(self.tmp.name)/'UA-0001.html',
+                                             full_page(card['vin']).encode('utf-8'))
         root = pathlib.Path(self.tmp.name)
         (root/'video').mkdir()
         page = root/'video/UA-0001.html'
-        page.write_text('<html><body><!--UA099_CLEAN_VIN_START--><div>VIN unchanged</div></body></html>')
+        page.write_text(full_page(card['vin']))
         before = page.read_bytes()
         result = spec_publication.reconcile_published(card, facts, root=root,
             public_reader=lambda *_: self.fail('conflicting page must not reach public read'),
@@ -349,7 +360,7 @@ class WorkerRecoveryTests(unittest.TestCase):
         root = pathlib.Path(self.tmp.name)
         (root / 'video').mkdir()
         page = root / 'video' / 'UA-0001.html'
-        original = '<html><body><p>Primary data preserved</p><!--UA099_CLEAN_VIN_START--><div>VIN</div></body></html>'
+        original = full_page()
         page.write_text(original)
         service.scan_new_vins()
         enricher = Mock(wraps=ready)
@@ -374,7 +385,7 @@ class WorkerRecoveryTests(unittest.TestCase):
         self.assertEqual(repaired['status'], 'PASS')
         self.assertEqual(page.read_text(), rendered)
         self.assertEqual(spec_publication.validate_page(page.read_text(), 'UA-0001',
-                         service._visible_facts('UA-0001'))['rows'], 1)
+                         service._visible_facts('UA-0001'), previous=original)['rows'], 1)
         self.assertEqual(self.state()['status'], 'READY')
         self.assertEqual(self.state()['attempts'], 1)
         enricher.assert_called_once()
