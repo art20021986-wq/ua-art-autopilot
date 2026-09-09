@@ -1,0 +1,184 @@
+{
+  "application_imported": false,
+  "base_helper_sha256": "38db5dbf9c5c6432665735cb3f6c238ac72c6c5306c6b8f34f59e0fa8432f23a",
+  "base_manifest_sha256": "c4f75a818156e29426c9d601552ab0de56663e965233f2a56c01f5aaa111de07",
+  "candidate_file_closure_sha256": "b519021118fa849b1229dc861ffd9483caee2f2ae211061bcd56c5fe89a8a450",
+  "candidate_id": "UA-ART-SPEC-AUTO10-COMPLETE-17-V3",
+  "changed_from_v2": [
+    "cars_ui.py"
+  ],
+  "combined17_execution": "V3_BYTE_COMPOSITION_WITH_SEPARATE_V2_AND_CALLBACK_DELTA_RECEIPTS",
+  "contract_id": "UA-ART-SPEC-AUTO-10-RESTORE-001-v1.0",
+  "crm_base_manifest_sha256": "12afce821b784771a2a8a0415cc289f5e713d53aabedf0ed3e2747a8c4d4e136",
+  "crm_repair_patcher_sha256": "97e1f170301d26403e115962392587f141be40a97b94acae412e3caeec8611f1",
+  "execution_dependency_pins": {
+    "catalog_design_golden.html": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3",
+    "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+  },
+  "execution_evidence": {
+    "callback_delta": {
+      "input_candidate_manifest_sha256": "12afce821b784771a2a8a0415cc289f5e713d53aabedf0ed3e2747a8c4d4e136",
+      "report_sha256": "a5d9362d8b388fc16aefbebec92c4253b9c4ee1e02515bd5c9f51cb04e4615ca",
+      "scope": "Exact v2 closure with only cars_ui replaced; actual registration, callbacks, SQLite and publisher with fake Telegram and local public reader.",
+      "status": "PASS",
+      "summary_sha256": "ca61f4a83936b236986272ca384d4e9b8c1722fe83eea63030a99de469a85ad4"
+    },
+    "combined_v2": {
+      "input_candidate_manifest_sha256": "12afce821b784771a2a8a0415cc289f5e713d53aabedf0ed3e2747a8c4d4e136",
+      "report_sha256": "613f8cb1a5ddbe07c9719f816e4725f58d3645adefd6d4c033abfc713cc8ab78",
+      "scope": "Historical complete v2 runtime; 16 unchanged module bytes are inherited, its old cars_ui is superseded.",
+      "status": "PASS",
+      "summary_sha256": "5d5d856d0d308413491f624e38c5d3142db2886239e3037f7c5d08035ed95672"
+    }
+  },
+  "files": {
+    "ai_filter.py": {
+      "after_sha256": "4b0326b0280e5bf9fdecab0a4f0a931525bd7700b11b6c6c37756895f55d6c89",
+      "before_sha256": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "analitika_wsgi.py": {
+      "after_sha256": "76cb2e6141b262e558acc7e96804afacc312a6cb3971cd623eef921e086d7761",
+      "before_sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+      "scope": "OPTIONAL_ANALYTICS_PRESERVES_PUBLISHER_OWNED_SHELL"
+    },
+    "autopilot_inbox/cloud/task_083_catalog_dedup/installer.py": {
+      "after_sha256": "13b61a13b73f4a029b01fa0f3c071ab8d4790b656d8fa5f37876e92ac5231684",
+      "before_sha256": "13dbcbced164c73bb1767fee6d35ca9597c14b552baaeb31ebbf90cad70b1b46",
+      "scope": "EXTERNAL_WRITER_COORDINATION_PATCH"
+    },
+    "car_number_allocator.py": {
+      "after_sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1",
+      "before_sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "card_lifecycle.py": {
+      "after_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+      "before_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "card_shell.py": {
+      "after_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+      "before_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "cars_schema.py": {
+      "after_sha256": "20da4d4e892b363cd57c8819eadf92f0d8d54383a6c3344e37391d00d5d56e8a",
+      "before_sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "cars_ui.py": {
+      "after_sha256": "57ad5acc340d412aa9d95e1ef56c7de85d4346ad6bbc755fda311763f3637a42",
+      "before_sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+      "scope": "CRM_CANCEL_RETIRES_PREVIOUS_TEXT_EDITOR"
+    },
+    "db.py": {
+      "after_sha256": "1d5073450b353b88f99944930ed34af0735784c3a580801bab694ecafb7f59a2",
+      "before_sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "master_card.py": {
+      "after_sha256": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8",
+      "before_sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "profile_library.py": {
+      "after_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+      "before_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "publikaciya.py": {
+      "after_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+      "before_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "publish_transaction_guard.py": {
+      "after_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+      "before_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "source_policy.py": {
+      "after_sha256": "8f6d010242ab7df297fe0ad2ee35233d80c7f5005ffaef669d8332caba9fffd2",
+      "before_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+      "scope": "REJECT_FOREIGN_OR_MISSING_RETURNED_VIN"
+    },
+    "spec_publication.py": {
+      "after_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+      "before_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "ua_additional_spec.py": {
+      "after_sha256": "48a3f8e88bb214d6632513b6ee0b884a0d3bd95cb4bc2e786426fec42e4b2441",
+      "before_sha256": "5a03cb99d1f4514539956f32a75e09e119e2e9049a91da6326adb32877518e56",
+      "scope": "INHERITED_FINAL15_BYTES"
+    },
+    "vin_spec_service.py": {
+      "after_sha256": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+      "before_sha256": "b3a90347c15e3063abe072f4b159b78e392a2da8f2e15f2bf9a37ba59bc9e7a7",
+      "scope": "INHERITED_FINAL15_BYTES"
+    }
+  },
+  "followup_patches": {
+    "analitika_wsgi.py": {
+      "function": "patch_analytics_shell",
+      "helper": "repair_analytics_shell.py",
+      "helper_sha256": "184976fe95978be2d7de64455bfc40e83a3fb541c4029a084662b0d1358a0135",
+      "input_kind": "bytes",
+      "input_sha256": "cb6fc54ae832eb768eb70f2815e010db46e15614ef1864acc3dd0d843386fc23",
+      "output_sha256": "76cb2e6141b262e558acc7e96804afacc312a6cb3971cd623eef921e086d7761",
+      "scope": "OPTIONAL_ANALYTICS_PRESERVES_PUBLISHER_OWNED_SHELL"
+    },
+    "cars_ui.py": {
+      "function": "patch_source",
+      "helper": "repair_crm_edit_session.py",
+      "helper_sha256": "97e1f170301d26403e115962392587f141be40a97b94acae412e3caeec8611f1",
+      "input_kind": "bytes",
+      "input_sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+      "output_sha256": "57ad5acc340d412aa9d95e1ef56c7de85d4346ad6bbc755fda311763f3637a42",
+      "scope": "CRM_CANCEL_RETIRES_PREVIOUS_TEXT_EDITOR"
+    },
+    "source_policy.py": {
+      "function": "patch_vpic_identity",
+      "helper": "repair_vpic_identity.py",
+      "helper_sha256": "22829322363c6622fd477c5746b047e73f0c5bc8f36137b58db39f233ce0d654",
+      "input_kind": "str",
+      "input_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+      "output_sha256": "8f6d010242ab7df297fe0ad2ee35233d80c7f5005ffaef669d8332caba9fffd2",
+      "scope": "REJECT_FOREIGN_OR_MISSING_RETURNED_VIN"
+    }
+  },
+  "inherited_final15_server_result_sha256": "f34de54adcee18d25a0214b5ed6844e05a963e46e2a47fc0aecd4b0861637d02",
+  "limitations": [
+    "This is exact byte composition, not a new run of the unchanged combined17 cycle or a claim of overall Gate B.",
+    "Two distinct read-back Python 3.10 server receipts bind the base runtime and the one-module callback repair.",
+    "Actual Telegram transport, external registrar modules, worker timing and live source10 remain separately unverified.",
+    "Legacy writer drain/handoff, production installation, UA-0017/UA-0018 publication and real public read-back are not established here.",
+    "Assembly imports only pinned pure helpers and compiles candidate bytes; no active application, service or database is touched."
+  ],
+  "module_count": 17,
+  "overall_gate_b": "NOT_EVALUATED",
+  "production_changed": false,
+  "publication_mode": "manifest_last",
+  "refined_base_helper_sha256": "ea0265bee0fc3b19fe5df6096dfb7f0676cce07a405bcaf34abfd26050ebdc24",
+  "refined_base_manifest_sha256": "d800e55813b6edc24322f7021e924dd0052915f07414b42bd02f0a7c234522f5",
+  "status": "OFFLINE_COMPLETE17_CRM_REPAIRED_COMPILED",
+  "target_root": "/home/Carix",
+  "unchanged_from_v2_count": 16,
+  "writer_pins": {
+    "analitika_wsgi.py": {
+      "followup_helper_sha256": "184976fe95978be2d7de64455bfc40e83a3fb541c4029a084662b0d1358a0135",
+      "function": "patch",
+      "output_sha256": "76cb2e6141b262e558acc7e96804afacc312a6cb3971cd623eef921e086d7761",
+      "patcher_sha256": "58e62afbc8458f273b605b06b222552ff07d83d9fd375c5891685045a070e2e5",
+      "prior_coordinated_output_sha256": "cb6fc54ae832eb768eb70f2815e010db46e15614ef1864acc3dd0d843386fc23",
+      "source_sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94"
+    },
+    "autopilot_inbox/cloud/task_083_catalog_dedup/installer.py": {
+      "function": "patch",
+      "output_sha256": "13b61a13b73f4a029b01fa0f3c071ab8d4790b656d8fa5f37876e92ac5231684",
+      "patcher_sha256": "6857483c3ee21fddb326278fe3ab3aa8eee85ebb82de9ff4048d59db14d870d2",
+      "source_sha256": "13dbcbced164c73bb1767fee6d35ca9597c14b552baaeb31ebbf90cad70b1b46"
+    }
+  }
+}
