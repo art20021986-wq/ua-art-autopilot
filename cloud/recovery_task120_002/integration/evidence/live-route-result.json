@@ -1,0 +1,196 @@
+{
+  "schema_version": "UA-ART-RECOVERY-ROUTE-LIVE-RESULT-1",
+  "task_id": "UA-ART-RECOVERY-TASK120-002",
+  "status": "CONNECTED_AND_LIVE_CANARY_PASS",
+  "observed_at": "2026-09-09T07:30:18.828Z",
+  "registration_pr": "https://github.com/art20021986-wq/ua-art-autopilot/pull/81",
+  "registration_commit": "e76daffc9c50fb0a44da019ae2989d0b4578bc27",
+  "reviewed_tree": "33144a56129e4ecf7d50c5c9cdabc45c307aaee6",
+  "canary_commit": "1bfac9fe6293dd3060def06a23777c7ddb1f84d9",
+  "canary_tree": "529c0b2d69fbcb7bbcafa4aa8422bbed46afbc3d",
+  "canary_paths": [
+    {
+      "path": "state/recovery_route_receipts/UA-ART-RECOVERY-TASK120-002.json",
+      "status": "added"
+    }
+  ],
+  "run": {
+    "id": 34323968311,
+    "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34323968311",
+    "event": "push",
+    "conclusion": "success",
+    "source_commit": "e76daffc9c50fb0a44da019ae2989d0b4578bc27",
+    "actor_id": 321059821,
+    "triggering_actor_id": 321059821,
+    "created_at": "2026-09-09T07:27:53Z",
+    "updated_at": "2026-09-09T07:28:07Z"
+  },
+  "job": {
+    "id": 102376853944,
+    "name": "recovery_canary",
+    "conclusion": "success",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Checkout authoritative main for TASK120 recovery",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Bind exact reviewed recovery runtime before repository Python",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Capture complete current Actions queue using GET only",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Validate TASK120 identity and prepare fixed data only",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Persist exact recovery canary tree with one main compare-and-swap",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify accepted immutable recovery commit",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve TASK120 recovery plan and execution evidence",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Checkout authoritative main for TASK120 recovery",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "other_jobs": [
+    {
+      "name": "report_safety_stop",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "halt_discovery_failure",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "mark_rollback",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "halt_preparing",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "halt_rolling_back",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "rollback_open",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "finalize_rollback",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "halt_recovery_failure",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "discover",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "recovery_plan",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "recovery_execute",
+      "conclusion": "skipped"
+    }
+  ],
+  "receipt": {
+    "application_writes": 0,
+    "context": {
+      "actor": "art20021986-wq",
+      "actor_id": "321059821",
+      "event": "push",
+      "head_sha": "e76daffc9c50fb0a44da019ae2989d0b4578bc27",
+      "run_attempt": "1",
+      "run_id": "34323968311",
+      "triggering_actor": "art20021986-wq",
+      "workflow_path": ".github/workflows/uaart_transaction_watchdog.yml"
+    },
+    "evidence_scope": "COMMIT_PRESENCE_AND_SEPARATE_READBACK_REQUIRED",
+    "halt_removed": false,
+    "halt_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
+    "parent_commit": "e76daffc9c50fb0a44da019ae2989d0b4578bc27",
+    "plan_sha256": "9ca0753436f59e34ef9182bd5c725e450067b563e8a71e0e52d476625c8dcf1a",
+    "reconciliation_sha256": "ce4f04f5fad0c1dc61544a029e4301868433b1a50c9ffaae93dce206bc6c4b3b",
+    "recorded_at": "2026-09-09T07:28:01.447336+00:00",
+    "repository": "art20021986-wq/ua-art-autopilot",
+    "runtime_hashes": {
+      ".github/workflows/uaart_autostart.yml": "b8be0e7d0f54da38b2bd4fbb85e629f8be3ebaef0980d7cc0995b63f1619f82e",
+      ".github/workflows/uaart_backup.yml": "dc988817fde15c14abdceb67991158fa83bcaf851e9000c46c14d2fe30506b0a",
+      ".github/workflows/uaart_critical.yml": "62777c284a0a2887deb2bc247da1fe03443dc118127d8583c2c29005191db3b6",
+      ".github/workflows/uaart_fast.yml": "a74bc0f2c9d006e875c15e064b5995ed008a11823abdfb6918ee905aa8cb7b86",
+      ".github/workflows/uaart_maintenance.yml": "9de321b12e06173a773a07af5954ff27b467b492a247ca7a04751dab776f24fb",
+      ".github/workflows/uaart_monitor.yml": "027ec6a9d3471c0647d185992ffbfc636587d7e248e1049ceeb248c9b7514292",
+      ".github/workflows/uaart_orchestrator.yml": "0bab939f235f3e03fd5c847814ae654e1ee585712b5d5c3b572f31a4779fd236",
+      ".github/workflows/uaart_standard.yml": "aa1b7aca91cc807bd1d83d402adf67c92517aefa0a4f4cfe73a7209dcb8073ba",
+      ".github/workflows/uaart_transaction_watchdog.yml": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe",
+      "automation/autostart_intake.py": "379239468dc46cb2b5bdc6a1cdde8e6648d7c7414538078eca64115c7d8ea066",
+      "automation/control_plane.py": "3c43545129a3f0e40e9636bc2032ba81d9aa9f46d302c5193716a31f196be9d0",
+      "automation/critical_adapter.py": "94935cbb5331306bf37ee8a386aa0bc27a55cdbdf8ba82778fa99fa726dccd47",
+      "automation/execution_contract.py": "22d167dbfd8b75881d60316a23cbd69da44b84b8ba6ea9c36322413b0b436985",
+      "automation/production_queue.py": "2c55d4c79a4606a66c2dd2cb70c7f159becb8992c29dbfaa783094e7e3959cb1",
+      "automation/task_orchestrator.py": "fb37093d45f5c6887b1452d07fc3be6693f1844cffe1e756eaccbd177f067f30",
+      "automation/task_ticket.py": "907bece70f3c0ff90f55e76f18885434749591f8a0835744384c80e52a14fe32",
+      "automation/transaction_watchdog.py": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395",
+      "state/schemas/task_request.schema.json": "82b08c90309a0fa26f457502b80a4f3f6c89d81b430f89a8c65f068899f03aee"
+    },
+    "runtime_manifest_sha256": "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c",
+    "schema_version": "UA-ART-RECOVERY-ROUTE-CANARY-1",
+    "task_id": "UA-ART-RECOVERY-TASK120-002"
+  },
+  "halt_preserved": true,
+  "halt_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
+  "application_writes": 0,
+  "local_tests_passed": 151,
+  "control_plane_changed": true,
+  "crm_site_pythonanywhere_changed": false,
+  "halt_removed": false,
+  "halt_execution_ready": false,
+  "halt_execution_blockers": [
+    "EXTERNAL_WRITER_VERIFICATION_REQUIRED",
+    "SEPARATE_OWNER_EXECUTION_COMMAND_REQUIRED"
+  ],
+  "overall_specification_gate_b": "NOT_COMPLETE",
+  "specification_published_by_this_task": false,
+  "log_evidence": [
+    "2026-09-09T07:27:59.9007173Z UAART_RECOVERY_RUNTIME_CLOSURE_VALIDATED",
+    "2026-09-09T07:28:04.2501022Z UAART_RECOVERY_ACCEPTED_RUNTIME_UNCHANGED",
+    "2026-09-09T07:28:04.2570710Z Exact Git CAS and remote readback completed: 1bfac9fe6293dd3060def06a23777c7ddb1f84d9",
+    "2026-09-09T07:28:04.9406406Z   \"status\": \"PASS\",",
+    "2026-09-09T07:28:04.9407555Z   \"verified_operation\": \"CANARY\""
+  ]
+}
