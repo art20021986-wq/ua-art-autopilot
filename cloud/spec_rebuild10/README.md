@@ -35,7 +35,35 @@ The historical restoration branch/PR79 remains reference evidence.
   save is checked not to invalidate the migrated facts. UA0016's owner-approved
   year2017 is applied to the candidate; live CRM remains unchanged.
 
+- `data_install.py`: executable data transaction for32 pages, the new store and
+  the approved UA0016 year cell, using the already-held real writer lease.
+  Durable backup/journal, conditional rollback, terminal readback and unknown-
+  outcome handling are implemented. See `DATA-INSTALL.md`.
+- `bootstrap.py`: concrete read-only CRM provider, independently authenticated
+  exact lifecycle plan, current card/diagnostic/catalogue readback and existing
+  supervisor registration. No placeholder callback grants real authority.
+- `source_provisioning.py`: pinned reviewed capture/normalization binding for
+  approved sources. A reviewed Kia2023 LPI model candidate is included; exact
+  vehicle mapping and source access remain separate.
+- `stage_verify.py`: relocatable actual-private-copy install/readback/rollback
+  harness. Its authority is explicitly synthetic and its writes are confined
+  to a new throwaway directory; input files and live application stay unchanged.
+
+- `sync.py`: automatically queues accepted fact changes for already verified
+  public cards, updates only the specification region and checks actual card,
+  diagnostic and catalogue readback. Durable backup/outbox stops unknown outcomes;
+  it never publishes drafts17/18. See `SYNC.md`.
+
 ## Verification
+
+Target-server verification on **Python3.10.12** completed at **15:20:26 UTC,
+9 September2026**: **197/197 tests PASS**,28 private runtime Python sources
+compiled without import, and an actual32-page/18-row copy install/readback/rollback
+PASS.557 facts preserved,550 visible,7 hidden; all32 pages have one VIN and the
+native visible link, with unchanged bytes outside approved regions. See
+`evidence/target-stage-r2.json`. The first target run exposed a Python3.10 SQLite
+authorizer incompatibility; its13 failures are retained and the fix is covered
+by regression tests. Live production has not been changed.
 
 Run from the repository root:
 
@@ -46,8 +74,9 @@ python -m unittest discover -s cloud/spec_rebuild10/tests -v
 Tests use synthetic local databases and injected transports/receipts. They do not
 prove live source extraction, actual server process shutdown or site publication.
 `evidence/private-copy-preparation.json` reports32 actual snapshot page-copy
-checks, not32 deployed pages. Local Python3.12 execution and Python3.10 syntax
-compatibility are separate from target-server runtime acceptance.
+checks, not32 deployed pages. Runtime, data and source tests are also synthetic. Read the dated target-server
+receipt in `evidence` for the exact runtime and scope; do not infer deployment
+from a test executed on the same host.
 
 The snapshot compiler requires the exact private source snapshot and previously
 reviewed restoration payload. Missing or changed inputs fail closed; do not
@@ -64,14 +93,13 @@ window; the earlier copy is not a globally atomic live snapshot.
    year/fuel/gearbox, and independently checked control facts. None of ten has a
    fresh live PASS in this change. Paid subscriptions require a separate purchase
    decision; selection approval does not buy a licence.
-2. Complete the actual data installer: verified ownership handoff, durable backup
-   and journal for32 HTML files and new database, conditional UA0016 year update,
-   unchanged full rows for protected drafts17/18, recovery after interruption and
-   conditional rollback. The old17-module code installer alone is insufficient.
-3. Bind the new runtime factory and worker to the verified existing supervisor,
-   current-row reader and authorized lifecycle publisher/readback verifier. No
-   route is fabricated by this module. Validate add/edit/hide/delete/re-publish
-   against the actual target candidate, including its standard shell generator.
+2. Connect the completed data transaction to actual verified ownership handoff.
+   Its real-copy install/rollback is checked; actual holder-death recovery still
+   needs an authenticated recovery controller. The old17-module code admission
+   does not admit this new runtime package; see `RUNTIME-PACKAGE.md`.
+3. Supply the completed runtime providers with the real verified supervisor and
+   controller authority, install the versioned runtime package and verify loaded
+   code. The candidate does not fabricate that controller or installation proof.
 4. Close pre-install GateB against the exact plan, package, backup/rollback and
    route. Obtain the separate exact-plan command if required by that route. Only
    then stop/drain the old writers, obtain fresh proof and install transactionally.

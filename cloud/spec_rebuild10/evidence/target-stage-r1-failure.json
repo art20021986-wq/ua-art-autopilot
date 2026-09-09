@@ -1,0 +1,21 @@
+{
+  "schema": "ua-art.rebuild10.target-test-failure.v1",
+  "observed_date": "2026-09-09",
+  "observed_server_time_utc": "15:10",
+  "runtime": "Python3.10.12",
+  "stage": "spec_rebuild10_stage_20260909_r1",
+  "archive_sha256": "4c2a6a7ab5d0af8a08090459cc8deeb4117dc243c9c7e1f8fd6d348e05ac9d50",
+  "tests_run": 195,
+  "errors": 13,
+  "elapsed_seconds": 72.85,
+  "status": "FAIL",
+  "error": "sqlite3.DatabaseError: not authorized",
+  "location": "data_install._write_year reset of SQLite authorizer, then _crm SELECT and rollback",
+  "real32_copy_cycle_run": false,
+  "production_changed": false,
+  "gate_b_pass": false,
+  "next_step": "Python3.10-compatible authorizer reset followed by a new isolated target run",
+  "confirmed_cause": "set_authorizer(None) disabling introduced in Python3.11; Python3.10 treats it as an invalid callback",
+  "fix": "Retain the same restrictive callable until the short-lived CRM connection closes",
+  "primary_reference": "https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.set_authorizer"
+}

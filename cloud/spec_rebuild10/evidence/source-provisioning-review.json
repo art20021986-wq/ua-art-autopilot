@@ -1,0 +1,71 @@
+{
+  "schema": "ua-art.source-provisioning-review.v1",
+  "observed_date": "2026-09-09",
+  "research_method": "public primary-source web reads; private snapshot read-only; no external VIN queries",
+  "production_changed": false,
+  "source_live_acceptance": false,
+  "new_local_tests": 14,
+  "kia_2023": {
+    "url": "https://www.kia.com/kr/vehicles/k5_bak_20231031/specification",
+    "candidate_fact_count": 8,
+    "target_uid": "UA-0018",
+    "status": "REVIEWED_MODEL_CANDIDATE_NOT_VEHICLE_ADMITTED",
+    "capture_sha256": "98a9ee60e4c440cb5eb97a7c36c54538b018881c850737f9bf04da611d8ea72c",
+    "remaining": [
+      "vehicle_sales_market",
+      "exact_2023_version",
+      "documented_fuel_alias",
+      "supplier_access_rights",
+      "production_import_authorization"
+    ]
+  },
+  "audi_2015": {
+    "uid": "UA-0017",
+    "status": "MULTIPLE_3_0_TDI_QUATTRO_VARIANTS",
+    "document_url": "https://emea-dam.audi.com/adobe/assets/urn:aaid:aem:d9374e0a-e9b1-451d-b306-ce3c4328afee/original/as/2015_audi_annual_report_financial.pdf",
+    "source_market": "DE",
+    "target_market": null,
+    "source_host_in_runtime_allowlist": false,
+    "power_assigned": false
+  },
+  "historical_source_year_mismatch": {
+    "source": "https://auto.danawa.com/auto/?Lineup=42280&Model=3260%2C3151&Tab=spec&Work=model&pcUse=y",
+    "source_model_year": 2018,
+    "target_year_2019": [
+      "UA-0003",
+      "UA-0004",
+      "UA-0006"
+    ],
+    "target_owner_year_2017": [
+      "UA-0016"
+    ],
+    "target_year_2018": [
+      "UA-0009",
+      "UA-0010",
+      "UA-0012"
+    ],
+    "action": "retain historical data, require documented model/build year distinction for new verification"
+  },
+  "source_year_match_pending_variant": {
+    "source": "https://auto.danawa.com/auto/modelPopup.php?Lineup=42773&Type=spec",
+    "source_model_year": 2018,
+    "targets": [
+      "UA-0011",
+      "UA-0015"
+    ]
+  },
+  "rounded_displacement_review": [
+    "UA-0003",
+    "UA-0004",
+    "UA-0006",
+    "UA-0009",
+    "UA-0010",
+    "UA-0011",
+    "UA-0012"
+  ],
+  "displacement_inconsistency_review": [
+    "UA-0014"
+  ],
+  "vehicle_sales_markets_confirmed": 0,
+  "vehicle_sales_markets_missing": 18
+}
