@@ -1,0 +1,20 @@
+{
+  "scope": "OFFLINE_COMPLETE17_ASSEMBLY_ONLY",
+  "status": "PASS",
+  "candidate_id": "UA-ART-SPEC-AUTO10-COMPLETE-17-V1",
+  "manifest_sha256": "d800e55813b6edc24322f7021e924dd0052915f07414b42bd02f0a7c234522f5",
+  "module_count": 17,
+  "candidate_path": "/workspace/scratch/2d59224df460/private-runtime/complete-candidate17-v1",
+  "tests_run": 8,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "inherited_final15_bytes_and_metadata_unchanged": true,
+  "assembler_sha256": "ea0265bee0fc3b19fe5df6096dfb7f0676cce07a405bcaf34abfd26050ebdc24",
+  "tests_sha256": "de6211e9436f5af0abf26875cfd8f36ee11fccac118069505122e54205595395",
+  "application_imported": false,
+  "production_changed": false,
+  "combined17_execution": "NOT_RUN",
+  "overall_gate_b": "NOT_EVALUATED",
+  "review_fix": "Readiness invalidation covers manifest write/fsync, uses the retained owned directory descriptor after path replacement, and unlinks only the originally created marker inode."
+}
