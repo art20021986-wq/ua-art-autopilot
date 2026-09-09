@@ -74,6 +74,20 @@ def execute(source, injected=None):
     return namespace
 
 
+def crm_source_with_stage_wrapper():
+    return crm_source() + r'''
+_UA117_BASE_REGISTER = register
+def _ua117_block_removed_stage(update, context):
+    pass
+def register(app):
+    _UA117_BASE_REGISTER(app)
+    app.add_handler(CallbackQueryHandler(
+        _ua117_block_removed_stage,
+        pattern=r"^car_setstage:\d+:(?:sea_loaded|sea_transit|ua_handed)$"),
+        group=-100)
+'''
+
+
 class PublicationFake(types.ModuleType):
     class SpecError(RuntimeError):
         pass
@@ -351,6 +365,36 @@ class IntegrationTests(unittest.TestCase):
         for variant in variants:
             with self.assertRaisesRegex(integration.IntegrationError, "EXISTING_WORKER_HOOK"):
                 integration.patch_cars_ui(variant)
+
+    def test_verified_stage_wrapper_preserves_single_start_and_existing_handler(self):
+        source = crm_source_with_stage_wrapper()
+        patched = integration.patch_cars_ui(source)
+        self.assertTrue(patched.startswith(source.rstrip()))
+        self.assertEqual(integration.patch_cars_ui(patched), patched)
+        namespace = execute(patched, {"CallbackQueryHandler": lambda callback, pattern: (callback, pattern)})
+
+        class App(list):
+            def add_handler(self, handler, group):
+                self.append((handler[1], group))
+
+        app = App()
+        namespace["register"](app)
+        self.assertEqual(self.starts, ["start"])
+        self.assertEqual(app, ["legacy-handler", (r"^car_setstage:\d+:(?:sea_loaded|sea_transit|ua_handed)$", -100)])
+
+    def test_rejects_broken_or_unknown_stage_wrapper_chains(self):
+        source = crm_source_with_stage_wrapper()
+        variants = [
+            source.replace("_UA117_BASE_REGISTER = register", "_UA117_BASE_REGISTER = other_register"),
+            source + "\n_UA117_BASE_REGISTER = other_register\n",
+            source.replace("    _UA117_BASE_REGISTER(app)", "    return\n    _UA117_BASE_REGISTER(app)"),
+            source.replace("    _UA117_BASE_REGISTER(app)", "    _UA117_BASE_REGISTER(app)\n    _UA117_BASE_REGISTER(app)"),
+            source.replace("group=-100)", "group=-99)"),
+        ]
+        for variant in variants:
+            with self.subTest(variant=variant[-100:]):
+                with self.assertRaisesRegex(integration.IntegrationError, "EXISTING_WORKER_HOOK"):
+                    integration.patch_cars_ui(variant)
 
 
 if __name__ == "__main__":

@@ -299,8 +299,36 @@ def patch_cars_ui(source: str) -> str:
     calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
              and isinstance(n.func, ast.Attribute) and n.func.attr == "start_worker"
              and isinstance(n.func.value, ast.Name) and n.func.value.id == "_ua110_vin_service"]
-    if len(calls) != 1 or calls[0] not in list(ast.walk(register)) or calls[0].args or calls[0].keywords:
+    if len(calls) != 1 or calls[0].args or calls[0].keywords:
         raise IntegrationError("EXISTING_WORKER_HOOK_MISSING_DUPLICATE_OR_MOVED")
+    if calls[0] not in list(ast.walk(register)):
+        # The verified TASK117/TASK121 runtime wraps UA110's register once.
+        # Accept only that exact wrapper and its immutable captured predecessor;
+        # do not infer arbitrary call graphs or add another worker start.
+        expected = ast.parse(r'''
+def register(app):
+    _UA117_BASE_REGISTER(app)
+    app.add_handler(CallbackQueryHandler(
+        _ua117_block_removed_stage,
+        pattern=r"^car_setstage:\d+:(?:sea_loaded|sea_transit|ua_handed)$"),
+        group=-100)
+''').body[0]
+        aliases = [n for n in tree.body if isinstance(n, ast.Assign)
+                   and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name)
+                   and n.targets[0].id == "_UA117_BASE_REGISTER"]
+        writes = [n for n in ast.walk(tree) if isinstance(n, ast.Name)
+                  and n.id == "_UA117_BASE_REGISTER" and isinstance(n.ctx, (ast.Store, ast.Del))]
+        if len(aliases) != 1 or len(writes) != 1 or ast.dump(register) != ast.dump(expected):
+            raise IntegrationError("EXISTING_WORKER_HOOK_UNRECOGNIZED_WRAPPER")
+        alias = aliases[0]
+        earlier = [n for n in tree.body if isinstance(n, ast.FunctionDef)
+                   and n.name == "register" and n.lineno < alias.lineno]
+        if (not isinstance(alias.value, ast.Name) or alias.value.id != "register"
+                or not earlier or alias.lineno >= register.lineno
+                or calls[0] not in list(ast.walk(earlier[-1]))
+                or not any(isinstance(n, ast.Expr) and n.value is calls[0]
+                           for n in earlier[-1].body)):
+            raise IntegrationError("EXISTING_WORKER_HOOK_BROKEN_WRAPPER_CHAIN")
     return _append(source, CRM_BLOCK, "cars_ui.py")
 
 

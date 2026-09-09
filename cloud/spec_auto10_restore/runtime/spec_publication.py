@@ -144,17 +144,21 @@ def render_block(card_uid: str, facts: Iterable[dict[str, Any]]) -> str:
         "Підтверджені характеристики ще готуються.", "Подтверждённые характеристики ещё готовятся.")
     style = ('<style id="ua-spec-auto10-style">'
              '.ua-additional-spec{display:block!important;visibility:visible!important;border:1px solid #c79848;border-radius:12px;margin:18px 0;padding:0;overflow:hidden}'
-             '.ua-additional-spec summary{display:flex!important;align-items:center;justify-content:space-between;gap:12px;padding:18px;cursor:pointer;font-weight:700;list-style:none}'
-             '.ua-additional-spec summary:after{content:"＋";color:#c79848}.ua-additional-spec[open] summary:after{content:"−"}'
+             '.ua-additional-spec summary{display:flex!important;align-items:center;justify-content:space-between;gap:12px;box-sizing:border-box;min-height:44px;padding:18px;cursor:pointer;font-weight:700;list-style:none}'
+             '.ua-additional-spec summary::-webkit-details-marker{display:none}.ua-additional-spec summary:focus-visible{outline:2px solid #c79848;outline-offset:-4px}'
+             '.ua-addspec-summary-text{display:grid;gap:6px;min-width:0;overflow-wrap:anywhere}.ua-addspec-summary-hint{color:#e6b864;font-size:14px;line-height:1.4;font-weight:600;text-decoration:underline;text-underline-offset:3px}'
+             '.ua-additional-spec summary:after{content:"＋";color:#c79848;flex-shrink:0}.ua-additional-spec[open] summary:after{content:"−"}'
              '.ua-addspec-body{padding:0 18px 18px}.ua-addspec-group h3{color:#c79848;font-size:15px;margin:18px 0 8px}'
              '.ua-addspec-group dl{margin:0}.ua-addspec-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;border-top:1px solid #ffffff20;padding:9px 0}'
              '.ua-addspec-row dt,.ua-addspec-row dd{margin:0;overflow-wrap:anywhere}.ua-addspec-row dd{text-align:right;font-weight:600}'
              '@media(max-width:560px){.ua-addspec-row{grid-template-columns:1fr;gap:4px}.ua-addspec-row dd{text-align:left}}'
              '</style>')
     return (START + style + '<details class="blok ua-additional-spec" data-ua-additional-spec="1" '
-            'data-spec-card="%s" data-spec-version="%s"><summary>%s</summary>'
+            'data-spec-card="%s" data-spec-version="%s"><summary><span class="ua-addspec-summary-text">%s'
+            '<span class="ua-addspec-summary-hint">%s</span></span></summary>'
             '<div class="ua-addspec-body">%s</div></details>' + END) % (
-                card_uid, _digest(rows), _i18n("Додаткова специфікація", "Дополнительная спецификация"), body)
+                card_uid, _digest(rows), _i18n("Додаткова специфікація", "Дополнительная спецификация"),
+                _i18n("Переглянути характеристики", "Посмотреть характеристики"), body)
 
 
 def _span(source: str) -> tuple[int, int] | None:

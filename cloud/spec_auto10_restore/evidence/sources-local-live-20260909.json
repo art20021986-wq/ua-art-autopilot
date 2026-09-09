@@ -1,0 +1,146 @@
+{
+  "policy_version": "UA-ART-SPEC-AUTO10-RESTORE-V1",
+  "audited_on": "2026-09-09T03:45:33.951885+00:00",
+  "curated_library_audited_on": "2026-09-04",
+  "execution_origin": "LOCAL_NOT_PYTHONANYWHERE",
+  "network_requested": true,
+  "source_count": 10,
+  "sources": {
+    "vpic.nhtsa.dot.gov": {
+      "status": "NOT_RUN",
+      "probe_url": "https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/kia?format=json",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": true,
+      "elapsed_seconds": 5.007,
+      "verified_http_response": false
+    },
+    "auto-data.net": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-b-180-1.8-cdi-109hp-7g-dct-18833",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": false,
+      "elapsed_seconds": null,
+      "verified_http_response": false
+    },
+    "carwiki.co.kr": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": false,
+      "elapsed_seconds": null,
+      "verified_http_response": false
+    },
+    "auto.danawa.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://auto.danawa.com/auto/?Lineup=42280&Model=3260%2C3151&Tab=spec&Work=model&pcUse=y",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": false,
+      "elapsed_seconds": null,
+      "verified_http_response": false
+    },
+    "carisyou.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.carisyou.com/car/5688/Spec/54625",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": false,
+      "elapsed_seconds": null,
+      "verified_http_response": false
+    },
+    "ultimatespecs.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/24345/Mercedes-Benz-B-Class-%28W245%29-B180-Autotronic.html",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": false,
+      "elapsed_seconds": null,
+      "verified_http_response": false
+    },
+    "automobile-catalog.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.automobile-catalog.com/car/2010/1549490/mercedes-benz_b_180_autotronic.html",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": false,
+      "elapsed_seconds": null,
+      "verified_http_response": false
+    },
+    "cars-data.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://cars-data.com/en/mercedes-benz/b-class/w245/b-170-35607--35607/specs",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": false,
+      "elapsed_seconds": null,
+      "verified_http_response": false
+    },
+    "carfolio.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": false,
+      "elapsed_seconds": null,
+      "verified_http_response": false
+    },
+    "encycarpedia.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.encycarpedia.com/mercedes/05-b-170-mpv",
+      "facts": 0,
+      "reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+      "request_attempted_in_process": false,
+      "elapsed_seconds": null,
+      "verified_http_response": false
+    }
+  },
+  "pass_count": 0,
+  "not_run_count": 10,
+  "vin_sent": false,
+  "production_touched": false,
+  "limitations": [
+    "Offline fixtures do not prove live source availability or current markup.",
+    "A model-page match is not proof of factory options for an individual VIN.",
+    "vPIC VIN identity decoding requires a separate approved worker check.",
+    "Carisyou legacy probe has no reviewed vehicle identity and remains NOT_RUN."
+  ],
+  "started_at_utc": "2026-09-09T03:45:33.951904+00:00",
+  "finished_at_utc": "2026-09-09T03:45:38.964005+00:00",
+  "elapsed_seconds": 5.012,
+  "network_attempts": [
+    {
+      "domain": "vpic.nhtsa.dot.gov",
+      "started_at": "2026-09-09T03:45:33.956638+00:00",
+      "result": "TRANSPORT_UNAVAILABLE",
+      "error_type": "URLError",
+      "policy_denial_explicit": false,
+      "elapsed_seconds": 5.007
+    }
+  ],
+  "stop_reason": "TRANSPORT_UNAVAILABLE_STOP_ALL_NETWORK",
+  "cli_exit_code": null,
+  "server_gate_passed": false,
+  "max_total_seconds": 175,
+  "per_request_timeout_seconds": 5,
+  "semantics": {
+    "vpic": "A generic Kia-model JSON response can only be API_SCHEMA_ONLY; no VIN decoder or worker identity check was run.",
+    "carisyou": "No reviewed identity for the legacy probe URL; adapter validation is NOT_RUN, even if its website is reachable.",
+    "pass": "A hypothetical local PASS would mean at least four matched, allowed fields; this run has zero PASS and proves neither live-server access nor per-VIN factory configuration."
+  },
+  "missing_for_server_gate": [
+    "Run adapter probes from the authenticated current PythonAnywhere execution environment using its actual installed candidate modules and network configuration.",
+    "Record source response and extraction/identity evidence with timestamps and actual module hashes for all ten approved sources.",
+    "Provide a reviewed Carisyou control vehicle/page identity before testing its adapter.",
+    "Perform the approved vPIC VIN decoder and strict identity check in the worker; API schema alone is insufficient.",
+    "Validate source evidence against current CRM identities, including unsupported Japanese frame numbers, without substituting historical profiles for current live evidence.",
+    "Retain explicit failures/unavailable states and last good facts; do not convert incomplete checks into ten-source PASS."
+  ],
+  "execution_tool_error": "exec_command failed: ProcessFailed { message: \"network approval was cancelled before a decision was returned\" }",
+  "execution_tool_elapsed_seconds": 5.4,
+  "transport_observation": "The process recorded one vPIC opener attempt ending in URLError at 5.007 seconds. It aborted all further network calls. No upstream response was verified.",
+  "no_alternate_route_or_retry": true,
+  "upstream_responses_verified": 0
+}

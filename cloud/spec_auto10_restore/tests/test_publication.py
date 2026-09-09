@@ -1,5 +1,6 @@
 import copy
 import importlib.util
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -24,6 +25,21 @@ class PublicationTests(unittest.TestCase):
         self.assertEqual(publication.strip_block(once), PAGE)
         self.assertEqual(once.count('data-ua-additional-spec="1"'), 1)
         self.assertIn("Додаткова специфікація", once)
+
+    def test_summary_exposes_native_tap_control_and_localized_action(self):
+        block = publication.render_block("UA-0001", FACTS)
+        summary = re.search(r"<summary>(.*?)</summary>", block).group(1)
+        visible_text = re.sub(r"<[^>]*>", " ", summary)
+        self.assertIn("Додаткова специфікація", visible_text)
+        self.assertIn("Переглянути характеристики", visible_text)
+        self.assertIn('data-ru="Дополнительная спецификация"', summary)
+        self.assertIn('data-ru="Посмотреть характеристики"', summary)
+        self.assertIn('data-uk="Переглянути характеристики"', summary)
+        self.assertIn('data-ua="Переглянути характеристики"', summary)
+        self.assertIn("min-height:44px", block)
+        self.assertIn("min-width:0;overflow-wrap:anywhere", block)
+        self.assertNotRegex(block, r"<script|<a\b|onclick=|role=\"button\"")
+        self.assertRegex(block, r"<details\b[^>]*><summary>")
 
     def test_partial_facts_allowed_and_empty_is_explicit_not_ready(self):
         ready = publication.inject(PAGE, "UA-0001", FACTS)

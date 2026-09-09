@@ -1,0 +1,64 @@
+{
+  "status": "EXACT_CURRENT_SOURCE_CANDIDATE_COMPILED",
+  "created_at_utc": "2026-09-09T04:07:45.423295+00:00",
+  "source_module_count": 7,
+  "candidate_module_count": 8,
+  "server_source_byte_hashes_provided_by_root_console": true,
+  "runtime_import_bindings_verified": false,
+  "production_changed": false,
+  "files": {
+    "cars_ui.py": {
+      "server_before_sha256": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+      "candidate_after_sha256": "a4f3b61a2e12842b8c0e869e8146df4bbdb9b949b4c7dcafde566081f7fbb5d0",
+      "new_module": false,
+      "candidate_bytes": 189963
+    },
+    "profile_library.py": {
+      "server_before_sha256": "1211250019cf16c74f28d96539606803db92fe9a204eddfbb2a7339d174085db",
+      "candidate_after_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+      "new_module": false,
+      "candidate_bytes": 24772
+    },
+    "publikaciya.py": {
+      "server_before_sha256": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
+      "candidate_after_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+      "new_module": false,
+      "candidate_bytes": 26228
+    },
+    "publish_transaction_guard.py": {
+      "server_before_sha256": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+      "candidate_after_sha256": "bd2ddb0b540022e3d68e9df3903a068f790f94485734f360a3bd557c3f960be3",
+      "new_module": false,
+      "candidate_bytes": 30869
+    },
+    "source_policy.py": {
+      "server_before_sha256": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38",
+      "candidate_after_sha256": "c13f369c0438f1d291083795e9c58f3ce3fb3e6fb7dffd5650f7121f06186f30",
+      "new_module": false,
+      "candidate_bytes": 59000
+    },
+    "spec_publication.py": {
+      "server_before_sha256": null,
+      "candidate_after_sha256": "39f5bca3cf01b859a167ee2f605e3f0b92316e86052ab89b61e208510e86e7ef",
+      "new_module": true,
+      "candidate_bytes": 20313
+    },
+    "ua_additional_spec.py": {
+      "server_before_sha256": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
+      "candidate_after_sha256": "d155f45b9676bea13ed1c5afb4a4c63fa763faed387d7e7c6a1fbef7a5eb1b8c",
+      "new_module": false,
+      "candidate_bytes": 39493
+    },
+    "vin_spec_service.py": {
+      "server_before_sha256": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae",
+      "candidate_after_sha256": "ef533bb7fb0f106114372d6c5efab47612aac998d5a70bebc84cf50fb84bd146",
+      "new_module": false,
+      "candidate_bytes": 49178
+    }
+  },
+  "tests": {
+    "integration": "18 PASS",
+    "other_suites": "Root will execute final combined suite"
+  },
+  "compatibility_adjustment": "Accept only the exact existing TASK117/TASK121 register wrapper that invokes the captured UA110 register once; preserve the sole worker start."
+}
