@@ -1,0 +1,1798 @@
+{
+  "schema_version": "UA-ART-RECOVERY-QUEUE-REVIEW-1",
+  "task_id": "UA-ART-RECOVERY-TASK120-002",
+  "source_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "produced_at": "2026-09-09T06:34:12.448663Z",
+  "production_touched": false,
+  "review_status": "SAFE_EMPTY_SNAPSHOT",
+  "actions": {
+    "statuses": [
+      {
+        "status": "pending",
+        "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=pending&per_page=100&page=1",
+        "started_at": "2026-09-09T06:32:53.574Z",
+        "observed_at": "2026-09-09T06:32:54.107Z",
+        "page": 1,
+        "per_page": 100,
+        "total_count": 0,
+        "returned_count": 0,
+        "all_pages_read": true,
+        "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+        "raw_body_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+      },
+      {
+        "status": "queued",
+        "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=queued&per_page=100&page=1",
+        "started_at": "2026-09-09T06:32:53.574Z",
+        "observed_at": "2026-09-09T06:32:54.081Z",
+        "page": 1,
+        "per_page": 100,
+        "total_count": 0,
+        "returned_count": 0,
+        "all_pages_read": true,
+        "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+        "raw_body_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+      },
+      {
+        "status": "in_progress",
+        "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=in_progress&per_page=100&page=1",
+        "started_at": "2026-09-09T06:32:53.574Z",
+        "observed_at": "2026-09-09T06:32:54.077Z",
+        "page": 1,
+        "per_page": 100,
+        "total_count": 0,
+        "returned_count": 0,
+        "all_pages_read": true,
+        "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+        "raw_body_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+      },
+      {
+        "status": "requested",
+        "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=requested&per_page=100&page=1",
+        "started_at": "2026-09-09T06:32:53.574Z",
+        "observed_at": "2026-09-09T06:32:54.137Z",
+        "page": 1,
+        "per_page": 100,
+        "total_count": 0,
+        "returned_count": 0,
+        "all_pages_read": true,
+        "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+        "raw_body_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+      },
+      {
+        "status": "waiting",
+        "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=waiting&per_page=100&page=1",
+        "started_at": "2026-09-09T06:32:53.574Z",
+        "observed_at": "2026-09-09T06:32:54.119Z",
+        "page": 1,
+        "per_page": 100,
+        "total_count": 0,
+        "returned_count": 0,
+        "all_pages_read": true,
+        "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+        "raw_body_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+      }
+    ],
+    "active_runs": [],
+    "pages_complete": true,
+    "active_run_count": 0,
+    "status": "EMPTY_AT_OBSERVATION"
+  },
+  "github_directory_inventories": [
+    {
+      "scope": "claims",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/contents/state/claims?ref=2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "observed_at": "2026-09-09T06:14:52.617Z",
+      "entries": [
+        {
+          "path": "state/claims/TASK107-R2-CANARY-1-FAST.1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5.33776437497.json",
+          "sha": "a00d7d1fd7eca31d0894356766350666430c587f",
+          "type": "file",
+          "size": 1850
+        },
+        {
+          "path": "state/claims/TASK107-R2-CANARY-2-STANDARD.1494882607a6e7fc8c06ed1f01d5d5d86c85d2ecaa3054aba1602c78f10a02a5.33776437497.json",
+          "sha": "75b233e362798e4bf6a12b1691945605f98d2f48",
+          "type": "file",
+          "size": 1838
+        },
+        {
+          "path": "state/claims/TASK107-R2-CANARY-3-CRITICAL.dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770.33776437497.json",
+          "sha": "fb861ffe0c22b53717e833fab7ec9341ac369f75",
+          "type": "file",
+          "size": 1844
+        },
+        {
+          "path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.0875de8561ad5b677cc7d4156512dda8acfb3584f08f38b2bded006dc2f1637f.33827926268.json",
+          "sha": "21eb51abc202a901c4e7331c378cb1085ae9603c",
+          "type": "file",
+          "size": 2263
+        },
+        {
+          "path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.4d6d19d301e2bc61232c698d7bf5975959f7e4321fba109a28037cce713b6246.33829829770.json",
+          "sha": "328f1628f7f4ea06409e85eae5ae4d9a1585a724",
+          "type": "file",
+          "size": 3922
+        },
+        {
+          "path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9.33827333029.json",
+          "sha": "dd2a83e63dbbe615a63e82256d4131105eb81a88",
+          "type": "file",
+          "size": 1627
+        },
+        {
+          "path": "state/claims/TASK110-VIN-SPEC-3SRC.49138842d8fb5909f57cfc622d7bb943ca90379a39702ef26b7ecc16d0540717.33835385104.json",
+          "sha": "aecbbcd58abef15667c05307080e47a4f2038bad",
+          "type": "file",
+          "size": 5038
+        },
+        {
+          "path": "state/claims/TASK110-VIN-SPEC-3SRC.4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95.33836434535.json",
+          "sha": "09b6781c33c5cfa092e0eaf18f8521629adf1f99",
+          "type": "file",
+          "size": 4249
+        },
+        {
+          "path": "state/claims/TASK111-VIN-SPEC-10SRC.15c38cdc5d0bfd25252e07e0df92d62fcc78aad1d89cfb602a31863143fe43c3.33850054689.json",
+          "sha": "d9b0b92f2f3637b28d88c190b383c365f5fa0a9c",
+          "type": "file",
+          "size": 5851
+        },
+        {
+          "path": "state/claims/TASK113-GLOBAL-AUTO-CANARY.091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781.33885007450.json",
+          "sha": "95b88e90135e804ce6b944998fa7b90d912f710f",
+          "type": "file",
+          "size": 2256
+        },
+        {
+          "path": "state/claims/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.33902756545.json",
+          "sha": "be8a7844a54f14174199926ce49bc22eccfef485",
+          "type": "file",
+          "size": 2277
+        },
+        {
+          "path": "state/claims/TASK115-REMOVE-VIN-ADS.1e07de40b1bbea73a79be0159bcb9a6e5176bb88b62fa809c621097940ca518a.33941649559.json",
+          "sha": "36fde7a4d006fb47f9d3d52cfa56eb64012c1bdf",
+          "type": "file",
+          "size": 1894
+        },
+        {
+          "path": "state/claims/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+          "sha": "b3455053c5da4c5e69844e21abad6afc5907db1d",
+          "type": "file",
+          "size": 4827
+        },
+        {
+          "path": "state/claims/TASK115-REMOVE-VIN-ADS.6fe897f3f0da1550bd802e6c8ae5867aa4e04d2e4a78383d15f83c2db3cdaadb.33942322588.json",
+          "sha": "573e62a7c609141c17176f169d7241de582c3d41",
+          "type": "file",
+          "size": 1894
+        },
+        {
+          "path": "state/claims/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+          "sha": "5175865a45a67fa99b95e7d6b7979a617109db1a",
+          "type": "file",
+          "size": 5556
+        },
+        {
+          "path": "state/claims/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+          "sha": "46437401a809176bdf226240749561269709b55f",
+          "type": "file",
+          "size": 3641
+        },
+        {
+          "path": "state/claims/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+          "sha": "d972ffc93a35d5cda1f5059a71d8dbfee69bcc4b",
+          "type": "file",
+          "size": 3488
+        },
+        {
+          "path": "state/claims/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+          "sha": "e4f6057879b97e6946063ebf9ab5d1e1a6b614aa",
+          "type": "file",
+          "size": 3509
+        },
+        {
+          "path": "state/claims/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+          "sha": "743af93c99d3398e1262e86c78bb378f33a168ed",
+          "type": "file",
+          "size": 4460
+        }
+      ],
+      "complete": true,
+      "local_exact_content_and_set_verified": true
+    },
+    {
+      "scope": "transactions",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/contents/state/transactions?ref=2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "observed_at": "2026-09-09T06:14:52.022Z",
+      "entries": [
+        {
+          "path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+          "sha": "773f24003e84d0f73b45549d9c372c8dd2fa090f",
+          "type": "file",
+          "size": 991
+        },
+        {
+          "path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+          "sha": "2da59f669a85cabdc2f31b13b8d22504a33fb407",
+          "type": "file",
+          "size": 988
+        },
+        {
+          "path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+          "sha": "922a7d8a5b2b49b2a2992f03733652517ea78755",
+          "type": "file",
+          "size": 1028
+        },
+        {
+          "path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+          "sha": "927d1059e48836d08691c19c1510c1be17d088e9",
+          "type": "file",
+          "size": 1024
+        },
+        {
+          "path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+          "sha": "295b395ed49e885c30a63aea70e32c5ccbf4da36",
+          "type": "file",
+          "size": 1036
+        },
+        {
+          "path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+          "sha": "47237c2abaf7ad1a186b7264938b675d86a44a92",
+          "type": "file",
+          "size": 885
+        }
+      ],
+      "complete": true,
+      "local_exact_content_and_set_verified": true
+    },
+    {
+      "scope": "autostart_consumed",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/contents/state/autostart_consumed?ref=2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "observed_at": "2026-09-09T06:14:52.124Z",
+      "entries": [
+        {
+          "path": "state/autostart_consumed/TASK113-GLOBAL-AUTO-CANARY.091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781.json",
+          "sha": "d7d2bbe226a8019a384fe96772dd85b0aee8c763",
+          "type": "file",
+          "size": 1115
+        },
+        {
+          "path": "state/autostart_consumed/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.json",
+          "sha": "9d20fbe0f44dd36f0497dfed64e9da856b9c5cbe",
+          "type": "file",
+          "size": 1142
+        },
+        {
+          "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.1e07de40b1bbea73a79be0159bcb9a6e5176bb88b62fa809c621097940ca518a.json",
+          "sha": "3d4859ed0bf769ce6c2fa9e4f964064e5f67e8ef",
+          "type": "file",
+          "size": 1319
+        },
+        {
+          "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.json",
+          "sha": "33ea89e5927401faf2ad9e4222e2e9b0d64a25a6",
+          "type": "file",
+          "size": 1319
+        },
+        {
+          "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.6fe897f3f0da1550bd802e6c8ae5867aa4e04d2e4a78383d15f83c2db3cdaadb.json",
+          "sha": "cab8d460e54d0cf5ded3983353d493ccfa2efd46",
+          "type": "file",
+          "size": 1319
+        },
+        {
+          "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.72aac33e2b84f5a50b31199ee8d3144c7788f450bdacb9fb925a1913241ee8ed.json",
+          "sha": "da540908fbf4a42c4ca4c15408842f216b9adab9",
+          "type": "file",
+          "size": 1319
+        },
+        {
+          "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.json",
+          "sha": "a1f4518d3c3abd81d6ef1240512ab75ff1fbfc69",
+          "type": "file",
+          "size": 1319
+        },
+        {
+          "path": "state/autostart_consumed/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.json",
+          "sha": "6c104a7b0ea88fec7e8fe4ca9cc560ad72ed0959",
+          "type": "file",
+          "size": 1379
+        },
+        {
+          "path": "state/autostart_consumed/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.json",
+          "sha": "c9da2e3d9992fd9ccf9603811e9153f3fed0e4fb",
+          "type": "file",
+          "size": 1373
+        },
+        {
+          "path": "state/autostart_consumed/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.json",
+          "sha": "2ceb86c07aecb6e1f6e4e8d0d8f7286b01ba18b8",
+          "type": "file",
+          "size": 1407
+        },
+        {
+          "path": "state/autostart_consumed/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.json",
+          "sha": "03b9ecc775880a7766f867cc7c5aa3dfb7c9d9a3",
+          "type": "file",
+          "size": 1385
+        }
+      ],
+      "complete": true,
+      "local_exact_content_and_set_verified": true
+    },
+    {
+      "scope": "autostart_nonces",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/contents/state/autostart_nonces?ref=2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "observed_at": "2026-09-09T06:14:52.041Z",
+      "entries": [
+        {
+          "path": "state/autostart_nonces/task113-auto-20260904t143846z-a725c97b.json",
+          "sha": "f84a15e3e63e7f552191d01048868dbfd1bf0a15",
+          "type": "file",
+          "size": 350
+        },
+        {
+          "path": "state/autostart_nonces/task114-postmerge-r2-a0645d23-20260904t175037z.json",
+          "sha": "5e6a9f900fa4fdb5361d86a2d4827aaab10bd245",
+          "type": "file",
+          "size": 361
+        },
+        {
+          "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t032500z-d96bc422.json",
+          "sha": "1168644f91f56ca5a3743fb7a5723df41d07f565",
+          "type": "file",
+          "size": 356
+        },
+        {
+          "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t033000z-72f1a4c9.json",
+          "sha": "4ce52f9a6f2331a0b021f56c9bda5c3c0dc5b471",
+          "type": "file",
+          "size": 356
+        },
+        {
+          "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t033600z-b46891ef.json",
+          "sha": "28e1f3eb759fd9a3f32824d8fb2868d56f050de6",
+          "type": "file",
+          "size": 356
+        },
+        {
+          "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t034100z-9ca70e15.json",
+          "sha": "dffb46786e94c5844e2d99eb12d99d6e58e62d9c",
+          "type": "file",
+          "size": 356
+        },
+        {
+          "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t044917z-684c7e18.json",
+          "sha": "5ddea7fb43e3b21afc310d25b0e38e7fafd26557",
+          "type": "file",
+          "size": 356
+        },
+        {
+          "path": "state/autostart_nonces/task117-remove-crm-stage-buttons-20260907t093405z-7c0d5dd5.json",
+          "sha": "1cd7dafc67c6e6cda789b6e984c5a7d272c62596",
+          "type": "file",
+          "size": 376
+        },
+        {
+          "path": "state/autostart_nonces/task118-emergency-site-recovery-20260907t112830z-6ca9a013.json",
+          "sha": "f2e05b5f1b9646617bd062a12d1b2c60f229de4c",
+          "type": "file",
+          "size": 374
+        },
+        {
+          "path": "state/autostart_nonces/task119-emergency-site-recovery-r2-20260907t115400z-ac3b8ec99a752d62.json",
+          "sha": "c32195543b15da91c7f70b5f31264623f796cac2",
+          "type": "file",
+          "size": 388
+        },
+        {
+          "path": "state/autostart_nonces/task120-publish-ua0017-ua0018-20260907t144314z-91299ef57db27ad8.json",
+          "sha": "c74f521c4dc725d31fd2a1980dad4e44c203157d",
+          "type": "file",
+          "size": 380
+        }
+      ],
+      "complete": true,
+      "local_exact_content_and_set_verified": true
+    },
+    {
+      "scope": "launch",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/contents/tasks/launch?ref=2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "observed_at": "2026-09-09T06:15:19.805Z",
+      "entries": [
+        {
+          "path": "tasks/launch/AUTO-TASK113-GLOBAL-AUTO-CANARY.json",
+          "sha": "2e87082b41441ba9c8b1f0770dfb88047e72131e",
+          "type": "file",
+          "size": 531
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK114-POSTMERGE-AUTO-CANARY-R1.json",
+          "sha": "c3d9d2e0e61882494eb6b2b7e1c1c27cd00d1933",
+          "type": "file",
+          "size": 544
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK114-POSTMERGE-AUTO-CANARY-R2.json",
+          "sha": "db3b686bf69842fa73dc2a9a362204e25fdaafc0",
+          "type": "file",
+          "size": 544
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK114-POSTMERGE-AUTO-CANARY.json",
+          "sha": "b761a751332950bf00fb426e8537bec071eec1f3",
+          "type": "file",
+          "size": 541
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T031700Z.json",
+          "sha": "fc18f227ca6c060243785b8ded11bc2d5cc4d1ce",
+          "type": "file",
+          "size": 531
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T032000Z.json",
+          "sha": "aa4e96715be6be8b2a98fa5bbac3ba78cba0574c",
+          "type": "file",
+          "size": 531
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T032200Z.json",
+          "sha": "3bbd31320b82756c94cb416b12857b94fc7e4dd7",
+          "type": "file",
+          "size": 531
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T033000Z.json",
+          "sha": "7c2a4c3bcb1c18f1533a5cd7f4690694e2f05a01",
+          "type": "file",
+          "size": 531
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T033330Z.json",
+          "sha": "b925a840eb75dfd6fea0507fbc4806121f9cff8f",
+          "type": "file",
+          "size": 531
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T033630Z.json",
+          "sha": "dc4260c9e91c4bda7432ade4b7e7a04e0490d313",
+          "type": "file",
+          "size": 531
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T034115Z.json",
+          "sha": "5b1e83fabe19e5505aa5c65044a90d7e8b449adb",
+          "type": "file",
+          "size": 531
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T044917Z.json",
+          "sha": "88b70ce692fd35291d21719e3fcb3b3d3d69b965",
+          "type": "file",
+          "size": 531
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK117-REMOVE-CRM-STAGE-BUTTONS-20260907T093405Z.json",
+          "sha": "fa79a6aa4931652b22be92005f17897ab0927a24",
+          "type": "file",
+          "size": 561
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK118-EMERGENCY-SITE-RECOVERY-20260907T112830Z.json",
+          "sha": "67c6b2c1337e2daf827e78c0b3335565c758d641",
+          "type": "file",
+          "size": 558
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK119-EMERGENCY-SITE-RECOVERY-R2-20260907T115400Z.json",
+          "sha": "8bcba40081f5686be5d76aa7b9c0108297ce52ab",
+          "type": "file",
+          "size": 575
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK120-PUBLISH-UA-0017-UA-0018-20260907T144314Z.json",
+          "sha": "8f389c4b34565869bf45f4912bebfff3ed114ddf",
+          "type": "file",
+          "size": 564
+        },
+        {
+          "path": "tasks/launch/AUTO-TASK121-KOREA-BUTTON-PROBE-20260908T060601Z.json",
+          "sha": "b4f66b0f6f95d05c75c3f80378423ce877fc1470",
+          "type": "file",
+          "size": 544
+        },
+        {
+          "path": "tasks/launch/TASK109-CONTAINER-TRACK-INLINE.json",
+          "sha": "025017f51a5b9747bf046bf4bca7f012e9a8af2c",
+          "type": "file",
+          "size": 365
+        },
+        {
+          "path": "tasks/launch/TASK109-STORAGE-PROBE.json",
+          "sha": "d0ae54c52caaf95c5f3ece1131800dd999396e35",
+          "type": "file",
+          "size": 140
+        },
+        {
+          "path": "tasks/launch/TASK110-STORAGE-PROBE.json",
+          "sha": "e6d80e9b86a8a7dc0a2be12c8cba547c3b274d6e",
+          "type": "file",
+          "size": 172
+        },
+        {
+          "path": "tasks/launch/TASK110-VIN-SPEC-3SRC.json",
+          "sha": "0e476990f195682a088927ff74aaaf6020ba08e9",
+          "type": "file",
+          "size": 451
+        },
+        {
+          "path": "tasks/launch/TASK111-STORAGE-PROBE.json",
+          "sha": "761de74e6a5422a2c10ee9e6691036e2e2da3e9a",
+          "type": "file",
+          "size": 174
+        },
+        {
+          "path": "tasks/launch/TASK111-VIN-SPEC-10SRC.json",
+          "sha": "7cb61ad6ca666a6ec7b16d14c924c25b04ace681",
+          "type": "file",
+          "size": 386
+        },
+        {
+          "path": "tasks/launch/TASK115-REMOVE-VIN-ADS.json",
+          "sha": "c8dc07227c042381824a3c905068142241ea4e79",
+          "type": "file",
+          "size": 348
+        }
+      ],
+      "complete": true,
+      "local_exact_content_and_set_verified": true
+    }
+  ],
+  "input_files": [
+    {
+      "path": "state/claims/TASK107-R2-CANARY-1-FAST.1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5.33776437497.json",
+      "git_blob_sha": "a00d7d1fd7eca31d0894356766350666430c587f",
+      "sha256": "7113cff052151a1a668917247a7d950e8d3822989495f45340df5ba9b4429055",
+      "bytes": 1850
+    },
+    {
+      "path": "state/claims/TASK107-R2-CANARY-2-STANDARD.1494882607a6e7fc8c06ed1f01d5d5d86c85d2ecaa3054aba1602c78f10a02a5.33776437497.json",
+      "git_blob_sha": "75b233e362798e4bf6a12b1691945605f98d2f48",
+      "sha256": "a7ddd5c950b4681c41f9fd4750567dfeca4ba59c66c0a7aeaf75c74f775bc1da",
+      "bytes": 1838
+    },
+    {
+      "path": "state/claims/TASK107-R2-CANARY-3-CRITICAL.dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770.33776437497.json",
+      "git_blob_sha": "fb861ffe0c22b53717e833fab7ec9341ac369f75",
+      "sha256": "18b07f3bead05e47b4092b8792638e94e8f3cc6c267c3a56be2bf32c1af71bb4",
+      "bytes": 1844
+    },
+    {
+      "path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.0875de8561ad5b677cc7d4156512dda8acfb3584f08f38b2bded006dc2f1637f.33827926268.json",
+      "git_blob_sha": "21eb51abc202a901c4e7331c378cb1085ae9603c",
+      "sha256": "2b1cd79591df1156a56fc6db6c5052efd11604e2dbc4b80d12620c33c45bf31c",
+      "bytes": 2263
+    },
+    {
+      "path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.4d6d19d301e2bc61232c698d7bf5975959f7e4321fba109a28037cce713b6246.33829829770.json",
+      "git_blob_sha": "328f1628f7f4ea06409e85eae5ae4d9a1585a724",
+      "sha256": "a4e6ae214af35117802247cc872e01cff879298dab1874177e2fbb81a74f2d17",
+      "bytes": 3922
+    },
+    {
+      "path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9.33827333029.json",
+      "git_blob_sha": "dd2a83e63dbbe615a63e82256d4131105eb81a88",
+      "sha256": "fb7322d3135a0a025c9784dd950adf303feadddcf62787e4f225d176f1ca9496",
+      "bytes": 1627
+    },
+    {
+      "path": "state/claims/TASK110-VIN-SPEC-3SRC.49138842d8fb5909f57cfc622d7bb943ca90379a39702ef26b7ecc16d0540717.33835385104.json",
+      "git_blob_sha": "aecbbcd58abef15667c05307080e47a4f2038bad",
+      "sha256": "5eb6279ef1b0bdb822de6d66657ba2cc60e8b3cfd4a29f7b81bcd17dcd75b383",
+      "bytes": 5038
+    },
+    {
+      "path": "state/claims/TASK110-VIN-SPEC-3SRC.4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95.33836434535.json",
+      "git_blob_sha": "09b6781c33c5cfa092e0eaf18f8521629adf1f99",
+      "sha256": "f63a3fa765bff3639d361b72cc1cd8689e044755c690cab3dbebd862900f2309",
+      "bytes": 4249
+    },
+    {
+      "path": "state/claims/TASK111-VIN-SPEC-10SRC.15c38cdc5d0bfd25252e07e0df92d62fcc78aad1d89cfb602a31863143fe43c3.33850054689.json",
+      "git_blob_sha": "d9b0b92f2f3637b28d88c190b383c365f5fa0a9c",
+      "sha256": "eb4c5b22e303c0cecf14e08ebcf37dffe48d43ad4f05680ce82c9a8c3b926a40",
+      "bytes": 5851
+    },
+    {
+      "path": "state/claims/TASK113-GLOBAL-AUTO-CANARY.091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781.33885007450.json",
+      "git_blob_sha": "95b88e90135e804ce6b944998fa7b90d912f710f",
+      "sha256": "6883753af8c35cacbe2a70a6184a9c1de2dca767a7e2e6140e4c1386b5f6cc83",
+      "bytes": 2256
+    },
+    {
+      "path": "state/claims/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.33902756545.json",
+      "git_blob_sha": "be8a7844a54f14174199926ce49bc22eccfef485",
+      "sha256": "049a5b7dd0bd19090cb84ea4b28b79f073af6ed71df04cc683469fc7b6eaa9b1",
+      "bytes": 2277
+    },
+    {
+      "path": "state/claims/TASK115-REMOVE-VIN-ADS.1e07de40b1bbea73a79be0159bcb9a6e5176bb88b62fa809c621097940ca518a.33941649559.json",
+      "git_blob_sha": "36fde7a4d006fb47f9d3d52cfa56eb64012c1bdf",
+      "sha256": "742eaff1f9332bd2dc6d5b624bec92de7298025689704f16e2fa76669eb454e1",
+      "bytes": 1894
+    },
+    {
+      "path": "state/claims/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+      "git_blob_sha": "b3455053c5da4c5e69844e21abad6afc5907db1d",
+      "sha256": "153d1d58a9dea47ed23c243e99e3335286cd15abf31c259c103f6626ad86efa0",
+      "bytes": 4827
+    },
+    {
+      "path": "state/claims/TASK115-REMOVE-VIN-ADS.6fe897f3f0da1550bd802e6c8ae5867aa4e04d2e4a78383d15f83c2db3cdaadb.33942322588.json",
+      "git_blob_sha": "573e62a7c609141c17176f169d7241de582c3d41",
+      "sha256": "c19cdf84528ba22c3e9261072effba35d752340ca5fbe97e5dcbf727d278d6a7",
+      "bytes": 1894
+    },
+    {
+      "path": "state/claims/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+      "git_blob_sha": "5175865a45a67fa99b95e7d6b7979a617109db1a",
+      "sha256": "768a08011415977969dd9211d5646a6e5ee9a370bfb25e846064b13416e59c0d",
+      "bytes": 5556
+    },
+    {
+      "path": "state/claims/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+      "git_blob_sha": "46437401a809176bdf226240749561269709b55f",
+      "sha256": "cb28d76fa749ca1755e5cdf3b9e7131e6b15c3919b9a506302e651ab2af8ae3e",
+      "bytes": 3641
+    },
+    {
+      "path": "state/claims/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+      "git_blob_sha": "d972ffc93a35d5cda1f5059a71d8dbfee69bcc4b",
+      "sha256": "c668d6526bde17ce5afc42cd86a20eb37f3aa89006f9a6ace37d7fd817891804",
+      "bytes": 3488
+    },
+    {
+      "path": "state/claims/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+      "git_blob_sha": "e4f6057879b97e6946063ebf9ab5d1e1a6b614aa",
+      "sha256": "cbaaecfab9234d536a3bcd035be1c62e069a8798c33703acb627783b46c2709f",
+      "bytes": 3509
+    },
+    {
+      "path": "state/claims/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+      "git_blob_sha": "743af93c99d3398e1262e86c78bb378f33a168ed",
+      "sha256": "160fd194e98c6135298b27d776c0a9e05379f9125cb68042c70a68bd15b9fb0b",
+      "bytes": 4460
+    },
+    {
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+      "git_blob_sha": "773f24003e84d0f73b45549d9c372c8dd2fa090f",
+      "sha256": "472eea4a28fac3808ad9cf3f2d0b45a10a6513ee10c070317ecaa56c81bebca2",
+      "bytes": 991
+    },
+    {
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+      "git_blob_sha": "2da59f669a85cabdc2f31b13b8d22504a33fb407",
+      "sha256": "ed7589766ac62635636b4b6e7f75c39efdf0e22cd32be38e50637317a866eadb",
+      "bytes": 988
+    },
+    {
+      "path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+      "git_blob_sha": "922a7d8a5b2b49b2a2992f03733652517ea78755",
+      "sha256": "03bfa4efb3bc558ed8390b9da5c65ec607622e7503e4059ab44ab49d08d9dfd7",
+      "bytes": 1028
+    },
+    {
+      "path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+      "git_blob_sha": "927d1059e48836d08691c19c1510c1be17d088e9",
+      "sha256": "cd9a5c72023d24208dfd4b84bb3f3c5276455664b4ad22162ff2353fb6a9cc0d",
+      "bytes": 1024
+    },
+    {
+      "path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+      "git_blob_sha": "295b395ed49e885c30a63aea70e32c5ccbf4da36",
+      "sha256": "02b2efb9378592c753c623f5569a18f94ed141832328c71966099b0ecfe54349",
+      "bytes": 1036
+    },
+    {
+      "path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+      "git_blob_sha": "47237c2abaf7ad1a186b7264938b675d86a44a92",
+      "sha256": "edd6091730bc946a0091bc56e74209ed5248efd5b6aade40c69104d408981da4",
+      "bytes": 885
+    },
+    {
+      "path": "state/autostart_consumed/TASK113-GLOBAL-AUTO-CANARY.091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781.json",
+      "git_blob_sha": "d7d2bbe226a8019a384fe96772dd85b0aee8c763",
+      "sha256": "f3cd708c80ea405ae3c20eeef37cb6e31d9567ee238c41197f67b7c303b2c428",
+      "bytes": 1115
+    },
+    {
+      "path": "state/autostart_consumed/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.json",
+      "git_blob_sha": "9d20fbe0f44dd36f0497dfed64e9da856b9c5cbe",
+      "sha256": "1fc6cf79ad40a6d018fd8571c6c05d368ddec1b4c54f54031753f1b1d038c004",
+      "bytes": 1142
+    },
+    {
+      "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.1e07de40b1bbea73a79be0159bcb9a6e5176bb88b62fa809c621097940ca518a.json",
+      "git_blob_sha": "3d4859ed0bf769ce6c2fa9e4f964064e5f67e8ef",
+      "sha256": "8f7d7b859e44af5da09b987569272b0de91864807611ea757f31bc9236f3f290",
+      "bytes": 1319
+    },
+    {
+      "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.json",
+      "git_blob_sha": "33ea89e5927401faf2ad9e4222e2e9b0d64a25a6",
+      "sha256": "d4729e31b88c224c147ec7e07cce61a98b74380c0cc809f032650e6c811c5c4f",
+      "bytes": 1319
+    },
+    {
+      "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.6fe897f3f0da1550bd802e6c8ae5867aa4e04d2e4a78383d15f83c2db3cdaadb.json",
+      "git_blob_sha": "cab8d460e54d0cf5ded3983353d493ccfa2efd46",
+      "sha256": "841bcd6de82edc9a56cabdf957ed67ae9076f66a03fad7d321070cfa82554abd",
+      "bytes": 1319
+    },
+    {
+      "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.72aac33e2b84f5a50b31199ee8d3144c7788f450bdacb9fb925a1913241ee8ed.json",
+      "git_blob_sha": "da540908fbf4a42c4ca4c15408842f216b9adab9",
+      "sha256": "7534ca7d35356e03000968d0bb6b03adee209797616028cbec7d94ca7c8d5d2a",
+      "bytes": 1319
+    },
+    {
+      "path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.json",
+      "git_blob_sha": "a1f4518d3c3abd81d6ef1240512ab75ff1fbfc69",
+      "sha256": "cd09ec229d1d6ca3a3b1ae4de06ceef06dbbf4734740bc09fadf45a0f5dae86c",
+      "bytes": 1319
+    },
+    {
+      "path": "state/autostart_consumed/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.json",
+      "git_blob_sha": "6c104a7b0ea88fec7e8fe4ca9cc560ad72ed0959",
+      "sha256": "a637b20a2a208e08f141fca4fe6f1013a5b2352857f7bd444f8fc512fd7b56ad",
+      "bytes": 1379
+    },
+    {
+      "path": "state/autostart_consumed/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.json",
+      "git_blob_sha": "c9da2e3d9992fd9ccf9603811e9153f3fed0e4fb",
+      "sha256": "b9dc8e5a5d4ea069f3829edac926f0937a00ee341195d5efaec71cb81c425e44",
+      "bytes": 1373
+    },
+    {
+      "path": "state/autostart_consumed/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.json",
+      "git_blob_sha": "2ceb86c07aecb6e1f6e4e8d0d8f7286b01ba18b8",
+      "sha256": "a5dd43c07317325a3c0cb7ed18ab7ecd7b0fe25dcb5649270b4c5ead4a2e7ba0",
+      "bytes": 1407
+    },
+    {
+      "path": "state/autostart_consumed/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.json",
+      "git_blob_sha": "03b9ecc775880a7766f867cc7c5aa3dfb7c9d9a3",
+      "sha256": "d9f00a141902e7626940391694b64b787bbc3e666edc5c9684098b9880502cc4",
+      "bytes": 1385
+    },
+    {
+      "path": "state/autostart_nonces/task113-auto-20260904t143846z-a725c97b.json",
+      "git_blob_sha": "f84a15e3e63e7f552191d01048868dbfd1bf0a15",
+      "sha256": "847a3bab987af3c725138e8e24431a9333f877991a0a4f7554195b0acfe9207d",
+      "bytes": 350
+    },
+    {
+      "path": "state/autostart_nonces/task114-postmerge-r2-a0645d23-20260904t175037z.json",
+      "git_blob_sha": "5e6a9f900fa4fdb5361d86a2d4827aaab10bd245",
+      "sha256": "df578f6d13985d32f57efee48777f08d98e2108a2dec28580a0ccec3110828d3",
+      "bytes": 361
+    },
+    {
+      "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t032500z-d96bc422.json",
+      "git_blob_sha": "1168644f91f56ca5a3743fb7a5723df41d07f565",
+      "sha256": "ba50f312fd79b305fb1bb8926f7cbd290d03682a00ff01ac4596a6d334f4faed",
+      "bytes": 356
+    },
+    {
+      "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t033000z-72f1a4c9.json",
+      "git_blob_sha": "4ce52f9a6f2331a0b021f56c9bda5c3c0dc5b471",
+      "sha256": "faa86c412cc331fafdeaf626b5da63812ff2632ea7eef092628b6c4f763be7d3",
+      "bytes": 356
+    },
+    {
+      "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t033600z-b46891ef.json",
+      "git_blob_sha": "28e1f3eb759fd9a3f32824d8fb2868d56f050de6",
+      "sha256": "733b7d405716c699be4a4e69b098c4ad58ceed1d0bde4cc64a74734a09e681c4",
+      "bytes": 356
+    },
+    {
+      "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t034100z-9ca70e15.json",
+      "git_blob_sha": "dffb46786e94c5844e2d99eb12d99d6e58e62d9c",
+      "sha256": "9a0a3ac09f91b06e43e07a70f04910bf06d73c44189467d373245f05e9a977f3",
+      "bytes": 356
+    },
+    {
+      "path": "state/autostart_nonces/task115-remove-vin-ads-20260905t044917z-684c7e18.json",
+      "git_blob_sha": "5ddea7fb43e3b21afc310d25b0e38e7fafd26557",
+      "sha256": "b2ff87590664c7333a24d808360f2d69aa12258fc602a9ec30d134fdf92025a4",
+      "bytes": 356
+    },
+    {
+      "path": "state/autostart_nonces/task117-remove-crm-stage-buttons-20260907t093405z-7c0d5dd5.json",
+      "git_blob_sha": "1cd7dafc67c6e6cda789b6e984c5a7d272c62596",
+      "sha256": "a45ff923ab3db57cde8f3f20ba5775d6a32f7610aaf8cd0b83b36cf30281336a",
+      "bytes": 376
+    },
+    {
+      "path": "state/autostart_nonces/task118-emergency-site-recovery-20260907t112830z-6ca9a013.json",
+      "git_blob_sha": "f2e05b5f1b9646617bd062a12d1b2c60f229de4c",
+      "sha256": "e4ccd831ea691371280f1946a2f1bb787abd25532bc814600ef854c18a7f98aa",
+      "bytes": 374
+    },
+    {
+      "path": "state/autostart_nonces/task119-emergency-site-recovery-r2-20260907t115400z-ac3b8ec99a752d62.json",
+      "git_blob_sha": "c32195543b15da91c7f70b5f31264623f796cac2",
+      "sha256": "796ed2307b8320b183ddbbab47ca0300e5a7131f3c5d8280ca5756a73bc9ae8e",
+      "bytes": 388
+    },
+    {
+      "path": "state/autostart_nonces/task120-publish-ua0017-ua0018-20260907t144314z-91299ef57db27ad8.json",
+      "git_blob_sha": "c74f521c4dc725d31fd2a1980dad4e44c203157d",
+      "sha256": "9e415b0e93edfa58176dd3086f150682033ffae62b92b0db8a8f9273683eec6c",
+      "bytes": 380
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK113-GLOBAL-AUTO-CANARY.json",
+      "git_blob_sha": "2e87082b41441ba9c8b1f0770dfb88047e72131e",
+      "sha256": "eb48b15bebbada94cc1c5b877f0fce5fa8cf128b061e2a6748ae0413972ebc51",
+      "bytes": 531
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK114-POSTMERGE-AUTO-CANARY-R1.json",
+      "git_blob_sha": "c3d9d2e0e61882494eb6b2b7e1c1c27cd00d1933",
+      "sha256": "836ab7463765d596017331bb07f11bef0b9ee110b494fe0110dc589a67cbb2bf",
+      "bytes": 544
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK114-POSTMERGE-AUTO-CANARY-R2.json",
+      "git_blob_sha": "db3b686bf69842fa73dc2a9a362204e25fdaafc0",
+      "sha256": "c837614c12b0ebfb9e5659e0be72fc7aee92d18d47ccf59838766a428163780d",
+      "bytes": 544
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK114-POSTMERGE-AUTO-CANARY.json",
+      "git_blob_sha": "b761a751332950bf00fb426e8537bec071eec1f3",
+      "sha256": "87d8064dcb21b58ae209ec933ab954796027062ab99f9604c2f6bcd8550093c8",
+      "bytes": 541
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T031700Z.json",
+      "git_blob_sha": "fc18f227ca6c060243785b8ded11bc2d5cc4d1ce",
+      "sha256": "70c24ce4b3bc5f93ac3fd527384f295f97eb6db0cc5ceaeefa36a332dc68e4ae",
+      "bytes": 531
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T032000Z.json",
+      "git_blob_sha": "aa4e96715be6be8b2a98fa5bbac3ba78cba0574c",
+      "sha256": "1476a60545e34a95f47130a2caeb24f17d4a9b401c1f23cc63325be3ed961bfc",
+      "bytes": 531
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T032200Z.json",
+      "git_blob_sha": "3bbd31320b82756c94cb416b12857b94fc7e4dd7",
+      "sha256": "96c0743d57faeb7a20ba330cd127d3c2ca9c7eebec0a7a7fd75f727cfb872714",
+      "bytes": 531
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T033000Z.json",
+      "git_blob_sha": "7c2a4c3bcb1c18f1533a5cd7f4690694e2f05a01",
+      "sha256": "dc95f32bcaf868f8b0b585930ce39b2e3dc7fe99b5dc3776b10a5f00d4acb1a9",
+      "bytes": 531
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T033330Z.json",
+      "git_blob_sha": "b925a840eb75dfd6fea0507fbc4806121f9cff8f",
+      "sha256": "dd67fadc6effd3f1c2f6d62d556e19d194c508323ed8061156d6144c4a7279bb",
+      "bytes": 531
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T033630Z.json",
+      "git_blob_sha": "dc4260c9e91c4bda7432ade4b7e7a04e0490d313",
+      "sha256": "ab99d0fd81ab9e9645dda0de12304d2a83ec8ebeda93281f4588b6f5ce7d6516",
+      "bytes": 531
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T034115Z.json",
+      "git_blob_sha": "5b1e83fabe19e5505aa5c65044a90d7e8b449adb",
+      "sha256": "83641382579d11b4cc4190379acde81c3d4e80dd1c2f151ff2cc1d12ba12ad0a",
+      "bytes": 531
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T044917Z.json",
+      "git_blob_sha": "88b70ce692fd35291d21719e3fcb3b3d3d69b965",
+      "sha256": "8f0c9f143814b8c700d4e4a7c632b2f4af5fd0ed7c2d3019832fb205f8615d6b",
+      "bytes": 531
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK117-REMOVE-CRM-STAGE-BUTTONS-20260907T093405Z.json",
+      "git_blob_sha": "fa79a6aa4931652b22be92005f17897ab0927a24",
+      "sha256": "1db527d6353cb8e12725a7ac104cb6fede33154feebe391663fdc27ef2a3af33",
+      "bytes": 561
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK118-EMERGENCY-SITE-RECOVERY-20260907T112830Z.json",
+      "git_blob_sha": "67c6b2c1337e2daf827e78c0b3335565c758d641",
+      "sha256": "950ab0b0679d9d2ba068949c53c66c071a9247c0a698dda373cea247e1f82b76",
+      "bytes": 558
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK119-EMERGENCY-SITE-RECOVERY-R2-20260907T115400Z.json",
+      "git_blob_sha": "8bcba40081f5686be5d76aa7b9c0108297ce52ab",
+      "sha256": "a5d952e95b857f9caf4e54b07123c32403d5a59ed204dfabfd46bb7c68bf6f3f",
+      "bytes": 575
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK120-PUBLISH-UA-0017-UA-0018-20260907T144314Z.json",
+      "git_blob_sha": "8f389c4b34565869bf45f4912bebfff3ed114ddf",
+      "sha256": "f38fedb88046bd4f71fdb50eec3c17da7668b90c05e13c7802f14b761bbdcf09",
+      "bytes": 564
+    },
+    {
+      "path": "tasks/launch/AUTO-TASK121-KOREA-BUTTON-PROBE-20260908T060601Z.json",
+      "git_blob_sha": "b4f66b0f6f95d05c75c3f80378423ce877fc1470",
+      "sha256": "0bb32e9da61159dc06447cba5e50b4e6baed005fbc0ca7cb36df1c1a18964572",
+      "bytes": 544
+    },
+    {
+      "path": "tasks/launch/TASK109-CONTAINER-TRACK-INLINE.json",
+      "git_blob_sha": "025017f51a5b9747bf046bf4bca7f012e9a8af2c",
+      "sha256": "e97cf7cc5f0a99c3c0f0770c3fa4179caec4301450d5231931e0c40504a4730c",
+      "bytes": 365
+    },
+    {
+      "path": "tasks/launch/TASK109-STORAGE-PROBE.json",
+      "git_blob_sha": "d0ae54c52caaf95c5f3ece1131800dd999396e35",
+      "sha256": "df1587f525454ad0b2148ecb14cde09ce098b7efd2de2b36b45b3c509ad8f720",
+      "bytes": 140
+    },
+    {
+      "path": "tasks/launch/TASK110-STORAGE-PROBE.json",
+      "git_blob_sha": "e6d80e9b86a8a7dc0a2be12c8cba547c3b274d6e",
+      "sha256": "8d4949678d9d1011947fea126a7483e86c1c8a7c0faf8c47009a83eed4d686a9",
+      "bytes": 172
+    },
+    {
+      "path": "tasks/launch/TASK110-VIN-SPEC-3SRC.json",
+      "git_blob_sha": "0e476990f195682a088927ff74aaaf6020ba08e9",
+      "sha256": "cf280e2d3e74b347dfe423b4ba0263e11695649345519f5a003d4c1e16491f68",
+      "bytes": 451
+    },
+    {
+      "path": "tasks/launch/TASK111-STORAGE-PROBE.json",
+      "git_blob_sha": "761de74e6a5422a2c10ee9e6691036e2e2da3e9a",
+      "sha256": "422955e10b41269e513d0384ba5dc85afa694b6ed148af6a01d546a589061718",
+      "bytes": 174
+    },
+    {
+      "path": "tasks/launch/TASK111-VIN-SPEC-10SRC.json",
+      "git_blob_sha": "7cb61ad6ca666a6ec7b16d14c924c25b04ace681",
+      "sha256": "fc95172906becd09af6c187ec1c83bd702e8cc792e371c11f6eb608aefaa556f",
+      "bytes": 386
+    },
+    {
+      "path": "tasks/launch/TASK115-REMOVE-VIN-ADS.json",
+      "git_blob_sha": "c8dc07227c042381824a3c905068142241ea4e79",
+      "sha256": "14d853d94ee48ad0c49fdb7d2caa06ee6dae302e3f0bed4a13c5c4ca36a46345",
+      "bytes": 348
+    }
+  ],
+  "claims": {
+    "total": 19,
+    "status_counts": {
+      "FINISHED": 12,
+      "FAILED": 7
+    },
+    "active_status_policy": [
+      "BLOCKED_RETRYABLE",
+      "BLOCKED_ROOT_CAUSE",
+      "CLAIMED",
+      "RUNNING",
+      "STALLED",
+      "TESTING",
+      "VERIFYING"
+    ],
+    "active_count": 0,
+    "entries": [
+      {
+        "path": "state/claims/TASK107-R2-CANARY-1-FAST.1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5.33776437497.json",
+        "identity": {
+          "run_id": "33776437497",
+          "task_id": "TASK107-R2-CANARY-1-FAST",
+          "task_sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5"
+        },
+        "status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "PATH_SCOPE:dd103d2185f56ece"
+        ],
+        "heartbeat_at": "2026-09-03T16:05:24Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK107-R2-CANARY-2-STANDARD.1494882607a6e7fc8c06ed1f01d5d5d86c85d2ecaa3054aba1602c78f10a02a5.33776437497.json",
+        "identity": {
+          "run_id": "33776437497",
+          "task_id": "TASK107-R2-CANARY-2-STANDARD",
+          "task_sha256": "1494882607a6e7fc8c06ed1f01d5d5d86c85d2ecaa3054aba1602c78f10a02a5"
+        },
+        "status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "CONTROL_PLANE"
+        ],
+        "heartbeat_at": "2026-09-03T16:05:57Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK107-R2-CANARY-3-CRITICAL.dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770.33776437497.json",
+        "identity": {
+          "run_id": "33776437497",
+          "task_id": "TASK107-R2-CANARY-3-CRITICAL",
+          "task_sha256": "dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770"
+        },
+        "status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "CONTROL_PLANE"
+        ],
+        "heartbeat_at": "2026-09-03T16:06:24Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.0875de8561ad5b677cc7d4156512dda8acfb3584f08f38b2bded006dc2f1637f.33827926268.json",
+        "identity": {
+          "run_id": "33827926268",
+          "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+          "task_sha256": "0875de8561ad5b677cc7d4156512dda8acfb3584f08f38b2bded006dc2f1637f"
+        },
+        "status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-04T02:14:57Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.4d6d19d301e2bc61232c698d7bf5975959f7e4321fba109a28037cce713b6246.33829829770.json",
+        "identity": {
+          "run_id": "33829829770",
+          "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+          "task_sha256": "4d6d19d301e2bc61232c698d7bf5975959f7e4321fba109a28037cce713b6246"
+        },
+        "status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-04T02:41:28Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9.33827333029.json",
+        "identity": {
+          "run_id": "33827333029",
+          "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+          "task_sha256": "8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9"
+        },
+        "status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-04T01:52:10Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK110-VIN-SPEC-3SRC.49138842d8fb5909f57cfc622d7bb943ca90379a39702ef26b7ecc16d0540717.33835385104.json",
+        "identity": {
+          "run_id": "33835385104",
+          "task_id": "TASK110-VIN-SPEC-3SRC",
+          "task_sha256": "49138842d8fb5909f57cfc622d7bb943ca90379a39702ef26b7ecc16d0540717"
+        },
+        "status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-04T04:11:55Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK110-VIN-SPEC-3SRC.4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95.33836434535.json",
+        "identity": {
+          "run_id": "33836434535",
+          "task_id": "TASK110-VIN-SPEC-3SRC",
+          "task_sha256": "4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95"
+        },
+        "status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-04T04:26:05Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK111-VIN-SPEC-10SRC.15c38cdc5d0bfd25252e07e0df92d62fcc78aad1d89cfb602a31863143fe43c3.33850054689.json",
+        "identity": {
+          "run_id": "33850054689",
+          "task_id": "TASK111-VIN-SPEC-10SRC",
+          "task_sha256": "15c38cdc5d0bfd25252e07e0df92d62fcc78aad1d89cfb602a31863143fe43c3"
+        },
+        "status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-04T07:55:34Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK113-GLOBAL-AUTO-CANARY.091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781.33885007450.json",
+        "identity": {
+          "run_id": "33885007450",
+          "task_id": "TASK113-GLOBAL-AUTO-CANARY",
+          "task_sha256": "091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781"
+        },
+        "status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "PATH_SCOPE:34afad063f5164e0"
+        ],
+        "heartbeat_at": "2026-09-04T14:40:10Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.33902756545.json",
+        "identity": {
+          "run_id": "33902756545",
+          "task_id": "TASK114-POSTMERGE-AUTO-CANARY",
+          "task_sha256": "23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5"
+        },
+        "status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "PATH_SCOPE:e083ecf0eed19659"
+        ],
+        "heartbeat_at": "2026-09-04T17:52:50Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK115-REMOVE-VIN-ADS.1e07de40b1bbea73a79be0159bcb9a6e5176bb88b62fa809c621097940ca518a.33941649559.json",
+        "identity": {
+          "run_id": "33941649559",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "task_sha256": "1e07de40b1bbea73a79be0159bcb9a6e5176bb88b62fa809c621097940ca518a"
+        },
+        "status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-05T03:22:58Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+        "identity": {
+          "run_id": "33942536609",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "task_sha256": "22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0"
+        },
+        "status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-05T04:04:27Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK115-REMOVE-VIN-ADS.6fe897f3f0da1550bd802e6c8ae5867aa4e04d2e4a78383d15f83c2db3cdaadb.33942322588.json",
+        "identity": {
+          "run_id": "33942322588",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "task_sha256": "6fe897f3f0da1550bd802e6c8ae5867aa4e04d2e4a78383d15f83c2db3cdaadb"
+        },
+        "status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-05T03:37:25Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+        "identity": {
+          "run_id": "33945882409",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "task_sha256": "aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7"
+        },
+        "status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "CARD:UA-0001",
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-05T05:11:37Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+        "identity": {
+          "run_id": "34107568301",
+          "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+          "task_sha256": "bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185"
+        },
+        "status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "PATH_SCOPE:99102478c07aca7f"
+        ],
+        "heartbeat_at": "2026-09-07T09:53:03Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+        "identity": {
+          "run_id": "34117903252",
+          "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
+          "task_sha256": "4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3"
+        },
+        "status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "PATH_SCOPE:242e7709889e82d8"
+        ],
+        "heartbeat_at": "2026-09-07T11:45:29Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+        "identity": {
+          "run_id": "34119998399",
+          "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
+          "task_sha256": "0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7"
+        },
+        "status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "PATH_SCOPE:242e7709889e82d8"
+        ],
+        "heartbeat_at": "2026-09-07T12:09:25Z",
+        "active_by_control_plane": false
+      },
+      {
+        "path": "state/claims/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+        "identity": {
+          "run_id": "34134692609",
+          "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+          "task_sha256": "a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442"
+        },
+        "status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CARD:UA-0017",
+          "CARD:UA-0018"
+        ],
+        "heartbeat_at": "2026-09-07T14:57:16Z",
+        "active_by_control_plane": false
+      }
+    ]
+  },
+  "transactions": {
+    "total": 6,
+    "status_counts": {
+      "ROLLED_BACK": 2,
+      "FINISHED": 4
+    },
+    "pending_count": 0,
+    "entries": [
+      {
+        "path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+        "identity": null,
+        "status": "ROLLED_BACK",
+        "transaction_id": "tx-33942536609-22411bf9f56d42ee",
+        "pending": false
+      },
+      {
+        "path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+        "identity": null,
+        "status": "FINISHED",
+        "transaction_id": "tx-33945882409-aa2c7cecc1f0c898",
+        "pending": false
+      },
+      {
+        "path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+        "identity": null,
+        "status": "FINISHED",
+        "transaction_id": "tx-34107568301-bb03fb76a6bad001",
+        "pending": false
+      },
+      {
+        "path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+        "identity": null,
+        "status": "FINISHED",
+        "transaction_id": "tx-34117903252-4a0872c57eb69158",
+        "pending": false
+      },
+      {
+        "path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+        "identity": null,
+        "status": "FINISHED",
+        "transaction_id": "tx-34119998399-0e4284a6792c645f",
+        "pending": false
+      },
+      {
+        "path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+        "identity": null,
+        "status": "ROLLED_BACK",
+        "transaction_id": "tx-34134692609-a4662a876b037595",
+        "pending": false
+      }
+    ]
+  },
+  "launch_markers": {
+    "total": 24,
+    "auto_count": 17,
+    "legacy_count": 7,
+    "expired_auto_count": 17,
+    "consumed_auto_count": 14,
+    "current_eligible_count": 0,
+    "entries": [
+      {
+        "path": "tasks/launch/AUTO-TASK113-GLOBAL-AUTO-CANARY.json",
+        "task_id": "TASK113-GLOBAL-AUTO-CANARY",
+        "mode_epoch": "auto-20260904T142755Z-90062b8c1cada131",
+        "expires_at": "2026-09-04T15:38:46Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK113-GLOBAL-AUTO-CANARY.091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": false,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK114-POSTMERGE-AUTO-CANARY-R1.json",
+        "task_id": "TASK114-POSTMERGE-AUTO-CANARY",
+        "mode_epoch": "auto-20260904T174527Z-global-guard-03",
+        "expires_at": "2026-09-04T19:36:56Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.json"
+        ],
+        "nonce_reserved": false,
+        "production_allowed": false,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK114-POSTMERGE-AUTO-CANARY-R2.json",
+        "task_id": "TASK114-POSTMERGE-AUTO-CANARY",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-04T19:40:37Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": false,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK114-POSTMERGE-AUTO-CANARY.json",
+        "task_id": "TASK114-POSTMERGE-AUTO-CANARY",
+        "mode_epoch": "auto-20260904T171630Z-global-guard-02",
+        "expires_at": "2026-09-04T19:31:30Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.json"
+        ],
+        "nonce_reserved": false,
+        "production_allowed": false,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T031700Z.json",
+        "task_id": "TASK115-REMOVE-VIN-ADS",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-05T04:17:00Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [],
+        "nonce_reserved": false,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T032000Z.json",
+        "task_id": "TASK115-REMOVE-VIN-ADS",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-05T04:20:00Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [],
+        "nonce_reserved": false,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T032200Z.json",
+        "task_id": "TASK115-REMOVE-VIN-ADS",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-05T04:25:00Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.1e07de40b1bbea73a79be0159bcb9a6e5176bb88b62fa809c621097940ca518a.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T033000Z.json",
+        "task_id": "TASK115-REMOVE-VIN-ADS",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-05T04:25:00Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.72aac33e2b84f5a50b31199ee8d3144c7788f450bdacb9fb925a1913241ee8ed.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T033330Z.json",
+        "task_id": "TASK115-REMOVE-VIN-ADS",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-05T04:25:00Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.72aac33e2b84f5a50b31199ee8d3144c7788f450bdacb9fb925a1913241ee8ed.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T033630Z.json",
+        "task_id": "TASK115-REMOVE-VIN-ADS",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-05T04:25:00Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.6fe897f3f0da1550bd802e6c8ae5867aa4e04d2e4a78383d15f83c2db3cdaadb.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T034115Z.json",
+        "task_id": "TASK115-REMOVE-VIN-ADS",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-05T04:25:00Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK115-REMOVE-VIN-ADS-20260905T044917Z.json",
+        "task_id": "TASK115-REMOVE-VIN-ADS",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-05T06:49:17Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK117-REMOVE-CRM-STAGE-BUTTONS-20260907T093405Z.json",
+        "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-07T11:04:04Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK118-EMERGENCY-SITE-RECOVERY-20260907T112830Z.json",
+        "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-07T13:18:30Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK119-EMERGENCY-SITE-RECOVERY-R2-20260907T115400Z.json",
+        "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-07T13:24:00Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK120-PUBLISH-UA-0017-UA-0018-20260907T144314Z.json",
+        "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-07T16:13:14Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [
+          "state/autostart_consumed/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.json"
+        ],
+        "nonce_reserved": true,
+        "production_allowed": true,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED",
+          "CONSUMED_OR_NONCE_RESERVED"
+        ]
+      },
+      {
+        "path": "tasks/launch/AUTO-TASK121-KOREA-BUTTON-PROBE-20260908T060601Z.json",
+        "task_id": "TASK121-KOREA-BUTTON-PROBE",
+        "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+        "expires_at": "2026-09-08T07:36:01Z",
+        "expired_at_review": true,
+        "matching_consumed_records": [],
+        "nonce_reserved": false,
+        "production_allowed": false,
+        "current_launch_eligible": false,
+        "ineligibility_reasons": [
+          "MARKER_ALREADY_EXISTS_NOT_NEW_ADD",
+          "MARKER_EXPIRED"
+        ]
+      }
+    ],
+    "legacy_entries": [
+      {
+        "path": "tasks/launch/TASK109-CONTAINER-TRACK-INLINE.json",
+        "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+        "eligible_by_global_autostart_path": false
+      },
+      {
+        "path": "tasks/launch/TASK109-STORAGE-PROBE.json",
+        "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+        "eligible_by_global_autostart_path": false
+      },
+      {
+        "path": "tasks/launch/TASK110-STORAGE-PROBE.json",
+        "task_id": "TASK110-VIN-SPEC-3SRC",
+        "eligible_by_global_autostart_path": false
+      },
+      {
+        "path": "tasks/launch/TASK110-VIN-SPEC-3SRC.json",
+        "task_id": "TASK110-VIN-SPEC-3SRC",
+        "eligible_by_global_autostart_path": false
+      },
+      {
+        "path": "tasks/launch/TASK111-STORAGE-PROBE.json",
+        "task_id": "TASK111-VIN-SPEC-10SRC",
+        "eligible_by_global_autostart_path": false
+      },
+      {
+        "path": "tasks/launch/TASK111-VIN-SPEC-10SRC.json",
+        "task_id": "TASK111-VIN-SPEC-10SRC",
+        "eligible_by_global_autostart_path": false
+      },
+      {
+        "path": "tasks/launch/TASK115-REMOVE-VIN-ADS.json",
+        "task_id": "TASK115-REMOVE-VIN-ADS",
+        "eligible_by_global_autostart_path": false
+      }
+    ],
+    "consumed_ledger_total": 11,
+    "nonce_reservation_total": 11,
+    "explicit_note": "Eligibility is denied by expiry and existing-file trigger policy. No validate_launch/consume_launch was invoked."
+  },
+  "control_state": {
+    "execution_mode": "AUTOMATIC",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "mode_sha256": "8013a8d15951b958a63e812330e7591c04882d0384f9c4bda85861bb7840469f",
+    "halt_present": true,
+    "halt_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
+    "halt_task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+    "halt_run_id": "34134692609",
+    "halt_status": "EMERGENCY_HALT",
+    "allow_replay_existing_launch_markers": false,
+    "halt_changed": false
+  },
+  "source_review": [
+    {
+      "path": "automation/control_plane.py",
+      "sha256": "93790a6422eba5b0b5f6b2920927d473cd0dd71950f8c1a2364892b83bbfff02",
+      "runtime_manifest_pin_matches": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/automation/control_plane.py"
+    },
+    {
+      "path": "automation/autostart_intake.py",
+      "sha256": "379239468dc46cb2b5bdc6a1cdde8e6648d7c7414538078eca64115c7d8ea066",
+      "runtime_manifest_pin_matches": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/automation/autostart_intake.py"
+    },
+    {
+      "path": "automation/production_queue.py",
+      "sha256": "2c55d4c79a4606a66c2dd2cb70c7f159becb8992c29dbfaa783094e7e3959cb1",
+      "runtime_manifest_pin_matches": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/automation/production_queue.py"
+    },
+    {
+      "path": "automation/transaction_watchdog.py",
+      "sha256": "86ca36417ca68ea5b7fb532df2389fc4cddc87c43be39d866408e04896a37729",
+      "runtime_manifest_pin_matches": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/automation/transaction_watchdog.py"
+    },
+    {
+      "path": ".github/workflows/uaart_autostart.yml",
+      "sha256": "b8be0e7d0f54da38b2bd4fbb85e629f8be3ebaef0980d7cc0995b63f1619f82e",
+      "runtime_manifest_pin_matches": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/.github/workflows/uaart_autostart.yml"
+    },
+    {
+      "path": ".github/workflows/uaart_maintenance.yml",
+      "sha256": "9de321b12e06173a773a07af5954ff27b467b492a247ca7a04751dab776f24fb",
+      "runtime_manifest_pin_matches": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/.github/workflows/uaart_maintenance.yml"
+    },
+    {
+      "path": ".github/workflows/uaart_monitor.yml",
+      "sha256": "027ec6a9d3471c0647d185992ffbfc636587d7e248e1049ceeb248c9b7514292",
+      "runtime_manifest_pin_matches": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/.github/workflows/uaart_monitor.yml"
+    },
+    {
+      "path": ".github/workflows/uaart_transaction_watchdog.yml",
+      "sha256": "9b4a18d5fd8c47e74728a21835b8207bd43e9bdc6fb6e1b1e54ba09a01a7a935",
+      "runtime_manifest_pin_matches": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/.github/workflows/uaart_transaction_watchdog.yml"
+    }
+  ],
+  "policy_findings": [
+    {
+      "id": "FRESH_ADDITION_REQUIRED",
+      "evidence": ".github/workflows/uaart_autostart.yml: push main paths AUTO-*.json; exactly one changed and added file; single-parent before/after; run_attempt=1",
+      "effect": "Removing only HALT plus adding receipt/archive does not match launch path, does not re-enqueue old markers."
+    },
+    {
+      "id": "ANTI_REPLAY_REQUIRED",
+      "evidence": "control_plane.verify_execution_mode requires allow_replay_existing_launch_markers=false; autostart.validate_launch rejects expired markers or consumed request hash/nonce/launch path; consume reserves nonce and ledger exclusively",
+      "effect": "Preserving old markers, consumed records, nonce reservations, and mode preserves replay protection."
+    },
+    {
+      "id": "SCHEDULED_TASKS_NOT_OLD_QUEUE",
+      "evidence": "Maintenance compiles/tests/reports; monitor reads health; watchdog discovers only PREPARING/OPEN/ROLLING_BACK, with existing shared production-writer serialization",
+      "effect": "A later scheduled run may occur. Current six terminal transactions supply no pending rollback target. This snapshot does not disable schedules."
+    }
+  ],
+  "blockers": [],
+  "execution_authorized": false,
+  "gate_b_pass": false,
+  "limitations": [
+    "This is a bounded read-only snapshot for stage A. It is not deployment approval or an ongoing lock.",
+    "GitHub Actions and authoritative main must be freshly re-read immediately before an authorized transition; compare-and-swap must reject drift.",
+    "External PythonAnywhere processes, manual writers, and platform scheduler internals are not observed by this GitHub-only review.",
+    "No workflow, queue entry, claim, nonce, marker, HALT, or production file was mutated; existing TASK120 is not to be rerun.",
+    "The existing global production-writer serialization must be honored by the eventual transition; Actions empty now does not prove future exclusion."
+  ],
+  "main_ref_revalidated": {
+    "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/branches/main",
+    "started_at": "2026-09-09T06:32:53.574Z",
+    "observed_at": "2026-09-09T06:32:54.203Z",
+    "branch": "main",
+    "sha": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+    "raw_body_sha256": "fa111725048a940e6ade73a061595d00bcaeac68adbf7d54dba16819a89bc8a8",
+    "matches_previously_captured_source": true,
+    "note": "Immutable files were not re-read; prior directory/source capture metadata remains unchanged."
+  },
+  "freshness": {
+    "ttl_seconds": 600,
+    "reference_observed_at": "2026-09-09T06:32:54.077Z",
+    "expires_at": "2026-09-09T06:42:54.077000Z",
+    "purpose": "Stage A queue snapshot only; revalidate immediately before any separately authorized execution."
+  }
+}

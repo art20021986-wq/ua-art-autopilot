@@ -1,12 +1,10 @@
-TASK_ID: task_107
+TASK_ID: UA-ART-RECOVERY-TASK120-002
 ROUND: 1
 CLAUDE_STATUS: DONE
-CURRENT_ACTION: Defined and documented FAST/STANDARD/CRITICAL routing classifier, stall detector, storage preflight thresholds, and produced timing/benchmark report using this task as the safe FAST benchmark. No production or CRM contact made.
-FILES_CREATED: cloud/task107_speed_report.md, cloud/latest_status.md, cloud/owner_reply.md
+CURRENT_ACTION: Этап A: подготовлены инертный контроллер, dry-run и реальная локальная Git-репетиция; 48/48 проверок PASS. Рабочее исполнение NOT_READY: runner не зарегистрирован, внешние writers не подтверждены, отдельной команды исполнения нет.
+FILES_CREATED: cloud/recovery_task120_002/README.md, cloud/recovery_task120_002/controller.py, cloud/recovery_task120_002/git_rehearsal.py, cloud/recovery_task120_002/rehearse_snapshot.py, cloud/recovery_task120_002/tests/, cloud/recovery_task120_002/evidence/, cloud/recovery_task120_002/approval-stage-a.json, cloud/recovery_task120_002/architecture-review.md, cloud/recovery_task120_002/code-review.md, cloud/recovery_task120_002/registration-proposal.md
 PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Review cloud/task107_speed_report.md for the routing classifier and benchmark evidence; confirm FAST/STANDARD/CRITICAL policy is acceptable before wiring it into the actual workflow config in a follow-up task.
-UPDATED_AT_UTC: 2026-09-02T17:21:43Z
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
-MEMORY_VERSION_READ: 4
+NEXT_FOR_CHATGPT: Проверить отдельный подготовительный PR и продолжить подготовку неактивного integration bundle по registration-proposal.md в рамках уже утверждённого ТЗ. Не удалять HALT, не активировать runtime, не запускать TASK120 и не публиковать UA-0017/UA-0018. Снятие HALT потребует предусмотренной отдельной команды на готовый проверенный результат; повторное согласование подготовки не требуется.
+UPDATED_AT_UTC: 2026-09-09T06:37:19.361347+00:00

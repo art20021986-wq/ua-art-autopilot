@@ -1,0 +1,15 @@
+{
+  "schema_version": "UA-ART-RECOVERY-PREPARATION-AUTHORIZATION-1",
+  "task_id": "UA-ART-RECOVERY-TASK120-002",
+  "spec_version": "1.0",
+  "source": "owner_message_in_current_conversation",
+  "owner_message": "Утверждаю ТЗ приступай",
+  "recorded_date_utc": "2026-09-09",
+  "owner_message_timestamp": null,
+  "scope": "STAGE_A_ANALYSIS_CODE_SEPARATE_PR_DRY_RUN",
+  "preparation_authorized": true,
+  "production_transition_authorized_by_this_message": false,
+  "live_runner_activation_authorized_by_this_record": false,
+  "execution_approval": null,
+  "note": "Запись фиксирует согласование подготовки. Она не является проверенным документом для исполняющего production runner. Отдельная команда требуется перед фактическим снятием HALT согласно утверждённому ТЗ."
+}
