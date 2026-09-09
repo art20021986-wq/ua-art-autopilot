@@ -39,6 +39,9 @@ The historical restoration branch/PR79 remains reference evidence.
   the approved UA0016 year cell, using the already-held real writer lease.
   Durable backup/journal, conditional rollback, terminal readback and unknown-
   outcome handling are implemented. See `DATA-INSTALL.md`.
+- `code_install.py`: exact29-file R2 admission, durable source backups and a
+  combined source/data coordinator. Recovery preflights both domains, restores
+  data before code, and preserves unresolved state. See `CODE-INSTALL.md`.
 - `bootstrap.py`: concrete read-only CRM provider, independently authenticated
   exact lifecycle plan, current card/diagnostic/catalogue readback and existing
   supervisor registration. No placeholder callback grants real authority.
@@ -64,6 +67,15 @@ native visible link, with unchanged bytes outside approved regions. See
 `evidence/target-stage-r2.json`. The first target run exposed a Python3.10 SQLite
 authorizer incompatibility; its13 failures are retained and the fix is covered
 by regression tests. Live production has not been changed.
+
+The new exact-code/combined installer was then verified on the same actual
+Python3.10.12 target at **16:09:58 UTC**: **56/56 focused tests PASS**
+(31 new code/coordinator tests plus25 data installer regressions). Its combined
+cycle used13 exact observed old source files,16 absent targets,29 actual R2
+afterimages,32 private HTML pages and18 CRM rows; install/readback/full rollback
+PASS and input files unchanged. See `evidence/target-stage-r3.json`. This completes
+the isolated installer stage, not production Gate B. The availability constraint
+and missing supported execution procedure are recorded in `AVAILABILITY.md`.
 
 Run from the repository root:
 
@@ -95,14 +107,17 @@ window; the earlier copy is not a globally atomic live snapshot.
    decision; selection approval does not buy a licence.
 2. Connect the completed data transaction to actual verified ownership handoff.
    Its real-copy install/rollback is checked; actual holder-death recovery still
-   needs an authenticated recovery controller. The old17-module code admission
-   does not admit this new runtime package; see `RUNTIME-PACKAGE.md`.
+   needs an authenticated recovery controller. Separate exact29-file code admission
+   and combined installation now exist; see `CODE-INSTALL.md`. The old17-module
+   admission remains unchanged.
 3. Supply the completed runtime providers with the real verified supervisor and
    controller authority, install the versioned runtime package and verify loaded
    code. The candidate does not fabricate that controller or installation proof.
 4. Close pre-install GateB against the exact plan, package, backup/rollback and
-   route. Obtain the separate exact-plan command if required by that route. Only
-   then stop/drain the old writers, obtain fresh proof and install transactionally.
+   route. Obtain the separate exact-plan command if required by that route. The owner now requires
+   continued site availability: follow `AVAILABILITY.md`; the earlier plan that
+   disables the webapp is not an available execution option. Obtain authenticated
+   writer isolation through a supported procedure before transactional writes.
 5. Read the actual16 public cards back and verify source/store/render alignment,
    one VIN and shell preservation. Tell the owner to click17 only when it is
    genuinely ready; verify17's real receipt before the owner clicks18.

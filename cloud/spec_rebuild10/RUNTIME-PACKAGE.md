@@ -1,4 +1,4 @@
-# Runtime package and the missing code admission
+# Runtime package and versioned code admission
 
 `prepare_runtime_package.py` assembles a private, inert source archive. It never
 imports the private application, installs files, changes permissions on the live
@@ -39,7 +39,9 @@ The final current snapshot is **20260909-r2**, with **29 files**: 13 unchanged,
 4 transformed,1 entrypoint,10 runtime Python modules and1 source registry.
 Its redacted exact manifest is `evidence/runtime-package-r2.json`. It includes
 both automatic spec synchronization and source provisioning. This is an inert
-source archive; code admission and a real installation controller remain pending.
+source archive. The separate versioned code admission and combined code/data
+installer are implemented in `code_install.py`; the real controller remains
+pending. See `CODE-INSTALL.md` and the dated target receipt.
 
 ## What the preparer verifies
 
@@ -59,27 +61,28 @@ source archive; code admission and a real installation controller remain pending
 Outputs are `runtime-package.tar.gz`, `runtime-manifest.json` and
 `runtime-package-redacted.json` inside a new private version directory. The last
 file contains hashes and target filenames, not application source or vehicle
-data. `new_code_installer_available=false` and `code_handoff_v4_compatible=false`
-are explicit; assembling a package does not close either gate.
+data. The package-time `new_code_installer_available=false` remains historical
+evidence and is superseded by the separate installer and R3 receipt;
+`code_handoff_v4_compatible=false` remains correct. Do not rewrite old evidence.
 
-## Concrete remaining admission and installation steps
+## Admission progress and remaining installation steps
 
-1. Finish runtime sources and regenerate the explicit bootstrap. Produce a new
-   stable archive and pin that exact version in the reviewed execution plan.
+1. Completed: stable R2 archive and explicit bootstrap are pinned. The new
+   installer admits exactly that version. Any runtime change needs a new review.
 2. Capture current live preconditions for **every target in the new manifest**,
    including absence or existing hash of `spec_rebuild10/`, its files and the
    bootstrap entrypoint. The old 17-file capture cannot attest new targets.
    Retain the three existing dependency pins for `catalog_design_golden.html`,
    `catalog_design_guard.py` and `stranica.py`.
-3. Implement and review a separate code-admission/installer revision for the new
-   exact manifest and expanded target set. It must journal new-directory creation
-   and removal, preserve file modes, borrow the live FenceLease, make durable
-   backups, verify readback and conditionally roll back without overwriting
-   foreign changes. Do not mutate v4 pins or bypass v4 by copying extra files.
-4. Bind code installation and the separate 32-page/new-store/year-cell data
-   transaction to the same authorized pause/drain session, with an explicit
-   combined failure/recovery policy. Two independent successful local receipts
-   alone do not establish an accepted combined installation.
+3. Completed: separate code-admission/installer revision, journaled new directory
+   creation/removal, metadata preservation, borrowed FenceLease, durable backups
+   and conditional full-set rollback. Target R3 verifies the exact29-file package.
+   The v4 pins remain unchanged.
+4. Implemented and target-tested: combined code/data coordination under one
+   session, full preflight and data-first/code-second recovery. Connect a real
+   authenticated controller before production use; synthetic test authority
+   cannot establish the live maintenance window. Follow `AVAILABILITY.md`: the
+   old webapp DISABLE procedure is excluded by the current owner requirement.
 5. Connect the controller's startup invocation: call `install_runtime(controller)`
    **before** `cars_ui.register` asks for the configured worker. Merely placing the
    bootstrap file on disk does not call it. The controller must supply verified
