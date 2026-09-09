@@ -1,0 +1,166 @@
+{
+  "schema_version": "UA-ART-RECOVERY-ROUTE-DELIVERY-1",
+  "task_id": "UA-ART-RECOVERY-TASK120-002",
+  "base_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+  "base_tree": "6f9914b2f742ff4fb4001a5046f86408ad4ecc65",
+  "created_at": "2026-09-09T07:25:03.854652+00:00",
+  "files": [
+    {
+      "path": ".github/workflows/uaart_transaction_watchdog.yml",
+      "size": 172203,
+      "sha256": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe",
+      "git_blob_sha": "51907560ad23dbb47567444e80aa93ebc97f1ad7"
+    },
+    {
+      "path": "automation/control_plane.py",
+      "size": 186623,
+      "sha256": "3c43545129a3f0e40e9636bc2032ba81d9aa9f46d302c5193716a31f196be9d0",
+      "git_blob_sha": "da668d6ea7bf29281129946a8ce03f15b5f552d9"
+    },
+    {
+      "path": "automation/transaction_watchdog.py",
+      "size": 49163,
+      "sha256": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395",
+      "git_blob_sha": "7bb5b1a5d3a50cb4cab2df2473640637fe46b42e"
+    },
+    {
+      "path": "cloud/latest_status.md",
+      "size": 1078,
+      "sha256": "b1d6419b5b38f472e5cf2c1b6eee4a92bfd8d0f40253acaef08381fd082de3cc",
+      "git_blob_sha": "58b0faf698eed98f9b6e2e356c289a8ebce287fc"
+    },
+    {
+      "path": "cloud/owner_reply.md",
+      "size": 841,
+      "sha256": "e402edcccef7598723d3b3234b5b0cfb2b1c460e615a90ccf0da50cb2e621e2d",
+      "git_blob_sha": "777a082d068bd3fc4d911d544fb3b913e7ca3454"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/README.md",
+      "size": 8933,
+      "sha256": "a643951a279a71d244888fed4ad6c8aee9d4e844ffaccb4b7ac3aa6356c4de6b",
+      "git_blob_sha": "a7033a627c044b912ab964b1819140c1bb90bc39"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/evidence/pre-registration-observation.json",
+      "size": 2945,
+      "sha256": "294d3cd222638d413a6f07f3808e388d609fc5e1b4d764a6e9e1d6aba582b580",
+      "git_blob_sha": "c7acbea6ddf31ae011c5b419d1bd61b98e71666a"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/evidence/registration-test-result.json",
+      "size": 950,
+      "sha256": "19614ddcb3e35de9c22e37d67149570b1558ce76f31b6a48d14b2c5530fdc2a0",
+      "git_blob_sha": "d58a6344792c56943fff64a505d10ace79ffc83c"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/evidence/registration-tests.log",
+      "size": 23245,
+      "sha256": "38cf6171d4029beea7cad5f0cd9e33468743dd2ec69c18e793d49f904e866b49",
+      "git_blob_sha": "a114c0dbee00f65416108919af67f4db641dd778"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/evidence/registration-validation.json",
+      "size": 3428,
+      "sha256": "a0ba39da72a944695fa505a3c08fd5640cabc5d2178fe3e362ff28b1af3f4047",
+      "git_blob_sha": "4c4600d92a86dc4085fcd6f14a565557a955f10a"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/evidence/rollback-plan.json",
+      "size": 2696,
+      "sha256": "856db12ae180d61431e342348950de5b437761caec5af85318522dce1c21cfcb",
+      "git_blob_sha": "83e3131f3b855f530ec528f063c884cc623fcb56"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/evidence/runtime-before-after.json",
+      "size": 2066,
+      "sha256": "50ee0ce9298475daa289fc1bada8dbb4212814f9a4bcf9eee90acb693a8aaef1",
+      "git_blob_sha": "3cf0b8e2d6127ed27ed6ba1fb8b101e74f1b4980"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/evidence/workflow-writer-test-result.json",
+      "size": 1381,
+      "sha256": "2d610595da06f8796d56d4440ba5599b94e638c5408e2f02ecc38d8410742374",
+      "git_blob_sha": "fae4ffe398a1609e44c783c65a341fb687da4184"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/policy_activation.py",
+      "size": 5798,
+      "sha256": "3ce55d09bb9a953e7a443e09c86da8a7a1b425d7718b502736b3014c0395d1ec",
+      "git_blob_sha": "ee77c032db192306410ecdbc908ba4dd683e582f"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/route-review.md",
+      "size": 7856,
+      "sha256": "c9752576252616ab07f153f31bb57dd8783025d7f88f1c44f18a942dc09f14c0",
+      "git_blob_sha": "9b35143a6fe6efbf969edd8b5c12c14effa96df8"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/runtime-registration.patch",
+      "size": 107410,
+      "sha256": "7b088a637b4bb4f79b183754e99234b57128cf135cfd6acaa2011b95dd7f93e4",
+      "git_blob_sha": "b8b380fa8d9d56436f2b520486093ac6b8da7906"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/tests/test_route_adapter.py",
+      "size": 24157,
+      "sha256": "cb3cbebc81a771a036c5406469efe7e81ddf4ae3e864f960bf88d18ee278ae12",
+      "git_blob_sha": "396ae5cdd194a413c20702e3bb975534194ec9a4"
+    },
+    {
+      "path": "cloud/recovery_task120_002/integration/tests/test_workflow_writer.py",
+      "size": 8001,
+      "sha256": "ec4caa29cd0869b07bf0eb0dfc68a86afb63f5f78b07b647235bb6b020a96be3",
+      "git_blob_sha": "d38713c69fa2564c4fb7c381307e8e34a7f6541d"
+    },
+    {
+      "path": "cloud/recovery_task120_002/tests/test_policy_activation.py",
+      "size": 12030,
+      "sha256": "39b5d7328c44b471dbefb38a365c61487ff2b7ad2268a4bbebb217817b2d0a84",
+      "git_blob_sha": "575abed5586ee57ed99ca96ca13ae4a2cd2944ca"
+    },
+    {
+      "path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+      "size": 2172,
+      "sha256": "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c",
+      "git_blob_sha": "5c3da225db8875cf2949541997afe8d6ae6f6778"
+    },
+    {
+      "path": "state/EXECUTION_MODE.json",
+      "size": 1260,
+      "sha256": "1075e1cfdd9d0ed09c45546c93a522eb5f28b7cd02c783f7db0439c350175281",
+      "git_blob_sha": "6016c7f1f972de98b9f4680733078eb4d64b5844"
+    },
+    {
+      "path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.json",
+      "size": 1575,
+      "sha256": "9e46455965d91b544d55b37698da453a94be25ab7f5a43d546f5e16766dac031",
+      "git_blob_sha": "d7176c91c642a8ab82bac52073de5a550a8f0426"
+    },
+    {
+      "path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-manifest.json",
+      "size": 2160,
+      "sha256": "bfb650e2bd58dd2f556213e1c875552e8ba33b55e7e71de1bfe9f311f6003110",
+      "git_blob_sha": "c453b2cf66378d3bf80d9091fafff823fed88b36"
+    },
+    {
+      "path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-mode.json",
+      "size": 1070,
+      "sha256": "8013a8d15951b958a63e812330e7591c04882d0384f9c4bda85861bb7840469f",
+      "git_blob_sha": "0791e4421b5ccc026dc8e6e4ae8e276e3463b348"
+    }
+  ],
+  "self_excluded": true,
+  "active_paths": [
+    ".github/workflows/uaart_transaction_watchdog.yml",
+    "automation/control_plane.py",
+    "automation/transaction_watchdog.py",
+    "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+    "state/EXECUTION_MODE.json",
+    "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.json",
+    "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-manifest.json",
+    "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-mode.json"
+  ],
+  "halt_removal_authorized": false,
+  "tests_run": 151
+}

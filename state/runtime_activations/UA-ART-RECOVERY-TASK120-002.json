@@ -1,0 +1,27 @@
+{
+  "changed_runtime_paths": [
+    ".github/workflows/uaart_transaction_watchdog.yml",
+    "automation/control_plane.py",
+    "automation/transaction_watchdog.py"
+  ],
+  "expected_halt_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
+  "halt_removal_authorized": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "original_approval_sha256": "6e6071e5a06e7d69a20aebc035bd57f74ef903e353cfe5a7e017df947a3eb643",
+  "owner": "Артём Бровинский / UA ART COMPANY LLC",
+  "owner_actor_id": "321059821",
+  "owner_command": "подключай проверенный маршрут исполнения.",
+  "previous_manifest_path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-manifest.json",
+  "previous_manifest_sha256": "bfb650e2bd58dd2f556213e1c875552e8ba33b55e7e71de1bfe9f311f6003110",
+  "previous_mode_path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-mode.json",
+  "previous_mode_sha256": "8013a8d15951b958a63e812330e7591c04882d0384f9c4bda85861bb7840469f",
+  "production_changes_authorized": false,
+  "registered_at": "2026-09-09T07:21:36.782961+00:00",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "runtime_manifest_path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+  "runtime_manifest_sha256": "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c",
+  "schema_version": "UA-ART-RUNTIME-ROUTE-ACTIVATION-1",
+  "scope": "REGISTER_RECOVERY_ROUTE_ONLY",
+  "source_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+  "task_id": "UA-ART-RECOVERY-TASK120-002"
+}

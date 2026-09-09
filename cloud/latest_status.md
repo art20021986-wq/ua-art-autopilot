@@ -1,12 +1,10 @@
-TASK_ID: task_107
-ROUND: 1
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Defined and documented FAST/STANDARD/CRITICAL routing classifier, stall detector, storage preflight thresholds, and produced timing/benchmark report using this task as the safe FAST benchmark. No production or CRM contact made.
-FILES_CREATED: cloud/task107_speed_report.md, cloud/latest_status.md, cloud/owner_reply.md
-PRODUCTION_TOUCHED: NO
+TASK_ID: UA-ART-RECOVERY-TASK120-002
+ROUND: 2
+CLAUDE_STATUS: WORKING
+CURRENT_ACTION: Проверенная регистрация маршрута: 151/151 локальных тестов PASS; ожидается фактический canary GitHub с сохранением HALT.
+FILES_CREATED: cloud/recovery_task120_002/integration/, cloud/recovery_task120_002/tests/test_policy_activation.py; восемь явно указанных runtime/state путей подключения
+PRODUCTION_TOUCHED: Подключение меняет только управление GitHub; CRM/сайт/PythonAnywhere не меняются
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Review cloud/task107_speed_report.md for the routing classifier and benchmark evidence; confirm FAST/STANDARD/CRITICAL policy is acceptable before wiring it into the actual workflow config in a follow-up task.
-UPDATED_AT_UTC: 2026-09-02T17:21:43Z
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
-MEMORY_VERSION_READ: 4
+NEXT_FOR_CHATGPT: Подтвердить рабочий GitHub canary: один служебный receipt, удалённое чтение результата и HALT без изменений. Не снимать HALT: внешние исполнители не подтверждены, отдельной команды снятия нет.
+UPDATED_AT_UTC: 2026-09-09T07:25:03.854652+00:00

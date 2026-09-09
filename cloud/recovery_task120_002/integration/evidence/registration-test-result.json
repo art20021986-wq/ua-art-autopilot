@@ -1,0 +1,21 @@
+{
+  "schema_version": "UA-ART-RECOVERY-REGISTRATION-TESTS-1",
+  "status": "PASS",
+  "started_at": "2026-09-09T07:22:02.309355+00:00",
+  "finished_at": "2026-09-09T07:22:33.069256+00:00",
+  "tests_run": 151,
+  "tests_collected": 151,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed_seconds": 30.76,
+  "runtime_hashes": {
+    "automation/control_plane.py": "3c43545129a3f0e40e9636bc2032ba81d9aa9f46d302c5193716a31f196be9d0",
+    "automation/transaction_watchdog.py": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395",
+    ".github/workflows/uaart_transaction_watchdog.yml": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe"
+  },
+  "runtime_unchanged_during_tests": true,
+  "production_touched": false,
+  "scope": "LOCAL_FIXTURES; actual Bash uses disposable bare Git; no live application changes",
+  "external_writer_verifier": "NOT_IMPLEMENTED; real execute refuses; 3-path fixture mocks only this gate"
+}

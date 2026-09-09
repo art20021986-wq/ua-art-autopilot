@@ -1,0 +1,55 @@
+{
+  "schema_version": "UA-ART-RECOVERY-REGISTRATION-ROLLBACK-1",
+  "task_id": "UA-ART-RECOVERY-TASK120-002",
+  "created_at": "2026-09-09T07:23:23.003213+00:00",
+  "rollback_executed": false,
+  "source_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+  "trigger": "Registration breaks existing control validation or canary cannot be safely fixed within reviewed registration scope",
+  "operations": [
+    {
+      "operation": "restore_exact_blob",
+      "path": ".github/workflows/uaart_transaction_watchdog.yml",
+      "source_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "restored_sha256": "9b4a18d5fd8c47e74728a21835b8207bd43e9bdc6fb6e1b1e54ba09a01a7a935",
+      "registered_sha256": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe"
+    },
+    {
+      "operation": "restore_exact_blob",
+      "path": "automation/control_plane.py",
+      "source_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "restored_sha256": "93790a6422eba5b0b5f6b2920927d473cd0dd71950f8c1a2364892b83bbfff02",
+      "registered_sha256": "3c43545129a3f0e40e9636bc2032ba81d9aa9f46d302c5193716a31f196be9d0"
+    },
+    {
+      "operation": "restore_exact_blob",
+      "path": "automation/transaction_watchdog.py",
+      "source_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "restored_sha256": "86ca36417ca68ea5b7fb532df2389fc4cddc87c43be39d866408e04896a37729",
+      "registered_sha256": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395"
+    },
+    {
+      "operation": "restore_exact_blob",
+      "path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+      "source_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "restored_sha256": "bfb650e2bd58dd2f556213e1c875552e8ba33b55e7e71de1bfe9f311f6003110",
+      "registered_sha256": "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c"
+    },
+    {
+      "operation": "restore_exact_blob",
+      "path": "state/EXECUTION_MODE.json",
+      "source_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "restored_sha256": "8013a8d15951b958a63e812330e7591c04882d0384f9c4bda85861bb7840469f",
+      "registered_sha256": "1075e1cfdd9d0ed09c45546c93a522eb5f28b7cd02c783f7db0439c350175281"
+    }
+  ],
+  "required_preflight": "Fresh main/HALT/runtime binding, no active writer, one exact-parent Git CAS; drift requires new reviewed plan",
+  "preserve": [
+    "state/AUTOPILOT_HALT.json",
+    "all original approval/request/claim/nonce/transaction/reconciliation records",
+    "all new runtime activation/history records",
+    "canary receipt if it was successfully created",
+    "all CRM/site/card/media files"
+  ],
+  "halt_removal_allowed": false,
+  "application_writes_allowed": false
+}

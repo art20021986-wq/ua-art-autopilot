@@ -1,0 +1,48 @@
+{
+  "schema_version": "UA-ART-RECOVERY-RUNTIME-DIFF-1",
+  "base_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+  "paths": [
+    {
+      "path": ".github/workflows/uaart_transaction_watchdog.yml",
+      "before_sha256": "9b4a18d5fd8c47e74728a21835b8207bd43e9bdc6fb6e1b1e54ba09a01a7a935",
+      "after_sha256": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe"
+    },
+    {
+      "path": "automation/control_plane.py",
+      "before_sha256": "93790a6422eba5b0b5f6b2920927d473cd0dd71950f8c1a2364892b83bbfff02",
+      "after_sha256": "3c43545129a3f0e40e9636bc2032ba81d9aa9f46d302c5193716a31f196be9d0"
+    },
+    {
+      "path": "automation/transaction_watchdog.py",
+      "before_sha256": "86ca36417ca68ea5b7fb532df2389fc4cddc87c43be39d866408e04896a37729",
+      "after_sha256": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395"
+    },
+    {
+      "path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+      "before_sha256": "bfb650e2bd58dd2f556213e1c875552e8ba33b55e7e71de1bfe9f311f6003110",
+      "after_sha256": "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c"
+    },
+    {
+      "path": "state/EXECUTION_MODE.json",
+      "before_sha256": "8013a8d15951b958a63e812330e7591c04882d0384f9c4bda85861bb7840469f",
+      "after_sha256": "1075e1cfdd9d0ed09c45546c93a522eb5f28b7cd02c783f7db0439c350175281"
+    },
+    {
+      "path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.json",
+      "before_sha256": null,
+      "after_sha256": "9e46455965d91b544d55b37698da453a94be25ab7f5a43d546f5e16766dac031"
+    },
+    {
+      "path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-manifest.json",
+      "before_sha256": null,
+      "after_sha256": "bfb650e2bd58dd2f556213e1c875552e8ba33b55e7e71de1bfe9f311f6003110"
+    },
+    {
+      "path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-mode.json",
+      "before_sha256": null,
+      "after_sha256": "8013a8d15951b958a63e812330e7591c04882d0384f9c4bda85861bb7840469f"
+    }
+  ],
+  "halt_change": false,
+  "crm_site_change": false
+}

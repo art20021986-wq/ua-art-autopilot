@@ -1,0 +1,70 @@
+{
+  "schema_version": "UA-ART-RECOVERY-REGISTRATION-PREFLIGHT-1",
+  "task_id": "UA-ART-RECOVERY-TASK120-002",
+  "scope": "READ_ONLY_BEFORE_REGISTRATION",
+  "observations": [
+    {
+      "data": {
+        "node_id": "REF_kwDOUD7Y3a9yZWZzL2hlYWRzL21haW4",
+        "object": {
+          "sha": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+          "type": "commit",
+          "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/commits/2ce0c3a886f124c5865c564a7073ef1805861f1c"
+        },
+        "ref": "refs/heads/main",
+        "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/refs/heads/main"
+      },
+      "observed_at": "2026-09-09T07:24:08.063Z",
+      "raw_body": "{\"ref\":\"refs/heads/main\",\"node_id\":\"REF_kwDOUD7Y3a9yZWZzL2hlYWRzL21haW4\",\"url\":\"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/refs/heads/main\",\"object\":{\"sha\":\"2ce0c3a886f124c5865c564a7073ef1805861f1c\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/commits/2ce0c3a886f124c5865c564a7073ef1805861f1c\"}}",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/ref/heads/main"
+    },
+    {
+      "data": {
+        "total_count": 0,
+        "workflow_runs": []
+      },
+      "observed_at": "2026-09-09T07:24:08.038Z",
+      "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=pending&per_page=100&page=1"
+    },
+    {
+      "data": {
+        "total_count": 0,
+        "workflow_runs": []
+      },
+      "observed_at": "2026-09-09T07:24:08.053Z",
+      "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=queued&per_page=100&page=1"
+    },
+    {
+      "data": {
+        "total_count": 0,
+        "workflow_runs": []
+      },
+      "observed_at": "2026-09-09T07:24:08.057Z",
+      "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=in_progress&per_page=100&page=1"
+    },
+    {
+      "data": {
+        "total_count": 0,
+        "workflow_runs": []
+      },
+      "observed_at": "2026-09-09T07:24:08.061Z",
+      "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=requested&per_page=100&page=1"
+    },
+    {
+      "data": {
+        "total_count": 0,
+        "workflow_runs": []
+      },
+      "observed_at": "2026-09-09T07:24:08.027Z",
+      "raw_body": "{\"total_count\":0,\"workflow_runs\":[]}",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=waiting&per_page=100&page=1"
+    }
+  ],
+  "main_unchanged": true,
+  "active_or_pending_runs": 0,
+  "halt_removal_authorized": false
+}
