@@ -1,0 +1,13 @@
+{
+  "schema_version": "UA-ART-RECOVERY-WORKFLOW-WRITER-TEST-1",
+  "task_id": "UA-ART-RECOVERY-TASK120-002",
+  "observed_at": "2026-09-09T07:20:06.727160Z",
+  "workflow_sha256": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe",
+  "tests_passed": 5,
+  "new_shell_scripts_checked": 13,
+  "inline_bootstraps_compiled": 3,
+  "production_touched": false,
+  "scope": "Exact reviewed Bash in five new local bare Git fixtures; synthetic non-authorizing receipts; fake token; file protocol only",
+  "exit_code": 0,
+  "test_output": "test_canary_adds_one_receipt_and_preserves_halt (test_workflow_writer.WorkflowWriterTests.test_canary_adds_one_receipt_and_preserves_halt) ... ok\ntest_execute_commits_exact_three_paths_and_original_archive (test_workflow_writer.WorkflowWriterTests.test_execute_commits_exact_three_paths_and_original_archive) ... ok\ntest_parent_drift_refuses_any_remote_write (test_workflow_writer.WorkflowWriterTests.test_parent_drift_refuses_any_remote_write) ... ok\ntest_proposal_receipt_tamper_refuses_write (test_workflow_writer.WorkflowWriterTests.test_proposal_receipt_tamper_refuses_write) ... ok\ntest_repeat_writer_cannot_make_second_commit (test_workflow_writer.WorkflowWriterTests.test_repeat_writer_cannot_make_second_commit) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.526s\n\nOK\n"
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": "UA-ART-RECOVERY-REGISTRATION-VALIDATION-1",
+  "task_id": "UA-ART-RECOVERY-TASK120-002",
+  "status": "PASS_LOCAL_REGISTRATION_VALIDATION",
+  "created_at": "2026-09-09T07:21:36.782961+00:00",
+  "base_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+  "mode_validation": {
+    "activated_at": "2026-09-04T17:49:04Z",
+    "allow_replay_existing_launch_markers": false,
+    "automatic_nonproduction": true,
+    "automatic_production": true,
+    "mode": "AUTOMATIC",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "owner_approval_path": "tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json",
+    "owner_approval_sha256": "6e6071e5a06e7d69a20aebc035bd57f74ef903e353cfe5a7e017df947a3eb643",
+    "production_requires_backup": true,
+    "production_requires_exact_launch": true,
+    "production_requires_gate_b": true,
+    "production_requires_live_receipt": true,
+    "production_requires_owner_approval": true,
+    "production_requires_pre_post_health": true,
+    "runtime_activation_path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.json",
+    "runtime_activation_sha256": "9e46455965d91b544d55b37698da453a94be25ab7f5a43d546f5e16766dac031",
+    "runtime_manifest_path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+    "runtime_manifest_sha256": "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c",
+    "schema_version": "UA-ART-EXECUTION-MODE-1",
+    "stop_on_safety_failure": true,
+    "task107_receipt_path": "state/receipts/TASK107-R2.json",
+    "task107_receipt_sha256": "bdf5d474d2186b4d37190b7a74f3a31b868b504c7caaad7b8a99d4a6ca120e0c",
+    "status": "PASS"
+  },
+  "normal_mode_result": "AUTOMATIC_MODE_HALTED",
+  "source_input_count": 115,
+  "source_inputs_changed": [
+    ".github/workflows/uaart_transaction_watchdog.yml",
+    "automation/control_plane.py",
+    "automation/transaction_watchdog.py",
+    "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+    "state/EXECUTION_MODE.json"
+  ],
+  "other_source_inputs_unchanged": 110,
+  "old_approval_unchanged": true,
+  "halt_unchanged": true,
+  "halt_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
+  "runtime_hashes": {
+    ".github/workflows/uaart_transaction_watchdog.yml": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe",
+    "automation/control_plane.py": "3c43545129a3f0e40e9636bc2032ba81d9aa9f46d302c5193716a31f196be9d0",
+    "automation/transaction_watchdog.py": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395"
+  },
+  "registration_metadata_sha256": {
+    "state/AUTOPILOT_RUNTIME_MANIFEST.json": "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c",
+    "state/EXECUTION_MODE.json": "1075e1cfdd9d0ed09c45546c93a522eb5f28b7cd02c783f7db0439c350175281",
+    "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.json": "9e46455965d91b544d55b37698da453a94be25ab7f5a43d546f5e16766dac031",
+    "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-manifest.json": "bfb650e2bd58dd2f556213e1c875552e8ba33b55e7e71de1bfe9f311f6003110",
+    "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-mode.json": "8013a8d15951b958a63e812330e7591c04882d0384f9c4bda85861bb7840469f"
+  },
+  "live_registration_performed": false,
+  "application_production_touched": false,
+  "halt_execution_ready": false,
+  "halt_execution_blockers": [
+    "EXTERNAL_WRITER_VERIFICATION_REQUIRED",
+    "SEPARATE_OWNER_EXECUTION_COMMAND_REQUIRED"
+  ]
+}

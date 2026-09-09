@@ -46,6 +46,17 @@ AUTOSTART_LEDGER_SCHEMA = "UA-ART-AUTOSTART-LEDGER-1"
 PRODUCTION_TRANSACTION_SCHEMA = "UA-ART-PRODUCTION-TRANSACTION-2"
 EXECUTION_MODES = {"MANUAL", "AUTOMATIC"}
 RUNTIME_MANIFEST_PATH = "state/AUTOPILOT_RUNTIME_MANIFEST.json"
+RUNTIME_ACTIVATION_PATH = "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.json"
+RUNTIME_PREVIOUS_MANIFEST_PATH = "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-manifest.json"
+RUNTIME_PREVIOUS_MODE_PATH = "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-mode.json"
+RUNTIME_ROUTE_CHANGED_PATHS = frozenset({
+    "automation/control_plane.py",
+    "automation/transaction_watchdog.py",
+    ".github/workflows/uaart_transaction_watchdog.yml",
+})
+RUNTIME_PREVIOUS_MANIFEST_SHA256 = "bfb650e2bd58dd2f556213e1c875552e8ba33b55e7e71de1bfe9f311f6003110"
+RUNTIME_PREVIOUS_MODE_SHA256 = "8013a8d15951b958a63e812330e7591c04882d0384f9c4bda85861bb7840469f"
+RUNTIME_ORIGINAL_APPROVAL_SHA256 = "6e6071e5a06e7d69a20aebc035bd57f74ef903e353cfe5a7e017df947a3eb643"
 RUNTIME_PINNED_PATHS = (
     ".github/workflows/uaart_autostart.yml",
     ".github/workflows/uaart_orchestrator.yml",
@@ -85,7 +96,7 @@ ACTIVE_WORKFLOW_EVENT_POLICY = {
     ".github/workflows/uaart_monitor.yml": frozenset({
         "schedule", "workflow_dispatch",
     }),
-    ".github/workflows/uaart_transaction_watchdog.yml": frozenset({"schedule"}),
+    ".github/workflows/uaart_transaction_watchdog.yml": frozenset({"schedule", "workflow_dispatch", "push"}),
 }
 SECRETS_INHERIT_WORKFLOW_ALLOWLIST = frozenset({
     ".github/workflows/uaart_autostart.yml",
@@ -124,7 +135,7 @@ CRITICAL_WORKFLOW_SHA256 = (
     "62777c284a0a2887deb2bc247da1fe03443dc118127d8583c2c29005191db3b6"
 )
 WATCHDOG_WORKFLOW_SHA256 = (
-    "9b4a18d5fd8c47e74728a21835b8207bd43e9bdc6fb6e1b1e54ba09a01a7a935"
+    "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe"
 )
 PYTHON_INTERPRETER_RE = re.compile(
     r"(?<![A-Za-z0-9_./-])(?:/usr/bin/)?python(?:3(?:\.\d+)?)?"
@@ -1470,7 +1481,9 @@ def _verify_watchdog_pinned_recovery_policy(source: str, relative: str) -> None:
     if any(marker not in rollback for marker in required):
         raise ControlPlaneError("WATCHDOG_PINNED_RECOVERY_RUNTIME_MISSING")
     push_blocks = [
-        block for block in _named_workflow_step_blocks(source, relative)
+        block for job_id, job in jobs.items()
+        if job_id not in {"recovery_canary", "recovery_execute"}
+        for block in _named_job_step_blocks(job, relative, job_id)
         if re.search(r"\bpush\s+origin\b", block)
     ]
     if len(push_blocks) != 6 or any(
@@ -1479,6 +1492,106 @@ def _verify_watchdog_pinned_recovery_policy(source: str, relative: str) -> None:
         for block in push_blocks
     ):
         raise ControlPlaneError("WATCHDOG_ACCEPTED_PUSH_PATH_DRIFT_GUARD")
+
+
+def _verify_recovery_route_workflow_policy(source: str, relative: str) -> None:
+    """Keep route registration and separately approved HALT removal disjoint."""
+    if relative != ".github/workflows/uaart_transaction_watchdog.yml":
+        return
+    trigger = _workflow_trigger_block(source, relative)
+    push = re.search(r"(?ms)^  push:\n(.*?)(?=^  [a-z_]+:|\Z)", trigger)
+    expected_push = (
+        "    branches:\n      - main\n    paths:\n"
+        "      - 'state/runtime_activations/UA-ART-RECOVERY-TASK120-002.json'\n"
+    )
+    if push is None or push.group(1) != expected_push:
+        raise ControlPlaneError("RECOVERY_ROUTE_PUSH_SCOPE")
+    if "concurrency:\n  group: ua-art-production-writer\n  cancel-in-progress: false\n" not in source:
+        raise ControlPlaneError("RECOVERY_ROUTE_WRITER_LOCK")
+    jobs = dict(_workflow_job_blocks(source, relative))
+    original_jobs = {
+        "discover", "halt_discovery_failure", "halt_preparing", "mark_rollback",
+        "rollback_open", "finalize_rollback", "halt_rolling_back",
+        "halt_recovery_failure", "report_safety_stop",
+    }
+    recovery_jobs = {"recovery_plan", "recovery_canary", "recovery_execute"}
+    if set(jobs) != original_jobs | recovery_jobs:
+        raise ControlPlaneError("RECOVERY_ROUTE_JOB_SET")
+    for job_id in sorted(original_jobs):
+        if "github.event_name == 'schedule'" not in jobs[job_id].split("\n    steps:", 1)[0]:
+            raise ControlPlaneError("RECOVERY_ROUTE_LEGACY_EVENT_SCOPE:" + job_id)
+    for job_id in sorted(recovery_jobs):
+        job = jobs[job_id]
+        header = job.split("\n    steps:", 1)[0]
+        required_header = (
+            "github.ref == 'refs/heads/main'", "github.run_attempt == 1",
+            "github.repository == 'art20021986-wq/ua-art-autopilot'",
+            "github.repository_id == '1346296029'",
+            "github.actor == 'art20021986-wq'",
+            "github.triggering_actor == 'art20021986-wq'",
+        )
+        if any(marker not in header for marker in required_header):
+            raise ControlPlaneError("RECOVERY_ROUTE_IDENTITY_GATE:" + job_id)
+        permission = "read" if job_id == "recovery_plan" else "write"
+        if (_job_contents_permission(job, relative, job_id) != permission
+                or "      actions: read\n" not in header):
+            raise ControlPlaneError("RECOVERY_ROUTE_PERMISSION:" + job_id)
+        if PRODUCTION_CREDENTIAL_REFERENCE_RE.search(job) or "secrets." in job:
+            raise ControlPlaneError("RECOVERY_ROUTE_PRODUCTION_CREDENTIAL:" + job_id)
+        required_bootstrap = (
+            'test "$GITHUB_RUN_ATTEMPT" = \'1\'',
+            'test "$WORKFLOW_SOURCE_COMMIT" = "$EXPECTED_MAIN"',
+            'test "$WORKFLOW_SOURCE_COMMIT" = "$(/usr/bin/git rev-parse HEAD)"',
+            "target.resolve() != target", "RECOVERY_BOOTSTRAP_FILE_SET",
+            "RECOVERY_BOOTSTRAP_WORKTREE_BINDING", "RECOVERY_BOOTSTRAP_FILE_BINDING",
+            "UAART_RECOVERY_RUNTIME_CLOSURE_VALIDATED",
+            "for status in pending queued in_progress requested waiting; do",
+            "--method GET --paginate --slurp",
+        )
+        first_repo_python = job.find("python3 -I automation/")
+        if (first_repo_python < 0
+                or any(marker not in job for marker in required_bootstrap)
+                or job.find("UAART_RECOVERY_RUNTIME_CLOSURE_VALIDATED") > first_repo_python):
+            raise ControlPlaneError("RECOVERY_ROUTE_BOOTSTRAP:" + job_id)
+        operation = job_id.removeprefix("recovery_")
+        if ("github.event_name == 'workflow_dispatch'" not in header
+                or f"inputs.operation == '{operation}'" not in header
+                or f"automation/transaction_watchdog.py recovery-{operation}" not in job):
+            raise ControlPlaneError("RECOVERY_ROUTE_OPERATION_GATE:" + job_id)
+        if job_id != "recovery_canary" and (
+            "github.event_name == 'push'" in header
+            or "github.event_name == 'schedule'" in header
+        ):
+            raise ControlPlaneError("RECOVERY_ROUTE_MANUAL_ONLY:" + job_id)
+        if job_id == "recovery_plan":
+            if "push origin" in job or "git update-index" in job:
+                raise ControlPlaneError("RECOVERY_ROUTE_PLAN_WRITES")
+            continue
+        required_cas = (
+            '--force-with-lease="refs/heads/main:$PARENT"',
+            'test "$PARENT" = "$(/usr/bin/git rev-parse refs/remotes/origin/main)"',
+            'test "${#CHANGED[@]}" -eq "${#EXPECTED_PATHS[@]}"',
+            'test "${CHANGED[$index]}" = "${EXPECTED_PATHS[$index]}"',
+            '/usr/bin/git merge-base --is-ancestor "$COMMIT" "$ACCEPTED"',
+            '/usr/bin/git diff --quiet "$COMMIT" "$ACCEPTED" -- "${EXPECTED_PATHS[@]}"',
+            '/usr/bin/git diff --quiet "$PARENT" "$ACCEPTED" -- "${RUNTIME_PATHS[@]}"',
+            "UAART_RECOVERY_ACCEPTED_RUNTIME_UNCHANGED",
+            "steps.proposal.outputs.ready == 'true'",
+        )
+        if any(marker not in job for marker in required_cas):
+            raise ControlPlaneError("RECOVERY_ROUTE_EXACT_CAS:" + job_id)
+        if job_id == "recovery_canary":
+            if ("EXPECTED_PATHS=('state/recovery_route_receipts/UA-ART-RECOVERY-TASK120-002.json')" not in job
+                    or "git update-index --force-remove" in job
+                    or 'git diff --quiet "$PARENT" "$COMMIT" -- \'state/AUTOPILOT_HALT.json\'' not in job
+                    or 'git diff --quiet "$PARENT" "$ACCEPTED" -- \'state/AUTOPILOT_HALT.json\'' not in job):
+                raise ControlPlaneError("RECOVERY_ROUTE_CANARY_HALT_PRESERVATION")
+        elif any(marker not in job for marker in (
+            "inputs.owner_confirmation", "inputs.plan_sha256", "--owner-confirmation", "--plan-sha256",
+            "'state/AUTOPILOT_HALT.json'", "'state/halt_history/UA-ART-RECOVERY-TASK120-002/halt.json'",
+            "'state/halt_history/UA-ART-RECOVERY-TASK120-002/receipt.json'",
+        )):
+            raise ControlPlaneError("RECOVERY_ROUTE_EXECUTE_APPROVAL_BINDING")
 
 
 def _verify_write_job_runtime_bootstrap_policy(source: str, relative: str) -> None:
@@ -1498,6 +1611,7 @@ def _verify_write_job_runtime_bootstrap_policy(source: str, relative: str) -> No
         ".github/workflows/uaart_transaction_watchdog.yml": {
             "halt_discovery_failure", "halt_preparing", "mark_rollback",
             "finalize_rollback", "halt_rolling_back", "halt_recovery_failure",
+            "recovery_canary", "recovery_execute",
         },
     }.get(relative)
     if expected_writers is None:
@@ -1532,6 +1646,7 @@ def _verify_write_job_runtime_bootstrap_policy(source: str, relative: str) -> No
                 '"${runtime_paths[@]}"'
             ),
             job.find("UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED"),
+            job.find("UAART_RECOVERY_RUNTIME_CLOSURE_VALIDATED"),
         )
         guards = [position for position in candidate_guards if position >= 0]
         if not guards or min(guards) > first_repo_python:
@@ -1579,7 +1694,12 @@ def _verify_write_job_runtime_bootstrap_policy(source: str, relative: str) -> No
                 'git diff --quiet "$WORKFLOW_SOURCE_COMMIT" "$parent" -- '
                 '"${runtime_paths[@]}"',
             )
-        if not any(marker in job for marker in parent_guards):
+        exact_recovery_cas = (
+            relative.endswith("uaart_transaction_watchdog.yml")
+            and job_id in {"recovery_canary", "recovery_execute"}
+            and '--force-with-lease="refs/heads/main:$PARENT"' in job
+        )
+        if not exact_recovery_cas and not any(marker in job for marker in parent_guards):
             raise ControlPlaneError(
                 "WRITE_JOB_RETRY_RUNTIME_BINDING:" + relative + ":" + job_id
             )
@@ -1686,6 +1806,7 @@ def verify_production_credential_workflow_policy(
         _verify_privileged_python_token_boundary(source, relative)
         _verify_critical_runtime_binding_policy(source, relative)
         _verify_watchdog_pinned_recovery_policy(source, relative)
+        _verify_recovery_route_workflow_policy(source, relative)
         _verify_write_job_runtime_bootstrap_policy(source, relative)
     if set(consumers) != set(PRODUCTION_CREDENTIAL_WORKFLOW_ALLOWLIST):
         raise ControlPlaneError("PRODUCTION_CREDENTIAL_CONSUMER_SET")
@@ -1697,6 +1818,126 @@ def verify_production_credential_workflow_policy(
         "secrets_inherit": inherited,
         "status": "PASS",
     }
+
+
+def _runtime_activation_file(root: pathlib.Path, relative: str) -> pathlib.Path:
+    """Activation authority must not traverse any symlink, including a parent."""
+    root = root.absolute()
+    path = root / safe_repo_path(relative)
+    for candidate in (path, *path.parents):
+        if candidate.is_symlink():
+            raise ControlPlaneError("RUNTIME_ACTIVATION_SYMLINK:" + relative)
+        if candidate == root:
+            break
+    if not path.is_file() or path.stat().st_size > 256 * 1024:
+        raise ControlPlaneError("RUNTIME_ACTIVATION_FILE_INVALID:" + relative)
+    return path
+
+
+def _runtime_activation_json(path: pathlib.Path) -> dict[str, Any]:
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ControlPlaneError("RUNTIME_ACTIVATION_DUPLICATE_KEY")
+            result[key] = value
+        return result
+    try:
+        value = json.loads(path.read_bytes(), object_pairs_hook=unique)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ControlPlaneError("RUNTIME_ACTIVATION_JSON_INVALID") from exc
+    if not isinstance(value, dict):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_OBJECT_REQUIRED")
+    return value
+
+
+def _verify_runtime_activation(
+    *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
+    runtime: Mapping[str, Any], runtime_sha: str,
+) -> dt.datetime:
+    """Authorize only the separately requested recovery-route registration.
+
+    TASK107's owner command, original mode policy and previous manifest remain
+    immutable.  This record extends runtime identity, never HALT permission.
+    The dependency order is code -> manifest -> registration -> mode, with no
+    hash of a file embedded into itself.
+    """
+    if mode.get("runtime_activation_path") != RUNTIME_ACTIVATION_PATH:
+        raise ControlPlaneError("RUNTIME_ACTIVATION_PATH_MISMATCH")
+    path = _runtime_activation_file(root, RUNTIME_ACTIVATION_PATH)
+    if sha256_file(path) != require_sha(mode.get("runtime_activation_sha256"), "runtime_activation"):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_SHA_MISMATCH")
+    activation = _runtime_activation_json(path)
+    expected_keys = {
+        "schema_version", "task_id", "scope", "owner_command", "owner",
+        "owner_actor_id", "registered_at", "source_commit", "repository",
+        "mode_epoch", "halt_removal_authorized", "production_changes_authorized",
+        "previous_manifest_path", "previous_manifest_sha256", "previous_mode_path",
+        "previous_mode_sha256", "original_approval_sha256", "runtime_manifest_path",
+        "runtime_manifest_sha256", "changed_runtime_paths", "expected_halt_sha256",
+    }
+    if set(activation) != expected_keys:
+        raise ControlPlaneError("RUNTIME_ACTIVATION_KEYS_MISMATCH")
+    expected_values = {
+        "schema_version": "UA-ART-RUNTIME-ROUTE-ACTIVATION-1",
+        "task_id": "UA-ART-RECOVERY-TASK120-002",
+        "scope": "REGISTER_RECOVERY_ROUTE_ONLY",
+        "owner_command": "подключай проверенный маршрут исполнения.",
+        "owner": "Артём Бровинский / UA ART COMPANY LLC",
+        "owner_actor_id": "321059821",
+        "repository": "art20021986-wq/ua-art-autopilot",
+        "mode_epoch": mode.get("mode_epoch"),
+        "previous_manifest_path": RUNTIME_PREVIOUS_MANIFEST_PATH,
+        "previous_manifest_sha256": RUNTIME_PREVIOUS_MANIFEST_SHA256,
+        "previous_mode_path": RUNTIME_PREVIOUS_MODE_PATH,
+        "previous_mode_sha256": RUNTIME_PREVIOUS_MODE_SHA256,
+        "original_approval_sha256": RUNTIME_ORIGINAL_APPROVAL_SHA256,
+        "runtime_manifest_path": RUNTIME_MANIFEST_PATH,
+        "runtime_manifest_sha256": runtime_sha,
+        "expected_halt_sha256": "35c8f42ec20d33f259cbf87aaaa193c86c4d5ae469fa4a8e67e6d049ce0091e9",
+    }
+    if any(activation.get(key) != expected for key, expected in expected_values.items()):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_IDENTITY_MISMATCH")
+    if (activation.get("halt_removal_authorized") is not False
+            or activation.get("production_changes_authorized") is not False):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_SCOPE_ESCALATION")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(activation.get("source_commit", ""))):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_SOURCE_COMMIT")
+    if activation.get("changed_runtime_paths") != sorted(RUNTIME_ROUTE_CHANGED_PATHS):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_CHANGED_PATH_SET")
+    if (mode.get("owner_approval_sha256") != RUNTIME_ORIGINAL_APPROVAL_SHA256
+            or approval.get("runtime_manifest_sha256") != RUNTIME_PREVIOUS_MANIFEST_SHA256):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_ORIGINAL_APPROVAL_BINDING")
+    old_manifest_path = _runtime_activation_file(root, RUNTIME_PREVIOUS_MANIFEST_PATH)
+    if sha256_file(old_manifest_path) != RUNTIME_PREVIOUS_MANIFEST_SHA256:
+        raise ControlPlaneError("RUNTIME_ACTIVATION_PREVIOUS_MANIFEST_SHA")
+    old_manifest = _runtime_activation_json(old_manifest_path)
+    if (set(old_manifest) != {"files", "generated_at", "mode_epoch", "schema_version"}
+            or old_manifest.get("schema_version") != RUNTIME_MANIFEST_SCHEMA
+            or old_manifest.get("mode_epoch") != mode.get("mode_epoch")
+            or set(old_manifest.get("files", {})) != set(RUNTIME_PINNED_PATHS)):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_PREVIOUS_MANIFEST_SCHEMA")
+    old_mode_path = _runtime_activation_file(root, RUNTIME_PREVIOUS_MODE_PATH)
+    if sha256_file(old_mode_path) != require_sha(activation.get("previous_mode_sha256"), "previous_mode"):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_PREVIOUS_MODE_SHA")
+    old_mode = _runtime_activation_json(old_mode_path)
+    preserved = dict(mode)
+    preserved.pop("runtime_activation_path", None)
+    preserved.pop("runtime_activation_sha256", None)
+    preserved["runtime_manifest_sha256"] = RUNTIME_PREVIOUS_MANIFEST_SHA256
+    if old_mode != preserved:
+        raise ControlPlaneError("RUNTIME_ACTIVATION_MODE_POLICY_DRIFT")
+    files = runtime.get("files")
+    if not isinstance(files, dict) or set(files) != set(RUNTIME_PINNED_PATHS):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_NEW_FILE_SET")
+    changed = {relative for relative in RUNTIME_PINNED_PATHS
+               if old_manifest["files"][relative] != files[relative]}
+    if changed != RUNTIME_ROUTE_CHANGED_PATHS:
+        raise ControlPlaneError("RUNTIME_ACTIVATION_UNAUTHORIZED_RUNTIME_CHANGE")
+    registered_at = parse_utc(str(activation.get("registered_at", "")))
+    if registered_at < parse_utc(str(mode.get("activated_at", ""))):
+        raise ControlPlaneError("RUNTIME_ACTIVATION_TIME_ORDER")
+    return registered_at
 
 
 def verify_execution_mode(
@@ -1763,6 +2004,10 @@ def verify_execution_mode(
         "task107_receipt_path",
         "task107_receipt_sha256",
     }
+    activation_keys = {"runtime_activation_path", "runtime_activation_sha256"}
+    has_runtime_activation = bool(set(mode) & activation_keys)
+    if has_runtime_activation:
+        expected_mode_keys |= activation_keys
     if set(mode) != expected_mode_keys:
         raise ControlPlaneError("EXECUTION_MODE_KEYS_MISMATCH")
     if mode.get("schema_version") != EXECUTION_MODE_SCHEMA or mode.get("mode") != "AUTOMATIC":
@@ -1892,7 +2137,7 @@ def verify_execution_mode(
     if runtime_path.is_symlink() or not runtime_path.is_file():
         raise ControlPlaneError("RUNTIME_MANIFEST_FILE_INVALID")
     runtime_sha = require_sha(mode.get("runtime_manifest_sha256"), "runtime_manifest")
-    if approval.get("runtime_manifest_sha256") != runtime_sha:
+    if not has_runtime_activation and approval.get("runtime_manifest_sha256") != runtime_sha:
         raise ControlPlaneError("RUNTIME_MANIFEST_APPROVAL_BINDING")
     if sha256_file(runtime_path) != runtime_sha:
         raise ControlPlaneError("RUNTIME_MANIFEST_SHA_MISMATCH")
@@ -1902,7 +2147,12 @@ def verify_execution_mode(
     if runtime.get("schema_version") != RUNTIME_MANIFEST_SCHEMA \
             or runtime.get("mode_epoch") != mode.get("mode_epoch"):
         raise ControlPlaneError("RUNTIME_MANIFEST_IDENTITY")
-    if parse_utc(str(runtime.get("generated_at", ""))) > parse_utc(str(mode["activated_at"])):
+    runtime_authorized_at = parse_utc(str(mode["activated_at"]))
+    if has_runtime_activation:
+        runtime_authorized_at = _verify_runtime_activation(
+            root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha,
+        )
+    if parse_utc(str(runtime.get("generated_at", ""))) > runtime_authorized_at:
         raise ControlPlaneError("RUNTIME_MANIFEST_AFTER_ACTIVATION")
     files = runtime.get("files")
     if not isinstance(files, dict) or set(files) != set(RUNTIME_PINNED_PATHS):
