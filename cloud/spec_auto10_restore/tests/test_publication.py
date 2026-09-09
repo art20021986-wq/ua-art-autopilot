@@ -1,0 +1,143 @@
+import copy
+import importlib.util
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import patch
+
+RUNTIME = Path(__file__).resolve().parents[1] / "runtime"
+spec = importlib.util.spec_from_file_location("spec_publication_test", RUNTIME / "spec_publication.py")
+publication = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(publication)
+
+PAGE = '<!doctype html><html><head></head><body><h1>UA-0001</h1><p>Price 17849</p><video src="unchanged.mp4"></video><!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START --><div>VIN stays plain</div></body></html>'
+CARD = {"car_uid": "UA-0001", "vin": "WDDZF0EB7HA053001", "published": True}
+FACTS = [{"field_key": "length", "label_ru": "Длина", "field_value": "4923", "unit": "мм",
+          "category": "dimensions", "verification_status": "VERIFIED_10SRC", "is_visible": 1}]
+
+
+class PublicationTests(unittest.TestCase):
+    def test_regeneration_keeps_exact_non_spec_bytes_and_one_section(self):
+        once = publication.inject(PAGE, "UA-0001", FACTS)
+        twice = publication.inject(once, "UA-0001", FACTS)
+        self.assertEqual(once, twice)
+        self.assertEqual(publication.strip_block(once), PAGE)
+        self.assertEqual(once.count('data-ua-additional-spec="1"'), 1)
+        self.assertIn("Додаткова специфікація", once)
+
+    def test_partial_facts_allowed_and_empty_is_explicit_not_ready(self):
+        ready = publication.inject(PAGE, "UA-0001", FACTS)
+        self.assertEqual(publication.validate_page(ready, "UA-0001", FACTS)["rows"], 1)
+        empty = publication.inject(PAGE, "UA-0001", [])
+        self.assertEqual(publication.validate_page(empty, "UA-0001", [])["data_status"], "NEEDS_REVIEW")
+
+    def test_no_confirmed_field_loss(self):
+        old = publication.inject(PAGE, "UA-0001", FACTS)
+        with self.assertRaisesRegex(publication.SpecError, "LOST"):
+            publication.inject(old, "UA-0001", [])
+
+    def test_manual_is_rendered_pending_hidden_are_not(self):
+        facts = copy.deepcopy(FACTS)
+        facts[0]["verification_status"] = "MANUAL_VERIFIED"
+        self.assertEqual(len(publication.normalize_facts(facts)), 1)
+        facts[0]["verification_status"] = "IDENTITY_CHANGED_REVIEW"
+        self.assertEqual(publication.normalize_facts(facts), [])
+
+    def test_provider_html_prices_and_vin_ads_rejected(self):
+        for value in ('<script>alert(1)</script>', 'https://carhistory.kr', 'cost $5'):
+            with self.subTest(value=value):
+                facts = copy.deepcopy(FACTS)
+                facts[0]["field_value"] = value
+                with self.assertRaises(publication.SpecError):
+                    publication.inject(PAGE, "UA-0001", facts)
+        with self.assertRaisesRegex(publication.SpecError, "VIN_ADVERTISEMENT"):
+            publication.inject(PAGE.replace('</body>', '<a href="https://carhistory.kr">VIN</a></body>'), "UA-0001", FACTS)
+
+    def test_malformed_duplicate_and_unknown_anchor_fail_closed(self):
+        for page in (PAGE + publication.START, PAGE + publication.START + publication.END + publication.START + publication.END,
+                     '<html><body>no known anchor</body></html>'):
+            with self.assertRaises(publication.SpecError):
+                publication.inject(page, "UA-0001", FACTS)
+
+    def test_tampered_and_foreign_data_fail(self):
+        page = publication.inject(PAGE, "UA-0001", FACTS)
+        with self.assertRaises(publication.SpecError):
+            publication.validate_page(page.replace('4923', '9999'), "UA-0001", FACTS)
+        with self.assertRaises(publication.SpecError):
+            publication.validate_page(page, "UA-0002", FACTS)
+
+    def _runtime(self, root):
+        for folder in ("video", "site"):
+            (root / folder).mkdir()
+            (root / folder / "UA-0001.html").write_text(PAGE)
+
+    def test_sync_changes_only_spec_and_verifies_public(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self._runtime(root)
+            calls = []
+            def reader(code):
+                calls.append(code)
+                return (root / "video" / (code + ".html")).read_text()
+            args = dict(root=root, public_reader=reader, state_reader=lambda code: (CARD, FACTS))
+            result = publication.reconcile_published(CARD, FACTS, **args)
+            self.assertEqual(result["status"], "PASS", result)
+            self.assertEqual(calls, ["UA-0001"])
+            self.assertEqual(publication.strip_block((root / "video/UA-0001.html").read_text()), PAGE)
+            self.assertEqual(publication.reconcile_published(CARD, FACTS, **args)["status"], "UNCHANGED")
+
+    def test_public_failure_remains_failure_and_can_retry_without_fetch(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self._runtime(root)
+            result = publication.reconcile_published(CARD, FACTS, root=root,
+                public_reader=lambda code: PAGE, state_reader=lambda code: (CARD, FACTS))
+            self.assertEqual(result["status"], "FAIL")
+            result = publication.reconcile_published(CARD, FACTS, root=root,
+                public_reader=lambda code: (root / "video/UA-0001.html").read_text(), state_reader=lambda code: (CARD, FACTS))
+            self.assertEqual(result["status"], "UNCHANGED")
+
+    def test_local_partial_write_failure_restores_own_bytes(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self._runtime(root)
+            atomic = publication._atomic
+            def fail_second(path, data):
+                if path.parent.name == "site":
+                    raise OSError("fixture disk failure")
+                return atomic(path, data)
+            with patch.object(publication, "_atomic", fail_second):
+                result = publication.reconcile_published(CARD, FACTS, root=root,
+                    public_reader=lambda code: self.fail("Should not verify failed transaction"),
+                    state_reader=lambda code: (CARD, FACTS))
+            self.assertEqual(result["status"], "FAIL")
+            self.assertEqual((root / "video/UA-0001.html").read_text(), PAGE)
+            self.assertEqual((root / "site/UA-0001.html").read_text(), PAGE)
+
+    def test_draft_does_not_touch_files_or_network(self):
+        result = publication.reconcile_published({**CARD, "published": False}, FACTS,
+            public_reader=lambda code: self.fail("Draft network call"))
+        self.assertEqual(result["status"], "NOT_REQUIRED")
+
+    def test_stale_vehicle_or_manual_facts_do_not_write(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self._runtime(root)
+            changed = {**CARD, "vin": "changed"}
+            result = publication.reconcile_published(CARD, FACTS, root=root,
+                public_reader=lambda code: self.fail("stale card should not publish"),
+                state_reader=lambda code: (changed, FACTS))
+            self.assertEqual(result["status"], "FAIL")
+            self.assertEqual((root / "video/UA-0001.html").read_text(), PAGE)
+
+    def test_live_writer_blocks_missing_section_but_ignores_non_primary_files(self):
+        with tempfile.TemporaryDirectory() as folder:
+            primary = Path(folder) / "UA-0001.html"
+            with patch.object(publication, "load_facts", return_value=FACTS):
+                with self.assertRaisesRegex(publication.SpecError, "BLOCK_MISSING"):
+                    publication.guard_write(primary, PAGE.encode())
+                publication.guard_write(primary.with_name("UA-0001-diag.html"), b"diagnostics")
+
+
+if __name__ == "__main__":
+    unittest.main()

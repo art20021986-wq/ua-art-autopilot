@@ -1,12 +1,10 @@
-TASK_ID: task_107
+TASK_ID: UA-ART-SPEC-AUTO-10-RESTORE-001
 ROUND: 1
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Defined and documented FAST/STANDARD/CRITICAL routing classifier, stall detector, storage preflight thresholds, and produced timing/benchmark report using this task as the safe FAST benchmark. No production or CRM contact made.
-FILES_CREATED: cloud/task107_speed_report.md, cloud/latest_status.md, cloud/owner_reply.md
+CLAUDE_STATUS: WAITING_OWNER
+CURRENT_ACTION: Исправление и Preview подготовлены; 84 изолированные проверки PASS. Gate B NOT_READY_FOR_PRODUCTION: ожидаются текущий read-only runtime-снимок и доступная среда Preview.
+FILES_CREATED: cloud/spec_auto10_restore/ (код, интеграция, offline builder, Preview.html, Gate-B.md, README.md, tests, evidence); cloud/owner_reply.md
 PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: NO
-OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Review cloud/task107_speed_report.md for the routing classifier and benchmark evidence; confirm FAST/STANDARD/CRITICAL policy is acceptable before wiring it into the actual workflow config in a follow-up task.
-UPDATED_AT_UTC: 2026-09-02T17:21:43Z
-CONTEXT_BUNDLE_SHA256: 2187f2edb78a05d8fdfc704059bbacddfc549c2d9e162f5c0ffc2a2e198ce79c
-MEMORY_VERSION_READ: 4
+OWNER_ACTION_REQUIRED: YES
+OWNER_QUESTION: Предоставить текущий согласованный read-only снимок CRM/спецификации, исходники используемых модулей и журналы публикации либо доступ для их чтения. Команда внедрения сейчас не запрашивается.
+NEXT_FOR_CHATGPT: Сверить runtime, фактическую БД и все пути записи; собрать кандидат по текущим исходникам, проверить текущие карточки, источники и доступный Preview; закрыть Gate B. Без Gate B PASS и отдельной команды владельца production не менять.
+UPDATED_AT_UTC: 2026-09-09T03:29:00Z
