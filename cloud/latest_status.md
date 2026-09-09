@@ -1,10 +1,13 @@
-TASK_ID: UA-ART-RECOVERY-TASK120-002
-ROUND: 2
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Маршрут подключён через PR81; GitHub run34323968311 и recovery_canary PASS. Добавлен ровно один служебный receipt, HALT сохранён. 151/151 локальных тестов PASS.
-FILES_CREATED: cloud/recovery_task120_002/integration/connection-report.md, cloud/recovery_task120_002/integration/evidence/live-route-result.json; код и доказательства подключения в PR81
-PRODUCTION_TOUCHED: YES — только управление GitHub. CRM, сайт и PythonAnywhere: NO
-OWNER_ACTION_REQUIRED: NO
-OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Подключение завершено. Снятие HALT по-прежнему заблокировано EXTERNAL_WRITER_VERIFICATION_REQUIRED; требуется проверенный контроль внешних исполнителей и отдельная команда на точный план. Не выдавать canary за Gate B спецификации или публикацию карточек.
-UPDATED_AT_UTC: 2026-09-09T07:31:16.663874+00:00
+TASK_ID: UA-ART-SPEC-REBUILD-10-001
+SPEC_VERSION: 1.0
+CLAUDE_STATUS: PREPARED_NOT_INSTALLED
+CURRENT_ACTION: Утверждённая новая реализация подготовлена в отдельной ветке. 116/116 локальных тестов PASS; 32 копии страниц сохраняют один VIN и оболочку. Preview16 карточек опубликован.
+PREVIEW_URL: https://ua-art-spec-preview.art20021986.chatgpt.site
+PRODUCTION_UAART_TOUCHED: NO
+CRM_RUNTIME_INSTALLED: NO
+FULL_GATE_B: PENDING
+LIVE_TEN_SOURCE_PASS: NO
+OWNER_ACTION_REQUIRED: NO — повторное утверждение ТЗ не требуется; кнопки17/18 пока не объявлены готовыми.
+NEXT_FOR_CHATGPT: Завершить фактический data-handoff executor и реальные runtime/readback bindings, подтвердить остановку старых писателей штатным маршрутом; подготовить точный GateB план. Подключить и проверить источники, установить точный рынок автомобилей по документам. Сохранить HALT; не повторять TASK120, не создавать дублирующую production-задачу, не публиковать17/18 автоматически.
+DETAILS: cloud/spec_rebuild10/README.md; cloud/spec_rebuild10/GATE-B.md
+BRANCH_ONLY_STATUS: YES — main и production этой подготовкой не менялись.
