@@ -1,6 +1,6 @@
 {
   "status": "EXACT_CURRENT_SOURCE_CANDIDATE_COMPILED",
-  "created_at_utc": "2026-09-09T04:07:45.423295+00:00",
+  "created_at_utc": "2026-09-09T04:34:46.329245+00:00",
   "source_module_count": 7,
   "candidate_module_count": 8,
   "server_source_byte_hashes_provided_by_root_console": true,
@@ -33,32 +33,34 @@
     },
     "source_policy.py": {
       "server_before_sha256": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38",
-      "candidate_after_sha256": "c13f369c0438f1d291083795e9c58f3ce3fb3e6fb7dffd5650f7121f06186f30",
+      "candidate_after_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
       "new_module": false,
-      "candidate_bytes": 59000
+      "candidate_bytes": 61028
     },
     "spec_publication.py": {
       "server_before_sha256": null,
-      "candidate_after_sha256": "39f5bca3cf01b859a167ee2f605e3f0b92316e86052ab89b61e208510e86e7ef",
+      "candidate_after_sha256": "29096e2f258d7a4412ef3274ccee02fc6f20e05b5d99d6594003446d7e73d95a",
       "new_module": true,
-      "candidate_bytes": 20313
+      "candidate_bytes": 21064
     },
     "ua_additional_spec.py": {
       "server_before_sha256": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
-      "candidate_after_sha256": "d155f45b9676bea13ed1c5afb4a4c63fa763faed387d7e7c6a1fbef7a5eb1b8c",
+      "candidate_after_sha256": "086257ef791cbf3d3c2ef282d5f225b0bb6158365a91b7e92110f493a94ad7c3",
       "new_module": false,
-      "candidate_bytes": 39493
+      "candidate_bytes": 39628
     },
     "vin_spec_service.py": {
       "server_before_sha256": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae",
-      "candidate_after_sha256": "ef533bb7fb0f106114372d6c5efab47612aac998d5a70bebc84cf50fb84bd146",
+      "candidate_after_sha256": "64a29a518b219edc6cdac82c51110061a573561fd9dd14ba6160c32979b8e51f",
       "new_module": false,
-      "candidate_bytes": 49178
+      "candidate_bytes": 52912
     }
   },
   "tests": {
-    "integration": "18 PASS",
-    "other_suites": "Root will execute final combined suite"
+    "combined": 97,
+    "status": "PASS",
+    "receipt": "test-results.json"
   },
-  "compatibility_adjustment": "Accept only the exact existing TASK117/TASK121 register wrapper that invokes the captured UA110 register once; preserve the sole worker start."
+  "compatibility_adjustment": "Accept only the exact existing TASK117/TASK121 register wrapper that invokes the captured UA110 register once; preserve the sole worker start.",
+  "identity_guard": "Demonstrated brand/model/year conflict blocks source lookup, queue retry, canonical read and publication; fact values and manual/visibility/verification flags preserved."
 }

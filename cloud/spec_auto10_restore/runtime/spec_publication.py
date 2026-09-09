@@ -230,6 +230,14 @@ def validate_page(source: str, card_uid: str, facts: Iterable[dict[str, Any]], *
 
 def load_facts(card_uid: str) -> list[dict[str, Any]]:
     card_uid = uid(card_uid)
+    # Legacy callbacks and common writers also pass here. Read the current
+    # identity independently of queue status so READY/old manual facts cannot
+    # bypass a newly discovered context conflict. This import starts no worker.
+    import vin_spec_service
+    card = next((row for row in vin_spec_service.read_cards() if row["car_uid"] == card_uid), None)
+    if card is None:
+        raise SpecError("CURRENT_CARD_IDENTITY_MISSING")
+    _assert_identity_context(card)
     path = Path(os.environ.get("UA_ART_SPEC_DB", "/home/Carix/vin_specs_task111_v3.db"))
     if not path.is_file():
         raise SpecError("CANONICAL_SPEC_DATABASE_MISSING")
@@ -297,8 +305,16 @@ def _current_state(card_uid: str) -> tuple[dict[str, Any], list[dict[str, Any]]]
     return card, load_facts(card_uid)
 
 
+def _assert_identity_context(card: dict[str, Any]) -> None:
+    import source_policy
+    issues = source_policy.identity_context_issues(card)
+    if issues:
+        raise SpecError("IDENTITY_CONTEXT_REQUIRES_REVIEW:" + ",".join(issues))
+
+
 def _assert_current(card: dict[str, Any], facts: list[dict[str, Any]], reader: Callable) -> None:
     current, current_facts = reader(uid(card.get("car_uid", card.get("auto_number"))))
+    _assert_identity_context(current)
     keys = ("car_uid", "vin", "brand", "model", "year", "fuel", "engine_cc", "transmission", "published")
     if any(str(current.get(key) or "").strip().casefold() != str(card.get(key) or "").strip().casefold() for key in keys):
         raise SpecError("CARD_CHANGED_DURING_SPECIFICATION_SYNC")

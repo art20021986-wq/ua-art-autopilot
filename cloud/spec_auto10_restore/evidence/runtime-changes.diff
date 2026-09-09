@@ -75,7 +75,7 @@
      except source_policy.SourcePolicyError:
          return None
      year = _pick(row, "year", "model_year", "god", "production_year")
-@@ -401,73 +430,79 @@
+@@ -401,73 +430,120 @@
      return {"facts": copied_facts, "meta": copied_meta}
  
  
@@ -101,6 +101,30 @@
 +                     (key, json.dumps(value, ensure_ascii=False), utc_now()))
 +
 +
++def _block_identity_context(conn: sqlite3.Connection, card: dict[str, Any],
++                            row: sqlite3.Row, issues: list[str]) -> bool:
++    """Fence both queues while preserving fact values and all operator flags."""
++    detail = "IDENTITY_CONTEXT_REQUIRES_REVIEW:" + ",".join(issues)
++    fingerprint = input_fingerprint(card)
++    if (row["status"] == "NEEDS_REVIEW" and row["site_sync_status"] == "NEEDS_REVIEW"
++            and row["last_error"] == detail and row["input_hash"] == fingerprint):
++        return False
++    facts = [dict(item) for item in conn.execute("""SELECT a.*, m.is_manual, m.is_visible,
++        m.verification_status FROM additional_specification a JOIN additional_specification_meta m
++        ON a.car_uid=m.car_uid AND a.field_key=m.field_key WHERE a.car_uid=?""", (card["car_uid"],))]
++    conn.execute("""INSERT INTO additional_specification_audit
++        (car_uid,field_key,action,old_value,new_value,spec_audit_json) VALUES(?,?,?,?,?,?)""",
++        (card["car_uid"], "__identity__", "IDENTITY_CONTEXT_BLOCKED", row["status"], "NEEDS_REVIEW",
++         json.dumps({"issues": issues, "input_hash": fingerprint, "preserved_facts": facts,
++                     "fact_values_and_operator_flags_changed": False}, ensure_ascii=False)))
++    conn.execute("""UPDATE vin_spec_jobs SET status='NEEDS_REVIEW',site_sync_status='NEEDS_REVIEW',
++        last_error=?,site_sync_detail=?,input_hash=?,generation=generation+1,
++        claim_token=NULL,site_sync_token=NULL,next_attempt_at=NULL,site_sync_next_at=NULL,
++        started_at=NULL,site_sync_started_at=NULL,finished_at=? WHERE id=?""",
++        (detail, detail, fingerprint, utc_now(), row["id"]))
++    return True
++
++
  def enqueue_card(card: dict[str, Any], *, force: bool = False) -> bool:
      uid = canonical_uid(card.get("car_uid"))
 -    vin = source_policy.normalize_vin(card.get("vin"))
@@ -110,6 +134,7 @@
      ensure_schema()
 -    now = utc_now()
 +    now, fingerprint = utc_now(), input_fingerprint(card)
++    issues = source_policy.identity_context_issues(card)
      with connect_spec(False) as conn:
 +        conn.execute("BEGIN IMMEDIATE")
          prior = conn.execute(
@@ -122,6 +147,22 @@
 +        row = conn.execute(
 +            "SELECT * FROM vin_spec_jobs WHERE car_uid=? AND vin=? AND policy_version=?",
 +            (uid, vin, source_policy.POLICY_VERSION)).fetchone()
++        if issues:
++            # An existing READY row and legacy visible/manual facts cannot
++            # bypass current identity validation. Keep every fact/flag intact.
++            if prior:
++                conn.execute("""UPDATE vin_spec_jobs SET status='SUPERSEDED',finished_at=?,claim_token=NULL,
++                    site_sync_token=NULL,site_sync_status='SUPERSEDED'
++                    WHERE car_uid=? AND vin<>? AND status<>'SUPERSEDED'""", (now, uid, vin))
++            if row is None:
++                conn.execute("""INSERT INTO vin_spec_jobs
++                    (car_id,car_uid,vin,policy_version,status,requested_at,input_hash,site_sync_status)
++                    VALUES(?,?,?,?,?,?,?,?)""", (card.get("car_id"), uid, vin,
++                    source_policy.POLICY_VERSION, "PENDING", now, fingerprint, "PENDING"))
++                row = conn.execute("SELECT * FROM vin_spec_jobs WHERE id=last_insert_rowid()").fetchone()
++            blocked = _block_identity_context(conn, card, row, issues)
++            conn.commit()
++            return blocked
 +        changed = bool(row and row["input_hash"] and row["input_hash"] != fingerprint)
 +        if prior or changed:
 +            # Retain historical values for audit, but never show another VIN's
@@ -210,7 +251,7 @@
          conn.commit()
      return True
  
-@@ -509,46 +544,50 @@
+@@ -509,46 +585,50 @@
  
  
  def recover_interrupted_jobs(stale_after_seconds: int = STALE_JOB_SECONDS) -> int:
@@ -289,7 +330,7 @@
  
  
  def _current_card(uid: str, vin: str) -> dict[str, Any] | None:
-@@ -558,10 +597,12 @@
+@@ -558,10 +638,12 @@
      return None
  
  
@@ -303,7 +344,7 @@
          for fact in facts:
              key = str(fact.get("field_key") or "").strip()
              try:
-@@ -593,6 +634,26 @@
+@@ -593,6 +675,26 @@
              ).fetchone()
              if manual and int(manual[0] or 0) == 1:
                  continue
@@ -330,7 +371,7 @@
              conn.execute(
                  """INSERT INTO additional_specification
                     (car_uid,field_key,field_value,normalized_value,source,source_url,confidence,is_price_field)
-@@ -619,6 +680,8 @@
+@@ -619,6 +721,8 @@
                      source_urls_json=excluded.source_urls_json,
                      verification_status=excluded.verification_status,
                      model_match_score=excluded.model_match_score,
@@ -339,7 +380,7 @@
                      updated_at=excluded.updated_at""",
                  (
                      uid, key, label, str(fact.get("category") or "additional"),
-@@ -627,82 +690,107 @@
+@@ -627,82 +731,112 @@
                      "VERIFIED_10SRC", float(fact.get("confidence") or 0.0), 0, 1, utc_now(),
                  ),
              )
@@ -434,6 +475,11 @@
 -            raise ServiceError("CARD_OR_VIN_CHANGED")
 +        if not card or input_fingerprint(card) != job["input_hash"]:
 +            raise ServiceError("CARD_OR_CONTEXT_CHANGED")
++        issues = source_policy.identity_context_issues(card)
++        if issues:
++            enqueue_card(card)
++            return {"car_uid": uid, "status": "NEEDS_REVIEW", "written": 0,
++                    "site_sync": "NEEDS_REVIEW", "identity_context_issues": issues}
          result = enricher(card)
 -        facts = list(result.get("facts") or [])
 -        written = _store_facts(uid, facts)
@@ -506,7 +552,7 @@
  
  
  def process_one(*, enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich) -> dict[str, Any] | None:
-@@ -710,50 +798,105 @@
+@@ -710,50 +844,116 @@
      return _process_claimed(job, enricher=enricher) if job else None
  
  
@@ -538,6 +584,13 @@
 +    with connect_spec(False) as conn:
 +        conn.execute("BEGIN IMMEDIATE")
 +        for card in cards:
++            issues = source_policy.identity_context_issues(card)
++            if issues:
++                row = conn.execute("SELECT * FROM vin_spec_jobs WHERE car_uid=? AND vin=? AND policy_version=?",
++                    (card["car_uid"], card["vin"], source_policy.POLICY_VERSION)).fetchone()
++                if row:
++                    _block_identity_context(conn, card, row, issues)
++                continue
 +            if not card.get("published"):
 +                conn.execute("""UPDATE vin_spec_jobs SET site_sync_status='NOT_REQUIRED',site_sync_token=NULL
 +                    WHERE car_uid=? AND policy_version=? AND site_sync_status<>'NOT_REQUIRED'""",
@@ -599,6 +652,10 @@
 +    try:
 +        if not card or input_fingerprint(card) != job["input_hash"]:
 +            status, detail = "SUPERSEDED", "CARD_OR_CONTEXT_CHANGED"
++        elif source_policy.identity_context_issues(card):
++            enqueue_card(card)
++            return {"car_uid": job["car_uid"], "status": "NEEDS_REVIEW", "attempt": 0,
++                    "detail": "IDENTITY_CONTEXT_REQUIRES_REVIEW"}
 +        elif not card.get("published"):
 +            status, detail = "NOT_REQUIRED", "карточка ещё не опубликована"
 +        else:
@@ -649,7 +706,7 @@
  
  
  def card_state(value: Any) -> dict[str, Any]:
-@@ -763,9 +906,10 @@
+@@ -763,9 +963,10 @@
      with connect_spec(True) as conn:
          row = conn.execute(
              """SELECT status,facts_count,attempts,last_error,site_sync_status,site_sync_detail,
@@ -662,7 +719,7 @@
          ).fetchone()
      return dict(row) if row else {"status": "NOT_QUEUED", "facts_count": 0, "site_sync_status": "NOT_REQUIRED"}
  
-@@ -789,18 +933,53 @@
+@@ -789,18 +990,53 @@
      return result
  
  
@@ -724,7 +781,7 @@
  
  
  def start_worker() -> bool:
-@@ -809,9 +988,19 @@
+@@ -809,9 +1045,19 @@
          if _worker is not None and _worker.is_alive():
              return False
          _stop_event.clear()
@@ -747,7 +804,7 @@
          _worker = threading.Thread(target=_worker_loop, name=WORKER_NAME, daemon=True)
          _worker.start()
          return True
-@@ -825,20 +1014,4 @@
+@@ -825,20 +1071,4 @@
  
  
  if __name__ == "__main__":
@@ -869,14 +926,40 @@
  
  
  def vin_model_year(value: Any) -> int | None:
-@@ -197,26 +250,9 @@
+@@ -197,27 +250,41 @@
          return exact[0]
      if len(exact) > 1:
          raise SourcePolicyError("AMBIGUOUS_EXACT_VIN_PROFILE")
 -    brand = _norm(car.get("brand") or car.get("make"))
--    model = _norm(car.get("model"))
++    # A shared VIN prefix does not establish the year, trim or transmission
++    # of a new vehicle.  New identities use discovery and page validation;
++    # they never inherit the historical fleet's manually curated facts.
++    return None
++
++
++def identity_context_issues(car: dict[str, Any]) -> list[str]:
++    """Reject demonstrated CRM/identity conflicts without replacing CRM data.
++
++    Exact VIN membership identifies a historical profile; it cannot override a
++    contradictory current make, model or year. A one-year calendar/model-year
++    difference is accepted. Numeric European chassis codes are not treated as
++    proof of a conflicting model year. Unknown profiles remain eligible for
++    normal source discovery and its independent identity validation.
++    """
++    issues: list[str] = []
++    profile = match_profile(car)
++    aliases = {"к5": "k5", "к 5": "k5", "б класса": "b class", "б класс": "b class"}
++    brand = _norm(car.get("brand"))
+     model = _norm(car.get("model"))
 -    fuel = _norm(car.get("fuel") or car.get("fuel_type"))
--    try:
++    model = aliases.get(model, model)
++    if profile:
++        if brand and not any(_norm(token) in brand for token in profile["brand_tokens"]):
++            issues.append("CRM_BRAND_DIFFERS_FROM_EXACT_VIN_PROFILE")
++        if model and not any(_norm(token) in model for token in profile["model_tokens"]):
++            issues.append("CRM_MODEL_DIFFERS_FROM_EXACT_VIN_PROFILE")
++    year = re.fullmatch(r"(?:19|20)\d{2}", str(car.get("year") or car.get("model_year") or "").strip())
+     try:
 -        cc = int(float(str(car.get("engine_cc") or car.get("displacement") or 0).replace(" ", "")))
 -    except (TypeError, ValueError):
 -        cc = 0
@@ -893,13 +976,18 @@
 -        if cc and not int(lower) <= cc <= int(upper):
 -            continue
 -        return profile
-+    # A shared VIN prefix does not establish the year, trim or transmission
-+    # of a new vehicle.  New identities use discovery and page validation;
-+    # they never inherit the historical fleet's manually curated facts.
-     return None
+-    return None
++        vin = normalize_vin(car.get("vin"))
++        inferred = vin_model_year(vin)
++    except SourcePolicyError:
++        vin, inferred = "", None
++    if year and inferred is not None and abs(int(year.group()) - inferred) > 1 and not vin[9].isdigit():
++        issues.append("CRM_YEAR_DIFFERS_FROM_INFERRED_VIN_MODEL_YEAR")
++    return issues
  
  
-@@ -242,6 +278,8 @@
+ def profile_facts(profile: dict[str, Any] | None) -> list[Fact]:
+@@ -242,6 +309,8 @@
                  confidence=0.94 if priority >= 90 else 0.89,
                  source_domain=domain,
                  source_url=str(source_urls[0]),
@@ -908,7 +996,7 @@
              ))
      return result
  
-@@ -334,6 +372,52 @@
+@@ -334,6 +403,52 @@
      return parser.lines, parser.rows
  
  
@@ -961,7 +1049,7 @@
  def _open_bytes(
      url: str,
      *,
-@@ -341,53 +425,67 @@
+@@ -341,53 +456,67 @@
      data: bytes | None = None,
      headers: dict[str, str] | None = None,
      timeout: int = HTTP_TIMEOUT,
@@ -1047,7 +1135,7 @@
  
  
  def _car_tokens(car: dict[str, Any]) -> dict[str, list[str]]:
-@@ -446,6 +544,12 @@
+@@ -446,6 +575,12 @@
  def page_match_score(car: dict[str, Any], text: str, domain: str) -> float:
      normalized = _norm(text)
      tokens = _car_tokens(car)
@@ -1060,7 +1148,7 @@
      score = 0.0
      if tokens["brand"] and _any_token(normalized, tokens["brand"]):
          score += 0.28
-@@ -796,6 +900,8 @@
+@@ -796,6 +931,8 @@
              confidence=min(confidence, 0.97),
              source_domain=domain,
              source_url=url,
@@ -1069,7 +1157,7 @@
          ))
      return score, result
  
-@@ -827,7 +933,8 @@
+@@ -827,7 +964,8 @@
          urllib.parse.quote(vin, safe=""),
          urllib.parse.urlencode({"format": "json", "modelyear": year}) if year else "format=json",
      )
@@ -1079,7 +1167,7 @@
      rows = payload.get("Results") if isinstance(payload, dict) else None
      if not isinstance(rows, list) or not rows or not isinstance(rows[0], dict):
          raise SourcePolicyError("VPIC_RESULT_INVALID")
-@@ -847,6 +954,8 @@
+@@ -847,6 +985,8 @@
              confidence=0.96,
              source_domain="vpic.nhtsa.dot.gov",
              source_url=url,
@@ -1088,7 +1176,7 @@
          ))
      identity = {key: _clean(data.get(key)) for key in ("Make", "Model", "ModelYear", "Manufacturer")}
      identity["ErrorCode"] = _clean(data.get("ErrorCode"))
-@@ -855,7 +964,7 @@
+@@ -855,7 +995,7 @@
  
  def vpic_identity_matches(car: dict[str, Any], identity: dict[str, Any]) -> bool:
      error_code = _clean(identity.get("ErrorCode"))
@@ -1097,7 +1185,7 @@
          return False
      tokens = _car_tokens(car)
      make = _norm(identity.get("Make") or identity.get("Manufacturer"))
-@@ -863,14 +972,15 @@
+@@ -863,14 +1003,15 @@
      year = re.sub(r"\D", "", str(identity.get("ModelYear") or ""))[:4]
      if not make or not tokens["brand"] or not _any_token(make, tokens["brand"]):
          return False
@@ -1115,7 +1203,7 @@
      grouped: dict[str, list[Fact]] = {}
      for fact in facts:
          if fact.field_key in BLOCKED_PRIMARY_KEYS or PRICE_RE.search(fact.display_value):
-@@ -885,14 +995,14 @@
+@@ -885,14 +1026,14 @@
          winning = max(
              by_value.values(),
              key=lambda items: (
@@ -1132,7 +1220,7 @@
              reverse=True,
          )
          best = ordered[0]
-@@ -908,6 +1018,13 @@
+@@ -908,6 +1049,13 @@
              "evidence_count": len(domains),
              "source_domains": domains,
              "source_urls": urls,
@@ -1146,7 +1234,7 @@
          })
      return result
  
-@@ -917,7 +1034,14 @@
+@@ -917,7 +1065,23 @@
      *,
      opener: Callable[..., Any] = urllib.request.urlopen,
  ) -> dict[str, Any]:
@@ -1159,10 +1247,19 @@
 +            "sources": {domain: {"status": "NOT_RUN_UNRESOLVED_IDENTITY", "facts": 0} for domain in SOURCE_DOMAINS},
 +            "warnings": ["JAPANESE_FRAME_REQUIRES_REVIEWED_CATALOGUE_MAPPING"],
 +        }
++    issues = identity_context_issues(car)
++    if issues:
++        return {
++            "policy_version": POLICY_VERSION, "vin": vin, "profile_id": "",
++            "lookup_years": [], "status": "NEEDS_REVIEW", "facts": [],
++            "sources": {domain: {"status": "NOT_RUN_IDENTITY_CONFLICT", "facts": 0}
++                        for domain in SOURCE_DOMAINS},
++            "warnings": issues, "identity_context_issues": issues,
++        }
      profile = match_profile(car)
      curated = profile_facts(profile)
      facts: list[Fact] = list(curated)
-@@ -940,9 +1064,13 @@
+@@ -940,9 +1104,13 @@
              warnings.append("VPIC_IDENTITY_MISMATCH")
          else:
              facts.extend(vpic_facts)
@@ -1178,7 +1275,7 @@
          warnings.append("VPIC_UNAVAILABLE")
  
      for domain in SOURCE_DOMAINS[1:]:
-@@ -958,30 +1086,37 @@
+@@ -958,30 +1126,37 @@
              urls = discover_urls(car, domain, opener=opener)
          except Exception as exc:
              urls = []
@@ -1222,7 +1319,7 @@
      ]
      minimum_facts = 10 if profile else 4
      status = "READY" if len(clean) >= minimum_facts and detailed_domains else "NEEDS_REVIEW"
-@@ -997,9 +1132,18 @@
+@@ -997,9 +1172,18 @@
      }
  
  
@@ -1243,7 +1340,7 @@
          "auto-data.net": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-b-180-1.8-cdi-109hp-7g-dct-18833",
          "carwiki.co.kr": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80",
          "auto.danawa.com": "https://auto.danawa.com/auto/?Lineup=42280&Model=3260%2C3151&Tab=spec&Work=model&pcUse=y",
-@@ -1010,19 +1154,64 @@
+@@ -1010,19 +1194,64 @@
          "carfolio.com": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447",
          "encycarpedia.com": "https://www.encycarpedia.com/mercedes/05-b-170-mpv",
      }
@@ -1316,7 +1413,7 @@
      }
  
  
-@@ -1050,4 +1239,3 @@
+@@ -1050,4 +1279,3 @@
          "year": "2019", "fuel": "LPI", "engine_cc": 2000,
      }))) >= 10
      print("UA111_SOURCE_POLICY_SELFTEST_PASS")

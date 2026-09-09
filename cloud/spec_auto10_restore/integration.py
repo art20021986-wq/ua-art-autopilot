@@ -115,6 +115,7 @@ def crm_summary(value):
             "PASS": "страница проверена и обновлена", "UNCHANGED": "страница проверена, данные актуальны",
             "FAIL": "обновление сайта не прошло", "FAILED": "обновление сайта не прошло",
             "SUPERSEDED": "ожидается обработка более новых данных",
+            "NEEDS_REVIEW": "публикация заблокирована до проверки данных автомобиля",
         }
         collected = collection.get(str(state.get("status")), "состояние сбора неизвестно")
         published = publication.get(str(state.get("site_sync_status")), "состояние сайта неизвестно")

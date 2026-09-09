@@ -452,6 +452,30 @@ def _record_state(key: str, value: Any) -> None:
                      (key, json.dumps(value, ensure_ascii=False), utc_now()))
 
 
+def _block_identity_context(conn: sqlite3.Connection, card: dict[str, Any],
+                            row: sqlite3.Row, issues: list[str]) -> bool:
+    """Fence both queues while preserving fact values and all operator flags."""
+    detail = "IDENTITY_CONTEXT_REQUIRES_REVIEW:" + ",".join(issues)
+    fingerprint = input_fingerprint(card)
+    if (row["status"] == "NEEDS_REVIEW" and row["site_sync_status"] == "NEEDS_REVIEW"
+            and row["last_error"] == detail and row["input_hash"] == fingerprint):
+        return False
+    facts = [dict(item) for item in conn.execute("""SELECT a.*, m.is_manual, m.is_visible,
+        m.verification_status FROM additional_specification a JOIN additional_specification_meta m
+        ON a.car_uid=m.car_uid AND a.field_key=m.field_key WHERE a.car_uid=?""", (card["car_uid"],))]
+    conn.execute("""INSERT INTO additional_specification_audit
+        (car_uid,field_key,action,old_value,new_value,spec_audit_json) VALUES(?,?,?,?,?,?)""",
+        (card["car_uid"], "__identity__", "IDENTITY_CONTEXT_BLOCKED", row["status"], "NEEDS_REVIEW",
+         json.dumps({"issues": issues, "input_hash": fingerprint, "preserved_facts": facts,
+                     "fact_values_and_operator_flags_changed": False}, ensure_ascii=False)))
+    conn.execute("""UPDATE vin_spec_jobs SET status='NEEDS_REVIEW',site_sync_status='NEEDS_REVIEW',
+        last_error=?,site_sync_detail=?,input_hash=?,generation=generation+1,
+        claim_token=NULL,site_sync_token=NULL,next_attempt_at=NULL,site_sync_next_at=NULL,
+        started_at=NULL,site_sync_started_at=NULL,finished_at=? WHERE id=?""",
+        (detail, detail, fingerprint, utc_now(), row["id"]))
+    return True
+
+
 def enqueue_card(card: dict[str, Any], *, force: bool = False) -> bool:
     uid = canonical_uid(card.get("car_uid"))
     vin = normalize_identity(card.get("vin"))
@@ -459,6 +483,7 @@ def enqueue_card(card: dict[str, Any], *, force: bool = False) -> bool:
         raise ServiceError("INVALID_CARD_UID")
     ensure_schema()
     now, fingerprint = utc_now(), input_fingerprint(card)
+    issues = source_policy.identity_context_issues(card)
     with connect_spec(False) as conn:
         conn.execute("BEGIN IMMEDIATE")
         prior = conn.execute(
@@ -467,6 +492,22 @@ def enqueue_card(card: dict[str, Any], *, force: bool = False) -> bool:
         row = conn.execute(
             "SELECT * FROM vin_spec_jobs WHERE car_uid=? AND vin=? AND policy_version=?",
             (uid, vin, source_policy.POLICY_VERSION)).fetchone()
+        if issues:
+            # An existing READY row and legacy visible/manual facts cannot
+            # bypass current identity validation. Keep every fact/flag intact.
+            if prior:
+                conn.execute("""UPDATE vin_spec_jobs SET status='SUPERSEDED',finished_at=?,claim_token=NULL,
+                    site_sync_token=NULL,site_sync_status='SUPERSEDED'
+                    WHERE car_uid=? AND vin<>? AND status<>'SUPERSEDED'""", (now, uid, vin))
+            if row is None:
+                conn.execute("""INSERT INTO vin_spec_jobs
+                    (car_id,car_uid,vin,policy_version,status,requested_at,input_hash,site_sync_status)
+                    VALUES(?,?,?,?,?,?,?,?)""", (card.get("car_id"), uid, vin,
+                    source_policy.POLICY_VERSION, "PENDING", now, fingerprint, "PENDING"))
+                row = conn.execute("SELECT * FROM vin_spec_jobs WHERE id=last_insert_rowid()").fetchone()
+            blocked = _block_identity_context(conn, card, row, issues)
+            conn.commit()
+            return blocked
         changed = bool(row and row["input_hash"] and row["input_hash"] != fingerprint)
         if prior or changed:
             # Retain historical values for audit, but never show another VIN's
@@ -745,6 +786,11 @@ def _process_claimed(job: dict[str, Any], *,
         card = _current_card(uid, vin)
         if not card or input_fingerprint(card) != job["input_hash"]:
             raise ServiceError("CARD_OR_CONTEXT_CHANGED")
+        issues = source_policy.identity_context_issues(card)
+        if issues:
+            enqueue_card(card)
+            return {"car_uid": uid, "status": "NEEDS_REVIEW", "written": 0,
+                    "site_sync": "NEEDS_REVIEW", "identity_context_issues": issues}
         result = enricher(card)
         current = _current_card(uid, vin)
         if not current or input_fingerprint(current) != job["input_hash"]:
@@ -809,6 +855,13 @@ def reconcile_published_cards() -> int:
     with connect_spec(False) as conn:
         conn.execute("BEGIN IMMEDIATE")
         for card in cards:
+            issues = source_policy.identity_context_issues(card)
+            if issues:
+                row = conn.execute("SELECT * FROM vin_spec_jobs WHERE car_uid=? AND vin=? AND policy_version=?",
+                    (card["car_uid"], card["vin"], source_policy.POLICY_VERSION)).fetchone()
+                if row:
+                    _block_identity_context(conn, card, row, issues)
+                continue
             if not card.get("published"):
                 conn.execute("""UPDATE vin_spec_jobs SET site_sync_status='NOT_REQUIRED',site_sync_token=NULL
                     WHERE car_uid=? AND policy_version=? AND site_sync_status<>'NOT_REQUIRED'""",
@@ -850,6 +903,10 @@ def sync_one(*, reconciler: Callable[[dict[str, Any], list[dict[str, Any]]], dic
     try:
         if not card or input_fingerprint(card) != job["input_hash"]:
             status, detail = "SUPERSEDED", "CARD_OR_CONTEXT_CHANGED"
+        elif source_policy.identity_context_issues(card):
+            enqueue_card(card)
+            return {"car_uid": job["car_uid"], "status": "NEEDS_REVIEW", "attempt": 0,
+                    "detail": "IDENTITY_CONTEXT_REQUIRES_REVIEW"}
         elif not card.get("published"):
             status, detail = "NOT_REQUIRED", "карточка ещё не опубликована"
         else:

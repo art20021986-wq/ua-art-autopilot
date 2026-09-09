@@ -227,6 +227,31 @@ class AdapterContractsTest(unittest.TestCase):
         self.assertTrue(all(item["status"] == "NOT_RUN_UNRESOLVED_IDENTITY" for item in result["sources"].values()))
         opener.assert_not_called()
 
+    def test_conflicting_exact_vin_year_make_or_model_cannot_collect_curated_facts(self):
+        base = dict(CAR, vin="KNAGS416BHA141028", year="2017", model="К5")
+        for changed, issue in (({"year": "1999"}, "CRM_YEAR_DIFFERS_FROM_INFERRED_VIN_MODEL_YEAR"),
+                               ({"model": "Sportage"}, "CRM_MODEL_DIFFERS_FROM_EXACT_VIN_PROFILE"),
+                               ({"brand": "Hyundai"}, "CRM_BRAND_DIFFERS_FROM_EXACT_VIN_PROFILE")):
+            with self.subTest(changed=changed):
+                opener = mock.Mock(side_effect=AssertionError("identity conflict must not request sources"))
+                card = {**base, **changed}
+                result = policy.enrich(card, opener=opener)
+                self.assertEqual(result["status"], "NEEDS_REVIEW")
+                self.assertEqual(result["facts"], [])
+                self.assertIn(issue, result["identity_context_issues"])
+                self.assertEqual(card, {**base, **changed})
+                opener.assert_not_called()
+
+    def test_context_guard_accepts_alias_one_year_and_numeric_european_chassis(self):
+        self.assertEqual(policy.identity_context_issues(dict(CAR, vin="KNAGS416BHA141028",
+                         year="2016", model="К5")), [])
+        self.assertEqual(policy.identity_context_issues(dict(CAR, vin="WDD2452322J561014",
+                         brand="Mercedes-Benz", model="Б-КЛАССА", year="2010")), [])
+        # A newly entered VIN cannot use lookup-year fallback to bypass a
+        # demonstrated conflict merely because it has no historical profile.
+        self.assertIn("CRM_YEAR_DIFFERS_FROM_INFERRED_VIN_MODEL_YEAR",
+                      policy.identity_context_issues(dict(CAR, year="1999")))
+
 
 if __name__ == "__main__":
     unittest.main()

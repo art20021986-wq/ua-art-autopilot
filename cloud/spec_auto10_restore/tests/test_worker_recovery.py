@@ -176,16 +176,82 @@ class WorkerRecoveryTests(unittest.TestCase):
         evidence = json.loads(service._visible_facts('UA-0001')[0]['source_evidence_json'])
         self.assertEqual(evidence['evidence_origins'], ['CURATED'])
 
-    def test_vin_replacement_hides_old_values_without_deleting_audit_data(self):
+    def test_conflicting_vin_replacement_preserves_values_flags_and_blocks_publication(self):
         service.scan_new_vins()
         service.process_one(enricher=ready)
         with sqlite3.connect(service.MAIN_DB) as conn:
             conn.execute("UPDATE cars SET vin='WDDMH0BBXDV171918'")
         service.scan_new_vins()
-        self.assertEqual(service._visible_facts('UA-0001'), [])
+        self.assertEqual(len(service._visible_facts('UA-0001')), 1)
+        self.assertEqual(self.state()['status'], 'NEEDS_REVIEW')
+        self.assertEqual(self.state()['site_sync_status'], 'NEEDS_REVIEW')
+        self.assertIsNone(service.sync_one(reconciler=lambda *_: self.fail('conflicting identity published')))
         with service.connect_spec(True) as conn:
             self.assertEqual(conn.execute('SELECT COUNT(*) FROM additional_specification').fetchone()[0], 1)
             self.assertEqual(conn.execute('SELECT COUNT(*) FROM additional_specification_audit').fetchone()[0], 1)
+
+    def test_legacy_ready_facts_with_year_conflict_are_blocked_without_changing_flags(self):
+        with sqlite3.connect(service.MAIN_DB) as conn:
+            conn.execute("UPDATE cars SET vin='KNAGS416BHA141028',model='К5',god=1999")
+        before_crm = service.MAIN_DB.read_bytes()
+        service._store_facts('UA-0001', [fact(), {**fact('5'), 'field_key': 'seats'}])
+        with service.connect_spec(False) as conn:
+            conn.execute("UPDATE additional_specification_meta SET is_manual=1 WHERE field_key='wheelbase'")
+            conn.execute("UPDATE additional_specification_meta SET is_visible=0 WHERE field_key='seats'")
+            preserved = [tuple(row) for row in conn.execute('SELECT * FROM additional_specification_meta ORDER BY field_key')]
+            values = [tuple(row) for row in conn.execute('SELECT * FROM additional_specification ORDER BY field_key')]
+            card = service.read_cards()[0]
+            conn.execute('''INSERT INTO vin_spec_jobs
+                (car_id,car_uid,vin,policy_version,status,requested_at,input_hash,site_sync_status)
+                VALUES(?,?,?,?,?,?,?,?)''', (1, 'UA-0001', card['vin'], service.source_policy.POLICY_VERSION,
+                'READY', service.utc_now(), service.input_fingerprint(card), 'PENDING'))
+        # Direct sync of a pre-existing READY row must block even before scan.
+        result = service.sync_one(reconciler=lambda *_: self.fail('old facts published'))
+        self.assertEqual(result['status'], 'NEEDS_REVIEW')
+        self.assertEqual(service.reconcile_published_cards(), 0)
+        self.assertEqual(service.scan_new_vins()['queued'], 0)
+        with service.connect_spec(True) as conn:
+            self.assertEqual(preserved, [tuple(row) for row in conn.execute('SELECT * FROM additional_specification_meta ORDER BY field_key')])
+            self.assertEqual(values, [tuple(row) for row in conn.execute('SELECT * FROM additional_specification ORDER BY field_key')])
+            audit = [dict(row) for row in conn.execute("SELECT * FROM additional_specification_audit WHERE action='IDENTITY_CONTEXT_BLOCKED'")]
+        self.assertEqual(len(audit), 1)
+        self.assertFalse(json.loads(audit[0]['spec_audit_json'])['fact_values_and_operator_flags_changed'])
+        self.assertEqual(service.MAIN_DB.read_bytes(), before_crm)
+
+    def test_new_conflicting_card_is_reviewed_before_collection_and_stays_blocked(self):
+        with sqlite3.connect(service.MAIN_DB) as conn:
+            conn.execute("UPDATE cars SET vin='KNAGS416BHA141028',model='К5',god=1999")
+        before_crm = service.MAIN_DB.read_bytes()
+        self.assertEqual(service.scan_new_vins()['queued'], 1)
+        self.assertEqual(self.state()['status'], 'NEEDS_REVIEW')
+        self.assertIsNone(service.process_one(enricher=lambda *_: self.fail('conflicting card collected')))
+        self.assertIsNone(service.sync_one(reconciler=lambda *_: self.fail('conflicting card published')))
+        self.assertFalse(service.retry_card('UA-0001'))
+        self.assertEqual(service.MAIN_DB.read_bytes(), before_crm)
+
+    def test_canonical_reader_and_actual_reconciler_reject_conflict_without_job_state(self):
+        import spec_publication
+        with sqlite3.connect(service.MAIN_DB) as conn:
+            conn.execute("UPDATE cars SET vin='KNAGS416BHA141028',model='К5',god=1999")
+        service._store_facts('UA-0001', [fact()])
+        card = service.read_cards()[0]
+        facts = service._visible_facts('UA-0001')
+        with patch.dict('os.environ', {'UA_ART_SPEC_DB': str(service.SPEC_DB)}):
+            with self.assertRaisesRegex(spec_publication.SpecError, 'IDENTITY_CONTEXT_REQUIRES_REVIEW'):
+                spec_publication.load_facts('UA-0001')
+            with self.assertRaisesRegex(spec_publication.SpecError, 'IDENTITY_CONTEXT_REQUIRES_REVIEW'):
+                spec_publication.guard_write(pathlib.Path(self.tmp.name)/'UA-0001.html', b'<html></html>')
+        root = pathlib.Path(self.tmp.name)
+        (root/'video').mkdir()
+        page = root/'video/UA-0001.html'
+        page.write_text('<html><body><!--UA099_CLEAN_VIN_START--><div>VIN unchanged</div></body></html>')
+        before = page.read_bytes()
+        result = spec_publication.reconcile_published(card, facts, root=root,
+            public_reader=lambda *_: self.fail('conflicting page must not reach public read'),
+            state_reader=lambda code: (card, facts))
+        self.assertEqual(result['status'], 'FAIL')
+        self.assertIn('IDENTITY_CONTEXT_REQUIRES_REVIEW', result['detail'])
+        self.assertEqual(page.read_bytes(), before)
 
     def test_worker_records_errors_and_heartbeat(self):
         with patch.object(service, 'migrate_legacy_once', side_effect=RuntimeError('fixture schema error')):

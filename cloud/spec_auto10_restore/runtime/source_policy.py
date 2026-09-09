@@ -256,6 +256,37 @@ def match_profile(car: dict[str, Any]) -> dict[str, Any] | None:
     return None
 
 
+def identity_context_issues(car: dict[str, Any]) -> list[str]:
+    """Reject demonstrated CRM/identity conflicts without replacing CRM data.
+
+    Exact VIN membership identifies a historical profile; it cannot override a
+    contradictory current make, model or year. A one-year calendar/model-year
+    difference is accepted. Numeric European chassis codes are not treated as
+    proof of a conflicting model year. Unknown profiles remain eligible for
+    normal source discovery and its independent identity validation.
+    """
+    issues: list[str] = []
+    profile = match_profile(car)
+    aliases = {"к5": "k5", "к 5": "k5", "б класса": "b class", "б класс": "b class"}
+    brand = _norm(car.get("brand"))
+    model = _norm(car.get("model"))
+    model = aliases.get(model, model)
+    if profile:
+        if brand and not any(_norm(token) in brand for token in profile["brand_tokens"]):
+            issues.append("CRM_BRAND_DIFFERS_FROM_EXACT_VIN_PROFILE")
+        if model and not any(_norm(token) in model for token in profile["model_tokens"]):
+            issues.append("CRM_MODEL_DIFFERS_FROM_EXACT_VIN_PROFILE")
+    year = re.fullmatch(r"(?:19|20)\d{2}", str(car.get("year") or car.get("model_year") or "").strip())
+    try:
+        vin = normalize_vin(car.get("vin"))
+        inferred = vin_model_year(vin)
+    except SourcePolicyError:
+        vin, inferred = "", None
+    if year and inferred is not None and abs(int(year.group()) - inferred) > 1 and not vin[9].isdigit():
+        issues.append("CRM_YEAR_DIFFERS_FROM_INFERRED_VIN_MODEL_YEAR")
+    return issues
+
+
 def profile_facts(profile: dict[str, Any] | None) -> list[Fact]:
     """Expand an audited profile into source-specific facts with provenance."""
     if not profile:
@@ -1041,6 +1072,15 @@ def enrich(
             "lookup_years": [], "status": "NEEDS_REVIEW", "facts": [],
             "sources": {domain: {"status": "NOT_RUN_UNRESOLVED_IDENTITY", "facts": 0} for domain in SOURCE_DOMAINS},
             "warnings": ["JAPANESE_FRAME_REQUIRES_REVIEWED_CATALOGUE_MAPPING"],
+        }
+    issues = identity_context_issues(car)
+    if issues:
+        return {
+            "policy_version": POLICY_VERSION, "vin": vin, "profile_id": "",
+            "lookup_years": [], "status": "NEEDS_REVIEW", "facts": [],
+            "sources": {domain: {"status": "NOT_RUN_IDENTITY_CONFLICT", "facts": 0}
+                        for domain in SOURCE_DOMAINS},
+            "warnings": issues, "identity_context_issues": issues,
         }
     profile = match_profile(car)
     curated = profile_facts(profile)
