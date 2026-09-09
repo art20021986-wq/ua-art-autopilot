@@ -116,6 +116,31 @@ class ServerGateTests(unittest.TestCase):
             with self.assertRaises(gate.GateError):
                 guard('open', (str(owned/'escape'), 'w', os.O_WRONLY))
 
+    def test_io_guard_resolves_relative_directory_descriptors(self):
+        with tempfile.TemporaryDirectory() as folder:
+            server = Path(folder)
+            stage = server/'stage'
+            stage.mkdir()
+            guard, counters = gate.make_audit_guard(stage, server)
+            server_fd = os.open(server, os.O_RDONLY | os.O_DIRECTORY)
+            stage_fd = os.open(stage, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                guard('os.link', ('src', 'dst', stage_fd, stage_fd))
+                guard('os.mkdir', ('candidate', 0o700, stage_fd))
+                guard('os.remove', ('owned', stage_fd))
+                for event, args in (
+                    ('os.link', ('src', 'dst', stage_fd, server_fd)),
+                    ('os.mkdir', ('candidate', 0o700, server_fd)),
+                    ('os.remove', ('existing', server_fd)),
+                    ('os.rename', ('owned', 'existing', stage_fd, server_fd)),
+                ):
+                    with self.subTest(event=event), self.assertRaises(gate.GateError):
+                        guard(event, args)
+                self.assertEqual(counters['blocked_outside_stage_writes'], 4)
+            finally:
+                os.close(stage_fd)
+                os.close(server_fd)
+
     def test_package_has_complete_manifest_expected_sources_legacy_fixtures_and_no_databases(self):
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder)/'gate.zip'

@@ -1,7 +1,9 @@
 """Offline compiler tests with temporary snapshots and no application execution."""
 import hashlib
+import errno
 import importlib.util
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -58,6 +60,7 @@ class CandidateCompilerTests(unittest.TestCase):
         self.assertEqual(report["module_count"], 10)
         self.assertFalse(report["production_changed"])
         self.assertFalse(report["runtime_verified"])
+        self.assertIn(report['publication_mode'], {'directory_atomic', 'manifest_last'})
         self.assertEqual(set(p.name for p in self.output.iterdir()), set(compiler.SNAPSHOT_FILES + compiler.RUNTIME_FILES) | {"manifest.json"})
         saved = json.loads((self.output / "manifest.json").read_text())
         self.assertEqual(saved, report)
@@ -71,6 +74,127 @@ class CandidateCompilerTests(unittest.TestCase):
             if name in compiler.RUNTIME_FILES:
                 self.assertEqual(original.read_bytes(), (self.output / name).read_bytes())
         self.assertEqual(list(self.root.glob(".spec-candidate-*")), [])
+
+    def test_unsupported_rename_uses_manifest_last_with_complete_verified_files(self):
+        real_link = os.link
+        linked_names = []
+
+        def observe_link(source, target, **kwargs):
+            linked_names.append(target)
+            if target != 'manifest.json':
+                self.assertFalse((self.output / 'manifest.json').exists())
+            return real_link(source, target, **kwargs)
+
+        with patch.object(compiler, '_rename_new_directory', side_effect=OSError(errno.EINVAL, 'unsupported filesystem operation')):
+            with patch.object(compiler.os, 'link', side_effect=observe_link):
+                report = compiler.prepare(self.source, self.output)
+        self.assertEqual(report['publication_mode'], 'manifest_last')
+        self.assertEqual(linked_names[-1], 'manifest.json')
+        self.assertEqual(len(linked_names), 11)
+        self.assertEqual(compiler.verify_candidate(self.output), report)
+        self.assertEqual(list(self.root.glob('.spec-candidate-*')), [])
+
+    def test_access_denial_does_not_trigger_fallback(self):
+        for number in (errno.EACCES, errno.EPERM, errno.ENOSPC, errno.EXDEV):
+            with self.subTest(errno=number):
+                with patch.object(compiler, '_rename_new_directory', side_effect=OSError(number, 'explicit failure')):
+                    with patch.object(compiler, '_publish_manifest_last') as fallback:
+                        with self.assertRaises(OSError):
+                            compiler.prepare(self.source, self.output)
+                        fallback.assert_not_called()
+                self.assertFalse(self.output.exists())
+
+    def test_fallback_refuses_output_claimed_between_rename_failure_and_mkdir(self):
+        def competing_output(*args):
+            self.output.mkdir()
+            (self.output / 'owner.txt').write_text('concurrent owner data')
+            raise OSError(errno.EINVAL, 'unsupported rename')
+        with patch.object(compiler, '_rename_new_directory', side_effect=competing_output):
+            with self.assertRaisesRegex(compiler.CandidateError, 'OUTPUT_ALREADY_EXISTS'):
+                compiler.prepare(self.source, self.output)
+        self.assertEqual((self.output / 'owner.txt').read_text(), 'concurrent owner data')
+        self.assertEqual({path.name for path in self.output.iterdir()}, {'owner.txt'})
+
+    def test_fallback_late_failure_removes_only_own_links_and_no_readiness_marker(self):
+        real_link = os.link
+        calls = []
+        def fail_late(source, target, **kwargs):
+            calls.append(target)
+            if len(calls) == 4:
+                raise OSError(errno.ENOSPC, 'injected late link failure')
+            return real_link(source, target, **kwargs)
+        with patch.object(compiler, '_rename_new_directory', side_effect=OSError(errno.EINVAL, 'unsupported')):
+            with patch.object(compiler.os, 'link', side_effect=fail_late):
+                with self.assertRaises(OSError):
+                    compiler.prepare(self.source, self.output)
+        self.assertFalse(self.output.exists())
+        self.assertEqual(list(self.root.glob('.spec-candidate-*')), [])
+
+    def test_fallback_directory_replacement_preserves_competing_output(self):
+        real_link = os.link
+        moved = self.root / 'moved-our-directory'
+        def replace_directory(source, target, **kwargs):
+            result = real_link(source, target, **kwargs)
+            if not moved.exists():
+                self.output.rename(moved)
+                self.output.mkdir()
+                (self.output / 'owner.txt').write_text('replacement owner')
+            return result
+        with patch.object(compiler, '_rename_new_directory', side_effect=OSError(errno.EINVAL, 'unsupported')):
+            with patch.object(compiler.os, 'link', side_effect=replace_directory):
+                with self.assertRaisesRegex(compiler.CandidateError, 'OUTPUT_DIRECTORY_REPLACED'):
+                    compiler.prepare(self.source, self.output)
+        self.assertEqual((self.output / 'owner.txt').read_text(), 'replacement owner')
+        self.assertEqual(list(moved.iterdir()), [])
+        self.assertEqual({path.name for path in self.output.iterdir()}, {'owner.txt'})
+
+    def test_cleanup_does_not_unlink_file_replaced_by_competing_writer(self):
+        real_link = os.link
+        first = []
+        def replace_own_file(source, target, **kwargs):
+            if first:
+                path = self.output / first[0]
+                path.unlink()
+                path.write_text('replacement must survive cleanup')
+                raise OSError(errno.ENOSPC, 'injected failure')
+            result = real_link(source, target, **kwargs)
+            first.append(target)
+            return result
+        with patch.object(compiler, '_rename_new_directory', side_effect=OSError(errno.EINVAL, 'unsupported')):
+            with patch.object(compiler.os, 'link', side_effect=replace_own_file):
+                with self.assertRaises(OSError):
+                    compiler.prepare(self.source, self.output)
+        self.assertEqual((self.output / first[0]).read_text(), 'replacement must survive cleanup')
+        self.assertFalse((self.output / 'manifest.json').exists())
+
+    def test_interrupted_partial_directory_is_not_ready_and_is_never_overwritten(self):
+        # State left by process death during file linking, before manifest commit.
+        self.output.mkdir()
+        partial = self.output / 'cars_ui.py'
+        partial.write_text('partial candidate from interrupted process')
+        with self.assertRaisesRegex(compiler.CandidateError, 'NOT_READY'):
+            compiler.verify_candidate(self.output)
+        with self.assertRaisesRegex(compiler.CandidateError, 'OUTPUT_ALREADY_EXISTS'):
+            compiler.prepare(self.source, self.output)
+        self.assertEqual(partial.read_text(), 'partial candidate from interrupted process')
+
+    def test_verify_rejects_tampered_extra_and_symlink_files(self):
+        compiler.prepare(self.source, self.output)
+        path = self.output / 'cars_ui.py'
+        original = path.read_bytes()
+        path.write_bytes(original + b'\n# altered after publication\n')
+        with self.assertRaisesRegex(compiler.CandidateError, 'HASH_MISMATCH'):
+            compiler.verify_candidate(self.output)
+        path.write_bytes(original)
+        extra = self.output / 'unknown.py'
+        extra.write_text('unexpected file')
+        with self.assertRaisesRegex(compiler.CandidateError, 'FILE_SET_INVALID'):
+            compiler.verify_candidate(self.output)
+        extra.unlink()
+        path.unlink()
+        path.symlink_to(self.source / 'cars_ui.py')
+        with self.assertRaises(OSError):
+            compiler.verify_candidate(self.output)
 
     def test_unknown_or_missing_sources_leave_no_partial_output(self):
         source_file = self.source / "cars_ui.py"

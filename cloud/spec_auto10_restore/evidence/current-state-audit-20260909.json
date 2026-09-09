@@ -1,0 +1,102 @@
+{
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "audit_script_sha256": "bbd112b84b0cd70b01696f8a7d54ee4ef377f3af8d722199b59df73668145360",
+  "server_report": "/home/Carix/spec_gate_b_restore_20260909/current-state-audit-v2.json",
+  "observation": "Authorized PythonAnywhere terminal output; selected summary and compact rows",
+  "is_full_report_copy": false,
+  "summary": {
+    "status": "READ_ONLY_AUDIT_COMPLETED",
+    "started_at_utc": "2026-09-09T05:52:19+00:00",
+    "completed_at_utc": "2026-09-09T05:52:19+00:00",
+    "production_changed": false,
+    "network_requests": 0,
+    "runtime_imported": false,
+    "root_binding": "explicit_path_not_active_process_proof",
+    "crm_rows": 18,
+    "published_rows": 16,
+    "draft_rows": 2,
+    "crm_selected_sha256_before": "71c3883c5235e8ea4c65183798f6e2d87c2e2491df2ce2e88ace53d9b626106b",
+    "crm_selected_sha256_after": "71c3883c5235e8ea4c65183798f6e2d87c2e2491df2ce2e88ace53d9b626106b",
+    "crm_identity_sha256": "ac3e8b4666c8db7d401673c1d42e1c3cc0b7e4c9e2cc528b72ce63cceede00bc",
+    "crm_matches_previous_verified_identity": true,
+    "spec_semantic_sha256": "ec45ac8ffc088f93a98857c81a6a95aac7b81ce8f7b8a466019a9a7e9e3572b3",
+    "spec_matches_previous_verified_fields": true,
+    "input_files_unchanged": true,
+    "global_atomic_snapshot": false
+  },
+  "drafts": [
+    {
+      "uid": "UA-0017",
+      "brand": "Audi",
+      "model": "A6",
+      "year": "2015",
+      "vin": {
+        "last4": "9684",
+        "sha256": "bdc6d48c3d19b41916729cb3c207518bb1db0f06a1fe95b23fa461f6f557709b",
+        "length": 17
+      },
+      "required_check": {
+        "status": "REVIEWED_SCHEMA_RULE",
+        "missing": [],
+        "runtime_handler_uses_this_rule": "UNVERIFIED",
+        "published_false_is_not_missing": true
+      },
+      "price_fields": {
+        "price_uah": 23000,
+        "price_total": null
+      }
+    },
+    {
+      "uid": "UA-0018",
+      "brand": "Kia",
+      "model": "K5",
+      "year": "2023",
+      "vin": {
+        "last4": "4823",
+        "sha256": "9e254bb640fc6adbbc8434001726aaba3774ed3dd64378d5919ae1eade878f99",
+        "length": 17
+      },
+      "required_check": {
+        "status": "REVIEWED_SCHEMA_RULE",
+        "missing": [],
+        "runtime_handler_uses_this_rule": "UNVERIFIED",
+        "published_false_is_not_missing": true
+      },
+      "price_fields": {
+        "price_uah": 19900,
+        "price_total": null
+      }
+    }
+  ],
+  "compact_legend": [
+    "Pairs=video/site; h=page v=VIN count s=spec rows:DB facts",
+    "c=brand/model/year/VIN/price: M=match X=mismatch U=unverified",
+    "d=diagnosis file+link; k=catalog file+link; 1=yes 0=no ?=unknown",
+    "req=missing schema fields (drafts); r=risks; -=none"
+  ],
+  "compact_cards": [
+    "UA-0001 y2017 p1 h1/1 v3/3 s0/0:43 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0002 y2010 p1 h1/1 v2/2 s0/0:47 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0003 y2019 p1 h1/1 v2/2 s0/0:25 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0004 y2019 p1 h1/1 v2/2 s0/0:25 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0005 y2013 p1 h1/1 v2/2 s0/0:44 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0006 y2019 p1 h1/1 v3/3 s0/0:25 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0007 y2011 p1 h1/1 v2/2 s0/0:47 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0008 y2009 p1 h1/1 v2/2 s0/0:47 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0009 y2018 p1 h1/1 v2/2 s0/0:25 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0010 y2018 p1 h1/1 v2/2 s0/0:25 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0011 y2018 p1 h1/1 v2/2 s0/0:29 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0012 y2018 p1 h1/1 v3/3 s0/0:25 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0013 y2015 p1 h1/1 v2/2 s0/0:40 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0014 y2016 p1 h1/1 v2/2 s0/0:47 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0015 y2018 p1 h1/1 v2/2 s0/0:38 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0016 y1999 p1 h1/1 v2/2 s0/0:25 cMMMMM/MMMMM d11/11 k11/11 req- r-",
+    "UA-0017 y2015 p0 h0/0 v?/? s?/?:0 cUUUUU/UUUUU d0?/0? k10/10 req- r-",
+    "UA-0018 y2023 p0 h0/0 v?/? s?/?:0 cUUUUU/UUUUU d0?/0? k10/10 req- r-"
+  ],
+  "limitations": [
+    "Static HTML parsing, not computed browser visibility.",
+    "Numeric prices match price_uah; currency mapping remains unverified.",
+    "Schema completeness does not prove successful actual publisher or new source enrichment."
+  ]
+}

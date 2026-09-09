@@ -1,4 +1,5 @@
 import importlib.util
+from contextlib import closing
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -23,11 +24,11 @@ class VerifiedSpecExportTests(unittest.TestCase):
     def test_hash_mismatch_fails_closed_without_database_writes(self):
         with tempfile.TemporaryDirectory() as folder:
             spec, crm = Path(folder) / "spec.db", Path(folder) / "crm.db"
-            with sqlite3.connect(spec) as conn:
+            with closing(sqlite3.connect(spec)) as conn, conn:
                 for table, fields in exporter.SPEC_FIELDS.items():
                     conn.execute("CREATE TABLE " + table + " (" +
                                  ",".join(field + " TEXT" for field in fields.split(",")) + ")")
-            with sqlite3.connect(crm) as conn:
+            with closing(sqlite3.connect(crm)) as conn, conn:
                 conn.execute("CREATE TABLE placeholder (id INTEGER)")
             before = (exporter.file_digest(spec), exporter.file_digest(crm))
             with self.assertRaisesRegex(exporter.ExportError, "SPEC_SEMANTIC_HASH_MISMATCH"):

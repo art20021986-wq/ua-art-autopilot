@@ -1,6 +1,7 @@
 """Temporary SQLite contract tests. No CRM, publisher or network calls."""
 from __future__ import annotations
 import concurrent.futures
+from contextlib import closing
 import json
 import pathlib
 import sqlite3
@@ -43,7 +44,7 @@ class WorkerRecoveryTests(unittest.TestCase):
         self.original_main, self.original_spec = service.MAIN_DB, service.SPEC_DB
         service.MAIN_DB = pathlib.Path(self.tmp.name) / 'crm.db'
         service.SPEC_DB = pathlib.Path(self.tmp.name) / 'spec.db'
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.executescript('''CREATE TABLE cars(id INTEGER PRIMARY KEY, auto_number TEXT, vin TEXT,
                 marka TEXT, model TEXT, god INTEGER, toplivo TEXT, engine_cc INTEGER,
                 transmission TEXT, published INTEGER);
@@ -63,12 +64,79 @@ class WorkerRecoveryTests(unittest.TestCase):
     def state(self):
         return service.card_state('UA-0001')
 
+    def test_connection_context_commits_and_closes_without_waiting_for_gc(self):
+        with service.connect_spec(False) as conn:
+            conn.execute("INSERT INTO vin_spec_state(key,value,updated_at) VALUES('close_test','committed','now')")
+        with self.assertRaises(sqlite3.ProgrammingError):
+            conn.execute('SELECT 1')
+        with service.connect_spec(True) as check:
+            self.assertEqual(check.execute("SELECT value FROM vin_spec_state WHERE key='close_test'").fetchone()[0], 'committed')
+        with self.assertRaises(sqlite3.ProgrammingError):
+            check.execute('SELECT 1')
+
+    def test_connection_context_rolls_back_and_closes_on_exception(self):
+        with self.assertRaisesRegex(RuntimeError, 'injected transaction failure'):
+            with service.connect_spec(False) as conn:
+                conn.execute("INSERT INTO vin_spec_state(key,value,updated_at) VALUES('rollback_test','must not persist','now')")
+                raise RuntimeError('injected transaction failure')
+        with self.assertRaises(sqlite3.ProgrammingError):
+            conn.execute('SELECT 1')
+        with service.connect_spec(True) as check:
+            self.assertIsNone(check.execute("SELECT value FROM vin_spec_state WHERE key='rollback_test'").fetchone())
+
+    def test_connection_initialization_failure_closes_open_handle(self):
+        opened = []
+        class BrokenPragma(service._ManagedConnection):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                opened.append(self)
+            def execute(self, sql, *args, **kwargs):
+                if sql == 'PRAGMA foreign_keys=ON':
+                    raise sqlite3.OperationalError('injected pragma failure')
+                return super().execute(sql, *args, **kwargs)
+        with patch.object(service, '_ManagedConnection', BrokenPragma):
+            with self.assertRaisesRegex(sqlite3.OperationalError, 'injected pragma failure'):
+                service.connect_spec(False)
+        self.assertEqual(len(opened), 1)
+        with self.assertRaises(sqlite3.ProgrammingError):
+            opened[0].execute('SELECT 1')
+
+    def test_retained_cursors_are_finalized_before_connection_close(self):
+        finalized = []
+        class ObservedCursor(sqlite3.Cursor):
+            def close(self):
+                # Record only after the native finalization succeeded while
+                # the connection was open, including an unfinished SELECT.
+                super().close()
+                finalized.append(id(self))
+        class ObservedConnection(service._ManagedConnection):
+            def cursor(self, *args, **kwargs):
+                kwargs.setdefault('factory', ObservedCursor)
+                return super().cursor(*args, **kwargs)
+        with patch.object(service, '_ManagedConnection', ObservedConnection):
+            with service.connect_spec(False) as conn:
+                direct = conn.cursor()
+                direct.execute('SELECT 1 UNION ALL SELECT 2')
+                selected = conn.execute('SELECT 3 UNION ALL SELECT 4')
+                self.assertEqual(selected.fetchone()[0], 3)  # intentionally unread remainder
+                many = conn.executemany("INSERT INTO vin_spec_state(key,value,updated_at) VALUES(?,?,?)",
+                                        [('cursor-a', 'a', 'now'), ('cursor-b', 'b', 'now')])
+                script = conn.executescript('SELECT 5;')
+                retained = [direct, selected, many, script]
+                self.assertTrue(all(cursor in conn._managed_cursors for cursor in retained))
+            self.assertTrue(all(id(cursor) in finalized for cursor in retained))
+            self.assertEqual(len(conn._managed_cursors), 0)
+            conn.close()  # explicit repeated close remains safe
+            for cursor in retained:
+                with self.assertRaises(sqlite3.ProgrammingError):
+                    cursor.fetchone()
+
     def test_context_edit_requeues_needs_review_but_normal_scan_is_idempotent(self):
         self.assertEqual(service.scan_new_vins()['queued'], 1)
         service.process_one(enricher=lambda _: {'status': 'NEEDS_REVIEW', 'facts': []})
         self.assertEqual(service.scan_new_vins()['queued'], 0)
         old_hash = self.state()['input_hash']
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.execute('UPDATE cars SET god=2016')
         self.assertEqual(service.scan_new_vins()['queued'], 1)
         self.assertNotEqual(self.state()['input_hash'], old_hash)
@@ -77,7 +145,7 @@ class WorkerRecoveryTests(unittest.TestCase):
     def test_stale_enrichment_after_context_edit_cannot_store_results(self):
         service.scan_new_vins()
         def edit_during_collection(card):
-            with sqlite3.connect(service.MAIN_DB) as conn:
+            with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
                 conn.execute("UPDATE cars SET model='Sonata'")
             return ready(card)
         result = service.process_one(enricher=edit_during_collection)
@@ -153,12 +221,12 @@ class WorkerRecoveryTests(unittest.TestCase):
         self.assertEqual(self.state()['site_sync_detail'], 'disk full')
 
     def test_drafts_never_call_publisher_then_publication_schedules_sync(self):
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.execute('UPDATE cars SET published=0')
         service.scan_new_vins()
         service.process_one(enricher=ready)
         self.assertIsNone(service.sync_one(reconciler=lambda *_: self.fail('draft published')))
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.execute('UPDATE cars SET published=1')
         self.assertEqual(service.reconcile_published_cards(), 1)
         self.assertEqual(service.sync_one(reconciler=lambda *_: {'status': 'PASS', 'detail': 'ok'})['status'], 'PASS')
@@ -189,7 +257,7 @@ class WorkerRecoveryTests(unittest.TestCase):
     def test_conflicting_vin_replacement_preserves_values_flags_and_blocks_publication(self):
         service.scan_new_vins()
         service.process_one(enricher=ready)
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.execute("UPDATE cars SET vin='WDDMH0BBXDV171918'")
         service.scan_new_vins()
         self.assertEqual(len(service._visible_facts('UA-0001')), 1)
@@ -201,7 +269,7 @@ class WorkerRecoveryTests(unittest.TestCase):
             self.assertEqual(conn.execute('SELECT COUNT(*) FROM additional_specification_audit').fetchone()[0], 1)
 
     def test_legacy_ready_facts_with_year_conflict_are_blocked_without_changing_flags(self):
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.execute("UPDATE cars SET vin='KNAGS416BHA141028',model='К5',god=1999")
         before_crm = service.MAIN_DB.read_bytes()
         service._store_facts('UA-0001', [fact(), {**fact('5'), 'field_key': 'seats'}])
@@ -229,7 +297,7 @@ class WorkerRecoveryTests(unittest.TestCase):
         self.assertEqual(service.MAIN_DB.read_bytes(), before_crm)
 
     def test_new_conflicting_card_is_reviewed_before_collection_and_stays_blocked(self):
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.execute("UPDATE cars SET vin='KNAGS416BHA141028',model='К5',god=1999")
         before_crm = service.MAIN_DB.read_bytes()
         self.assertEqual(service.scan_new_vins()['queued'], 1)
@@ -241,7 +309,7 @@ class WorkerRecoveryTests(unittest.TestCase):
 
     def test_canonical_reader_and_actual_reconciler_reject_conflict_without_job_state(self):
         import spec_publication
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.execute("UPDATE cars SET vin='KNAGS416BHA141028',model='К5',god=1999")
         service._store_facts('UA-0001', [fact()])
         card = service.read_cards()[0]
@@ -274,7 +342,7 @@ class WorkerRecoveryTests(unittest.TestCase):
         self.assertIn('fixture schema error', heartbeat['error'])
 
     def test_due_old_card_sync_cannot_starve_new_enrichment(self):
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             for index in range(2, 18):
                 conn.execute("INSERT INTO cars SELECT ?,?,vin,marka,model,god,toplivo,engine_cc,transmission,published FROM cars WHERE id=1",
                              (index, f"UA-{index:04d}"))
@@ -392,11 +460,11 @@ class WorkerRecoveryTests(unittest.TestCase):
         self.assertEqual(service.MAIN_DB.read_bytes(), self.before)
 
     def test_japanese_chassis_is_queued_but_never_sent_as_standard_vin(self):
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.execute("UPDATE cars SET vin='DAA-HE12-123456'")
         # Agent's conservative normalizer accepts only reviewed frame families;
         # use an already normalized supported frame form.
-        with sqlite3.connect(service.MAIN_DB) as conn:
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
             conn.execute("UPDATE cars SET vin='HE12-123456'")
         if not hasattr(source_policy, 'normalize_identity'):
             self.skipTest('source identity change not present yet')

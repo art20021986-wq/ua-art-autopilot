@@ -140,12 +140,15 @@ def make_audit_guard(stage: Path, server_root: Path, *, owned_temp: Path | None 
     write_roots = (stage,) if owned_temp is None else (stage, validate_owned_temp(owned_temp))
     counters = {'blocked_network_or_process_actions': 0, 'blocked_outside_stage_writes': 0,
                 'blocked_production_reads': 0, 'isolated_lock_probe_processes': 0}
-    def resolved(value):
+    def resolved(value, dir_fd=None):
         if isinstance(value, int) or value is None:
             return None
-        return Path(os.fsdecode(value)).absolute().resolve()
-    def write_path(value):
-        path = resolved(value)
+        path = Path(os.fsdecode(value))
+        if not path.is_absolute() and dir_fd not in (None, -1, -100):
+            path = Path(os.readlink('/proc/self/fd/' + str(dir_fd))) / path
+        return path.absolute().resolve()
+    def write_path(value, dir_fd=None):
+        path = resolved(value, dir_fd)
         if path is not None and not inside(path):
             counters['blocked_outside_stage_writes'] += 1
             raise GateError('WRITE_OUTSIDE_ISOLATED_ROOTS_FORBIDDEN')
@@ -176,12 +179,21 @@ def make_audit_guard(stage: Path, server_root: Path, *, owned_temp: Path | None 
             writing = (isinstance(mode, str) and any(char in mode for char in 'wax+')) or (
                 isinstance(flags, int) and flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND))
             write_path(path) if writing else read_path(path)
-        elif event in {'os.remove', 'os.rmdir', 'os.mkdir', 'os.chmod', 'os.chown', 'os.truncate', 'os.utime'}:
+        elif event in {'os.remove', 'os.rmdir'}:
+            write_path(args[0], args[1] if len(args) > 1 else None)
+        elif event in {'os.mkdir', 'os.chmod'}:
+            write_path(args[0], args[2] if len(args) > 2 else None)
+        elif event == 'os.chown':
+            write_path(args[0], args[3] if len(args) > 3 else None)
+        elif event == 'os.utime':
+            write_path(args[0], args[3] if len(args) > 3 else None)
+        elif event == 'os.truncate':
             write_path(args[0])
         elif event in {'os.rename', 'os.link'}:
-            write_path(args[0]); write_path(args[1])
+            write_path(args[0], args[2] if len(args) > 2 else None)
+            write_path(args[1], args[3] if len(args) > 3 else None)
         elif event == 'os.symlink':
-            write_path(args[1])
+            write_path(args[1], args[2] if len(args) > 2 else None)
         elif event == 'sqlite3.connect':
             target = str(args[0])
             if target != ':memory:':
@@ -233,8 +245,8 @@ def main() -> int:
               'vin_decoder_network_check': 'NOT_RUN', 'live_crm_end_to_end': 'NOT_RUN',
               'python_version': '.'.join(map(str, sys.version_info[:3])),
               'execution_origin': 'PYTHONANYWHERE_ACCOUNT_ISOLATED_STAGE',
-              'filesystem_scope': {'home_atomic_directory_publish': 'UNSUPPORTED_IN_PRIOR_SERVER_RUN_ERRNO_22',
-                  'home_runtime_write_compatibility': 'NOT_ESTABLISHED', 'tmp_atomic_directory_publish': 'NOT_RUN'},
+              'filesystem_scope': {'renameat2_noreplace': 'UNSUPPORTED_IN_PRIOR_SERVER_RUNS_ERRNO_22',
+                  'home_candidate_commit': 'NOT_RUN', 'home_runtime_write_compatibility': 'NOT_ESTABLISHED'},
               'started_at_utc': dt.datetime.now(dt.timezone.utc).isoformat()}
     run = None
     phase = 'stage_validation'
@@ -265,7 +277,7 @@ def main() -> int:
         temp.mkdir(mode=0o700)
         tempfile.tempdir = str(temp)
         report['isolated_write_roots'] = [str(STAGE), str(owned_temp)]
-        report['candidate_output_root'] = str(owned_temp/'compiled-candidate')
+        report['candidate_output_root'] = str(run/'compiled-candidate')
         # Do not retain the live home or any environment-supplied home path in
         # import search paths. No environment variables or secret files read.
         sys.path = [entry for entry in sys.path if entry and not (
@@ -280,10 +292,15 @@ def main() -> int:
                 'isolated_server_candidate_compiler', STAGE/'cloud/spec_auto10_restore/prepare_candidate.py')
             compiler = importlib.util.module_from_spec(compiler_spec)
             compiler_spec.loader.exec_module(compiler)
-            compiled = compiler.prepare(source_copy, owned_temp/'compiled-candidate')
+            compiled = compiler.prepare(source_copy, run/'compiled-candidate')
+            verified = compiler.verify_candidate(run/'compiled-candidate')
+            if verified != compiled:
+                raise GateError('CANDIDATE_READINESS_MANIFEST_MISMATCH')
             report['candidate'] = {'status': compiled['status'], 'module_count': compiled['module_count'],
-                                   'files': compiled['files'], 'application_imported': False}
-            report['filesystem_scope']['tmp_atomic_directory_publish'] = 'PASS'
+                                   'files': compiled['files'], 'application_imported': False,
+                                   'publication_mode': compiled['publication_mode'],
+                                   'readiness_and_hashes_verified': True}
+            report['filesystem_scope']['home_candidate_commit'] = 'PASS'
             phase = 'isolated_tests'
             tests = unittest.defaultTestLoader.discover(str(STAGE/'cloud/spec_auto10_restore/tests'), pattern='test_*.py')
             result = unittest.TextTestRunner(stream=captured, resultclass=SanitizedResults).run(tests)
@@ -307,8 +324,9 @@ def main() -> int:
             'External sources and individual VIN verification were not requested and remain NOT_RUN.',
             'No install, database correction, deployment, restart, or production publication was performed.',
             'Only the exact isolated Python -I -B flock probe may create a child process; all other process/network actions are forbidden.',
-            'Candidate outputs and temporary databases/pages use one fresh private /tmp directory, not the production home filesystem.',
-            'The earlier home-filesystem RENAME_NOREPLACE errno 22 remains unresolved; isolated /tmp PASS cannot prove production filesystem write compatibility.',
+            'The candidate is saved and verified in the isolated home staging folder; test databases/pages use one fresh private /tmp directory.',
+            'Manifest-last mode commits readiness only after every file is complete; it does not claim atomic visibility of the whole directory.',
+            'Candidate commit compatibility does not establish the running publisher, production write paths or the overall Gate B.',
             'This result cannot establish the overall Gate B or release permission.']
     except Exception as exc:
         report['status'] = 'FAIL'
@@ -325,6 +343,16 @@ def main() -> int:
         result_path = None
     print(json.dumps({'status': report['status'], 'scope': report['scope'],
                       'overall_gate_b': 'NOT_EVALUATED', 'tests_run': report.get('tests', {}).get('run', 0),
+                      'failures': report.get('tests', {}).get('failures'),
+                      'errors': report.get('tests', {}).get('errors'),
+                      'skipped': report.get('tests', {}).get('skipped'),
+                      'candidate_mode': report.get('candidate', {}).get('publication_mode'),
+                      'candidate_modules': report.get('candidate', {}).get('module_count'),
+                      'candidate_verified': report.get('candidate', {}).get('readiness_and_hashes_verified'),
+                      'sources_unchanged': report.get('production_source_bytes_and_mtimes_unchanged'),
+                      'io_guard': report.get('io_guard'),
+                      'failed_scenarios': [item for item in report.get('tests', {}).get('scenarios', [])
+                                           if item['status'] != 'PASS'],
                       'failure_code': report.get('failure_code'), 'failure_errno': report.get('failure_errno'),
                       'failure_phase': report.get('failure_phase'), 'report': result_path}, ensure_ascii=True))
     return 0 if report['status'] == 'PASS' else 2
