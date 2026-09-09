@@ -1,0 +1,362 @@
+{
+  "error": "TypeError:startswith first arg must be bytes or a tuple of bytes, not str",
+  "inputs": {
+    "golden_sha256": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3",
+    "modules": {
+      "card_lifecycle.py": {
+        "candidate_sha256_before_relocation": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+        "captured_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+        "literal_relocations": [],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7"
+      },
+      "card_shell.py": {
+        "candidate_sha256_before_relocation": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+        "captured_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+        "literal_relocations": [],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a"
+      },
+      "catalog_design_guard.py": {
+        "candidate_sha256_before_relocation": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+        "captured_sha256": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+        "literal_relocations": [
+          {
+            "line": 22,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "24553ca0358d4dc182284ead17fd2e9a2b11f12fe8f57377985f12652891d2c4"
+      },
+      "db.py": {
+        "candidate_sha256_before_relocation": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+        "captured_sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+        "literal_relocations": [
+          {
+            "line": 76,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 77,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 900,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 901,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "671c31b332f6d813f3b4f52d09726d0fb897622d19f61be33ce52c13d11898f8"
+      },
+      "master_card.py": {
+        "candidate_sha256_before_relocation": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8",
+        "captured_sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+        "literal_relocations": [
+          {
+            "line": 9,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 1463,
+            "literal_sha256": "8d72e31c80f02bb81c64ab1e66182b6671df09bb14f3a5e651c4cd06facdfb34",
+            "occurrences": 1
+          },
+          {
+            "line": 1463,
+            "literal_sha256": "01b4e8bad30c73d6a577f2d4db1df95e716f9ba28c942f03276e47aa8d89b0cc",
+            "occurrences": 1
+          },
+          {
+            "line": 1840,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 1840,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          },
+          {
+            "line": 2201,
+            "literal_sha256": "bdc5edfffd4ad1b0f81a37a8aa0f2339a64291608610d40e5f0f22f1f4aa89bc",
+            "occurrences": 1
+          },
+          {
+            "line": 2261,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 2261,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          },
+          {
+            "line": 2855,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": true,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "38e4125f744f0143e51dce6ca0d536c77a5f4e34929e1bdf29e6105b5d208dfc"
+      },
+      "profile_library.py": {
+        "candidate_sha256_before_relocation": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+        "captured_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+        "literal_relocations": [],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6"
+      },
+      "publikaciya.py": {
+        "candidate_sha256_before_relocation": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+        "captured_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+        "literal_relocations": [
+          {
+            "line": 10,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 267,
+            "literal_sha256": "93beac4d8d22984bf297edd1983639eec7d680cecdee2448caca9501f30d5fa0",
+            "occurrences": 1
+          },
+          {
+            "line": 587,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "9938df9f13844303581d5a315f3808f601bc943d531f67a76c8072d8ff13677e"
+      },
+      "publish_transaction_guard.py": {
+        "candidate_sha256_before_relocation": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+        "captured_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+        "literal_relocations": [
+          {
+            "line": 31,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "bfa74d6c88cdd2d738f198c549515bd9ee32f4ee3ec904c1957fe7f0d2eca4ee"
+      },
+      "source_policy.py": {
+        "candidate_sha256_before_relocation": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+        "captured_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+        "literal_relocations": [],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      },
+      "spec_publication.py": {
+        "candidate_sha256_before_relocation": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+        "captured_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+        "literal_relocations": [
+          {
+            "line": 280,
+            "literal_sha256": "c48fdad1e1df62122795fb354451bce6610dff2c7979ee9a8fdb85080058c03a",
+            "occurrences": 1
+          },
+          {
+            "line": 394,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "806688cc37e7a87fea3c44a2cdcadee0b916f2c0e6954a4df73fe4926b6ac1ff"
+      },
+      "stranica.py": {
+        "candidate_sha256_before_relocation": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc",
+        "captured_sha256": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc",
+        "literal_relocations": [
+          {
+            "line": 15,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 701,
+            "literal_sha256": "84b82f138a5e4633460f5c4c927abf76f90df5e29c82ee2457b72c652ab8f934",
+            "occurrences": 1
+          },
+          {
+            "line": 919,
+            "literal_sha256": "8d72e31c80f02bb81c64ab1e66182b6671df09bb14f3a5e651c4cd06facdfb34",
+            "occurrences": 1
+          },
+          {
+            "line": 919,
+            "literal_sha256": "01b4e8bad30c73d6a577f2d4db1df95e716f9ba28c942f03276e47aa8d89b0cc",
+            "occurrences": 1
+          },
+          {
+            "line": 1721,
+            "literal_sha256": "36f863becdb23d3636622478e3fff9f48ad08f776a42d8a107b1c462473fbbc0",
+            "occurrences": 1
+          },
+          {
+            "line": 2633,
+            "literal_sha256": "4b59c8372e694dffab4384931bd4251483d2c784907b112c7871447c6cd6ea22",
+            "occurrences": 1
+          },
+          {
+            "line": 2682,
+            "literal_sha256": "8d72e31c80f02bb81c64ab1e66182b6671df09bb14f3a5e651c4cd06facdfb34",
+            "occurrences": 1
+          },
+          {
+            "line": 2875,
+            "literal_sha256": "4b59c8372e694dffab4384931bd4251483d2c784907b112c7871447c6cd6ea22",
+            "occurrences": 1
+          },
+          {
+            "line": 2893,
+            "literal_sha256": "7860529380408555ac66d043513d4edd5dc80aceaef0d145ed423ea9fce8de54",
+            "occurrences": 1
+          },
+          {
+            "line": 2894,
+            "literal_sha256": "5bd6a2b716323f986e523b3945458120b7005f5f2c5efc86e6ce6761a5e8cf90",
+            "occurrences": 1
+          },
+          {
+            "line": 3048,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 3048,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          },
+          {
+            "line": 3372,
+            "literal_sha256": "bdc5edfffd4ad1b0f81a37a8aa0f2339a64291608610d40e5f0f22f1f4aa89bc",
+            "occurrences": 1
+          },
+          {
+            "line": 3432,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 3432,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "eee8c13dbb30d00b41de3aca9d65f706ff407545cb44178c4194134552ff8f19"
+      },
+      "ua_additional_spec.py": {
+        "candidate_sha256_before_relocation": "48a3f8e88bb214d6632513b6ee0b884a0d3bd95cb4bc2e786426fec42e4b2441",
+        "captured_sha256": "5a03cb99d1f4514539956f32a75e09e119e2e9049a91da6326adb32877518e56",
+        "literal_relocations": [
+          {
+            "line": 14,
+            "literal_sha256": "d47f953a8ac8df98f9408dc7e9a9d6aef9984eed311b119d0b0388c5f0050267",
+            "occurrences": 1
+          },
+          {
+            "line": 655,
+            "literal_sha256": "c48fdad1e1df62122795fb354451bce6610dff2c7979ee9a8fdb85080058c03a",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": true,
+        "staged_sha256": "9b5ae1fbe9f21a93c6e99d87cc0d63d960b56da8b01c20fcd897c57b26fa42d6"
+      },
+      "vin_spec_service.py": {
+        "candidate_sha256_before_relocation": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+        "captured_sha256": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+        "literal_relocations": [
+          {
+            "line": 32,
+            "literal_sha256": "d47f953a8ac8df98f9408dc7e9a9d6aef9984eed311b119d0b0388c5f0050267",
+            "occurrences": 1
+          },
+          {
+            "line": 34,
+            "literal_sha256": "c48fdad1e1df62122795fb354451bce6610dff2c7979ee9a8fdb85080058c03a",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "863b951010d62a8a8b65f1f47a419517c0f6b900e6c10e658994a28f6a78e479"
+      }
+    }
+  },
+  "io_guard": {
+    "network": 0,
+    "outside_read": 0,
+    "outside_write": 0,
+    "process": 0
+  },
+  "production_changed": false,
+  "scope": "ISOLATED_CAPTURED_FULL_PUBLISHER",
+  "status": "FAIL",
+  "trace": [
+    {
+      "file": "full_publisher_rehearsal.py",
+      "function": "main",
+      "line": 384
+    },
+    {
+      "file": "full_publisher_rehearsal.py",
+      "function": "scenario",
+      "line": 241
+    },
+    {
+      "file": "full_publisher_rehearsal.py",
+      "function": "seed_runtime",
+      "line": 200
+    },
+    {
+      "file": "db.py",
+      "function": "init_db",
+      "line": 333
+    },
+    {
+      "file": "db.py",
+      "function": "connect",
+      "line": 316
+    },
+    {
+      "file": "db.py",
+      "function": "_ua_lock3_connect",
+      "line": 89
+    },
+    {
+      "file": "full_publisher_rehearsal.py",
+      "function": "guard",
+      "line": 130
+    }
+  ]
+}

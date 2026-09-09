@@ -1,0 +1,52 @@
+{
+  "scope": "OFFLINE_COMPLETE15_COMPOSITION_AND_VERIFICATION",
+  "status": "PASS",
+  "candidate_id": "UA-ART-SPEC-AUTO10-COMPLETE-15-V1",
+  "candidate_path": "/workspace/scratch/2d59224df460/private-runtime/complete-candidate15-v1-r2",
+  "candidate_manifest_sha256": "c4f75a818156e29426c9d601552ab0de56663e965233f2a56c01f5aaa111de07",
+  "candidate_files": {
+    "card_lifecycle.py": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+    "card_shell.py": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+    "cars_ui.py": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+    "profile_library.py": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+    "publikaciya.py": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+    "publish_transaction_guard.py": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+    "source_policy.py": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+    "spec_publication.py": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+    "ua_additional_spec.py": "48a3f8e88bb214d6632513b6ee0b884a0d3bd95cb4bc2e786426fec42e4b2441",
+    "vin_spec_service.py": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+    "car_number_allocator.py": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1",
+    "master_card.py": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8",
+    "cars_schema.py": "20da4d4e892b363cd57c8819eadf92f0d8d54383a6c3344e37391d00d5d56e8a",
+    "db.py": "1d5073450b353b88f99944930ed34af0735784c3a580801bab694ecafb7f59a2",
+    "ai_filter.py": "4b0326b0280e5bf9fdecab0a4f0a931525bd7700b11b6c6c37756895f55d6c89"
+  },
+  "module_count": 15,
+  "publication_mode": "manifest_last",
+  "started_at_utc": "2026-09-09T08:28:12.166048+00:00",
+  "completed_at_utc": "2026-09-09T08:28:15.725361+00:00",
+  "duration_seconds": 3.559,
+  "tests_run": 12,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "python_version": "3.12.14",
+  "assembler_sha256": "38db5dbf9c5c6432665735cb3f6c238ac72c6c5306c6b8f34f59e0fa8432f23a",
+  "tests_sha256": "4d63d0388bf963134b379b4088efea08b4e965809206354c7eeabe923bea915d",
+  "historical_builder_sha256": "43ca3f03e9157c77bebe1c15f65431d7dbf464a79815f1a7607ad1b18985e235",
+  "original_v7_bytes_and_mtimes_unchanged": true,
+  "base_materialization": {
+    "reason": "Local v7directorycontainsderivedbytecode; copiedonlyexacttenpinnedmodulesandmanifest into new strictinputdirectory. Originalfilespreserved.",
+    "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean"
+  },
+  "production_changed": false,
+  "application_imported": false,
+  "final15_runtime_executed": false,
+  "overall_gate_b": "NOT_EVALUATED",
+  "execution_dependency_pins": {
+    "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc",
+    "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "catalog_design_golden.html": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3"
+  },
+  "review_fix": "Verifier rejects forged Gate B/production flags, unknown manifest keys, removed limitations; input paths marked informational."
+}

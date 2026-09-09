@@ -205,20 +205,136 @@ class WorkerRecoveryTests(unittest.TestCase):
         self.assertEqual(page['repairs'], 1)
         self.assertEqual(self.state()['attempts'], 1)
 
-    def test_sync_retries_are_bounded_and_not_reset_by_scanning(self):
+    def test_sync_retries_are_bounded_and_cooldown_not_reset_by_scanning(self):
         service.scan_new_vins()
         service.process_one(enricher=ready)
         for _ in range(3):
             self.expire('site_sync_next_at')
             result = service.sync_one(reconciler=lambda *_: {'status': 'FAIL', 'detail': 'disk full'})
         self.assertEqual(result['status'], 'FAILED')
+        deadline = self.state()['site_sync_next_at']
         for _ in range(2):
             service.scan_new_vins()
-            self.expire('site_sync_next_at')
             service.reconcile_published_cards()
             self.assertIsNone(service.sync_one(reconciler=lambda *_: self.fail('budget exceeded')))
+            self.assertEqual(self.state()['site_sync_next_at'], deadline)
         self.assertEqual(self.state()['site_sync_attempts'], 3)
         self.assertEqual(self.state()['site_sync_detail'], 'disk full')
+
+    def exhaust_sync(self):
+        service.scan_new_vins()
+        service.process_one(enricher=ready)
+        for _ in range(service.MAX_SYNC_ATTEMPTS):
+            self.expire('site_sync_next_at')
+            result = service.sync_one(reconciler=lambda *_: {'status': 'FAIL', 'detail': 'temporary outage'})
+        self.assertEqual(result['status'], 'FAILED')
+
+    def test_failed_batch_recovers_real_pages_after_cooldown_without_refetch(self):
+        import spec_publication
+        self.exhaust_sync()
+        with service.connect_spec(False) as conn:
+            conn.execute("UPDATE additional_specification SET field_value='2800 мм'")
+            conn.execute('UPDATE additional_specification_meta SET is_manual=1')
+            preserved = [tuple(row) for row in conn.execute('SELECT * FROM additional_specification_meta')]
+        root = pathlib.Path(self.tmp.name)
+        for folder in ('video', 'site'):
+            (root/folder).mkdir()
+            (root/folder/'UA-0001.html').write_text(full_page(), encoding='utf-8')
+        self.expire('site_sync_next_at')
+        service.ensure_schema()  # reinitialization retains the due deadline
+        self.assertEqual(service.reconcile_published_cards(), 1)
+        self.assertEqual(service.reconcile_published_cards(), 0)
+        def reconcile(card, facts):
+            return spec_publication.reconcile_published(card, facts, root=root,
+                state_reader=lambda _: (service.read_cards()[0], service._visible_facts('UA-0001')),
+                public_reader=lambda _: (root/'video/UA-0001.html').read_text())
+        with patch.object(service, 'process_one', side_effect=AssertionError('source collection must not run')):
+            result = service.sync_one(reconciler=reconcile)
+        self.assertEqual(result['status'], 'PASS')
+        self.assertEqual(result['attempt'], 1)
+        self.assertEqual(self.state()['attempts'], 1)
+        for folder in ('video', 'site'):
+            page = (root/folder/'UA-0001.html').read_text()
+            self.assertEqual(page.count('data-ua-additional-spec="1"'), 1)
+            self.assertIn('2800 мм', page)
+            self.assertEqual(page.count('KNAGN4AD5F5067209'), 1)
+        with service.connect_spec(True) as conn:
+            self.assertEqual(preserved, [tuple(row) for row in conn.execute('SELECT * FROM additional_specification_meta')])
+        self.assertEqual(service.MAIN_DB.read_bytes(), self.before)
+
+    def test_legacy_failed_job_without_deadline_gets_one_durable_cooldown(self):
+        self.exhaust_sync()
+        with service.connect_spec(False) as conn:
+            conn.execute('UPDATE vin_spec_jobs SET site_sync_next_at=NULL')
+        service.ensure_schema()
+        deadline = self.state()['site_sync_next_at']
+        self.assertIsNotNone(deadline)
+        self.assertGreater(deadline, service.utc_now())
+        service.ensure_schema()
+        self.assertEqual(self.state()['site_sync_next_at'], deadline)
+        self.assertEqual(service.reconcile_published_cards(), 0)
+        self.assertEqual(self.state()['site_sync_attempts'], service.MAX_SYNC_ATTEMPTS)
+        self.assertEqual(self.state()['site_sync_detail'], 'temporary outage')
+
+    def test_due_failed_job_does_not_republish_hidden_or_deleted_card(self):
+        for mutation in ('UPDATE cars SET published=0', 'DELETE FROM cars'):
+            with self.subTest(mutation=mutation):
+                self.exhaust_sync()
+                self.expire('site_sync_next_at')
+                with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
+                    conn.execute(mutation)
+                self.assertEqual(service.reconcile_published_cards(), 0)
+                self.assertIsNone(service.sync_one(reconciler=lambda *_: self.fail('withdrawn card republished')))
+                if mutation.startswith('UPDATE'):
+                    with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
+                        conn.execute('UPDATE cars SET published=1')
+                    service.reconcile_published_cards()
+
+    def test_due_failed_job_with_identity_conflict_remains_blocked(self):
+        self.exhaust_sync()
+        self.expire('site_sync_next_at')
+        with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:
+            conn.execute('UPDATE cars SET god=1999')
+        self.assertEqual(service.reconcile_published_cards(), 0)
+        self.assertEqual(self.state()['site_sync_status'], 'NEEDS_REVIEW')
+        self.assertIsNone(service.sync_one(reconciler=lambda *_: self.fail('conflict published')))
+
+    def test_concurrent_due_failed_batch_has_one_requeue_and_one_claim(self):
+        self.exhaust_sync()
+        self.expire('site_sync_next_at')
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            counts = list(pool.map(lambda _: service.reconcile_published_cards(), range(2)))
+        self.assertEqual(sum(counts), 1)
+        calls = []
+        def reconcile(*_):
+            calls.append(True)
+            return {'status': 'PASS', 'detail': 'one owner'}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            results = list(pool.map(lambda _: service.sync_one(reconciler=reconcile), range(2)))
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(sum(result is not None for result in results), 1)
+
+    def test_failed_batch_does_not_steal_nonexpired_sync_ownership(self):
+        self.exhaust_sync()
+        self.expire('site_sync_next_at')
+        with service.connect_spec(False) as conn:
+            conn.execute("UPDATE vin_spec_jobs SET site_sync_status='RUNNING',site_sync_token='active-owner',site_sync_started_at=?", (service.utc_now(),))
+        self.assertEqual(service.reconcile_published_cards(), 0)
+        service.recover_interrupted_jobs()
+        self.assertEqual(self.state()['site_sync_status'], 'RUNNING')
+        with service.connect_spec(True) as conn:
+            self.assertEqual(conn.execute('SELECT site_sync_token FROM vin_spec_jobs').fetchone()[0], 'active-owner')
+
+    def test_expired_final_sync_claim_gets_cooldown_before_automatic_retry(self):
+        self.exhaust_sync()
+        with service.connect_spec(False) as conn:
+            conn.execute("UPDATE vin_spec_jobs SET site_sync_status='RUNNING',site_sync_token='expired-owner',site_sync_started_at='2000-01-01T00:00:00Z'")
+        service.recover_interrupted_jobs()
+        self.assertEqual(self.state()['site_sync_status'], 'FAILED')
+        self.assertEqual(service.reconcile_published_cards(), 0)
+        self.expire('site_sync_next_at')
+        self.assertEqual(service.reconcile_published_cards(), 1)
+        self.assertEqual(service.sync_one(reconciler=lambda *_: {'status': 'PASS', 'detail': 'recovered'})['attempt'], 1)
 
     def test_drafts_never_call_publisher_then_publication_schedules_sync(self):
         with closing(sqlite3.connect(service.MAIN_DB)) as conn, conn:

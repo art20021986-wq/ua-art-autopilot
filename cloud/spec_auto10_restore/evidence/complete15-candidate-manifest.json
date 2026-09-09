@@ -1,0 +1,251 @@
+{
+  "application_imported": false,
+  "base_pins": {
+    "card_lifecycle.py": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+    "card_shell.py": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+    "cars_ui.py": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+    "profile_library.py": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+    "publikaciya.py": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+    "publish_transaction_guard.py": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+    "source_policy.py": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+    "spec_publication.py": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+    "ua_additional_spec.py": "5a03cb99d1f4514539956f32a75e09e119e2e9049a91da6326adb32877518e56",
+    "vin_spec_service.py": "b3a90347c15e3063abe072f4b159b78e392a2da8f2e15f2bf9a37ba59bc9e7a7"
+  },
+  "candidate_id": "UA-ART-SPEC-AUTO10-COMPLETE-15-V1",
+  "contract_id": "UA-ART-SPEC-AUTO-10-RESTORE-001-v1.0",
+  "execution_dependency_pins": {
+    "catalog_design_golden.html": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3",
+    "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+  },
+  "files": {
+    "ai_filter.py": {
+      "after_sha256": "4b0326b0280e5bf9fdecab0a4f0a931525bd7700b11b6c6c37756895f55d6c89",
+      "before_sha256": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
+      "changed": true
+    },
+    "car_number_allocator.py": {
+      "after_sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1",
+      "before_sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1",
+      "changed": false
+    },
+    "card_lifecycle.py": {
+      "after_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+      "before_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+      "changed": false
+    },
+    "card_shell.py": {
+      "after_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+      "before_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+      "changed": false
+    },
+    "cars_schema.py": {
+      "after_sha256": "20da4d4e892b363cd57c8819eadf92f0d8d54383a6c3344e37391d00d5d56e8a",
+      "before_sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+      "changed": true
+    },
+    "cars_ui.py": {
+      "after_sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+      "before_sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+      "changed": false
+    },
+    "db.py": {
+      "after_sha256": "1d5073450b353b88f99944930ed34af0735784c3a580801bab694ecafb7f59a2",
+      "before_sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "changed": true
+    },
+    "master_card.py": {
+      "after_sha256": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8",
+      "before_sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+      "changed": true
+    },
+    "profile_library.py": {
+      "after_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+      "before_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+      "changed": false
+    },
+    "publikaciya.py": {
+      "after_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+      "before_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+      "changed": false
+    },
+    "publish_transaction_guard.py": {
+      "after_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+      "before_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+      "changed": false
+    },
+    "source_policy.py": {
+      "after_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+      "before_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+      "changed": false
+    },
+    "spec_publication.py": {
+      "after_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+      "before_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+      "changed": false
+    },
+    "ua_additional_spec.py": {
+      "after_sha256": "48a3f8e88bb214d6632513b6ee0b884a0d3bd95cb4bc2e786426fec42e4b2441",
+      "before_sha256": "5a03cb99d1f4514539956f32a75e09e119e2e9049a91da6326adb32877518e56",
+      "changed": true
+    },
+    "vin_spec_service.py": {
+      "after_sha256": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+      "before_sha256": "b3a90347c15e3063abe072f4b159b78e392a2da8f2e15f2bf9a37ba59bc9e7a7",
+      "changed": true
+    }
+  },
+  "helper_pins": {
+    "allocator_integration.py": "580e23865e7a128f6f2aace3d6a1c122881c2b1141d13cc56a838e38a7d6ffa7",
+    "prepare_candidate.py": "43ca3f03e9157c77bebe1c15f65431d7dbf464a79815f1a7607ad1b18985e235",
+    "repair_master_shell.py": "fb01f9de8b17e5b37babb56c1554de3f2cc3067668fc8db63237d9f47aafcac4",
+    "repair_public_contract.py": "69765b84749f61e97ca6ac99c1a28c9bc9864a98fb38c82a527383b8c063287b"
+  },
+  "input_binding_scope": "INFORMATIONAL_LOCAL_ASSEMBLY_PATHS_ONLY",
+  "input_bindings": [
+    {
+      "bytes": 18079,
+      "path": "/workspace/scratch/2d59224df460/spec-work/cloud/spec_auto10_restore/prepare_candidate.py",
+      "sha256": "43ca3f03e9157c77bebe1c15f65431d7dbf464a79815f1a7607ad1b18985e235"
+    },
+    {
+      "bytes": 24999,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/card_lifecycle.py",
+      "sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7"
+    },
+    {
+      "bytes": 15141,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/card_shell.py",
+      "sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a"
+    },
+    {
+      "bytes": 188776,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/cars_ui.py",
+      "sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec"
+    },
+    {
+      "bytes": 24772,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/profile_library.py",
+      "sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6"
+    },
+    {
+      "bytes": 26228,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/publikaciya.py",
+      "sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8"
+    },
+    {
+      "bytes": 32437,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/publish_transaction_guard.py",
+      "sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912"
+    },
+    {
+      "bytes": 61028,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/source_policy.py",
+      "sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+    },
+    {
+      "bytes": 24389,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/spec_publication.py",
+      "sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718"
+    },
+    {
+      "bytes": 39636,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/ua_additional_spec.py",
+      "sha256": "5a03cb99d1f4514539956f32a75e09e119e2e9049a91da6326adb32877518e56"
+    },
+    {
+      "bytes": 59921,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/vin_spec_service.py",
+      "sha256": "b3a90347c15e3063abe072f4b159b78e392a2da8f2e15f2bf9a37ba59bc9e7a7"
+    },
+    {
+      "bytes": 3405,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/complete15-base-v7-clean/manifest.json",
+      "sha256": "d283f846d68041b548ac7f481d8cccc11d2869521f9888e7aeb5d868b9766051"
+    },
+    {
+      "bytes": 147699,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/publisher-inputs-20260909T074529Z/master_card.py",
+      "sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce"
+    },
+    {
+      "bytes": 34721,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/publisher-inputs-20260909T074529Z/db.py",
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
+    },
+    {
+      "bytes": 200678,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/publisher-inputs-20260909T074529Z/stranica.py",
+      "sha256": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+    },
+    {
+      "bytes": 24562,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/publisher-inputs-20260909T074529Z/catalog_design_guard.py",
+      "sha256": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60"
+    },
+    {
+      "bytes": 24447,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/publisher-inputs-20260909T074936Z/cars_schema.py",
+      "sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73"
+    },
+    {
+      "bytes": 26858,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/publisher-inputs-20260909T075542Z/ai_filter.py",
+      "sha256": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6"
+    },
+    {
+      "bytes": 40001,
+      "path": "/workspace/scratch/2d59224df460/private-runtime/publisher-inputs-20260909T074856Z/catalog_design_golden.html",
+      "sha256": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3"
+    },
+    {
+      "bytes": 61170,
+      "path": "/workspace/scratch/2d59224df460/spec-work/cloud/spec_auto10_restore/runtime/vin_spec_service.py",
+      "sha256": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16"
+    },
+    {
+      "bytes": 6463,
+      "path": "/workspace/scratch/2d59224df460/spec-work/cloud/spec_auto10_restore/runtime/car_number_allocator.py",
+      "sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1"
+    },
+    {
+      "bytes": 2622,
+      "path": "/workspace/scratch/2d59224df460/spec-work/cloud/spec_auto10_restore/repair_master_shell.py",
+      "sha256": "fb01f9de8b17e5b37babb56c1554de3f2cc3067668fc8db63237d9f47aafcac4"
+    },
+    {
+      "bytes": 1942,
+      "path": "/workspace/scratch/2d59224df460/spec-work/cloud/spec_auto10_restore/repair_public_contract.py",
+      "sha256": "69765b84749f61e97ca6ac99c1a28c9bc9864a98fb38c82a527383b8c063287b"
+    },
+    {
+      "bytes": 4632,
+      "path": "/workspace/scratch/2d59224df460/spec-work/cloud/spec_auto10_restore/allocator_integration.py",
+      "sha256": "580e23865e7a128f6f2aace3d6a1c122881c2b1141d13cc56a838e38a7d6ffa7"
+    }
+  ],
+  "limitations": [
+    "Compile/assembly only: final fifteen-module execution remains a separate gate.",
+    "Execution dependency pins are unchanged dependencies, not installation files.",
+    "No application import, database, source request, deployment or service action."
+  ],
+  "module_count": 15,
+  "overall_gate_b": "NOT_EVALUATED",
+  "production_changed": false,
+  "publication_mode": "manifest_last",
+  "runtime_pins": {
+    "car_number_allocator.py": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1",
+    "vin_spec_service.py": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16"
+  },
+  "source_pins": {
+    "ai_filter.py": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
+    "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+    "catalog_design_golden.html": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3",
+    "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+    "master_card.py": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+    "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+  },
+  "status": "OFFLINE_COMPLETE_CANDIDATE_COMPILED"
+}

@@ -1,0 +1,14 @@
+{
+  "scope": "V8_FOCUSED_ISOLATED_GATE_PACKAGE",
+  "path": "/workspace/scratch/2d59224df460/spec-retry-gate-v8.zip",
+  "sha256": "56aab55439b6477a2ce9aa0298861b0af2b495ff9c638d95ef7286535735eac3",
+  "bytes": 58106,
+  "required_stage": "/home/Carix/spec_retry_v8_20260909",
+  "required_directory_mode": "0700",
+  "command": "python3.10 -I -B retry_gate.py",
+  "expected_tests": 50,
+  "server_executed": false,
+  "production_changed": false,
+  "allowlist_only": true,
+  "package_contains_publisher_cycle_harness": false
+}
