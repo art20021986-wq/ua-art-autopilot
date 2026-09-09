@@ -1,0 +1,24 @@
+{
+  "schema_version": "UA-ART-RECOVERY-TEST-RESULT-1",
+  "task_id": "UA-ART-RECOVERY-TASK120-002",
+  "observed_at": "2026-09-09T06:35:41.766184+00:00",
+  "status": "PASS",
+  "command": "python -m unittest discover -s cloud/recovery_task120_002/tests -v",
+  "exit_code": 0,
+  "tests_run": 48,
+  "controller_tests": 20,
+  "git_tests": 28,
+  "failures": 0,
+  "errors": 0,
+  "elapsed_seconds": 6.953,
+  "source_code_sha256": {
+    "controller.py": "d7fed7a80c555fb01fd81fe9bc49f70f79274164c8ecb1f8ec93bfcd13d005e7",
+    "git_rehearsal.py": "ae9dab3a600a33336b2e8abc438e93329db76905b03d1d7780ee7e7fb636bfe9",
+    "tests/test_controller.py": "03e4dfff1367a31acbd44d34d3506eb6b2e5866478426c42720aecdd0eef11aa",
+    "tests/test_git_rehearsal.py": "1a96cf3f797716cdb2b8bf5a416f62df495b7ebafc954aec45b2a87f5ffff406"
+  },
+  "execution_environment": "local isolated fixtures; Python 3.12; real /usr/bin/git for Git tests",
+  "production_touched": false,
+  "live_runner_tested": false,
+  "overall_specification_gate_b": "NOT_EVALUATED"
+}
