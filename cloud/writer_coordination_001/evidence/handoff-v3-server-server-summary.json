@@ -1,0 +1,24 @@
+{
+  "schema": "UA-ART-CODE-HANDOFF-V3-SERVER-SUMMARY-1",
+  "python_version": "3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]",
+  "status": "PASS",
+  "scope": "ISOLATED_SYNTHETIC_17_FILES_REAL_LOCKS_FAKE_AUTHORITY",
+  "tests": 30,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "io_guard": {
+    "blocked_network": 0,
+    "blocked_subprocess": 0,
+    "blocked_read": 0,
+    "blocked_write": 0
+  },
+  "bundle_inputs_unchanged": true,
+  "production_changed": false,
+  "real_task_api_called": false,
+  "production_lock_files_opened": false,
+  "external_writers_verified": false,
+  "overall_gate_b": "NOT_EVALUATED",
+  "result_path": "/home/Carix/code_handoff_v3_gate_20260909/run-20260909T110221140568Z/result.json",
+  "finished_at": "2026-09-09T11:03:15.106693+00:00"
+}

@@ -1,0 +1,218 @@
+test_actual_writes_rolled_back (test_code_handoff_v2.Tests) ... FAIL
+test_backup_tampering (test_code_handoff_v2.Tests) ... ERROR
+test_competing_process_cannot_acquire_any_six_locks (test_code_handoff_v2.Tests) ... ERROR
+test_dependency_drift (test_code_handoff_v2.Tests) ... ok
+test_epoch_replay (test_code_handoff_v2.Tests) ... ok
+test_extra_candidate_file (test_code_handoff_v2.Tests) ... ok
+test_foreign_write_not_destroyed (test_code_handoff_v2.Tests) ... FAIL
+test_incomplete_preconditions (test_code_handoff_v2.Tests) ... ok
+test_install_code_only_keeps_all_locks (test_code_handoff_v2.Tests) ... ERROR
+test_interruption_after_replace_rolls_back_only (test_code_handoff_v2.Tests) ... ERROR
+test_missing_authority (test_code_handoff_v2.Tests) ... ok
+test_new_file_post_link_crash_cleans_only_owned_stage (test_code_handoff_v2.Tests) ... ERROR
+test_no_repeat (test_code_handoff_v2.Tests) ... ERROR
+test_no_unpause_after_rollback (test_code_handoff_v2.Tests) ... ERROR
+test_old_installed_receipt_not_current_after_rollback (test_code_handoff_v2.Tests) ... ERROR
+test_partial_journal (test_code_handoff_v2.Tests) ... ERROR
+test_precondition_drift (test_code_handoff_v2.Tests) ... ok
+test_proof_loss_leaves_incomplete (test_code_handoff_v2.Tests) ... FAIL
+test_rejects_local_bool (test_code_handoff_v2.Tests) ... ok
+test_stale_or_wrong_binding (test_code_handoff_v2.Tests) ... ok
+test_terminal_replay_reads_same_result_without_reinstall (test_code_handoff_v2.Tests) ... ERROR
+test_verifier_cannot_drop_lease_and_still_permit_write (test_code_handoff_v2.Tests) ... ERROR
+test_wrong_holder_process (test_code_handoff_v2.Tests) ... ok
+
+======================================================================
+ERROR: test_backup_tampering (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 198, in test_backup_tampering
+    self.worker.install(); next((self.worker.transaction/'backup').glob('*.bin')).write_bytes(b'tampered')
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_competing_process_cannot_acquire_any_six_locks (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 175, in test_competing_process_cannot_acquire_any_six_locks
+    self.worker._replace = check; self.worker.install()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_install_code_only_keeps_all_locks (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 83, in test_install_code_only_keeps_all_locks
+    result = self.worker.install()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_interruption_after_replace_rolls_back_only (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 126, in test_interruption_after_replace_rolls_back_only
+    with self.assertRaises(Crash): self.worker.install()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_new_file_post_link_crash_cleans_only_owned_stage (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 145, in test_new_file_post_link_crash_cleans_only_owned_stage
+    with self.assertRaises(Crash): self.worker.install()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_no_repeat (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 105, in test_no_repeat
+    self.worker.install()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_no_unpause_after_rollback (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 228, in test_no_unpause_after_rollback
+    self.worker.install(); result = self.new_worker().rollback_only()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_old_installed_receipt_not_current_after_rollback (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 222, in test_old_installed_receipt_not_current_after_rollback
+    self.worker.install()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_partial_journal (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 201, in test_partial_journal
+    self.worker.install()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_terminal_replay_reads_same_result_without_reinstall (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 205, in test_terminal_replay_reads_same_result_without_reinstall
+    result = self.worker.install()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+ERROR: test_verifier_cannot_drop_lease_and_still_permit_write (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 219, in test_verifier_cannot_drop_lease_and_still_permit_write
+    with self.assertRaises(sf.FenceError): self.worker.install()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 378, in install
+    self._backup()
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 223, in _backup
+    require(usage.f_bavail * usage.f_frsize >= needed and
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py", line 38, in require
+    raise HandoffError(error)
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+======================================================================
+FAIL: test_actual_writes_rolled_back (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 115, in test_actual_writes_rolled_back
+    with self.assertRaisesRegex(RuntimeError,'fourth'): self.worker.install()
+AssertionError: "fourth" does not match "STORAGE_PREFLIGHT"
+
+======================================================================
+FAIL: test_foreign_write_not_destroyed (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 157, in test_foreign_write_not_destroyed
+    with self.assertRaisesRegex(h.HandoffError,'ROLLBACK_BLOCKED'): self.worker.install()
+AssertionError: "ROLLBACK_BLOCKED" does not match "STORAGE_PREFLIGHT"
+
+======================================================================
+FAIL: test_proof_loss_leaves_incomplete (test_code_handoff_v2.Tests)
+----------------------------------------------------------------------
+code_handoff_v2.HandoffError: STORAGE_PREFLIGHT
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py", line 165, in test_proof_loss_leaves_incomplete
+    with self.assertRaisesRegex(h.HandoffError,'ROLLBACK_BLOCKED'): self.worker.install()
+AssertionError: "ROLLBACK_BLOCKED" does not match "STORAGE_PREFLIGHT"
+
+----------------------------------------------------------------------
+Ran 23 tests in 19.743s
+
+FAILED (failures=3, errors=11)

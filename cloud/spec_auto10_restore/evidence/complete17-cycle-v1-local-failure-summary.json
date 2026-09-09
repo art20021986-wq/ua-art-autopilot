@@ -1,0 +1,18 @@
+{
+  "scope": "FROZEN17_V1_COMBINED_INTERACTION_FAILED",
+  "production_changed": false,
+  "overall_gate_b": "NOT_EVALUATED",
+  "candidate_manifest_sha256": "d800e55813b6edc24322f7021e924dd0052915f07414b42bd02f0a7c234522f5",
+  "publisher": "PASS",
+  "lifecycle": "PASS",
+  "error": "RuntimeError:ANALYTICS_CHANGED_CANONICAL_SHELL:video/UA-0003.html,video/UA-0001-diag.html,video/UA-0003-diag.html,video/UA-0001.html,site/UA-0003.html,site/UA-0001-diag.html,site/UA-0003-diag.html,site/UA-0001.html",
+  "io_guard": {
+    "network": 0,
+    "outside_read": 0,
+    "outside_write": 0,
+    "process": 0
+  },
+  "result_sha256": "19792c733fd2e3889dd4e8c0be6b2e9ff6c82253c707d9ad7a72212a15b0ea51",
+  "harness_sha256_at_failure": "dda383ec851a3d5c64df78d88f1e3df6aa613b702c6aeec1cd81f7813f79b1c2",
+  "completed_at_utc": "2026-09-09T10:35:43.943605+00:00"
+}
