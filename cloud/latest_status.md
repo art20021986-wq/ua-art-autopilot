@@ -1,10 +1,10 @@
 TASK_ID: UA-ART-CRM-CATALOG-FOLDERS-001
-ROUND: 2
-CLAUDE_STATUS: WAITING_OWNER
-CURRENT_ACTION: Проверен актуальный код и состав 18+1. Готовы адаптер и установщик; 38 локальных тестов PASS. Запуск preflight заблокирован автоматической проверкой до явного подтверждения.
+ROUND: 3
+CLAUDE_STATUS: DONE
+CURRENT_ACTION: Папки установлены на PythonAnywhere, хеши/исходный префикс/компиляция проверены. Task266084 Running, оба бота запущены. После рестарта проверено распределение 18+1.
 FILES_CREATED: cloud/crm_catalog_folders_001/, tasks/task_122.md
-PRODUCTION_TOUCHED: NO — загружен только неисполнявшийся файл установщика; действующие исходники и процессы не изменены
-OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Подтверждаете запуск /home/Carix/crm_folders_install_20260910.py для проверки и установки папок с резервной копией и перезапуском существующей задачи ботов?
-NEXT_FOR_CHATGPT: После подтверждения сверить SHA окончательного установщика, выполнить preflight/apply, restart task266084 и проверить журнал/меню. Не обходить отказ, не снимать HALT.
-UPDATED_AT_UTC: 2026-09-10T10:59:00Z
+PRODUCTION_TOUCHED: YES — cars_ui.py, ua_crm_catalog_folders.py и перезапуск существующей task266084 после явного подтверждения владельца
+OWNER_ACTION_REQUIRED: NO
+OWNER_QUESTION: NONE
+NEXT_FOR_CHATGPT: Установка завершена; не повторять installer. Ограничение проверки — реальные клики Telegram и публикация/снятие не выполнялись. Счётчики главной относятся к отдельной задаче.
+UPDATED_AT_UTC: 2026-09-10T11:23:00Z
