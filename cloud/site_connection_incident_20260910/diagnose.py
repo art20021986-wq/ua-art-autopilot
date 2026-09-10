@@ -9,7 +9,8 @@ import time
 from pathlib import Path
 
 HOSTS = ('uaart.com.ua', 'www.uaart.com.ua')
-URLS = ('https://uaart.com.ua/', 'https://www.uaart.com.ua/',
+URLS = ('http://uaart.com.ua/', 'http://www.uaart.com.ua/',
+        'https://uaart.com.ua/', 'https://www.uaart.com.ua/',
         'https://www.uaart.com.ua/video/index.html',
         'https://www.uaart.com.ua/video/katalog.html')
 UA = {
@@ -59,7 +60,7 @@ def tls(host):
 def http(url,agent,family):
     nonce=str(time.time_ns())
     result=command(['curl', family, '--silent','--show-error','--location',
-                    '--proto','=https','--proto-redir','=https','--max-redirs','5',
+                    '--proto','=http,https','--proto-redir','=http,https','--max-redirs','5',
                     '--connect-timeout','10','--max-time','25','--max-filesize','10485760',
                     '--user-agent',UA[agent], '--header','Cache-Control: no-cache',
                     '--output','/dev/null','--dump-header','-', '--write-out',
