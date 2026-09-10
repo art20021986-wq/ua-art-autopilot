@@ -22,6 +22,12 @@ Checks covered:
 - `price_uah` and `price_georgia` remain independent;
 - empty Georgia price stays unset and shows as `—` in the edit prompt.
 
+Validation run:
+- `python cloud/task_088_ge_price_crm_stage1/simulator.py > cloud/task_088_ge_price_crm_stage1/evidence.json`
+- `python - <<'PY' ... import cloud.task_088_ge_price_crm_stage1.tests.test_stage1 ... PY` → 5/5 PASS
+- `python -m py_compile cloud/task_088_ge_price_crm_stage1/simulator.py cloud/task_088_ge_price_crm_stage1/tests/test_stage1.py`
+- `python -m json.tool cloud/task_088_ge_price_crm_stage1/evidence.json`
+
 Stage boundary:
 - only Gate A / Stage 1 CRM work is covered here;
 - no Gate B preview or public rendering changes were started.
