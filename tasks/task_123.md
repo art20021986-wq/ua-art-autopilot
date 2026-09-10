@@ -8,7 +8,7 @@ Implementation: `cloud/site_counters_123/`. Supersedes the uninstalled total-onl
 
 Validation: 15 Python tests pass (including installer hash guards, rollback, publication snapshot restoration, 18→19→18 and stage changes). Node DOM-fixture tests pass for identity deduplication, aliases, invalid/empty data and RU/UK plurals. Empty catalog handling is tested in the counter layer; the existing publication design guard still disallows publishing an empty catalog. No real UA-0019 publication was performed.
 
-Live deployment: 2026-09-10 11:54:10 UTC, PythonAnywhere native console. Preflight passed the existing golden-layout validator for both catalogs. Installer returned INSTALLED. Homepage browser then showed total 18 and stages 5/1/8/4 in Russian. Final language/filter/restart verification is being completed.
+Live deployment: 2026-09-10 11:54:10 UTC, PythonAnywhere native console. Preflight passed the existing golden-layout validator for both catalogs. Installer returned INSTALLED. Homepage browser then showed total 18 and stages 5/1/8/4 in Russian. Final browser checks passed: RU/UK homepage and catalog labels; all four stage filters rendered 5/1/8/4 cards, all filter rendered 18. After a hosting startup delay, run_all_log confirms new process start at 12:02:29 UTC, client bot at 12:02:30 and internal bot at 12:02:31. Installed publisher imports successfully and resolves the new _install_catalog wrapper at line 769.
 
 Backup: `/home/Carix/backups/site_counters_123/20260910T115410Z`.
 
