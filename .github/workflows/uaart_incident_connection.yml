@@ -6,6 +6,8 @@ on:
     paths:
       - '.github/workflows/uaart_incident_connection.yml'
       - 'cloud/site_connection_incident_20260910/diagnose.py'
+      - 'cloud/site_connection_incident_20260910/uaart_connection_monitor.py'
+      - 'cloud/site_connection_incident_20260910/test_uaart_connection_monitor.py'
 
 permissions:
   contents: read
@@ -21,10 +23,19 @@ jobs:
           persist-credentials: false
       - name: Probe public DNS TLS and HTTP without production credentials
         run: python3 -I cloud/site_connection_incident_20260910/diagnose.py
+      - name: Check monitor failure handling and duplicate process guard
+        run: python3 -I -m unittest discover -s cloud/site_connection_incident_20260910 -p 'test_uaart_connection_monitor.py' -v
+      - name: Verify all four live routes with the reviewed monitor
+        run: python3 -I cloud/site_connection_incident_20260910/uaart_connection_monitor.py --evidence monitor-result.json
+      - name: Record live monitor result
+        if: always()
+        run: python3 -I -c "from pathlib import Path; p=Path('monitor-result.json'); print(p.read_text() if p.exists() else 'MONITOR_EVIDENCE_MISSING')"
       - name: Preserve connection evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: uaart-incident-connection-${{ github.run_id }}
-          path: incident-connection-result.json
+          path: |
+            incident-connection-result.json
+            monitor-result.json
           retention-days: 14
