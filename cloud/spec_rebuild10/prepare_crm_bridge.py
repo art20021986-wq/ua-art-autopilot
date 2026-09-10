@@ -48,6 +48,18 @@ UI_BLOCK = '''
 # UA_ART_SPEC_REBUILD10_CRM_V1: owner actions use only the configured route.
 from spec_rebuild10 import crm_bridge as _ua_rb10_bridge
 
+_ua_rb10_previous_card_kb = card_kb
+
+def card_kb(card, staff):
+    markup = _ua_rb10_previous_card_kb(card, staff)
+    rows = []
+    for row in markup.inline_keyboard:
+        kept = [button for button in row
+                if not str(getattr(button, "callback_data", "") or "").startswith("car_spec_refresh:")]
+        if kept:
+            rows.append(kept)
+    return InlineKeyboardMarkup(rows)
+
 def render(card, staff):
     return _UA099_BASE_RENDER(card, staff) + "\\n" + _ua_rb10_bridge.runtime_summary(card)
 
@@ -76,6 +88,12 @@ async def _ua_rb10_transition(update, context, action):
 
 async def toggle_publish(update, context):
     return await _ua_rb10_transition(update, context, "toggle")
+
+async def ad_screen(update, context):
+    # The ordinary "Разместить объявление" action publishes directly after
+    # required business fields have passed validation; there is no second
+    # specification or catalogue confirmation screen.
+    return await _ua_rb10_transition(update, context, "publish")
 
 async def delete_ok(update, context):
     return await _ua_rb10_transition(update, context, "delete")

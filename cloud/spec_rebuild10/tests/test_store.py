@@ -8,6 +8,7 @@ import unittest
 import sqlite3
 import hashlib
 import json
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from store import SpecStore, StoreError, StaleJobError
@@ -92,6 +93,56 @@ class StoreTests(unittest.TestCase):
         result = self.store.fail_job(second["id"], second["lease_token"], "source unavailable", now=self.now + 22)
         self.assertEqual("exhausted", result["state"])
         self.assertEqual(4900, self.store.get_facts(self.uid)[0]["value"])
+
+    def test_partial_acceptance_and_retry_are_atomic_and_never_reset_budget(self):
+        self.store.set_manual_fact(self.uid, fact("height_mm", 1500, hidden=True))
+        first = self.claim()
+        result = self.store.approve_candidates(first["id"], first["lease_token"], [fact()],
+            now=self.now + 1, retry_error="danawa:SOURCE_HTTP_ERROR", retry_after=20)
+        self.assertEqual(result["accepted"], 1)
+        self.assertEqual(result["state"], "retry")
+        self.assertEqual(self.store.get_jobs()[0]["attempts"], 1)
+        self.assertEqual(self.store.get_facts(self.uid)[0]["value"], 4900)
+        self.assertIsNone(self.store.claim_job("second", now=self.now + 20))
+        with self.assertRaises(StaleJobError):
+            self.store.approve_candidates(first["id"], first["lease_token"], [fact(value=5000)],
+                now=self.now + 21, retry_error="SOURCE_HTTP_ERROR")
+        second = self.store.claim_job("second", now=self.now + 21)
+        result = self.store.approve_candidates(second["id"], second["lease_token"], [fact("width_mm", 1860)],
+            now=self.now + 22, retry_error="danawa:SOURCE_HTTP_ERROR", retry_after=0)
+        self.assertEqual(result["state"], "exhausted")
+        self.assertEqual(self.store.get_jobs()[0]["attempts"], 2)
+        self.assertIsNone(self.store.claim_job("third", now=self.now + 23))
+        self.assertEqual(len(self.store.get_facts(self.uid)), 2)
+        hidden = next(row for row in self.store.get_facts(self.uid, include_hidden=True) if row["key"] == "height_mm")
+        self.assertTrue(hidden["manual"])
+        self.assertTrue(hidden["hidden"])
+
+    def test_partial_write_failure_rolls_back_facts_candidates_and_job_transition(self):
+        job = self.claim()
+        save = self.store._save_fact
+        def fail_after_write(*args):
+            save(*args)
+            raise StoreError("synthetic disk error")
+        with patch.object(self.store, "_save_fact", side_effect=fail_after_write):
+            with self.assertRaises(StoreError):
+                self.store.approve_candidates(job["id"], job["lease_token"], [fact()],
+                    now=self.now + 1, retry_error="SOURCE_HTTP_ERROR")
+        self.assertEqual(self.store.get_facts(self.uid), [])
+        self.assertEqual(self.store.get_candidates(self.uid), [])
+        self.assertEqual(self.store.get_jobs()[0]["state"], "leased")
+        self.assertEqual(self.store.get_jobs()[0]["lease_token"], job["lease_token"])
+
+    def test_partial_approval_rejects_expired_or_changed_identity_without_new_facts(self):
+        first = self.store.claim_job("first", lease_seconds=1, now=self.now)
+        with self.assertRaises(StaleJobError):
+            self.store.approve_candidates(first["id"], first["lease_token"], [fact()],
+                now=self.now + 2, retry_error="SOURCE_HTTP_ERROR")
+        self.store.upsert_vehicle(self.uid, {**self.identity, "year": 2018})
+        with self.assertRaises(StaleJobError):
+            self.store.approve_candidates(first["id"], first["lease_token"], [fact()],
+                now=self.now + 2, retry_error="SOURCE_HTTP_ERROR")
+        self.assertEqual(self.store.get_facts(self.uid), [])
 
     def test_identity_change_isolates_old_facts_and_rejects_late_completion(self):
         self.store.import_legacy(self.uid, [fact()], "snapshot-1")
@@ -203,6 +254,22 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(4950, self.store.get_facts(self.uid)[0]["value"])
         self.store.set_published(self.uid, False)
         self.assertEqual(4950, self.store.get_facts(self.uid)[0]["value"])
+
+    def test_exact_empty_publication_receipt_allows_later_specification_sync(self):
+        receipt = self.receipt()
+        for changes in ({"facts_digest": "wrong"}, {"shell_preserved": False},
+                        {"identity_hash": "wrong"}, {"specification_visible": False}):
+            with self.assertRaises(StoreError):
+                self.store.mark_publication_verified(self.uid, 1, {**receipt, **changes})
+        snapshot = self.store.mark_publication_verified(self.uid, 1, receipt)
+        self.assertEqual(snapshot["facts"], [])
+        self.assertTrue(self.store.get_vehicle(self.uid)["published"])
+        self.finish(self.claim(), [fact()])
+        self.assertNotEqual(self.store.facts_digest(self.uid), receipt["facts_digest"])
+        self.assertEqual(self.store.get_publication_snapshot(self.uid)["facts"], [])
+        updated = self.store.mark_publication_verified(self.uid, 1,
+            self.receipt(receipt_id="synthetic-spec-sync-2"))
+        self.assertEqual(updated["facts"][0]["value"], 4900)
 
     def test_old_publication_snapshot_cannot_be_used_for_changed_identity(self):
         self.finish(self.claim(), [fact()])

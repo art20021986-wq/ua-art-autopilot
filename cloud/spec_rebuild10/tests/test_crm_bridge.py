@@ -1,11 +1,13 @@
 """Actual bridge + actual temporary SQLite store; no Telegram/network/site IO."""
 from dataclasses import replace
+from contextlib import contextmanager
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import sqlite3
 import tempfile
+import threading
 import unittest
 
 from cloud.spec_rebuild10 import crm_bridge as module
@@ -96,13 +98,77 @@ class BridgeTests(unittest.TestCase):
         self.assertEqual(state, {"auth": 1})
         self.assertEqual(clear_editor_state(state), 0)
 
-    def test_no_initial_publication_without_facts_or_owner(self):
+    def test_initial_publication_can_have_pending_facts_but_requires_owner(self):
         self.bridge.saved(row())
-        with self.assertRaisesRegex(BridgeError, "ACCEPTED_SPEC_REQUIRED"):
-            self.bridge.prepare("publish", row(), 1, gate)
-        self.seed()
+        ticket = self.bridge.prepare("publish", row(), 1, gate)
+        self.assertEqual(ticket.facts_digest, self.store.facts_digest("UA-0017"))
+        self.assertFalse(self.store.get_vehicle("UA-0017")["published"])
         with self.assertRaisesRegex(BridgeError, "OWNER_ACTION_REQUIRED"):
             self.bridge.prepare("publish", row(), 0, gate)
+
+    def test_empty_spec_publication_returns_verified_vehicle_link(self):
+        self.bridge.saved(row())
+        called = []
+        def execute(ticket, submitted):
+            called.append(ticket.action)
+            return {"ok": True, "receipt": self.receipt(ticket)}
+        module.configure_runtime(RuntimeBindings(self.bridge, gate, execute,
+            lambda *args: True, lambda: {"started": False}, lambda uid: row()))
+        self.assertEqual(module.runtime_public_facts("UA-0017"), [])
+        ok, message = module.runtime_transition("publish", row(), 1)
+        self.assertTrue(ok, message)
+        self.assertEqual(called, ["publish"])
+        self.assertIn("https://www.uaart.com.ua/video/UA-0017.html", message)
+        self.assertIn("автоматично", message)
+        self.assertEqual(self.store.get_publication_snapshot("UA-0017")["facts"], [])
+
+    def test_homepage_redirect_is_never_reported_as_publication_link(self):
+        self.seed()
+        def execute(ticket, submitted):
+            receipt = self.receipt(ticket)
+            receipt["page_url"] = "https://www.uaart.com.ua/video/index.html"
+            return {"ok": True, "receipt": receipt}
+        module.configure_runtime(RuntimeBindings(self.bridge, gate, execute,
+            lambda *args: True, lambda: {"started": False}, lambda uid: row()))
+        ok, message = module.runtime_transition("publish", row(), 1)
+        self.assertFalse(ok)
+        self.assertNotIn("https://", message)
+        self.assertFalse(self.store.get_vehicle("UA-0017")["published"])
+
+    def test_fact_commit_waits_until_pending_publication_snapshot_is_recorded(self):
+        self.bridge.saved(row())
+        lock = threading.RLock()
+        attempted = threading.Event()
+        committed = threading.Event()
+        threads = []
+        @contextmanager
+        def publication_scope():
+            with lock:
+                yield
+        def accept_fact():
+            attempted.set()
+            with publication_scope():
+                with SpecStore(str(Path(self.temp.name) / "spec.sqlite")) as independent:
+                    self.assertIsNotNone(independent.get_publication_snapshot("UA-0017"))
+                    independent.set_manual_fact("UA-0017", {"key": "length", "value": "4900"})
+                committed.set()
+        def execute(ticket, submitted):
+            thread = threading.Thread(target=accept_fact)
+            threads.append(thread)
+            thread.start()
+            self.assertTrue(attempted.wait(2))
+            self.assertFalse(committed.is_set())
+            return {"ok": True, "receipt": self.receipt(ticket)}
+        module.configure_runtime(RuntimeBindings(self.bridge, gate, execute,
+            lambda *args: True, lambda: {"started": False}, lambda uid: row(),
+            publication_scope=publication_scope))
+        ok, message = module.runtime_transition("publish", row(), 1)
+        for thread in threads:
+            thread.join(2)
+        self.assertTrue(ok, message)
+        self.assertTrue(committed.is_set())
+        self.assertEqual(self.store.get_publication_snapshot("UA-0017")["facts"], [])
+        self.assertEqual(len(self.store.get_facts("UA-0017")), 1)
 
     def test_gate_and_scope_required(self):
         self.seed()

@@ -6,12 +6,13 @@ An explicit runtime binding may call run_once after verified installation.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from contextlib import nullcontext
 import copy
 import hashlib
 import json
 import re
 import time
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, ContextManager, Mapping
 
 try:
     from . import sources
@@ -22,6 +23,21 @@ except ImportError:  # Standalone offline execution from this directory.
 
 POLICY_ID = "UA-ART-SPEC-REBUILD-10-001:v1"
 MAX_RUN_SECONDS = 120.0
+# These failures reject one source's entire document, never its neighbours.
+# Unknown codes and failures of source trust/authorization remain batch-fatal.
+SOURCE_LOCAL_ERRORS = frozenset({
+    "COLLECTOR_FAILED", "COLLECTOR_UNAVAILABLE", "WORKER_TIME_BUDGET_EXHAUSTED",
+    "TRANSPORT_TIMEOUT", "TRANSPORT_FAILED", "TRANSPORT_RESPONSE_INVALID",
+    "SOURCE_HTTP_ERROR", "RESPONSE_TOO_LARGE", "REDIRECT_LOOP", "REDIRECT_LIMIT",
+    "REDIRECT_LOCATION_MISSING", "VPIC_JSON_INVALID", "VPIC_RESULT_INVALID",
+    "VPIC_DECODE_INCOMPLETE", "VIN_INVALID", "VIN_MISMATCH", "IDENTITY_INVALID",
+    "IDENTITY_INCOMPLETE", "IDENTITY_MISMATCH", "VEHICLE_EVIDENCE_REQUIRES_EXACT_VIN",
+    "IMPORT_SCHEMA_INVALID", "EVIDENCE_KIND_INVALID", "FACT_COUNT_INVALID",
+    "FACT_KEY_INVALID", "FACT_CATEGORY_INVALID", "FACT_TEXT_INVALID",
+    "FACT_VALUE_INVALID", "POSITIVE_FACT_REQUIRES_NUMBER",
+    "ZERO_OR_NEGATIVE_PLACEHOLDER_FORBIDDEN", "DUPLICATE_FACT_KEY",
+    "EQUIPMENT_REQUIRES_VEHICLE_EVIDENCE",
+})
 
 
 @dataclass(frozen=True)
@@ -106,16 +122,20 @@ class SpecWorker:
                  *, worker_id: str = "spec-rebuild10", max_run_seconds: float = 90.0,
                  lease_seconds: int = 120, retry_after: float = 60.0,
                  clock: Callable[[], float] = time.time,
-                 monotonic: Callable[[], float] = time.monotonic):
+                 monotonic: Callable[[], float] = time.monotonic,
+                 acceptance_scope: Callable[[], ContextManager[Any]] = nullcontext):
         if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,80}", worker_id):
             raise sources.SourceError("WORKER_ID_INVALID")
         if (isinstance(max_run_seconds, bool) or not 0 < max_run_seconds <= MAX_RUN_SECONDS
                 or isinstance(lease_seconds, bool) or not max_run_seconds + 5 <= lease_seconds <= 900
                 or not 0 <= retry_after <= 86400):
             raise sources.SourceError("WORKER_LIMITS_INVALID")
+        if not callable(acceptance_scope):
+            raise sources.SourceError("ACCEPTANCE_SCOPE_INVALID")
         self.store, self.worker_id = store, worker_id
         self.max_run_seconds, self.lease_seconds, self.retry_after = max_run_seconds, lease_seconds, retry_after
         self.clock, self.monotonic = clock, monotonic
+        self.acceptance_scope = acceptance_scope
         self.registry = sources.load_registry()
         self.collectors = dict(collectors or {})
         for key, binding in self.collectors.items():
@@ -154,11 +174,12 @@ class SpecWorker:
         return report
 
     def run_once(self) -> dict[str, Any]:
-        """Process at most one durable job; stop collection on first real error.
+        """Process one durable job, isolating ordinary source failures.
 
         Injected collectors must honor timeout/byte limits. No generic untrusted
         callable can be forcibly cancelled by this synchronous service; a runtime
-        must supply the bounded source transport. Late results never commit.
+        must supply the bounded source transport. Late source results never
+        commit; earlier verified documents can survive an unavailable source.
         """
         report = {"worker_id": self.worker_id, "publication_performed": False,
             "app_writes": 0, "new_store_writes_only": True, **self.readiness()}
@@ -173,34 +194,49 @@ class SpecWorker:
         try:
             target = source_identity(job["identity"])
             candidates = []
+            source_errors = {}
             for source_id, binding in self.collectors.items():
                 self._current(job)
                 remaining = self.max_run_seconds - (self.monotonic() - started)
                 if remaining <= 0:
-                    raise sources.SourceError("WORKER_TIME_BUDGET_EXHAUSTED")
+                    source_errors[source_id] = "WORKER_TIME_BUDGET_EXHAUSTED"
+                    report["sources"][source_id].update(state="SKIPPED_TIME_BUDGET",
+                        error="WORKER_TIME_BUDGET_EXHAUSTED")
+                    continue
                 request = CollectionRequest(source_id, job["uid"], job["revision"],
                     job["identity_hash"], copy.deepcopy(target), min(remaining, sources.MAX_TOTAL_SECONDS))
                 try:
-                    collected = binding.collect(request)
-                except sources.SourceError:
-                    raise
-                except Exception:
-                    raise sources.SourceError("COLLECTOR_FAILED") from None
-                self._current(job)
-                if self.monotonic() - started > self.max_run_seconds:
-                    raise sources.SourceError("WORKER_TIME_BUDGET_EXHAUSTED")
-                if not isinstance(collected, CollectedDocument) or collected.source_id != source_id:
-                    raise sources.SourceError("COLLECTOR_SOURCE_IMPERSONATION")
-                if collected.outcome == "NO_MATCH":
-                    report["sources"][source_id].update(state="NO_MATCH", live_acceptance="CONTROL_CASE_NO_MATCH")
+                    try:
+                        collected = binding.collect(request)
+                    except (sources.SourceError, StoreError):
+                        raise
+                    except Exception:
+                        raise sources.SourceError("COLLECTOR_FAILED") from None
+                    self._current(job)
+                    if self.monotonic() - started > self.max_run_seconds:
+                        raise sources.SourceError("WORKER_TIME_BUDGET_EXHAUSTED")
+                    if not isinstance(collected, CollectedDocument) or collected.source_id != source_id:
+                        raise sources.SourceError("COLLECTOR_SOURCE_IMPERSONATION")
+                    if collected.outcome == "NO_MATCH":
+                        report["sources"][source_id].update(state="NO_MATCH", live_acceptance="CONTROL_CASE_NO_MATCH")
+                        continue
+                    if collected.outcome != "OK":
+                        raise sources.SourceError("COLLECTOR_UNAVAILABLE")
+                    if source_id == "vpic":
+                        facts = sources.parse_vpic(collected.payload, target, source_url=collected.source_url)
+                    else:
+                        facts = sources.parse_normalized_import(source_id, collected.payload, target,
+                            access=binding.access, authorization=collected.authorization, registry=self.registry)
+                    self._current(job)
+                    if self.monotonic() - started > self.max_run_seconds:
+                        raise sources.SourceError("WORKER_TIME_BUDGET_EXHAUSTED")
+                except sources.SourceError as error:
+                    self._current(job)
+                    if error.code not in SOURCE_LOCAL_ERRORS:
+                        raise
+                    source_errors[source_id] = error.code
+                    report["sources"][source_id].update(state="ERROR", error=error.code)
                     continue
-                if collected.outcome != "OK":
-                    raise sources.SourceError("COLLECTOR_UNAVAILABLE")
-                if source_id == "vpic":
-                    facts = sources.parse_vpic(collected.payload, target, source_url=collected.source_url)
-                else:
-                    facts = sources.parse_normalized_import(source_id, collected.payload, target,
-                        access=binding.access, authorization=collected.authorization, registry=self.registry)
                 candidates.extend(facts)
                 report["sources"][source_id].update(state="PARSED_CONTROL_CASE", candidates=len(facts),
                     live_acceptance="DOCUMENT_PARSED_NOT_FULL_ADAPTER_ACCEPTANCE")
@@ -211,10 +247,25 @@ class SpecWorker:
             pending = [dict(row, identity_hash=job["identity_hash"]) for row in resolution["pending"]]
             rejected = [{**row, "value": None, "source_policy_rejection": row["reason"],
                 "identity_hash": job["identity_hash"]} for row in resolution["rejected"]]
-            decision = self.store.approve_candidates(job["id"], job["lease_token"], approved + pending + rejected,
-                                                      now=self.clock())
-            report.update({"status": "COLLECTED" if decision["accepted"] else "NO_NEW_CONFIRMED_FACTS",
-                "queue_state": "succeeded", "accepted": decision["accepted"], "review": decision["review"],
+            retry_error = None
+            if source_errors:
+                report["source_errors"] = source_errors
+                codes = set(source_errors.values())
+                report["error"] = next(iter(codes)) if len(codes) == 1 else "PARTIAL_SOURCE_FAILURE"
+                retry_error = ";".join(source_id + ":" + code for source_id, code in source_errors.items())
+            # Runtime supplies the same lock as publication prepare/readback.
+            # Network collection remains outside that short acceptance interval.
+            with self.acceptance_scope():
+                self._current(job)
+                decision = self.store.approve_candidates(job["id"], job["lease_token"], approved + pending + rejected,
+                    now=self.clock(), retry_error=retry_error, retry_after=self.retry_after)
+            status = "COLLECTED" if decision["accepted"] else "NO_NEW_CONFIRMED_FACTS"
+            if source_errors:
+                status = "EXHAUSTED" if decision["state"] == "exhausted" else "RETRY_SCHEDULED"
+                if decision["accepted"]:
+                    status = "PARTIAL_COLLECTED_" + status
+            report.update({"status": status,
+                "queue_state": decision["state"], "accepted": decision["accepted"], "review": decision["review"],
                 "rejected": decision["rejected"],
                 "source_policy_accepted": len(approved),
                 "all_ten_live_acceptance": False})

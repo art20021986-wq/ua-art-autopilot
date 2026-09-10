@@ -392,14 +392,22 @@ class SpecStore:
             DO UPDATE SET payload=excluded.payload, updated_at=excluded.updated_at""",
             (uid, revision, fact["key"], _json(fact), now))
 
-    def approve_candidates(self, job_id: str, lease_token: str, facts: list[dict], now=None) -> dict:
+    def approve_candidates(self, job_id: str, lease_token: str, facts: list[dict], now=None,
+                           *, retry_error: str | None = None, retry_after: float = 30) -> dict:
         """Finish a leased collection and merge only nonconflicting verified facts.
 
         The name denotes factual acceptance, never permission to publish a car.
         Conflicts and unverified candidates are persisted for owner review.
+        A partial collection can atomically retain accepted facts and retry the
+        same job. Attempts are never reset, even when some sources succeed.
         """
         if not isinstance(facts, list):
             raise StoreError("facts must be a list")
+        if retry_error is not None and (not isinstance(retry_error, str)
+                or not retry_error.strip() or len(retry_error) > 1000):
+            raise StoreError("retry_error must be a nonempty bounded code")
+        if isinstance(retry_after, bool) or not isinstance(retry_after, (int, float)) or not 0 <= retry_after <= 86400:
+            raise StoreError("retry_after must be between 0 and 86400")
         now = self._now(now)
         result = {"job_id": job_id, "accepted": 0, "review": 0, "rejected": 0}
         normalized = []
@@ -451,8 +459,13 @@ class SpecStore:
                 self.db.execute("INSERT INTO candidates VALUES(?,?,?,?,?,?,?,?,?)", (
                     uuid.uuid4().hex, job_id, job["uid"], job["revision"], key, payload, decision, reason, now))
                 result[decision] += 1
-            self.db.execute("""UPDATE jobs SET state='succeeded', lease_token=NULL,
-                lease_until=NULL,updated_at=? WHERE id=?""", (now, job_id))
+            state = "succeeded" if retry_error is None else (
+                "exhausted" if job["attempts"] >= job["max_attempts"] else "retry")
+            self.db.execute("""UPDATE jobs SET state=?, next_attempt=?, lease_token=NULL,
+                lease_until=NULL,error=?,updated_at=? WHERE id=?""",
+                (state, now + retry_after if retry_error is not None else now,
+                 retry_error, now, job_id))
+            result["state"] = state
         return result
 
     def import_legacy(self, uid: str, facts: list[dict], receipt_id: str) -> dict:
@@ -583,7 +596,7 @@ class SpecStore:
                 "facts_digest": digest, "status": "PASS", "specification_visible": True,
                 "single_vin": True, "shell_preserved": True,
             }
-            if not facts or any(receipt.get(key) != value for key, value in required.items()):
+            if any(receipt.get(key) != value for key, value in required.items()):
                 raise StoreError("receipt must bind exact visible facts, identity and shell checks")
             if any(receipt.get(key) is not True for key in ("specification_visible", "single_vin", "shell_preserved")):
                 raise StoreError("receipt checks must be explicit booleans")

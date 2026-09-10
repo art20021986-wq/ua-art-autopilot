@@ -147,7 +147,7 @@ def _provenance(fact):
 
 
 def normalize_facts(facts):
-    """Support canonical and preserved legacy field records without HTML data."""
+    """Return confirmed visible rows, or an empty list while data is pending."""
     result = {}
     for fact in facts:
         if not isinstance(fact, dict):
@@ -197,8 +197,6 @@ def normalize_facts(facts):
             raise SpecError("CONFLICTING_SPECIFICATION_KEY:" + key)
         result[key] = row
     rows = sorted(result.values(), key=lambda r: (list(GROUPS).index(r["category"]), r["key"]))
-    if not rows:
-        raise SpecError("NO_VERIFIED_VISIBLE_SPECIFICATION")
     return rows
 
 
@@ -266,12 +264,16 @@ def render_block(uid, facts, lang="uk"):
             _source_details(r["provenance"], lang)) for r in items)
         groups.append('<section class="ua-rb10-group"><h3>%s</h3><dl>%s</dl></section>' % (
             _i18n(*titles, lang), body))
+    content = "".join(groups) if rows else '<p class="ua-rb10-pending">%s</p>' % _i18n(
+        "Додаткові характеристики уточнюються.", "Дополнительные характеристики уточняются.", lang)
     return (START + STYLE + '<a class="ua-rb10-link" href="#additional-specification">%s</a>'
             '<section id="additional-specification" class="blok ua-rb10" data-ua-additional-spec="1" '
-            'data-spec-card="%s" data-spec-version="%s" aria-labelledby="additional-specification-title">'
+            'data-spec-card="%s" data-spec-version="%s" data-spec-status="%s" '
+            'aria-labelledby="additional-specification-title">'
             '<h2 id="additional-specification-title">%s</h2>%s</section>' + END) % (
                 _i18n("Додаткова специфікація →", "Дополнительная спецификация →", lang), uid, _digest(rows),
-                _i18n("Додаткова специфікація", "Дополнительная спецификация", lang), "".join(groups))
+                "READY" if rows else "PENDING",
+                _i18n("Додаткова специфікація", "Дополнительная спецификация", lang), content)
 
 
 def _span(source):
@@ -379,7 +381,7 @@ def validate_page(source, uid, facts, previous=None, lang="uk"):
             delta = {"outside_permitted_regions_byte_changes": 0, "status": "PINNED_TEMPLATE"}
     except shell_guard.ShellError as exc:
         raise SpecError(str(exc)) from exc
-    return {"status": "PASS", "rows": len(rows), "data_status": "READY", "language": lang,
+    return {"status": "PASS", "rows": len(rows), "data_status": "READY" if rows else "PENDING", "language": lang,
             "version": _digest(rows), "visible_vin_count": vin["visible_vin_count"],
             "visible_anchor": "#additional-specification", "javascript_required": False,
             "shell_assets_sha256": assets["ordered_static_assets_sha256"], "shell_delta": delta}

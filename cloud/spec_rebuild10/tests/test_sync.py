@@ -100,6 +100,34 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(first,second);self.assertEqual(self.states(),['READY'])
         self.assertEqual(self.writes,[])
 
+    def test_initial_pending_page_is_filled_automatically_without_owner_action(self):
+        # Fresh publication of an empty specification, followed by acceptance
+        # of a fact. Only the existing automatic sync is invoked afterwards.
+        self.spec.unlink()
+        with SpecStore(self.spec) as store:
+            crm_bridge.CrmBridge(store).saved(self.rows(UID))
+            vehicle=store.get_vehicle(UID)
+            receipt={'uid':UID,'revision':vehicle['revision'],'identity_hash':vehicle['identity_hash'],
+                'facts_digest':store.facts_digest(UID),'receipt_id':'SYNTHETIC-pending-readback',
+                'status':'PASS','route_id':'SYNTHETIC-owner-publish','verified_at':'2026-09-10T00:00:00Z',
+                'page_url':'https://www.uaart.com.ua/video/'+UID+'.html',
+                'specification_visible':True,'single_vin':True,'shell_preserved':True}
+            store.mark_publication_verified(UID,vehicle['revision'],receipt)
+        pending=render.compose_page(page(),UID,[])
+        for folder in ('video','site'):
+            self.primary(folder).write_text(pending)
+        catalog=(self.root/'video'/'katalog.html').read_bytes()
+        self.accept_more()
+        result=self.service.tick()['sync']
+        self.assertEqual(result['status'],'VERIFIED')
+        for folder in ('video','site'):
+            filled=self.primary(folder).read_text()
+            self.assertIn('1860',filled)
+            self.assertNotIn('data-spec-status="PENDING"',filled)
+            self.assertEqual(render._without_block(filled),render._without_block(pending))
+        self.assertEqual((self.root/'video'/'katalog.html').read_bytes(),catalog)
+        self.assertEqual(self.service.tick()['sync']['status'],'IDLE')
+
     def test_two_page_spec_only_sync_updates_real_verified_snapshot_once(self):
         original_catalog=(self.root/'video'/'katalog.html').read_bytes()
         result=self.service.tick()['sync']
@@ -272,6 +300,18 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(result['public_sync']['sync']['status'],'VERIFIED')
         self.assertEqual(len(self.writes),2)
         self.assertEqual(worker.tick()['public_sync']['sync']['status'],'IDLE')
+        self.assertEqual(len(self.writes),2)
+
+    def test_supplier_failure_does_not_block_previously_accepted_site_update(self):
+        receipt={'module':'spec_rebuild10','old_workers_stopped':True,'exclusive_owner':True,'receipt_id':'SYNTHETIC'}
+        worker=bootstrap.WorkerService(self.spec,self.rows,{},receipt,lambda _:True)
+        bootstrap.attach_public_sync(worker,self.runtime,self.outbox,
+            authorize_sync=self.authorize,transport=self.transport)
+        with patch('cloud.spec_rebuild10.worker.SpecWorker.run_once',
+                   return_value={'status':'RETRY_SCHEDULED','publication_performed':False}):
+            result=worker.tick()
+        self.assertEqual(result['worker']['status'],'RETRY_SCHEDULED')
+        self.assertEqual(result['public_sync']['sync']['status'],'VERIFIED')
         self.assertEqual(len(self.writes),2)
 
 

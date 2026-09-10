@@ -70,11 +70,62 @@ class RendererTests(unittest.TestCase):
         with self.assertRaisesRegex(render.SpecError, "VISIBLE_VIN"):
             render.compose_page(before, UID, FACTS)
 
-    def test_no_facts_or_only_unverified_facts_reject_publication(self):
-        for facts in ([], [{"key": "length", "value": "1", "verification_status": "PENDING"}],
-                      [{"key": "length", "value": "1", "is_visible": 0}]):
-            with self.subTest(facts=facts), self.assertRaisesRegex(render.SpecError, "NO_VERIFIED"):
+    def test_empty_hidden_or_unverified_facts_render_visible_pending_section(self):
+        for facts in ([], [{"key": "length", "value": "9998", "verification_status": "PENDING"}],
+                      [{"key": "length", "value": "9998", "is_visible": 0,
+                        "verification_status": "VERIFIED"}]):
+            with self.subTest(facts=facts):
+                self.assertEqual(render.normalize_facts(facts), [])
+                result = render.compose_page(page(), UID, facts)
+                self.assertIn('href="#additional-specification"', result)
+                self.assertIn('<section id="additional-specification"', result)
+                self.assertIn('data-spec-status="PENDING"', result)
+                self.assertIn('>Додаткові характеристики уточнюються.</span>', result)
+                self.assertNotIn('data-spec-key=', result)
+                self.assertNotIn("9998", result)
+                report = render.validate_page(result, UID, facts, previous=page())
+                self.assertEqual(report["data_status"], "PENDING")
+                self.assertEqual(report["rows"], 0)
+                self.assertEqual(report["visible_vin_count"], 1)
+                self.assertEqual(report["shell_delta"]["outside_permitted_regions_byte_changes"], 0)
+                self.assertEqual(render._without_block(result), render.shell_guard.normalize_html(page(), UID))
+                self.assertEqual(result, render.compose_page(result, UID, facts))
+
+    def test_pending_section_is_localized_without_invented_facts(self):
+        result = render.render_block(UID, [], "ru")
+        self.assertIn('data-uk="Додаткові характеристики уточнюються."', result)
+        self.assertIn('data-ru="Дополнительные характеристики уточняются."', result)
+        self.assertIn('>Дополнительные характеристики уточняются.</span>', result)
+        self.assertNotIn('<dl>', result)
+
+    def test_pending_to_confirmed_update_preserves_unrelated_bytes(self):
+        pending = render.compose_page(page(), UID, [])
+        filled = render.compose_page(pending, UID, FACTS)
+        self.assertNotIn('class="ua-rb10-pending"', filled)
+        self.assertIn('data-spec-status="READY"', filled)
+        self.assertEqual(render._without_block(pending), render._without_block(filled))
+        report = render.validate_page(filled, UID, FACTS, previous=pending)
+        self.assertEqual(report["data_status"], "READY")
+        self.assertEqual(report["rows"], len(FACTS))
+        self.assertEqual(report["shell_delta"]["outside_permitted_regions_byte_changes"], 0)
+
+    def test_confirmed_to_pending_cannot_remove_previously_published_fields(self):
+        filled = render.compose_page(page(), UID, FACTS)
+        for facts in ([], [{"key": "length", "value": "4900", "verification_status": "PENDING"}],
+                      [{**fact, "is_visible": 0} for fact in FACTS]):
+            with self.subTest(facts=facts), self.assertRaisesRegex(render.SpecError, "KEYS_LOST"):
+                render.compose_page(filled, UID, facts)
+
+    def test_pending_does_not_bypass_malformed_or_unsafe_fact_validation(self):
+        for facts in ([None], [{**FACTS[0], "value": "<script>unsafe</script>"}],
+                      [{**FACTS[0], "key": "vin"}]):
+            with self.subTest(facts=facts), self.assertRaises(render.SpecError):
                 render.compose_page(page(), UID, facts)
+        unverified = [{"key": "length", "value": "<script>unsafe</script>"}]
+        result = render.render_block(UID, unverified)
+        self.assertIn('data-spec-status="PENDING"', result)
+        self.assertNotIn("unsafe", result)
+        self.assertNotIn("<script", result)
 
     def test_disappearing_field_does_not_replace_last_good_page(self):
         before = render.compose_page(page(), UID, FACTS)
@@ -216,9 +267,10 @@ class RendererTests(unittest.TestCase):
         with self.assertRaisesRegex(render.SpecError, "STATIC_ASSETS_CHANGED"):
             render.validate_authorized_card_change(before, after, UID, FACTS, manifest, row)
 
-    def test_missing_new_fact_verification_fails_closed(self):
-        with self.assertRaisesRegex(render.SpecError, "NO_VERIFIED"):
-            render.render_block(UID, [{"key": "length", "value": "4900"}])
+    def test_missing_new_fact_verification_is_not_surfaced(self):
+        pending = render.render_block(UID, [{"key": "length", "value": "4900"}])
+        self.assertNotIn("4900", pending)
+        self.assertIn('data-spec-status="PENDING"', pending)
         legacy = {"key": "length", "value": "4900",
                   "legacy_import": {"receipt_id": "synthetic-import", "fresh_verification": False}}
         self.assertIn("4900", render.render_block(UID, [legacy]))

@@ -1,5 +1,11 @@
 # UA-ART-SPEC-REBUILD-10-001 v1.0
 
+**10 September follow-up:** the owner confirmed initial manual publication with
+an honest pending specification and automatic later enrichment. See
+[MANUAL-PUBLISH-AUTO-SPEC.md](MANUAL-PUBLISH-AUTO-SPEC.md) for the implemented
+changes, current verification and remaining production blockers. Target R2/R3
+receipts below describe the base revision and do not certify this follow-up.
+
 The owner approved a new implementation and the ten named sources on 9 September
 2026. This branch contains the new module, private-copy verification evidence and
 integration preparation. It does not install or enable code on the live CRM/site.

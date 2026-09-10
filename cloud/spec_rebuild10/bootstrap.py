@@ -273,6 +273,7 @@ class WorkerService:
         self.receipt, self.verify_installation, self.register = installation_receipt, verify_installation, register
         self._lock, self._registered = threading.RLock(), False
         self.public_sync = None
+        self.acceptance_scope = None
 
     def _handoff(self):
         require(callable(self.verify_installation) and self.verify_installation(self.receipt) is True
@@ -289,17 +290,19 @@ class WorkerService:
                         "public_sync": {"status": "BLOCKED_SYNC_RECONCILIATION_REQUIRED"}}
             with SpecStore(self.store_path) as store:
                 worker = bind_worker(store, self.collectors, installation_receipt=self.receipt,
-                                     verify_installation=self.verify_installation)
+                                     verify_installation=self.verify_installation,
+                                     **({"acceptance_scope": self.acceptance_scope}
+                                        if self.acceptance_scope is not None else {}))
                 scan = self.rows.snapshot()
                 require(scan["complete"] is True, "COMPLETE_CRM_SCAN_REQUIRED")
                 reconciliation = crm_bridge.CrmBridge(store).reconcile_saved_rows(scan["rows"])
                 require(not reconciliation["needs_input"], "CRM_RECONCILIATION_NEEDS_INPUT")
                 result = {"reconciliation": reconciliation, "worker": worker.run_once()}
             if self.public_sync is not None:
-                if result["worker"]["status"] in {"RETRY_SCHEDULED", "EXHAUSTED", "STALE_RESULT_DISCARDED"}:
-                    result["public_sync"] = {"status": "NOT_RUN_COLLECTION_ERROR"}
-                else:
-                    result["public_sync"] = self.public_sync.tick()
+                # Supplier failures do not suspend already accepted updates
+                # for other automobiles. Sync independently verifies each
+                # current CRM identity, publication snapshot and outbox.
+                result["public_sync"] = self.public_sync.tick()
             return result
 
     def start(self):
@@ -327,6 +330,7 @@ def configure(store_path, rows, plan, readback, worker, *, execute_lifecycle):
     its durable COMPLETED archive receipt. No legacy import occurs in this call.
     """
     require(callable(execute_lifecycle), "VERIFIED_LOCKED_LIFECYCLE_EXECUTOR_REQUIRED")
+    require(callable(worker.acceptance_scope), "SHARED_PUBLICATION_ACCEPTANCE_SCOPE_REQUIRED")
     worker._handoff()
     with SpecStore(store_path) as store:
         bind_worker(store, worker.collectors, installation_receipt=worker.receipt,
@@ -337,7 +341,7 @@ def configure(store_path, rows, plan, readback, worker, *, execute_lifecycle):
     crm_bridge.configure_runtime_factory(str(store_path), read_current_row=rows,
         verify_readiness=plan.readiness, execute_lifecycle=execute_lifecycle,
         verify_readback=readback.verify, start_worker=worker.start,
-        verify_page_change=plan.page_change)
+        verify_page_change=plan.page_change, publication_scope=worker.acceptance_scope)
     return {"status": "RUNTIME_CONFIGURED", "tracked": len(reconciled["tracked"]),
             "worker_started": False, "production_publication_performed": False}
 
@@ -453,6 +457,8 @@ def attach_public_sync(worker, runtime, outbox_path, *, authorize_sync, transpor
     """Bind the automatic specification-only outbox to the same supervisor tick."""
     from .sync import SpecSync
     require(worker.public_sync is None, "PUBLIC_SYNC_ALREADY_CONFIGURED")
+    require(callable(runtime.guard._exclusive_lock), "VERIFIED_PUBLICATION_LOCK_REQUIRED")
+    worker.acceptance_scope = runtime.guard._exclusive_lock
     worker.public_sync = SpecSync(worker.store_path, worker.rows, runtime, outbox_path,
                                  authorize_sync=authorize_sync, transport=transport)
     return worker.public_sync

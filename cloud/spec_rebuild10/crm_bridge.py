@@ -6,7 +6,7 @@ is deliberately no default publisher, shell command, HALT change or worker.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 from decimal import Decimal, InvalidOperation
 import hashlib
@@ -14,6 +14,7 @@ import json
 import logging
 import re
 from typing import Any, Callable, Mapping
+from urllib.parse import urlsplit
 
 from .store import StoreError
 
@@ -163,9 +164,9 @@ class CrmBridge:
         uid, identity = identity_from_crm(row)
         vehicle = self.store.get_vehicle(uid)
         revision = int(vehicle["revision"])
-        facts = self.store.get_facts(uid)
-        if action == "publish" and not facts:
-            raise BridgeError("ACCEPTED_SPEC_REQUIRED")
+        # Owner-approved flow: a saved automobile may be published with an
+        # honest pending section. Exact identity, route and readback checks
+        # still apply; the later collector cannot publish a draft on its own.
         request = {"uid": uid, "action": action, "actor_id": actor_id,
                    "identity_hash": vehicle["identity_hash"], "revision": revision,
                    "facts_digest": self.store.facts_digest(uid),
@@ -226,6 +227,7 @@ class RuntimeBindings:
     start_worker: Callable
     read_current_row: Callable
     verify_page_change: Callable | None = None
+    publication_scope: Callable = nullcontext
 
 
 _runtime: RuntimeBindings | None = None
@@ -255,7 +257,7 @@ def configure_runtime(bindings: RuntimeBindings) -> None:
     """Called only by the separately reviewed CRM bootstrap after handoff."""
     global _runtime
     if not isinstance(bindings, RuntimeBindings) or any(not callable(getattr(bindings, key))
-            for key in ("verify_readiness", "execute_lifecycle", "verify_readback", "start_worker", "read_current_row")):
+            for key in ("verify_readiness", "execute_lifecycle", "verify_readback", "start_worker", "read_current_row", "publication_scope")):
         raise BridgeError("VERIFIED_RUNTIME_BINDINGS_REQUIRED")
     if _runtime_factory is not None or (_runtime is not None and _runtime is not bindings):
         raise BridgeError("RUNTIME_ALREADY_CONFIGURED")
@@ -265,7 +267,8 @@ def configure_runtime(bindings: RuntimeBindings) -> None:
 def configure_runtime_factory(store_path: str, *, read_current_row: Callable,
                               verify_readiness: Callable, execute_lifecycle: Callable,
                               verify_readback: Callable, start_worker: Callable,
-                              verify_page_change: Callable | None = None) -> None:
+                              verify_page_change: Callable | None = None,
+                              publication_scope: Callable = nullcontext) -> None:
     """Thread-scoped bootstrap; dependencies must be the reviewed real route.
 
     Each outer event owns one SQLite connection; nested publisher callbacks use
@@ -275,13 +278,13 @@ def configure_runtime_factory(store_path: str, *, read_current_row: Callable,
     if _runtime is not None or _runtime_factory is not None:
         raise BridgeError("RUNTIME_ALREADY_CONFIGURED")
     if not all(callable(value) for value in (read_current_row, verify_readiness,
-            execute_lifecycle, verify_readback, start_worker)):
+            execute_lifecycle, verify_readback, start_worker, publication_scope)):
         raise BridgeError("VERIFIED_RUNTIME_BINDINGS_REQUIRED")
     from .store import SpecStore
     def factory():
         return RuntimeBindings(CrmBridge(SpecStore(store_path)), verify_readiness,
                                execute_lifecycle, verify_readback, start_worker,
-                               read_current_row, verify_page_change)
+                               read_current_row, verify_page_change, publication_scope)
     _runtime_factory = factory
 
 
@@ -329,8 +332,6 @@ def _public_facts(runtime, uid):
     if current_uid != uid or _identity(identity)[1] != vehicle["identity_hash"] or vehicle["tombstoned"]:
         raise BridgeError("CRM_SPEC_IDENTITY_MISMATCH")
     facts = runtime.bridge.store.get_facts(uid)
-    if not facts:
-        raise BridgeError("ACCEPTED_SPEC_REQUIRED")
     output = []
     for fact in facts:
         item = dict(fact)
@@ -379,7 +380,13 @@ def validate_runtime_page_change(before: str, after: str, uid: str, facts: list)
 
 def runtime_transition(action: str, row: Mapping, actor_id: int) -> tuple[bool, str]:
     with _runtime_scope() as runtime:
-        return _transition(runtime, action, row, actor_id)
+        if runtime is None:
+            return _transition(runtime, action, row, actor_id)
+        # Same verified cross-process publication lock as worker acceptance.
+        # Collection happens outside this scope; only fact commits wait for
+        # the whole prepare -> execute -> readback/snapshot interval.
+        with runtime.publication_scope():
+            return _transition(runtime, action, row, actor_id)
 
 
 def _transition(runtime, action, row, actor_id):
@@ -407,8 +414,26 @@ def _transition(runtime, action, row, actor_id):
         _active_ticket.reset(token)
     if result.get("ok") is not True:
         return False, str(result.get("detail", "Дію не завершено."))
+    if action == "publish":
+        # Return only the URL bound to the completed, verified receipt. A 200
+        # homepage redirect is never a vehicle publication confirmation.
+        url = str(result.get("receipt", {}).get("page_url", ""))
+        try:
+            parsed = urlsplit(url)
+            approved = (parsed.scheme == "https"
+                and parsed.hostname in {"uaart.com.ua", "www.uaart.com.ua"}
+                and not parsed.username and not parsed.password
+                and parsed.port in (None, 443) and not parsed.query and not parsed.fragment
+                and parsed.path == "/video/" + ticket.uid + ".html")
+        except ValueError:
+            approved = False
+        if not approved:
+            return False, "Посилання не підтверджує публікацію автомобіля. Потрібна звірка стану сайту."
     try:
         runtime.bridge.observed(ticket, result["receipt"], runtime.verify_readback)
     except Exception:
         return False, "Результат потребує перевірки. Не повторюйте дію до звірки стану сайту."
+    if action == "publish":
+        return True, ("✅ " + ticket.uid + " опубліковано.\n" + url
+            + "\nДодаткові підтверджені характеристики оновлюються автоматично.")
     return True, str(result.get("detail", "Зміни перевірено."))
