@@ -1,10 +1,9 @@
-TASK_ID: UA-ART-RECOVERY-TASK120-002
-ROUND: 2
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Маршрут подключён через PR81; GitHub run34323968311 и recovery_canary PASS. Добавлен ровно один служебный receipt, HALT сохранён. 151/151 локальных тестов PASS.
-FILES_CREATED: cloud/recovery_task120_002/integration/connection-report.md, cloud/recovery_task120_002/integration/evidence/live-route-result.json; код и доказательства подключения в PR81
-PRODUCTION_TOUCHED: YES — только управление GitHub. CRM, сайт и PythonAnywhere: NO
-OWNER_ACTION_REQUIRED: NO
-OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Подключение завершено. Снятие HALT по-прежнему заблокировано EXTERNAL_WRITER_VERIFICATION_REQUIRED; требуется проверенный контроль внешних исполнителей и отдельная команда на точный план. Не выдавать canary за Gate B спецификации или публикацию карточек.
-UPDATED_AT_UTC: 2026-09-09T07:31:16.663874+00:00
+TASK_ID: SITE-CONNECTION-20260910
+EXECUTOR: Codex
+STATUS: BLOCKED_FOR_EXACT_UPLOAD_APPROVAL
+CURRENT_ACTION: One webapp reload completed; four-route monitor tested; installation blocked by automatic approval review.
+PRODUCTION_TOUCHED: YES — one exact webapp reload only
+OWNER_ACTION_REQUIRED: YES
+OWNER_QUESTION: Confirm upload of /home/Carix/uaart_connection_monitor.py and one read-only Always-on monitor task.
+NEXT_FOR_CHATGPT: Follow REPORT.md; do not claim mobile issue resolved or monitor installed.
+UPDATED_AT_UTC: 2026-09-10T09:59:18Z
