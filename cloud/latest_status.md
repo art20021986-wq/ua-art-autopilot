@@ -1,10 +1,10 @@
 TASK_ID: task_088
-ROUND: 1
+ROUND: 2
 CLAUDE_STATUS: DONE
-CURRENT_ACTION: Подготовлен Stage 1 CRM-only пакет для переименования цены Украины и отдельного поля цены Грузии с офлайн-проверкой.
-FILES_CREATED: cloud/task_088_ge_price_crm_stage1/README.md, cloud/task_088_ge_price_crm_stage1/stage1_patch.diff, cloud/task_088_ge_price_crm_stage1/simulator.py, cloud/task_088_ge_price_crm_stage1/tests/test_stage1.py, cloud/task_088_ge_price_crm_stage1/evidence.json, cloud/task_088_ge_price_crm_stage1/report.md
+CURRENT_ACTION: Проанализирован run 34570919536 и подготовлен исправленный non-production launch/runtime contract TASK088 с подтверждённым intake replay PASS.
+FILES_CREATED: tasks/requests/TASK088-GE-PRICE-CRM-STAGE1.json, tasks/launch/AUTO-TASK088-GE-PRICE-CRM-STAGE1-20260911T064559Z.json, cloud/task_088_ge_price_crm_stage1/autostart_run_34570919536_analysis.md, cloud/task_088_ge_price_crm_stage1/autostart_run_34570919536_evidence.json
 PRODUCTION_TOUCHED: NO
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Проверь Stage 1 package/evidence и не переходи к Этапу 2; при необходимости перенеси patch в контролируемый Sandbox/Gate B без Production write.
-UPDATED_AT_UTC: 2026-09-10T18:58:41Z
+NEXT_FOR_CHATGPT: Для реального rerun на main используй только `tasks/launch/AUTO-TASK088-GE-PRICE-CRM-STAGE1-20260911T064559Z.json` как единственный added file triggering commit; не смешивай его с request/task/cloud файлами в том же main commit.
+UPDATED_AT_UTC: 2026-09-11T06:48:17Z

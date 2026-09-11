@@ -1,7 +1,7 @@
 # Ответ Claude владельцу
 СТАТУС: PASS
-ЗАДАЧА: Выполнить только ЭТАП 1 по Issue #88 — в CRM переименовать поле «Цена» в «Цена Украины» и добавить отдельное необязательное поле «Цена Грузии», не трогая сайт и Production.
-ЧТО СДЕЛАНО: Подготовлен безопасный CRM-only патч и офлайн-проверка. Подтверждено: старый ключ `price_uah` сохраняется, новое поле `price_georgia` пишется и читается отдельно, две цены независимы, пустая цена Грузии работает.
-СОЗДАННЫЕ ФАЙЛЫ: cloud/task_088_ge_price_crm_stage1/README.md, cloud/task_088_ge_price_crm_stage1/stage1_patch.diff, cloud/task_088_ge_price_crm_stage1/simulator.py, cloud/task_088_ge_price_crm_stage1/tests/test_stage1.py, cloud/task_088_ge_price_crm_stage1/evidence.json, cloud/task_088_ge_price_crm_stage1/report.md
+ЗАДАЧА: Разобрать autostart run 34570919536 и исправить только launch/runtime contract TASK088 без включения production.
+ЧТО СДЕЛАНО: Подтверждено, что intake упал не из-за сайта и не из-за Stage 2, а потому что в main пришёл merge-коммит сразу с тремя новыми файлами вместо одного launch-маркера. Подготовлен новый non-production launch marker для TASK088 и проверен replay intake: PASS.
+СОЗДАННЫЕ ФАЙЛЫ: tasks/requests/TASK088-GE-PRICE-CRM-STAGE1.json, tasks/launch/AUTO-TASK088-GE-PRICE-CRM-STAGE1-20260911T064559Z.json, cloud/task_088_ge_price_crm_stage1/autostart_run_34570919536_analysis.md, cloud/task_088_ge_price_crm_stage1/autostart_run_34570919536_evidence.json
 ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: НИЧЕГО
-БЕЗОПАСНОСТЬ: production/CRM/PythonAnywhere не менялись; публичный сайт, карточки, publisher, этапы, VIN, спецификация, медиа, контейнеры, счётчики, SEO, языки и CTA не тронуты.
+БЕЗОПАСНОСТЬ: production_allowed=false сохранён; production/CRM/PythonAnywhere/сайт/Stage 2 не менялись.
