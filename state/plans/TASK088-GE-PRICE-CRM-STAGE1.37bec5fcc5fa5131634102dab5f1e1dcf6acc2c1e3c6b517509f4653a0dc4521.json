@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK088-GE-PRICE-CRM-STAGE1.37bec5fcc5fa5131634102dab5f1e1dcf6acc2c1e3c6b517509f4653a0dc4521.json",
+  "autostart_ledger_sha256": "54fca416e96504afb5f3a359f5dcf23a5c0d7675ae05d7cbbaeec61b514f03cf",
+  "autostart_source_commit": "e7af98bea2a5a3ad5c2dde5b158a351cd03be47c",
+  "created_at": "2026-09-11T17:21:35Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "34627083846",
+    "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+    "task_sha256": "37bec5fcc5fa5131634102dab5f1e1dcf6acc2c1e3c6b517509f4653a0dc4521"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE1-R2.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
