@@ -528,6 +528,13 @@ class WorkflowContractTests(unittest.TestCase):
             "COMMIT:refs/heads/main",
         ):
             self.assertIn(marker, persist)
+        self.assertEqual(
+            value.count('set -- $(git rev-list --parents -n 1 "$SOURCE_COMMIT")'), 3
+        )
+        self.assertEqual(value.count('test "$1" = "$SOURCE_COMMIT"'), 3)
+        self.assertEqual(value.count('test "$2" = "$BEFORE_SHA"'), 3)
+        self.assertEqual(value.count('test "$#" -eq 3'), 3)
+        self.assertNotIn('"$SOURCE_COMMIT $BEFORE_SHA"', value)
         self.assertLess(persist.index("unset GH_TOKEN"), persist.index("python3 -I"))
         self.assertEqual(value.count("${{ github.token }}"), 1)
         self.assertIn("uses: ./.github/workflows/uaart_orchestrator.yml", value)
@@ -541,6 +548,41 @@ class WorkflowContractTests(unittest.TestCase):
         CP._verify_autostart_fresh_runner_policy(
             value, ".github/workflows/uaart_autostart.yml"
         )
+
+    def test_global_autostart_parent_gate_accepts_direct_and_normal_merge_only(self):
+        value = self.read("uaart_autostart.yml")
+        gate = re.compile(
+            r'set -- \$\(git rev-list --parents -n 1 "\$SOURCE_COMMIT"\)\n'
+            r'\s+test "\$1" = "\$SOURCE_COMMIT"\n'
+            r'\s+test "\$2" = "\$BEFORE_SHA"\n'
+            r'\s+if test "\$#" -ne 2; then\n'
+            r'\s+test "\$#" -eq 3\n'
+            r'\s+fi'
+        )
+        self.assertEqual(len(gate.findall(value)), 3)
+        source = "a" * 40
+        before = "b" * 40
+        other = "c" * 40
+        another = "d" * 40
+
+        def accepts_parent_line(line: str) -> bool:
+            parts = line.split()
+            return (
+                len(parts) in {2, 3}
+                and parts[0] == source
+                and parts[1] == before
+            )
+
+        self.assertTrue(accepts_parent_line(f"{source} {before}"))
+        self.assertTrue(accepts_parent_line(f"{source} {before} {other}"))
+        for rejected in (
+            f"{source} {other}",
+            f"{source} {other} {before}",
+            f"{source} {before} {other} {another}",
+            f"{other} {before}",
+        ):
+            with self.subTest(rejected=rejected):
+                self.assertFalse(accepts_parent_line(rejected))
 
     def test_nonproduction_rerun_is_failure_only_without_controller(self):
         for name in ("uaart_fast.yml", "uaart_standard.yml"):
