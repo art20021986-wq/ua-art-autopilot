@@ -1,0 +1,27 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/operator-ui/cars_ui.py",
+    "production/db.py"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Stage 1 only: apply CRM patch for Ukraine/Georgia price split in controlled non-production bridge path, perform live write -> DB -> read-back, and verify independent optional Georgia price while keeping site/publisher/production unchanged.",
+  "execution": {
+    "controller_path": "automation/pythonanywhere_gate_a_controller.py",
+    "controller_sha256": "2670723896da03cbe06eec1d6b81bd2faa249f84294f5f705649fcb36dd2f229",
+    "evidence_paths": [
+      "cloud/task_088_ge_price_crm_stage1/live_attempt_evidence.json",
+      "cloud/task_088_ge_price_crm_stage1/live_attempt_report.md"
+    ],
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+    "timeout_seconds": 900
+  },
+  "production_required": false,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_required_bytes": 16777216,
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+  "title": "Stage 1 UA/GE CRM price live bridge run"
+}
