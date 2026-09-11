@@ -6,6 +6,7 @@ from unittest import mock
 
 import controller
 import remote_probe
+import owner_preflight
 
 
 def values(operation='execute'):
@@ -130,6 +131,38 @@ class Tests(unittest.TestCase):
             api.snapshot.side_effect = None; api.snapshot.return_value = {'drift': True}
             with self.assertRaisesRegex(controller.ControllerError, 'SOURCE_DRIFT_REFUSE_OVERWRITE'):
                 controller.rollback(v, lambda _: api)
+
+    def test_failure_log_sanitizer_omits_source_and_secret_values(self):
+        raw = b'File "/home/Carix/autopilot_inbox/task/remote_probe.py", line 88\n  token="never-export-this"\nValueError: arbitrary-sensitive-value\nTASK088_PREFLIGHT_DIAGNOSTIC {"phase":"startup_or_result_publication","error_type":"ValueError","error_code":"PACKAGE_SHA","token":"never-export-this"}\n'
+        safe = controller.sanitize_task_log(raw)
+        self.assertNotIn('never-export-this', json.dumps(safe))
+        self.assertNotIn('arbitrary-sensitive-value', json.dumps(safe))
+        self.assertEqual(safe['exception_types'], ['ValueError'])
+        self.assertEqual(safe['package_frames'], [{'filename': 'remote_probe.py', 'line': 88}])
+        self.assertEqual(safe['diagnostic_signals'][0]['error_code'], 'PACKAGE_SHA')
+
+    def test_import_failure_is_durably_reported_after_once_only_claim(self):
+        v = values(); plan = {**controller.bindings(v), 'backup_manifest_sha256': v['UAART_BACKUP_MANIFEST_SHA256']}
+        def bad_import():
+            raise ModuleNotFoundError('private-sensitive-text')
+        with tempfile.TemporaryDirectory() as temp:
+            here = pathlib.Path(temp)
+            value = remote_probe.collect_once(plan, bad_import, here)
+            self.assertEqual(value['collection_status'], 'FAIL')
+            self.assertEqual(value['error_type'], 'ModuleNotFoundError')
+            self.assertTrue((here / 'started.json').exists())
+            payload = (here / 'result.json').read_text()
+            self.assertNotIn('private-sensitive-text', payload)
+        # Protected-tree enumeration must stop during traversal, before hashing.
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp); (root / 'site').mkdir()
+            for index in range(5):
+                (root / 'site' / str(index)).write_bytes(b'file')
+            with mock.patch.object(owner_preflight.time, 'monotonic', side_effect=[0, 0, 0, 21] + [21] * 20), mock.patch.object(pathlib.Path, 'rglob', side_effect=AssertionError('unbounded traversal')):
+                observed = owner_preflight.protected_probe(root)
+            self.assertEqual(observed['site']['status'], 'NOT_VERIFIED')
+            self.assertEqual(observed['site']['diagnostic_code'], 'PROTECTED_HASH_BUDGET')
+            self.assertNotIn('tree_sha256', observed['site'])
 
 
 if __name__ == '__main__':
