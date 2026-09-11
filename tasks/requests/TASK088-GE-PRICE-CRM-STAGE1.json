@@ -2,20 +2,34 @@
   "ai_requested": false,
   "changed_paths": [
     "production/operator-ui/cars_ui.py",
-    "production/db.py"
+    "production/crm.db"
   ],
   "complexity": 2,
   "control_plane_version": "TASK107-R2",
-  "description": "Stage 1 only: apply CRM patch for Ukraine/Georgia price split in controlled non-production bridge path, perform live write -> DB -> read-back, and verify independent optional Georgia price while keeping site/publisher/production unchanged.",
+  "critical": {
+    "allow_crm_vehicle_data": true,
+    "gate_b_authorized": false
+  },
+  "description": "Stage 1 only: install CRM split Ukraine/Georgia price support on PythonAnywhere, add optional cars.price_georgia, verify live transactional write -> DB -> read-back with rollback to original row values, and keep public site, publisher and Stage 2 unchanged.",
   "execution": {
-    "controller_path": "automation/pythonanywhere_gate_a_controller.py",
-    "controller_sha256": "2670723896da03cbe06eec1d6b81bd2faa249f84294f5f705649fcb36dd2f229",
-    "evidence_paths": [
-      "cloud/task_088_ge_price_crm_stage1/live_attempt_evidence.json",
-      "cloud/task_088_ge_price_crm_stage1/live_attempt_report.md"
+    "controller_path": "cloud/task_088_ge_price_crm_stage1/controller.py",
+    "controller_sha256": "6ec70380ce2d7b647293a4bf0552c1ff6e561545d0a2b015fdb55d7ae2d9ad6c",
+    "dependency_paths": [
+      "cloud/task_088_ge_price_crm_stage1/remote_installer.py"
     ],
+    "evidence_paths": [
+      "cloud/task_088_ge_price_crm_stage1/evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json"
+    ],
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage1/remote_installer.py": "73eefca83bbb6054836b1e4f836f02a1e4292867a3171dbd456b428b5a1c5cdf",
+      "cloud/task_088_ge_price_crm_stage1/test_contract.py": "8958b3652da6dcc2651572a2f93b41ffd488c4fce584cd0d96b1abb84693c1f8"
+    },
     "production_required": false,
     "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+    "test_paths": [
+      "cloud/task_088_ge_price_crm_stage1/test_contract.py"
+    ],
     "timeout_seconds": 900
   },
   "production_required": false,
