@@ -528,6 +528,13 @@ class WorkflowContractTests(unittest.TestCase):
             "COMMIT:refs/heads/main",
         ):
             self.assertIn(marker, persist)
+        self.assertEqual(
+            value.count('set -- $(git rev-list --parents -n 1 "$SOURCE_COMMIT")'), 3
+        )
+        self.assertEqual(value.count('test "$1" = "$SOURCE_COMMIT"'), 3)
+        self.assertEqual(value.count('test "$2" = "$BEFORE_SHA"'), 3)
+        self.assertEqual(value.count('test "$#" -eq 3'), 3)
+        self.assertNotIn('"$SOURCE_COMMIT $BEFORE_SHA"', value)
         self.assertLess(persist.index("unset GH_TOKEN"), persist.index("python3 -I"))
         self.assertEqual(value.count("${{ github.token }}"), 1)
         self.assertIn("uses: ./.github/workflows/uaart_orchestrator.yml", value)
