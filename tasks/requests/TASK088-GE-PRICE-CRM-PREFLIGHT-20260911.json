@@ -1,0 +1,68 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/operator-ui/cars_ui.py",
+    "production/crm.db"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": true,
+    "gate_a_path": "tasks/gates/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
+    "gate_a_sha256": "7f88d3f9adbe9eaea39adb5a3505d3f31d6be5f01a334e936cb5dd0c87938ccc",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
+    "manifest_sha256": "4041f502cdab42329b2323dfbd5bd5dc13cfdbe160c7ca702bdb406ccd9cbef2",
+    "owner_approval_path": "tasks/approvals/TASK088-GE-PRICE-CRM-PREFLIGHT.production.json",
+    "owner_approval_sha256": "e63f96db0b1c7cb59511faf914f232d0b426a9b1f9520b9106cccb864ca12227"
+  },
+  "description": "Owner authorized the protected TASK088 CRM route and explicitly directed removal of its manual storage block. Collect actual source hashes, schema, unpublished car IDs and runtime metadata. Business source, database, site and publisher writes are forbidden; only bounded diagnostic artifacts and one temporary diagnostic AlwaysOn task are permitted. Never restart the existing CRM bot. No actual two-price acceptance is claimed. Exact owner storage waiver, Gate A/B, transaction, backup and rollback contracts remain mandatory.",
+  "execution": {
+    "backup_controller_path": "cloud/task088_crm_preflight/backup_controller.py",
+    "backup_controller_sha256": "912436d34848f08bbb88eac6893e954494d16dfff3eaa774fda873b6bc1fe568",
+    "backup_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-BACKUP.json",
+    "controller_path": "cloud/task088_crm_preflight/controller.py",
+    "controller_sha256": "1cb40cf33ec064e7771b00338c8e18e9a362d8b92ff9e81e5747eeb30e461f98",
+    "dependency_paths": [
+      "cloud/task088_crm_preflight/capacity_probe.py",
+      "cloud/task088_crm_preflight/owner_preflight.py",
+      "cloud/task088_crm_preflight/remote_probe.py",
+      "cloud/task088_crm_preflight/ui_patch.py"
+    ],
+    "evidence_paths": [
+      "cloud/task088_crm_preflight/evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-BACKUP.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-ROLLBACK.json"
+    ],
+    "file_sha256": {
+      "cloud/task088_crm_preflight/capacity_probe.py": "404643d0bc1271a3d264cfd577a6a3e041b0790245fb8e0266967396b965ba6e",
+      "cloud/task088_crm_preflight/owner_preflight.py": "4d17adc77d687c7bbb16d525a37b999f4f4a273fc1d340820b57a523f25bcf93",
+      "cloud/task088_crm_preflight/remote_probe.py": "5cf91540786e86466e740f19dbf6986016b24338856187f9ac8f419a70b790e0",
+      "cloud/task088_crm_preflight/test_contract.py": "3c3ee369a340873a8b2b6ce779afcb222d45a4577df53a952acca35b1d73c888",
+      "cloud/task088_crm_preflight/ui_patch.py": "01dbf7363ea0fa902bd8b2137ad0a7442be4a63f970eb22f6c7161c7122b9c37"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
+    "rollback_controller_path": "cloud/task088_crm_preflight/rollback_controller.py",
+    "rollback_controller_sha256": "e5d5c917fd0a6d50ade28f5e82ef450989cd03e52ee26cc94bb52812f2357b25",
+    "rollback_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-ROLLBACK.json",
+    "test_paths": [
+      "cloud/task088_crm_preflight/test_contract.py"
+    ],
+    "timeout_seconds": 600
+  },
+  "health_checks": [
+    "https://www.uaart.com.ua/"
+  ],
+  "production_required": true,
+  "read_only": true,
+  "requested_min_class": "CRITICAL",
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK088-OWNER-STORAGE-OVERRIDE-20260911.json",
+    "evidence_sha256": "d61acd3880b96e8c1a212a3ebe9b2ad91a3581cede1316aa29b0c5d6a4a2bae0"
+  },
+  "storage_required_bytes": 524288,
+  "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+  "title": "TASK088 automatic CRM diagnostic after owner storage override"
+}

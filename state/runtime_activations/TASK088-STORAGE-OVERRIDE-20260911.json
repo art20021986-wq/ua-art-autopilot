@@ -1,0 +1,48 @@
+{
+  "allowed_requests": {
+    "tasks/requests/TASK088-GE-PRICE-CRM-PREFLIGHT-20260911.json": {
+      "manifest_sha256": "4041f502cdab42329b2323dfbd5bd5dc13cfdbe160c7ca702bdb406ccd9cbef2",
+      "package_dependency_digest": "4bb1ff6646bbce5b1987ddcdb5bc1a51f7f22585d2c5b4b8d91a22b4f8a1472f",
+      "request_sha256": "062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    }
+  },
+  "changed_runtime_paths": [
+    "automation/control_plane.py"
+  ],
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "owner": "Артём Бровинский / UA ART COMPANY LLC",
+  "owner_actor_id": "321059821",
+  "owner_command": "Так может быть сними эту непонятную блокировку, удали её нахуй.",
+  "owner_scope_record": {
+    "allowed_target_paths": [
+      "production/operator-ui/cars_ui.py",
+      "production/crm.db"
+    ],
+    "allowed_task_ids": [
+      "TASK088-GE-PRICE-CRM-PREFLIGHT",
+      "TASK088-GE-PRICE-CRM-STAGE1"
+    ],
+    "anti_replay_changes_allowed": false,
+    "backup_required": true,
+    "credential_route_authorized": true,
+    "live_verify_required": true,
+    "rollback_required": true,
+    "site_changes_allowed": false,
+    "storage_gate_override_authorized": true
+  },
+  "previous_activation_path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.json",
+  "previous_activation_sha256": "9e46455965d91b544d55b37698da453a94be25ab7f5a43d546f5e16766dac031",
+  "previous_manifest_path": "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.previous-manifest.json",
+  "previous_manifest_sha256": "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c",
+  "previous_mode_path": "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.previous-mode.json",
+  "previous_mode_sha256": "1075e1cfdd9d0ed09c45546c93a522eb5f28b7cd02c783f7db0439c350175281",
+  "registered_at": "2026-09-11T14:03:29Z",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "runtime_manifest_path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+  "runtime_manifest_sha256": "29b062e598f4c89d63e234f0ec25aae7fe9e4f67fe98345b209cca5ee3db23f8",
+  "schema_version": "UA-ART-TASK088-STORAGE-OVERRIDE-1",
+  "scope": "TASK088_CRM_ONLY_STORAGE_OWNER_OVERRIDE",
+  "source_commit": "0e4f53c51eec341a8b042572ade02013d7e1b948",
+  "task_id": "TASK088-STORAGE-OVERRIDE-20260911"
+}

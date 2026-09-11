@@ -1,0 +1,26 @@
+{
+  "backup_plan": "GET source hashes; no business mutation targets to restore",
+  "backup_plan_ready": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "evaluated_at": "2026-09-11T14:03:29Z",
+  "live_acceptance": "NOT_PERFORMED",
+  "local_test_count": 10,
+  "manifest_sha256": "4041f502cdab42329b2323dfbd5bd5dc13cfdbe160c7ca702bdb406ccd9cbef2",
+  "production_write": false,
+  "protected_snapshot": {
+    "business_targets": {
+      "access": "NOT_OPENED_IN_LOCAL_GATE",
+      "write_permitted": false
+    },
+    "site_publisher_media": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    }
+  },
+  "rollback_plan": "Delete only exact newly created diagnostic task; never restore or overwrite business data",
+  "rollback_plan_ready": true,
+  "status": "PASS",
+  "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
