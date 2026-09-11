@@ -10,25 +10,39 @@
     "allow_crm_vehicle_data": true,
     "gate_b_authorized": false
   },
-  "description": "Owner-authorized UA-ART-GE-UA-MARKET-PRICE-001 v3.2 recovery candidate 20260911T114500Z. Supersedes run 34591174796 request SHA 0b4edb818dceac55c1605bb2c7e105425c919a8998ae91096b1eb60e0c07bbbe, whose TOKEN_MISSING failure occurred before remote writes and whose exact claim was closed FAILED by the control-plane contract. Preserve all consumed ledgers and nonces. NOT READY FOR LAUNCH: confirm Stage 1 CRM UI versus prohibited Telegram Stage 2 boundary; correct committed DB read-back, independence and compensating restoration checks; resolve approved nonproduction credential and target binding. Scope remains Stage 1 only; no site, publisher or Stage 2 changes. This candidate is held on a recovery branch without a launch marker.",
+  "description": "HOLD / NOT LAUNCHABLE. Owner clarified 2026-09-11 that Stage 1 CRM UI is the same Telegram CRM bot: adjacent Ukraine and Georgia price controls are in scope. Existing old run 34591174796 was closed FAILED; preserve its request, claim and all replay history. Candidate now includes separate selected-price routing, committed DB read-back, cross-car invariants and scoped restoration. Local regression tests passed; final counts are in RECOVERY_20260911.md; no current live source snapshot or live bot acceptance proof exists. The protected CRM controller rejects production_required=false before network access. These flags deliberately remain false pending a correction to the handoff routing authorization; global gates and secrets are unchanged. Do not create a launch marker. Required next inputs: approved protected CRM-only route; authenticated current source + explicit unpublished test car + protected site paths; exact source plan hashes; measured running-bot acceptance. Website, publisher, vehicle media, VIN, stages, SEO and all unrelated functions are outside scope.",
   "execution": {
     "controller_path": "cloud/task_088_ge_price_crm_stage1/controller.py",
-    "controller_sha256": "6ec70380ce2d7b647293a4bf0552c1ff6e561545d0a2b015fdb55d7ae2d9ad6c",
+    "controller_sha256": "868fe939f345c5394fc04f796c5dcc6c1d5426e83b5ed4849277bf2cca4679d5",
     "dependency_paths": [
-      "cloud/task_088_ge_price_crm_stage1/remote_installer.py"
+      "cloud/task_088_ge_price_crm_stage1/remote_installer.py",
+      "cloud/task_088_ge_price_crm_stage1/ui_patch.py",
+      "cloud/task_088_ge_price_crm_stage1/db_verification.py",
+      "cloud/task_088_ge_price_crm_stage1/backup_controller.py",
+      "cloud/task_088_ge_price_crm_stage1/rollback_controller.py"
     ],
     "evidence_paths": [
       "cloud/task_088_ge_price_crm_stage1/evidence.json",
       "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json"
     ],
     "file_sha256": {
-      "cloud/task_088_ge_price_crm_stage1/remote_installer.py": "5df8dee76a5d2be28b4169d7e5bd5700484c638d697e70df8cd4a8b4ccc74d24",
-      "cloud/task_088_ge_price_crm_stage1/test_contract.py": "8958b3652da6dcc2651572a2f93b41ffd488c4fce584cd0d96b1abb84693c1f8"
+      "cloud/task_088_ge_price_crm_stage1/backup_controller.py": "3da8bbf02b6607cf6b49c0490da23219f6dd0d3539af83af9286e17ed4d93570",
+      "cloud/task_088_ge_price_crm_stage1/db_verification.py": "b3eae8a2a54b01ed117ec7118e2349f048ae2740fb8dc069222257c7ddf79b99",
+      "cloud/task_088_ge_price_crm_stage1/remote_installer.py": "e4579bc9f3757f25129d1a43f0979e78fb51d2132524bfef70f0f6eda513eb36",
+      "cloud/task_088_ge_price_crm_stage1/rollback_controller.py": "c7476b2c22c582ecbf2ea0d3baa509f5274ad18f3113b2c17f8fcb0948e51987",
+      "cloud/task_088_ge_price_crm_stage1/test_contract.py": "f2ebafdfab55183994fc63823a1675ed8c5ef635b8c571d75369b7e941518b4f",
+      "cloud/task_088_ge_price_crm_stage1/test_controller.py": "988e0c08f234f045ed2326e21a96ecb05446af5fe8a1fcaf472d485dd55fc196",
+      "cloud/task_088_ge_price_crm_stage1/test_db_verification.py": "f6157fd5bc63c4d06992fddb300e1203e8c8f0b7b4e2ce56e7dd95d1c7ecc2c4",
+      "cloud/task_088_ge_price_crm_stage1/test_ui_patch.py": "f22a6983483d37f2ef220383fdc9f2f4063d9b857091d32a0961e3334fec211b",
+      "cloud/task_088_ge_price_crm_stage1/ui_patch.py": "01dbf7363ea0fa902bd8b2137ad0a7442be4a63f970eb22f6c7161c7122b9c37"
     },
     "production_required": false,
     "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
     "test_paths": [
-      "cloud/task_088_ge_price_crm_stage1/test_contract.py"
+      "cloud/task_088_ge_price_crm_stage1/test_contract.py",
+      "cloud/task_088_ge_price_crm_stage1/test_controller.py",
+      "cloud/task_088_ge_price_crm_stage1/test_db_verification.py",
+      "cloud/task_088_ge_price_crm_stage1/test_ui_patch.py"
     ],
     "timeout_seconds": 900
   },
