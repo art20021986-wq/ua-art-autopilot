@@ -27,3 +27,10 @@ TASK088 contract fix prepared here:
 
 Required replay shape for intake PASS:
 - the fresh `AUTO-TASK088-GE-PRICE-CRM-STAGE1-20260911T064559Z.json` marker must be the only added file in the triggering main commit.
+
+Validation:
+- JSON syntax for request and launch marker: PASS
+- sha256(request) = `ef95c515b035b99c16ef2ad08266d684c736b5a0945105ce6dd7a6bdb6c72bca`
+- local exact-intake replay in `/tmp/task088_autostart_replay`: PASS
+- `verify-mode --require AUTOMATIC`: PASS after replaying main-equivalent non-halted state
+- `automation/autostart_intake.py ... --validate-only`: PASS
