@@ -1,0 +1,33 @@
+{
+  "finished_at": "2026-09-11T18:12:23Z",
+  "remote": {
+    "after_sha256": {
+      "/home/Carix/cars_ui.py": "76d0a16e7a22940c6699293cf356a6cdba08bb76565bfdcd9b1c66d214b1fee4",
+      "/home/Carix/crm.db": "de958c88d87608787bbe3403b5e50744e0c52eed592326cd26aabfdd8b41410f"
+    },
+    "before_sha256": {
+      "/home/Carix/cars_ui.py": "ea5e68c0cce1662808e95836f56f811ba56cbf825b09d2dae928bb1d35162205",
+      "/home/Carix/crm.db": "7e0257ff4962179d8fe4e6defa6daef2e128a206f0afd918d6d5b223ffb770a9"
+    },
+    "crm_db": "/home/Carix/crm.db",
+    "crm_source": "/home/Carix/cars_ui.py",
+    "db": {
+      "column": "price_georgia",
+      "live_transaction_write_readback": "PASS",
+      "rollback_to_original": "PASS",
+      "test_car_id": 7
+    },
+    "finished_at": "2026-09-11T18:11:57Z",
+    "publisher_write": false,
+    "site_write": false,
+    "source_changed": true,
+    "stage2_touched": false,
+    "started_at": "2026-09-11T18:11:55Z",
+    "status": "PASS",
+    "task_id": "TASK088-GE-PRICE-CRM-STAGE1"
+  },
+  "request_sha256": "adefa0226fdfd81d1292e991e8744570ce0adae7f9c5602f8290d5b71eae9cb6",
+  "run_id": "34631499680",
+  "status": "PASS",
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE1"
+}
