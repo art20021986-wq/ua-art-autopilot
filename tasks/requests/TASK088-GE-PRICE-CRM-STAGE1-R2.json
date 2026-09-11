@@ -1,0 +1,41 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/operator-ui/cars_ui.py",
+    "production/crm.db"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": true,
+    "gate_b_authorized": false
+  },
+  "description": "Stage 1 only: fresh execution identity after the prior consumed TASK088 request reached controller_nonproduction but produced no repository receipt. Retain the prior ledger and nonce history unchanged. Install CRM split Ukraine/Georgia price support on PythonAnywhere, add optional cars.price_georgia, verify live transactional write -> DB -> read-back with rollback to original row values, and keep public site, publisher and Stage 2 unchanged.",
+  "execution": {
+    "controller_path": "cloud/task_088_ge_price_crm_stage1/controller.py",
+    "controller_sha256": "6ec70380ce2d7b647293a4bf0552c1ff6e561545d0a2b015fdb55d7ae2d9ad6c",
+    "dependency_paths": [
+      "cloud/task_088_ge_price_crm_stage1/remote_installer.py"
+    ],
+    "evidence_paths": [
+      "cloud/task_088_ge_price_crm_stage1/evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json"
+    ],
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage1/remote_installer.py": "5df8dee76a5d2be28b4169d7e5bd5700484c638d697e70df8cd4a8b4ccc74d24",
+      "cloud/task_088_ge_price_crm_stage1/test_contract.py": "8958b3652da6dcc2651572a2f93b41ffd488c4fce584cd0d96b1abb84693c1f8"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+    "test_paths": [
+      "cloud/task_088_ge_price_crm_stage1/test_contract.py"
+    ],
+    "timeout_seconds": 900
+  },
+  "production_required": false,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_required_bytes": 16777216,
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+  "title": "Stage 1 UA/GE CRM price live bridge run — fresh execution identity"
+}
