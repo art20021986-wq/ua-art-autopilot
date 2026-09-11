@@ -35,7 +35,7 @@
   "production_required": true,
   "production_transaction_id": "tx-34608152298-062ad76555efb682",
   "production_transaction_path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "read_only-0355ae2639e03869-38e9b3b73cbcd2d0",
   "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
   "receipt_validation_status": "PENDING",
@@ -73,5 +73,5 @@
       "cloud/task088_crm_preflight/ui_patch.py": "01dbf7363ea0fa902bd8b2137ad0a7442be4a63f970eb22f6c7161c7122b9c37"
     }
   },
-  "updated_at": "2026-09-11T14:08:59Z"
+  "updated_at": "2026-09-11T14:14:11Z"
 }
