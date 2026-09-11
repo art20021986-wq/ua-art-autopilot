@@ -10,7 +10,7 @@
     "allow_crm_vehicle_data": true,
     "gate_b_authorized": false
   },
-  "description": "Stage 1 only: install CRM split Ukraine/Georgia price support on PythonAnywhere, add optional cars.price_georgia, verify live transactional write -> DB -> read-back with rollback to original row values, and keep public site, publisher and Stage 2 unchanged.",
+  "description": "Stage 1 only: install CRM split Ukraine/Georgia price support on PythonAnywhere, add optional cars.price_georgia, verify live transactional write -> DB -> read-back with rollback to original row values, and keep public site, publisher and Stage 2 unchanged. Fresh retry after correcting marker time binding; execution scope is unchanged.",
   "execution": {
     "controller_path": "cloud/task_088_ge_price_crm_stage1/controller.py",
     "controller_sha256": "6ec70380ce2d7b647293a4bf0552c1ff6e561545d0a2b015fdb55d7ae2d9ad6c",
