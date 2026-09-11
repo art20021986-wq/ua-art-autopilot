@@ -83,12 +83,8 @@ jobs:
           test "$BEFORE_SHA" != '0000000000000000000000000000000000000000'
           git cat-file -e "$BEFORE_SHA^{commit}"
           git merge-base --is-ancestor "$BEFORE_SHA" "$SOURCE_COMMIT"
-          set -- $(git rev-list --parents -n 1 "$SOURCE_COMMIT")
-          test "$1" = "$SOURCE_COMMIT"
-          test "$2" = "$BEFORE_SHA"
-          if test "$#" -ne 2; then
-            test "$#" -eq 3
-          fi
+          test "$(git rev-list --parents -n 1 "$SOURCE_COMMIT")" = \
+            "$SOURCE_COMMIT $BEFORE_SHA"
           mapfile -d '' -t bootstrap_changes < <(
             git diff --name-only -z "$BEFORE_SHA" "$SOURCE_COMMIT"
           )
@@ -119,12 +115,8 @@ jobs:
           test "$BEFORE_SHA" != '0000000000000000000000000000000000000000'
           git cat-file -e "$BEFORE_SHA^{commit}"
           git merge-base --is-ancestor "$BEFORE_SHA" "$SOURCE_COMMIT"
-          set -- $(git rev-list --parents -n 1 "$SOURCE_COMMIT")
-          test "$1" = "$SOURCE_COMMIT"
-          test "$2" = "$BEFORE_SHA"
-          if test "$#" -ne 2; then
-            test "$#" -eq 3
-          fi
+          test "$(git rev-list --parents -n 1 "$SOURCE_COMMIT")" = \
+            "$SOURCE_COMMIT $BEFORE_SHA"
           mapfile -d '' -t changes < <(git diff --name-only -z "$BEFORE_SHA" "$AFTER_SHA")
           mapfile -d '' -t additions < <(git diff --name-only -z --diff-filter=A "$BEFORE_SHA" "$AFTER_SHA")
           test "${#changes[@]}" -eq 1
@@ -341,12 +333,8 @@ jobs:
             test "$BEFORE_SHA" != '0000000000000000000000000000000000000000'
             git cat-file -e "$BEFORE_SHA^{commit}"
             git merge-base --is-ancestor "$BEFORE_SHA" "$SOURCE_COMMIT"
-            set -- $(git rev-list --parents -n 1 "$SOURCE_COMMIT")
-            test "$1" = "$SOURCE_COMMIT"
-            test "$2" = "$BEFORE_SHA"
-            if test "$#" -ne 2; then
-              test "$#" -eq 3
-            fi
+            test "$(git rev-list --parents -n 1 "$SOURCE_COMMIT")" = \
+              "$SOURCE_COMMIT $BEFORE_SHA"
             mapfile -d '' -t changes < <(
               git diff --name-only -z "$BEFORE_SHA" "$SOURCE_COMMIT"
             )
