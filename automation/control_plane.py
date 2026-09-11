@@ -154,7 +154,7 @@ ORCHESTRATOR_WORKFLOW_SHA256 = (
     "0bab939f235f3e03fd5c847814ae654e1ee585712b5d5c3b572f31a4779fd236"
 )
 CRITICAL_WORKFLOW_SHA256 = (
-    "62777c284a0a2887deb2bc247da1fe03443dc118127d8583c2c29005191db3b6"
+    "6f13c864a5d7b400474f3c9a1fe15e0d2d4dfca5d25dd195a628a3225d33e65a"
 )
 WATCHDOG_WORKFLOW_SHA256 = (
     "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe"
@@ -1974,7 +1974,7 @@ def _verify_task088_runtime_activation(
         "previous_mode_sha256": TASK088_PREVIOUS_MODE_SHA256,
         "previous_activation_path": RUNTIME_ACTIVATION_PATH,
         "previous_activation_sha256": TASK088_PREVIOUS_ACTIVATION_SHA256,
-        "changed_runtime_paths": ["automation/control_plane.py"],
+        "changed_runtime_paths": [".github/workflows/uaart_critical.yml", "automation/control_plane.py"],
         "owner_scope_record": TASK088_OWNER_SCOPE,
     }
     if set(activation) != set(expected) | {"registered_at", "source_commit", "allowed_requests"}:
@@ -2002,7 +2002,7 @@ def _verify_task088_runtime_activation(
     files = runtime.get("files")
     if (not isinstance(files, dict) or set(files) != set(RUNTIME_PINNED_PATHS)
             or {name for name in RUNTIME_PINNED_PATHS if files[name] != old_runtime["files"][name]}
-            != {"automation/control_plane.py"}):
+            != {".github/workflows/uaart_critical.yml", "automation/control_plane.py"}):
         raise ControlPlaneError("TASK088_RUNTIME_CHANGE_SCOPE")
     allowed = activation["allowed_requests"]
     if not isinstance(allowed, dict) or not 1 <= len(allowed) <= 2:

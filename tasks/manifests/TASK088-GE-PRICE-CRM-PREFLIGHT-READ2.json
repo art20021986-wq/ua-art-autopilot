@@ -1,0 +1,46 @@
+{
+  "acceptance_scope": "DIAGNOSTIC_COLLECTION_ONLY_NOT_CRM_PRICE_PASS",
+  "backup_required": true,
+  "backup_scope": [
+    "production/operator-ui/cars_ui.py",
+    "production/crm.db"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "diagnostic_artifacts": {
+    "read_existing_run_id": "34608152298",
+    "remote_processes_created": 0,
+    "remote_writes": 0
+  },
+  "explicit_crm_vehicle_approval": true,
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "noop",
+      "path": "production/operator-ui/cars_ui.py",
+      "postcondition": {
+        "business_data_write": false
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/crm.db",
+      "postcondition": {
+        "business_data_write": false
+      }
+    }
+  ],
+  "production_write": false,
+  "protected_paths": [
+    "production/site",
+    "production/publisher",
+    "production/media",
+    "production/vehicle-data"
+  ],
+  "rollback_required": true,
+  "rollback_scope": [
+    "production/operator-ui/cars_ui.py",
+    "production/crm.db"
+  ],
+  "task_class": "CRITICAL",
+  "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+}

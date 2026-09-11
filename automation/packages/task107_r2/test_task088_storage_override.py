@@ -39,6 +39,7 @@ class Task088StorageOverrideTests(unittest.TestCase):
         self.old_mode = CP.read_json(self.root / CP.TASK088_PREVIOUS_MODE_PATH)
         self.runtime = CP.read_json(self.root / CP.TASK088_PREVIOUS_MANIFEST_PATH)
         self.runtime["files"]["automation/control_plane.py"] = CP.sha256_file(ROOT / "automation/control_plane.py")
+        self.runtime["files"][".github/workflows/uaart_critical.yml"] = CP.sha256_file(ROOT / ".github/workflows/uaart_critical.yml")
         self.runtime["generated_at"] = CP.utc_now()
         self.write(CP.RUNTIME_MANIFEST_PATH, self.runtime)
         self.mode = copy.deepcopy(self.old_mode)
@@ -68,7 +69,7 @@ class Task088StorageOverrideTests(unittest.TestCase):
             "previous_mode_sha256": CP.TASK088_PREVIOUS_MODE_SHA256,
             "previous_activation_path": CP.RUNTIME_ACTIVATION_PATH,
             "previous_activation_sha256": CP.TASK088_PREVIOUS_ACTIVATION_SHA256,
-            "changed_runtime_paths": ["automation/control_plane.py"],
+            "changed_runtime_paths": [".github/workflows/uaart_critical.yml", "automation/control_plane.py"],
             "owner_scope_record": copy.deepcopy(CP.TASK088_OWNER_SCOPE),
             "registered_at": CP.utc_now(), "source_commit": "a" * 40,
             "allowed_requests": {},

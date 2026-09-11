@@ -1,0 +1,70 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/operator-ui/cars_ui.py",
+    "production/crm.db"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": true,
+    "gate_a_path": "tasks/gates/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2.json",
+    "gate_a_sha256": "b11a6176adbd9affc4cc13ac596ffbce8e33ae7500422c1dc31a3bd665f4dfff",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2.json",
+    "manifest_sha256": "254b4deb306e61d8bb22eaa74d842758ddee0489876a7d781ec1c2d353f4c0d9",
+    "owner_approval_path": "tasks/approvals/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2.production.json",
+    "owner_approval_sha256": "6516bd004c9e3c35ac890ea9627002dfbd12e7ab6ce5f80f5ed9e1289b15fc18"
+  },
+  "description": "Owner requested automatic execution without copying Bash on a phone. GET only: read the exact existing files and own temporary-task log of failed run 34608152298 plus current CRM source hashes and static syntax shape. No remote uploads, processes, tasks, business or database writes. Original attempt is reconciled separately using owner screenshot and pinned read-only code. This task cannot claim price acceptance. Keep exact approval, storage scope, backup, rollback and anti-replay contracts.",
+  "execution": {
+    "backup_controller_path": "cloud/task088_crm_preflight/backup_controller.py",
+    "backup_controller_sha256": "912436d34848f08bbb88eac6893e954494d16dfff3eaa774fda873b6bc1fe568",
+    "backup_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2-BACKUP.json",
+    "controller_path": "cloud/task088_crm_preflight/controller.py",
+    "controller_sha256": "a109618fcdede0ab157e5a2a87bdfcfcbb5c347d5ab24700972176bd69367cfc",
+    "dependency_paths": [
+      "cloud/task088_crm_preflight/capacity_probe.py",
+      "cloud/task088_crm_preflight/owner_preflight.py",
+      "cloud/task088_crm_preflight/read_existing.py",
+      "cloud/task088_crm_preflight/remote_probe.py",
+      "cloud/task088_crm_preflight/ui_patch.py"
+    ],
+    "evidence_paths": [
+      "cloud/task088_crm_preflight/evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2-BACKUP.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2-ROLLBACK.json"
+    ],
+    "file_sha256": {
+      "cloud/task088_crm_preflight/capacity_probe.py": "404643d0bc1271a3d264cfd577a6a3e041b0790245fb8e0266967396b965ba6e",
+      "cloud/task088_crm_preflight/owner_preflight.py": "4d17adc77d687c7bbb16d525a37b999f4f4a273fc1d340820b57a523f25bcf93",
+      "cloud/task088_crm_preflight/read_existing.py": "9246b50c9bbc364271b8ddbe19ef01f97d5f2fd7cbe07af33af00e7750e681ce",
+      "cloud/task088_crm_preflight/remote_probe.py": "5cf91540786e86466e740f19dbf6986016b24338856187f9ac8f419a70b790e0",
+      "cloud/task088_crm_preflight/test_contract.py": "c33db91508694226deb2761312ee69ae6d88120e88486fd1d30838fe46c59f00",
+      "cloud/task088_crm_preflight/ui_patch.py": "01dbf7363ea0fa902bd8b2137ad0a7442be4a63f970eb22f6c7161c7122b9c37"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2.json",
+    "rollback_controller_path": "cloud/task088_crm_preflight/rollback_controller.py",
+    "rollback_controller_sha256": "e5d5c917fd0a6d50ade28f5e82ef450989cd03e52ee26cc94bb52812f2357b25",
+    "rollback_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2-ROLLBACK.json",
+    "test_paths": [
+      "cloud/task088_crm_preflight/test_contract.py"
+    ],
+    "timeout_seconds": 600
+  },
+  "health_checks": [
+    "https://www.uaart.com.ua/"
+  ],
+  "production_required": true,
+  "read_only": true,
+  "requested_min_class": "CRITICAL",
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK088-OWNER-STORAGE-OVERRIDE-20260911.json",
+    "evidence_sha256": "d61acd3880b96e8c1a212a3ebe9b2ad91a3581cede1316aa29b0c5d6a4a2bae0"
+  },
+  "storage_required_bytes": 524288,
+  "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+  "title": "TASK088 automatic GET-only existing evidence reader"
+}
