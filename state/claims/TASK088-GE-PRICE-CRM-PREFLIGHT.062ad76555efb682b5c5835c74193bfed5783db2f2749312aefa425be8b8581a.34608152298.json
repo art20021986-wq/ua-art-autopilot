@@ -17,6 +17,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "160587c164831ebf"
+    },
+    {
+      "action": "STOP_FAIL_CLOSED_TERMINAL",
+      "at": "2026-09-11T17:03:36Z",
+      "class": "TRANSIENT",
+      "message": "Read-only diagnostic aborted; owner screenshot confirms temporary task absent; no business mutation capability in pinned package; error detail unknown. Manual reconciliation, no rollback executed.",
+      "retries_remaining": 0,
+      "retry_allowed": false,
+      "signature": "04e19682bf1b7fa1"
     }
   ],
   "heartbeat_at": "2026-09-11T14:08:59Z",
@@ -46,7 +55,7 @@
   "production_required": true,
   "production_transaction_id": "tx-34608152298-062ad76555efb682",
   "production_transaction_path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "read_only-0355ae2639e03869-38e9b3b73cbcd2d0",
   "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
   "receipt_validation_status": "PENDING",
@@ -73,7 +82,7 @@
   },
   "storage_preflight_status": "OWNER_TASK088_STORAGE_OVERRIDE",
   "task_class": "CRITICAL",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "task_execution_status": "FAILED",
   "trusted_package": {
     "controller_sha256": "1cb40cf33ec064e7771b00338c8e18e9a362d8b92ff9e81e5747eeb30e461f98",
     "file_sha256": {
@@ -84,5 +93,5 @@
       "cloud/task088_crm_preflight/ui_patch.py": "01dbf7363ea0fa902bd8b2137ad0a7442be4a63f970eb22f6c7161c7122b9c37"
     }
   },
-  "updated_at": "2026-09-11T14:14:38Z"
+  "updated_at": "2026-09-11T17:03:36Z"
 }

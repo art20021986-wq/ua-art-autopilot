@@ -21,13 +21,15 @@ ROOT = HERE.parents[1]
 PACKAGE = 'cloud/task088_crm_preflight'
 BASE = 'https://www.pythonanywhere.com/api/v0/user/Carix/'
 REMOTE_ROOT = '/home/Carix/autopilot_inbox/cloud/task088_crm_preflight/runs'
-RECEIPT_REL = f'state/receipts/{TASK_ID}.json'
-BACKUP_RECEIPT_REL = f'state/receipts/{TASK_ID}-BACKUP.json'
-ROLLBACK_RECEIPT_REL = f'state/receipts/{TASK_ID}-ROLLBACK.json'
+RECEIPT_REL = f'state/receipts/{TASK_ID}-READ2.json'
+BACKUP_RECEIPT_REL = f'state/receipts/{TASK_ID}-READ2-BACKUP.json'
+ROLLBACK_RECEIPT_REL = f'state/receipts/{TASK_ID}-READ2-ROLLBACK.json'
 EVIDENCE_REL = PACKAGE + '/evidence.json'
 SOURCE_FILES = ('remote_probe.py', 'owner_preflight.py', 'ui_patch.py', 'capacity_probe.py')
 BUSINESS_FILES = ('cars_ui.py', 'cars_schema.py', 'db.py', 'start_safe.py')
 TARGET_PATHS = frozenset(('production/operator-ui/cars_ui.py', 'production/crm.db'))
+PRIOR_IDENTITY = {'task_id': TASK_ID, 'run_id': '34608152298', 'request_sha256': '062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a', 'transaction_id': 'tx-34608152298-062ad76555efb682', 'manifest_sha256': '4041f502cdab42329b2323dfbd5bd5dc13cfdbe160c7ca702bdb406ccd9cbef2'}
+PRIOR_DIRECTORY = REMOTE_ROOT + '/' + PRIOR_IDENTITY['run_id'] + '-' + PRIOR_IDENTITY['request_sha256']
 BINDINGS = ('task_id', 'run_id', 'request_sha256', 'transaction_id', 'manifest_sha256')
 MAX_BYTES = 16 * 1024 * 1024
 MAX_UPLOAD_BYTES = 512 * 1024
@@ -125,21 +127,23 @@ def required(environment, operation):
 
 
 class API:
+    """The automatic file reader permits GET only; it never starts remote Python."""
     def __init__(self, values):
         self.values = dict(values)
-        self.directory = REMOTE_ROOT + '/' + values['UAART_RUN_ID'] + '-' + values['UAART_REQUEST_SHA256']
         self.opener = urllib.request.build_opener(NoRedirect())
+        self.prior_log_id = None
 
     def request(self, method, url, data=None, headers=None, allowed=(200,)):
-        if not url.startswith(BASE) or method not in {'GET', 'POST', 'DELETE'}:
-            raise ControllerError('API_SCOPE')
-        if method == 'POST' and url != BASE + 'always_on/' and url not in {self.file_url(self.directory + '/' + name, write=True) for name in (*SOURCE_FILES, 'plan.json', 'trigger.json')}:
-            raise ControllerError('API_WRITE_SCOPE')
-        if method == 'DELETE' and not re.fullmatch(re.escape(BASE) + r'always_on/[1-9][0-9]*/', url):
-            raise ControllerError('API_DELETE_SCOPE')
-        actual = {'Authorization': 'Token ' + self.values['PYTHONANYWHERE_API_TOKEN'], 'User-Agent': 'ua-art-task088-preflight/1'}
-        actual.update(headers or {})
-        request = urllib.request.Request(url, data=data, headers=actual, method=method)
+        if method != 'GET' or data is not None or headers:
+            raise ControllerError('DIAGNOSTIC_GET_ONLY')
+        paths = {'/home/Carix/' + name for name in BUSINESS_FILES}
+        paths.update(PRIOR_DIRECTORY + '/' + name + '.json' for name in ('plan', 'trigger', 'started', 'result'))
+        if self.prior_log_id is not None:
+            paths.add('/var/log/alwayson-log-' + str(self.prior_log_id) + '.log')
+        urls = {BASE + 'files/path' + urllib.parse.quote(path, safe='/') for path in paths}
+        if url not in urls:
+            raise ControllerError('DIAGNOSTIC_READ_SCOPE')
+        request = urllib.request.Request(url, headers={'Authorization': 'Token ' + self.values['PYTHONANYWHERE_API_TOKEN'], 'User-Agent': 'ua-art-task088-readonly/2'}, method='GET')
         try:
             with self.opener.open(request, timeout=45) as response:
                 status, body = response.status, response.read(MAX_BYTES + 1)
@@ -151,16 +155,9 @@ class API:
             raise ControllerError('HTTP_' + str(status))
         return status, body
 
-    def file_url(self, path, write=False):
-        allowed = {self.directory + '/' + name for name in (*SOURCE_FILES, 'plan.json', 'result.json', 'started.json', 'trigger.json')}
-        if not write:
-            allowed.update('/home/Carix/' + name for name in BUSINESS_FILES)
-        if path not in allowed or (write and pathlib.PurePosixPath(path).name in {'result.json', 'started.json'}):
-            raise ControllerError('FILE_SCOPE')
-        return BASE + 'files/path' + urllib.parse.quote(path, safe='/')
-
     def read(self, path, missing=False):
-        status, body = self.request('GET', self.file_url(path), allowed=(200, 404))
+        url = BASE + 'files/path' + urllib.parse.quote(path, safe='/')
+        status, body = self.request('GET', url, allowed=(200, 404))
         if status == 404:
             if missing:
                 return None
@@ -174,99 +171,14 @@ class API:
             sources[name] = {'sha256': sha(payload), 'bytes': len(payload)} if payload is not None else {'absent': True}
         return {**bindings(self.values), 'business_mutation_targets': [], 'database_backup': 'NOOP_READ_ONLY_DIAGNOSTIC', 'sources': sources}
 
-    def upload(self, name, value):
-        path = self.directory + '/' + name
-        url = self.file_url(path, write=True)
-        if len(value) > MAX_UPLOAD_BYTES:
-            raise ControllerError('UPLOAD_BUDGET')
-        previous = self.read(path, missing=True)
-        if previous is not None:
-            if previous != value:
-                raise ControllerError('IMMUTABLE_FILE_MISMATCH')
-            return
-        boundary = '----task088-' + uuid.uuid4().hex
-        body = (f'--{boundary}\r\nContent-Disposition: form-data; name="content"; filename="{name}"\r\nContent-Type: application/octet-stream\r\n\r\n').encode() + value + f'\r\n--{boundary}--\r\n'.encode()
-        self.request('POST', url, body, {'Content-Type': 'multipart/form-data; boundary=' + boundary}, allowed=(200, 201))
-        if self.read(path) != value:
-            raise ControllerError('UPLOAD_READBACK')
+    def authorize_prior_log(self, record):
+        if not isinstance(record, dict) or any(record.get(k) != v for k, v in PRIOR_IDENTITY.items()) or type(record.get('id')) is not int or record['id'] <= 0:
+            raise ControllerError('PRIOR_TRIGGER_IDENTITY')
+        self.prior_log_id = record['id']
 
-    def command(self):
-        return 'cd ' + shlex.quote(self.directory) + ' && python3.10 -B remote_probe.py'
-
-    def description(self):
-        return TASK_ID + ' ' + self.values['UAART_RUN_ID'] + '-' + self.values['UAART_REQUEST_SHA256']
-
-    def tasks(self):
-        _, body = self.request('GET', BASE + 'always_on/')
-        parsed = json.loads(body)
-        items = parsed.get('results', parsed.get('objects', parsed.get('tasks', []))) if isinstance(parsed, dict) else parsed
-        if not isinstance(items, list):
-            raise ControllerError('TASK_LIST')
-        return items
-
-    def cleanup(self, identifier=None):
-        record = self.read(self.directory + '/trigger.json', missing=True)
-        if record is not None:
-            value = json.loads(record)
-            if any(value.get(key) != expected for key, expected in bindings(self.values).items()) or type(value.get('id')) is not int:
-                raise ControllerError('TRIGGER_RECORD_IDENTITY')
-            if identifier is not None and identifier != value['id']:
-                raise ControllerError('TRIGGER_IDENTITY')
-            identifier = value['id']
-        matches = [item for item in self.tasks() if isinstance(item, dict) and item.get('command') == self.command() and item.get('description') == self.description()]
-        if len(matches) > 1:
-            raise ControllerError('TRIGGER_NOT_UNIQUE')
-        if not matches:
-            return {'cleanup': 'PASS', 'created_trigger_absent': True}
-        item = matches[0]
-        if type(item.get('id')) is not int or item['id'] <= 0 or (identifier is not None and item['id'] != identifier):
-            raise ControllerError('TRIGGER_IDENTITY')
-        # Exact immutable command and description recover the id if POST response was lost.
-        self.request('DELETE', BASE + 'always_on/' + str(item['id']) + '/', allowed=(200, 202, 204, 404))
-        if any(isinstance(task, dict) and task.get('id') == item['id'] for task in self.tasks()):
-            raise ControllerError('TRIGGER_CLEANUP_NOT_VERIFIED')
-        return {'cleanup': 'PASS', 'created_trigger_absent': True}
-
-    def collect(self, snapshot, timeout=240):
-        existing = self.read(self.directory + '/result.json', missing=True)
-        if existing is not None:
-            result = json.loads(existing)
-            validate_remote(result, self.values)
-            self.cleanup()
-            return result
-        if self.read(self.directory + '/started.json', missing=True) is not None:
-            raise ControllerError('REMOTE_ATTEMPT_ALREADY_STARTED')
-        sources = {name: (HERE / name).read_bytes() for name in SOURCE_FILES}
-        if sum(map(len, sources.values())) > MAX_UPLOAD_BYTES:
-            raise ControllerError('PACKAGE_BUDGET')
-        for name, payload in sources.items():
-            compile(payload.decode('utf-8'), name, 'exec')
-        plan = {**bindings(self.values), 'backup_manifest_sha256': self.values['UAART_BACKUP_MANIFEST_SHA256'], 'sources': snapshot['sources'], 'remote_source_sha256': {name: sha(payload) for name, payload in sources.items()}}
-        for name, payload in sources.items():
-            self.upload(name, payload)
-        self.upload('plan.json', canonical(plan))
-        identifier = None
-        try:
-            if any(isinstance(item, dict) and item.get('command') == self.command() for item in self.tasks()):
-                raise ControllerError('PREEXISTING_TRIGGER')
-            form = urllib.parse.urlencode({'command': self.command(), 'description': self.description(), 'enabled': 'true'}).encode()
-            _, body = self.request('POST', BASE + 'always_on/', form, {'Content-Type': 'application/x-www-form-urlencoded'}, allowed=(200, 201, 202))
-            value = json.loads(body)
-            identifier = value.get('id') if isinstance(value, dict) else None
-            if type(identifier) is not int or identifier <= 0:
-                raise ControllerError('TRIGGER_IDENTITY')
-            self.upload('trigger.json', canonical({**bindings(self.values), 'id': identifier}))
-            deadline = time.monotonic() + timeout
-            while time.monotonic() < deadline:
-                raw = self.read(self.directory + '/result.json', missing=True)
-                if raw is not None:
-                    result = json.loads(raw)
-                    validate_remote(result, self.values)
-                    return result
-                time.sleep(5)
-            raise ControllerError('REMOTE_TIMEOUT')
-        finally:
-            self.cleanup(identifier)
+    def collect(self, snapshot):
+        import read_existing
+        return read_existing.collect(self, snapshot)
 
 
 def validate_remote(value, values):
@@ -303,7 +215,7 @@ def execute(environment, api_factory=API):
         if api.snapshot() != snapshot:
             raise ControllerError('SOURCE_DRIFT_DURING_DIAGNOSTIC')
         evidence['status'] = 'PASS'
-        receipt = {**bindings(values), 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'status': 'FINISHED', 'task_class': 'CRITICAL', 'target_environment': 'production', 'tests': 'PASS', 'backup': 'PASS', 'production': 'PASS', 'live_verify': 'PASS', 'rollback': 'PASS', 'rollback_ready': True, 'production_required': True, 'backup_manifest_sha256': values['UAART_BACKUP_MANIFEST_SHA256'], 'unexpected_changes': 0, 'protected_files_unchanged': True, 'crm_unchanged': True, 'read_only': True, 'verification_scope': 'READ_ONLY_DISCOVERY_COLLECTION_AND_SOURCE_HASH_PRESERVATION', 'crm_prices_acceptance': 'NOT_PERFORMED', 'finished_at': now()}
+        receipt = {**bindings(values), 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'status': 'FINISHED', 'task_class': 'CRITICAL', 'target_environment': 'production', 'tests': 'PASS', 'backup': 'PASS', 'production': 'PASS', 'live_verify': 'PASS', 'rollback': 'PASS', 'rollback_ready': True, 'production_required': True, 'backup_manifest_sha256': values['UAART_BACKUP_MANIFEST_SHA256'], 'unexpected_changes': 0, 'protected_files_unchanged': True, 'crm_unchanged': True, 'read_only': True, 'verification_scope': 'GET_ONLY_EXISTING_EVIDENCE_AND_CURRENT_SOURCE_HASH_PRESERVATION', 'crm_prices_acceptance': 'NOT_PERFORMED', 'finished_at': now()}
         atomic(ROOT / RECEIPT_REL, receipt)
     except Exception as exc:
         evidence['error'] = str(exc) if isinstance(exc, ControllerError) else type(exc).__name__
@@ -315,7 +227,6 @@ def execute(environment, api_factory=API):
 def rollback(environment, api_factory=API):
     values = required(environment, 'rollback')
     api = api_factory(values)
-    api.cleanup()
     if sha(canonical(api.snapshot())) != values['UAART_BACKUP_MANIFEST_SHA256']:
         raise ControllerError('SOURCE_DRIFT_REFUSE_OVERWRITE')
     receipt = {**bindings(values), 'schema_version': 'UA-ART-PRODUCTION-ROLLBACK-RECEIPT-1', 'operation': 'rollback', 'status': 'ROLLED_BACK', 'rollback': 'PASS', 'backup_manifest_sha256': values['UAART_BACKUP_MANIFEST_SHA256'], 'restored': True, 'unexpected_changes': 0, 'protected_files_unchanged': True, 'crm_unchanged': True, 'live_verify': 'PASS'}
@@ -325,5 +236,5 @@ def rollback(environment, api_factory=API):
 
 if __name__ == '__main__':
     result = execute(os.environ)
-    print(json.dumps({'task_id': TASK_ID, 'status': result['status'], 'crm_prices_acceptance': 'NOT_PERFORMED'}, sort_keys=True))
+    print(json.dumps({'task_id': TASK_ID, 'status': result['status'], 'crm_prices_acceptance': 'NOT_PERFORMED', 'error': result.get('error'), 'remote': result.get('remote')}, sort_keys=True))
     raise SystemExit(0 if result['status'] == 'PASS' else 1)

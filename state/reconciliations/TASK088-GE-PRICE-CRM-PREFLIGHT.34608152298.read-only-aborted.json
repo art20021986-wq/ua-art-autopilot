@@ -1,0 +1,82 @@
+{
+  "business_mutation_assessment": {
+    "basis": "Pinned executed package at launch commit b3e34208482ae5e89e5581ece7f3408ae527fcf2, request hashes, successful contract validation, and code-scope audit.",
+    "business_mutation_operations_in_executed_package": 0,
+    "controller_business_source_http_methods": [
+      "GET"
+    ],
+    "controller_upload_scope": "Only own immutable per-run diagnostic directory; no business files.",
+    "current_db_readback": "NOT_PERFORMED",
+    "current_source_hash_readback": "NOT_PERFORMED; next GET-only reader will verify against saved plan.",
+    "database_access": "SQLite mode=ro and query_only, SELECT/PRAGMA metadata; existing SHM read marks may change.",
+    "no_business_write_conclusion": true,
+    "remote_module_imports": "Hash-verified diagnostic modules only; no live CRM imports.",
+    "remote_result_writes": "Only started.json and result.json in validated diagnostic run directory."
+  },
+  "compatibility_terminalization": {
+    "active_transaction_status": "ROLLED_BACK",
+    "claim_execution_status": "FAILED",
+    "explanation": "Legacy terminal metadata closes an aborted read-only diagnostic with observed temporary-task absence. No data restoration or CRM price PASS is asserted.",
+    "semantic_rollback_executed": false
+  },
+  "halt_archive": "state/halt_history/TASK088-GE-PRICE-CRM-PREFLIGHT.34608152298/halt.json",
+  "job_assertions": [
+    {
+      "conclusion": "success",
+      "job_id": 103292326153,
+      "scope": "Credential-backed source snapshot only"
+    },
+    {
+      "conclusion": "failure",
+      "controller_error": "UNKNOWN; diagnostic error was not published",
+      "job_id": 103292517970
+    },
+    {
+      "conclusion": "failure",
+      "credential_step": "skipped",
+      "error": "PINNED_SOURCE_COMMIT_BINDING",
+      "job_id": 103294217841
+    }
+  ],
+  "nonce_mutation": false,
+  "original_run_id": "34608152298",
+  "owner_direction": "Automatically run the diagnostic files; do not require Bash pasting from a phone. Earlier TASK088 unblock and CRM-only credential authority preserved.",
+  "production_price_acceptance": "NOT_PERFORMED",
+  "recorded_at": "2026-09-11T17:03:36Z",
+  "replay_ledger_mutation": false,
+  "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-PREFLIGHT-20260911.json",
+  "request_sha256": "062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a",
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-EVIDENCE-2",
+  "semantic_outcome": "ABORTED_READ_ONLY_DIAGNOSTIC",
+  "source_of_cleanup_evidence": {
+    "always_on_rows": 2,
+    "ephemeral_files_absence_claimed": false,
+    "filename": "IMG_8924.png",
+    "kind": "OWNER_PROVIDED_SCREENSHOT",
+    "library_file_id": "libfile_f8e601b350088191a021346f9ee2ab89",
+    "matching_scheduled_task088_rows": 0,
+    "matching_task088_rows": 0,
+    "observed_commands": [
+      "python3.10 /home/Carix/start_safe.py",
+      "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 [truncated on screenshot]"
+    ],
+    "observed_server_time": "2026-09-11T16:45Z",
+    "observed_states": [
+      "Running",
+      "Running"
+    ],
+    "precision": "minute",
+    "sha256": "51a275759dd7da7fa9813b8c177a09326f5289f1b482d85d2442cd20e4daa826"
+  },
+  "state_after_sha256": {
+    "state/claims/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json": "92f998119fc4f87b570d740075b41f6de65e07a1924ccbc5eb1c8f6d748fec9b",
+    "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json": "16b6c76e361872efeceddd0521881450af6d127e9f10f234761fca4a3d4a5305"
+  },
+  "state_before_sha256": {
+    "state/AUTOPILOT_HALT.json": "c5d263e53ab9f8a72be6a2b3e3f11f9a54a402c8d75f97f9ee48ff08e0358003",
+    "state/claims/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json": "7279b04bfc434604afe6f0a1dc1cf96e4d1b97b98947451f999771e538ab02bb",
+    "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json": "7fe16acc70353ee147022446ea41627ed344391f5cdd8454f3efc515cb6a10ac"
+  },
+  "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+  "transaction_id": "tx-34608152298-062ad76555efb682"
+}
