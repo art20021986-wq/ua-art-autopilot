@@ -549,6 +549,31 @@ class WorkflowContractTests(unittest.TestCase):
             value, ".github/workflows/uaart_autostart.yml"
         )
 
+    def test_global_autostart_parent_gate_accepts_direct_and_normal_merge_only(self):
+        source = "a" * 40
+        before = "b" * 40
+        other = "c" * 40
+        another = "d" * 40
+
+        def accepts_parent_line(line: str) -> bool:
+            parts = line.split()
+            return (
+                len(parts) in {2, 3}
+                and parts[0] == source
+                and parts[1] == before
+            )
+
+        self.assertTrue(accepts_parent_line(f"{source} {before}"))
+        self.assertTrue(accepts_parent_line(f"{source} {before} {other}"))
+        for rejected in (
+            f"{source} {other}",
+            f"{source} {other} {before}",
+            f"{source} {before} {other} {another}",
+            f"{other} {before}",
+        ):
+            with self.subTest(rejected=rejected):
+                self.assertFalse(accepts_parent_line(rejected))
+
     def test_nonproduction_rerun_is_failure_only_without_controller(self):
         for name in ("uaart_fast.yml", "uaart_standard.yml"):
             with self.subTest(name=name):
