@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "f4cf8c885f7a320eacc53dd57637adf5bd18a027060e669cb97e597acc694b7f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-11T14:14:38Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 34608152298",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "160587c164831ebf"
+    }
+  ],
   "heartbeat_at": "2026-09-11T14:08:59Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -62,7 +73,7 @@
   },
   "storage_preflight_status": "OWNER_TASK088_STORAGE_OVERRIDE",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "1cb40cf33ec064e7771b00338c8e18e9a362d8b92ff9e81e5747eeb30e461f98",
     "file_sha256": {
@@ -73,5 +84,5 @@
       "cloud/task088_crm_preflight/ui_patch.py": "01dbf7363ea0fa902bd8b2137ad0a7442be4a63f970eb22f6c7161c7122b9c37"
     }
   },
-  "updated_at": "2026-09-11T14:14:11Z"
+  "updated_at": "2026-09-11T14:14:38Z"
 }
