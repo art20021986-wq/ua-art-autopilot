@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "f4cf8c885f7a320eacc53dd57637adf5bd18a027060e669cb97e597acc694b7f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-11T14:08:25Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-11T14:08:59Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "34608152298",
     "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
@@ -35,7 +35,7 @@
   "production_required": true,
   "production_transaction_id": "tx-34608152298-062ad76555efb682",
   "production_transaction_path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "read_only-0355ae2639e03869-38e9b3b73cbcd2d0",
   "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
   "receipt_validation_status": "PENDING",
@@ -73,5 +73,5 @@
       "cloud/task088_crm_preflight/ui_patch.py": "01dbf7363ea0fa902bd8b2137ad0a7442be4a63f970eb22f6c7161c7122b9c37"
     }
   },
-  "updated_at": "2026-09-11T14:08:25Z"
+  "updated_at": "2026-09-11T14:08:59Z"
 }
