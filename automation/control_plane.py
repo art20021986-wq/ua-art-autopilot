@@ -57,6 +57,28 @@ RUNTIME_ROUTE_CHANGED_PATHS = frozenset({
 RUNTIME_PREVIOUS_MANIFEST_SHA256 = "bfb650e2bd58dd2f556213e1c875552e8ba33b55e7e71de1bfe9f311f6003110"
 RUNTIME_PREVIOUS_MODE_SHA256 = "8013a8d15951b958a63e812330e7591c04882d0384f9c4bda85861bb7840469f"
 RUNTIME_ORIGINAL_APPROVAL_SHA256 = "6e6071e5a06e7d69a20aebc035bd57f74ef903e353cfe5a7e017df947a3eb643"
+TASK088_ACTIVATION_PATH = "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.json"
+TASK088_PREVIOUS_MANIFEST_PATH = "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.previous-manifest.json"
+TASK088_PREVIOUS_MODE_PATH = "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.previous-mode.json"
+TASK088_PREVIOUS_MANIFEST_SHA256 = "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c"
+TASK088_PREVIOUS_MODE_SHA256 = "1075e1cfdd9d0ed09c45546c93a522eb5f28b7cd02c783f7db0439c350175281"
+TASK088_PREVIOUS_ACTIVATION_SHA256 = "9e46455965d91b544d55b37698da453a94be25ab7f5a43d546f5e16766dac031"
+TASK088_PACKAGE_ROOTS = {
+    "TASK088-GE-PRICE-CRM-PREFLIGHT": "cloud/task088_crm_preflight/",
+    "TASK088-GE-PRICE-CRM-STAGE1": "cloud/task_088_ge_price_crm_stage1/",
+}
+TASK088_TARGET_PATHS = ("production/operator-ui/cars_ui.py", "production/crm.db")
+TASK088_OWNER_SCOPE = {
+    "credential_route_authorized": True,
+    "storage_gate_override_authorized": True,
+    "allowed_task_ids": list(TASK088_PACKAGE_ROOTS),
+    "allowed_target_paths": list(TASK088_TARGET_PATHS),
+    "site_changes_allowed": False,
+    "anti_replay_changes_allowed": False,
+    "backup_required": True,
+    "rollback_required": True,
+    "live_verify_required": True,
+}
 RUNTIME_PINNED_PATHS = (
     ".github/workflows/uaart_autostart.yml",
     ".github/workflows/uaart_orchestrator.yml",
@@ -1851,6 +1873,154 @@ def _runtime_activation_json(path: pathlib.Path) -> dict[str, Any]:
     return value
 
 
+def _validate_task088_override_request(
+    relative: str, binding: Mapping[str, Any], *, root: pathlib.Path,
+) -> dict[str, Any]:
+    """An owner waiver binds one complete request, never a reusable flag."""
+    if set(binding) != {"task_id", "request_sha256", "manifest_sha256", "package_dependency_digest"}:
+        raise ControlPlaneError("TASK088_OVERRIDE_BINDING_KEYS")
+    normalized, path, raw, request_sha = load_request(relative, root)
+    task_id = raw["task_id"]
+    if (task_id not in TASK088_PACKAGE_ROOTS or binding["task_id"] != task_id
+            or request_sha != require_sha(binding["request_sha256"], "task088_request")
+            or not normalized.startswith("tasks/requests/" + task_id)
+            or path != _runtime_activation_file(root, normalized)):
+        raise ControlPlaneError("TASK088_OVERRIDE_REQUEST_IDENTITY")
+    preflight = task_id == "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    if (raw.get("production_required") is not True
+            or raw.get("read_only") is not preflight
+            or raw.get("requested_min_class") != "CRITICAL"
+            or len(raw.get("changed_paths", [])) != 2
+            or normalized_changed_paths(raw) != tuple(sorted(TASK088_TARGET_PATHS))):
+        raise ControlPlaneError("TASK088_OVERRIDE_REQUEST_SCOPE")
+    execution = raw.get("execution")
+    critical = raw.get("critical")
+    if not isinstance(execution, dict) or not isinstance(critical, dict):
+        raise ControlPlaneError("TASK088_OVERRIDE_CONTRACT_REQUIRED")
+    if (execution.get("production_required") is not True
+            or critical.get("gate_b_authorized") is not True
+            or critical.get("allow_crm_vehicle_data") is not True
+            or sha256_bytes(canonical_json(execution)) != require_sha(
+                binding["package_dependency_digest"], "task088_package")):
+        raise ControlPlaneError("TASK088_OVERRIDE_EXECUTION_BINDING")
+    package = TASK088_PACKAGE_ROOTS[task_id]
+    for prefix, filename in (("controller", "controller.py"),
+                             ("backup_controller", "backup_controller.py"),
+                             ("rollback_controller", "rollback_controller.py")):
+        relative_code = execution.get(prefix + "_path")
+        if relative_code != package + filename:
+            raise ControlPlaneError("TASK088_OVERRIDE_CONTROLLER_SCOPE")
+        if sha256_file(_runtime_activation_file(root, relative_code)) != require_sha(
+                execution.get(prefix + "_sha256"), prefix):
+            raise ControlPlaneError("TASK088_OVERRIDE_CONTROLLER_SHA")
+    for key in ("backup_receipt_path", "rollback_receipt_path"):
+        receipt = safe_repo_path(str(execution.get(key, "")))
+        if not receipt.startswith("state/receipts/" + task_id) or not receipt.endswith(".json"):
+            raise ControlPlaneError("TASK088_OVERRIDE_RECEIPT_SCOPE")
+    hashes = execution.get("file_sha256")
+    if not isinstance(hashes, dict):
+        raise ControlPlaneError("TASK088_OVERRIDE_PACKAGE_HASHES")
+    for dependency in execution.get("dependency_paths", []) + execution.get("test_paths", []):
+        if not isinstance(dependency, str) or not dependency.startswith(package):
+            raise ControlPlaneError("TASK088_OVERRIDE_DEPENDENCY_SCOPE")
+        if sha256_file(_runtime_activation_file(root, dependency)) != require_sha(
+                hashes.get(dependency), "task088_dependency"):
+            raise ControlPlaneError("TASK088_OVERRIDE_DEPENDENCY_SHA")
+    manifest_path = _runtime_activation_file(root, safe_repo_path(str(critical.get("manifest_path", ""))))
+    manifest = _runtime_activation_json(manifest_path)
+    manifest_sha = sha256_bytes(canonical_json(manifest))
+    if (manifest_sha != require_sha(binding["manifest_sha256"], "task088_manifest")
+            or manifest_sha != critical.get("manifest_sha256")
+            or manifest.get("task_id") != task_id
+            or manifest.get("contract_id") != "UA-ART-CRITICAL-ADAPTER-V1.0"
+            or manifest.get("task_class") != "CRITICAL"
+            or manifest.get("explicit_crm_vehicle_approval") is not True):
+        raise ControlPlaneError("TASK088_OVERRIDE_MANIFEST_BINDING")
+    operations = manifest.get("operations")
+    if (not isinstance(operations, list) or len(operations) != 2
+            or any(not isinstance(item, dict) for item in operations)
+            or sorted(item.get("path", "") for item in operations) != sorted(TASK088_TARGET_PATHS)
+            or any(item.get("action") not in ({"noop"} if preflight else {"create", "replace"})
+                   for item in operations)):
+        raise ControlPlaneError("TASK088_OVERRIDE_OPERATION_SCOPE")
+    if any(manifest.get(key) is not True for key in (
+            "backup_required", "rollback_required", "live_verify_required")):
+        raise ControlPlaneError("TASK088_OVERRIDE_PROTECTIONS_REQUIRED")
+    return raw
+
+
+def _verify_task088_runtime_activation(
+    *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
+    runtime: Mapping[str, Any], runtime_sha: str,
+) -> dt.datetime:
+    path = _runtime_activation_file(root, TASK088_ACTIVATION_PATH)
+    if sha256_file(path) != require_sha(mode.get("runtime_activation_sha256"), "task088_activation"):
+        raise ControlPlaneError("TASK088_ACTIVATION_SHA")
+    activation = _runtime_activation_json(path)
+    expected = {
+        "schema_version": "UA-ART-TASK088-STORAGE-OVERRIDE-1",
+        "task_id": "TASK088-STORAGE-OVERRIDE-20260911",
+        "scope": "TASK088_CRM_ONLY_STORAGE_OWNER_OVERRIDE",
+        "owner": "Артём Бровинский / UA ART COMPANY LLC",
+        "owner_actor_id": "321059821",
+        "owner_command": "Так может быть сними эту непонятную блокировку, удали её нахуй.",
+        "repository": "art20021986-wq/ua-art-autopilot",
+        "mode_epoch": mode.get("mode_epoch"),
+        "runtime_manifest_path": RUNTIME_MANIFEST_PATH,
+        "runtime_manifest_sha256": runtime_sha,
+        "previous_manifest_path": TASK088_PREVIOUS_MANIFEST_PATH,
+        "previous_manifest_sha256": TASK088_PREVIOUS_MANIFEST_SHA256,
+        "previous_mode_path": TASK088_PREVIOUS_MODE_PATH,
+        "previous_mode_sha256": TASK088_PREVIOUS_MODE_SHA256,
+        "previous_activation_path": RUNTIME_ACTIVATION_PATH,
+        "previous_activation_sha256": TASK088_PREVIOUS_ACTIVATION_SHA256,
+        "changed_runtime_paths": ["automation/control_plane.py"],
+        "owner_scope_record": TASK088_OWNER_SCOPE,
+    }
+    if set(activation) != set(expected) | {"registered_at", "source_commit", "allowed_requests"}:
+        raise ControlPlaneError("TASK088_ACTIVATION_KEYS")
+    if any(activation.get(key) != value for key, value in expected.items()):
+        raise ControlPlaneError("TASK088_ACTIVATION_SCOPE")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(activation.get("source_commit", ""))):
+        raise ControlPlaneError("TASK088_ACTIVATION_SOURCE_COMMIT")
+    snapshots = {}
+    for kind in ("manifest", "mode", "activation"):
+        snapshot = _runtime_activation_file(root, activation["previous_" + kind + "_path"])
+        if sha256_file(snapshot) != activation["previous_" + kind + "_sha256"]:
+            raise ControlPlaneError("TASK088_PREVIOUS_" + kind.upper() + "_SHA")
+        snapshots[kind] = _runtime_activation_json(snapshot)
+    old_mode, old_runtime = snapshots["mode"], snapshots["manifest"]
+    preserved = dict(mode)
+    for key in ("runtime_manifest_sha256", "runtime_activation_path", "runtime_activation_sha256"):
+        preserved[key] = old_mode[key]
+    if preserved != old_mode:
+        raise ControlPlaneError("TASK088_MODE_POLICY_DRIFT")
+    old_registered_at = _verify_runtime_activation(
+        root=root, mode=old_mode, approval=approval,
+        runtime=old_runtime, runtime_sha=TASK088_PREVIOUS_MANIFEST_SHA256,
+    )
+    files = runtime.get("files")
+    if (not isinstance(files, dict) or set(files) != set(RUNTIME_PINNED_PATHS)
+            or {name for name in RUNTIME_PINNED_PATHS if files[name] != old_runtime["files"][name]}
+            != {"automation/control_plane.py"}):
+        raise ControlPlaneError("TASK088_RUNTIME_CHANGE_SCOPE")
+    allowed = activation["allowed_requests"]
+    if not isinstance(allowed, dict) or not 1 <= len(allowed) <= 2:
+        raise ControlPlaneError("TASK088_ALLOWED_REQUESTS_REQUIRED")
+    tasks = set()
+    for relative, binding in allowed.items():
+        if not isinstance(binding, dict):
+            raise ControlPlaneError("TASK088_OVERRIDE_BINDING_OBJECT")
+        raw = _validate_task088_override_request(relative, binding, root=root)
+        if raw["task_id"] in tasks:
+            raise ControlPlaneError("TASK088_DUPLICATE_TASK_GRANT")
+        tasks.add(raw["task_id"])
+    registered_at = parse_utc(str(activation["registered_at"]))
+    if registered_at < old_registered_at:
+        raise ControlPlaneError("TASK088_ACTIVATION_TIME_ORDER")
+    return registered_at
+
+
 def _verify_runtime_activation(
     *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
     runtime: Mapping[str, Any], runtime_sha: str,
@@ -1862,6 +2032,10 @@ def _verify_runtime_activation(
     The dependency order is code -> manifest -> registration -> mode, with no
     hash of a file embedded into itself.
     """
+    if mode.get("runtime_activation_path") == TASK088_ACTIVATION_PATH:
+        return _verify_task088_runtime_activation(
+            root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha,
+        )
     if mode.get("runtime_activation_path") != RUNTIME_ACTIVATION_PATH:
         raise ControlPlaneError("RUNTIME_ACTIVATION_PATH_MISMATCH")
     path = _runtime_activation_file(root, RUNTIME_ACTIVATION_PATH)
@@ -2981,6 +3155,67 @@ def _production_storage_probe(
     }
 
 
+def _task088_owner_storage_override(
+    request_path: str, raw: Mapping[str, Any], request_sha: str, *, root: pathlib.Path,
+) -> dict[str, Any] | None:
+    """Apply the owner's exact TASK088 waiver after mode/ledger validation.
+
+    This is deliberately not a capacity PASS. Backup, transaction, health,
+    owner approval, exact launch and live receipt gates remain mandatory.
+    """
+    mode_path = root / "state/EXECUTION_MODE.json"
+    if not mode_path.is_file():
+        return None
+    mode = read_json(mode_path)
+    if mode.get("runtime_activation_path") != TASK088_ACTIVATION_PATH:
+        return None
+    activation_path = _runtime_activation_file(root, TASK088_ACTIVATION_PATH)
+    if sha256_file(activation_path) != require_sha(mode.get("runtime_activation_sha256"), "task088_activation"):
+        raise ControlPlaneError("TASK088_ACTIVATION_SHA")
+    activation = _runtime_activation_json(activation_path)
+    binding = activation["allowed_requests"].get(safe_repo_path(request_path))
+    if binding is None:
+        return None
+    if binding["request_sha256"] != request_sha:
+        raise ControlPlaneError("TASK088_OVERRIDE_REQUEST_IDENTITY")
+    checked = _validate_task088_override_request(request_path, binding, root=root)
+    if checked != raw:
+        raise ControlPlaneError("TASK088_OVERRIDE_REQUEST_DRIFT")
+    descriptor = raw.get("storage_probe")
+    expected_path = "state/storage/TASK088-OWNER-STORAGE-OVERRIDE-20260911.json"
+    if not isinstance(descriptor, dict) or descriptor.get("evidence_path") != expected_path:
+        raise ControlPlaneError("TASK088_OVERRIDE_EVIDENCE_SCOPE")
+    evidence_path = _runtime_activation_file(root, expected_path)
+    if sha256_file(evidence_path) != require_sha(descriptor.get("evidence_sha256"), "task088_storage_override"):
+        raise ControlPlaneError("TASK088_OVERRIDE_EVIDENCE_SHA")
+    evidence = _runtime_activation_json(evidence_path)
+    expected = {
+        "schema_version": "UA-ART-TASK088-STORAGE-OVERRIDE-EVIDENCE-1",
+        "status": "OWNER_OVERRIDE",
+        "task_scope": list(TASK088_PACKAGE_ROOTS),
+        "owner_authorized": True,
+        "capacity_measured": False,
+        "reason": "Так может быть сними эту непонятную блокировку, удали её нахуй.",
+        "business_targets": list(TASK088_TARGET_PATHS),
+    }
+    if evidence != expected:
+        raise ControlPlaneError("TASK088_OVERRIDE_EVIDENCE_CONTENT")
+    return {
+        "status": "OWNER_TASK088_STORAGE_OVERRIDE",
+        "allowed": True,
+        "capacity_measured": False,
+        "measurement_scope": "owner_authorized_exact_task088_storage_override",
+        "backup_required": True,
+        "rollback_required": True,
+        "live_verify_required": True,
+        "request_sha256": request_sha,
+        "activation_path": TASK088_ACTIVATION_PATH,
+        "activation_sha256": mode["runtime_activation_sha256"],
+        "evidence_path": expected_path,
+        "evidence_sha256": descriptor["evidence_sha256"],
+    }
+
+
 def storage_preflight(
     request_path: str,
     run_id: str,
@@ -2989,8 +3224,15 @@ def storage_preflight(
     usage_percent: float | None = None,
     free_bytes: int | None = None,
 ) -> dict[str, Any]:
-    claim_path, claim, raw, _ = _load_exact_claim(request_path, run_id, root=root)
+    claim_path, claim, raw, request_sha = _load_exact_claim(request_path, run_id, root=root)
     production = bool(raw.get("production_required", False))
+    if production:
+        override = _task088_owner_storage_override(request_path, raw, request_sha, root=root)
+        if override is not None:
+            claim["storage_preflight_status"] = override["status"]
+            claim["storage_preflight"] = override
+            _touch_claim(claim_path, claim)
+            return override
     if production:
         measurement = _production_storage_probe(raw, root=root)
         measured_percent = float(measurement["usage_percent"])
