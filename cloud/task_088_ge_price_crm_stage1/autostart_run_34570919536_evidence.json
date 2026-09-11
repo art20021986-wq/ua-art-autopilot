@@ -1,0 +1,39 @@
+{
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+  "analyzed_run_id": 34570919536,
+  "analyzed_job_id": 103172651152,
+  "analyzed_workflow": "UA ART Global Production Autostart",
+  "analyzed_head_branch": "main",
+  "analyzed_head_sha": "24287ac9ca1f01d9f5c6a617834d96e47a5fe63a",
+  "analyzed_conclusion": "failure",
+  "failed_step": "Require exact main automatic runtime",
+  "root_cause": {
+    "type": "non_marker_only_main_commit",
+    "details": [
+      "tasks/UA-ART-GE-UA-MARKET-PRICE-001-v3.1.md",
+      "tasks/requests/TASK088-GE-PRICE-CRM-STAGE1.json",
+      "tasks/launch/AUTO-TASK088-GE-PRICE-CRM-STAGE1-20260911T055651Z.json"
+    ]
+  },
+  "fixed_contract": {
+    "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE1.json",
+    "request_sha256": "ef95c515b035b99c16ef2ad08266d684c736b5a0945105ce6dd7a6bdb6c72bca",
+    "launch_path": "tasks/launch/AUTO-TASK088-GE-PRICE-CRM-STAGE1-20260911T064559Z.json",
+    "launch_sha256": "c44ea08b59f54bd975d4f886bc977c2483218e86cd45abd6826b610f19d67756",
+    "production_allowed": false,
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04"
+  },
+  "replay_validation": {
+    "mode": "AUTOMATIC",
+    "verify_mode_pass": true,
+    "exact_marker_only_commit_pass": true,
+    "autostart_intake_validate_only_pass": true,
+    "simulated_before_sha": "5fa9828905fd061eb71589bcc3af2e5fcb231473",
+    "simulated_source_commit": "597764f2ebc006ee5d977b699683671fe03bf545",
+    "simulated_run_id": "34570919536-replay"
+  },
+  "execute_persist_touched": false,
+  "production_touched": false,
+  "site_touched": false,
+  "stage2_touched": false
+}

@@ -1,0 +1,81 @@
+{
+  "task_id": "UA-ART-GE-PRICE-CRM-001",
+  "issue": 88,
+  "stage": 1,
+  "mode": "SIMULATED_LOCAL_CRM",
+  "production_touched": false,
+  "crm_live_write": false,
+  "public_site_touched": false,
+  "checks": [
+    {
+      "name": "ui_relabel_and_adjacent_field",
+      "pass": true
+    },
+    {
+      "name": "schema_adds_price_georgia_without_renaming_price_uah",
+      "pass": true,
+      "details": {
+        "columns": [
+          "id",
+          "auto_number",
+          "brand",
+          "model",
+          "year",
+          "vin",
+          "fuel",
+          "engine_cc",
+          "gearbox",
+          "drive",
+          "mileage_km",
+          "color",
+          "condition_text",
+          "price_uah",
+          "sea_container",
+          "diag_link",
+          "price_history",
+          "status",
+          "updated_at",
+          "cover_photo",
+          "eta_manual",
+          "price_georgia"
+        ],
+        "price_uah_before": 14300
+      }
+    },
+    {
+      "name": "write_db_readback_price_uah",
+      "pass": true,
+      "details": {
+        "message": "Записано: 15100",
+        "price_uah_after": 15100,
+        "price_georgia_after": null
+      }
+    },
+    {
+      "name": "write_db_readback_price_georgia",
+      "pass": true,
+      "details": {
+        "message": "Записано: 16200",
+        "price_uah_after": 15100,
+        "price_georgia_after": 16200
+      }
+    },
+    {
+      "name": "empty_price_georgia_supported",
+      "pass": true,
+      "details": {
+        "prompt": "<b>Цена Грузии</b>\nСейчас: —\nТолько число, в долларах.\nПоле необязательное: если цены для Грузии нет, ничего не вводите.\n\nПришлите новое значение текстом или голосом."
+      }
+    },
+    {
+      "name": "independent_audit_rows",
+      "pass": true,
+      "details": {
+        "price_uah": 1,
+        "price_georgia": 1
+      }
+    }
+  ],
+  "all_pass": true,
+  "generated_at_utc": "2026-09-10T18:58:11.206856+00:00"
+}

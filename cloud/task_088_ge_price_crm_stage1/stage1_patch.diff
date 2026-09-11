@@ -1,0 +1,50 @@
+--- a/cars_ui.py
++++ b/cars_ui.py
+@@
+-def ensure_columns():
+-    """Добавляет колонки, которых нет ни в старой схеме, ни в cars_schema."""
+-    extra = [("price_history", "TEXT"), ("cover_photo", "TEXT"),
+-             ("eta_manual", "TEXT")]
++def ensure_columns():
++    """Добавляет колонки, которых нет ни в старой схеме, ни в cars_schema."""
++    extra = [("price_history", "TEXT"), ("cover_photo", "TEXT"),
++             ("eta_manual", "TEXT"), ("price_georgia", "INTEGER")]
+     with db.connect() as c:
+         have = {r["name"] for r in c.execute("PRAGMA table_info(cars)").fetchall()}
+         for name, decl in extra:
+             if name not in have:
+                 try:
+                     c.execute("ALTER TABLE cars ADD COLUMN %s %s" % (name, decl))
+                     log.info("Добавлена колонка cars.%s", name)
+                 except Exception as e:
+                     log.warning("Не добавил cars.%s: %s", name, e)
+@@
+ LABELS_ALL = {
+     "brand": "марка", "model": "модель", "year": "год", "vin": "VIN",
+     "fuel": "топливо", "engine_cc": "объём", "gearbox": "КПП", "drive": "привод",
+     "mileage_km": "пробег", "color": "цвет", "condition_text": "тех. состояние",
+-    "price_uah": "цена", "sea_container": "контейнер", "diag_link": "ссылка на отчёт",
++    "price_uah": "цена Украины", "price_georgia": "цена Грузии",
++    "sea_container": "контейнер", "diag_link": "ссылка на отчёт",
+     "eta_days": "срок доставки", "auto_number": "номер авто",
+     "diag_text": "описание диагностики",
+ }
+@@
+ EDITABLE = [
+     ("auto_number", "Номер авто"), ("brand", "Марка"), ("model", "Модель"),
+     ("year", "Год выпуска"), ("vin", "VIN"), ("fuel", "Топливо"),
+     ("engine_cc", "Объём, см³"), ("gearbox", "КПП"), ("drive", "Привод"),
+     ("mileage_km", "Пробег"), ("color", "Цвет"), ("condition_text", "Описание"),
+-    ("price_uah", "Цена продажи"),
++    ("price_uah", "Цена Украины"), ("price_georgia", "Цена Грузии"),
+ ]
+-MONEY = {"price_uah", "cost_total", "cost_purchase", "cost_fees", "cost_logistics"}
+-NUMERIC = {"engine_cc", "mileage_km", "price_uah"}
++MONEY = {"price_uah", "price_georgia", "cost_total", "cost_purchase", "cost_fees", "cost_logistics"}
++NUMERIC = {"engine_cc", "mileage_km", "price_uah", "price_georgia"}
+@@
+-    elif field == "price_uah":
++    elif field in ("price_uah", "price_georgia"):
+         hint = "\nТолько число, в долларах."
++        if field == "price_georgia":
++            hint += "\nПоле необязательное: если цены для Грузии нет, ничего не вводите."
