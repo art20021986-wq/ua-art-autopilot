@@ -5,20 +5,37 @@
   "autostart_ledger_sha256": "38839fbbd9edf3d5af42c17bd540aefa4befde45044b9b65e9ebfea0b5355ca0",
   "autostart_source_commit": "b3e34208482ae5e89e5581ece7f3408ae527fcf2",
   "created_at": "2026-09-11T14:07:20Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "f4cf8c885f7a320eacc53dd57637adf5bd18a027060e669cb97e597acc694b7f",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-11T14:07:20Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-09-11T14:08:25Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "34608152298",
     "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
     "task_sha256": "062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 207.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-34608152298-062ad76555efb682",
+  "production_transaction_path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "read_only-0355ae2639e03869-38e9b3b73cbcd2d0",
   "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +46,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "3d4e93c24125f8ed5082cdfa94c82cd2cedaf6a1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "activation_path": "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.json",
+    "activation_sha256": "c4750713e8ecfa093de44b0c4cca5efe5551a7cd4d054b27c5fa687ecab9ed00",
+    "allowed": true,
+    "backup_required": true,
+    "capacity_measured": false,
+    "evidence_path": "state/storage/TASK088-OWNER-STORAGE-OVERRIDE-20260911.json",
+    "evidence_sha256": "d61acd3880b96e8c1a212a3ebe9b2ad91a3581cede1316aa29b0c5d6a4a2bae0",
+    "live_verify_required": true,
+    "measurement_scope": "owner_authorized_exact_task088_storage_override",
+    "request_sha256": "062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a",
+    "rollback_required": true,
+    "status": "OWNER_TASK088_STORAGE_OVERRIDE"
+  },
+  "storage_preflight_status": "OWNER_TASK088_STORAGE_OVERRIDE",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-11T14:07:20Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "1cb40cf33ec064e7771b00338c8e18e9a362d8b92ff9e81e5747eeb30e461f98",
+    "file_sha256": {
+      "cloud/task088_crm_preflight/capacity_probe.py": "404643d0bc1271a3d264cfd577a6a3e041b0790245fb8e0266967396b965ba6e",
+      "cloud/task088_crm_preflight/owner_preflight.py": "4d17adc77d687c7bbb16d525a37b999f4f4a273fc1d340820b57a523f25bcf93",
+      "cloud/task088_crm_preflight/remote_probe.py": "5cf91540786e86466e740f19dbf6986016b24338856187f9ac8f419a70b790e0",
+      "cloud/task088_crm_preflight/test_contract.py": "3c3ee369a340873a8b2b6ce779afcb222d45a4577df53a952acca35b1d73c888",
+      "cloud/task088_crm_preflight/ui_patch.py": "01dbf7363ea0fa902bd8b2137ad0a7442be4a63f970eb22f6c7161c7122b9c37"
+    }
+  },
+  "updated_at": "2026-09-11T14:08:25Z"
 }
