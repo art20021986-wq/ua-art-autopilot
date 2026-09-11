@@ -550,6 +550,16 @@ class WorkflowContractTests(unittest.TestCase):
         )
 
     def test_global_autostart_parent_gate_accepts_direct_and_normal_merge_only(self):
+        value = self.read("uaart_autostart.yml")
+        gate = re.compile(
+            r'set -- \$\(git rev-list --parents -n 1 "\$SOURCE_COMMIT"\)\n'
+            r'\s+test "\$1" = "\$SOURCE_COMMIT"\n'
+            r'\s+test "\$2" = "\$BEFORE_SHA"\n'
+            r'\s+if test "\$#" -ne 2; then\n'
+            r'\s+test "\$#" -eq 3\n'
+            r'\s+fi'
+        )
+        self.assertEqual(len(gate.findall(value)), 3)
         source = "a" * 40
         before = "b" * 40
         other = "c" * 40
