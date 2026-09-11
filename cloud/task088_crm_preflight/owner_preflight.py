@@ -211,31 +211,53 @@ def protected_probe(root):
     result = {}
     started = time.monotonic()
     hashed_bytes = 0
+    entries_seen = 0
+
+    def check_budget():
+        if entries_seen > 20000 or hashed_bytes > 128 * 1024 * 1024 or time.monotonic() - started > 20:
+            raise ProbeError("PROTECTED_HASH_BUDGET")
+
     for name in PROTECTED_NAMES:
         path = root / name
-        if not path.exists():
-            continue
-        if path.is_symlink():
-            result[name] = {"status": "SYMLINK_REFUSED"}; continue
-        items = [path] if path.is_file() else sorted(path.rglob("*"))
         digest = hashlib.sha256()
         files = 0
-        for item in items:
-            if item.is_symlink():
-                raise ProbeError("PROTECTED_SYMLINK")
-            if item.is_file():
-                files += 1
-                if files > 20000:
-                    raise ProbeError("PROTECTED_FILE_LIMIT")
-                file_hash = hashlib.sha256()
-                with item.open("rb") as handle:
-                    for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-                        hashed_bytes += len(chunk)
-                        if hashed_bytes > 128 * 1024 * 1024 or time.monotonic() - started > 20:
-                            raise ProbeError("PROTECTED_HASH_BUDGET")
-                        file_hash.update(chunk)
-                digest.update(str(item.relative_to(root)).encode() + b"\0" + file_hash.digest())
-        result[name] = {"status": "PASS", "path": str(path), "files": files, "tree_sha256": digest.hexdigest()}
+        try:
+            check_budget()
+            if not path.exists():
+                continue
+            pending = [path]
+            while pending:
+                check_budget()
+                item = pending.pop()
+                info = item.lstat()
+                if stat.S_ISLNK(info.st_mode):
+                    raise ProbeError("PROTECTED_SYMLINK")
+                if stat.S_ISDIR(info.st_mode):
+                    # Bound enumeration itself; never materialize an entire rglob.
+                    children = []
+                    with os.scandir(item) as directory:
+                        for entry in directory:
+                            entries_seen += 1
+                            check_budget()
+                            children.append(item / entry.name)
+                    pending.extend(sorted(children, reverse=True))
+                elif stat.S_ISREG(info.st_mode):
+                    files += 1
+                    file_hash = hashlib.sha256()
+                    with item.open("rb") as handle:
+                        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                            hashed_bytes += len(chunk)
+                            check_budget()
+                            file_hash.update(chunk)
+                    digest.update(str(item.relative_to(root)).encode() + b"\0" + file_hash.digest())
+                else:
+                    raise ProbeError("PROTECTED_SPECIAL_FILE")
+            result[name] = {"status": "PASS", "path": str(path), "files": files, "tree_sha256": digest.hexdigest()}
+        except Exception as exc:
+            result[name] = {"status": "NOT_VERIFIED", "path": str(path), "files_observed": files,
+                            "complete": False, "error_type": type(exc).__name__}
+            if isinstance(exc, ProbeError) and str(exc) in {"PROTECTED_HASH_BUDGET", "PROTECTED_SYMLINK", "PROTECTED_SPECIAL_FILE"}:
+                result[name]["diagnostic_code"] = str(exc)
     return result
 
 

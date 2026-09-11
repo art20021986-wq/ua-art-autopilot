@@ -129,6 +129,7 @@ class API:
         self.values = dict(values)
         self.directory = REMOTE_ROOT + '/' + values['UAART_RUN_ID'] + '-' + values['UAART_REQUEST_SHA256']
         self.opener = urllib.request.build_opener(NoRedirect())
+        self.diagnostics = {}
 
     def request(self, method, url, data=None, headers=None, allowed=(200,)):
         if not url.startswith(BASE) or method not in {'GET', 'POST', 'DELETE'}:
@@ -227,6 +228,53 @@ class API:
             raise ControllerError('TRIGGER_CLEANUP_NOT_VERIFIED')
         return {'cleanup': 'PASS', 'created_trigger_absent': True}
 
+    def failure_diagnostics(self, identifier=None):
+        """Bounded output; never export raw logs, source, arbitrary exception text."""
+        diagnostics = {}
+        for name in ('started.json', 'result.json', 'trigger.json'):
+            try:
+                payload = self.read(self.directory + '/' + name, missing=True)
+                item = {'exists': payload is not None}
+                if payload is not None:
+                    parsed = json.loads(payload)
+                    item['identity_matches'] = isinstance(parsed, dict) and all(parsed.get(key) == value for key, value in bindings(self.values).items())
+                    if item['identity_matches']:
+                        for key in ('collection_status', 'error_type', 'error_code', 'phase'):
+                            value = parsed.get(key)
+                            if isinstance(value, str) and re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,79}', value):
+                                item[key] = value
+                        if name == 'trigger.json' and type(parsed.get('id')) is int and parsed['id'] > 0:
+                            if identifier is not None and identifier != parsed['id']:
+                                raise ControllerError('TRIGGER_IDENTITY')
+                            identifier = parsed['id']
+                diagnostics[name] = item
+            except Exception as exc:
+                diagnostics[name] = {'diagnostic_error_type': type(exc).__name__}
+        try:
+            matches = [item for item in self.tasks() if isinstance(item, dict) and item.get('command') == self.command() and item.get('description') == self.description()]
+            diagnostics['matching_tasks'] = len(matches)
+            if len(matches) == 1:
+                item = matches[0]
+                diagnostics['task'] = {key: item[key] for key in ('id', 'enabled') if key in item and type(item[key]) in (int, bool)}
+                for key in ('state', 'status'):
+                    value = item.get(key)
+                    if isinstance(value, str) and re.fullmatch(r'[A-Za-z _-]{1,40}', value):
+                        diagnostics['task'][key] = value
+                if identifier is None and type(item.get('id')) is int:
+                    identifier = item['id']
+        except Exception as exc:
+            diagnostics['tasks_error_type'] = type(exc).__name__
+        if type(identifier) is int and identifier > 0:
+            try:
+                # Only the newly created exact task's documented log; never bot logs.
+                url = BASE + 'files/path/var/log/alwayson-log-' + str(identifier) + '.log'
+                status, payload = self.request('GET', url, allowed=(200, 404))
+                diagnostics['task_log'] = sanitize_task_log(payload) if status == 200 else {'exists': False}
+            except Exception as exc:
+                diagnostics['task_log'] = {'diagnostic_error_type': type(exc).__name__}
+        self.diagnostics.update(diagnostics)
+        return diagnostics
+
     def collect(self, snapshot, timeout=240):
         existing = self.read(self.directory + '/result.json', missing=True)
         if existing is not None:
@@ -265,8 +313,34 @@ class API:
                     return result
                 time.sleep(5)
             raise ControllerError('REMOTE_TIMEOUT')
+        except Exception as exc:
+            self.diagnostics['controller_error'] = str(exc) if isinstance(exc, ControllerError) else type(exc).__name__
+            self.failure_diagnostics(identifier)
+            raise
         finally:
-            self.cleanup(identifier)
+            try:
+                self.diagnostics['cleanup'] = self.cleanup(identifier)
+            except Exception as exc:
+                self.diagnostics['cleanup'] = {'cleanup': 'FAIL', 'error_type': type(exc).__name__}
+                raise
+
+
+def sanitize_task_log(payload):
+    text = payload[-65536:].decode('utf-8', 'replace')
+    errors = sorted(set(re.findall(r'(?m)^(ModuleNotFoundError|ImportError|SyntaxError|IndentationError|ValueError|TypeError|KeyError|NameError|AttributeError|OSError|PermissionError|FileNotFoundError|FileExistsError|MemoryError|RuntimeError):', text)))
+    frames = []
+    for filename, lineno in re.findall(r'File "[^"\n]*/([^/"\n]+)", line ([0-9]{1,6})', text):
+        if filename in SOURCE_FILES:
+            frames.append({'filename': filename, 'line': int(lineno)})
+    signals = []
+    for line in text.splitlines():
+        if line.startswith('TASK088_PREFLIGHT_DIAGNOSTIC '):
+            try:
+                value = json.loads(line.partition(' ')[2])
+                signals.append({key: item for key, item in value.items() if key in {'phase', 'error_type', 'error_code', 'collection_status'} and isinstance(item, str) and re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,79}', item)})
+            except (ValueError, TypeError, AttributeError):
+                continue
+    return {'exists': True, 'bytes_observed': len(payload), 'exception_types': errors, 'package_frames': frames[-12:], 'diagnostic_signals': signals[-4:], 'raw_log_exported': False}
 
 
 def validate_remote(value, values):
@@ -292,6 +366,7 @@ def backup(environment, api_factory=API):
 def execute(environment, api_factory=API):
     values = required(environment, 'execute')
     evidence = {**bindings(values), 'status': 'FAIL', 'started_at': now(), 'crm_prices_acceptance': 'NOT_PERFORMED'}
+    api = None
     try:
         api = api_factory(values)
         snapshot = api.snapshot()
@@ -299,6 +374,8 @@ def execute(environment, api_factory=API):
             raise ControllerError('SOURCE_DRIFT_SINCE_BACKUP')
         remote = api.collect(snapshot)
         evidence['remote'] = remote
+        if isinstance(getattr(api, 'diagnostics', None), dict):
+            evidence['diagnostics'] = api.diagnostics
         validate_remote(remote, values)
         if api.snapshot() != snapshot:
             raise ControllerError('SOURCE_DRIFT_DURING_DIAGNOSTIC')
@@ -307,6 +384,8 @@ def execute(environment, api_factory=API):
         atomic(ROOT / RECEIPT_REL, receipt)
     except Exception as exc:
         evidence['error'] = str(exc) if isinstance(exc, ControllerError) else type(exc).__name__
+        if api is not None and isinstance(getattr(api, 'diagnostics', None), dict):
+            evidence['diagnostics'] = api.diagnostics
     evidence['finished_at'] = now()
     atomic(ROOT / EVIDENCE_REL, evidence)
     return evidence
@@ -325,5 +404,6 @@ def rollback(environment, api_factory=API):
 
 if __name__ == '__main__':
     result = execute(os.environ)
-    print(json.dumps({'task_id': TASK_ID, 'status': result['status'], 'crm_prices_acceptance': 'NOT_PERFORMED'}, sort_keys=True))
+    summary = {key: result[key] for key in ('task_id', 'status', 'crm_prices_acceptance', 'error', 'diagnostics') if key in result}
+    print(json.dumps(summary, sort_keys=True), flush=True)
     raise SystemExit(0 if result['status'] == 'PASS' else 1)

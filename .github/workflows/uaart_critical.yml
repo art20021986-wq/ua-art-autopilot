@@ -1739,7 +1739,7 @@ jobs:
       ROLLBACK_RECEIPT_PATH: ${{ needs.validate.outputs.rollback_receipt_path }}
       DEPENDENCY_SHA256: ${{ needs.validate.outputs.dependency_sha256 }}
       RUNTIME_MANIFEST_SHA256: ${{ needs.validate.outputs.runtime_manifest_sha256 }}
-      SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+      SOURCE_COMMIT: ${{ needs.validate.outputs.workflow_source_commit }}
       PINNED_ROOT: ${{ github.workspace }}/../uaart-critical-pinned-recovery
       WORKFLOW_BLOB_OID: ${{ needs.validate.outputs.workflow_blob_oid }}
       WORKFLOW_PATH: .github/workflows/uaart_critical.yml

@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import pathlib
 import re
 import subprocess
 import sys
+import tempfile
 import unittest
 
 
@@ -921,6 +923,53 @@ class WorkflowContractTests(unittest.TestCase):
             "source_commit: ${{ steps.orphan.outputs.source_commit }}", discover
         )
         self.assertIn("claim_path: ${{ steps.orphan.outputs.claim_path }}", discover)
+
+    def test_rollback_binds_launch_commit_after_intake_adds_state_commits(self):
+        job = self.jobs("uaart_critical.yml")["rollback_execute"]
+        header = job.split("\n    steps:", 1)[0]
+        match = re.search(r"^      SOURCE_COMMIT: \$\{\{ needs\.validate\.outputs\.([a-z_]+) \}\}$", header, re.M)
+        self.assertIsNotNone(match)
+        outputs = {
+            "source_commit": "5bddc53af1fe8448e9c0bcd7782471db1da2eeb3",
+            "workflow_source_commit": "b3e34208482ae5e89e5581ece7f3408ae527fcf2",
+        }
+        selected = outputs[match.group(1)]
+        self.assertEqual(selected, outputs["workflow_source_commit"])
+        # Exercise the actual durable-state guard from the workflow. Selecting
+        # the later intake HEAD used to fail before rollback credentials.
+        marker = "          python3 -I - <<'PY'\n"
+        source = job.split(marker, 1)[1].split("\n          PY", 1)[0]
+        code = "\n".join(line[10:] if line.startswith(" " * 10) else line for line in source.splitlines())
+        for source_commit, expected_success in ((selected, True), (outputs["source_commit"], False)):
+            with self.subTest(source_commit=source_commit), tempfile.TemporaryDirectory() as temporary:
+                root = pathlib.Path(temporary)
+                pinned = root / "pinned"
+                pinned.mkdir()
+                claim_path, tx_path, request_path = "state/claims/task.json", "state/transactions/task.json", "tasks/requests/task.json"
+                ledger_path, backup_path = "state/autostart_consumed/task.json", "state/receipts/backup.json"
+                records = {
+                    claim_path: {"autostart_source_commit": outputs["workflow_source_commit"], "autostart_ledger_path": ledger_path},
+                    tx_path: {"request_path": request_path, "backup_receipt_path": backup_path},
+                    request_path: {}, ledger_path: {}, backup_path: {},
+                }
+                for relative, value in records.items():
+                    path = root / relative
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(json.dumps(value), encoding="utf-8")
+                environment = {"PINNED_ROOT": str(pinned), "CLAIM_PATH": claim_path,
+                               "TRANSACTION_PATH": tx_path, "REQUEST_PATH": request_path,
+                               "SOURCE_COMMIT": source_commit}
+                result = subprocess.run([sys.executable, "-I", "-c", code], cwd=root, env=environment,
+                                        text=True, capture_output=True, timeout=10, check=False)
+                if expected_success:
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn("UAART_PINNED_DURABLE_STATE_COPIED", result.stdout)
+                    for relative in records:
+                        self.assertEqual((pinned / relative).read_bytes(), (root / relative).read_bytes())
+                else:
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("PINNED_SOURCE_COMMIT_BINDING", result.stderr)
+                    self.assertFalse(any(pinned.rglob("*.json")))
 
     def test_all_production_state_writers_bind_runtime_before_repo_python(self):
         expected = {

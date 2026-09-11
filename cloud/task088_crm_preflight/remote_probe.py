@@ -55,6 +55,7 @@ def collect_once(plan, collector, here=HERE):
         value.update({'collection_status': 'PASS', 'discovery': discovery})
     except Exception as exc:
         value['error_type'] = type(exc).__name__
+        value['phase'] = 'discovery'
     payload = canonical(value)
     if len(payload) > 2 * 1024 * 1024:
         raise ValueError('RESULT_BUDGET')
@@ -71,11 +72,24 @@ def collect_once(plan, collector, here=HERE):
 def main():
     plan = json.loads((HERE / 'plan.json').read_bytes())
     validate_plan(plan)
-    # Only the hash-verified diagnostic module is imported; never live CRM modules.
-    import owner_preflight
-    result = collect_once(plan, owner_preflight.collect)
+    def collect():
+        # Import after the durable started marker, so import errors get a result.
+        # Only this hash-verified diagnostic module; never live CRM modules.
+        import owner_preflight
+        return owner_preflight.collect()
+    result = collect_once(plan, collect)
+    if result is not None and result.get('collection_status') != 'PASS':
+        print('TASK088_PREFLIGHT_DIAGNOSTIC ' + json.dumps({key: result[key] for key in ('phase', 'error_type', 'collection_status') if key in result}, sort_keys=True), flush=True)
     return 0 if result is None or result.get('collection_status') == 'PASS' else 1
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    try:
+        exit_code = main()
+    except Exception as exc:
+        diagnostic = {'phase': 'startup_or_result_publication', 'error_type': type(exc).__name__}
+        if isinstance(exc, ValueError) and re.fullmatch(r'[A-Z_]{1,80}', str(exc)):
+            diagnostic['error_code'] = str(exc)
+        print('TASK088_PREFLIGHT_DIAGNOSTIC ' + json.dumps(diagnostic, sort_keys=True), flush=True)
+        exit_code = 1
+    raise SystemExit(exit_code)
