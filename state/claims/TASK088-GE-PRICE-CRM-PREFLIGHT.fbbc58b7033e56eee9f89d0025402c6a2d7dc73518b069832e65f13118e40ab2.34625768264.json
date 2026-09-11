@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.json",
+  "autostart_ledger_sha256": "d70e08743ed5ea44f56d357b3c07572738f352d4d9cc760c4caf4a02bdbc4356",
+  "autostart_source_commit": "5074a8cb7210b437b176323ad82e89984f579786",
+  "created_at": "2026-09-11T17:07:01Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-11T17:07:01Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "34625768264",
+    "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+    "task_sha256": "fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "read_only-0355ae2639e03869-38e9b3b73cbcd2d0",
+  "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-PREFLIGHT-20260911-READ2.json",
+  "request_sha256": "fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2",
+  "resource_locks": [
+    "READ_ONLY:0355ae2639e03869"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "e2360a9ea39b5d83bcc5bd05c3782111add9bfe4",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-11T17:07:01Z"
+}
