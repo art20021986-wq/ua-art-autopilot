@@ -1,0 +1,33 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/task_088_ge_price_crm_stage2_discovery/evidence.json"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "GET-only read of current CRM source files and Stage 1 evidence. No remote writes, no database values exported, no restarts, no website changes. Stage 2 acceptance is not performed by this discovery task.",
+  "execution": {
+    "controller_path": "cloud/task_088_ge_price_crm_stage2_discovery/controller.py",
+    "controller_sha256": "d02d2fcce302791f7767af3299f29eb3aeffbf0bb5f14606e0d69b7b7fb29d02",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/task_088_ge_price_crm_stage2_discovery/evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.json"
+    ],
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage2_discovery/test_contract.py": "1abedf7b95202404f90dd5322427afdc6714d79bd7a58bf90098c6b140b8b92d"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.json",
+    "test_paths": [
+      "cloud/task_088_ge_price_crm_stage2_discovery/test_contract.py"
+    ],
+    "timeout_seconds": 300
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY",
+  "title": "Read current CRM price handlers for Stage 2 recovery"
+}
