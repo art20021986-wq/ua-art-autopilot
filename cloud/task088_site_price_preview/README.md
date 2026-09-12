@@ -27,17 +27,29 @@ part of this component or this change.
 
 - Upper value: `price_uah`, using the existing USD formatter and existing value.
 - Lower value: `price_georgia`, using the same formatter independently.
+- When a price is set in the CRM bot and committed to its matching DB field,
+  the site must display that value on the corresponding market row.
+- Always render the Georgia heading and description, including when its price
+  is absent. The preview's neutral description is “Придбання автомобіля в Грузії.”
 - Never derive Georgia from Ukraine or the current vehicle stage.
 - Language selection translates labels; it must not change either value.
 - Retain the existing site language mechanism instead of adding a market router.
 - The actual Georgia value of UA-0009 has not been read. The preview deliberately
   demonstrates a missing-value state and makes no assertion about that DB row.
 
-Proposed NULL display for owner approval: **Ціну уточнюйте** (RU: **Цену
-уточняйте**). Keep both headings and the vehicle card. Do not implement this
-fallback in Production until the owner approves it.
+## Approved missing-Georgia-price behavior
+
+The owner's latest instruction explicitly approves **Цена уточняется**.
+Use **Ціна уточнюється** in Ukrainian and **Цена уточняется** in Russian,
+through the existing language mechanism. NULL/empty Georgia price does not
+hide its heading, its description, the Ukraine price, or the vehicle card.
+Do not use 0 or a dash as missing-price placeholders. Never copy the Ukraine
+amount or invent a Georgia amount. This fallback needs no further approval.
+This rule is specific to the Georgia price; existing Ukraine behavior stays
+unchanged. The approval does not establish live integration or authorize
+Production deployment.
 
 Before implementation: inspect current generator/data propagation and language
-integration, finish Stage 2, approve this layout and NULL wording, and prepare
+integration, finish Stage 2, verify this Preview, and prepare
 the existing backup/hash/preview/regression gates. Production remains subject
 to separate explicit owner permission after Preview verification.
