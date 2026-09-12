@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.f6c3c3569b078ebbd5e5c5efba441266beea088ae80874d45bbc31b5791e0f63.json",
+  "autostart_ledger_sha256": "678b3ff13ddb1d616d7d3f67cb0f46be7008405ea63858e881ce6c658ebf3a9d",
+  "autostart_source_commit": "6f529e49c2ed22dbecd10721147dd903f6c724fb",
+  "created_at": "2026-09-12T09:41:19Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-12T09:41:19Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "34686469242",
+    "task_id": "TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY",
+    "task_sha256": "f6c3c3569b078ebbd5e5c5efba441266beea088ae80874d45bbc31b5791e0f63"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "read_only-f61a5ededf3e0446-cfb9105053519ceb",
+  "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.json",
+  "request_sha256": "f6c3c3569b078ebbd5e5c5efba441266beea088ae80874d45bbc31b5791e0f63",
+  "resource_locks": [
+    "READ_ONLY:f61a5ededf3e0446"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "69a7bf65489307b4d1d7f90056b76514da7a7547",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-12T09:41:19Z"
+}
