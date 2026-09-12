@@ -1,0 +1,68 @@
+{
+  "observed_at": "2026-09-12T12:50:25.216Z",
+  "source_url": "https://www.pythonanywhere.com/user/Carix/files/home/Carix/cars_ui.py?edit",
+  "source_path": "/home/Carix/cars_ui.py",
+  "scope": "VISIBLE_CURRENT_SOURCE_ROUTING_ONLY",
+  "fragment": "        field = wait[\"field\"]\n        nizhny = input_text.lower()\n        if field not in (\"price_uah\", \"condition_text\", \"diag_text\", \"diag_link\") \\\n                and (\"$\" in nizhny or \"цена\" in nizhny or \"стоимость\" in nizhny):\n            field = \"price_uah\"\n        elif field == \"eta_days\" and _re.search(r\"\\d{4,}\", nizhny):\n            field = \"price_uah\"",
+  "live_price_writes": 0,
+  "live_acceptance": "NOT_PERFORMED",
+  "checked_at": "2026-09-12T12:51:26.651282+00:00",
+  "source_fragment_sha256": "661f5bf855d71f858b433b875515343e9752e2593e117c842425c0d89905912d",
+  "verification": "LOCAL_EXECUTION_OF_EXACT_CURRENT_VISIBLE_ROUTING_FRAGMENT",
+  "cases": [
+    {
+      "selected_field": "price_uah",
+      "input": "11000",
+      "routed_field": "price_uah",
+      "independent_route": "PASS"
+    },
+    {
+      "selected_field": "price_uah",
+      "input": "11000 $",
+      "routed_field": "price_uah",
+      "independent_route": "PASS"
+    },
+    {
+      "selected_field": "price_uah",
+      "input": "цена 11000",
+      "routed_field": "price_uah",
+      "independent_route": "PASS"
+    },
+    {
+      "selected_field": "price_uah",
+      "input": "стоимость 11000",
+      "routed_field": "price_uah",
+      "independent_route": "PASS"
+    },
+    {
+      "selected_field": "price_georgia",
+      "input": "11000",
+      "routed_field": "price_georgia",
+      "independent_route": "PASS"
+    },
+    {
+      "selected_field": "price_georgia",
+      "input": "11000 $",
+      "routed_field": "price_uah",
+      "independent_route": "FAIL"
+    },
+    {
+      "selected_field": "price_georgia",
+      "input": "цена 11000",
+      "routed_field": "price_uah",
+      "independent_route": "FAIL"
+    },
+    {
+      "selected_field": "price_georgia",
+      "input": "стоимость 11000",
+      "routed_field": "price_uah",
+      "independent_route": "FAIL"
+    }
+  ],
+  "routing_gate": "FAIL",
+  "live_db_readback": "NOT_PERFORMED",
+  "live_cross_write_test": "NOT_PERFORMED",
+  "original_price_restoration": "NOT_PERFORMED_NO_LIVE_PRICE_WRITE_ATTEMPTED",
+  "stage2_status": "NOT_PASS",
+  "stop_reason": "CURRENT_SELECTED_GEORGIA_ROUTE_REDIRECTS_TO_UKRAINE"
+}
