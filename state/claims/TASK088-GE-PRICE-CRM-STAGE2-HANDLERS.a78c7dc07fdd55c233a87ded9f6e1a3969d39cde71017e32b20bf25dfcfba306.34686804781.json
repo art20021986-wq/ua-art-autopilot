@@ -7,21 +7,23 @@
   "created_at": "2026-09-12T09:49:25Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-12T09:49:25Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-12T09:50:16Z",
+  "heartbeat_at": "2026-09-12T09:50:16Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "34686804781",
     "task_id": "TASK088-GE-PRICE-CRM-STAGE2-HANDLERS",
     "task_sha256": "a78c7dc07fdd55c233a87ded9f6e1a3969d39cde71017e32b20bf25dfcfba306"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-7d52b26e78613af6-8f1bc027e27db049",
   "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-HANDLERS.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "489ec130b5bb205d1185966301e2bfa19b87a41b8a77a2e7d912464136a4143b",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-HANDLERS.json",
   "request_sha256": "a78c7dc07fdd55c233a87ded9f6e1a3969d39cde71017e32b20bf25dfcfba306",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "e0b1ad520464c0c976cc8b559e013860cb535971",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92219449344,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 16777216,
+    "status": "PASS",
+    "usage_percent": 40.452
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-12T09:49:25Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "1a85104f646f297c52764946c707c6b3d7d7e6537c10e4fa41f051deab4601e8",
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage2_handlers/test_contract.py": "fd5232feec456e42c40cd115b8d6a4b45e9767c5ae028e07e206cf6b59b86f2c"
+    }
+  },
+  "updated_at": "2026-09-12T09:50:16Z"
 }

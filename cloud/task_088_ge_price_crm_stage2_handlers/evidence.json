@@ -1,0 +1,2804 @@
+{
+  "controlled_price_rollback": "NOT_PERFORMED",
+  "cross_write_tests": "NOT_PERFORMED",
+  "current_database_schema": "NOT_VERIFIED",
+  "database_bytes_exported": 0,
+  "finished_at": "2026-09-12T09:49:54Z",
+  "http_methods": [
+    "GET"
+  ],
+  "live_process_inspection": "NOT_PERFORMED",
+  "live_source_environment": "production",
+  "price_readback": "NOT_PERFORMED",
+  "remote_get_count": 12,
+  "remote_response_body_bytes": 639030,
+  "remote_write_count": 0,
+  "request_sha256": "a78c7dc07fdd55c233a87ded9f6e1a3969d39cde71017e32b20bf25dfcfba306",
+  "run_id": "34686804781",
+  "scope": "GET_ONLY_DISCOVERY",
+  "source_snapshot_consistency": "PASS",
+  "sources": {
+    "/home/Carix/cars_schema.py": {
+      "all_definitions_retained": true,
+      "bytes": 24447,
+      "exported_function_bytes": 0,
+      "field_constants": [],
+      "full_source_exported": false,
+      "function_definitions": [
+        {
+          "decorators": [],
+          "line": 142,
+          "name": "stage_of",
+          "order": 19,
+          "sha256": "dee2d0f38b84204afa33fbfb0d3478733c76ab624fe8d10dc492a5f574460f73"
+        },
+        {
+          "decorators": [],
+          "line": 147,
+          "name": "status_label",
+          "order": 20,
+          "sha256": "4fe10465f0bf9d29e22da519bc6df8a3c49181acb9e65d7e8bd1e1e38fc3a630"
+        },
+        {
+          "decorators": [],
+          "line": 155,
+          "name": "missing_required",
+          "order": 21,
+          "sha256": "a0d8925230922ecf2e77e1a53fdf6fef0004b3da93e7528a2facf74e64c8415a"
+        },
+        {
+          "decorators": [],
+          "line": 171,
+          "name": "is_draft",
+          "order": 22,
+          "sha256": "3b6218577959bcbc3b33d2bf6ded1526c3ad95d92c1c6263a70432f9d0afe796"
+        },
+        {
+          "decorators": [],
+          "line": 175,
+          "name": "check_vin",
+          "order": 23,
+          "sha256": "469447fc4f27d5c56cac6a0f49b4c5f6b1e58ab16b5763811d068221cec72a03"
+        },
+        {
+          "decorators": [],
+          "line": 200,
+          "name": "_as_date",
+          "order": 24,
+          "sha256": "51a498626b1af263bbdf49d38ce600b60f2781165aaff75dd10f023cc67ca465"
+        },
+        {
+          "decorators": [],
+          "line": 213,
+          "name": "days_to_kyiv",
+          "order": 25,
+          "sha256": "78fc9da53791e35cdab0a0bfdc5f7d571c9ba675002bc51caf0eb7eaee08171a"
+        },
+        {
+          "decorators": [],
+          "line": 239,
+          "name": "_hit",
+          "order": 29,
+          "sha256": "5c997d8d0cdde45209d8ac99ccb069246c53445a2fbe5121aeed1ecb5c66f5f5"
+        },
+        {
+          "decorators": [],
+          "line": 244,
+          "name": "order_photos",
+          "order": 30,
+          "sha256": "7bc31821b0bfa02faabcb6928aaa8867ee1f4d410bbd3d2bbc32939af8cbd9ee"
+        },
+        {
+          "decorators": [],
+          "line": 259,
+          "name": "cover_photo",
+          "order": 31,
+          "sha256": "99bb9049b9aeb0b477c259dc8398024627d8fc4b2cd0f5ce2ff44260bdfb3754"
+        },
+        {
+          "decorators": [],
+          "line": 268,
+          "name": "money",
+          "order": 32,
+          "sha256": "7a6a814a4600ed521aef454b85db27a0e1d0c45ec2f2f809d26045090b8132a2"
+        },
+        {
+          "decorators": [],
+          "line": 274,
+          "name": "num",
+          "order": 33,
+          "sha256": "90b5e4554363549d6c66072ac2b5c1c40525c435aee8c6d410a3c895643449b6"
+        },
+        {
+          "decorators": [],
+          "line": 280,
+          "name": "dmy",
+          "order": 34,
+          "sha256": "6024371fc932a10e5fdb75dd35575dd334b4938f634a81d434448855e8d83978"
+        },
+        {
+          "decorators": [],
+          "line": 285,
+          "name": "render_card",
+          "order": 35,
+          "sha256": "284fb11004e30bbfb730b75f3d7fe17ca768e617091bcccab6e8567cbe98ad57"
+        },
+        {
+          "decorators": [],
+          "line": 362,
+          "name": "next_auto_number",
+          "order": 36,
+          "sha256": "3e655902f98d26bc436623e23e9b137637795121321c533f01eb5810d93a30e7"
+        },
+        {
+          "decorators": [],
+          "line": 386,
+          "name": "migrate",
+          "order": 38,
+          "sha256": "62ca01f123657b841751b3cf8364c005e2e069958a7127e0e3f020e45e56dc25"
+        }
+      ],
+      "imports": [
+        {
+          "module": "datetime",
+          "names": [
+            {
+              "alias": null,
+              "name": "date"
+            },
+            {
+              "alias": null,
+              "name": "datetime"
+            },
+            {
+              "alias": null,
+              "name": "timedelta"
+            }
+          ],
+          "order": 1
+        }
+      ],
+      "live_module_imported": false,
+      "path": "/home/Carix/cars_schema.py",
+      "runtime_handler_binding": "NOT_VERIFIED",
+      "selected_functions": {},
+      "sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+      "syntax": "PASS",
+      "top_level_call_shapes": [],
+      "top_level_symbol_aliases": []
+    },
+    "/home/Carix/cars_ui.py": {
+      "all_definitions_retained": true,
+      "bytes": 198768,
+      "exported_function_bytes": 35295,
+      "field_constants": [
+        {
+          "line": 465,
+          "order": 40,
+          "values": {
+            "LABELS_ALL": {
+              "price_georgia": "цена Грузии",
+              "price_uah": "цена Украины"
+            }
+          }
+        },
+        {
+          "line": 475,
+          "order": 41,
+          "values": {
+            "EDITABLE": [
+              {
+                "field": "price_uah",
+                "label": "Цена Украины"
+              },
+              {
+                "field": "price_georgia",
+                "label": "Цена Грузии"
+              }
+            ]
+          }
+        },
+        {
+          "line": 482,
+          "order": 42,
+          "values": {
+            "MONEY": [
+              "cost_fees",
+              "cost_logistics",
+              "cost_purchase",
+              "cost_total",
+              "price_georgia",
+              "price_uah"
+            ]
+          }
+        },
+        {
+          "line": 483,
+          "order": 43,
+          "values": {
+            "NUMERIC": [
+              "engine_cc",
+              "mileage_km",
+              "price_georgia",
+              "price_uah"
+            ]
+          }
+        }
+      ],
+      "full_source_exported": false,
+      "function_definitions": [
+        {
+          "decorators": [],
+          "line": 70,
+          "name": "ensure_columns",
+          "order": 16,
+          "sha256": "7622f79cad8913759a381af23d8409e138026b74512fefe8ad50038bfd0e9546"
+        },
+        {
+          "decorators": [],
+          "line": 85,
+          "name": "jload",
+          "order": 17,
+          "sha256": "53cf77ea254d9ed4c911d4422fe7c6795b7b09baa3c2a87f1212c9d249b479a1"
+        },
+        {
+          "decorators": [],
+          "line": 95,
+          "name": "jdump",
+          "order": 18,
+          "sha256": "35b99b12bd4320267da8550397c99433b0aaba8728f3cf08a31956f02643beb3"
+        },
+        {
+          "decorators": [],
+          "line": 99,
+          "name": "card_of",
+          "order": 19,
+          "sha256": "4cbec081f1a21c0bbacbea10c271233255cedebee26115a949e38aaaf4a0f60f"
+        },
+        {
+          "decorators": [],
+          "line": 110,
+          "name": "photos_of",
+          "order": 20,
+          "sha256": "8db1d8fc10b3988a34028857330160a9ddaee7128f668de155f6e49692e78125"
+        },
+        {
+          "decorators": [],
+          "line": 126,
+          "name": "videos_of",
+          "order": 21,
+          "sha256": "f4f2fef7b2160211e3898111c8be61d58cc79e1a5a186e5a69e7be821398da54"
+        },
+        {
+          "decorators": [],
+          "line": 137,
+          "name": "price_history",
+          "order": 22,
+          "sha256": "844f6b630128e19e6c5f8548ddb11b5d27859b5762e76647ea71856ac2284e87"
+        },
+        {
+          "decorators": [],
+          "line": 141,
+          "name": "price_stale",
+          "order": 23,
+          "sha256": "30f31164d215afd5fdced54b404ff629fec008e170fd91b83f91c35aed531ae8"
+        },
+        {
+          "decorators": [],
+          "line": 149,
+          "name": "set_field",
+          "order": 24,
+          "sha256": "8f6ea6455a0f950573e4433f3bc273471c617b679d37ae96b803cfbf492440e8"
+        },
+        {
+          "decorators": [],
+          "line": 156,
+          "name": "drop_wait",
+          "order": 25,
+          "sha256": "cbd7a76eb6412e87c863a7506ae23f57b8fe02cc0db7686409f78dd332c4db9d"
+        },
+        {
+          "decorators": [],
+          "line": 165,
+          "name": "is_owner",
+          "order": 26,
+          "sha256": "7d3d9263f229aaa726f62cb4439ca26ddaa2744f4ec95721a2f77a38ee65feb0"
+        },
+        {
+          "decorators": [],
+          "line": 174,
+          "name": "_ua082_clean",
+          "order": 27,
+          "sha256": "c7a1ae82aa4b244274d56a0f7b1366cc38a9ceb5750f8ac8b69ab098c79b8b3c"
+        },
+        {
+          "decorators": [],
+          "line": 178,
+          "name": "_ua082_vin4",
+          "order": 28,
+          "sha256": "517b167748b9f36bf0048276332c90629a95592b3aa2d66cad68eedf0afe9ac9"
+        },
+        {
+          "decorators": [],
+          "line": 187,
+          "name": "_ua082_title_parts",
+          "order": 29,
+          "sha256": "0c0460c7dd9f0e52e5f8a17492a0384eb7bce555a2bf8f4e9f9c852a4135a297"
+        },
+        {
+          "decorators": [],
+          "line": 198,
+          "name": "_ua082_title_plain",
+          "order": 30,
+          "sha256": "ab15361582a6fe565339916cd3648fa63a5c2c1a362da30eb4bb5119a9b2d6f2"
+        },
+        {
+          "decorators": [],
+          "line": 203,
+          "name": "_ua082_title_html",
+          "order": 31,
+          "sha256": "7d1fb441df22dfb800139b361c7bb185efb8878955bbc7236865de8399f9a095"
+        },
+        {
+          "decorators": [],
+          "line": 213,
+          "name": "_ua082_title_button",
+          "order": 32,
+          "sha256": "c8514c9d1c4fe7bba97a2c2ac149330a99b56d8d3521ba2044bbdef73a8a3895"
+        },
+        {
+          "decorators": [],
+          "line": 224,
+          "name": "render",
+          "order": 33,
+          "sha256": "79ef124e9db43b516de2eb1f0dbe7b2e9a75e909cd52d5a7b15282bcb27e5258"
+        },
+        {
+          "decorators": [],
+          "line": 319,
+          "name": "eta_of",
+          "order": 34,
+          "sha256": "31da50b4520bfd93541290e8094e9fd544a853000753aed6cb958e885dd36e7a"
+        },
+        {
+          "decorators": [],
+          "line": 331,
+          "name": "_int",
+          "order": 35,
+          "sha256": "0fd4de651759c6c3c81e1d36dbf43c31c5a225cf4e49974c941f0b6ca417976b"
+        },
+        {
+          "decorators": [],
+          "line": 338,
+          "name": "_year",
+          "order": 36,
+          "sha256": "ab874f482cb7ca058a7b2826139f9620bf4422588a606fd13586ff25d12f0769"
+        },
+        {
+          "decorators": [],
+          "line": 347,
+          "name": "card_kb",
+          "order": 37,
+          "sha256": "fda0d3e7644e3cae77a176305d06ee1cb5f88ad210f5e99a515a4b0d77e8b608"
+        },
+        {
+          "decorators": [],
+          "line": 378,
+          "name": "open_card",
+          "order": 38,
+          "sha256": "c3975efdb027bceffbada1dee560270557b60a9f9f3d9f5a7ec7de48aeb19634"
+        },
+        {
+          "decorators": [],
+          "line": 420,
+          "name": "cars_list",
+          "order": 39,
+          "sha256": "ef39a41236c9d161bcc46aa86ca629718dda9de1c02ceac823cb4518514048d8"
+        },
+        {
+          "decorators": [],
+          "line": 486,
+          "name": "edit_menu",
+          "order": 44,
+          "sha256": "606650ab2ca149db2ab38318ca742e3b6424646e17ba8e6b5b247138acc76a76"
+        },
+        {
+          "decorators": [],
+          "line": 507,
+          "name": "edit_ask",
+          "order": 45,
+          "sha256": "610e274e01a241241d338fd2980a7a1b04339de2514da9485d02f0bea6d5d767"
+        },
+        {
+          "decorators": [],
+          "line": 543,
+          "name": "clear_field",
+          "order": 46,
+          "sha256": "a08b65fbba8db963d89b5cfb274d7d07bd5cfcb9f33656d3d167bce63ad3d758"
+        },
+        {
+          "decorators": [],
+          "line": 579,
+          "name": "diag_clear",
+          "order": 47,
+          "sha256": "80c5b8ce724f02e1969e77b555d72afb2dd6182c5c55c5b22a454333550230e7"
+        },
+        {
+          "decorators": [],
+          "line": 646,
+          "name": "apply_value",
+          "order": 48,
+          "sha256": "18c8dfc9f7cb6f5d4cf4e41a0fe02dbd07be9b21f142a072e90bfac602f7388b"
+        },
+        {
+          "decorators": [],
+          "line": 703,
+          "name": "media_screen",
+          "order": 49,
+          "sha256": "625c730a4aeaafd007076ca371779bd333044ede5b0e0c045162eb443e0925a9"
+        },
+        {
+          "decorators": [],
+          "line": 739,
+          "name": "video_gallery",
+          "order": 50,
+          "sha256": "e89a3888bb60803934f0c284f44a381d6c6b7b303a9fcc1055dd659210e7f521"
+        },
+        {
+          "decorators": [],
+          "line": 774,
+          "name": "gallery",
+          "order": 51,
+          "sha256": "a950d740226d6835fafd81e8a1b6f543f7d2a9ca0cecc2411eaa903de204057a"
+        },
+        {
+          "decorators": [],
+          "line": 815,
+          "name": "photo_remove_menu",
+          "order": 52,
+          "sha256": "ee7fe6c91538197127afd375ae766a69bc600f13fb89ce6eaf8ef5ab5e141284"
+        },
+        {
+          "decorators": [],
+          "line": 844,
+          "name": "photo_remove",
+          "order": 53,
+          "sha256": "7fd5e55da79b757998202cb0a7312694df378acc9e781bb6bc979fa088e5adc1"
+        },
+        {
+          "decorators": [],
+          "line": 866,
+          "name": "photo_remove_all_ask",
+          "order": 54,
+          "sha256": "384c2fb3ee0242e19b5413f2a44e560a587ca1bf633a00fbb2c92afff719b2c7"
+        },
+        {
+          "decorators": [],
+          "line": 889,
+          "name": "photo_remove_all",
+          "order": 55,
+          "sha256": "9e37394d72f4df5af809ac2a125ce0a803befd3f75ebcdb32338d9233d1a94eb"
+        },
+        {
+          "decorators": [],
+          "line": 948,
+          "name": "add_media_start",
+          "order": 57,
+          "sha256": "a343c592a791b1a58155063952ad59d1293c5929405b3d8b8da5eaa92f1605e9"
+        },
+        {
+          "decorators": [],
+          "line": 962,
+          "name": "_save_media_bazovoe",
+          "order": 58,
+          "sha256": "190967589acd9164d0b6cb160aa26ce419f9e77a2ec4d3a835c8baf991fdf42b"
+        },
+        {
+          "decorators": [],
+          "line": 996,
+          "name": "condition_screen",
+          "order": 59,
+          "sha256": "6cbb689c0ffeb4ef040a6f6316ccc7e811fd3aaf5c295a6f865f4b612d5c38a3"
+        },
+        {
+          "decorators": [],
+          "line": 1053,
+          "name": "stage_menu",
+          "order": 60,
+          "sha256": "768e216898902c1c6d0f51761962ae61c4d4abc4fdb147862528abc66e5137ff"
+        },
+        {
+          "decorators": [],
+          "line": 1118,
+          "name": "stage_set",
+          "order": 62,
+          "sha256": "0e2d101a38834781acb5d9a8668ecacff3acec9a61d03f842dfbdb8129432aa4"
+        },
+        {
+          "decorators": [],
+          "line": 1194,
+          "name": "price_screen",
+          "order": 63,
+          "sha256": "630442256fb615dcbc7b980fddb219ae3f582dac6fb719633a917a57144aade5"
+        },
+        {
+          "decorators": [],
+          "line": 1221,
+          "name": "save_ai_text",
+          "order": 64,
+          "sha256": "5dbf57ed31ca629e849c4e2e344ce7cd178c9f4aa7027f710fd4a36aed69b082"
+        },
+        {
+          "decorators": [],
+          "line": 1239,
+          "name": "keep_price",
+          "order": 65,
+          "sha256": "80c553eef2b2187442dbdb18f9a687afbe319161bf7d687ddf05c12d6323f5ae"
+        },
+        {
+          "decorators": [],
+          "line": 1254,
+          "name": "remember_price",
+          "order": 66,
+          "sha256": "0702c97d9efbfe65dd4750dcc00191d72e0f0d314cfe1804edb2fb439424a988"
+        },
+        {
+          "decorators": [],
+          "line": 1286,
+          "name": "_orient",
+          "order": 70,
+          "sha256": "9ff773288c6a1f48dd81cf7c5f6e62f268f82e756a17e02a7b43abba8e284a53"
+        },
+        {
+          "decorators": [],
+          "line": 1296,
+          "name": "auto_catch",
+          "order": 71,
+          "sha256": "0d828afcac3c3e5cc304846821784189aeab4c157e1941eb5e99ee85f94844b3"
+        },
+        {
+          "decorators": [],
+          "line": 1413,
+          "name": "client_of",
+          "order": 73,
+          "sha256": "75dd76df38fdd4fe369537959e80181d6ec7e946eb93d3b2e20fdf77a37d3ad9"
+        },
+        {
+          "decorators": [],
+          "line": 1424,
+          "name": "client_screen",
+          "order": 74,
+          "sha256": "1a6471521b879030f454580ff57fc3940ae5d9b7e6052e6322c7f84189d0011e"
+        },
+        {
+          "decorators": [],
+          "line": 1471,
+          "name": "client_ask",
+          "order": 75,
+          "sha256": "b44bc8a420f54a0349192e615b3417010000016b1e585c3bc4d1fd2d99ee2386"
+        },
+        {
+          "decorators": [],
+          "line": 1489,
+          "name": "client_unlink",
+          "order": 76,
+          "sha256": "9c7850d305c6c72b292e58f5dcdad4f14023b8aa05a80336d26dfd40c1a9d420"
+        },
+        {
+          "decorators": [],
+          "line": 1505,
+          "name": "toggle_publish",
+          "order": 77,
+          "sha256": "21c3f452813122f18247359259432bed2a23f12163ac36859bac0ffd594d8682"
+        },
+        {
+          "decorators": [],
+          "line": 1542,
+          "name": "mark_sold",
+          "order": 78,
+          "sha256": "b68fddc1779387cb313dffbcbe295e77ff7e9f54ad4b6e5f201ebb39c8563078"
+        },
+        {
+          "decorators": [],
+          "line": 1560,
+          "name": "mark_sold_ok",
+          "order": 79,
+          "sha256": "e5e12201544ebc12e8f867c5e36add00a203da45da564e32dc40d97ccccb685d"
+        },
+        {
+          "decorators": [],
+          "line": 1573,
+          "name": "delete_ask",
+          "order": 80,
+          "sha256": "257134e00ad805ed353078d1917ac89c856b9faf1c889aba43206e6e60f6cf94"
+        },
+        {
+          "decorators": [],
+          "line": 1590,
+          "name": "delete_ok",
+          "order": 81,
+          "sha256": "02dfa6f74159ad11b1952455913d382970f89ee651645d85cd5f4d7341ec99c7"
+        },
+        {
+          "decorators": [],
+          "line": 1619,
+          "name": "stats_line",
+          "order": 82,
+          "sha256": "b8826cfd81e3509c7106005040dd289327bc3a30ab01d44ed18718d50e39bef5"
+        },
+        {
+          "decorators": [],
+          "line": 1636,
+          "name": "ai_warning",
+          "order": 83,
+          "sha256": "0dd09af6fba6b0f014262d5e3cd8e0240914f84b09527afe74a9f6f79233e457"
+        },
+        {
+          "decorators": [],
+          "line": 1653,
+          "name": "menu_header",
+          "order": 84,
+          "sha256": "c267ba6fe7a95ad06ce799cc8a304088fb140b47e8a028082d897cac326f383a"
+        },
+        {
+          "decorators": [],
+          "line": 1673,
+          "name": "with_stats_button",
+          "order": 87,
+          "sha256": "e1fc78b8bae1f0bdfc6f71c41c36b8f7bb7a9a6a6bbe11db4a8b62768dafd925"
+        },
+        {
+          "decorators": [],
+          "line": 1701,
+          "name": "more_screen",
+          "order": 88,
+          "sha256": "55db0a0fd23e83b4611681e57f68bacb448c9e30c69e61cbc4875991ba00fef5"
+        },
+        {
+          "decorators": [],
+          "line": 1719,
+          "name": "clients_screen",
+          "order": 89,
+          "sha256": "45e4a37e48c23c29e1e931e8424d095e8b065ba599627cafcfc4184c2a443d06"
+        },
+        {
+          "decorators": [],
+          "line": 1749,
+          "name": "crm_leads",
+          "order": 90,
+          "sha256": "8ed7bea4005affac99e89552695102a3bacabd25fb082e6d6db9df7e0a8765c7"
+        },
+        {
+          "decorators": [],
+          "line": 1780,
+          "name": "crm_stats",
+          "order": 91,
+          "sha256": "131813fdbfda454ad3c5b09eebb5ade73b0401637efc59ee9fa3b0472ba19893"
+        },
+        {
+          "decorators": [],
+          "line": 1797,
+          "name": "crm_stats_week",
+          "order": 92,
+          "sha256": "e2aa7d5d9e07ab78aa8ba4c19ec2da0ac4517a82978f0295fb5c51f1e3aac4e2"
+        },
+        {
+          "decorators": [],
+          "line": 1819,
+          "name": "client_view",
+          "order": 93,
+          "sha256": "563b2d39a41ec78dd257f68a6a1c487eac1c6ed90d7188aec2ea0c94f471a74b"
+        },
+        {
+          "decorators": [],
+          "line": 1824,
+          "name": "preview",
+          "order": 94,
+          "sha256": "d334668b9f8d395f16b8bbc4943263ecc12f9f1bfa889b75f4a0c001d0ca3cbc"
+        },
+        {
+          "decorators": [],
+          "line": 1894,
+          "name": "preview_demo",
+          "order": 95,
+          "sha256": "068885d5a704d877e5ce34a39faebcff1dc1a4ac17e1fe1382d84fded9695ea4"
+        },
+        {
+          "decorators": [],
+          "line": 1902,
+          "name": "ad_text",
+          "order": 96,
+          "sha256": "91e30e108fd769e591b4cb479339412c7771838ae1502b93a01a8cc25c61cc21"
+        },
+        {
+          "decorators": [],
+          "line": 1944,
+          "name": "ad_screen",
+          "order": 97,
+          "sha256": "73d9533b5187500a6bb5e2a52f01bcb983ef7df21e72846341ee922049e1066a"
+        },
+        {
+          "decorators": [],
+          "line": 1985,
+          "name": "collect_svodka",
+          "order": 98,
+          "sha256": "a1fd17b9efbeb1c3a7671a978bd5d7ba0d6f4222209d93741be7896644839519"
+        },
+        {
+          "decorators": [],
+          "line": 2066,
+          "name": "optimize_screen",
+          "order": 99,
+          "sha256": "824fc0f2812842d5e87109c847963f6216be4ea61e999051bd46bde10b06af61"
+        },
+        {
+          "decorators": [],
+          "line": 2103,
+          "name": "svodka_screen",
+          "order": 100,
+          "sha256": "302730891dd707480b2a9754134a92f81d717efed1371fe4bc05b29eeab8a668"
+        },
+        {
+          "decorators": [],
+          "line": 2120,
+          "name": "_v168_empty",
+          "order": 101,
+          "sha256": "3ed0071bfdfb4664fb596dbda9436b0769ae924d719f1b63c7df7493a9586fa5"
+        },
+        {
+          "decorators": [],
+          "line": 2124,
+          "name": "_v168_is_correction",
+          "order": 102,
+          "sha256": "4596a546ea5331992435fff47b684c3085c0683eefd7ce1e30b671a7ec690e77"
+        },
+        {
+          "decorators": [],
+          "line": 2132,
+          "name": "_v168_named_fields",
+          "order": 103,
+          "sha256": "c154b0410fec9d955532fc9cd5e314d5f1f87b04f217133cce6e65aef481a006"
+        },
+        {
+          "decorators": [],
+          "line": 2155,
+          "name": "_v168_cas_write",
+          "order": 104,
+          "sha256": "c7e2d1cca5cd063e3d00063ccb94ba72463749b3b06613d74be53bdbfee0c381"
+        },
+        {
+          "decorators": [],
+          "line": 2191,
+          "name": "_v168_guard_heartbeat",
+          "order": 105,
+          "sha256": "8b5c69bcf0fcd471721cbdacec5bb9848d4d8703568fbd559930c98a27808816"
+        },
+        {
+          "decorators": [],
+          "line": 2199,
+          "name": "_v168_ack",
+          "order": 106,
+          "sha256": "a9dfb9f6bdac8011d5011ffb9e4ebcb8def2198a2fb64d5f56edbfbad836eca6"
+        },
+        {
+          "decorators": [],
+          "line": 2221,
+          "name": "_v168_start_guard",
+          "order": 107,
+          "sha256": "64d8793f7a148ffb963a3d218ee92b235d88d58f4d0976236e6e2b548f7cc4c9"
+        },
+        {
+          "decorators": [],
+          "line": 2236,
+          "name": "voice_change_plan",
+          "order": 108,
+          "sha256": "becf0b6d7c761056e94fa4033d323fdb454f387a56af58321554d6122f078d49"
+        },
+        {
+          "decorators": [],
+          "line": 2252,
+          "name": "voice_undo",
+          "order": 109,
+          "sha256": "feffb4186abc9d05b08f85689c2c0e6c32cd0df509dd2af380558694d75b56cd"
+        },
+        {
+          "decorators": [],
+          "line": 2302,
+          "name": "_v165_key",
+          "order": 114,
+          "sha256": "6d7f87638bac99c842ae4807365b4d8f74a38d236ca164cbd5e4f98b08fd71d9"
+        },
+        {
+          "decorators": [],
+          "line": 2313,
+          "name": "_v165_limit",
+          "order": 115,
+          "sha256": "f1736e7337497841b90690bfac435bfbabe1fd364cb67a6819bfc1330585bd70"
+        },
+        {
+          "decorators": [],
+          "line": 2318,
+          "name": "_v165_read_rows",
+          "order": 116,
+          "sha256": "efd87fab16629e85e43839cecfc0d903feb53a0dc88ca1b59cccc300b0f63544"
+        },
+        {
+          "decorators": [],
+          "line": 2344,
+          "name": "_v165_spool_enqueue",
+          "order": 117,
+          "sha256": "5e1944e3d5afcd2489adaaf3753e182ad9fe521feb0cc37ee1a5e8e37a45ee05"
+        },
+        {
+          "decorators": [],
+          "line": 2409,
+          "name": "_v165_spool_remove",
+          "order": 118,
+          "sha256": "4dba7df10a5302743b272df36a4c80b52082747a1b2e6cd5cb76bbb832d855db"
+        },
+        {
+          "decorators": [],
+          "line": 2450,
+          "name": "_v166_drain_owned",
+          "order": 119,
+          "sha256": "faa1eef8d6fcb1cccc7118d495c41be9098738116f651461e427f55a47027937"
+        },
+        {
+          "decorators": [],
+          "line": 2481,
+          "name": "_v165_spool_drain",
+          "order": 120,
+          "sha256": "a7c5a6ef82df50a7368d4bb5ddee8d706f71531a84edc806fc2ca4a3b3a8959a"
+        },
+        {
+          "decorators": [],
+          "line": 2498,
+          "name": "_v165_media_ids",
+          "order": 121,
+          "sha256": "b77d85fdb77c8640b351fe4a7206948ef0ce60c2955fef60a4495834ebf0a1fe"
+        },
+        {
+          "decorators": [],
+          "line": 2514,
+          "name": "_v165_status",
+          "order": 122,
+          "sha256": "3d3c22428fd6d34396abc565f5e98f9b36fc1127e871247283741ed73bc5291c"
+        },
+        {
+          "decorators": [],
+          "line": 2532,
+          "name": "media_spool_worker_job",
+          "order": 123,
+          "sha256": "84ff1e6e73fbb40d99ba690892674d18fb1d3961e89b8e7f6257ee6cb0110e76"
+        },
+        {
+          "decorators": [],
+          "line": 2537,
+          "name": "_v165_progress_job",
+          "order": 124,
+          "sha256": "b3f6dcc92b8f545f156c74380d8e583c9b493aa3a593e71a5c962150dc54ad90"
+        },
+        {
+          "decorators": [],
+          "line": 2567,
+          "name": "_v165_schedule_progress",
+          "order": 125,
+          "sha256": "80ac0f99296f24f7b00f950166bc0180a091c452c3b10af056a1769c9c067bb3"
+        },
+        {
+          "decorators": [],
+          "line": 2587,
+          "name": "_v167_voice_explicit_fields",
+          "order": 126,
+          "sha256": "9c147051b825ec15c6c74c15305a4a45507aa2bc2502cc075e76b3db247a41d7"
+        },
+        {
+          "decorators": [],
+          "line": 2648,
+          "name": "catch_message",
+          "order": 127,
+          "sha256": "a466d36cc0b0ea41c7f5ffe3d646f6d9ae13b8ef96dfa53cfaf98a150b298889"
+        },
+        {
+          "decorators": [],
+          "line": 2985,
+          "name": "_ubrat_fayly_foto",
+          "order": 128,
+          "sha256": "5242650d3bd6dcb9fc0cea57278a69af52ab38ff563001c7b499ceb5d07de22a"
+        },
+        {
+          "decorators": [],
+          "line": 3003,
+          "name": "_ubrat_fayly_video",
+          "order": 129,
+          "sha256": "5c97dc25aa931774d3298d42b19ea892e00a2ae3b0ffd63f2f76ddb0981cbe64"
+        },
+        {
+          "decorators": [],
+          "line": 3037,
+          "name": "_peresobrat_stranicy",
+          "order": 130,
+          "sha256": "24d6ca8eed7e40b3de1107369cbe2e874d42c59e9d72c0f5ff7a4013cee29e2a"
+        },
+        {
+          "decorators": [],
+          "line": 3054,
+          "name": "video_remove_all_ask",
+          "order": 131,
+          "sha256": "4af4519590175f41249b85c69cee0e857cf18fa5b4159918ad6e9f48bda2eacc"
+        },
+        {
+          "decorators": [],
+          "line": 3078,
+          "name": "video_remove_all",
+          "order": 132,
+          "sha256": "cab004c99c0a0a8d0bd64436d2064f0f1cfa791716d651dcd5fc1df6648f6c7c"
+        },
+        {
+          "decorators": [],
+          "line": 3125,
+          "name": "diag_photo_show",
+          "order": 133,
+          "sha256": "c6de1d0ae75767f51f0591e5c8da0c2d8cbbf2cbc3003161a25cba300014274f"
+        },
+        {
+          "decorators": [],
+          "line": 3151,
+          "name": "diag_video_show",
+          "order": 134,
+          "sha256": "91f8ed2875c24183d88e2fe3706e888b6deb14e3263bd3ba66bd96c5213c60af"
+        },
+        {
+          "decorators": [],
+          "line": 3178,
+          "name": "diag_clear_ask",
+          "order": 135,
+          "sha256": "0080fd8ca0d1f2f9b4bb5757d72000e1da7a79559ca49dabd7684f34e8d26b7e"
+        },
+        {
+          "decorators": [],
+          "line": 3217,
+          "name": "_ubrat_video_polno",
+          "order": 136,
+          "sha256": "eec6f87212052c07bd4a812268cd91af37b79719e9a06b6b1a75f2b0aef83aa4"
+        },
+        {
+          "decorators": [],
+          "line": 3276,
+          "name": "register",
+          "order": 137,
+          "sha256": "eae5c22d3d823e6524b6ec2823e03d46deb2d38dbfeb80e189508aadc41cc5e3"
+        },
+        {
+          "decorators": [],
+          "line": 3364,
+          "name": "_v140_zapis",
+          "order": 146,
+          "sha256": "15d8167672cac2114319f8afd32fd0a283fe1238ef83a6a81f860f03392107fd"
+        },
+        {
+          "decorators": [],
+          "line": 3372,
+          "name": "_v140_sprosit",
+          "order": 147,
+          "sha256": "6ea9041d9f3ada9c070ca0a4425645be085d3f9c218457047db19f9d451b9629"
+        },
+        {
+          "decorators": [],
+          "line": 3395,
+          "name": "_save_media_proverka",
+          "order": 148,
+          "sha256": "200aaf3ff776025322af22ffec83bb40b4e841bedb49bd9728ef9ac86eab95cf"
+        },
+        {
+          "decorators": [],
+          "line": 3444,
+          "name": "_v142_papka",
+          "order": 153,
+          "sha256": "8cb95bb51ad43e3591941a9b82ecc2ecc89f492c57a660b2ba3ab8367454d239"
+        },
+        {
+          "decorators": [],
+          "line": 3451,
+          "name": "_v142_kopirovat",
+          "order": 154,
+          "sha256": "f514ab93a41deb8ccbb64ccc9b111c1dae587285eb00c0729e97737501b009ad"
+        },
+        {
+          "decorators": [],
+          "line": 3462,
+          "name": "_v142_vernut",
+          "order": 155,
+          "sha256": "a049d0f63f20a79e4a0a79403ec56bd661abdbf5a500832e6ca5e3738d313e65"
+        },
+        {
+          "decorators": [],
+          "line": 3479,
+          "name": "_v142_zapas_video",
+          "order": 156,
+          "sha256": "d009939f34d486d79bde16134f3ce7267c3ced56144d10c0f6300f140277b499"
+        },
+        {
+          "decorators": [],
+          "line": 3488,
+          "name": "_v142_zapas_foto",
+          "order": 157,
+          "sha256": "70acc9144cdde90054d2499cd69afed3c27f461aac14c49689c574163fd3bd60"
+        },
+        {
+          "decorators": [],
+          "line": 3494,
+          "name": "_v142_vernut_foto",
+          "order": 158,
+          "sha256": "3f26b7bbad6f1ecf0fbed3887b32c48aa82a8a28e0e1fde0be6b722a8ae6beed"
+        },
+        {
+          "decorators": [],
+          "line": 3501,
+          "name": "_ubrat_video_polno",
+          "order": 160,
+          "sha256": "0659d53be73471b6d032a76dc4bfe6b34a6aa794246ef0da69929704ee20a156"
+        },
+        {
+          "decorators": [],
+          "line": 3520,
+          "name": "save_media",
+          "order": 164,
+          "sha256": "6be0c1a9e8c6b94063262e330a3cb3dd4026b7d1d008b9e100dc3160249b747f"
+        },
+        {
+          "decorators": [],
+          "line": 3547,
+          "name": "_v159_ne_tot_tip",
+          "order": 165,
+          "sha256": "e6b7536dfb4519401240e83169f14a345c748c4ee572ed63f9ea6cf1b9aaa095"
+        },
+        {
+          "decorators": [],
+          "line": 3575,
+          "name": "_v163_status",
+          "order": 168,
+          "sha256": "03a47e66afdad0893b8c5a80ad2c8345f2d2c4ee63e14526abd87798d1183309"
+        },
+        {
+          "decorators": [],
+          "line": 3607,
+          "name": "_ubrat_video_polno",
+          "order": 169,
+          "sha256": "cafe2a8b8ca623b887aec286b5e8434ab4634a12c13499a460595338ede2e763"
+        },
+        {
+          "decorators": [],
+          "line": 3616,
+          "name": "_ua083_publish_preimage",
+          "order": 170,
+          "sha256": "c124928f036df1a809a316f9ae1ad179231c3f7e070651a5b43c0d8c2c545596"
+        },
+        {
+          "decorators": [],
+          "line": 3620,
+          "name": "_ua083_restore_publish_preimage",
+          "order": 171,
+          "sha256": "c149e04397a2d480bd9be4f488a34f3867ddefd70923760da38d59880cf106b5"
+        },
+        {
+          "decorators": [],
+          "line": 3634,
+          "name": "toggle_publish",
+          "order": 172,
+          "sha256": "eb2788a8084afc6b565a91b9a9d93faa52ad8b23ceef7c3eb889d6a1351ad0d4"
+        },
+        {
+          "decorators": [],
+          "line": 3705,
+          "name": "_ua099_uid",
+          "order": 178,
+          "sha256": "3ec875951c1780a5986b77a87e7c51205c80337624e7ad8db966d5d5fd300b2a"
+        },
+        {
+          "decorators": [],
+          "line": 3708,
+          "name": "render",
+          "order": 179,
+          "sha256": "fabbfaf30c4e38cb9f60e891f5f3fdcb14c537f6cebf626a259f535032470a94"
+        },
+        {
+          "decorators": [],
+          "line": 3715,
+          "name": "card_kb",
+          "order": 180,
+          "sha256": "8c282a07ee06d7378f71d29456641b695da0540f0d84c2bad2362b65feed7c35"
+        },
+        {
+          "decorators": [],
+          "line": 3733,
+          "name": "_ua099_require_staff",
+          "order": 181,
+          "sha256": "49b89204ebb80d5dcabe4b61923a570c2326adea2495e4f0b4f01ee0c14b7dca"
+        },
+        {
+          "decorators": [],
+          "line": 3742,
+          "name": "_ua099_card",
+          "order": 182,
+          "sha256": "b8df6b5d47b3d861d0d4b477f4eb120ad2f69234112126d8a533baa6f0d72f9e"
+        },
+        {
+          "decorators": [],
+          "line": 3748,
+          "name": "_ua099_back",
+          "order": 183,
+          "sha256": "e564194123020e39760d37a897f616429066f969438b643ada5fe967b479ecd7"
+        },
+        {
+          "decorators": [],
+          "line": 3753,
+          "name": "additional_spec_screen",
+          "order": 184,
+          "sha256": "ee54b70ec63f9a5c85757dbeecc704935b967b94d80c5796524cb763dd812a9a"
+        },
+        {
+          "decorators": [],
+          "line": 3780,
+          "name": "additional_spec_item",
+          "order": 185,
+          "sha256": "8475c5b186a508b64ee84ddcd303aa46402f3fdd9165a93a9cb5ba5da37d8231"
+        },
+        {
+          "decorators": [],
+          "line": 3818,
+          "name": "additional_spec_visibility",
+          "order": 186,
+          "sha256": "87e03798665c84121e09e9e55a4ef46815cd142ab00fd519e355af0973ffd83c"
+        },
+        {
+          "decorators": [],
+          "line": 3834,
+          "name": "additional_spec_edit",
+          "order": 187,
+          "sha256": "472b4311751319377e6f4463bb2567556b7fd9e38d284ffd6e5205f70a2f7bc9"
+        },
+        {
+          "decorators": [],
+          "line": 3852,
+          "name": "additional_spec_edit_message",
+          "order": 188,
+          "sha256": "8f5e6819def486c9534c2ba108e74fc24c9828e0615052c59061c22ea70b1edf"
+        },
+        {
+          "decorators": [],
+          "line": 3883,
+          "name": "additional_spec_category",
+          "order": 189,
+          "sha256": "80fabcbbea392aac3de3b67ddfbc4f864ce0d491e33a17e7bf233e280890522e"
+        },
+        {
+          "decorators": [],
+          "line": 3900,
+          "name": "additional_spec_set_category",
+          "order": 190,
+          "sha256": "2b8ca1d65c6d4b72366f868dbca7c8ba540ee5cf28ac1ae81c2d2b212f282dd9"
+        },
+        {
+          "decorators": [],
+          "line": 3912,
+          "name": "additional_spec_publish",
+          "order": 191,
+          "sha256": "6ce843cc5c6aa8f1b24e16e2f67a7e1c772c1ad97c0a8e07626248163147d4be"
+        },
+        {
+          "decorators": [],
+          "line": 3916,
+          "name": "register",
+          "order": 192,
+          "sha256": "2a73b47650cd5fd456d3f4ec5adc79e032238c72273de18479e1250434c77320"
+        },
+        {
+          "decorators": [],
+          "line": 3942,
+          "name": "additional_spec_screen",
+          "order": 195,
+          "sha256": "ee54b70ec63f9a5c85757dbeecc704935b967b94d80c5796524cb763dd812a9a"
+        },
+        {
+          "decorators": [],
+          "line": 3969,
+          "name": "_ua110_refresh_spec",
+          "order": 196,
+          "sha256": "22594b0c961b9c9ff51ecbdd0f83f205815baa720f60afd64c1a82c3791bb818"
+        },
+        {
+          "decorators": [],
+          "line": 3973,
+          "name": "register",
+          "order": 197,
+          "sha256": "20b00d97b039b474f1148b60f655706dedc6453e5e4fbe4d1df949c1410a6c07"
+        },
+        {
+          "decorators": [],
+          "line": 3985,
+          "name": "_ua117_block_removed_stage",
+          "order": 200,
+          "sha256": "4661e0b79315d4abed9b52b86b8af41026c2c5dd67aac1066096089d8604bd15"
+        },
+        {
+          "decorators": [],
+          "line": 3997,
+          "name": "register",
+          "order": 201,
+          "sha256": "54bd8d52ad23eefa83b058d90821f9d1569007a94839e3e0535cd3bab103df08"
+        },
+        {
+          "decorators": [],
+          "line": 4007,
+          "name": "_ua_emergency_enqueue_spec",
+          "order": 203,
+          "sha256": "5e39e222d9ef612525a98a26fd67490a8e51c3917a19aa4ec7b49b4b3c08061d"
+        },
+        {
+          "decorators": [],
+          "line": 4017,
+          "name": "_ua_emergency_schedule_spec",
+          "order": 204,
+          "sha256": "06d016ff911ea001fc3813e809620c74b406dec0d96302a087da6bf3b40e488a"
+        },
+        {
+          "decorators": [],
+          "line": 4028,
+          "name": "_ua_emergency_spec_status",
+          "order": 205,
+          "sha256": "53941b302d2c307563a4b598f970e6e70e8d0f679b330332f8d19a2a977d3b0c"
+        },
+        {
+          "decorators": [],
+          "line": 4053,
+          "name": "_ua122_catalog_ids",
+          "order": 213,
+          "sha256": "60b939f796bb82a6c183d77bb732e9443ccade2706a4c70810e5fdd64f7c86a7"
+        },
+        {
+          "decorators": [],
+          "line": 4064,
+          "name": "cars_list",
+          "order": 214,
+          "sha256": "60b2f7877d5ef6e44ab4c86394fd3d890fb0d720e940ed40fa21441f2317c042"
+        },
+        {
+          "decorators": [],
+          "line": 4130,
+          "name": "card_kb",
+          "order": 215,
+          "sha256": "66a0b450803e91433667308cbf64997eb73eae715d1382562ea79ac5bec54304"
+        },
+        {
+          "decorators": [],
+          "line": 4145,
+          "name": "register",
+          "order": 216,
+          "sha256": "0f35fae54e0c3efb655ac4e8f5d31d08babfad2dc700239bdc3741022ef07be9"
+        },
+        {
+          "decorators": [],
+          "line": 4161,
+          "name": "_ua004_source_signature",
+          "order": 223,
+          "sha256": "c2620674a4f4bd244a78f575e22d4500efff7f78857356c7067e94d191823f48"
+        },
+        {
+          "decorators": [],
+          "line": 4178,
+          "name": "_ua004_sync_current_stage",
+          "order": 224,
+          "sha256": "ad55603bfb793d16895381a7cfeacd2369f20e8759e4756f7f78089f8e7a765d"
+        },
+        {
+          "decorators": [],
+          "line": 4190,
+          "name": "_ua004_stage_reconcile_job",
+          "order": 225,
+          "sha256": "d3e6a21a45d01064bb739246a16ad5742d4fd04994a7240d1e2bf9148af1e013"
+        },
+        {
+          "decorators": [],
+          "line": 4209,
+          "name": "register",
+          "order": 226,
+          "sha256": "c0cb0c172fbbe7febbc2511fce95a653bfff4c604fe62c65b04026935e16dbf1"
+        }
+      ],
+      "imports": [
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "json"
+            }
+          ],
+          "order": 1
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "logging"
+            }
+          ],
+          "order": 2
+        },
+        {
+          "module": "telegram",
+          "names": [
+            {
+              "alias": null,
+              "name": "InlineKeyboardButton"
+            },
+            {
+              "alias": null,
+              "name": "InlineKeyboardMarkup"
+            },
+            {
+              "alias": null,
+              "name": "Update"
+            }
+          ],
+          "order": 3
+        },
+        {
+          "module": "telegram.ext",
+          "names": [
+            {
+              "alias": null,
+              "name": "ApplicationHandlerStop"
+            },
+            {
+              "alias": null,
+              "name": "CallbackQueryHandler"
+            },
+            {
+              "alias": null,
+              "name": "ContextTypes"
+            },
+            {
+              "alias": null,
+              "name": "MessageHandler"
+            },
+            {
+              "alias": null,
+              "name": "filters"
+            }
+          ],
+          "order": 4
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "S",
+              "name": "cars_schema"
+            }
+          ],
+          "order": 5
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "CR",
+              "name": "card_render"
+            }
+          ],
+          "order": 6
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "db"
+            }
+          ],
+          "order": 7
+        },
+        {
+          "module": "datetime",
+          "names": [
+            {
+              "alias": "_date",
+              "name": "date"
+            },
+            {
+              "alias": "_dt",
+              "name": "datetime"
+            },
+            {
+              "alias": "_td",
+              "name": "timedelta"
+            }
+          ],
+          "order": 8
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "os"
+            }
+          ],
+          "order": 9
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_re",
+              "name": "re"
+            }
+          ],
+          "order": 67
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_t140",
+              "name": "time"
+            }
+          ],
+          "order": 138
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_j140",
+              "name": "json"
+            }
+          ],
+          "order": 139
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_u140",
+              "name": "urllib.request"
+            }
+          ],
+          "order": 140
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_ue140",
+              "name": "urllib.error"
+            }
+          ],
+          "order": 141
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_g142",
+              "name": "glob"
+            }
+          ],
+          "order": 149
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_sh142",
+              "name": "shutil"
+            }
+          ],
+          "order": 150
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_tm142",
+              "name": "time"
+            }
+          ],
+          "order": 151
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_s152",
+              "name": "sqlite3"
+            }
+          ],
+          "order": 161
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_s163",
+              "name": "sqlite3"
+            }
+          ],
+          "order": 166
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_ua099_html",
+              "name": "html"
+            }
+          ],
+          "order": 173
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_ua099_spec",
+              "name": "ua_additional_spec"
+            }
+          ],
+          "order": 174
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_ua110_vin_service",
+              "name": "vin_spec_service"
+            }
+          ],
+          "order": 193
+        },
+        {
+          "module": "pathlib",
+          "names": [
+            {
+              "alias": "_ua122_Path",
+              "name": "Path"
+            }
+          ],
+          "order": 206
+        },
+        {
+          "module": "ua_crm_catalog_folders",
+          "names": [
+            {
+              "alias": "_ua122_parse_catalog",
+              "name": "parse_catalog"
+            },
+            {
+              "alias": "_ua122_partition",
+              "name": "partition_by_catalog"
+            }
+          ],
+          "order": 207
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_ua004_asyncio",
+              "name": "asyncio"
+            }
+          ],
+          "order": 217
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_ua004_hashlib",
+              "name": "hashlib"
+            }
+          ],
+          "order": 218
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_ua004_sqlite3",
+              "name": "sqlite3"
+            }
+          ],
+          "order": 219
+        },
+        {
+          "module": "pathlib",
+          "names": [
+            {
+              "alias": "_ua004_Path",
+              "name": "Path"
+            }
+          ],
+          "order": 220
+        }
+      ],
+      "live_module_imported": false,
+      "path": "/home/Carix/cars_ui.py",
+      "runtime_handler_binding": "NOT_VERIFIED",
+      "selected_functions": {
+        "apply_value": [
+          {
+            "decorators": [],
+            "line": 646,
+            "name": "apply_value",
+            "order": 48,
+            "sha256": "18c8dfc9f7cb6f5d4cf4e41a0fe02dbd07be9b21f142a072e90bfac602f7388b",
+            "source": "def apply_value(card_id, field, raw, actor_id):\n    \"\"\"Возвращает (ок, сообщение). Ничего не додумывает.\"\"\"\n    value = (raw or \"\").strip()\n    if not value:\n        return False, \"Пустое значение не записываю.\"\n\n    if field == \"eta_days\":\n        digits = \"\".join(ch for ch in value if ch.isdigit())\n        if not digits:\n            return False, \"Пришлите число дней, например 45.\"\n        n = int(digits)\n        if n > 400:\n            return False, \"Слишком большой срок. Пришлите число дней.\"\n        eta = _date.today() + _td(days=n)\n        set_field(card_id, \"eta_manual\", eta.isoformat(), actor_id)\n        set_field(card_id, \"days_to_kyiv\", n, actor_id)\n        return True, \"До прибытия %d дней · %s\" % (n, eta.strftime(\"%d.%m.%Y\"))\n\n    if field in NUMERIC:\n        digits = value.lower().replace(\" \", \"\").replace(\"\\u00a0\", \"\")\n        for lishnee in (\"цена\", \"стоимость\", \"$\", \"usd\", \"долларов\", \"долл\"):\n            digits = digits.replace(lishnee, \"\")\n        for word, mult in ((\"тысяч\", 1000), (\"тыс\", 1000), (\"к\", 1000)):\n            if word in digits.lower():\n                digits = digits.lower().split(word)[0]\n                try:\n                    num = int(float(digits.replace(\",\", \".\")) * mult)\n                except ValueError:\n                    return False, \"Не разобрал число. Пришлите цифрами.\"\n                break\n        else:\n            digits = \"\".join(ch for ch in digits if ch.isdigit())\n            if not digits:\n                return False, \"Не разобрал число. Пришлите цифрами.\"\n            num = int(digits)\n        if field == \"engine_cc\" and num < 100:\n            return False, (\"Похоже, это литры. Объём нужен в кубических сантиметрах — \"\n                           \"например, 1598.\")\n        set_field(card_id, field, num, actor_id)\n        return True, \"Записано: %s\" % S.num(num)\n\n    if field == \"vin\":\n        vin = value.upper().replace(\" \", \"\")\n        ok, msg = S.check_vin(vin)\n        if not ok:\n            return False, \"VIN не принят: %s\" % msg\n        set_field(card_id, field, vin, actor_id)\n        return True, \"Записано: %s\" % vin\n\n    set_field(card_id, field, value, actor_id)\n    return True, \"Записано.\"",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "auto_catch": [
+          {
+            "decorators": [],
+            "line": 1296,
+            "name": "auto_catch",
+            "order": 71,
+            "sha256": "0d828afcac3c3e5cc304846821784189aeab4c157e1941eb5e99ee85f94844b3",
+            "source": "async def auto_catch(msg, card, actor_id, context):\n    \"\"\"Кладёт присланное в открытую карточку само, без кнопок.\n    Возвращает True, если разобралось; False — пусть идёт обычным путём.\"\"\"\n    cid = card[\"id\"]\n    number = card.get(\"auto_number\") or \"#%d\" % cid\n\n    # ── фото, видео, документы: только по кнопке ──\n    # Что нельзя опознать наверняка, бот сам в карточку не кладёт.\n    # Нажмите «Фото и видео» или «Тех. состояние» и пришлите файлы туда.\n    if msg.photo or msg.video or msg.video_note or msg.document:\n        return False\n\n    # ── текст ──\n    text = (msg.text or \"\").strip()\n    if not text:\n        return False\n    if VIN_RE.search(text):\n        return False                        # новый VIN — это новая машина, не правка\n\n    link = _re.search(r\"https?://\\S+\", text)\n    if link and len(text) < 200:\n        set_field(cid, \"diag_link\", link.group(0), actor_id)\n        await msg.reply_text(\"Ссылка на отчёт записана в %s.\" % number)\n        return True\n\n    golo = _re.fullmatch(r\"[\\d\\s]{3,12}\\s*[$₴]?\", text)\n    if golo:\n        ok, answer = apply_value(cid, \"price_uah\", text, actor_id)\n        if ok:\n            await msg.reply_text(\n                \"%s · цена: %s\" % (number, answer.replace(\"Записано: \", \"\")),\n                reply_markup=InlineKeyboardMarkup([[\n                    InlineKeyboardButton(\"← Вернуться к карточке\",\n                                         callback_data=\"car_open:%d\" % cid)]]))\n            return True\n\n    # «запиши / добавь / поставь» — ИИ сам вносит данные в карточку\n    try:\n        import assistant\n        if assistant.is_write(text):\n            polya = assistant.extract(text, card)\n            zapisano = []\n            for field, value in (polya or {}).items():\n                if field not in dict(EDITABLE) and field not in (\n                        \"brand\", \"model\", \"condition_text\", \"sea_container\",\n                        \"diag_link\", \"fuel\"):\n                    continue\n                ok, _ = apply_value(cid, field, str(value), actor_id)\n                if ok:\n                    zapisano.append(LABELS_ALL.get(field, field))\n            if zapisano:\n                await msg.reply_text(\n                    \"%s · записано: %s\" % (number, \", \".join(zapisano)),\n                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(\n                        \"← Вернуться к карточке\",\n                        callback_data=\"car_open:%d\" % cid)]]))\n                return True\n    except Exception as e:\n        log.warning(\"Запись через ИИ: %s\", e)\n\n    # свободная просьба — отвечает ИИ, а не «необработанное»\n    try:\n        import assistant\n        if assistant.is_request(text):\n            otvet = assistant.ask(text, card)\n            if otvet:\n                context.user_data[\"ai_otvet\"] = otvet[:1500]\n                await msg.reply_text(\n                    assistant.clean_html(otvet)[:3800], parse_mode=\"HTML\",\n                    reply_markup=InlineKeyboardMarkup([\n                        [InlineKeyboardButton(\"Записать в тех. состояние\",\n                                              callback_data=\"car_saveai:%d\" % cid)],\n                        [InlineKeyboardButton(\"← Вернуться к карточке\",\n                                              callback_data=\"car_open:%d\" % cid)]]))\n                return True\n    except Exception as e:\n        log.warning(\"Помощник: %s\", e)\n\n    for rx, field in PHRASES:\n        m = rx.search(text)\n        if not m:\n            continue\n        raw = (m.group(1) or \"\").strip()\n        if not raw:\n            continue\n        if field == \"mileage_km\" and len(m.groups()) > 1 and m.group(2):\n            try:\n                if int(raw.replace(\" \", \"\")) < 1000:\n                    raw = str(int(raw.replace(\" \", \"\")) * 1000)\n            except ValueError:\n                continue\n        ok, answer = apply_value(cid, field, raw, actor_id)\n        if ok:\n            await msg.reply_text(\n                \"%s · %s\" % (number, answer),\n                reply_markup=InlineKeyboardMarkup([[\n                    InlineKeyboardButton(\"← Вернуться к карточке\",\n                                         callback_data=\"car_open:%d\" % cid)]]))\n            return True\n    return False",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "card_kb": [
+          {
+            "decorators": [],
+            "line": 347,
+            "name": "card_kb",
+            "order": 37,
+            "sha256": "fda0d3e7644e3cae77a176305d06ee1cb5f88ad210f5e99a515a4b0d77e8b608",
+            "source": "def card_kb(card, staff):\n    cid = card[\"id\"]\n    rows = [\n        [InlineKeyboardButton(\"Редактировать данные\", callback_data=\"car_edit:%d\" % cid),\n         InlineKeyboardButton(\"Фото и видео\", callback_data=\"car_media:%d\" % cid)],\n        [InlineKeyboardButton(\"🚚 Доставка и этапы\", callback_data=\"car_stage:%d\" % cid)],\n        [InlineKeyboardButton(\"Комплексная диагностика\", callback_data=\"car_cond:%d\" % cid)],\n    ]\n    klient = client_of(card)\n    rows.append([InlineKeyboardButton(\n        \"Покупатель\" if klient else \"Оформить за клиентом\",\n        callback_data=\"car_client:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Как видит покупатель\",\n                                      callback_data=\"car_preview:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"Разместить объявление\",\n                                      callback_data=\"car_ad:%d\" % cid)])\n    rows.append([\n        InlineKeyboardButton(\n            \"Скрыть от клиентов\" if card.get(\"published\") else \"Показать клиентам\",\n            callback_data=\"car_pub:%d\" % cid),\n        InlineKeyboardButton(\"Продано\", callback_data=\"car_sold:%d\" % cid),\n    ])\n    rows.append([InlineKeyboardButton(\"Удалить\", callback_data=\"car_del:%d\" % cid)])\n    rows.append([InlineKeyboardButton(\"← Все автомобили\", callback_data=\"cards_cars\")])\n    return InlineKeyboardMarkup(rows)",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          },
+          {
+            "decorators": [],
+            "line": 3715,
+            "name": "card_kb",
+            "order": 180,
+            "sha256": "8c282a07ee06d7378f71d29456641b695da0540f0d84c2bad2362b65feed7c35",
+            "source": "def card_kb(card, staff):\n    markup = _UA099_BASE_CARD_KB(card, staff)\n    rows = []\n    for row in markup.inline_keyboard:\n        clean = [button for button in row if \"carhistory.kr\" not in str(getattr(button, \"url\", \"\") or \"\").lower()]\n        if clean:\n            rows.append(clean)\n    cid = int(card[\"id\"])\n    spec_row = [InlineKeyboardButton(\n        \"📐 Дополнительная спецификация\", callback_data=\"car_spec:%d\" % cid\n    )]\n    if not any(any(str(getattr(button, \"callback_data\", \"\") or \"\").startswith(\"car_spec:\") for button in row) for row in rows):\n        position = next((index + 1 for index, row in enumerate(rows)\n                         if any(str(getattr(button, \"callback_data\", \"\") or \"\").startswith(\"car_cond:\")\n                                for button in row)), min(3, len(rows)))\n        rows.insert(position, spec_row)\n    return InlineKeyboardMarkup(rows)",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          },
+          {
+            "decorators": [],
+            "line": 4130,
+            "name": "card_kb",
+            "order": 215,
+            "sha256": "66a0b450803e91433667308cbf64997eb73eae715d1382562ea79ac5bec54304",
+            "source": "def card_kb(card, staff):\n    markup = _UA122_BASE_CARD_KB(card, staff)\n    try:\n        folder = 'catalog' if card.get('auto_number') in _ua122_catalog_ids() else 'unpublished'\n    except Exception:\n        return markup  # Keep the existing return button on read failure.\n    return InlineKeyboardMarkup([\n        [InlineKeyboardButton('← ' + _UA122_LABELS[folder],\n             callback_data='ua122_cars:%s:0' % folder)\n         if getattr(button, 'callback_data', None) in ('cards_cars', 'cars_cards')\n         else button for button in row]\n        for row in markup.inline_keyboard\n    ])",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "card_of": [
+          {
+            "decorators": [],
+            "line": 99,
+            "name": "card_of",
+            "order": 19,
+            "sha256": "4cbec081f1a21c0bbacbea10c271233255cedebee26115a949e38aaaf4a0f60f",
+            "source": "def card_of(card_id):\n    card = db.get_card(\"cars\", int(card_id))\n    if not card:\n        return None\n    # старые значения подтягиваем в новые поля, если новые пустые\n    for old, new in LEGACY.items():\n        if not card.get(new) and card.get(old):\n            card[new] = card[old]\n    return card",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "catch_message": [
+          {
+            "analysis_only_not_executable_source": true,
+            "decorators": [],
+            "line": 2648,
+            "name": "catch_message",
+            "omission_reason": "ANALYSIS_ONLY_HANDLER",
+            "order": 127,
+            "redacted_analysis_source": "async def catch_message(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    \"\"\"[REDACTED_SETTING]\"\"\"\n    import asyncio\n    import time\n    import ai\n    import ai_fast_schema as fast\n    import ai_filter\n    import local_ocr\n    msg = update.effective_message\n    if not msg:\n        return\n    user_id = update.effective_user.id\n    wait = context.user_data.get('[REDACTED_SETTING]')\n    if wait:\n        target = wait['[REDACTED_SETTING]']\n        tag = '[REDACTED_SETTING]'\n        file_id = None\n        if msg.photo:\n            file_id = msg.photo[-'[REDACTED_SETTING]'].file_id\n            if target in ('[REDACTED_SETTING]', '[REDACTED_SETTING]'):\n                unique_id = getattr(msg.photo[-'[REDACTED_SETTING]'], '[REDACTED_SETTING]', None) or file_id\n                _v166_result = _v165_spool_enqueue(wait['card_id'], target, file_id, user_id, tag, unique_id=unique_id, message_id=msg.message_id)\n                _v166_session_ids = wait.setdefault('[REDACTED_SETTING]', [])\n                state = _v166_result.get('[REDACTED_SETTING]')\n                if state == '[REDACTED_SETTING]' and file_id not in _v166_session_ids:\n                    _v166_session_ids.append(file_id)\n                elif str(state).startswith('[REDACTED_SETTING]'):\n                    wait['[REDACTED_SETTING]'] = int(wait.get('[REDACTED_SETTING]') or '[REDACTED_SETTING]') + '[REDACTED_SETTING]'\n                elif state == '[REDACTED_SETTING]':\n                    wait['[REDACTED_SETTING]'] = int(wait.get('[REDACTED_SETTING]') or '[REDACTED_SETTING]') + '[REDACTED_SETTING]'\n                _v165_schedule_progress(context, msg, wait['card_id'], target, _v166_session_ids, wait.get('[REDACTED_SETTING]', '[REDACTED_SETTING]'), wait.get('[REDACTED_SETTING]', '[REDACTED_SETTING]'))\n                raise ApplicationHandlerStop\n        elif msg.video:\n            file_id = msg.video.file_id\n            if target in ('[REDACTED_SETTING]', '[REDACTED_SETTING]', '[REDACTED_SETTING]'):\n                target = '[REDACTED_SETTING]'\n                slot = _orient(msg.video)\n                tag = {'[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]'}.get(slot, '[REDACTED_SETTING]')\n        elif msg.video_note:\n            file_id = msg.video_note.file_id\n        elif msg.document:\n            file_id = msg.document.file_id\n        card = card_of(wait['card_id'])\n        if not card:\n            context.user_data.pop('[REDACTED_SETTING]', None)\n            return\n        if file_id:\n            answer = await asyncio.to_thread(save_media, card, target, file_id, user_id, tag)\n            if answer:\n                await msg.reply_text(answer)\n            raise ApplicationHandlerStop\n        if msg.text and target == '[REDACTED_SETTING]':\n            pass\n        return\n    voice_object = msg.voice or msg.audio or msg.video_note\n    input_text = (msg.text or '[REDACTED_SETTING]').strip()\n    wait = context.user_data.get('car_wait')\n    thinking = None\n    voice_elapsed = None\n    if voice_object:\n        active_id = wait.get('card_id') if wait else context.user_data.get('[REDACTED_SETTING]')\n        active_card = card_of(active_id) if active_id else None\n        if not active_card:\n            context.user_data.pop('[REDACTED_SETTING]', None)\n            context.user_data.pop('[REDACTED_SETTING]', None)\n            await msg.reply_text('[REDACTED_SETTING]')\n            raise ApplicationHandlerStop\n        chat_id = getattr(msg, '[REDACTED_SETTING]', None) or update.effective_chat.id\n        marker = '[REDACTED_SETTING]' % (chat_id, msg.message_id)\n        seen = context.chat_data.get('[REDACTED_SETTING]')\n        if not isinstance(seen, list):\n            seen = []\n            context.chat_data['[REDACTED_SETTING]'] = seen\n        if marker in seen:\n            await msg.reply_text('[REDACTED_SETTING]')\n            raise ApplicationHandlerStop\n        seen.append(marker)\n        del seen[:-'[REDACTED_SETTING]']\n        context.user_data.pop('[REDACTED_SETTING]', None)\n        import crm_voice_watchdog as _v178_voice\n        started = time.monotonic()\n        duration_seconds = int(getattr(voice_object, '[REDACTED_SETTING]', '[REDACTED_SETTING]') or '[REDACTED_SETTING]')\n        timeout_seconds = _v178_voice.timeout_for_duration(duration_seconds)\n        thinking = await msg.reply_text('[REDACTED_SETTING]' % timeout_seconds)\n        if not ai.voice_enabled():\n            if marker in seen:\n                seen.remove(marker)\n            await thinking.edit_text('[REDACTED_SETTING]')\n            raise ApplicationHandlerStop\n        try:\n            import crm_online_guard as _v168_guard\n            if not _v168_guard.circuit_allows('[REDACTED_SETTING]'):\n                if marker in seen:\n                    seen.remove(marker)\n                await thinking.edit_text('[REDACTED_SETTING]')\n                raise ApplicationHandlerStop\n        except ApplicationHandlerStop:\n            raise\n        except Exception:\n            pass\n        if msg.voice:\n            file_id, filename = (msg.voice.file_id, '[REDACTED_SETTING]')\n        elif msg.audio:\n            file_id, filename = (msg.audio.file_id, '[REDACTED_SETTING]')\n        else:\n            file_id, filename = (msg.video_note.file_id, '[REDACTED_SETTING]')\n\n        async def download_voice(fid):\n            tg_file = await context.bot.get_file(fid)\n            return bytes(await tg_file.download_as_bytearray())\n        _v178_result = None\n        try:\n            audio_bytes = await asyncio.wait_for(download_voice(file_id), timeout=_v178_voice.download_timeout_for_duration(duration_seconds))\n            _v178_result = await _v178_voice.transcribe_with_restart(audio_bytes, filename, duration_seconds)\n            input_text = (_v178_result.text if _v178_result.ok else '[REDACTED_SETTING]').strip()\n        except asyncio.CancelledError:\n            raise\n        except asyncio.TimeoutError:\n            input_text = '[REDACTED_SETTING]'\n            log.warning('[REDACTED_SETTING]', active_id)\n        except Exception as e:\n            input_text = '[REDACTED_SETTING]'\n            log.warning('[REDACTED_SETTING]', active_id, e)\n        voice_elapsed = time.monotonic() - started\n        try:\n            import crm_online_guard as _v168_guard\n            _v168_guard.circuit_result('[REDACTED_SETTING]', bool(input_text))\n            _v168_guard.record_timing('[REDACTED_SETTING]', voice_elapsed, '[REDACTED_SETTING]' if input_text else '[REDACTED_SETTING]', card_id=active_id)\n        except Exception:\n            pass\n        if not input_text:\n            if marker in seen:\n                seen.remove(marker)\n            attempts = getattr(_v178_result, '[REDACTED_SETTING]', '[REDACTED_SETTING]') if _v178_result else '[REDACTED_SETTING]'\n            restarts = getattr(_v178_result, '[REDACTED_SETTING]', '[REDACTED_SETTING]') if _v178_result else '[REDACTED_SETTING]'\n            await thinking.edit_text('[REDACTED_SETTING]' % (max(attempts, '[REDACTED_SETTING]'), restarts), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % active_id)]]))\n            raise ApplicationHandlerStop\n    if not wait:\n        cid = context.user_data.get('[REDACTED_SETTING]') if voice_object else context.user_data.get('[REDACTED_SETTING]')\n        card = card_of(cid) if cid else None\n        if card and voice_object:\n            schema_allowed = set(fast.car_fields(ai_filter))\n            card = card_of(card['id']) or card\n            correction = _v168_is_correction(input_text)\n            named_fields = _v168_named_fields(input_text, schema_allowed)\n            explicit_override = bool(correction or named_fields)\n            if named_fields:\n                allowed = named_fields\n            else:\n                allowed = {field for field in schema_allowed if _v168_empty(card.get(field))}\n            data = {}\n            if allowed:\n                data.update(local_ocr.fields_from_text(input_text, allowed))\n                data.update(fast.fast_text_data(input_text, ai_filter))\n                if data:\n                    data = fast.clean_car(fast.parsed_from_data(data), ai_filter, '[REDACTED_SETTING]')\n                data = {key: value for key, value in (data or {}).items() if key in allowed and value not in (None, '[REDACTED_SETTING]', [])}\n                data.update(_v167_voice_explicit_fields(input_text, allowed))\n            changes, skipped = voice_change_plan(card, data, allowed, explicit_override)\n            applied = []\n            for field, old, new in changes:\n                try:\n                    ok, reason = _v168_cas_write(card['id'], field, old, new, user_id, explicit_override)\n                    if ok:\n                        applied.append((field, old, new))\n                    elif reason in ('[REDACTED_SETTING]', '[REDACTED_SETTING]'):\n                        skipped.append(field)\n                except Exception as e:\n                    log.warning('[REDACTED_SETTING]', card['id'], field, e)\n            number = card.get('[REDACTED_SETTING]') or '[REDACTED_SETTING]' % card['id']\n            if applied:\n                token = '[REDACTED_SETTING]'\n                context.user_data['[REDACTED_SETTING]'] = {'card_id': card['id'], '[REDACTED_SETTING]': token, '[REDACTED_SETTING]': [{'field': f, '[REDACTED_SETTING]': old, '[REDACTED_SETTING]': new} for f, old, new in applied]}\n                value_names = {'[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]', '[REDACTED_SETTING]': '[REDACTED_SETTING]'}\n                lines = []\n                for field, _, value in applied:\n                    shown = value_names.get(str(value), str(value))\n                    lines.append('[REDACTED_SETTING]' % (LABELS_ALL.get(field, field), shown))\n                await thinking.edit_text('[REDACTED_SETTING]' % (number, '[REDACTED_SETTING]'.join(lines), voice_elapsed or '[REDACTED_SETTING]'), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % (card['id'], token))], [InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % card['id'])]]))\n            elif data and skipped and (not explicit_override):\n                await thinking.edit_text('[REDACTED_SETTING]' % number)\n            elif data:\n                await thinking.edit_text('[REDACTED_SETTING]' % number)\n            else:\n                await thinking.edit_text('[REDACTED_SETTING]')\n            raise ApplicationHandlerStop\n        if card:\n            done = await auto_catch(msg, card, user_id, context)\n            if done:\n                raise ApplicationHandlerStop\n    wait = context.user_data.get('car_wait')\n    if wait and input_text and wait.get('client'):\n        context.user_data.pop('car_wait', None)\n        card = card_of(wait['card_id'])\n        klient = client_of(card)\n        if klient:\n            db.update_card_field('[REDACTED_SETTING]', klient['id'], wait['field'], input_text, user_id)\n        answer = '[REDACTED_SETTING]'\n        if voice_object:\n            answer += '[REDACTED_SETTING]' % (voice_elapsed or '[REDACTED_SETTING]')\n        if thinking:\n            await thinking.edit_text(answer, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % wait['card_id'])], [InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % wait['card_id'])]]))\n        else:\n            await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % wait['card_id'])], [InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % wait['card_id'])]]))\n        raise ApplicationHandlerStop\n    if wait and input_text:\n        context.user_data.pop('car_wait', None)\n        field = wait['field']\n        nizhny = input_text.lower()\n        if field not in ('price_uah', '[REDACTED_SETTING]', '[REDACTED_SETTING]', '[REDACTED_SETTING]') and ('[REDACTED_SETTING]' in nizhny or 'цена' in nizhny or '[REDACTED_SETTING]' in nizhny):\n            field = 'price_uah'\n        elif field == '[REDACTED_SETTING]' and _re.search('[REDACTED_SETTING]', nizhny):\n            field = 'price_uah'\n        ok, answer = apply_value(wait['card_id'], field, input_text, user_id)\n        card = card_of(wait['card_id'])\n        if ok and field == 'price_uah' and card:\n            remember_price(card, user_id)\n            answer = '[REDACTED_SETTING]' % (card.get('[REDACTED_SETTING]') or '[REDACTED_SETTING]', S.status_label(card.get('[REDACTED_SETTING]')), S.money(_int(card.get('price_uah'))))\n        rows = [[InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % wait['card_id'])]]\n        if ok and field in ('[REDACTED_SETTING]', '[REDACTED_SETTING]'):\n            zapisano = input_text\n            punktov = len([s for s in zapisano.split('[REDACTED_SETTING]') if s.strip()])\n            answer = '[REDACTED_SETTING]' % (punktov, len(zapisano), zapisano)\n            rows.insert('[REDACTED_SETTING]', [InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % wait['card_id'])])\n        if voice_object:\n            answer += '[REDACTED_SETTING]' % (voice_elapsed or '[REDACTED_SETTING]')\n        if not ok:\n            wait['field'] = field\n            context.user_data['car_wait'] = wait\n            rows.insert('[REDACTED_SETTING]', [InlineKeyboardButton('[REDACTED_SETTING]', callback_data='[REDACTED_SETTING]' % wait['card_id'])])\n        if thinking:\n            await thinking.edit_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        else:\n            await msg.reply_text(answer, reply_markup=InlineKeyboardMarkup(rows))\n        raise ApplicationHandlerStop",
+            "redaction_applied": true,
+            "sha256": "a466d36cc0b0ea41c7f5ffe3d646f6d9ae13b8ef96dfa53cfaf98a150b298889",
+            "source_exported": false
+          }
+        ],
+        "edit_ask": [
+          {
+            "decorators": [],
+            "line": 507,
+            "name": "edit_ask",
+            "order": 45,
+            "sha256": "610e274e01a241241d338fd2980a7a1b04339de2514da9485d02f0bea6d5d767",
+            "source": "async def edit_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    _, cid, field = q.data.split(\":\")\n    card = card_of(cid)\n    label = dict(EDITABLE).get(field, field)\n    now = card.get(field)\n    hint = \"\"\n    if field == \"engine_cc\":\n        hint = \"\\nВ кубических сантиметрах, например 1598.\"\n    elif field in (\"price_uah\", \"price_georgia\"):\n        hint = \"\\nТолько число, в долларах.\"\n        if field == \"price_georgia\":\n            hint += \"\\nПоле необязательное: если цены для Грузии нет, ничего не вводите.\"\n    elif field == \"condition_text\":\n        hint = (\"\\n\\nЧтобы изменить — пришлите новый текст. \"\n                \"Он полностью заменит нынешний. \"\n                \"Каждый пункт с новой строки.\")\n    elif field == \"vin\":\n        hint = \"\\n17 знаков.\"\n    elif field == \"eta_days\":\n        hint = (\"\\nСколько дней осталось до прибытия в Киев. \"\n                \"Дата пересчитается сама, дальше счётчик пойдёт вниз каждый день.\")\n    context.user_data[\"car_wait\"] = {\"card_id\": int(cid), \"field\": field}\n    await q.message.reply_text(\n        \"<b>%s</b>\\nСейчас: %s%s\\n\\nПришлите новое значение текстом или голосом.\"\n        % (label, now if now else \"—\", hint),\n        parse_mode=\"HTML\",\n        reply_markup=InlineKeyboardMarkup([[\n            InlineKeyboardButton(\"← Отмена\", callback_data=\"car_open:%s\" % cid)]\n            + ([InlineKeyboardButton(\"Очистить\",\n                callback_data=\"car_clr:%s:%s\" % (cid, field))]\n               if field == \"condition_text\" and now else [])]))\n    raise ApplicationHandlerStop",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "edit_menu": [
+          {
+            "decorators": [],
+            "line": 486,
+            "name": "edit_menu",
+            "order": 44,
+            "sha256": "606650ab2ca149db2ab38318ca742e3b6424646e17ba8e6b5b247138acc76a76",
+            "source": "async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    q = update.callback_query\n    await _v168_ack(q,)\n    drop_wait(context)\n    cid = int(q.data.split(\":\")[-1])\n    card = card_of(cid)\n    rows, buf = [], []\n    for key, label in EDITABLE:\n        buf.append(InlineKeyboardButton(label, callback_data=\"car_setf:%d:%s\" % (cid, key)))\n        if len(buf) == 2:\n            rows.append(buf)\n            buf = []\n    if buf:\n        rows.append(buf)\n    rows.append([InlineKeyboardButton(\"← К карточке\", callback_data=\"car_open:%d\" % cid)])\n    await q.message.reply_text(\n        \"Что меняем?\\n%s\" % (card.get(\"auto_number\") or db.card_title(\"cars\", card)),\n        reply_markup=InlineKeyboardMarkup(rows))\n    raise ApplicationHandlerStop",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "jdump": [
+          {
+            "decorators": [],
+            "line": 95,
+            "name": "jdump",
+            "order": 18,
+            "sha256": "35b99b12bd4320267da8550397c99433b0aaba8728f3cf08a31956f02643beb3",
+            "source": "def jdump(value):\n    return json.dumps(value, ensure_ascii=False)",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "price_history": [
+          {
+            "decorators": [],
+            "line": 137,
+            "name": "price_history",
+            "order": 22,
+            "sha256": "844f6b630128e19e6c5f8548ddb11b5d27859b5762e76647ea71856ac2284e87",
+            "source": "def price_history(card):\n    return jload(card.get(\"price_history\"), {}) or {}",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "register": [
+          {
+            "decorators": [],
+            "line": 3276,
+            "name": "register",
+            "order": 137,
+            "sha256": "eae5c22d3d823e6524b6ec2823e03d46deb2d38dbfeb80e189508aadc41cc5e3",
+            "source": "def register(app):\n    ensure_columns()\n    _v168_start_guard(app, \"crm_bot\")\n    try:\n        import ai_filter\n        ai_filter.register(app)\n    except Exception as e:\n        log.warning(\"ai_filter не подключён: %s\", e)\n    try:\n        import photo_hide\n        photo_hide.register(app)\n    except Exception as e:\n        log.warning(\"photo_hide не подключён: %s\", e)\n    g = -1\n    app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, catch_message), group=g)\n    app.add_handler(CallbackQueryHandler(voice_undo, pattern=r\"^car_vundo:\"), group=g)\n    app.add_handler(CallbackQueryHandler(open_card, pattern=r\"^card_open:cars:\"), group=g)\n    app.add_handler(CallbackQueryHandler(open_card, pattern=r\"^car_open:\"), group=g)\n    app.add_handler(CallbackQueryHandler(clear_field, pattern=r\"^car_clr:\"), group=g)\n    app.add_handler(CallbackQueryHandler(diag_clear, pattern=r\"^diag_clr:\"), group=g)\n    app.add_handler(CallbackQueryHandler(cars_list, pattern=r\"^cards_cars$\"), group=g)\n    app.add_handler(CallbackQueryHandler(cars_list, pattern=r\"^cars_cards$\"), group=g)\n    app.add_handler(CallbackQueryHandler(edit_menu, pattern=r\"^car_edit:\"), group=g)\n    app.add_handler(CallbackQueryHandler(edit_ask, pattern=r\"^car_setf:\"), group=g)\n    app.add_handler(CallbackQueryHandler(media_screen, pattern=r\"^car_media:\"), group=g)\n    app.add_handler(CallbackQueryHandler(video_remove_all, pattern=r\"^car_vidvseok:\"), group=g)\n    app.add_handler(CallbackQueryHandler(video_remove_all_ask, pattern=r\"^car_vidvse:\"), group=g)\n    app.add_handler(CallbackQueryHandler(diag_photo_show, pattern=r\"^car_dgal:\"), group=g)\n    app.add_handler(CallbackQueryHandler(diag_video_show, pattern=r\"^car_dvid:\"), group=g)\n    app.add_handler(CallbackQueryHandler(gallery, pattern=r\"^car_gal:\"), group=g)\n    app.add_handler(CallbackQueryHandler(video_gallery, pattern=r\"^car_vid:\"), group=g)\n    app.add_handler(CallbackQueryHandler(photo_remove_menu, pattern=r\"^car_rmphoto:\"), group=g)\n    app.add_handler(CallbackQueryHandler(photo_remove, pattern=r\"^car_rmpok:\"), group=g)\n    app.add_handler(CallbackQueryHandler(\n        photo_remove_all_ask, pattern=r\"^car_rmvse:\"), group=g)\n    app.add_handler(CallbackQueryHandler(\n        photo_remove_all, pattern=r\"^car_rmvse2:\"), group=g)\n    app.add_handler(CallbackQueryHandler(add_media_start, pattern=r\"^car_add:\"), group=g)\n    app.add_handler(CallbackQueryHandler(condition_screen, pattern=r\"^car_cond:\"), group=g)\n    app.add_handler(CallbackQueryHandler(diag_clear_ask, pattern=r\"^diag_ask:\"), group=g)\n    app.add_handler(CallbackQueryHandler(stage_menu, pattern=r\"^car_stage:\"), group=g)\n    app.add_handler(CallbackQueryHandler(stage_set, pattern=r\"^car_setstage:\"), group=g)\n    app.add_handler(CallbackQueryHandler(price_screen, pattern=r\"^car_price:\"), group=g)\n    app.add_handler(CallbackQueryHandler(keep_price, pattern=r\"^car_keepprice:\"), group=g)\n    app.add_handler(CallbackQueryHandler(save_ai_text, pattern=r\"^car_saveai:\"), group=g)\n    app.add_handler(CallbackQueryHandler(preview, pattern=r\"^car_preview:\"), group=g)\n    app.add_handler(CallbackQueryHandler(preview_demo, pattern=r\"^car_demo:\"), group=g)\n    app.add_handler(CallbackQueryHandler(ad_screen, pattern=r\"^car_ad:\"), group=g)\n    app.add_handler(CallbackQueryHandler(client_screen, pattern=r\"^car_client:\"), group=g)\n    app.add_handler(CallbackQueryHandler(client_ask, pattern=r\"^car_setc:\"), group=g)\n    app.add_handler(CallbackQueryHandler(client_unlink, pattern=r\"^car_unclient:\"), group=g)\n    app.add_handler(CallbackQueryHandler(toggle_publish, pattern=r\"^car_pub:\"), group=g)\n    app.add_handler(CallbackQueryHandler(mark_sold, pattern=r\"^car_sold:\"), group=g)\n    app.add_handler(CallbackQueryHandler(mark_sold_ok, pattern=r\"^car_soldok:\"), group=g)\n    app.add_handler(CallbackQueryHandler(delete_ask, pattern=r\"^car_del:\"), group=g)\n    app.add_handler(CallbackQueryHandler(delete_ok, pattern=r\"^car_delok:\"), group=g)\n    app.add_handler(CallbackQueryHandler(crm_stats, pattern=r\"^crm_stats$\"), group=g)\n    app.add_handler(CallbackQueryHandler(clients_screen, pattern=r\"^cards_clients$\"), group=g)\n    app.add_handler(CallbackQueryHandler(crm_leads, pattern=r\"^crm_leads$\"), group=g)\n    app.add_handler(CallbackQueryHandler(more_screen, pattern=r\"^crm_more$\"), group=g)\n    app.add_handler(CallbackQueryHandler(optimize_screen, pattern=r\"^crm_optimize$\"), group=g)\n    app.add_handler(CallbackQueryHandler(svodka_screen, pattern=r\"^crm_svodka$\"), group=g)\n    app.add_handler(CallbackQueryHandler(crm_stats_week, pattern=r\"^crm_stats_week$\"), group=g)\n    try:\n        import konteyner\n        konteyner.register(app, -2)\n    except Exception as e:\n        log.warning(\"konteyner не подключён: %s\", e)\n    log.info(\"cars_ui подключён\")",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          },
+          {
+            "decorators": [],
+            "line": 3916,
+            "name": "register",
+            "order": 192,
+            "sha256": "2a73b47650cd5fd456d3f4ec5adc79e032238c72273de18479e1250434c77320",
+            "source": "def register(app):\n    _UA099_BASE_REGISTER(app)\n    group = -3\n    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,\n                                   additional_spec_edit_message), group=group)\n    app.add_handler(CallbackQueryHandler(additional_spec_screen,\n                                         pattern=r\"^car_spec:\\d+$\"), group=group)\n    app.add_handler(CallbackQueryHandler(additional_spec_item,\n                                         pattern=r\"^car_spec_item:\\d+:\\d+$\"), group=group)\n    app.add_handler(CallbackQueryHandler(additional_spec_visibility,\n                                         pattern=r\"^car_spec_vis:\\d+:\\d+$\"), group=group)\n    app.add_handler(CallbackQueryHandler(additional_spec_edit,\n                                         pattern=r\"^car_spec_edit:\\d+:\\d+$\"), group=group)\n    app.add_handler(CallbackQueryHandler(additional_spec_category,\n                                         pattern=r\"^car_spec_cat:\\d+:\\d+$\"), group=group)\n    app.add_handler(CallbackQueryHandler(additional_spec_set_category,\n                                         pattern=r\"^car_spec_setcat:\\d+:\\d+:[a-z_]+$\"), group=group)\n    app.add_handler(CallbackQueryHandler(additional_spec_publish,\n                                         pattern=r\"^car_spec_publish:\\d+$\"), group=group)",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          },
+          {
+            "decorators": [],
+            "line": 3973,
+            "name": "register",
+            "order": 197,
+            "sha256": "20b00d97b039b474f1148b60f655706dedc6453e5e4fbe4d1df949c1410a6c07",
+            "source": "def register(app):\n    _UA110_BASE_REGISTER(app)\n    _ua110_vin_service.start_worker()\n    app.add_handler(CallbackQueryHandler(\n        _ua110_refresh_spec, pattern=r\"^car_spec_refresh:\\d+$\"\n    ), group=-4)",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          },
+          {
+            "decorators": [],
+            "line": 3997,
+            "name": "register",
+            "order": 201,
+            "sha256": "54bd8d52ad23eefa83b058d90821f9d1569007a94839e3e0535cd3bab103df08",
+            "source": "def register(app):\n    _UA117_BASE_REGISTER(app)\n    app.add_handler(CallbackQueryHandler(\n        _ua117_block_removed_stage,\n        pattern=r\"^car_setstage:\\d+:(?:sea_loaded|sea_transit|ua_handed)$\"),\n        group=-100)",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          },
+          {
+            "decorators": [],
+            "line": 4145,
+            "name": "register",
+            "order": 216,
+            "sha256": "0f35fae54e0c3efb655ac4e8f5d31d08babfad2dc700239bdc3741022ef07be9",
+            "source": "def register(app):\n    _UA122_BASE_REGISTER(app)\n    app.add_handler(CallbackQueryHandler(cars_list,\n        pattern=r'^ua122_cars:(?:catalog|unpublished):[0-9]{1,9}$'), group=-1)",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          },
+          {
+            "decorators": [],
+            "line": 4209,
+            "name": "register",
+            "order": 226,
+            "sha256": "c0cb0c172fbbe7febbc2511fce95a653bfff4c604fe62c65b04026935e16dbf1",
+            "source": "def register(app):\n    _UA004_BASE_REGISTER(app)\n    if app.job_queue is None:\n        log.error('UA004: existing CRM job queue unavailable; direct stage sync remains active')\n        return\n    if not app.job_queue.get_jobs_by_name('ua-stage-catalog-sync-004'):\n        app.job_queue.run_repeating(_ua004_stage_reconcile_job, interval=15, first=3,\n                                   name='ua-stage-catalog-sync-004',\n                                   job_kwargs={'max_instances': 1, 'coalesce': True})",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "set_field": [
+          {
+            "decorators": [],
+            "line": 149,
+            "name": "set_field",
+            "order": 24,
+            "sha256": "8f6ea6455a0f950573e4433f3bc273471c617b679d37ae96b803cfbf492440e8",
+            "source": "def set_field(card_id, field, value, actor_id):\n    \"\"\"Пустое значение в карточку не пишем — данные не теряются.\"\"\"\n    if value in (None, \"\", []):\n        return\n    db.update_card_field(\"cars\", int(card_id), field, value, actor_id)",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ]
+      },
+      "sha256": "76d0a16e7a22940c6699293cf356a6cdba08bb76565bfdcd9b1c66d214b1fee4",
+      "syntax": "PASS",
+      "top_level_call_shapes": [],
+      "top_level_symbol_aliases": [
+        {
+          "line": 3361,
+          "order": 145,
+          "targets": [
+            "_v140_save_media_ishodnyy"
+          ],
+          "value": "_save_media_bazovoe"
+        },
+        {
+          "line": 3498,
+          "order": 159,
+          "targets": [
+            "_v142_ubrat_video_ishodnyy"
+          ],
+          "value": "_ubrat_video_polno"
+        },
+        {
+          "line": 3515,
+          "order": 162,
+          "targets": [
+            "_v152_save_media"
+          ],
+          "value": "_save_media_proverka"
+        },
+        {
+          "line": 3572,
+          "order": 167,
+          "targets": [
+            "_v163_ubrat_ishodnyy"
+          ],
+          "value": "_ubrat_video_polno"
+        },
+        {
+          "line": 3701,
+          "order": 175,
+          "targets": [
+            "_UA099_BASE_RENDER"
+          ],
+          "value": "render"
+        },
+        {
+          "line": 3702,
+          "order": 176,
+          "targets": [
+            "_UA099_BASE_CARD_KB"
+          ],
+          "value": "card_kb"
+        },
+        {
+          "line": 3703,
+          "order": 177,
+          "targets": [
+            "_UA099_BASE_REGISTER"
+          ],
+          "value": "register"
+        },
+        {
+          "line": 3940,
+          "order": 194,
+          "targets": [
+            "_UA110_BASE_REGISTER"
+          ],
+          "value": "register"
+        },
+        {
+          "line": 3983,
+          "order": 199,
+          "targets": [
+            "_UA117_BASE_REGISTER"
+          ],
+          "value": "register"
+        },
+        {
+          "line": 4049,
+          "order": 211,
+          "targets": [
+            "_UA122_BASE_CARD_KB"
+          ],
+          "value": "card_kb"
+        },
+        {
+          "line": 4050,
+          "order": 212,
+          "targets": [
+            "_UA122_BASE_REGISTER"
+          ],
+          "value": "register"
+        },
+        {
+          "line": 4158,
+          "order": 221,
+          "targets": [
+            "_UA004_BASE_REGISTER"
+          ],
+          "value": "register"
+        }
+      ]
+    },
+    "/home/Carix/db.py": {
+      "all_definitions_retained": true,
+      "bytes": 34721,
+      "exported_function_bytes": 1100,
+      "field_constants": [],
+      "full_source_exported": false,
+      "function_definitions": [
+        {
+          "decorators": [],
+          "line": 108,
+          "name": "_ua_sql_pishet",
+          "order": 32,
+          "sha256": "e8b3ebcd05dd6617b501fcddca5c1844ff52e9678820e471485ac9927bbe5ae6"
+        },
+        {
+          "decorators": [],
+          "line": 120,
+          "name": "_ua_fayl_zahvatit",
+          "order": 33,
+          "sha256": "34d0205189e8752197080053d3bb27161a69636e40159eb8f0339683bb4feffc"
+        },
+        {
+          "decorators": [],
+          "line": 145,
+          "name": "_ua_fayl_otpustit",
+          "order": 34,
+          "sha256": "b2a024a18b39eccbb778e9019abddacbdd7387516c99dfa090a156c832b1de74"
+        },
+        {
+          "decorators": [],
+          "line": 315,
+          "name": "connect",
+          "order": 37,
+          "sha256": "3257e05c559e7c2d6d39ba0ca1b66818f6283909a411bba695d21517b29afe15"
+        },
+        {
+          "decorators": [],
+          "line": 331,
+          "name": "init_db",
+          "order": 38,
+          "sha256": "e09aeca3adcf5ef0bbc8103a19ebd5468e0d3f5ad5d4b54e3d023b47ea510636"
+        },
+        {
+          "decorators": [],
+          "line": 460,
+          "name": "migrate",
+          "order": 39,
+          "sha256": "5b41d0a50d9d670bec01b8789351a5f5513dbbde462ebea011ab221ffc62d10d"
+        },
+        {
+          "decorators": [],
+          "line": 479,
+          "name": "now",
+          "order": 40,
+          "sha256": "5f9286bb0c78ef9b91d5ab328bd316151d46390ffb2ca71d4b00acbb5e454ebd"
+        },
+        {
+          "decorators": [],
+          "line": 486,
+          "name": "log_action",
+          "order": 41,
+          "sha256": "a3df565d695dbd57cd2462030e503c42dc64b671482b731d8ae1c02f769d7af3"
+        },
+        {
+          "decorators": [],
+          "line": 500,
+          "name": "get_audit",
+          "order": 42,
+          "sha256": "a94e9306da6b6e61f5ab2656ab0f1596d66edb0e152a68bcff1082ad76f58fc5"
+        },
+        {
+          "decorators": [],
+          "line": 518,
+          "name": "ensure_owner",
+          "order": 43,
+          "sha256": "f97a3a0684432bf06ede6d6583fba641e001e8a4eb17b003e64ae09088e653c8"
+        },
+        {
+          "decorators": [],
+          "line": 534,
+          "name": "get_staff",
+          "order": 44,
+          "sha256": "02f74323b78d153ea4efc16f67f9cfc7870079874bcbf19e2ab15f424308071f"
+        },
+        {
+          "decorators": [],
+          "line": 540,
+          "name": "list_staff",
+          "order": 45,
+          "sha256": "3557755a8750272e2af62ca805a2caf7cb101e316ac26de80ab534a3cbb9e1ca"
+        },
+        {
+          "decorators": [],
+          "line": 549,
+          "name": "staff_ids_by_role",
+          "order": 46,
+          "sha256": "08fbb84ad26fc6185910e05f78d6ea1dd05a63dc24d58071984948c6cd4491eb"
+        },
+        {
+          "decorators": [],
+          "line": 556,
+          "name": "set_staff_active",
+          "order": 47,
+          "sha256": "76baa78ad099c69fe4c98803b0cacbe6b9c777710033bd28b204f3990c153018"
+        },
+        {
+          "decorators": [],
+          "line": 564,
+          "name": "set_staff_role",
+          "order": 48,
+          "sha256": "7377dcaa08b39bad2dacdbe6efb452eabdc91f9f8e1dabab0a845a407e321cef"
+        },
+        {
+          "decorators": [],
+          "line": 575,
+          "name": "create_invite",
+          "order": 49,
+          "sha256": "194c0036681919dbc8f48a477e8995a5e6c2ce3888c689a541d02c1b0b2aa3fd"
+        },
+        {
+          "decorators": [],
+          "line": 588,
+          "name": "use_invite",
+          "order": 50,
+          "sha256": "828ad7a73519bacb1ceae2c3c6bccaec09d36a81042c7200e1283f7a6a4199a6"
+        },
+        {
+          "decorators": [],
+          "line": 611,
+          "name": "list_open_invites",
+          "order": 51,
+          "sha256": "abe4c4d5df3a8d564a50963ae81a65004711825494f13c1cbf491a54adbce9e8"
+        },
+        {
+          "decorators": [],
+          "line": 621,
+          "name": "add_inbox",
+          "order": 52,
+          "sha256": "3aaa4475e605916949aecb848586e91335d81cf3d6354c18a4f25c9603abd4f1"
+        },
+        {
+          "decorators": [],
+          "line": 636,
+          "name": "get_inbox",
+          "order": 53,
+          "sha256": "8ee6dd24f32e9a571bcf73b703f2f15a4a2d8e592b7898aed77d5fa3d003cb12"
+        },
+        {
+          "decorators": [],
+          "line": 642,
+          "name": "list_inbox",
+          "order": 54,
+          "sha256": "c84cb1c95f19fc742a05428216aa0b02fc577cf6b12ad61f252c28f32b584f42"
+        },
+        {
+          "decorators": [],
+          "line": 658,
+          "name": "count_inbox",
+          "order": 55,
+          "sha256": "4c216bf23d31ae34bbe5abd46ddd253f69c2e2d05bd246f0566480e76a3aa5f4"
+        },
+        {
+          "decorators": [],
+          "line": 668,
+          "name": "set_inbox_status",
+          "order": 56,
+          "sha256": "df89c100b2a64c3c3d6066b2a8f147fc8aa4009e57ce0cb9f2a14c4f4c355a7f"
+        },
+        {
+          "decorators": [],
+          "line": 681,
+          "name": "link_inbox_card",
+          "order": 57,
+          "sha256": "2b376d30af7856f0c1bfe9435d92ef51257323403211df5c5e98fb67bf3e1a0e"
+        },
+        {
+          "decorators": [],
+          "line": 701,
+          "name": "create_card",
+          "order": 60,
+          "sha256": "e5a09a2a9ef9f56121910f914640099acbd8f87f6313b82c643b546f67d73ed9"
+        },
+        {
+          "decorators": [],
+          "line": 716,
+          "name": "get_card",
+          "order": 61,
+          "sha256": "98ec50651f47457a5c3fb62099076e9c1e8e9b20a9eac79be648f985b8ec04b1"
+        },
+        {
+          "decorators": [],
+          "line": 722,
+          "name": "list_cards",
+          "order": 62,
+          "sha256": "9a709fd8d277505b3c73ff803df17d58adffbd70cb0d0c5d3791b775679bdc8c"
+        },
+        {
+          "decorators": [],
+          "line": 735,
+          "name": "update_card_field",
+          "order": 63,
+          "sha256": "1749f0eef8fc799ed5b08bd6a4482fad3126199d8c40207b76143b263349a1b1"
+        },
+        {
+          "decorators": [],
+          "line": 745,
+          "name": "set_card_review",
+          "order": 64,
+          "sha256": "cf5c8ccb3349125111bf9dfb852f0a163c8bba74134d38637e4c55dd2ccfd405"
+        },
+        {
+          "decorators": [],
+          "line": 759,
+          "name": "card_title",
+          "order": 65,
+          "sha256": "733ac97c1655f367392e8a2f7120b64a6fbecab1d4040cd9cf1b1b508e1d15e3"
+        },
+        {
+          "decorators": [],
+          "line": 772,
+          "name": "add_comment",
+          "order": 66,
+          "sha256": "8a4a7086a94ed0ae170a01bec6b6406dc02606327d16c334780aa2bc7edf1933"
+        },
+        {
+          "decorators": [],
+          "line": 784,
+          "name": "list_comments",
+          "order": 67,
+          "sha256": "3b2912a33dc5d70804daa74d32b15989a92fa1d0d1de4111029ab7b392efeea4"
+        },
+        {
+          "decorators": [],
+          "line": 795,
+          "name": "search",
+          "order": 68,
+          "sha256": "0debccf2c78d92b2c8a3d04e6f25224b70fb0611cfa4f52d729c7f2444706a9a"
+        },
+        {
+          "decorators": [],
+          "line": 816,
+          "name": "stats_summary",
+          "order": 69,
+          "sha256": "592f5688f4e2c15b70de57de40d457cf0734d5220ba8b68a93e6cdab7e1c8e16"
+        },
+        {
+          "decorators": [],
+          "line": 832,
+          "name": "published_cars",
+          "order": 70,
+          "sha256": "b3907b1c6193c0c78840a30f77b390de46eb6064c95b47e6d4cf8b3068b859e8"
+        },
+        {
+          "decorators": [],
+          "line": 847,
+          "name": "make_backup",
+          "order": 73,
+          "sha256": "36368e9f64d34d3f91ac113d4d502329a1033970a25bbd7b41181bfb23ca0450"
+        },
+        {
+          "decorators": [],
+          "line": 883,
+          "name": "backup_info",
+          "order": 74,
+          "sha256": "52b1d2dd277c8e1d5f9d41680764f7d901134b5fc59f5687c3043b104d58c62d"
+        }
+      ],
+      "imports": [
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "os"
+            }
+          ],
+          "order": 1
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "json"
+            }
+          ],
+          "order": 2
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "sqlite3"
+            }
+          ],
+          "order": 3
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "secrets"
+            }
+          ],
+          "order": 4
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "logging"
+            }
+          ],
+          "order": 5
+        },
+        {
+          "module": "datetime",
+          "names": [
+            {
+              "alias": null,
+              "name": "datetime"
+            }
+          ],
+          "order": 6
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_potoki",
+              "name": "threading"
+            }
+          ],
+          "order": 25
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": "_ua_sqlite3",
+              "name": "sqlite3"
+            }
+          ],
+          "order": 26
+        }
+      ],
+      "live_module_imported": false,
+      "path": "/home/Carix/db.py",
+      "runtime_handler_binding": "NOT_VERIFIED",
+      "selected_functions": {
+        "connect": [
+          {
+            "decorators": [],
+            "line": 315,
+            "name": "connect",
+            "order": 37,
+            "sha256": "3257e05c559e7c2d6d39ba0ca1b66818f6283909a411bba695d21517b29afe15",
+            "source": "def connect():\n    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)\n    conn.row_factory = sqlite3.Row\n    # Setup pragmas must not hold the transaction queue for a long-lived reader.\n    try:\n        sqlite3.Connection.execute(conn, \"PRAGMA journal_mode=DELETE\")\n    except Exception:\n        pass\n    sqlite3.Connection.execute(\n        conn, \"PRAGMA busy_timeout=%d\" % (ZAMOK_OZHIDANIE * 1000)\n    )\n    sqlite3.Connection.execute(conn, \"PRAGMA foreign_keys=ON\")\n    return conn",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "now": [
+          {
+            "decorators": [],
+            "line": 479,
+            "name": "now",
+            "order": 40,
+            "sha256": "5f9286bb0c78ef9b91d5ab328bd316151d46390ffb2ca71d4b00acbb5e454ebd",
+            "source": "def now() -> str:\n    return datetime.now().isoformat(timespec=\"seconds\")",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ],
+        "update_card_field": [
+          {
+            "decorators": [],
+            "line": 735,
+            "name": "update_card_field",
+            "order": 63,
+            "sha256": "1749f0eef8fc799ed5b08bd6a4482fad3126199d8c40207b76143b263349a1b1",
+            "source": "def update_card_field(table: str, card_id: int, field: str, value, actor_id: int):\n    \"\"\"Каждая правка поля попадает в журнал со старым и новым значением.\"\"\"\n    old = get_card(table, card_id)\n    old_value = old.get(field) if old else None\n    with connect() as c:\n        c.execute(f\"UPDATE {table} SET {field}=?, updated_at=? WHERE id=?\",\n                  (value, now(), card_id))\n    log_action(actor_id, \"card_edit\", table, card_id, field, old_value, value)",
+            "source_exported": true,
+            "source_scope": "EXACT_FUNCTION_WITHOUT_DECORATORS"
+          }
+        ]
+      },
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "syntax": "PASS",
+      "top_level_call_shapes": [],
+      "top_level_symbol_aliases": []
+    },
+    "/home/Carix/start_safe.py": {
+      "all_definitions_retained": true,
+      "bytes": 60667,
+      "exported_function_bytes": 0,
+      "field_constants": [],
+      "full_source_exported": false,
+      "function_definitions": [
+        {
+          "decorators": [],
+          "line": 74,
+          "name": "_bump",
+          "order": 23,
+          "sha256": "454fd90207cdc38ebecf06222945c96e3d76dc905e28ec03020a4d9fa6f584de"
+        },
+        {
+          "decorators": [],
+          "line": 84,
+          "name": "patch_request_timeouts",
+          "order": 24,
+          "sha256": "fd6a2270996fd7e6359fa8f9833153ce94aa18510288ff4938ae7045c876ed75"
+        },
+        {
+          "decorators": [],
+          "line": 123,
+          "name": "_wrap_send",
+          "order": 25,
+          "sha256": "9f3486c62874ed5e717c1b9413526bc62ecdc9ff5d546c720da969950cb510df"
+        },
+        {
+          "decorators": [],
+          "line": 192,
+          "name": "_videos_after_html",
+          "order": 26,
+          "sha256": "cffe4adf592533238582d67bd3464e70eb5cd6f06374929c88ef27a6ca80baf1"
+        },
+        {
+          "decorators": [],
+          "line": 241,
+          "name": "_cache_path",
+          "order": 29,
+          "sha256": "8efeeda8c560e8a0af5e55ae34800c06d96721ec942de61c4febb6cda17e1492"
+        },
+        {
+          "decorators": [],
+          "line": 246,
+          "name": "_cache_get",
+          "order": 30,
+          "sha256": "a95694fea557f9805e8a3d5bed8e3f91533ee5e5696f017f3d5e51d09642f80d"
+        },
+        {
+          "decorators": [],
+          "line": 257,
+          "name": "_cache_put",
+          "order": 31,
+          "sha256": "04f20d6f9fc2e6c2b54d400f767115b25189fdaaa974c89650fa172f99dad20c"
+        },
+        {
+          "decorators": [],
+          "line": 266,
+          "name": "patch_download_cache",
+          "order": 32,
+          "sha256": "1e7f0d38d6008e0073d95eeb8ea65eed97d0373a4be6eee2bc5f126d758b824b"
+        },
+        {
+          "decorators": [],
+          "line": 309,
+          "name": "_doc_bytes",
+          "order": 33,
+          "sha256": "655360d6e2b00f8d0b962a869e14e90896ca6ea7aa22764378ee4bd24401cf72"
+        },
+        {
+          "decorators": [],
+          "line": 331,
+          "name": "_karty",
+          "order": 37,
+          "sha256": "b91bb057c62a1c37b2677970ce3733f7d120c8dfcc28cfb22cdaf6d50d504b6f"
+        },
+        {
+          "decorators": [],
+          "line": 361,
+          "name": "_dopisat_video",
+          "order": 38,
+          "sha256": "0650d48944639d5da9fdb3b08f62ef7a539eceace48bcbfa7211ebef08397f5a"
+        },
+        {
+          "decorators": [],
+          "line": 407,
+          "name": "_wrap_silent",
+          "order": 39,
+          "sha256": "362278725973c777bd5fbb850aae3569719135148de9a30baa2e128c5339e52e"
+        },
+        {
+          "decorators": [],
+          "line": 436,
+          "name": "patch_card_html_budget",
+          "order": 41,
+          "sha256": "851d4bb60b3cd089af87a21de4fc48e44145447913dbae6ce1465a0b5a3fb94c"
+        },
+        {
+          "decorators": [],
+          "line": 461,
+          "name": "patch_bot_methods",
+          "order": 42,
+          "sha256": "dcd865bdd12d39ef0d378ff2261c9b8201e1bb249290618e04537ddbf7a2af32"
+        },
+        {
+          "decorators": [],
+          "line": 498,
+          "name": "patch_error_handlers",
+          "order": 43,
+          "sha256": "eb9cc2daab877bc065c43e518efd236530c7dca7e282083e01d84437676f36ad"
+        },
+        {
+          "decorators": [],
+          "line": 552,
+          "name": "clean_split",
+          "order": 49,
+          "sha256": "54e013258d6ed15292c67707a18b8dfe4fe92bd618464269128190d50d410a12"
+        },
+        {
+          "decorators": [],
+          "line": 569,
+          "name": "fix_split_text",
+          "order": 50,
+          "sha256": "2993708a89896fe2135df24e665fc0c986737b49b64259dd4aeb187fc8a4aef7"
+        },
+        {
+          "decorators": [],
+          "line": 586,
+          "name": "db_clean_split",
+          "order": 51,
+          "sha256": "8734caa4b27557fad964ab303c0e22ddb53f5a271d007ae2d3dc34e7ba06905b"
+        },
+        {
+          "decorators": [],
+          "line": 658,
+          "name": "_rows",
+          "order": 60,
+          "sha256": "fbe2110ae0d41e0889d699aac366da1fa981b803a5dae26c716b89123b089137"
+        },
+        {
+          "decorators": [],
+          "line": 668,
+          "name": "_car_columns",
+          "order": 61,
+          "sha256": "99d12aea1ffd073c6fe36cec7048ababd2ab3dad774e32b0b7646069431d237c"
+        },
+        {
+          "decorators": [],
+          "line": 677,
+          "name": "_ids",
+          "order": 62,
+          "sha256": "2effbbf04e6a7ac215a6d1c8de44e588c4d30cfd9bddeb260f5684b9f93a8f6a"
+        },
+        {
+          "decorators": [],
+          "line": 706,
+          "name": "_money",
+          "order": 63,
+          "sha256": "eb72f53118bb1663e1a9cd0895f3ab01f642c64377cda1760e8edaf49d1caadc"
+        },
+        {
+          "decorators": [],
+          "line": 714,
+          "name": "_dash",
+          "order": 64,
+          "sha256": "a7f8ecd3aa03ada7688154a9fd155f7d97238e2565971f8ba5d83cf3dc033ec1"
+        },
+        {
+          "decorators": [],
+          "line": 719,
+          "name": "client_text",
+          "order": 65,
+          "sha256": "ac9396469f8a1c9618b908de035d2a4198dfc965b3d3817b7b211d01b85fa7cf"
+        },
+        {
+          "decorators": [],
+          "line": 766,
+          "name": "_send_client_card",
+          "order": 66,
+          "sha256": "1c54b99fefda8329a586401e9a32c5289fa56263eb7e29e077599b9b7b9c5dee"
+        },
+        {
+          "decorators": [],
+          "line": 797,
+          "name": "register_pokaz",
+          "order": 67,
+          "sha256": "92b9d27fa684f4aa2aef1af111cf209f088d1ed2c8a8be861f7d092cfdaef705"
+        },
+        {
+          "decorators": [],
+          "line": 1104,
+          "name": "register_token",
+          "order": 68,
+          "sha256": "79afb0f554117f5c0fc6574907d0ece7a41be1a87330e3050b9a8ce11ce1f5eb"
+        },
+        {
+          "decorators": [],
+          "line": 1214,
+          "name": "patch_register_hook",
+          "order": 69,
+          "sha256": "48c68b632158f61224a694f66f085591e5cf9a2d6e339ba565ffe993455d238c"
+        },
+        {
+          "decorators": [],
+          "line": 1268,
+          "name": "_v_arhiv",
+          "order": 74,
+          "sha256": "b6217e3ecbd918abf968931bcde3fb308d08af942ef410edf3467f79c0064b55"
+        },
+        {
+          "decorators": [],
+          "line": 1283,
+          "name": "pochinit_imena",
+          "order": 75,
+          "sha256": "3499ab260fdae9d850a28f6620df90777243761550a28c8748ebfc7ff15159a4"
+        },
+        {
+          "decorators": [],
+          "line": 1316,
+          "name": "ubrat_musor",
+          "order": 76,
+          "sha256": "e9e93a3e7f5c22ab206133306dc152cb7ae3a8a3b0286850b4b63c2d37e3f028"
+        },
+        {
+          "decorators": [],
+          "line": 1337,
+          "name": "apply_all",
+          "order": 77,
+          "sha256": "27b9c20e0236fd3cecda5c610b2b0796e2b025694406cd89050a33502c40dda6"
+        },
+        {
+          "decorators": [],
+          "line": 1357,
+          "name": "_zhivoy_token",
+          "order": 78,
+          "sha256": "655e9a166766ba28678fc34aaac8c1b321e408552ea2d233ccdbc103a6524b31"
+        },
+        {
+          "decorators": [],
+          "line": 1372,
+          "name": "_token_iz",
+          "order": 79,
+          "sha256": "6a226f1df2442b785b2a09a3b3b4d38c221a4ff5df40e1f44415b2c50a8d866f"
+        },
+        {
+          "decorators": [],
+          "line": 1380,
+          "name": "avariynyy_rezhim",
+          "order": 80,
+          "sha256": "0686741ce51532936982fa0dac28187991c5ccdcd8286ffe30a5d20c7741770d"
+        },
+        {
+          "decorators": [],
+          "line": 1408,
+          "name": "main",
+          "order": 81,
+          "sha256": "fb50b9336ff5546122e63e2475d216e2a3f00b72d6df0fe27a71c338c1cc4326"
+        }
+      ],
+      "imports": [
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "os"
+            }
+          ],
+          "order": 1
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "sys"
+            }
+          ],
+          "order": 2
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "time"
+            }
+          ],
+          "order": 3
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "asyncio"
+            }
+          ],
+          "order": 4
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "functools"
+            }
+          ],
+          "order": 5
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "logging"
+            }
+          ],
+          "order": 6
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "runpy"
+            }
+          ],
+          "order": 7
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "shutil"
+            }
+          ],
+          "order": 8
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "hashlib"
+            }
+          ],
+          "order": 27
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "re"
+            }
+          ],
+          "order": 44
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "sqlite3"
+            }
+          ],
+          "order": 45
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "shutil"
+            }
+          ],
+          "order": 46
+        },
+        {
+          "module": null,
+          "names": [
+            {
+              "alias": null,
+              "name": "json"
+            }
+          ],
+          "order": 52
+        }
+      ],
+      "live_module_imported": false,
+      "path": "/home/Carix/start_safe.py",
+      "runtime_handler_binding": "NOT_VERIFIED",
+      "selected_functions": {},
+      "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "syntax": "PASS",
+      "top_level_call_shapes": [
+        {
+          "line": 35,
+          "order": 11,
+          "shape": {
+            "args": [],
+            "call": "logging.basicConfig",
+            "keywords": [
+              {
+                "name": "level",
+                "value": {
+                  "symbol": "logging.INFO"
+                }
+              },
+              {
+                "name": "format",
+                "value": {
+                  "constant_type": "str"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "top_level_symbol_aliases": []
+    }
+  },
+  "stage1_backup_existence": [
+    {
+      "body_bytes_read": 0,
+      "exists": true,
+      "http_status": 200,
+      "integrity": "NOT_VERIFIED",
+      "method": "GET",
+      "path": "/home/Carix/autopilot_inbox/cloud/task_088_ge_price_crm_stage1/backup/cars_ui.py",
+      "restore_test": "NOT_PERFORMED"
+    },
+    {
+      "body_bytes_read": 0,
+      "exists": true,
+      "http_status": 200,
+      "integrity": "NOT_VERIFIED",
+      "method": "GET",
+      "path": "/home/Carix/autopilot_inbox/cloud/task_088_ge_price_crm_stage1/backup/crm.db",
+      "restore_test": "NOT_PERFORMED"
+    }
+  ],
+  "stage1_durable_prerequisite": {
+    "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+    "sha256": "f8a2325b036010e2d5f35b277fe3039eed7d974c708f8fd73dc61318a8779d82",
+    "status": "FINISHED",
+    "tests": "PASS"
+  },
+  "stage1_remote_receipt": {
+    "after_sha256": {
+      "/home/Carix/cars_ui.py": "76d0a16e7a22940c6699293cf356a6cdba08bb76565bfdcd9b1c66d214b1fee4"
+    },
+    "before_sha256": {
+      "/home/Carix/cars_ui.py": "76d0a16e7a22940c6699293cf356a6cdba08bb76565bfdcd9b1c66d214b1fee4"
+    },
+    "historical_rollback": "PASS",
+    "historical_transaction_write_readback": "PASS",
+    "live_schema_verification": "NOT_PERFORMED",
+    "path": "/home/Carix/autopilot_inbox/cloud/task_088_ge_price_crm_stage1/receipt.json",
+    "sha256": "9a8823cc3101076b8f86f0ed00dec9aa8a0bcb2b7f35451cdc12e526f0aa11e2",
+    "status": "PASS",
+    "task_id": "TASK088-GE-PRICE-CRM-STAGE1"
+  },
+  "stage2_acceptance": "NOT_PERFORMED",
+  "status": "COMPLETED",
+  "target_environment": "shadow",
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-HANDLERS",
+  "telegram_ui": "NOT_VERIFIED"
+}
