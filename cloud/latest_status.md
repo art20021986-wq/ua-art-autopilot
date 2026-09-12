@@ -1,10 +1,7 @@
-TASK_ID: UA-ART-RECOVERY-TASK120-002
-ROUND: 2
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Маршрут подключён через PR81; GitHub run34323968311 и recovery_canary PASS. Добавлен ровно один служебный receipt, HALT сохранён. 151/151 локальных тестов PASS.
-FILES_CREATED: cloud/recovery_task120_002/integration/connection-report.md, cloud/recovery_task120_002/integration/evidence/live-route-result.json; код и доказательства подключения в PR81
-PRODUCTION_TOUCHED: YES — только управление GitHub. CRM, сайт и PythonAnywhere: NO
-OWNER_ACTION_REQUIRED: NO
-OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Подключение завершено. Снятие HALT по-прежнему заблокировано EXTERNAL_WRITER_VERIFICATION_REQUIRED; требуется проверенный контроль внешних исполнителей и отдельная команда на точный план. Не выдавать canary за Gate B спецификации или публикацию карточек.
-UPDATED_AT_UTC: 2026-09-09T07:31:16.663874+00:00
+# Task 123 — site vehicle counters
+
+2026-09-10: INSTALLED on PythonAnywhere at 11:54:10 UTC. Homepage now 18; Kiev 5, Georgia 1, sea 8, Korea 4. Verified Russian and Ukrainian homepage and catalog labels; clicked all four stage filters and confirmed rendered card counts 5/1/8/4.
+
+15 Python tests and Node DOM-fixture checks pass. Server preflight passed existing golden catalog validation. Publisher now updates homepage counts in its existing publication transaction and includes homepage files in rollback snapshots. Task 266084 restarted: new process 12:02:29 UTC, client bot 12:02:30, internal bot 12:02:31; run_all_log confirms both active. All filter rendered 18 cards.
+
+Code and backup hashes, scope and rollback: `tasks/task_123.md`. Supersedes the uninstalled total-only package in `cloud/home_total_auto/`. CRM folders previously deployed under task 122 / PR 87 remain intact. Main EMERGENCY_HALT and old workflow configuration unchanged.
