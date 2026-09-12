@@ -1,10 +1,10 @@
-TASK_ID: UA-ART-RECOVERY-TASK120-002
-ROUND: 2
+TASK_ID: UA-ART-CRM-CATALOG-FOLDERS-001
+ROUND: 3
 CLAUDE_STATUS: DONE
-CURRENT_ACTION: Маршрут подключён через PR81; GitHub run34323968311 и recovery_canary PASS. Добавлен ровно один служебный receipt, HALT сохранён. 151/151 локальных тестов PASS.
-FILES_CREATED: cloud/recovery_task120_002/integration/connection-report.md, cloud/recovery_task120_002/integration/evidence/live-route-result.json; код и доказательства подключения в PR81
-PRODUCTION_TOUCHED: YES — только управление GitHub. CRM, сайт и PythonAnywhere: NO
+CURRENT_ACTION: Папки установлены на PythonAnywhere, хеши/исходный префикс/компиляция проверены. Task266084 Running, оба бота запущены. После рестарта проверено распределение 18+1.
+FILES_CREATED: cloud/crm_catalog_folders_001/, tasks/task_122.md
+PRODUCTION_TOUCHED: YES — cars_ui.py, ua_crm_catalog_folders.py и перезапуск существующей task266084 после явного подтверждения владельца
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Подключение завершено. Снятие HALT по-прежнему заблокировано EXTERNAL_WRITER_VERIFICATION_REQUIRED; требуется проверенный контроль внешних исполнителей и отдельная команда на точный план. Не выдавать canary за Gate B спецификации или публикацию карточек.
-UPDATED_AT_UTC: 2026-09-09T07:31:16.663874+00:00
+NEXT_FOR_CHATGPT: Установка завершена; не повторять installer. Ограничение проверки — реальные клики Telegram и публикация/снятие не выполнялись. Счётчики главной относятся к отдельной задаче.
+UPDATED_AT_UTC: 2026-09-10T11:23:00Z
