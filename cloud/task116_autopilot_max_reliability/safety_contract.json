@@ -1,0 +1,57 @@
+{
+  "schema_version": "UA-ART-TASK116-SAFETY-CONTRACT-1",
+  "task_id": "TASK116-AUTOPILOT-MAX-RELIABILITY",
+  "branch": "task116-autopilot-max-reliability",
+  "authorization": "PACKAGE_PREPARATION_AND_SANDBOX_ONLY",
+  "production_allowed": false,
+  "production_approval_present": false,
+  "gate_b_status": "NOT_CREATED",
+  "launch_marker_allowed": false,
+  "remote_execution_allowed": false,
+  "protected_resources": [
+    "production website",
+    "CRM database",
+    "CRM bot",
+    "DNS and Cloudflare",
+    "vehicle VIN values",
+    "vehicle prices",
+    "vehicle stages and dates",
+    "public cards and catalogs",
+    "additional specifications",
+    "diagnostic pages and media",
+    "container tracking data"
+  ],
+  "allowed_repository_scope": [
+    "tasks/task_116.md",
+    "cloud/task116_autopilot_max_reliability/**",
+    "automation/task116_*.py",
+    "automation/packages/task116/**",
+    "tests/task116/**"
+  ],
+  "forbidden_paths": [
+    "tasks/launch/AUTO-*",
+    "tasks/approvals/*production*",
+    "state/EXECUTION_MODE.json",
+    "state/AUTOPILOT_HALT.json",
+    "state/transactions/**",
+    "state/receipts/**",
+    "site/**",
+    "video/**"
+  ],
+  "fail_closed_on": [
+    "scope drift",
+    "unexpected protected change",
+    "production credential exposure",
+    "missing or stale evidence",
+    "hash mismatch",
+    "ambiguous owner authorization"
+  ],
+  "permanent_guards": {
+    "vin_advertising": "FORBIDDEN",
+    "vin_third_party_leakage": "FORBIDDEN",
+    "additional_specification": "REQUIRED",
+    "unexpected_changes": 0,
+    "ua0009_separate_check": true,
+    "primary_language": "uk"
+  }
+}
