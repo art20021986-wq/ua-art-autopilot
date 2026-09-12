@@ -1,0 +1,195 @@
+{
+  "application_imported": false,
+  "archive_bytes": 251477,
+  "archive_sha256": "46a20d282cd3114eb49364a4a6b662a09a2074f58ee837c3c1982f46c416933f",
+  "assembly_inputs_sha256": {
+    "bootstrap_manifest": "bb01533b5e86c2c3a71b6f789535ca896fcaa8ad82542946f0bf9944d1c6ed07",
+    "bootstrap_preparer": "359f55f0efb0bda024feb0d1efba3d7081f8a671f6eedbdc2817e89270f8901d",
+    "crm_bridge_manifest": "23641a6d4498deb9e5b1fecaafa23b357eecedb68d6478173700d7652859edf8"
+  },
+  "authorization": "NOT_GRANTED_BY_PACKAGE",
+  "automatic_first_publication": false,
+  "code_handoff_v4_compatible": false,
+  "complete17_base_manifest_sha256": "14f42086fc8bc94aefc4e4c83bda50e01107c30d2ad893c00d658f60d0c64fff",
+  "excluded": [
+    "CRM database",
+    "specification database",
+    "HTML",
+    "media",
+    "separate credential/configuration files",
+    "runtime plans",
+    "installation controller"
+  ],
+  "file_count": 29,
+  "files": {
+    "ai_filter.py": {
+      "bytes": 26974,
+      "group": "legacy_unchanged",
+      "sha256": "4b0326b0280e5bf9fdecab0a4f0a931525bd7700b11b6c6c37756895f55d6c89"
+    },
+    "analitika_wsgi.py": {
+      "bytes": 5013,
+      "group": "legacy_unchanged",
+      "sha256": "76cb2e6141b262e558acc7e96804afacc312a6cb3971cd623eef921e086d7761"
+    },
+    "autopilot_inbox/cloud/task_083_catalog_dedup/installer.py": {
+      "bytes": 48352,
+      "group": "legacy_unchanged",
+      "sha256": "13b61a13b73f4a029b01fa0f3c071ab8d4790b656d8fa5f37876e92ac5231684"
+    },
+    "car_number_allocator.py": {
+      "bytes": 6463,
+      "group": "legacy_unchanged",
+      "sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1"
+    },
+    "card_lifecycle.py": {
+      "bytes": 24999,
+      "group": "legacy_unchanged",
+      "sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7"
+    },
+    "card_shell.py": {
+      "bytes": 15141,
+      "group": "legacy_unchanged",
+      "sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a"
+    },
+    "cars_schema.py": {
+      "bytes": 24267,
+      "group": "legacy_unchanged",
+      "sha256": "20da4d4e892b363cd57c8819eadf92f0d8d54383a6c3344e37391d00d5d56e8a"
+    },
+    "cars_ui.py": {
+      "bytes": 191393,
+      "group": "legacy_transformed_for_rebuild10",
+      "sha256": "ff4e68ef59cc78d7ffeb5e75fbc13bcf72cb03c93c28cf69336b69ae4f31c388"
+    },
+    "db.py": {
+      "bytes": 35963,
+      "group": "legacy_transformed_for_rebuild10",
+      "sha256": "62ef505b0f6dccbefa647cf81633bbccdc49447a1e0ee69122d7141542859686"
+    },
+    "master_card.py": {
+      "bytes": 146017,
+      "group": "legacy_unchanged",
+      "sha256": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8"
+    },
+    "profile_library.py": {
+      "bytes": 24772,
+      "group": "legacy_unchanged",
+      "sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6"
+    },
+    "publikaciya.py": {
+      "bytes": 26228,
+      "group": "legacy_unchanged",
+      "sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8"
+    },
+    "publish_transaction_guard.py": {
+      "bytes": 32437,
+      "group": "legacy_unchanged",
+      "sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912"
+    },
+    "source_policy.py": {
+      "bytes": 61436,
+      "group": "legacy_unchanged",
+      "sha256": "8f6d010242ab7df297fe0ad2ee35233d80c7f5005ffaef669d8332caba9fffd2"
+    },
+    "spec_publication.py": {
+      "bytes": 25974,
+      "group": "legacy_transformed_for_rebuild10",
+      "sha256": "7749280eadf4b618638494c8a05540cbdef80249203e36e232943aac675b3ca2"
+    },
+    "spec_rebuild10/__init__.py": {
+      "bytes": 103,
+      "group": "new_runtime_module",
+      "sha256": "196589bb74d80d87a3c46e83e71a8ff9b6154b95c37cda74ea3ab3dfe2c7e61d"
+    },
+    "spec_rebuild10/bootstrap.py": {
+      "bytes": 25682,
+      "group": "new_runtime_module",
+      "sha256": "91ad1d3ae6fe5626a2627401aca002a19bdbd2c3e5e6d5ddfc2920f70129dab7"
+    },
+    "spec_rebuild10/crm_bridge.py": {
+      "bytes": 18504,
+      "group": "new_runtime_module",
+      "sha256": "49aaece71fcda47186cb613b916cd4116a46c8677d618403b0199b418b1b644b"
+    },
+    "spec_rebuild10/render.py": {
+      "bytes": 24859,
+      "group": "new_runtime_module",
+      "sha256": "6aac332313719ebe3826d70c31cd5e0e32d90e18b925245679910d0cbafc6a7c"
+    },
+    "spec_rebuild10/shell_guard.py": {
+      "bytes": 15141,
+      "group": "new_runtime_module",
+      "sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a"
+    },
+    "spec_rebuild10/source_provisioning.py": {
+      "bytes": 7969,
+      "group": "new_runtime_module",
+      "sha256": "67425d1ad154b0cb542ce3b3df0c254773616682853de8f96edc9d9e824e4e2b"
+    },
+    "spec_rebuild10/sources.json": {
+      "bytes": 5765,
+      "group": "new_runtime_registry",
+      "sha256": "519fb2fd80a645ed96c2057a1833b3e9309b17a6a66eed3f8fe66fbf716d3880"
+    },
+    "spec_rebuild10/sources.py": {
+      "bytes": 25262,
+      "group": "new_runtime_module",
+      "sha256": "c807e124e9a49ffdacc66e5da0db523b5bfaaf992189650c437eec3d8da6eda6"
+    },
+    "spec_rebuild10/store.py": {
+      "bytes": 37358,
+      "group": "new_runtime_module",
+      "sha256": "3b9f0ca34e13964bbebad14fd67d3782651fdb69b44802a7d6a34b9eb0f1730d"
+    },
+    "spec_rebuild10/sync.py": {
+      "bytes": 19265,
+      "group": "new_runtime_module",
+      "sha256": "d9d839b3048eb3239b11f56219ac6ed700118db3befa266d13fbda7f378a9941"
+    },
+    "spec_rebuild10/worker.py": {
+      "bytes": 13271,
+      "group": "new_runtime_module",
+      "sha256": "c375c48401d1a2b62589c0f05e4eaf9698579d391daddc308b079213d1418418"
+    },
+    "spec_rebuild10_bootstrap.py": {
+      "bytes": 1546,
+      "group": "explicit_controller_entrypoint",
+      "sha256": "2c33ad0a6225a8ee19dfcb12abaa4e10f6f34fe7f30b8502c307cf561d2256e1"
+    },
+    "ua_additional_spec.py": {
+      "bytes": 41523,
+      "group": "legacy_transformed_for_rebuild10",
+      "sha256": "ad08ccf7be3588dd96d1b8ada4bd42dfafbc44ea3a72f6476c6f41037bd0ae9c"
+    },
+    "vin_spec_service.py": {
+      "bytes": 61170,
+      "group": "legacy_unchanged",
+      "sha256": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16"
+    }
+  },
+  "groups": {
+    "explicit_controller_entrypoint": 1,
+    "legacy_transformed_for_rebuild10": 4,
+    "legacy_unchanged": 13,
+    "new_runtime_module": 10,
+    "new_runtime_registry": 1
+  },
+  "live_preconditions": "NOT_OBSERVED_FOR_THIS_NEW_TARGET_SET",
+  "manifest_sha256": "2605ca1a08207e94a77747b984930c07947bce8b3ee271a6454d06c9a702de40",
+  "new_code_installer_available": false,
+  "overall_gate_b": "NOT_EVALUATED",
+  "private_archive_must_not_be_committed": true,
+  "production_changed": false,
+  "runtime_loaded": false,
+  "schema": "UA-ART-SPEC-REBUILD10-RUNTIME-PACKAGE-1",
+  "status": "PREPARED_INERT_REQUIRES_NEW_CODE_ADMISSION",
+  "target_root": "/home/Carix",
+  "unchanged_execution_dependency_pins": {
+    "catalog_design_golden.html": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3",
+    "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+  },
+  "version": "20260909-r2",
+  "worker_started": false
+}
