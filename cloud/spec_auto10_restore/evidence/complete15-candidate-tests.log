@@ -1,0 +1,17 @@
+test_input_drift_after_commit_invalidates_owned_ready_marker (test_complete_candidate.CompleteCandidateTests.test_input_drift_after_commit_invalidates_owned_ready_marker) ... ok
+test_input_drift_before_commit_creates_no_ready_output (test_complete_candidate.CompleteCandidateTests.test_input_drift_before_commit_creates_no_ready_output) ... ok
+test_manifest_is_last_and_incomplete_output_is_not_ready (test_complete_candidate.CompleteCandidateTests.test_manifest_is_last_and_incomplete_output_is_not_ready) ... ok
+test_missing_and_unexpected_base_files_rejected (test_complete_candidate.CompleteCandidateTests.test_missing_and_unexpected_base_files_rejected) ... ok
+test_missing_and_unexpected_source_mapping_rejected_before_output (test_complete_candidate.CompleteCandidateTests.test_missing_and_unexpected_source_mapping_rejected_before_output) ... ok
+test_output_exists_and_overlap_never_overwrite (test_complete_candidate.CompleteCandidateTests.test_output_exists_and_overlap_never_overwrite) ... ok
+test_pinned_helper_change_is_rejected (test_complete_candidate.CompleteCandidateTests.test_pinned_helper_change_is_rejected) ... ok
+test_real_composition_exact15_pins_and_historical_builder_stays10 (test_complete_candidate.CompleteCandidateTests.test_real_composition_exact15_pins_and_historical_builder_stays10) ... ok
+test_relocated_or_already_patched_inputs_are_rejected (test_complete_candidate.CompleteCandidateTests.test_relocated_or_already_patched_inputs_are_rejected) ... ok
+test_symlink_source_and_output_rejected (test_complete_candidate.CompleteCandidateTests.test_symlink_source_and_output_rejected) ... ok
+test_verifier_rejects_missing_unexpected_tampered_files_and_provenance (test_complete_candidate.CompleteCandidateTests.test_verifier_rejects_missing_unexpected_tampered_files_and_provenance) ... ok
+test_write_failure_cleans_only_owned_unfinished_output (test_complete_candidate.CompleteCandidateTests.test_write_failure_cleans_only_owned_unfinished_output) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 3.024s
+
+OK

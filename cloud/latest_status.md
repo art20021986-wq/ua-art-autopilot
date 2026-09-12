@@ -1,10 +1,23 @@
-TASK_ID: UA-ART-RECOVERY-TASK120-002
-ROUND: 2
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Маршрут подключён через PR81; GitHub run34323968311 и recovery_canary PASS. Добавлен ровно один служебный receipt, HALT сохранён. 151/151 локальных тестов PASS.
-FILES_CREATED: cloud/recovery_task120_002/integration/connection-report.md, cloud/recovery_task120_002/integration/evidence/live-route-result.json; код и доказательства подключения в PR81
-PRODUCTION_TOUCHED: YES — только управление GitHub. CRM, сайт и PythonAnywhere: NO
-OWNER_ACTION_REQUIRED: NO
+TASK_ID: UA-ART-SPEC-AUTO-10-RESTORE-001
+ROUND: 10
+CLAUDE_STATUS: BLOCKED
+CURRENT_ACTION: Согласованный информационный запрос в PythonAnywhere Support отправлен один раз из аккаунта Carix. Форма подтвердила получение 9 сентября 12:32:50 UTC; обычный срок ответа — один рабочий день. Технического ответа пока нет. Подготовленный пакет16 и ручной порядок17→18 сохранены; рабочее восстановление ещё не выполнено.
+FILES_CREATED: cloud/spec_auto10_restore/manual16/{prepare.py,scope-and-readiness.json,fresh-candidate-readback.json,server-staging-readback.json,manual-sequence.json,README.md}; cloud/writer_coordination_001/{MAINTENANCE-PHASES.md,DATA-HANDOFF-INTERFACE.md,SUPPORT-WSGI-DRAIN-DRAFT.md}; обновлены Gate-B.md, CRM-WORKFLOW.md, NEXT-INTEGRATION-PLAN.md. Сохранение в прежний draft PR79; новой production-задачи нет.
+PRODUCTION_TOUCHED: NO
+SERVER_STAGING_TOUCHED: YES — readonly capture, metadata и частный пакет в /home/Carix/spec_complete17_gate_20260909. Архив не распакован/не исполнен; CRM, рабочие HTML/код, задачи, HALT и очередь не менялись.
+OWNER_ACTION_REQUIRED: NO — разрешение на отправку получено и исполнено. Повторно не спрашивать; разрешение относится только к информационному сообщению, не к остановке/установке.
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Подключение завершено. Снятие HALT по-прежнему заблокировано EXTERNAL_WRITER_VERIFICATION_REQUIRED; требуется проверенный контроль внешних исполнителей и отдельная команда на точный план. Не выдавать canary за Gate B спецификации или публикацию карточек.
-UPDATED_AT_UTC: 2026-09-09T07:31:16.663874+00:00
+SUPPORT_DRAFT: SENT_CONFIRMED. Contact Support показал Thank you for contacting Support. We will respond as soon as possible, normally within one working day. Нажатие OK ровно одно; повторов0. Body SHA521122a9c65e032639b3bc1fd322814eff52b0e9210a2b292762a53a5bfd4cfa,1619bytes. Ticket ID не показан. Receipt cloud/writer_coordination_001/evidence/support-send-confirmed-20260909.json. Технический ответ не получен; письмо не разрешает support менять сервисы.
+CURRENT_DATA_PAYLOAD: private-runtime/manual16-payload-r9-v3/private-plan.json; plan SHA 301e45050ce7a163825e0429d36929d81f4d4fe723c3342af166baf3fc311597. Серверный manual16-candidate-20260909-r9.zip SHA b8cd862c72708009539ac6ec4bc33ea92d723ef9c0e190c04e3de8918af81d42; проверены все 37 членов. Полные HTML, diff, план и CRM-копии не коммитить. Сохранены на сервере приватно.
+CURRENT_CODE_CANDIDATE: Прежние final17 v3 manifest 14f42086fc8bc94aefc4e4c83bda50e01107c30d2ad893c00d658f60d0c64fff и code_handoff_v4.py SHA 0dec7fa5509da16b143698cee2a2ff5641385644c2f1ae01724fe516cce82000 неизменны. Установщик меняет 17 Python-файлов, не HTML/SQL. Не выдавать его за готовый DATA-исполнитель.
+EXACT_BLOCKER: (1) Нет поддержанного аутентифицированного подтверждения завершения всего старого WSGI дерева/namespace. Tasks и Consoles относятся к другим областям; старый goodbye не доказывает нынешнее завершение. (2) Не реализована и не проверена постоянная DATA-транзакция 32 HTML + одна SQL-ячейка внутри существующего FenceLease с backup, journal, conditional rollback и crash recovery. Reconciler повторно открывает fd того же flock, получает PUBLICATION_LOCK_BUSY; его rollback двух страниц в памяти не решает весь объём. DATA-HANDOFF-INTERFACE.md — точный проект требуемого кода, НЕ готовый исполнитель.
+PHASE_CORRECTION: After-stop drain и after-install loaded runtime не нужны ДО подготовки контрольного плана. Main recovery-plan уже соблюдает этот порядок; прежний readiness смешивал временные условия. Исправление порядка не ослабляет проверку перед записью и не разрешает production credentials в старом HALT-only recovery job. Изменённый маршрут требует своей версии и проверки.
+SOURCE10: Новых HTTP не было. Для отображения сохранённых 557/550 фактов на 16 карточках новые запросы не нужны; прежние semantic pins совпали. Общая проверка десяти источников остаётся отдельным последующим этапом. Прежнюю отмену network approval другим маршрутом не обходили.
+LIVE_CARDS: Копии 12:14/12:17 UTC: 18 полных CRM-строк, 16 published. UA-0017/UA-0018 имеют published=0, четыре их primary HTML отсутствуют; фактов в canonical spec DB для них пока 0. UA-0016 в рабочей CRM пока 1999; 2017 уже утверждён, не переспрашивать.
+MANUAL_SEQUENCE: Автопубликация 17/18 отменена последним поручением. Обе кнопки пока NOT_READY. Сначала рабочие 16 + загруженная исправленная CRM + готовность самой 17; затем владелец нажимает публикацию 17, проверяется реальная HTML/каталог/спецификация/оболочка; только затем 18. Не нажимать вместо владельца и не подменять тесты настоящей публикацией.
+PLATFORM_INVENTORY: Аутентифицированные Tasks/Consoles 12:12–12:16 UTC: AlwaysOn start_safe Running с 8 сентября 07:07:30, три прежних расписания enabled; из task processes только start_safe, console processes — два Bash. Stop, kill, disable и reload не выполнялись.
+CURRENT_MAIN_VERIFIED: 8866d83e52197703a2f148ec882d560090ed62c9; исходный head PR79 — 1997f19c062b195d4c6f5206522e591fd26bc241.
+AUTOMATIONS: Private lookup в round9 не обнаружил автоматизацию «Автопилот после карточек 17–18» или SPEC-RESTORE. Новую не создавали, чужие задачи не меняли. Последний ручной порядок имеет приоритет над прежним автоматическим сценарием.
+NEXT_FOR_CHATGPT: Не отправлять support draft снова: он принят. При получении технического ответа проверить, действительно ли указан поддержанный WSGI completion boundary; сам ответ не является proof текущего drain. Продолжить уже утверждённую реализацию DATA-транзакции по DATA-HANDOFF-INTERFACE.md, без повторного flock и дублирования code installer. После подготовки и приёмки подключить контрольное окно, соответствующий Gate B и предусмотренное маршрутом подтверждение точного плана. После рабочих16 и готовностиCRM/самой17 владелец нажимает17, затем проверка и18. Не повторять TASK120 или закрытые большие тесты без нового риска.
+OVERALL_GATE_B: NOT_READY_FOR_PRODUCTION
+UPDATED_AT_UTC: 2026-09-09T12:34:02.556483+00:00

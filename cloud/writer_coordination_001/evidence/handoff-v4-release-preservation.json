@@ -1,0 +1,61 @@
+{
+  "broader_preexisting_changes_observed": {
+    "route-work/cloud/writer_coordination_001/NEXT-INTEGRATION-PLAN.md": {
+      "after": "6d77a1da4427be74ea6686eb8f816ce5322386b570436de5279190f0acc72ba8",
+      "before": "3c9dd8d9db28e57d781eb37a90eb97dd8eacb903d5f41c673b7b068efad360be"
+    },
+    "route-work/cloud/writer_coordination_001/WSGI-LIFECYCLE.md": {
+      "after": "88f894c19174e6bc2ffe971811b8bb382bed071b0e2cbbf7761f39c54813e75a",
+      "before": "3d1f230c17ea00ae47a4a0194588ab8ac83a319ef778d6eafde3dec7f43a3ef7"
+    },
+    "route-work/cloud/writer_coordination_001/evidence/wsgi-lifecycle-local-tests.json": {
+      "after": "50459f33fdd544817dd66419eb1805c24dce93341caeb9bacb1fb3aca37442a9",
+      "before": "f70e624b51589dc88a17f24b868fe2b9943debae84be04ae852cced6a7d8a5a4"
+    },
+    "route-work/cloud/writer_coordination_001/evidence/wsgi-lifecycle-observation-20260909.json": {
+      "after": "67a84f86d576ecdfe90bc9ed79b05fd0a0e0e0ecdfb80ef32b789998b82b25a5",
+      "before": "de968932948ffebe577a6a1f4cf074794688d84d32d2bfa2dfeeead002c022b7"
+    },
+    "route-work/cloud/writer_coordination_001/tests/test_wsgi_lifecycle.py": {
+      "after": "c3963cc0fa465891cc3ce184ea3ba70f48d4ead80f9088efb51dd70c838345a7",
+      "before": "1c66e58d142186ada60aa9293933314e4df1033b1ea73f015b5458a020c980e8"
+    },
+    "route-work/cloud/writer_coordination_001/wsgi_lifecycle.py": {
+      "after": "ec6bb9e993bf81ac29ba323961290fb7eb0622c908ac49cf64077e11a40b9256",
+      "before": "63fe08f86b73286690f2f4bb69276261d2f2116ca478ea2b77dc44100e53f628"
+    }
+  },
+  "broader_preexisting_directory_file_count": 82,
+  "live17_absent": 4,
+  "live17_present": 13,
+  "overall_gate_b": "NOT_EVALUATED",
+  "owner_command": null,
+  "production_action_performed": false,
+  "protected_prior_artifact_count": 17,
+  "protected_prior_artifacts_unchanged": true,
+  "protected_prior_sha256": {
+    "route-work/cloud/writer_coordination_001/code_handoff_v3.py": "200ca169be01cb12bf6cdaa8425acdb2279e1bfc6fd9306d51300148043f9ed1",
+    "route-work/cloud/writer_coordination_001/evidence/handoff-v3-exact-guard-local-qa.log": "22b74b5b18d601c9f2071121cc4b1a7091008ee1d5adec0fb21d3f243cbc8677",
+    "route-work/cloud/writer_coordination_001/evidence/handoff-v3-exact-guard-local-result.json": "6d4067849409b6fc54c3a760ea873c90e7f5f38dcec4d9faf1eefaa8073a8592",
+    "route-work/cloud/writer_coordination_001/evidence/handoff-v3-guard-local-qa.log": "889006ed3e51a5a1956e6174851e7e48a2057ab07553cf79400d28ec9f35af91",
+    "route-work/cloud/writer_coordination_001/evidence/handoff-v3-guard-local-result.json": "186e6f4ac51c2ce8d01e93f62e4516902e85a782e342a300678d99d7934e8cbe",
+    "route-work/cloud/writer_coordination_001/evidence/handoff-v3-independent-review.md": "32d9adfd5b0df19d773e42f3f5c923e6f3872e093f72d1f7adc46edddbdfea55",
+    "route-work/cloud/writer_coordination_001/evidence/handoff-v3-server-launcher.log": "29815183ec11589e10d6ec2a87bc9d2bdcf7a507bb6dcdf085e5699303273760",
+    "route-work/cloud/writer_coordination_001/evidence/handoff-v3-server-result.json": "d4de16383b4b5afba0bebb6cd16e7d1bb13c51f98bb9967cad7f61a0401e2fe2",
+    "route-work/cloud/writer_coordination_001/evidence/handoff-v3-server-server-summary.json": "5484df495c73c0c325b66c76370dc6056181c95a3ffe7b47bc05703aa342c76f",
+    "route-work/cloud/writer_coordination_001/evidence/handoff-v3-server-tests.log": "513ec22155d7355845bc41732fd60d57e5057d94e2e572f110353199b78a9fe9",
+    "route-work/cloud/writer_coordination_001/evidence/live17-preconditions-20260909.json": "8af928455c267332547842cd9281175055058f57b638095328c39297df0c5f71",
+    "route-work/cloud/writer_coordination_001/evidence/maintenance-v2-live17-handoff-v3-readiness.json": "a1e25ba3677e9a8e4279fe98c07d45bc8de11b83bace4dc32c5c93d33597b68d",
+    "route-work/cloud/writer_coordination_001/handoff_v3_server_gate.py": "2a2d2b5462edb280e134d94598bae12255608ed761033ef725cbde1c658cec85",
+    "route-work/cloud/writer_coordination_001/package_handoff_v3_gate.py": "e09cdbdbaf72655fa97deaeff64d22e23bd40082bd6b48ed6f5216bc2f2b533f",
+    "route-work/cloud/writer_coordination_001/platform-inventory-20260909.json": "a4dd2bbb6305e4027bd22f34f2f8f213af2aae332fd29102f9fb1ac3da597fb1",
+    "route-work/cloud/writer_coordination_001/prepare_maintenance_v2.py": "4307ee60962f1ce0c0a4f132129b6da9c2731fad14fb144105a6d4bb997c75ce",
+    "route-work/cloud/writer_coordination_001/test_code_handoff_v3.py": "e24b11ae630b976c9cd794893172035ead72510dd8a8b530fc5b317963b208f7"
+  },
+  "readiness_canonical_hash_valid": true,
+  "readiness_sha256": "dac7d3874728e2b3b4d779dbd1e6da187e2cac3a4cbf938af704be1c4004fe6d",
+  "readiness_status": "BLOCKED_BEFORE_EXACT_EXECUTION_PLAN",
+  "recorded_at": "2026-09-09T12:02:42.755367+00:00",
+  "schema": "UA-ART-HANDOFF-V4-RELEASE-PRESERVATION-1",
+  "v3_algorithm_unchanged_except_three_reviewed_admission_literals": true
+}

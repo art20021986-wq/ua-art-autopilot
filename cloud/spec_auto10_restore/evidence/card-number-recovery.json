@@ -1,0 +1,49 @@
+{
+  "contract": "UA-ART-SPEC-AUTO-10-RESTORE-001:CARD-NUMBER-RECOVERY:1",
+  "scope": "ISOLATED_ACTUAL_SOURCE_SQLITE_CANDIDATE",
+  "started_at_utc": "2026-09-09T08:04:13.051816+00:00",
+  "finished_at_utc": "2026-09-09T08:04:13.437653+00:00",
+  "tests": {
+    "status": "PASS",
+    "run": 26,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_seconds": 0.3857
+  },
+  "source_sha256": {
+    "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+    "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+    "ai_filter.py": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6"
+  },
+  "candidate_sha256": {
+    "cars_schema.py": "20da4d4e892b363cd57c8819eadf92f0d8d54383a6c3344e37391d00d5d56e8a",
+    "db.py": "1d5073450b353b88f99944930ed34af0735784c3a580801bab694ecafb7f59a2",
+    "ai_filter.py": "4b0326b0280e5bf9fdecab0a4f0a931525bd7700b11b6c6c37756895f55d6c89",
+    "car_number_allocator.py": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1"
+  },
+  "patcher_sha256": "580e23865e7a128f6f2aace3d6a1c122881c2b1141d13cc56a838e38a7d6ffa7",
+  "test_file_sha256": "7cbc65e9e547e662f633dbda6bf39875f766de9f89b49189d62b957227298ab2",
+  "old_bug": {
+    "fixture": "UA-0017 and UA-0018 exist; delete id18",
+    "actual_legacy_next": "UA-0018",
+    "patched_next": "UA-0019"
+  },
+  "production_touched": false,
+  "application_top_level_imports": false,
+  "network_requests": 0,
+  "live_publication_proven": false,
+  "new_persistent_table": "ua_card_number_sequence",
+  "must_install_together": [
+    "cars_schema.py",
+    "db.py",
+    "ai_filter.py",
+    "car_number_allocator.py"
+  ],
+  "remaining_gates": [
+    "combine candidate and update full module manifest",
+    "actual publisher create/delete/create with new sources",
+    "review external writers and actual loaded runtime",
+    "existing production release gates"
+  ]
+}

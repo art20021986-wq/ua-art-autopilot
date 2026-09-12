@@ -1,0 +1,186 @@
+{
+  "schema": "UAART_DRAFT_BRANCH_MAIN_SYNC_V1",
+  "date_utc": "2026-09-09",
+  "branch": "spec-auto-10-restore-001",
+  "ours": "9165c29b0f26f6a9748021658847859802426b1c",
+  "main": "8866d83e52197703a2f148ec882d560090ed62c9",
+  "common_ancestor": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+  "adopted_main_entries": [
+    {
+      "mode": "100644",
+      "path": ".github/workflows/uaart_transaction_watchdog.yml",
+      "sha": "51907560ad23dbb47567444e80aa93ebc97f1ad7",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "automation/control_plane.py",
+      "sha": "da668d6ea7bf29281129946a8ce03f15b5f552d9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "automation/transaction_watchdog.py",
+      "sha": "7bb5b1a5d3a50cb4cab2df2473640637fe46b42e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+      "sha": "5c3da225db8875cf2949541997afe8d6ae6f6778",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "state/EXECUTION_MODE.json",
+      "sha": "6016c7f1f972de98b9f4680733078eb4d64b5844",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/README.md",
+      "sha": "a17fb752cae051e7fe3df4e44bd6acdde797ae1a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/connection-report.md",
+      "sha": "91add889f3e61b839fcd38dd139260d20c1b3379",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/evidence/delivery-manifest.json",
+      "sha": "7de0d5817dffbc44be0d1ce32deed2b370a2c0dd",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/evidence/live-route-result.json",
+      "sha": "be949906962f9cffefaf470b45684d212ad573eb",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/evidence/pre-registration-observation.json",
+      "sha": "c7acbea6ddf31ae011c5b419d1bd61b98e71666a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/evidence/registration-test-result.json",
+      "sha": "d58a6344792c56943fff64a505d10ace79ffc83c",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/evidence/registration-tests.log",
+      "sha": "a114c0dbee00f65416108919af67f4db641dd778",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/evidence/registration-validation.json",
+      "sha": "4c4600d92a86dc4085fcd6f14a565557a955f10a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/evidence/rollback-plan.json",
+      "sha": "83e3131f3b855f530ec528f063c884cc623fcb56",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/evidence/runtime-before-after.json",
+      "sha": "3cf0b8e2d6127ed27ed6ba1fb8b101e74f1b4980",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/evidence/workflow-writer-test-result.json",
+      "sha": "fae4ffe398a1609e44c783c65a341fb687da4184",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/policy_activation.py",
+      "sha": "ee77c032db192306410ecdbc908ba4dd683e582f",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/route-review.md",
+      "sha": "9b35143a6fe6efbf969edd8b5c12c14effa96df8",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/runtime-registration.patch",
+      "sha": "b8b380fa8d9d56436f2b520486093ac6b8da7906",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/tests/test_route_adapter.py",
+      "sha": "396ae5cdd194a413c20702e3bb975534194ec9a4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/integration/tests/test_workflow_writer.py",
+      "sha": "d38713c69fa2564c4fb7c381307e8e34a7f6541d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "cloud/recovery_task120_002/tests/test_policy_activation.py",
+      "sha": "575abed5586ee57ed99ca96ca13ae4a2cd2944ca",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "state/recovery_route_receipts/UA-ART-RECOVERY-TASK120-002.json",
+      "sha": "4f64d64aab6b38ea378a8de2f03e4ef0caf03186",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.json",
+      "sha": "d7176c91c642a8ab82bac52073de5a550a8f0426",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-manifest.json",
+      "sha": "c453b2cf66378d3bf80d9091fafff823fed88b36",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "state/runtime_activations/UA-ART-RECOVERY-TASK120-002.previous-mode.json",
+      "sha": "0791e4421b5ccc026dc8e6e4ae8e276e3463b348",
+      "type": "blob"
+    }
+  ],
+  "conflicts": [
+    {
+      "base": "0588419892adfae671b0628c7fd18689aebb9f52",
+      "main": "6db8d0767faaf1ff3d5b172b92a78a842dbe5c43",
+      "ours": "17de2520bcaa6eee0134f890098e9688026f1c92",
+      "path": "cloud/latest_status.md",
+      "resolution": "Keep current restoration report; it explicitly records successful main recovery-route registration and broader restoration remains BLOCKED. Main's earlier report remains in its original commit and route integration evidence."
+    },
+    {
+      "base": "de65d898c9e3e8253234024c5f14396eca73dc72",
+      "main": "864d1def188dfbff4dd974e3c280deddcf9e346b",
+      "ours": "546452bfb66b34c4988cc998065300f5a677c536",
+      "path": "cloud/owner_reply.md",
+      "resolution": "Keep current restoration report; it explicitly records successful main recovery-route registration and broader restoration remains BLOCKED. Main's earlier report remains in its original commit and route integration evidence."
+    }
+  ],
+  "main_branch_changed": false,
+  "production_changed": false,
+  "halt_removed": false,
+  "old_canary_preserved": true
+}

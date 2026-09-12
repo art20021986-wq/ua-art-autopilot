@@ -1,0 +1,14 @@
+{
+  "schema": "UA-ART-SOURCE10-ACCESS-CONTROL-OBSERVATION-1",
+  "date_utc": "2026-09-09",
+  "execution_origin": "LOCAL_SAME_ROUTE_RENEWED_USER_REQUEST",
+  "request_scope": "PUBLIC_GET_NO_VIN_NO_CRM",
+  "runtime_result": "evidence/source-acceptance-v2-renewed-local.json",
+  "runtime_observation": "First request timed out after 8.011s; remaining nine requests not started; zero HTTP responses.",
+  "tool_result": "write_stdin failed: Unified exec process failed: network approval was cancelled before a decision was returned",
+  "interpretation": "Environment access unresolved; not evidence of remote source outage or explicit permission refusal.",
+  "alternate_route_used": false,
+  "automatic_retry_performed": false,
+  "production_changed": false,
+  "overall_gate_b": "NOT_EVALUATED"
+}

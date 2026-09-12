@@ -1,0 +1,174 @@
+{
+  "cached_readiness": {
+    "candidate_pages_saved": false,
+    "cards": 16,
+    "current_html_verified": false,
+    "idempotent": true,
+    "one_visible_vin": true,
+    "pages": 32,
+    "shell_assets_preserved": true,
+    "visible_rows": 550
+  },
+  "excluded_card_scope": {
+    "catalog_additions_authorized_by_this_step": false,
+    "current_published_flags": [
+      0,
+      0
+    ],
+    "publish_automatically": false,
+    "required_preservation": [
+      "CRM full rows",
+      "publication flags",
+      "HTML paths and their existence",
+      "media",
+      "queue jobs"
+    ],
+    "uids": [
+      "UA-0017",
+      "UA-0018"
+    ]
+  },
+  "executable_installer_created": false,
+  "existing_components": {
+    "code_handoff": "cloud/writer_coordination_001/code_handoff_v4.py; code-only scope, no CRM/HTML install, no application imports, no unpause",
+    "offline_rebuild": "check_all_card_rebuild.py:check; uses build_verified_specs.py:build and runtime/spec_publication.py:inject",
+    "per_card_reconcile": "runtime/spec_publication.py:reconcile_published; published-only, shared flock, current identity/facts checks, own-postimage rollback for local failure, public HTML validation"
+  },
+  "generated_at_utc": "2026-09-09T12:13:20.857747+00:00",
+  "inputs": {
+    "evidence/all-card-rebuild-single-vin.json": {
+      "sha256": "17ed5a47b5bc8f99dc8209a9083870af1f07204d8dee7238f7a79ab3dd888458"
+    },
+    "evidence/live-card-status-20260909T115925Z.json": {
+      "sha256": "07da08f2b3e85395d1b371a530d0313fa537338654d10372422a7eea3139ea9a"
+    },
+    "evidence/owner-correction-UA-0016.json": {
+      "sha256": "e40cef0f9f87b0d4841cec81945ae10b87d55507e4d85c8fe035e16a375da6dc"
+    },
+    "evidence/verified-specs-report.json": {
+      "sha256": "5a620206c16b0885a98522dfaa76c75cbfa5f3e55c0b429747d03b734f7e0917"
+    }
+  },
+  "lock_composition_observation": {
+    "effect": "Calling existing reconcile_published while FenceLease retains this lock returns PUBLICATION_LOCK_BUSY.",
+    "local_tempfile_only": true,
+    "production_lock_touched": false,
+    "separate_open_conflicts_with_held_flock": true
+  },
+  "network_requests": 0,
+  "not_authorization": [
+    "This is a scoped readiness review, not a production execution plan.",
+    "No Gate B status, network permission or external-writer verification is replaced by this document.",
+    "No new production task, old TASK120 repeat, automatic publication or HALT change is requested."
+  ],
+  "owner_direction": "Restore specification on existing sixteen first; owner publishes UA-0017 then UA-0018 manually only after readiness confirmation.",
+  "owner_manual_sequence": [
+    {
+      "action": "Restore published16; verify real public specification and unchanged shell.",
+      "ready": false,
+      "step": 1
+    },
+    {
+      "action": "Verify corrected CRM runtime; root confirms owner may press Publish for UA-0017.",
+      "ready": false,
+      "step": 2
+    },
+    {
+      "action": "Owner presses UA-0017 once; verify HTML link, specification and one catalog entry before UA-0018.",
+      "ready": false,
+      "step": 3
+    },
+    {
+      "action": "Root confirms owner may press Publish for UA-0018; owner presses once; verify same acceptance.",
+      "ready": false,
+      "step": 4
+    }
+  ],
+  "persistence_limit": "A standalone page repair cannot prevent a still-running old publisher from overwriting it. Future persistence requires verified writer integration and the corrected CRM runtime.",
+  "production_changed": false,
+  "remaining_execution_requirements": [
+    "Fresh authenticated, stable current HTML/CRM/spec preconditions matching exact approved scope; historical snapshot hashes cannot authorize writes.",
+    "Verified exclusion and drain of every old writer; stopping future scheduled launches alone is insufficient.",
+    "A reviewed permitted route binding the exact operation, external-writer proof, existing Gate B requirements and owner authorization without removing HALT directly.",
+    "Durable backup/rollback for the exact 32-page operation and approved UA-0016 year correction, including protection of draft UA-0017/UA-0018 rows, media and jobs.",
+    "A correct transfer from the held fence to the HTML operation: current reconciler opens a separate descriptor and cannot reacquire the already-held publication lock.",
+    "Actual public page verification for all sixteen and runtime CRM callback verification before telling owner to publish UA-0017."
+  ],
+  "restoration_scope": {
+    "candidate_delta": [
+      "Insert one canonical additional-specification section",
+      "Remove proven duplicate VIN displays using existing card_shell.permitted_delta"
+    ],
+    "primary_html_paths": [
+      "video/UA-0001.html",
+      "site/UA-0001.html",
+      "video/UA-0002.html",
+      "site/UA-0002.html",
+      "video/UA-0003.html",
+      "site/UA-0003.html",
+      "video/UA-0004.html",
+      "site/UA-0004.html",
+      "video/UA-0005.html",
+      "site/UA-0005.html",
+      "video/UA-0006.html",
+      "site/UA-0006.html",
+      "video/UA-0007.html",
+      "site/UA-0007.html",
+      "video/UA-0008.html",
+      "site/UA-0008.html",
+      "video/UA-0009.html",
+      "site/UA-0009.html",
+      "video/UA-0010.html",
+      "site/UA-0010.html",
+      "video/UA-0011.html",
+      "site/UA-0011.html",
+      "video/UA-0012.html",
+      "site/UA-0012.html",
+      "video/UA-0013.html",
+      "site/UA-0013.html",
+      "video/UA-0014.html",
+      "site/UA-0014.html",
+      "video/UA-0015.html",
+      "site/UA-0015.html",
+      "video/UA-0016.html",
+      "site/UA-0016.html"
+    ],
+    "published_uids": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016"
+    ],
+    "shell_and_media_policy": "All bytes outside permitted specification/VIN regions and all media remain unchanged.",
+    "stored_rows": 557,
+    "ua0016_year_prerequisite": {
+      "old": 1999,
+      "owner_confirmed": 2017,
+      "production_correction_applied": false,
+      "runtime_must_reject_old_context": true
+    },
+    "visible_rows": 550
+  },
+  "schema": "UA-ART-MANUAL16-SCOPE-REVIEW-1",
+  "source_phase": {
+    "fresh_ten_source_verification_complete": false,
+    "full_gate_b_pass": false,
+    "full_task_ten_source_requirement_removed": false,
+    "reason": "The existing renderer and cached rebuild consume already stored, semantically pinned facts; they perform zero provider requests.",
+    "stored_fact_restoration_requires_new_http": false
+  },
+  "status": "PREPARATION_ONLY_EXECUTION_BLOCKED",
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001"
+}

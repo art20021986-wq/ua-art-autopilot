@@ -1,0 +1,394 @@
+{
+  "application_imports": false,
+  "candidate_id": "UA-ART-SPEC-AUTO10-COMPLETE-17-V2",
+  "candidate_manifest_sha256": "12afce821b784771a2a8a0415cc289f5e713d53aabedf0ed3e2747a8c4d4e136",
+  "code_writes": [
+    {
+      "after_sha256": "4b0326b0280e5bf9fdecab0a4f0a931525bd7700b11b6c6c37756895f55d6c89",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/ai_filter.py"
+    },
+    {
+      "after_sha256": "76cb2e6141b262e558acc7e96804afacc312a6cb3971cd623eef921e086d7761",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/analitika_wsgi.py"
+    },
+    {
+      "after_sha256": "13b61a13b73f4a029b01fa0f3c071ab8d4790b656d8fa5f37876e92ac5231684",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "13dbcbced164c73bb1767fee6d35ca9597c14b552baaeb31ebbf90cad70b1b46",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/installer.py"
+    },
+    {
+      "after_sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": null,
+        "state": "ABSENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/car_number_allocator.py"
+    },
+    {
+      "after_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": null,
+        "state": "ABSENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/card_lifecycle.py"
+    },
+    {
+      "after_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": null,
+        "state": "ABSENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/card_shell.py"
+    },
+    {
+      "after_sha256": "20da4d4e892b363cd57c8819eadf92f0d8d54383a6c3344e37391d00d5d56e8a",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/cars_schema.py"
+    },
+    {
+      "after_sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/cars_ui.py"
+    },
+    {
+      "after_sha256": "1d5073450b353b88f99944930ed34af0735784c3a580801bab694ecafb7f59a2",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/db.py"
+    },
+    {
+      "after_sha256": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/master_card.py"
+    },
+    {
+      "after_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "1211250019cf16c74f28d96539606803db92fe9a204eddfbb2a7339d174085db",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/profile_library.py"
+    },
+    {
+      "after_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/publikaciya.py"
+    },
+    {
+      "after_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/publish_transaction_guard.py"
+    },
+    {
+      "after_sha256": "8f6d010242ab7df297fe0ad2ee35233d80c7f5005ffaef669d8332caba9fffd2",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/source_policy.py"
+    },
+    {
+      "after_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": null,
+        "state": "ABSENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/spec_publication.py"
+    },
+    {
+      "after_sha256": "48a3f8e88bb214d6632513b6ee0b884a0d3bd95cb4bc2e786426fec42e4b2441",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/ua_additional_spec.py"
+    },
+    {
+      "after_sha256": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+      "backup": "EXCLUSIVE_SESSION_BACKUP_BEFORE_WRITE",
+      "before": {
+        "sha256": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae",
+        "state": "PRESENT"
+      },
+      "mutation": "HASH_CONDITIONAL_CODE_FILE_ONLY",
+      "path": "/home/Carix/vin_spec_service.py"
+    }
+  ],
+  "crm_html_media_writes": 0,
+  "current_main_verified": false,
+  "execution_identity": "UNASSIGNED",
+  "inventory_sha256": "8395e0bcf311f7c1a3c4167edd7ee5a511282a6742c25d8a3825f2a671771907",
+  "live_observation": {
+    "capture_receipt_sha256": "dadf4e9da5d9d568a9d1f593f17e4d3a3969f2fc8c520823945b9331ba06dea0",
+    "captured_at": "2026-09-09T10:54:07.975345+00:00",
+    "files": {
+      "ai_filter.py": {
+        "sha256": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
+        "state": "PRESENT"
+      },
+      "analitika_wsgi.py": {
+        "sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+        "state": "PRESENT"
+      },
+      "autopilot_inbox/cloud/task_083_catalog_dedup/installer.py": {
+        "sha256": "13dbcbced164c73bb1767fee6d35ca9597c14b552baaeb31ebbf90cad70b1b46",
+        "state": "PRESENT"
+      },
+      "car_number_allocator.py": {
+        "sha256": null,
+        "state": "ABSENT"
+      },
+      "card_lifecycle.py": {
+        "sha256": null,
+        "state": "ABSENT"
+      },
+      "card_shell.py": {
+        "sha256": null,
+        "state": "ABSENT"
+      },
+      "cars_schema.py": {
+        "sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+        "state": "PRESENT"
+      },
+      "cars_ui.py": {
+        "sha256": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+        "state": "PRESENT"
+      },
+      "db.py": {
+        "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+        "state": "PRESENT"
+      },
+      "master_card.py": {
+        "sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+        "state": "PRESENT"
+      },
+      "profile_library.py": {
+        "sha256": "1211250019cf16c74f28d96539606803db92fe9a204eddfbb2a7339d174085db",
+        "state": "PRESENT"
+      },
+      "publikaciya.py": {
+        "sha256": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
+        "state": "PRESENT"
+      },
+      "publish_transaction_guard.py": {
+        "sha256": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+        "state": "PRESENT"
+      },
+      "source_policy.py": {
+        "sha256": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38",
+        "state": "PRESENT"
+      },
+      "spec_publication.py": {
+        "sha256": null,
+        "state": "ABSENT"
+      },
+      "ua_additional_spec.py": {
+        "sha256": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
+        "state": "PRESENT"
+      },
+      "vin_spec_service.py": {
+        "sha256": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae",
+        "state": "PRESENT"
+      }
+    }
+  },
+  "no_repeat": "Use same existing recovery session and exact plan; no new TASK120 or production task",
+  "observation_only": true,
+  "observed_main": "8866d83e52197703a2f148ec882d560090ed62c9",
+  "overall_gate_b": "NOT_EVALUATED",
+  "owner_command": null,
+  "readiness_sha256": "ca882be276f6b6a0a3f0a87182b83171c021d8f4155736ba32fdbdfcc595e28f",
+  "required_evidence": [
+    {
+      "id": "fresh_main_and_execution_identity",
+      "requirement": "Current main, unique existing run/nonce/epoch and exact plan binding",
+      "status": "UPSTREAM_VERIFICATION_REQUIRED"
+    },
+    {
+      "id": "authenticated_live_preconditions",
+      "requirement": "All 17 live path hashes or explicitly proven absence, plus three dependency hashes",
+      "status": "UPSTREAM_VERIFICATION_REQUIRED"
+    },
+    {
+      "id": "platform_pause_ownership",
+      "requirement": "Fresh account readback of four original task IDs/settings and original webapp enabled state",
+      "status": "UPSTREAM_VERIFICATION_REQUIRED"
+    },
+    {
+      "current_exact_blocker": "No documented PA API proves full old-process drain; UI task/console process lists and Kill exist, old WSGI termination remains unproven.",
+      "id": "all_prior_writer_drain",
+      "requirement": "Provider-confirmed termination of prior Always On, cron/manual and old WSGI writers, including waiters",
+      "status": "UPSTREAM_VERIFICATION_REQUIRED"
+    },
+    {
+      "id": "loaded_new_runtime",
+      "requirement": "Verified handoff and loaded WSGI/worker hashes, health readback before resume",
+      "status": "UPSTREAM_VERIFICATION_REQUIRED"
+    },
+    {
+      "id": "exact_owner_authorization",
+      "requirement": "Separate exact-plan command required by the verified recovery route",
+      "status": "UPSTREAM_VERIFICATION_REQUIRED"
+    },
+    {
+      "id": "current_runtime_canary",
+      "requirement": "Versioned canary for changed runtime; historical v1 PASS is not reused",
+      "status": "UPSTREAM_VERIFICATION_REQUIRED"
+    },
+    {
+      "id": "overall_gate_b_and_source10",
+      "requirement": "Actual final17v2 execution plus permitted source10 evidence and remaining full Gate B checks",
+      "status": "UPSTREAM_VERIFICATION_REQUIRED"
+    }
+  ],
+  "rollback": {
+    "crash": "KEEP_TASKS_PAUSED_REACQUIRE_VERIFIED_OWNERSHIP_THEN_ROLLBACK_ONLY",
+    "foreign_write": "STOP_DO_NOT_OVERWRITE",
+    "mode": "EXACT_OWNED_BACKUP_BYTES_MODES_MTIME",
+    "resume": "Only upstream verified terminal and fresh loaded-runtime health allow original task/webapp restoration",
+    "terminal_readback": "CodeHandoff.read_terminal; old filenames or prior PASS are not current proof"
+  },
+  "schema": "UA-ART-MAINTENANCE-READINESS-V2",
+  "status": "BLOCKED_BEFORE_EXACT_EXECUTION_PLAN",
+  "tasks": [
+    {
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "description": "",
+      "enabled": true,
+      "extra": {
+        "user": "Carix"
+      },
+      "id": 266084,
+      "kind": "always_on",
+      "maintenance_action": "TEMPORARILY_DISABLE_SAME_ID",
+      "restore_enabled": true
+    },
+    {
+      "command": "cd /home/Carix/autopilot_inbox/cloud/seo_rehab_guard_068 && python3.10 seo_rehab_guard_068_repair.py --dry-run",
+      "description": "seo068 ten-run production dry-run fallback",
+      "enabled": true,
+      "expiry": null,
+      "extra": {
+        "user": "Carix"
+      },
+      "hour": 21,
+      "id": 1502215,
+      "interval": "daily",
+      "kind": "schedule",
+      "maintenance_action": "TEMPORARILY_DISABLE_SAME_ID",
+      "minute": 28,
+      "restore_enabled": true
+    },
+    {
+      "command": "cd /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup && python3.10 installer.py install",
+      "description": "task083 install fallback",
+      "enabled": true,
+      "expiry": null,
+      "extra": {
+        "user": "Carix"
+      },
+      "hour": 8,
+      "id": 1502679,
+      "interval": "daily",
+      "kind": "schedule",
+      "maintenance_action": "TEMPORARILY_DISABLE_SAME_ID",
+      "minute": 2,
+      "restore_enabled": true
+    },
+    {
+      "command": "set -e; mkdir -p '/home/Carix/autopilot_inbox/cloud/task_096_tech_spec_ai_crm/data_enrichment'",
+      "description": "TASK096 v7 1788202686 fallback-1",
+      "enabled": true,
+      "expiry": null,
+      "extra": {
+        "user": "Carix"
+      },
+      "hour": 19,
+      "id": 1505035,
+      "interval": "daily",
+      "kind": "schedule",
+      "maintenance_action": "TEMPORARILY_DISABLE_SAME_ID",
+      "minute": 0,
+      "restore_enabled": true
+    }
+  ],
+  "terminal_source_pins": {
+    "code_handoff_v2.py": "08e013756a1ffe89043904efeb878d1d7318d67cdb5c628573f3b26cb454fc55",
+    "handoff_v2_server_gate.py": "3e4407e6c6980ae87daace9e9c7cca96e700a8579cd0f11db91d0797c7f05995",
+    "platform_control.py": "82489cd9dd20331ea90b668138c12f5c594a1e40df186f7170fd7b783ce612d9",
+    "server_fence.py": "199a8744b3dd335899adcac92c52e30c462d7b471898d6b94a7ba944b9f05b85"
+  },
+  "unchanged_dependencies": {
+    "catalog_design_golden.html": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3",
+    "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+  },
+  "webapp": {
+    "domain": "www.uaart.com.ua",
+    "impact": "Webapp service is temporarily unavailable during the window; disabling does not prove old WSGI drain.",
+    "maintenance_action": "DISABLE_DURING_REVIEWED_WINDOW_THEN_RESTORE_EXACT_ORIGINAL_STATE",
+    "original_enabled": "UNOBSERVED",
+    "source_directory": "/home/Carix/mysite",
+    "wsgi_path": "/var/www/www_uaart_com_ua_wsgi.py"
+  }
+}

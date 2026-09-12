@@ -1,0 +1,80 @@
+{
+  "policy_version": "UA-ART-SPEC-AUTO10-RESTORE-V1",
+  "audited_on": "2026-09-09T03:28:41.928898+00:00",
+  "curated_library_audited_on": "2026-09-04",
+  "execution_origin": "local environment; worker verification pending",
+  "network_requested": false,
+  "source_count": 10,
+  "sources": {
+    "vpic.nhtsa.dot.gov": {
+      "status": "NOT_RUN",
+      "probe_url": "https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/kia?format=json",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    },
+    "auto-data.net": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-b-180-1.8-cdi-109hp-7g-dct-18833",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    },
+    "carwiki.co.kr": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    },
+    "auto.danawa.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://auto.danawa.com/auto/?Lineup=42280&Model=3260%2C3151&Tab=spec&Work=model&pcUse=y",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    },
+    "carisyou.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.carisyou.com/car/5688/Spec/54625",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    },
+    "ultimatespecs.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/24345/Mercedes-Benz-B-Class-%28W245%29-B180-Autotronic.html",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    },
+    "automobile-catalog.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.automobile-catalog.com/car/2010/1549490/mercedes-benz_b_180_autotronic.html",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    },
+    "cars-data.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://cars-data.com/en/mercedes-benz/b-class/w245/b-170-35607--35607/specs",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    },
+    "carfolio.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    },
+    "encycarpedia.com": {
+      "status": "NOT_RUN",
+      "probe_url": "https://www.encycarpedia.com/mercedes/05-b-170-mpv",
+      "facts": 0,
+      "reason": "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
+    }
+  },
+  "pass_count": 0,
+  "not_run_count": 10,
+  "vin_sent": false,
+  "production_touched": false,
+  "limitations": [
+    "Offline fixtures do not prove live source availability or current markup.",
+    "A model-page match is not proof of factory options for an individual VIN.",
+    "vPIC VIN identity decoding requires a separate approved worker check.",
+    "Carisyou legacy probe has no reviewed vehicle identity and remains NOT_RUN."
+  ]
+}

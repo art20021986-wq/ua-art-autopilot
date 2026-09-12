@@ -1,0 +1,737 @@
+{
+  "checks": [
+    {
+      "audit": {
+        "data_status": "READY",
+        "rows": 1,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_reference": "reviewed_template_pin",
+        "status": "PASS",
+        "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+        "visible_vin_count": 1
+      },
+      "check": "primary_spec_and_single_vin",
+      "path": "video/UA-0001.html"
+    },
+    {
+      "audit": {
+        "data_status": "READY",
+        "rows": 1,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_reference": "reviewed_template_pin",
+        "status": "PASS",
+        "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+        "visible_vin_count": 1
+      },
+      "check": "primary_spec_and_single_vin",
+      "path": "video/UA-0002.html"
+    },
+    {
+      "check": "catalog_shell",
+      "folder": "video",
+      "same": true
+    },
+    {
+      "audit": {
+        "data_status": "READY",
+        "rows": 1,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_reference": "reviewed_template_pin",
+        "status": "PASS",
+        "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+        "visible_vin_count": 1
+      },
+      "check": "primary_spec_and_single_vin",
+      "path": "site/UA-0001.html"
+    },
+    {
+      "audit": {
+        "data_status": "READY",
+        "rows": 1,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_reference": "reviewed_template_pin",
+        "status": "PASS",
+        "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+        "visible_vin_count": 1
+      },
+      "check": "primary_spec_and_single_vin",
+      "path": "site/UA-0002.html"
+    },
+    {
+      "check": "catalog_shell",
+      "folder": "site",
+      "same": true
+    }
+  ],
+  "fault_rollback": {
+    "changed_html_at_failure": [
+      "video/katalog.html",
+      "video/UA-0002.html",
+      "video/UA-0002-diag.html",
+      "site/UA-0002.html",
+      "site/UA-0002-diag.html"
+    ],
+    "evidence": {
+      "backup_root": "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/rezerv_publikacii/TASK083/20260909T081800Z-006ad47ce4b2",
+      "base_results": {
+        "UA-0002": {
+          "message": "Страница UA-0002 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0002.html?v=1788941882",
+          "ok": true
+        }
+      },
+      "catalog": null,
+      "codes": [
+        "UA-0002"
+      ],
+      "contract_id": "UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0",
+      "error": "OSError:SYNTHETIC_ONE_SHOT_SECOND_CATALOG_WRITE_FAILURE",
+      "mode": "INSTALL",
+      "published_rows_sha256_before": "1fbf6c72d67f82e8cd83e87dcefa358ce2b2534dd3f41071165338bf4f58cc5c",
+      "rollback": {
+        "backup_root": "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/rezerv_publikacii/TASK083/20260909T081800Z-006ad47ce4b2",
+        "removed": [],
+        "restored": [
+          "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/site/UA-0002-diag.html",
+          "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/site/UA-0002.html",
+          "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/video/UA-0002-diag.html",
+          "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/video/UA-0002.html",
+          "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/video/katalog.html"
+        ]
+      },
+      "staged_diagnostics": {
+        "UA-0002": "d5a3b46be1703e18e2f81e2b41eb7592b14b286b37d58cb59ee3c8e5a2479e60"
+      },
+      "status": "FAIL",
+      "verification": null
+    },
+    "exact_all_html_restored": true,
+    "injected": [
+      "site/katalog.html"
+    ],
+    "status": "PASS",
+    "synthetic_change": "UA-0002 price_uah 15000 -> 16000 before publication; restored to 15000 after scenario"
+  },
+  "inputs": {
+    "golden_sha256": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3",
+    "modules": {
+      "card_lifecycle.py": {
+        "candidate_sha256_before_relocation": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+        "captured_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+        "literal_relocations": [],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7"
+      },
+      "card_shell.py": {
+        "candidate_sha256_before_relocation": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+        "captured_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+        "literal_relocations": [],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a"
+      },
+      "catalog_design_guard.py": {
+        "candidate_sha256_before_relocation": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+        "captured_sha256": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+        "literal_relocations": [
+          {
+            "line": 22,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "1ac943db01ea0fa27d2216a7bad98b44b76758cb0f7632786fed70b41641207a"
+      },
+      "db.py": {
+        "candidate_sha256_before_relocation": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+        "captured_sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+        "literal_relocations": [
+          {
+            "line": 76,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 77,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 900,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 901,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "e00cffd9d3b31f31baed90996c690981780185a9e4f5703105db3e35c47a4567"
+      },
+      "master_card.py": {
+        "candidate_sha256_before_relocation": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8",
+        "captured_sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+        "literal_relocations": [
+          {
+            "line": 9,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 1463,
+            "literal_sha256": "8d72e31c80f02bb81c64ab1e66182b6671df09bb14f3a5e651c4cd06facdfb34",
+            "occurrences": 1
+          },
+          {
+            "line": 1463,
+            "literal_sha256": "01b4e8bad30c73d6a577f2d4db1df95e716f9ba28c942f03276e47aa8d89b0cc",
+            "occurrences": 1
+          },
+          {
+            "line": 1840,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 1840,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          },
+          {
+            "line": 2201,
+            "literal_sha256": "bdc5edfffd4ad1b0f81a37a8aa0f2339a64291608610d40e5f0f22f1f4aa89bc",
+            "occurrences": 1
+          },
+          {
+            "line": 2261,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 2261,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          },
+          {
+            "line": 2855,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": true,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "e947db7c2d57fb600b60697fa6df6fb14be1693d9e4df3d8088d9fe2d3e967b5"
+      },
+      "profile_library.py": {
+        "candidate_sha256_before_relocation": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+        "captured_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+        "literal_relocations": [],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6"
+      },
+      "publikaciya.py": {
+        "candidate_sha256_before_relocation": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+        "captured_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+        "literal_relocations": [
+          {
+            "line": 10,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 267,
+            "literal_sha256": "93beac4d8d22984bf297edd1983639eec7d680cecdee2448caca9501f30d5fa0",
+            "occurrences": 1
+          },
+          {
+            "line": 587,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "78419f035c28c34fe9ab677775c50a9ec8f8cdd419391c96f9fe011020e43561"
+      },
+      "publish_transaction_guard.py": {
+        "candidate_sha256_before_relocation": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+        "captured_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+        "literal_relocations": [
+          {
+            "line": 31,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "c559f9abe89f5d8e122d9186e62066871294ccf4620547f3ee28986cfbb29a0d"
+      },
+      "source_policy.py": {
+        "candidate_sha256_before_relocation": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+        "captured_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+        "literal_relocations": [],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      },
+      "spec_publication.py": {
+        "candidate_sha256_before_relocation": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+        "captured_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+        "literal_relocations": [
+          {
+            "line": 280,
+            "literal_sha256": "c48fdad1e1df62122795fb354451bce6610dff2c7979ee9a8fdb85080058c03a",
+            "occurrences": 1
+          },
+          {
+            "line": 394,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "606b7baa1f551cc08e97e7d8faefd92cfbe59007ac15deb21726348a8b9372cd"
+      },
+      "stranica.py": {
+        "candidate_sha256_before_relocation": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc",
+        "captured_sha256": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc",
+        "literal_relocations": [
+          {
+            "line": 15,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 701,
+            "literal_sha256": "84b82f138a5e4633460f5c4c927abf76f90df5e29c82ee2457b72c652ab8f934",
+            "occurrences": 1
+          },
+          {
+            "line": 919,
+            "literal_sha256": "8d72e31c80f02bb81c64ab1e66182b6671df09bb14f3a5e651c4cd06facdfb34",
+            "occurrences": 1
+          },
+          {
+            "line": 919,
+            "literal_sha256": "01b4e8bad30c73d6a577f2d4db1df95e716f9ba28c942f03276e47aa8d89b0cc",
+            "occurrences": 1
+          },
+          {
+            "line": 1721,
+            "literal_sha256": "36f863becdb23d3636622478e3fff9f48ad08f776a42d8a107b1c462473fbbc0",
+            "occurrences": 1
+          },
+          {
+            "line": 2633,
+            "literal_sha256": "4b59c8372e694dffab4384931bd4251483d2c784907b112c7871447c6cd6ea22",
+            "occurrences": 1
+          },
+          {
+            "line": 2682,
+            "literal_sha256": "8d72e31c80f02bb81c64ab1e66182b6671df09bb14f3a5e651c4cd06facdfb34",
+            "occurrences": 1
+          },
+          {
+            "line": 2875,
+            "literal_sha256": "4b59c8372e694dffab4384931bd4251483d2c784907b112c7871447c6cd6ea22",
+            "occurrences": 1
+          },
+          {
+            "line": 2893,
+            "literal_sha256": "7860529380408555ac66d043513d4edd5dc80aceaef0d145ed423ea9fce8de54",
+            "occurrences": 1
+          },
+          {
+            "line": 2894,
+            "literal_sha256": "5bd6a2b716323f986e523b3945458120b7005f5f2c5efc86e6ce6761a5e8cf90",
+            "occurrences": 1
+          },
+          {
+            "line": 3048,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 3048,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          },
+          {
+            "line": 3372,
+            "literal_sha256": "bdc5edfffd4ad1b0f81a37a8aa0f2339a64291608610d40e5f0f22f1f4aa89bc",
+            "occurrences": 1
+          },
+          {
+            "line": 3432,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 3432,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "30ea298d09bc3cc9fdb2ee63cc85fe5518ac707bf47e0a792b009ba93fe30324"
+      },
+      "ua_additional_spec.py": {
+        "candidate_sha256_before_relocation": "48a3f8e88bb214d6632513b6ee0b884a0d3bd95cb4bc2e786426fec42e4b2441",
+        "captured_sha256": "5a03cb99d1f4514539956f32a75e09e119e2e9049a91da6326adb32877518e56",
+        "literal_relocations": [
+          {
+            "line": 14,
+            "literal_sha256": "d47f953a8ac8df98f9408dc7e9a9d6aef9984eed311b119d0b0388c5f0050267",
+            "occurrences": 1
+          },
+          {
+            "line": 655,
+            "literal_sha256": "c48fdad1e1df62122795fb354451bce6610dff2c7979ee9a8fdb85080058c03a",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": true,
+        "staged_sha256": "136b4dd6574e125ef04fa118194df33c3707fe448328957d5c4718569342dad7"
+      },
+      "vin_spec_service.py": {
+        "candidate_sha256_before_relocation": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+        "captured_sha256": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+        "literal_relocations": [
+          {
+            "line": 32,
+            "literal_sha256": "d47f953a8ac8df98f9408dc7e9a9d6aef9984eed311b119d0b0388c5f0050267",
+            "occurrences": 1
+          },
+          {
+            "line": 34,
+            "literal_sha256": "c48fdad1e1df62122795fb354451bce6610dff2c7979ee9a8fdb85080058c03a",
+            "occurrences": 1
+          }
+        ],
+        "reviewed_master_shell_patch": false,
+        "reviewed_public_contract_patch": false,
+        "staged_sha256": "ccd3127d1c81200d1ee3ebf39e42f54e4eaed6b495c687b08c8c901d02e4b2f2"
+      }
+    }
+  },
+  "io_guard": {
+    "network": 0,
+    "outside_read": 0,
+    "outside_write": 0,
+    "process": 0
+  },
+  "production_changed": false,
+  "production_imported": false,
+  "public_contract_negative_controls": {
+    "rejections": {
+      "changed_fact": [
+        "canonical spec/VIN: SPECIFICATION_DIFFERS_FROM_CONFIRMED_DATA"
+      ],
+      "changed_primary_action": [
+        "primary action != 1 exact Задаток 500 $"
+      ],
+      "duplicate_vin": [
+        "canonical spec/VIN: SHELL_VISIBLE_VIN_COUNT_OR_IDENTITY"
+      ],
+      "extra_static_style": [
+        "canonical spec/VIN: UNREVIEWED_NEW_CARD_SHELL_ASSETS"
+      ],
+      "missing_diagnostic_link": [
+        "diagnostics links != 1"
+      ],
+      "missing_spec": [
+        "additional spec blocks != 1",
+        "additional spec element != 1",
+        "canonical spec/VIN: SPECIFICATION_BLOCK_MISSING",
+        "additional spec/stage order"
+      ],
+      "spec_after_stage": [
+        "additional spec/stage order"
+      ],
+      "wrong_single_vin": [
+        "primary VIN differs from operator CRM"
+      ]
+    },
+    "status": "PASS",
+    "valid_page_errors": []
+  },
+  "publish": {
+    "evidence": {
+      "backup_root": "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/rezerv_publikacii/TASK083/20260909T081754Z-03c654c3b583",
+      "base_results": {
+        "UA-0001": {
+          "message": "Страница UA-0001 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0001.html?v=1788941875",
+          "ok": true
+        },
+        "UA-0002": {
+          "message": "Страница UA-0002 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0002.html?v=1788941876",
+          "ok": true
+        }
+      },
+      "catalog": {
+        "candidate": {
+          "article_cards": 2,
+          "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+          "counts": {
+            "all": 2,
+            "georgia": 0,
+            "kiev": 0,
+            "korea": 0,
+            "sea": 2
+          },
+          "errors": [],
+          "filters": {
+            "all": 1,
+            "georgia": 1,
+            "kiev": 1,
+            "korea": 1,
+            "sea": 1
+          },
+          "ids": [
+            "UA-0002",
+            "UA-0001"
+          ],
+          "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+          "status": "PASS"
+        },
+        "design_guard": {
+          "article_cards": 2,
+          "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+          "counts": {
+            "all": 2,
+            "georgia": 0,
+            "kiev": 0,
+            "korea": 0,
+            "sea": 2
+          },
+          "errors": [],
+          "filters": {
+            "all": 1,
+            "georgia": 1,
+            "kiev": 1,
+            "korea": 1,
+            "sea": 1
+          },
+          "ids": [
+            "UA-0002",
+            "UA-0001"
+          ],
+          "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+          "status": "PASS"
+        },
+        "installed": {
+          "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/site/katalog.html": {
+            "audit": {
+              "article_cards": 2,
+              "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+              "counts": {
+                "all": 2,
+                "georgia": 0,
+                "kiev": 0,
+                "korea": 0,
+                "sea": 2
+              },
+              "errors": [],
+              "filters": {
+                "all": 1,
+                "georgia": 1,
+                "kiev": 1,
+                "korea": 1,
+                "sea": 1
+              },
+              "ids": [
+                "UA-0002",
+                "UA-0001"
+              ],
+              "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+              "status": "PASS"
+            },
+            "sha256": "1f6a9b0e5b77612de915790ad870b140f21c48b1e8fb36abbaf94e4e0c5ee7b8"
+          },
+          "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/video/katalog.html": {
+            "audit": {
+              "article_cards": 2,
+              "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+              "counts": {
+                "all": 2,
+                "georgia": 0,
+                "kiev": 0,
+                "korea": 0,
+                "sea": 2
+              },
+              "errors": [],
+              "filters": {
+                "all": 1,
+                "georgia": 1,
+                "kiev": 1,
+                "korea": 1,
+                "sea": 1
+              },
+              "ids": [
+                "UA-0002",
+                "UA-0001"
+              ],
+              "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+              "status": "PASS"
+            },
+            "sha256": "1f6a9b0e5b77612de915790ad870b140f21c48b1e8fb36abbaf94e4e0c5ee7b8"
+          }
+        },
+        "published_rows_sha256": "021ced2faf6ff2e7839cbb46d3b1a190302e1b5c877a86f1284688e590a2e979",
+        "target": "UA-0002"
+      },
+      "codes": [
+        "UA-0001",
+        "UA-0002"
+      ],
+      "contract_id": "UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0",
+      "mode": "INSTALL",
+      "published_rows_sha256_after": "021ced2faf6ff2e7839cbb46d3b1a190302e1b5c877a86f1284688e590a2e979",
+      "published_rows_sha256_before": "021ced2faf6ff2e7839cbb46d3b1a190302e1b5c877a86f1284688e590a2e979",
+      "rollback": null,
+      "staged_diagnostics": {
+        "UA-0001": "0a06b6ab03c22c34a818d7a3eb429a1dff373404f3c3ed32baccf55876884477",
+        "UA-0002": "5993323f6c080e166f93edd4ccf80bc1f561a16684746eaca28143083a772ad3"
+      },
+      "status": "PASS",
+      "verification": {
+        "catalogs": {
+          "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/site/katalog.html": {
+            "article_cards": 2,
+            "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+            "counts": {
+              "all": 2,
+              "georgia": 0,
+              "kiev": 0,
+              "korea": 0,
+              "sea": 2
+            },
+            "errors": [],
+            "filters": {
+              "all": 1,
+              "georgia": 1,
+              "kiev": 1,
+              "korea": 1,
+              "sea": 1
+            },
+            "ids": [
+              "UA-0002",
+              "UA-0001"
+            ],
+            "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+            "status": "PASS"
+          },
+          "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/video/katalog.html": {
+            "article_cards": 2,
+            "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+            "counts": {
+              "all": 2,
+              "georgia": 0,
+              "kiev": 0,
+              "korea": 0,
+              "sea": 2
+            },
+            "errors": [],
+            "filters": {
+              "all": 1,
+              "georgia": 1,
+              "kiev": 1,
+              "korea": 1,
+              "sea": 1
+            },
+            "ids": [
+              "UA-0002",
+              "UA-0001"
+            ],
+            "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+            "status": "PASS"
+          }
+        },
+        "published_rows_sha256": "021ced2faf6ff2e7839cbb46d3b1a190302e1b5c877a86f1284688e590a2e979",
+        "targets": {
+          "UA-0001": {
+            "category": "more",
+            "files": {
+              "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/site": {
+                "diag_sha256": "740a28cc1d3372f0b44c67783c2696ec7268d3f7e18324eb071a93f95ee2fc81",
+                "primary": {
+                  "bytes": 37448,
+                  "diag_links": 1,
+                  "stage": 2
+                },
+                "primary_sha256": "6a36abcfc6b8fb93973036dbc1b54234307b3690228f57c5ae24a0d347bcad10"
+              },
+              "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/video": {
+                "diag_sha256": "740a28cc1d3372f0b44c67783c2696ec7268d3f7e18324eb071a93f95ee2fc81",
+                "primary": {
+                  "bytes": 37448,
+                  "diag_links": 1,
+                  "stage": 2
+                },
+                "primary_sha256": "6a36abcfc6b8fb93973036dbc1b54234307b3690228f57c5ae24a0d347bcad10"
+              }
+            },
+            "stage": 2,
+            "status": "sea_transit"
+          },
+          "UA-0002": {
+            "category": "more",
+            "files": {
+              "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/site": {
+                "diag_sha256": "f0fd1c20b37ff120d328d7bd0595f8e18429f4f2b8352ed2fdce00207a5cf1ee",
+                "primary": {
+                  "bytes": 37448,
+                  "diag_links": 1,
+                  "stage": 2
+                },
+                "primary_sha256": "403567d95393bae41c7e387c16700658091d87bec523755b7c2b88de1a3269f0"
+              },
+              "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/runtime/video": {
+                "diag_sha256": "f0fd1c20b37ff120d328d7bd0595f8e18429f4f2b8352ed2fdce00207a5cf1ee",
+                "primary": {
+                  "bytes": 37448,
+                  "diag_links": 1,
+                  "stage": 2
+                },
+                "primary_sha256": "403567d95393bae41c7e387c16700658091d87bec523755b7c2b88de1a3269f0"
+              }
+            },
+            "stage": 2,
+            "status": "sea_transit"
+          }
+        }
+      }
+    },
+    "message": "Страницы, диагностика и оба каталога опубликованы одним проверенным пакетом: UA-0001, UA-0002",
+    "ok": true
+  },
+  "repeat": {
+    "byte_identical": false,
+    "changed_paths": [
+      "video/UA-0002.html",
+      "video/UA-0002-diag.html",
+      "site/UA-0002.html",
+      "site/UA-0002-diag.html"
+    ],
+    "generation_timestamp_fields": [
+      "URL ?v= epoch",
+      "обновлено date/time"
+    ],
+    "message": "Страницы, диагностика и оба каталога опубликованы одним проверенным пакетом: UA-0002",
+    "ok": true,
+    "only_known_generation_timestamps_changed": true
+  },
+  "scope": "ISOLATED_CAPTURED_FULL_PUBLISHER",
+  "status": "PASS",
+  "synthetic_data": true
+}

@@ -1,0 +1,83 @@
+{
+  "checked_at_utc": "2026-09-09T05:57:27.002371+00:00",
+  "scope": "LOCAL_CANDIDATE_V7",
+  "manifest": {
+    "contract_id": "UA-ART-SPEC-AUTO-10-RESTORE-001-v1.0",
+    "files": {
+      "card_lifecycle.py": {
+        "after_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+        "before_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+        "changed": false,
+        "input_kind": "runtime_bundle"
+      },
+      "card_shell.py": {
+        "after_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+        "before_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+        "changed": false,
+        "input_kind": "runtime_bundle"
+      },
+      "cars_ui.py": {
+        "after_sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+        "before_sha256": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+        "changed": true,
+        "input_kind": "snapshot"
+      },
+      "profile_library.py": {
+        "after_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+        "before_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+        "changed": false,
+        "input_kind": "runtime_bundle"
+      },
+      "publikaciya.py": {
+        "after_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+        "before_sha256": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
+        "changed": true,
+        "input_kind": "snapshot"
+      },
+      "publish_transaction_guard.py": {
+        "after_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+        "before_sha256": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+        "changed": true,
+        "input_kind": "snapshot"
+      },
+      "source_policy.py": {
+        "after_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+        "before_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+        "changed": false,
+        "input_kind": "runtime_bundle"
+      },
+      "spec_publication.py": {
+        "after_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+        "before_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+        "changed": false,
+        "input_kind": "runtime_bundle"
+      },
+      "ua_additional_spec.py": {
+        "after_sha256": "5a03cb99d1f4514539956f32a75e09e119e2e9049a91da6326adb32877518e56",
+        "before_sha256": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
+        "changed": true,
+        "input_kind": "snapshot"
+      },
+      "vin_spec_service.py": {
+        "after_sha256": "b3a90347c15e3063abe072f4b159b78e392a2da8f2e15f2bf9a37ba59bc9e7a7",
+        "before_sha256": "b3a90347c15e3063abe072f4b159b78e392a2da8f2e15f2bf9a37ba59bc9e7a7",
+        "changed": false,
+        "input_kind": "runtime_bundle"
+      }
+    },
+    "gate_b_remaining": [
+      "Verify consistent source snapshot and current process module bindings.",
+      "Map flattened modules to reviewed actual installation paths.",
+      "Validate current canonical data, every publication path and rollback route.",
+      "Close Gate B and use the existing authorized production/recovery route; owner's placement command is recorded."
+    ],
+    "module_count": 10,
+    "production_changed": false,
+    "publication_mode": "directory_atomic",
+    "runtime_verified": false,
+    "source_layout": "flattened_explicit_snapshot",
+    "status": "OFFLINE_CANDIDATE_COMPILED"
+  },
+  "previous_runtime_sha256": "see candidate-runtime-diff.json",
+  "production_changed": false
+}

@@ -1,0 +1,13 @@
+...........................................................................................................usage: python -m unittest [-h] --root ROOT --output OUTPUT [--spec-db SPEC_DB]
+python -m unittest: error: OUTPUT_MUST_NOT_EXIST
+.....usage: python -m unittest [-h] --root ROOT --output OUTPUT [--spec-db SPEC_DB]
+python -m unittest: error: OUTPUT_MUST_BE_OUTSIDE_ROOT
+usage: python -m unittest [-h] --root ROOT --output OUTPUT [--spec-db SPEC_DB]
+python -m unittest: error: OUTPUT_MUST_BE_OUTSIDE_ROOT
+........................................Specification identity excluded: UA-0001 LIFECYCLE_RETIRED_AUTO_NUMBER_REUSED
+..............................
+----------------------------------------------------------------------
+Ran 182 tests in 4.654s
+
+OK
+{"status": "READ_ONLY_REPORT_WRITTEN", "output": "/tmp/tmpc6tl0w60/report.json", "runtime_verified": false, "consistent_snapshot": false}

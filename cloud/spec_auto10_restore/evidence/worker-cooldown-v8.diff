@@ -1,0 +1,78 @@
+--- candidate-errno22-v7/vin_spec_service.py
++++ candidate-v8/vin_spec_service.py
+@@ -39,7 +39,12 @@
+ WORKER_NAME = "uaart-spec-auto10-restore"
+ MAX_SYNC_ATTEMPTS = 3
+ RETRY_SECONDS = max(15, int(os.environ.get("UA_ART_SPEC_RETRY_SECONDS", "60")))
+-RECONCILE_SECONDS = max(60, int(os.environ.get("UA_ART_SPEC_RECONCILE_SECONDS", "300")))
++# Leave ordinary polling margin below the five-minute detection target. The
++# actual end-to-end SLA still requires a measured worker/backlog acceptance run.
++RECONCILE_SECONDS = max(60, int(os.environ.get("UA_ART_SPEC_RECONCILE_SECONDS", "240")))
++SYNC_FAILURE_COOLDOWN_SECONDS = max(60, min(300, int(
++    os.environ.get("UA_ART_SPEC_FAILURE_COOLDOWN_SECONDS", "300"))))
++RECOVERY_REVISION = "UA-ART-SPEC-AUTO10-RESTORE-V8-SYNC-COOLDOWN"
+ BACKLOG_SECONDS = 1.0
+ LOGGER = logging.getLogger(__name__)
+ IDENTITY_FIELDS = ("car_id", "vin", "brand", "model", "year", "fuel", "engine_cc", "transmission")
+@@ -266,6 +271,12 @@
+         meta_columns = set(_columns(conn, "additional_specification_meta"))
+         if "source_evidence_json" not in meta_columns:
+             conn.execute("ALTER TABLE additional_specification_meta ADD COLUMN source_evidence_json TEXT NOT NULL DEFAULT '{}'")
++        # Old exhausted jobs may have no deadline. Start one durable cooldown,
++        # without resetting their attempts or retrying on every scan/restart.
++        conn.execute("""UPDATE vin_spec_jobs SET site_sync_next_at=?
++            WHERE policy_version=? AND site_sync_status='FAILED'
++            AND site_sync_next_at IS NULL AND site_sync_token IS NULL""",
++            (_later(SYNC_FAILURE_COOLDOWN_SECONDS), source_policy.POLICY_VERSION))
+         conn.commit()
+     try:
+         os.chmod(SPEC_DB, 0o600)
+@@ -700,9 +711,11 @@
+         recovered = max(0, int(cursor.rowcount))
+         conn.execute("""UPDATE vin_spec_jobs SET site_sync_token=NULL,site_sync_started_at=NULL,
+             site_sync_status=CASE WHEN site_sync_attempts>=? THEN 'FAILED' ELSE 'PENDING' END,
+-            site_sync_detail='INTERRUPTED_RETRY',site_sync_next_at=?
++            site_sync_detail='INTERRUPTED_RETRY',site_sync_next_at=CASE
++                WHEN site_sync_attempts>=? THEN ? ELSE ? END
+             WHERE site_sync_status='RUNNING' AND (site_sync_started_at IS NULL OR site_sync_started_at<=?)""",
+-            (MAX_SYNC_ATTEMPTS, _later(RETRY_SECONDS), cutoff))
++            (MAX_SYNC_ATTEMPTS, MAX_SYNC_ATTEMPTS, _later(SYNC_FAILURE_COOLDOWN_SECONDS),
++             _later(RETRY_SECONDS), cutoff))
+         conn.commit()
+         return recovered
+ 
+@@ -952,8 +965,9 @@
+ def reconcile_published_cards() -> int:
+     """Schedule read/repair verification periodically, without refetching sources.
+ 
+-    Exhausted publication failures require an explicit retry or changed vehicle
+-    context. Successful checks get a fresh bounded budget on the next interval.
++    Each failed batch retains its error and exhausted budget during a durable
++    cooldown. A due batch may retry the same published identity automatically;
++    source-collection attempts and stored/manual facts are never reset here.
+     """
+     cards = read_cards()
+     _retire_absent_jobs(cards)
+@@ -976,7 +990,9 @@
+             cursor = conn.execute("""UPDATE vin_spec_jobs SET site_sync_status='PENDING',
+                 site_sync_attempts=0,site_sync_token=NULL WHERE car_uid=? AND vin=? AND input_hash=?
+                 AND policy_version=? AND status NOT IN ('SUPERSEDED','RUNNING','PROCESSING')
+-                AND site_sync_status IN ('PASS','UNCHANGED','NOT_REQUIRED')
++                AND site_sync_status IN ('PASS','UNCHANGED','NOT_REQUIRED','FAILED')
++                AND site_sync_token IS NULL
++                AND (site_sync_status<>'FAILED' OR site_sync_next_at IS NOT NULL)
+                 AND (site_sync_next_at IS NULL OR site_sync_next_at<=?)""",
+                 (card["car_uid"], card["vin"], input_fingerprint(card), source_policy.POLICY_VERSION, utc_now()))
+             count += max(0, cursor.rowcount)
+@@ -1063,7 +1079,10 @@
+         status, detail = "FAIL", (type(exc).__name__ + ":" + str(exc))[:500]
+     attempt = int(job.get("site_sync_attempts") or 0) + 1
+     durable_status = ("PENDING" if attempt < MAX_SYNC_ATTEMPTS else "FAILED") if status == "FAIL" else status
+-    next_at = _later(RECONCILE_SECONDS if status in {"PASS", "UNCHANGED"} else RETRY_SECONDS * attempt)
++    delay = (RECONCILE_SECONDS if status in {"PASS", "UNCHANGED"}
++             else SYNC_FAILURE_COOLDOWN_SECONDS if durable_status == "FAILED"
++             else RETRY_SECONDS * attempt)
++    next_at = _later(delay)
+     with connect_spec(False) as conn:
+         cursor = conn.execute("""UPDATE vin_spec_jobs SET site_sync_status=?,site_sync_detail=?,
+             site_sync_next_at=?,site_sync_token=NULL,site_sync_started_at=NULL

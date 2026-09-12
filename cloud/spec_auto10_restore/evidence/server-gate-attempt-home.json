@@ -1,0 +1,23 @@
+{
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "checked_at_utc": "2026-09-09T05:14:22.157444+00:00",
+  "status": "FAIL_BEFORE_TESTS",
+  "scope": "PYTHON310_ISOLATED_TEST_SUBGATE",
+  "overall_gate_b": "NOT_EVALUATED",
+  "python": "python3.10",
+  "stage": "/home/Carix/spec_gate_b_restore_20260909",
+  "server_console_id": "48109264",
+  "package_sha256": "a27649c5c6d304aee95527f2f12c1680c55ef0518e94caf7011fe4f5d1d59677",
+  "source_hashes_verified": 7,
+  "tests_run": 0,
+  "error": "OSError: [Errno 22] Invalid argument",
+  "operation": "prepare_candidate atomic directory rename with RENAME_NOREPLACE",
+  "server_report": "run-20260909T051420646548Z/server-gate-result.json",
+  "diagnostic_reproduction": "prepare_candidate.py --source run-20260909T051420646548Z/source-copy-readonly --output candidate-filesystem-check",
+  "production_changed": false,
+  "limitations": [
+    "This failure is not a network/access denial and does not prove a runtime publication failure.",
+    "The local builder requires RENAME_NOREPLACE support; this server home directory did not accept the operation.",
+    "No server tests were executed in this attempt."
+  ]
+}

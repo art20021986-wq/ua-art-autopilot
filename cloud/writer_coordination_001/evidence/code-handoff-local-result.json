@@ -1,0 +1,29 @@
+{
+  "application_imported": false,
+  "candidate_id": "UA-ART-SPEC-AUTO10-COMPLETE-17-V1",
+  "independent_review": {
+    "agent": "handoff_review",
+    "closures": [
+      "hardlink post-link interruption owned staging recovery",
+      "lease loss during verifier produces zero target writes",
+      "stale installed receipt after terminal fsync failure read as current rollback"
+    ],
+    "overall_gate_b": "NOT_EVALUATED",
+    "status": "BOUNDED_REVIEW_PASS",
+    "tests_passed": 23
+  },
+  "installer_sha256": "9c977cccdeea572cb20a9f97880fb24b6afade55075173e777bd9474e8cd057c",
+  "live_authority_drain_adapter": "NOT_CONNECTED",
+  "manifest_sha256": "d800e55813b6edc24322f7021e924dd0052915f07414b42bd02f0a7c234522f5",
+  "module_count": 17,
+  "observed_at": "2026-09-09T10:42:44.767352+00:00",
+  "overall_gate_b": "NOT_EVALUATED",
+  "production_changed": false,
+  "python": "3.12.14",
+  "source10_tested": false,
+  "status": "EXACT17_CANDIDATE_PURE_READ_COMPILE_PASS",
+  "test_count": 23,
+  "test_result": "PASS",
+  "test_scope": "Synthetic 17-file fixtures and test authority, real six-lock subprocess contention; in-process interruption simulation",
+  "tests_sha256": "bb5e523cea35f4504efb755e0480076a0fc3868b62e5f47adb0fde22247cc307"
+}

@@ -1,0 +1,21 @@
+{
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "observed_on_utc": "2026-09-09",
+  "main_commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+  "source": "state/AUTOPILOT_HALT.json",
+  "halted_at": "2026-09-07T14:48:16Z",
+  "halt_status": "EMERGENCY_HALT",
+  "halt_task": "TASK120-PUBLISH-UA-0017-UA-0018",
+  "halt_run_id": "34134692609",
+  "halt_reason": "CRITICAL Production pipeline failed; GitHub Actions run 34134692609; rollback reserved false; rollback performed false",
+  "enforcement_source": "automation/control_plane.py",
+  "enforcement_error": "AUTOMATIC_MODE_HALTED",
+  "recovery_exception": "allow_halt_for_recovery is reserved for the existing verified recovery path",
+  "owner_placement_command_received": true,
+  "owner_year_confirmation": "UA-0016: 2017",
+  "production_write_attempted": false,
+  "halt_changed": false,
+  "gate_b_status": "NOT_READY_FOR_PRODUCTION",
+  "note": "This is an observed existing release control, not an automatic-approval rejection and not a request for repeat deployment permission. An isolated staging test and private Preview do not close all Gate B checks.",
+  "rechecked_main_at_utc": "2026-09-09T05:27:07.337757+00:00"
+}

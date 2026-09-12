@@ -1,0 +1,12 @@
+test_byte_drift_missing_nested_module_and_extra_file_refused (test_complete17_crm_candidate.CrmCandidateCompositionTests.test_byte_drift_missing_nested_module_and_extra_file_refused) ... ok
+test_edited_pass_receipt_does_not_authorize_composition (test_complete17_crm_candidate.CrmCandidateCompositionTests.test_edited_pass_receipt_does_not_authorize_composition) ... ok
+test_exact_one_changed_module_and_separate_server_evidence (test_complete17_crm_candidate.CrmCandidateCompositionTests.test_exact_one_changed_module_and_separate_server_evidence) ... ok
+test_existing_output_and_symlinked_input_refused (test_complete17_crm_candidate.CrmCandidateCompositionTests.test_existing_output_and_symlinked_input_refused) ... /workspace/scratch/2d59224df460/spec-work/cloud/spec_auto10_restore/complete17_candidate.py:89: ResourceWarning: unclosed scandir iterator <posix.ScandirIterator object at 0x7efcdb0fccb0>
+  raise RuntimeError("OUTPUT_SYMLINK_FORBIDDEN")
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.864s
+
+OK

@@ -1,0 +1,4 @@
+Actual unittest verification summary, 9 September 2026 UTC.
+Command: python3 -I -B -m unittest discover -s spec-work/cloud/spec_auto10_restore/tests -p test_complete17_candidate.py -v
+Ran 8 tests in 1.607s. OK. Failures: 0. Errors: 0. Skipped: 0.
+Includes exact nested target/base preservation, source/helper/base drift, output conflict/overlap, invalid mapping/symlink, input drift before readiness, forged execution claim/flattened output, and injected manifest fsync failure with own-marker invalidation.

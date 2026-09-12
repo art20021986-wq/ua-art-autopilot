@@ -1,0 +1,35 @@
+test_account_quota_70_warning_keeps_install_allowed (test_code_handoff_v3.Tests) ... ok
+test_account_quota_80_heavy_gate (test_code_handoff_v3.Tests) ... ok
+test_account_quota_90_emergency_gate (test_code_handoff_v3.Tests) ... ok
+test_actual_writes_rolled_back (test_code_handoff_v3.Tests) ... ok
+test_backup_tampering (test_code_handoff_v3.Tests) ... ok
+test_competing_process_cannot_acquire_any_six_locks (test_code_handoff_v3.Tests) ... ok
+test_dependency_drift (test_code_handoff_v3.Tests) ... ok
+test_epoch_replay (test_code_handoff_v3.Tests) ... ok
+test_extra_candidate_file (test_code_handoff_v3.Tests) ... ok
+test_filesystem_absolute_capacity_still_blocks (test_code_handoff_v3.Tests) ... ok
+test_foreign_write_not_destroyed (test_code_handoff_v3.Tests) ... ok
+test_incomplete_preconditions (test_code_handoff_v3.Tests) ... ok
+test_install_code_only_keeps_all_locks (test_code_handoff_v3.Tests) ... ok
+test_interruption_after_replace_rolls_back_only (test_code_handoff_v3.Tests) ... ok
+test_missing_account_quota_rejected (test_code_handoff_v3.Tests) ... ok
+test_missing_authority (test_code_handoff_v3.Tests) ... ok
+test_new_file_post_link_crash_cleans_only_owned_stage (test_code_handoff_v3.Tests) ... ok
+test_no_repeat (test_code_handoff_v3.Tests) ... ok
+test_no_unpause_after_rollback (test_code_handoff_v3.Tests) ... ok
+test_old_installed_receipt_not_current_after_rollback (test_code_handoff_v3.Tests) ... ok
+test_partial_journal (test_code_handoff_v3.Tests) ... ok
+test_precondition_drift (test_code_handoff_v3.Tests) ... ok
+test_proof_loss_leaves_incomplete (test_code_handoff_v3.Tests) ... ok
+test_rejects_local_bool (test_code_handoff_v3.Tests) ... ok
+test_shared_filesystem_percent_does_not_fake_account_quota (test_code_handoff_v3.Tests) ... ok
+test_stale_account_quota_rejected (test_code_handoff_v3.Tests) ... ok
+test_stale_or_wrong_binding (test_code_handoff_v3.Tests) ... ok
+test_terminal_replay_reads_same_result_without_reinstall (test_code_handoff_v3.Tests) ... ok
+test_verifier_cannot_drop_lease_and_still_permit_write (test_code_handoff_v3.Tests) ... ok
+test_wrong_holder_process (test_code_handoff_v3.Tests) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 53.646s
+
+OK

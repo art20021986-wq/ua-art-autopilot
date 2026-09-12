@@ -1,0 +1,269 @@
+{
+  "application_modules_imported": false,
+  "database_static_binding": {
+    "base_rule": "directory containing db.py",
+    "canonical_db_if_this_installed_module_is_loaded": "/home/Carix/crm.db",
+    "connect_factory": "Soedinenie",
+    "connection_and_cursor_write_wrappers_present": true,
+    "cooperative_file_lock": "/home/Carix/.crm_db.lock",
+    "file": "/home/Carix/db.py",
+    "lock_released_on_commit_rollback_close": true,
+    "scope_limit": "Only callers using this connection wrapper are covered; direct sqlite3 connections and other files are not proven fenced. This corrects any inference that all CRM writes necessarily have no file lock.",
+    "source_lines": {
+      "base_db_file": 19,
+      "connect": 315,
+      "connection_class": 189,
+      "lock_acquisition": 120
+    }
+  },
+  "forecast_for_20260909_0802": {
+    "explanation": "For the acquired current stranica.py and master_card.py bytes, the installed generator patch takes its valid-marker branch and returns identical bytes, so it does not replace these generators. The ten specification candidate modules are outside the installer direct write set. Catalog transformations, optional core behavior, full preflight outcome and actual scheduled execution cannot be inferred without the remaining current inputs and runtime evidence. The schedule remains a coordinated catalog/generator writer, including rollback, rather than a proven individual-card specification remover.",
+    "full_installer_outcome_known": false,
+    "missing_current_inputs": [
+      "/home/Carix/yadro.py",
+      "/home/Carix/catalog_stage_guard_core.py",
+      "/home/Carix/catalog_stage_guard_runtime.py",
+      "/home/Carix/video/katalog.html",
+      "/home/Carix/site/katalog.html"
+    ],
+    "observed_generator_results": {
+      "/home/Carix/master_card.py": {
+        "all_six_installer_marker_checks_pass_static": true,
+        "conditional_source_write": "NO_IF_THESE_BYTES_REMAIN_CURRENT_AND_PREFLIGHT_PASSES",
+        "patch_branch": "VALID_EXISTING_MARKER_RETURNS_IDENTICAL_SOURCE",
+        "python_ast_parse_pass": true,
+        "sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce"
+      },
+      "/home/Carix/stranica.py": {
+        "all_six_installer_marker_checks_pass_static": true,
+        "conditional_source_write": "NO_IF_THESE_BYTES_REMAIN_CURRENT_AND_PREFLIGHT_PASSES",
+        "patch_branch": "VALID_EXISTING_MARKER_RETURNS_IDENTICAL_SOURCE",
+        "python_ast_parse_pass": true,
+        "sha256": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+      }
+    },
+    "status": "PARTIALLY_DETERMINED_FROM_CURRENT_SOURCE_NOT_AN_EXECUTION_RESULT"
+  },
+  "installer_executed": false,
+  "launcher_static_binding": {
+    "base": "/home/Carix",
+    "changes_cwd_to_base": true,
+    "configured_chain": [
+      {
+        "line": 33,
+        "mechanism": "main changes cwd and prepends /home/Carix to sys.path; runpy.run_path",
+        "source": "start_safe.py",
+        "target": "/home/Carix/run_all.py"
+      },
+      {
+        "line": 72,
+        "mechanism": "module import; run_bots calls db.init_db at startup",
+        "source": "run_all.py",
+        "target": "db"
+      },
+      {
+        "line": 100,
+        "mechanism": "module import inside run_bots, then team_bot.build_application",
+        "source": "run_all.py",
+        "target": "team_bot"
+      },
+      {
+        "line": 44,
+        "mechanism": "module import",
+        "source": "team_bot.py",
+        "target": "db"
+      },
+      {
+        "line": 46,
+        "mechanism": "module import",
+        "source": "team_bot.py",
+        "target": "cars_ui"
+      },
+      {
+        "line": 1402,
+        "mechanism": "build_application registers handlers on the Telegram Application",
+        "source": "team_bot.py",
+        "target": "cars_ui.register"
+      }
+    ],
+    "configured_chain_verified_to_cars_ui": true,
+    "entrypoint": "/home/Carix/start_safe.py",
+    "execution": "runpy.run_path(TARGET, run_name=__main__)",
+    "loaded_crm_and_spec_modules_verified": false,
+    "module_resolution_limitation": "This is the configured source path, assuming normal imports from the configured root. It does not inspect running sys.modules, loaded file hashes, PythonAnywhere worker environment or existing database handles.",
+    "other_startup_work": {
+      "diagnostic_worker_source_and_runtime_not_reviewed": true,
+      "polling_drop_pending_updates": false,
+      "run_all_attempts_diagnostic_worker_start": true,
+      "run_all_attempts_lead_bot_start": true,
+      "run_all_calls_db_init_db": true
+    },
+    "prepends_base_to_sys_path_when_missing": true,
+    "running_process_db_binding_verified": false,
+    "singleton_lock": "/home/Carix/.start_safe.singleton.lock",
+    "source_lines": {
+      "base_target": 32,
+      "main": 1408
+    },
+    "target": "/home/Carix/run_all.py",
+    "target_run_all_acquired": true
+  },
+  "method": "Read acquired source bytes; compare each SHA256 and byte count to download manifest; parse Python AST and inspect control flow. No application import or execution.",
+  "next_bounded_checks": [
+    "The acquired run_all.py and team_bot.py complete the configured path to cars_ui.register and db.py; next verify actual loaded process bindings through an authenticated process-aware mechanism, not a fresh import in a separate console.",
+    "Before changing runtime, account for the enabled TASK083 writer and its three locks; preserve exact schedule configuration and obtain a real coordinated execution window.",
+    "Include startup condition_text normalization and source-file cleanup in backup/restart/readback checks; do not restart merely as a diagnostic read.",
+    "Do not claim what the 08:02 run wrote until its actual status and before/after evidence are obtained."
+  ],
+  "parent_ui_observation": {
+    "always_on_command": "python3.10 /home/Carix/start_safe.py",
+    "displayed_process_start": "2026-09-08 07:07:30",
+    "independently_observed_by_this_static_review": false,
+    "scheduled_command": "cd /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup && python3.10 installer.py install",
+    "scheduled_enabled": true,
+    "scheduled_frequency": "daily",
+    "scheduled_time_displayed": "08:02",
+    "state": "Running"
+  },
+  "processes_restarted": false,
+  "production_touched_by_this_review": false,
+  "reviewed_at_utc": "2026-09-09T07:52:22.891187+00:00",
+  "root_cause_attribution": {
+    "confirmed_risk": "Independent scheduled generator/catalog writes and rollback are not serialized by the specification publication lock.",
+    "startup_rewrite_proven_cause_of_incident": false,
+    "task083_proven_cause_of_missing_individual_card_specs": false
+  },
+  "runtime_gate_changed": false,
+  "schedule_changed": false,
+  "schema_version": "UA-ART-INSTALLED-WRITER-STATIC-AUDIT-1",
+  "secrets_or_raw_source_exported": false,
+  "source_acquisition": {
+    "all_six_files_reverified_locally": true,
+    "authenticated_pythonanywhere_acquisition_and_zip_sha_verified_by_parent": true,
+    "bundle_label": "publisher-inputs-20260909T074529Z",
+    "source_files": {
+      "autopilot_inbox/cloud/task_083_catalog_dedup/installer.py": {
+        "bytes": 45744,
+        "download_manifest_match": true,
+        "sha256": "13dbcbced164c73bb1767fee6d35ca9597c14b552baaeb31ebbf90cad70b1b46"
+      },
+      "catalog_design_guard.py": {
+        "bytes": 24562,
+        "download_manifest_match": true,
+        "sha256": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60"
+      },
+      "db.py": {
+        "bytes": 34721,
+        "download_manifest_match": true,
+        "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086"
+      },
+      "master_card.py": {
+        "bytes": 147699,
+        "download_manifest_match": true,
+        "sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce"
+      },
+      "run_all.py": {
+        "bundle_label": "publisher-inputs-20260909T074856Z",
+        "bytes": 5823,
+        "download_manifest_match": true,
+        "sha256": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9"
+      },
+      "start_safe.py": {
+        "bytes": 60667,
+        "download_manifest_match": true,
+        "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+      },
+      "stranica.py": {
+        "bytes": 200678,
+        "download_manifest_match": true,
+        "sha256": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+      },
+      "team_bot.py": {
+        "bundle_label": "publisher-inputs-20260909T074936Z",
+        "bytes": 65247,
+        "download_manifest_match": true,
+        "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+      }
+    },
+    "supplemental_bundle_labels": [
+      "publisher-inputs-20260909T074856Z",
+      "publisher-inputs-20260909T074936Z"
+    ],
+    "total_selected_source_files_reverified_locally": 8
+  },
+  "startup_candidate_cleanup_intersection": [],
+  "startup_mutation_paths": [
+    {
+      "behavior": "Before run_all, normalizes spaces in .py filenames to underscores; may move a newer alternate filename over the existing destination after archiving it. No directory inventory proving such alternates absent was supplied.",
+      "function": "pochinit_imena",
+      "source_line": 1283
+    },
+    {
+      "behavior": "Before run_all, archives files matching configured cleanup patterns outside a protected filename allowlist. None of the ten current specification candidate Python basenames matches the reviewed cleanup patterns.",
+      "function": "ubrat_musor",
+      "source_line": 1316
+    },
+    {
+      "behavior": "Before run_all, directly opens /home/Carix/crm.db using sqlite3.connect; may back up the DB and UPDATE cars.condition_text for matching cars. A restart is not a read-only check. This connection does not use db.py cooperative .crm_db.lock wrapper.",
+      "function": "db_clean_split",
+      "source_line": 586
+    }
+  ],
+  "status": "ACTUAL_INSTALLED_SOURCE_VERIFIED_STATIC_AUDIT",
+  "task083_installed_writer": {
+    "candidate_direct_write_intersection": [],
+    "checks_protected_primary_page_hashes_before_after": true,
+    "creates_backup_on_every_install_reaching_backup": true,
+    "equals_previously_reviewed_repository_installer_sha256": true,
+    "individual_vehicle_page_write_targets": [],
+    "installed_sha256": "13dbcbced164c73bb1767fee6d35ca9597c14b552baaeb31ebbf90cad70b1b46",
+    "locks_in_acquisition_order": [
+      "/home/Carix/.task082_catalog_stage_repair.lock",
+      "/home/Carix/.task082_catalog_stage_guard.lock",
+      "/home/Carix/.task083_catalog_dedup.lock"
+    ],
+    "managed_paths": [
+      "/home/Carix/stranica.py",
+      "/home/Carix/yadro.py",
+      "/home/Carix/master_card.py",
+      "/home/Carix/video/katalog.html",
+      "/home/Carix/site/katalog.html",
+      "/home/Carix/catalog_stage_guard_core.py"
+    ],
+    "one_shot_completed_stamp": false,
+    "optional_managed_path": "/home/Carix/catalog_stage_guard_core.py",
+    "read_only_source_observations": [
+      "/home/Carix/publikaciya.py",
+      "/home/Carix/catalog_stage_guard_runtime.py"
+    ],
+    "rollbacks_restore_saved_managed_files_without_global_publication_lock": true,
+    "skip_install_when_prior_receipt_exists": false,
+    "source_lines": {
+      "inspect_base": 869,
+      "lock_and_receipt": 1046,
+      "marker_idempotence": 285,
+      "path_constants": 31,
+      "run_install": 967,
+      "run_rollback": 1029
+    },
+    "ten_module_candidate_paths": [
+      "/home/Carix/card_lifecycle.py",
+      "/home/Carix/card_shell.py",
+      "/home/Carix/cars_ui.py",
+      "/home/Carix/profile_library.py",
+      "/home/Carix/publikaciya.py",
+      "/home/Carix/publish_transaction_guard.py",
+      "/home/Carix/source_policy.py",
+      "/home/Carix/spec_publication.py",
+      "/home/Carix/ua_additional_spec.py",
+      "/home/Carix/vin_spec_service.py"
+    ],
+    "uses_crm_db_lock": false,
+    "uses_publication_transaction_lock": false,
+    "uses_specification_publication_guard": false,
+    "writes_changed_target_bytes_only": true,
+    "writes_mode_receipt_even_when_preflight_fails": true
+  },
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "workflows_started": false
+}

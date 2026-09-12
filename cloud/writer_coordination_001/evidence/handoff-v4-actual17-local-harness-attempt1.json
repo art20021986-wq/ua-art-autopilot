@@ -1,0 +1,16 @@
+{
+  "application_imported": false,
+  "candidate_manifest_sha256": "14f42086fc8bc94aefc4e4c83bda50e01107c30d2ad893c00d658f60d0c64fff",
+  "cause": "Existing v3/v4 _terminal returns self.proof_digests by reference; same-instance read_terminal appends a proof digest to that in-memory returned mapping while the disk receipt remains frozen. Historical reviewed tests use a fresh CodeHandoff reader.",
+  "correction": "Harness only: use a fresh CodeHandoff for terminal reads, matching test_code_handoff_v3.py. Production installer algorithm unchanged.",
+  "harness_sha256": "09344ec8db7ac210ba661cdabe185c0efdb22c7372c14b8643d4b7aa836e126d",
+  "installer_sha256": "0dec7fa5509da16b143698cee2a2ff5641385644c2f1ae01724fe516cce82000",
+  "observed_failure": "AssertionError: installation terminal readback",
+  "overall_gate_b": "NOT_EVALUATED",
+  "production_changed": false,
+  "recorded_at": "2026-09-09T11:59:57.066732+00:00",
+  "schema": "UA-ART-HANDOFF-V4-TARGETED-HARNESS-ATTEMPT-1",
+  "scope": "LOCAL_TEMPORARY_FIXTURE_REAL17_PAYLOAD_SYNTHETIC_LEGACY_AUTHORITY_QUOTA_SESSION",
+  "stage": "Actual17 install completed; same-instance read_terminal equality failed before explicit rollback; TemporaryDirectory then cleaned the isolated fixture.",
+  "status": "HARNESS_ASSERTION_FAILED"
+}
