@@ -8,13 +8,13 @@ Executed from the branch preparation directory:
 python -B -m unittest discover -s cloud/task088_autopilot_owner_policy -p 'test_*.py' -q
 ```
 
-Result after the owner's Telegram-only/no-email answer: **47 tests, all PASS**.
+Result after the owner's delivery-to-Kyiv answer: **47 tests, all PASS**.
 
 Coverage includes immediate stop for transient and other failures; exact task/request/attempt/failure binding; stale/future evidence rejection; backup/rollback/gate conditions; prohibition of replay or action skipping; terminal task rejection; dependency receipt and resource isolation checks; rejection of malformed booleans and ambiguous resource scopes; failure/daily-only notification selection; reporting time configuration. Five additional tests verify RU/UA customs captions, contract consistency, independent USD price requirements and rejection of unsupported inputs without adding unconfirmed all-inclusive promises.
 
 This does not exercise Telegram delivery, live CRM, server restart, workflow activation, 60-second price synchronization, production rollback or the seven failing main workflow-contract tests. The trusted integration adapter must produce and verify real evidence; unit-test fixtures are not such evidence.
 
-Existing caption/contract checks now reflect the confirmed Georgia delivery destination AUTOPAPA, parking16. They retain Georgian customs exclusion, independent USD prices and unchanged Ukrainian delivery assumptions. No new test suite was added for the text-only change.
+Existing caption/contract checks now reflect both confirmed delivery destinations: Ukraine price includes delivery to Kyiv and Ukrainian customs; Georgia price includes delivery to AUTOPAPA parking16 and excludes Georgian customs. The checks retain independent USD prices and do not add certification/storage/all-inclusive promises. No new test suite was added for the text-only change.
 
 Existing reporting checks also verify TELEGRAM as the only channel, an empty fallback list, and the required pending-delivery policy. They do not prove a live outbox or actual delivery. START_DELAY remains an allowed failure subtype; progress/completion messages remain excluded.
 
