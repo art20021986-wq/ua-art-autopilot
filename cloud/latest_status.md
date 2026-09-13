@@ -1,10 +1,10 @@
 TASK_ID: UA-ART-OWNER-DECISIONS-20260913
-ROUND: 9
+ROUND: 10
 CLAUDE_STATUS: BLOCKED
-CURRENT_ACTION: Added semantic publication acknowledgement candidate: CRM/card/catalog must match same committed revision and both prices; failures retain committed CRM values, never falsely acknowledge or replay old revisions. 55/55 policy tests PASS. Prior CI repair 183/183 and HALT guard 13/13 remain offline evidence; live integration/activation and Gate B still outstanding.
+CURRENT_ACTION: Stage 3 readiness checked: live UA-0010/catalog still have one price; canonical Stage 2 helper has no publication trigger. Exact current four-file server snapshot unavailable through browser transfer; source-bound integration and Gate B cannot safely proceed.
 FILES_CREATED: cloud/task088_autopilot_owner_policy/; cloud/task088_watchdog_target_halt/
 PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: NO
-OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Review cloud/task088_watchdog_target_halt/README.md and exact-base patch; prepare normal runtime activation and Gate B without modifying historical receipts. Stage 2 receipt already PASS; Stage 3/4, Telegram and publication SLA remain uninstalled/unverified.
-UPDATED_AT_UTC: 2026-09-13T11:00:12Z
+OWNER_ACTION_REQUIRED: YES
+OWNER_QUESTION: Provide a private current archive of yadro.py, stranica.py, publikaciya.py and cars_ui.py only, without database/customer/config secrets.
+NEXT_FOR_CHATGPT: Read STAGE3_GATE_B_READINESS.md; obtain exact current source snapshots, identify live generator/callback, build guarded integration without reinstalling Stage 2 or executing historical s3 scripts. Do not publish private sources to the public repository.
+UPDATED_AT_UTC: 2026-09-13T14:10:54Z
