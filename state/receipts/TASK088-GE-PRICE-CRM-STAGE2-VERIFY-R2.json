@@ -1,0 +1,28 @@
+{
+  "candidate_verification": "PASS",
+  "completion_meaning": "READ_ONLY_VERIFICATION_ONLY_NO_INSTALLATION",
+  "crm_price_acceptance": "NOT_PERFORMED",
+  "evidence_path": "cloud/task_088_ge_price_crm_stage2_verify_r2/evidence.json",
+  "finished_at": "2026-09-13T02:47:06Z",
+  "live_source_environment": "production",
+  "production_required": false,
+  "remote_path_errors": [
+    "/home/Carix/price_parser.py"
+  ],
+  "remote_write_count": 0,
+  "request_sha256": "955482850c58cffc1ea9b2a44efbe3923f0e2ae46d7b390aba495ba4a5c3dc7f",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_REMOTE_WRITES_LOCAL_DISCOVERY_ARTIFACTS_ONLY",
+  "run_id": "34733840685",
+  "scope": "GET_ONLY_FULL_SOURCE_VERIFICATION",
+  "source_snapshot_consistency": "PARTIAL",
+  "stage2_acceptance": "NOT_PERFORMED",
+  "stage2_status": "NOT_PERFORMED",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2",
+  "tests": "PASS",
+  "tests_scope": "GET_SCOPE_IMMUTABLE_PREREQUISITE_AND_SAFE_PARTIAL_EVIDENCE",
+  "unexpected_changes": 0
+}

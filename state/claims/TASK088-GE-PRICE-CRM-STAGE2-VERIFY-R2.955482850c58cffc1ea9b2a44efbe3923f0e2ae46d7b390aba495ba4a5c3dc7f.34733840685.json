@@ -7,21 +7,23 @@
   "created_at": "2026-09-13T02:46:37Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-13T02:46:37Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-13T02:47:27Z",
+  "heartbeat_at": "2026-09-13T02:47:27Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "34733840685",
     "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2",
     "task_sha256": "955482850c58cffc1ea9b2a44efbe3923f0e2ae46d7b390aba495ba4a5c3dc7f"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-a35bb0a49afb2aa5-885ce53d6238dba3",
   "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "bc6efff92180725f69eef620030b84f89e0bd5fbd9cb78e1e0e95f391cc8da7d",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.json",
   "request_sha256": "955482850c58cffc1ea9b2a44efbe3923f0e2ae46d7b390aba495ba4a5c3dc7f",
   "resource_locks": [
@@ -29,8 +31,25 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "51ece0876f628952a55ea5e9fe2c2e8d94782b94",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92218781696,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 16777216,
+    "status": "PASS",
+    "usage_percent": 40.453
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-13T02:46:37Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "cd28210771d3d076a78310a5b510ad8bc1763b0072c497024f888fdd09658bff",
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/patcher.py": "8a7e33e94b834668651f1a41d083a0f39be4facafaf44f67193e3c6291dcef90",
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/runtime.py": "4cedb3bd34988c8bc7792e557dc5b44fdd209e032021d6f17898fead05e45417",
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/test_contract.py": "16ba24f9bf9d3f3dbf039bca6e4123f2c22f6aeccb53a48d4dedfe1f432c238d"
+    }
+  },
+  "updated_at": "2026-09-13T02:47:27Z"
 }
