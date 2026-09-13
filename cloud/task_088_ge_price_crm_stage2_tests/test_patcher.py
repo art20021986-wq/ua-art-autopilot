@@ -1,4 +1,4 @@
-"""In-memory transformation tests; no live source or database is executed."""
+"""Local-only dynamic fixtures; excluded from the production package closure."""
 import ast
 import asyncio
 import types

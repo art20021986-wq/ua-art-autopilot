@@ -1,28 +1,72 @@
 {
   "ai_requested": false,
-  "changed_paths": ["production/operator-ui/cars_ui.py", "production/crm.db"],
+  "changed_paths": [
+    "production/operator-ui/cars_ui.py",
+    "production/crm.db"
+  ],
   "complexity": 2,
   "control_plane_version": "TASK107-R2",
-  "critical": {"allow_crm_vehicle_data": true, "gate_b_authorized": false},
-  "description": "Emergency Stage 2 retry with fresh execution identity. Activate Telegram CRM Bot UI already installed by Stage 1: price_uah = Цена Украины, price_georgia = Цена Грузии. Verify independent numeric text writes with DB read-back, price_uah unchanged during Georgia write, price_georgia unchanged during Ukraine write, rollback test values, and preserve every unrelated CRM function. Public site, publisher, Stage 3, VIN, media, stages, additional specification, counters and SEO must remain untouched.",
-  "execution": {
-    "controller_path": "cloud/task_088_ge_price_crm_stage1/controller.py",
-    "controller_sha256": "6ec70380ce2d7b647293a4bf0552c1ff6e561545d0a2b015fdb55d7ae2d9ad6c",
-    "dependency_paths": ["cloud/task_088_ge_price_crm_stage1/remote_installer.py"],
-    "evidence_paths": ["cloud/task_088_ge_price_crm_stage1/evidence.json", "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json"],
-    "file_sha256": {
-      "cloud/task_088_ge_price_crm_stage1/remote_installer.py": "5df8dee76a5d2be28b4169d7e5bd5700484c638d697e70df8cd4a8b4ccc74d24",
-      "cloud/task_088_ge_price_crm_stage1/test_contract.py": "8958b3652da6dcc2651572a2f93b41ffd488c4fce584cd0d96b1abb84693c1f8"
-    },
-    "production_required": false,
-    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
-    "test_paths": ["cloud/task_088_ge_price_crm_stage1/test_contract.py"],
-    "timeout_seconds": 900
+  "critical": {
+    "allow_crm_vehicle_data": true,
+    "gate_a_path": "tasks/gates/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+    "gate_a_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "gate_b_authorized": false,
+    "manifest_path": "tasks/manifests/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+    "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "owner_approval_path": "tasks/approvals/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.production.json",
+    "owner_approval_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
-  "production_required": false,
-  "read_only": false,
+  "description": "Disabled parent acceptance sentinel. Obsolete Stage1 task/controller/receipt alias is removed. Installation is a separate explicitly scoped TASK088-GE-PRICE-CRM-STAGE2-INSTALL child. This request never installs or restarts anything; acceptance_controller exits BLOCKED until independently implemented real Telegram menu/input, commit/fresh DB read-back, market independence and original-price restoration proofs exist. Parent receipt must not be created from the installation result; Stage3 forbidden.",
+  "execution": {
+    "backup_controller_path": "cloud/task_088_ge_price_crm_stage2/backup_controller.py",
+    "backup_controller_sha256": "1ce7c3db11f28da2d47f6aea76f59def174ef7963dc0adba0a50b075f53b2a29",
+    "backup_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-BACKUP.json",
+    "controller_path": "cloud/task_088_ge_price_crm_stage2/acceptance_controller.py",
+    "controller_sha256": "6c680128d31e2c125fdbf874f47d10e968b81c9cf95420f203b0bd250b22d1a1",
+    "dependency_paths": [
+      "cloud/task_088_ge_price_crm_stage2/controller.py",
+      "cloud/task_088_ge_price_crm_stage2/patcher.py",
+      "cloud/task_088_ge_price_crm_stage2/remote_installer.py",
+      "cloud/task_088_ge_price_crm_stage2/runtime.py",
+      "cloud/task_088_ge_price_crm_stage2/test_fixtures.py",
+      "cloud/task_088_ge_price_crm_stage2/test_controller.py"
+    ],
+    "evidence_paths": [
+      "cloud/task_088_ge_price_crm_stage2/installation_evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-BACKUP.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-ROLLBACK.json"
+    ],
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage2/controller.py": "20a927c37afb338ac18d025423da2270f4aa4d1eb0938bd7185dacd009468b5d",
+      "cloud/task_088_ge_price_crm_stage2/patcher.py": "8a7e33e94b834668651f1a41d083a0f39be4facafaf44f67193e3c6291dcef90",
+      "cloud/task_088_ge_price_crm_stage2/remote_installer.py": "f2835b5087f4bf645287205fdf5a39782f6176e94c64bd41c1f6c4429544a3bf",
+      "cloud/task_088_ge_price_crm_stage2/runtime.py": "4cedb3bd34988c8bc7792e557dc5b44fdd209e032021d6f17898fead05e45417",
+      "cloud/task_088_ge_price_crm_stage2/test_fixtures.py": "5cac8b2f0aa2108c6bef9da1d3ab554060a50919cd2a63a2bba1947356f59c81",
+      "cloud/task_088_ge_price_crm_stage2/test_remote_installer.py": "28bb196e207d9dfcc2a41bd4b07db996650be8c9001608771f8be7c0993ee2ce",
+      "cloud/task_088_ge_price_crm_stage2/test_controller.py": "2bd151101a8b8d8b4cf7922c8467e9c49bb1c1f31518039cdbe253acf3c4646e"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json",
+    "rollback_controller_path": "cloud/task_088_ge_price_crm_stage2/rollback_controller.py",
+    "rollback_controller_sha256": "1e3e1286ace7a428b46900635b6301f89a2925b279b2c3c19ea86723ae04400c",
+    "rollback_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-ROLLBACK.json",
+    "test_paths": [
+      "cloud/task_088_ge_price_crm_stage2/test_remote_installer.py"
+    ],
+    "timeout_seconds": 1200
+  },
+  "health_checks": [
+    "https://www.uaart.com.ua/"
+  ],
+  "production_required": true,
+  "read_only": true,
   "requested_min_class": "CRITICAL",
-  "storage_required_bytes": 16777216,
-  "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
-  "title": "Stage 2 Telegram CRM Bot UA/GE independent prices emergency retry"
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+    "evidence_sha256": "528d5afdb47db1b83d7253096d71438d8fac61f070a65313deebb0a357b9af78"
+  },
+  "storage_required_bytes": 268435456,
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2",
+  "title": "Retired Stage 2 retry; blocked parent acceptance sentinel"
 }

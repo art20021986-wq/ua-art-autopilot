@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SQLite fixture tests only; these do not verify the production DB or bot."""
+"""Local-only SQLite/handler fixtures; excluded from production deployment."""
 import json
 import ast
 import os

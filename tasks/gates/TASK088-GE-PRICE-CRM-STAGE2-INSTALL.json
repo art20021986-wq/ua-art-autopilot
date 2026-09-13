@@ -1,0 +1,82 @@
+{
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+  "status": "PASS",
+  "production_write": false,
+  "tests": "PASS",
+  "unexpected_changes": 0,
+  "backup_plan_ready": true,
+  "rollback_plan_ready": true,
+  "manifest_sha256": "dbd31f0675c792f9e4ebf3c2f6b7f82d1121946ddc4454d3401955bebe1ceb46",
+  "evaluated_at": "2026-09-13T02:59:11Z",
+  "protected_snapshot": {
+    "source_before_sha256": "76d0a16e7a22940c6699293cf356a6cdba08bb76565bfdcd9b1c66d214b1fee4",
+    "approved_candidate_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "dependencies_expected_sha256": {
+      "/home/Carix/db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "/home/Carix/start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "/home/Carix/cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73"
+    },
+    "cars_schema_observation_at": "2026-09-12T09:41:45Z",
+    "cars_schema_current_equality": "RUNTIME_PREFLIGHT_REQUIRED",
+    "external_parser_file_observation": "TWO_GET_HTTP_404; module availability still checked on target",
+    "current_database_schema": "RUNTIME_PREFLIGHT_REQUIRED",
+    "live_process_identity": "AUTHENTICATED_SUPERVISOR_RUNTIME_CHECKS_REQUIRED; OS_PID_NOT_INSPECTED",
+    "source_report_path": "cloud/task_088_ge_price_crm_stage2_verify_r2/evidence.json",
+    "source_report_sha256": "528ac382ef28c005e696d97cc955390d2c204840c8b7ba888474b7b70df765bf",
+    "source_report_observed_at": "2026-09-13T02:47:06Z",
+    "stage1_remote_receipt_sha256": "9a8823cc3101076b8f86f0ed00dec9aa8a0bcb2b7f35451cdc12e526f0aa11e2",
+    "unrelated_top_level_ast": "PASS",
+    "site_write": false,
+    "live_price_writes": false,
+    "owner_metadata_preflight_path": "cloud/task_088_ge_price_crm_stage2/server_preflight.json",
+    "owner_metadata_preflight_sha256": "4637af65600e760d132d3765e0079946748f54b84c6c80a1731a925ded062ffb",
+    "authenticated_supervisor_observation": {
+      "source": "PYTHONANYWHERE_AUTHENTICATED_API",
+      "observed_at": "2026-09-13T02:58:00Z",
+      "timestamp_precision": "Minute reported by owner-authorized current GET diagnostic",
+      "supervisor_id": 266084,
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "enabled": true,
+      "state": "Running",
+      "http_method": "GET",
+      "api_schema_confirmed": true,
+      "fresh_before_after_runtime_checks": "REQUIRED",
+      "os_pid_inspection": "NO_OS_PID_INSPECTION"
+    }
+  },
+  "tests_scope": "LOCAL_INSTALLER_SAFETY_AND_GET_ONLY_FULL_SOURCE_CANDIDATE_VERIFICATION",
+  "live_telegram_acceptance": "NOT_PERFORMED",
+  "acceptance_scope": "INSTALLATION_AND_SOURCE_DB_READONLY_VERIFY",
+  "stage2_acceptance": "PENDING_TELEGRAM_CHECKS",
+  "stage3_allowed": false,
+  "local_test_results": {
+    "installer_safety": {
+      "result": "PASS",
+      "count": 21,
+      "command": "python3 -B -I automation/execution_contract.py test tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json --expected-class CRITICAL"
+    },
+    "runtime_behavior": {
+      "result": "PASS",
+      "count": 23,
+      "package": "cloud/task_088_ge_price_crm_stage2_tests",
+      "production_deployed": false
+    },
+    "execution_dependency_contract": "PASS",
+    "full_remote_source_candidate_compile_and_unrelated_AST": "PASS",
+    "controller_supervisor": {
+      "result": "PASS",
+      "count": 4,
+      "scope": "Authenticated GET exact service identity and stopped/missing/malformed rejection"
+    }
+  },
+  "runtime_checks_before_source_replace": [
+    "Validate actual SQLite schema and integrity, without migration",
+    "Check authenticated supervisor 266084 exact command, enabled flag and Running state before and after each operation; freeze supervisor identity, with OS PID continuity explicitly not inspected",
+    "Verify all expected dependency hashes and external parser nonexistence before and after installation",
+    "Create immutable online SQLite/source backups and verify approved candidate hash before replacement"
+  ],
+  "runtime_compatibility": "PENDING_LIVE_CHECKS",
+  "backup_execution": "NOT_PERFORMED",
+  "production_installation": "NOT_PERFORMED"
+}

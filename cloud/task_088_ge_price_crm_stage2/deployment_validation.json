@@ -1,0 +1,61 @@
+{
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+  "status": "READY_FOR_ROOT_REVIEW",
+  "observed_at": "2026-09-13T02:59:11Z",
+  "production_write": false,
+  "remote_execution": "NOT_PERFORMED_BY_THIS_AUDIT",
+  "runtime_rules_changed": false,
+  "production_python_source_count": 10,
+  "production_execution_contract_validation": "PASS",
+  "production_installer_safety_tests": {
+    "count": 21,
+    "result": "PASS",
+    "command": "python3 -B -I automation/execution_contract.py test tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json --expected-class CRITICAL"
+  },
+  "local_behavior_tests": {
+    "count": 23,
+    "result": "PASS",
+    "package": "cloud/task_088_ge_price_crm_stage2_tests",
+    "deployed": false
+  },
+  "source_sha256": {
+    "cloud/task_088_ge_price_crm_stage2/rollback_controller.py": "1e3e1286ace7a428b46900635b6301f89a2925b279b2c3c19ea86723ae04400c",
+    "cloud/task_088_ge_price_crm_stage2/test_controller.py": "2bd151101a8b8d8b4cf7922c8467e9c49bb1c1f31518039cdbe253acf3c4646e",
+    "cloud/task_088_ge_price_crm_stage2/acceptance_controller.py": "6c680128d31e2c125fdbf874f47d10e968b81c9cf95420f203b0bd250b22d1a1",
+    "cloud/task_088_ge_price_crm_stage2/runtime.py": "4cedb3bd34988c8bc7792e557dc5b44fdd209e032021d6f17898fead05e45417",
+    "cloud/task_088_ge_price_crm_stage2/controller.py": "20a927c37afb338ac18d025423da2270f4aa4d1eb0938bd7185dacd009468b5d",
+    "cloud/task_088_ge_price_crm_stage2/test_fixtures.py": "5cac8b2f0aa2108c6bef9da1d3ab554060a50919cd2a63a2bba1947356f59c81",
+    "cloud/task_088_ge_price_crm_stage2/patcher.py": "8a7e33e94b834668651f1a41d083a0f39be4facafaf44f67193e3c6291dcef90",
+    "cloud/task_088_ge_price_crm_stage2/backup_controller.py": "1ce7c3db11f28da2d47f6aea76f59def174ef7963dc0adba0a50b075f53b2a29",
+    "cloud/task_088_ge_price_crm_stage2/test_remote_installer.py": "28bb196e207d9dfcc2a41bd4b07db996650be8c9001608771f8be7c0993ee2ce",
+    "cloud/task_088_ge_price_crm_stage2/remote_installer.py": "f2835b5087f4bf645287205fdf5a39782f6176e94c64bd41c1f6c4429544a3bf"
+  },
+  "stage2_acceptance": "PENDING_TELEGRAM_CHECKS",
+  "stage3_allowed": false,
+  "live_pins_ready": true,
+  "gate_b_authorized": true,
+  "storage_observed_at": "2026-09-13T02:45:40Z",
+  "gate_b_validation": "GATE_B_AUTHORIZED",
+  "storage_gate": {
+    "status": "PASS",
+    "allowed": true,
+    "usage_percent": 19.807,
+    "free_bytes": 30137122816,
+    "required_bytes": 268435456,
+    "heavy": true
+  },
+  "controller_local_required": "PASS",
+  "real_launch_marker_created": false,
+  "installation": "NOT_PERFORMED",
+  "supervisor_api_schema": "CONFIRMED_CURRENT_AUTHENTICATED_GET",
+  "request_sha256": "f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e",
+  "manifest_sha256": "dbd31f0675c792f9e4ebf3c2f6b7f82d1121946ddc4454d3401955bebe1ceb46",
+  "gate_a_sha256": "83de7385b7bdd07353345c7b8e4d2e4d04b144b08145a1a9cc3a4eb89f4d2daa",
+  "owner_approval_sha256": "d3a54b313ed47dabd075bbad71fb14eb1836116e83a6889076b0aebe9939f4af",
+  "production_controller_safety_tests": {
+    "count": 4,
+    "result": "PASS"
+  },
+  "launch_nonce": "task088-stage2-install-20260913-1ba1a9fd3910135be967f125",
+  "approval_expires_at": "2026-09-13T03:15:40Z"
+}
