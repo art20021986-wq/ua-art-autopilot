@@ -1,0 +1,38 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/task_088_ge_price_crm_stage2_verify_r2/evidence.json"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Ten fixed GET requests read cars_ui.py, db.py, price_parser.py, start_safe.py and the historical Stage 1 receipt twice. Preserve successful helper/AST evidence and report fixed path-specific failures when an optional source is absent. Inspect optional parser import syntax and selected startup/reconciliation helpers. Compile the complete cars_ui candidate in memory using pinned local patcher/runtime; downloaded modules are never executed. No upload, process operation, database download, CRM price edit, restart or installation. FINISHED means diagnostic evidence collection only; individual path and candidate statuses remain explicit.",
+  "execution": {
+    "controller_path": "cloud/task_088_ge_price_crm_stage2_verify_r2/controller.py",
+    "controller_sha256": "cd28210771d3d076a78310a5b510ad8bc1763b0072c497024f888fdd09658bff",
+    "dependency_paths": [
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/patcher.py",
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/runtime.py"
+    ],
+    "evidence_paths": [
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.json"
+    ],
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/patcher.py": "8a7e33e94b834668651f1a41d083a0f39be4facafaf44f67193e3c6291dcef90",
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/runtime.py": "4cedb3bd34988c8bc7792e557dc5b44fdd209e032021d6f17898fead05e45417",
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/test_contract.py": "16ba24f9bf9d3f3dbf039bca6e4123f2c22f6aeccb53a48d4dedfe1f432c238d"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.json",
+    "test_paths": [
+      "cloud/task_088_ge_price_crm_stage2_verify_r2/test_contract.py"
+    ],
+    "timeout_seconds": 300
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2",
+  "title": "GET-only Stage 2 verification with partial evidence and optional parser status"
+}
