@@ -1,10 +1,11 @@
-TASK_ID: UA-ART-OWNER-DECISIONS-20260913
-ROUND: 10
-CLAUDE_STATUS: BLOCKED
-CURRENT_ACTION: Stage 3 readiness checked: live UA-0010/catalog still have one price; canonical Stage 2 helper has no publication trigger. Exact current four-file server snapshot unavailable through browser transfer; source-bound integration and Gate B cannot safely proceed.
-FILES_CREATED: cloud/task088_autopilot_owner_policy/; cloud/task088_watchdog_target_halt/
-PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: YES
-OWNER_QUESTION: Provide a private current archive of yadro.py, stranica.py, publikaciya.py and cars_ui.py only, without database/customer/config secrets.
-NEXT_FOR_CHATGPT: Read STAGE3_GATE_B_READINESS.md; obtain exact current source snapshots, identify live generator/callback, build guarded integration without reinstalling Stage 2 or executing historical s3 scripts. Do not publish private sources to the public repository.
-UPDATED_AT_UTC: 2026-09-13T14:10:54Z
+TASK_ID: UA-ART-GE-UA-MARKET-PRICE-001-STAGES3-4
+ROUND: 11
+CLAUDE_STATUS: WORKING
+CURRENT_ACTION: Exact current source recovered; CRM/outbox/renderer/runtime/authority/installer candidates implemented. Root reruns: price-sync 136/136 PASS and renderer 40/40 PASS. Preparing real read-only server preflight and authenticated fresh canonical control bridge before deployment/live acceptance.
+FILES_CREATED: cloud/task088_price_sync/; cloud/task088_stage3_renderer/; cloud/task088_autopilot_owner_policy/STAGE3_GATE_B_READINESS.md
+PRODUCTION_TOUCHED: YES
+PRODUCTION_CHANGE_SCOPE: PythonAnywhere obsolete TASK083 daily 08:02 scheduled installer row 1502679 disabled; UI now offers Enable task. CRM and existing monitor remained Running. No working source, CRM values or public HTML changed.
+OWNER_ACTION_REQUIRED: NO
+OWNER_QUESTION: NONE
+NEXT_FOR_CHATGPT: Run server preflight using corrected bundle keys; establish authenticated fresh private-repository control bridge; bind actual canonical request/claim/transaction/Gate B and bootstrap; deploy with verified backups; complete live Stage 3/4 acceptance. Do not reinstall Stage 1/2, request an unnecessary archive or renew already granted permission. Do not mark stages complete from local tests.
+UPDATED_AT_UTC: 2026-09-13T16:50:46Z
