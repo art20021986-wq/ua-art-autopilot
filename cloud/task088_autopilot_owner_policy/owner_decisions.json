@@ -1,6 +1,6 @@
 {
   "contract_id": "UA-ART-OWNER-DECISIONS-20260913",
-  "version": 1,
+  "version": 2,
   "implementation_status": "BRANCH_ONLY_NOT_DEPLOYED",
   "source": "Owner questionnaire and request to implement answers, 2026-09-13",
   "pricing": {
@@ -15,8 +15,13 @@
     "extra_publish_click_required": false,
     "max_sync_seconds": 60,
     "preserve": ["specifications", "photos", "diagnostics", "descriptions", "counters", "languages", "other_vehicle_fields"],
-    "ukraine_customs_included": null,
-    "next_owner_question": "DOES_UKRAINIAN_PRICE_INCLUDE_UKRAINIAN_CUSTOMS_CLEARANCE"
+    "ukraine_customs_included": true,
+    "ukraine_customs_confirmation": "Owner explicitly confirmed inclusion of customs clearance in Ukraine, 2026-09-13",
+    "customs_captions_ru": {
+      "ukraine": "Украина — с растаможкой в Украине",
+      "georgia": "Грузия — без растаможки в Грузии"
+    },
+    "customs_confirmation_does_not_imply": ["delivery_included", "certification_included", "no_other_charges"]
   },
   "autopilot": {
     "operating_hours": "24/7",

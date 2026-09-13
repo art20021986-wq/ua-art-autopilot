@@ -14,16 +14,16 @@ This is a branch-only execution foundation, not a deployment or receipt. No prod
 ## Next production package: Stage 3
 
 1. Inspect and hash current `yadro.py`, `stranica.py`, `publikaciya.py` and the active rendering path. Never patch an unverified historical source snapshot.
-2. Render BOTH independent USD prices on vehicle cards AND in catalog; Georgia caption must explicitly say that Georgian customs clearance is not included. Preserve Ukrainian prices without conversion.
+2. Render BOTH independent USD prices on vehicle cards AND in catalog. Owner confirmed on 13 September: Ukrainian price INCLUDES customs clearance in Ukraine; Georgian price EXCLUDES customs clearance in Georgia. Use the explicit captions in `price_captions.py`. Preserve Ukrainian prices without conversion. Do not infer delivery/certification inclusion or add an all-inclusive/no-extra-charges promise from this answer.
 3. Preserve diagnostics, extended specifications, media, descriptions, language behavior, ordering and catalog counts. No DB field migration in this stage.
 4. Use a NEW stage-specific identity, request, claim, transaction and final receipt; retain Stage 2 as a prerequisite, never its identity as the new stage's identity.
 5. Stage only in a separate branch. Verify exact allowed diff, all relevant tests, backup hash and restore rehearsal, writer exclusion, health checks and Gate B before any production write.
 6. Rollback must compare current artifact against the version installed by this transaction; refuse to overwrite a later writer's change.
 7. Inspect a canary rendering without publication first; then use the authorized deployment path. Do not patch generated HTML outside its canonical generator as a shortcut.
 
-## Stage 4: automatic CRM → site synchronization
+## Stage 4: final protection and autopilot activation
 
-Stage 4 is the next integration workstream for automatic synchronization/acceptance, not the existing logistics module for Korea/ferry/Georgia/Kyiv. Its exact historical scope must be checked against the original four-stage specification before marking Stage 4 complete.
+The original four-stage scope defines Stage 4 as final protection and autopilot activation. Automatic CRM-to-site synchronization is a required integration/acceptance condition across Stages 3–4, not a replacement for final protection and activation. This is unrelated to the existing logistics module for Korea/ferry/Georgia/Kyiv.
 
 - Trigger only after successful DB commit. Use a durable, versioned event/outbox; observe both independent price fields.
 - Publish through the one authorized writer with idempotency and resource locks; prevent an older event overwriting a newer price.
@@ -33,6 +33,7 @@ Stage 4 is the next integration workstream for automatic synchronization/accepta
 - Allow independent work only after dependency and resource-isolation checks. Never treat an unknown dependency/lock state as safe.
 - Verify both directions: modifying Georgia must not change Ukraine and modifying Ukraine must not change Georgia. Confirm non-price content remains unchanged and prices agree between CRM/card/catalog.
 - A real final receipt, failure-path test, and safe rollback evidence are required. This branch is not that receipt.
+- Final activation requires successful safety/integration gates and the owner's separate production command. No activation or HALT change is performed by this package.
 
 ## Autopilot policy integration blockers
 

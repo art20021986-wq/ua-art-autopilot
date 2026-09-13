@@ -8,8 +8,8 @@ Executed from the branch preparation directory:
 python -B -m unittest discover -s cloud/task088_autopilot_owner_policy -p 'test_*.py' -q
 ```
 
-Result: **32 tests, all PASS**.
+Result after the owner's Ukrainian-customs answer: **37 tests, all PASS**.
 
-Coverage includes immediate stop for transient and other failures; exact task/request/attempt/failure binding; stale/future evidence rejection; backup/rollback/gate conditions; prohibition of replay or action skipping; terminal task rejection; dependency receipt and resource isolation checks; rejection of malformed booleans and ambiguous resource scopes; failure/daily-only notification selection; reporting time configuration.
+Coverage includes immediate stop for transient and other failures; exact task/request/attempt/failure binding; stale/future evidence rejection; backup/rollback/gate conditions; prohibition of replay or action skipping; terminal task rejection; dependency receipt and resource isolation checks; rejection of malformed booleans and ambiguous resource scopes; failure/daily-only notification selection; reporting time configuration. Five additional tests verify RU/UA customs captions, contract consistency, independent USD price requirements and rejection of unsupported inputs without adding unconfirmed all-inclusive promises.
 
 This does not exercise Telegram delivery, live CRM, server restart, workflow activation, 60-second price synchronization, production rollback or the seven failing main workflow-contract tests. The trusted integration adapter must produce and verify real evidence; unit-test fixtures are not such evidence.
