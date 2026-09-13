@@ -1,6 +1,6 @@
 {
   "contract_id": "UA-ART-OWNER-DECISIONS-20260913",
-  "version": 7,
+  "version": 8,
   "implementation_status": "BRANCH_ONLY_NOT_DEPLOYED",
   "source": "Owner questionnaire and request to implement answers, 2026-09-13",
   "pricing": {
@@ -23,15 +23,17 @@
     "max_sync_seconds": 60,
     "preserve": ["specifications", "photos", "diagnostics", "descriptions", "counters", "languages", "other_vehicle_fields"],
     "ukraine_customs_included": true,
+    "ukraine_certification_included": true,
+    "ukraine_certification_confirmation": "Owner answer: Да, сертификация включена",
     "ukraine_delivery_included": true,
     "ukraine_delivery_destination": "Kyiv",
     "ukraine_delivery_confirmation": "Owner answer: Да, доставка до Киева включена",
     "ukraine_customs_confirmation": "Owner explicitly confirmed inclusion of customs clearance in Ukraine, 2026-09-13",
     "customs_captions_ru": {
-      "ukraine": "Украина — с доставкой до Киева и растаможкой в Украине",
+      "ukraine": "Украина — с доставкой до Киева, растаможкой и сертификацией в Украине",
       "georgia": "Грузия — с доставкой до авторынка AUTOPAPA, паркинг №16; без растаможки в Грузии"
     },
-    "customs_confirmation_does_not_imply": ["certification_included", "no_other_charges"]
+    "customs_confirmation_does_not_imply": ["no_other_charges"]
   },
   "autopilot": {
     "operating_hours": "24/7",

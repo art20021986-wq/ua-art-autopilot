@@ -7,12 +7,12 @@ from price_captions import price_caption
 
 class PriceCaptionTests(unittest.TestCase):
     def test_russian_captions_match_owner_confirmation(self):
-        self.assertEqual(price_caption("ukraine"), "Украина — с доставкой до Киева и растаможкой в Украине")
+        self.assertEqual(price_caption("ukraine"), "Украина — с доставкой до Киева, растаможкой и сертификацией в Украине")
         self.assertEqual(price_caption("georgia"), "Грузия — с доставкой до авторынка AUTOPAPA, паркинг №16; без растаможки в Грузии")
 
     def test_ukrainian_captions_and_site_language_alias(self):
         for language in ("uk", "ua"):
-            self.assertEqual(price_caption("ukraine", language), "Україна — з доставкою до Києва та розмитненням в Україні")
+            self.assertEqual(price_caption("ukraine", language), "Україна — з доставкою до Києва, розмитненням і сертифікацією в Україні")
             self.assertEqual(price_caption("georgia", language), "Грузія — з доставкою до авторинку AUTOPAPA, паркінг №16; без розмитнення в Грузії")
 
     def test_unknown_inputs_cannot_silently_pick_wrong_market(self):
@@ -25,6 +25,7 @@ class PriceCaptionTests(unittest.TestCase):
         contract = json.loads(Path(__file__).with_name("owner_decisions.json").read_text())
         rules = contract["pricing"]
         self.assertIs(rules["ukraine_customs_included"], True)
+        self.assertIs(rules["ukraine_certification_included"], True)
         self.assertIs(rules["ukraine_delivery_included"], True)
         self.assertEqual(rules["ukraine_delivery_destination"], "Kyiv")
         self.assertIs(rules["georgia_customs_included"], False)
@@ -37,8 +38,9 @@ class PriceCaptionTests(unittest.TestCase):
     def test_customs_confirmation_does_not_expand_price_promise(self):
         for market in ("ukraine", "georgia"):
             caption = price_caption(market).lower()
-            for unconfirmed in ("доплат нет", "под ключ", "сертификация включена"):
+            for unconfirmed in ("доплат нет", "под ключ"):
                 self.assertNotIn(unconfirmed, caption)
+        self.assertNotIn("сертиф", price_caption("georgia").lower())
         contract = json.loads(Path(__file__).with_name("owner_decisions.json").read_text())
         rules = contract["pricing"]
         self.assertIs(rules["georgia_delivery_included"], True)
