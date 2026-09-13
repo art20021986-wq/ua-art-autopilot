@@ -1,6 +1,6 @@
 {
   "contract_id": "UA-ART-OWNER-DECISIONS-20260913",
-  "version": 8,
+  "version": 9,
   "implementation_status": "BRANCH_ONLY_NOT_DEPLOYED",
   "source": "Owner questionnaire and request to implement answers, 2026-09-13",
   "pricing": {
@@ -21,6 +21,13 @@
     "auto_publish_after_crm_save": true,
     "extra_publish_click_required": false,
     "max_sync_seconds": 60,
+    "publication_acknowledgement": "ONLY_AFTER_FRESH_SEMANTIC_CRM_CARD_AND_CATALOG_READBACK",
+    "publication_failure_crm_action": "KEEP_COMMITTED_PRICE",
+    "publication_failure_choice_source": "Conservative engineering default following owner reliability request 'Давай без ошибок'; owner did not explicitly select either rollback option",
+    "publication_must_bind": ["car_id", "committed_revision", "both_independent_USD_prices", "task_request_attempt", "non_price_content_preservation"],
+    "http_success_alone_is_publication_success": false,
+    "late_publication_counts_as_60_second_sla_success": false,
+    "publication_acknowledgement_implementation": "PURE_CANDIDATE_NOT_INTEGRATED",
     "preserve": ["specifications", "photos", "diagnostics", "descriptions", "counters", "languages", "other_vehicle_fields"],
     "ukraine_customs_included": true,
     "ukraine_certification_included": true,

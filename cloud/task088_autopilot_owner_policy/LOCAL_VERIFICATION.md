@@ -8,7 +8,16 @@ Executed from the branch preparation directory:
 python -B -m unittest discover -s cloud/task088_autopilot_owner_policy -p 'test_*.py' -q
 ```
 
-Result after the owner's Ukrainian-certification answer: **47 tests, all PASS**.
+Result after the owner's publication-reliability answer: **55 tests, all PASS**.
+
+Eight publication-acknowledgement tests cover exact CRM/card/catalog semantic readback,
+both independent prices, unchanged other content, missing versus zero Georgian price,
+partial publication, wrong vehicle/attempt/revision, newer CRM changes, stale/future
+evidence, ambiguous failure and the exact 60-second boundary including honest late
+success. The failure flag represents durable stopped state; it must not be cleared
+by a later successful poll outside the verified recovery process. This is a pure
+decision module: no real publisher, outbox, lock, sender or atomic acknowledgement
+adapter is installed, and no live zero-error guarantee is established.
 
 Coverage includes immediate stop for transient and other failures; exact task/request/attempt/failure binding; stale/future evidence rejection; backup/rollback/gate conditions; prohibition of replay or action skipping; terminal task rejection; dependency receipt and resource isolation checks; rejection of malformed booleans and ambiguous resource scopes; failure/daily-only notification selection; reporting time configuration. Five additional tests verify RU/UA customs captions, contract consistency, independent USD price requirements and rejection of unsupported inputs without adding unconfirmed all-inclusive promises.
 
