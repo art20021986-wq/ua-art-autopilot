@@ -1,0 +1,38 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/task_088_ge_price_crm_stage2_verify/evidence.json"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Fetch cars_ui.py, db.py and price_parser.py by exact GET-only allowlist. Parse AST and export only selected safe helpers. Run the pinned local patcher on complete original cars_ui bytes in memory and compile without importing or executing downloaded source. Recheck source hashes and immutable Stage 1 prerequisite. No remote writes, uploads, process actions, database downloads, CRM price edits or installation. FINISHED means read-only verification only.",
+  "execution": {
+    "controller_path": "cloud/task_088_ge_price_crm_stage2_verify/controller.py",
+    "controller_sha256": "4af7d957dfed48a3fb72525b42670110b7f916a9d67853e616e77ee542b6a8fe",
+    "dependency_paths": [
+      "cloud/task_088_ge_price_crm_stage2_verify/patcher.py",
+      "cloud/task_088_ge_price_crm_stage2_verify/runtime.py"
+    ],
+    "evidence_paths": [
+      "cloud/task_088_ge_price_crm_stage2_verify/evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.json"
+    ],
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage2_verify/patcher.py": "8a7e33e94b834668651f1a41d083a0f39be4facafaf44f67193e3c6291dcef90",
+      "cloud/task_088_ge_price_crm_stage2_verify/runtime.py": "4cedb3bd34988c8bc7792e557dc5b44fdd209e032021d6f17898fead05e45417",
+      "cloud/task_088_ge_price_crm_stage2_verify/test_contract.py": "6af026440f0840e7906d811f04548413c48630e26939d23faae613b486f01c14"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.json",
+    "test_paths": [
+      "cloud/task_088_ge_price_crm_stage2_verify/test_contract.py"
+    ],
+    "timeout_seconds": 300
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY",
+  "title": "Verify full current Stage 2 source and price helpers with GET only"
+}
