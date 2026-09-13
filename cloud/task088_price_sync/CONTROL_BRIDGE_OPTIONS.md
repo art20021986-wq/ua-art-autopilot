@@ -16,8 +16,8 @@ file, repository visibility, credential or production setting was changed.
 - Existing GitHub Actions jobs use `github.token` and
   `secrets.PYTHONANYWHERE_API_TOKEN`; neither value was accessed or exported by
   this assessment. Those credentials can remain inside their existing runner
-  trust boundary. Their existence does not authorize an arbitrary new workflow
-  or control-plane writer.
+  trust boundary. Their existence does not supply a reviewed running control-plane
+  producer; that integration is still missing.
 - Existing PythonAnywhere access can install a reviewed package after its
   normal gates. It cannot make a copied GitHub snapshot continuously fresh.
 
@@ -82,9 +82,9 @@ It must deliver genuinely fresh observations within the provider's existing
 time bound, independently of the current interactive task. Existing app access,
 server access and intermittent GitHub schedules do not establish it.
 
-No fresh GitHub credential should be copied to the server, no new security
-capability should be silently added, and no paid continuous runner should be
-enabled to conceal this gap. Keep the completed price-sync/renderer/guard work
+The current connection does not expose a scoped unattended GitHub credential
+for installation on the server. A continuous runner is not already configured,
+and a finite runner cannot be described as proof of uninterrupted operation. Keep the completed price-sync/renderer/guard work
 and server preflight evidence. Finish a real bounded Stage 3 control window if
 its existing-authority runner and producer can be verified; leave unattended
 Stage 4 activation blocked until the missing continuous capability is supplied

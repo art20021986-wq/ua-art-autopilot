@@ -48,3 +48,7 @@ See INSTALLER_CONTRACT.md, BINDING_CONTRACT.md and ../task088_autopilot_owner_po
     python -B -m unittest discover -s cloud/task088_price_sync -p 'test_*.py' -v
 
 Some tests require exact privately recovered fixtures. Do not put private source, CRM databases or preflight SQLite copies in public GitHub or public attachments. Code and local tests alone do not complete Stage 3/4.
+
+## Actual server preflight — 13 September 2026
+
+The package was staged and tested at 16:54 UTC. Candidate verification **PASS**: 38/38 HTML candidates, 5 source patches, 7 pinned dependencies and offline schema preserving cars/audit. Production source, CRM and public HTML were not written by preflight. Overall **BLOCKED** pending the real control bridge/Gate B/activation. See `SERVER_PREFLIGHT_20260913.json` and `EXECUTION_REPORT_RU.md`.

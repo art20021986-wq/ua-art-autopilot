@@ -48,3 +48,7 @@ No verified local mirror of canonical EXECUTION_MODE/AUTOPILOT_HALT was found on
 Next: server preflight; complete the control bridge and concrete Gate B evidence; install against the verified snapshot; create the real config/anchor; activate under controlled conditions; verify CRM → card → catalog and Telegram.
 
 These are implementation and evidence requirements, **not a new request for owner permission**. Do not label Stage 3/4 FINISHED or report active delivery/reliability gains until their real acceptance receipts exist.
+
+## Server evidence now available
+
+Read-only production preflight completed at 2026-09-13T16:54:22Z: 38/38 HTML candidates PASS, five patched sources compile, seven dependency hashes match, offline schema preserves cars/audit. Report summary: `../task088_price_sync/SERVER_PREFLIGHT_20260913.json`. Gate B, activation and live acceptance remain incomplete.
