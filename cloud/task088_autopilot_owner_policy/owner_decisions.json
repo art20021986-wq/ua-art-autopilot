@@ -1,6 +1,6 @@
 {
   "contract_id": "UA-ART-OWNER-DECISIONS-20260913",
-  "version": 4,
+  "version": 5,
   "implementation_status": "BRANCH_ONLY_NOT_DEPLOYED",
   "source": "Owner questionnaire and request to implement answers, 2026-09-13",
   "pricing": {
@@ -42,6 +42,11 @@
     "start_delay_does_not_replace": ["immediate_failure_notification", "60_second_price_sync_deadline"],
     "telegram_events": ["failure", "start_delay", "daily_report"],
     "telegram_destination": "OWNER_PRIVATE_CHAT_WITH_EXISTING_CRM_BOT",
+    "notification_channels": ["TELEGRAM"],
+    "fallback_notification_channels": [],
+    "telegram_unavailable_action": "KEEP_PENDING_UNTIL_VERIFIED_TELEGRAM_DELIVERY",
+    "pending_notification_outbox_status": "REQUIRED_NOT_IMPLEMENTED",
+    "notification_recovery_may_replay_production_task": false,
     "telegram_delivery_status": "NOT_CONNECTED_BY_THIS_PACKAGE",
     "daily_report_local_time": "10:00",
     "daily_report_timezone": "Asia/Ho_Chi_Minh",

@@ -190,7 +190,7 @@ class OwnerPolicyTests(unittest.TestCase):
             p.DependencyReceipt(self.identity, "FINISHED", "a" * 64, 1)
 
     def test_telegram_only_failure_and_daily(self):
-        for event in ("FAILURE", "DAILY_REPORT"):
+        for event in ("FAILURE", "START_DELAY", "DAILY_REPORT"):
             self.assertTrue(p.telegram_event_selected(event))
         for event in ("PROGRESS", "STARTED", "COMPLETED", "RESUMED"):
             self.assertFalse(p.telegram_event_selected(event))
@@ -203,6 +203,9 @@ class OwnerPolicyTests(unittest.TestCase):
         self.assertEqual(p.REPORT_TIMEZONE, "Asia/Ho_Chi_Minh")
         self.assertEqual(p.REPORT_FORMAT, "SHORT_WITH_DETAIL_LINK")
         self.assertEqual(p.TELEGRAM_DESTINATION, "VERIFIED_OWNER_PRIVATE_CRM_CHAT")
+        self.assertEqual(p.NOTIFICATION_CHANNELS, ("TELEGRAM",))
+        self.assertEqual(p.FALLBACK_NOTIFICATION_CHANNELS, ())
+        self.assertEqual(p.TELEGRAM_UNAVAILABLE_ACTION, "KEEP_PENDING_UNTIL_VERIFIED_TELEGRAM_DELIVERY")
         self.assertEqual(p.OPERATING_WINDOW, "24X7")
 
 
