@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827.json",
+  "autostart_ledger_sha256": "bd5cf3d04ff69dbe745cb3615c49c2f7e5093df7792757a1711cd692d44d1d7e",
+  "autostart_source_commit": "707e2d54c9613e45ef08fcb2b1c0991169afa233",
+  "created_at": "2026-09-13T02:34:40Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-13T02:34:40Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "34733330869",
+    "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY",
+    "task_sha256": "1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "read_only-5b74afb8a929e83a-6e67e1b7e3d007ee",
+  "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.json",
+  "request_sha256": "1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827",
+  "resource_locks": [
+    "READ_ONLY:5b74afb8a929e83a"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "e92d5745c2ff73fc08b718e2e6731dc48e92ea78",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-13T02:34:40Z"
+}
