@@ -1,0 +1,201 @@
+{
+  "schema_version": "UA-ART-INCIDENT-EVIDENCE-1",
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+  "original_run_id": "34734575941",
+  "evidence_scope": "READ_ONLY_INCIDENT_RECONCILIATION_DRAFT",
+  "semantic_outcome": "SOURCE_INSTALLED_CONTROL_PLANE_FINALIZATION_FAILED",
+  "is_terminal_receipt": false,
+  "stage2_acceptance": "PENDING_TELEGRAM_CHECKS",
+  "stage3_allowed": false,
+  "observed_main_commit": "b8e2f3ce1f8fc77f12cec04776ce4dc53994a78a",
+  "original_source_commit": "85b35810b6ec7bf050fda00872c3a33ed841fc27",
+  "request_sha256": "f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e",
+  "timeline": [
+    {
+      "at": "2026-09-13T03:05:19Z",
+      "fact": "Autostart launch consumed"
+    },
+    {
+      "at": "2026-09-13T03:09:16Z",
+      "fact": "Production transaction OPEN after backup PASS"
+    },
+    {
+      "at": "2026-09-13T03:15:40Z",
+      "fact": "Launch ledger and transaction expired"
+    },
+    {
+      "at": "2026-09-13T03:16:54Z",
+      "fact": "Production controller returned FINISHED limited to INSTALLATION_AND_SOURCE_DB_READONLY_VERIFY; Telegram checks pending",
+      "job_id": 103664117470
+    },
+    {
+      "at": "2026-09-13T03:17:13Z",
+      "fact": "Finalization failed AUTOSTART_LEDGER_EXPIRED before durable receipt persistence",
+      "job_id": 103664984026
+    },
+    {
+      "at": "2026-09-13T03:17:23Z",
+      "fact": "One-shot rollback reservation persisted as ROLLING_BACK"
+    },
+    {
+      "at": "2026-09-13T03:17:34Z",
+      "fact": "Rollback preflight failed AUTOSTART_NONCE_RESERVATION_MISSING / TRANSACTION_LEDGER_INVALID before rollback controller execution",
+      "job_id": 103665035873
+    },
+    {
+      "at": "2026-09-13T03:17:43Z",
+      "fact": "EMERGENCY_HALT recorded; rollback performed false"
+    }
+  ],
+  "live_source_observation": {
+    "observed_at_precision": "2026-09-13T05:17Z (minute supplied by parent agent)",
+    "source": "Parent agent /root authenticated PythonAnywhere console sha256sum readback",
+    "path": "/home/Carix/cars_ui.py",
+    "sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "matches_approved_candidate": true,
+    "proves": "Approved source remains installed on disk",
+    "does_not_prove": [
+      "Running CRM imported this source",
+      "Telegram menu acceptance",
+      "Current database rows restored after UI checks",
+      "Current published site prices"
+    ]
+  },
+  "earlier_dry_run_observation": {
+    "at": "2026-09-13T03:05Z",
+    "source": "Parent agent /root read previously existing console dry-run output",
+    "status": "NOOP",
+    "files": [],
+    "published_count": 18,
+    "stage_counts": {
+      "georgia": 5,
+      "kiev": 5,
+      "korea": 4,
+      "sea": 4
+    },
+    "scope_note": "Historical dry-run only; not current site verification"
+  },
+  "root_causes": [
+    {
+      "code": "AUTOSTART_LEDGER_EXPIRED",
+      "detail": "The controller completed 74 seconds after ledger expiry; finalize checked identity 93 seconds after expiry.",
+      "repair_constraint": "Do not edit consumed launch, approval or ledger expiry retroactively."
+    },
+    {
+      "code": "PINNED_RECOVERY_NONCE_COPY_OMISSION",
+      "detail": "Critical workflow pinned recovery checkout copies claim, transaction, request, ledger and backup receipt, but omits the ledger-bound nonce reservation created after the pinned source commit.",
+      "path": ".github/workflows/uaart_critical.yml",
+      "nonce_reservation_exists_on_main": true,
+      "nonce_reservation_path": "state/autostart_nonces/task088-stage2-install-20260913-1ba1a9fd3910135be967f125.json",
+      "nonce_reservation_sha256": "096edd3e521bde8a1113a1647bf16acff2d9aee9032812bc5d035f82b527a027",
+      "repair_constraint": "Any runtime fix must preserve nonce validation and use reviewed runtime activation; do not bypass the missing-file check."
+    }
+  ],
+  "observed_state": {
+    "halt": {
+      "halted_at": "2026-09-13T03:17:43Z",
+      "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+      "reason": "CRITICAL Production pipeline failed; GitHub Actions run 34734575941; rollback reserved true; rollback performed false",
+      "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+      "request_sha256": "f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e",
+      "run_id": "34734575941",
+      "status": "EMERGENCY_HALT",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL"
+    },
+    "transaction": {
+      "autostart_ledger_path": "state/autostart_consumed/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.json",
+      "backup_manifest_sha256": "c7fec58b1b43d076e866f78f4ac1f6a1377cc04b114b3767f21a2e1a426562bf",
+      "backup_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL-BACKUP.json",
+      "backup_receipt_sha256": "65f41a21edeca20ad2ea6a67f431ae934252494b169b4455ec91c814e6682c6b",
+      "expires_at": "2026-09-13T03:15:40Z",
+      "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+      "opened_at": "2026-09-13T03:09:16Z",
+      "prepared_at": "2026-09-13T03:06:45Z",
+      "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+      "request_sha256": "f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e",
+      "run_id": "34734575941",
+      "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+      "status": "ROLLING_BACK",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+      "transaction_id": "tx-34734575941-f9cf3ff6cfaba7e1"
+    },
+    "claim_status": "BLOCKED_ROOT_CAUSE",
+    "claim_receipt_validation_status": "PENDING",
+    "claim_post_health_status": "REQUIRED"
+  },
+  "controller_artifact": {
+    "id": 10309934196,
+    "name": "uaart-critical-controller-34734575941-1",
+    "sha256": "69441d920db9988eb1b1cd20c3e5c41b9bc55f7385dd9b0bc5331b3014da5db3",
+    "expires_at": "2026-09-15T03:16:55Z",
+    "archive_contents_verified": false,
+    "archive_materialization_result": "HTTP 403 from tool-provided download URL",
+    "controller_log_verified": true
+  },
+  "policy_findings": {
+    "manual_reconciliation_rule": {
+      "path": "automation/transaction_watchdog.py",
+      "text": "ROLLING_BACK means the one automatic rollback attempt was already consumed, so recovery must halt for manual reconciliation and must not retry it.",
+      "new_owner_phrase_required_by_this_rule": false
+    },
+    "halt_rule": {
+      "path": ".github/workflows/uaart_transaction_watchdog.yml",
+      "text": "A valid same-epoch HALT blocks forward work, not recovery."
+    },
+    "terminal_transition_rule": {
+      "path": "automation/control_plane.py",
+      "function": "close_production_transaction",
+      "finished_allowed_from": [
+        "OPEN"
+      ],
+      "rolled_back_allowed_from": [
+        "ROLLING_BACK"
+      ]
+    },
+    "current_forward_only_reconciliation_cli": "NOT_IMPLEMENTED",
+    "existing_halt_release_cli": {
+      "scope": "UA-ART-RECOVERY-TASK120-002 only",
+      "applies_to_current_incident": false,
+      "reason": "Hard-coded failed task, run, request, halt hash and reconciliation identity; cannot substitute TASK088."
+    },
+    "authorization_interpretation": "Existing owner authorization covers urgent Stage2 work and preparation of factual reconciliation. Generic manual-reconciliation wording does not itself require a new owner phrase. It does not permit circumventing runtime controls or fabricating an outcome."
+  },
+  "next_required_evidence": [
+    "Read remote backup and execute results, cross-check all three result bindings and backup hashes; historical verify result has now been read",
+    "Confirm active CRM process/source activation separately",
+    "Complete both-menu Telegram checks, commit and independent DB readback, independence and original-value restoration",
+    "Implement and review an incident-specific recovery route before changing current transaction/HALT state or forward production execution"
+  ],
+  "changes_performed_by_this_report": {
+    "application_writes": 0,
+    "runtime_changes": 0,
+    "halt_changes": 0,
+    "transaction_changes": 0,
+    "launches": 0
+  },
+  "source_urls": [
+    "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34734575941",
+    "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34734575941/job/103664984026",
+    "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34734575941/job/103665035873"
+  ],
+  "remote_verify_observation": {
+    "observed_at_precision": "2026-09-13T05:19Z (minute supplied by parent agent)",
+    "source": "Parent agent /root authenticated PythonAnywhere read of run-specific verify-result.json",
+    "status": "INSTALLATION_VERIFIED",
+    "finished_at": "2026-09-13T03:16:31.774779Z",
+    "database_unchanged": true,
+    "schema_sha256": "6c60f6ceb8fa385535cf33ab9c93cc3eae06c5452b12cca0ae785357eefc2c9a",
+    "cars_sha256": "de4382f296dcb02e951f783d359798ec734e758a3e83bc42db8517b90367a5d0",
+    "car_count": 19,
+    "integrity": "PASS",
+    "protected_sources_unchanged": true,
+    "source_installed": true,
+    "site_write": false,
+    "migration": false,
+    "live_price_writes": false,
+    "bot_restart": "NOT_PERFORMED",
+    "code_activation": "PENDING_RESTART",
+    "rollback_ready": true,
+    "scope_note": "Readback of historical installer verification result; not proof of bot activation or Telegram acceptance."
+  }
+}
