@@ -1,6 +1,9 @@
 """In-memory transformation tests; no live source or database is executed."""
 import ast
+import asyncio
+import types
 import unittest
+from unittest import mock
 import patcher as p
 
 FIXTURE = '''from __future__ import annotations
@@ -53,6 +56,47 @@ class PatcherTests(unittest.TestCase):
         catch = p.function(result, 'catch_message')
         branch = next(n for n in catch.body if isinstance(n, ast.If) and '_task088_apply_selected_price' in ast.unparse(n))
         self.assertIn("('price_uah', 'price_georgia')", ast.unparse(branch.test))
+
+    def test_explicit_both_markets_stop_before_generic_parser_and_keep_failed_wait(self):
+        source, _ = p.build_candidate(FIXTURE, expected_sha256=p.digest(FIXTURE))
+        namespace = {}
+        exec(compile(source, '<fixture>', 'exec'), namespace)
+        class Stop(Exception):
+            pass
+        namespace.update(ApplicationHandlerStop=Stop,
+                         InlineKeyboardButton=lambda *args, **kwargs: (args, kwargs),
+                         InlineKeyboardMarkup=lambda rows: rows,
+                         legacy_route=mock.Mock(side_effect=AssertionError('generic parser reached')))
+        for field in ('price_uah', 'price_georgia'):
+            for raw in ('11400', '11400 $', 'цена 11400'):
+                for success in (True, False):
+                    with self.subTest(field=field, raw=raw, success=success):
+                        apply = mock.Mock(return_value=(success, 'fixture result'))
+                        namespace['_task088_apply_selected_price'] = apply
+                        wait = {'card_id': 1, 'field': field}
+                        context = types.SimpleNamespace(user_data={'car_wait': wait})
+                        message = types.SimpleNamespace(text=raw, reply_text=mock.AsyncMock())
+                        update = types.SimpleNamespace(message=message, effective_user=types.SimpleNamespace(id=8))
+                        with self.assertRaises(Stop):
+                            asyncio.run(namespace['catch_message'](update, context))
+                        apply.assert_called_once_with(1, field, raw, 8)
+                        message.reply_text.assert_awaited_once()
+                        self.assertEqual('car_wait' in context.user_data, not success)
+                        self.assertEqual(wait['field'], field)
+
+    def test_unrelated_field_uses_existing_handler(self):
+        source, _ = p.build_candidate(FIXTURE, expected_sha256=p.digest(FIXTURE))
+        namespace = {}
+        exec(compile(source, '<fixture>', 'exec'), namespace)
+        route = mock.Mock(return_value='existing handler')
+        namespace['legacy_route'] = route
+        namespace['_task088_apply_selected_price'] = mock.Mock(side_effect=AssertionError('price helper reached'))
+        wait = {'card_id': 1, 'field': 'mileage_km'}
+        context = types.SimpleNamespace(user_data={'car_wait': wait})
+        update = types.SimpleNamespace(message=types.SimpleNamespace(text='12000'),
+                                       effective_user=types.SimpleNamespace(id=8))
+        self.assertEqual(asyncio.run(namespace['catch_message'](update, context)), 'existing handler')
+        route.assert_called_once_with(wait, '12000')
 
     def test_missing_stage1_binding_refuses(self):
         source = FIXTURE.replace('("price_georgia", "Цена Грузии")', '("cost_purchase", "Purchase")')

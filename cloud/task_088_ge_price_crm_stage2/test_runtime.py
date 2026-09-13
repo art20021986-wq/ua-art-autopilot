@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """SQLite fixture tests only; these do not verify the production DB or bot."""
 import json
+import ast
+import os
 import pathlib
 import sqlite3
 import sys
 import tempfile
 import types
+import threading
 import unittest
 from unittest import mock
 
@@ -23,7 +26,7 @@ class FixtureDB:
         self.connections += 1
         if self.fail_fresh_connect and self.connections == 2:
             raise sqlite3.OperationalError("fixture read-back connection failure")
-        conn = sqlite3.connect(self.path)
+        conn = sqlite3.connect(self.path, factory=getattr(self, "connection_factory", sqlite3.Connection))
         conn.row_factory = sqlite3.Row
         conn.set_trace_callback(self.statements.append)
         return conn
@@ -92,7 +95,41 @@ class RuntimeTests(unittest.TestCase):
         expected = dict(before[0], price_uah=12700, updated_at="fixture-new-time",
                         price_history=json.dumps({"1":11000, "3":12700}, sort_keys=True))
         self.assertEqual(self.rows(), [expected, before[1]])
-        self.assertEqual(self.audit(), [("price_uah", "12000", "12700")])
+        self.assertEqual(self.audit(), [("price_uah", "12000", "12700"),
+            ("price_history", before[0]["price_history"], expected["price_history"])])
+
+    def test_supported_numeric_and_price_labels_keep_selected_market(self):
+        for field in ("price_uah", "price_georgia"):
+            for value in ("11400", "11 400", "11\u00a0400 USD", "$11400", "11400 $",
+                          "цена 11400", "стоимость 11400", "ціна 11400", "11,400 долл.",
+                          "цена Украины 11400", "ціна Грузії 11400", "11.4 тыс USD"):
+                with self.subTest(field=field, value=value):
+                    before = self.rows()
+                    ok, message = r._task088_apply_selected_price(1, field, value, 8)
+                    self.assertTrue(ok, message)
+                    saved = self.rows()[0]
+                    other = "price_uah" if field == "price_georgia" else "price_georgia"
+                    self.assertEqual(saved[field], 11400)
+                    self.assertEqual(saved[other], before[0][other])
+
+    def test_actual_recorded_connection_releases_queue_before_independent_read(self):
+        # Execute only the retained TASK064 connection helper string, never the
+        # installer or a live module. This is the queue used by recorded db.connect.
+        path = pathlib.Path(__file__).resolve().parents[1] / "task_064" / "sqlite_hotfix_installer.py"
+        tree = ast.parse(path.read_text())
+        helper = next(ast.literal_eval(node.value) for node in tree.body
+                      if isinstance(node, ast.Assign)
+                      and any(isinstance(t, ast.Name) and t.id == "HELPERS_AND_CLASS" for t in node.targets))
+        namespace = {"sqlite3": sqlite3, "os": os, "_potoki": threading,
+                     "BASE_DIR": self.temp.name, "ZAMOK": threading.RLock(), "ZAMOK_OZHIDANIE": 1}
+        exec(helper, namespace)
+        self.db.connection_factory = namespace["Soedinenie"]
+        for field in ("price_uah", "price_georgia"):
+            with self.subTest(field=field):
+                ok, message = r._task088_apply_selected_price(1, field, "11400", 8)
+                self.assertTrue(ok, message)
+                self.assertEqual(namespace["_UA_FAYL_SOSTOYANIE"].depth, 0)
+        self.assertEqual(self.db.connections, 4)
 
     def test_default_null_georgia_survives_ukraine_edit_and_blank_ge_input(self):
         ok, message = r._task088_apply_selected_price(2, "price_uah", "14500", 8)
@@ -189,6 +226,24 @@ class RuntimeTests(unittest.TestCase):
             conn.execute("DROP TABLE audit")
         self.assertFalse(r._task088_apply_selected_price(1, "price_uah", "13000", 8)[0])
         self.assertEqual(self.rows(), before)
+
+    def test_history_audit_failure_rolls_back_both_values_and_price_audit(self):
+        before = self.rows()
+        with sqlite3.connect(self.path) as conn:
+            conn.execute("CREATE TRIGGER fail_history_audit BEFORE INSERT ON audit "
+                         "WHEN NEW.field='price_history' BEGIN SELECT RAISE(ABORT,'fixture failure'); END")
+        self.assertFalse(r._task088_apply_selected_price(1, "price_uah", "13000", 8)[0])
+        self.assertEqual(self.rows(), before)
+        self.assertEqual(self.audit(), [])
+
+    def test_modified_audit_record_cannot_pass(self):
+        before = self.rows()
+        with sqlite3.connect(self.path) as conn:
+            conn.execute("CREATE TRIGGER corrupt_audit AFTER INSERT ON audit "
+                         "BEGIN UPDATE audit SET field='price_uah' WHERE rowid=NEW.rowid; END")
+        self.assertFalse(r._task088_apply_selected_price(1, "price_georgia", "13000", 8)[0])
+        self.assertEqual(self.rows(), before)
+        self.assertEqual(self.audit(), [])
 
     def test_fresh_readback_connection_failure_cannot_claim_success(self):
         self.db.fail_fresh_connect = True
