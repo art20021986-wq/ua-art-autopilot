@@ -35,7 +35,7 @@
   "production_required": true,
   "production_transaction_id": "tx-34734575941-f9cf3ff6cfaba7e1",
   "production_transaction_path": "state/transactions/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
   "receipt_validation_status": "PENDING",
@@ -74,5 +74,5 @@
       "cloud/task_088_ge_price_crm_stage2/test_remote_installer.py": "28bb196e207d9dfcc2a41bd4b07db996650be8c9001608771f8be7c0993ee2ce"
     }
   },
-  "updated_at": "2026-09-13T03:09:16Z"
+  "updated_at": "2026-09-13T03:17:23Z"
 }
