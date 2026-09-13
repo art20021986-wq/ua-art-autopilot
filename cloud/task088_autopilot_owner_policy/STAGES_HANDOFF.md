@@ -41,6 +41,8 @@ The pure-policy module in this directory can be unit tested without a server. It
 
 Integration still requires: durable task/attempt state, evidence-producing health checks, canonical workflow bindings, resolved workflow-contract failures, resource-lock/dependency integration, a configured owner-only Telegram sender and delivery checks. Telegram credentials must stay in their normal configured environment and must never enter this repository.
 
+Owner-approved start-delay rule: notify when an ordinary approved, currently runnable task has not started for at least 300 seconds since its verified readiness episode. Do not reset ready_since on polling; bind state and notification to exact task/request/attempt/episode. Suppress a successfully delivered duplicate. Use fresh observations, recheck before dispatch and preserve confirmed delivery state durably. This is a startup failure notification, not an extra progress update. Known failures stay immediate and price synchronization keeps its independent 60-second deadline. Branch policy tests do not prove a real-time scheduler or Telegram delivery.
+
 The daily ChatGPT health-check schedule was changed to 10:00 Asia/Ho_Chi_Minh, effective 14 September 2026. That scheduling change does not establish Telegram delivery.
 
 Repository privacy/main protection remain unapplied; verify effect on existing Actions/deployment access before changing visibility. Never weaken existing gates to make CI green.

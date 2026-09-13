@@ -6,6 +6,8 @@ eligibility decision is not authorization, receipt verification or deployment.
 """
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta
+import hashlib
+import json
 import re
 
 
@@ -15,10 +17,12 @@ REPORT_FORMAT = "SHORT_WITH_DETAIL_LINK"
 TELEGRAM_DESTINATION = "VERIFIED_OWNER_PRIVATE_CRM_CHAT"
 OPERATING_WINDOW = "24X7"
 MAX_EVIDENCE_AGE = timedelta(minutes=5)
+ORDINARY_START_DELAY = timedelta(minutes=5)
+MAX_QUEUE_SNAPSHOT_AGE = timedelta(seconds=30)
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 _IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}\Z")
 _TERMINAL = frozenset({"FINISHED", "FAILED", "ROLLED_BACK"})
-_NOTIFIABLE = frozenset({"FAILURE", "DAILY_REPORT"})
+_NOTIFIABLE = frozenset({"FAILURE", "START_DELAY", "DAILY_REPORT"})
 _EVENTS = _NOTIFIABLE | {"PROGRESS", "STARTED", "COMPLETED", "RESUMED"}
 _RESOURCE_ROOTS = frozenset({
     "GLOBAL_PRODUCTION", "CONTROL_PLANE", "SECURITY_CONTROL_PLANE", "CRM_DB",
@@ -253,3 +257,56 @@ def telegram_event_selected(event_type: str) -> bool:
     if type(event_type) is not str or event_type not in _EVENTS:
         raise PolicyInputError("UNKNOWN_NOTIFICATION_EVENT")
     return event_type in _NOTIFIABLE
+
+
+@dataclass(frozen=True)
+class StartDelayDecision:
+    action: str
+    reason: str
+    event_key: str | None = None
+    event_type: str | None = None
+
+
+def start_delay_decision(*, identity: Identity, snapshot_identity: Identity,
+                         readiness_episode: str, task_kind: str, task_state: str,
+                         approval_verified: bool, readiness_verified: bool,
+                         ready_since: datetime, checked_at: datetime, now: datetime,
+                         delivered_event_keys: tuple[str, ...]) -> StartDelayDecision:
+    """Select one 5-minute start-delay alert; does not send or persist anything.
+
+    The trusted adapter must preserve ready_since and readiness_episode across
+    polls, verify identity/state, serialize dispatch, and record successful
+    delivery durably. START_DELAY is a failure subtype, not a progress update.
+    """
+    if type(identity) is not Identity or type(snapshot_identity) is not Identity:
+        raise PolicyInputError("EXACT_IDENTITIES_REQUIRED")
+    _identifier(readiness_episode, "READINESS_EPISODE")
+    _identifier(task_state, "TASK_STATE")
+    if type(task_kind) is not str or task_kind not in {"ORDINARY", "PRICE_SYNC"}:
+        raise PolicyInputError("UNSUPPORTED_TASK_KIND")
+    _boolean(approval_verified, "APPROVAL_VERIFIED")
+    _boolean(readiness_verified, "READINESS_VERIFIED")
+    for value, name in ((ready_since, "READY_SINCE"), (checked_at, "CHECKED_AT"), (now, "NOW")):
+        _instant(value, name)
+    if ready_since > checked_at or checked_at > now:
+        raise PolicyInputError("INVALID_QUEUE_TIMESTAMP_ORDER")
+    _ids(delivered_event_keys, "DELIVERED_EVENT_KEYS")
+    for key in delivered_event_keys:
+        _sha(key, "DELIVERED_EVENT_KEY")
+    if identity != snapshot_identity:
+        return StartDelayDecision("WAIT", "READINESS_IDENTITY_MISMATCH")
+    if task_kind == "PRICE_SYNC":
+        return StartDelayDecision("WAIT", "PRICE_SYNC_HAS_SEPARATE_60_SECOND_DEADLINE")
+    if task_state != "READY" or not approval_verified or not readiness_verified:
+        return StartDelayDecision("WAIT", "TASK_NOT_APPROVED_AND_READY_TO_START")
+    if now - checked_at > MAX_QUEUE_SNAPSHOT_AGE:
+        return StartDelayDecision("WAIT", "FRESH_QUEUE_STATE_REQUIRED")
+    if now - ready_since < ORDINARY_START_DELAY:
+        return StartDelayDecision("WAIT", "START_DELAY_THRESHOLD_NOT_REACHED")
+    binding = ["START_DELAY", identity.task_id, identity.request_sha256,
+               identity.attempt_id, readiness_episode]
+    event_key = hashlib.sha256(json.dumps(binding, separators=(",", ":")).encode()).hexdigest()
+    if event_key in delivered_event_keys:
+        return StartDelayDecision("WAIT", "THIS_READINESS_EPISODE_ALREADY_REPORTED", event_key)
+    return StartDelayDecision("NOTIFY_ELIGIBLE", "READY_TASK_NOT_STARTED_FOR_300_SECONDS",
+                              event_key, "START_DELAY")
