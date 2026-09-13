@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "74b43ad0361e0e9f40ecc97f77cd90f266f6c22c02acc7615aeb68a068bca29f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-13T03:17:43Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 34734575941",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "63a7d429445e6391"
+    }
+  ],
   "heartbeat_at": "2026-09-13T03:09:16Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -61,7 +72,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "20a927c37afb338ac18d025423da2270f4aa4d1eb0938bd7185dacd009468b5d",
     "file_sha256": {
@@ -74,5 +85,5 @@
       "cloud/task_088_ge_price_crm_stage2/test_remote_installer.py": "28bb196e207d9dfcc2a41bd4b07db996650be8c9001608771f8be7c0993ee2ce"
     }
   },
-  "updated_at": "2026-09-13T03:17:23Z"
+  "updated_at": "2026-09-13T03:17:43Z"
 }
