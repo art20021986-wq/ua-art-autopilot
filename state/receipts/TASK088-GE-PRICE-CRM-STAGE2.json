@@ -1,0 +1,50 @@
+{
+  "activation": "PASS",
+  "activation_database_unchanged": true,
+  "activation_html_file_count": 115,
+  "activation_html_unchanged": true,
+  "activation_report_sha256": "a330497c3f4c76e5a5289743dcea9db8873564835118ff51248b378192a2f008",
+  "activation_source_verified": true,
+  "backup": "PASS",
+  "backup_manifest_sha256": "c7fec58b1b43d076e866f78f4ac1f6a1377cc04b114b3767f21a2e1a426562bf",
+  "bot_restart": "PASS",
+  "catalog_check": "NOOP",
+  "catalog_counts": {
+    "all": 18,
+    "georgia": 5,
+    "kiev": 5,
+    "korea": 4,
+    "sea": 4
+  },
+  "closed_at": "2026-09-13T05:56:14Z",
+  "control_card_id": 29,
+  "control_card_unpublished": true,
+  "crm_process": "Running",
+  "database_restored": true,
+  "ge_commit_then_independent_read": "PASS",
+  "independent_price_fields": "PASS",
+  "installed_source_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+  "live_acceptance_backup_sha256": "eeddcda5e9e1f7f044c54b2704108426064931be8a33cfa5d7ac922ce56f635f",
+  "live_acceptance_report_sha256": "5f6c099ebbcd82a99d0d1907d707221f58b4c4c280978139e545d83dace7f60e",
+  "live_acceptance_status": "PASS",
+  "menu_routes": "PASS",
+  "original_values_restored": true,
+  "production": "PASS",
+  "rollback_ready": true,
+  "stage1_prerequisite": "PASS",
+  "stage2_status": "PASS",
+  "stage3_allowed": true,
+  "status": "FINISHED",
+  "supported_inputs_checked": {
+    "price_georgia": "11 401 USD",
+    "price_uah": "$11,402"
+  },
+  "task_class": "CRITICAL",
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2",
+  "tests": {
+    "controller_installation": "25 PASS",
+    "runtime_and_routes": "23 PASS"
+  },
+  "ua_commit_then_independent_read": "PASS",
+  "unexpected_changes": 0
+}
