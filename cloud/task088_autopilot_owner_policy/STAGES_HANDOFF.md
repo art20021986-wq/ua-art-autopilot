@@ -14,7 +14,7 @@ This is a branch-only execution foundation, not a deployment or receipt. No prod
 ## Next production package: Stage 3
 
 1. Inspect and hash current `yadro.py`, `stranica.py`, `publikaciya.py` and the active rendering path. Never patch an unverified historical source snapshot.
-2. Render BOTH independent USD prices on vehicle cards AND in catalog. Owner confirmed on 13 September: Ukrainian price INCLUDES customs clearance in Ukraine; Georgian price EXCLUDES customs clearance in Georgia. Use the explicit captions in `price_captions.py`. Preserve Ukrainian prices without conversion. Do not infer delivery/certification inclusion or add an all-inclusive/no-extra-charges promise from this answer.
+2. Render BOTH independent USD prices on vehicle cards AND in catalog. Owner confirmed on 13 September: Ukrainian price INCLUDES customs clearance in Ukraine; Georgian price INCLUDES delivery to AUTOPAPA market, parking16, and EXCLUDES customs clearance in Georgia. Use the explicit captions in `price_captions.py`. Preserve Ukrainian prices without conversion. Do not infer delivery to Ukraine, certification, parking/storage fees or duration, or add an all-inclusive/no-extra-charges promise.
 3. Preserve diagnostics, extended specifications, media, descriptions, language behavior, ordering and catalog counts. No DB field migration in this stage.
 4. Use a NEW stage-specific identity, request, claim, transaction and final receipt; retain Stage 2 as a prerequisite, never its identity as the new stage's identity.
 5. Stage only in a separate branch. Verify exact allowed diff, all relevant tests, backup hash and restore rehearsal, writer exclusion, health checks and Gate B before any production write.

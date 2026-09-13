@@ -1,12 +1,19 @@
 {
   "contract_id": "UA-ART-OWNER-DECISIONS-20260913",
-  "version": 3,
+  "version": 4,
   "implementation_status": "BRANCH_ONLY_NOT_DEPLOYED",
   "source": "Owner questionnaire and request to implement answers, 2026-09-13",
   "pricing": {
     "currency_ukraine": "USD",
     "currency_georgia": "USD",
     "georgia_customs_included": false,
+    "georgia_delivery_included": true,
+    "georgia_delivery_destination": {
+      "market": "AUTOPAPA",
+      "parking_number": 16,
+      "source": "Owner answer: Да доставка включена до рынка авто папа паркинг 16"
+    },
+    "georgia_delivery_confirmation_does_not_imply": ["storage_fees_included", "parking_fees_included", "storage_duration", "onward_delivery_to_ukraine"],
     "catalog_markets": ["ukraine", "georgia"],
     "card_markets": ["ukraine", "georgia"],
     "keep_existing_ukrainian_prices": true,
@@ -19,7 +26,7 @@
     "ukraine_customs_confirmation": "Owner explicitly confirmed inclusion of customs clearance in Ukraine, 2026-09-13",
     "customs_captions_ru": {
       "ukraine": "Украина — с растаможкой в Украине",
-      "georgia": "Грузия — без растаможки в Грузии"
+      "georgia": "Грузия — с доставкой до авторынка AUTOPAPA, паркинг №16; без растаможки в Грузии"
     },
     "customs_confirmation_does_not_imply": ["delivery_included", "certification_included", "no_other_charges"]
   },

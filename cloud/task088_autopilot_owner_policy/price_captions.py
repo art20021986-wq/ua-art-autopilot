@@ -1,18 +1,19 @@
-"""Owner-approved customs captions, branch-only; not wired into the live renderer.
+"""Owner-approved price captions, branch-only; not wired into the live renderer.
 
 No price inputs, conversion, DB access, HTML writes or network operations.
-Confirmation of customs clearance does not establish delivery/certification
-inclusion or justify a new all-inclusive/no-extra-charges claim.
+Ukraine: customs included; delivery/certification inclusion not established.
+Georgia: delivery to AUTOPAPA parking16 included; Georgian customs excluded.
+No storage fees, parking duration or all-inclusive promise is inferred.
 """
 
 _CAPTIONS = {
     "ru": {
         "ukraine": "Украина — с растаможкой в Украине",
-        "georgia": "Грузия — без растаможки в Грузии",
+        "georgia": "Грузия — с доставкой до авторынка AUTOPAPA, паркинг №16; без растаможки в Грузии",
     },
     "uk": {
         "ukraine": "Україна — з розмитненням в Україні",
-        "georgia": "Грузія — без розмитнення в Грузії",
+        "georgia": "Грузія — з доставкою до авторинку AUTOPAPA, паркінг №16; без розмитнення в Грузії",
     },
 }
 
