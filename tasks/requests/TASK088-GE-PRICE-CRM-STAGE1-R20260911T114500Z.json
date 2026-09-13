@@ -1,0 +1,61 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/operator-ui/cars_ui.py",
+    "production/crm.db"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": true,
+    "gate_b_authorized": false
+  },
+  "description": "HOLD / NOT LAUNCHABLE. Owner confirmed CRM UI is the same Telegram CRM bot and explicitly authorized the existing protected production-credential route for TASK088 two independent prices in CRM source and DB, with website writes forbidden (reply: Да разрешай). Do not ask for that permission again. Old run 34591174796 was closed FAILED; preserve its request and all replay history. Prepared independent selected-price routing, committed DB read-back and scoped restoration. Execution flags remain disabled until real current source hashes, an explicit unpublished test car, actual account storage measurement no older than 30 minutes, protected paths and measured runtime acceptance exist. The existing production storage gate runs before credentials even for a GET-only/noop request; do not falsify old metrics or weaken it. Run package owner_preflight.py in the owner PythonAnywhere console to supply read-only evidence. No live CRM PASS exists. Website, publisher, media, VIN, stages, SEO and unrelated functions are forbidden.",
+  "execution": {
+    "controller_path": "cloud/task_088_ge_price_crm_stage1/controller.py",
+    "controller_sha256": "868fe939f345c5394fc04f796c5dcc6c1d5426e83b5ed4849277bf2cca4679d5",
+    "dependency_paths": [
+      "cloud/task_088_ge_price_crm_stage1/remote_installer.py",
+      "cloud/task_088_ge_price_crm_stage1/ui_patch.py",
+      "cloud/task_088_ge_price_crm_stage1/db_verification.py",
+      "cloud/task_088_ge_price_crm_stage1/backup_controller.py",
+      "cloud/task_088_ge_price_crm_stage1/rollback_controller.py",
+      "cloud/task_088_ge_price_crm_stage1/owner_preflight.py",
+      "cloud/task_088_ge_price_crm_stage1/capacity_probe.py"
+    ],
+    "evidence_paths": [
+      "cloud/task_088_ge_price_crm_stage1/evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json"
+    ],
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage1/backup_controller.py": "3da8bbf02b6607cf6b49c0490da23219f6dd0d3539af83af9286e17ed4d93570",
+      "cloud/task_088_ge_price_crm_stage1/capacity_probe.py": "404643d0bc1271a3d264cfd577a6a3e041b0790245fb8e0266967396b965ba6e",
+      "cloud/task_088_ge_price_crm_stage1/db_verification.py": "b3eae8a2a54b01ed117ec7118e2349f048ae2740fb8dc069222257c7ddf79b99",
+      "cloud/task_088_ge_price_crm_stage1/owner_preflight.py": "0b40ba1cf6f9bc765969f5bef698346493d7ecf69ab68632b9a1c6a875df4f77",
+      "cloud/task_088_ge_price_crm_stage1/remote_installer.py": "e4579bc9f3757f25129d1a43f0979e78fb51d2132524bfef70f0f6eda513eb36",
+      "cloud/task_088_ge_price_crm_stage1/rollback_controller.py": "c7476b2c22c582ecbf2ea0d3baa509f5274ad18f3113b2c17f8fcb0948e51987",
+      "cloud/task_088_ge_price_crm_stage1/test_contract.py": "f2ebafdfab55183994fc63823a1675ed8c5ef635b8c571d75369b7e941518b4f",
+      "cloud/task_088_ge_price_crm_stage1/test_controller.py": "988e0c08f234f045ed2326e21a96ecb05446af5fe8a1fcaf472d485dd55fc196",
+      "cloud/task_088_ge_price_crm_stage1/test_db_verification.py": "f6157fd5bc63c4d06992fddb300e1203e8c8f0b7b4e2ce56e7dd95d1c7ecc2c4",
+      "cloud/task_088_ge_price_crm_stage1/test_owner_preflight.py": "3cb071e81d24fcba76d93d8ce8f6aea99ccc03b9d9b583b303d4a7373c2b2e63",
+      "cloud/task_088_ge_price_crm_stage1/test_ui_patch.py": "f22a6983483d37f2ef220383fdc9f2f4063d9b857091d32a0961e3334fec211b",
+      "cloud/task_088_ge_price_crm_stage1/ui_patch.py": "01dbf7363ea0fa902bd8b2137ad0a7442be4a63f970eb22f6c7161c7122b9c37"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+    "test_paths": [
+      "cloud/task_088_ge_price_crm_stage1/test_contract.py",
+      "cloud/task_088_ge_price_crm_stage1/test_controller.py",
+      "cloud/task_088_ge_price_crm_stage1/test_db_verification.py",
+      "cloud/task_088_ge_price_crm_stage1/test_ui_patch.py",
+      "cloud/task_088_ge_price_crm_stage1/test_owner_preflight.py"
+    ],
+    "timeout_seconds": 900
+  },
+  "production_required": false,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_required_bytes": 16777216,
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+  "title": "Stage 1 UA/GE CRM price live bridge run"
+}
