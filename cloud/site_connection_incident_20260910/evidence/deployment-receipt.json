@@ -1,0 +1,24 @@
+{
+  "always_on_task_id": 270984,
+  "command": "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+  "credentials_used_by_monitor": false,
+  "destination": "/home/Carix/uaart_connection_monitor.py",
+  "existing_start_safe_task": "unchanged",
+  "first_report_verified": true,
+  "observed_state": "Running",
+  "owner_confirmation": "Загружай",
+  "reload_capability": false,
+  "schema_version": 1,
+  "sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+  "site_crm_files_changed": false,
+  "task": "SITE-CONNECTION-20260910",
+  "upload": "CONFIRMED_UI_FILE_LIST",
+  "first_report": {
+    "check_id": "db51b089cda248d2ae43d7baae603a82",
+    "started_at": "2026-09-10T10:09:33.018+00:00",
+    "status": "healthy",
+    "exit_code": 0,
+    "source": "PythonAnywhere editor DOM for /home/Carix/uaart-monitor/latest.json"
+  },
+  "verification": "Upload confirmed by file list; exactly one new Always-on row observed; first JSON report healthy. Long-term availability and mobile browser recovery remain unconfirmed."
+}
