@@ -1,0 +1,26 @@
+{
+  "schema_version": "UA-ART-TASK088-WATCHDOG-REPAIR-CANDIDATE-1",
+  "status": "CANDIDATE_NOT_ACTIVATED",
+  "source_commit": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "created_at_utc": "2026-09-13T10:34:50Z",
+  "patch": "cloud/task088_watchdog_target_halt/runtime-and-contracts.patch",
+  "files": {
+    ".github/workflows/uaart_transaction_watchdog.yml": {
+      "after_sha256": "341e26ad64828c29e761fed07e78aa655df022e40ebab4d4df7f1fdf7b4fe5bf",
+      "before_sha256": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe"
+    },
+    "automation/packages/task107_r2/test_workflow_contracts.py": {
+      "after_sha256": "93a41d3ff65dd7ada8972efd7b4ce29402433ee162b6ba84d8fdf0f5c3d458ab",
+      "before_sha256": "46a552b9264b779561d86491e3aadf30e68c7c24d813e040a374da1f13656461"
+    }
+  },
+  "preserved": [
+    "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+    "state/receipts",
+    "automation/control_plane.py",
+    "automation/transaction_watchdog.py"
+  ],
+  "live_actions_performed": false,
+  "gate_b": "NOT_PASSED",
+  "activation_note": "Do not rewrite existing receipts or runtime pins to manufacture validation. Separate candidate binding and normal activation review required."
+}
