@@ -1,0 +1,59 @@
+{
+  "schema": "UA-ART-SPEC-REBUILD10-AVAILABILITY-OBSERVATION-1",
+  "observation_window_utc": [
+    "2026-09-09T15:43:00Z",
+    "2026-09-09T15:55:00Z"
+  ],
+  "method": "PUBLIC_RENDERED_UI_AND_AUTHENTICATED_HOSTING_UI_READ_ONLY",
+  "homepage": {
+    "url": "https://www.uaart.com.ua/video/index.html",
+    "rendered": true
+  },
+  "catalogue": {
+    "url": "https://www.uaart.com.ua/video/katalog.html?v=1788838881",
+    "rendered": true,
+    "cards": 16,
+    "stage_counts": {
+      "kyiv": 3,
+      "georgia": 1,
+      "ferry": 8,
+      "korea": 4
+    }
+  },
+  "sample_card": {
+    "id": "UA-0001",
+    "url": "https://www.uaart.com.ua/video/UA-0001.html",
+    "opened_via_catalogue_link": true,
+    "rendered": true,
+    "rebuilt_specification_visible": false,
+    "duplicate_vin_present": true,
+    "catalogue_stage": "georgia",
+    "card_route_stage": "ferry"
+  },
+  "hosting": {
+    "webapp": "www.uaart.com.ua",
+    "enabled": true,
+    "python": "3.10",
+    "static_url": "/video/",
+    "static_directory": "/home/Carix/video/",
+    "force_https": true,
+    "password_protection": false
+  },
+  "hosting_mutations": 0,
+  "production_changed": false,
+  "continuous_uptime_proven": false,
+  "other_browser_availability_proven": false,
+  "prior_outage_cause_established": false,
+  "availability_preserving_production_route_verified": false,
+  "external_writer_verification": "REQUIRED",
+  "overall_gate_b": "PENDING",
+  "post_stage_homepage_readback": {
+    "observed_window_utc": [
+      "2026-09-09T16:10:00Z",
+      "2026-09-09T16:12:00Z"
+    ],
+    "rendered": true,
+    "catalogue_link_count_label": 16,
+    "production_changed": false
+  }
+}

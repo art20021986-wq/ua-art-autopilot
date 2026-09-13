@@ -1,0 +1,37 @@
+{
+  "schema": "UA-ART-SPEC-REBUILD10-LOCAL-VALIDATION-1",
+  "observed_at_utc": "2026-09-09T14:18:10.682170+00:00",
+  "tests": {
+    "status": "PASS",
+    "count": 116,
+    "store": 23,
+    "sources": 27,
+    "worker": 23,
+    "renderer": 25,
+    "crm_bridge": 18,
+    "command": "python -m unittest discover -s cloud/spec_rebuild10/tests -q"
+  },
+  "python_runtime": "3.12.14",
+  "python_310_syntax": "PASS",
+  "final_snapshot_reproduction": "32 candidate pages plus32 Preview content/wrappers identical to published Preview",
+  "production_changed": false,
+  "target_server_tests_performed": false,
+  "module_sha256": {
+    "cloud/spec_rebuild10/__init__.py": "196589bb74d80d87a3c46e83e71a8ff9b6154b95c37cda74ea3ab3dfe2c7e61d",
+    "cloud/spec_rebuild10/crm_bridge.py": "49aaece71fcda47186cb613b916cd4116a46c8677d618403b0199b418b1b644b",
+    "cloud/spec_rebuild10/prepare_crm_bridge.py": "aa878bcd30fe13221e868a9d5cfe52d19488f2c651ea4cdc6cac0248b7ad454a",
+    "cloud/spec_rebuild10/prepare_snapshot.py": "ff08e555f4741be861f999b3ea62775e858a3a4967a0693ec6fcf07e120aab88",
+    "cloud/spec_rebuild10/render.py": "6aac332313719ebe3826d70c31cd5e0e32d90e18b925245679910d0cbafc6a7c",
+    "cloud/spec_rebuild10/shell_guard.py": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+    "cloud/spec_rebuild10/sources.json": "519fb2fd80a645ed96c2057a1833b3e9309b17a6a66eed3f8fe66fbf716d3880",
+    "cloud/spec_rebuild10/sources.py": "c807e124e9a49ffdacc66e5da0db523b5bfaaf992189650c437eec3d8da6eda6",
+    "cloud/spec_rebuild10/store.py": "3b9f0ca34e13964bbebad14fd67d3782651fdb69b44802a7d6a34b9eb0f1730d",
+    "cloud/spec_rebuild10/tests/test_crm_bridge.py": "a4161155c8ee17f8205ca61d9ede7c62224a4fdf42373ca61217a553c417b380",
+    "cloud/spec_rebuild10/tests/test_render.py": "0f3875559f8ab2bbe5e9091bb5b5f754c543b4bfffa25501668a9662e801b242",
+    "cloud/spec_rebuild10/tests/test_sources.py": "6d01bb1700e0c0ce54e2531f058e6e3f288774d15dc6d10d2d8a3f35c958877b",
+    "cloud/spec_rebuild10/tests/test_store.py": "f0ffcb761c1ef45573e3165ec130639c4404cd261621ad7c887444a7485453a9",
+    "cloud/spec_rebuild10/tests/test_worker.py": "cbf376ac134fd199f3c04f5ed1e1e900cc7ff11b96241010d3340f88d48dd517",
+    "cloud/spec_rebuild10/worker.py": "c375c48401d1a2b62589c0f05e4eaf9698579d391daddc308b079213d1418418"
+  },
+  "live_vin_fixture_leaks": 0
+}
