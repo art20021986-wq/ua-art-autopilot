@@ -1,0 +1,135 @@
+{
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+  "parent_task_id": "TASK088-GE-PRICE-CRM-STAGE2",
+  "task_class": "CRITICAL",
+  "acceptance_scope": "INSTALLATION_AND_SOURCE_DB_READONLY_VERIFY",
+  "stage2_acceptance": "PENDING_TELEGRAM_CHECKS",
+  "stage3_allowed": false,
+  "production_write": true,
+  "explicit_crm_vehicle_approval": true,
+  "backup_required": true,
+  "rollback_required": true,
+  "live_verify_required": true,
+  "backup_scope": [
+    "production/operator-ui/cars_ui.py",
+    "production/crm.db"
+  ],
+  "rollback_scope": [
+    "production/operator-ui/cars_ui.py"
+  ],
+  "rollback_database_policy": "No live database writes during installation; never overwrite concurrent CRM data with a snapshot.",
+  "operations": [
+    {
+      "action": "replace",
+      "path": "production/operator-ui/cars_ui.py",
+      "expected_before_sha256": "76d0a16e7a22940c6699293cf356a6cdba08bb76565bfdcd9b1c66d214b1fee4",
+      "expected_after_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "postcondition": {
+        "scope": "Only selected-price handler routing and pinned helper functions; all other AST nodes preserved."
+      }
+    },
+    {
+      "action": "noop",
+      "path": "production/crm.db",
+      "postcondition": {
+        "schema_unchanged": true,
+        "vehicle_values_unchanged": true,
+        "live_price_writes": false,
+        "online_backup_required": true
+      }
+    }
+  ],
+  "protected_paths": [
+    "production/site",
+    "production/publisher",
+    "production/media",
+    "production/cars_schema.py",
+    "production/db.py",
+    "production/price_parser.py",
+    "production/start_safe.py"
+  ],
+  "deployment_plan": {
+    "readiness": "READY",
+    "nonce": "task088-stage2-install-20260913-1ba1a9fd3910135be967f125",
+    "source_path": "/home/Carix/cars_ui.py",
+    "db_path": "/home/Carix/crm.db",
+    "db_module_path": "/home/Carix/db.py",
+    "parser_path": "/home/Carix/price_parser.py",
+    "utils_path": "/home/Carix/cars_schema.py",
+    "expected_source_sha256": "76d0a16e7a22940c6699293cf356a6cdba08bb76565bfdcd9b1c66d214b1fee4",
+    "expected_candidate_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "expected_stage1_receipt_sha256": "9a8823cc3101076b8f86f0ed00dec9aa8a0bcb2b7f35451cdc12e526f0aa11e2",
+    "stage1_receipt_path": "/home/Carix/autopilot_inbox/cloud/task_088_ge_price_crm_stage1/receipt.json",
+    "expected_dependency_sha256": {
+      "/home/Carix/db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "/home/Carix/start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "/home/Carix/cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73"
+    },
+    "expected_absent_dependency_paths": [
+      "/home/Carix/price_parser.py"
+    ],
+    "expected_schema_sha256": null,
+    "exact_process": {
+      "command_argv": [
+        "python3.10",
+        "/home/Carix/start_safe.py"
+      ],
+      "supervisor_id": 266084,
+      "verification_mode": "authenticated_supervisor"
+    },
+    "quota": {
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+      "target_environment": "production",
+      "read_only": true,
+      "measured_at": "2026-09-13T02:45:40Z",
+      "measurement": "Authenticated PythonAnywhere Files page: exact byte values from visible quota element title attributes; observation time conservatively rounded down",
+      "total_bytes": 37580963840,
+      "used_bytes": 7443841024,
+      "free_bytes": 30137122816,
+      "quota_observation": {
+        "source_url": "https://www.pythonanywhere.com/user/Carix/files/home/Carix/",
+        "used_element": "id_disk_used",
+        "used_title": "7443841024",
+        "total_element": "id_disk_quota",
+        "total_title": "37580963840",
+        "used_display": "6.9 GB",
+        "total_display": "35.0 GB",
+        "percent_full_display": 20,
+        "server_measurement_timestamp": "NOT_EXPOSED",
+        "precision": "exact integer bytes exposed by account quota UI"
+      }
+    },
+    "test_car_id": null
+  },
+  "evidence_provenance": {
+    "candidate_source": {
+      "path": "cloud/task_088_ge_price_crm_stage2_verify_r2/evidence.json",
+      "sha256": "528ac382ef28c005e696d97cc955390d2c204840c8b7ba888474b7b70df765bf",
+      "run_id": "34733840685",
+      "observed_at": "2026-09-13T02:47:06Z",
+      "scope": "GET_ONLY_FULL_SOURCE_VERIFICATION"
+    },
+    "cars_schema_expected_baseline": {
+      "path": "cloud/task_088_ge_price_crm_stage2_discovery/evidence.json",
+      "sha256": "85d616b11deb26c2361c364d0865c8ca8b5b7e024b8120e265c12e0c1827a703",
+      "run_id": "34686469242",
+      "observed_at": "2026-09-12T09:41:45Z",
+      "current_equality": "REQUIRED_DURING_BACKUP_AND_BEFORE_REPLACEMENT"
+    },
+    "runtime_preflight_required": [
+      "Validate actual SQLite schema and integrity, without migration",
+      "Check authenticated supervisor 266084 exact command, enabled flag and Running state before and after each operation; freeze supervisor identity, with OS PID continuity explicitly not inspected",
+      "Verify all expected dependency hashes and external parser nonexistence before and after installation",
+      "Create immutable online SQLite/source backups and verify approved candidate hash before replacement"
+    ],
+    "runtime_compatibility": "PENDING_LIVE_CHECKS",
+    "process_restart": "NOT_AUTHORIZED_BY_THIS_CHILD",
+    "telegram_ui_acceptance": "NOT_PERFORMED",
+    "owner_metadata_preflight": {
+      "path": "cloud/task_088_ge_price_crm_stage2/server_preflight.json",
+      "sha256": "4637af65600e760d132d3765e0079946748f54b84c6c80a1731a925ded062ffb",
+      "scope": "READONLY_METADATA; schema hash algorithm differs from installer; runtime validation remains mandatory"
+    }
+  }
+}

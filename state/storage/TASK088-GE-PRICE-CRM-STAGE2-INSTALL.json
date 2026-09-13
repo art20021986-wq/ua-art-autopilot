@@ -1,0 +1,22 @@
+{
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+  "target_environment": "production",
+  "read_only": true,
+  "measured_at": "2026-09-13T02:45:40Z",
+  "measurement": "Authenticated PythonAnywhere Files page: exact byte values from visible quota element title attributes; observation time conservatively rounded down",
+  "total_bytes": 37580963840,
+  "used_bytes": 7443841024,
+  "free_bytes": 30137122816,
+  "quota_observation": {
+    "source_url": "https://www.pythonanywhere.com/user/Carix/files/home/Carix/",
+    "used_element": "id_disk_used",
+    "used_title": "7443841024",
+    "total_element": "id_disk_quota",
+    "total_title": "37580963840",
+    "used_display": "6.9 GB",
+    "total_display": "35.0 GB",
+    "percent_full_display": 20,
+    "server_measurement_timestamp": "NOT_EXPOSED",
+    "precision": "exact integer bytes exposed by account quota UI"
+  }
+}

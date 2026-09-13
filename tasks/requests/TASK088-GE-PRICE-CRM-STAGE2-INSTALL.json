@@ -1,0 +1,72 @@
+{
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+  "title": "Stage 2 installation only; full Telegram acceptance remains pending",
+  "description": "Owner explicitly confirmed urgent Stage 2 installation and will check it. This child installs only the reviewed minimal cars_ui.py source patch after immutable online SQLite/source backup and pinned runtime preflight. No Stage 1 reinstall or migration, no live price changes, no bot restart, no publisher/site action. FINISHED means INSTALLATION_AND_SOURCE_DB_READONLY_VERIFY only; parent Stage 2 acceptance remains PENDING_TELEGRAM_CHECKS and Stage 3 is forbidden. Current SQLite schema, dependency equality, optional parser absence and exact CRM process identity must pass on the target before replacement. The full-source GET-only candidate verification and local installer safety tests passed; Telegram acceptance has not been performed.",
+  "changed_paths": [
+    "production/operator-ui/cars_ui.py",
+    "production/crm.db"
+  ],
+  "control_plane_version": "TASK107-R2",
+  "requested_min_class": "CRITICAL",
+  "production_required": true,
+  "read_only": false,
+  "ai_requested": false,
+  "complexity": 2,
+  "storage_required_bytes": 268435456,
+  "health_checks": [
+    "https://www.uaart.com.ua/"
+  ],
+  "storage_probe": {
+    "evidence_path": "state/storage/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+    "evidence_sha256": "528d5afdb47db1b83d7253096d71438d8fac61f070a65313deebb0a357b9af78"
+  },
+  "critical": {
+    "allow_crm_vehicle_data": true,
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+    "manifest_sha256": "dbd31f0675c792f9e4ebf3c2f6b7f82d1121946ddc4454d3401955bebe1ceb46",
+    "gate_a_path": "tasks/gates/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+    "gate_a_sha256": "83de7385b7bdd07353345c7b8e4d2e4d04b144b08145a1a9cc3a4eb89f4d2daa",
+    "owner_approval_path": "tasks/approvals/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.production.json",
+    "owner_approval_sha256": "d3a54b313ed47dabd075bbad71fb14eb1836116e83a6889076b0aebe9939f4af"
+  },
+  "execution": {
+    "controller_path": "cloud/task_088_ge_price_crm_stage2/controller.py",
+    "controller_sha256": "20a927c37afb338ac18d025423da2270f4aa4d1eb0938bd7185dacd009468b5d",
+    "backup_controller_path": "cloud/task_088_ge_price_crm_stage2/backup_controller.py",
+    "backup_controller_sha256": "1ce7c3db11f28da2d47f6aea76f59def174ef7963dc0adba0a50b075f53b2a29",
+    "backup_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL-BACKUP.json",
+    "rollback_controller_path": "cloud/task_088_ge_price_crm_stage2/rollback_controller.py",
+    "rollback_controller_sha256": "1e3e1286ace7a428b46900635b6301f89a2925b279b2c3c19ea86723ae04400c",
+    "rollback_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL-ROLLBACK.json",
+    "dependency_paths": [
+      "cloud/task_088_ge_price_crm_stage2/acceptance_controller.py",
+      "cloud/task_088_ge_price_crm_stage2/patcher.py",
+      "cloud/task_088_ge_price_crm_stage2/remote_installer.py",
+      "cloud/task_088_ge_price_crm_stage2/runtime.py",
+      "cloud/task_088_ge_price_crm_stage2/test_fixtures.py"
+    ],
+    "test_paths": [
+      "cloud/task_088_ge_price_crm_stage2/test_remote_installer.py",
+      "cloud/task_088_ge_price_crm_stage2/test_controller.py"
+    ],
+    "file_sha256": {
+      "cloud/task_088_ge_price_crm_stage2/acceptance_controller.py": "6c680128d31e2c125fdbf874f47d10e968b81c9cf95420f203b0bd250b22d1a1",
+      "cloud/task_088_ge_price_crm_stage2/patcher.py": "8a7e33e94b834668651f1a41d083a0f39be4facafaf44f67193e3c6291dcef90",
+      "cloud/task_088_ge_price_crm_stage2/remote_installer.py": "f2835b5087f4bf645287205fdf5a39782f6176e94c64bd41c1f6c4429544a3bf",
+      "cloud/task_088_ge_price_crm_stage2/runtime.py": "4cedb3bd34988c8bc7792e557dc5b44fdd209e032021d6f17898fead05e45417",
+      "cloud/task_088_ge_price_crm_stage2/test_fixtures.py": "5cac8b2f0aa2108c6bef9da1d3ab554060a50919cd2a63a2bba1947356f59c81",
+      "cloud/task_088_ge_price_crm_stage2/test_remote_installer.py": "28bb196e207d9dfcc2a41bd4b07db996650be8c9001608771f8be7c0993ee2ce",
+      "cloud/task_088_ge_price_crm_stage2/test_controller.py": "2bd151101a8b8d8b4cf7922c8467e9c49bb1c1f31518039cdbe253acf3c4646e"
+    },
+    "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+    "evidence_paths": [
+      "cloud/task_088_ge_price_crm_stage2/installation_evidence.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL-BACKUP.json",
+      "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL-ROLLBACK.json"
+    ],
+    "production_required": true,
+    "timeout_seconds": 1200
+  }
+}
