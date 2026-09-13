@@ -18,6 +18,7 @@ TELEGRAM_DESTINATION = "VERIFIED_OWNER_PRIVATE_CRM_CHAT"
 NOTIFICATION_CHANNELS = ("TELEGRAM",)
 FALLBACK_NOTIFICATION_CHANNELS = ()
 TELEGRAM_UNAVAILABLE_ACTION = "KEEP_PENDING_UNTIL_VERIFIED_TELEGRAM_DELIVERY"
+UNRESOLVED_INCIDENT_FOLLOWUP = "DAILY_REPORT_ONLY"
 OPERATING_WINDOW = "24X7"
 MAX_EVIDENCE_AGE = timedelta(minutes=5)
 ORDINARY_START_DELAY = timedelta(minutes=5)
@@ -26,7 +27,7 @@ _SHA = re.compile(r"[0-9a-f]{64}\Z")
 _IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}\Z")
 _TERMINAL = frozenset({"FINISHED", "FAILED", "ROLLED_BACK"})
 _NOTIFIABLE = frozenset({"FAILURE", "START_DELAY", "DAILY_REPORT"})
-_EVENTS = _NOTIFIABLE | {"PROGRESS", "STARTED", "COMPLETED", "RESUMED"}
+_EVENTS = _NOTIFIABLE | {"PROGRESS", "STARTED", "COMPLETED", "RESUMED", "INCIDENT_REMINDER"}
 _RESOURCE_ROOTS = frozenset({
     "GLOBAL_PRODUCTION", "CONTROL_PLANE", "SECURITY_CONTROL_PLANE", "CRM_DB",
     "CATALOG_RENDERER", "CATALOG_ALL_CARDS", "HOMEPAGE", "DOCS", "MEDIA",
@@ -256,7 +257,12 @@ def independent_task_decision(*, candidate: Identity, stopped: Identity,
 
 
 def telegram_event_selected(event_type: str) -> bool:
-    """Selection only; no recipient resolution, delivery or delivery retries."""
+    """Selection only; no sender. Already-reported incidents get no reminders.
+
+    A trusted adapter must preserve incident identity across polls. A first
+    alert awaiting confirmed delivery remains pending, not INCIDENT_REMINDER.
+    Distinct new failures remain immediately notifiable.
+    """
     if type(event_type) is not str or event_type not in _EVENTS:
         raise PolicyInputError("UNKNOWN_NOTIFICATION_EVENT")
     return event_type in _NOTIFIABLE

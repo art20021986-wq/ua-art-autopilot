@@ -192,7 +192,7 @@ class OwnerPolicyTests(unittest.TestCase):
     def test_telegram_only_failure_and_daily(self):
         for event in ("FAILURE", "START_DELAY", "DAILY_REPORT"):
             self.assertTrue(p.telegram_event_selected(event))
-        for event in ("PROGRESS", "STARTED", "COMPLETED", "RESUMED"):
+        for event in ("PROGRESS", "STARTED", "COMPLETED", "RESUMED", "INCIDENT_REMINDER"):
             self.assertFalse(p.telegram_event_selected(event))
         for unknown in (None, "", "CUSTOM"):
             with self.assertRaises(p.PolicyInputError):
@@ -206,6 +206,7 @@ class OwnerPolicyTests(unittest.TestCase):
         self.assertEqual(p.NOTIFICATION_CHANNELS, ("TELEGRAM",))
         self.assertEqual(p.FALLBACK_NOTIFICATION_CHANNELS, ())
         self.assertEqual(p.TELEGRAM_UNAVAILABLE_ACTION, "KEEP_PENDING_UNTIL_VERIFIED_TELEGRAM_DELIVERY")
+        self.assertEqual(p.UNRESOLVED_INCIDENT_FOLLOWUP, "DAILY_REPORT_ONLY")
         self.assertEqual(p.OPERATING_WINDOW, "24X7")
 
 

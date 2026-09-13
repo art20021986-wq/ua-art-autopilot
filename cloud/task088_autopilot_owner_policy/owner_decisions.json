@@ -1,6 +1,6 @@
 {
   "contract_id": "UA-ART-OWNER-DECISIONS-20260913",
-  "version": 6,
+  "version": 7,
   "implementation_status": "BRANCH_ONLY_NOT_DEPLOYED",
   "source": "Owner questionnaire and request to implement answers, 2026-09-13",
   "pricing": {
@@ -44,6 +44,10 @@
     "start_delay_deduplication": "ONE_CONFIRMED_NOTIFICATION_PER_IDENTITY_AND_READINESS_EPISODE",
     "start_delay_does_not_replace": ["immediate_failure_notification", "60_second_price_sync_deadline"],
     "telegram_events": ["failure", "start_delay", "daily_report"],
+    "unresolved_incident_followup": "DAILY_REPORT_ONLY",
+    "repeat_unresolved_incident_alerts": false,
+    "first_incident_notification_requires_confirmed_delivery": true,
+    "distinct_new_failures_notify_immediately": true,
     "telegram_destination": "OWNER_PRIVATE_CHAT_WITH_EXISTING_CRM_BOT",
     "notification_channels": ["TELEGRAM"],
     "fallback_notification_channels": [],
