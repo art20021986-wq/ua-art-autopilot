@@ -1,0 +1,115 @@
+{
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "reviewed_at_utc": "2026-09-09T04:33:09.558632+00:00",
+  "scope": "Read-only static review of pinned repository code, following a scheduled task observed by the parent in authenticated PythonAnywhere Tasks UI",
+  "production_touched_by_review": false,
+  "installer_executed": false,
+  "workflow_started": false,
+  "schedule_changed": false,
+  "source": {
+    "repository": "art20021986-wq/ua-art-autopilot",
+    "commit": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+    "path": "cloud/task_083_catalog_dedup/installer.py",
+    "git_blob_oid": "9ea0998c1f23164b2efef55a915b8961d4e7da6d",
+    "sha256": "13dbcbced164c73bb1767fee6d35ca9597c14b552baaeb31ebbf90cad70b1b46",
+    "bytes": 45744,
+    "cached_copy_matches_pinned_repository_blob": true,
+    "installed_server_installer_hash_verified": false,
+    "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/cloud/task_083_catalog_dedup/installer.py"
+  },
+  "parent_observed_tasks_ui": {
+    "always_on_command": "python3.10 /home/Carix/start_safe.py",
+    "always_on_status": "Running",
+    "always_on_started_displayed": "2026-09-08 07:07:30",
+    "scheduled_command": "cd /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup && python3.10 installer.py install",
+    "scheduled_frequency": "daily",
+    "scheduled_time_displayed": "08:02",
+    "schedule_timezone_not_independently_verified": true,
+    "scheduled_enabled": true,
+    "description": "task083installfallback"
+  },
+  "historical_log": {
+    "filename": "schedule-log-1502679.log",
+    "status": "NOT_READ",
+    "error_reported_by_parent": "Browser net::ERR_BLOCKED_BY_CLIENT",
+    "alternate_route_attempted": false
+  },
+  "write_scope_from_code": {
+    "managed_paths": [
+      "/home/Carix/stranica.py",
+      "/home/Carix/yadro.py",
+      "/home/Carix/master_card.py",
+      "/home/Carix/video/katalog.html",
+      "/home/Carix/site/katalog.html",
+      "/home/Carix/catalog_stage_guard_core.py"
+    ],
+    "optional_managed_path": "/home/Carix/catalog_stage_guard_core.py",
+    "individual_vehicle_page_write_targets": [],
+    "candidate_8_module_direct_target_intersection": [],
+    "read_only_observed_module_paths": [
+      "/home/Carix/publikaciya.py",
+      "/home/Carix/catalog_stage_guard_runtime.py"
+    ],
+    "other_operational_writes": [
+      "Timestamped backups under /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup/backups",
+      "Mode receipt JSON under the installer directory",
+      "Three local lock files",
+      "Temporary copied CRM DB used for read-only invariant checks"
+    ]
+  },
+  "idempotency": {
+    "one_shot_completed_stamp_prevents_future_install_runs": false,
+    "prior_install_receipt_checked_before_install": false,
+    "generator_marker_returns_original_after_validation": true,
+    "core_marker_returns_original_after_validation": true,
+    "target_write_skipped_when_candidate_bytes_identical": true,
+    "new_backup_created_on_each_install_reaching_backup": true,
+    "new_receipt_written_on_each_run": true,
+    "note": "Content patch idempotence does not disable the scheduled execution or make install mode globally read-only."
+  },
+  "vehicle_page_invariant": {
+    "glob_patterns": [
+      "/home/Carix/video/UA-*.html",
+      "/home/Carix/site/UA-*.html"
+    ],
+    "before_after_hash_check": true,
+    "failure_code": "PROTECTED_CARD_PAGES_CHANGED",
+    "failure_restore_scope": "Managed generator/core/catalog paths only, not the vehicle pages"
+  },
+  "coverage_gaps": [
+    {
+      "status": "CONFIRMED_IN_PINNED_CODE",
+      "finding": "Installer and rollback perform their own atomic writes without calling spec_publication, publikaciya final guards or publish_transaction_guard.",
+      "impact": "Include this scheduled code writer in deployment and rollback coordination; it is not direct proof of a vehicle spec overwrite."
+    },
+    {
+      "status": "CONFIRMED_IN_PINNED_CODE",
+      "finding": "Uses .task082_catalog_stage_repair.lock, .task082_catalog_stage_guard.lock and .task083_catalog_dedup.lock; does not use .ua_art_publish_transaction.lock.",
+      "impact": "The reviewed schedule is not serialized by the new specification publication lock."
+    },
+    {
+      "status": "CONFIRMED_IN_PINNED_CODE",
+      "finding": "restore reads backup bytes and writes them whenever current bytes differ, without compare-and-swap ownership check.",
+      "impact": "A concurrent legitimate edit to one of the managed generator/core/catalog files could be replaced during rollback. No such incident was proved here."
+    }
+  ],
+  "spec_disappearance_attribution": {
+    "status": "NOT_PROVEN",
+    "conclusion": "The reviewed source does not directly write individual vehicle pages and checks their hashes. It is not evidence that TASK083 removed the additional specification.",
+    "still_needed": "Exact installed installer hash and permitted historical evidence identifying a concrete write event; blocked log access was not bypassed."
+  },
+  "code_locations": {
+    "path_constants": "32-47",
+    "protected_pages_snapshot": "173-181",
+    "generator_idempotence": "285-288",
+    "core_idempotence": "398-401",
+    "read_only_runtime_and_publisher_snapshot": "798-822",
+    "backup_and_restore": "846-866",
+    "install_write_set_and_checks": "967-1026",
+    "rollback_scope": "1029-1043",
+    "entrypoint_locks_and_receipt": "1046-1071"
+  },
+  "gate_inventory_requirement": "Include enabled scheduled jobs, their reviewed write targets and rollback paths in the existing Gate B writer inventory.",
+  "disable_task083_required_by_this_review": false,
+  "disable_task083_reason": "No direct target overlap with the prepared eight-module candidate and no proved removal of vehicle-page specifications; this review does not require or authorize disabling the schedule."
+}

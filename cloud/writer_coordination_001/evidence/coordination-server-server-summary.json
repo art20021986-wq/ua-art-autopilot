@@ -1,0 +1,24 @@
+{
+  "schema": "UA-ART-WRITER-COORDINATION-SERVER-SUMMARY-1",
+  "python_version": "3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]",
+  "status": "PASS",
+  "scope": "ISOLATED_SYNTHETIC_LOCKS_AND_FAKE_PLATFORM_API",
+  "tests": 55,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "io_guard": {
+    "blocked_network": 0,
+    "blocked_subprocess": 0,
+    "blocked_read": 0,
+    "blocked_write": 0
+  },
+  "bundle_inputs_unchanged": true,
+  "production_changed": false,
+  "real_task_api_called": false,
+  "production_lock_files_opened": false,
+  "external_writers_verified": false,
+  "overall_gate_b": "NOT_EVALUATED",
+  "result_path": "/home/Carix/writer_coordination_gate_20260909/run-20260909T092743502363Z/result.json",
+  "finished_at": "2026-09-09T09:27:49.428110+00:00"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "UA-ART-ANALYTICS-WRITER-SERVER-TEST-1",
+  "status": "PASS",
+  "scope": "ISOLATED_ACTUAL_ANALYTICS_FUNCTION_WITH_SYNTHETIC_HTML",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "started_at": "2026-09-09T09:31:09.337567+00:00",
+  "finished_at": "2026-09-09T09:31:09.401031+00:00",
+  "tests": 13,
+  "expected_tests": 13,
+  "test_groups": {
+    "test_analytics_writer.py": 13
+  },
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "io_guard": {
+    "blocked_network": 0,
+    "blocked_subprocess": 0,
+    "blocked_read": 0,
+    "blocked_write": 0
+  },
+  "bundle_inputs_unchanged": true,
+  "bundle_sha256": "32d30966ac13d0e98459cb3ae422e08002052f5e8fbee007b8fc81b7c0bc7e07",
+  "source_sha256": {
+    "analytics_server_gate.py": "9999f43434dbc65c0fe69c773c26668d6a3c323b698abf6df5252278c07d088c",
+    "patch_analytics_writer.py": "58e62afbc8458f273b605b06b222552ff07d83d9fd375c5891685045a070e2e5",
+    "tests/test_analytics_writer.py": "64892d7695c8a675510eb5c80db13a2e0b3ccbdadc9d818d38b0922847f88981"
+  },
+  "captured_source_sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+  "production_changed": false,
+  "real_task_api_called": false,
+  "production_lock_files_opened": false,
+  "external_writers_verified": false,
+  "cross_host_lock_verified": false,
+  "overall_gate_b": "NOT_EVALUATED",
+  "guard_limit": "Python audit guard over reviewed code; native temporary multiprocessing IPC is not an application write"
+}

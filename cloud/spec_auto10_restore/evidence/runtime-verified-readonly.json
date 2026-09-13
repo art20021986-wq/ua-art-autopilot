@@ -1,0 +1,41 @@
+{
+  "checked_at": "2026-09-09T04:11:55.632563+00:00",
+  "method": "authenticated PythonAnywhere separate diagnostic Bash console; sha256sum and immutable read-only SQLite SELECT; no application imports",
+  "server_root": "/home/Carix",
+  "server_console_id": "48108896",
+  "crm_site_writes": 0,
+  "source_byte_hashes": {
+    "cars_ui.py": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+    "publikaciya.py": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
+    "ua_additional_spec.py": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
+    "vin_spec_service.py": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae",
+    "source_policy.py": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38",
+    "profile_library.py": "1211250019cf16c74f28d96539606803db92fe9a204eddfbb2a7339d174085db",
+    "crm.db": "8d0ed38f677cbad38131195614f1ab17e4f2e266c06594303649473324766b2e",
+    "vin_specs_task111_v3.db": "76f452a79e1f00debb88aa94fe868c1d701ac3728683990b89f34b0f1f9ab70d",
+    "vin_specs.db": "4b6d66d6f26d906450198f7ed8a8f149dc0986a4d3d60ff64fe81ec0b357beea",
+    "publish_transaction_guard.py": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d"
+  },
+  "spec_semantic_sha256": "ec45ac8ffc088f93a98857c81a6a95aac7b81ce8f7b8a466019a9a7e9e3572b3",
+  "spec_fact_rows": 557,
+  "spec_meta_rows": 557,
+  "crm_all_identity_sha256": "ac3e8b4666c8db7d401673c1d42e1c3cc0b7e4c9e2cc528b72ce63cceede00bc",
+  "crm_published_identity_sha256": "0c26cb2672accba3e64aa018ecf3732f44bac740fb9c235a2adf57ad61b21443",
+  "crm_cards": 18,
+  "published_cards": 16,
+  "unpublished_cards": [
+    "UA-0017",
+    "UA-0018"
+  ],
+  "wal_journal_absent_at_read": true,
+  "whole_database_bytes_match": false,
+  "fact_metadata_content_matches_cached_copy": true,
+  "selected_car_identity_content_matches_cached_copy": true,
+  "runtime_import_bindings_verified": false,
+  "new_source_http_checks_from_server": false,
+  "notes": [
+    "SQLite read transactions used mode=ro&immutable=1 after checking journal absence.",
+    "Equality concerns the selected semantic fields, not the entire database or all service/job fields.",
+    "Screenshot car is UA-0010, VIN suffix4445."
+  ]
+}

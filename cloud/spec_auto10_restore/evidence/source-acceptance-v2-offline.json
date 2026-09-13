@@ -1,0 +1,122 @@
+{
+  "schema": "UA-ART-SOURCE10-ACCEPTANCE-1",
+  "plan_sha256": "c950c34d7fbbefdf499357d1df0e8f55ea20cc4b9db7cd1121af703d47dd07ad",
+  "started_at": "2026-09-09T10:42:20.729263+00:00",
+  "execution_origin": "offline",
+  "authorization_reference": "",
+  "runtime_sha256": {
+    "profile_library.py": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+    "source_policy.py": "8f6d010242ab7df297fe0ad2ee35233d80c7f5005ffaef669d8332caba9fffd2"
+  },
+  "network_requested": false,
+  "vin_request_attempted": false,
+  "vin_transmitted": false,
+  "production_touched": false,
+  "sources": [
+    {
+      "domain": "vpic.nhtsa.dot.gov",
+      "probe_url": "https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/kia?format=json",
+      "mode": "api_schema",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    },
+    {
+      "domain": "auto-data.net",
+      "probe_url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-b-180-1.8-cdi-109hp-7g-dct-18833",
+      "mode": "model_adapter",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    },
+    {
+      "domain": "carwiki.co.kr",
+      "probe_url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80",
+      "mode": "model_adapter",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    },
+    {
+      "domain": "auto.danawa.com",
+      "probe_url": "https://auto.danawa.com/auto/?Lineup=42280&Model=3260%2C3151&Tab=spec&Work=model&pcUse=y",
+      "mode": "model_adapter",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    },
+    {
+      "domain": "carisyou.com",
+      "probe_url": "https://www.carisyou.com/car/5688/Spec/54625",
+      "mode": "inspect_identity",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    },
+    {
+      "domain": "ultimatespecs.com",
+      "probe_url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/24345/Mercedes-Benz-B-Class-%28W245%29-B180-Autotronic.html",
+      "mode": "model_adapter",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    },
+    {
+      "domain": "automobile-catalog.com",
+      "probe_url": "https://www.automobile-catalog.com/car/2010/1549490/mercedes-benz_b_180_autotronic.html",
+      "mode": "model_adapter",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    },
+    {
+      "domain": "cars-data.com",
+      "probe_url": "https://cars-data.com/en/mercedes-benz/b-class/w245/b-170-35607--35607/specs",
+      "mode": "model_adapter",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    },
+    {
+      "domain": "carfolio.com",
+      "probe_url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447",
+      "mode": "model_adapter",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    },
+    {
+      "domain": "encycarpedia.com",
+      "probe_url": "https://www.encycarpedia.com/mercedes/05-b-170-mpv",
+      "mode": "model_adapter",
+      "access": "NOT_RUN",
+      "adapter": "NOT_RUN",
+      "identity": "NOT_VERIFIED",
+      "reason": "NETWORK_NOT_REQUESTED"
+    }
+  ],
+  "network_calls_started": 0,
+  "gate_b": "NOT_EVALUATED",
+  "finished_at": "2026-09-09T10:42:20.729280+00:00",
+  "stop_reason": "NETWORK_NOT_REQUESTED",
+  "adapter_pass_count": 0,
+  "source_count": 10,
+  "sources_with_http_response": 0,
+  "all_ten_adapters_pass": false,
+  "probe_execution_complete": false,
+  "limitations": [
+    "Model pages do not prove factory options of an individual VIN.",
+    "This read-only run cannot erase last-good CRM facts and does not test production preservation.",
+    "A source-level failure is retained explicitly; API_SCHEMA_ONLY is never adapter PASS.",
+    "The plan and authorization reference do not bypass environment network permissions."
+  ]
+}

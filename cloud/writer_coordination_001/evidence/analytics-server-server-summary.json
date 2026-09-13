@@ -1,0 +1,26 @@
+{
+  "schema": "UA-ART-ANALYTICS-WRITER-SERVER-SUMMARY-1",
+  "python_version": "3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]",
+  "status": "PASS",
+  "scope": "ISOLATED_ACTUAL_ANALYTICS_FUNCTION_WITH_SYNTHETIC_HTML",
+  "tests": 13,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "io_guard": {
+    "blocked_network": 0,
+    "blocked_subprocess": 0,
+    "blocked_read": 0,
+    "blocked_write": 0
+  },
+  "bundle_inputs_unchanged": true,
+  "production_source_unchanged": true,
+  "production_source_sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+  "production_changed": false,
+  "real_task_api_called": false,
+  "production_lock_files_opened": false,
+  "external_writers_verified": false,
+  "overall_gate_b": "NOT_EVALUATED",
+  "result_path": "/home/Carix/analytics_writer_gate_20260909/run-20260909T093342143010Z/result.json",
+  "finished_at": "2026-09-09T09:33:43.249464+00:00"
+}

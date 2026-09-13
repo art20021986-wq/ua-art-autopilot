@@ -1,0 +1,78 @@
+{
+  "algorithm_byte_identical_after_three_admission_literal_substitutions": true,
+  "application_imported": false,
+  "blocked_io_attempts": {
+    "network": 0,
+    "production_access": 0,
+    "subprocess": 0
+  },
+  "candidate_after_sha256": {
+    "ai_filter.py": "4b0326b0280e5bf9fdecab0a4f0a931525bd7700b11b6c6c37756895f55d6c89",
+    "analitika_wsgi.py": "76cb2e6141b262e558acc7e96804afacc312a6cb3971cd623eef921e086d7761",
+    "autopilot_inbox/cloud/task_083_catalog_dedup/installer.py": "13b61a13b73f4a029b01fa0f3c071ab8d4790b656d8fa5f37876e92ac5231684",
+    "car_number_allocator.py": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1",
+    "card_lifecycle.py": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+    "card_shell.py": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+    "cars_schema.py": "20da4d4e892b363cd57c8819eadf92f0d8d54383a6c3344e37391d00d5d56e8a",
+    "cars_ui.py": "57ad5acc340d412aa9d95e1ef56c7de85d4346ad6bbc755fda311763f3637a42",
+    "db.py": "1d5073450b353b88f99944930ed34af0735784c3a580801bab694ecafb7f59a2",
+    "master_card.py": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8",
+    "profile_library.py": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+    "publikaciya.py": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+    "publish_transaction_guard.py": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+    "source_policy.py": "8f6d010242ab7df297fe0ad2ee35233d80c7f5005ffaef669d8332caba9fffd2",
+    "spec_publication.py": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+    "ua_additional_spec.py": "48a3f8e88bb214d6632513b6ee0b884a0d3bd95cb4bc2e786426fec42e4b2441",
+    "vin_spec_service.py": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16"
+  },
+  "candidate_id": "UA-ART-SPEC-AUTO10-COMPLETE-17-V3",
+  "candidate_manifest_sha256": "14f42086fc8bc94aefc4e4c83bda50e01107c30d2ad893c00d658f60d0c64fff",
+  "candidate_pin_was_patched_for_test": false,
+  "candidate_source_inputs_unchanged": true,
+  "cars_ui_sha256": "57ad5acc340d412aa9d95e1ef56c7de85d4346ad6bbc755fda311763f3637a42",
+  "changed_application_files": [
+    "cars_ui.py"
+  ],
+  "compiled_actual_candidate_modules": 17,
+  "finished_at": "2026-09-09T12:00:10.272230+00:00",
+  "fixture_authority_phase_count": 43,
+  "fixture_authority_quota_and_session": "SYNTHETIC; NOT AUTHENTICATED",
+  "fixture_before_absent": 4,
+  "fixture_before_present": 13,
+  "fixture_install_rollback_cycles": 1,
+  "fixture_install_status": "CODE_INSTALLED_READBACK",
+  "fixture_legacy_bytes": "SYNTHETIC; NOT ACTUAL LIVE17 PRECONDITION BYTES",
+  "fixture_rollback_status": "CODE_ROLLED_BACK_READBACK",
+  "fixture_six_locks_held_through_readback": true,
+  "historical_v3_server_30_tests_rerun": false,
+  "installer_sha256": "0dec7fa5509da16b143698cee2a2ff5641385644c2f1ae01724fe516cce82000",
+  "original_modes_mtime_and_absence_restored": true,
+  "overall_gate_b": "NOT_EVALUATED",
+  "production_changed": false,
+  "production_lock_files_opened": false,
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "real_external_writers_verified": false,
+  "real_task_api_called": false,
+  "schema": "UA-ART-HANDOFF-V4-ACTUAL17-LOCAL-ADMISSION-1",
+  "started_at": "2026-09-09T12:00:08.897116+00:00",
+  "status": "PASS",
+  "unchanged_application_file_count": 16,
+  "unchanged_execution_dependency_pins": {
+    "catalog_design_golden.html": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3",
+    "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+  },
+  "unpause_authorized": false,
+  "validation_scope": "LOCAL_TARGETED_ADMISSION_AND_ONE_ACTUAL17_BYTE_FIXTURE_INSTALL_ROLLBACK",
+  "validation_source_sha256": {
+    "code_handoff_v3.py": "200ca169be01cb12bf6cdaa8425acdb2279e1bfc6fd9306d51300148043f9ed1",
+    "code_handoff_v4.py": "0dec7fa5509da16b143698cee2a2ff5641385644c2f1ae01724fe516cce82000",
+    "prepare_maintenance_v3.py": "4516e6082390b4ec2c7c6593c55459b15b2027c6366b0175b5e8b146975db8ac",
+    "server_fence.py": "199a8744b3dd335899adcac92c52e30c462d7b471898d6b94a7ba944b9f05b85",
+    "verify_handoff_v4_candidate.py": "90997dd8e7a2f9020b6884681923b0dbced1da204dddc475623b06e4a1d5c195"
+  },
+  "wrong_candidate_rejections": {
+    "new_installer_rejects_old_candidate": "EXACT_COMPLETE17_MANIFEST_REQUIRED",
+    "old_installer_rejects_new_candidate": "EXACT_COMPLETE17_MANIFEST_REQUIRED"
+  }
+}

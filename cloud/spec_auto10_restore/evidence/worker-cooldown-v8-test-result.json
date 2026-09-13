@@ -1,0 +1,27 @@
+{
+  "scope": "V8_LOCAL_WORKER_RECOVERY_AND_DEPENDENT_LIFECYCLE_DELTA",
+  "status": "PASS",
+  "candidate_revision": "UA-ART-SPEC-AUTO10-RESTORE-V8-SYNC-COOLDOWN",
+  "python_version": "3.12.14",
+  "started_at_utc": "2026-09-09T07:47:20.817962+00:00",
+  "completed_at_utc": "2026-09-09T07:47:21.621936+00:00",
+  "duration_seconds": 0.804,
+  "tests_run": 50,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "runtime_and_test_sha256": {
+    "cloud/spec_auto10_restore/runtime/vin_spec_service.py": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+    "cloud/spec_auto10_restore/tests/test_worker_recovery.py": "897d54cfd78473d489e9e19302a8fd516967a0c8577f749a10efc20746be3696"
+  },
+  "inputs_unchanged_during_test": true,
+  "production_changed": false,
+  "network_requests": 0,
+  "full_gate_b_pass": false,
+  "limitations": [
+    "Synthetic deadlines exercise durable scheduling, not wall-clock worker SLA.",
+    "Source collection and its exhaustion policy unchanged.",
+    "Active lease timeout remains1800seconds; no claim stealing introduced.",
+    "No PythonAnywhere import, process restart or deployment in this subtask."
+  ]
+}

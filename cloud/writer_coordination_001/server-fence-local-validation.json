@@ -1,0 +1,26 @@
+{
+  "schema": "UA-ART-WRITER-FENCE-LOCAL-VALIDATION-1",
+  "recorded_at": "2026-09-09T09:16:30.926928+00:00",
+  "status": "PASS",
+  "scope": "LOCAL_EXISTING_INODE_FENCE_WITH_SYNTHETIC_COMPETING_PROCESSES",
+  "command": "python3 -B -m unittest discover -s cloud/writer_coordination_001 -p test_server_fence.py -v",
+  "tests": 19,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "python": "3.12.14",
+  "production_touched": false,
+  "pythonanywhere_executed": false,
+  "external_writers_verified": false,
+  "cross_host_lock_verified": false,
+  "limits": [
+    "Requires authenticated platform pause and termination of all prior invocations including queued installers",
+    "A separate PA console process list is not accepted as account-wide drain proof",
+    "Maintains intent on release/crash; no automatic unpause or stale intent deletion",
+    "No application installation/lock handoff implemented by this helper"
+  ],
+  "files": {
+    "server_fence.py": "199a8744b3dd335899adcac92c52e30c462d7b471898d6b94a7ba944b9f05b85",
+    "test_server_fence.py": "73a28acd8098ac31392db02d164eba8a5543fe9b0040cd662ad4ae7882518115"
+  }
+}

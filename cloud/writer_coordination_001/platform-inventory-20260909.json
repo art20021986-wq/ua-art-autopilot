@@ -1,0 +1,39 @@
+{
+  "schema": "UAART_PLATFORM_INVENTORY_OBSERVATION_V1",
+  "observation_date_utc": "2026-09-09",
+  "main_sha": "8866d83e52197703a2f148ec882d560090ed62c9",
+  "provenance": "Authenticated PythonAnywhere account Carix, rendered GET API responses and Tasks/Consoles/Web UI",
+  "production_mutations": 0,
+  "external_writer_verification": "INCOMPLETE",
+  "always_on": [
+    {"id":266084,"user":"Carix","command":"python3.10 /home/Carix/start_safe.py","description":"","enabled":true,"state":"Running"}
+  ],
+  "schedule": [
+    {"id":1502215,"user":"Carix","command":"cd /home/Carix/autopilot_inbox/cloud/seo_rehab_guard_068 && python3.10 seo_rehab_guard_068_repair.py --dry-run","description":"seo068 ten-run production dry-run fallback","enabled":true,"interval":"daily","hour":21,"minute":28,"expiry":null},
+    {"id":1502679,"user":"Carix","command":"cd /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup && python3.10 installer.py install","description":"task083 install fallback","enabled":true,"interval":"daily","hour":8,"minute":2,"expiry":null},
+    {"id":1505035,"user":"Carix","command":"set -e; mkdir -p '/home/Carix/autopilot_inbox/cloud/task_096_tech_spec_ai_crm/data_enrichment'","description":"TASK096 v7 1788202686 fallback-1","enabled":true,"interval":"daily","hour":19,"minute":0,"expiry":null}
+  ],
+  "tasks_process_list": [
+    {"command":"python3.10 /home/Carix/start_safe.py","started_utc":"2026-09-08T07:07:30Z"}
+  ],
+  "consoles_process_list": [
+    {"command":"bash","started_utc":"2026-09-09T03:55:21Z"},
+    {"command":"bash","started_utc":"2026-09-09T05:12:39Z"}
+  ],
+  "webapp": {
+    "domain":"www.uaart.com.ua",
+    "python_version":"3.10",
+    "source_directory":"/home/Carix/mysite",
+    "working_directory":"/home/Carix/",
+    "wsgi_path":"/var/www/www_uaart_com_ua_wsgi.py",
+    "static_mappings":[{"url":"/video/","directory":"/home/Carix/video/"}],
+    "observed_wrappers":["analitika_wsgi.obolochka","uaart_bridge_wsgi.obolochka"]
+  },
+  "limitations":[
+    "Observation only; no tasks paused or restarted.",
+    "Lists are point-in-time UI evidence, not a durable drain or complete process-tree proof.",
+    "Historical console entries are not treated as running processes.",
+    "The web ingress, diagnostic worker, manual entrypoints and prior queued invocations must be covered before global writer verification.",
+    "Authenticated GET capability is proven; PATCH mutation and workflow credential scope were not exercised."
+  ]
+}

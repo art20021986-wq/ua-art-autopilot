@@ -1,0 +1,44 @@
+{
+  "status": "READ_ONLY_RECHECK",
+  "source_checked_at_utc": "2026-09-09T08:02:09.686547+00:00",
+  "source_hashes": {
+    "cars_ui.py": "9db53cc1d80c8f09aecda3a324cd5deb20812857a13004395f09b854091b05d5",
+    "publikaciya.py": "fb7fa77277ebc3330c85ab3744c85ac7f084074a314866a5bf388a283f2622c0",
+    "ua_additional_spec.py": "a04bb9fe565379a02e2c4e1b7c055821ecd63fb3e7c84138e5fe949ac032d259",
+    "vin_spec_service.py": "247943e514f34dc37265791bf56fd36e58bcbaa8b2064285544733b1afc42bae",
+    "source_policy.py": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38",
+    "profile_library.py": "1211250019cf16c74f28d96539606803db92fe9a204eddfbb2a7339d174085db",
+    "publish_transaction_guard.py": "ce6bd00338fbdc38b91f9554ea7baab3b8e921ffe6c1035aa4aba0186e2b549d",
+    "master_card.py": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+    "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+  },
+  "all_nine_match_reviewed_input_bytes": true,
+  "method": "PythonAnywhere authenticated diagnostic console; hashlib reads only; source contents not imported",
+  "crm_checked_at_utc": "2026-09-09T07:51:41.978032+00:00",
+  "crm_rows": 18,
+  "published_rows": 16,
+  "drafts": [
+    {
+      "uid": "UA-0017",
+      "year": "2015",
+      "published": false
+    },
+    {
+      "uid": "UA-0018",
+      "year": "2023",
+      "published": false
+    }
+  ],
+  "ua0016": {
+    "current_year": "1999",
+    "owner_approved_target_year": "2017",
+    "change_applied": false
+  },
+  "database_read_mode": "mode=ro&immutable=1 after absence check for -wal and -journal",
+  "production_changed": false,
+  "limitations": [
+    "Configured files are not loaded-process binding proof.",
+    "08:02 schedule completion and catalog/core/yadro outcomes were not established.",
+    "The selected database query was not a new audit of every live page or all CRM fields."
+  ]
+}

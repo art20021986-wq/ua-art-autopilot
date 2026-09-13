@@ -1,0 +1,22 @@
+{
+  "checked_at": "2026-09-09T03:20:54.355767+00:00",
+  "status": "NOT_VERIFIED_BROWSER_ACCESS_BLOCKED",
+  "attempts": [
+    {
+      "url": "http://127.0.0.1:8765/Preview.html",
+      "result": "net::ERR_BLOCKED_BY_CLIENT"
+    },
+    {
+      "url": "file:///home/oai/share/2d59224df460/spec-work/cloud/spec_auto10_restore/Preview.html",
+      "result": "Browser URL security policy rejected action; no workaround permitted"
+    }
+  ],
+  "visual_qa": false,
+  "desktop_qa": false,
+  "mobile_qa": false,
+  "screenshot": null,
+  "field_display_count_verified": false,
+  "historical_profile_label_readability_verified": false,
+  "production_writes": 0,
+  "next_step": "Provide artifact for owner review or use an independently approved supported preview hosting flow; do not bypass browser URL policy."
+}

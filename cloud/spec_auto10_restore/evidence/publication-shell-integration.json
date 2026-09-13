@@ -1,0 +1,45 @@
+{
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "status": "PASS_LOCAL_PUBLICATION_SHELL_INTEGRATION",
+  "full_gate_b_pass": false,
+  "production_touched": false,
+  "network_requests": 0,
+  "checked_at_utc": "2026-09-09T05:06:55.833965+00:00",
+  "tests": {
+    "command": "python -B -m unittest test_card_shell test_publication test_worker_recovery test_lifecycle test_verified_specs",
+    "test_count": 74,
+    "failures": 0,
+    "errors": 0,
+    "status": "PASS"
+  },
+  "full_page_contract": {
+    "one_main_visible_vin": true,
+    "known_duplicate_normalization": true,
+    "canonical_specification": true,
+    "existing_card_static_assets_exact": true,
+    "new_card_reviewed_static_assets_pin": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+    "reconciliation_only_permitted_delta": true,
+    "standalone_fragment_api": "validate_block",
+    "fragment_api_cannot_validate_full_page": true,
+    "public_get_compares_local_static_assets": true,
+    "current_identity_checks_car_id": true,
+    "canonical_identity_duplicate_uid_and_tombstone_fence": "card_lifecycle.validate_publication_identity read-only; recovery writes performed by lifecycle/worker integration"
+  },
+  "cached32_evidence": "evidence/all-card-rebuild-single-vin.json",
+  "files_sha256": {
+    "runtime/card_shell.py": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+    "runtime/spec_publication.py": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+    "build_verified_specs.py": "b0c3b551b20ce15f2aa37500dd5911c839bc694fc95f505ad0458860a806df1d",
+    "build_preview.py": "41dfeeee755b2af106f31f787ea6b370377444e47b2eaccfe71a30d53112afe9",
+    "check_all_card_rebuild.py": "ac0a4eaf16f58e4b7da3127f5e4aac19b5f789a13a56aa2be12c1f6039b12347",
+    "check_card_shell.py": "d1ce6e07defe03fa8d41b9c07fdef66d3eecfdd5598c0988bd6d77b23fd61b16",
+    "tests/test_card_shell.py": "7080dd1370960dff3537b60881c1db78f16b7053875b084cad46a6d73f6f0642",
+    "tests/test_publication.py": "7e78bd36f47476c791bf85a727be39ddb5eb9291031389930810e4ac57008695",
+    "tests/fixtures/reviewed_shell_assets.html": "4e8a5b320da16b500fca3d25d8aa0d03ce9ae4b78bf619368894f420e7187bbe"
+  },
+  "limitations": [
+    "Local isolated tests and historical cached HTML only; no current production writer execution is claimed.",
+    "Per-card data and gallery updates remain possible. Static assets alone do not validate arbitrary header/footer or inline executable script changes during ordinary CRUD; full specification reconciliation additionally uses exact permitted-delta comparison.",
+    "Reviewed new-card asset pin is explicit and cannot be changed with an environment switch. A different template requires review."
+  ]
+}

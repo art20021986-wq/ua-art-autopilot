@@ -1,0 +1,23 @@
+{
+  "schema": "UA-ART-ANALYTICS-WRITER-SERVER-PACKAGE-1",
+  "recorded_at": "2026-09-09T09:31:51.119341+00:00",
+  "archive_name": "analytics-writer-server-v1.zip",
+  "archive_sha256": "d21c738cfd3c9caebca12e70eb540ee39e58e94525c63655dde9dcbff4db8b51",
+  "archive_bytes": 9056,
+  "server_command": "python3.10 -I -B /home/Carix/analytics_writer_gate_20260909/bundle-v1/analytics_server_gate.py",
+  "source_files": [
+    "analytics_server_gate.py",
+    "patch_analytics_writer.py",
+    "tests/test_analytics_writer.py"
+  ],
+  "local_qa": "analytics-gate-local-qa.json",
+  "local_tests_passed": 13,
+  "server_executed": false,
+  "production_changed": false,
+  "scope": "PACKAGE_AND_LOCAL_QA_ONLY",
+  "server_production_read_allowlist": {
+    "/home/Carix/analitika_wsgi.py": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94"
+  },
+  "real_task_api_called": false,
+  "overall_gate_b": "NOT_EVALUATED"
+}

@@ -1,0 +1,3245 @@
+--- reviewed-current/card_lifecycle.py
++++ candidate/card_lifecycle.py
+@@ -0,0 +1,520 @@
++"""Bounded CRM/public-page transitions under the existing publication lock.
++
++No import-time writes. Only explicit CRM callbacks call these functions. Deletes
++retain media, specification facts and a private row/page backup. Only exact
++primary, diagnostic and catalog files are in the write set. Rollback compensates
++only our CRM fields; concurrent unrelated CRM edits are never overwritten.
++"""
++from __future__ import annotations
++
++import datetime
++import hashlib
++import json
++import os
++from pathlib import Path
++import re
++import sqlite3
++import tempfile
++import threading
++import uuid
++
++CONTRACT = "UA-ART-SPEC-AUTO-10-RESTORE-001:LIFECYCLE:1"
++UID = re.compile(r"UA-[0-9]{4,}\Z")
++MAX_FILE = 32 * 1024 * 1024
++ARCHIVE_TABLE = "ua_spec_lifecycle_archive"
++_ACTIVE_OPERATION = threading.local()
++
++
++class LifecycleError(RuntimeError):
++    pass
++
++
++def _atomic(path, data, mode=0o600):
++    path = Path(path)
++    path.parent.mkdir(parents=True, exist_ok=True)
++    fd, temporary = tempfile.mkstemp(prefix=".lifecycle-", dir=path.parent)
++    try:
++        with os.fdopen(fd, "wb") as stream:
++            stream.write(data)
++            stream.flush()
++            os.fsync(stream.fileno())
++        os.chmod(temporary, mode)
++        os.replace(temporary, path)
++        directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
++        try:
++            os.fsync(directory)
++        finally:
++            os.close(directory)
++    finally:
++        if os.path.exists(temporary):
++            os.unlink(temporary)
++
++
++def _safe_path(path, root):
++    path, root = Path(path).absolute(), Path(root).absolute()
++    if root not in path.parents:
++        raise LifecycleError("PATH_OUTSIDE_RUNTIME")
++    for part in (path, *path.parents):
++        if part.is_symlink():
++            raise LifecycleError("LIFECYCLE_SYMLINK_FORBIDDEN:" + str(part))
++    if path.exists() and not path.is_file():
++        raise LifecycleError("LIFECYCLE_REGULAR_FILE_REQUIRED:" + str(path))
++    return path
++
++
++def _read(path):
++    if path.stat().st_size > MAX_FILE:
++        raise LifecycleError("LIFECYCLE_FILE_TOO_LARGE")
++    return path.read_bytes()
++
++
++def _connect(guard):
++    _safe_path(guard.DB, guard.ROOT)
++    connection = sqlite3.connect(str(guard.DB), timeout=30)
++    connection.row_factory = sqlite3.Row
++    connection.execute("PRAGMA foreign_keys=ON")
++    return connection
++
++
++def _json(data):
++    return (json.dumps(data, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode()
++
++
++def _same_identity(current, before):
++    return current is not None and all(
++        current.get(field) == before.get(field)
++        for field in ("id", "auto_number", "vin", "created_at") if field in before
++    )
++
++
++def _uid_unique(connection, code, card_id, *, absent=False):
++    code = str(code).strip().upper()
++    rows = connection.execute(
++        "SELECT id FROM cars WHERE UPPER(TRIM(auto_number))=?", (code,)
++    ).fetchall()
++    return not rows if absent else len(rows) == 1 and rows[0][0] == card_id
++
++
++def _archive_state(guard, operation_id, state):
++    connection = _connect(guard)
++    try:
++        connection.execute("UPDATE ua_spec_lifecycle_archive SET state=? WHERE operation_id=?",
++                           (state, operation_id))
++        connection.commit()
++    finally:
++        connection.close()
++
++
++def validate_publication_identity(connection, code, *, expected_card_id=None, require_published=True):
++    """Read-only UID/tombstone gate using the caller's existing CRM connection.
++
++    Does not create tables, change rows, open databases, import the application,
++    or mutate connection pragmas. Safe to call under the publication lock from
++    the worker or specification reader before reusing UID-bound facts.
++    """
++    code = str(code or "").strip().upper()
++    if not UID.fullmatch(code):
++        raise LifecycleError("LIFECYCLE_AUTO_NUMBER_INVALID")
++    rows = connection.execute(
++        "SELECT id,published FROM cars WHERE UPPER(TRIM(auto_number))=?", (code,)
++    ).fetchall()
++    if len(rows) != 1:
++        raise LifecycleError("LIFECYCLE_CARD_MISSING_OR_DUPLICATE_UID")
++    card_id, published = rows[0][0], rows[0][1]
++    if expected_card_id is not None and card_id != int(expected_card_id):
++        raise LifecycleError("LIFECYCLE_CARD_ID_CHANGED")
++    if require_published and published != 1:
++        raise LifecycleError("LIFECYCLE_CARD_NOT_PUBLISHED")
++    exists = connection.execute(
++        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (ARCHIVE_TABLE,)
++    ).fetchone()
++    if exists:
++        unresolved = connection.execute(
++            "SELECT operation_id FROM ua_spec_lifecycle_archive WHERE auto_number=? "
++            "AND state IN ('APPLIED','ROLLBACK_DB_DONE')", (code,),
++        ).fetchall()
++        active = getattr(_ACTIVE_OPERATION, "operation_id", None)
++        if any(row[0] != active for row in unresolved):
++            raise LifecycleError("LIFECYCLE_RECOVERY_REQUIRED")
++        retired = connection.execute(
++            "SELECT car_id FROM ua_spec_lifecycle_archive WHERE auto_number=? "
++            "AND action='delete' AND state='COMPLETED' LIMIT 1", (code,),
++        ).fetchone()
++        if retired is not None:
++            raise LifecycleError("LIFECYCLE_RETIRED_AUTO_NUMBER_REUSED")
++    return {"car_id": card_id, "auto_number": code, "published": published}
++
++
++def _delete_schema_safe(connection):
++    # The observed cars/media schema has no cascading relationships. Unknown
++    # deletion hooks must be reviewed instead of risking associated data loss.
++    for (sql,) in connection.execute(
++        "SELECT sql FROM sqlite_master WHERE type='trigger' AND tbl_name='cars'"
++    ):
++        if re.search(r"\bDELETE\b", str(sql), re.I):
++            raise LifecycleError("UNREVIEWED_CAR_DELETE_TRIGGER")
++    names = [row[0] for row in connection.execute(
++        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
++    )]
++    for name in names:
++        quoted = '"' + name.replace('"', '""') + '"'
++        for fk in connection.execute("PRAGMA foreign_key_list(" + quoted + ")"):
++            if fk[2] == "cars" and fk[6].upper() not in {"NO ACTION", "RESTRICT"}:
++                raise LifecycleError("UNREVIEWED_CAR_DELETE_CASCADE:" + name)
++
++
++class _Snapshot:
++    def __init__(self, guard, code, row, action, actor_id):
++        self.guard = guard
++        self.code = code
++        self.operation_id = uuid.uuid4().hex
++        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
++        self.root = Path(guard.ROOT) / "rezerv_publikacii" / "SPEC_LIFECYCLE" / (stamp + "-" + self.operation_id)
++        for part in (self.root, *self.root.parents):
++            if part.is_symlink():
++                raise LifecycleError("LIFECYCLE_BACKUP_SYMLINK_FORBIDDEN")
++        self.root.mkdir(parents=True, mode=0o700, exist_ok=False)
++        self.files = {}
++        for site_root in guard.ROOTS:
++            if not Path(site_root).is_dir() or Path(site_root).is_symlink():
++                raise LifecycleError("LIFECYCLE_SITE_ROOT_MISSING")
++            for name in (code + ".html", code + "-diag.html", "katalog.html"):
++                path = _safe_path(Path(site_root) / name, guard.ROOT)
++                data = _read(path) if path.is_file() else None
++                mode = path.stat().st_mode & 0o777 if data is not None else 0o644
++                relative = str(path.relative_to(guard.ROOT))
++                self.files[path] = {"data": data, "mode": mode, "relative": relative}
++                if data is not None:
++                    _atomic(self.root / "files" / relative, data)
++        self.report = {
++            "contract_id": CONTRACT, "operation_id": self.operation_id,
++            "code": code, "action": action, "actor_id": actor_id,
++            "created_at": stamp, "state": "PREPARED", "row_before": row,
++            "files": {value["relative"]: {
++                "exists": value["data"] is not None, "mode": value["mode"],
++                "sha256": hashlib.sha256(value["data"]).hexdigest() if value["data"] is not None else None,
++            } for value in self.files.values()},
++            "media_and_specification_deleted": False,
++        }
++        self.save()
++
++    def save(self):
++        _atomic(self.root / "manifest.json", _json(self.report))
++
++    @classmethod
++    def from_archive(cls, guard, archive):
++        result = cls.__new__(cls)
++        result.guard = guard
++        result.root = Path(archive["backup_path"]).absolute()
++        base = Path(guard.ROOT) / "rezerv_publikacii" / "SPEC_LIFECYCLE"
++        if result.root.parent != base or result.root.is_symlink():
++            raise LifecycleError("LIFECYCLE_RECOVERY_BACKUP_SCOPE")
++        manifest = _safe_path(result.root / "manifest.json", guard.ROOT)
++        result.report = json.loads(_read(manifest))
++        result.code = archive["auto_number"]
++        result.operation_id = archive["operation_id"]
++        if (not UID.fullmatch(result.code)
++                or result.report.get("operation_id") != result.operation_id
++                or result.report.get("code") != result.code
++                or result.report.get("action") != archive["action"]
++                or result.report.get("row_before") != json.loads(archive["previous_row_json"])):
++            raise LifecycleError("LIFECYCLE_RECOVERY_MANIFEST_MISMATCH")
++        expected = {str((Path(root) / name).relative_to(guard.ROOT))
++                    for root in guard.ROOTS
++                    for name in (result.code + ".html", result.code + "-diag.html", "katalog.html")}
++        if set(result.report.get("files", {})) != expected:
++            raise LifecycleError("LIFECYCLE_RECOVERY_FILE_SET")
++        result.files = {}
++        for relative, item in result.report["files"].items():
++            path = _safe_path(Path(guard.ROOT) / relative, guard.ROOT)
++            data = None
++            if item["exists"]:
++                stored = _safe_path(result.root / "files" / relative, result.root)
++                data = _read(stored)
++                if hashlib.sha256(data).hexdigest() != item["sha256"]:
++                    raise LifecycleError("LIFECYCLE_RECOVERY_BACKUP_HASH")
++            result.files[path] = {"data": data, "mode": item["mode"], "relative": relative}
++        return result
++
++    def restore_files(self):
++        for path, item in self.files.items():
++            _safe_path(path, self.guard.ROOT)
++            if item["data"] is None:
++                path.unlink(missing_ok=True)
++            else:
++                _atomic(path, item["data"], item["mode"])
++        for path, item in self.files.items():
++            if (path.is_file() and _read(path) == item["data"]) if item["data"] is not None else not path.exists():
++                continue
++            raise LifecycleError("LIFECYCLE_ROLLBACK_READBACK_FAILED:" + str(path))
++
++    def withdraw_pages(self):
++        for path in self.files:
++            if path.name != "katalog.html":
++                _safe_path(path, self.guard.ROOT)
++                path.unlink(missing_ok=True)
++                directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
++                try:
++                    os.fsync(directory)
++                finally:
++                    os.close(directory)
++
++
++def _archive_schema(connection):
++    connection.execute("""CREATE TABLE IF NOT EXISTS ua_spec_lifecycle_archive (
++        operation_id TEXT PRIMARY KEY, car_id INTEGER NOT NULL,
++        auto_number TEXT NOT NULL, action TEXT NOT NULL, state TEXT NOT NULL,
++        previous_row_json TEXT NOT NULL, actor_id INTEGER, created_at TEXT NOT NULL,
++        backup_path TEXT NOT NULL
++    )""")
++
++
++def _mutate(guard, card_id, action, actor_id, snapshot, before):
++    connection = _connect(guard)
++    after_fields = {}
++    try:
++        connection.execute("BEGIN IMMEDIATE")
++        current = connection.execute("SELECT * FROM cars WHERE id=?", (card_id,)).fetchone()
++        if current is None or dict(current) != before:
++            raise LifecycleError("CRM_CHANGED_BEFORE_LIFECYCLE")
++        validate_publication_identity(connection, snapshot.code, expected_card_id=card_id,
++                                      require_published=False)
++        if action == "delete":
++            _delete_schema_safe(connection)
++        _archive_schema(connection)
++        retired = connection.execute(
++            "SELECT car_id FROM ua_spec_lifecycle_archive WHERE auto_number=? "
++            "AND action='delete' AND state='COMPLETED' LIMIT 1", (snapshot.code,),
++        ).fetchone()
++        if retired is not None:
++            raise LifecycleError("LIFECYCLE_RETIRED_AUTO_NUMBER_REUSED")
++        connection.execute(
++            "INSERT INTO ua_spec_lifecycle_archive VALUES(?,?,?,?,?,?,?,?,?)",
++            (snapshot.operation_id, card_id, snapshot.code, action, "APPLIED",
++             json.dumps(before, ensure_ascii=False, sort_keys=True), actor_id,
++             snapshot.report["created_at"], str(snapshot.root)),
++        )
++        if action == "delete":
++            connection.execute("DELETE FROM cars WHERE id=?", (card_id,))
++        else:
++            after_fields["published"] = int(action == "publish")
++            if "publish_pending" in before:
++                after_fields["publish_pending"] = 0
++            if action == "sold":
++                after_fields["status"] = "sold"
++            if "updated_at" in before:
++                after_fields["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
++            assignments = ",".join('"' + field + '"=?' for field in after_fields)
++            connection.execute("UPDATE cars SET " + assignments + " WHERE id=?",
++                               (*after_fields.values(), card_id))
++        snapshot.report["after_fields"] = after_fields
++        snapshot.save()  # persisted before the CRM commit; crash recovery uses it
++        connection.commit()
++        return after_fields
++    except Exception:
++        connection.rollback()
++        raise
++    finally:
++        connection.close()
++
++
++def _compensate(guard, card_id, action, before, after_fields, operation_id):
++    connection = _connect(guard)
++    try:
++        connection.execute("BEGIN IMMEDIATE")
++        row = connection.execute("SELECT * FROM cars WHERE id=?", (card_id,)).fetchone()
++        if action == "delete":
++            if row is not None or not _uid_unique(connection, before["auto_number"], card_id, absent=True):
++                raise LifecycleError("LIFECYCLE_DELETE_ROLLBACK_ID_REUSED")
++            columns = ",".join('"' + key.replace('"', '""') + '"' for key in before)
++            marks = ",".join("?" for _ in before)
++            connection.execute("INSERT INTO cars (" + columns + ") VALUES (" + marks + ")",
++                               tuple(before.values()))
++        else:
++            current = dict(row) if row is not None else None
++            if not _same_identity(current, before) or not _uid_unique(connection, before["auto_number"], card_id):
++                raise LifecycleError("LIFECYCLE_ROLLBACK_IDENTITY_CHANGED")
++            semantic_fields = {key: value for key, value in after_fields.items() if key != "updated_at"}
++            if any(current[field] != value for field, value in semantic_fields.items()):
++                raise LifecycleError("LIFECYCLE_ROLLBACK_CONCURRENT_FIELD_CHANGE")
++            restore_fields = dict(semantic_fields)
++            if "updated_at" in after_fields and current["updated_at"] == after_fields["updated_at"]:
++                restore_fields["updated_at"] = after_fields["updated_at"]
++            assignments = ",".join('"' + field + '"=?' for field in restore_fields)
++            connection.execute("UPDATE cars SET " + assignments + " WHERE id=?",
++                               (*(before[field] for field in restore_fields), card_id))
++        connection.execute("UPDATE ua_spec_lifecycle_archive SET state='ROLLBACK_DB_DONE' WHERE operation_id=?",
++                           (operation_id,))
++        connection.commit()
++    except Exception:
++        connection.rollback()
++        raise
++    finally:
++        connection.close()
++
++
++def recover_pending(*, guard=None):
++    """Roll back interrupted operations, called before writes and by the worker.
++
++    Only APPLIED / ROLLBACK_DB_DONE rows in this helper's own archive are used.
++    Identity conflicts or altered backups stop recovery without overwriting them.
++    """
++    if guard is None:
++        import publish_transaction_guard as guard
++    if getattr(guard, "LIFECYCLE_REENTRANT_LOCK", False) is not True:
++        raise LifecycleError("LIFECYCLE_SHARED_REENTRANT_LOCK_REQUIRED")
++    recovered = []
++    with guard._exclusive_lock():
++        connection = _connect(guard)
++        try:
++            exists = connection.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
++                                        (ARCHIVE_TABLE,)).fetchone()
++            if not exists:
++                return {"status": "PASS", "recovered": []}
++            pending = [dict(row) for row in connection.execute(
++                "SELECT * FROM ua_spec_lifecycle_archive WHERE state IN ('APPLIED','ROLLBACK_DB_DONE') "
++                "ORDER BY created_at,operation_id LIMIT 101"
++            )]
++        finally:
++            connection.close()
++        if len(pending) > 100:
++            raise LifecycleError("LIFECYCLE_RECOVERY_QUEUE_REQUIRES_REVIEW")
++        for archive in pending:
++            snapshot = _Snapshot.from_archive(guard, archive)
++            before = snapshot.report["row_before"]
++            after_fields = snapshot.report.get("after_fields")
++            if not isinstance(after_fields, dict):
++                raise LifecycleError("LIFECYCLE_RECOVERY_AFTER_FIELDS_MISSING")
++            if archive["state"] == "APPLIED":
++                _compensate(guard, archive["car_id"], archive["action"], before,
++                            after_fields, archive["operation_id"])
++            else:
++                connection = _connect(guard)
++                try:
++                    row = connection.execute("SELECT * FROM cars WHERE id=?", (archive["car_id"],)).fetchone()
++                    current = dict(row) if row is not None else None
++                    if (not _same_identity(current, before)
++                            or not _uid_unique(connection, archive["auto_number"], archive["car_id"])
++                            or any(current[field] != before[field] for field in after_fields if field != "updated_at")):
++                        raise LifecycleError("LIFECYCLE_RECOVERY_ROLLBACK_IDENTITY_CHANGED")
++                finally:
++                    connection.close()
++            snapshot.restore_files()
++            snapshot.report["state"] = "ROLLED_BACK"
++            snapshot.save()
++            _archive_state(guard, snapshot.operation_id, "ROLLED_BACK")
++            recovered.append(snapshot.operation_id)
++    return {"status": "PASS", "recovered": recovered}
++
++
++def _transition(card_id, action, actor_id, *, publisher=None, guard=None):
++    if action not in {"publish", "hide", "sold", "delete"}:
++        raise LifecycleError("LIFECYCLE_ACTION_INVALID")
++    if isinstance(card_id, bool) or int(card_id) <= 0:
++        raise LifecycleError("LIFECYCLE_CARD_ID_INVALID")
++    card_id = int(card_id)
++    if guard is None:
++        import publish_transaction_guard as guard
++    if getattr(guard, "LIFECYCLE_REENTRANT_LOCK", False) is not True:
++        raise LifecycleError("LIFECYCLE_SHARED_REENTRANT_LOCK_REQUIRED")
++    snapshot, applied = None, False
++    with guard._exclusive_lock():
++        recover_pending(guard=guard)
++        previous_operation = getattr(_ACTIVE_OPERATION, "operation_id", None)
++        try:
++            connection = _connect(guard)
++            try:
++                row = connection.execute("SELECT * FROM cars WHERE id=?", (card_id,)).fetchone()
++                if row is None:
++                    raise LifecycleError("LIFECYCLE_CARD_NOT_FOUND")
++                before = dict(row)
++            finally:
++                connection.close()
++            code = str(before.get("auto_number") or "").strip().upper()
++            if not UID.fullmatch(code):
++                raise LifecycleError("LIFECYCLE_AUTO_NUMBER_INVALID")
++            snapshot = _Snapshot(guard, code, before, action, actor_id)
++            after_fields = _mutate(guard, card_id, action, actor_id, snapshot, before)
++            applied = True
++            _ACTIVE_OPERATION.operation_id = snapshot.operation_id
++            if action == "publish":
++                if publisher is None:
++                    import publikaciya
++                    publisher = publikaciya.opublikovat
++                result = publisher(code)
++            else:
++                snapshot.withdraw_pages()
++                result = guard.rebuild_catalog()
++            if not isinstance(result, (tuple, list)) or len(result) < 2 or result[0] is not True:
++                raise LifecycleError("LIFECYCLE_PUBLICATION_FAILED:" + str(result)[:1000])
++            if action != "publish":
++                for path in snapshot.files:
++                    if path.name != "katalog.html" and path.exists():
++                        raise LifecycleError("WITHDRAWN_PAGE_RECREATED:" + str(path))
++                    if path.name == "katalog.html" and code in guard._href_counts(_read(path).decode("utf-8")):
++                        raise LifecycleError("WITHDRAWN_CARD_STILL_IN_CATALOG")
++            connection = _connect(guard)
++            try:
++                current = connection.execute("SELECT * FROM cars WHERE id=?", (card_id,)).fetchone()
++                if action == "delete":
++                    valid = current is None and _uid_unique(connection, code, card_id, absent=True)
++                else:
++                    valid = current is not None and current["published"] == int(action == "publish")
++                    valid = valid and _same_identity(dict(current) if current is not None else None, before)
++                    valid = valid and _uid_unique(connection, code, card_id)
++                    if action == "sold":
++                        valid = valid and current["status"] == "sold"
++                if not valid:
++                    raise LifecycleError("CRM_CHANGED_DURING_LIFECYCLE")
++                connection.execute("UPDATE ua_spec_lifecycle_archive SET state='COMPLETED' WHERE operation_id=?",
++                                   (snapshot.operation_id,))
++                connection.commit()
++            finally:
++                connection.close()
++            snapshot.report["state"] = "COMPLETED"
++            snapshot.save()
++            messages = {
++                "publish": "Машина видна клиентам. Страницы и каталог проверены.",
++                "hide": "Машина скрыта. Карточка убрана из каталога и по прямым ссылкам.",
++                "sold": "Отмечено: продана. Карточка убрана с сайта; данные сохранены в CRM.",
++                "delete": "Карточка удалена из CRM и с сайта. Медиа, спецификация и резервная копия сохранены.",
++            }
++            return True, messages[action]
++        except Exception as exc:
++            errors = []
++            if applied:
++                try:
++                    _compensate(guard, card_id, action, before, after_fields, snapshot.operation_id)
++                except Exception as rollback_error:
++                    errors.append("CRM: " + str(rollback_error))
++            if snapshot is not None and not errors:
++                try:
++                    snapshot.restore_files()
++                except Exception as rollback_error:
++                    errors.append("pages: " + str(rollback_error))
++                if applied and not errors:
++                    _archive_state(guard, snapshot.operation_id, "ROLLED_BACK")
++            if snapshot is not None:
++                snapshot.report.update({"state": "ROLLBACK_FAILED" if errors else "ROLLED_BACK",
++                                        "error": str(exc), "rollback_errors": errors})
++                try:
++                    snapshot.save()
++                except Exception as backup_error:
++                    errors.append("backup: " + str(backup_error))
++            if errors:
++                raise LifecycleError("КРИТИЧНО: требуется восстановление из " + str(snapshot.root) + ": " + "; ".join(errors)) from exc
++            return False, "Изменение отменено; прежние данные и страницы сохранены. " + str(exc)
++        finally:
++            _ACTIVE_OPERATION.operation_id = previous_operation
++
++
++def set_visibility(card_id, visible, actor_id=None, *, publisher=None, guard=None):
++    return _transition(card_id, "publish" if visible else "hide", actor_id, publisher=publisher, guard=guard)
++
++
++def delete_card(card_id, actor_id=None, *, guard=None):
++    return _transition(card_id, "delete", actor_id, guard=guard)
++
++
++def mark_sold(card_id, actor_id=None, *, guard=None):
++    return _transition(card_id, "sold", actor_id, guard=guard)
+--- reviewed-current/card_shell.py
++++ candidate/card_shell.py
+@@ -0,0 +1,330 @@
++"""Pure, byte-preserving repairs of proven duplicate VIN markup.
++
++No application imports, I/O, network, or HTML reserialization. Unknown VIN
++layouts fail closed. ``visible`` means potentially visible HTML text: head,
++script, style, template, hidden elements and explicit inline display:none /
++visibility:hidden are excluded. Stylesheets are preserved, never interpreted.
++"""
++from __future__ import annotations
++
++import hashlib
++import json
++from html import unescape
++from html.parser import HTMLParser
++import re
++
++
++VIN = re.compile(r"(?<![A-Z0-9])[A-HJ-NPR-Z0-9]{17}(?![A-Z0-9])")
++UID = re.compile(r"UA-[0-9]{4,6}\Z")
++VIN_MARKERS = (
++    ("<!-- UA-ART-VIN-GUARD-LITE-V1:START -->", "<!-- UA-ART-VIN-GUARD-LITE-V1:END -->"),
++    ("<!--UA099_CLEAN_VIN_START-->", "<!--UA099_CLEAN_VIN_END-->"),
++)
++SPEC_MARKERS = ("<!--UA099_ADD_SPEC_START-->", "<!--UA099_ADD_SPEC_END-->")
++VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
++BLOCK = {"html", "body", "div", "p", "section", "article", "table", "tr", "td", "th", "li", "ul", "ol", "br", "h1", "h2", "h3", "summary"}
++INVISIBLE = {"head", "script", "style", "template"}
++
++
++class ShellError(RuntimeError):
++    pass
++
++
++class _Node:
++    def __init__(self, tag, attrs, start, end, parent):
++        self.tag, self.attrs, self.start, self.end = tag, dict(attrs), start, end
++        self.duplicate_attrs = len(self.attrs) != len(attrs)
++        self.parent, self.children = parent, []
++        self.closed = tag in VOID or tag == "root"
++
++
++class _Text:
++    def __init__(self, text, start, end, parent):
++        self.text, self.start, self.end, self.parent = text, start, end, parent
++
++
++def _hidden(node):
++    style = node.attrs.get("style", "") or ""
++    return (node.tag in INVISIBLE or "hidden" in node.attrs or
++            bool(re.search(r"(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*(?:hidden|collapse))\s*(?:!important\s*)?(?:;|$)", style, re.I)))
++
++
++def _text(node, *, visible=False):
++    if isinstance(node, _Text):
++        return node.text
++    if visible and _hidden(node):
++        return ""
++    result = "".join(_text(child, visible=visible) for child in node.children)
++    return " " + result + " " if visible and node.tag in BLOCK else result
++
++
++def _is_visible(node):
++    while node is not None:
++        if isinstance(node, _Node) and _hidden(node):
++            return False
++        node = node.parent
++    return True
++
++
++class _Page(HTMLParser):
++    def __init__(self, source):
++        super().__init__(convert_charrefs=False)
++        self.source = source
++        self.lines = [0] + [match.end() for match in re.finditer("\n", source)]
++        self.root = _Node("root", [], 0, len(source), None)
++        self.stack, self.nodes, self.texts, self.comments = [self.root], [], [], []
++        self.feed(source)
++        self.close()
++
++    def _offset(self):
++        line, col = self.getpos()
++        return self.lines[line - 1] + col
++
++    def handle_starttag(self, tag, attrs):
++        start = self._offset()
++        node = _Node(tag, attrs, start, start + len(self.get_starttag_text()), self.stack[-1])
++        self.stack[-1].children.append(node)
++        self.nodes.append(node)
++        if tag not in VOID:
++            self.stack.append(node)
++
++    def handle_startendtag(self, tag, attrs):
++        self.handle_starttag(tag, attrs)
++        if tag not in VOID:
++            self.stack.pop().closed = True
++
++    def handle_endtag(self, tag):
++        for index in range(len(self.stack) - 1, 0, -1):
++            if self.stack[index].tag == tag:
++                node = self.stack[index]
++                node.end = self.source.find(">", self._offset()) + 1
++                node.closed = index == len(self.stack) - 1
++                del self.stack[index:]
++                return
++
++    def _add_text(self, text, raw):
++        start = self._offset()
++        node = _Text(text, start, start + len(raw), self.stack[-1])
++        self.stack[-1].children.append(node)
++        self.texts.append(node)
++
++    def handle_data(self, data):
++        self._add_text(data, data)
++
++    def handle_entityref(self, name):
++        raw = "&" + name + ";"
++        self._add_text(unescape(raw), raw)
++
++    def handle_charref(self, name):
++        raw = "&#" + name + ";"
++        self._add_text(unescape(raw), raw)
++
++    def handle_comment(self, data):
++        start = self._offset()
++        end = self.source.find("-->", start)
++        if end < 0:
++            raise ShellError("SHELL_UNCLOSED_COMMENT")
++        self.comments.append((self.source[start:end + 3], start, end + 3))
++
++
++def _children(node):
++    return [child for child in node.children if not isinstance(child, _Text) or child.text.strip()]
++
++
++def _main_vin(page, card_uid):
++    if not isinstance(card_uid, str) or not UID.fullmatch(card_uid):
++        raise ShellError("SHELL_INVALID_CARD_UID")
++    rows = []
++    for row in page.nodes:
++        if row.tag != "tr":
++            continue
++        cells = _children(row)
++        if cells and isinstance(cells[0], _Node) and _text(cells[0]).strip().upper() == "VIN":
++            if (len(cells) != 2 or any(not isinstance(cell, _Node) or cell.tag != "td" or not cell.closed for cell in cells)
++                    or cells[0].attrs != {"class": "k"} or cells[1].attrs
++                    or not row.closed or not row.parent or row.parent.tag not in {"table", "tbody"}
++                    or any(isinstance(child, _Node) for cell in cells for child in cell.children)
++                    or not _is_visible(row) or any(cell.duplicate_attrs for cell in cells)):
++                raise ShellError("SHELL_UNKNOWN_MAIN_VIN_MARKUP")
++            rows.append((row, _text(cells[1]).strip()))
++    if len(rows) != 1 or not VIN.fullmatch(rows[0][1]):
++        raise ShellError("SHELL_MAIN_VIN_MISSING_DUPLICATE_OR_INVALID")
++    return rows[0]
++
++
++def _marked_span(page, markers):
++    starts = [item for item in page.comments if item[0] == markers[0]]
++    ends = [item for item in page.comments if item[0] == markers[1]]
++    if not starts and not ends:
++        return None
++    if len(starts) != 1 or len(ends) != 1 or starts[0][2] > ends[0][1]:
++        raise ShellError("SHELL_MALFORMED_MARKERS")
++    return starts[0][1], ends[0][2], starts[0][2], ends[0][1]
++
++
++def _duplicate_range(page, card_uid, vin):
++    spans = [span for markers in VIN_MARKERS if (span := _marked_span(page, markers)) is not None]
++    if len(spans) > 1:
++        raise ShellError("SHELL_MULTIPLE_DUPLICATE_BLOCKS")
++    marked_nodes = [node for node in page.nodes if "ua-clean-vin" in (node.attrs.get("class", "") or "").split()
++                    or "data-ua-clean-vin" in node.attrs]
++    value_nodes = [node for node in page.nodes if "ua-vin-value" in (node.attrs.get("class", "") or "").split()]
++    if not spans:
++        if marked_nodes or value_nodes:
++            raise ShellError("SHELL_UNMARKED_DUPLICATE_VIN")
++        return []
++    start, end, inner_start, inner_end = spans[0]
++    if len(marked_nodes) != 1 or len(value_nodes) != 1:
++        raise ShellError("SHELL_UNKNOWN_DUPLICATE_VIN_MARKUP")
++    node = marked_nodes[0]
++    children = _children(node)
++    attrs = node.attrs
++    expected = {"class", "data-ua-clean-vin", "data-ua-card", "data-ua-stage", "data-ua-video-count"}
++    if (node.tag != "div" or not node.closed or node.duplicate_attrs or set(attrs) != expected
++            or attrs["class"] != "blok ua-clean-vin" or attrs["data-ua-clean-vin"] != "1"
++            or attrs["data-ua-card"] != card_uid or attrs["data-ua-stage"] not in {"1", "2", "3", "4"}
++            or not re.fullmatch(r"0|[1-9][0-9]*", attrs["data-ua-video-count"] or "")
++            or node.start < inner_start or node.end > inner_end
++            or page.source[inner_start:node.start].strip() or page.source[node.end:inner_end].strip()
++            or any(inner_start <= pos < inner_end for _, pos, _ in page.comments)
++            or len(children) != 2):
++        raise ShellError("SHELL_UNKNOWN_DUPLICATE_VIN_MARKUP")
++    for child, cls, value in zip(children, ("zag", "ua-vin-value"), ("VIN", vin)):
++        if (not isinstance(child, _Node) or child.tag != "div" or not child.closed or child.duplicate_attrs
++                or child.attrs != {"class": cls} or _text(child) != value
++                or any(isinstance(item, _Node) for item in child.children)):
++            raise ShellError("SHELL_DUPLICATE_VIN_CONTENT_MISMATCH")
++    return [(start, end, "marked_duplicate_vin_block")]
++
++
++def _description_ranges(page, vin):
++    """Only the three exact redundant forms proven in the cached primary pages."""
++    ranges = []
++    for node in page.texts:
++        if vin not in node.text or not _is_visible(node):
++            continue
++        parent = node.parent
++        siblings = parent.children
++        index = siblings.index(node)
++        if (parent.tag == "div" and parent.attrs == {"class": "tehtekst"}
++                and not parent.duplicate_attrs and parent.closed
++                and node.text == "VIN: " + vin and 0 < index < len(siblings) - 1
++                and all(isinstance(item, _Node) and item.tag == "br" and not item.attrs and not item.duplicate_attrs
++                        for item in (siblings[index - 1], siblings[index + 1]))):
++            ranges.append((node.start, siblings[index + 1].end, "description_vin_br_line"))
++            continue
++        row = parent.parent
++        if (parent.tag != "div" or parent.attrs or parent.duplicate_attrs or not parent.closed
++                or len(parent.children) != 1 or row is None or row.duplicate_attrs
++                or row.tag != "div" or row.attrs != {"class": "tehstr"} or not row.closed):
++            continue
++        children = _children(row)
++        if (len(children) != 2 or children[1] is not parent or not isinstance(children[0], _Node)
++                or children[0].tag != "div" or children[0].attrs != {"class": "m"}
++                or children[0].duplicate_attrs or not children[0].closed
++                or any(isinstance(item, _Node) for item in children[0].children)
++                or _text(children[0]) != "•"
++                or any(row.start <= pos < row.end for _, pos, _ in page.comments)):
++            continue
++        if node.text == "VIN: " + vin:
++            ranges.append((row.start, row.end, "description_vin_bullet"))
++        else:
++            prefix = "Автомобиль уже выкуплен и отправлен паромом. "
++            phrase = "VIN проверен: " + vin + ". "
++            suffix = "По данным карточки, пробег составляет всего 342 км."
++            if node.text == prefix + phrase + suffix and page.source[node.start:node.end] == node.text:
++                start = node.start + len(prefix)
++                ranges.append((start, start + len(phrase), "description_redundant_vin_clause"))
++    return ranges
++
++
++def _plan(source, card_uid):
++    if not isinstance(source, str) or len(source.encode("utf-8")) > 4 * 1024 * 1024:
++        raise ShellError("SHELL_INVALID_HTML_INPUT")
++    page = _Page(source)
++    _, vin = _main_vin(page, card_uid)
++    ranges = sorted(_duplicate_range(page, card_uid, vin) + _description_ranges(page, vin))
++    if any(left[1] > right[0] for left, right in zip(ranges, ranges[1:])):
++        raise ShellError("SHELL_OVERLAPPING_REMOVALS")
++    result = source
++    for start, end, _ in reversed(ranges):
++        result = result[:start] + result[end:]
++    validate_one_visible_vin(result, card_uid)
++    return result, ranges
++
++
++def normalize_html(source, card_uid):
++    """Remove proven visible duplicates, preserving every other source byte."""
++    return _plan(source, card_uid)[0]
++
++
++def validate_one_visible_vin(source, card_uid):
++    """Reject duplicate/foreign VIN text and malformed or leftover VIN panels."""
++    page = _Page(source)
++    _, vin = _main_vin(page, card_uid)
++    if _duplicate_range(page, card_uid, vin):
++        raise ShellError("SHELL_DUPLICATE_VIN_REMAINS")
++    tokens = VIN.findall(_text(page.root, visible=True))
++    if tokens != [vin]:
++        raise ShellError("SHELL_VISIBLE_VIN_COUNT_OR_IDENTITY")
++    return {"status": "PASS", "visible_vin_count": 1, "main_technical_vin_preserved": True}
++
++
++def _without_spec(source):
++    span = _marked_span(_Page(source), SPEC_MARKERS)
++    return source if span is None else source[:span[0]] + source[span[1]:]
++
++
++def permitted_delta(before, after, card_uid):
++    """Assert only canonical spec replacement and proven VIN removal occurred.
++
++    The caller separately validates the canonical specification. This contract
++    never authorizes changes to prices, descriptions, main values, stage, CTA,
++    photos, scripts, schema, or styles outside that exact specification span.
++    """
++    original = _without_spec(before)
++    expected, ranges = _plan(original, card_uid)
++    actual = _without_spec(after)
++    validate_one_visible_vin(actual, card_uid)
++    if actual != expected:
++        raise ShellError("SHELL_UNAUTHORIZED_NON_SPEC_CHANGE")
++    return {"status": "PASS", "visible_vin_count": 1,
++            "permitted_removals": [{"reason": reason, "characters": end - start,
++                                    "utf8_bytes": len(original[start:end].encode("utf-8"))}
++                                   for start, end, reason in ranges],
++            "remaining_shell_sha256": hashlib.sha256(actual.encode("utf-8")).hexdigest(),
++            "outside_permitted_regions_byte_changes": 0}
++
++
++def _shell_assets(source):
++    source = _without_spec(source)
++    assets = []
++    for node in _Page(source).nodes:
++        is_stylesheet = (node.tag == "link" and "stylesheet" in (node.attrs.get("rel", "") or "").lower().split())
++        if node.tag == "style" or is_stylesheet or (node.tag == "script" and "src" in node.attrs):
++            if not node.closed or node.duplicate_attrs:
++                raise ShellError("SHELL_MALFORMED_STATIC_ASSET")
++            assets.append((node.tag, source[node.start:node.end]))
++    if not any(tag in {"style", "link"} for tag, _ in assets):
++        raise ShellError("SHELL_MISSING_ASSET_BASELINE")
++    return assets
++
++
++def validate_shell_assets(before, after):
++    """Preserve exact ordered styles, stylesheet links and external scripts.
++
++    The canonical specification's own region is excluded. This permits normal
++    vehicle values and gallery data to change during a separately validated
++    CRUD rebuild; it does not authorize changes to inline executable scripts,
++    header/footer structure, inline style attributes, or other shell content.
++    Full specification-only repairs must also pass ``permitted_delta``.
++    """
++    original, current = _shell_assets(before), _shell_assets(after)
++    if current != original:
++        raise ShellError("SHELL_STATIC_ASSETS_CHANGED")
++    serialized = json.dumps(current, ensure_ascii=True, separators=(",", ":")).encode("utf-8")
++    return {"status": "PASS", "static_asset_count": len(current),
++            "style_count": sum(tag == "style" for tag, _ in current),
++            "stylesheet_link_count": sum(tag == "link" for tag, _ in current),
++            "external_script_count": sum(tag == "script" for tag, _ in current),
++            "ordered_static_assets_sha256": hashlib.sha256(serialized).hexdigest()}
+--- reviewed-current/cars_ui.py
++++ candidate/cars_ui.py
+@@ -1556,12 +1556,17 @@
+     q = update.callback_query
+     await _v168_ack(q,)
+     cid = int(q.data.split(":")[-1])
+-    set_field(cid, "status", "sold", q.from_user.id)
+-    db.update_card_field("cars", cid, "published", 0, q.from_user.id)
+-    await q.message.reply_text(
+-        "Отмечено: продана. Из каталога убрана.",
+-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+-            "← Вернуться к карточке", callback_data="car_open:%d" % cid)]]))
++    import asyncio as _ua_lifecycle_async
++    import card_lifecycle as _ua_lifecycle
++    try:
++        ok, detail = await _ua_lifecycle_async.to_thread(
++            _ua_lifecycle.mark_sold, cid, q.from_user.id)
++    except Exception as exc:
++        log.exception("Lifecycle sold transition failed for car %s", cid)
++        detail = str(exc)
++    await q.message.reply_text(detail, reply_markup=InlineKeyboardMarkup([
++        [InlineKeyboardButton("← Вернуться к карточке", callback_data="car_open:%d" % cid)]
++    ]))
+     raise ApplicationHandlerStop
+ 
+ 
+@@ -1574,8 +1579,8 @@
+                       " ".join(str(x) for x in (card.get("brand"),
+                                                 card.get("model")) if x))
+     await q.message.reply_text(
+-        "Удалить карточку %s?\nВернуть её будет нельзя. Фото, видео и история "
+-        "пропадут вместе с ней." % name.strip(),
++        "Удалить карточку %s из CRM и с сайта?\nФото, видео и спецификация "
++        "останутся в резерве. Прямые ссылки на карточку будут отключены." % name.strip(),
+         reply_markup=InlineKeyboardMarkup([
+             [InlineKeyboardButton("Да, удалить", callback_data="car_delok:%d" % cid)],
+             [InlineKeyboardButton("← Отмена", callback_data="car_open:%d" % cid)]]))
+@@ -1586,22 +1591,20 @@
+     q = update.callback_query
+     await _v168_ack(q,)
+     cid = int(q.data.split(":")[-1])
+-    card = card_of(cid)
+-    nomer = card.get("auto_number") if card else "#%d" % cid
+-    try:
+-        with db.connect() as c:
+-            c.execute("DELETE FROM cars WHERE id=?", (cid,))
+-        db.log_action(q.from_user.id, "card_delete", "cars", cid, "auto_number",
+-                      nomer, None)
+-    except Exception as e:
+-        log.warning("Не удалил карточку: %s", e)
+-        await q.message.reply_text("Не получилось удалить: %s" % e)
+-        raise ApplicationHandlerStop
+-    context.user_data.pop("car_last", None)
+-    await q.message.reply_text(
+-        "Карточка %s удалена." % nomer,
+-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+-            "← Все автомобили", callback_data="cards_cars")]]))
++    import asyncio as _ua_lifecycle_async
++    import card_lifecycle as _ua_lifecycle
++    try:
++        ok, detail = await _ua_lifecycle_async.to_thread(
++            _ua_lifecycle.delete_card, cid, q.from_user.id)
++    except Exception as exc:
++        log.exception("Lifecycle delete failed for car %s", cid)
++        await q.message.reply_text(str(exc))
++        raise ApplicationHandlerStop
++    if ok:
++        context.user_data.pop("car_last", None)
++    await q.message.reply_text(detail, reply_markup=InlineKeyboardMarkup([
++        [InlineKeyboardButton("← Все автомобили", callback_data="cards_cars")]
++    ]))
+     raise ApplicationHandlerStop
+ 
+ 
+@@ -3629,54 +3632,32 @@
+     await _v168_ack(q,)
+     cid = int(q.data.split(":")[-1])
+     card = card_of(cid)
+-    actor_id = q.from_user.id
+-    preimage = _ua083_publish_preimage(card)
+-    novoe = 0 if card.get("published") else 1
++    if not card:
++        await q.message.reply_text("Карточка не найдена.")
++        raise ApplicationHandlerStop
++    visible = not bool(card.get("published"))
+     back = InlineKeyboardMarkup([[InlineKeyboardButton(
+         "← Вернуться к карточке", callback_data="car_open:%d" % cid)]])
+-
+-    if novoe:
++    if visible:
+         miss = S.missing_required(card)
+         if miss:
+             await q.message.reply_text(
+                 "Для показа клиентам не хватает: %s" % ", ".join(miss),
+                 reply_markup=InlineKeyboardMarkup([
+                     [InlineKeyboardButton("Дозаполнить", callback_data="car_edit:%d" % cid)],
+-                    [InlineKeyboardButton("← Вернуться к карточке",
+-                                          callback_data="car_open:%d" % cid)]]))
++                    [InlineKeyboardButton("← Вернуться к карточке", callback_data="car_open:%d" % cid)]
++                ]))
+             raise ApplicationHandlerStop
+-
+-    try:
+-        import asyncio as _ua083_asyncio
+-        import publikaciya as _ua083_publisher
+-
+-        db.update_card_field("cars", cid, "published", novoe, actor_id)
+-        if novoe:
+-            ok, detail = await _ua083_asyncio.to_thread(
+-                _ua083_publisher.opublikovat, card.get("auto_number"))
+-            success_text = "Машина видна клиентам в каталоге."
+-        else:
+-            ok, detail = await _ua083_asyncio.to_thread(_ua083_publisher.obnovit_katalog)
+-            success_text = "Машина скрыта от клиентов."
+-        if ok is not True:
+-            restored = _ua083_restore_publish_preimage(cid, preimage, actor_id)
+-            text = str(detail or "Публикация не прошла проверку.")
+-            if not restored:
+-                text += " КРИТИЧНО: состояние CRM не удалось восстановить автоматически."
+-            await q.message.reply_text(text, reply_markup=back)
+-            raise ApplicationHandlerStop
+-        await q.message.reply_text(success_text, reply_markup=back)
+-        raise ApplicationHandlerStop
+-    except ApplicationHandlerStop:
+-        raise
++    import asyncio as _ua_lifecycle_async
++    import card_lifecycle as _ua_lifecycle
++    try:
++        ok, detail = await _ua_lifecycle_async.to_thread(
++            _ua_lifecycle.set_visibility, cid, visible, q.from_user.id)
+     except Exception as exc:
+-        restored = _ua083_restore_publish_preimage(cid, preimage, actor_id)
+-        log.exception("TASK083 publication exception for car %s", cid)
+-        text = "Публикация отменена: %s. Выполнен откат." % exc
+-        if not restored:
+-            text += " КРИТИЧНО: состояние CRM не удалось восстановить автоматически."
+-        await q.message.reply_text(text, reply_markup=back)
+-        raise ApplicationHandlerStop
++        log.exception("Lifecycle visibility failed for car %s", cid)
++        detail = str(exc)
++    await q.message.reply_text(detail, reply_markup=back)
++    raise ApplicationHandlerStop
+ # UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:UI:END
+ 
+ # >>> UA099 ADDITIONAL SPEC CRM V1
+@@ -4022,3 +4003,24 @@
+         _ua117_block_removed_stage,
+         pattern=r"^car_setstage:\d+:(?:sea_loaded|sea_transit|ua_handed)$"),
+         group=-100)
++
++# >>> UA SPEC AUTO10 RESTORE CRM V1
++import re as _ua_auto10_re
++
++_UA_AUTO10_BASE_CARD_KB = card_kb
++
++
++def card_kb(card, staff):
++    markup = _UA_AUTO10_BASE_CARD_KB(card, staff)
++    rows = []
++    for row in markup.inline_keyboard:
++        kept = [button for button in row if not _ua_auto10_re.fullmatch(
++            r"car_spec:\d+", str(getattr(button, "callback_data", "") or "")
++        )]
++        if kept:
++            rows.append(kept)
++    # Preserve all remaining button objects, callbacks, row order and metadata.
++    return type(markup)(rows, api_kwargs=getattr(markup, "api_kwargs", None))
++# <<< UA SPEC AUTO10 RESTORE CRM V1
++
++# UA_AUTO10_LIFECYCLE_V1: CRM callbacks use card_lifecycle.
+--- reviewed-current/profile_library.py
++++ candidate/profile_library.py
+@@ -429,3 +429,4 @@
+             sources = tuple(fact.get("sources") or ())
+             if not sources or any(source not in urls for source in sources):
+                 raise ValueError("PROFILE_PROVENANCE:" + profile_id + ":" + field_key)
++
+--- reviewed-current/publikaciya.py
++++ candidate/publikaciya.py
+@@ -555,3 +555,46 @@
+         html = _ua111_spec.inject_public_spec(html, kod)
+     return html, diag, card
+ # <<< UA111 FINAL PUBLIC SPEC NORMALIZER V1
++
++# >>> UA SPEC AUTO10 RESTORE PUBLISHER V1
++import pathlib as _ua_auto10_pathlib
++import os as _ua_auto10_os
++import re as _ua_auto10_re
++import spec_publication as _ua_auto10_publication
++
++_UA_AUTO10_BASE_MASTER = _master
++_UA_AUTO10_BASE_PRIMARY_WRITE = _zapisat_atomarno
++
++
++def _master(kod):
++    output = _UA_AUTO10_BASE_MASTER(kod)
++    if not isinstance(output, (tuple, list)) or len(output) != 3:
++        raise _ua_auto10_publication.SpecError("PUBLISH_MASTER_RESULT_UNRECOGNIZED")
++    source, diag, card = output
++    if not isinstance(source, str) or not source:
++        raise _ua_auto10_publication.SpecError("PUBLISH_PRIMARY_HTML_MISSING")
++    import ua_additional_spec as _ua_auto10_spec
++    code = _ua_auto10_spec.canonical_uid(kod)
++    facts = _ua_auto10_publication.load_facts(code)
++    source = _ua_auto10_publication.inject(source, code, facts)
++    _ua_auto10_publication.validate_page(source, code, facts)
++    return source, diag, card
++
++
++def _zapisat_atomarno(put, tekst):
++    path = _ua_auto10_pathlib.Path(put)
++    root = _ua_auto10_pathlib.Path(
++        _ua_auto10_os.environ.get("UA_ART_ROOT", "/home/Carix")
++    ).resolve()
++    # Only primary files at the reviewed public roots are publication writes.
++    # Diagnostic/catalog rendering and immutable backup files retain behavior.
++    if (_ua_auto10_re.fullmatch(r"UA-[0-9]{4,6}\.html", path.name)
++            and path.absolute().parent in (root / "video", root / "site")):
++        if path.is_symlink() or path.parent.is_symlink():
++            raise _ua_auto10_publication.SpecError("PUBLIC_WRITE_SYMLINK")
++        if not isinstance(tekst, (str, bytes)):
++            raise _ua_auto10_publication.SpecError("PUBLIC_WRITE_DATA_TYPE")
++        data = tekst.encode("utf-8") if isinstance(tekst, str) else tekst
++        _ua_auto10_publication.guard_write(path, data)
++    return _UA_AUTO10_BASE_PRIMARY_WRITE(put, tekst)
++# <<< UA SPEC AUTO10 RESTORE PUBLISHER V1
+--- reviewed-current/publish_transaction_guard.py
++++ candidate/publish_transaction_guard.py
+@@ -209,24 +209,54 @@
+ 
+ @contextlib.contextmanager
+ def _exclusive_lock():
+-    LOCK.parent.mkdir(parents=True, exist_ok=True)
+-    handle = open(LOCK, "a+")
++    # UA_AUTO10_LIFECYCLE_V1: nested publication in the same thread shares one
++    # OS file lock; other threads/processes still wait with the original timeout.
+     deadline = time.monotonic() + WAIT_SECONDS
++    if not _ua_lifecycle_mutex.acquire(timeout=max(0, WAIT_SECONDS)):
++        raise PublishError("PUBLISH_LOCK_TIMEOUT")
++    handle = None
++    acquired = False
++    nested = getattr(_ua_lifecycle_thread, "depth", 0) > 0
+     try:
++        if nested:
++            _ua_lifecycle_thread.depth += 1
++            try:
++                yield
++            finally:
++                _ua_lifecycle_thread.depth -= 1
++            return
++        LOCK.parent.mkdir(parents=True, exist_ok=True)
++        handle = open(LOCK, "a+")
+         while True:
+             try:
+                 fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
++                acquired = True
+                 break
+             except BlockingIOError:
+                 if time.monotonic() >= deadline:
+                     raise PublishError("PUBLISH_LOCK_TIMEOUT")
+-                time.sleep(0.25)
+-        yield
++                time.sleep(min(0.25, max(0, deadline - time.monotonic())))
++        _ua_lifecycle_thread.depth = 1
++        try:
++            # Recovery precedes every outer publisher/readback/rollback entry.
++            # Its nested acquisition shares this lock and does not recurse.
++            import card_lifecycle as _ua_lifecycle_recovery
++            import sys as _ua_lifecycle_sys
++            _ua_lifecycle_recovery.recover_pending(
++                guard=_ua_lifecycle_sys.modules[__name__])
++            yield
++        finally:
++            _ua_lifecycle_thread.depth = 0
+     finally:
+         try:
+-            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
++            if handle is not None:
++                try:
++                    if acquired:
++                        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
++                finally:
++                    handle.close()
+         finally:
+-            handle.close()
++            _ua_lifecycle_mutex.release()
+ 
+ 
+ def _render_diag(code: str) -> bytes:
+@@ -734,3 +764,53 @@
+             raise PublishError("ROLLBACK_READBACK_MISMATCH:" + ",".join(mismatches))
+         return {"backup_root": str(self.root), "removed": removed, "restored": restored}
+ # <<< UA099 BOUNDED GZIP SNAPSHOT V1
++
++# >>> UA SPEC AUTO10 RESTORE TRANSACTION V1
++import spec_publication as _ua_auto10_publication
++
++_UA_AUTO10_BASE_ATOMIC = _atomic
++_UA_AUTO10_BASE_VALIDATE_PRIMARY = _validate_primary
++_UA_AUTO10_BASE_PUBLISH_LOCKED = _publish_locked
++
++
++def _atomic(path, data, mode=None):
++    path = pathlib.Path(path)
++    if (re.fullmatch(r"UA-[0-9]{4,6}\.html", path.name)
++            and path.absolute().parent in tuple(pathlib.Path(root).absolute() for root in ROOTS)):
++        if path.is_symlink() or path.parent.is_symlink():
++            raise _ua_auto10_publication.SpecError("PUBLIC_WRITE_SYMLINK")
++        _ua_auto10_publication.guard_write(path, data)
++    return _UA_AUTO10_BASE_ATOMIC(path, data, mode)
++
++
++def _validate_primary(code, row, source):
++    _ua_auto10_publication.validate_page(
++        source, code, _ua_auto10_publication.load_facts(code)
++    )
++    return _UA_AUTO10_BASE_VALIDATE_PRIMARY(code, row, source)
++
++
++def _publish_locked(base_publish, codes, proba=False):
++    codes = list(codes)
++    # Snapshot.restore uses the guarded writer too. Before the ordinary
++    # transaction takes a snapshot, require healthy canonical preimages.
++    # Existing damaged pages must first use the spec-only reconciler.
++    for value in codes:
++        code = _code(value)
++        facts = _ua_auto10_publication.load_facts(code)
++        for root in ROOTS:
++            path = pathlib.Path(root) / (code + ".html")
++            if path.is_symlink() or path.parent.is_symlink():
++                raise _ua_auto10_publication.SpecError("PUBLIC_WRITE_SYMLINK")
++            if path.is_file():
++                _ua_auto10_publication.validate_page(
++                    _read(path).decode("utf-8"), code, facts
++                )
++    return _UA_AUTO10_BASE_PUBLISH_LOCKED(base_publish, codes, proba=proba)
++# <<< UA SPEC AUTO10 RESTORE TRANSACTION V1
++
++# UA_AUTO10_LIFECYCLE_V1: initialized before module import returns.
++import threading as _ua_lifecycle_threading
++_ua_lifecycle_mutex = _ua_lifecycle_threading.RLock()
++_ua_lifecycle_thread = _ua_lifecycle_threading.local()
++LIFECYCLE_REENTRANT_LOCK = True
+--- reviewed-current/source_policy.py
++++ candidate/source_policy.py
+@@ -11,10 +11,14 @@
+ from __future__ import annotations
+ 
+ import dataclasses
++import datetime as dt
++import email.utils
+ import html
+ import json
+ import os
+ import re
++import threading
++import time
+ import urllib.error
+ import urllib.parse
+ import urllib.request
+@@ -24,7 +28,7 @@
+ import profile_library
+ 
+ 
+-POLICY_VERSION = "UA111-10SRC-V3"
++POLICY_VERSION = "UA-ART-SPEC-AUTO10-RESTORE-V1"
+ SOURCE_DOMAINS = (
+     "vpic.nhtsa.dot.gov",
+     "auto-data.net",
+@@ -79,8 +83,39 @@
+ }
+ profile_library.validate_library(SOURCE_DOMAINS, BLOCKED_PRIMARY_KEYS)
+ 
+-_BODY_CACHE: dict[str, bytes] = {}
+-_FETCH_FAILURE_CACHE: dict[str, str] = {}
++CACHE_MAX_ENTRIES = 64
++BODY_CACHE_TTL_SECONDS = 3600
++FAILURE_BACKOFF_SECONDS = 30
++FAILURE_BACKOFF_MAX_SECONDS = 900
++_CACHE_LOCK = threading.RLock()
++
++
++@dataclasses.dataclass(frozen=True)
++class _CachedBody:
++    body: bytes
++    expires_at: float
++    fetched_at: str
++
++
++@dataclasses.dataclass(frozen=True)
++class _FetchFailure:
++    code: str
++    retry_at: float
++    attempts: int
++
++
++_BODY_CACHE: dict[str, _CachedBody] = {}
++_FETCH_FAILURE_CACHE: dict[str, _FetchFailure] = {}
++
++
++class _FetchedBody(bytes):
++    """Bytes carrying retrieval provenance without changing parser callers."""
++
++    def __new__(cls, body: bytes, origin: str, fetched_at: str) -> "_FetchedBody":
++        result = super().__new__(cls, body)
++        result.evidence_origin = origin
++        result.retrieved_at = fetched_at
++        return result
+ 
+ 
+ @dataclasses.dataclass(frozen=True)
+@@ -93,6 +128,9 @@
+     confidence: float
+     source_domain: str
+     source_url: str
++    evidence_origin: str = "supplied_page"
++    retrieved_at: str = ""
++    curated_audited_on: str = ""
+ 
+     def to_dict(self) -> dict[str, Any]:
+         return dataclasses.asdict(self)
+@@ -107,6 +145,21 @@
+     if not VIN_RE.fullmatch(vin):
+         raise SourcePolicyError("INVALID_VIN")
+     return vin
++
++
++def normalize_identity(value: Any) -> str:
++    """Recognize VIN or a narrow frame-number syntax; never infer a trim.
++
++    Frame recognition only permits storage and review.  It does not establish
++    fuel, equipment or a catalogue match, and must never be sent to vPIC.
++    """
++    value = re.sub(r"\s+", "", str(value or "")).upper()
++    try:
++        return normalize_vin(value)
++    except SourcePolicyError:
++        if re.fullmatch(r"(?:NHP10|HE12|E12|SNE12|E13|ZVW30|ZVW35|ZVW50|ZVW51|ZVW55)-[0-9]{6,7}", value):
++            return value
++        raise SourcePolicyError("INVALID_VIN_OR_UNRECOGNIZED_FRAME") from None
+ 
+ 
+ def vin_model_year(value: Any) -> int | None:
+@@ -197,27 +250,41 @@
+         return exact[0]
+     if len(exact) > 1:
+         raise SourcePolicyError("AMBIGUOUS_EXACT_VIN_PROFILE")
+-    brand = _norm(car.get("brand") or car.get("make"))
++    # A shared VIN prefix does not establish the year, trim or transmission
++    # of a new vehicle.  New identities use discovery and page validation;
++    # they never inherit the historical fleet's manually curated facts.
++    return None
++
++
++def identity_context_issues(car: dict[str, Any]) -> list[str]:
++    """Reject demonstrated CRM/identity conflicts without replacing CRM data.
++
++    Exact VIN membership identifies a historical profile; it cannot override a
++    contradictory current make, model or year. A one-year calendar/model-year
++    difference is accepted. Numeric European chassis codes are not treated as
++    proof of a conflicting model year. Unknown profiles remain eligible for
++    normal source discovery and its independent identity validation.
++    """
++    issues: list[str] = []
++    profile = match_profile(car)
++    aliases = {"к5": "k5", "к 5": "k5", "б класса": "b class", "б класс": "b class"}
++    brand = _norm(car.get("brand"))
+     model = _norm(car.get("model"))
+-    fuel = _norm(car.get("fuel") or car.get("fuel_type"))
++    model = aliases.get(model, model)
++    if profile:
++        if brand and not any(_norm(token) in brand for token in profile["brand_tokens"]):
++            issues.append("CRM_BRAND_DIFFERS_FROM_EXACT_VIN_PROFILE")
++        if model and not any(_norm(token) in model for token in profile["model_tokens"]):
++            issues.append("CRM_MODEL_DIFFERS_FROM_EXACT_VIN_PROFILE")
++    year = re.fullmatch(r"(?:19|20)\d{2}", str(car.get("year") or car.get("model_year") or "").strip())
+     try:
+-        cc = int(float(str(car.get("engine_cc") or car.get("displacement") or 0).replace(" ", "")))
+-    except (TypeError, ValueError):
+-        cc = 0
+-    for profile in profile_library.PROFILES:
+-        if not any(vin.startswith(str(prefix)) for prefix in profile["vin_prefixes"]):
+-            continue
+-        if brand and not any(_norm(token) in brand for token in profile.get("brand_tokens") or ()):
+-            continue
+-        if model and not any(_norm(token) in model for token in profile.get("model_tokens") or ()):
+-            continue
+-        if fuel and not any(_norm(token) in fuel for token in profile.get("fuel_tokens") or ()):
+-            continue
+-        lower, upper = profile.get("cc_range") or (0, 99999)
+-        if cc and not int(lower) <= cc <= int(upper):
+-            continue
+-        return profile
+-    return None
++        vin = normalize_vin(car.get("vin"))
++        inferred = vin_model_year(vin)
++    except SourcePolicyError:
++        vin, inferred = "", None
++    if year and inferred is not None and abs(int(year.group()) - inferred) > 1 and not vin[9].isdigit():
++        issues.append("CRM_YEAR_DIFFERS_FROM_INFERRED_VIN_MODEL_YEAR")
++    return issues
+ 
+ 
+ def profile_facts(profile: dict[str, Any] | None) -> list[Fact]:
+@@ -242,6 +309,8 @@
+                 confidence=0.94 if priority >= 90 else 0.89,
+                 source_domain=domain,
+                 source_url=str(source_urls[0]),
++                evidence_origin="curated_profile",
++                curated_audited_on=str(profile_library.AUDIT_DATE),
+             ))
+     return result
+ 
+@@ -334,6 +403,52 @@
+     return parser.lines, parser.rows
+ 
+ 
++class _AllowedRedirect(urllib.request.HTTPRedirectHandler):
++    """Check the destination before urllib follows a redirect."""
++
++    def redirect_request(self, req: Any, fp: Any, code: int, msg: str, headers: Any, newurl: str) -> Any:
++        if not _fetch_domain(newurl) or _fetch_domain(newurl) != _fetch_domain(req.full_url):
++            raise SourcePolicyError("REDIRECT_DOMAIN_FORBIDDEN")
++        return super().redirect_request(req, fp, code, msg, headers, newurl)
++
++
++def _utc_now() -> str:
++    return dt.datetime.now(dt.timezone.utc).isoformat()
++
++
++def _retry_after_seconds(headers: Any) -> float:
++    value = str((headers or {}).get("Retry-After") or "").strip()
++    if value.isdigit():
++        return float(value)
++    try:
++        when = email.utils.parsedate_to_datetime(value)
++        if when.tzinfo is None:
++            when = when.replace(tzinfo=dt.timezone.utc)
++        return max(0.0, (when - dt.datetime.now(dt.timezone.utc)).total_seconds())
++    except (TypeError, ValueError, OverflowError):
++        return 0.0
++
++
++def _remember_failure(url: str, code: str, *, retry_after: float = 0.0) -> None:
++    with _CACHE_LOCK:
++        previous = _FETCH_FAILURE_CACHE.get(url)
++        # Limit both exponent and cache size; no background retry/sleep loop.
++        attempts = min(10, previous.attempts + 1 if previous else 1)
++        delay = min(FAILURE_BACKOFF_MAX_SECONDS, FAILURE_BACKOFF_SECONDS * 2 ** (attempts - 1))
++        # An explicit server cooldown is honored even if longer than our cap.
++        delay = max(delay, retry_after)
++        if url not in _FETCH_FAILURE_CACHE and len(_FETCH_FAILURE_CACHE) >= CACHE_MAX_ENTRIES:
++            _FETCH_FAILURE_CACHE.pop(next(iter(_FETCH_FAILURE_CACHE)))
++        _FETCH_FAILURE_CACHE[url] = _FetchFailure(code, time.monotonic() + delay, attempts)
++
++
++def clear_fetch_caches() -> None:
++    """Local diagnostic/test reset; successful retries also clear failures."""
++    with _CACHE_LOCK:
++        _BODY_CACHE.clear()
++        _FETCH_FAILURE_CACHE.clear()
++
++
+ def _open_bytes(
+     url: str,
+     *,
+@@ -341,53 +456,67 @@
+     data: bytes | None = None,
+     headers: dict[str, str] | None = None,
+     timeout: int = HTTP_TIMEOUT,
+-    opener: Callable[..., Any] = urllib.request.urlopen,
++    opener: Callable[..., Any] | None = None,
+ ) -> bytes:
+     initial_domain = _fetch_domain(url)
+     if not initial_domain:
+         raise SourcePolicyError("FETCH_DOMAIN_FORBIDDEN")
+     cacheable = (
+-        method == "GET" and data is None and opener is urllib.request.urlopen
++        method == "GET" and data is None and (opener is None or opener is urllib.request.urlopen)
+         and initial_domain != DISCOVERY_DOMAIN
+     )
+-    if cacheable and url in _BODY_CACHE:
+-        return _BODY_CACHE[url]
+-    if cacheable and url in _FETCH_FAILURE_CACHE:
+-        raise SourcePolicyError(_FETCH_FAILURE_CACHE[url])
++    if cacheable:
++        with _CACHE_LOCK:
++            now = time.monotonic()
++            cached = _BODY_CACHE.get(url)
++            if cached and now < cached.expires_at:
++                return _FetchedBody(cached.body, "cached_page", cached.fetched_at)
++            if cached:
++                _BODY_CACHE.pop(url, None)
++            failure = _FETCH_FAILURE_CACHE.get(url)
++            if failure and now < failure.retry_at:
++                raise SourcePolicyError("RETRY_DEFERRED:" + failure.code)
+     request_headers = {
+         "User-Agent": "Mozilla/5.0 (compatible; UAART-VIN-Spec/1.0)",
+         "Accept-Language": "ru,en;q=0.9,ko;q=0.8",
+     }
+     request_headers.update(headers or {})
+     request = urllib.request.Request(url, data=data, headers=request_headers, method=method)
++    fetch = (
++        urllib.request.build_opener(_AllowedRedirect()).open
++        if opener is None or opener is urllib.request.urlopen else opener
++    )
+     try:
+-        with opener(request, timeout=timeout) as response:
++        with fetch(request, timeout=timeout) as response:
+             status = int(getattr(response, "status", 200))
+             final_url = str(getattr(response, "geturl", lambda: url)())
+             if _fetch_domain(final_url) != initial_domain:
+                 raise SourcePolicyError("REDIRECT_DOMAIN_FORBIDDEN")
+             body = response.read(MAX_RESPONSE_BYTES + 1)
++            if status != 200:
++                raise SourcePolicyError("HTTP_%d" % status)
++            if len(body) > MAX_RESPONSE_BYTES:
++                raise SourcePolicyError("RESPONSE_TOO_LARGE")
+     except SourcePolicyError as exc:
+         if cacheable:
+-            _FETCH_FAILURE_CACHE[url] = str(exc)
++            _remember_failure(url, str(exc))
+         raise
+     except urllib.error.HTTPError as exc:
+         if cacheable:
+-            _FETCH_FAILURE_CACHE[url] = "HTTP_%d" % exc.code
++            _remember_failure(url, "HTTP_%d" % exc.code, retry_after=_retry_after_seconds(exc.headers))
+         raise SourcePolicyError("HTTP_%d" % exc.code) from exc
+     except Exception as exc:
+         if cacheable:
+-            _FETCH_FAILURE_CACHE[url] = "NETWORK_%s" % type(exc).__name__
++            _remember_failure(url, "NETWORK_%s" % type(exc).__name__)
+         raise SourcePolicyError("NETWORK_%s" % type(exc).__name__) from exc
+-    if status != 200:
+-        raise SourcePolicyError("HTTP_%d" % status)
+-    if len(body) > MAX_RESPONSE_BYTES:
+-        raise SourcePolicyError("RESPONSE_TOO_LARGE")
++    fetched_at = _utc_now()
+     if cacheable:
+-        if len(_BODY_CACHE) >= 64:
+-            _BODY_CACHE.pop(next(iter(_BODY_CACHE)))
+-        _BODY_CACHE[url] = body
+-    return body
++        with _CACHE_LOCK:
++            _FETCH_FAILURE_CACHE.pop(url, None)
++            if url not in _BODY_CACHE and len(_BODY_CACHE) >= CACHE_MAX_ENTRIES:
++                _BODY_CACHE.pop(next(iter(_BODY_CACHE)))
++            _BODY_CACHE[url] = _CachedBody(body, time.monotonic() + BODY_CACHE_TTL_SECONDS, fetched_at)
++    return _FetchedBody(body, "fresh_page", fetched_at)
+ 
+ 
+ def _car_tokens(car: dict[str, Any]) -> dict[str, list[str]]:
+@@ -446,6 +575,12 @@
+ def page_match_score(car: dict[str, Any], text: str, domain: str) -> float:
+     normalized = _norm(text)
+     tokens = _car_tokens(car)
++    # A weighted score alone could previously pass another model of the same
++    # make (brand + year + cc + fuel = .68). Identity anchors are mandatory.
++    if any(not tokens[key] or not _any_token(normalized, tokens[key]) for key in ("brand", "model", "year")):
++        return 0.0
++    if any(tokens[key] and not _any_token(normalized, tokens[key]) for key in ("fuel", "cc")):
++        return 0.0
+     score = 0.0
+     if tokens["brand"] and _any_token(normalized, tokens["brand"]):
+         score += 0.28
+@@ -796,6 +931,8 @@
+             confidence=min(confidence, 0.97),
+             source_domain=domain,
+             source_url=url,
++            evidence_origin=getattr(body, "evidence_origin", "supplied_page"),
++            retrieved_at=getattr(body, "retrieved_at", ""),
+         ))
+     return score, result
+ 
+@@ -827,7 +964,8 @@
+         urllib.parse.quote(vin, safe=""),
+         urllib.parse.urlencode({"format": "json", "modelyear": year}) if year else "format=json",
+     )
+-    payload = json.loads(_open_bytes(url, opener=opener).decode("utf-8"))
++    body = _open_bytes(url, opener=opener)
++    payload = json.loads(body.decode("utf-8"))
+     rows = payload.get("Results") if isinstance(payload, dict) else None
+     if not isinstance(rows, list) or not rows or not isinstance(rows[0], dict):
+         raise SourcePolicyError("VPIC_RESULT_INVALID")
+@@ -847,6 +985,8 @@
+             confidence=0.96,
+             source_domain="vpic.nhtsa.dot.gov",
+             source_url=url,
++            evidence_origin=getattr(body, "evidence_origin", "supplied_page"),
++            retrieved_at=getattr(body, "retrieved_at", ""),
+         ))
+     identity = {key: _clean(data.get(key)) for key in ("Make", "Model", "ModelYear", "Manufacturer")}
+     identity["ErrorCode"] = _clean(data.get("ErrorCode"))
+@@ -855,7 +995,7 @@
+ 
+ def vpic_identity_matches(car: dict[str, Any], identity: dict[str, Any]) -> bool:
+     error_code = _clean(identity.get("ErrorCode"))
+-    if error_code and any(part.strip() not in {"0"} for part in error_code.split(",")):
++    if not error_code or any(part.strip() not in {"0"} for part in error_code.split(",")):
+         return False
+     tokens = _car_tokens(car)
+     make = _norm(identity.get("Make") or identity.get("Manufacturer"))
+@@ -863,14 +1003,15 @@
+     year = re.sub(r"\D", "", str(identity.get("ModelYear") or ""))[:4]
+     if not make or not tokens["brand"] or not _any_token(make, tokens["brand"]):
+         return False
+-    if model and tokens["model"] and not _any_token(model, tokens["model"]):
++    if not model or not tokens["model"] or not _any_token(model, tokens["model"]):
+         return False
+-    if year and tokens["year"] and year not in tokens["year"]:
++    if not year or not tokens["year"] or year not in tokens["year"]:
+         return False
+     return True
+ 
+ 
+ def deduplicate(facts: Iterable[Fact]) -> list[dict[str, Any]]:
++    origin_priority = {"fresh_page": 3, "cached_page": 2, "supplied_page": 1, "curated_profile": 0}
+     grouped: dict[str, list[Fact]] = {}
+     for fact in facts:
+         if fact.field_key in BLOCKED_PRIMARY_KEYS or PRICE_RE.search(fact.display_value):
+@@ -885,14 +1026,14 @@
+         winning = max(
+             by_value.values(),
+             key=lambda items: (
+-                max(SOURCE_PRIORITY.get(item.source_domain, 0) for item in items),
++                max((SOURCE_PRIORITY.get(item.source_domain, 0), origin_priority.get(item.evidence_origin, 0)) for item in items),
+                 len({item.source_domain for item in items}),
+                 max(item.confidence for item in items),
+             ),
+         )
+         ordered = sorted(
+             winning,
+-            key=lambda item: (SOURCE_PRIORITY.get(item.source_domain, 0), item.confidence),
++            key=lambda item: (SOURCE_PRIORITY.get(item.source_domain, 0), origin_priority.get(item.evidence_origin, 0), item.confidence),
+             reverse=True,
+         )
+         best = ordered[0]
+@@ -908,6 +1049,13 @@
+             "evidence_count": len(domains),
+             "source_domains": domains,
+             "source_urls": urls,
++            "evidence_origins": list(dict.fromkeys(item.evidence_origin for item in ordered)),
++            "provenance": [
++                {"source_domain": item.source_domain, "source_url": item.source_url,
++                 "origin": item.evidence_origin, "retrieved_at": item.retrieved_at,
++                 "curated_audited_on": item.curated_audited_on}
++                for item in ordered
++            ],
+         })
+     return result
+ 
+@@ -917,7 +1065,23 @@
+     *,
+     opener: Callable[..., Any] = urllib.request.urlopen,
+ ) -> dict[str, Any]:
+-    vin = normalize_vin(car.get("vin"))
++    vin = normalize_identity(car.get("vin"))
++    if not VIN_RE.fullmatch(vin):
++        return {
++            "policy_version": POLICY_VERSION, "vin": vin, "profile_id": "",
++            "lookup_years": [], "status": "NEEDS_REVIEW", "facts": [],
++            "sources": {domain: {"status": "NOT_RUN_UNRESOLVED_IDENTITY", "facts": 0} for domain in SOURCE_DOMAINS},
++            "warnings": ["JAPANESE_FRAME_REQUIRES_REVIEWED_CATALOGUE_MAPPING"],
++        }
++    issues = identity_context_issues(car)
++    if issues:
++        return {
++            "policy_version": POLICY_VERSION, "vin": vin, "profile_id": "",
++            "lookup_years": [], "status": "NEEDS_REVIEW", "facts": [],
++            "sources": {domain: {"status": "NOT_RUN_IDENTITY_CONFLICT", "facts": 0}
++                        for domain in SOURCE_DOMAINS},
++            "warnings": issues, "identity_context_issues": issues,
++        }
+     profile = match_profile(car)
+     curated = profile_facts(profile)
+     facts: list[Fact] = list(curated)
+@@ -940,9 +1104,13 @@
+             warnings.append("VPIC_IDENTITY_MISMATCH")
+         else:
+             facts.extend(vpic_facts)
+-            sources["vpic.nhtsa.dot.gov"] = {"status": "PASS", "facts": len(vpic_facts), "identity": identity}
++            sources["vpic.nhtsa.dot.gov"] = {
++                "status": "PASS" if vpic_facts else "NO_TECHNICAL_FACTS",
++                "facts": len(vpic_facts), "identity": identity,
++                "evidence_origins": sorted({fact.evidence_origin for fact in vpic_facts}),
++            }
+     except Exception as exc:
+-        sources["vpic.nhtsa.dot.gov"] = {"status": "FAIL", "error": type(exc).__name__}
++        sources["vpic.nhtsa.dot.gov"] = {"status": "FAIL", "error": str(exc) if isinstance(exc, SourcePolicyError) else type(exc).__name__}
+         warnings.append("VPIC_UNAVAILABLE")
+ 
+     for domain in SOURCE_DOMAINS[1:]:
+@@ -958,30 +1126,37 @@
+             urls = discover_urls(car, domain, opener=opener)
+         except Exception as exc:
+             urls = []
+-            attempts.append({"status": "DISCOVERY_FAIL", "error": type(exc).__name__})
++            attempts.append({"status": "DISCOVERY_FAIL", "error": str(exc) if isinstance(exc, SourcePolicyError) else type(exc).__name__})
+         for url in urls:
+             try:
+                 body = _open_bytes(url, opener=opener)
+                 score, page_facts = extract_page_facts(car, url, body)
+-                attempts.append({"url": url, "score": score, "facts": len(page_facts)})
++                attempts.append({"url": url, "score": score, "facts": len(page_facts),
++                                 "evidence_origin": getattr(body, "evidence_origin", "supplied_page"),
++                                 "retrieved_at": getattr(body, "retrieved_at", "")})
+                 if page_facts:
+                     accepted.extend(page_facts)
+                     break
+             except Exception as exc:
+-                attempts.append({"url": url, "status": "FETCH_FAIL", "error": type(exc).__name__})
++                attempts.append({"url": url, "status": "FETCH_FAIL", "error": str(exc) if isinstance(exc, SourcePolicyError) else type(exc).__name__})
+         facts.extend(accepted)
+         curated_count = curated_counts.get(domain, 0)
+         sources[domain] = {
+-            "status": "PASS" if accepted else "CURATED_PASS" if curated_count else "NO_CONFIDENT_MATCH",
+-            "facts": len(accepted) + curated_count,
++            "status": "PASS" if accepted else "CURATED_AVAILABLE" if curated_count else "NO_CONFIDENT_MATCH",
++            "facts": len({fact.field_key for fact in [*accepted, *curated] if fact.source_domain == domain}),
++            "fresh_facts": sum(fact.evidence_origin == "fresh_page" for fact in accepted),
++            "cached_facts": sum(fact.evidence_origin == "cached_page" for fact in accepted),
+             "curated_facts": curated_count,
++            "curated_audited_on": str(profile_library.AUDIT_DATE) if curated_count else "",
+             "attempts": attempts,
+         }
++        if not accepted and curated_count:
++            warnings.append("CURATED_ONLY:" + domain)
+ 
+     clean = deduplicate(facts)
+     detailed_domains = [
+         domain for domain in SOURCE_DOMAINS[1:]
+-        if sources.get(domain, {}).get("status") in {"PASS", "CURATED_PASS"}
++        if sources.get(domain, {}).get("status") in {"PASS", "CURATED_AVAILABLE"}
+     ]
+     minimum_facts = 10 if profile else 4
+     status = "READY" if len(clean) >= minimum_facts and detailed_domains else "NEEDS_REVIEW"
+@@ -997,9 +1172,18 @@
+     }
+ 
+ 
+-def audit_sources(*, opener: Callable[..., Any] = urllib.request.urlopen) -> dict[str, Any]:
++def audit_sources(
++    *, opener: Callable[..., Any] | None = None, network: bool = False,
++    execution_origin: str = "local environment; worker verification pending",
++) -> dict[str, Any]:
++    """Read-only probe; HTTP 200 alone never establishes a working adapter.
++
++    Defaults to NOT_RUN.  Explicit network=True performs public GETs without
++    VINs or any CRM data.  vPIC's generic schema check is deliberately weaker
++    than a VIN decode and is never included in technical PASS counts.
++    """
+     probes = {
+-        "vpic.nhtsa.dot.gov": "https://vpic.nhtsa.dot.gov/api/",
++        "vpic.nhtsa.dot.gov": "https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/kia?format=json",
+         "auto-data.net": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-b-180-1.8-cdi-109hp-7g-dct-18833",
+         "carwiki.co.kr": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80",
+         "auto.danawa.com": "https://auto.danawa.com/auto/?Lineup=42280&Model=3260%2C3151&Tab=spec&Work=model&pcUse=y",
+@@ -1010,19 +1194,64 @@
+         "carfolio.com": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447",
+         "encycarpedia.com": "https://www.encycarpedia.com/mercedes/05-b-170-mpv",
+     }
++    samples = {
++        "auto-data.net": {"brand": "Mercedes-Benz", "model": "B-Class", "year": "2013", "fuel": "diesel", "engine_cc": 1796},
++        "carwiki.co.kr": {"brand": "Kia", "model": "K5", "year": "2018", "fuel": "LPI", "engine_cc": 1999},
++        "auto.danawa.com": {"brand": "Kia", "model": "K5", "year": "2018", "fuel": "LPI", "engine_cc": 1999},
++        "carfolio.com": {"brand": "Hyundai", "model": "Sonata", "year": "2018", "fuel": "LPI", "engine_cc": 1999},
++    }
++    mercedes = {"brand": "Mercedes-Benz", "model": "B-Class", "year": "2010", "fuel": "gasoline", "engine_cc": 1699}
+     result: dict[str, Any] = {}
+     for domain, url in probes.items():
++        item: dict[str, Any] = {"status": "NOT_RUN", "probe_url": url, "facts": 0}
++        result[domain] = item
++        if not network:
++            item["reason"] = "NETWORK_CHECK_NOT_REQUESTED_OR_UNAVAILABLE"
++            continue
++        if domain == "carisyou.com":
++            item["reason"] = "NO_REVIEWED_IDENTITY_FOR_LEGACY_PROBE_URL"
++            continue
+         try:
+-            body = _open_bytes(url, opener=opener)
+-            result[domain] = {"status": "PASS", "bytes": len(body)}
++            # Force a fresh GET for diagnostics; production cache remains intact.
++            fetch = opener or urllib.request.build_opener(_AllowedRedirect()).open
++            body = _open_bytes(url, opener=fetch)
++            item.update({"bytes": len(body), "retrieved_at": getattr(body, "retrieved_at", "")})
++            if domain == "vpic.nhtsa.dot.gov":
++                payload = json.loads(body.decode("utf-8"))
++                rows = payload.get("Results") if isinstance(payload, dict) else None
++                valid = isinstance(rows, list) and any(
++                    isinstance(row, dict) and _norm(row.get("Make_Name")) == "kia"
++                    and _clean(row.get("Model_Name")) for row in rows
++                )
++                item.update({"status": "API_SCHEMA_ONLY" if valid else "FAIL_SCHEMA",
++                             "reason": "VIN_DECODER_NOT_RUN; NO_VIN_TRANSMITTED"})
++                continue
++            sample = samples.get(domain, mercedes)
++            score, extracted = extract_page_facts(sample, url, body)
++            clean = deduplicate(extracted)
++            item.update({"match_score": score, "facts": len(clean),
++                         "fields": [fact["field_key"] for fact in clean],
++                         "status": "PASS" if len(clean) >= 4 else "FAIL_CONTENT_OR_IDENTITY"})
+         except Exception as exc:
+-            result[domain] = {"status": "FAIL", "error": type(exc).__name__}
++            code = str(exc) if isinstance(exc, SourcePolicyError) else type(exc).__name__
++            # A connectivity restriction is missing evidence, never a pass or
++            # a claim that the upstream source itself is broken.
++            unavailable = code.startswith("NETWORK_") or code.startswith("RETRY_DEFERRED:")
++            item.update({"status": "NOT_RUN" if unavailable else "FAIL", "error": code})
+     return {
+-        "policy_version": POLICY_VERSION,
+-        "audited_on": profile_library.AUDIT_DATE,
+-        "source_count": len(SOURCE_DOMAINS),
+-        "sources": result,
+-        "pass_count": sum(1 for item in result.values() if item["status"] == "PASS"),
++        "policy_version": POLICY_VERSION, "audited_on": _utc_now(),
++        "curated_library_audited_on": profile_library.AUDIT_DATE,
++        "execution_origin": execution_origin, "network_requested": network,
++        "source_count": len(SOURCE_DOMAINS), "sources": result,
++        "pass_count": sum(item["status"] == "PASS" for item in result.values()),
++        "not_run_count": sum(item["status"] == "NOT_RUN" for item in result.values()),
++        "vin_sent": False, "production_touched": False,
++        "limitations": [
++            "Offline fixtures do not prove live source availability or current markup.",
++            "A model-page match is not proof of factory options for an individual VIN.",
++            "vPIC VIN identity decoding requires a separate approved worker check.",
++            "Carisyou legacy probe has no reviewed vehicle identity and remains NOT_RUN.",
++        ],
+     }
+ 
+ 
+--- reviewed-current/spec_publication.py
++++ candidate/spec_publication.py
+@@ -0,0 +1,443 @@
++"""Canonical specification renderer and guarded single-VIN page reconciliation.
++
++No work happens at import. CRM data are never written. The normal publisher
++and this reconciler must share the existing publication lock. Installation
++and the current server paths remain subject to Gate B.
++"""
++from __future__ import annotations
++
++import contextlib
++import fcntl
++import hashlib
++import html
++import json
++import os
++from pathlib import Path
++import re
++import sqlite3
++import tempfile
++import urllib.request
++from typing import Any, Callable, Iterable
++
++import card_shell
++
++START = "<!--UA099_ADD_SPEC_START-->"
++END = "<!--UA099_ADD_SPEC_END-->"
++MAX_PAGE_BYTES = 4 * 1024 * 1024
++# Reviewed against all 32 cached primary pages; changes require a new reviewed
++# template release. No environment switch or automatic learning of a new hash.
++PINNED_SHELL_ASSETS_SHA256 = "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed"
++UID_RE = re.compile(r"^UA-[0-9]{4,6}$")
++BAD_TEXT = re.compile(r"<[^>]*>|https?://|www\.|javascript:|data:|carhistory|vindecoderz|affiliate", re.I)
++PRICE = re.compile(r"price|cost|auction|advert|ц[еі]на|стоимость|вартість|реклам|₩|\$|€", re.I)
++GROUPS = {
++    "engine": ("Двигун", "Двигатель"),
++    "dynamics": ("Динаміка", "Динамика"),
++    "consumption": ("Витрата пального", "Расход топлива"),
++    "dimensions": ("Розміри", "Размеры"),
++    "capacity": ("Місткість", "Вместимость"),
++    "weight": ("Маса", "Масса"),
++    "suspension": ("Підвіска", "Подвеска"),
++    "brakes": ("Гальма", "Тормоза"),
++    "steering": ("Кермове керування", "Рулевое управление"),
++    "wheels": ("Колеса", "Колёса"),
++    "ecology": ("Екологія", "Экология"),
++    "transmission_detail": ("Трансмісія", "Трансмиссия"),
++    "additional": ("Інші характеристики", "Другие характеристики"),
++}
++UK_LABELS = {
++    "doors": "Кількість дверей", "seats": "Кількість місць",
++    "urban_fuel_consumption": "Витрата в місті", "highway_fuel_consumption": "Витрата на трасі",
++    "combined_fuel_consumption": "Змішана витрата", "urban_fuel_economy": "Економічність у місті",
++    "highway_fuel_economy": "Економічність на трасі", "combined_fuel_economy": "Змішана економічність",
++    "co2_emissions": "Викиди CO₂", "emission_standard": "Екологічний стандарт",
++    "energy_efficiency_class": "Клас енергоефективності", "acceleration_0_100": "Розгін 0–100 км/год",
++    "maximum_speed": "Максимальна швидкість", "maximum_power": "Максимальна потужність",
++    "specific_power": "Питома потужність", "maximum_torque": "Максимальний крутний момент",
++    "engine_layout": "Розташування двигуна", "engine_code": "Код двигуна",
++    "cylinders": "Кількість циліндрів", "engine_configuration": "Конфігурація двигуна",
++    "cylinder_bore": "Діаметр циліндра", "piston_stroke": "Хід поршня",
++    "compression_ratio": "Ступінь стиснення", "valves_per_cylinder": "Клапанів на циліндр",
++    "fuel_injection": "Система впорскування", "aspiration": "Тип наддуву",
++    "valvetrain": "Газорозподільний механізм", "engine_oil_capacity": "Об’єм оливи",
++    "coolant_capacity": "Об’єм охолоджувальної рідини", "kerb_weight": "Споряджена маса",
++    "gross_weight": "Допустима повна маса", "payload": "Вантажопідйомність",
++    "boot_capacity": "Об’єм багажника", "boot_capacity_maximum": "Максимальний об’єм багажника",
++    "fuel_tank_capacity": "Об’єм паливного бака", "length": "Довжина", "width": "Ширина",
++    "height": "Висота", "wheelbase": "Колісна база", "front_track": "Передня колія",
++    "rear_track": "Задня колія", "ground_clearance": "Дорожній просвіт",
++    "drag_coefficient": "Коефіцієнт аеродинамічного опору", "turning_circle": "Діаметр розвороту",
++    "number_of_gears": "Кількість передач", "front_suspension": "Передня підвіска",
++    "rear_suspension": "Задня підвіска", "front_brakes": "Передні гальма",
++    "rear_brakes": "Задні гальма", "steering_type": "Кермове керування",
++    "power_steering": "Підсилювач керма", "tyre_size": "Розмір шин", "wheel_size": "Розмір дисків",
++}
++
++
++class SpecError(RuntimeError):
++    pass
++
++
++def uid(value: Any) -> str:
++    value = str(value or "").strip().upper()
++    if not UID_RE.fullmatch(value):
++        raise SpecError("INVALID_CARD_ID")
++    return value
++
++
++def _text(value: Any, maximum: int = 500) -> str:
++    value = re.sub(r"\s+", " ", str(value if value is not None else "")).strip()
++    if not value or len(value) > maximum or BAD_TEXT.search(value) or PRICE.search(value):
++        raise SpecError("UNSAFE_SPECIFICATION_TEXT")
++    return value
++
++
++def normalize_facts(facts: Iterable[dict[str, Any]]) -> list[dict[str, str]]:
++    result = {}
++    for fact in facts:
++        if not int(fact.get("is_visible", 1)):
++            continue
++        if int(fact.get("is_price_field", 0)):
++            raise SpecError("PRICE_FIELD_FORBIDDEN")
++        state = str(fact.get("verification_status", "VERIFIED")).upper()
++        if state not in {"VERIFIED", "VERIFIED_10SRC", "MANUAL_VERIFIED", "TRUSTED", "MANUAL", "CURATED_PASS"}:
++            continue
++        key = _text(fact.get("field_key", fact.get("key")), 120)
++        if not re.fullmatch(r"[a-zA-Z0-9_.:-]+", key) or key.casefold() in {"vin", "vin_code", "chassis_number"}:
++            raise SpecError("INVALID_SPECIFICATION_KEY")
++        label = _text(fact.get("label_ru", fact.get("label", key)), 160)
++        value = _text(fact.get("field_value", fact.get("display_value", fact.get("value"))))
++        unit = str(fact.get("unit") or "").strip()
++        if unit:
++            unit = _text(unit, 50)
++            if not value.endswith(unit):
++                value += " " + unit
++        category = str(fact.get("category") or "additional")
++        if category not in GROUPS:
++            category = "additional"
++        row = {"key": key, "label_ru": label, "label_uk": UK_LABELS.get(key, label),
++               "value": value, "category": category}
++        if key in result and result[key] != row:
++            raise SpecError("CONFLICTING_SPECIFICATION_KEY:" + key)
++        result[key] = row
++    return sorted(result.values(), key=lambda row: (list(GROUPS).index(row["category"]), row["key"]))
++
++
++def _digest(rows: list[dict[str, str]]) -> str:
++    return hashlib.sha256(json.dumps(rows, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
++
++
++def _i18n(uk: str, ru: str) -> str:
++    return '<span data-ua="%s" data-uk="%s" data-ru="%s">%s</span>' % (
++        html.escape(uk, quote=True), html.escape(uk, quote=True),
++        html.escape(ru, quote=True), html.escape(uk))
++
++
++def render_block(card_uid: str, facts: Iterable[dict[str, Any]]) -> str:
++    card_uid = uid(card_uid)
++    rows = normalize_facts(facts)
++    groups = []
++    for category, titles in GROUPS.items():
++        items = [row for row in rows if row["category"] == category]
++        if not items:
++            continue
++        body = "".join('<div class="ua-addspec-row" data-spec-key="%s"><dt>%s</dt><dd>%s</dd></div>' % (
++            html.escape(row["key"], quote=True), _i18n(row["label_uk"], row["label_ru"]),
++            html.escape(row["value"])) for row in items)
++        groups.append('<section class="ua-addspec-group"><h3>%s</h3><dl>%s</dl></section>' % (_i18n(*titles), body))
++    body = "".join(groups) or '<p class="ua-addspec-empty">%s</p>' % _i18n(
++        "Підтверджені характеристики ще готуються.", "Подтверждённые характеристики ещё готовятся.")
++    style = ('<style id="ua-spec-auto10-style">'
++             '.ua-additional-spec{display:block!important;visibility:visible!important;border:1px solid #c79848;border-radius:12px;margin:18px 0;padding:0;overflow:hidden}'
++             '.ua-additional-spec summary{display:flex!important;align-items:center;justify-content:space-between;gap:12px;box-sizing:border-box;min-height:44px;padding:18px;cursor:pointer;font-weight:700;list-style:none}'
++             '.ua-additional-spec summary::-webkit-details-marker{display:none}.ua-additional-spec summary:focus-visible{outline:2px solid #c79848;outline-offset:-4px}'
++             '.ua-addspec-summary-text{display:grid;gap:6px;min-width:0;overflow-wrap:anywhere}.ua-addspec-summary-hint{color:#e6b864;font-size:14px;line-height:1.4;font-weight:600;text-decoration:underline;text-underline-offset:3px}'
++             '.ua-additional-spec summary:after{content:"＋";color:#c79848;flex-shrink:0}.ua-additional-spec[open] summary:after{content:"−"}'
++             '.ua-addspec-body{padding:0 18px 18px}.ua-addspec-group h3{color:#c79848;font-size:15px;margin:18px 0 8px}'
++             '.ua-addspec-group dl{margin:0}.ua-addspec-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;border-top:1px solid #ffffff20;padding:9px 0}'
++             '.ua-addspec-row dt,.ua-addspec-row dd{margin:0;overflow-wrap:anywhere}.ua-addspec-row dd{text-align:right;font-weight:600}'
++             '@media(max-width:560px){.ua-addspec-row{grid-template-columns:1fr;gap:4px}.ua-addspec-row dd{text-align:left}}'
++             '</style>')
++    return (START + style + '<details class="blok ua-additional-spec" data-ua-additional-spec="1" '
++            'data-spec-card="%s" data-spec-version="%s"><summary><span class="ua-addspec-summary-text">%s'
++            '<span class="ua-addspec-summary-hint">%s</span></span></summary>'
++            '<div class="ua-addspec-body">%s</div></details>' + END) % (
++                card_uid, _digest(rows), _i18n("Додаткова специфікація", "Дополнительная спецификация"),
++                _i18n("Переглянути характеристики", "Посмотреть характеристики"), body)
++
++
++def _span(source: str) -> tuple[int, int] | None:
++    a, b = source.count(START), source.count(END)
++    if a == b == 0:
++        if re.search(r'data-ua-additional-spec\s*=|class=[\"\'][^\"\']*ua-additional-spec', source, re.I):
++            raise SpecError("UNMARKED_SPECIFICATION_REQUIRES_REVIEW")
++        return None
++    if a != 1 or b != 1 or source.index(START) >= source.index(END):
++        raise SpecError("MALFORMED_OR_DUPLICATE_SPECIFICATION")
++    return source.index(START), source.index(END) + len(END)
++
++
++def strip_block(source: str) -> str:
++    span = _span(source)
++    return source[:span[0]] + source[span[1]:] if span else source
++
++
++def _insert_at(source: str) -> int:
++    for marker in ("<!--UA099_CLEAN_VIN_START-->", "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START -->"):
++        if marker in source:
++            return source.index(marker)
++    match = re.search(r'<(?:div|section)\b[^>]*class=[\"\'][^\"\']*\bua-clean-vin\b', source, re.I)
++    if match:
++        return match.start()
++    raise SpecError("SPECIFICATION_INSERTION_ANCHOR_MISSING")
++
++
++def inject(source: str, card_uid: str, facts: Iterable[dict[str, Any]]) -> str:
++    facts = list(facts)
++    card_uid = uid(card_uid)
++    _span(source)  # Validate legacy specification markers before any repair.
++    try:
++        normalized = card_shell.normalize_html(source, card_uid)
++    except card_shell.ShellError as exc:
++        raise SpecError(str(exc)) from exc
++    span = _span(normalized)
++    block = render_block(card_uid, facts)
++    if span:
++        output = normalized[:span[0]] + block + normalized[span[1]:]
++    else:
++        at = _insert_at(normalized)
++        output = normalized[:at] + block + normalized[at:]
++    try:
++        card_shell.permitted_delta(source, output, card_uid)
++    except card_shell.ShellError as exc:
++        raise SpecError(str(exc)) from exc
++    validate_page(output, card_uid, facts, previous=source)
++    return output
++
++
++def _validate_specification(source: str, card_uid: str, facts: Iterable[dict[str, Any]], *, previous: str | None = None) -> dict[str, Any]:
++    card_uid = uid(card_uid)
++    facts = list(facts)
++    rows = normalize_facts(facts)
++    if re.search(r"carhistory(?:\.kr)?|vindecoderz(?:\.com)?|(?:Проверить|Перевірити)\s+VIN|2\s*200\s*KRW", source, re.I):
++        raise SpecError("PUBLIC_VIN_ADVERTISEMENT_FORBIDDEN")
++    span = _span(source)
++    if span is None:
++        raise SpecError("SPECIFICATION_BLOCK_MISSING")
++    if source[span[0]:span[1]] != render_block(card_uid, facts):
++        raise SpecError("SPECIFICATION_DIFFERS_FROM_CONFIRMED_DATA")
++    if len(re.findall(r'data-ua-additional-spec=[\"\']1[\"\']', source)) != 1:
++        raise SpecError("SPECIFICATION_BLOCK_COUNT")
++    if previous:
++        old_span = _span(previous)
++        if old_span:
++            old = previous[old_span[0]:old_span[1]]
++            old_keys = set(re.findall(r'data-spec-key="([^"]+)"', old))
++            if old_keys - {row["key"] for row in rows}:
++                raise SpecError("PREVIOUS_SPECIFICATION_KEYS_LOST")
++            old_count = len(re.findall(r'class=[\"\'][^\"\']*\bua-addspec-row\b', old))
++            if old_count > len(rows):
++                raise SpecError("PREVIOUS_SPECIFICATION_ROWS_LOST")
++    return {"status": "PASS", "rows": len(rows), "data_status": "READY" if rows else "NEEDS_REVIEW", "version": _digest(rows)}
++
++
++def validate_block(source: str, card_uid: str, facts: Iterable[dict[str, Any]]) -> dict[str, Any]:
++    """Validate a standalone specification fragment, never a publishable page."""
++    facts = list(facts)
++    result = _validate_specification(source, card_uid, facts)
++    if source != render_block(card_uid, facts):
++        raise SpecError("STANDALONE_SPECIFICATION_FRAGMENT_REQUIRED")
++    return result
++
++
++def validate_page(source: str, card_uid: str, facts: Iterable[dict[str, Any]], *, previous: str | None = None) -> dict[str, Any]:
++    """A full page needs one main VIN and unchanged or reviewed shell assets.
++
++    Existing-card CRUD may alter vehicle values and gallery data; assets must
++    match the existing page. With no existing page, the template must match the
++    reviewed pin. Specification-only reconciliation also uses permitted_delta.
++    """
++    result = _validate_specification(source, card_uid, facts, previous=previous)
++    try:
++        vin = card_shell.validate_one_visible_vin(source, uid(card_uid))
++        assets = card_shell.validate_shell_assets(previous if previous is not None else source, source)
++    except card_shell.ShellError as exc:
++        raise SpecError(str(exc)) from exc
++    if previous is None and assets["ordered_static_assets_sha256"] != PINNED_SHELL_ASSETS_SHA256:
++        raise SpecError("UNREVIEWED_NEW_CARD_SHELL_ASSETS")
++    return {**result, "visible_vin_count": vin["visible_vin_count"],
++            "shell_assets_sha256": assets["ordered_static_assets_sha256"],
++            "shell_reference": "existing_card" if previous is not None else "reviewed_template_pin"}
++
++
++def load_facts(card_uid: str) -> list[dict[str, Any]]:
++    card_uid = uid(card_uid)
++    # Legacy callbacks and common writers also pass here. Read the current
++    # identity independently of queue status so READY/old manual facts cannot
++    # bypass a newly discovered context conflict. This import starts no worker.
++    card = _read_current_identity(card_uid, require_published=False)
++    _assert_identity_context(card)
++    path = Path(os.environ.get("UA_ART_SPEC_DB", "/home/Carix/vin_specs_task111_v3.db"))
++    if not path.is_file():
++        raise SpecError("CANONICAL_SPEC_DATABASE_MISSING")
++    with contextlib.closing(sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True, timeout=15)) as conn:
++        conn.row_factory = sqlite3.Row
++        conn.execute("PRAGMA query_only=ON")
++        return [dict(row) for row in conn.execute('''
++            SELECT a.*, m.label_ru, m.category, m.unit, m.verification_status,
++                   m.is_manual, m.is_visible
++            FROM additional_specification a JOIN additional_specification_meta m
++              ON a.car_uid=m.car_uid AND a.field_key=m.field_key
++            WHERE a.car_uid=? AND a.is_price_field=0 AND m.is_visible=1
++        ''', (card_uid,))]
++
++
++def guard_write(path: Path, data: bytes) -> None:
++    """Call before every atomic primary-page replacement in the shared writer."""
++    if re.fullmatch(r"UA-[0-9]{4,6}\.html", path.name):
++        previous = path.read_text(encoding="utf-8") if path.is_file() else None
++        validate_page(data.decode("utf-8"), path.stem, load_facts(path.stem), previous=previous)
++
++
++def _read_page(path: Path) -> bytes:
++    if path.is_symlink() or not path.is_file():
++        raise SpecError("PUBLIC_PAGE_MISSING_OR_SYMLINK")
++    with path.open("rb") as handle:
++        data = handle.read(MAX_PAGE_BYTES + 1)
++    if len(data) > MAX_PAGE_BYTES:
++        raise SpecError("PUBLIC_PAGE_TOO_LARGE")
++    return data
++
++
++def _atomic(path: Path, data: bytes) -> None:
++    fd, name = tempfile.mkstemp(prefix=".ua-spec-", dir=path.parent)
++    temp = Path(name)
++    try:
++        with os.fdopen(fd, "wb") as handle:
++            handle.write(data)
++            handle.flush()
++            os.fsync(handle.fileno())
++        os.chmod(temp, path.stat().st_mode & 0o777)
++        os.replace(temp, path)
++    finally:
++        temp.unlink(missing_ok=True)
++
++
++def _public_read(card_uid: str) -> str:
++    url = "https://www.uaart.com.ua/video/%s.html" % uid(card_uid)
++    request = urllib.request.Request(url, headers={"Cache-Control": "no-cache", "User-Agent": "UA-ART-Spec-Verify/1"})
++    with urllib.request.urlopen(request, timeout=15) as response:
++        if response.status != 200 or response.geturl().split("?")[0] != url:
++            raise SpecError("PUBLIC_RESPONSE_MISMATCH")
++        body = response.read(MAX_PAGE_BYTES + 1)
++    if len(body) > MAX_PAGE_BYTES:
++        raise SpecError("PUBLIC_RESPONSE_TOO_LARGE")
++    return body.decode("utf-8")
++
++
++def _current_state(card_uid: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
++    # Importing the module does not start its worker. read_cards is strictly RO.
++    return _read_current_identity(card_uid, require_published=True), load_facts(card_uid)
++
++
++def _read_current_identity(card_uid: str, *, require_published: bool) -> dict[str, Any]:
++    """Read-only duplicate-UID/tombstone fence; recovery writes happen elsewhere."""
++    import vin_spec_service
++    import card_lifecycle
++    path = Path(vin_spec_service.MAIN_DB)
++    if not path.is_file() or path.is_symlink():
++        raise SpecError("CURRENT_CRM_DATABASE_MISSING_OR_SYMLINK")
++    with contextlib.closing(sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True, timeout=15)) as conn:
++        conn.execute("PRAGMA query_only=ON")
++        try:
++            identity = card_lifecycle.validate_publication_identity(
++                conn, uid(card_uid), require_published=require_published)
++        except card_lifecycle.LifecycleError as exc:
++            raise SpecError(str(exc)) from exc
++    card = next((row for row in vin_spec_service.read_cards() if row["car_uid"] == card_uid), None)
++    if card is None:
++        raise SpecError("CURRENT_CARD_IDENTITY_MISSING")
++    if card.get("car_id") != identity["car_id"]:
++        raise SpecError("CURRENT_CARD_ID_CHANGED_DURING_READ")
++    return card
++
++
++def _assert_identity_context(card: dict[str, Any]) -> None:
++    import source_policy
++    issues = source_policy.identity_context_issues(card)
++    if issues:
++        raise SpecError("IDENTITY_CONTEXT_REQUIRES_REVIEW:" + ",".join(issues))
++
++
++def _assert_current(card: dict[str, Any], facts: list[dict[str, Any]], reader: Callable) -> None:
++    current, current_facts = reader(uid(card.get("car_uid", card.get("auto_number"))))
++    _assert_identity_context(current)
++    keys = ("car_id", "car_uid", "vin", "brand", "model", "year", "fuel", "engine_cc", "transmission", "published")
++    if any(str(current.get(key) or "").strip().casefold() != str(card.get(key) or "").strip().casefold() for key in keys):
++        raise SpecError("CARD_CHANGED_DURING_SPECIFICATION_SYNC")
++    if normalize_facts(current_facts) != normalize_facts(facts):
++        raise SpecError("SPECIFICATION_CHANGED_DURING_SYNC")
++
++
++def reconcile_published(card: dict[str, Any], facts: Iterable[dict[str, Any]], *,
++                        root: Path | None = None, public_reader: Callable[[str], str] | None = None,
++                        state_reader: Callable | None = None) -> dict[str, Any]:
++    """Reconcile one already-published card under the existing shared lock.
++
++    A failed public read leaves valid local updates intact for bounded retry;
++    a failed local transaction restores only our own unchanged postimages.
++    """
++    if card.get("published") not in (True, 1, "1"):
++        return {"status": "NOT_REQUIRED", "detail": "DRAFT_NOT_PUBLISHED"}
++    facts = list(facts)
++    code = uid(card.get("car_uid", card.get("auto_number")))
++    root = (root or Path(os.environ.get("UA_ART_ROOT", "/home/Carix"))).resolve()
++    if not root.is_dir():
++        return {"status": "FAIL", "detail": "RUNTIME_ROOT_MISSING"}
++    reader = public_reader or _public_read
++    state_reader = state_reader or _current_state
++    lock_path = root / ".ua_art_publish_transaction.lock"
++    try:
++        if lock_path.is_symlink():
++            raise SpecError("PUBLICATION_LOCK_SYMLINK")
++        with lock_path.open("a+b") as lock:
++            try:
++                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
++            except BlockingIOError:
++                return {"status": "FAIL", "detail": "PUBLICATION_LOCK_BUSY"}
++            paths = [root / "video" / (code + ".html")]
++            if (root / "site").is_dir():
++                paths.append(root / "site" / (code + ".html"))
++            if any(path.parent.is_symlink() or path.resolve().parent != path.parent for path in paths):
++                raise SpecError("PUBLIC_ROOT_SYMLINK")
++            before = {path: _read_page(path) for path in paths}
++            _assert_current(card, facts, state_reader)
++            after = {path: inject(data.decode("utf-8"), code, facts).encode() for path, data in before.items()}
++            changed = []
++            try:
++                for path in paths:
++                    _assert_current(card, facts, state_reader)
++                    if _read_page(path) != before[path]:
++                        raise SpecError("CONCURRENT_PUBLIC_PAGE_CHANGE")
++                    if after[path] != before[path]:
++                        _atomic(path, after[path])
++                        changed.append(path)
++                for path in paths:
++                    if _read_page(path) != after[path]:
++                        raise SpecError("LOCAL_READBACK_MISMATCH")
++                    validate_page(after[path].decode(), code, facts, previous=before[path].decode())
++                _assert_current(card, facts, state_reader)
++            except Exception:
++                for path in reversed(changed):
++                    if _read_page(path) == after[path]:
++                        _atomic(path, before[path])
++                raise
++            live = reader(code)
++            result = validate_page(live, code, facts, previous=after[paths[0]].decode("utf-8"))
++            # Unpublish/delete/identity edits during the public GET must not
++            # be reported as a completed publication of the old card.
++            _assert_current(card, facts, state_reader)
++            return {"status": "PASS" if changed else "UNCHANGED", "detail": "PUBLIC_SPEC_VERIFIED",
++                    "rows": result["rows"], "version": result["version"], "data_status": result["data_status"]}
++    except Exception as exc:
++        return {"status": "FAIL", "detail": type(exc).__name__ + ":" + str(exc)[:180]}
+--- reviewed-current/ua_additional_spec.py
++++ candidate/ua_additional_spec.py
+@@ -855,3 +855,54 @@
+         raise RuntimeError("UA115_UNAPPROVED_EXTERNAL_HOST:" + uid + ":" + ",".join(sorted(_ua115_unknown)))
+     return output
+ # <<< UA115 NO PUBLIC VIN ADS
++
++# >>> UA SPEC AUTO10 RESTORE SPEC V1
++# Preserve manual CRM helpers, the existing sidecar connection and VIN data.
++# Public reads always use the same canonical UA_ART_SPEC_DB as the worker.
++import spec_publication as _ua_auto10_publication
++
++
++def render_public_block(value):
++    code = canonical_uid(value)
++    if not code:
++        raise _ua_auto10_publication.SpecError("INVALID_CARD_ID")
++    return _ua_auto10_publication.render_block(
++        code, _ua_auto10_publication.load_facts(code)
++    )
++
++
++def inject_public_spec(source, value):
++    code = canonical_uid(value)
++    if not code:
++        raise _ua_auto10_publication.SpecError("INVALID_CARD_ID")
++    # The canonical injector changes the spec block and reviewed duplicate VIN
++    # spans, and validates that all remaining content and shell assets survive.
++    facts = _ua_auto10_publication.load_facts(code)
++    return _ua_auto10_publication.inject(source, code, facts)
++
++
++def crm_summary(value):
++    base = _UA110_BASE_CRM_SUMMARY(value)
++    try:
++        import vin_spec_service as _ua_auto10_service
++        state = _ua_auto10_service.card_state(value)
++        collection = {
++            "NOT_QUEUED": "VIN ещё не поставлен в очередь",
++            "PENDING": "сбор в очереди", "RUNNING": "идёт сбор характеристик",
++            "READY": "характеристики собраны", "NEEDS_REVIEW": "нужна проверка данных",
++            "FAILED": "сбор не выполнен",
++        }
++        publication = {
++            "NOT_REQUIRED": "обновление сайта не требуется",
++            "PENDING": "обновление сайта в очереди", "RUNNING": "идёт обновление сайта",
++            "PASS": "страница проверена и обновлена", "UNCHANGED": "страница проверена, данные актуальны",
++            "FAIL": "обновление сайта не прошло", "FAILED": "обновление сайта не прошло",
++            "SUPERSEDED": "ожидается обработка более новых данных",
++            "NEEDS_REVIEW": "публикация заблокирована до проверки данных автомобиля",
++        }
++        collected = collection.get(str(state.get("status")), "состояние сбора неизвестно")
++        published = publication.get(str(state.get("site_sync_status")), "состояние сайта неизвестно")
++        return base + "\nАвтосбор: " + collected + " · Сайт: " + published
++    except Exception:
++        return base + "\nАвтосбор и обновление сайта: состояние временно недоступно"
++# <<< UA SPEC AUTO10 RESTORE SPEC V1
+--- reviewed-current/vin_spec_service.py
++++ candidate/vin_spec_service.py
+@@ -1,17 +1,20 @@
+ #!/usr/bin/env python3
+ """Automatic VIN-triggered additional-specification service for UA ART.
+ 
+-The live CRM is opened read-only.  Enrichment, provenance, job state and
++Collection opens the live CRM read-only. Enrichment, provenance, job state and
+ operator edits live in a separate SQLite sidecar.  A valid VIN already saved
+ by the existing CRM flow creates one idempotent job for this policy version.
+ 
+-Only already-published cards may be refreshed automatically.  This service
+-never creates the initial public listing and never changes price, status or
+-any other primary CRM field.
++Only already-published cards may be refreshed automatically. Collection never
++creates the initial public listing or changes primary CRM fields. Before
++startup/publication, the reviewed lifecycle helper may compensate an archived
++interrupted transaction under the shared lock; this is recorded crash recovery.
+ """
+ from __future__ import annotations
+ 
+ import datetime as dt
++import hashlib
++import logging
+ import json
+ import os
+ import pathlib
+@@ -19,6 +22,7 @@
+ import sqlite3
+ import threading
+ import time
++import uuid
+ from typing import Any, Callable, Iterable
+ 
+ import source_policy
+@@ -31,7 +35,13 @@
+ SCAN_SECONDS = max(15, int(os.environ.get("UA_ART_VIN_SCAN_SECONDS", "30")))
+ MAX_ATTEMPTS = 3
+ STALE_JOB_SECONDS = max(300, int(os.environ.get("UA_ART_VIN_STALE_SECONDS", "1800")))
+-WORKER_NAME = "uaart-vin-spec-v2"
++WORKER_NAME = "uaart-spec-auto10-restore"
++MAX_SYNC_ATTEMPTS = 3
++RETRY_SECONDS = max(15, int(os.environ.get("UA_ART_SPEC_RETRY_SECONDS", "60")))
++RECONCILE_SECONDS = max(60, int(os.environ.get("UA_ART_SPEC_RECONCILE_SECONDS", "300")))
++BACKLOG_SECONDS = 1.0
++LOGGER = logging.getLogger(__name__)
++IDENTITY_FIELDS = ("car_id", "vin", "brand", "model", "year", "fuel", "engine_cc", "transmission")
+ CARD_RE = re.compile(r"^UA[-‑–—]?0*(\d{1,6})$", re.IGNORECASE)
+ SEMANTIC_LABEL_GENERIC_TOKENS = {
+     "auto", "car", "vehicle", "body", "overall",
+@@ -174,11 +184,31 @@
+             );
+             """
+         )
++        # Additive migration: preserve task111 rows and operator audit history.
++        existing = set(_columns(conn, "vin_spec_jobs"))
++        for name, declaration in {
++            "input_hash": "TEXT NOT NULL DEFAULT ''",
++            "generation": "INTEGER NOT NULL DEFAULT 0",
++            "claim_token": "TEXT",
++            "next_attempt_at": "TEXT",
++            "site_sync_attempts": "INTEGER NOT NULL DEFAULT 0",
++            "site_sync_next_at": "TEXT",
++            "site_sync_token": "TEXT",
++            "site_sync_started_at": "TEXT",
++        }.items():
++            if name not in existing:
++                conn.execute("ALTER TABLE vin_spec_jobs ADD COLUMN " + name + " " + declaration)
++        audit_columns = set(_columns(conn, "additional_specification_audit"))
++        if "spec_audit_json" not in audit_columns:
++            conn.execute("ALTER TABLE additional_specification_audit ADD COLUMN spec_audit_json TEXT NOT NULL DEFAULT '{}'")
++        meta_columns = set(_columns(conn, "additional_specification_meta"))
++        if "source_evidence_json" not in meta_columns:
++            conn.execute("ALTER TABLE additional_specification_meta ADD COLUMN source_evidence_json TEXT NOT NULL DEFAULT '{}'")
+         conn.commit()
+     try:
+         os.chmod(SPEC_DB, 0o600)
+-    except OSError:
+-        pass
++    except OSError as exc:
++        LOGGER.warning("Cannot restrict sidecar mode: %s", type(exc).__name__)
+ 
+ 
+ def _quoted(name: str) -> str:
+@@ -227,7 +257,7 @@
+     if not uid or not raw_vin:
+         return None
+     try:
+-        vin = source_policy.normalize_vin(raw_vin)
++        vin = normalize_identity(raw_vin)
+     except source_policy.SourcePolicyError:
+         return None
+     year = _pick(row, "year", "model_year", "god", "production_year")
+@@ -254,13 +284,27 @@
+ 
+ 
+ def read_cards() -> list[dict[str, Any]]:
++    import card_lifecycle
+     with connect_main() as conn:
+         if not _table_exists(conn, "cars"):
+             raise ServiceError("CARS_TABLE_MISSING")
+         rows = [dict(row) for row in conn.execute("SELECT rowid AS __rowid__, * FROM cars ORDER BY rowid")]
++        cards = []
++        for row in rows:
++            card = _card_from_row(row)
++            if card is None:
++                continue
++            try:
++                card_lifecycle.validate_publication_identity(conn, card["car_uid"],
++                    expected_card_id=card["car_id"], require_published=False)
++            except card_lifecycle.LifecycleError as exc:
++                # Preserve rows/facts for review, but never select one of
++                # duplicate or retired UIDs arbitrarily for either queue.
++                LOGGER.warning("Specification identity excluded: %s %s", card["car_uid"], str(exc))
++                continue
++            cards.append(card)
+         if conn.total_changes != 0:
+             raise ServiceError("MAIN_CRM_WRITE_GUARD")
+-    cards = [card for row in rows if (card := _card_from_row(row)) is not None]
+     return sorted(cards, key=lambda item: item["car_uid"])
+ 
+ 
+@@ -401,73 +445,120 @@
+     return {"facts": copied_facts, "meta": copied_meta}
+ 
+ 
++def normalize_identity(value: Any) -> str:
++    normalizer = getattr(source_policy, "normalize_identity", source_policy.normalize_vin)
++    return normalizer(value)
++
++
++def input_fingerprint(card: dict[str, Any]) -> str:
++    payload = {key: re.sub(r"\s+", " ", str(card.get(key) or "")).strip().casefold()
++               for key in IDENTITY_FIELDS}
++    return hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
++
++
++def _later(seconds: int) -> str:
++    return (dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=seconds)).replace(
++        microsecond=0).isoformat().replace("+00:00", "Z")
++
++
++def _record_state(key: str, value: Any) -> None:
++    with connect_spec(False) as conn:
++        conn.execute("INSERT OR REPLACE INTO vin_spec_state(key,value,updated_at) VALUES(?,?,?)",
++                     (key, json.dumps(value, ensure_ascii=False), utc_now()))
++
++
++def _block_identity_context(conn: sqlite3.Connection, card: dict[str, Any],
++                            row: sqlite3.Row, issues: list[str]) -> bool:
++    """Fence both queues while preserving fact values and all operator flags."""
++    detail = "IDENTITY_CONTEXT_REQUIRES_REVIEW:" + ",".join(issues)
++    fingerprint = input_fingerprint(card)
++    if (row["status"] == "NEEDS_REVIEW" and row["site_sync_status"] == "NEEDS_REVIEW"
++            and row["last_error"] == detail and row["input_hash"] == fingerprint):
++        return False
++    facts = [dict(item) for item in conn.execute("""SELECT a.*, m.is_manual, m.is_visible,
++        m.verification_status FROM additional_specification a JOIN additional_specification_meta m
++        ON a.car_uid=m.car_uid AND a.field_key=m.field_key WHERE a.car_uid=?""", (card["car_uid"],))]
++    conn.execute("""INSERT INTO additional_specification_audit
++        (car_uid,field_key,action,old_value,new_value,spec_audit_json) VALUES(?,?,?,?,?,?)""",
++        (card["car_uid"], "__identity__", "IDENTITY_CONTEXT_BLOCKED", row["status"], "NEEDS_REVIEW",
++         json.dumps({"issues": issues, "input_hash": fingerprint, "preserved_facts": facts,
++                     "fact_values_and_operator_flags_changed": False}, ensure_ascii=False)))
++    conn.execute("""UPDATE vin_spec_jobs SET status='NEEDS_REVIEW',site_sync_status='NEEDS_REVIEW',
++        last_error=?,site_sync_detail=?,input_hash=?,car_id=?,generation=generation+1,
++        claim_token=NULL,site_sync_token=NULL,next_attempt_at=NULL,site_sync_next_at=NULL,
++        started_at=NULL,site_sync_started_at=NULL,finished_at=? WHERE id=?""",
++        (detail, detail, fingerprint, card.get("car_id"), utc_now(), row["id"]))
++    return True
++
++
+ def enqueue_card(card: dict[str, Any], *, force: bool = False) -> bool:
+     uid = canonical_uid(card.get("car_uid"))
+-    vin = source_policy.normalize_vin(card.get("vin"))
++    vin = normalize_identity(card.get("vin"))
+     if not uid:
+         raise ServiceError("INVALID_CARD_UID")
+     ensure_schema()
+-    now = utc_now()
++    now, fingerprint = utc_now(), input_fingerprint(card)
++    issues = source_policy.identity_context_issues(card)
+     with connect_spec(False) as conn:
++        conn.execute("BEGIN IMMEDIATE")
+         prior = conn.execute(
+-            """SELECT vin FROM vin_spec_jobs WHERE car_uid=? AND vin<>?
+-               AND status<>'SUPERSEDED' ORDER BY id DESC LIMIT 1""",
+-            (uid, vin),
+-        ).fetchone()
++            "SELECT vin FROM vin_spec_jobs WHERE car_uid=? AND vin<>? AND status<>'SUPERSEDED' ORDER BY id DESC LIMIT 1",
++            (uid, vin)).fetchone()
++        row = conn.execute(
++            "SELECT * FROM vin_spec_jobs WHERE car_uid=? AND vin=? AND policy_version=?",
++            (uid, vin, source_policy.POLICY_VERSION)).fetchone()
++        if issues:
++            # An existing READY row and legacy visible/manual facts cannot
++            # bypass current identity validation. Keep every fact/flag intact.
++            if prior:
++                conn.execute("""UPDATE vin_spec_jobs SET status='SUPERSEDED',finished_at=?,claim_token=NULL,
++                    site_sync_token=NULL,site_sync_status='SUPERSEDED'
++                    WHERE car_uid=? AND vin<>? AND status<>'SUPERSEDED'""", (now, uid, vin))
++            if row is None:
++                conn.execute("""INSERT INTO vin_spec_jobs
++                    (car_id,car_uid,vin,policy_version,status,requested_at,input_hash,site_sync_status)
++                    VALUES(?,?,?,?,?,?,?,?)""", (card.get("car_id"), uid, vin,
++                    source_policy.POLICY_VERSION, "PENDING", now, fingerprint, "PENDING"))
++                row = conn.execute("SELECT * FROM vin_spec_jobs WHERE id=last_insert_rowid()").fetchone()
++            blocked = _block_identity_context(conn, card, row, issues)
++            conn.commit()
++            return blocked
++        changed = bool(row and row["input_hash"] and row["input_hash"] != fingerprint)
++        if prior or changed:
++            # Retain historical values for audit, but never show another VIN's
++            # or another significant vehicle context's facts as current facts.
++            conn.execute("""UPDATE additional_specification_meta SET is_visible=0,
++                verification_status='IDENTITY_CHANGED_REVIEW',updated_at=? WHERE car_uid=?""", (now, uid))
++            conn.execute("""INSERT INTO additional_specification_audit
++                (car_uid,field_key,action,old_value,new_value) VALUES(?,?,?,?,?)""",
++                (uid, "__identity__", "IDENTITY_SUPERSEDED",
++                 str(prior["vin"]) if prior else str(row["input_hash"]), fingerprint))
+         if prior:
+-            # A corrected/replaced VIN must never inherit facts from the old
+-            # vehicle.  Automated rows are removed; operator rows are hidden
+-            # and explicitly require review before they can be shown again.
+-            conn.execute(
+-                """DELETE FROM additional_specification WHERE car_uid=? AND field_key NOT IN
+-                   (SELECT field_key FROM additional_specification_meta
+-                    WHERE car_uid=? AND is_manual=1)""",
+-                (uid, uid),
+-            )
+-            conn.execute(
+-                """UPDATE additional_specification_meta SET is_visible=0,
+-                   verification_status='VIN_CHANGED_REVIEW',updated_at=?
+-                   WHERE car_uid=? AND is_manual=1""",
+-                (now, uid),
+-            )
+-            conn.execute(
+-                "UPDATE vin_spec_jobs SET status='SUPERSEDED',finished_at=? WHERE car_uid=? AND vin<>? AND status<>'SUPERSEDED'",
+-                (now, uid, vin),
+-            )
+-            conn.execute(
+-                """INSERT INTO additional_specification_audit
+-                   (car_uid,field_key,action,old_value,new_value)
+-                   VALUES(?,?,?,?,?)""",
+-                (uid, "__vin__", "VIN_SUPERSEDED", str(prior["vin"]), vin),
+-            )
+-        row = conn.execute(
+-            "SELECT id,status,attempts FROM vin_spec_jobs WHERE car_uid=? AND vin=? AND policy_version=?",
+-            (uid, vin, source_policy.POLICY_VERSION),
+-        ).fetchone()
++            conn.execute("""UPDATE vin_spec_jobs SET status='SUPERSEDED',finished_at=?,claim_token=NULL,
++                site_sync_token=NULL,site_sync_status='SUPERSEDED' WHERE car_uid=? AND vin<>? AND status<>'SUPERSEDED'""",
++                (now, uid, vin))
+         if row:
+-            if force:
+-                conn.execute(
+-                    """UPDATE vin_spec_jobs SET status='PENDING',attempts=0,last_error=NULL,
+-                       requested_at=?,started_at=NULL,finished_at=NULL,
+-                       site_sync_status='NOT_REQUIRED',site_sync_detail=NULL WHERE id=?""",
+-                    (now, int(row["id"])),
+-                )
+-                conn.commit()
+-                return True
+-            if row["status"] == "FAILED" and int(row["attempts"]) < MAX_ATTEMPTS:
+-                conn.execute(
+-                    "UPDATE vin_spec_jobs SET status='PENDING',requested_at=?,last_error=NULL WHERE id=?",
+-                    (now, int(row["id"])),
+-                )
++            # A pre-upgrade row is re-evaluated once. Force never steals an
++            # active unexpired claim; context changes invalidate it explicitly.
++            if force and row["status"] == "RUNNING" and not changed:
++                return False
++            reset = force or changed or not row["input_hash"] or row["status"] == "SUPERSEDED"
++            if reset:
++                conn.execute("""UPDATE vin_spec_jobs SET status='PENDING',attempts=0,last_error=NULL,
++                    input_hash=?,car_id=?,generation=generation+1,claim_token=NULL,next_attempt_at=NULL,
++                    facts_count=(SELECT COUNT(*) FROM additional_specification_meta WHERE car_uid=? AND is_visible=1),
++                    requested_at=?,started_at=NULL,finished_at=NULL,site_sync_status='PENDING',
++                    site_sync_detail=NULL,site_sync_attempts=0,site_sync_next_at=NULL,
++                    site_sync_token=NULL,site_sync_started_at=NULL WHERE id=?""",
++                    (fingerprint, card.get("car_id"), uid, now, int(row["id"])))
+                 conn.commit()
+                 return True
+             return False
+-        conn.execute(
+-            """INSERT INTO vin_spec_jobs
+-               (car_id,car_uid,vin,policy_version,status,requested_at)
+-               VALUES(?,?,?,?,?,?)""",
+-            (card.get("car_id"), uid, vin, source_policy.POLICY_VERSION, "PENDING", now),
+-        )
++        conn.execute("""INSERT INTO vin_spec_jobs
++            (car_id,car_uid,vin,policy_version,status,requested_at,input_hash,site_sync_status)
++            VALUES(?,?,?,?,?,?,?,?)""",
++            (card.get("car_id"), uid, vin, source_policy.POLICY_VERSION, "PENDING", now, fingerprint,
++             "PENDING" if card.get("published") else "NOT_REQUIRED"))
+         conn.commit()
+     return True
+ 
+@@ -486,7 +577,30 @@
+     queued = 0
+     for card in cards:
+         queued += int(enqueue_card(card))
+-    return {"valid_vins": len(cards), "queued": queued, "card_uids": [item["car_uid"] for item in cards]}
++    retired = _retire_absent_jobs(cards)
++    return {"valid_vins": len(cards), "queued": queued, "retired": retired,
++            "card_uids": [item["car_uid"] for item in cards]}
++
++
++def _retire_absent_jobs(cards: list[dict[str, Any]]) -> int:
++    """Invalidate both claims for removed/renamed identities; retain fact history.
++
++    This never deletes or creates a site page. A missing CRM identity is not a
++    request to regenerate it. Re-insertion is a new enqueue/generation decision.
++    """
++    current = {(card["car_uid"], card["vin"], card["car_id"]) for card in cards}
++    with connect_spec(False) as conn:
++        conn.execute("BEGIN IMMEDIATE")
++        stale_ids = [row["id"] for row in conn.execute("""SELECT id,car_uid,vin,car_id FROM vin_spec_jobs
++            WHERE policy_version=? AND (status<>'SUPERSEDED' OR site_sync_status<>'SUPERSEDED')""",
++            (source_policy.POLICY_VERSION,)) if (row["car_uid"], row["vin"], row["car_id"]) not in current]
++        for job_id in stale_ids:
++            conn.execute("""UPDATE vin_spec_jobs SET status='SUPERSEDED',site_sync_status='SUPERSEDED',
++                last_error='CRM_IDENTITY_REMOVED_OR_REPLACED',site_sync_detail='CRM_IDENTITY_REMOVED_OR_REPLACED',
++                claim_token=NULL,site_sync_token=NULL,started_at=NULL,site_sync_started_at=NULL,
++                next_attempt_at=NULL,site_sync_next_at=NULL,finished_at=? WHERE id=?""", (utc_now(), job_id))
++        conn.commit()
++    return len(stale_ids)
+ 
+ 
+ def requeue_all_current_vins() -> dict[str, Any]:
+@@ -509,46 +623,50 @@
+ 
+ 
+ def recover_interrupted_jobs(stale_after_seconds: int = STALE_JOB_SECONDS) -> int:
+-    """Return abandoned current-policy jobs to PENDING for an automatic retry."""
++    """Recover expired ownership without replenishing either retry budget."""
+     ensure_schema()
+-    seconds = max(0, int(stale_after_seconds))
+-    cutoff = (
+-        dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=seconds)
+-    ).replace(microsecond=0).isoformat().replace("+00:00", "Z")
++    cutoff = _later(-max(0, int(stale_after_seconds)))
+     with connect_spec(False) as conn:
+-        cursor = conn.execute(
+-            """UPDATE vin_spec_jobs
+-               SET status='PENDING',attempts=0,requested_at=?,started_at=NULL,finished_at=NULL,
+-                   last_error='INTERRUPTED_RETRY',site_sync_status='NOT_REQUIRED',
+-                   site_sync_detail=NULL
+-               WHERE policy_version=? AND status IN ('RUNNING','PROCESSING')
+-                 AND (started_at IS NULL OR started_at<=?)""",
+-            (utc_now(), source_policy.POLICY_VERSION, cutoff),
+-        )
++        conn.execute("BEGIN IMMEDIATE")
++        cursor = conn.execute("""UPDATE vin_spec_jobs SET
++            status=CASE WHEN attempts>=? THEN 'FAILED' ELSE 'PENDING' END,
++            claim_token=NULL,requested_at=?,started_at=NULL,finished_at=NULL,
++            last_error='INTERRUPTED_RETRY',next_attempt_at=?
++            WHERE policy_version=? AND status IN ('RUNNING','PROCESSING')
++            AND (started_at IS NULL OR started_at<=?)""",
++            (MAX_ATTEMPTS, utc_now(), _later(RETRY_SECONDS), source_policy.POLICY_VERSION, cutoff))
++        recovered = max(0, int(cursor.rowcount))
++        conn.execute("""UPDATE vin_spec_jobs SET site_sync_token=NULL,site_sync_started_at=NULL,
++            site_sync_status=CASE WHEN site_sync_attempts>=? THEN 'FAILED' ELSE 'PENDING' END,
++            site_sync_detail='INTERRUPTED_RETRY',site_sync_next_at=?
++            WHERE site_sync_status='RUNNING' AND (site_sync_started_at IS NULL OR site_sync_started_at<=?)""",
++            (MAX_SYNC_ATTEMPTS, _later(RETRY_SECONDS), cutoff))
+         conn.commit()
+-        return max(0, int(cursor.rowcount))
++        return recovered
+ 
+ 
+ def _claim() -> dict[str, Any] | None:
+     ensure_schema()
+     with connect_spec(False) as conn:
+         conn.execute("BEGIN IMMEDIATE")
+-        row = conn.execute(
+-            """SELECT * FROM vin_spec_jobs
+-               WHERE status='PENDING' AND attempts<? AND policy_version=?
+-               ORDER BY attempts,requested_at,id LIMIT 1""",
+-            (MAX_ATTEMPTS, source_policy.POLICY_VERSION),
+-        ).fetchone()
++        row = conn.execute("""SELECT * FROM vin_spec_jobs WHERE status='PENDING' AND attempts<?
++            AND policy_version=? AND (next_attempt_at IS NULL OR next_attempt_at<=?)
++            ORDER BY attempts,requested_at,id LIMIT 1""",
++            (MAX_ATTEMPTS, source_policy.POLICY_VERSION, utc_now())).fetchone()
+         if not row:
+-            conn.commit()
+             return None
+-        updated = conn.execute(
+-            """UPDATE vin_spec_jobs SET status='RUNNING',attempts=attempts+1,
+-               started_at=?,last_error=NULL WHERE id=? AND status='PENDING'""",
+-            (utc_now(), int(row["id"])),
+-        )
++        token = uuid.uuid4().hex
++        conn.execute("""UPDATE vin_spec_jobs SET status='RUNNING',attempts=attempts+1,
++            started_at=?,last_error=NULL,claim_token=? WHERE id=?""", (utc_now(), token, int(row["id"])))
++        claimed = dict(conn.execute("SELECT * FROM vin_spec_jobs WHERE id=?", (int(row["id"]),)).fetchone())
+         conn.commit()
+-        return dict(conn.execute("SELECT * FROM vin_spec_jobs WHERE id=?", (int(row["id"]),)).fetchone()) if updated.rowcount == 1 else None
++        return claimed
++
++
++def _owns(conn: sqlite3.Connection, job: dict[str, Any]) -> bool:
++    return conn.execute("""SELECT 1 FROM vin_spec_jobs WHERE id=? AND status='RUNNING'
++        AND claim_token=? AND input_hash=?""",
++        (job["id"], job.get("claim_token"), job.get("input_hash"))).fetchone() is not None
+ 
+ 
+ def _current_card(uid: str, vin: str) -> dict[str, Any] | None:
+@@ -558,10 +676,12 @@
+     return None
+ 
+ 
+-def _store_facts(uid: str, facts: Iterable[dict[str, Any]]) -> int:
++def _store_facts(uid: str, facts: Iterable[dict[str, Any]], *, job: dict[str, Any] | None = None) -> int:
+     written = 0
+     with connect_spec(False) as conn:
+         conn.execute("BEGIN IMMEDIATE")
++        if job is not None and not _owns(conn, job):
++            raise ServiceError("STALE_JOB_CLAIM")
+         for fact in facts:
+             key = str(fact.get("field_key") or "").strip()
+             try:
+@@ -593,6 +713,26 @@
+             ).fetchone()
+             if manual and int(manual[0] or 0) == 1:
+                 continue
++            before = conn.execute("""SELECT a.field_value,a.source,a.source_url,a.confidence,
++                m.label_ru,m.category,m.unit,m.source_domains_json,m.source_urls_json,m.source_evidence_json
++                FROM additional_specification a LEFT JOIN additional_specification_meta m
++                ON a.car_uid=m.car_uid AND a.field_key=m.field_key
++                WHERE a.car_uid=? AND a.field_key=?""", (uid, key)).fetchone()
++            if before is not None and before["field_value"] != value:
++                snapshot = {
++                    "before": dict(before),
++                    "after": {"field_value": value, "label_ru": label, "source": "AUTO_10SRC",
++                        "source_url": urls[0], "source_domains": domains, "source_urls": urls,
++                        "confidence": min(1.0, max(0.0, float(fact.get("confidence") or 0.0))),
++                        "evidence_origins": fact.get("evidence_origins") or [],
++                        "provenance": fact.get("provenance") or []},
++                    "policy_version": source_policy.POLICY_VERSION,
++                    "input_hash": job.get("input_hash") if job else None,
++                }
++                conn.execute("""INSERT INTO additional_specification_audit
++                    (car_uid,field_key,action,old_value,new_value,spec_audit_json)
++                    VALUES(?,?,?,?,?,?)""", (uid, key, "AUTO_REPLACED", before["field_value"], value,
++                        json.dumps(snapshot, ensure_ascii=False)))
+             conn.execute(
+                 """INSERT INTO additional_specification
+                    (car_uid,field_key,field_value,normalized_value,source,source_url,confidence,is_price_field)
+@@ -619,6 +759,8 @@
+                     source_urls_json=excluded.source_urls_json,
+                     verification_status=excluded.verification_status,
+                     model_match_score=excluded.model_match_score,
++                    is_visible=CASE WHEN additional_specification_meta.verification_status='IDENTITY_CHANGED_REVIEW'
++                        THEN 1 ELSE additional_specification_meta.is_visible END,
+                     updated_at=excluded.updated_at""",
+                 (
+                     uid, key, label, str(fact.get("category") or "additional"),
+@@ -627,82 +769,117 @@
+                     "VERIFIED_10SRC", float(fact.get("confidence") or 0.0), 0, 1, utc_now(),
+                 ),
+             )
++            conn.execute("""UPDATE additional_specification_meta SET source_evidence_json=?
++                WHERE car_uid=? AND field_key=?""",
++                (json.dumps({"evidence_origins": fact.get("evidence_origins") or [],
++                             "provenance": fact.get("provenance") or []}, ensure_ascii=False), uid, key))
+             written += 1
+         _hide_semantic_duplicates(conn, uid)
+         conn.commit()
+     return written
+ 
+ 
+-def _refresh_published(
+-    card: dict[str, Any],
+-    *,
+-    publisher: Callable[[str], Any] | None = None,
+-    sleeper: Callable[[float], Any] = time.sleep,
+-) -> tuple[str, str]:
++def _visible_facts(uid: str) -> list[dict[str, Any]]:
++    with connect_spec(True) as conn:
++        rows = [dict(row) for row in conn.execute("""SELECT a.*, m.label_ru, m.category, m.unit,
++            m.is_manual, m.is_visible, m.verification_status, m.source_domains_json, m.source_urls_json, m.source_evidence_json
++            FROM additional_specification a JOIN additional_specification_meta m
++            ON a.car_uid=m.car_uid AND a.field_key=m.field_key
++            WHERE a.car_uid=? AND a.is_price_field=0 AND m.is_visible=1
++            ORDER BY m.category,a.field_key""", (uid,))]
++    for row in rows:
++        row["display_value"] = row["field_value"]
++    return rows
++
++
++def _refresh_published(card: dict[str, Any], *, publisher: Callable[[str], Any] | None = None,
++                       sleeper: Callable[[float], Any] = time.sleep) -> tuple[str, str]:
++    """Compatibility helper; generic full-card publishing is never implicit."""
+     if not card.get("published"):
+         return "NOT_REQUIRED", "карточка ещё не опубликована"
+-    failures: list[str] = []
+-    for attempt in range(1, 4):
+-        try:
+-            if publisher is None:
+-                import publikaciya
+-                current_publisher = publikaciya.opublikovat
+-            else:
+-                current_publisher = publisher
+-            result = current_publisher(card["car_uid"])
+-            if isinstance(result, tuple):
+-                ok, detail = result[0], result[1] if len(result) > 1 else ""
+-            else:
+-                ok, detail = bool(result), str(result)
+-            if ok is True:
+-                return "PASS", ("attempt %d: " % attempt + str(detail))[:500]
+-            failures.append("attempt %d: %s" % (attempt, str(detail)[:140]))
+-        except Exception as exc:  # stored facts stay available for a later retry
+-            failures.append("attempt %d: %s:%s" % (attempt, type(exc).__name__, str(exc)[:120]))
+-        if attempt < 3:
+-            sleeper(attempt)
+-    return "FAIL", " | ".join(failures)[:500]
+-
+-
+-def _process_claimed(
+-    job: dict[str, Any],
+-    *,
+-    enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich,
+-) -> dict[str, Any]:
++    if publisher is None:
++        return "FAIL", "EXPLICIT_SPEC_RECONCILER_REQUIRED"
++    try:
++        result = publisher(card["car_uid"])
++        ok, detail = (result[0], result[1]) if isinstance(result, tuple) else (bool(result), str(result))
++        return ("PASS" if ok is True else "FAIL"), str(detail)[:500]
++    except Exception as exc:
++        return "FAIL", (type(exc).__name__ + ":" + str(exc))[:500]
++
++
++def _has_transient_source_error(value: Any) -> bool:
++    if isinstance(value, dict):
++        if value.get("status") in {"FAIL", "TIMEOUT", "RETRY", "FETCH_FAIL", "DISCOVERY_FAIL"}:
++            return True
++        return any(_has_transient_source_error(item) for item in value.values())
++    if isinstance(value, list):
++        return any(_has_transient_source_error(item) for item in value)
++    return False
++
++
++def _process_claimed(job: dict[str, Any], *,
++    enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich) -> dict[str, Any]:
+     uid, vin = str(job["car_uid"]), str(job["vin"])
+     try:
+         card = _current_card(uid, vin)
+-        if not card:
+-            raise ServiceError("CARD_OR_VIN_CHANGED")
++        if not card or input_fingerprint(card) != job["input_hash"]:
++            raise ServiceError("CARD_OR_CONTEXT_CHANGED")
++        issues = source_policy.identity_context_issues(card)
++        if issues:
++            enqueue_card(card)
++            return {"car_uid": uid, "status": "NEEDS_REVIEW", "written": 0,
++                    "site_sync": "NEEDS_REVIEW", "identity_context_issues": issues}
+         result = enricher(card)
+-        facts = list(result.get("facts") or [])
+-        written = _store_facts(uid, facts)
+-        status = "READY" if result.get("status") == "READY" and written >= 1 else "NEEDS_REVIEW"
+-        # A partial set may still contain individually verified facts (for
+-        # example, official vPIC identity details).  Publish those facts while
+-        # keeping NEEDS_REVIEW visible to the operator; never invent values to
+-        # make a card look complete.
+-        sync_status, sync_detail = _refresh_published(card) if written >= 1 else ("NOT_REQUIRED", "нет подтверждённых фактов")
++        current = _current_card(uid, vin)
++        if not current or input_fingerprint(current) != job["input_hash"]:
++            if current:
++                enqueue_card(current)
++            raise ServiceError("CARD_OR_CONTEXT_CHANGED")
++        written = _store_facts(uid, list(result.get("facts") or []), job=job)
++        retained = len(_visible_facts(uid))
++        sources = result.get("sources") or {}
++        transient = _has_transient_source_error(sources)
++        status = "READY" if result.get("status") == "READY" and retained else "NEEDS_REVIEW"
++        if transient and int(job["attempts"]) < MAX_ATTEMPTS:
++            status = "PENDING"
+         with connect_spec(False) as conn:
+-            conn.execute(
+-                """UPDATE vin_spec_jobs SET status=?,facts_count=?,source_status_json=?,
+-                   finished_at=?,site_sync_status=?,site_sync_detail=?,last_error=NULL WHERE id=?""",
+-                (
+-                    status, written, json.dumps(result.get("sources") or {}, ensure_ascii=False),
+-                    utc_now(), sync_status, sync_detail, int(job["id"]),
+-                ),
+-            )
++            conn.execute("BEGIN IMMEDIATE")
++            if not _owns(conn, job):
++                raise ServiceError("STALE_JOB_CLAIM")
++            conn.execute("""UPDATE vin_spec_jobs SET status=?,facts_count=?,source_status_json=?,
++                finished_at=?,claim_token=NULL,next_attempt_at=?,
++                site_sync_status=CASE WHEN site_sync_status='RUNNING' THEN site_sync_status
++                    WHEN site_sync_attempts>=3 THEN 'FAILED' ELSE ? END,
++                last_error=? WHERE id=?""",
++                (status, retained, json.dumps(sources, ensure_ascii=False), utc_now(),
++                 _later(RETRY_SECONDS * int(job["attempts"])) if status == "PENDING" else None,
++                 "PENDING" if current.get("published") else "NOT_REQUIRED",
++                 "SOURCE_RETRY_PENDING" if status == "PENDING" else (
++                     "SOURCE_ERRORS_EXHAUSTED" if transient else None), int(job["id"])))
+             conn.commit()
+-        return {"car_uid": uid, "status": status, "facts": written, "site_sync": sync_status}
++        return {"car_uid": uid, "status": status, "facts": retained, "written": written,
++                "site_sync": "PENDING" if current.get("published") else "NOT_REQUIRED"}
+     except Exception as exc:
+         final = "FAILED" if int(job.get("attempts") or 0) >= MAX_ATTEMPTS else "PENDING"
++        stale = isinstance(exc, ServiceError) and str(exc) in {"CARD_OR_CONTEXT_CHANGED", "STALE_JOB_CLAIM"}
+         with connect_spec(False) as conn:
+-            conn.execute(
+-                "UPDATE vin_spec_jobs SET status=?,last_error=?,finished_at=? WHERE id=?",
+-                (final, type(exc).__name__ + ":" + str(exc)[:500], utc_now(), int(job["id"])),
+-            )
+-            conn.commit()
+-        return {"car_uid": uid, "status": final, "error": type(exc).__name__}
++            conn.execute("BEGIN IMMEDIATE")
++            if _owns(conn, job):
++                if stale:
++                    final = "SUPERSEDED"
++                conn.execute("""UPDATE vin_spec_jobs SET status=?,last_error=?,finished_at=?,claim_token=NULL,
++                    next_attempt_at=?,
++                    site_sync_status=CASE WHEN ? THEN 'SUPERSEDED' ELSE site_sync_status END,
++                    site_sync_token=CASE WHEN ? THEN NULL ELSE site_sync_token END,
++                    site_sync_next_at=CASE WHEN ? THEN NULL ELSE site_sync_next_at END
++                    WHERE id=?""",
++                    (final, type(exc).__name__ + ":" + str(exc)[:500], utc_now(),
++                     None if stale else _later(RETRY_SECONDS * max(1, int(job.get("attempts") or 0))),
++                     stale, stale, stale, int(job["id"])))
++                conn.commit()
++            else:
++                final = "STALE_DISCARDED"
++        return {"car_uid": uid, "status": final, "error": type(exc).__name__ + ":" + str(exc)[:120]}
+ 
+ 
+ def process_one(*, enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich) -> dict[str, Any] | None:
+@@ -710,50 +887,156 @@
+     return _process_claimed(job, enricher=enricher) if job else None
+ 
+ 
+-def process_card_now(
+-    value: Any,
+-    *,
+-    enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich,
+-) -> dict[str, Any] | None:
+-    """Atomically reclaim one terminal current job for installer remediation.
+-
+-    Unlike retry_card(), this creates no observable PENDING window.  It is
+-    used only after the installer has observed that no worker still owns an
+-    active job, preventing a hot-reloaded worker from reclaiming the row with
+-    an older in-memory profile library.
++def reconcile_published_cards() -> int:
++    """Schedule read/repair verification periodically, without refetching sources.
++
++    Exhausted publication failures require an explicit retry or changed vehicle
++    context. Successful checks get a fresh bounded budget on the next interval.
+     """
+-    uid = canonical_uid(value)
+-    if not uid:
+-        return None
+-    card = next((item for item in read_cards() if item["car_uid"] == uid), None)
+-    if not card:
+-        return None
++    cards = read_cards()
++    _retire_absent_jobs(cards)
++    count = 0
++    with connect_spec(False) as conn:
++        conn.execute("BEGIN IMMEDIATE")
++        for card in cards:
++            issues = source_policy.identity_context_issues(card)
++            if issues:
++                row = conn.execute("SELECT * FROM vin_spec_jobs WHERE car_uid=? AND vin=? AND policy_version=?",
++                    (card["car_uid"], card["vin"], source_policy.POLICY_VERSION)).fetchone()
++                if row:
++                    _block_identity_context(conn, card, row, issues)
++                continue
++            if not card.get("published"):
++                conn.execute("""UPDATE vin_spec_jobs SET site_sync_status='NOT_REQUIRED',site_sync_token=NULL
++                    WHERE car_uid=? AND policy_version=? AND site_sync_status<>'NOT_REQUIRED'""",
++                    (card["car_uid"], source_policy.POLICY_VERSION))
++                continue
++            cursor = conn.execute("""UPDATE vin_spec_jobs SET site_sync_status='PENDING',
++                site_sync_attempts=0,site_sync_token=NULL WHERE car_uid=? AND vin=? AND input_hash=?
++                AND policy_version=? AND status NOT IN ('SUPERSEDED','RUNNING','PROCESSING')
++                AND site_sync_status IN ('PASS','UNCHANGED','NOT_REQUIRED')
++                AND (site_sync_next_at IS NULL OR site_sync_next_at<=?)""",
++                (card["car_uid"], card["vin"], input_fingerprint(card), source_policy.POLICY_VERSION, utc_now()))
++            count += max(0, cursor.rowcount)
++        conn.commit()
++    return count
++
++
++def recover_lifecycle_pending(*, guard=None) -> dict[str, Any]:
++    """Recover interrupted lifecycle transactions before any worker writes.
++
++    The preliminary archive lookup is read-only. No application guard import
++    occurs when no recovery is pending (including isolated unit fixtures).
++    Actual compensation is delegated to the reviewed lifecycle helper under
++    the existing shared reentrant publication lock and matching CRM database.
++    """
++    import card_lifecycle
++    with connect_main() as conn:
++        if not _table_exists(conn, card_lifecycle.ARCHIVE_TABLE):
++            return {"status": "PASS", "recovered": []}
++        pending = conn.execute("SELECT 1 FROM ua_spec_lifecycle_archive "
++            "WHERE state IN ('APPLIED','ROLLBACK_DB_DONE') LIMIT 1").fetchone()
++    if not pending:
++        return {"status": "PASS", "recovered": []}
++    if guard is None:
++        import publish_transaction_guard as guard
++    if pathlib.Path(guard.DB).resolve() != MAIN_DB.resolve():
++        raise ServiceError("LIFECYCLE_RECOVERY_CRM_DATABASE_MISMATCH")
++    if (getattr(guard, "LIFECYCLE_REENTRANT_LOCK", False) is not True or
++            pathlib.Path(guard.LOCK).resolve() != pathlib.Path(guard.ROOT).resolve()/".ua_art_publish_transaction.lock"):
++        raise ServiceError("LIFECYCLE_RECOVERY_SHARED_LOCK_MISMATCH")
++    result = card_lifecycle.recover_pending(guard=guard)
++    if result.get("status") != "PASS":
++        raise ServiceError("LIFECYCLE_RECOVERY_NOT_VERIFIED")
++    return result
++
++
++def sync_one(*, reconciler: Callable[[dict[str, Any], list[dict[str, Any]]], dict[str, Any]] | None = None,
++             lifecycle_guard=None) -> dict[str, Any] | None:
++    """Claim one durable publication attempt; the reconciler must verify output."""
++    recover_lifecycle_pending(guard=lifecycle_guard)
+     ensure_schema()
+     with connect_spec(False) as conn:
+         conn.execute("BEGIN IMMEDIATE")
+-        row = conn.execute(
+-            """SELECT * FROM vin_spec_jobs
+-               WHERE car_uid=? AND vin=? AND policy_version=?
+-                 AND status IN ('NEEDS_REVIEW','FAILED','READY')
+-               ORDER BY id DESC LIMIT 1""",
+-            (uid, card["vin"], source_policy.POLICY_VERSION),
+-        ).fetchone()
++        row = conn.execute("""SELECT * FROM vin_spec_jobs WHERE policy_version=?
++            AND site_sync_status='PENDING' AND site_sync_attempts<?
++            AND status NOT IN ('SUPERSEDED','RUNNING','PROCESSING')
++            AND (status<>'PENDING' OR EXISTS (SELECT 1 FROM additional_specification_meta m
++                WHERE m.car_uid=vin_spec_jobs.car_uid AND m.is_visible=1))
++            AND (site_sync_next_at IS NULL OR site_sync_next_at<=?)
++            ORDER BY COALESCE(site_sync_next_at,''),id LIMIT 1""",
++            (source_policy.POLICY_VERSION, MAX_SYNC_ATTEMPTS, utc_now())).fetchone()
+         if not row:
+-            conn.commit()
+             return None
+-        updated = conn.execute(
+-            """UPDATE vin_spec_jobs SET status='RUNNING',attempts=1,
+-               started_at=?,finished_at=NULL,last_error=NULL,
+-               site_sync_status='NOT_REQUIRED',site_sync_detail=NULL
+-               WHERE id=? AND status IN ('NEEDS_REVIEW','FAILED','READY')""",
+-            (utc_now(), int(row["id"])),
+-        )
+-        claimed = (
+-            dict(conn.execute("SELECT * FROM vin_spec_jobs WHERE id=?", (int(row["id"]),)).fetchone())
+-            if updated.rowcount == 1 else None
+-        )
++        job, token = dict(row), uuid.uuid4().hex
++        conn.execute("""UPDATE vin_spec_jobs SET site_sync_status='RUNNING',site_sync_token=?,
++            site_sync_started_at=?,site_sync_attempts=site_sync_attempts+1 WHERE id=?""",
++            (token, utc_now(), job["id"]))
+         conn.commit()
+-    return _process_claimed(claimed, enricher=enricher) if claimed else None
++    status, detail = "FAIL", "NOT_EXECUTED"
++    card = _current_card(job["car_uid"], job["vin"])
++    try:
++        if not card or input_fingerprint(card) != job["input_hash"]:
++            status, detail = "SUPERSEDED", "CARD_OR_CONTEXT_CHANGED"
++        elif source_policy.identity_context_issues(card):
++            enqueue_card(card)
++            return {"car_uid": job["car_uid"], "status": "NEEDS_REVIEW", "attempt": 0,
++                    "detail": "IDENTITY_CONTEXT_REQUIRES_REVIEW"}
++        elif not card.get("published"):
++            status, detail = "NOT_REQUIRED", "карточка ещё не опубликована"
++        else:
++            if reconciler is None:
++                from spec_publication import reconcile_published
++                reconciler = reconcile_published
++            result = reconciler(card, _visible_facts(job["car_uid"]))
++            status, detail = str(result.get("status") or "FAIL"), str(result.get("detail") or "")[:500]
++            if status not in {"PASS", "UNCHANGED", "FAIL", "NOT_REQUIRED"}:
++                status, detail = "FAIL", "INVALID_RECONCILER_RESULT"
++            latest = _current_card(job["car_uid"], job["vin"])
++            if not latest or input_fingerprint(latest) != job["input_hash"]:
++                status, detail = "SUPERSEDED", "CARD_OR_CONTEXT_CHANGED_DURING_SYNC"
++            elif not latest.get("published"):
++                status, detail = "NOT_REQUIRED", "CARD_UNPUBLISHED_DURING_SYNC"
++    except Exception as exc:
++        status, detail = "FAIL", (type(exc).__name__ + ":" + str(exc))[:500]
++    attempt = int(job.get("site_sync_attempts") or 0) + 1
++    durable_status = ("PENDING" if attempt < MAX_SYNC_ATTEMPTS else "FAILED") if status == "FAIL" else status
++    next_at = _later(RECONCILE_SECONDS if status in {"PASS", "UNCHANGED"} else RETRY_SECONDS * attempt)
++    with connect_spec(False) as conn:
++        cursor = conn.execute("""UPDATE vin_spec_jobs SET site_sync_status=?,site_sync_detail=?,
++            site_sync_next_at=?,site_sync_token=NULL,site_sync_started_at=NULL
++            WHERE id=? AND site_sync_token=? AND input_hash=?""",
++            (durable_status, detail, next_at, job["id"], token, job["input_hash"]))
++        if cursor.rowcount and status == "SUPERSEDED":
++            # Fence the collection half as well; an absent identity must not
++            # remain READY/PENDING while only publication is retired.
++            conn.execute("""UPDATE vin_spec_jobs SET status='SUPERSEDED',claim_token=NULL,
++                next_attempt_at=NULL,site_sync_next_at=NULL,finished_at=? WHERE id=?""",
++                (utc_now(), job["id"]))
++        conn.commit()
++    return {"car_uid": job["car_uid"], "status": durable_status if cursor.rowcount else "STALE_DISCARDED",
++            "attempt": attempt, "detail": detail}
++
++
++def process_card_now(value: Any, *, enricher: Callable[[dict[str, Any]], dict[str, Any]] = source_policy.enrich) -> dict[str, Any] | None:
++    """Explicit operator retry. It cannot take an active worker's claim."""
++    uid = canonical_uid(value)
++    card = next((item for item in read_cards() if item["car_uid"] == uid), None)
++    if not card or not enqueue_card(card, force=True):
++        return None
++    # Claim only this card atomically; do not accidentally process another row.
++    with connect_spec(False) as conn:
++        conn.execute("BEGIN IMMEDIATE")
++        row = conn.execute("""SELECT * FROM vin_spec_jobs WHERE car_uid=? AND vin=? AND policy_version=?
++            AND status='PENDING' AND input_hash=?""",
++            (uid, card["vin"], source_policy.POLICY_VERSION, input_fingerprint(card))).fetchone()
++        if not row:
++            return None
++        conn.execute("""UPDATE vin_spec_jobs SET status='RUNNING',attempts=attempts+1,started_at=?,claim_token=?
++            WHERE id=?""", (utc_now(), uuid.uuid4().hex, row["id"]))
++        job = dict(conn.execute("SELECT * FROM vin_spec_jobs WHERE id=?", (row["id"],)).fetchone())
++        conn.commit()
++    return _process_claimed(job, enricher=enricher)
+ 
+ 
+ def card_state(value: Any) -> dict[str, Any]:
+@@ -763,9 +1046,10 @@
+     with connect_spec(True) as conn:
+         row = conn.execute(
+             """SELECT status,facts_count,attempts,last_error,site_sync_status,site_sync_detail,
+-               requested_at,finished_at FROM vin_spec_jobs WHERE car_uid=?
++               requested_at,finished_at,next_attempt_at,site_sync_attempts,site_sync_next_at,input_hash
++               FROM vin_spec_jobs WHERE car_uid=? AND policy_version=? AND status<>'SUPERSEDED'
+                ORDER BY id DESC LIMIT 1""",
+-            (uid,),
++            (uid, source_policy.POLICY_VERSION),
+         ).fetchone()
+     return dict(row) if row else {"status": "NOT_QUEUED", "facts_count": 0, "site_sync_status": "NOT_REQUIRED"}
+ 
+@@ -789,29 +1073,77 @@
+     return result
+ 
+ 
++def worker_cycle(*, lifecycle_guard=None) -> dict[str, Any]:
++    """One measurable cycle; at most one enrichment or one publication job."""
++    ensure_schema()
++    _record_state("worker_heartbeat", {"status": "RUNNING", "at": utc_now()})
++    try:
++        lifecycle_recovery = recover_lifecycle_pending(guard=lifecycle_guard)
++        migrate_legacy_once()
++        recovered = recover_interrupted_jobs()
++        scan = scan_new_vins()
++        reconcile_published_cards()
++        # Alternate busy queues durably: old-card reconciliation must never
++        # starve newly created cards, including across worker restarts.
++        with connect_spec(True) as conn:
++            row = conn.execute("SELECT value FROM vin_spec_state WHERE key='worker_last_kind'").fetchone()
++        last_kind = json.loads(row[0]) if row else None
++        kinds = ("enrichment", "sync") if last_kind == "sync" else ("sync", "enrichment")
++        result, kind = None, None
++        for candidate in kinds:
++            result = process_one() if candidate == "enrichment" else sync_one()
++            if result is not None:
++                kind = candidate
++                _record_state("worker_last_kind", kind)
++                break
++        state = {"status": "OK", "at": utc_now(), "scan": scan, "recovered": recovered,
++                 "lifecycle_recovery": lifecycle_recovery,
++                 "job": result, "job_kind": kind}
++        _record_state("worker_heartbeat", state)
++        return state
++    except Exception as exc:
++        state = {"status": "ERROR", "at": utc_now(), "error": type(exc).__name__ + ":" + str(exc)[:500]}
++        LOGGER.exception("Specification worker cycle failed")
++        _record_state("worker_heartbeat", state)
++        return state
++
++
+ def _worker_loop() -> None:
+     while not _stop_event.is_set():
++        delay = SCAN_SECONDS
+         try:
+-            migrate_legacy_once()
+-            recover_interrupted_jobs()
+-            scan_new_vins()
+-            process_one()
++            result = worker_cycle()
++            # Drain a backlog promptly, but retain a stop-aware delay and do
++            # one claim per cycle. Empty/error/exhausted queues poll normally.
++            if result.get("status") == "OK" and result.get("job") is not None:
++                delay = BACKLOG_SECONDS
+         except Exception:
+-            # Deliberately fail the current cycle only; each job keeps its own
+-            # retry/error state and the CRM bot must remain available.
+-            pass
+-        _stop_event.wait(SCAN_SECONDS)
+-
+-
+-def start_worker() -> bool:
++            # A full/unavailable sidecar may prevent durable heartbeat writes.
++            # Keep the CRM alive, emit an error, and retry after the poll delay.
++            LOGGER.exception("Specification worker state unavailable")
++        _stop_event.wait(delay)
++
++
++def start_worker(*, lifecycle_guard=None) -> bool:
+     global _worker
+     with _worker_lock:
+         if _worker is not None and _worker.is_alive():
+             return False
+         _stop_event.clear()
+-        ensure_schema()
+-        migrate_legacy_once()
+-        recover_interrupted_jobs()
++        try:
++            ensure_schema()
++            _record_state("worker_heartbeat", {"status": "STARTING", "at": utc_now()})
++            recover_lifecycle_pending(guard=lifecycle_guard)
++            migrate_legacy_once()
++            recover_interrupted_jobs()
++        except Exception as exc:
++            LOGGER.exception("Specification worker startup failed")
++            try:
++                _record_state("worker_heartbeat", {"status": "ERROR", "phase": "STARTUP", "at": utc_now(),
++                    "error": type(exc).__name__ + ":" + str(exc)[:500]})
++            except Exception:
++                LOGGER.exception("Cannot persist specification startup error")
++            return False
+         _worker = threading.Thread(target=_worker_loop, name=WORKER_NAME, daemon=True)
+         _worker.start()
+         return True
+@@ -825,19 +1157,4 @@
+ 
+ 
+ if __name__ == "__main__":
+-    if MAIN_DB.is_file():
+-        print(json.dumps({"scan": scan_new_vins(), "processed": process_backlog()}, ensure_ascii=False, indent=2))
+-    else:
+-        assert canonical_uid("UA-5") == "UA-0005"
+-        assert source_policy.normalize_vin("WDDMH0BBXDV171918") == "WDDMH0BBXDV171918"
+-        calls: list[str] = []
+-        def transient_publisher(uid: str) -> tuple[bool, str]:
+-            calls.append(uid)
+-            return (len(calls) > 1, "transient" if len(calls) == 1 else "published")
+-        assert _refresh_published(
+-            {"car_uid": "UA-0005", "published": True},
+-            publisher=transient_publisher,
+-            sleeper=lambda _seconds: None,
+-        )[0] == "PASS"
+-        assert calls == ["UA-0005", "UA-0005"]
+-        print("UA111_VIN_SPEC_SERVICE_SELFTEST_PASS")
++    raise SystemExit("Import the service from the reviewed CRM integration; offline tests do not start it.")

@@ -1,0 +1,33 @@
+{
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "observed_at_utc": "2026-09-09T05:25:53.109901+00:00",
+  "status": "FAIL_BEFORE_TESTS",
+  "scope": "PYTHON310_ISOLATED_TEST_SUBGATE",
+  "overall_gate_b": "NOT_EVALUATED",
+  "python_version": "3.10.12",
+  "package_sha256": "e412be2bc3131b035753150a4ebea62b6369feeb2951b6af05e1c91a482941e7",
+  "package_files_excluding_manifest": 38,
+  "production_sources_before_verified": 7,
+  "tests_run": 0,
+  "failure_code": "OSError",
+  "failure_errno": 22,
+  "failure_phase": "candidate_compile",
+  "tested_candidate_output_scope": "fresh_private_owned_/tmp/ua-art-spec-gate-*",
+  "server_stage": "/home/Carix/spec_gate_b_restore_20260909",
+  "server_report": "run-20260909T052202544989Z/server-gate-result.json",
+  "server_console": "48109264",
+  "production_writes": 0,
+  "production_database_reads": 0,
+  "production_application_imports": false,
+  "source_network_checks": "NOT_RUN",
+  "live_crm_end_to_end": "NOT_RUN",
+  "observation_method": "Authorized PythonAnywhere console result and read-only rendered JSON editor",
+  "is_exact_report_copy": false,
+  "notes": [
+    "This is a summary of observed fields; the full original report remains in the server staging folder.",
+    "The first attempt also failed with errno 22 in the server home directory.",
+    "The isolated candidate compiler requires atomic directory RENAME_NOREPLACE; both tested server locations rejected the operation.",
+    "No server tests ran; the 169 PASS result belongs to local Python 3.12.14 only.",
+    "This does not establish that ordinary runtime file replacement is unsupported; that route remains untested."
+  ]
+}
