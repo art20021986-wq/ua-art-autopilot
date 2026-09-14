@@ -50,6 +50,8 @@ failure, even if that file exists on disk.
 The captured cards' inline `kadry` gallery lists explicitly bind every full-size
 photo as well as static thumbnails. Only the known literal JSON list of canonical
 gallery paths is accepted; malformed or dynamic declarations block the build.
+The observed diagnostic gallery's `diag/UA-NNNN/m/NN.jpg` literal paths follow
+the same checks; no other diagnostic directory or filename pattern is inferred.
 JavaScript is never evaluated and photo directories are never enumerated.
 Observed links to `info.html`, `podbor.html` and a published car's exact
 `UA-NNNN-diag.html` may be copied unchanged from the captured manifest or an

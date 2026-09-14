@@ -1,0 +1,57 @@
+{
+  "archive": "cloud/task088_v5_acceptance/resume_20260914/PR114_GALLERY_FIX_V2_EVIDENCE_20260914.zip",
+  "sha256": "30d18a9bd5d1094cd029fe3b71f33f24cb45226a699ae302679955c475dc6970",
+  "bytes": 13049,
+  "files": 10,
+  "binding": {
+    "kind": "PREVIEW_GALLERY_DIAGNOSTIC_LITERAL_FIX_V2",
+    "assembled_at_utc": "2026-09-14T16:34:46.040644+00:00",
+    "status": "SOFTWARE_CHECKS_PASS",
+    "source_sha256": {
+      "cloud/task088_v5_preview/build_preview.py": "ce6fb512f2b2c5dadb81c6412b1da28a43b8ba0d8b9d325f93c03833d9368cc9",
+      "cloud/task088_v5_preview/test_preview.py": "0cef5f63051d4619bc0942a8ffd6826be751250475273c8ae0af5ac110a930f3",
+      "cloud/task088_v5_preview/README.md": "a436ea47fa050ceccd45ce4ced6b821d4824ac7eaaa1e091b1b76d9a085b0498"
+    },
+    "tests": {
+      "public_preview_tests.txt": {
+        "status": "PASS",
+        "tests": 40,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      "private_preview_tests.txt": {
+        "status": "PASS",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      }
+    },
+    "actual_observation": {
+      "manifest_sha256": "7c5335f921487734c5af8a94df49d1ba04ba6f5bf97492d346ab619b7205fb28",
+      "html_files": 41,
+      "diagnostic_route": "/video/UA-0001-diag.html",
+      "literal_path": "diag/UA-0001/m/01.jpg"
+    },
+    "first_server_attempt": {
+      "status": "PREVIEW_REFRESH_INCOMPLETE",
+      "code": "EXPLICIT_LITERAL_GALLERY_REQUIRED",
+      "finished_at_utc": "2026-09-14T16:22:07.513371+00:00",
+      "preview_wsgi_changed": false
+    },
+    "integration_status": "PASS",
+    "unchanged_protected_html_and_harness": 40,
+    "unchanged_diagnostic_fixture_html": 1,
+    "unchanged_diagnostic_static_asset_pin": true,
+    "runner_review": {
+      "status": "PASS",
+      "only_v2_change": "BUILDER_SHA",
+      "runner_sha256": "cc94f3cd48af99ff7630c67ec344be380f812ca81d1f8ac3499ac4cd3846bb9c",
+      "kit_sha256": "17eafc534890651ef217e31fbe64aa7b41ae25a71480759172310fd50bfb75e5"
+    },
+    "preview_gate": "NOT_PASSED",
+    "v2_server_execution": "NOT_RUN",
+    "production_written": false
+  }
+}

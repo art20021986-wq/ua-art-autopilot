@@ -469,6 +469,11 @@ class BuilderBoundaryTest(unittest.TestCase):
                     var tek=0;function pokazat(i){tek=i;bol.src=kadry[tek];}</script>'''
                 self.assertEqual(References(source).references,{
                     'foto/UA-0015/001.jpg','foto/UA-0015/002.jpg','foto/UA-0015/m/002.jpg'})
+        # Hash-bound server HTML also has one diagnostic gallery whose literal
+        # photo is already referenced statically; it must not block the build.
+        diagnostic='''<img src="diag/UA-0001/m/01.jpg"><script>
+            var kadry=["diag/UA-0001/m/01.jpg"];var tek=0;</script>'''
+        self.assertEqual(References(diagnostic).references,{'diag/UA-0001/m/01.jpg'})
 
     def test_gallery_discovery_does_not_scan_unrelated_strings_or_nonexecutable_data(self):
         source='''<div data-example='var kadry=["foto/UA-0015/099.jpg"];'></div>
@@ -488,7 +493,12 @@ class BuilderBoundaryTest(unittest.TestCase):
             'var kadry=["foto/UA-0015/%2e%2e/private.jpg"];',
             'var kadry=["https://other.example/002.jpg"];',
             'var kadry=["/video/foto/UA-0015/002.jpg"];',
-            'var kadry=["foto/UA-0015/private.py"];'):
+            'var kadry=["foto/UA-0015/private.py"];',
+            'var kadry=["diag/UA-0001/01.jpg"];',
+            'var kadry=["diag/UA-0001/m/001.jpg"];',
+            'var kadry=["diag/UA-0001/m/../../private.jpg"];',
+            'var kadry=["diag/UA-0001/m/01.png"];',
+            'var kadry=["diag/UA-0001/m/private.py"];'):
             with self.subTest(body=body):
                 with self.assertRaisesRegex(ValueError,'EXPLICIT_LITERAL_GALLERY_REQUIRED'):
                     References('<script>'+body+'</script>')

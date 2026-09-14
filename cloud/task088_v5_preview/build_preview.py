@@ -75,7 +75,8 @@ def gallery_references(source):
     except ValueError as error:
         raise ValueError('EXPLICIT_LITERAL_GALLERY_REQUIRED') from error
     if (type(paths) is not list or not source[prefix.end()+end:].lstrip().startswith(';') or
-            any(type(path) is not str or re.fullmatch(r'foto/UA-[0-9]{4}/[0-9]{3}\.jpg',path) is None
+            any(type(path) is not str or re.fullmatch(
+                r'(?:foto/UA-[0-9]{4}/[0-9]{3}|diag/UA-[0-9]{4}/m/[0-9]{2})\.jpg',path) is None
                 for path in paths)):
         raise ValueError('EXPLICIT_LITERAL_GALLERY_REQUIRED')
     return paths

@@ -23,7 +23,7 @@ import zipfile
 PARENT = Path('/home/Carix/autopilot_inbox/cloud')
 STAGE = PARENT / 'task088-v5-preview-stage-zlcw0vma'
 OLD = STAGE / 'kyiv-preview-f3nbwi84'
-BUILDER_SHA = 'ce6fb512f2b2c5dadb81c6412b1da28a43b8ba0d8b9d325f93c03833d9368cc9'
+BUILDER_SHA = '0137d0077ef485679feea238b579b629f8c281542ca28a7277b769d5a7b8fa02'
 OLD_BUILDER_SHA = '9d9ae6caa4a33d3a717dee3f96c9d695b5977873edb5b3aa56fd891ee15f6ecc'
 PACKAGE_SHA = 'faf3c49aae147df9d4ed140b03da54c7c6b1f531b12fefa19169cad040f347bd'
 RENDERER_SHA = '35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed'
