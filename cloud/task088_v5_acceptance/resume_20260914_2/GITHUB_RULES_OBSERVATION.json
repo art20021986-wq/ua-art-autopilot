@@ -1,0 +1,39 @@
+{
+  "kind": "READ_ONLY_GITHUB_RULES_OBSERVATION_NOT_GATE",
+  "observed_at": "2026-09-14T17:56:25.363Z",
+  "head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
+  "main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "branch_api": {
+    "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/branches/main",
+    "protected": false,
+    "protection": {
+      "enabled": false,
+      "required_status_checks": {
+        "checks": [],
+        "contexts": [],
+        "enforcement_level": "off"
+      }
+    }
+  },
+  "rulesets_api": {
+    "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/rulesets?includes_parents=true",
+    "rulesets": []
+  },
+  "checks": [
+    {
+      "id": 104086345529,
+      "name": "Workers Builds: ua-art-seo-watch",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "3d46faaf39bfb66df69402ce3e497220c433b45b",
+      "completed_at": "2026-09-14T17:48:10Z"
+    }
+  ],
+  "actions": {
+    "head_sha": "3d46faaf39bfb66df69402ce3e497220c433b45b",
+    "total_count": 0,
+    "workflow_runs": []
+  },
+  "interpretation": "No GitHub-required status contexts or rulesets were observed. This does not waive project software/Preview/Gate B/backup/freshness/activation requirements or turn the historical watchdog failure into PASS.",
+  "production_write": false
+}
