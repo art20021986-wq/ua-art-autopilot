@@ -50,6 +50,7 @@ PRIVATE_TESTS = frozenset({
     "test_private_catalog_guard.py", "test_private_master_chain.py",
     "test_cars_ui_hook.py", "test_guard_fence.py",
     "test_private_preview_capture.py",
+    "test_private_stage_catalog_sync.py",
 })
 
 

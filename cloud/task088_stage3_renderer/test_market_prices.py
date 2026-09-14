@@ -29,6 +29,36 @@ class Parsed(HTMLParser):
 
 
 class MarketPricesTest(unittest.TestCase):
+    def test_kyiv_hides_entire_georgia_block_without_changing_stored_price(self):
+        for status in ("ua_arrived", "ua_customs", "ua_ready", "sold", "archive", " UA_ARRIVED "):
+            for compact in (False, True):
+                for georgia in (7800, None):
+                    with self.subTest(status=status, compact=compact, georgia=georgia):
+                        row = dict(auto_number="UA-0002", status=status, price_uah=8000, price_georgia=georgia)
+                        before = copy.deepcopy(row)
+                        fragment = render_market_prices(row, compact=compact, require_car_id=True)
+                        self.assertEqual(visible_lines(fragment), ["🇺🇦 Украина — 8 000 $"])
+                        self.assertEqual([m["data-ua-market"] for m in Parsed(fragment).markets], ["ukraine"])
+                        for caption in CAPTIONS["georgia"].values():
+                            self.assertNotIn(caption, fragment)
+                        self.assertNotIn('data-ua-field="price_georgia"', fragment)
+                        self.assertEqual(row, before)
+
+    def test_non_kyiv_and_stage_transitions_keep_independent_georgia_value(self):
+        row = dict(auto_number="UA-0002", price_uah=8000, price_georgia=7800)
+        for compact in (False, True):
+            for status in ("kr_bought", "sea_loaded", "sold_transit", "ge_waiting", None, "unknown"):
+                with self.subTest(status=status, compact=compact):
+                    row["status"] = status
+                    self.assertEqual(visible_lines(render_market_prices(row, compact=compact)), [
+                        "🇺🇦 Украина — 8 000 $", "🇬🇪 Грузия — 7 800 $"])
+            row["status"] = "ua_arrived"
+            row["price_georgia"] = 7900
+            self.assertEqual(visible_lines(render_market_prices(row, compact=compact)), ["🇺🇦 Украина — 8 000 $"])
+            row["status"] = "ge_waiting"
+            self.assertEqual(visible_lines(render_market_prices(row, compact=compact))[1], "🇬🇪 Грузия — 7 900 $")
+            row["price_georgia"] = 7800
+
     def test_two_independent_usd_prices_in_order(self):
         parsed = Parsed(render_market_prices({"price_uah": 12000, "price_georgia": 7800}))
         self.assertEqual([m["data-ua-market"] for m in parsed.markets], ["ukraine", "georgia"])

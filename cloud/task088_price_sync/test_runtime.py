@@ -109,6 +109,22 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.worker.tick(), "IDLE")
         self.assertEqual(self.notices(), [])
 
+    def test_legacy_worker_reads_kyiv_status_and_preserves_stored_ge(self):
+        with sqlite3.connect(self.db) as conn:
+            conn.execute('ALTER TABLE cars ADD COLUMN status TEXT')
+            conn.execute("UPDATE cars SET status='ua_arrived' WHERE id=1")
+        self.assertEqual(self.worker.tick(), 'PUBLISHED')
+        for surface in self.binding.resolve_surfaces('UA-0001'):
+            source = surface.path.read_text()
+            left, right = runtime.fragment_span(source, kind=surface.kind, code='UA-0001')
+            self.assertEqual(runtime._Prices(source[left:right]).values,
+                             [('ukraine', 'price_uah', '20000', 'USD')])
+            self.assertNotIn('🇬🇪', source[left:right])
+        with sqlite3.connect(self.db) as conn:
+            self.assertEqual(conn.execute('SELECT price_uah,price_georgia,status FROM cars WHERE id=1').fetchone(),
+                             (20000, 5000, 'ua_arrived'))
+        self.assertEqual(self.paths['UA-0002'].read_bytes(), self.initial[self.paths['UA-0002']])
+
     def test_foreign_publication_lock_prevents_even_claim(self):
         with self.worker.lock():
             self.assertEqual(runtime.Worker(self.binding).tick(), "BUSY")

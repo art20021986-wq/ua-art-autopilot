@@ -26,7 +26,8 @@ def package_mapping(repository):
     for name in ("uaart_price_sync_runtime.py", "uaart_price_sync_binding.py", "uaart_price_sync_confirmation.py",
                  "uaart_price_control_reader.py", "preflight.py", "install_package.py", "patch_cars_ui.py", "patch_guard.py"):
         mapping[name] = sync / name
-    for name in ("patch_yadro.py", "patch_stranica.py", "patch_catalog_design_guard.py", "initial_html_prices.py"):
+    for name in ("patch_yadro.py", "patch_stranica.py", "patch_catalog_design_guard.py",
+                 "patch_stage_catalog_sync.py", "initial_html_prices.py"):
         mapping[name] = renderer / name
     for name in ("owner_policy.py", "price_publication.py"):
         mapping[name] = policy / name

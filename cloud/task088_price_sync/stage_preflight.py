@@ -51,7 +51,7 @@ def main():
         mapping[name] = 'cloud/task088_price_sync/' + name
     mapping['uaart_price_sync_outbox.py'] = 'cloud/task088_price_sync/outbox.py'
     for name in ('uaart_market_prices.py', 'patch_yadro.py', 'patch_stranica.py',
-                 'patch_catalog_design_guard.py', 'initial_html_prices.py'):
+                 'patch_catalog_design_guard.py', 'patch_stage_catalog_sync.py', 'initial_html_prices.py'):
         mapping[name] = 'cloud/task088_stage3_renderer/' + name
     for name in ('owner_policy.py', 'price_publication.py'):
         mapping[name] = 'cloud/task088_autopilot_owner_policy/' + name

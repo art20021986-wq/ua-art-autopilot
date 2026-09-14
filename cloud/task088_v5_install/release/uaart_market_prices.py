@@ -28,6 +28,16 @@ CAPTIONS = {
 MISSING = {"ru": "Цена уточняется", "uk": "Ціна уточнюється", "ka": "ფასი ზუსტდება"}
 
 
+def georgia_price_visible(row):
+    """Kyiv cars show UA only; stored GE stays independent and untouched.
+
+    Match the inspected CRM stage resolver: ua_* and sold/archive are stage 4.
+    Missing/unknown status preserves the existing two-market presentation.
+    """
+    status = str(row.get("status") or "").strip().lower()
+    return not (status.startswith("ua_") or status in ("sold", "archive"))
+
+
 def normalized_usd(value):
     """Return an exact USD decimal string; no truncation, rounding, or FX conversion.
 
@@ -76,10 +86,11 @@ def _amount(canonical):
 
 
 def render_market_prices(row, compact=False, require_car_id=False):
-    """Return two vertically ordered price blocks from independent CRM fields.
+    """Return stage-appropriate price blocks from independent CRM fields.
 
     Only the returned fragment changes. No global CSS, scripts, links, selectors,
-    shared state, or data mutation. Empty Georgia stays visible with a placeholder.
+    shared state, or data mutation. GE is omitted for Kyiv cars; otherwise empty
+    Georgia stays visible with a placeholder. Both stored amounts are validated.
     """
     if not hasattr(row, "get") or type(compact) is not bool or type(require_car_id) is not bool:
         raise ValueError("PRICE_COMPONENT_INPUT_INVALID")
@@ -97,6 +108,8 @@ def render_market_prices(row, compact=False, require_car_id=False):
     out = [START, '<div class="ua-market-prices-v1" data-ua-price-version="%s" data-ua-car="%s" '
            'style="display:flex;flex-direction:column;gap:9px;min-width:0;max-width:100%%;overflow-wrap:anywhere">' % (VERSION, car_id)]
     for index, (market, field, value) in enumerate(prices):
+        if market == "georgia" and not georgia_price_visible(row):
+            continue
         border = "" if compact or index == 0 else "border-top:1px solid rgba(147,166,189,.35);padding-top:9px;"
         out.append('<div data-ua-market="%s" data-ua-field="%s" data-ua-value="%s" '
                    'data-ua-currency="USD" style="%smin-width:0">'

@@ -26,10 +26,11 @@ MODULES = {"uaart_market_prices.py", "uaart_price_sync_outbox.py", "uaart_price_
            "uaart_price_sync_binding.py", "owner_policy.py", "price_publication.py",
            "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py"}
 TOOLS = {"preflight.py", "install_package.py", "patch_cars_ui.py", "patch_yadro.py", "patch_stranica.py",
-         "patch_catalog_design_guard.py", "patch_guard.py", "initial_html_prices.py"}
-SOURCES = {"cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py", "publish_transaction_guard.py"}
+         "patch_catalog_design_guard.py", "patch_stage_catalog_sync.py", "patch_guard.py", "initial_html_prices.py"}
+SOURCES = {"cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py", "publish_transaction_guard.py",
+           "ua_stage_catalog_sync.py"}
 DEPENDENCIES = {"db.py", "cars_schema.py", "start_safe.py", "master_card.py", "publikaciya.py",
-                "ua_stage_catalog_sync.py", "catalog_design_golden.html", "team_bot.py"}
+                "catalog_design_golden.html", "team_bot.py"}
 MAX_FILE = 8 * 1024 * 1024
 
 
@@ -154,7 +155,8 @@ def run(output_id, expected_bundle_sha256, *, test_root=None, package_relative=P
                 "publish_transaction_guard.py": ("patch_guard", "patch_source", False),
                 "yadro.py": ("patch_yadro", "patch_yadro", True),
                 "stranica.py": ("patch_stranica", "patch_stranica", True),
-                "catalog_design_guard.py": ("patch_catalog_design_guard", "patch_catalog_design_guard", True)}
+                "catalog_design_guard.py": ("patch_catalog_design_guard", "patch_catalog_design_guard", True),
+                "ua_stage_catalog_sync.py": ("patch_stage_catalog_sync", "patch_stage_catalog_sync", True)}
             if set(bundle.get("source_sha256", {})) != SOURCES:
                 raise ValueError("EXACT_LIVE_SOURCE_PINS_REQUIRED")
             for name, (module_name, function_name, byte_api) in patches.items():

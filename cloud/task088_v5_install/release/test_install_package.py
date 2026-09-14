@@ -213,10 +213,19 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(self.db.execute("SELECT price_georgia FROM cars WHERE id=7").fetchone()[0], 9000)
 
     def test_unexpected_dependency_drift_blocks_install(self):
-        (self.root / "ua_stage_catalog_sync.py").write_bytes(b"unreviewed writer")
+        (self.root / "master_card.py").write_bytes(b"unreviewed writer")
         with self.assertRaisesRegex(I.InstallError, "DEPENDENCY_HASH"):
             self.call()
         self.assert_no_candidate_files()
+
+    def test_stage_process_source_is_pinned_and_not_overwritten_after_drift(self):
+        path = self.root / "ua_stage_catalog_sync.py"
+        self.assertIn(path.name, I.SOURCES)
+        path.write_bytes(b"unreviewed stage writer")
+        with self.assertRaisesRegex(I.InstallError, "INVENTORY_DRIFT|PREIMAGE_DRIFT"):
+            self.call()
+        self.assertEqual(path.read_bytes(), b"unreviewed stage writer")
+        self.assert_original_database()
 
     def test_missing_binding_bootstrap_blocks_install(self):
         self.files.pop("uaart_price_sync_binding.py")

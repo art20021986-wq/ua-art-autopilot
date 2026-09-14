@@ -91,6 +91,113 @@ class V5RuntimeTests(unittest.TestCase):
             row=conn.execute(f'SELECT payload_json FROM {O.V5_AUDIT} WHERE event_key=? AND fact=?',(key,fact)).fetchone()
             return json.loads(row[0]) if row else None
 
+    def _set_fixture_stage(self, status, car=1):
+        """Model an already completed, separate stage change before price input."""
+        with sqlite3.connect(self.db) as conn:
+            conn.execute('UPDATE cars SET status=? WHERE id=?', (status, car))
+        row = self.row(car)
+        for surface in self.surfaces(row['auto_number']):
+            if not surface.price_applicable:
+                continue
+            text = surface.path.read_text()
+            left, right = self.worker._span(text, surface, row['auto_number'])
+            fragment = prices.render_market_prices(row, compact=surface.kind != 'CARD', require_car_id=True)
+            surface.path.write_text(text[:left] + fragment + text[right:])
+
+    def test_kyiv_ua_and_ge_edits_preserve_hidden_ge_and_all_protected_data(self):
+        self._set_fixture_stage('ua_arrived')
+        protected = {surface.path: self.worker._protected_hash(surface.path.read_bytes(), surface, 'UA-0001')
+                     for surface in self.surfaces('UA-0001')}
+        untouched_car = self.cards[2].read_bytes()
+        initial = self.row()
+        first = self.submit(field='price_uah', value=24500)
+        self.worker.tick()
+        self.assertEqual(self.event(first['event_key'])['state'], 'COMPLETED')
+        self.assertEqual((self.row()['price_uah'], self.row()['price_georgia']), (24500, 8000))
+        after_ua = {surface.path: surface.path.read_bytes() for surface in self.surfaces('UA-0001')}
+        second = self.submit(value=18900)
+        self.worker.tick()
+        self.assertEqual(self.event(second['event_key'])['state'], 'COMPLETED')
+        self.assertEqual((self.row()['price_uah'], self.row()['price_georgia']), (24500, 18900))
+        self.assertEqual({k: v for k, v in self.row().items() if k not in ('price_uah', 'price_georgia', 'updated_at')},
+                         {k: v for k, v in initial.items() if k not in ('price_uah', 'price_georgia', 'updated_at')})
+        for surface in self.surfaces('UA-0001'):
+            self.assertEqual(surface.path.read_bytes(), after_ua[surface.path])
+            self.assertEqual(self.worker._protected_hash(surface.path.read_bytes(), surface, 'UA-0001'),
+                             protected[surface.path])
+            if surface.price_applicable:
+                text = surface.path.read_text()
+                left, right = self.worker._span(text, surface, 'UA-0001')
+                parsed = R._Prices(text[left:right])
+                self.assertEqual(parsed.values, [('ukraine', 'price_uah', '24500', 'USD')])
+                self.assertNotIn('🇬🇪', text[left:right])
+                self.assertNotIn('Рустави', text[left:right])
+        self.assertEqual(self.cards[2].read_bytes(), untouched_car)
+        self.assertEqual(self.audit(second['event_key'], 'DB_COMMITTED')['details']['after']['price_georgia'], 18900)
+        self.assertTrue(self.audit(second['event_key'], 'DB_READBACK')['details']['separate_connection'])
+        self.assertEqual(len(self.notices()), 2)
+
+    def test_kyiv_restart_uses_committed_stage_snapshot_without_reintroducing_ge(self):
+        self._set_fixture_stage('ua_arrived')
+        event = self.submit(field='price_uah', value=24500)
+        original = self.worker._commit_selected_price
+        def crash(*args):
+            original(*args)
+            raise Crash()
+        self.worker._commit_selected_price = crash
+        with self.assertRaises(Crash):
+            self.worker.process_operation(event['event_key'])
+        self.assertEqual(self.event(event['event_key'])['state'], 'DB_COMMITTED')
+        result = R.V5Worker(self.binding).tick()
+        completed = self.event(event['event_key'])
+        self.assertEqual(completed['state'], 'COMPLETED', result)
+        self.assertEqual(json.loads(completed['after_json'])['status'], 'ua_arrived')
+        for surface in self.surfaces('UA-0001'):
+            if surface.price_applicable:
+                source = surface.path.read_text()
+                left, right = self.worker._span(source, surface, 'UA-0001')
+                self.assertEqual([v[0] for v in R._Prices(source[left:right]).values], ['ukraine'])
+        self.assertEqual(self.row()['price_georgia'], 8000)
+
+    def test_kyiv_and_georgia_concurrent_price_operations_keep_distinct_market_visibility(self):
+        self._set_fixture_stage('ua_arrived', car=1)
+        self._set_fixture_stage('ge_to_kyiv', car=2)
+        one = self.submit(field='price_uah', value=24500, car=1)
+        two = self.submit(value=7500, car=2)
+        self.worker.tick()
+        self.assertEqual([self.event(e['event_key'])['state'] for e in (one, two)], ['COMPLETED'] * 2)
+        catalog = self.catalog.read_text()
+        for car, expected in ((1, ['ukraine']), (2, ['ukraine', 'georgia'])):
+            code = f'UA-{car:04d}'
+            left, right = R.fragment_span(catalog, kind='CATALOG', code=code)
+            self.assertEqual([v[0] for v in R._Prices(catalog[left:right]).values], expected)
+        self.assertEqual(self.row(1)['price_georgia'], 8000)
+        self.assertEqual(self.row(2)['price_uah'], 9000)
+
+    def test_kyiv_snapshot_mismatch_or_public_ge_cannot_pass_semantic_verification(self):
+        self._set_fixture_stage('ua_arrived')
+        event = self.submit(field='price_uah', value=24500)
+        self.worker.tick()
+        event = self.event(event['event_key'])
+        source = self.cards[1].read_text()
+        left, right = R.fragment_span(source, kind='CARD', code='UA-0001')
+        R.semantic_fragment(source[left:right], 'UA-0001', event)
+        wrong = prices.render_market_prices(dict(self.row(), status='ge_waiting'), require_car_id=True)
+        with self.assertRaisesRegex(R.SyncError, 'PRICE_SEMANTICS_MISMATCH'):
+            R.semantic_fragment(wrong, 'UA-0001', event)
+        for mutation in ({'auto_number': 'UA-0099'}, {'id': 2}, {'vin': 'WRONG'}, {'price_georgia': None}):
+            altered = dict(event, after_json=json.dumps(dict(json.loads(event['after_json']), **mutation)))
+            with self.assertRaisesRegex(R.SyncError, 'V5_RENDER_DB_SNAPSHOT_MISMATCH'):
+                self.worker._desired(altered, self.surfaces('UA-0001')[0])
+        snapshot = json.loads(event['after_json']); del snapshot['status']
+        with self.assertRaisesRegex(R.SyncError, 'V5_RENDER_DB_SNAPSHOT_MISMATCH'):
+            self.worker._desired(dict(event, after_json=json.dumps(snapshot)), self.surfaces('UA-0001')[0])
+        with self.assertRaisesRegex(R.SyncError, 'V5_RENDER_DB_SNAPSHOT_REQUIRED'):
+            self.worker._desired(dict(event, after_json=None), self.surfaces('UA-0001')[0])
+        missing_snapshot = dict(event); del missing_snapshot['after_json']
+        with self.assertRaisesRegex(R.SyncError, 'V5_RENDER_DB_SNAPSHOT_REQUIRED'):
+            self.worker._desired(missing_snapshot, self.surfaces('UA-0001')[0])
+
     def test_four_conscious_changes_fully_complete_fifo_and_preserve_ua(self):
         values=[18000,18500,18300,18900]
         events=[self.submit(value=v) for v in values]

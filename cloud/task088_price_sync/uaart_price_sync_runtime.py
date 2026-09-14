@@ -28,7 +28,7 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 import uaart_price_sync_outbox as outbox
-from uaart_market_prices import START, END, normalized_usd, render_market_prices
+from uaart_market_prices import START, END, normalized_usd, render_market_prices, georgia_price_visible
 from owner_policy import Identity
 from price_publication import PriceVersion, Readback, publication_decision
 
@@ -139,12 +139,38 @@ class _Prices(HTMLParser):
                                      ("data-ua-market", "data-ua-field", "data-ua-value", "data-ua-currency")))
 
 
+def _event_price_row(code, event):
+    """Use the committed car snapshot, including stage, for public visibility.
+
+    V5 snapshots are already backed by the DB read-back and immutable commit
+    audit. Do not discard their status or replace it with a display preference.
+    The legacy worker binds status from its locked current CRM row instead.
+    """
+    if 'car_code' in event or 'after_json' in event:
+        try:
+            row = json.loads(event.get('after_json'))
+        except (TypeError, ValueError) as error:
+            raise SyncError('V5_RENDER_DB_SNAPSHOT_REQUIRED') from error
+        required = {'id', 'auto_number', 'vin', 'status', 'price_uah', 'price_georgia'}
+        if (type(row) is not dict or not required <= row.keys()
+                or row['auto_number'] != code or row['id'] != event.get('car_id')
+                or row['vin'] != event.get('vin')
+                or (canonical(row['price_uah']), canonical(row['price_georgia'], georgia=True)) !=
+                   (event['ukraine_usd'], event['georgia_usd'])):
+            raise SyncError('V5_RENDER_DB_SNAPSHOT_MISMATCH')
+        return row
+    return dict(auto_number=code, price_uah=event['ukraine_usd'],
+                price_georgia=event['georgia_usd'], status=event.get('status'))
+
+
 def semantic_fragment(fragment: str, code: str, event) -> None:
     parsed = _Prices(fragment)
     if parsed.codes != [code]:
         raise SyncError("PRICE_CAR_IDENTITY_MISMATCH")
-    expected = [("ukraine", "price_uah", normalized_usd(event["ukraine_usd"]), "USD"),
-                ("georgia", "price_georgia", normalized_usd(event["georgia_usd"]), "USD")]
+    row = _event_price_row(code, event)
+    expected = [("ukraine", "price_uah", normalized_usd(row['price_uah']), "USD")]
+    if georgia_price_visible(row):
+        expected.append(("georgia", "price_georgia", normalized_usd(row['price_georgia']), "USD"))
     if parsed.values != expected:
         raise SyncError("PRICE_SEMANTICS_MISMATCH")
 
@@ -155,8 +181,8 @@ def replace_price(source: bytes, *, kind: str, code: str, event) -> bytes:
     old = _Prices(text[begin:end])
     if old.codes != [code]:
         raise SyncError("EXISTING_PRICE_CAR_IDENTITY_MISMATCH")
-    fragment = render_market_prices(dict(auto_number=code, price_uah=event["ukraine_usd"],
-                                        price_georgia=event["georgia_usd"]), compact=kind == "CATALOG", require_car_id=True)
+    fragment = render_market_prices(_event_price_row(code, event),
+                                    compact=kind == "CATALOG", require_car_id=True)
     semantic_fragment(fragment, code, event)
     candidate = (text[:begin] + fragment + text[end:]).encode("utf-8")
     check = candidate.decode("utf-8")
@@ -444,7 +470,7 @@ class Worker:
             self._notice(conn, key, "FAILURE", "INTERRUPTED_REQUIRES_RECONCILIATION")
 
     def _row(self, conn, event):
-        cursor = conn.execute("SELECT id,auto_number,published,price_uah,price_georgia FROM cars WHERE id=?", (event["car_id"],))
+        cursor = conn.execute("SELECT * FROM cars WHERE id=?", (event["car_id"],))
         result = cursor.fetchone()
         if result is None:
             raise SyncError("CRM_CAR_MISSING")
@@ -553,6 +579,7 @@ class Worker:
             conn.execute("BEGIN IMMEDIATE")
             event = outbox.require_current_claim(conn, event_key=event["event_key"], nonce=event["claim_nonce"])
             row = self._row(conn, event)
+            event = dict(event, status=row.get('status'))
             code = row["auto_number"]
             surfaces = self._surfaces(code)
             authority = self._authority(event, surfaces)
@@ -723,7 +750,7 @@ class Worker:
                         return event
                 if event is None or event["state"] not in ("STOPPED", "CLAIMED"):
                     raise SyncError("UNCERTAIN_ATTEMPT_REQUIRED_FOR_RECOVERY")
-                cursor = conn.execute("SELECT id,auto_number,published,price_uah,price_georgia FROM cars WHERE id=?", (event["car_id"],))
+                cursor = conn.execute("SELECT * FROM cars WHERE id=?", (event["car_id"],))
                 values = cursor.fetchone()
                 if values is None:
                     raise SyncError("CRM_CAR_MISSING")
@@ -735,7 +762,8 @@ class Worker:
                 surfaces = self._surfaces(code)
                 authority = self._authority(event, surfaces)
                 latest = conn.execute(f"SELECT MAX(revision) FROM {outbox.TABLE} WHERE car_id=?", (event["car_id"],)).fetchone()[0]
-                current = dict(ukraine_usd=canonical(row["price_uah"]), georgia_usd=canonical(row["price_georgia"], georgia=True))
+                current = dict(ukraine_usd=canonical(row["price_uah"]),
+                               georgia_usd=canonical(row["price_georgia"], georgia=True), status=row.get('status'))
                 journal = self.binding.journal_root / event_key
                 manifest = json.loads(_safe_bytes(journal / "journal.json"))
                 if (manifest.get("event_key"), manifest.get("claim_nonce")) != (event_key, event["claim_nonce"]):
@@ -766,8 +794,7 @@ class Worker:
                         semantic_fragment(source[begin:end], code, current)
                     except SyncError:
                         prices_match = False
-                    expected_fragment = render_market_prices(dict(auto_number=code, price_uah=current["ukraine_usd"],
-                                                                   price_georgia=current["georgia_usd"]),
+                    expected_fragment = render_market_prices(_event_price_row(code, current),
                                                              compact=surface.kind == "CATALOG", require_car_id=True)
                     prices_match &= source[begin:end] == expected_fragment
                     prior_source = before_files[str(surface.path)].decode("utf-8")
@@ -808,8 +835,9 @@ class Worker:
                 if evidence.outcome == "PUBLISHED":
                     if not non_price_preserved:
                         raise SyncError("RECOVERY_NON_PRICE_CONTENT_CHANGED")
-                    if not prices_match or latest != event["revision"] or current != {
-                            "ukraine_usd": event["ukraine_usd"], "georgia_usd": event["georgia_usd"]}:
+                    if (not prices_match or latest != event["revision"]
+                            or (current['ukraine_usd'], current['georgia_usd']) !=
+                               (event['ukraine_usd'], event['georgia_usd'])):
                         raise SyncError("RECOVERY_CURRENT_PRICE_IDENTITY_MISMATCH")
                     if evidence.publication_receipt_sha256 != digest(observation_receipt):
                         raise SyncError("RECOVERY_PUBLICATION_RECEIPT_HASH_MISMATCH")
@@ -1127,8 +1155,7 @@ class V5Worker(Worker):
 
     @staticmethod
     def _desired(event, surface):
-        return render_market_prices(dict(auto_number=event['car_code'],
-                                         price_uah=event['ukraine_usd'], price_georgia=event['georgia_usd']),
+        return render_market_prices(_event_price_row(event['car_code'], event),
                                     compact=surface.kind != 'CARD', require_car_id=True)
 
     def _proof(self, event, surfaces):

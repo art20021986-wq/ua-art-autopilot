@@ -28,8 +28,8 @@ MODULES = frozenset({"uaart_market_prices.py", "uaart_price_sync_outbox.py",
     "uaart_price_sync_runtime.py", "uaart_price_sync_binding.py", "owner_policy.py",
     "price_publication.py", "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py"})
 SOURCES = frozenset({"cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py",
-                     "publish_transaction_guard.py"})
-DEPENDENCIES = frozenset({"db.py", "cars_schema.py", "start_safe.py", "ua_stage_catalog_sync.py",
+                     "publish_transaction_guard.py", "ua_stage_catalog_sync.py"})
+DEPENDENCIES = frozenset({"db.py", "cars_schema.py", "start_safe.py",
                          "master_card.py", "publikaciya.py", "team_bot.py",
                          "catalog_design_golden.html"})
 EVIDENCE_NAMES = ("request", "claim", "transaction", "gate_b", "stage2", "quota", "writers", "manifest", "owner_approval", "preview_gate")
@@ -277,6 +277,7 @@ def build_candidates(source_files, html_files, rows, modules, *, homepage_policy
     from patch_yadro import patch_yadro
     from patch_stranica import patch_stranica
     from patch_catalog_design_guard import patch_catalog_design_guard
+    from patch_stage_catalog_sync import patch_stage_catalog_sync
     from patch_guard import patch_source as patch_guard
     from initial_html_prices import migrate_card, migrate_catalog, migrate_home
     if set(source_files) != SOURCES or set(modules) != MODULES:
@@ -284,7 +285,8 @@ def build_candidates(source_files, html_files, rows, modules, *, homepage_policy
     result = {"cars_ui.py": patch_source(source_files["cars_ui.py"].decode()).encode()}
     result["publish_transaction_guard.py"] = patch_guard(source_files["publish_transaction_guard.py"].decode()).encode()
     for name, patcher in (("yadro.py", patch_yadro), ("stranica.py", patch_stranica),
-                          ("catalog_design_guard.py", patch_catalog_design_guard)):
+                          ("catalog_design_guard.py", patch_catalog_design_guard),
+                          ("ua_stage_catalog_sync.py", patch_stage_catalog_sync)):
         result[name] = patcher(source_files[name])[0]
     result.update(modules)
     by_code = {row["auto_number"]: row for row in rows if row["published"] == 1}
