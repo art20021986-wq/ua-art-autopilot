@@ -31,11 +31,15 @@ class References(HTMLParser):
         self.references = set()
         self.links = set()
         self.in_style = False
+        self.in_script = False
         self.feed(source)
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == 'a' and attrs.get('href'): self.links.add(attrs['href'])
         if tag == 'style': self.in_style = True
+        if tag == 'script':
+            self.in_script = (not attrs.get('src') and
+                attrs.get('type','').strip().lower() in ('','text/javascript','application/javascript','module'))
         if attrs.get('style'): self.references.update(css_references(attrs['style']))
         if tag in ('script','img','source','video','audio'):
             for key in ('src','poster'):
@@ -46,8 +50,35 @@ class References(HTMLParser):
             self.references.add(attrs['href'])
     def handle_endtag(self, tag):
         if tag == 'style': self.in_style = False
+        if tag == 'script': self.in_script = False
     def handle_data(self, data):
         if self.in_style: self.references.update(css_references(data))
+        if self.in_script: self.references.update(gallery_references(data))
+
+
+def gallery_references(source):
+    """Read the captured gallery's literal list, without evaluating JavaScript.
+
+    Full-size photos appear only in this list, not in thumbnail img attributes.
+    An unrecognized declaration blocks the build instead of silently producing
+    an incomplete asset manifest. Every returned path still passes the normal
+    per-file canonical path, public-root, size and SHA256 checks below.
+    """
+    declarations = list(re.finditer(r'\b(?:var|let|const)\s+kadry\b',source))
+    if not declarations:
+        return []
+    prefix = re.match(r'\s*(?:var|let|const)\s+kadry\s*=\s*',source)
+    if len(declarations) != 1 or prefix is None:
+        raise ValueError('EXPLICIT_LITERAL_GALLERY_REQUIRED')
+    try:
+        paths, end = json.JSONDecoder().raw_decode(source[prefix.end():])
+    except ValueError as error:
+        raise ValueError('EXPLICIT_LITERAL_GALLERY_REQUIRED') from error
+    if (type(paths) is not list or not source[prefix.end()+end:].lstrip().startswith(';') or
+            any(type(path) is not str or re.fullmatch(r'foto/UA-[0-9]{4}/[0-9]{3}\.jpg',path) is None
+                for path in paths)):
+        raise ValueError('EXPLICIT_LITERAL_GALLERY_REQUIRED')
+    return paths
 
 
 def css_references(source):

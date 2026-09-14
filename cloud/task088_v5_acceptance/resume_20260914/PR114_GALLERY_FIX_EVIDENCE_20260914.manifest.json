@@ -1,0 +1,38 @@
+{
+  "archive": "cloud/task088_v5_acceptance/resume_20260914/PR114_GALLERY_FIX_EVIDENCE_20260914.zip",
+  "bytes": 14007,
+  "sha256": "0b048d204cdb04ad66b9c2ad71a592732418f4b1449a24b7e0fdf1230b0e781e",
+  "evidence_files": 9,
+  "binding": {
+    "kind": "PREVIEW_GALLERY_SOFTWARE_FIX_EVIDENCE",
+    "assembled_at_utc": "2026-09-14T16:12:57.753740+00:00",
+    "status": "SOFTWARE_CHECKS_PASS",
+    "source_sha256": {
+      "cloud/task088_v5_preview/build_preview.py": "0137d0077ef485679feea238b579b629f8c281542ca28a7277b769d5a7b8fa02",
+      "cloud/task088_v5_preview/test_preview.py": "7fc3d8dc57d3307e79aa025ab1b0851be04c43b4b5ebeb87d4db1b90dc5e2cae",
+      "cloud/task088_v5_preview/README.md": "f9e9f7cfba7ec82e3327e6085b8df8c731b362e650fc5cda71489db7a033d544"
+    },
+    "tests": {
+      "public_preview_tests.txt": {
+        "count": 40,
+        "status": "PASS",
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "private_preview_tests.txt": {
+        "count": 6,
+        "status": "PASS",
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "integration_status": "PASS",
+    "unchanged_protected_html_and_harness": 40,
+    "preview_gate": "NOT_PASSED",
+    "browser_acceptance": "REQUIRES_SERVER_REBUILD_AND_RETEST",
+    "production_written": false,
+    "source_scope": "Only build_preview.py runtime code; test_preview.py and README accompany it. No further runtime edits after frozen builder SHA."
+  }
+}

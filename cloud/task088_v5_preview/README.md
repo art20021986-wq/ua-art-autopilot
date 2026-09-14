@@ -47,6 +47,10 @@ HTML routes cannot be added through asset roots. The legacy optional site-root
 argument does not make `/site/` an HTTP surface: current routing proves it is
 unserved. A `/site/` dependency referenced by a served page remains an explicit
 failure, even if that file exists on disk.
+The captured cards' inline `kadry` gallery lists explicitly bind every full-size
+photo as well as static thumbnails. Only the known literal JSON list of canonical
+gallery paths is accepted; malformed or dynamic declarations block the build.
+JavaScript is never evaluated and photo directories are never enumerated.
 Observed links to `info.html`, `podbor.html` and a published car's exact
 `UA-NNNN-diag.html` may be copied unchanged from the captured manifest or an
 explicit root. Each gets a source binding and byte-equality evidence, and is

@@ -458,6 +458,41 @@ class BuilderBoundaryTest(unittest.TestCase):
         self.assertEqual(refs.links,{'info.html','UA-0017-diag.html'})
         self.assertEqual(refs.references,{'photo.jpg'})
 
+    def test_gallery_full_size_photos_are_discovered_beyond_static_thumbnails(self):
+        # The observed UA-0015 failure: the hero was listed independently, but
+        # navigating to photo 2 requested a full-size file absent from img src.
+        for declaration in ('var', 'let', 'const'):
+            with self.subTest(declaration=declaration):
+                source='''<img src="foto/UA-0015/001.jpg">
+                    <img src="foto/UA-0015/m/002.jpg"><div id="lupa"><img id="bolshoe" src=""></div>
+                    <script>''' + declaration + ''' kadry=["foto/UA-0015/001.jpg", "foto/UA-0015/002.jpg"];
+                    var tek=0;function pokazat(i){tek=i;bol.src=kadry[tek];}</script>'''
+                self.assertEqual(References(source).references,{
+                    'foto/UA-0015/001.jpg','foto/UA-0015/002.jpg','foto/UA-0015/m/002.jpg'})
+
+    def test_gallery_discovery_does_not_scan_unrelated_strings_or_nonexecutable_data(self):
+        source='''<div data-example='var kadry=["foto/UA-0015/099.jpg"];'></div>
+            <script>var other=["foto/UA-0015/098.jpg"];</script>
+            <script type="application/json">var kadry=["foto/UA-0015/097.jpg"];</script>
+            <script src="gallery.js">var kadry=["foto/UA-0015/096.jpg"];</script>'''
+        self.assertEqual(References(source).references,{'gallery.js'})
+
+    def test_malformed_or_dynamic_gallery_declarations_fail_closed(self):
+        for body in (
+            'var kadry;', 'var kadry=loadPhotos();', 'var kadry=["foto/UA-0015/002.jpg",];',
+            'var kadry=["foto/UA-0015/002.jpg"] + extra;', 'var kadry=["foto/UA-0015/002.jpg"]',
+            'var kadry={"0":"foto/UA-0015/002.jpg"};', 'var kadry=[false];',
+            'var kadry=["foto/UA-0015/002.jpg"];let kadry=[];',
+            'var before=1;var kadry=["foto/UA-0015/002.jpg"];',
+            'var kadry=["foto/UA-0015/../../private.jpg"];',
+            'var kadry=["foto/UA-0015/%2e%2e/private.jpg"];',
+            'var kadry=["https://other.example/002.jpg"];',
+            'var kadry=["/video/foto/UA-0015/002.jpg"];',
+            'var kadry=["foto/UA-0015/private.py"];'):
+            with self.subTest(body=body):
+                with self.assertRaisesRegex(ValueError,'EXPLICIT_LITERAL_GALLERY_REQUIRED'):
+                    References('<script>'+body+'</script>')
+
 
 
 if __name__=='__main__': unittest.main()
