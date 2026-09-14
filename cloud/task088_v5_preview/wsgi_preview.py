@@ -15,7 +15,9 @@ import re
 from urllib.parse import urlsplit
 
 from common import ASSET_TYPES, CONTRACT, MAX_FILE_BYTES, read, relative, sha
-from routing_proof import validate_legacy_home_redirect
+from routing_proof import validate_legacy_home_redirect, validate_unserved_site_prefix
+from viewport_harness import (FRAME_QUERY, HARNESS_ROUTE, HTML_MIME,
+                              render as render_viewport, specification as viewport_specification)
 
 
 def origin(value):
@@ -60,12 +62,18 @@ class Preview:
             if type(route) is not str or not route.startswith('/'):
                 raise ValueError('EXACT_ROUTE_REQUIRED')
             route_relative = relative(route[1:])
+            if route_relative.startswith('site/'):
+                raise ValueError('UNSERVED_SITE_RESOURCES_CANNOT_BE_PUBLIC')
             extension = Path(route_relative).suffix.lower()
             mime = item.get('content_type')
             if extension == '.html':
-                if (not re.fullmatch(r'(video|site)/(UA-[0-9]{4,}|katalog)\.html',route_relative)
+                if route == HARNESS_ROUTE:
+                    if (set(item) != {'storage','path','sha256','bytes','content_type','protection'}
+                            or item.get('protection') != 'AUTHENTICATED_VIEWPORT_HARNESS'):
+                        raise ValueError('EXACT_VIEWPORT_HARNESS_ITEM_REQUIRED')
+                elif (not re.fullmatch(r'video/(UA-[0-9]{4,}|katalog)\.html',route_relative)
                         and route_relative != 'video/index.html'):
-                    auxiliary = re.fullmatch(r'(video|site)/(info|podbor|UA-[0-9]{4,}-diag)\.html',route_relative)
+                    auxiliary = re.fullmatch(r'(video)/(info|podbor|UA-[0-9]{4,}-diag)\.html',route_relative)
                     if not auxiliary or item.get('protection') != 'UNCHANGED_LINKED_PUBLIC_HTML':
                         raise ValueError('ONLY_REVIEWED_HTML_ROUTES_ALLOWED')
                     if auxiliary[2].endswith('-diag') and '/'+auxiliary[1]+'/'+auxiliary[2][:-5]+'.html' not in self.files:
@@ -98,6 +106,20 @@ class Preview:
             if (not re.fullmatch(r'[0-9a-f]{64}',item.get('sha256','')) or type(item.get('bytes')) is not int
                     or not 0 <= item['bytes'] <= MAX_FILE_BYTES):
                 raise ValueError('PINNED_PUBLIC_BYTES_REQUIRED')
+        self.viewport_documents = set()
+        viewport = manifest.get('viewport_harness')
+        if viewport is not None or HARNESS_ROUTE in self.files:
+            expected = viewport_specification(self.files)
+            item = self.files.get(HARNESS_ROUTE)
+            if viewport != expected or item is None:
+                raise ValueError('EXACT_VIEWPORT_MANIFEST_REQUIRED')
+            expected_html = render_viewport(self.files)
+            if (item['sha256'] != sha(expected_html) or item['bytes'] != len(expected_html)
+                    or read(self.root,item['path']) != expected_html):
+                raise ValueError('CANONICAL_PINNED_VIEWPORT_HARNESS_REQUIRED')
+            self.viewport_documents = set(expected['document_routes'])
+        if 'unserved_site_prefix_proof' in manifest:
+            validate_unserved_site_prefix(manifest['unserved_site_prefix_proof'])
         self.redirects = manifest.get('redirects',{})
         if type(self.redirects) is not dict or set(self.redirects)-{'/site/index.html'}:
             raise ValueError('ONLY_OBSERVED_LEGACY_HOME_REDIRECT_ALLOWED')
@@ -141,13 +163,14 @@ class Preview:
 
     def __call__(self,environ,start_response):
         common = [('Cache-Control','private, no-store'),('X-Content-Type-Options','nosniff'),
-                  ('X-Robots-Tag','noindex, nofollow, noarchive'),('Referrer-Policy','no-referrer'),
-                  ('Content-Security-Policy',"default-src 'self'; script-src 'self' 'unsafe-inline'; "
+                  ('X-Robots-Tag','noindex, nofollow, noarchive'),('Referrer-Policy','no-referrer')]
+        normal_policy = ("default-src 'self'; script-src 'self' 'unsafe-inline'; "
                    "style-src 'self' 'unsafe-inline'; img-src 'self' data: " + self.public_origin +
                    "; media-src 'self' " + self.public_origin + "; font-src 'self' data:; connect-src 'none'; "
-                   "object-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'")]
-        def response(status,body=b'',extra=(),mime='text/plain; charset=utf-8'):
-            start_response(status,common+[('Content-Type',mime),('Content-Length',str(len(body)))]+list(extra))
+                   "object-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'")
+        def response(status,body=b'',extra=(),mime='text/plain; charset=utf-8',policy=None):
+            start_response(status,common+[('Content-Security-Policy',policy or normal_policy),
+                ('Content-Type',mime),('Content-Length',str(len(body)))]+list(extra))
             return [] if environ.get('REQUEST_METHOD') == 'HEAD' else [body]
         if environ.get('wsgi.url_scheme') != 'https' or environ.get('HTTP_HOST') != self.origin.netloc:
             return response('421 Misdirected Request',b'Protected HTTPS preview required.')
@@ -170,7 +193,22 @@ class Preview:
             raw = read(root,item['path'])
             if len(raw) != item['bytes'] or not hmac.compare_digest(sha(raw),item['sha256']):
                 raise ValueError('PREVIEW_RESOURCE_DRIFT')
-            return response('200 OK',raw,mime=item['content_type'])
+            policy = None
+            if path == HARNESS_ROUTE:
+                # Explicit paths only. No wildcard, external frame, query-driven
+                # source, arbitrary URL proxy, credential or new write endpoint.
+                frame_sources = ' '.join(self.origin.geturl()+route for route in sorted(self.viewport_documents))
+                policy = ("default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; "
+                          "frame-src " + frame_sources + "; connect-src 'none'; object-src 'none'; "
+                          "form-action 'none'; base-uri 'none'; frame-ancestors 'none'")
+            elif path in self.viewport_documents and environ.get('QUERY_STRING','') == FRAME_QUERY:
+                # HTTP sandbox cannot be removed by a same-origin child script.
+                # Ordinary top-level candidate URLs keep their existing policy.
+                # Relative navigation loses the opt-in query and cannot frame;
+                # link/native-action acceptance therefore uses top-level pages.
+                policy = normal_policy.replace("frame-ancestors 'none'","frame-ancestors 'self'")
+                policy += "; frame-src 'none'; sandbox allow-scripts allow-same-origin"
+            return response('200 OK',raw,mime=item['content_type'],policy=policy)
         except (OSError,ValueError):
             return response('503 Service Unavailable',b'Preview resource verification failed.')
 

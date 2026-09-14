@@ -11,7 +11,10 @@ import unittest
 from common import CONTRACT, MAX_FILE_BYTES, encoded, read, relative, sha, write_new
 from build_preview import References, build, css_references
 from wsgi_preview import Preview
-from routing_proof import SOURCE_BINDINGS, STATIC_MAPPING, PRODUCTION_LOCATION, validate_legacy_home_redirect
+from routing_proof import (SOURCE_BINDINGS, STATIC_MAPPING, PRODUCTION_LOCATION, WRAPPER_ROUTES,
+                           validate_legacy_home_redirect, validate_unserved_site_prefix)
+from viewport_harness import (FRAME_QUERY, HARNESS_ROUTE, VIEWPORTS, render as render_viewport,
+                              specification as viewport_specification)
 
 
 class PreviewBoundaryTest(unittest.TestCase):
@@ -136,21 +139,33 @@ class PreviewBoundaryTest(unittest.TestCase):
             self.manifest['files'] = {route:item}
             with self.assertRaises(ValueError): self.app()
 
-    def test_explicit_asset_roots_are_separate_and_hash_bound(self):
-        for prefix in ('video','site'):
-            root = self.base/prefix
-            root.mkdir()
-            raw = (prefix+' media').encode()
-            (root/'photo.jpg').write_bytes(raw)
-            self.manifest['asset_roots'][prefix] = str(root)
-            self.manifest['files']['/'+prefix+'/photo.jpg'] = {'storage':'asset','root':prefix,'path':'photo.jpg',
+    def test_public_video_assets_are_independently_hash_bound(self):
+        root = self.base/'video'
+        root.mkdir()
+        self.manifest['asset_roots']['video'] = str(root)
+        for name in ('first.jpg','second.jpg'):
+            raw=name.encode()
+            (root/name).write_bytes(raw)
+            self.manifest['files']['/video/'+name] = {'storage':'asset','root':'video','path':name,
                 'sha256':sha(raw),'bytes':len(raw),'content_type':'image/jpeg'}
         app = self.app()
-        self.assertEqual(self.call(app,'/video/photo.jpg')['body'],b'video media')
-        self.assertEqual(self.call(app,'/site/photo.jpg')['body'],b'site media')
-        (self.base/'site/photo.jpg').write_bytes(b'changed')
-        self.assertEqual(self.call(app,'/site/photo.jpg')['status'],'503 Service Unavailable')
-        self.assertEqual(self.call(app,'/video/photo.jpg')['status'],'200 OK')
+        self.assertEqual(self.call(app,'/video/first.jpg')['body'],b'first.jpg')
+        self.assertEqual(self.call(app,'/video/second.jpg')['body'],b'second.jpg')
+        (root/'second.jpg').write_bytes(b'changed')
+        self.assertEqual(self.call(app,'/video/second.jpg')['status'],'503 Service Unavailable')
+        self.assertEqual(self.call(app,'/video/first.jpg')['status'],'200 OK')
+
+    def test_unserved_site_html_and_assets_cannot_be_injected_into_public_manifest(self):
+        for route,mime in (('/site/UA-0017.html','text/html; charset=utf-8'),
+                           ('/site/katalog.html','text/html; charset=utf-8'),
+                           ('/site/info.html','text/html; charset=utf-8'),
+                           ('/site/photo.jpg','image/jpeg')):
+            item={'storage':'bundle','path':'public'+route,'sha256':sha(self.html),
+                  'bytes':len(self.html),'content_type':mime}
+            self.manifest['files'][route]=item
+            with self.assertRaisesRegex(ValueError,'UNSERVED_SITE_RESOURCES_CANNOT_BE_PUBLIC'): self.app()
+            self.manifest['files'].pop(route)
+        self.assertEqual(self.call(self.app(),'/offline/site/UA-0017.html')['status'],'404 Not Found')
 
     def test_arbitrary_asset_root_and_mapping_are_rejected(self):
         self.manifest['asset_roots'] = {'home':str(self.base)}
@@ -211,6 +226,27 @@ class PreviewBoundaryTest(unittest.TestCase):
             'production_location':PRODUCTION_LOCATION,'routing_evidence_sha256':'0'*64,
             'route':'/site/index.html','classification':'UNSERVED_LEGACY_USES_BASE_WSGI_REDIRECT'}}
 
+    def site_prefix_proof(self):
+        return {'contract':'UA-ART-OBSERVED-UNSERVED-SITE-PREFIX-1',
+            'source_sha256':dict(SOURCE_BINDINGS),'static_mappings':copy.deepcopy(STATIC_MAPPING),
+            'wrapper_routes':copy.deepcopy(WRAPPER_ROUTES),'production_location':PRODUCTION_LOCATION,
+            'routing_evidence_sha256':'0'*64,'unserved_prefix':'/site/','served_prefix':'/video/',
+            'classification':'OFFLINE_PROTECTED_SOURCE_ONLY'}
+
+    def test_whole_site_prefix_exclusion_needs_its_own_exact_routing_proof(self):
+        proof=self.site_prefix_proof()
+        validate_unserved_site_prefix(proof)
+        self.manifest['unserved_site_prefix_proof']=proof
+        self.app()
+        for field,value in (('unserved_prefix','/'),('served_prefix','/site/'),
+                            ('static_mappings',STATIC_MAPPING+[{'url':'/site/','directory':'/home/Carix/site/'}]),
+                            ('wrapper_routes',{'seo':['/site/']}),
+                            ('source_sha256',{**SOURCE_BINDINGS,'observed_wsgi_config.py':'0'*64})):
+            self.manifest['unserved_site_prefix_proof']={**self.site_prefix_proof(),field:value}
+            with self.assertRaisesRegex(ValueError,'EXACT_UNSERVED_SITE_PREFIX_PROOF_REQUIRED'): self.app()
+        self.manifest['unserved_site_prefix_proof']=self.legacy_redirect()['proof']
+        with self.assertRaisesRegex(ValueError,'EXACT_UNSERVED_SITE_PREFIX_PROOF_REQUIRED'): self.app()
+
     def test_proven_legacy_home_redirect_is_authenticated_and_exact(self):
         self.manifest['redirects']={'/site/index.html':self.legacy_redirect()}
         app=self.app()
@@ -232,8 +268,118 @@ class PreviewBoundaryTest(unittest.TestCase):
         self.manifest['redirects']={'/site/*':self.legacy_redirect()}
         with self.assertRaisesRegex(ValueError,'ONLY_OBSERVED_LEGACY_HOME_REDIRECT_ALLOWED'):self.app()
 
+    def add_viewport(self):
+        raw = render_viewport(self.manifest['files'])
+        write_new(self.bundle,'public'+HARNESS_ROUTE,raw)
+        self.manifest['viewport_harness'] = viewport_specification(self.manifest['files'])
+        self.manifest['files'][HARNESS_ROUTE] = {'storage':'bundle','path':'public'+HARNESS_ROUTE,
+            'sha256':sha(raw),'bytes':len(raw),'content_type':'text/html; charset=utf-8',
+            'protection':'AUTHENTICATED_VIEWPORT_HARNESS'}
+        return raw
+
+    def test_viewport_authentication_host_and_read_only_boundaries_apply_to_every_request(self):
+        self.add_viewport()
+        app=self.app()
+        for route in (HARNESS_ROUTE,'/video/index.html','/private.json'):
+            self.assertEqual(self.call(app,route,auth=False,QUERY_STRING=FRAME_QUERY)['status'],'401 Unauthorized')
+            self.assertEqual(self.call(app,route,QUERY_STRING=FRAME_QUERY,REQUEST_METHOD='POST')['status'],'405 Method Not Allowed')
+            self.assertEqual(self.call(app,route,QUERY_STRING=FRAME_QUERY,HTTP_HOST='production.example')['status'],'421 Misdirected Request')
+        self.assertEqual(self.call(app,'/private.json',QUERY_STRING=FRAME_QUERY)['status'],'404 Not Found')
+
+    def test_viewport_changes_only_opted_in_headers_and_preserves_candidate_bytes(self):
+        self.add_viewport()
+        app=self.app()
+        for query in ('',FRAME_QUERY,FRAME_QUERY+'&other=1','__uaart_viewport=2','other=1'):
+            result=self.call(app,QUERY_STRING=query)
+            self.assertEqual((result['status'],result['body']),('200 OK',self.html))
+            policy=result['headers']['Content-Security-Policy']
+            if query==FRAME_QUERY:
+                self.assertIn("frame-ancestors 'self'",policy)
+                self.assertIn('sandbox allow-scripts allow-same-origin',policy)
+                self.assertIn("frame-src 'none'",policy)
+                for forbidden in ('allow-top-navigation','allow-popups','allow-forms','allow-downloads'):
+                    self.assertNotIn(forbidden,policy)
+            else:
+                self.assertIn("frame-ancestors 'none'",policy)
+                self.assertNotIn('sandbox',policy)
+        head=self.call(app,QUERY_STRING=FRAME_QUERY,REQUEST_METHOD='HEAD')
+        self.assertEqual(head['body'],b'')
+        self.assertIn("frame-ancestors 'self'",head['headers']['Content-Security-Policy'])
+
+    def test_viewport_parent_can_frame_only_manifest_document_paths(self):
+        self.add_auxiliary()
+        raw=self.add_viewport()
+        app=self.app()
+        result=self.call(app,HARNESS_ROUTE)
+        self.assertEqual(result['body'],raw)
+        directives={item.strip().split(' ',1)[0]:item.strip().split(' ',1)[1]
+                    for item in result['headers']['Content-Security-Policy'].split(';')}
+        self.assertEqual(directives['frame-src'],'https://preview.example/video/index.html https://preview.example/video/info.html')
+        self.assertEqual(directives['frame-ancestors'],"'none'")
+        self.assertEqual(directives['connect-src'],"'none'")
+        self.assertEqual(directives['form-action'],"'none'")
+        self.assertNotIn('fixture-only',raw.decode())
+        self.assertNotIn(str(self.config_path),raw.decode())
+        self.assertNotIn('password_hash_hex',raw.decode())
+        self.assertEqual(self.manifest['viewport_harness']['acceptance'],'NOT_RUN')
+
+    def test_viewport_query_cannot_frame_harness_assets_errors_or_unreviewed_documents(self):
+        self.add_viewport()
+        raw=b'body{color:black}'
+        write_new(self.bundle,'public/video/test.css',raw)
+        self.manifest['files']['/video/test.css']={'storage':'bundle','path':'public/video/test.css',
+            'sha256':sha(raw),'bytes':len(raw),'content_type':'text/css; charset=utf-8'}
+        app=self.app()
+        for route in (HARNESS_ROUTE,'/video/test.css','/unknown.html','//video/index.html'):
+            result=self.call(app,route,QUERY_STRING=FRAME_QUERY)
+            self.assertIn("frame-ancestors 'none'",result['headers']['Content-Security-Policy'])
+        (self.bundle/'public/video/index.html').write_bytes(b'CHANGED')
+        result=self.call(app,QUERY_STRING=FRAME_QUERY)
+        self.assertEqual(result['status'],'503 Service Unavailable')
+        self.assertIn("frame-ancestors 'none'",result['headers']['Content-Security-Policy'])
+
+    def test_viewport_canonical_template_and_exact_manifest_list_are_required(self):
+        self.add_viewport()
+        self.manifest['viewport_harness']['document_routes'].append('/private.html')
+        with self.assertRaisesRegex(ValueError,'EXACT_VIEWPORT_MANIFEST_REQUIRED'): self.app()
+        self.manifest['viewport_harness']=viewport_specification(self.manifest['files'])
+        item=self.manifest['files'][HARNESS_ROUTE]
+        changed=b'<html><script>fetch("/private.json")</script></html>'
+        (self.bundle/item['path']).write_bytes(changed)
+        item.update(sha256=sha(changed),bytes=len(changed))
+        with self.assertRaisesRegex(ValueError,'CANONICAL_PINNED_VIEWPORT_HARNESS_REQUIRED'): self.app()
+
+    def test_viewport_optional_compatibility_never_accepts_half_registered_harness(self):
+        self.add_viewport()
+        descriptor=self.manifest.pop('viewport_harness')
+        with self.assertRaisesRegex(ValueError,'EXACT_VIEWPORT_MANIFEST_REQUIRED'): self.app()
+        self.manifest['viewport_harness']=descriptor
+        self.manifest['files'].pop(HARNESS_ROUTE)
+        with self.assertRaisesRegex(ValueError,'EXACT_VIEWPORT_MANIFEST_REQUIRED'): self.app()
+
+    def test_viewport_file_drift_and_symlink_do_not_serve_tampered_wrapper(self):
+        self.add_viewport()
+        app=self.app()
+        path=self.bundle/('public'+HARNESS_ROUTE)
+        path.write_bytes(b'UNREVIEWED SCRIPT')
+        self.assertEqual(self.call(app,HARNESS_ROUTE)['status'],'503 Service Unavailable')
+        path.unlink()
+        target=self.base/'private.js'
+        target.write_bytes(b'PRIVATE')
+        path.symlink_to(target)
+        self.assertEqual(self.call(app,HARNESS_ROUTE)['status'],'503 Service Unavailable')
+
 
 class BuilderBoundaryTest(unittest.TestCase):
+    def test_viewport_builder_rejects_noncanonical_or_nonpublic_sources(self):
+        home={'storage':'bundle','sha256':'0'*64,'content_type':'text/html; charset=utf-8'}
+        for route in ('https://other.example/video/index.html','//other.example/video/index.html',
+                      '/video/index.html?target=evil','/video/../private.html','/private.html','/site/index.html'):
+            with self.assertRaisesRegex(ValueError,'VIEWPORT_REQUIRES_EXACT_PINNED_PUBLIC_DOCUMENTS'):
+                render_viewport({'/video/index.html':home,route:home})
+        with self.assertRaisesRegex(ValueError,'VIEWPORT_REQUIRES_PINNED_HOME'):
+            render_viewport({})
+
     def test_exact_relative_paths(self):
         for value in ('../x','/x','a//b','a/./b','a\\b','a/%2e%2e/x','a\0b',''):
             with self.assertRaises(ValueError): relative(value)

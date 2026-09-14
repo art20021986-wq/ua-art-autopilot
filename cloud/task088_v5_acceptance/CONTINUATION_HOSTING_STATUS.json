@@ -1,5 +1,5 @@
 {
-  "recorded_at_utc": "2026-09-14T08:05:58.604873+00:00",
+  "recorded_at_utc": "2026-09-14T08:16:47.253093+00:00",
   "task": "UA-ART-GE-UA-MARKET-PRICE-001 FINAL v5.0",
   "owner_authorization": {
     "source": "current conversation: Да разрешаю",
@@ -11,16 +11,31 @@
     }
   },
   "observed_webapp_creation": {
-    "method": "authenticated PythonAnywhere Web UI reload and Add a new web app",
+    "method": "authenticated PythonAnywhere Web UI",
+    "result": "All done! Your web app is now set up. Details below.",
     "existing_domain": "www.uaart.com.ua",
-    "current_plan_webapp_limit": 1,
-    "result": "Upgrade to add a new web app"
+    "new_domain": "Carix.pythonanywhere.com",
+    "python_version": "3.10",
+    "wsgi_path": "/var/www/carix_pythonanywhere_com_wsgi.py",
+    "static_mappings": [],
+    "force_https_setting": true,
+    "protected_candidate_installed": false
   },
-  "payment_status": "FINAL_CONFIRMATION_NOT_YET_APPLIED",
+  "payment_status": "APPLIED_CONFIRMED_BY_OWNER_SCREENSHOT_AND_SECOND_WEBAPP_CREATION",
   "credential_status": "NOT_PROVISIONED",
   "preview_activated": false,
   "production_written": false,
   "stage3_status": "OPEN",
   "stage4_status": "OPEN",
-  "note": "Owner permission is already granted. The hosting checkout must finish; do not request the same permission again."
+  "note": "Owner permission is already granted and second webapp exists. Private candidate and authentication remain to be installed. No recurring payment or access permission needs to be requested again.",
+  "prior_observation": {
+    "recorded_at_utc": "2026-09-14T08:05:58.604873+00:00",
+    "observed_webapp_creation": {
+      "method": "authenticated PythonAnywhere Web UI reload and Add a new web app",
+      "existing_domain": "www.uaart.com.ua",
+      "current_plan_webapp_limit": 1,
+      "result": "Upgrade to add a new web app"
+    },
+    "payment_status": "FINAL_CONFIRMATION_NOT_YET_APPLIED"
+  }
 }

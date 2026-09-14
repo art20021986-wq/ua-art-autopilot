@@ -9,6 +9,9 @@ SOURCE_BINDINGS = {
 }
 STATIC_MAPPING = [{'url':'/video/','directory':'/home/Carix/video/'}]
 PRODUCTION_LOCATION = 'https://www.uaart.com.ua/video/index.html'
+WRAPPER_ROUTES = {'seo':['/robots.txt','/sitemap.xml'],
+                  'analytics':['/ua/a.js','/ua/a/e'],
+                  'bridge':['/uaart-bridge','/uaart-bridge/health']}
 
 
 def prove_legacy_home_redirect(captured_file, routes, routing_hash):
@@ -45,3 +48,37 @@ def validate_legacy_home_redirect(proof):
             or proof['classification'] != 'UNSERVED_LEGACY_USES_BASE_WSGI_REDIRECT'
             or not re.fullmatch(r'[0-9a-f]{64}',proof['routing_evidence_sha256'])):
         raise ValueError('EXACT_LEGACY_HOME_REDIRECT_PROOF_REQUIRED')
+
+
+def prove_unserved_site_prefix(captured_file, routes, routing_hash):
+    """Separate proof for excluding /site/ artifacts from HTTP/browser coverage.
+
+    The exact reviewed base WSGI is unconditional. Its three pinned wrappers
+    handle only the explicitly observed routes below; none handles /site/.
+    The sole static mapping is /video/. This proves absence of a /site/ file
+    serving path; it does not install a wildcard Preview redirect or excuse a
+    broken /site/ dependency referenced from a genuinely served /video/ page.
+    """
+    prove_legacy_home_redirect(captured_file,routes,routing_hash)
+    if routes.get('wrapper_routes') != WRAPPER_ROUTES:
+        raise ValueError('UNSERVED_SITE_WRAPPER_ROUTE_OBSERVATION_REQUIRED')
+    proof = {'contract':'UA-ART-OBSERVED-UNSERVED-SITE-PREFIX-1',
+             'source_sha256':dict(SOURCE_BINDINGS),'static_mappings':STATIC_MAPPING,
+             'wrapper_routes':WRAPPER_ROUTES,'production_location':PRODUCTION_LOCATION,
+             'routing_evidence_sha256':routing_hash,'unserved_prefix':'/site/',
+             'served_prefix':'/video/','classification':'OFFLINE_PROTECTED_SOURCE_ONLY'}
+    validate_unserved_site_prefix(proof)
+    return proof
+
+
+def validate_unserved_site_prefix(proof):
+    if (type(proof) is not dict or set(proof) != {'contract','source_sha256','static_mappings',
+            'wrapper_routes','production_location','routing_evidence_sha256','unserved_prefix',
+            'served_prefix','classification'}
+            or proof['contract'] != 'UA-ART-OBSERVED-UNSERVED-SITE-PREFIX-1'
+            or proof['source_sha256'] != SOURCE_BINDINGS or proof['static_mappings'] != STATIC_MAPPING
+            or proof['wrapper_routes'] != WRAPPER_ROUTES or proof['production_location'] != PRODUCTION_LOCATION
+            or proof['unserved_prefix'] != '/site/' or proof['served_prefix'] != '/video/'
+            or proof['classification'] != 'OFFLINE_PROTECTED_SOURCE_ONLY'
+            or not re.fullmatch(r'[0-9a-f]{64}',proof['routing_evidence_sha256'])):
+        raise ValueError('EXACT_UNSERVED_SITE_PREFIX_PROOF_REQUIRED')
