@@ -1,0 +1,65 @@
+{
+  "kind": "OFFLINE_HELPER_VALIDATION_RECORDED_FROM_EXISTING_TOOL_RESULT_NOT_A_GATE",
+  "provenance": {
+    "reported_from_tool": true,
+    "tool_chunk_id": "56786b",
+    "command": "python3 -I -B cloud/task088_v5_acceptance/resume_support/test_checkpoint_inspect.py",
+    "run_timestamp_utc": null,
+    "timestamp_note": "The tool result did not include a wall-clock run timestamp. No timestamp has been invented.",
+    "test_elapsed_seconds_reported": 0.025,
+    "tool_exit_code": 0,
+    "output_capture": "Exact combined output text copied from tool result; stdout/stderr were not separately exposed.",
+    "tests_repeated_for_this_record": false
+  },
+  "test_result": {
+    "tests_run": 20,
+    "tests_passed": 20,
+    "failures": 0,
+    "errors": 0,
+    "unittest_result": "OK"
+  },
+  "tested_files": [
+    {
+      "path": "cloud/task088_v5_acceptance/resume_support/README.md",
+      "sha256": "e1795df443a63c81e15855a63cc8318c3471fb0a32631994cf926147b35b5c09",
+      "bytes": 5591
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_support/checkpoint_inspect.py",
+      "sha256": "c6178cb606cde930a27081a1560d0969c60670c1b3fd92359dab92fc186426e8",
+      "bytes": 17688
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_support/test_checkpoint_inspect.py",
+      "sha256": "1bd9430cfa4fe1ee88cad9e5911a5a7294f4b1fffe3c441d2fa770d8c3266087",
+      "bytes": 15113
+    }
+  ],
+  "test_output": {
+    "path": "cloud/task088_v5_acceptance/resume_support/TEST_OUTPUT.txt",
+    "sha256": "e25d4bf8c0bcfe41a5e4d5f7415787dd614f145ef9e165537ff773d0ca540595",
+    "bytes": 2975
+  },
+  "git_only_inspection": {
+    "tool_chunk_id": "c29b4b",
+    "report": {
+      "path": "cloud/task088_v5_acceptance/resume_support/checkpoints/pr114-git-only-inspection.ad4bacd463bb2889e1b7b1130477dc8419a8212c2d54af39b8f0ecdc5af3548a.json",
+      "sha256": "ad4bacd463bb2889e1b7b1130477dc8419a8212c2d54af39b8f0ecdc5af3548a",
+      "bytes": 16618
+    },
+    "checkout_commit": "3d46faaf",
+    "report_observed_at": "2026-09-14T18:03:27.633526+00:00",
+    "inspector_sha256": "c6178cb606cde930a27081a1560d0969c60670c1b3fd92359dab92fc186426e8",
+    "source_files_checked": 82,
+    "source_differences": [],
+    "software_report_source": "PINNED_ARCHIVE_MEMBER_NO_EXTRACTION",
+    "reference_issue_count": 1
+  },
+  "limits": [
+    "Accepts only the offline helper and its isolated temporary-file interruption behavior.",
+    "Preserves the historical existing 446/446 and 183/183 results; does not rerun or newly accept them.",
+    "Hashes check integrity; no new source authentication, live state, browser gallery, CRM synchronization, Production or Gate acceptance.",
+    "No runtime/workflow/canonical authority integration, remote restart acceptance or universal future-process persistence was implemented.",
+    "The final git-only report retains the known historical PR-body pointer mismatch and expired quota; it grants no execution or replay permission."
+  ]
+}
