@@ -1,9 +1,11 @@
-"""Dedicated authenticated, read-only HTTPS Preview app. No production app imports.
+"""Dedicated read-only HTTPS Preview app. No production app imports.
 
 No credentials are generated, selected or activated. The deployer must supply a
 private configuration, a separately approved origin and an externally provisioned
 Basic-auth verifier. Every response is manifest-bound; there is no directory or
 filesystem fallback, API, upload, analytics endpoint or write method.
+The owner may explicitly provision PUBLIC_READ_ONLY_PREVIEW_OWNER_AUTHORIZED
+instead of Basic authentication. Missing or mixed access configuration fails.
 """
 import base64
 import hashlib
@@ -30,7 +32,9 @@ class Preview:
     def __init__(self, config_path):
         config_path = Path(config_path).absolute()
         config = json.loads(read(config_path.parent, config_path.name, private=True))
-        if set(config) != {'contract','preview_origin','bundle_root','manifest_sha256','basic_auth'} or config['contract'] != CONTRACT:
+        self.public_preview = config.get('access_policy') == 'PUBLIC_READ_ONLY_PREVIEW_OWNER_AUTHORIZED'
+        access_keys = {'access_policy'} if self.public_preview else {'basic_auth'}
+        if set(config) != {'contract','preview_origin','bundle_root','manifest_sha256'} | access_keys or config['contract'] != CONTRACT:
             raise ValueError('EXACT_PRIVATE_PREVIEW_CONFIG_REQUIRED')
         self.origin = origin(config['preview_origin'])
         self.root = Path(config['bundle_root'])
@@ -129,6 +133,10 @@ class Preview:
                     or redirect['location'] not in self.files or route in self.files):
                 raise ValueError('EXACT_LEGACY_HOME_REDIRECT_REQUIRED')
             validate_legacy_home_redirect(redirect['proof'])
+        self.auth = None
+        self.cached_valid_header = None
+        if self.public_preview:
+            return
         auth = config['basic_auth']
         if set(auth) != {'username','salt_hex','iterations','password_hash_hex'}:
             raise ValueError('PROVISIONED_AUTH_VERIFIER_REQUIRED')
@@ -144,6 +152,8 @@ class Preview:
         self.cached_valid_header = None
 
     def authenticated(self, header):
+        if self.public_preview:
+            return False  # Public access is explicit policy, never authentication.
         if type(header) is not str or not header.startswith('Basic ') or len(header) > 2048:
             return False
         header_hash = hashlib.sha256(header.encode()).digest()
@@ -174,7 +184,7 @@ class Preview:
             return [] if environ.get('REQUEST_METHOD') == 'HEAD' else [body]
         if environ.get('wsgi.url_scheme') != 'https' or environ.get('HTTP_HOST') != self.origin.netloc:
             return response('421 Misdirected Request',b'Protected HTTPS preview required.')
-        if not self.authenticated(environ.get('HTTP_AUTHORIZATION','')):
+        if not self.public_preview and not self.authenticated(environ.get('HTTP_AUTHORIZATION','')):
             return response('401 Unauthorized',b'Authentication required.',
                             [('WWW-Authenticate','Basic realm="UA ART protected preview", charset="UTF-8"')])
         if environ.get('REQUEST_METHOD') not in ('GET','HEAD'):

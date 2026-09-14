@@ -1,3 +1,18 @@
+# Preview access update authorized by the owner
+
+The owner explicitly requested a password-free alternative from a phone.
+A private mode-0600 configuration may now select exactly
+`access_policy: PUBLIC_READ_ONLY_PREVIEW_OWNER_AUTHORIZED` instead of `basic_auth`.
+Only manifest-listed candidate pages and public assets become publicly readable;
+HTTPS, exact host, source pins, GET/HEAD-only behavior, no indexing, and denial of
+DB/source/config/audit routes remain mandatory. Missing, misspelled or mixed
+access settings fail closed. Existing Basic-auth configurations retain their
+original behavior. This changes only Preview access; it grants no Production PASS.
+See `../task088_v5_acceptance/OWNER_PUBLIC_PREVIEW_CHANGE.json` and the one-time
+`../task088_v5_preview_access/provision_public_preview.py`. The reference Basic
+provisioning instructions below remain available but are no longer required for
+this owner's Preview.
+
 # Protected Stage 3 Preview
 
 This package prepares a private, price-only candidate and serves it from a

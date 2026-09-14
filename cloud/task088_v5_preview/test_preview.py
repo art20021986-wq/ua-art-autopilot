@@ -65,6 +65,47 @@ class PreviewBoundaryTest(unittest.TestCase):
         for path in ('/','/video/index.html','/private.json','/ua/a.js','/uaart-bridge'):
             self.assertEqual(self.call(app,path,auth=False)['status'],'401 Unauthorized')
 
+    def public_app(self):
+        self.config.pop('basic_auth')
+        self.config['access_policy'] = 'PUBLIC_READ_ONLY_PREVIEW_OWNER_AUTHORIZED'
+        return self.app()
+
+    def test_explicit_public_policy_exposes_only_read_only_manifest_pages(self):
+        app = self.public_app()
+        response = self.call(app, auth=False)
+        self.assertEqual((response['status'], response['body']), ('200 OK', self.html))
+        self.assertNotIn('WWW-Authenticate', response['headers'])
+        self.assertIn('noindex', response['headers']['X-Robots-Tag'])
+        self.assertEqual(self.call(app, auth=False, REQUEST_METHOD='HEAD')['body'], b'')
+        for path in ('/cars.db', '/config.json', '/manifest.json', '/db.py', '/uaart-bridge',
+                     '/video/../private.json', '/video/%2e%2e/private.json', '/site/UA-0001.html'):
+            self.assertEqual(self.call(app, path, auth=False)['status'], '404 Not Found')
+        for method in ('POST', 'PUT', 'DELETE', 'PATCH', 'CONNECT', 'TRACE'):
+            self.assertEqual(self.call(app, auth=False, REQUEST_METHOD=method)['status'], '405 Method Not Allowed')
+        for override in ({'wsgi.url_scheme':'http'}, {'HTTP_HOST':'production.example'}):
+            self.assertEqual(self.call(app, auth=False, **override)['status'], '421 Misdirected Request')
+
+    def test_public_policy_is_never_inferred_from_missing_or_mixed_credentials(self):
+        original = copy.deepcopy(self.config)
+        for access in (None, 'public', '', False):
+            self.config = copy.deepcopy(original)
+            self.config.pop('basic_auth')
+            if access is not None:
+                self.config['access_policy'] = access
+            with self.assertRaisesRegex(ValueError, 'EXACT_PRIVATE_PREVIEW_CONFIG_REQUIRED'):
+                self.app()
+        self.config = original
+        self.config['access_policy'] = 'PUBLIC_READ_ONLY_PREVIEW_OWNER_AUTHORIZED'
+        with self.assertRaisesRegex(ValueError, 'EXACT_PRIVATE_PREVIEW_CONFIG_REQUIRED'):
+            self.app()
+
+    def test_public_policy_still_rejects_candidate_drift(self):
+        app = self.public_app()
+        (self.bundle / 'public/video/index.html').write_bytes(b'UNREVIEWED BYTES')
+        response = self.call(app, auth=False)
+        self.assertEqual(response['status'], '503 Service Unavailable')
+        self.assertNotIn(b'UNREVIEWED BYTES', response['body'])
+
     def test_unknown_credentials_and_malformed_headers_fail_closed(self):
         app = self.app()
         for header in ('Basic invalid','Bearer x','Basic '+base64.b64encode(b'test-only:wrong').decode(),
