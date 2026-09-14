@@ -1,6 +1,6 @@
 {
-  "kind": "RESUME_CHECKPOINT_V2_NOT_A_GATE",
-  "recorded_at": "2026-09-14T17:19:19.125262+00:00",
+  "kind": "RESUME_CHECKPOINT_CURRENT_AFTER_AUDIT_NOT_A_GATE",
+  "recorded_at": "2026-09-14T17:44:28.847Z",
   "authorization": "TЗv1.0 approved; publication already authorized only after real full Preview and canonical controls; no renewed permission requested",
   "full_preview_gate": "NOT_PASSED",
   "stage3": "OPEN_NOT_PUBLISHED",
@@ -8,9 +8,9 @@
   "production_written": false,
   "crm_written": false,
   "original_reviewed_head": "e146c2ea8c28033050b49ccbebb33aa5276c8788",
-  "last_root_reported_remote_head": "0de18dffe5f7db768aa7e27e3bf96c2a99a9ad8f",
+  "last_root_reported_remote_head": "5c3a1560c723de6a6f1f422fa33487153cef75f6",
   "last_root_reported_remote_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
-  "remote_sha_provenance": "Root confirmed these refs around17UTC; root will commit the new checkpoint afterward. This snapshot does not claim its own later commit SHA.",
+  "remote_sha_provenance": "PR metadata observed during audit before this continuation-note commit; frozen evidence remains at the indicated historical SHA.",
   "software": {
     "report": {
       "path": "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix_v2/FINAL_CURRENT_CANDIDATE_RESULTS.json",
@@ -447,15 +447,15 @@
   "manual_inputs": [
     {
       "type": "OWNER_READ_ONLY_GITHUB_CREDENTIAL",
-      "status": "ACTUAL_HIDDEN_PROMPT_WAITING_OWNER",
+      "status": "RECEIVER_EXITED_E_TOKEN_FORMAT_NO_ACTIVE_HIDDEN_PROMPT",
       "receiver_sha256": "e30b3c66e046b567b6b1be00dc476433c7f36bc08745d05b21b4c35250e0151d",
       "command": "python3.10 -I -B /home/Carix/autopilot_inbox/cloud/provision_read_credential.py",
       "scope": "art20021986-wq/ua-art-autopilot Contents:read; hiddenTTY only; no value in chat/logs/repo",
       "console_id": "48168693",
       "console_url": "https://www.pythonanywhere.com/user/Carix/consoles/48168693/",
       "prompt": "GitHub read-only token (hidden):",
-      "next_action": "Enter only the owner-provided token and press Enter. Do not type a shell command into the active token prompt.",
-      "command_use": "Receiver command is only for a later restart if no token prompt is active; do not rerun while waiting."
+      "next_action": "Old CHECKPOINT_V2 hidden-prompt waiting instructions are historical. Never type a token into a shell prompt. On continuation inspect actual state, verify the reviewed receiver, restart it only when no receiver is active, then use its hidden input.",
+      "command_use": "Inspect actual terminal first. Restart reviewed receiver only if no active receiver. Enter credential only through its verified hidden prompt."
     },
     {
       "type": "PERMITTED_FULL_SIZE_GALLERY_OBSERVATION",
@@ -498,5 +498,18 @@
     "credential_created_by_permission_helper": false
   },
   "quota_state_at_final_snapshot": "EXPIRED_AFTER_17:11:42.701UTC_REFRESH_BEFORE_CANONICAL_EXECUTION",
-  "unique_next_owner_action": "Enter only the token at the already waiting hidden prompt in console48168693, then Enter; do not run another command there."
+  "unique_next_owner_action": "No immediate token entry: previous hidden prompt exited. Resume by reconciling actual state and consulting AUDIT_CONTINUATION_NOTICE.json.",
+  "historical_evidence_checkpoint": "CHECKPOINT_V2.json at 5c3a1560c723de6a6f1f422fa33487153cef75f6",
+  "audit_continuation_notice": "AUDIT_CONTINUATION_NOTICE.json",
+  "audit_transition": {
+    "console_id": "48168693",
+    "state": "SHELL_PROMPT_RECEIVER_EXITED",
+    "observed_result": "E_TOKEN_FORMAT",
+    "exit_prompt_time_utc": "17:36",
+    "action": "Submitted empty input to end unattended hidden-input prompt after the user requested audit/specification.",
+    "secret_entered_by_agent": false,
+    "credential_provisioning": "NOT_CONFIRMED_NOT_COMPLETED_BY_THIS_ATTEMPT",
+    "safety": "Old CHECKPOINT_V2 hidden-prompt waiting instructions are historical. Never type a token into a shell prompt. On continuation inspect actual state, verify the reviewed receiver, restart it only when no receiver is active, then use its hidden input.",
+    "browser_observation": "17:14 ... python3.10 -IB provision_read_credential.py; GitHub read-only token (hidden):; E_TOKEN_FORMAT; 17:36 ~/autopilot_inbox/cloud $"
+  }
 }
