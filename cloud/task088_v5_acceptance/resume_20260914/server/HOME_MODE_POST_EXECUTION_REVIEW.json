@@ -1,0 +1,27 @@
+{
+  "kind": "POST_EXECUTION_INDEPENDENT_READ_ONLY_HELPER_AND_RECEIPT_REVIEW",
+  "reviewed_at": "2026-09-14T17:17:53.267311+00:00",
+  "reviewer": "/root/review_acceptance",
+  "helper": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/server/restrict_home_group_write.py",
+    "bytes": 3164,
+    "sha256": "cc6d48f4de1e447eb5771380b267a4ed783ef384f3f27ae4813e4c11f9ea4ad0"
+  },
+  "actual_receipt": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/server/home_mode_1713.json",
+    "bytes": 367,
+    "sha256": "85e104997671248d6014e243c491603b715c84a6bbe04ee759fd4a2f4d61caf7"
+  },
+  "checks": [
+    "Requires isolated Python and bytecode disabled",
+    "Opens exact directory chain using O_DIRECTORY and O_NOFOLLOW",
+    "Requires exact observed owner/group/mode0755-preimage0775/size and stable inode/path metadata",
+    "Calls fchmod only to remove group-write bit020; no other permission bit changes",
+    "Checks actual0755 readback and stable owner/group/inode",
+    "Reads/writes no file contents and creates no credential",
+    "Existing receiver implementation and credential guards remain unchanged"
+  ],
+  "clarification": "Exact preimage required is0775; after-mode required is0755. Review was after the root-executed action; no new server action or test was performed.",
+  "conclusion": "SCOPE_MATCHES_ACTUAL_RESTRICTIVE_PREREQUISITE",
+  "full_preview": "NOT_PASSED"
+}
