@@ -4,20 +4,25 @@ from decimal import Decimal, InvalidOperation
 from html import escape
 import re
 
-VERSION = "task088-market-prices-v1"
+VERSION = "task088-market-prices-final-v5"
 START = "<!-- UA-ART-MARKET-PRICES-V1:START -->"
 END = "<!-- UA-ART-MARKET-PRICES-V1:END -->"
 
+COUNTRIES = {
+    "ukraine": {"ru": "Украина", "uk": "Україна", "ka": "უკრაინა"},
+    "georgia": {"ru": "Грузия", "uk": "Грузія", "ka": "საქართველო"},
+}
+FLAGS = {"ukraine": "🇺🇦", "georgia": "🇬🇪"}
 CAPTIONS = {
     "ukraine": {
-        "ru": "Украина — с доставкой до Киева, растаможкой и сертификацией в Украине",
-        "uk": "Україна — з доставкою до Києва, розмитненням і сертифікацією в Україні",
-        "ka": "უკრაინა — კიევამდე მიწოდებით, უკრაინაში განბაჟებითა და სერტიფიცირებით",
+        "ru": "Цена с доставкой в Киев с растаможкой и сертификацией",
+        "uk": "Ціна з доставкою до Києва з розмитненням і сертифікацією",
+        "ka": "ფასი კიევში მიწოდებით, განბაჟებითა და სერტიფიცირებით",
     },
     "georgia": {
-        "ru": "Грузия — с доставкой до авторынка AUTOPAPA, паркинг №16; без растаможки в Грузии",
-        "uk": "Грузія — з доставкою до авторинку AUTOPAPA, паркінг №16; без розмитнення в Грузії",
-        "ka": "საქართველო — ავტობაზრობა AUTOPAPA-მდე მიწოდებით, პარკინგი №16; საქართველოში განბაჟების გარეშე",
+        "ru": "Цена автомобиля с доставкой до авторынка Рустави 🅿️ №16",
+        "uk": "Ціна автомобіля з доставкою до авторинку Руставі 🅿️ №16",
+        "ka": "ავტომობილის ფასი რუსთავის ავტობაზრობამდე მიწოდებით 🅿️ №16",
     },
 }
 MISSING = {"ru": "Цена уточняется", "uk": "Ціна уточнюється", "ka": "ფასი ზუსტდება"}
@@ -92,14 +97,16 @@ def render_market_prices(row, compact=False, require_car_id=False):
     out = [START, '<div class="ua-market-prices-v1" data-ua-price-version="%s" data-ua-car="%s" '
            'style="display:flex;flex-direction:column;gap:9px;min-width:0;max-width:100%%;overflow-wrap:anywhere">' % (VERSION, car_id)]
     for index, (market, field, value) in enumerate(prices):
-        border = "" if index == 0 else "border-top:1px solid rgba(147,166,189,.35);padding-top:9px;"
+        border = "" if compact or index == 0 else "border-top:1px solid rgba(147,166,189,.35);padding-top:9px;"
         out.append('<div data-ua-market="%s" data-ua-field="%s" data-ua-value="%s" '
                    'data-ua-currency="USD" style="%smin-width:0">'
                    % (market, field, escape(value, quote=True), border))
-        out.append('<div class="ua-market-amount-v1" style="font-size:%spx;font-weight:800;line-height:1.2;color:var(--zoloto,#f0a63c)">%s</div>'
-                   % ("19" if compact else "25", _amount(value)))
-        out.append('<div class="ua-market-caption-v1" style="font-size:%spx;line-height:1.35;opacity:.85;margin-top:4px">%s</div></div>'
-                   % ("11" if compact else "12", _translated(CAPTIONS[market])))
+        out.append('<div class="ua-market-amount-v1" style="font-size:%spx;font-weight:800;line-height:1.35;color:var(--zoloto,#f0a63c)">%s %s — %s</div>'
+                   % ("16" if compact else "25", FLAGS[market], _translated(COUNTRIES[market]), _amount(value)))
+        if not compact:
+            out.append('<div class="ua-market-caption-v1" style="font-size:14px;line-height:1.4;opacity:.85;margin-top:4px">%s</div>'
+                       % _translated(CAPTIONS[market]))
+        out.append("</div>")
     out.extend(["</div>", END])
     return "".join(out)
 

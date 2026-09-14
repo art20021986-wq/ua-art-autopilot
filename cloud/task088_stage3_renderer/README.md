@@ -1,4 +1,4 @@
-# TASK088 Stage 3 renderer candidate
+# TASK088 Stage 3 renderer candidate — FINAL v5.0
 
 Status: local candidate, not installed. No CRM, production HTML, workflow, receipt,
 or production configuration writes were performed by this package.
@@ -12,17 +12,21 @@ borrow a value from the other market. A row depending on the legacy `price_total
 fallback is rejected for explicit reconciliation, never silently copied or hidden.
 Ukraine appears above Georgia on the card
 and on every catalog tile. Missing Georgia remains visible as “Цена уточняется”.
-Captions match the owner policy: Ukraine includes delivery to Kyiv, Ukrainian
-customs and certification; Georgia includes delivery to AUTOPAPA parking №16,
-and excludes Georgian customs.
+Headings include translated country names and flags. Compact tiles contain only
+two country/price rows, at 16px, without delivery descriptions. Full cards include
+the FINAL v5.0 descriptions: delivery to Kyiv with customs and certification, and
+delivery to the Rustavi car market 🅿️ №16. These descriptions supersede the old
+candidate's AUTOPAPA/customs wording. Historical owner-decision files remain
+unchanged; the renderer tests assert FINAL v5.0 directly.
 
 `patch_yadro.patch_yadro(bytes)` and `patch_stranica.patch_stranica(bytes)` return
 candidate bytes plus provenance. They never import or execute their target
 modules, and never write files. Full input SHA256 and AST-selected original price
 statements must match. They replace only the base price statements (plus the old
 unqualified “доплат нет” caption in the same price slot) and add the renderer
-import. Price-related catalog headings/meta descriptions now distinguish Ukraine
-and Georgia rather than claiming every amount includes delivery to Kyiv. Existing
+import. The `stranica.sobrat_glavnuyu` homepage price statement uses the same
+compact renderer. Catalog headings, SEO and metadata remain unchanged; restoring
+only the price fragments must restore the complete original output. Existing
 wrappers remain byte-identical. Unknown source revisions and
 reapplication fail closed. Complete candidates are compiled before return.
 
@@ -59,16 +63,18 @@ From the repository/workspace root:
 UA088_LIVE_SOURCE_DIR=/path/to/private_snapshot python -B -m unittest discover -s cloud/task088_stage3_renderer -p 'test_*.py' -v
 ```
 
-40 tests pass with the private generator/master/catalog/HTML snapshots supplied.
-Without private snapshots, 16 exact-source tests are explicitly skipped; this is
+44 tests pass with the private generator/master/catalog/HTML snapshots supplied.
+The prior candidate's historical 40-test result does not cover FINAL v5.0.
+Without private snapshots, 18 exact-source tests are explicitly skipped; this is
 not equivalent evidence.
 
 The exact-source tests extract only named base renderer AST functions, execute
 them with controlled dependencies, and compare before/after results for 18 synthetic
-car rows spanning four stages and an 18-item catalog in both generators. No real
-CRM rows are read or represented as acceptance evidence. Restoring the original price fragment
-and the explicitly scoped catalog price heading produces a byte-identical complete
-document. Card identifiers, images, description,
+car rows spanning four stages, an 18-item catalog in both generators, and the
+existing `stranica` homepage with 18 synthetic rows plus an empty list. No real
+CRM rows are read or represented as acceptance evidence. Restoring the original
+price fragment produces a byte-identical complete document, including headings
+and metadata. Card identifiers, images, description,
 stage content, links, navigation, scripts, diagnostics and catalog counters outside
 the replaced fragment therefore do not change in these tested base renderers.
 No module top-level code or live filesystem helpers execute.
@@ -108,3 +114,31 @@ card / catalog equality, immutable generation receipt and public readback.
 Maintain no regression in all non-price content, and test mobile layout and active
 language switching. Telegram price-save/outbox wiring, transactional publication,
 60-second latency and actual owner notifications are outside this pure renderer.
+
+FINAL v5.0 Preview Gate is not closed by this package. The captured fixtures
+contain one real full vehicle card and an 18-item catalog, but no current homepage
+or complete set of real full vehicle pages. The real `ua-site-languages.js` and
+`i18n.js` scripts must be exercised in a browser; static translation-attribute
+tests do not establish working language switching. The current homepage routing
+must be traced: the captured `yadro.glavnaya_html` builds stage tiles, whereas
+`stranica.sobrat_glavnuyu` builds individual vehicle tiles. A patched function is
+not evidence that the production homepage calls it. Complete Preview coverage,
+fresh source/DB binding and deployment gates remain required.
+
+## Read-only snapshot audit
+
+`python -B audit_snapshot.py --root /home/Carix` reads the three pinned generator
+sources, published CRM price fields, every published full card and both catalogs
+under `video/` and `site/`. It builds candidates only in memory and emits JSON to
+stdout. `audit_snapshot(Path(root))` exposes the same report to a reviewed caller.
+The script itself does not save the report or candidates. The DB connection uses
+`mode=ro`, `query_only` and a SQL authorizer; only six published-car fields are
+selected. Their fingerprint is compared through separate before/after connections.
+This is not a complete protected-DB-row comparison or a server-wide writer lock.
+
+The HTML manifest covers root-level HTML plus recursive `video/` and `site/` HTML.
+Every captured hash is checked again after in-memory migration; new, missing,
+unreadable or drifting files fail. Sources also receive a final hash check.
+Missing current homepage/browser/full-chain/full-row acceptance is explicit in
+the report. The CLI exits 1 because those mandatory Preview checks remain open,
+even when all snapshot checks pass. It cannot authorize Production.

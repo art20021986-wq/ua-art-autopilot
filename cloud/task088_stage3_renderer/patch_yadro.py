@@ -9,11 +9,6 @@ import hashlib
 
 EXPECTED_SHA256 = "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793"
 IMPORT = "from uaart_market_prices import render_market_prices as _ua088_render_market_prices\n"
-CATALOG_PRICE_COPY = (
-    ("Каталог автомобилей UA ART COMPANY: цены под ключ в Киеве.", "Каталог автомобилей UA ART COMPANY: цены для Украины и Грузии."),
-    ("%s · цены под ключ в Киеве", "%s · цены для Украины и Грузии"),
-    ("%s · ціни під ключ у Києві", "%s · ціни для України та Грузії"),
-)
 
 
 def _node_text(source, node):
@@ -78,11 +73,6 @@ def patch_yadro(source_bytes):
     candidate = source
     for start, end, replacement in sorted(replacements, reverse=True):
         candidate = candidate[:start] + replacement + candidate[end:]
-    # Price-scoped catalog statements, not a site-wide replacement.
-    for old, new in CATALOG_PRICE_COPY:
-        if _node_text(source, catalog).count(old) != 1 or candidate.count(old) != 1:
-            raise ValueError("YADRO_CATALOG_PRICE_COPY_MISMATCH")
-        candidate = candidate.replace(old, new, 1)
     compile(candidate, "yadro.py", "exec")
     changed_tree = ast.parse(candidate)
     changed_cards = [node for node in changed_tree.body if isinstance(node, ast.FunctionDef) and node.name == "karta_html"]
@@ -96,6 +86,6 @@ def patch_yadro(source_bytes):
         "source": "yadro.py", "before_sha256": before,
         "after_sha256": hashlib.sha256(encoded).hexdigest(),
         "price_statements_replaced": 2, "imports_added": 1,
-        "catalog_price_copy_replacements": len(CATALOG_PRICE_COPY),
+        "catalog_price_copy_replacements": 0,
         "wrappers_unchanged": 5, "candidate_compiles": True,
     }

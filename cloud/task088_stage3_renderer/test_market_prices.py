@@ -1,11 +1,17 @@
 import copy
 from decimal import Decimal
 from html.parser import HTMLParser
-import importlib.util
-import pathlib
+from html import unescape
+import re
 import unittest
 
 from uaart_market_prices import CAPTIONS, END, START, normalized_usd, render_market_prices
+
+
+def visible_lines(fragment):
+    """Read each rendered price heading independently of its HTML wrappers."""
+    return [unescape(re.sub(r"<[^>]+>", "", line)) for line in re.findall(
+        r'<div class="ua-market-amount-v1"[^>]*>(.*?)</div>', fragment)]
 
 
 class Parsed(HTMLParser):
@@ -88,12 +94,19 @@ class MarketPricesTest(unittest.TestCase):
         self.assertNotIn("под ключ", render_market_prices({"price_uah": 9000}).lower())
         self.assertNotIn("доплат нет", render_market_prices({"price_uah": 9000}).lower())
 
-    def test_card_and_catalog_share_exact_values_and_captions(self):
+    def test_card_and_catalog_share_exact_values_with_captions_only_on_full_card(self):
         row = {"price_uah": 9000, "price_georgia": 7000}
-        self.assertEqual(Parsed(render_market_prices(row)).markets, Parsed(render_market_prices(row, compact=True)).markets)
+        full = render_market_prices(row)
+        compact = render_market_prices(row, compact=True)
+        price_data = lambda fragment: [{key: value for key, value in attrs.items() if key.startswith("data-ua-")}
+                                       for attrs in Parsed(fragment).markets]
+        self.assertEqual(price_data(full), price_data(compact))
+        self.assertEqual(visible_lines(full), visible_lines(compact))
+        self.assertNotIn("ua-market-caption-v1", compact)
         for caption in CAPTIONS.values():
             for text in caption.values():
-                self.assertIn(text, render_market_prices(row, compact=True))
+                self.assertIn(text, full)
+                self.assertNotIn(text, compact)
 
     def test_exact_component_boundaries(self):
         out = render_market_prices({})
@@ -109,14 +122,51 @@ class MarketPricesTest(unittest.TestCase):
         out = render_market_prices({"auto_number": "UA-0010", "price_uah": 9000}, require_car_id=True)
         self.assertIn('data-ua-car="UA-0010"', out)
 
-    def test_captions_match_approved_owner_policy(self):
-        policy = pathlib.Path(__file__).resolve().parents[1] / "task088_autopilot_owner_policy" / "price_captions.py"
-        spec = importlib.util.spec_from_file_location("owner_captions", policy)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        for market in ("ukraine", "georgia"):
-            for language in ("ru", "uk"):
-                self.assertEqual(CAPTIONS[market][language], module.price_caption(market, language))
+    def test_final_v5_exact_country_price_lines_and_full_captions(self):
+        row = {"price_uah": 24500, "price_georgia": 18900}
+        for compact in (False, True):
+            with self.subTest(compact=compact):
+                fragment = render_market_prices(row, compact=compact)
+                self.assertEqual(visible_lines(fragment), [
+                    "🇺🇦 Украина — 24 500 $", "🇬🇪 Грузия — 18 900 $"])
+                self.assertNotIn("AUTOPAPA", fragment)
+                self.assertNotIn("без растаможки", fragment)
+        self.assertEqual(CAPTIONS["ukraine"]["ru"],
+                         "Цена с доставкой в Киев с растаможкой и сертификацией")
+        self.assertEqual(CAPTIONS["georgia"]["ru"],
+                         "Цена автомобиля с доставкой до авторынка Рустави 🅿️ №16")
+
+    def test_final_v5_missing_georgia_is_labelled_without_zero_amount(self):
+        for compact in (False, True):
+            fragment = render_market_prices({"price_uah": 24500, "price_georgia": None}, compact=compact)
+            self.assertEqual(visible_lines(fragment), [
+                "🇺🇦 Украина — 24 500 $", "🇬🇪 Грузия — Цена уточняется"])
+            self.assertNotIn("Грузия — 0 $", "".join(visible_lines(fragment)))
+
+    def test_final_v5_translation_attributes_preserve_numeric_values(self):
+        # Static attribute contract only. The real site's language scripts and
+        # browser switching remain separate, required integration evidence.
+        labels = {
+            "ru": ("Украина", "Грузия", "Цена уточняется"),
+            "uk": ("Україна", "Грузія", "Ціна уточнюється"),
+            "ua": ("Україна", "Грузія", "Ціна уточнюється"),
+            "ka": ("უკრაინა", "საქართველო", "ფასი ზუსტდება"),
+            "ge": ("უკრაინა", "საქართველო", "ფასი ზუსტდება"),
+        }
+        for compact in (False, True):
+            for ge_price in (18900, None):
+                original = render_market_prices({"price_uah": 24500, "price_georgia": ge_price}, compact=compact)
+                before_values = Parsed(original).markets
+                for language, (ua, ge, missing) in labels.items():
+                    def translate(match):
+                        attributes, default = match.groups()
+                        selected = re.search(r'\bdata-' + language + r'="([^"]*)"', attributes)
+                        return '<span' + attributes + '>' + (selected.group(1) if selected else default) + '</span>'
+                    translated = re.sub(r'<span([^>]*)>([^<]*)</span>', translate, original)
+                    expected_ge = "18 900 $" if ge_price is not None else missing
+                    self.assertEqual(visible_lines(translated), [
+                        "🇺🇦 " + ua + " — 24 500 $", "🇬🇪 " + ge + " — " + expected_ge])
+                    self.assertEqual(Parsed(translated).markets, before_values)
 
 
 if __name__ == "__main__":

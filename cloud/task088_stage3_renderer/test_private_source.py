@@ -47,7 +47,7 @@ def base_renderers(source):
 
 def master_base_renderers(source):
     tree = ast.parse(source)
-    names = {"ekran", "cena", "nomer", "etap_dlinno", "etap_korotko", "sobrat_kartochku", "sobrat_katalog"}
+    names = {"ekran", "cena", "nomer", "etap_dlinno", "etap_korotko", "sobrat_kartochku", "sobrat_katalog", "sobrat_glavnuyu"}
     selected = []
     seen = set()
     for node in tree.body:
@@ -66,6 +66,9 @@ def master_base_renderers(source):
         "shapka": lambda: "<fixture-header />",
         "podval": lambda *args: "<fixture-footer>%s</fixture-footer>" % repr(args),
         "v_bota": lambda text: "https://t.me/fixture?start=" + text,
+        "svyaz_blok": lambda *args: "<fixture-contacts />",
+        "RAZDELITEL_PODBOR": "<fixture-divider />", "STRANY_PODBOR": [],
+        "TELEFON": "fixture-phone", "ADRES": "fixture-address",
         "_ua_delivery_stage_anchor": lambda row: "<fixture-route>%s</fixture-route>" % row["status"],
     }
     exec(compile(ast.Module(body=selected, type_ignores=[]), "selected_master_pure_ast", "exec"), namespace)
@@ -108,13 +111,10 @@ class LiveSourceDifferentialTest(unittest.TestCase):
         for row in rows:
             old = '<div class="cn">%s</div>' % self.before["ekran"](self.before["dengi"](row["price_uah"]))
             restored = restored.replace(render_market_prices(row, compact=True), old, 1)
-        restored = restored.replace("цены для Украины и Грузии", "цены под ключ в Киеве").replace("ціни для України та Грузії", "ціни під ключ у Києві")
         self.assertEqual(restored, before)
         self.assertEqual(after.count(START), 18)
         self.assertEqual(after.count(END), 18)
-        self.assertIn("цены для Украины и Грузии", after)
-        self.assertIn("ціни для України та Грузії", after)
-        self.assertNotIn("цены под ключ в Киеве", after)
+        self.assertEqual(self.provenance["catalog_price_copy_replacements"], 0)
 
     def test_missing_both_prices_changes_only_former_empty_card_slot(self):
         row = self.model(10)
@@ -165,15 +165,35 @@ class MasterSourceDifferentialTest(unittest.TestCase):
         for row in rows:
             old = "<div class='cn'>%s</div>" % self.before["cena"](row)
             restored = restored.replace(render_market_prices(row, compact=True), old, 1)
-        restored = restored.replace("цены для Украины и Грузии", "цены под ключ в Киеве")
         self.assertEqual(restored, before)
         self.assertEqual(after.count(START), 18)
-        self.assertIn("цены для Украины и Грузии", after)
-        self.assertNotIn("цены под ключ в Киеве", after)
+        self.assertEqual(self.provenance["catalog_price_copy_replacements"], 0)
+
+    def test_master_homepage_eighteen_items_only_price_changes(self):
+        rows = [self.model(number, ("kr_ready", "sea_ready", "ge_ready", "ua_ready")[number % 4]) for number in range(1, 19)]
+        # Both priced and nullable Georgia must use the same homepage component.
+        for row in rows[::2]:
+            row["price_georgia"] = None
+        photos = {row["auto_number"]: [row["auto_number"] + ".jpg"] for row in rows}
+        before = self.before["sobrat_glavnuyu"](rows, photos)
+        after = self.after["sobrat_glavnuyu"](rows, photos)
+        restored = after
+        for row in rows:
+            old = "<div class='cn'>%s</div>" % self.before["cena"](row)
+            restored = restored.replace(render_market_prices(row, compact=True), old, 1)
+        self.assertEqual(restored, before)
+        self.assertEqual(after.count(START), 18)
+        self.assertEqual(after.count(END), 18)
+        self.assertNotIn("ua-market-caption-v1", after)
+        self.assertEqual(self.provenance["homepage_price_statements_replaced"], 1)
+
+    def test_master_empty_homepage_unchanged(self):
+        self.assertEqual(self.before["sobrat_glavnuyu"]([], {}), self.after["sobrat_glavnuyu"]([], {}))
 
     def test_master_wrapper_integrity_and_full_compile(self):
         self.assertTrue(self.provenance["candidate_compiles"])
         self.assertEqual(self.provenance["wrappers_unchanged"], 7)
+        self.assertEqual(self.provenance["price_statements_replaced"], 3)
         compile(self.candidate, "stranica.py", "exec")
 
     def test_master_input_drift_and_reapply_rejected(self):

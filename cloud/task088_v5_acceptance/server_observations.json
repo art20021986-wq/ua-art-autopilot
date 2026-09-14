@@ -1,0 +1,34 @@
+{
+  "observation_channel": "authenticated PythonAnywhere browser; read-only sha256sum console and Tasks UI",
+  "observed_date_utc": "2026-09-14",
+  "source_check_server_prompt_utc": "05:57",
+  "tasks_page_server_time_utc": "05:59",
+  "production_source_written": false,
+  "crm_price_written": false,
+  "public_html_written": false,
+  "crm_restarted": false,
+  "diagnostic_console_created": 48163167,
+  "crm_process": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "observed_state": "Running"
+  },
+  "connection_monitor_observed_state": "Running",
+  "task083_scheduler_observed_state": "Disabled (Enable task button)",
+  "source_sha256": {
+    "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "yadro.py": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793",
+    "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+  },
+  "github": {
+    "main_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+    "pr114_head_before_this_work": "886d8ce0d1a23a9774a07308d460eebd54927ea5",
+    "pr112_merged": true,
+    "pr113_merged": true,
+    "main_AUTOPILOT_HALT_read_status": 404
+  },
+  "limits": [
+    "Running is a process state, not end-to-end Telegram acceptance.",
+    "Three source hashes are current; no current DB/HTML verification is implied by this observation.",
+    "No Stage3/4 completion is claimed."
+  ]
+}
