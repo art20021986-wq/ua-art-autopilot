@@ -29,7 +29,7 @@ class GateFailureTests(unittest.TestCase):
         for relative in G.SOURCE_ROOTS:
             (self.root / relative).mkdir(parents=True)
             (self.root / relative / "candidate.py").write_text("VALUE = 1\n")
-        for relative in G.WORKFLOWS:
+        for relative in G.WORKFLOWS + G.CANONICAL_SOURCES:
             path = self.root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("name: fixture only\n")

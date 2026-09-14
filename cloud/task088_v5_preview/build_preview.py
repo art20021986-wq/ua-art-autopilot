@@ -14,6 +14,7 @@ import re
 from urllib.parse import urljoin, urlsplit, unquote
 
 from common import ASSET_TYPES, CONTRACT, encoded, read, relative, sha, write_new
+from routing_proof import prove_legacy_home_redirect
 
 RENDERER = Path(__file__).resolve().parents[1] / 'task088_stage3_renderer'
 sys.path.insert(0, str(RENDERER))
@@ -27,10 +28,12 @@ class References(HTMLParser):
     def __init__(self, source):
         super().__init__(convert_charrefs=True)
         self.references = set()
+        self.links = set()
         self.in_style = False
         self.feed(source)
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if tag == 'a' and attrs.get('href'): self.links.add(attrs['href'])
         if tag == 'style': self.in_style = True
         if attrs.get('style'): self.references.update(css_references(attrs['style']))
         if tag in ('script','img','source','video','audio'):
@@ -86,6 +89,7 @@ def build(snapshot, output, source_origin, routing_evidence, asset_root=None, si
     for name in ('video/index.html','site/index.html','observed_wsgi_config.py','analitika_wsgi.py','uaart_bridge_wsgi.py'):
         if sha(captured_file(name)) != routes['source_sha256'].get(name):
             raise ValueError('ROUTING_EVIDENCE_CAPTURE_MISMATCH:' + name)
+    legacy_redirect = prove_legacy_home_redirect(captured_file,routes,sha(route_raw))
     source_checks = []
     for name, patcher in (('yadro.py',patch_yadro),('stranica.py',patch_stranica),('catalog_design_guard.py',patch_catalog_design_guard)):
         patched, evidence = patcher(captured_file(name))
@@ -109,6 +113,48 @@ def build(snapshot, output, source_origin, routing_evidence, asset_root=None, si
     pages.append(dict(path='/video/index.html', kind='HOME', **evidence))
     files = {'/' + name: {'storage':'bundle','path':'public/' + name,'sha256':sha(raw),
                          'bytes':len(raw),'content_type':'text/html; charset=utf-8'} for name, raw in payload.items()}
+    # Only these observed public navigation and per-published-car diagnostic
+    # paths may be added unchanged. Never crawl or expose arbitrary HTML.
+    auxiliary_allowed = {folder + '/' + name for folder in ('video','site')
+        for name in ('info.html','podbor.html',*(row['auto_number']+'-diag.html' for row in rows))}
+    linked_pages, missing_pages, pending_pages, seen_pages = [], [], list(payload), set()
+    bound_auxiliary_sources = []
+    while pending_pages:
+        referring = pending_pages.pop()
+        for ref in sorted(References(payload[referring].decode()).links):
+            parsed = urlsplit(urljoin(source_origin + '/' + referring,ref))
+            if (parsed.scheme,parsed.netloc) != (origin.scheme,origin.netloc) or not parsed.path.endswith('.html'):
+                continue
+            name = unquote(parsed.path).lstrip('/')
+            if name in payload or name == 'site/index.html' or name in seen_pages: continue
+            seen_pages.add(name)
+            if name not in auxiliary_allowed:
+                missing_pages.append({'path':'/'+name,'referring_path':'/'+referring,
+                                      'reason':'UNREVIEWED_LINKED_HTML_ROUTE'})
+                continue
+            try:
+                if name in captured['sha256']:
+                    raw = captured_file(name)
+                    binding = {'type':'CAPTURE','path':name,'sha256':sha(raw)}
+                    bound_auxiliary_sources.append((snapshot,name,sha(raw)))
+                else:
+                    prefix,asset_path = name.split('/',1)
+                    if prefix not in asset_roots: raise FileNotFoundError(name)
+                    raw = read(asset_roots[prefix],asset_path)
+                    binding = {'type':'EXPLICIT_PUBLIC_ROOT','root':prefix,'path':asset_path,'sha256':sha(raw)}
+                    bound_auxiliary_sources.append((asset_roots[prefix],asset_path,sha(raw)))
+                raw.decode('utf-8')
+                payload[name] = raw
+                files['/'+name] = {'storage':'bundle','path':'public/'+name,'sha256':sha(raw),'bytes':len(raw),
+                    'content_type':'text/html; charset=utf-8','protection':'UNCHANGED_LINKED_PUBLIC_HTML',
+                    'source_binding':binding}
+                linked_pages.append({'path':'/'+name,'referring_path':'/'+referring,'source_binding':binding,
+                    'before_sha256':sha(raw),'after_sha256':sha(raw),'all_bytes_unchanged':True,
+                    'browser_link_check':'NOT_RUN'})
+                pending_pages.append(name)
+            except (OSError,ValueError,UnicodeError):
+                missing_pages.append({'path':'/'+name,'referring_path':'/'+referring,
+                    'reason':'UNCHANGED_PUBLIC_HTML_NOT_CAPTURED_OR_UNREADABLE'})
     pending = [(name, ref) for name, raw in payload.items() for ref in References(raw.decode()).references]
     missing, external, seen = [], [], set()
     while pending:
@@ -150,15 +196,22 @@ def build(snapshot, output, source_origin, routing_evidence, asset_root=None, si
     matrix = [{'path':page['path'],'kind':page['kind'],'source_diff':'PASS_PRICE_ONLY_OR_UNCHANGED_HOME',
                'browser':[{ 'language':lang,'viewport':size,'status':'NOT_RUN'}
                           for lang in ('RU','UA','GE') for size in ('desktop','mobile')]} for page in pages]
+    for root,name,expected in bound_auxiliary_sources:
+        if sha(read(root,name)) != expected:
+            raise ValueError('UNCHANGED_PUBLIC_HTML_SOURCE_CHANGED_DURING_BUILD:' + name)
     provenance = {'contract':CONTRACT,'source_capture_sha256':sha(captured_raw),
         'routing_evidence_sha256':sha(route_raw),'published_count':len(rows),
         'sources':source_checks,'pages':pages,'matrix':matrix,
         'excluded_protected_legacy':[{'path':'site/index.html','sha256':sha(captured_file('site/index.html')),
                                     'reason':'OBSERVED_UNSERVED_LEGACY_PRESERVED'}],
         'missing_assets':sorted(missing,key=lambda x:x['path']),'external_references':sorted(external,key=lambda x:x['url']),
+        'linked_public_html':sorted(linked_pages,key=lambda x:x['path']),
+        'missing_linked_html':sorted(missing_pages,key=lambda x:x['path']),
+        'legacy_home_redirect_proof':legacy_redirect,
         'preview_gate':'NOT_PASSED','browser_run':False,'production_written':False,'activated':False}
     manifest = {'contract':CONTRACT,'source_origin':source_origin,
                 'asset_roots':{prefix:str(root) for prefix,root in asset_roots.items()},
+                'redirects':{'/site/index.html':{'status':'302 Found','location':'/video/index.html','proof':legacy_redirect}},
                 'home_route':'/video/index.html','files':files,'provenance_sha256':sha(encoded(provenance)),
                 'preview_gate':'NOT_PASSED'}
     output.mkdir(mode=0o700)
@@ -166,7 +219,8 @@ def build(snapshot, output, source_origin, routing_evidence, asset_root=None, si
     write_new(output,'provenance.json',encoded(provenance))
     write_new(output,'manifest.json',encoded(manifest))
     return {'output':str(output),'manifest_sha256':sha(encoded(manifest)),'pages':len(pages),
-            'pinned_assets':len(files)-len(pages),'missing_assets':len(missing),
+            'pinned_assets':len(files)-len(pages)-len(linked_pages),'missing_assets':len(missing),
+            'unchanged_linked_pages':len(linked_pages),'missing_linked_pages':len(missing_pages),
             'external_references':len(external),'preview_gate':'NOT_PASSED','activated':False}
 
 

@@ -263,10 +263,11 @@ class API:
         """
         _, raw = self.request("GET", BASE + "webapps/")
         webapps = json.loads(raw)
-        if (not isinstance(webapps, list) or len(webapps) != 1
-                or webapps[0].get("domain_name") != "www.uaart.com.ua"
-                or webapps[0].get("enabled") is not True
-                or webapps[0].get("python_version") != "3.10"):
+        if not isinstance(webapps, list) or any(not isinstance(item, dict) for item in webapps):
+            raise ControllerError("EXACT_EXISTING_WEBAPP_ROUTING_REQUIRED")
+        production = [item for item in webapps if item.get("domain_name") == "www.uaart.com.ua"]
+        if (len(production) != 1 or production[0].get("enabled") is not True
+                or production[0].get("python_version") != "3.10"):
             raise ControllerError("EXACT_EXISTING_WEBAPP_ROUTING_REQUIRED")
         _, raw = self.request("GET", BASE + "webapps/www.uaart.com.ua/static_files/")
         mappings = json.loads(raw)

@@ -213,6 +213,28 @@ class ControllerBoundaryTests(unittest.TestCase):
             with self.assertRaisesRegex(C.ControllerError, "EXACT_EXISTING_STATIC_ROUTING_REQUIRED"):
                 api.routing()
 
+    def test_isolated_preview_webapp_does_not_change_production_route_admission(self):
+        api = C.API({"UAART_RUN_ID": "123", "UAART_REQUEST_SHA256": "a" * 64, "PYTHONANYWHERE_API_TOKEN": "TEST-ONLY"})
+        production = {"domain_name": "www.uaart.com.ua", "enabled": True, "python_version": "3.10"}
+        preview = {"domain_name": "preview.example.test", "enabled": True, "python_version": "3.10"}
+        responses = [(200, json.dumps([preview, production]).encode()),
+                     (200, json.dumps([{"path": "/home/Carix/video/", "url": "/video/"}]).encode())]
+        with patch.object(api, "request", side_effect=responses) as network:
+            result = api.routing()
+        self.assertEqual(result["domain"], "www.uaart.com.ua")
+        self.assertEqual(network.call_args_list[1].args, ("GET", C.BASE + "webapps/www.uaart.com.ua/static_files/"))
+
+    def test_ambiguous_or_missing_production_webapp_blocks_before_static_lookup(self):
+        production = {"domain_name": "www.uaart.com.ua", "enabled": True, "python_version": "3.10"}
+        preview = {"domain_name": "preview.example.test", "enabled": True, "python_version": "3.10"}
+        for webapps in ([production, dict(production)], [preview]):
+            with self.subTest(domains=[item["domain_name"] for item in webapps]):
+                api = C.API({"UAART_RUN_ID": "123", "UAART_REQUEST_SHA256": "a" * 64, "PYTHONANYWHERE_API_TOKEN": "TEST-ONLY"})
+                with patch.object(api, "request", return_value=(200, json.dumps(webapps).encode())) as network:
+                    with self.assertRaisesRegex(C.ControllerError, "EXACT_EXISTING_WEBAPP_ROUTING_REQUIRED"):
+                        api.routing()
+                self.assertEqual(network.call_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

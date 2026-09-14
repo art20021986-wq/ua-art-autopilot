@@ -28,7 +28,9 @@ SOURCE_ROOTS = (
     "cloud/task088_v5_install", "cloud/task088_v5_preview",
 )
 WORKFLOWS = (".github/workflows/uaart_critical.yml", ".github/workflows/uaart_maintenance.yml")
+CANONICAL_SOURCES = ("automation/control_plane.py", "automation/test_task088_stage3_activation.py")
 REQUIRED_TESTS = {
+    "canonical_activation": ("automation", {"test_task088_stage3_activation.py"}),
     "renderer": ("cloud/task088_stage3_renderer", {
         "test_market_prices.py", "test_initial_html_prices.py", "test_home_prices.py",
     }),
@@ -66,7 +68,7 @@ def digest(raw):
 def source_inventory(root):
     """Bind all importable candidate Python; reject alternate import artifacts."""
     root = root.resolve(strict=True)
-    paths = set(WORKFLOWS)
+    paths = set(WORKFLOWS + CANONICAL_SOURCES)
     for relative in SOURCE_ROOTS:
         directory = root / relative
         if directory.is_symlink() or not directory.is_dir():

@@ -11,6 +11,7 @@ import unittest
 from common import CONTRACT, MAX_FILE_BYTES, encoded, read, relative, sha, write_new
 from build_preview import References, build, css_references
 from wsgi_preview import Preview
+from routing_proof import SOURCE_BINDINGS, STATIC_MAPPING, PRODUCTION_LOCATION, validate_legacy_home_redirect
 
 
 class PreviewBoundaryTest(unittest.TestCase):
@@ -166,6 +167,71 @@ class PreviewBoundaryTest(unittest.TestCase):
         self.config['basic_auth']['salt_hex'] = '1'*33
         with self.assertRaisesRegex(ValueError,'PROVISIONED_AUTH_VERIFIER_REQUIRED'): self.app()
 
+    def add_auxiliary(self, route='/video/info.html'):
+        raw=b'<html><body>Unchanged public information</body></html>'
+        write_new(self.bundle,'public'+route,raw)
+        self.manifest['files'][route]={'storage':'bundle','path':'public'+route,'sha256':sha(raw),
+            'bytes':len(raw),'content_type':'text/html; charset=utf-8','protection':'UNCHANGED_LINKED_PUBLIC_HTML',
+            'source_binding':{'type':'CAPTURE','path':route[1:],'sha256':sha(raw)}}
+        return raw
+
+    def test_unchanged_navigation_page_requires_auth_and_retains_exact_bytes(self):
+        raw=self.add_auxiliary()
+        app=self.app()
+        self.assertEqual(self.call(app,'/video/info.html',auth=False)['status'],'401 Unauthorized')
+        response=self.call(app,'/video/info.html')
+        self.assertEqual((response['status'],response['body']),('200 OK',raw))
+        (self.bundle/'public/video/info.html').write_bytes(b'changed public information')
+        self.assertEqual(self.call(app,'/video/info.html')['status'],'503 Service Unavailable')
+
+    def test_unchanged_html_needs_exact_source_binding_and_reviewed_name(self):
+        self.add_auxiliary()
+        item=self.manifest['files']['/video/info.html']
+        item['source_binding']['sha256']='0'*64
+        with self.assertRaisesRegex(ValueError,'UNCHANGED_PUBLIC_HTML_SOURCE_PIN_REQUIRED'): self.app()
+        item['source_binding']['sha256']=item['sha256']
+        item['source_binding']['path']='video/private.html'
+        with self.assertRaisesRegex(ValueError,'EXACT_UNCHANGED_PUBLIC_HTML_BINDING_REQUIRED'): self.app()
+        self.manifest['files'].pop('/video/info.html')
+        self.add_auxiliary('/video/private.html')
+        with self.assertRaisesRegex(ValueError,'ONLY_REVIEWED_HTML_ROUTES_ALLOWED'): self.app()
+
+    def test_diagnostic_requires_its_published_car(self):
+        raw=self.add_auxiliary('/video/UA-0017-diag.html')
+        with self.assertRaisesRegex(ValueError,'DIAGNOSTIC_REQUIRES_PUBLISHED_CARD'): self.app()
+        write_new(self.bundle,'public/video/UA-0017.html',self.html)
+        item=copy.deepcopy(self.manifest['files']['/video/index.html'])
+        item['path']='public/video/UA-0017.html'
+        self.manifest['files']['/video/UA-0017.html']=item
+        self.assertEqual(self.call(self.app(),'/video/UA-0017-diag.html')['body'],raw)
+
+    def legacy_redirect(self):
+        return {'status':'302 Found','location':'/video/index.html','proof':{
+            'source_sha256':dict(SOURCE_BINDINGS),'static_mappings':copy.deepcopy(STATIC_MAPPING),
+            'production_location':PRODUCTION_LOCATION,'routing_evidence_sha256':'0'*64,
+            'route':'/site/index.html','classification':'UNSERVED_LEGACY_USES_BASE_WSGI_REDIRECT'}}
+
+    def test_proven_legacy_home_redirect_is_authenticated_and_exact(self):
+        self.manifest['redirects']={'/site/index.html':self.legacy_redirect()}
+        app=self.app()
+        self.assertEqual(self.call(app,'/site/index.html',auth=False)['status'],'401 Unauthorized')
+        response=self.call(app,'/site/index.html')
+        self.assertEqual((response['status'],response['headers']['Location']),('302 Found','/video/index.html'))
+        self.assertEqual(self.call(app,'/site/unknown.html')['status'],'404 Not Found')
+        self.assertEqual(self.call(app,'/site/index.html',REQUEST_METHOD='POST')['status'],'405 Method Not Allowed')
+
+    def test_redirect_source_drift_open_redirect_and_broad_fallback_are_rejected(self):
+        redirect=self.legacy_redirect()
+        self.manifest['redirects']={'/site/index.html':redirect}
+        redirect['proof']['source_sha256']['observed_wsgi_config.py']='0'*64
+        with self.assertRaisesRegex(ValueError,'EXACT_LEGACY_HOME_REDIRECT_PROOF_REQUIRED'):self.app()
+        redirect=self.legacy_redirect()
+        self.manifest['redirects']={'/site/index.html':redirect}
+        redirect['location']='https://other.example'
+        with self.assertRaisesRegex(ValueError,'EXACT_LEGACY_HOME_REDIRECT_REQUIRED'):self.app()
+        self.manifest['redirects']={'/site/*':self.legacy_redirect()}
+        with self.assertRaisesRegex(ValueError,'ONLY_OBSERVED_LEGACY_HOME_REDIRECT_ALLOWED'):self.app()
+
 
 class BuilderBoundaryTest(unittest.TestCase):
     def test_exact_relative_paths(self):
@@ -199,6 +265,11 @@ class BuilderBoundaryTest(unittest.TestCase):
         <link rel="alternate stylesheet" href="screen.css"><script src="lang.js"></script>'''
         self.assertEqual(References(source).references,{'theme.css','hero.jpg','tile.webp','photo.jpg',
             'small.jpg','large.jpg','screen.css','lang.js'})
+
+    def test_link_discovery_does_not_mix_navigation_with_asset_dependencies(self):
+        refs=References('<a href="info.html">Info</a><a href="UA-0017-diag.html">Diagnostic</a><img src="photo.jpg">')
+        self.assertEqual(refs.links,{'info.html','UA-0017-diag.html'})
+        self.assertEqual(refs.references,{'photo.jpg'})
 
 
 

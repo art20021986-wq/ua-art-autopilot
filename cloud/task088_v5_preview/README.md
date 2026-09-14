@@ -29,6 +29,12 @@ The optional media roots apply only to their exact `/video/` and `/site/`
 prefixes. Each referenced file receives its own path, length, MIME type and SHA256
 in the manifest. There is no directory-serving fallback. Source, database,
 configuration and arbitrary HTML routes cannot be added through asset roots.
+Observed links to `info.html`, `podbor.html` and a published car's exact
+`UA-NNNN-diag.html` may be copied unchanged from the captured manifest or an
+explicit root. Each gets a source binding and byte-equality evidence, and is
+read again before output creation to detect source drift. Their referenced
+assets are also individually pinned. Unknown linked HTML remains an explicit
+Gate failure, even if a matching file exists in the root.
 Files over 32 MiB, unavailable files and third-party resources remain explicit
 unresolved dependencies. The builder does not fetch them or invent substitutes.
 
@@ -40,9 +46,16 @@ asset roots; any subsequent byte change results in HTTP 503 on that resource.
 Observed Production serves `video/index.html`, which contains four stage tiles
 and no individual-car price previews. Its bytes remain identical. The unserved
 legacy `site/index.html` is excluded with its hash and routing proof recorded;
-it is not mislabeled as a converted homepage. Each published car is migrated in
+it is not mislabeled as a converted homepage. Only `/site/index.html` redirects
+to the Preview's `/video/index.html`, matching the observed unconditional
+Production WSGI redirect when a path is outside the `/video/` static mapping.
+This exception requires the exact reviewed WSGI, analytics and bridge source
+hashes plus routing evidence; unknown routes still return 404. The legacy HTML
+itself is never served or altered. Each published car is migrated in
 both roots, with two catalogs and the served homepage: 39 pages for the current
-18-car capture. Publication counts are derived from the captured rows.
+18-car capture. Unchanged linked pages are recorded separately and do not
+inflate that price-surface count or its 234 browser checks. Publication counts
+are derived from the captured rows.
 
 ## Dedicated app configuration
 
@@ -85,6 +98,7 @@ UA088_LIVE_SOURCE_DIR=/absolute/path/to/private-capture \
 The tests cover authentication, exact host/HTTPS, read-only methods, disclosure
 and traversal attempts, symlink rejection, changed files, manifest pins, private
 configuration modes, separate asset roots, resource bounds, dependency scanning,
+source-bound unchanged linked HTML, the one proven legacy redirect,
 and the actual captured-page build. They use isolated temporary fixtures and do
 not activate anything.
 
@@ -96,3 +110,10 @@ writer exclusion and a fresh CRM/DB snapshot must be established by the Stage 3
 acceptance process before it can issue its separate PASS receipt. Installation,
 Production verification and the real Stage 4 operational cycle remain separate
 gates.
+
+The current read-only capture does not contain the 40 linked information,
+selection and diagnostic files. The build now lists these omissions rather than
+silently providing broken links. A fresh capture or a server build with the
+explicit roots is required. A source-only browser API without a supported
+viewport-control flow cannot claim the planned mobile runs; no iframe harness
+is installed by this package.

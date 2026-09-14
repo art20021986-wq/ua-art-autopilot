@@ -15,6 +15,7 @@ import re
 from urllib.parse import urlsplit
 
 from common import ASSET_TYPES, CONTRACT, MAX_FILE_BYTES, read, relative, sha
+from routing_proof import validate_legacy_home_redirect
 
 
 def origin(value):
@@ -64,7 +65,22 @@ class Preview:
             if extension == '.html':
                 if (not re.fullmatch(r'(video|site)/(UA-[0-9]{4,}|katalog)\.html',route_relative)
                         and route_relative != 'video/index.html'):
-                    raise ValueError('ONLY_GENERATED_HTML_ROUTES_ALLOWED')
+                    auxiliary = re.fullmatch(r'(video|site)/(info|podbor|UA-[0-9]{4,}-diag)\.html',route_relative)
+                    if not auxiliary or item.get('protection') != 'UNCHANGED_LINKED_PUBLIC_HTML':
+                        raise ValueError('ONLY_REVIEWED_HTML_ROUTES_ALLOWED')
+                    if auxiliary[2].endswith('-diag') and '/'+auxiliary[1]+'/'+auxiliary[2][:-5]+'.html' not in self.files:
+                        raise ValueError('DIAGNOSTIC_REQUIRES_PUBLISHED_CARD')
+                    binding = item.get('source_binding',{})
+                    if type(binding) is not dict or binding.get('sha256') != item.get('sha256'):
+                        raise ValueError('UNCHANGED_PUBLIC_HTML_SOURCE_PIN_REQUIRED')
+                    if binding.get('type') == 'CAPTURE':
+                        valid_binding = set(binding)=={'type','path','sha256'} and binding.get('path')==route_relative
+                    elif binding.get('type') == 'EXPLICIT_PUBLIC_ROOT':
+                        valid_binding = (set(binding)=={'type','root','path','sha256'}
+                            and binding.get('root')==auxiliary[1] and auxiliary[1] in self.asset_roots
+                            and binding.get('path')==route_relative.split('/',1)[1])
+                    else: valid_binding = False
+                    if not valid_binding: raise ValueError('EXACT_UNCHANGED_PUBLIC_HTML_BINDING_REQUIRED')
                 if mime != 'text/html; charset=utf-8' or item.get('storage') != 'bundle':
                     raise ValueError('GENERATED_HTML_MANIFEST_REQUIRED')
             elif ASSET_TYPES.get(extension) != mime:
@@ -82,6 +98,15 @@ class Preview:
             if (not re.fullmatch(r'[0-9a-f]{64}',item.get('sha256','')) or type(item.get('bytes')) is not int
                     or not 0 <= item['bytes'] <= MAX_FILE_BYTES):
                 raise ValueError('PINNED_PUBLIC_BYTES_REQUIRED')
+        self.redirects = manifest.get('redirects',{})
+        if type(self.redirects) is not dict or set(self.redirects)-{'/site/index.html'}:
+            raise ValueError('ONLY_OBSERVED_LEGACY_HOME_REDIRECT_ALLOWED')
+        for route,redirect in self.redirects.items():
+            if (type(redirect) is not dict or set(redirect)!={'status','location','proof'}
+                    or redirect['status']!='302 Found' or redirect['location']!='/video/index.html'
+                    or redirect['location'] not in self.files or route in self.files):
+                raise ValueError('EXACT_LEGACY_HOME_REDIRECT_REQUIRED')
+            validate_legacy_home_redirect(redirect['proof'])
         auth = config['basic_auth']
         if set(auth) != {'username','salt_hex','iterations','password_hash_hex'}:
             raise ValueError('PROVISIONED_AUTH_VERIFIER_REQUIRED')
@@ -134,6 +159,9 @@ class Preview:
         path = environ.get('PATH_INFO','')
         if path == '/':
             return response('302 Found',extra=[('Location','/video/index.html')])
+        if path in self.redirects:
+            redirect = self.redirects[path]
+            return response(redirect['status'],extra=[('Location',redirect['location'])])
         item = self.files.get(path)
         if item is None:
             return response('404 Not Found',b'Not a preview resource.')

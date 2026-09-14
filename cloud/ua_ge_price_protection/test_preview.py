@@ -18,7 +18,7 @@ class PreviewBindingTests(unittest.TestCase):
             directory = self.root / relative
             directory.mkdir(parents=True)
             (directory / "fixture_source.py").write_text("# TEST FIXTURE ONLY\n")
-        for relative in G.WORKFLOWS:
+        for relative in G.WORKFLOWS + G.CANONICAL_SOURCES:
             path = self.root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("# TEST FIXTURE ONLY\n")
