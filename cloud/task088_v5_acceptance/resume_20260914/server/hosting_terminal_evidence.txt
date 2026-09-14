@@ -1,0 +1,9 @@
+sha256sum observe_host_state.py
+eaa87ef8cc8c6c139def76eb6ff8365e364599e4159cbe4f070e1179254c8b49  observe_host_state.py
+15:37 ~/autopilot_inbox/cloud $ python3.10 -IB observe_host_state.py
+{"always_on": [{"enabled": true, "id": 266084, "is_crm": true, "running": null, "state": "Running", "status": null}, {"enabled": true, "id": 270984,
+ "is_crm": false, "running": null, "state": "Running", "status": null}], "existing_api_token_present": true, "kind": "READ_ONLY_HOSTING_API_OBSERVAT
+ION", "observed_at_utc": "2026-09-14T15:37:43.583198+00:00", "production_written": false, "static_mappings": [{"id": 2185199, "path": "/home/Carix/v
+ideo/", "url": "/video/"}], "webapps": [{"domain_name": "www.uaart.com.ua", "enabled": true, "python_version": "3.10"}, {"domain_name": "Carix.pytho
+nanywhere.com", "enabled": true, "python_version": "3.10"}]}
+15:37 ~/autopilot_inbox/cloud $ 

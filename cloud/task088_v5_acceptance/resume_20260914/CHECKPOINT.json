@@ -1,0 +1,50 @@
+{
+  "kind": "RESUME_CHECKPOINT_NOT_A_GATE",
+  "recorded_at": "2026-09-14T15:40:43.343191+00:00",
+  "reviewed_head": "e146c2ea8c28033050b49ccbebb33aa5276c8788",
+  "reviewed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "source_manifest_sha256": "18fc3c2ffb16df204cdd7318f550fbffa0a2169da3be57ff0d2bc88b1855b5c7",
+  "preview_manifest_sha256": "7c5335f921487734c5af8a94df49d1ba04ba6f5bf97492d346ab619b7205fb28",
+  "software": {
+    "combined": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 443,
+      "unexpected_successes": 0
+    },
+    "private": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 95,
+      "unexpected_successes": 0
+    },
+    "public": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 348,
+      "unexpected_successes": 0
+    }
+  },
+  "software_evidence": "software/software_checks_final.json",
+  "browser": "48 original validated raw plus new observations in progress; authoritative files in browser/",
+  "host_evidence": "server/hosting_observation.json",
+  "credential_presence": "Fresh server stat at 15:34 UTC returned No such file or directory; value not read",
+  "full_preview_gate": "NOT_PASSED",
+  "stage3": "OPEN",
+  "stage4": "OPEN",
+  "production_written": false,
+  "next_actions": [
+    "Complete browser raw evidence and evaluator",
+    "Fresh independent server inventories/price readback/quota",
+    "Reconcile required workflow tests with existing strict policy",
+    "Canonical Stage3 preparation after complete real evidence",
+    "Writer exclusion, backup, install, postdeploy",
+    "Provision authorized persistent reader through secure owner credential flow; live Stage4 acceptance"
+  ]
+}
