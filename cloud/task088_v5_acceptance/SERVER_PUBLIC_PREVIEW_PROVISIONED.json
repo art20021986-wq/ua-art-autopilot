@@ -1,0 +1,28 @@
+{
+  "access_policy": "PUBLIC_READ_ONLY_PREVIEW_OWNER_AUTHORIZED",
+  "backup": "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/public-preview-app-k5dav0pf/default_wsgi.backup.py",
+  "hosting_unchanged": true,
+  "kind": "OWNER_AUTHORIZED_PUBLIC_PREVIEW_PROVISIONED",
+  "manifest_sha256": "083cd2de139f2f9e695f76c4e9873252c3291b4adb90af488c069315b37abdd6",
+  "new_preview_wsgi_written": true,
+  "origin": "https://carix.pythonanywhere.com",
+  "preview_gate": "NOT_PASSED",
+  "production_written": false,
+  "production_wsgi_unchanged": true,
+  "recorded_at_utc": "2026-09-14T10:05:10.881550+00:00",
+  "reload_requested": false,
+  "runtime_sha256": {
+    "common.py": "cb30a2b61d28438a9844e79b1bc8550f92885dab8b6dc0d76c2789827c9893fa",
+    "routing_proof.py": "fd483b95d5b0a2bc92146d1c137decb9e368706248b7469c9c1243a3fd622c5d",
+    "viewport_harness.py": "3b6830eff2d35ed94688707018e606b0d404a00bcb4dce80fa0dadab89b0bae1",
+    "wsgi_entry.py": "7b7b9056b55c41a5031e430cf470b10ae66fd812f792a3cd65cb931c1ced02e7",
+    "wsgi_preview.py": "ba8188817fe309e42082024007ff892342283937a76a45fe8e3fcc2c975c2ee4"
+  },
+  "verification": {
+    "pinned_resources": 679,
+    "private_routes_denied": 9,
+    "scope": "IN_PROCESS_REAL_BUNDLE_NOT_BROWSER_RENDERING",
+    "status": "PASS"
+  },
+  "wsgi_sha256": "90248b83241ca611f846d810485066ca7ef2d2f076dcaa275bc6068ea9a0d273"
+}
