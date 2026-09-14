@@ -1,0 +1,511 @@
+{
+  "contract": "TASK088-PREVIEW-CRITERIA-EVIDENCE-MAP-1",
+  "report_kind": "ANALYSIS_ONLY_NOT_PREVIEW_GATE",
+  "recorded_at": "2026-09-14T16:23:23.793931+00:00",
+  "source_manifest_sha256": "eab94e62b58e95a3a6c219a4a9a206cfdb8eda4b1192deb107f358358b8da5f7",
+  "full_preview_status": "NOT_PASSED",
+  "criteria_count": 24,
+  "criteria": [
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json"
+      ],
+      "evidence_status": "SUPPORTED_COVERAGE",
+      "id": "all_published_cars",
+      "observed": "120 cases cover the18 current published cars plus served home/catalog across3 languages and2 CSS sizes. All18 cards and18 own diagnostics were actually navigated. Current selected-row digest/count match captured rows.",
+      "remaining": "Bind the dynamic published_codes set and unchanged pages/resources to the rebuilt candidate and installer-format DB snapshot; photos and homepage follow-ups remain shared."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/SERVER_KYIV_PREVIEW_REFRESHED.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_evaluation.json"
+      ],
+      "evidence_status": "SUPPORTED_HOME_CSS_COUNTS_AND_NAVIGATION_DESTINATIONS",
+      "id": "homepage",
+      "observed": "Served video/index.html is price-free and byte-preserved with six CSS cases. Root actually navigated from an own-card home link;16:21:06 homepage URL/DOM shows Kyiv5, Georgia5, ferry4, Korea4 and total18, plus matching stage query and catalog destination hrefs.",
+      "remaining": "Rebind the retained homepage/source evidence to the rebuilt candidate and apply existing unserved-home routing policy. Destination href observation does not claim every outgoing link was clicked."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/SERVER_KYIV_PREVIEW_REFRESHED.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_images_after_filters_raw.json"
+      ],
+      "evidence_status": "SUPPORTED_PRICE_VISUAL_FILTERS_AND_CARD_NAVIGATION",
+      "id": "catalog",
+      "observed": "Six CSS cases cover all18 price groups. Saved desktop RU/GE samples are readable; actual stage filters and displayed counts5/5/4/4/all18 exactly match source code sets. All18 catalog images decoded after filters and all18 card/own diagnostic routes were visited.",
+      "remaining": "Rebind this retained page/resource evidence to the rebuilt candidate. Full-size gallery acceptance remains separate."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json"
+      ],
+      "evidence_status": "SUPPORTED_CONTENT_WITH_PHOTOS_OPEN",
+      "id": "full_cards",
+      "observed": "All18 cards have six saved price/layout cases plus actual top-level navigation, own diagnostic link, VIN presence, additional specification entry and expected CTA href. Nonprice markup preservation tests pass.",
+      "remaining": "Resolve permitted full-size gallery acceptance; rebind unchanged per-card evidence to the rebuilt candidate."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json"
+      ],
+      "evidence_status": "SUPPORTED_CHANGED_PRICE_TEXT",
+      "id": "ru",
+      "observed": "RU country/amount/caption/missing-price text measured against current renderer and source values across all20 pages.",
+      "remaining": "Retain matrix plus actual catalog RU/UA/GE click evidence and rebind unchanged content to the rebuilt candidate; no additional language rewrite is required."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json"
+      ],
+      "evidence_status": "SUPPORTED_CHANGED_PRICE_TEXT",
+      "id": "ua",
+      "observed": "UA locale uk and exact translated country/amount/caption/missing-price values validated across all20 pages.",
+      "remaining": "Retain matrix plus actual catalog RU/UA/GE click evidence and rebind unchanged content to the rebuilt candidate; no additional language rewrite is required."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json"
+      ],
+      "evidence_status": "SUPPORTED_CHANGED_PRICE_TEXT",
+      "id": "ge",
+      "observed": "GE locale ka and exact translated country/amount/caption/missing-price values validated across all20 pages.",
+      "remaining": "Retain matrix plus actual catalog RU/UA/GE click evidence and rebind unchanged content to the rebuilt candidate; no additional language rewrite is required."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json"
+      ],
+      "evidence_status": "SUPPORTED_ACTUAL_BUTTON_ACTIONS",
+      "id": "language_switching",
+      "observed": "Final browser report records actual native harness selections and actual clicks on each RU/UA/GE button and Observe. Top-level catalog RU→UA→GE clicks produce the correct locales/headings.",
+      "remaining": "Retain exact action provenance and final page/hash binding; do not relabel CSS viewport evidence as native mobile-browser testing."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json"
+      ],
+      "evidence_status": "SUPPORTED_EXACT_VALUES",
+      "id": "ua_price",
+      "observed": "Independent UA field values match retained captured rows for all18 cars/card+catalog; captured rows and current server rows match.",
+      "remaining": "Final evaluator must bind current installer-format DB hashes and exact candidate manifest."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json"
+      ],
+      "evidence_status": "SUPPORTED_EXACT_VALUES_AND_KYIV_RULE",
+      "id": "ge_price",
+      "observed": "GE numeric/empty values independently match source; five Kyiv cars have only UA rows, thirteen others have UA+GE. Fresh protected DB equality confirms stored GE not erased.",
+      "remaining": "Bind exact current DB/candidate; Stage4 independent editing remains later live acceptance."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json"
+      ],
+      "evidence_status": "SUPPORTED_PRICE_TEXT_WITH_VISUAL_SAMPLE",
+      "id": "missing_ge",
+      "observed": "Translated missing-price text verified in matrix; UA0015 RU desktop visibly shows Цена уточняется and caption.",
+      "remaining": "Retain exact source/renderer values and visible nullable-GE sample when rebinding the rebuilt candidate; never fill GE from UA/zero."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json"
+      ],
+      "evidence_status": "SUPPORTED_PRICE_AND_CATALOG_VISUAL_SAMPLES",
+      "id": "desktop",
+      "observed": "60 desktop CSS cases validate geometry/text/fonts. Nullable-GE, numeric UA/GE and catalog RU/GE screenshots have saved scoped visual PASS.",
+      "remaining": "Rebind existing price/catalog evidence to rebuilt pages; full-size gallery photo acceptance is still open."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json"
+      ],
+      "evidence_status": "SUPPORTED_CSS_GEOMETRY_AND_PRICE_VISUAL_SAMPLES",
+      "id": "mobile",
+      "observed": "60 cases at390x844 verify actual CSS dimensions, media query, fonts, price geometry and no horizontal overflow. Numeric UA/GE Georgian and Kyiv UA-only Russian screenshots have saved scoped visual PASS.",
+      "remaining": "Rebind existing evidence to rebuilt pages; native Safari/iOS, touch swipe and external app actions were not tested and must not be claimed."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/SERVER_KYIV_PREVIEW_REFRESHED.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_evaluation.json"
+      ],
+      "evidence_status": "SUPPORTED_DETAIL_AND_DIAGNOSTIC_NAVIGATION",
+      "id": "links",
+      "observed": "Actual navigation visited all18 card URLs and18 own diagnostic URLs with matching car identity. Actual CTA destinations and card return/home hrefs are retained; no customer messages or external app actions were sent.",
+      "remaining": "Retain actual18 card+18 diagnostic navigations, root card-to-home navigation and inspected homepage/catalog/CTA destinations; rebind to final candidate. Href checks do not claim external app delivery or that every unchanged link was clicked."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json"
+      ],
+      "evidence_status": "SUPPORTED_SCOPED_CONTROLS_WITH_GALLERY_PHOTOS_OPEN",
+      "id": "buttons",
+      "observed": "Actual catalog language/filter buttons and all18 diagnostic links worked; additional-specification sample expanded; gallery close and thumbnail selection worked. CTA hrefs match kupit for5Kyiv/bron for13others and vopros for all18.",
+      "remaining": "Photo rendering remains open despite successful thumbnail selection. External CTA delivery/native app launch was not performed and is not implied by href checks."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/SERVER_KYIV_PREVIEW_REFRESHED.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json"
+      ],
+      "evidence_status": "SUPPORTED_NONPRICE_PRESERVATION",
+      "id": "vin",
+      "observed": "Captured-card tests preserve every byte outside price fragments; fresh source binding matches. All18 actual top-level cards contain a VIN-format value; this is presence plus source preservation, not a new VIN identity/decoding audit.",
+      "remaining": "Final evaluator should cite exact per-card preserved-byte/source proof. No new VIN decoding or data changes required."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+        "cloud/task088_v5_acceptance/SERVER_KYIV_PREVIEW_REFRESHED.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_images_after_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/gallery_direct_image_failure.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json"
+      ],
+      "evidence_status": "BLOCKED_OBSERVED_FULLSIZE_IMAGE_FAILURE",
+      "id": "photos",
+      "observed": "UA0015 first full-size image rendered. At16:03:39Z photo2/37 had complete=true and naturalWidth=naturalHeight=0, with black screenshots. All18 catalog thumbnails later decoded, but that does not prove full-size coverage. The explicit browser policy denial is retained verbatim.",
+      "remaining": "Scoped builder repair has446 software and183 maintenance tests passing. Complete normal reviewed server Preview rebuild/integrity checks. Do not retry the explicitly blocked photo via another route/tool. Full-size display remains NOT_PASSED pending genuine permitted observation or concrete manual handoff."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/SERVER_KYIV_PREVIEW_REFRESHED.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json"
+      ],
+      "evidence_status": "SUPPORTED_NONPRICE_PRESERVATION",
+      "id": "specifications",
+      "observed": "Captured-card migration tests preserve tables and other nonprice markup; fresh source/HTML equality supports retained specifications.",
+      "remaining": "Bind unchanged actual candidate cards; do not claim new specification enrichment or accuracy review."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json"
+      ],
+      "evidence_status": "SUPPORTED_PRESERVATION_AND_ENTRY_INVENTORY",
+      "id": "additional_specification",
+      "observed": "Captured-card tests preserve details/summary markup. All18 live card entry points were observed; actual UA0015 expansion exposed31 parameters.",
+      "remaining": "Retain actual availability and existing source preservation when binding final candidate; no enrichment or expansion of every unchanged specification is required."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_evaluation.json"
+      ],
+      "evidence_status": "SUPPORTED_ACTUAL_CATALOG_STAGE_SETS",
+      "id": "stages",
+      "observed": "Actual catalog filters show Kyiv5, Georgia5, ferry4, Korea4; every code set exactly matches captured row status groups. Fresh15:57 source-row digest equals capture. Captured-source tests cover entering/leavingKyiv and independent prices.",
+      "remaining": "Rebind retained stage code sets to the current installer snapshot and rebuilt candidate; live Stage4 edit/regeneration is later acceptance."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_evaluation.json"
+      ],
+      "evidence_status": "SUPPORTED_HOME_AND_CATALOG_COUNTS",
+      "id": "counters",
+      "observed": "Actual catalog filters and code sets match captured source groups5/5/4/4/all18. The16:21:06 actual homepage DOM independently shows the same four stage counts and total18, with expected stage query links. Current/captured source-row digest matched at15:57.",
+      "remaining": "Bind these retained observations to the current installer snapshot/dynamic published set and rebuilt candidate; no duplicate counter/browser run is needed if relevant bytes/source remain unchanged."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/SERVER_KYIV_PREVIEW_REFRESHED.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json"
+      ],
+      "evidence_status": "SUPPORTED_PRICE_SCOPE_WITH_INSTALL_INVENTORY_PENDING",
+      "id": "no_unrelated_diff",
+      "observed": "Fresh all17 tables/schema/880 HTML/live sources/static mappings MATCH; card/catalog only-price tests pass; known679 Preview resources MATCH.",
+      "remaining": "Final install preparation still needs full scoped media/root/source system_inventory and exact own-candidate manifest; dynamic gallery refs must be included."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/source_binding.json",
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json"
+      ],
+      "evidence_status": "SUPPORTED_ISOLATED_SOURCE_TESTS_PENDING_FINAL_BUNDLE",
+      "id": "source_generation",
+      "observed": "Actual captured generator/master/stage functions tested in isolated fixtures, price fragments survive regeneration/stage changes; current server sources match capture.",
+      "remaining": "Bind exact fresh preflight source patches/candidate bundle; do not claim a live CRM publication cycle from isolated mocked-network fixtures."
+    },
+    {
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+        "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json"
+      ],
+      "evidence_status": "SUPPORTED_READONLY_OBSERVATION_PENDING_CANONICAL_SHAPE",
+      "id": "independent_db_readback",
+      "observed": "15:57 before/after read-only DB schema+17 tables MATCH; selected published row digest/count MATCH retained capture. No CRM writes.",
+      "remaining": "Use observe_install_inputs/database_snapshot and real preflight to obtain exact cars_sha256/audit_sha256/published_sha256/published_codes required by installer and final Preview. Do not rename this freshness report as installer observation."
+    }
+  ],
+  "known_evidence": [
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+      "sha256": "6229d7f7dca2295f8e9a611dc696a9326ca6bc38327cd884ccc9e3a566a65638",
+      "bytes": 63691
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_QA_CONTINUATION_STATUS.json",
+      "sha256": "afabc4ba3fd23ade5ecbc99e1c6c2cf87fc03f65bd224ca3f7810191e0c09696",
+      "bytes": 366
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+      "sha256": "f66a418fcebbae5ed72c44c42083657076027bd421403a2d0603cc216f383140",
+      "bytes": 2522
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/software_checks_final.json",
+      "sha256": "380d823e4fdd085e34df624e59d2ca54ba4149030087f60ffeba53fad2b65c40",
+      "bytes": 22406
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/workflow/actual_price_gate.json",
+      "sha256": "af36967a6715209a5b7cdd4dcfb7276c5a67eb05ab7e5df2cccae535417db120",
+      "bytes": 13519
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/workflow_fix/FINAL_TEST_REPAIR_SUMMARY.json",
+      "sha256": "c85b2080429185f4f15dc640aa536aef4bc39b649c0331bf4c9977992cbe6ef2",
+      "bytes": 2911
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/SERVER_KYIV_PREVIEW_REFRESHED.json",
+      "sha256": "1b80283370d7e156d0c5c30adfab9d6e2ef10d7fe37cb41294317227d941e638",
+      "bytes": 2089
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/source_binding.json",
+      "sha256": "2bf2b2a74f282c1d00bc49ea0f68607defee0d0fedb11fa23868acd1e86595e0",
+      "bytes": 10808
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/capture_integrity_before.json",
+      "sha256": "bfbcc30c78a2af53bd5d8c53f0f7877d59146f3e81981953ae4465f9b8dd3fb8",
+      "bytes": 6505
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/capture_integrity_after.json",
+      "sha256": "bfbcc30c78a2af53bd5d8c53f0f7877d59146f3e81981953ae4465f9b8dd3fb8",
+      "bytes": 6505
+    },
+    {
+      "path": "cloud/ua_ge_price_protection/verify_preview.py",
+      "sha256": "9ac48982700f577ae52437c82e151965ea0630b0c3ca47d356c62b134bb7c509",
+      "bytes": 9307
+    },
+    {
+      "path": "cloud/task088_price_sync/install_package.py",
+      "sha256": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673",
+      "bytes": 37425
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+      "sha256": "1ef3d1e3f346268da4a4cb110f1382d7768f9ea19226d9fc9b3bf67f636fe95f",
+      "bytes": 141690
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+      "sha256": "3a374cc4665eae0ce474cab20710eb1bef516400b44f2715076c19e0a9b9a3b0",
+      "bytes": 40600
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+      "sha256": "3798d46b281515c0a50bb2e3c41e8da464abaf1ccc3f3264bd9a772e76ff4906",
+      "bytes": 15090
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json",
+      "sha256": "0b71625508c8562b9c8f66ee3ad98c89f124a32dd58f8cc78781b07b910abd23",
+      "bytes": 444
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+      "sha256": "afae35660a3a98581bc3b1574dba71f673dc7d65910b623b02dccc6dee8d75f6",
+      "bytes": 147639
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+      "sha256": "fbbad9371af85ff962dde768e01027b2da4451d6ce75edc418bdb90d2bb00259",
+      "bytes": 16151
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_images_after_filters_raw.json",
+      "sha256": "51430d74fbe3e759fbfcd23c3a6718e26b05d848a9957601a708d09fd4f58ea3",
+      "bytes": 2192
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/gallery_direct_image_failure.json",
+      "sha256": "7c53e5d2746a1aabd99fea2517819861b562db58f16e36ea47f710266fcbf0b0",
+      "bytes": 989
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+      "sha256": "b8d194e6c92d54694279cd4e5d4e36958bed16349cc93e2dfc7a395c3fc8d3a9",
+      "bytes": 5692
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_evaluation.json",
+      "sha256": "b088b76f2a13447afa41cafd552ec0d72d53dba327e3ea4b513fb181dc411fc6",
+      "bytes": 1991
+    }
+  ],
+  "confirmed_totals": {
+    "software_public": 351,
+    "software_private": 95,
+    "software_combined": 446,
+    "maintenance_unit_tests": 183,
+    "browser_cases": 120,
+    "browser_assertions": 6744,
+    "current_published_count": 18,
+    "current_db_tables": 17,
+    "current_html_files": 880,
+    "checked_preview_resources": 679,
+    "detail_pages_navigated": 18,
+    "diagnostic_pages_navigated": 18,
+    "catalog_images_decoded": 18,
+    "catalog_stage_filters_compared": 5,
+    "homepage_stage_counters_compared": 4,
+    "homepage_total_count_compared": 18
+  },
+  "important_scope_notes": [
+    "verify_preview.py validates exact evidence/hash/schema/source/time bindings; it generates no semantic/browser observations and no credentials.",
+    "A PASS value inserted for every PREVIEW_CHECKS key is not an actual acceptance observation.",
+    "All new72 harness language observations used actual button clicks; top-level catalog RU/UA/GE click evidence is now retained in the final scoped browser report.",
+    "The679 pinned resources matching does not prove dynamically constructed full-size gallery URLs were included; there is a demonstrated photo load failure.",
+    "Older raw cases can be reused when exact source/candidate/resource identity is freshly established; do not rerun all120 merely because48 are older.",
+    "If gallery repair changes candidate/resource manifest, refresh affected source/harness evidence and rebind the final Gate; do not keep obsolete candidate bindings.",
+    "Native Safari/iOS/TikTok is untested; the24-code-key contract does not itself introduce an extra native-specific check.",
+    "15:57 readback is not the full installer input observation/preflight format; all-media system inventory and canonical DB digest tuple remain required.",
+    "Maintenance183 PASS is actual local unittest discovery, not a live workflow execution.",
+    "After this mapping snapshot, root confirmed a real builder omission of inline kadry full-size references and a separate explicit BrowserURL-policy block for the photo URL. A code fix, unchanged server bytes or complete resource manifest cannot substitute for the missing permitted browser observation.",
+    "The new446 software result belongs to builder0137d007 and source eab94e62; it does not retroactively turn the679-resource browser candidate into the rebuilt candidate.",
+    "Actual root homepage DOM observed16:21:06 closes the displayed-home-counter gap:5/5/4/4 and total18 match captured/source catalog groups. Misnamed homepage_counters_raw_1618.txt is failed-navigation card content and is explicitly excluded.",
+    "Root reports the actual installer observer returned HIDDEN_SOURCE_REQUIRES_REVIEW without writes; metadata review remains pending. This map does not infer valid install preflight from that report."
+  ],
+  "credential_boundary": {
+    "preview_observation_required": false,
+    "verify_preview_required": false,
+    "stage3_install_existing_route": "Canonical GitHub Actions uses its existing runner/repository and scoped PythonAnywhere credential after all gates; read credential is not requested by install engine.",
+    "stage4_continuous_reader_required": true,
+    "reader_expected_credential_path": "/home/Carix/.config/uaart-price-control/github-read.token",
+    "authorized_scope": "art20021986-wq/ua-art-autopilot Contents: read",
+    "read_values": false,
+    "freshness_max_seconds": 30,
+    "reason": "The actual reader performs authenticated fixed-origin GETs for current main/commit/tree/blobs and independently validates mode/HALT/delegation. Chat connector access, public anonymous polling or a copied timestamp cannot replace continuous authenticated server access."
+  },
+  "minimum_next_actions": [
+    "Complete the approved gallery server rebuild/integrity and bind the new candidate manifest. Respect explicit BrowserURL denial; keep photos NOT_PASSED pending genuine permitted full-size display evidence or concrete manual handoff.",
+    "Retain completed120CSS,18 card+18 diagnostic routes, language/filter clicks and catalog/homepage count comparisons. Rebind unchanged page/source evidence after rebuild without duplicate broad browser runs.",
+    "Run existing actual install observation/private preflight with fresh quota/routing; bind full scoped inventory, exact source candidates and canonical DB tuple. The15:57 freshness report is retained but is not the installer observation.",
+    "Evaluate all24 using exact retained evidence and the same current candidate; only then construct actual Stage3 bindings. No fake PASS/claim/transaction documents.",
+    "After installation, provision/verify the approved continuous authenticated reader and execute live Stage4 acceptance; Preview itself does not require that reader credential."
+  ],
+  "access_blocker": {
+    "browser_photo_acceptance": "NOT_PASSED",
+    "effect": "Full Preview Gate must remain open until genuine permitted observation satisfies photos.",
+    "permitted_parallel_work": "Scoped reviewed code fix, existing authorized server-side filesystem rebuild and integrity checks",
+    "prohibited": "Retrying the blocked resource through another browser route, proxy or alternate tool",
+    "source": "cloud/task088_v5_acceptance/resume_20260914/browser/gallery_direct_image_failure.json",
+    "target": "https://carix.pythonanywhere.com/video/foto/UA-0015/002.jpg",
+    "type": "EXPLICIT_BROWSER_URL_POLICY_BLOCK"
+  },
+  "production_written": false,
+  "crm_written": false,
+  "canonical_gate_created": false,
+  "previous_revision": {
+    "recorded_at": "2026-09-14T16:18:55.013763+00:00",
+    "sha256": "9de550e4af06f64e0ca6bd473985065005a1c66cb6443da1d611dd9a4663ce20"
+  },
+  "browser_observed_candidate_manifest_sha256": "7c5335f921487734c5af8a94df49d1ba04ba6f5bf97492d346ab619b7205fb28",
+  "browser_observed_source_manifest_sha256": "18fc3c2ffb16df204cdd7318f550fbffa0a2169da3be57ff0d2bc88b1855b5c7",
+  "current_software_builder_sha256": "0137d0077ef485679feea238b579b629f8c281542ca28a7277b769d5a7b8fa02",
+  "candidate_binding_status": "Gallery-fixed software is verified; fresh server Preview rebuild/manifest and affected browser acceptance are not yet included in this mapping."
+}
