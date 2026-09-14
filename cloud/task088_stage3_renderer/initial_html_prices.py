@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from hashlib import sha256
 from html.parser import HTMLParser
 import re
+from urllib.parse import parse_qs, urlsplit
 
 from uaart_market_prices import END, START, normalized_usd, render_market_prices, replace_catalog_price_slot
 
@@ -210,4 +211,78 @@ def migrate_catalog(source, rows):
         "before_sha256": sha256(source.encode()).hexdigest(),
         "after_sha256": sha256(candidate.encode()).hexdigest(),
         "outside_price_unchanged": True,
+    }
+
+
+class HomeInventory(HTMLParser):
+    """Inspect homepage links without interpreting/executing scripts."""
+    def __init__(self, source):
+        super().__init__(convert_charrefs=True)
+        self.anchors = []
+        self.car_price_surface = False
+        self.feed(source)
+        self.close()
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        classes = set(attrs.get("class", "").split())
+        if tag == "a":
+            self.anchors.append(attrs)
+            if re.search(r"(?:^|/)UA-[0-9]{4,}(?:\.html)?(?:[?#]|$)", attrs.get("href", ""), re.I):
+                self.car_price_surface = True
+        if (classes & {"catalog-card", "plitka", "ua-stage-card-v2", "ua-market-prices-v1", "cn", "cn_b", "cena"}
+                or "data-ua-car" in attrs or "data-ua-market" in attrs):
+            self.car_price_surface = True
+
+
+def _catalog_link(attrs):
+    parsed = urlsplit(attrs.get("href", ""))
+    if parsed.scheme not in ("", "https") or parsed.netloc not in ("", "uaart.com.ua", "www.uaart.com.ua"):
+        raise ValueError("INITIAL_HOME_CATALOG_LINK_UNKNOWN")
+    if parsed.path not in ("katalog.html", "./katalog.html", "/video/katalog.html", "/katalog.html"):
+        raise ValueError("INITIAL_HOME_CATALOG_LINK_UNKNOWN")
+    return parsed
+
+
+def migrate_home(source, rows):
+    """Preserve the confirmed stage-only home; never price a representative car.
+
+    A homepage with individual car previews requires an explicit supported
+    migration. Unknown or newly introduced price surfaces fail closed. The
+    existing stranica individual-car homepage generator already renders compact
+    dual-price fragments directly; it is not the current live homepage route.
+    """
+    codes = set()
+    for row in rows:
+        render_market_prices(row, require_car_id=True)
+        code = row["auto_number"]
+        if code in codes:
+            raise ValueError("INITIAL_HOME_DUPLICATE_CRM_ID")
+        codes.add(code)
+    if not codes:
+        raise ValueError("INITIAL_HOME_EMPTY_CRM")
+    if START in source or END in source:
+        raise ValueError("INITIAL_HOME_MARKED_PRICE_SURFACE_REQUIRES_MIGRATION")
+    inventory = HomeInventory(source)
+    if inventory.car_price_surface:
+        raise ValueError("INITIAL_HOME_CAR_PRICE_SURFACE_REQUIRES_MIGRATION")
+    stages = [attrs for attrs in inventory.anchors if "stage-card" in attrs.get("class", "").split()]
+    expected = {"kiev", "georgia", "sea", "korea"}
+    if len(stages) != 4 or {attrs.get("data-stage") for attrs in stages} != expected:
+        raise ValueError("INITIAL_HOME_STAGE_TOPOLOGY_UNKNOWN")
+    for attrs in stages:
+        query = parse_qs(_catalog_link(attrs).query)
+        if query.get("f") != [attrs["data-stage"]]:
+            raise ValueError("INITIAL_HOME_STAGE_LINK_MISMATCH")
+    calls = [attrs for attrs in inventory.anchors if "outline-cta" in attrs.get("class", "").split()]
+    if len(calls) != 1:
+        raise ValueError("INITIAL_HOME_CATALOG_CTA_UNKNOWN")
+    if _catalog_link(calls[0]).query:
+        raise ValueError("INITIAL_HOME_CATALOG_CTA_FILTERED")
+    source_hash = sha256(source.encode("utf-8")).hexdigest()
+    return source, {
+        "surface": "HOME", "topology": "STAGE_ONLY", "no_car_price_surfaces": True,
+        "price_regions_changed": 0, "stage_links": 4, "published_count": len(codes),
+        "before_sha256": source_hash, "after_sha256": source_hash,
+        "outside_price_unchanged": True, "all_bytes_unchanged": True,
     }

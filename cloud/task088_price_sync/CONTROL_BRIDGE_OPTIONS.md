@@ -1,5 +1,44 @@
 # TASK088: authoritative control bridge — verified capability boundary
 
+## Additional deployed-source evidence, 2026-09-14
+
+The current authenticated WSGI configuration imports `uaart_bridge_wsgi` and
+wraps the public application with its `obolochka` middleware. The independently
+captured source establishes an existing Make-to-PythonAnywhere **ingress**;
+the earlier repository-only review did not establish this deployed component.
+Observed source SHA256:
+`b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150`.
+
+That middleware intercepts `/uaart-bridge` and `/uaart-bridge/health` only. It
+compares the configured `UAART_BRIDGE_SECRET` (or the separately stored private
+bridge secret) with `X-UAART-Bridge-Secret` using `hmac.compare_digest`. This is
+constant-time bearer-secret comparison, not an HMAC signature over the payload.
+It accepts only its configured repository/ref and handoff marker, then writes
+a private queue entry with commit SHA, receipt timestamp and delivery metadata.
+It deliberately does not retain arbitrary webhook contents or execute jobs.
+
+The captured implementation has no authenticated GitHub read, canonical mode
+validation, approval/revocation evaluation, control-cache writer, heartbeat or
+queue consumer. Receipt time proves when this ingress accepted a request; it
+does not prove current GitHub state. Its health response explicitly identifies
+the component as `ingress_only`. Accordingly, its existing secret and queue
+cannot be reinterpreted as ongoing price-publication authority. No new action
+or permission has been installed on this ingress.
+
+`probe_control_capabilities.py` is a separate presence-only host diagnostic. It
+reads only explicitly grounded source paths and reports hashes/environment
+variable names, plus boolean presence of repository-grounded credential names
+in the current process and the observed CRM process. It never exports values,
+reads credential-file contents, calls the network or writes production data.
+Its output remains capability discovery, not authentication or clearance.
+
+The continuing requirement is an actual authenticated reader/producer able to
+renew canonical observations within the existing freshness bound. A discovered
+ingress alone does not supply that capability. No public-repository fallback,
+synthetic control flag, timestamp renewal or authority expansion is permitted.
+
+## Earlier assessment retained for provenance
+
 Assessment: 2026-09-13. Status: **continuous control producer not available;
 Stage 4 unattended activation is not proved**. No workflow, server control
 file, repository visibility, credential or production setting was changed.

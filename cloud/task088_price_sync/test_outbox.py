@@ -416,7 +416,8 @@ class OutboxTests(unittest.TestCase):
         self.addCleanup(db.close)
         db.execute("BEGIN IMMEDIATE")
         O.install(db)
-        self.assertEqual(db.execute("SELECT COUNT(*) FROM sqlite_master WHERE type='trigger'").fetchone()[0], 2)
+        self.assertEqual(db.execute("SELECT COUNT(*) FROM sqlite_master WHERE type='trigger' AND tbl_name=?",
+                                    (O.RECOVERY_TABLE,)).fetchone()[0], 2)
         db.rollback()
         self.assertEqual(db.execute("SELECT COUNT(*) FROM sqlite_master WHERE type IN ('table','trigger')").fetchone()[0], 0)
         self.begin()

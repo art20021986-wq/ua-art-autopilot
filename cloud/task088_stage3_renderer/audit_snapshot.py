@@ -18,7 +18,7 @@ from pathlib import Path
 import re
 import sqlite3
 
-from initial_html_prices import migrate_card, migrate_catalog
+from initial_html_prices import migrate_card, migrate_catalog, migrate_home
 from patch_catalog_design_guard import EXPECTED_SHA256 as CATALOG_SHA, patch_catalog_design_guard
 from patch_stranica import EXPECTED_SHA256 as STRANICA_SHA, patch_stranica
 from patch_yadro import EXPECTED_SHA256 as YADRO_SHA, patch_yadro
@@ -153,9 +153,10 @@ def audit_snapshot(root):
 
     if rows is not None:
         for directory in ("video", "site"):
-            targets = [(directory + "/" + row["auto_number"] + ".html", row) for row in rows]
-            targets.append((directory + "/katalog.html", None))
-            for relative, row in targets:
+            targets = [(directory + "/" + row["auto_number"] + ".html", row, "CARD") for row in rows]
+            targets.append((directory + "/katalog.html", None, "CATALOG"))
+            targets.append((directory + "/index.html", None, "HOME"))
+            for relative, row, surface in targets:
                 check = {"path": relative}
                 try:
                     raw = read_inside(root, relative)
@@ -164,12 +165,20 @@ def audit_snapshot(root):
                     if before.get(relative, {}).get("sha256") != current_hash:
                         raise ValueError("HTML_DRIFT_BEFORE_CANDIDATE")
                     source = raw.decode("utf-8")
-                    candidate, evidence = migrate_card(source, row) if row is not None else migrate_catalog(source, rows)
+                    if surface == "CARD":
+                        candidate, evidence = migrate_card(source, row)
+                    elif surface == "CATALOG":
+                        candidate, evidence = migrate_catalog(source, rows)
+                    else:
+                        candidate, evidence = migrate_home(source, rows)
                     if not evidence.get("outside_price_unchanged"):
                         raise ValueError("PROTECTED_HTML_CHANGED")
                     check.update(status="PASS", candidate_sha256=digest(candidate.encode("utf-8")),
                                  protected_bytes_unchanged=True,
                                  price_regions_changed=evidence["price_regions_changed"])
+                    if surface == "HOME":
+                        check.update(topology=evidence["topology"], no_car_price_surfaces=evidence["no_car_price_surfaces"],
+                                     all_bytes_unchanged=evidence["all_bytes_unchanged"])
                 except (OSError, ValueError, UnicodeError, AssertionError, TypeError) as error:
                     check.update(status="FAIL", reason=reason(error), protected_bytes_unchanged=None)
                 report["pages"].append(check)

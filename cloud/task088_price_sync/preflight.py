@@ -21,14 +21,15 @@ import sys
 
 LIVE_ROOT = Path("/home/Carix")
 PACKAGE_RELATIVE = "autopilot_inbox/cloud/task088_price_sync_current"
-CONTRACT = "TASK088-PRICE-SYNC-READONLY-PREFLIGHT-1"
+CONTRACT = "TASK088-PRICE-SYNC-READONLY-PREFLIGHT-5"
 MODULES = {"uaart_market_prices.py", "uaart_price_sync_outbox.py", "uaart_price_sync_runtime.py",
-           "uaart_price_sync_binding.py", "owner_policy.py", "price_publication.py"}
+           "uaart_price_sync_binding.py", "owner_policy.py", "price_publication.py",
+           "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py"}
 TOOLS = {"preflight.py", "install_package.py", "patch_cars_ui.py", "patch_yadro.py", "patch_stranica.py",
          "patch_catalog_design_guard.py", "patch_guard.py", "initial_html_prices.py"}
 SOURCES = {"cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py", "publish_transaction_guard.py"}
 DEPENDENCIES = {"db.py", "cars_schema.py", "start_safe.py", "master_card.py", "publikaciya.py",
-                "ua_stage_catalog_sync.py", "catalog_design_golden.html"}
+                "ua_stage_catalog_sync.py", "catalog_design_golden.html", "team_bot.py"}
 MAX_FILE = 8 * 1024 * 1024
 
 
@@ -97,7 +98,7 @@ def _fresh_quota(quota, now):
         return False
 
 
-def run(output_id, expected_bundle_sha256, *, test_root=None):
+def run(output_id, expected_bundle_sha256, *, test_root=None, package_relative=PACKAGE_RELATIVE):
     root = Path(test_root) if test_root is not None else LIVE_ROOT
     if root == LIVE_ROOT and test_root is not None:
         raise ValueError("TEST_ROOT_CANNOT_BE_PRODUCTION")
@@ -107,7 +108,9 @@ def run(output_id, expected_bundle_sha256, *, test_root=None):
         raise ValueError("UNIQUE_PREFLIGHT_OUTPUT_ID_REQUIRED")
     if not re.fullmatch(r"[0-9a-f]{64}", expected_bundle_sha256):
         raise ValueError("REVIEWED_BUNDLE_HASH_REQUIRED")
-    package = _safe(root, PACKAGE_RELATIVE)
+    if not re.fullmatch(r"autopilot_inbox/cloud/task088_price_sync_[A-Za-z0-9_-]+", package_relative):
+        raise ValueError("TASK_SCOPED_PRIVATE_STAGING_REQUIRED")
+    package = _safe(root, package_relative)
     if not package.is_dir():
         raise ValueError("EXISTING_STAGING_PACKAGE_REQUIRED")
     bundle_bytes = _read(_safe(package, "preflight_bundle.json"))
@@ -141,6 +144,12 @@ def run(output_id, expected_bundle_sha256, *, test_root=None):
         try:
             engine = importlib.import_module("install_package")
             migrator = importlib.import_module("initial_html_prices")
+            routing = bundle.get("routing")
+            homepage_policy = bundle.get("homepage_policy", {})
+            if homepage_policy:
+                engine.verify_routing_sources(routing, root=root)
+                report["homepage_policy"] = homepage_policy
+                report["routing_evidence_sha256"] = bundle["routing_evidence_sha256"]
             patches = {"cars_ui.py": ("patch_cars_ui", "patch_source", False),
                 "publish_transaction_guard.py": ("patch_guard", "patch_source", False),
                 "yadro.py": ("patch_yadro", "patch_yadro", True),
@@ -164,6 +173,11 @@ def run(output_id, expected_bundle_sha256, *, test_root=None):
                 report["dependencies"][name] = actual
                 if bundle.get("dependency_sha256", {}).get(name) != actual:
                     report["blockers"].append("DEPENDENCY_PIN_MISSING_OR_DRIFT:" + name)
+            inventory = engine.system_inventory(root)
+            if inventory != bundle.get("system_inventory"):
+                raise ValueError("FULL_REVIEWED_SYSTEM_INVENTORY_REQUIRED")
+            report["system_inventory"] = inventory
+            report["system_inventory_sha256"] = _sha(_json(inventory))
             db_path = _safe(root, "crm.db")
             if not stat.S_ISREG(db_path.lstat().st_mode):
                 raise ValueError("REGULAR_EXISTING_CRM_DATABASE_REQUIRED")
@@ -178,15 +192,17 @@ def run(output_id, expected_bundle_sha256, *, test_root=None):
                 columns = [description[0] for description in cursor.description]
                 rows = [dict(zip(columns, row)) for row in cursor]
                 published = [row for row in rows if row.get("published") == 1]
-                if len(published) != 18:
-                    raise ValueError("CURRENT_PUBLISHED_COUNT_NOT_18")
+                if report["database"]["published_codes"] != bundle.get("expected_published_codes"):
+                    raise ValueError("PUBLISHED_SET_DOES_NOT_MATCH_REVIEWED_SNAPSHOT")
+                report["schema_sha256"] = _sha(_json(readonly.execute(
+                    "SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY type,name").fetchall()))
                 if any(row.get("price_uah") in (None, "", 0) for row in published):
                     raise ValueError("LEGACY_UKRAINE_PRICE_FALLBACK")
                 quota = bundle.get("quota_evidence", {})
                 if not _fresh_quota(quota, datetime.now(timezone.utc).timestamp()):
                     raise ValueError("FRESH_AUTHENTICATED_PA_QUOTA_REQUIRED_BEFORE_PRIVATE_BACKUP")
                 html_names = [f"{folder}/{row['auto_number']}.html" for folder in ("video", "site") for row in published]
-                html_names += ["video/katalog.html", "site/katalog.html"]
+                html_names += ["video/katalog.html", "site/katalog.html", "video/index.html", "site/index.html"]
                 html_bytes = sum(_safe(root, name).stat().st_size for name in html_names)
                 required = 3 * (db_path.stat().st_size + html_bytes + sum(len(value) for value in candidates.values())) + 1024 * 1024
                 if (quota["used_bytes"] + required > quota["limit_bytes"] * 0.8
@@ -220,13 +236,18 @@ def run(output_id, expected_bundle_sha256, *, test_root=None):
                 report["blockers"].append("STAGE_COUNTS_DO_NOT_MATCH_REVIEWED_SNAPSHOT")
             by_code = {row["auto_number"]: row for row in published}
             for folder in ("video", "site"):
-                for code in (*sorted(by_code), "katalog"):
+                for code in (*sorted(by_code), "katalog", "index"):
                     name = folder + "/" + code + ".html"
                     try:
                         original = _read(_safe(root, name))
                         before[name] = _sha(original)
-                        candidate, proof = (migrator.migrate_catalog(original.decode("utf-8"), published)
-                                            if code == "katalog" else migrator.migrate_card(original.decode("utf-8"), by_code[code]))
+                        text = original.decode("utf-8")
+                        if code == "index":
+                            candidate, proof = engine.migrate_home_candidate(name, text, published, homepage_policy, routing)
+                        elif code == "katalog":
+                            candidate, proof = migrator.migrate_catalog(text, published)
+                        else:
+                            candidate, proof = migrator.migrate_card(text, by_code[code])
                         candidates[name] = candidate.encode("utf-8")
                         report["html"][name] = dict(proof, status="PASS")
                     except Exception as exc:
@@ -244,13 +265,27 @@ def run(output_id, expected_bundle_sha256, *, test_root=None):
             try:
                 offline.execute("BEGIN IMMEDIATE")
                 runtime = importlib.import_module("uaart_price_sync_runtime")
+                schema_before = offline.execute(
+                    "SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY type,name").fetchall()
                 runtime.install(offline)
+                schema_after = offline.execute(
+                    "SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY type,name").fetchall()
+                engine.validate_schema_change(schema_before, schema_after)
+                if not offline.in_transaction:
+                    raise ValueError("SCHEMA_INSTALLER_COMMITTED_CALLER_TRANSACTION")
                 if engine.database_snapshot(offline) != report["database"]:
                     raise ValueError("OFFLINE_SCHEMA_CHANGED_CARS_OR_AUDIT")
                 report["candidate_schema_sha256"] = _sha(_json(offline.execute(
                     "SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY type,name").fetchall()))
                 offline.commit()
                 report["offline_schema_test"] = "PASS_CRM_AND_AUDIT_UNCHANGED"
+                independent = sqlite3.connect(migrated.as_uri() + "?mode=ro", uri=True)
+                try:
+                    if (engine.database_snapshot(independent) != report["database"] or
+                            independent.execute("SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY type,name").fetchall() != schema_after):
+                        raise ValueError("OFFLINE_SCHEMA_INDEPENDENT_READBACK_FAILED")
+                finally:
+                    independent.close()
             finally:
                 offline.close()
             current = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True, timeout=10)
@@ -268,6 +303,11 @@ def run(output_id, expected_bundle_sha256, *, test_root=None):
             for name, expected in report["dependencies"].items():
                 if _sha(_read(_safe(root, name))) != expected:
                     raise ValueError("DEPENDENCY_CHANGED_DURING_PREFLIGHT:" + name)
+            if engine.system_inventory(root) != inventory:
+                raise ValueError("PROTECTED_SYSTEM_CHANGED_DURING_PREFLIGHT")
+            if homepage_policy:
+                engine.verify_routing_sources(routing, root=root)
+            report["protected_system_readback"] = "PASS"
             for name, content in sorted(candidates.items()):
                 _write(_safe(output / "candidate_root", name), content)
             report["candidate_files"] = engine.candidate_manifest(candidates, {name: before[name] for name in candidates})
@@ -304,10 +344,11 @@ def main():
     parser.add_argument("--output-id", required=True)
     parser.add_argument("--expected-bundle-sha256", required=True)
     arguments = parser.parse_args()
-    report, path = run(arguments.output_id, arguments.expected_bundle_sha256)
+    package_relative = str(Path(__file__).resolve().parent.relative_to(LIVE_ROOT))
+    report, path = run(arguments.output_id, arguments.expected_bundle_sha256, package_relative=package_relative)
     print(json.dumps({"status": report["status"], "candidate_verification": report.get("candidate_verification"),
                       "report": str(path), "blockers": report["blockers"]}, ensure_ascii=False))
-    return 0 if report.get("candidate_verification") == "PASS" else 1
+    return 0 if report.get("status") == "PASS" else 1
 
 
 if __name__ == "__main__":

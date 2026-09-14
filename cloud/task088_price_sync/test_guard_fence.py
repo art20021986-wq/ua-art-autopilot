@@ -3,6 +3,7 @@ import ast
 import contextlib
 import fcntl
 import hashlib
+import json
 import os
 import pathlib
 import re
@@ -133,6 +134,60 @@ class GuardFenceTests(unittest.TestCase):
                                       receipt_sha256=digest("fixture receipt"), now_ms=1200)
         self.db.commit()
 
+    def submit_v5(self, key="v5_edit1", value="8700.00", field="price_georgia"):
+        self.db.execute("BEGIN IMMEDIATE")
+        event = O.submit(self.db, event_key=digest(key), car_id=10, field=field,
+            value=value, actor_id=700, chat_id=700, now_ms=2000,
+            provenance={"source": "SYNTHETIC_TEST"})
+        self.db.commit()
+        return event
+
+    def advance_v5(self, event, stop="COMPLETED"):
+        # Fixture executes the actual durable state transitions; it proves
+        # guard behavior only, never Production completion.
+        key = event["event_key"]
+        self.db.execute("BEGIN IMMEDIATE")
+        event = O.claim_operation(self.db, event_key=key, nonce=digest("claim_" + key), now_ms=2100)
+        if stop == "CLAIMED":
+            self.db.commit()
+            return event
+        before = self.row_map()[0]["UA-0010"]
+        stored = None if event["value"] is None else int(event["value"].split(".")[0])
+        self.db.execute("UPDATE cars SET " + event["field"] + "=? WHERE id=10", (stored,))
+        cursor = self.db.execute("SELECT * FROM cars WHERE id=10")
+        after = dict(zip((item[0] for item in cursor.description), cursor.fetchone()))
+        ua = "%d.00" % after["price_uah"]
+        ge = None if after["price_georgia"] is None else "%d.00" % after["price_georgia"]
+        event = O.transition_operation(self.db,event_key=key,nonce=event["claim_nonce"],
+            expected_state="CLAIMED",new_state="DB_COMMITTED",now_ms=2200,
+            ukraine_usd=ua,georgia_usd=ge,before_json=O.v5_json(before),after_json=O.v5_json(after),db_committed_ms=2200)
+        O.audit_operation(self.db,key,"DB_COMMITTED",{"before":before,"after":after},2200)
+        O.audit_operation(self.db,key,"DB_READBACK",{"separate_connection":True,"ua":ua,"ge":ge},2210)
+        if stop == "DB_COMMITTED":
+            self.db.commit()
+            return event
+        event = O.transition_operation(self.db,event_key=key,nonce=event["claim_nonce"],
+            expected_state="DB_COMMITTED",new_state="SITE_PUBLISHED",now_ms=2300)
+        if stop == "SITE_PUBLISHED":
+            self.db.commit()
+            return event
+        proof = dict(operation_id=key,claim_nonce=event["claim_nonce"],car_id=10,car_code="UA-0010",vin="",
+            actor_id=700,chat_id=700,market=event["field"],new_value=event["value"],ua=ua,ge=ge,
+            db_readback="PASS",protected_data="PASS",verification="PASS",verified_ms=2400)
+        receipt = digest(O.v5_json(proof))
+        event = O.transition_operation(self.db,event_key=key,nonce=event["claim_nonce"],
+            expected_state="SITE_PUBLISHED",new_state="VERIFIED",now_ms=2400,
+            verified_ms=2400,receipt_sha256=receipt)
+        O.audit_operation(self.db,key,"VERIFIED",proof,2400)
+        if stop == "VERIFIED":
+            self.db.commit()
+            return event
+        event = O.transition_operation(self.db,event_key=key,nonce=event["claim_nonce"],
+            expected_state="VERIFIED",new_state="COMPLETED",now_ms=2500,completed_ms=2500)
+        O.audit_operation(self.db,key,"COMPLETED",{"receipt_sha256":receipt,"operator_chat_id":700},2500)
+        self.db.commit()
+        return event
+
     def assert_blocked(self, reason="UNVERIFIED_PRICE_INTENTS"):
         for call in (lambda: self.ns["publish_one"](self.base, "UA-0029"), self.ns["rebuild_catalog"]):
             self.stage.clear()
@@ -250,6 +305,72 @@ class GuardFenceTests(unittest.TestCase):
         self.assertIn("restore", self.stage)
         self.db.execute("BEGIN IMMEDIATE")
         self.db.rollback()
+
+    def test_v5_accepted_intent_blocks_before_any_price_mutation_or_generation(self):
+        self.submit_v5()
+        self.assertEqual(self.db.execute("SELECT price_georgia FROM cars WHERE id=10").fetchone()[0],8000)
+        self.assert_blocked("V5_UNVERIFIED_PRICE_INTENTS")
+
+    def test_every_unfinished_v5_checkpoint_blocks_whole_generator(self):
+        event = self.submit_v5()
+        event = self.advance_v5(event,"CLAIMED")
+        self.assert_blocked("V5_UNVERIFIED_PRICE_INTENTS")
+        # Each persisted checkpoint is still unfinished; no last-known green
+        # event may authorize the current whole-site publisher.
+        for state in ("DB_COMMITTED","SITE_PUBLISHED","VERIFIED"):
+            self.db.execute(f"UPDATE {O.V5_TABLE} SET state=? WHERE event_key=?", (state,event["event_key"]))
+            self.assert_blocked("V5_UNVERIFIED_PRICE_INTENTS")
+
+    def test_v5_completed_current_pair_allows_publish_and_rebuild(self):
+        event = self.advance_v5(self.submit_v5())
+        self.assertEqual(event["state"],"COMPLETED")
+        self.assertTrue(self.ns["publish_one"](self.base,"UA-0029")[0])
+        self.assertTrue(self.ns["rebuild_catalog"]()[0])
+
+    def test_new_v5_queued_intent_blocks_even_after_completed_event(self):
+        self.advance_v5(self.submit_v5())
+        self.submit_v5("v5_edit2", "8800.00")
+        self.assert_blocked("V5_UNVERIFIED_PRICE_INTENTS")
+
+    def test_latest_v5_pair_supersedes_old_published_v1_snapshot(self):
+        self.published()
+        self.advance_v5(self.submit_v5())
+        self.assertTrue(self.ns["rebuild_catalog"]()[0])
+
+    def test_v5_does_not_hide_uncertain_legacy_intents(self):
+        self.enqueue()
+        self.advance_v5(self.submit_v5())
+        self.assert_blocked("UNVERIFIED_PRICE_INTENTS")
+
+    def test_v5_receipt_does_not_authorize_untracked_other_market_price(self):
+        self.advance_v5(self.submit_v5())
+        self.db.execute("UPDATE cars SET price_uah=11000 WHERE id=10")
+        self.assert_blocked("V5_UNTRACKED_CRM_PRICE_CHANGE")
+
+    def test_legitimate_later_nonprice_change_does_not_invalidate_current_prices(self):
+        self.advance_v5(self.submit_v5())
+        self.db.execute("ALTER TABLE cars ADD COLUMN status TEXT")
+        self.db.execute("UPDATE cars SET status='kyiv' WHERE id=10")
+        self.assertTrue(self.ns["rebuild_catalog"]()[0])
+
+    def test_v5_completed_label_without_actual_completion_proof_blocks(self):
+        event = self.submit_v5()
+        self.db.execute(f"UPDATE {O.V5_TABLE} SET state='COMPLETED',claim_nonce=?,ukraine_usd='10000.00',georgia_usd='8000.00' WHERE event_key=?",
+                        (digest("fake"), event["event_key"]))
+        self.assert_blocked("V5_SELECTED_PRICE_SNAPSHOT_MISMATCH")
+
+    def test_v5_corrupted_receipt_checksum_blocks(self):
+        event = self.advance_v5(self.submit_v5())
+        self.db.execute(f"UPDATE {O.V5_TABLE} SET receipt_sha256=? WHERE event_key=?",(digest("wrong"),event["event_key"]))
+        self.assert_blocked("V5_COMPLETION_PROOF_MISMATCH")
+
+    def test_v5_immutable_audit_trigger_and_schema_are_required(self):
+        self.db.execute(f"DROP TRIGGER {O.V5_AUDIT}_no_update")
+        self.assert_blocked("V5_PRICE_PROTECTION_TRIGGER_REQUIRED")
+
+    def test_v5_nullable_ge_completed_snapshot_is_supported(self):
+        self.advance_v5(self.submit_v5(value=None))
+        self.assertTrue(self.ns["rebuild_catalog"]()[0])
 
 
 if __name__ == "__main__":

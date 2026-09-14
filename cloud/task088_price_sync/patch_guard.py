@@ -11,7 +11,7 @@ import textwrap
 SOURCE_SHA256 = "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d"
 
 
-HELPER = '''# TASK088_PRICE_PUBLICATION_FENCE_V1
+HELPER = '''# TASK088_PRICE_PUBLICATION_FENCE_V5
 @contextlib.contextmanager
 def _task088_price_quiescence():
     """Hold the CRM write fence through legacy rendering, writes and rollback.
@@ -38,6 +38,88 @@ def _task088_price_quiescence():
             (_task088_outbox.TABLE,)).fetchone()
         if schema is None or schema[0] != _task088_outbox._DDL:
             raise PublishError("TASK088_PRICE_OUTBOX_SCHEMA_REQUIRED")
+        # FINAL v5 operator intents precede price mutation. The full generator
+        # must never consume an accepted but unverified intermediate price.
+        for name, ddl in ((_task088_outbox.V5_TABLE, _task088_outbox._V5_DDL),
+                          (_task088_outbox.V5_AUDIT, _task088_outbox._V5_AUDIT_DDL)):
+            schema = connection.execute(
+                "SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (name,)).fetchone()
+            if schema is None or schema[0] != ddl:
+                raise PublishError("TASK088_V5_PRICE_SCHEMA_REQUIRED")
+        for name, ddl in _task088_outbox._V5_TRIGGERS:
+            trigger = connection.execute(
+                "SELECT sql FROM sqlite_master WHERE type='trigger' AND name=?", (name,)).fetchone()
+            if trigger is None or trigger[0] != ddl:
+                raise PublishError("TASK088_V5_PRICE_PROTECTION_TRIGGER_REQUIRED")
+        pending = connection.execute(
+            "SELECT 1 FROM " + _task088_outbox.V5_TABLE + " WHERE state!='COMPLETED' LIMIT 1").fetchone()
+        if pending is not None:
+            raise PublishError("TASK088_V5_UNVERIFIED_PRICE_INTENTS_BLOCK_FULL_PUBLICATION")
+        import hashlib as _task088_hashlib
+        import json as _task088_json
+        completed = connection.execute(
+            "SELECT event.event_key FROM " + _task088_outbox.V5_TABLE + " AS event "
+            "WHERE event.sequence=(SELECT MAX(newer.sequence) FROM " + _task088_outbox.V5_TABLE +
+            " AS newer WHERE newer.car_id=event.car_id)").fetchall()
+        v5_car_ids = set()
+        for (event_key,) in completed:
+            event = _task088_outbox.get_operation(connection, event_key)
+            v5_car_ids.add(event["car_id"])
+            cursor = connection.execute("SELECT * FROM cars WHERE id=?", (event["car_id"],))
+            raw_row = cursor.fetchone()
+            row = dict(zip((item[0] for item in cursor.description), raw_row)) if raw_row is not None else None
+            if (row is None or row.get("auto_number") != event["car_code"]
+                    or str(row.get("vin") or "") != event["vin"]):
+                raise PublishError("TASK088_V5_VERIFIED_CAR_IDENTITY_REQUIRED")
+            def _canonical_price(value, nullable=False):
+                if value is None and nullable:
+                    return None
+                if type(value) is not int or not 0 <= value < 2**63:
+                    raise PublishError("TASK088_CURRENT_CRM_PRICE_FORMAT_INVALID")
+                return "%d.00" % value
+            actual_pair = (_canonical_price(row.get("price_uah")),
+                           _canonical_price(row.get("price_georgia"), True))
+            expected_pair = (event["ukraine_usd"], event["georgia_usd"])
+            if actual_pair != expected_pair:
+                raise PublishError("TASK088_V5_UNTRACKED_CRM_PRICE_CHANGE")
+            selected = 0 if event["field"] == "price_uah" else 1
+            if event["value"] != expected_pair[selected]:
+                raise PublishError("TASK088_V5_SELECTED_PRICE_SNAPSHOT_MISMATCH")
+            stamps = [event[key] for key in ("created_ms", "db_committed_ms", "verified_ms", "completed_ms")]
+            if any(type(value) is not int or value < 0 for value in stamps) or stamps != sorted(stamps):
+                raise PublishError("TASK088_V5_COMPLETION_CHECKPOINTS_REQUIRED")
+            try:
+                after = _task088_json.loads(event["after_json"])
+                if (after["id"] != event["car_id"] or after["auto_number"] != event["car_code"]
+                        or str(after.get("vin") or "") != event["vin"]
+                        or (_canonical_price(after["price_uah"]), _canonical_price(after["price_georgia"], True)) != expected_pair):
+                    raise PublishError("TASK088_V5_COMMITTED_PRICE_SNAPSHOT_REQUIRED")
+                records = {fact: _task088_json.loads(payload) for fact, payload in connection.execute(
+                    "SELECT fact,payload_json FROM " + _task088_outbox.V5_AUDIT + " WHERE event_key=?", (event_key,))}
+                required = {"ACCEPTED", "DB_COMMITTED", "DB_READBACK", "VERIFIED", "COMPLETED"}
+                if not required <= records.keys():
+                    raise PublishError("TASK088_V5_COMPLETION_AUDIT_REQUIRED")
+                for fact in required:
+                    item = records[fact]
+                    if (item["operation_id"] != event_key or item["car_id"] != event["car_id"]
+                            or item["actor_id"] != event["actor_id"] or item["chat_id"] != event["chat_id"]
+                            or item["field"] != event["field"] or item["requested_value"] != event["value"]):
+                        raise PublishError("TASK088_V5_COMPLETION_AUDIT_IDENTITY_MISMATCH")
+                proof = records["VERIFIED"]["details"]
+                encoded = _task088_json.dumps(proof, sort_keys=True, ensure_ascii=True, separators=(",", ":")).encode()
+                if (_task088_hashlib.sha256(encoded).hexdigest() != event["receipt_sha256"]
+                        or proof["operation_id"] != event_key or proof["claim_nonce"] != event["claim_nonce"]
+                        or proof["car_id"] != event["car_id"] or proof["car_code"] != event["car_code"]
+                        or proof["vin"] != event["vin"] or proof["actor_id"] != event["actor_id"]
+                        or proof["chat_id"] != event["chat_id"] or proof["market"] != event["field"]
+                        or proof["new_value"] != event["value"] or (proof["ua"], proof["ge"]) != expected_pair
+                        or proof["verified_ms"] != event["verified_ms"]
+                        or any(proof[key] != "PASS" for key in ("db_readback", "protected_data", "verification"))
+                        or records["DB_READBACK"]["details"]["separate_connection"] is not True
+                        or records["COMPLETED"]["details"]["receipt_sha256"] != event["receipt_sha256"]):
+                    raise PublishError("TASK088_V5_COMPLETION_PROOF_MISMATCH")
+            except (KeyError, TypeError, ValueError) as exc:
+                raise PublishError("TASK088_V5_COMPLETION_PROOF_INVALID") from exc
         table = _task088_outbox.TABLE
         unresolved = connection.execute(
             "SELECT 1 FROM " + table + " AS event "
@@ -58,6 +140,10 @@ def _task088_price_quiescence():
             "SELECT MAX(newer.revision) FROM " + table + " AS newer "
             "WHERE newer.car_id=event.car_id)").fetchall()
         for state, expected_ua, expected_ge, car_id, actual_ua, actual_ge in latest:
+            # A completed v5 operation supersedes the old published snapshot,
+            # while unresolved v1 work above remains fail-closed.
+            if car_id in v5_car_ids:
+                continue
             if car_id is None or state != "PUBLISHED":
                 raise PublishError("TASK088_VERIFIED_CURRENT_PRICE_EVENT_REQUIRED")
             if (type(actual_ua) is not int or not 0 <= actual_ua < 2**63

@@ -352,5 +352,177 @@ class BindingTests(unittest.TestCase):
             self.provider()
 
 
+class BindingV5Tests(unittest.TestCase):
+    """Real v5 admission/claims with an expressly synthetic installer chain."""
+    put = BindingTests.put
+    rebuild_chain = BindingTests.rebuild_chain
+    provider = BindingTests.provider
+    authorize = BindingTests.authorize
+    tearDown = BindingTests.tearDown
+
+    def setUp(self):
+        BindingTests.setUp(self)
+        for name in binding.V5_REQUIRED_CODE:
+            content=("# isolated TEST source "+name+"\n").encode()
+            (self.root/name).write_bytes(content)
+            self.code[name]=binding.sha(content)
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("ALTER TABLE cars ADD COLUMN vin TEXT")
+            conn.execute("UPDATE cars SET vin='TESTVIN' || printf('%010d',id)")
+            conn.execute("CREATE TABLE staff(user_id INTEGER PRIMARY KEY, active INTEGER, role TEXT)")
+            conn.execute("INSERT INTO staff VALUES(700,1,'manager')")
+            conn.commit()
+            conn.execute("BEGIN IMMEDIATE")
+            outbox.install_v5(conn)
+            conn.commit()
+            self.schema = binding.schema_sha256(conn)
+        self.delegation.update(contract=binding.CONTRACT_V5,
+            operation="UPDATE_PUBLISHED_CAR_HOME_CATALOG_PRICES",
+            identity_policy="AUTHENTICATED_CRM_PUBLISHED_CARS", schema_sha256=self.schema,
+            operator_policy={"source":"AUTHENTICATED_TELEGRAM_UPDATE",
+                             "permission":"EXISTING_CRM_EDIT_CAR_ACL", "chat_types":["private"],
+                             "roles":["owner","admin","manager"]},
+            surface_templates=[
+                {"kind":"CARD", "path":"video/{auto_number}.html", "url":"https://example.test/video/{auto_number}.html", "price_applicable":True},
+                {"kind":"CATALOG", "path":"video/katalog.html", "url":"https://example.test/video/katalog.html", "price_applicable":True},
+                {"kind":"HOME", "path":"video/index.html", "url":"https://example.test/video/index.html", "price_applicable":False}])
+        del self.delegation["surfaces"]
+        self.rebuild_chain()
+        self.event = self.new_operation()
+
+    def provenance(self, car_id=1, **changes):
+        return dict({"source":"SYNTHETIC_TEST", "actor_id":700, "chat_id":700,
+                     "message_id":80, "update_id":900, "chat_type":"private", "bot_id":123,
+                     "authorized_car_id":car_id, "permission":"EDIT_CAR"}, **changes)
+
+    def test_missing_installed_reader_pin_refuses_v5_binding(self):
+        self.code.pop("uaart_price_control_reader.py")
+        self.rebuild_chain()
+        with self.assertRaisesRegex(binding.BindingError, "ALL_INSTALLED_WRITERS_AND_MODULES_REQUIRED"):
+            self.provider()
+
+    def new_operation(self, car_id=1, key="c"*64, provenance=None):
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            facts = self.provenance(car_id) if provenance is None else provenance
+            outbox.submit(conn, event_key=key, car_id=car_id, field="price_georgia", value="6000",
+                          actor_id=700, chat_id=facts["chat_id"], now_ms=self.now, provenance=facts)
+            event = outbox.claim_operation(conn, event_key=key, nonce=binding.sha((key+"claim").encode()), now_ms=self.now)
+            conn.commit()
+        return event
+
+    def test_verified_operator_claim_binds_actor_origin_and_actual_vin(self):
+        proof = self.authorize()
+        self.assertEqual(proof["operator_chat_id"],700)
+        self.assertEqual(proof["operator_user_id"],700)
+        self.assertNotEqual(proof["operator_chat_id"],self.delegation["owner_chat_id"])
+        self.assertEqual(proof["revision"],self.event["sequence"])
+        self.assertEqual(len(proof["allowed_paths"]),3)
+        self.assertEqual(proof["operator_provenance_sha256"],binding.sha(binding.encoded(self.provenance())))
+
+    def test_future_published_identity_needs_no_new_config_or_approval(self):
+        provider = self.provider()
+        before = self.anchor.read_bytes(), (self.root/"private/config.json").read_bytes()
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("INSERT INTO cars VALUES (19,'UA-0019',1,12000,NULL,'TESTVIN0000000019')")
+        self.event = self.new_operation(car_id=19,key="e"*64)
+        descriptor = os.open(self.lock,os.O_RDWR)
+        try:
+            fcntl.flock(descriptor,fcntl.LOCK_EX)
+            proof = provider.authorize(self.event,provider.resolve_surfaces("UA-0019"))
+        finally:
+            os.close(descriptor)
+        self.assertEqual(proof["auto_number"],"UA-0019")
+        self.assertIn(str(self.root/"video/UA-0019.html"),proof["allowed_paths"])
+        self.assertEqual(before,(self.anchor.read_bytes(),(self.root/"private/config.json").read_bytes()))
+        self.assertEqual(provider.binding().resolve_identity(19)["vin"],"TESTVIN0000000019")
+
+    def test_unpublished_or_ambiguous_identity_cannot_get_surfaces(self):
+        provider = self.provider()
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("INSERT INTO cars VALUES (19,'UA-0019',0,12000,NULL,'TESTVIN0000000019')")
+        with self.assertRaisesRegex(binding.BindingError,"PUBLISHED_CRM_IDENTITY_REQUIRED"):
+            provider.resolve_surfaces("UA-0019")
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("UPDATE cars SET published=1 WHERE id=19")
+            conn.execute("INSERT INTO cars VALUES (20,'UA-0019',1,13000,NULL,'TESTVIN0000000020')")
+        with self.assertRaisesRegex(binding.BindingError,"PUBLISHED_CRM_IDENTITY_REQUIRED"):
+            provider.resolve_surfaces("UA-0019")
+
+    def test_dynamic_policy_does_not_unpin_existing_identity(self):
+        provider = self.provider()
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("UPDATE cars SET auto_number='UA-0040' WHERE id=1")
+        with self.assertRaisesRegex(binding.BindingError,"LIVE_CAR_REGISTRY_DRIFT"):
+            provider.resolve_identity(1)
+
+    def test_claim_vin_must_match_independent_current_db_read(self):
+        provider = self.provider()
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("UPDATE cars SET vin='TESTVIN0000009999' WHERE id=1")
+        with self.assertRaisesRegex(binding.BindingError,"EVENT_CRM_VIN_MISMATCH"):
+            self.authorize(provider)
+
+    def test_mutated_event_is_not_a_durable_claim(self):
+        self.event = dict(self.event, value="200")
+        with self.assertRaisesRegex(binding.BindingError,"DURABLE_CURRENT_EVENT_CLAIM_REQUIRED"):
+            self.authorize()
+
+    def test_missing_actual_permission_or_wrong_bot_blocks_claim(self):
+        for i, change in enumerate(({"permission":"VIEW_CAR"},{"bot_id":999},{"authorized_car_id":2})):
+            with self.subTest(change=change):
+                with sqlite3.connect(self.db) as conn:
+                    conn.execute("INSERT INTO cars VALUES (? ,?,1,12000,NULL,?)",(21+i,f"UA-{21+i:04d}",f"TESTVIN{21+i:010d}"))
+                self.event = self.new_operation(car_id=21+i, key=str(i+1)*64,
+                                               provenance=self.provenance(21+i,**change))
+                provider=self.provider()
+                descriptor=os.open(self.lock,os.O_RDWR)
+                try:
+                    fcntl.flock(descriptor,fcntl.LOCK_EX)
+                    with self.assertRaises(binding.BindingError):
+                        provider.authorize(self.event,provider.resolve_surfaces(self.event["car_code"]))
+                finally:os.close(descriptor)
+
+    def test_synthetic_provenance_cannot_be_used_by_production_verifier(self):
+        provider=self.provider()
+        provider.testing=False
+        with self.assertRaisesRegex(binding.BindingError,"AUTHENTICATED_OPERATOR_UPDATE_REQUIRED"):
+            provider._operator_provenance(self.event)
+
+    def test_revoked_existing_staff_permission_blocks_previously_claimed_work(self):
+        provider=self.provider()
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("UPDATE staff SET active=0 WHERE user_id=700")
+        with self.assertRaisesRegex(binding.BindingError,"CURRENT_CRM_EDIT_PERMISSION_REQUIRED"):
+            self.authorize(provider)
+
+    def test_unrecognized_staff_role_cannot_be_delegated(self):
+        self.delegation["operator_policy"]["roles"].append("observer")
+        self.rebuild_chain()
+        with self.assertRaisesRegex(binding.BindingError,"EXPLICIT_OPERATOR_PERMISSION"):
+            self.provider()
+
+    def test_home_applicability_is_explicit_and_read_only_when_no_vehicle_tiles(self):
+        surfaces=self.provider().resolve_surfaces("UA-0001")
+        self.assertEqual([(s.kind,s.price_applicable) for s in surfaces],
+                         [("CARD",True),("CATALOG",True),("HOME",False)])
+        del self.delegation["surface_templates"][2]["price_applicable"]
+        self.rebuild_chain()
+        with self.assertRaisesRegex(binding.BindingError,"EXACT_SURFACE_FIELDS_REQUIRED"):
+            self.provider()
+
+    def test_template_cannot_change_origin_escape_root_or_omit_home(self):
+        originals=[dict(item) for item in self.delegation["surface_templates"]]
+        for key,value in (("path","../{auto_number}.html"),("url","https://foreign.test/{auto_number}.html")):
+            self.delegation["surface_templates"]=[dict(item) for item in originals]
+            self.delegation["surface_templates"][0][key]=value
+            self.rebuild_chain()
+            with self.assertRaises(binding.BindingError):self.provider()
+        self.delegation["surface_templates"]=originals[:2]
+        self.rebuild_chain()
+        with self.assertRaisesRegex(binding.BindingError,"EXACT_CARD_CATALOG_HOME_TEMPLATES_REQUIRED"):
+            self.provider()
+
+
 if __name__ == "__main__":
     unittest.main()

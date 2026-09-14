@@ -133,3 +133,70 @@ Validation: 28 isolated tests cover artifact-chain tampering, wrong vehicle and
 bot identity, missing locks, schema/source drift, symlinks, duplicate JSON keys,
 control revocation/HALT, stale/future external observations, raw chat evidence,
 read-only preflight, and startup ordering.
+
+## FINAL v5.0 dynamic operation delegation
+
+The v1 contract above remains unchanged for its bounded historical candidate.
+The new contract `UA-ART-PRICE-EVENT-DELEGATION-2` uses operation
+`UPDATE_PUBLISHED_CAR_HOME_CATALOG_PRICES`. Its manifest must explicitly bind
+`identity_policy: AUTHENTICATED_CRM_PUBLISHED_CARS`; this does not silently extend
+an existing v1 approval. All existing immutable artifact, source, schema, bot,
+writer fence and fresh canonical control checks still apply.
+
+`car_identities` now pins the initial unique ID/code pairs without requiring 18
+cars. A newly published car is admitted by a fresh, separate read of the same
+pinned CRM database. Its code must identify exactly one row, its published flag
+must equal 1, and its VIN must be present. The operation's immutable code/VIN must
+match that read. Existing pinned identities cannot be reassigned. New cars do
+not require configuration rewrites or fresh per-car approvals.
+
+Instead of per-car `surfaces`, v2 requires `surface_templates`, containing every
+served CARD, CATALOG and HOME location. Each has exactly `kind`, `path`, `url`
+and boolean `price_applicable`. CARD path and URL each contain one
+`{auto_number}` placeholder; other paths contain none. Substitution occurs only
+for a separately verified CRM identity. All original root, origin, basename and
+symlink protections apply. `price_applicable` must be true for CARD/CATALOG.
+For a reviewed HOME containing only stage tiles or a redirect, it can explicitly
+be false; the runtime then preserves and verifies its entire content. Missing
+applicability is an error, never inferred clearance.
+
+`operator_policy` has exactly:
+
+```json
+{
+  "source": "AUTHENTICATED_TELEGRAM_UPDATE",
+  "permission": "EXISTING_CRM_EDIT_CAR_ACL",
+  "chat_types": ["private"],
+  "roles": ["owner", "admin", "manager"]
+}
+```
+
+The displayed private-chat scope is an example, not observed production policy.
+Any existing authorized group workflow needs its actual `group`/`supergroup`
+scope explicitly included in the reviewed delegation. Owner incident routing
+keeps its independently verified private-chat evidence; successful operation
+receipts use the authenticated originating operator/chat.
+
+The actual pinned CRM adapter must perform its existing edit permission check
+and persist factual `provenance_json` from the authenticated Update, with
+`source: TELEGRAM_UPDATE`, `actor_id`, `chat_id`, `chat_type`, `bot_id`,
+`message_id`, `update_id`, `authorized_car_id`, and `permission: EDIT_CAR`.
+These fields are an audit record of that check, not permission granted by writing
+a JSON flag. The provider independently rereads the exact durable v5 operation,
+requires a current CLAIMED/DB_COMMITTED/SITE_PUBLISHED/VERIFIED checkpoint, and checks its
+provenance, current bot, vehicle and configured chat scope. A private chat must
+belong to the actor; group IDs must be negative. A synthetic source is accepted
+only under an explicitly injected TEST root, and rejected by production.
+
+The current captured `team_bot.who` admits active records from `db.get_staff`;
+the observed roles are `owner`, `admin`, `manager`. The v2 provider independently
+checks the same staff record is still active with one of those exact roles before
+each authorization. It also requires installed code pins for `team_bot.py` and
+the new confirmation module, in addition to the original complete dependency
+set. Missing or revoked staff access cannot be replaced by provenance flags.
+
+`Binding.resolve_identity(car_id)` supplies the dynamic verifier to `V5Worker`.
+The resulting authority record binds the operation sequence, event hash,
+operator evidence hash and originating operator/chat alongside the unchanged
+canonical deployment chain. Local tests do not create any live anchor, receipt,
+operator permission evidence or continuous control bridge.

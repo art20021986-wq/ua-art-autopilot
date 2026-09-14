@@ -12,7 +12,7 @@ import re
 import urllib.request
 
 ROOT = Path('/home/Carix/autopilot_inbox/cloud')
-DEST = ROOT / 'task088_price_sync_current'
+
 REPO = 'https://raw.githubusercontent.com/art20021986-wq/ua-art-autopilot/'
 
 
@@ -20,9 +20,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('commit')
     parser.add_argument('bundle_sha256')
+    parser.add_argument('--staging-id', required=True)
     args = parser.parse_args()
     if not re.fullmatch(r'[0-9a-f]{40}', args.commit) or not re.fullmatch(r'[0-9a-f]{64}', args.bundle_sha256):
         raise ValueError('EXACT_REVIEWED_COMMIT_AND_BUNDLE_REQUIRED')
+    if not re.fullmatch(r'[A-Za-z0-9_-]{8,90}', args.staging_id):
+        raise ValueError('FRESH_STAGING_ID_REQUIRED')
+    DEST = ROOT / ('task088_price_sync_' + args.staging_id)
     for parent in (ROOT, *ROOT.parents):
         if parent.is_symlink():
             raise ValueError('SYMLINK_PARENT_FORBIDDEN')
@@ -38,11 +42,12 @@ def main():
     if hashlib.sha256(raw).hexdigest() != args.bundle_sha256:
         raise ValueError('REVIEWED_BUNDLE_HASH_MISMATCH')
     bundle = json.loads(raw)
-    if bundle['contract'] != 'TASK088-PRICE-SYNC-READONLY-PREFLIGHT-1':
+    if bundle['contract'] != 'TASK088-PRICE-SYNC-READONLY-PREFLIGHT-5':
         raise ValueError('WRONG_CONTRACT')
     mapping = {}
     for name in ('preflight.py', 'install_package.py', 'patch_cars_ui.py', 'patch_guard.py',
-                 'uaart_price_sync_runtime.py', 'uaart_price_sync_binding.py'):
+                 'uaart_price_sync_runtime.py', 'uaart_price_sync_binding.py', 'uaart_price_sync_confirmation.py',
+                 'uaart_price_control_reader.py'):
         mapping[name] = 'cloud/task088_price_sync/' + name
     mapping['uaart_price_sync_outbox.py'] = 'cloud/task088_price_sync/outbox.py'
     for name in ('uaart_market_prices.py', 'patch_yadro.py', 'patch_stranica.py',

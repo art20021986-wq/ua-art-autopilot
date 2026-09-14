@@ -1,128 +1,105 @@
-# Stage 3 source, price HTML and outbox installation candidate
+# FINAL v5 Stage 3 installation contract
 
-**Not installed. No CRM restart or autopilot activation has been performed.**
+This is reviewed preparation and an installation engine, **not installed or activated**.
+No Stage 1 or Stage 2 controller is called. The actual closed Stage 2 receipt must
+prove Stage 1 prerequisite, Stage 2 PASS and the exact current `cars_ui.py` preimage.
 
-`install_package.py` supplies a callable installation engine, not a self-authorizing
-command. A trusted execution adapter must obtain the real canonical request,
-claim, OPEN transaction, approved manifest, Gate B evidence and owner authorization
-from their authoritative records. Passing invented JSON documents is not an
-authorization workflow. The engine verifies exact artifact bytes, their binding
-and current state; it cannot authenticate an arbitrary caller's provenance.
+## Immutable scope
 
-## Current source and file scope
+Contract: `UA-ART-GE-PRICE-STAGE3-INSTALL-5`.
+Task identity: a fresh `TASK088-GE-PRICE-SITE-STAGE3-<unique-suffix>` with a real
+canonical request, RUNNING claim and unexpired OPEN transaction. Historical
+Stage 1/2 requests, nonces, receipts and HALT controls are never rewritten.
 
-Writable source targets: `cars_ui.py`, `yadro.py`, `stranica.py`,
-`catalog_design_guard.py`, `publish_transaction_guard.py`. Each candidate is
-produced by its current-source SHA-bound patcher.
+Writable existing Python sources: `cars_ui.py`, `yadro.py`, `stranica.py`,
+`catalog_design_guard.py`, `publish_transaction_guard.py`.
 
-Installed modules: `uaart_market_prices.py`, `uaart_price_sync_outbox.py`,
-`uaart_price_sync_runtime.py`, `uaart_price_sync_binding.py`, `owner_policy.py`,
-`price_publication.py`.
+New modules: `uaart_market_prices.py`, `uaart_price_sync_outbox.py`,
+`uaart_price_sync_runtime.py`, `uaart_price_sync_binding.py`,
+`uaart_price_sync_confirmation.py`, `owner_policy.py`, `price_publication.py`.
 
-The only initial public HTML changes are price fragments in the 18 currently
-published cards in **both** `video/` and `site/`, plus those two catalogs: 38
-files. `build_candidates` uses the strict initial HTML migrator; it does not
-call a live generator or republish diagnostics, photos or specification pages.
+The published vehicle set is read from CRM and pinned by exact IDs/codes/hash,
+without a fixed count of 18. HTML scope includes every published vehicle in both
+`video/` and `site/`, both `katalog.html` files and both `index.html` files. Home
+surfaces without actual vehicle previews retain their full original bytes;
+no car's price is presented as a price of a whole vehicle stage.
 
-`catalog_design_golden.html` is **read-only**. It and the six other
-dependencies are pinned, backed up and verified unchanged before and after
-installation. The final catalog guard inserts the new prices into its existing
-golden template on later normal render calls.
+All files under `video/` and `site/`, plus every root `.py`, `.html`, `.css` and
+`.js` file, form the complete protected system inventory. Unrelated assets,
+images and specification files must remain unchanged. Symlinks, unreadable
+subtrees and inventory drift stop preparation or installation. All source and
+HTML patchers remain exact-preimage bound.
 
-## Source hook
+## Required real evidence
 
-The CRM hook keeps the Stage 2 price and audit checks, adds the outbox event before
-the same connection commits, and performs independent readback. Published cars
-require stable Telegram chat/message/update/actor/card/field identity. Repeated
-messages do not repeat audit writes; old deliveries cannot overwrite a later
-price. Both explicit buttons, text/AI price routes, voice CAS and guarded voice
-undo are covered. Nullable Georgia restoration is an internal guarded operation.
+`request`, `claim`, `transaction`, `gate_b`, `stage2`, `quota`, `writers`,
+`manifest`, `owner_approval`, `preview_gate` are raw authoritative documents,
+pinned by exact SHA-256 in the plan. A trusted execution adapter must retrieve
+and authenticate their provenance. JSON supplied to the engine is not itself an
+authorization workflow.
 
-Initial vehicle publication stays manual. The existing 15-second stage job and
-unrelated handlers remain unchanged. The final registration wrapper explicitly
-bootstraps `/home/Carix/.uaart_price_sync_anchor.json` before registering the price
-worker. That anchor must be derived from actual completed installation evidence;
-the code does not supply an invented control bridge or owner chat.
+The actual full Preview report uses `TASK088-FINAL-V5-PREVIEW-GATE-1`, binds the
+candidate manifest, current schema, CRM/audit hashes, protected system inventory
+and exact published codes, and passes every name in `PREVIEW_CHECKS`. Gate B
+must bind the exact raw Preview report hash. A generic Gate PASS cannot hide a
+missing mobile, language, homepage, protection or other required check.
 
-## Installer safety boundary
+Owner authorization remains the existing canonical production format, bound to
+the fresh task/request/manifest/Gate. The owner's FINAL v5 authorization already
+permits automatic Stage 3 publication after full Preview PASS; the adapter must
+materialize those real technical bindings without asking again merely to fill
+hashes. The engine never invents them.
 
-- Immutable plan hash; exact before/after manifest, dependency hashes, current
-  schema and all CRM/audit row hashes; exact published IDs/count and price hash.
-- Fresh Gate B/quota/writer evidence; canonical claim and unexpired transaction;
-  canonical Stage 2 receipt bound to the current `cars_ui.py` preimage.
-- Existing publication `flock` and SQLite `BEGIN IMMEDIATE` held across backup,
-  source/schema/HTML switch and verification. All writers must honor the same
-  fence; an uncovered external writer blocks installation.
-- Verified immutable private source/HTML/dependency backups and SQLite online
-  backup before mutation. Account quota and actual filesystem free space must
-  cover backup, candidates and rollback; OS disk size is not account quota.
-- Atomic individual file replacements, file/directory fsync, current-preimage
-  CAS and readback. This is a coordinated bundle with rollback, **not** a claim
-  that multiple filesystem paths can switch in one atomic OS operation.
-- Schema creation is confined to the reviewed outbox/recovery/notice tables.
-  CRM cars and audit rows must remain unchanged. DDL rolls back with the caller's
-  transaction on failure.
-- Rollback only restores an exact candidate written by this transaction. Foreign
-  versions are preserved and reported. Failed restoration is reported as
-  incomplete reconciliation; it is never labeled successful rollback.
-- A committed source/schema bundle with a missing receipt is uncertain and must
-  be reconciled. The engine does not automatically undo committed changes or
-  replay an interrupted installation.
+## Backup, switch and recovery
 
-Output `install_receipt.json` has status
-`INSTALLED_PENDING_LIVE_ACCEPTANCE`, real installed hashes and backup proof,
-`stage3_complete:false`, `bot_restarted:false`. It is installation evidence only.
-The verified private config/anchor, controlled CRM activation, public readback,
-Telegram acceptance and stage completion receipts remain subsequent operations.
+Before source/schema/HTML mutation, hold the existing publication flock and a
+SQLite `BEGIN IMMEDIATE` transaction, re-read exact live preimages and schema,
+and verify the complete inventory and all existing writer fences.
 
-## Read-only server preflight
+Create a unique private backup directory for this real transaction. Back up all
+scoped website files/assets/root source files with streamed independent hash
+readback, plus a SQLite online backup verified against the original CRM/audit
+snapshot. Preserve originals and modes in the immutable backup manifest. Database
+and source backup permissions are 0600; directories are 0700. Account quota
+must cover the actual full backup/candidates/rollback plus filesystem space.
+An OS disk size cannot substitute for authenticated account quota.
 
-Flatten the six runtime modules and these eight tools into the already approved
-private directory `/home/Carix/autopilot_inbox/cloud/task088_price_sync_current`:
+Fresh authority and writer evidence is rechecked after the potentially long full
+backup, before mutation. The schema installer only adds reviewed v1/v5 outbox,
+recovery, notice, intent, immutable audit and confirmation objects. It must not
+commit the caller's transaction or modify existing cars/audit. The complete
+candidate schema must equal the schema produced in the isolated Preview DB.
 
-`preflight.py`, `install_package.py`, `patch_cars_ui.py`, `patch_yadro.py`,
-`patch_stranica.py`, `patch_catalog_design_guard.py`, `patch_guard.py`,
-`initial_html_prices.py`.
+Each file replacement uses preimage CAS, atomic replace, fsync and readback.
+This is a coordinated bundle, not one atomic multi-file OS switch. Verify the
+whole system inventory, schema and CRM/audit before commit, then independently
+read the committed DB/schema from a separate connection. Recheck protected files.
 
-The reviewed `preflight_bundle.json` must contain:
+Before commit, failures roll back schema and restore only files still equal to
+this transaction's exact candidate. Newer foreign versions are preserved and
+reported as conflicts. Failed restorations require reconciliation; old backup
+or historical evidence is never replaced. After a committed bundle, failure or
+missing receipt means uncertain state requiring reconciliation. The engine
+never silently restores an old DB or erases newer operator changes.
 
-- `contract`: `TASK088-PRICE-SYNC-READONLY-PREFLIGHT-1`;
-- `package_sha256`: exactly the six modules and eight tools;
-- `source_sha256`: exactly the five writable live-source preimages;
-- `dependency_sha256`: `db.py`, `cars_schema.py`, `start_safe.py`,
-  `master_card.py`, `publikaciya.py`, `ua_stage_catalog_sync.py`,
-  `catalog_design_golden.html`;
-- `expected_stage_counts`: current Korea/sea/Georgia/Kyiv counts;
-- `stage2_receipt`: the actual canonical Stage 2 receipt contents;
-- `quota_evidence`: authenticated Carix account usage/limit in bytes, source
-  `PYTHONANYWHERE_AUTHENTICATED_ACCOUNT`, aware ISO `observed_at` at most 30 minutes old.
+## Output and activation boundary
 
-Run in that staging directory using a new observation ID and its actual reviewed
-bundle SHA:
+Successful installation yields `INSTALLED_PENDING_LIVE_ACCEPTANCE`, actual
+installed hashes, full-backup hash, independent readback PASS, and
+`stage3_complete:false`, `bot_restarted:false`, `live_public_acceptance:NOT_RUN`.
+This is **not** Stage 3 or Stage 4 completion.
 
-```sh
-python3.10 preflight.py --output-id preflight-UNIQUE-OBSERVATION-ID --expected-bundle-sha256 ACTUAL_64_HEX_BUNDLE_SHA
-```
+Subsequent actual operations must: reconcile the receipt with the canonical
+claim, construct the private v2 binding anchor from real installation/delegation
+evidence, restart only the positively identified CRM process, perform full
+post-deploy public checks, run the real Stage 4 operation/restart/Telegram tests,
+and close the relevant canonical gates. The Stage 2 installation route does not
+perform these new Stage 3/4 operations and must never be reused to imply success.
 
-Only a new `preflight_outputs/<id>/` tree is written; reuse is rejected. Candidate
-files and two SQLite copies stay private with mode 0600 inside mode-0700
-directories. No DB rows or full source content are printed. The report records
-hashes, counts, exact price-preservation results and blockers. The SQLite copies
-must never be put in GitHub or a public attachment.
+## Preparation tools
 
-A candidate can pass local/source/HTML/schema verification while overall status
-remains `BLOCKED` because the canonical control bridge/Gate B/activation has not
-run. This is intentional. The script never creates a success receipt for those
-missing operations.
-
-## Verification performed locally
-
-- **18/18 CRM-hook tests PASS**, using AST-extracted exact current functions and
-  isolated SQLite databases; no bot/source module import.
-- **15/15 installer safety tests PASS**, using explicit `TEST` plans/temp roots:
-  online-backup readback, atomic rollback, competing-version preservation, stale
-  or false evidence, quota, schema/price drift, missing binding, syntax failure
-  symlink refusal and preservation of an existing transaction's historical evidence.
-- Server-preflight code compiles and its readonly SQLite online-backup method
-  was exercised locally. Real 38-page server validation is a separate recorded
-  run; this document does not claim it has occurred.
+See `cloud/task088_v5_install/README.md` for the exact read-only observation,
+package build, private preflight and immutable plan commands. These tools never
+write live sources, publish pages, restart CRM, create Gate B or manufacture a
+claim/owner approval. Candidate/source files can contain embedded credentials
+and must stay private; do not commit the candidate tree or backup DB.

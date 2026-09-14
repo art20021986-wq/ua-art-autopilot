@@ -66,22 +66,22 @@ def conscious_updates(hooks):
                                    identity=(700, 50 + index, 900 + index))[0])
         events = f.events()
         observed = {"accepted": accepted,
-                    "revisions": [e["revision"] for e in events],
+                    "sequences": [e["sequence"] for e in events],
                     "states_before_worker": [e["state"] for e in events],
-                    "georgia_usd": [e["georgia_usd"] for e in events],
+                    "submitted_values": [e["value"] for e in events],
                     "unique_operation_count": len({e["event_key"] for e in events}),
                     "stored_ua": f.card()["price_uah"],
                     "stored_ge": f.card()["price_georgia"]}
         expected = {"accepted": [True] * 4,
-                    "states_before_worker": ["PENDING"] * 4,
+                    "states_before_worker": ["QUEUED"] * 4,
                     "unique_operation_count": 4,
-                    "stored_ua": 10000, "stored_ge": 18900,
+                    "stored_ua": 10000, "stored_ge": 8000,
                     "rule": "Every conscious input remains eligible for its own verified pipeline."}
         passed = (accepted == [True] * 4 and len(events) == 4
                   and observed["unique_operation_count"] == 4
-                  and observed["states_before_worker"] == ["PENDING"] * 4
+                  and observed["states_before_worker"] == ["QUEUED"] * 4
                   and observed["stored_ua"] == 10000
-                  and observed["stored_ge"] == 18900)
+                  and observed["stored_ge"] == 8000)
         return outcome("conscious_inputs_not_superseded", [11, 16], expected, observed, passed)
 
 
@@ -106,37 +106,37 @@ def anomaly_confirmation(hooks, amount):
 
 
 def restart_recovery(runtime_tests):
-    with fixture(runtime_tests.RuntimeTests) as f:
+    with fixture(runtime_tests.V5RuntimeTests) as f:
+        key = f.submit()["event_key"]
         with sqlite3.connect(f.db) as conn:
             conn.execute("BEGIN IMMEDIATE")
-            runtime_tests.outbox.claim(conn, event_key=f.key, nonce="c" * 64,
-                                       now_ms=f.clock_ms)
+            runtime_tests.O.claim_operation(conn, event_key=key, nonce="c" * 64,
+                                           now_ms=f.now)
             conn.commit()
         # Exact real checkpoint: a durable claim exists, _execute has not begun.
         # Recreate the worker as startup does; do not invoke manual recover().
-        restarted = runtime_tests.runtime.Worker(f.binding)
+        restarted = runtime_tests.R.V5Worker(f.binding)
         ticks = []
         for _ in range(2):
-            f.clock_ms += 5000
+            f.now += 5000
             ticks.append(restarted.tick())
-        event = f.event()
+        event = f.event(key)
         observed = {"checkpoint": "CLAIM_COMMITTED_BEFORE_EXECUTE",
                     "worker_recreated": True, "ticks": ticks,
-                    "state": event["state"], "reason": event["reason"],
+                    "state": event["state"], "reason": event["last_error"],
                     "publication_receipt_present": bool(event["receipt_sha256"]),
                     "operator_reentry": False, "manual_recovery_called": False}
-        expected = {"state": "PUBLISHED", "publication_receipt_present": True,
+        expected = {"state": "COMPLETED", "publication_receipt_present": True,
                     "operator_reentry": False,
                     "rule": "Automatically finish a confirmed operation after ordinary restart."}
         return outcome("restart_resumes_committed_operation", [17, 27], expected, observed,
-                       event["state"] == "PUBLISHED" and bool(event["receipt_sha256"]))
+                       event["state"] == "COMPLETED" and bool(event["receipt_sha256"]))
 
 
 def success_receipt(runtime_tests):
-    with fixture(runtime_tests.RuntimeTests) as f:
-        # The candidate event schema cannot currently persist this initiating
-        # operator identity. The absence of ANY success receipt already fails.
+    with fixture(runtime_tests.V5RuntimeTests) as f:
         operator_chat_id = 700
+        key = f.submit(value=18900, chat=operator_chat_id)["event_key"]
         messages = []
 
         class FakeBot:
@@ -148,21 +148,21 @@ def success_receipt(runtime_tests):
         asyncio.run(f.worker.deliver_notices(FakeBot()))
         success_messages = [m for m in messages
                             if "✅" in m.get("text", "") and "Завершено" in m["text"]]
-        observed = {"pipeline_result": result, "event_state": f.event()["state"],
+        observed = {"pipeline_result": result, "event_state": f.event(key)["state"],
                     "initiating_operator_chat_id": operator_chat_id,
                     "configured_owner_chat_id": f.binding.owner_chat_id,
-                    "queued_notice_kinds": [row[0] for row in f.notices()],
+                    "queued_notice_kinds": [row[1] for row in f.notices()],
                     "fake_telegram_calls": messages,
                     "success_receipt_count": len(success_messages)}
-        expected = {"event_state": "PUBLISHED", "success_receipt_count": 1,
+        expected = {"event_state": "COMPLETED", "success_receipt_count": 1,
                     "recipient_chat_id": operator_chat_id,
-                    "receipt_contains": ["✅ Завершено", "Грузии", "UA-0001", "5 000"],
+                    "receipt_contains": ["✅ Завершено", "Грузии", "UA-0001", "18 900"],
                     "rule": "Only after verification, send completion to the editing operator."}
         matching = [m for m in success_messages
                     if m.get("chat_id") == operator_chat_id
                     and "UA-0001" in m["text"] and "Грузии" in m["text"]
-                    and "5000" in m["text"].replace(" ", "").replace("\u00a0", "")]
-        passed = f.event()["state"] == "PUBLISHED" and len(success_messages) == 1 and len(matching) == 1
+                    and "18900" in m["text"].replace(" ", "").replace("\u00a0", "")]
+        passed = f.event(key)["state"] == "COMPLETED" and len(success_messages) == 1 and len(matching) == 1
         return outcome("verified_success_receipt_to_operator", [15, 24, 27], expected, observed, passed)
 
 
@@ -181,7 +181,7 @@ def main():
     try:
         paths = [SYNC / name for name in ("outbox.py", "patch_cars_ui.py",
                  "uaart_price_sync_runtime.py", "uaart_price_sync_binding.py",
-                 "test_cars_ui_hook.py", "test_runtime.py")]
+                 "uaart_price_sync_confirmation.py", "test_cars_ui_hook.py", "test_runtime.py", "test_v5_runtime.py")]
         paths += [HERE.parent / "task088_stage3_renderer" / "uaart_market_prices.py",
                   HERE.parent / "task088_autopilot_owner_policy" / "owner_policy.py",
                   HERE.parent / "task088_autopilot_owner_policy" / "price_publication.py"]
@@ -192,7 +192,7 @@ def main():
         with patch.dict(os.environ, {"TASK088_CARS_UI_SOURCE": str(source)}), \
              patch.object(socket, "create_connection", side_effect=RuntimeError("OFFLINE_NETWORK_FORBIDDEN")), \
              patch.object(socket.socket, "connect", side_effect=RuntimeError("OFFLINE_NETWORK_FORBIDDEN")):
-            runtimes = load("v5_runtime_fixtures", SYNC / "test_runtime.py")
+            runtimes = load("v5_runtime_fixtures", SYNC / "test_v5_runtime.py")
             hooks = load("v5_hook_fixtures", SYNC / "test_cars_ui_hook.py")
             hooks.CarsHookTests.setUpClass()
             checks = [lambda: conscious_updates(hooks),

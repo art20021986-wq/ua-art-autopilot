@@ -1,8 +1,15 @@
-"""Assemble reviewed code for a read-only server check; never deploy live files."""
+"""Build a content-addressed read-only package from a real reviewed observation.
+
+No source hashes, counts, quota, or acceptance evidence are supplied by defaults.
+The observation comes from observe_install_inputs.py on the authenticated server.
+It contains hashes/counts only; no CRM database or live Python source is packed.
+"""
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
+import re
 import zipfile
 
 
@@ -10,71 +17,92 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def build(workspace):
-    workspace = Path(workspace).resolve()
-    cloud = workspace / "cloud"
-    sync = cloud / "task088_price_sync"
-    renderer = cloud / "task088_stage3_renderer"
-    policy = cloud / "task088_autopilot_owner_policy"
-    source = workspace / "live_source_private"
-    mapping = {
-        "uaart_market_prices.py": renderer / "uaart_market_prices.py",
-        "uaart_price_sync_outbox.py": sync / "outbox.py",
-        "uaart_price_sync_runtime.py": sync / "uaart_price_sync_runtime.py",
-        "uaart_price_sync_binding.py": sync / "uaart_price_sync_binding.py",
-        "owner_policy.py": policy / "owner_policy.py",
-        "price_publication.py": policy / "price_publication.py",
-    }
-    for name in ("preflight.py", "install_package.py", "patch_cars_ui.py", "patch_guard.py"):
+def package_mapping(repository):
+    cloud = Path(repository) / "cloud"
+    sync, renderer, policy = (cloud / name for name in (
+        "task088_price_sync", "task088_stage3_renderer", "task088_autopilot_owner_policy"))
+    mapping = {"uaart_market_prices.py": renderer / "uaart_market_prices.py",
+        "uaart_price_sync_outbox.py": sync / "outbox.py"}
+    for name in ("uaart_price_sync_runtime.py", "uaart_price_sync_binding.py", "uaart_price_sync_confirmation.py",
+                 "uaart_price_control_reader.py", "preflight.py", "install_package.py", "patch_cars_ui.py", "patch_guard.py"):
         mapping[name] = sync / name
     for name in ("patch_yadro.py", "patch_stranica.py", "patch_catalog_design_guard.py", "initial_html_prices.py"):
         mapping[name] = renderer / name
-    files = {name: path.read_bytes() for name, path in mapping.items()}
+    for name in ("owner_policy.py", "price_publication.py"):
+        mapping[name] = policy / name
+    return mapping
+
+
+def build(repository, *, observation, stage2_receipt, output_directory, routing_evidence=None):
+    repository = Path(repository).resolve()
+    observed_raw = Path(observation).read_bytes()
+    observed = json.loads(observed_raw)
+    if (observed.get("contract") != "TASK088-V5-INSTALL-OBSERVATION-1" or
+            observed.get("status") != "PASS" or observed.get("read_only") is not True):
+        raise ValueError("REAL_COMPLETE_READONLY_OBSERVATION_REQUIRED")
+    instant = datetime.fromisoformat(observed["observed_at"].replace("Z", "+00:00"))
+    if instant.tzinfo is None or not 0 <= (datetime.now(timezone.utc) - instant).total_seconds() <= 1800:
+        raise ValueError("OBSERVATION_STALE")
+    files = {name: path.read_bytes() for name, path in package_mapping(repository).items()}
     for name, data in files.items():
         compile(data, name, "exec")
-    sources = {name: sha((source / name).read_bytes()) for name in (
-        "cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py", "publish_transaction_guard.py")}
-    dependencies = {name: sha((source / name).read_bytes()) for name in (
-        "master_card.py", "publikaciya.py", "ua_stage_catalog_sync.py", "catalog_design_golden.html")}
-    dependencies.update({
-        "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
-        "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
-        "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
-    })
-    quota = json.loads((source / "quota_observation.json").read_text())
-    stage2_bytes = (workspace / "runtime-repair/state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json").read_bytes()
-    bundle = {
-        "contract": "TASK088-PRICE-SYNC-READONLY-PREFLIGHT-1",
+    from install_package import SOURCES, DEPENDENCIES
+    for key, expected in (("source_sha256", SOURCES), ("dependency_sha256", DEPENDENCIES)):
+        if set(observed.get(key, {})) != expected or any(
+                not re.fullmatch(r"[0-9a-f]{64}", value) for value in observed[key].values()):
+            raise ValueError("COMPLETE_OBSERVED_PINS_REQUIRED:" + key)
+    stage2_bytes = Path(stage2_receipt).read_bytes()
+    stage2 = json.loads(stage2_bytes)
+    if (stage2.get("task_id") != "TASK088-GE-PRICE-CRM-STAGE2" or stage2.get("status") != "FINISHED"
+            or stage2.get("stage1_prerequisite") != "PASS" or stage2.get("stage2_status") != "PASS"
+            or stage2.get("stage3_allowed") is not True
+            or stage2.get("installed_source_sha256") != observed["source_sha256"]["cars_ui.py"]):
+        raise ValueError("EXACT_STAGE1_STAGE2_PREREQUISITES_REQUIRED")
+    bundle = {"contract": "TASK088-PRICE-SYNC-READONLY-PREFLIGHT-5",
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "observation_sha256": sha(observed_raw),
         "package_sha256": {name: sha(data) for name, data in files.items()},
-        "source_sha256": sources,
-        "dependency_sha256": dependencies,
-        "expected_stage_counts": {"kiev": 5, "georgia": 5, "sea": 4, "korea": 4},
-        "quota_evidence": quota,
-        "stage2_receipt": json.loads(stage2_bytes),
+        "source_sha256": observed["source_sha256"], "dependency_sha256": observed["dependency_sha256"],
+        "system_inventory": observed["system_inventory"],
+        "expected_published_codes": observed["database"]["published_codes"],
+        "expected_stage_counts": observed["stage_counts"],
+        "quota_evidence": observed["quota_evidence"], "stage2_receipt": stage2,
         "canonical_stage2_raw_file_sha256": sha(stage2_bytes),
-        "authority_status": "NOT_ACTIVATED_NO_TRUSTED_CONTROL_BRIDGE",
-    }
+        "authority_status": "READONLY_PREFLIGHT_NOT_A_PRODUCTION_GATE"}
+    if routing_evidence is not None:
+        from install_package import validate_routing
+        routing_raw = Path(routing_evidence).read_bytes()
+        routing = json.loads(routing_raw)
+        validate_routing(routing)
+        bundle.update({"routing": routing, "routing_evidence_sha256": sha(routing_raw),
+                       "homepage_policy": {"site/index.html": "PROTECTED_LEGACY_NOT_SERVED"}})
     raw = json.dumps(bundle, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode()
     files["preflight_bundle.json"] = raw
-    output = workspace / "delivery"
-    output.mkdir(exist_ok=True)
-    identifier = sha(raw)[:12]
-    archive = output / ("uaart_price_sync_preflight_" + identifier + ".zip")
-    with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as packed:
+    output = Path(output_directory).resolve()
+    output.mkdir(parents=True, exist_ok=True, mode=0o700)
+    archive = output / ("uaart_price_sync_preflight_" + sha(raw)[:16] + ".zip")
+    fd = os.open(archive, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "wb") as handle, zipfile.ZipFile(handle, "w", compression=zipfile.ZIP_DEFLATED) as packed:
         for name, data in sorted(files.items()):
             info = zipfile.ZipInfo(name)
             info.external_attr = 0o600 << 16
             info.compress_type = zipfile.ZIP_DEFLATED
             packed.writestr(info, data)
     metadata = {"archive": str(archive), "archive_sha256": sha(archive.read_bytes()),
-                "bundle_sha256": sha(raw), "files": sorted(files), "bytes": archive.stat().st_size}
-    (output / "preflight_upload.json").write_text(json.dumps(metadata, indent=2))
+                "bundle_sha256": sha(raw), "files": sorted(files), "bytes": archive.stat().st_size,
+                "production_changed": False, "gate_b_created": False}
     print(json.dumps(metadata))
+    return metadata
 
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("workspace")
-    build(parser.parse_args().workspace)
+    parser.add_argument("repository")
+    parser.add_argument("--observation", required=True)
+    parser.add_argument("--stage2-receipt", required=True)
+    parser.add_argument("--output-directory", required=True)
+    parser.add_argument("--routing-evidence")
+    args = parser.parse_args()
+    build(args.repository, observation=args.observation,
+          stage2_receipt=args.stage2_receipt, output_directory=args.output_directory, routing_evidence=args.routing_evidence)

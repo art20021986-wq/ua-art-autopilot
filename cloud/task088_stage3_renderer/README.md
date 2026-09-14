@@ -18,6 +18,9 @@ the FINAL v5.0 descriptions: delivery to Kyiv with customs and certification, an
 delivery to the Rustavi car market 🅿️ №16. These descriptions supersede the old
 candidate's AUTOPAPA/customs wording. Historical owner-decision files remain
 unchanged; the renderer tests assert FINAL v5.0 directly.
+Inner spans inherit the price font and color explicitly, preventing the existing
+`.catalog-top span` rule from shrinking country names and amounts to 12px.
+Actual USD amounts stay together while long country/placeholder text can wrap.
 
 `patch_yadro.patch_yadro(bytes)` and `patch_stranica.patch_stranica(bytes)` return
 candidate bytes plus provenance. They never import or execute their target
@@ -44,6 +47,14 @@ anchors abort, and existing markers abort reapplication. Catalog shell, photos,
 descriptions, specifications, diagnostics and every non-price byte remain intact.
 The installer owns snapshot hashes, locks, backup, atomic writes and readback.
 
+`initial_html_prices.migrate_home(html, rows)` recognizes the current four-stage
+homepage and preserves every byte. Its stage photos are not individual car-price
+previews and must not acquire prices of representative cars. Newly found car
+links or price surfaces fail closed instead of being silently ignored. The
+current `video/index.html` passes this inventory. The captured `site/index.html`
+is an older seven-car homepage with stale prices, not a redirect; it requires
+verified routing evidence before it may be excluded as an inactive artifact.
+
 ## Exact source baselines
 
 | Source | SHA256 | Wrappers preserved |
@@ -63,10 +74,11 @@ From the repository/workspace root:
 UA088_LIVE_SOURCE_DIR=/path/to/private_snapshot python -B -m unittest discover -s cloud/task088_stage3_renderer -p 'test_*.py' -v
 ```
 
-44 tests pass with the private generator/master/catalog/HTML snapshots supplied.
-The prior candidate's historical 40-test result does not cover FINAL v5.0.
-Without private snapshots, 18 exact-source tests are explicitly skipped; this is
-not equivalent evidence.
+51 tests pass with the complete current private capture and its hash manifest.
+The original partial private snapshot runs 48 tests with three additional
+complete-capture checks skipped. The earlier 40/44-test results do not cover the
+later homepage/CSS/current-capture checks. Missing private fixtures are explicit
+skips, never equivalent acceptance evidence.
 
 The exact-source tests extract only named base renderer AST functions, execute
 them with controlled dependencies, and compare before/after results for 18 synthetic
@@ -115,14 +127,16 @@ Maintain no regression in all non-price content, and test mobile layout and acti
 language switching. Telegram price-save/outbox wiring, transactional publication,
 60-second latency and actual owner notifications are outside this pure renderer.
 
-FINAL v5.0 Preview Gate is not closed by this package. The captured fixtures
-contain one real full vehicle card and an 18-item catalog, but no current homepage
-or complete set of real full vehicle pages. The real `ua-site-languages.js` and
+FINAL v5.0 Preview Gate is not closed by this package. The original partial
+fixtures contain one real full vehicle card and an 18-item catalog. The current
+capture additionally exercises all 36 full-card copies and both catalogs against
+their capture-manifest hashes, plus the current stage-only homepage and the
+distinct stale legacy homepage. The real `ua-site-languages.js` and
 `i18n.js` scripts must be exercised in a browser; static translation-attribute
 tests do not establish working language switching. The current homepage routing
-must be traced: the captured `yadro.glavnaya_html` builds stage tiles, whereas
-`stranica.sobrat_glavnuyu` builds individual vehicle tiles. A patched function is
-not evidence that the production homepage calls it. Complete Preview coverage,
+must remain explicit: the current public `video/index.html` contains stage tiles,
+whereas `stranica.sobrat_glavnuyu` builds individual vehicle tiles. A patched
+function is not evidence that the production homepage calls it. Complete Preview coverage,
 fresh source/DB binding and deployment gates remain required.
 
 ## Read-only snapshot audit
