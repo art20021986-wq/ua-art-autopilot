@@ -1,6 +1,6 @@
 {
   "contract": "PR114-RESUME-EXECUTION-NOTICE-NOT-A-GATE-1",
-  "updated_at": "2026-09-15T05:00:36.296837+00:00",
+  "updated_at": "2026-09-15T05:14:02.241770+00:00",
   "specification": "UA-ART-PR114-COMPLETION-004 v1.0",
   "user_direction": "Действуй, нужен полный PASS. Preserve progress across interrupted message streams.",
   "observed_head": "2dafab4b1aaa1184ebfdf672a5afd6a00bf92e13",
@@ -20,7 +20,8 @@
   "completed_operations": {
     "install-observe-20260915-0440": "COMPLETED_RECONCILED_DO_NOT_REPEAT",
     "preview-binding-20260915-0446": "COMPLETED_RECONCILED_DO_NOT_REPEAT",
-    "preflight-resume1509-0334": "COMPLETED_BLOCKED_CANONICAL_CONTROLS_NOT_RUN_DO_NOT_REPEAT"
+    "preflight-resume1509-0334": "COMPLETED_BLOCKED_CANONICAL_CONTROLS_NOT_RUN_DO_NOT_REPEAT",
+    "writer-identity-facts-0508": "COMPLETED_RC0_RAW_RETAINED_SERVER; summary recovered; no repeat"
   },
   "raw_recovery": "cloud/task088_v5_acceptance/resume_20260915_2/REPORT_RECOVERY.json",
   "historical_suites_repeated": false,
@@ -29,14 +30,15 @@
     "state": "SHELL_PROMPT",
     "credential_prompt_open": false
   },
-  "next_action": "Collect missing authenticated writer and identity facts; prepare real canonical request, manifest, Gate B and activation. Refresh time-bound inputs only when a new canonical launch is otherwise ready. Continue verified backup/install then live Stage4 acceptance.",
+  "next_action": "Finish writer dependency/fence review and authenticated bot/private-chat read-only facts. No new preflight until these are complete.",
   "foreground_in_progress": true,
   "foreground_owner": "current root conversation; only Git writer",
   "continuation_coordination": "Background continuation must re-read current PR/head/checkpoint and abstain from Git or server mutations while foreground heartbeat is less than 15 minutes old. This coordination notice is not a production lock or authority. Existing canonical locks always apply.",
   "background_task": {
     "id": "6aa838e44e688191acb636f6597ac587",
-    "is_enabled": false,
-    "action": "Resume existing task after this milestone is durably saved and read back."
+    "is_enabled": true,
+    "action": "Existing task resumed after actual8/8 stage1 and durable readback; no competing writes while foreground active.",
+    "prompt_readback_match": true
   },
   "production_written": false,
   "crm_written": false,
