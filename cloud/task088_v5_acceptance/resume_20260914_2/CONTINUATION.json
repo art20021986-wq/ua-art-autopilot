@@ -1,6 +1,6 @@
 {
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "recorded_at": "2026-09-15T03:41:27.664Z",
+  "recorded_at": "2026-09-15T04:08:54.023Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "branch": "codex/task088-owner-policy-20260913-0934",
   "prior_audit_head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
@@ -24,7 +24,9 @@
     "Fresh private preflight bundle17/17code-identical staged once; actual preflight finished03:23:57 BLOCKED/FAIL solely because quota expired before private backup. Raw report preserved, exact server/download SHA matched; no DB backup/candidate or live write.",
     "Fresh account quota observed03:26:07.967Z used7522402304 limit37580963840; saved uniquely. A new V3 observer launched once because canonical builder requires observation freshness; old results/statuses/timestamps retained.",
     "New observer completed PASS at03:33, raw observed_at03:28:52, all DB/source/schema/inventory compared equal. New Preview binding again MATCH_SCOPED_BINDINGS_ONLY; raw SHA991449... independently server/local matched.",
-    "Fresh retry package15d2fd8d built17/17code-identical, ZIPSHA6bba9888 verified at server, staged once in resume1509_0334 with full_readbackPASS. Separate private preflight launched once after readback; current outcome pending."
+    "Fresh retry package15d2fd8d built17/17code-identical, ZIPSHA6bba9888 verified at server, staged once in resume1509_0334 with full_readbackPASS. Separate private preflight launched once after readback; current outcome pending.",
+    "Actual retry preflight completed20260915T03:47:13.988456Z. Raw report server/local SHA f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7 matched; candidate PASS, offline schema PASS, protected readback PASS, sole overall BLOCKED canonical bridge/Gate B/activation not run. Independent30comparisons MATCH; no live/source/CRM/public HTML writes.",
+    "Current controls read: no active Actions and no pending transactions; last watchdog34912613369 repeats prior RECOVERY_CANARY_RECEIPT_BINDING before canary write. Old read-only blocked claim preserved. Stage3/4 receipts absent."
   ],
   "saved_tests": {
     "software": 446,
@@ -33,7 +35,7 @@
     "repeat_full_suites": false
   },
   "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0327.json.gz.b64",
-  "current_credential_state": "ABSENT_CONFIRMED_20260915_0312; console48168693 runs private preflight, NOT hidden token prompt",
+  "current_credential_state": "ABSENT_LAST_CHECK_20260915_0312; preflight completed; console48168693 is at normal shell prompt, NOT hidden token prompt",
   "full_preview_gate": "NOT_PASSED",
   "stage3": "OPEN_NOT_PUBLISHED",
   "stage4": "OPEN_NOT_ACCEPTED",
@@ -55,8 +57,8 @@
     "production_recovery_implemented_or_accepted": false
   },
   "next_action": {
-    "kind": "RECONCILE_ALREADY_RUNNING_RETRY_PREFLIGHT",
-    "detail": "Read console48168693 and /home/Carix/autopilot_inbox/cloud/preflight_1509_0338.json; inspect existing task088_price_sync_resume1509_0334/preflight_outputs/preflight-resume1509-0334/report.json, preserve rawhash/status. Do not repeat oldstaging/preflightIDs. On valid candidate/protected-systemPASS evaluate actualfull24 and precise installation candidate; then ownerrequested automaticnew-planstages2/3 throughcanonical controls."
+    "kind": "EVALUATE_ACTUAL_24_PREVIEW_ON_SAVED_CANDIDATE",
+    "detail": "Use completed saved preflight, its independent30MATCH verification, latest Preview binding and retained evidence to finalize genuine24-criterion Preview contract. Do not repeat preflight-resume1509-0334. Current quota is expired for future launch; refresh only required actual observations with recorded reason. After actual criterion8 closure resume existing background task with corrected gallery/current-state prompt and continue new-planstages2/3 through canonical controls."
   },
   "further_required": [
     "Provision owner-created fine-grained GitHub Contents:read token for only art20021986-wq/ua-art-autopilot using the reviewed hidden-input receiver. First verify actual console/receiver state; never place token in chat, command arguments, repo or a shell prompt. Current receiver is not running.",
@@ -66,7 +68,7 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "persist_policy": "Save code and sanitized evidence in same branch; after any interrupted Git mutation read remote ref/tree before retry. This continuation is not evidence that a server write completed.",
-  "observed_pr_head_before_this_update": "3f597a8b958d992b173e8252cff84b2b0e679294",
+  "observed_pr_head_before_this_update": "879a9c39a6aa1f6d57b6e0b5d78cdf6b654d92d2",
   "owner_screenshots": {
     "path": "cloud/task088_v5_acceptance/resume_20260914_2/OWNER_SCREENSHOTS_REVIEW.json",
     "bytes": 3233,
@@ -86,7 +88,7 @@
     "stage3_existing_canonical_runner_requires_new_reader_token": false,
     "stage4_continuous_reader_requires_read_credential": true
   },
-  "background_task_state": "PAUSED_SINCE_20260914_1907; foreground continuation resumed by owner; historical enabled record retained",
+  "background_task_state": "DISABLED_CONFIRMED_20260915; enable existing task after actual first-stage completion per owner; do not create duplicate",
   "progress": {
     "completed": 7,
     "total": 20,
@@ -101,8 +103,24 @@
   "running_operation": {
     "kind": "PRIVATE_PREFLIGHT_NOT_PUBLICATION",
     "launched_once": true,
-    "command": "python3.10 -IB /home/Carix/autopilot_inbox/cloud/task088_price_sync_resume1509_0334/preflight.py --output-id preflight-resume1509-0334 --expected-bundle-sha256 15d2fd8dc4f7f24162343cd635f19185376a7ef9f77cb3b7eb7bb11a5c5a46ef > preflight_1509_0338.json",
+    "outcome": "COMPLETED_RECONCILED_DO_NOT_RELAUNCH",
+    "output_id": "preflight-resume1509-0334",
+    "observed_at": "2026-09-15T03:39:41.680759+00:00",
+    "completed_at": "2026-09-15T03:47:13.988456+00:00",
+    "status": "BLOCKED",
+    "candidate_verification": "PASS",
+    "blockers": [
+      "CANONICAL_CONTROL_BRIDGE_GATE_B_AND_ACTIVATION_NOT_RUN"
+    ],
+    "report": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+    "raw_bytes": 1306122,
+    "raw_sha256": "f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7",
+    "gzip_sha256": "c7659699b0948c1822ccbeaa1a9be73638e45f7c15ffe421699fc8506da22dea",
+    "candidate_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611",
+    "independent_verification": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/PREFLIGHT_COMPLETION_VERIFICATION.json",
     "quota_expires": "2026-09-15T03:56:07.967Z",
-    "outcome": "PENDING_READBACK"
-  }
+    "production_authority": false
+  },
+  "owner_current_request": "Prepare complete completion specification with preserved three stages, exact owner actions and recommendations. The document does not itself activate reader or override current safety gates. Existing execution/publication authorization remains valid.",
+  "current_control_read": "cloud/task088_v5_acceptance/resume_20260915/CURRENT_CONTROL_READ_1509.json"
 }
