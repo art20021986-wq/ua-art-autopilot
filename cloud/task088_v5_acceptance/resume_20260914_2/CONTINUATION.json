@@ -1,6 +1,6 @@
 {
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "recorded_at": "2026-09-15T05:18:38.495505+00:00",
+  "recorded_at": "2026-09-15T05:37:39.699867+00:00",
   "repository": "art20021986-wq/ua-art-autopilot",
   "branch": "codex/task088-owner-policy-20260913-0934",
   "prior_audit_head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
@@ -30,7 +30,8 @@
     "All 24 exact-candidate Preview criteria independently reviewed with retained raw evidence; 26 archive/hash comparisons MATCH and fresh source/DB/HTML/resource bindings preserved. Genuine final Preview contract PASS at20260915T04:55:50; stage1=8/8, total8/20=40%.",
     "Fresh observer and binding completed exactly once; browser download transport failed, then original raw bytes recovered losslessly via minimal deltas against immutable base reports. Server/local sizes and SHA256 match; no observer or preflight rerun.",
     "Actual05:06 CRM source/ACL facts obtained;14 private originals independently match. Active media-deletion callback before DB transaction is not fenced by installer locks. Full writer PASS BLOCKED; no canonical launch attempted.",
-    "Actual05:15 existing CRM getMe/getChat confirmed bot and unique active owner private chat. Raw941bytes server/local SHA0027d739... match. No messages sent, updates consumed or token disclosed."
+    "Actual05:15 existing CRM getMe/getChat confirmed bot and unique active owner private chat. Raw941bytes server/local SHA0027d739... match. No messages sent, updates consumed or token disclosed.",
+    "New isolated quiescence protocol independently reviewed: final21/21 local synthetic tests PASS; immutable plan, separate before/after source pins and durable intent-before-action journal. Not integrated, no writer/canonical/Stage3/4 PASS."
   ],
   "saved_tests": {
     "software": 446,
@@ -39,7 +40,7 @@
     "repeat_full_suites": false
   },
   "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260915_2/REPORT_RECOVERY.json",
-  "current_credential_state": "ABSENT_LAST_CHECK_20260915_0312; preflight completed; console48168693 is at normal shell prompt, NOT hidden token prompt",
+  "current_credential_state": "ABSENT_OBSERVED_2026-09-15T05:28:02.877826+00:00; receiver SHA matched; console48168693 remains at shell, hidden receiver not started",
   "full_preview_gate": "PASS_24_OF_24",
   "stage3": "OPEN_NOT_PUBLISHED",
   "stage4": "OPEN_NOT_ACCEPTED",
@@ -61,8 +62,8 @@
     "production_recovery_implemented_or_accepted": false
   },
   "next_action": {
-    "kind": "RESOLVE_ACTUAL_UNFENCED_WRITERS",
-    "detail": "Prepare lawful complete writer quiescence/remediation for actual running old CRM before any new preflight or canonical launch. Existing supervisor-running contract must not be bypassed. Provision reader credential only through owner hidden input."
+    "kind": "INTEGRATE_ACTUAL_WRITER_FENCES_AND_CANONICAL_QUIESCENCE",
+    "detail": "Continue isolated preparation of filesystem fences and exact phase-aware canonical integration. Real complete process/drain evidence remains missing. Owner read credential still absent; no premature freshness-only reruns."
   },
   "further_required": [
     "Provision owner-created fine-grained GitHub Contents:read token for only art20021986-wq/ua-art-autopilot using the reviewed hidden-input receiver. First verify actual console/receiver state; never place token in chat, command arguments, repo or a shell prompt. Current receiver is not running.",
@@ -72,7 +73,7 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "persist_policy": "Save code and sanitized evidence in same branch; after any interrupted Git mutation read remote ref/tree before retry. This continuation is not evidence that a server write completed.",
-  "observed_pr_head_before_this_update": "2dafab4b1aaa1184ebfdf672a5afd6a00bf92e13",
+  "observed_pr_head_before_this_update": "e669e2d874be195e1d3fe8d0276c5ec7459ecd24",
   "owner_screenshots": {
     "path": "cloud/task088_v5_acceptance/resume_20260914_2/OWNER_SCREENSHOTS_REVIEW.json",
     "bytes": 3233,
@@ -132,5 +133,11 @@
     "path": "cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_GATE.json",
     "sha256": "3ed070183d19de801348aef5a521d30781c6528aa585441c6593ab34ae7f864a",
     "evaluated_at": "2026-09-15T04:55:50.289644+00:00"
+  },
+  "quiescence_preparation": {
+    "path": "cloud/task088_v5_quiescence",
+    "tests_passed": 21,
+    "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
+    "integrated": false
   }
 }
