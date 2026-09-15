@@ -1,9 +1,9 @@
 {
   "contract": "PR114-RESUME-EXECUTION-NOTICE-NOT-A-GATE-1",
-  "updated_at": "2026-09-15T05:37:39.699867+00:00",
+  "updated_at": "2026-09-15T05:47:44.897034+00:00",
   "specification": "UA-ART-PR114-COMPLETION-004 v1.0",
   "user_direction": "Действуй, нужен полный PASS. Preserve progress across interrupted message streams.",
-  "observed_head": "e669e2d874be195e1d3fe8d0276c5ec7459ecd24",
+  "observed_head": "4219b77fd5142ff0d11d7381694fc09d75f3b066",
   "observed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
   "progress": {
     "accepted": 8,
@@ -64,6 +64,28 @@
       "Canonical authority and phase-aware adapter integration",
       "Permanent filesystem writer fences",
       "Fresh observation rebinding after long backup"
-    ]
+    ],
+    "durable_commit": "4219b77fd5142ff0d11d7381694fc09d75f3b066",
+    "git_readback": "13/13 exact"
+  },
+  "integration_map": {
+    "path": "cloud/task088_v5_acceptance/resume_20260915_2/QUIESCENCE_INTEGRATION_MAP.json",
+    "root_source_readback": "14/14 Git blobs matched commit4219b77fd5142ff0d11d7381694fc09d75f3b066",
+    "integrated": false
+  },
+  "monitor_review": {
+    "path": "cloud/task088_v5_acceptance/resume_20260915_2/COMPLETE_MONITOR_SOURCE_REVIEW.json",
+    "source_sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+    "status": "FULL_STATIC_DIRECT_EFFECT_REVIEW_PASS_ONLY",
+    "limits": [
+      "Loaded-process code identity not observed",
+      "WSGI effects of public GET remain separate writer scope"
+    ],
+    "source_retained": "cloud/task088_v5_acceptance/resume_20260915_2/observed_monitor_source_0542.py.txt"
+  },
+  "writer_fence_preparation": {
+    "path": "cloud/task088_v5_writer_fence",
+    "status": "IN_PROGRESS_ISOLATED_CANDIDATE_AND_CONCURRENCY_TESTS",
+    "integrated": false
   }
 }
