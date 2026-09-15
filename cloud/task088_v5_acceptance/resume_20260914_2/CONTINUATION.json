@@ -1,6 +1,6 @@
 {
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "recorded_at": "2026-09-15T04:08:54.023Z",
+  "recorded_at": "2026-09-15T05:00:36.296837+00:00",
   "repository": "art20021986-wq/ua-art-autopilot",
   "branch": "codex/task088-owner-policy-20260913-0934",
   "prior_audit_head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
@@ -26,7 +26,9 @@
     "New observer completed PASS at03:33, raw observed_at03:28:52, all DB/source/schema/inventory compared equal. New Preview binding again MATCH_SCOPED_BINDINGS_ONLY; raw SHA991449... independently server/local matched.",
     "Fresh retry package15d2fd8d built17/17code-identical, ZIPSHA6bba9888 verified at server, staged once in resume1509_0334 with full_readbackPASS. Separate private preflight launched once after readback; current outcome pending.",
     "Actual retry preflight completed20260915T03:47:13.988456Z. Raw report server/local SHA f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7 matched; candidate PASS, offline schema PASS, protected readback PASS, sole overall BLOCKED canonical bridge/Gate B/activation not run. Independent30comparisons MATCH; no live/source/CRM/public HTML writes.",
-    "Current controls read: no active Actions and no pending transactions; last watchdog34912613369 repeats prior RECOVERY_CANARY_RECEIPT_BINDING before canary write. Old read-only blocked claim preserved. Stage3/4 receipts absent."
+    "Current controls read: no active Actions and no pending transactions; last watchdog34912613369 repeats prior RECOVERY_CANARY_RECEIPT_BINDING before canary write. Old read-only blocked claim preserved. Stage3/4 receipts absent.",
+    "All 24 exact-candidate Preview criteria independently reviewed with retained raw evidence; 26 archive/hash comparisons MATCH and fresh source/DB/HTML/resource bindings preserved. Genuine final Preview contract PASS at20260915T04:55:50; stage1=8/8, total8/20=40%.",
+    "Fresh observer and binding completed exactly once; browser download transport failed, then original raw bytes recovered losslessly via minimal deltas against immutable base reports. Server/local sizes and SHA256 match; no observer or preflight rerun."
   ],
   "saved_tests": {
     "software": 446,
@@ -34,9 +36,9 @@
     "browser_css_scenarios": 120,
     "repeat_full_suites": false
   },
-  "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0327.json.gz.b64",
+  "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260915_2/REPORT_RECOVERY.json",
   "current_credential_state": "ABSENT_LAST_CHECK_20260915_0312; preflight completed; console48168693 is at normal shell prompt, NOT hidden token prompt",
-  "full_preview_gate": "NOT_PASSED",
+  "full_preview_gate": "PASS_24_OF_24",
   "stage3": "OPEN_NOT_PUBLISHED",
   "stage4": "OPEN_NOT_ACCEPTED",
   "publication_authorization": "Existing owner authorization after genuine full PASS remains valid; no duplicate publication confirmation is required.",
@@ -57,18 +59,18 @@
     "production_recovery_implemented_or_accepted": false
   },
   "next_action": {
-    "kind": "EVALUATE_ACTUAL_24_PREVIEW_ON_SAVED_CANDIDATE",
-    "detail": "Use completed saved preflight, its independent30MATCH verification, latest Preview binding and retained evidence to finalize genuine24-criterion Preview contract. Do not repeat preflight-resume1509-0334. Current quota is expired for future launch; refresh only required actual observations with recorded reason. After actual criterion8 closure resume existing background task with corrected gallery/current-state prompt and continue new-planstages2/3 through canonical controls."
+    "kind": "PREPARE_CANONICAL_INSTALLATION",
+    "detail": "Collect missing authenticated writer and identity facts; prepare real canonical request, manifest, Gate B and activation. Refresh time-bound inputs only when a new canonical launch is otherwise ready. Continue verified backup/install then live Stage4 acceptance."
   },
   "further_required": [
     "Provision owner-created fine-grained GitHub Contents:read token for only art20021986-wq/ua-art-autopilot using the reviewed hidden-input receiver. First verify actual console/receiver state; never place token in chat, command arguments, repo or a shell prompt. Current receiver is not running.",
     "Re-read current server/DB/source/Preview and canonical receipts before further work; reconcile unknown external outcomes first.",
     "Fresh actual quota/Preview/Gate binding and writer exclusion; earlier timestamps remain expired.",
-    "Evaluate all 24 criteria on exact candidate, finalize canonical request/manifest/Gate/activation under existing controls; do not fabricate authority from this checkpoint.",
+    "Prepare canonical request/manifest/Gate B/activation from actual eligible inputs. Accepted Preview and this checkpoint do not grant production authority.",
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "persist_policy": "Save code and sanitized evidence in same branch; after any interrupted Git mutation read remote ref/tree before retry. This continuation is not evidence that a server write completed.",
-  "observed_pr_head_before_this_update": "879a9c39a6aa1f6d57b6e0b5d78cdf6b654d92d2",
+  "observed_pr_head_before_this_update": "2dafab4b1aaa1184ebfdf672a5afd6a00bf92e13",
   "owner_screenshots": {
     "path": "cloud/task088_v5_acceptance/resume_20260914_2/OWNER_SCREENSHOTS_REVIEW.json",
     "bytes": 3233,
@@ -88,15 +90,15 @@
     "stage3_existing_canonical_runner_requires_new_reader_token": false,
     "stage4_continuous_reader_requires_read_credential": true
   },
-  "background_task_state": "DISABLED_CONFIRMED_20260915; enable existing task after actual first-stage completion per owner; do not create duplicate",
+  "background_task_state": "DISABLED_PENDING_DURABLE_STAGE1_READBACK_THEN_RESUME_EXISTING",
   "progress": {
-    "completed": 7,
+    "completed": 8,
     "total": 20,
-    "percent": 35,
+    "percent": 40,
     "stage1": {
-      "completed": 7,
+      "completed": 8,
       "total": 8,
-      "percent": 87.5
+      "percent": 100
     }
   },
   "photos_acceptance": "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json",
@@ -121,6 +123,12 @@
     "quota_expires": "2026-09-15T03:56:07.967Z",
     "production_authority": false
   },
-  "owner_current_request": "Prepare complete completion specification with preserved three stages, exact owner actions and recommendations. The document does not itself activate reader or override current safety gates. Existing execution/publication authorization remains valid.",
-  "current_control_read": "cloud/task088_v5_acceptance/resume_20260915/CURRENT_CONTROL_READ_1509.json"
+  "owner_current_request": "Действуй, нужен полный PASS. Preserve progress across interrupted message streams.",
+  "current_control_read": "cloud/task088_v5_acceptance/resume_20260915/CURRENT_CONTROL_READ_1509.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260915_2/EXECUTION_NOTICE.json",
+  "preview_gate": {
+    "path": "cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_GATE.json",
+    "sha256": "3ed070183d19de801348aef5a521d30781c6528aa585441c6593ab34ae7f864a",
+    "evaluated_at": "2026-09-15T04:55:50.289644+00:00"
+  }
 }

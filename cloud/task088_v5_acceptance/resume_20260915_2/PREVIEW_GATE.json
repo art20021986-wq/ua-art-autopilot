@@ -1,0 +1,557 @@
+{
+  "contract": "TASK088-FINAL-V5-PREVIEW-GATE-1",
+  "task_id": "TASK088-GE-PRICE-SITE-STAGE3-20260915-0455",
+  "status": "PASS",
+  "evaluated_at": "2026-09-15T04:55:50.289644+00:00",
+  "candidate_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611",
+  "database": {
+    "audit_sha256": "1674892165b6b42f3a726559a3ac6eac22981a3a83b7371ade8dc4cf9a095171",
+    "cars_sha256": "fb3a161124b7c883e3755ddbc2b84060a6fe91954ac52f6cf7a4b93ae1db4244",
+    "published_codes": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016",
+      "UA-0017",
+      "UA-0018"
+    ],
+    "published_sha256": "746227be9abe97b4e07afd50c8dd393268a2a9a6c576c63ce089d636d6d7658d"
+  },
+  "schema_sha256": "2f11c8573be88b0dc8da1adf12fcdc6c5105844f0a0300797fc907f9544ff8c2",
+  "system_inventory_sha256": "b78bf862e08c4b549956b803245a851366085ae93ccc59291fde46656eec4dea",
+  "published_codes": [
+    "UA-0001",
+    "UA-0002",
+    "UA-0003",
+    "UA-0004",
+    "UA-0005",
+    "UA-0006",
+    "UA-0007",
+    "UA-0008",
+    "UA-0009",
+    "UA-0010",
+    "UA-0011",
+    "UA-0012",
+    "UA-0013",
+    "UA-0014",
+    "UA-0015",
+    "UA-0016",
+    "UA-0017",
+    "UA-0018"
+  ],
+  "source_files_sha256": {
+    ".github/workflows/uaart_critical.yml": "4523f30fd01fa9e1b578be9e18593101270564cf1f51849df02e887c808fb80e",
+    ".github/workflows/uaart_maintenance.yml": "04e0b6636789d5fe67da3ac3f31ab713603fb71066dd72b0f0f44fcd12346fa5",
+    "automation/control_plane.py": "6e3f6962d160bd778cadadb9ae24ff5d82df5ecc847a95ade2553e3c34719d5d",
+    "automation/test_task088_stage3_activation.py": "4aa4a06a75694a1b3149956064b0ff42131a9e61f6f11abc49bff2e5981a832b",
+    "cloud/task088_price_sync/build_preflight_bundle.py": "b3ac89ba2006c196259f94667ad58a0467738387a3ec6ba9c8ca9d5f61f15c73",
+    "cloud/task088_price_sync/install_package.py": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673",
+    "cloud/task088_price_sync/outbox.py": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+    "cloud/task088_price_sync/patch_cars_ui.py": "6a695ae16e6710516383f472d454e96d813893c80d4f39cf96bd2df687f2388c",
+    "cloud/task088_price_sync/patch_guard.py": "fb36683ff114f82f10696e16eca17676507f52461b8929243e877af0efb7e08b",
+    "cloud/task088_price_sync/preflight.py": "71927589e9c2c847fdafb9078c5c2aab0ba40af0dbebed31804a1a616348fcde",
+    "cloud/task088_price_sync/probe_control_capabilities.py": "4de11964be94e16eedeca520a402b4a58dd150e0ce3ff7d64ff9fe1af8115ad4",
+    "cloud/task088_price_sync/stage_preflight.py": "e860a0f3823f4278e740bbd728c26f57ca28e23f5ae894b3c5f4031666254a30",
+    "cloud/task088_price_sync/test_binding.py": "fe95aa83023aba33777276d305474990e32df8e5522396cba38b0fa83fca5770",
+    "cloud/task088_price_sync/test_cars_ui_hook.py": "07f48c4348252214ccc867d1b593ad3d06229967d14a99407ceb6bc2ab46e0b6",
+    "cloud/task088_price_sync/test_confirmation.py": "d1b80cbaf67e8c98f7ef6e6d59bdac9d52854c42a2f3492bbdf64c42a874b91f",
+    "cloud/task088_price_sync/test_control_reader.py": "a47d91fdccc7b7104d18fb6118fbd853a0c77b6e4317745730211eef57b58a56",
+    "cloud/task088_price_sync/test_crm_intent_contract.py": "32864ab25d7426392811f52340dc8e34c20b00c40aadff4b628a3c605811d41b",
+    "cloud/task088_price_sync/test_guard_fence.py": "11b6a3d26949a36695cc8aa0d2e2246442ac9b11aa8109da4aa2130553bb1a78",
+    "cloud/task088_price_sync/test_install_package.py": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+    "cloud/task088_price_sync/test_outbox.py": "dfbe12f544013397f5ed70c419ed67c9717bb7474c827b9f384a0f05103b3d61",
+    "cloud/task088_price_sync/test_public_guard_contract.py": "41c073005f99d13a7b410432204494ed03052daa669fd39b343954e282b06799",
+    "cloud/task088_price_sync/test_runtime.py": "6d9068cd590f9d5bfbec9fab30f2bafec98efbfb1a23a7dc3b6782079b8965e7",
+    "cloud/task088_price_sync/test_v5_install_preparation.py": "3e1c77a2a0f215b3babd009a7f414dc96baaa3c193ca28ff597b4bb6618485fc",
+    "cloud/task088_price_sync/test_v5_outbox.py": "4dfee3def65939a70c2650286f1bcceb0f31ba9592eba7e2fdf73c7042531673",
+    "cloud/task088_price_sync/test_v5_runtime.py": "39f4122f2509be336cacb3a1d2185fc0874b7e5d85da48ed2bc921219de19302",
+    "cloud/task088_price_sync/uaart_price_control_reader.py": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+    "cloud/task088_price_sync/uaart_price_sync_binding.py": "efecb6371e0ecccde75df053d740ec5316bdf1a1a3573171fe7b25de4657348f",
+    "cloud/task088_price_sync/uaart_price_sync_confirmation.py": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+    "cloud/task088_price_sync/uaart_price_sync_runtime.py": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a",
+    "cloud/task088_stage3_renderer/audit_snapshot.py": "c89c71d40925ae60516e7fc27f5eb1fc392411254d908d605cc3da483ff16886",
+    "cloud/task088_stage3_renderer/initial_html_prices.py": "c34be563fcdc90740bcf99dd6c81f3b9dc44f3f9ef883a0cc118314f5c741333",
+    "cloud/task088_stage3_renderer/patch_catalog_design_guard.py": "a251b3e6c036645701ae8473f3c0020f8589c04815509b533cf0a531656c024f",
+    "cloud/task088_stage3_renderer/patch_stage_catalog_sync.py": "2c59fea132f1bff9b55a8c4ab911035509078836f2ebdb5f5e388787b7e109be",
+    "cloud/task088_stage3_renderer/patch_stranica.py": "7fe01235678cbdbeecafc3d402c75ba95c80643ea295d355208eb8749a5e5848",
+    "cloud/task088_stage3_renderer/patch_yadro.py": "873fbfcd05d0d740810cb898302090f75239ca7c1d115992e524c3290f2b7fb1",
+    "cloud/task088_stage3_renderer/test_captured_pages.py": "25a3f90633f44c3e1f7cba28ee116b118b4f535cd1649526798dacca5b62287a",
+    "cloud/task088_stage3_renderer/test_home_prices.py": "d2430a6c2d29c5feead29b88c2cdaac70fb05e716591601e561693c1aa6389fc",
+    "cloud/task088_stage3_renderer/test_initial_html_prices.py": "818f058f4fbaed37030fc5c698c478dc290771a61b6446675a751aee6fa1b11a",
+    "cloud/task088_stage3_renderer/test_market_prices.py": "0da3b1fd3ec09e13967cf1cc4383a7f74b4bb70ab33f706b8d38bcc6c1680951",
+    "cloud/task088_stage3_renderer/test_private_catalog_guard.py": "3ec241ba797337cbac7b910bfe962a76756c0f8883a3e60dde4e788a2b439500",
+    "cloud/task088_stage3_renderer/test_private_master_chain.py": "28b9d41b66d2d3931ea72bb296944dc00e7ffadcc7f72242b348f98e1c3ca3a4",
+    "cloud/task088_stage3_renderer/test_private_source.py": "04889623b0efa9a957487f92d2a5f36d2cc0b8f29ee3e16da31dc74b01ea8e37",
+    "cloud/task088_stage3_renderer/test_private_stage_catalog_sync.py": "42e57f3316a4d1206a3433acdb9ab474cb05906b26caf2a56c0e40a08592db6b",
+    "cloud/task088_stage3_renderer/uaart_market_prices.py": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+    "cloud/task088_v5_install/backup_controller.py": "5080826a2a7fa0afef24134e1d69fbb48596cc824d97e939e63c3ef6b25a61a1",
+    "cloud/task088_v5_install/build_release.py": "81808e30e5d60c626290fa848fbf31ae7435c5f41fc4f54372c6914f2b0f5357",
+    "cloud/task088_v5_install/controller.py": "71722965e09f59d0afb9fab86a6571c713efb60111d970a632d80a4f05e3cf9c",
+    "cloud/task088_v5_install/observe_install_inputs.py": "626bb2142367b1b1d251fc131ee6365d6285fea6daa0cd08d2b8bc565d56a42f",
+    "cloud/task088_v5_install/prepare_install_plan.py": "588528ef127831879d6cee60765de34b36a3358e8711d780eabbdbc8cfbcce81",
+    "cloud/task088_v5_install/release/backup_controller.py": "5080826a2a7fa0afef24134e1d69fbb48596cc824d97e939e63c3ef6b25a61a1",
+    "cloud/task088_v5_install/release/controller.py": "71722965e09f59d0afb9fab86a6571c713efb60111d970a632d80a4f05e3cf9c",
+    "cloud/task088_v5_install/release/install_package.py": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673",
+    "cloud/task088_v5_install/release/outbox.py": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+    "cloud/task088_v5_install/release/owner_policy.py": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+    "cloud/task088_v5_install/release/price_publication.py": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+    "cloud/task088_v5_install/release/remote_adapter.py": "9def8122a4a60c6685197048adf2f9b494b6767a79b3d9c35c6de0b01e2fabeb",
+    "cloud/task088_v5_install/release/rollback_controller.py": "a5e21ac45f93bd31f410cffd19649ce7655a1c9eb706f51df894293f403bcd0b",
+    "cloud/task088_v5_install/release/test_adapter.py": "5e4b08c67bddc3900b1582a338cf96f8a0839882a66054468e1f9b75efb30aff",
+    "cloud/task088_v5_install/release/test_install_package.py": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+    "cloud/task088_v5_install/release/uaart_market_prices.py": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+    "cloud/task088_v5_install/release/uaart_price_control_reader.py": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+    "cloud/task088_v5_install/release/uaart_price_sync_binding.py": "efecb6371e0ecccde75df053d740ec5316bdf1a1a3573171fe7b25de4657348f",
+    "cloud/task088_v5_install/release/uaart_price_sync_confirmation.py": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+    "cloud/task088_v5_install/release/uaart_price_sync_outbox.py": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+    "cloud/task088_v5_install/release/uaart_price_sync_runtime.py": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a",
+    "cloud/task088_v5_install/remote_adapter.py": "9def8122a4a60c6685197048adf2f9b494b6767a79b3d9c35c6de0b01e2fabeb",
+    "cloud/task088_v5_install/rollback_controller.py": "a5e21ac45f93bd31f410cffd19649ce7655a1c9eb706f51df894293f403bcd0b",
+    "cloud/task088_v5_install/test_adapter.py": "5e4b08c67bddc3900b1582a338cf96f8a0839882a66054468e1f9b75efb30aff",
+    "cloud/task088_v5_preview/build_preview.py": "ce6fb512f2b2c5dadb81c6412b1da28a43b8ba0d8b9d325f93c03833d9368cc9",
+    "cloud/task088_v5_preview/common.py": "cb30a2b61d28438a9844e79b1bc8550f92885dab8b6dc0d76c2789827c9893fa",
+    "cloud/task088_v5_preview/routing_proof.py": "fd483b95d5b0a2bc92146d1c137decb9e368706248b7469c9c1243a3fd622c5d",
+    "cloud/task088_v5_preview/test_preview.py": "0cef5f63051d4619bc0942a8ffd6826be751250475273c8ae0af5ac110a930f3",
+    "cloud/task088_v5_preview/test_private_preview_capture.py": "2215d49449725fae78dba7d3bb7ce597c202bbc2ab72bfa7d8d7eb11165a0c06",
+    "cloud/task088_v5_preview/viewport_harness.py": "3b6830eff2d35ed94688707018e606b0d404a00bcb4dce80fa0dadab89b0bae1",
+    "cloud/task088_v5_preview/wsgi_entry.py": "7b7b9056b55c41a5031e430cf470b10ae66fd812f792a3cd65cb931c1ced02e7",
+    "cloud/task088_v5_preview/wsgi_preview.py": "ba8188817fe309e42082024007ff892342283937a76a45fe8e3fcc2c975c2ee4",
+    "cloud/ua_ge_price_protection/gate.py": "bda31a6a7a01e3ec940f898605ff5cbd1a118443ec5ebb5f63d23ec34d31e445",
+    "cloud/ua_ge_price_protection/run_suite.py": "5eacf94f3d22e5b1d70b5a4bf814a086fb7dfe10369a8913d90da2dc52e71ea5",
+    "cloud/ua_ge_price_protection/test_gate.py": "d909cc4c5684489475c839f94a23b2b4342b421be0a84a14fcf7108068a8d91d",
+    "cloud/ua_ge_price_protection/test_guard_helper.py": "3010ae5e0d346b598362c48ab970e1918952500fe71429c085d347bec3e7845b",
+    "cloud/ua_ge_price_protection/test_preview.py": "60e2fb13783ebf168e61acff97520d0427f6ebeebe009a57f137d9ef99fd2e9c",
+    "cloud/ua_ge_price_protection/verify_preview.py": "9ac48982700f577ae52437c82e151965ea0630b0c3ca47d356c62b134bb7c509"
+  },
+  "checks": {
+    "all_published_cars": "PASS",
+    "homepage": "PASS",
+    "catalog": "PASS",
+    "full_cards": "PASS",
+    "ru": "PASS",
+    "ua": "PASS",
+    "ge": "PASS",
+    "language_switching": "PASS",
+    "ua_price": "PASS",
+    "ge_price": "PASS",
+    "missing_ge": "PASS",
+    "desktop": "PASS",
+    "mobile": "PASS",
+    "links": "PASS",
+    "buttons": "PASS",
+    "vin": "PASS",
+    "photos": "PASS",
+    "specifications": "PASS",
+    "additional_specification": "PASS",
+    "stages": "PASS",
+    "counters": "PASS",
+    "no_unrelated_diff": "PASS",
+    "source_generation": "PASS",
+    "independent_db_readback": "PASS"
+  },
+  "criterion_evaluation": [
+    {
+      "id": "all_published_cars",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "All 18 distinct published cards appear in 120 unique page/locale/CSS cases and 18 actual detail/diagnostic navigations.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "The total is the observed current set, not a permanent limit.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "homepage",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Six raw home CSS cases, actual home stage links/counts 5/5/4/4=18 and later 10/10 decoded images support home availability and preservation.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+        "cloud/task088_v5_acceptance/resume_20260915/browser/PREVIEW_HOME_OBSERVATION.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Earlier 9/10 lazy-image snapshot remains unchanged; later natural scrolling yielded 10/10.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "catalog",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Six catalog cases contain all 18 prices; actual stage filters show correct 5/5/4/4/all18 sets and 18 images decoded.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_images_after_filters_raw.json"
+      ],
+      "scope_limit": "Card routes and price changes are covered; native app launches are outside this check.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "full_cards",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "18 card+diagnostic identities, 108 card CSS records, VIN/spec entries and preserved nonprice HTML are supported; separate owner photo acceptance closes the targeted gallery gap.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json"
+      ],
+      "scope_limit": "Full cards refers to changed/preserved page behavior; not newly rendering every media asset.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "ru",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "40 raw RU records across all 20 surfaces, exact country/value/caption checks, and RU screenshots support the price UI.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_nullable_ge_UA0015_desktop_RU.jpg"
+      ],
+      "scope_limit": "Existing whole-site wording is preserved; this is not a new translation audit.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "ua",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "40 raw UA records use locale uk and the source-bound exact price strings.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json"
+      ],
+      "scope_limit": "Price text and locale behavior are covered; unrelated copy is preserved.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "ge",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "40 raw GE records use locale ka; Georgian mobile numeric and missing-price samples have measured boxes.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_mobile_UA0010_GE_numeric.jpg"
+      ],
+      "scope_limit": "Price UI localized behavior is covered; independent linguistic proofreading of all site copy is not claimed.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "language_switching",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual top-level RU→UA→GE observations contain matching ru/uk/ka and matching catalog headings; raw cases retain requested/actual locale.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json"
+      ],
+      "scope_limit": "Retained real UI evidence; no new clicks or JS setters used in this review.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "ua_price",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "UA values are consistent for each car across locales, sizes, card and catalog; original validator matched independent captured source rows and current preflight preserves the DB.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/canonical/PUBLISHED_IDENTITY_BINDING_V2.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Raw private source rows were not reopened by this reviewer; original validator source digest plus independent DB bridge is retained.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "ge_price",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "13 non-Kyiv cars have independent GE rows; five Kyiv cars have UA only in every raw case. DB/schema/inventory remain unchanged.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Suppressing display does not delete the stored GE value. Live CRM edits remain later acceptance.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "missing_ge",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Source-bound matrix includes empty GE text; saved UA-0015 RU screenshot visibly reads Цена уточняется with Rustavi caption.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_nullable_ge_UA0015_desktop_RU.jpg"
+      ],
+      "scope_limit": "No new null data was written to CRM.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "desktop",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "60 actual 1280×900 CSS cases and retained visual samples show readable price rows and captions.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_UA0010_numeric_GE_desktop_RU.jpg",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_nullable_ge_UA0015_desktop_RU.jpg"
+      ],
+      "scope_limit": "Geometry across all cases plus screenshots of representative numeric/null/catalog samples.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "mobile",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "60 actual 390×844 CSS cases match viewport/media/font/overflow assertions; independently inspected GE numeric and Kyiv UA-only screenshots are readable.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_mobile_UA0010_GE_numeric.jpg",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_mobile_UA0002_RU_kyiv_only.jpg"
+      ],
+      "scope_limit": "CSS mobile layout in Chrome; not blanket iPhone/Safari/touch/network emulation. Owner phone gallery confirmation is separate.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "links",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Primary raw observations contain 18 actual detail URLs and 18 own diagnostic URLs/bodies with matching car codes; destinations of CTAs/home/return links are retained.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json"
+      ],
+      "scope_limit": "No customer messages, calls, forms, shares, or native app launches were sent.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "buttons",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual catalog filter/language actions, diagnostic navigation and UA-0015 specification expansion are recorded. Owner confirms gallery switching/closing after repair.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+        "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json"
+      ],
+      "scope_limit": "CTA destination validation is distinct from sending external actions. Arrow-key navigation was not implemented and touch swipe was not independently tested.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "vin",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "All 18 primary card texts contain VIN data; candidate reports preserve all nonprice HTML.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "VIN presence/preservation, not an independent vehicle decoding or duplicate-VIN redesign.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "photos",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual V2 receipt records 679 preserved+542 added assets and 1221 in-process resources; 560 gallery routes unchanged. Owner screenshots/confirmation resolve photo2/37→photo3 and close.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/server/gallery_1640.json",
+        "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
+        "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json"
+      ],
+      "scope_limit": "Original owner image files were previously accepted, not re-rendered by this reviewer. Old blocked-resource failure remains untouched; no retry occurred.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "specifications",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "All 40 candidate HTML reports preserve nonprice regions and underlying DB/schema/full inventory; card texts retain specification tables.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json"
+      ],
+      "scope_limit": "No new enrichment or accuracy audit of external specification sources.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "additional_specification",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "All 18 primary card texts contain the entry. UA-0015 expansion exposes 31 parameters; candidate preservation protects the markup.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Existing entry and expansion behavior; future timed enrichment is not proved here.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "stages",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual filtered code sets 5 Kyiv/5 Georgia/4 ferry/4 Korea match source-bound expectations and preflight stage counts.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Live stage transition acceptance is not invented from static filters.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "counters",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual homepage DOM and actual catalog filters independently show 5/5/4/4 and total18, with matching destinations/code sets.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Matching fresh DB/published-set bridge is required before reusing these exact counts.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "no_unrelated_diff",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Exact completed preflight has 40 protected HTML surfaces, 54-file candidate and 9625-file inventory equality with independent observer. Gallery receipt preserves old resources.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0327.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260914/server/gallery_1640.json"
+      ],
+      "scope_limit": "This is preflight preservation, not completed deployment/rollback evidence.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "source_generation",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Completed preflight contains compiled source after-images, exact 54 candidate files and candidate verification PASS; 20 served page hashes equal genuine browser harness hashes.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/PREFLIGHT_COMPLETION_VERIFICATION.json"
+      ],
+      "scope_limit": "Current full software source pins must be checked by root. Live regeneration and repeated CRM edits remain Stage4.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    },
+    {
+      "id": "independent_db_readback",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Raw completed preflight and independent observer compare equal for DB tuple, schema and complete 9625-file inventory. Raw report confirms protected readback PASS and all live mutation flags false.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0327.json.gz.b64"
+      ],
+      "scope_limit": "Original top-level BLOCKED_CANONICAL_CONTROL_BRIDGE is retained. Freshness/writer exclusion/authority belong to current execution inputs.",
+      "status": "PASS",
+      "current_binding": "Fresh observer, Preview binding and exact candidate/source/DB preservation independently reconciled by root"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_24_INDEPENDENT_REVIEW.json",
+      "sha256": "3bae6ce8511dd52d842e4cf3723766251410f89a30e905b2ddd629d0fbf97029",
+      "bytes": 18459
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260915_2/RETAINED_EVIDENCE_INSPECTION.json",
+      "sha256": "a0c8690d60c114a7dee1c813a85ddb01f6f406d0ae374493b84ce8255d989cc1",
+      "bytes": 4615
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260915_2/LIVE_PREVIEW_HOME.json",
+      "sha256": "bc7f9e4fab2faeffd03863dd0b8b1b8794641447f76f8e741b3ca714e2bb65bb",
+      "bytes": 1184
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260915_2/REPORT_RECOVERY.json",
+      "sha256": "292c220a3ad6de5ac9308c676d4d7b7be035b3323a8bd2bb382258fb2c1cc0f6",
+      "bytes": 2044
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260915_2/OBS_DELTA.json",
+      "sha256": "d48e7050cc97cd370d2fb3d6ac7bfc07d3e9711894ccc9a0dfe92cc7ce1bae38",
+      "bytes": 514
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260915_2/BIND_DELTA.json",
+      "sha256": "db8417dbc2b6a1e04e71cb4b05c2ee51e3d6c4e5c43709bc57d9bdeb04606b4b",
+      "bytes": 2456
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+      "sha256": "26c3641e83bf1ce634c0d9cb6cd13c4a377a976a304d2e2bbff853dd69c5b5d8",
+      "bytes": 246473
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/PREFLIGHT_COMPLETION_VERIFICATION.json",
+      "sha256": "f3bdc0cf955c206b99b7f9556ddbbd99f6605d80bd32621f331b93aac1ac15b3",
+      "bytes": 9542
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json",
+      "sha256": "503c1088b68753b027ff20d4d16ec8f4ad21fb81d94367b76fe87c736b6c2ae8",
+      "bytes": 8186
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser_evidence_120_20260914.zip",
+      "sha256": "b649a7f97f7bd1a84fe9b5c28bd09f00c843f40a0221104c7a3adbf6d3ddb02b",
+      "bytes": 130346
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser_visual_links_20260914.zip",
+      "sha256": "4b1932ec2c7d50a148c0bae21623c3773f23ac87395c563c427256e030291031",
+      "bytes": 724500
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/PR114_GALLERY_V2_SOFTWARE_EVIDENCE_20260914.zip",
+      "sha256": "5e392949f94ab5584c93c0083c4b6e05429f09644d7d3a0fa965a62daa766c69",
+      "bytes": 35718
+    }
+  ],
+  "evidence_member_resolution": "Logical browser evidence paths in criterion_evaluation are retained in the pinned browser archives and their member manifests; they are not new browser observations.",
+  "current_observation_times": {
+    "server": "2026-09-15T04:40:14.504473+00:00",
+    "preview_binding": "2026-09-15T04:46:15.173258+00:00",
+    "live_home": "2026-09-15T04:52:22.899Z"
+  },
+  "preflight_original_status": "BLOCKED",
+  "preflight_original_observed_at": "2026-09-15T03:39:41.680759+00:00",
+  "preflight_rerun": false,
+  "historical_test_suites_rerun": false,
+  "scope": "Review and acceptance of exact Stage3 Preview candidate only; not installation, Gate B, runtime activation, Stage3/Stage4 receipt or live CRM synchronisation.",
+  "required_before_publication": [
+    "Fresh canonical inputs including preflight where required by validator",
+    "Real writer exclusion, request, manifest, Gate B, owner authorization and activation",
+    "Verified full backup and canonical launch; no direct merge bypass"
+  ],
+  "production_written": false,
+  "crm_written": false,
+  "progress": {
+    "accepted": 8,
+    "total": 20,
+    "percent": 40,
+    "stage1_accepted": 8,
+    "stage1_total": 8,
+    "stage1_percent": 100
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "observed_at": "2026-09-15T04:45:23.988Z",
+  "source_url": "https://www.pythonanywhere.com/user/Carix/tasks_tab/",
+  "visible": {
+    "cpu": "CPU Usage: You are in the tarpit. 100% used – 6945.95s of 5,000s. Resets in 3 hours, 26 minutes More Info",
+    "rows": [
+      {
+        "enabled": true,
+        "running": false,
+        "scripts": []
+      },
+      {
+        "enabled": false,
+        "running": false,
+        "scripts": []
+      },
+      {
+        "enabled": true,
+        "running": false,
+        "scripts": []
+      },
+      {
+        "enabled": true,
+        "running": true,
+        "scripts": [
+          "/home/Carix/start_safe.py"
+        ]
+      },
+      {
+        "enabled": true,
+        "running": true,
+        "scripts": [
+          "/home/Carix/uaart_connection_monitor.py"
+        ]
+      }
+    ]
+  }
+}

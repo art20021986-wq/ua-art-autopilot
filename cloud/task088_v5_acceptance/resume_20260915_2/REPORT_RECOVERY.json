@@ -1,0 +1,46 @@
+{
+  "contract": "PR114-EXACT-OBSERVATION-RECOVERY-1",
+  "reconstructed_at": "2026-09-15T04:55:50.289644+00:00",
+  "method": "Apply authenticated server-emitted top-level JSON delta to the pinned historical raw JSON; encode ensure_ascii=true, sort_keys=true, separators comma colon, then one LF. Accept only exact raw byte length and server SHA256. Both new reports matched.",
+  "transfer_failures": [
+    "download wait timeout",
+    "Protocol error Fetch.failRequest Invalid InterceptionId"
+  ],
+  "operations_repeated": false,
+  "old_statuses_and_timestamps_rewritten": false,
+  "new_reports": [
+    {
+      "server_path": "/home/Carix/autopilot_inbox/cloud/install_1509_0440.json",
+      "raw_sha256": "e5aa42f3e2067e09633c2e5176125f274390a77ac08a03099c842193d4f15a4c",
+      "raw_bytes": 1282773,
+      "base": {
+        "path": "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0327.json.gz.b64",
+        "sha256": "3d22d1568cb6a54f331b12a57528d79e5b8b24e6260a00a431e939ad7dbc9062",
+        "bytes": 242357
+      },
+      "base_encoding": "base64(gzip(raw UTF8 JSON))",
+      "delta": {
+        "path": "cloud/task088_v5_acceptance/resume_20260915_2/OBS_DELTA.json",
+        "sha256": "d48e7050cc97cd370d2fb3d6ac7bfc07d3e9711894ccc9a0dfe92cc7ce1bae38",
+        "bytes": 514
+      }
+    },
+    {
+      "server_path": "/home/Carix/autopilot_inbox/cloud/binding_1509_0446.json",
+      "raw_sha256": "45ddb2f78e9bb195bab6ffeb43ddd926ee96e1e2e4f0abd5b0a481b54ca79ea5",
+      "raw_bytes": 7552,
+      "base": {
+        "path": "cloud/task088_v5_acceptance/resume_20260915/server/binding_1509_0334.json",
+        "sha256": "991449ee7199c4c65534dfd3d9b459b47ae3699a0452249b5b1d883ce9d00018",
+        "bytes": 7551
+      },
+      "base_encoding": "raw UTF8 JSON",
+      "delta": {
+        "path": "cloud/task088_v5_acceptance/resume_20260915_2/BIND_DELTA.json",
+        "sha256": "db8417dbc2b6a1e04e71cb4b05c2ee51e3d6c4e5c43709bc57d9bdeb04606b4b",
+        "bytes": 2456
+      }
+    }
+  ],
+  "result": "BOTH_EXACT_RAW_HASHES_MATCH"
+}
