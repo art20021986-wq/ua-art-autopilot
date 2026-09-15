@@ -1,0 +1,52 @@
+{
+  "contract": "PR114-RESUME-EXECUTION-NOTICE-NOT-A-GATE-1",
+  "recorded_at": "2026-09-15T04:39:40.420Z",
+  "specification": "UA-ART-PR114-COMPLETION-004 v1.0",
+  "user_direction": "Действуй, нужен полный PASS. Preserve progress across interrupted message streams.",
+  "observed_head": "3026f7bb11a9aa58b0970694793d9d5100251c44",
+  "observed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "completed": {
+    "restored_exact_git_source_files": 82,
+    "source_manifest_sha256": "0dae6071812640061367ef54dedb52a4b6a8e155449d526202f2496f52b55f38",
+    "restored_checkpoint_sha256": "ce3558e1869c77f81104a9f3c8be5ef592596c579da10dc0f3ba1e31a590081d",
+    "raw_preflight_sha256": "f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7",
+    "raw_preflight": "COMPLETED_RECONCILED_DO_NOT_REPEAT",
+    "server_report_hash_rechecked": true,
+    "software_suites_repeated": false
+  },
+  "progress": {
+    "accepted": 7,
+    "total": 20,
+    "percent": 35,
+    "full_preview": "NOT_PASSED"
+  },
+  "console": {
+    "id": "48168693",
+    "state": "SHELL_PROMPT",
+    "credential_prompt_open": false,
+    "command_input": "Use clipboard paste into inner terminal textbox then Enter. Direct cua.type edited terminal display and did not submit shell text; page reloaded, blank Enter reconciled. No mutation command attempted."
+  },
+  "next_operation": {
+    "id": "install-observe-20260915-0440",
+    "state": "PLANNED_NOT_LAUNCHED",
+    "server_output": "/home/Carix/autopilot_inbox/cloud/install_1509_0440.json",
+    "observer_sha256": "48502613db498c1c347e62f5ea2d5dadedd1ff0ab6457bd6ebe2781c9560817c",
+    "reason": "Current server/source/DB binding required for actual final Preview; old report timestamps unchanged.",
+    "quota": {
+      "source": "PYTHONANYWHERE_AUTHENTICATED_ACCOUNT",
+      "account": "Carix",
+      "observed_at": "2026-09-15T04:35:31.561Z",
+      "used_bytes": 7538966528,
+      "limit_bytes": 37580963840
+    },
+    "recovery": "Before launch or retry inspect actual console/output. Do not launch duplicate observer if result exists or process remains active."
+  },
+  "next_action": "Launch reviewed read-only observer exactly once with newly observed quota, save stdout uniquely, then reconcile and bind current Preview against saved candidate and independent 24-criterion review.",
+  "production_written": false,
+  "crm_written": false,
+  "background_task": {
+    "id": "6aa838e44e688191acb636f6597ac587",
+    "is_enabled": false,
+    "action": "Resume existing task only after actual first-stage closure, with corrected accepted-gallery instructions."
+  }
+}
