@@ -1,0 +1,450 @@
+{
+  "contract": "PR114-FINAL24-EVIDENCE-DRAFT-ANALYSIS-ONLY-1",
+  "recorded_at": "2026-09-15T03:13:25.835435+00:00",
+  "observed_pr_head": "a1b4f9ba691c8a4aff1db6b38adec5c457ce9fac",
+  "observed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "full_preview": "NOT_PASSED",
+  "purpose": "Evidence inventory for root final evaluator after actual fresh preflight; no canonical checks-PASS dictionary and no Gate or authority are created.",
+  "criteria_count": 24,
+  "evidence": {
+    "owner": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
+      "bytes": 2487,
+      "sha256": "55a970c7b34745232fa132883b5d87344740db93c272eee6bca7da5754d6b623",
+      "commit": "a1b4f9ba691c8a4aff1db6b38adec5c457ce9fac"
+    },
+    "fresh_install_observer": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0254.json.gz.b64",
+      "encoding": "base64(gzip(raw UTF8 JSON))",
+      "raw_bytes": 1282773,
+      "raw_sha256": "758c8862b4005dd4fc1d30eb0faf793f60693b9c1155667e610477623255b247",
+      "gzip_sha256": "443ac3626db955a670fc664b1183499393af53f2bcd7132a69ea458bd9bbca40",
+      "observed_at": "2026-09-15T02:54:36.396354+00:00"
+    },
+    "fresh_preview_binding": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/server/binding_1509_0304.json",
+      "bytes": 7552,
+      "sha256": "c54945bfd66d56b8ff0ca1ac50277cf539b0d5869a8ef97b85620f3f013cda08"
+    },
+    "fresh_home_browser_observation": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/browser/PREVIEW_HOME_OBSERVATION.json",
+      "bytes": 932,
+      "sha256": "bbf5f3432ed4362da52e478fb8bd7b46e8b72b03bf68763c3a4c44f3bdafafbf"
+    },
+    "historical_actual_gallery_receipt": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/gallery_1640.json",
+      "bytes": 19081,
+      "sha256": "e893bdd1ce9a83ceaffc629bb2d5b56cb23dddb7f1d73b4c0cfbe7fc4a95d2da"
+    },
+    "historical_page_preservation_bridge": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREFLIGHT_BROWSER_BINDING_V2.json",
+      "bytes": 7120,
+      "sha256": "3320408164e34afbd7781e5594cb5fa6fbbb0a4d2f5e04cf6e52f098fccc5c99"
+    },
+    "historical_browser_report": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+      "bytes": 15090,
+      "sha256": "3798d46b281515c0a50bb2e3c41e8da464abaf1ccc3f3264bd9a772e76ff4906"
+    },
+    "canonical_criteria_map": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREVIEW_CRITERIA_MAP.json",
+      "bytes": 69803,
+      "sha256": "7ae93f51824511c80104070352b5594781f329e09957a18c23390ae8059dfd4b",
+      "commit": "2e8f30fe54c8ecd86acf888de86d9ca62ba01706"
+    },
+    "photos_acceptance": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json",
+      "bytes": 8186,
+      "sha256": "503c1088b68753b027ff20d4d16ec8f4ad21fb81d94367b76fe87c736b6c2ae8"
+    }
+  },
+  "shared_completed_scope": {
+    "historical_software_checks_reused": 446,
+    "historical_maintenance_checks_reused": 183,
+    "historical_browser_css_cases_reused": 120,
+    "fresh_observer": "ActualPASS read-only report; raw status retained.",
+    "fresh_binding": "ActualMATCH_SCOPED_BINDINGS_ONLY; raw full_previewNOT_PASSED retained.",
+    "photos_criterion7": "COMPLETED_IN_SEPARATE_ACCEPTANCE"
+  },
+  "shared_pending_inputs": [
+    "Actual fresh private preflight/candidate verification and independent protected-system readback, retained with original top-level status.",
+    "Exact final installation54-file candidate binding, complete current source inventory, DB/schema/system inventory/published set and Preview resource-manifest bridge.",
+    "Current authority/mode/HALT/delegation and required canonical request/manifest/Gate/activation inputs.",
+    "Fresh actual quota and writer exclusion when required; no timestamp-only refresh.",
+    "Root evaluation of all24criteria into genuineTASK088-FINAL-V5-PREVIEW-GATE-1 only after evidence suffices."
+  ],
+  "criteria": [
+    {
+      "id": "all_published_cars",
+      "historical_evidence_status": "SUPPORTED_COVERAGE",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "18 published codes match retained browser coverage and fresh observer/binding; no hard-coded future limit.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "all_published_cars"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "homepage",
+      "historical_evidence_status": "SUPPORTED_HOME_CSS_COUNTS_AND_NAVIGATION_DESTINATIONS",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained home CSS/count/navigation evidence; fresh03:07home HTML hash match and10/10images decoded.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "homepage"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding",
+        "fresh_home_browser_observation"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "catalog",
+      "historical_evidence_status": "SUPPORTED_PRICE_VISUAL_FILTERS_AND_CARD_NAVIGATION",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained6CSS cases,18prices/images, actual filter sets and all18card navigation; current HTML hash matches.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "catalog"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "full_cards",
+      "historical_evidence_status": "SUPPORTED_CONTENT_WITH_PHOTOS_OPEN",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "18card identities, price/CSS cases, VIN/spec/diagnostic/CTA evidence retained; current41HTML integrity and accepted gallery regression.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "full_cards"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding",
+        "photos_acceptance"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "ru",
+      "historical_evidence_status": "SUPPORTED_CHANGED_PRICE_TEXT",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained exact RU price labels/values/captions across20pages; current HTML/source bindings match.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "ru"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "ua",
+      "historical_evidence_status": "SUPPORTED_CHANGED_PRICE_TEXT",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained exact UA labels/values/captions across20pages; owner UA-0015 and fresh uk-home observations supplementary.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "ua"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "ge",
+      "historical_evidence_status": "SUPPORTED_CHANGED_PRICE_TEXT",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained exact GE labels/values/captions across20pages with source/HTML equality.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "ge"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "language_switching",
+      "historical_evidence_status": "SUPPORTED_ACTUAL_BUTTON_ACTIONS",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Actual retained RU/UA/GE button actions and locale/headings; unchanged HTML/runtime.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "language_switching"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "ua_price",
+      "historical_evidence_status": "SUPPORTED_EXACT_VALUES",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "All18 independent UA source values and card/catalog matching retained; fresh canonical DB unchanged.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "ua_price"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "ge_price",
+      "historical_evidence_status": "SUPPORTED_EXACT_VALUES_AND_KYIV_RULE",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Independent GE values retained, Kyiv publiclyUA-only and GE stored; fresh DB/source/HTML equality.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "ge_price"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "missing_ge",
+      "historical_evidence_status": "SUPPORTED_PRICE_TEXT_WITH_VISUAL_SAMPLE",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained translated missing-GE matrix and ownerUA-0015 visible missing-price caption.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "missing_ge"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "desktop",
+      "historical_evidence_status": "SUPPORTED_PRICE_AND_CATALOG_VISUAL_SAMPLES",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained60desktop CSS cases and scoped visible samples; current source/HTML equality.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "desktop"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "mobile",
+      "historical_evidence_status": "SUPPORTED_CSS_GEOMETRY_AND_PRICE_VISUAL_SAMPLES",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained60mobile CSS cases and samples; fresh390x844home geometry and owner-device gallery are scoped supplements.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "mobile"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding",
+        "fresh_home_browser_observation"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "links",
+      "historical_evidence_status": "SUPPORTED_DETAIL_AND_DIAGNOSTIC_NAVIGATION",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Actual retained18card+18own-diagnostic navigations and CTA hrefs; no external customer actions asserted.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "links"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "buttons",
+      "historical_evidence_status": "SUPPORTED_SCOPED_CONTROLS_WITH_GALLERY_PHOTOS_OPEN",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained language/filter/diagnostic/spec actions; owner now confirms full-screen switch/close.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "buttons"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding",
+        "photos_acceptance"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "vin",
+      "historical_evidence_status": "SUPPORTED_NONPRICE_PRESERVATION",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained nonprice preservation and VIN presence for18cards; no new VIN-decoding audit.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "vin"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "photos",
+      "historical_evidence_status": "BLOCKED_MANUAL_FULLSIZE_PROOF_AFTER_ACTUAL_V2_REPAIR",
+      "current_evidence_assessment": "CRITERION7_ACCEPTED_TARGETED_VISUAL_AND_SET_INTEGRITY",
+      "actual_support": "Criterion7 accepted by ownerfullscreen2→3/37+close and fresh exact18card/560route/full-inventory bindings; no all560browser-render claim.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "photos"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding",
+        "photos_acceptance"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "specifications",
+      "historical_evidence_status": "SUPPORTED_NONPRICE_PRESERVATION",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained nonprice tables/markup and fresh exact HTML/source equality.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "specifications"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "additional_specification",
+      "historical_evidence_status": "SUPPORTED_PRESERVATION_AND_ENTRY_INVENTORY",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained18entry points and actualUA-0015 expansion31parameters; fresh nonprice HTML preserved.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "additional_specification"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "stages",
+      "historical_evidence_status": "SUPPORTED_ACTUAL_CATALOG_STAGE_SETS",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained actual stage filter sets5/5/4/4 plus fresh DB/source equality; operational stage-change cycles remain Stage4.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "stages"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "counters",
+      "historical_evidence_status": "SUPPORTED_HOME_AND_CATALOG_COUNTS",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Retained home/catalog actual counts and code sets; fresh stage counts5/5/4/4 and18codes unchanged.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "counters"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Final current exact-candidate/current-authority evaluation and evidence registration; do not claim unobserved external/native actions."
+    },
+    {
+      "id": "no_unrelated_diff",
+      "historical_evidence_status": "SUPPORTED_ACTUAL_PREVIEW_AND_PREFLIGHT_PRESERVATION",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Actual historical679resources preserved+542expected assets; current41HTML/runtime and full9625inventory match; final install candidate binding pending.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "no_unrelated_diff"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Consume the actual fresh private preflight and exact candidate/protected-operations/source binding before final evaluation."
+    },
+    {
+      "id": "source_generation",
+      "historical_evidence_status": "SUPPORTED_CAPTURED_SOURCE_AND_ACTUAL_PRIVATE_PREFLIGHT",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Historical actual54-file private candidate PASS remains scoped; fresh private preflight and exact final installation candidate/source closure pending.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "source_generation"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Consume the actual fresh private preflight and exact candidate/protected-operations/source binding before final evaluation."
+    },
+    {
+      "id": "independent_db_readback",
+      "historical_evidence_status": "SUPPORTED_ACTUAL_OBSERVER_AND_PREFLIGHT_READBACK",
+      "current_evidence_assessment": "SUPPORTED_FOR_FINAL_EVALUATOR_NOT_CANONICAL_PASS",
+      "actual_support": "Real fresh V3 observer independently read DB and verified stable complete inventory; fresh private preflight readback pending.",
+      "historical_evidence_locator": {
+        "map": "canonical_criteria_map",
+        "criterion_id": "independent_db_readback"
+      },
+      "new_support": [
+        "fresh_install_observer",
+        "fresh_preview_binding"
+      ],
+      "remaining": "Consume the actual fresh private preflight and exact candidate/protected-operations/source binding before final evaluation."
+    }
+  ],
+  "explicit_nonclaims": [
+    "No blanket PASS based only on existing key names.",
+    "No new requirement to capture all photographs or every card in a browser is invented.",
+    "No fresh preflight result is asserted before its real report exists.",
+    "No Stage3/4 receipt, release authorization, production deployment or live price synchronization is created by this draft."
+  ],
+  "next_action": "Read the actual fresh preflight result and current execution inputs; root reviews all24assessments and exact binding/freshness before issuing any finalPreviewGate."
+}
