@@ -1,6 +1,6 @@
 {
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "recorded_at": "2026-09-14T18:13:36.594418+00:00",
+  "recorded_at": "2026-09-15T02:49:07.571Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "branch": "codex/task088-owner-policy-20260913-0934",
   "prior_audit_head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
@@ -15,7 +15,8 @@
     "Read actual PythonAnywhere console and current credential presence; receiver not started; saved gallery/preflight receipt hashes match.",
     "Implemented and isolated-tested offline continuation inspector; recovered saved software evidence directly from its pinned Git archive using an actual tracked-only checkout; no historical suites rerun.",
     "Owner supplied two screenshots: inline photo2 and UA-0015 price block observed; exact original attachment IDs and hashes preserved. Full-screen/switch/close remain unobserved.",
-    "Read current AUTOMATIC mode; created enabled hourly background continuation through GitHub and isolated local work. Production controls and mode unchanged."
+    "Read current AUTOMATIC mode; created enabled hourly background continuation through GitHub and isolated local work. Production controls and mode unchanged.",
+    "Owner full-screen photos2/37 and3/37 received; actual switching and closing confirmed. Original attachments and SHA256 saved; repeated owner test not required."
   ],
   "saved_tests": {
     "software": 446,
@@ -46,9 +47,8 @@
     "production_recovery_implemented_or_accepted": false
   },
   "next_action": {
-    "kind": "OBTAIN_MISSING_OWNER_GALLERY_OBSERVATION",
-    "detail": "Owner taps the displayed photo2 into full-screen, switches once and closes; supplies a full-screen screenshot and confirms the actual actions. Inline photo2 display is now confirmed by the provided screenshot. Complete remaining gallery coverage and exact candidate bindings afterwards.",
-    "preview_card_url": "https://carix.pythonanywhere.com/video/UA-0015.html"
+    "kind": "REFRESH_CURRENT_PREVIEW_SOURCE_DB_BINDINGS",
+    "detail": "Use actual authorized server read-only observation to bind owner full-screen evidence and retained card/media coverage to current Preview and candidate. Complete24 actual criteria; no owner test replay."
   },
   "further_required": [
     "Provision owner-created fine-grained GitHub Contents:read token for only art20021986-wq/ua-art-autopilot using the reviewed hidden-input receiver. First verify actual console/receiver state; never place token in chat, command arguments, repo or a shell prompt. Current receiver is not running.",
@@ -58,7 +58,7 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "persist_policy": "Save code and sanitized evidence in same branch; after any interrupted Git mutation read remote ref/tree before retry. This continuation is not evidence that a server write completed.",
-  "observed_pr_head_before_this_update": "429bca235efae8aa25e8d6b228fd8e8ec4636d43",
+  "observed_pr_head_before_this_update": "2e8f30fe54c8ecd86acf888de86d9ca62ba01706",
   "owner_screenshots": {
     "path": "cloud/task088_v5_acceptance/resume_20260914_2/OWNER_SCREENSHOTS_REVIEW.json",
     "bytes": 3233,
@@ -68,5 +68,15 @@
     "path": "cloud/task088_v5_acceptance/resume_20260914_2/BACKGROUND_CONTINUATION.json",
     "bytes": 3411,
     "sha256": "3459d77512586d9fb5037930103963751ecc1592523188fc7f4637e579cab7db"
-  }
+  },
+  "owner_fullscreen_observation": {
+    "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
+    "sha256": "55a970c7b34745232fa132883b5d87344740db93c272eee6bca7da5754d6b623"
+  },
+  "credential_boundary": {
+    "preview_evaluation_requires_reader_token": false,
+    "stage3_existing_canonical_runner_requires_new_reader_token": false,
+    "stage4_continuous_reader_requires_read_credential": true
+  },
+  "background_task_state": "PAUSED_SINCE_20260914_1907; foreground continuation resumed by owner; historical enabled record retained"
 }
