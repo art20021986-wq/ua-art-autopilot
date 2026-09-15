@@ -1,0 +1,331 @@
+{
+  "contract": "PR114-QUIESCENCE-INTEGRATION-MAP-1",
+  "created_at_utc": "2026-09-15T05:44:51.629919Z",
+  "status": "READ_ONLY_DESIGN_REVIEW_NO_RUNTIME_INTEGRATION",
+  "scope": {
+    "existing_files_changed": false,
+    "production_changed": false,
+    "provider_calls_made": false,
+    "historical_suites_run": false,
+    "git_head_independently_verified": false,
+    "reason": "Restored source directory has no Git metadata; root owns remote source/head binding. File hashes below bind this inspection."
+  },
+  "conclusion": {
+    "current_stage3_pause_allowed_by_controller": false,
+    "prototype_sufficient_for_production": false,
+    "provider_temporary_enabled_patch_documented": true,
+    "provider_configuration_readback_is_process_drain_proof": false,
+    "minimum_legitimate_route": "Introduce and review an explicitly phase-aware, manifest-bound maintenance protocol; prove all writer containment; carry one durable identity across PREPARING backup and OPEN installation; refresh only expired observations honestly; restore the exact existing supervisor after coherent source/schema/files readback. Keep the accepted isolated prototype isolated until a separately reviewed executor and canonical integration exist.",
+    "decisive_current_gap": "The current actual CRM photo_remove_all path deletes media before its DB write without taking the publication lock. Existing SQLite BEGIN IMMEDIATE correctly excludes SQLite writes but does not exclude this filesystem mutation."
+  },
+  "authority": {
+    "user_document": "UA-ART-PR114-COMPLETION-004-v1.0(1).docx",
+    "extracted_source": "/workspace/scratch/a740e84d2a41/completion004_extracted.txt",
+    "references": [
+      {
+        "lines": "94,111-114",
+        "meaning": "Release is already owner-authorized after actual full PASS; technical gates remain mandatory; refresh genuinely expired evidence after long backup and preserve newer operator data."
+      },
+      {
+        "lines": "179-185",
+        "meaning": "Unknown outcome requires target reconciliation with the same operation identity; preserve HALT/locks/Gate; do failure simulations only in isolation and do not stop production for failure simulation."
+      }
+    ],
+    "interpretation": "The specific ban on stopping production for failure simulation does not establish a blanket ban on a necessary planned installation pause. This interpretation is not a technical admission and does not override the current exact Running controller check or create a new activation.",
+    "no_new_owner_release_permission_required": true,
+    "new_technical_authority_required_for_changed_bytes": true
+  },
+  "preserved_invariants": [
+    "Exact existing CRM Always-On ID 266084 and exact command python3.10 /home/Carix/start_safe.py; never delete/recreate it, replace its command, or substitute a different supervisor.",
+    "Existing task/request/manifest/owner/Gate B/activation/source commit/package dependencies and run/transaction/nonce/claim/ledger bindings.",
+    "PREPARING must be durably canonical before production credentials; OPEN requires the exact full verified backup receipt.",
+    "Fresh real Preview/quota/Gate <=30 minutes; real writer exclusion <=5 minutes; stricter installed limits prevail.",
+    "No changing old observation timestamps, no retroactive VERIFIED writer declarations, no historical BLOCKED-to-PASS edits.",
+    "Publication lock and SQLite BEGIN IMMEDIATE remain real held barriers; spec84 lock is separate and requires consistent global order.",
+    "Exact existing routing, public media, all unrelated inventory and independent UA/GE prices remain protected.",
+    "Unknown pause/apply/resume result permits read-only reconciliation only; no timer resume, duplicate effect, or new operation identity to bypass unknown state.",
+    "Resume only after coherent exact BEFORE or AFTER version readback and newer operator changes preserved; never roll old DB over current CRM.",
+    "Stage3 installation and Stage4 live acceptance remain separate receipts; restored Running is not live-cycle PASS."
+  ],
+  "integration_points": [
+    {
+      "id": "I01_CANONICAL_INPUT_PHASES",
+      "paths": [
+        "cloud/task088_v5_acceptance/resume_20260914/canonical/derive_candidate_parts.py"
+      ],
+      "symbols": [
+        "build",
+        "REQUIRED_INPUTS"
+      ],
+      "lines": "31,138-143,144-163",
+      "current": "The dry-run builder requires every actual writer fence VERIFIED, no uncovered writer, and a <=300s actual observation before it constructs canonical parts. It also requires complete bound Preview, preflight and software source closure.",
+      "required_change": "A reviewed new construction/contract version must distinguish immutable readiness to execute the exact planned pause from actual observed QUIESCED admission immediately before protected backup/apply. The old builder cannot truthfully consume a planned pause as an already VERIFIED fence.",
+      "preserve": "The old builder and retained parts remain historical evidence. Do not relax actual APPLY all-writer exclusion or source/Preview checks."
+    },
+    {
+      "id": "I02_MANIFEST_EFFECT_SCOPE",
+      "paths": [
+        "cloud/task088_v5_install/controller.py",
+        "automation/critical_adapter.py"
+      ],
+      "symbols": [
+        "required",
+        "validate_manifest",
+        "authorize_gate_b"
+      ],
+      "lines": "controller:131-156; critical_adapter:161-219,255",
+      "current": "Stage3 currently derives an exact file/schema-only operation set from install_blueprint and compares it with request.changed_paths. Evidence keys are exact. Generic critical_adapter only validates authority and safe manifest paths; it executes no effects.",
+      "required_change": "Add a bounded maintenance effect contract describing only enabled false/true transitions for exact pre-existing supervisor IDs, before command/config pins, operation identity, expected coherent before/after versions, and terminal restoration conditions. Bind it to the same manifest/approval/Gate/package closure. A logical provider resource operation must have reviewed Stage3 semantics and exact action sequence, not be smuggled into file-only scope.",
+      "generic_adapter_change": "Not automatically required: it may validate an explicitly safe logical resource path with hashes already. Determine after schema design. Do not weaken generic authorization or anti-replay."
+    },
+    {
+      "id": "I03_PHASE_AWARE_SUPERVISOR_API",
+      "paths": [
+        "cloud/task088_v5_install/controller.py"
+      ],
+      "symbols": [
+        "API.supervisor",
+        "API.run",
+        "perform"
+      ],
+      "lines": "249-255,281-329,348-378",
+      "current": "API.supervisor demands exact ID/command AND enabled true/Running before and after every separate backup/execute/verify/rollback runner. There is no pause method or phase-aware state.",
+      "required_change": "Separate immutable supervisor identity/config validation from phase-specific expected lifecycle validation. Require Running before planned pause and after verified resume; require real disabled/terminal plus independent drain only while the reviewed maintenance phase is active. Add a narrowly scoped PATCH of enabled only, write-ahead journal intent, and fresh GET reconciliation; preserve ID/command/config equality in every phase.",
+      "prohibition": "Changing Running check to accept arbitrary disabled state, disabling a supervisor outside canonical maintenance, or marking restarted:false after actual restart would be false evidence."
+    },
+    {
+      "id": "I04_DURABLE_CROSS_JOB_SESSION",
+      "paths": [
+        "cloud/task088_v5_install/controller.py",
+        "cloud/task088_v5_install/remote_adapter.py",
+        ".github/workflows/uaart_critical.yml"
+      ],
+      "symbols": [
+        "API.run",
+        "backup",
+        "perform",
+        "jobs.backup",
+        "jobs.open",
+        "jobs.controller_production"
+      ],
+      "lines": "controller:281-329; remote_adapter:92-142; workflow:721-856,857-1063,1064-1246",
+      "current": "Full backup runs as a separate PREPARING child; its publication+SQLite locks release at child exit. GitHub then validates/persists backup and promotes OPEN in another job, then invokes separate execute and verify children.",
+      "required_change": "Choose a reviewed durable maintenance session spanning PREPARING backup, the canonical OPEN promotion, installation, coherent verification and resume; prove actual held fences at every mutation boundary. A local prototype journal on an ephemeral GitHub runner is insufficient. A private durable remote journal/lease must bind request/run/transaction/manifest/plan and controller source. The component that holds locks cannot be silently terminated between child operations.",
+      "alternate": "If permanent fences eliminate the need for a continuous pause across jobs, prove that for the actual loaded old and new writer versions. Releasing pause between phases requires full fresh revalidation and cannot reuse a drifted immutable backup/plan."
+    },
+    {
+      "id": "I05_REMOTE_DRAIN_ATTESTATION",
+      "paths": [
+        "cloud/task088_v5_install/remote_adapter.py",
+        "cloud/task088_v5_quiescence/state_machine.py"
+      ],
+      "symbols": [
+        "backup",
+        "run",
+        "Protocol._observation",
+        "Protocol._quiesced"
+      ],
+      "lines": "remote_adapter:92-142,292+; state_machine:156-194",
+      "current": "Prototype consumes normalized membership_complete, zero live processes/active tasks, exact writer source pins, held-lock observations and freshness. It does not authenticate or collect them. Remote backup currently holds publication and SQLite locks only.",
+      "required_change": "Implement a separately reviewed source-pinned observer/executor with complete account/process membership, managed-supervisor descendants, scheduled/WSGI/worker writers and loaded-process version identity. Pin observation evidence and plan identity; prove no in-flight filesystem work remains. Unknown or unobservable writer stays BLOCKED.",
+      "missing_data": "No complete fresh drain/membership attestation exists. Two ps snapshots or enabled=false alone are not a containment proof."
+    },
+    {
+      "id": "I06_INSTALLER_ADMISSION_AND_REFRESH",
+      "paths": [
+        "cloud/task088_price_sync/install_package.py",
+        "cloud/task088_v5_install/remote_adapter.py"
+      ],
+      "symbols": [
+        "_validate",
+        "install",
+        "backup"
+      ],
+      "lines": "install_package:35,312-418,471-480,553-561; remote_adapter:92-142",
+      "current": "Installer requires an exact evidence set/hash map and <=300s writer receipt. It re-runs validation after its own full backup before first schema/file mutation. PREPARING also performs a full backup.",
+      "required_change": "Bind initial maintenance authority to an immutable plan and allow only separately authenticated, immutable, linked fresh observation receipts under that same plan. Reobserve genuinely expired quota/Preview/writer facts after long backups; old authority cannot be renewed by changing its timestamp. Check real locks/drain before each protected phase and compare independent current DB/schema/source/full inventory to the bound plan.",
+      "design_risk": "Simply replacing writers.json after approval changes Gate/manifest/request hashes; bypassing the final validation or extending freshness is not a lawful refresh protocol."
+    },
+    {
+      "id": "I07_UNKNOWN_RESULT_AND_RUNNER_CLEANUP",
+      "paths": [
+        "cloud/task088_v5_install/controller.py",
+        "automation/execution_contract.py",
+        "cloud/task088_v5_quiescence/state_machine.py"
+      ],
+      "symbols": [
+        "API.run",
+        "run_backup",
+        "run_controller",
+        "run_rollback",
+        "Protocol.outcome_unknown"
+      ],
+      "lines": "controller:296-329; execution_contract:661-740; state_machine:214-253",
+      "current": "API.run rejects existing result files; on timeout its finally block deletes its exact owned remote runner. execution_contract subprocess calls also have timeouts. These paths do not incorporate quiescence reconciliation.",
+      "required_change": "On lost/unknown pause/apply/resume result, persist UNKNOWN and read durable target result/journal/process state using the same identity before any further effect. Verify an owned runner is terminal and no longer holding the maintenance/install operation before destructive cleanup. Preserve one-shot rollback policy and do not replay because an HTTP response or local subprocess result was lost.",
+      "issue": "Deleting an own still-active installer after an ambiguous timeout may terminate a lock holder or in-flight install. Exact ownership alone is not proof of safe cleanup."
+    },
+    {
+      "id": "I08_PREPARING_AND_ROLLBACK_RECOVERY",
+      "paths": [
+        ".github/workflows/uaart_critical.yml",
+        ".github/workflows/uaart_transaction_watchdog.yml",
+        "automation/transaction_watchdog.py",
+        "automation/control_plane.py"
+      ],
+      "symbols": [
+        "jobs.recover",
+        "jobs.rollback_mark",
+        "jobs.halt_preparing",
+        "discover",
+        "start_production_rollback",
+        "open_production_transaction"
+      ],
+      "lines": "critical_workflow:2013+,2275+,2362-2364; watchdog_workflow:449-602,1205+,2033+; watchdog:337-403; control_plane:3964-4110",
+      "current": "Orphan PREPARING is halted; automatic rollback is armed only for OPEN. ROLLING_BACK is one-shot/ambiguous and halts. No path reconciles and restores a partially paused supervisor set during PREPARING.",
+      "required_change": "Before production pause, add reviewed bounded maintenance recovery for pause unknown, partial multi-supervisor pause, PREPARING interruption, OPEN failure and coherent BEFORE/AFTER resume. Keep HALT in force for production writes while allowing only exact authorized read-only reconciliation and verified restoration actions. Generic transaction state/receipt schemas are strict; do not append unrecognized fields.",
+      "accepted_prototype_limit": "Prototype intentionally fail-closes partial multi-supervisor pause; it has no selective retry/compensation executor. This must be resolved or explicitly excluded with proof of a single complete managed set before real integration."
+    },
+    {
+      "id": "I09_RECEIPTS_AND_FINALIZATION",
+      "paths": [
+        "automation/execution_contract.py",
+        "automation/control_plane.py",
+        "automation/transaction_watchdog.py",
+        ".github/workflows/uaart_critical.yml",
+        "cloud/task088_v5_install/controller.py"
+      ],
+      "symbols": [
+        "validate_backup_receipt",
+        "validate_rollback_receipt",
+        "open_production_transaction",
+        "_validate_backup_receipt",
+        "perform",
+        "jobs.finalize"
+      ],
+      "lines": "execution_contract:497-528,797-852; control_plane:3995-4048; watchdog:260-324; workflow:1649-1740; controller:348-378",
+      "current": "Backup and rollback receipts have exact key sets; only selected state/receipts paths and package evidence paths are allowed. Finalization reads post-health and validates final receipt. Controller declares installation-only scope and bot_restart NOT_PERFORMED.",
+      "required_change": "Use reviewed schema versions for any new lifecycle fields, or place separately hash-bound maintenance evidence in an already allowed package evidence path without altering canonical fixed schemas. Require restoration receipt and exact loaded-source/process/readback before finalization; report actual restart/resume truthfully. Keep Stage3 and Stage4 separate and do not claim live-cycle acceptance from installer verification."
+    },
+    {
+      "id": "I10_RELEASE_AND_SOFTWARE_CLOSURE",
+      "paths": [
+        "cloud/task088_v5_install/build_release.py",
+        "cloud/task088_v5_install/controller.py",
+        "cloud/ua_ge_price_protection/gate.py",
+        "automation/execution_contract.py"
+      ],
+      "symbols": [
+        "sources",
+        "build",
+        "REMOTE_FILES",
+        "source_inventory",
+        "validate"
+      ],
+      "lines": "build_release:16-69; controller:30-33,174-180; gate:source_inventory; execution_contract:425-518",
+      "current": "Build creates a flat exact package, rejects extra Python/symlinks/drift, and records source hashes. Remote closure and executable dependency inventory are exact.",
+      "required_change": "Add every shipped helper/observer/executor and targeted test deliberately to the source mapping, flat release, remote closure where used, request dependencies and software/Preview source inventory. Regenerate generated release from original sources, not only copies. Revalidate changed bytes with scoped new tests and then mandatory actual gates; do not reuse old source PASS for changed code.",
+      "tests_now": "None run by this integration review."
+    },
+    {
+      "id": "I11_RUNTIME_ACTIVATION_SCOPE",
+      "paths": [
+        "automation/control_plane.py",
+        ".github/workflows/uaart_critical.yml",
+        ".github/workflows/uaart_transaction_watchdog.yml",
+        "state/AUTOPILOT_RUNTIME_MANIFEST.json"
+      ],
+      "symbols": [
+        "PRICE_V5_WORKFLOW_SHA256",
+        "PRICE_V5_RUNTIME_PATHS",
+        "RUNTIME_PINNED_PATHS",
+        "_verify_task088_price_runtime_activation"
+      ],
+      "lines": "control_plane:77-81,102-121,2193-2252; workflow:runtime pin checks",
+      "current": "Current price-v5 activation permits exactly critical workflow, maintenance workflow and control_plane changes with exact reviewed workflow hashes. Eighteen core runtime files remain fully pinned. Existing activation cannot admit extra execution_contract/watchdog/critical_adapter edits.",
+      "required_change": "Prefer package-local implementation where it can preserve the required generic semantics. If workflow/core recovery or receipt changes are necessary, prepare a distinct reviewed runtime activation/authority chain for exact new bytes and preserve the previous manifests/activations. Do not enlarge allowed paths or replace hardcoded hashes merely to make old activation accept unreviewed code.",
+      "boundary": "Current accepted prototype approval is not a canonical runtime activation."
+    }
+  ],
+  "provider_api": {
+    "primary_source": "https://help.pythonanywhere.com/pages/API/",
+    "documented": [
+      "GET /api/v0/user/{username}/always_on/ lists tasks.",
+      "GET /always_on/{id}/ returns exact task information.",
+      "PUT/PATCH /always_on/{id}/ accepts command, description and enabled parameters.",
+      "DELETE /always_on/{id}/ stops and deletes the task; it is unsuitable for preserving CRM identity.",
+      "POST /always_on/{id}/restart/ is listed, but is not a substitute for proved quiescence.",
+      "Scheduled tasks have list/read and enabled modification endpoints."
+    ],
+    "inference": "PATCH only enabled=false followed by exact GET, and later enabled=true followed by exact GET, offers a documented route for bounded configuration disable/re-enable without replacing command or ID. The actual account's response/state vocabulary and authorization still need authentic verification.",
+    "documentation_limits": [
+      "No documented guarantee in the inspected API reference that enabled=false synchronously drains descendants or application in-flight work.",
+      "No documented complete process membership/drain endpoint or graceful-stop proof.",
+      "No documented compare-and-swap/idempotency generation for enabled transitions; exact pre/post config observations and durable one-operation reconciliation are needed.",
+      "Positive enabled readback is necessary but insufficient to assert complete writer exclusion."
+    ],
+    "live_patch_attempted": false
+  },
+  "objectively_missing_or_unproven": [
+    {
+      "id": "M01",
+      "fact": "Authenticated complete writer membership/containment and drain evidence for the actual loaded CRM/descendant/WSGI/scheduled workers.",
+      "effect": "No real QUIESCED can be issued."
+    },
+    {
+      "id": "M02",
+      "fact": "A production executor/observer adapter and durable cross-job journal lease with reviewed partial-pause and unknown-result recovery.",
+      "effect": "Accepted prototype cannot perform production lifecycle transitions."
+    },
+    {
+      "id": "M03",
+      "fact": "Phase-aware canonical admission and genuine post-backup fresh evidence refresh under immutable authority.",
+      "effect": "Current fixed writer Gate cannot accept a merely planned pause; a stale receipt cannot be refreshed by retimestamp."
+    },
+    {
+      "id": "M04",
+      "fact": "Reviewed exact maintenance manifest/request/approval/Gate/activation and source closure for changed integration bytes.",
+      "effect": "No current controller-authorized pause or Stage3 installation."
+    },
+    {
+      "id": "M05",
+      "fact": "Independent coherent final source/schema/files, exact supervisor restoration, and live CRM-to-card-to-catalog acceptance after actual install.",
+      "effect": "No Stage3/Stage4 PASS before these real outcomes."
+    },
+    {
+      "id": "M06",
+      "fact": "Separate protected GitHub reader credential was reported absent by root at 05:28; this review did not inspect any credential.",
+      "effect": "Per document criterion9 it does not block Preview/canonical preparation, but must be prepared before publication and is needed for permanent reader/live acceptance."
+    }
+  ],
+  "shortest_ordered_work": [
+    "Complete exact current writer source/effect classification and a smallest reviewed permanent-fence patch candidate in the separate package; establish whether a single CRM pause plus existing real locks contains the entire install writer set.",
+    "Specify the phase-aware maintenance manifest, real attestation collector and durable cross-job identity/recovery before wiring a provider writer.",
+    "Implement and review source-pinned executor/observer integration against isolated failure fixtures, including partial pause, lost result, long backup expiry, newer CRM changes and runner cleanup.",
+    "Build complete immutable release and exact canonical parts/activation for changed bytes; obtain fresh real Preview/quota/source/writer/routing facts at their actual boundaries.",
+    "Run only the authorized canonical launch with durable PREPARING, full verified backup, OPEN, real protected apply, coherent readback and exact supervisor restoration.",
+    "Perform independent live site and CRM-cycle acceptance with prepared permanent reader credential; issue separate truthful Stage3/Stage4 receipts and final Gate."
+  ],
+  "referenced_prior_reviews": [
+    "release-review/WRITER_FENCE_INDEPENDENT_REVIEW.json",
+    "release-review/SPEC_LOCK_FENCE_SUPPLEMENT.json",
+    "release-review/QUIESCENCE_PROTOTYPE_INDEPENDENT_REVIEW.json",
+    "release-review/MONITOR_EFFECTS_PARTIAL_REVIEW.json"
+  ],
+  "inspected_source_sha256": {
+    ".github/workflows/uaart_critical.yml": "4523f30fd01fa9e1b578be9e18593101270564cf1f51849df02e887c808fb80e",
+    ".github/workflows/uaart_transaction_watchdog.yml": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe",
+    "automation/control_plane.py": "6e3f6962d160bd778cadadb9ae24ff5d82df5ecc847a95ade2553e3c34719d5d",
+    "automation/critical_adapter.py": "94935cbb5331306bf37ee8a386aa0bc27a55cdbdf8ba82778fa99fa726dccd47",
+    "automation/execution_contract.py": "22d167dbfd8b75881d60316a23cbd69da44b84b8ba6ea9c36322413b0b436985",
+    "automation/transaction_watchdog.py": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395",
+    "cloud/task088_price_sync/install_package.py": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673",
+    "cloud/task088_v5_acceptance/resume_20260914/canonical/derive_candidate_parts.py": "afa9d4363d7a8ada6014a73af305e948452e260b704827dc3a044114973695b9",
+    "cloud/task088_v5_install/build_release.py": "81808e30e5d60c626290fa848fbf31ae7435c5f41fc4f54372c6914f2b0f5357",
+    "cloud/task088_v5_install/controller.py": "71722965e09f59d0afb9fab86a6571c713efb60111d970a632d80a4f05e3cf9c",
+    "cloud/task088_v5_install/remote_adapter.py": "9def8122a4a60c6685197048adf2f9b494b6767a79b3d9c35c6de0b01e2fabeb",
+    "cloud/task088_v5_quiescence/state_machine.py": "55c47c2bfbdd870662e4760918edab9c3f838edc0286895c976e214c8ae7c1b5",
+    "cloud/ua_ge_price_protection/gate.py": "bda31a6a7a01e3ec940f898605ff5cbd1a118443ec5ebb5f63d23ec34d31e445",
+    "state/AUTOPILOT_RUNTIME_MANIFEST.json": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5"
+  }
+}

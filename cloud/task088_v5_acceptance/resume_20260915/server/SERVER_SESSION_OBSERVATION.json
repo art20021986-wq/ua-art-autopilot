@@ -1,0 +1,75 @@
+{
+  "contract": "PR114-SERVER-SESSION-OBSERVATION-NOT-A-GATE-1",
+  "recorded_at": "2026-09-15T03:18:00.414339+00:00",
+  "observed_head": "a1b4f9ba691c8a4aff1db6b38adec5c457ce9fac",
+  "main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "production_written": false,
+  "crm_written": false,
+  "private_writes": "New quota JSON, helper, observer/binding stdout, exact new preflight archive and uniquely staged directory only. Private preflight currently pending result.",
+  "routing_observation": {
+    "hosting_url": "https://www.pythonanywhere.com/user/Carix/webapps/",
+    "web_app": "www.uaart.com.ua",
+    "static_mappings": [
+      {
+        "url": "/video/",
+        "directory": "/home/Carix/video/"
+      }
+    ],
+    "source_hash_observed_console_time_utc": "2026-09-15T03:12:00Z",
+    "time_precision": "minute",
+    "source_sha256": {
+      "observed_wsgi_config.py": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+      "analitika_wsgi.py": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+      "uaart_bridge_wsgi.py": "b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150",
+      "video/index.html": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+      "site/index.html": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69"
+    },
+    "prior_report": "cloud/task088_v5_acceptance/route_observations.json",
+    "result": "MATCH_MAPPING_AND_FIVE_SOURCE_HASHES",
+    "new_base_HTTP_request_performed": false,
+    "route_configuration_changed": false
+  },
+  "writer_stop_file": {
+    "path": "/home/Carix/analitika_stop.txt",
+    "observed_utc_minute": "2026-09-15T03:12:00Z",
+    "exists": true,
+    "ls_result": "-rw-rw-r-- 1 Carix registered_users 0 Aug 23 07:53 /home/Carix/analitika_stop.txt",
+    "contents_read": false,
+    "changed": false,
+    "fence_verdict": "NOT_VERIFIED_FULL_WRITER_EXCLUSION"
+  },
+  "reader_credential": {
+    "path": "/home/Carix/.config/uaart-price-control/github-read.token",
+    "observed_utc_minute": "2026-09-15T03:12:00Z",
+    "exists": false,
+    "contents_read": false,
+    "receiver_started": false,
+    "needed_for": "STAGE4_CONTINUOUS_READER"
+  },
+  "transport_incidents": [
+    {
+      "kind": "TERMINAL_CUA_TYPE_DID_NOT_EXECUTE",
+      "handling": "Reconciled actual empty prompt; used keyboard events in short chunks, inspected partial prefix after deadlines before entering remaining suffix and Enter once."
+    },
+    {
+      "kind": "HIDDEN_FILE_INPUT_CHOOSER_TIMEOUT_KERNEL_RESET",
+      "handling": "Reconnected existing tabs and verified missing upload before using visible associated upload label. Server observer had completed once; did not relaunch."
+    },
+    {
+      "kind": "DOWNLOAD_EVENT_TIMEOUT",
+      "handling": "Observer download arrived after timeout and matched independently observed server SHA. Small binding read from rendered editor instead and exact raw SHA matched. No preflight/observer replay."
+    },
+    {
+      "kind": "GITHUB_BINARY_FETCH_UTF8_ONLY",
+      "handling": "Binary gzip blob created but not linked. Persist equivalent base64-text gzip blob and independently fetched exact text bytes; raw report unchanged."
+    }
+  ],
+  "hash_readbacks": {
+    "observer_raw": "758c8862b4005dd4fc1d30eb0faf793f60693b9c1155667e610477623255b247",
+    "binding_raw": "c54945bfd66d56b8ff0ca1ac50277cf539b0d5869a8ef97b85620f3f013cda08",
+    "helper": "be59c4e98fb9920461d87adcdaebb60a577fa9dfcb84179e7324df19a2f5069e",
+    "stager": "f594fd1d3c166d08984f164c575666b89a2a2e96808de48b5983b61bad55d319",
+    "preflight_archive": "c34506f93d87ca4af1eccb3fd89bbe633141bbe720dde1e198552346d900b5a4"
+  },
+  "single_next_action": "Reconcile pending private preflight result, preserve it, then evaluate full24 and remaining actual canonical controls."
+}

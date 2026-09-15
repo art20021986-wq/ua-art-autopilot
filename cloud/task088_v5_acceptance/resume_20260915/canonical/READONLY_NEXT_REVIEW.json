@@ -1,0 +1,80 @@
+{
+  "contract": "TASK088-READONLY-CANONICAL-NEXT-REVIEW-1",
+  "status": "REVIEW_ONLY_NOT_PREVIEW_PASS_OR_AUTHORITY",
+  "local_repository": "/workspace/scratch/5f3dba772b24/ua-art-autopilot",
+  "scope": "Read-only review of pinned local canonical instructions, helper and validators; root owns current Git/server observations.",
+  "production_written": false,
+  "tests_run": false,
+  "reader_key_boundary": {
+    "preview_evaluation_requires_key": false,
+    "verify_preview_requires_key": false,
+    "canonical_stage3_installer_requires_reader_key": false,
+    "stage4_runtime_binding_requires_authenticated_reader": true,
+    "source": "cloud/task088_v5_acceptance/resume_20260914/canonical/READINESS.md"
+  },
+  "full_preview_construction": {
+    "observation_command": "The already running root-owned observer must finish and its raw result be reconciled before any retry.",
+    "current_preview_binding": "Match actual current Preview WSGI/config/resource manifest to gallery_1640.json; bind all 20 served page hashes and 679 preserved resources; use existing coverage and new owner fullscreen/switch/close observation without retrying policy-blocked image URL.",
+    "private_preflight_freshness": "derive_candidate_parts.py requires the actual preflight observed_at within 1800 seconds. Matching new observation alone does not refresh the old preflight report timestamp.",
+    "private_preflight_package_builder": "cloud/task088_price_sync/build_preflight_bundle.py",
+    "private_preflight_build_argv_template": ["python3", "-B", "cloud/task088_price_sync/build_preflight_bundle.py", ".", "--observation", "ACTUAL_FRESH_OBSERVATION_JSON", "--stage2-receipt", "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json", "--output-directory", "NEW_PRIVATE_LOCAL_DIRECTORY", "--routing-evidence", "ACTUAL_ROUTING_JSON"],
+    "builder_import_note": "The reviewed existing builder imports adjacent install_package.py; direct -I script execution removes that import path. Use its documented invocation in the pinned isolated checkout, or a reviewed explicit isolated import wrapper. Do not modify tested source solely to run this command.",
+    "private_preflight_staging_pattern": "/home/Carix/autopilot_inbox/cloud/task088_price_sync_<unique-id>",
+    "private_preflight_argv_template": ["python3.10", "-I", "-B", "preflight.py", "--output-id", "preflight-UNIQUE_OBSERVATION_ID", "--expected-bundle-sha256", "ACTUAL_BUNDLE_SHA256"],
+    "private_preflight_expected_scope": "candidate_verification PASS, offline_schema_test PASS_CRM_AND_AUDIT_UNCHANGED and protected_system_readback PASS can coexist with overall BLOCKED/CANONICAL_CONTROL_BRIDGE_GATE_B_AND_ACTIVATION_NOT_RUN. Preserve the raw status.",
+    "report_contract": "TASK088-FINAL-V5-PREVIEW-GATE-1",
+    "report_required_bindings": ["task_id fresh TASK088-GE-PRICE-SITE-STAGE3-*", "status based on actual criterion evaluation", "evaluated_at actual current evaluation time", "candidate_manifest_sha256 from actual installation candidate, not Preview resource manifest", "database exact canonical four-field object", "schema_sha256", "system_inventory_sha256 over engine canonical encoding", "published_codes sorted unique and equal database published_codes", "source_files_sha256 exact current gate.source_inventory", "checks exact set of 24, each independently supported", "linked raw old and new evidence with original observation times and hashes"],
+    "checks": ["all_published_cars", "homepage", "catalog", "full_cards", "ru", "ua", "ge", "language_switching", "ua_price", "ge_price", "missing_ge", "desktop", "mobile", "links", "buttons", "vin", "photos", "specifications", "additional_specification", "stages", "counters", "no_unrelated_diff", "source_generation", "independent_db_readback"],
+    "no_automatic_observer_to_pass_conversion": "verify_preview validates report bindings; it does not perform observations or create PASS. No report-producing command found that substitutes for actual evaluation.",
+    "canonical_coverage_map": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREVIEW_CRITERIA_MAP.json"
+  },
+  "routing": {
+    "existing_evidence": "cloud/task088_v5_acceptance/route_observations.json",
+    "existing_observation_time": "2026-09-14T06:30:00Z",
+    "hosting_configuration_url": "https://www.pythonanywhere.com/user/Carix/webapps/",
+    "required_mapping": {"url": "/video/", "directory": "/home/Carix/video/"},
+    "source_server_paths": {"observed_wsgi_config.py": "/var/www/www_uaart_com_ua_wsgi.py", "analitika_wsgi.py": "/home/Carix/analitika_wsgi.py", "uaart_bridge_wsgi.py": "/home/Carix/uaart_bridge_wsgi.py", "video/index.html": "/home/Carix/video/index.html", "site/index.html": "/home/Carix/site/index.html"},
+    "required_policy": {"served_home": "video/index.html", "site/index.html": "UNSERVED_LEGACY_PRESERVE_EXACT_BYTES"},
+    "validators": ["cloud/task088_price_sync/install_package.py: validate_routing", "cloud/task088_price_sync/install_package.py: verify_routing_sources"],
+    "source_revalidation": "Existing routing may be retained with original timestamp if current authenticated mapping and all five source hashes are independently revalidated. Do not rewrite timestamps or confuse Preview WSGI with production WSGI."
+  },
+  "writers": {
+    "actual_report_found_in_scoped_artifacts": false,
+    "required_report_fields": ["task_id", "install_files_sha256", "observed_at <= 300 seconds", "publication_lock=/home/Carix/.ua_art_publish_transaction.lock", "writers nonempty, every fence VERIFIED from actual evidence", "uncovered_writers empty only if factually established"],
+    "stage4_additional_fields": ["control_contract_sha256", "each writer path and installed_sha256 matching installed_code_sha256"],
+    "required_stage4_writer_paths": ["cars_ui.py", "ua_stage_catalog_sync.py", "publish_transaction_guard.py", "master_card.py", "publikaciya.py", "uaart_price_sync_runtime.py"],
+    "known_additional_writer": {"path": "/home/Carix/analitika_wsgi.py", "function": "_storozh", "interval_seconds": 120, "effect": "Adds analytics marker to top-level HTML in video/site if absent", "existing_stop_path": "/home/Carix/analitika_stop.txt", "saved_stop_file_presence": "NOT_OBSERVED", "saved_writer_exclusion": "NOT_VERIFIED"},
+    "caution": "Stable source/DB/inventory hashes do not prove writers excluded. Do not create VERIFIED flags without observing installed fences or the exact authorized stop mechanism. Do not remove locks/HALT or stop processes under this review."
+  },
+  "delegation": {
+    "actual_v2_report_found_in_scoped_artifacts": false,
+    "contract": "UA-ART-PRICE-EVENT-DELEGATION-2",
+    "required_scope": {"environment": "PRODUCTION", "root": "/home/Carix", "operation": "UPDATE_PUBLISHED_CAR_HOME_CATALOG_PRICES", "identity_policy": "AUTHENTICATED_CRM_PUBLISHED_CARS", "fields": ["price_uah", "price_georgia"], "currency": "USD", "non_price_changes": "FORBIDDEN", "initial_publication": "OWNER_MANUAL", "activation": "BOUNDED_PRICE_EVENTS"},
+    "required_actual_facts": ["initial unique ID/code pairs from current CRM", "all installed code and writer hashes", "candidate installed schema hash", "database/publication lock/journal paths", "every served CARD/CATALOG/HOME surface template and explicit HOME price applicability", "authenticated existing CRM bot ID and owner private-chat proof", "existing operator ACL and actual allowed chat types", "owner policy artifact", "writer report hash", "explicit external canonical control contract and reader paths", "explicit recovery-successor scope"],
+    "private_chat_provenance": "AUTHENTICATED_CRM_BOT_PRIVATE_CHAT with independent raw proof reference; no synthetic/test fixture IDs or guessed private chat.",
+    "control_reader_config": "Pin outside delegation via binding config control_reader {path,sha256} to avoid a hash cycle; install anchor last after actual deployment receipt.",
+    "definition": "cloud/task088_price_sync/BINDING_CONTRACT.md",
+    "validator": "cloud/task088_price_sync/uaart_price_sync_binding.py"
+  },
+  "candidate_parts": {
+    "helper": "cloud/task088_v5_acceptance/resume_20260914/canonical/derive_candidate_parts.py",
+    "required_input_names": ["preflight", "preview", "quota", "writers", "routing", "delegation", "software"],
+    "index_contract": "TASK088-ACTUAL-CONSTRUCTION-INPUTS-1",
+    "input_reference_shape": "Exactly {path, sha256}; hashes are raw-byte SHA256 except explicit canonical object relationships checked internally.",
+    "software_input": "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix_v2/PUBLIC_GATE.json",
+    "run_default_dry_run_first": true,
+    "no_parts_until_all_real_inputs": true,
+    "freshness_seconds": {"preflight": 1800, "preview": 1800, "quota": 1800, "writers": 300},
+    "then": "Finish exact protected manifest and deployment paths, actual Gate binding manifest and raw Preview/writers, materialize existing owner authorization, final request and three-pin runtime activation. Parts alone are non-executable and not authority."
+  },
+  "validators_and_launch": {
+    "verify_mode_argv": ["python3", "-I", "-B", "automation/control_plane.py", "verify-mode", "--require", "AUTOMATIC"],
+    "workflow_policy": "automation/control_plane.py: verify_production_credential_workflow_policy(root=ROOT), also called by verify-mode; no separate automation/workflow_policy.py exists.",
+    "verify_request_argv_template": ["python3", "-I", "-B", "automation/control_plane.py", "verify-request", "ACTUAL_REQUEST_PATH", "--sha256", "ACTUAL_REQUEST_SHA256"],
+    "execution_validate_argv_template": ["python3", "-I", "-B", "automation/execution_contract.py", "validate", "ACTUAL_REQUEST_PATH", "--expected-class", "CRITICAL"],
+    "verify_preview_argv_template": ["python3", "-I", "-B", "cloud/ua_ge_price_protection/verify_preview.py", "--request-path", "ACTUAL_REQUEST_PATH", "--request-sha256", "ACTUAL_REQUEST_SHA256"],
+    "autostart_validate_argv_template": ["python3", "-I", "-B", "automation/autostart_intake.py", "ACTUAL_LAUNCH_PATH", "--run-id", "ACTUAL_RUN_ID", "--source-commit", "ACTUAL_MARKER_COMMIT", "--validate-only", "--root", "ISOLATED_FULL_CANDIDATE_CHECKOUT"],
+    "launch_boundary": "Register validated actual candidate/main first; then separate single-parent commit adding exactly one new tasks/launch/AUTO-*.json. Canonical workflow owns nonce reservation, claim, transaction and ledger. Do not precreate them or substitute direct merge/launch.",
+    "installation_plan_applicability": "cloud/task088_v5_install/prepare_install_plan.py only after actual canonical request/claim/transaction/Gate/Stage2/quota/writers/manifest/owner/Preview/routing evidence exists."
+  }
+}

@@ -33,6 +33,13 @@ ACTIVE = {
     "uaart_monitor.yml",
     "uaart_transaction_watchdog.yml",
 }
+WATCHDOG = "uaart_transaction_watchdog.yml"
+RECOVERY_JOBS = {"recovery_plan", "recovery_canary", "recovery_execute"}
+RECOVERY_WRITERS = {"recovery_canary", "recovery_execute"}
+LEGACY_WATCHDOG_WRITERS = {
+    "halt_discovery_failure", "halt_preparing", "mark_rollback",
+    "finalize_rollback", "halt_rolling_back", "halt_recovery_failure",
+}
 
 
 class WorkflowContractTests(unittest.TestCase):
@@ -46,6 +53,28 @@ class WorkflowContractTests(unittest.TestCase):
     def jobs(self, name: str) -> dict[str, str]:
         relative = ".github/workflows/" + name
         return dict(CP._workflow_job_blocks(self.read(name), relative))
+
+    def assert_recovery_cas(self, block: str) -> None:
+        # Recovery deliberately makes one exact-parent write, then resolves a
+        # lost push response through readback. It must never join retry writers.
+        self.assertEqual(len(re.findall(r"\bpush\s+origin\b", block)), 1)
+        self.assertNotIn("for attempt", block)
+        for marker in (
+            'test "$WORKFLOW_SOURCE_COMMIT" = "$PARENT"',
+            'test "$PARENT" = "$(/usr/bin/git rev-parse refs/remotes/origin/main)"',
+            '--force-with-lease="refs/heads/main:$PARENT"',
+            'test "${#CHANGED[@]}" -eq "${#EXPECTED_PATHS[@]}"',
+            'test "${CHANGED[$index]}" = "${EXPECTED_PATHS[$index]}"',
+            '/usr/bin/git merge-base --is-ancestor "$COMMIT" "$ACCEPTED"',
+            '/usr/bin/git diff --quiet "$COMMIT" "$ACCEPTED" -- "${EXPECTED_PATHS[@]}"',
+            '/usr/bin/git diff --quiet "$PARENT" "$ACCEPTED" -- "${RUNTIME_PATHS[@]}"',
+            "UAART_RECOVERY_ACCEPTED_RUNTIME_UNCHANGED",
+        ):
+            self.assertIn(marker, block)
+        push_at = block.index("push origin")
+        self.assertLess(block.index('test "$PARENT" = "$(/usr/bin/git rev-parse refs/remotes/origin/main)"'), push_at)
+        self.assertLess(push_at, block.index('ACCEPTED="$(/usr/bin/git rev-parse refs/remotes/origin/main)"'))
+        self.assertLess(push_at, block.index("UAART_RECOVERY_ACCEPTED_RUNTIME_UNCHANGED"))
 
     def multiline_shell_blocks(self, name: str) -> list[str]:
         lines = self.read(name).splitlines()
@@ -530,13 +559,8 @@ class WorkflowContractTests(unittest.TestCase):
             "COMMIT:refs/heads/main",
         ):
             self.assertIn(marker, persist)
-        self.assertEqual(
-            value.count('set -- $(git rev-list --parents -n 1 "$SOURCE_COMMIT")'), 3
-        )
-        self.assertEqual(value.count('test "$1" = "$SOURCE_COMMIT"'), 3)
-        self.assertEqual(value.count('test "$2" = "$BEFORE_SHA"'), 3)
-        self.assertEqual(value.count('test "$#" -eq 3'), 3)
-        self.assertNotIn('"$SOURCE_COMMIT $BEFORE_SHA"', value)
+        self.assertEqual(value.count('test "$(git rev-list --parents -n 1 "$SOURCE_COMMIT")" ='), 3)
+        self.assertEqual(value.count('"$SOURCE_COMMIT $BEFORE_SHA"'), 3)
         self.assertLess(persist.index("unset GH_TOKEN"), persist.index("python3 -I"))
         self.assertEqual(value.count("${{ github.token }}"), 1)
         self.assertIn("uses: ./.github/workflows/uaart_orchestrator.yml", value)
@@ -551,40 +575,36 @@ class WorkflowContractTests(unittest.TestCase):
             value, ".github/workflows/uaart_autostart.yml"
         )
 
-    def test_global_autostart_parent_gate_accepts_direct_and_normal_merge_only(self):
+    def test_global_autostart_parent_gate_accepts_only_exact_single_parent(self):
         value = self.read("uaart_autostart.yml")
         gate = re.compile(
-            r'set -- \$\(git rev-list --parents -n 1 "\$SOURCE_COMMIT"\)\n'
-            r'\s+test "\$1" = "\$SOURCE_COMMIT"\n'
-            r'\s+test "\$2" = "\$BEFORE_SHA"\n'
-            r'\s+if test "\$#" -ne 2; then\n'
-            r'\s+test "\$#" -eq 3\n'
-            r'\s+fi'
+            r'test "\$\(git rev-list --parents -n 1 "\$SOURCE_COMMIT"\)" = \\\n'
+            r'\s*"\$SOURCE_COMMIT \$BEFORE_SHA"'
         )
-        self.assertEqual(len(gate.findall(value)), 3)
+        snippets = gate.findall(value)
+        self.assertEqual(len(snippets), 3)
         source = "a" * 40
         before = "b" * 40
         other = "c" * 40
         another = "d" * 40
 
-        def accepts_parent_line(line: str) -> bool:
-            parts = line.split()
-            return (
-                len(parts) in {2, 3}
-                and parts[0] == source
-                and parts[1] == before
-            )
-
-        self.assertTrue(accepts_parent_line(f"{source} {before}"))
-        self.assertTrue(accepts_parent_line(f"{source} {before} {other}"))
-        for rejected in (
-            f"{source} {other}",
-            f"{source} {other} {before}",
-            f"{source} {before} {other} {another}",
-            f"{other} {before}",
-        ):
-            with self.subTest(rejected=rejected):
-                self.assertFalse(accepts_parent_line(rejected))
+        cases = [(f"{source} {before}", True)] + [(line, False) for line in (
+            f"{source} {before} {other}", f"{source} {other}",
+            f"{source} {other} {before}", f"{source} {before} {other} {another}",
+            f"{other} {before}", source, "",
+        )]
+        # Execute the actual workflow shell, mocking only git output. No
+        # independently reimplemented acceptance predicate can hide a drift.
+        for index, snippet in enumerate(snippets):
+            for line, accepted in cases:
+                with self.subTest(gate=index, parent_line=line):
+                    result = subprocess.run(
+                        ["/bin/bash", "--noprofile", "--norc", "-c",
+                         'set -eu\ngit() { printf "%s\\n" "$PARENT_LINE"; }\n' + snippet],
+                        env={"SOURCE_COMMIT":source, "BEFORE_SHA":before, "PARENT_LINE":line},
+                        text=True, capture_output=True, timeout=10, check=False,
+                    )
+                    self.assertEqual(result.returncode == 0, accepted, result.stderr)
 
     def test_nonproduction_rerun_is_failure_only_without_controller(self):
         for name in ("uaart_fast.yml", "uaart_standard.yml"):
@@ -824,7 +844,11 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertNotIn("github.token", block)
         watchdog = self.read("uaart_transaction_watchdog.yml")
         self.assertIn("group: ua-art-production-writer", watchdog)
-        self.assertNotIn("workflow_dispatch:", watchdog)
+        relative = ".github/workflows/" + WATCHDOG
+        trigger = CP._workflow_trigger_block(watchdog, relative)
+        self.assertEqual(set(re.findall(r"(?m)^  ([a-z_]+):", trigger)),
+                         {"push", "workflow_dispatch", "schedule"})
+        CP._verify_recovery_route_workflow_policy(watchdog, relative)
         self.assertIn("--require AUTOMATIC", watchdog)
         self.assertIn("--allow-halt-for-recovery", watchdog)
         self.assertIn("transaction_watchdog.py discover", watchdog)
@@ -976,10 +1000,7 @@ class WorkflowContractTests(unittest.TestCase):
             "uaart_critical.yml": {
                 "prepare", "open", "finalize", "recover", "rollback_mark",
             },
-            "uaart_transaction_watchdog.yml": {
-                "halt_discovery_failure", "halt_preparing", "mark_rollback",
-                "finalize_rollback", "halt_rolling_back", "halt_recovery_failure",
-            },
+            WATCHDOG: LEGACY_WATCHDOG_WRITERS | RECOVERY_WRITERS,
         }
         forbidden = (
             "GITHUB_ENV", "GITHUB_PATH", "BASH_ENV", "PYTHONSTARTUP",
@@ -1004,6 +1025,7 @@ class WorkflowContractTests(unittest.TestCase):
                             '"${runtime_paths[@]}"'
                         ),
                         job.find("UAART_SOURCE_PINNED_WRITER_RUNTIME_VALIDATED"),
+                        job.find("UAART_RECOVERY_RUNTIME_CLOSURE_VALIDATED"),
                     ]
                     guards = [value for value in guards if value >= 0]
                     self.assertTrue(guards)
@@ -1087,6 +1109,7 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertIn(binding, block)
 
     def test_git_write_credentials_are_scoped_to_trusted_steps(self):
+        recovery_queue_jobs = set()
         for name in (
             "uaart_autostart.yml",
             "uaart_orchestrator.yml",
@@ -1101,15 +1124,110 @@ class WorkflowContractTests(unittest.TestCase):
             with self.subTest(name=name):
                 value = self.read(name)
                 self.assertNotIn("persist-credentials: true", value)
-                for block in self.steps(name):
-                    if "github.token" not in block:
-                        continue
-                    self.assertTrue(
-                        "production_queue.py" in block
-                        or "extraheader" in block,
-                        block.splitlines()[0],
-                    )
-                    self.assertFalse(CP._task_execution_commands(block))
+                relative = ".github/workflows/" + name
+                for job_id, job in self.jobs(name).items():
+                    for block in CP._named_job_step_blocks(job, relative, job_id):
+                        if "github.token" not in block:
+                            continue
+                        if (name == WATCHDOG and job_id in RECOVERY_JOBS
+                                and "Capture complete current Actions queue using GET only" in block):
+                            self.assertNotIn(job_id, recovery_queue_jobs)
+                            recovery_queue_jobs.add(job_id)
+                            self.assertIn("--method GET --paginate --slurp", block)
+                            self.assertIn('"/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=${status}&per_page=100"', block)
+                            self.assertIn("trap 'unset GH_TOKEN' EXIT", block)
+                            self.assertIsNone(CP.PYTHON_INTERPRETER_RE.search(block))
+                            self.assertNotIn("extraheader", block)
+                        else:
+                            self.assertTrue(
+                                "production_queue.py" in block or "extraheader" in block,
+                                block.splitlines()[0],
+                            )
+                        self.assertFalse(CP._task_execution_commands(block))
+        self.assertEqual(recovery_queue_jobs, RECOVERY_JOBS)
+
+    def test_recovery_queue_reads_all_active_statuses_with_get_and_pagination(self):
+        relative = ".github/workflows/" + WATCHDOG
+        statuses = ("pending", "queued", "in_progress", "requested", "waiting")
+        for job_id in sorted(RECOVERY_JOBS):
+            job = self.jobs(WATCHDOG)[job_id]
+            block = next(block for block in CP._named_job_step_blocks(job, relative, job_id)
+                         if "Capture complete current Actions queue using GET only" in block)
+            body = CP._step_run_body(block, relative)
+            match = re.search(r"(?ms)^\s*for status in [^\n]+; do\n.*?^\s*done\s*$", body)
+            self.assertIsNotNone(match)
+            loop = match.group(0)
+            self.assertEqual(loop.count("/usr/bin/gh"), 1)
+            # Run the actual loop without network. Capture expanded argv, so
+            # endpoint/method/status/pagination assertions cover shell behavior.
+            with self.subTest(job=job_id), tempfile.TemporaryDirectory() as temporary:
+                capture = pathlib.Path(temporary) / "calls"
+                result = subprocess.run(
+                    ["/bin/bash", "--noprofile", "--norc", "-c",
+                     'set -eu\nmock_gh() { printf "%s\\0" "$@" >> "$CALL_LOG"; '
+                     'printf "\\n" >> "$CALL_LOG"; printf "[]\\n"; }\n'
+                     + loop.replace("/usr/bin/gh", "mock_gh")],
+                    env={"QUEUE_DIR":temporary, "CALL_LOG":str(capture)},
+                    text=True, capture_output=True, timeout=10, check=False,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                calls = [line.rstrip(b"\0").decode().split("\0")
+                         for line in capture.read_bytes().splitlines()]
+                self.assertEqual(calls, [
+                    ["api", "--hostname", "github.com", "--method", "GET", "--paginate", "--slurp",
+                     "-H", "Accept: application/vnd.github+json",
+                     "/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=" + status + "&per_page=100"]
+                    for status in statuses
+                ])
+                self.assertEqual({p.name for p in pathlib.Path(temporary).glob("*.json")},
+                                 {status + ".json" for status in statuses})
+
+    def test_recovery_policy_rejects_unsafe_bootstrap_requests_and_writes(self):
+        relative = ".github/workflows/" + WATCHDOG
+        value = self.read(WATCHDOG)
+        jobs = self.jobs(WATCHDOG)
+        CP._verify_recovery_route_workflow_policy(value, relative)
+        CP._verify_write_job_runtime_bootstrap_policy(value, relative)
+
+        def rejects(job_id, old, new, reason, verifier=CP._verify_recovery_route_workflow_policy):
+            with self.subTest(job=job_id, mutation=reason, removed=old):
+                self.assertIn(old, jobs[job_id], "Mutation anchor missing: " + old)
+                mutated_job = jobs[job_id].replace(old, new, 1)
+                mutated = value.replace(jobs[job_id], mutated_job, 1)
+                self.assertNotEqual(mutated, value)
+                with self.assertRaisesRegex(CP.ControlPlaneError, re.escape(reason)):
+                    verifier(mutated, relative)
+
+        for job_id in sorted(RECOVERY_JOBS):
+            rejects(job_id, "          /usr/bin/python3 -I - <<'PY'\n",
+                    "          python3 -I automation/transaction_watchdog.py recovery-plan\n"
+                    "          /usr/bin/python3 -I - <<'PY'\n", "RECOVERY_ROUTE_BOOTSTRAP:" + job_id)
+            rejects(job_id, "--method GET", "--method POST", "RECOVERY_ROUTE_BOOTSTRAP:" + job_id)
+            rejects(job_id, "github.repository_id == '1346296029'", "true",
+                    "RECOVERY_ROUTE_IDENTITY_GATE:" + job_id)
+        for job_id in sorted(RECOVERY_WRITERS):
+            for guard in (
+                '--force-with-lease="refs/heads/main:$PARENT"',
+                'test "${CHANGED[$index]}" = "${EXPECTED_PATHS[$index]}"',
+                '/usr/bin/git diff --quiet "$COMMIT" "$ACCEPTED" -- "${EXPECTED_PATHS[@]}"',
+                '/usr/bin/git diff --quiet "$PARENT" "$ACCEPTED" -- "${RUNTIME_PATHS[@]}"',
+            ):
+                rejects(job_id, guard, "true", "RECOVERY_ROUTE_EXACT_CAS:" + job_id)
+            # Endpoint changes are blocked by the exact workflow pin. Do not
+            # misrepresent that as a semantic endpoint check inside the CP.
+            rejects(job_id, "/actions/runs?status=", "/actions/workflows?status=",
+                    "WRITE_WORKFLOW_EXACT_SHA256_MISMATCH:" + relative,
+                    CP._verify_write_job_runtime_bootstrap_policy)
+        rejects("recovery_canary",
+                "EXPECTED_PATHS=('state/recovery_route_receipts/UA-ART-RECOVERY-TASK120-002.json')",
+                "EXPECTED_PATHS=('state/AUTOPILOT_HALT.json')",
+                "RECOVERY_ROUTE_CANARY_HALT_PRESERVATION")
+        for binding in ("inputs.plan_sha256", "inputs.owner_confirmation"):
+            rejects("recovery_execute", binding, "inputs.unbound",
+                    "RECOVERY_ROUTE_EXECUTE_APPROVAL_BINDING")
+        rejects("recovery_execute", "github.event_name == 'workflow_dispatch'",
+                "(github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')",
+                "RECOVERY_ROUTE_MANUAL_ONLY:recovery_execute")
 
     def test_sensitive_routes_are_hard_pinned_to_main(self):
         for name in (
@@ -1204,6 +1322,8 @@ class WorkflowContractTests(unittest.TestCase):
                 self.assertGreaterEqual(downloads, 1)
 
     def test_all_durable_pushes_have_bounded_retry(self):
+        recovery_seen = set()
+        legacy_watchdog_seen = set()
         for name in (
             "uaart_autostart.yml",
             "uaart_orchestrator.yml",
@@ -1213,17 +1333,41 @@ class WorkflowContractTests(unittest.TestCase):
             "uaart_transaction_watchdog.yml",
         ):
             with self.subTest(name=name):
-                for block in self.steps(name):
-                    if "push origin" in block:
-                        self.assertIn("for attempt in 1 2 3 4 5 6", block)
-                        self.assertIn("fetch", block)
-                        self.assertIn("merge-base --is-ancestor", block)
+                relative = ".github/workflows/" + name
+                for job_id, job in self.jobs(name).items():
+                    for block in CP._named_job_step_blocks(job, relative, job_id):
+                        if "push origin" not in block:
+                            continue
+                        if name == WATCHDOG and job_id in RECOVERY_WRITERS:
+                            self.assertNotIn(job_id, recovery_seen)
+                            recovery_seen.add(job_id)
+                            self.assert_recovery_cas(block)
+                        else:
+                            self.assertIn("for attempt in 1 2 3 4 5 6", block)
+                            self.assertIn("fetch", block)
+                            self.assertIn("merge-base --is-ancestor", block)
+                            if name == WATCHDOG:
+                                self.assertNotIn(job_id, legacy_watchdog_seen)
+                                legacy_watchdog_seen.add(job_id)
+        self.assertEqual(recovery_seen, RECOVERY_WRITERS)
+        self.assertEqual(legacy_watchdog_seen, LEGACY_WATCHDOG_WRITERS)
 
     def test_watchdog_push_retry_accepts_an_already_persisted_commit(self):
-        pushes = [
-            block for block in self.steps("uaart_transaction_watchdog.yml")
-            if "push origin" in block
-        ]
+        relative = ".github/workflows/" + WATCHDOG
+        pushes = []
+        recovery_pushes = {}
+        for job_id, job in self.jobs(WATCHDOG).items():
+            for block in CP._named_job_step_blocks(job, relative, job_id):
+                if "push origin" not in block:
+                    continue
+                if job_id in RECOVERY_WRITERS:
+                    self.assertNotIn(job_id, recovery_pushes)
+                    recovery_pushes[job_id] = block
+                else:
+                    pushes.append(block)
+        self.assertEqual(set(recovery_pushes), RECOVERY_WRITERS)
+        for block in recovery_pushes.values():
+            self.assert_recovery_cas(block)
         self.assertEqual(len(pushes), 6)
         for block in pushes:
             self.assertIn("LAST_COMMIT=''", block)

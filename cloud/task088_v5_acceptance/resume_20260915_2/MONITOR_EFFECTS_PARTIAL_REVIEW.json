@@ -1,0 +1,28 @@
+{
+  "contract": "PR114-MONITOR-EFFECTS-PARTIAL-INDEPENDENT-REVIEW-1",
+  "source_evidence": "/workspace/scratch/PR114_monitor_sources_0526.json",
+  "source_sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+  "function_map_evidence": "/workspace/scratch/PR114_dependency_functions_0522.json",
+  "inspected_actual_function_count": 3,
+  "inspected_functions": {
+    "isolated_probe": "subprocess.run invokes this same resolved Python file with sys.executable, -I, --_probe-json and --timeout. The selected function contains no service restart/control call.",
+    "write_evidence": "Creates parent directories, writes JSON to a NamedTemporaryFile in the destination directory, atomically replaces the supplied path, and cleans the temporary path. Destination is a caller-controlled Path argument in this function.",
+    "monitor_lock": "Creates destination parent and acquires .uaart-monitor.lock in that directory for the watch session. This is a monitor singleton lock, not a site publication fence."
+  },
+  "whole_monitor_read_only_proven": false,
+  "current_command_observation_from_root": {
+    "source": "Authenticated Tasks UI observed by root at 2026-09-15T05:27Z; relayed to reviewer in collaboration message.",
+    "command": "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+    "state": "Running",
+    "selected_evidence_path": "/home/Carix/uaart-monitor/latest.json",
+    "path_scope": "Outside root-level Python source files and public video/site inventory. Full main/dispatch/probe side effects remain unreviewed."
+  },
+  "remaining_minimal_inputs": [
+    "Actual main/run_watch/run_monitor bodies and module-level dispatch to bind the destination and executed code.",
+    "Actual probe_once Request construction, redirect policy and HTTP method to identify the network effects.",
+    "Trace the observed --evidence destination through main/run_watch; current command values are known, but dispatch bodies remain unreviewed.",
+    "Relevant imports/module-level side effects; do not infer their absence from a function-name summary."
+  ],
+  "conclusion": "The selected subprocess creates an isolated probe of the monitor itself, and the shown file writes are monitoring evidence/lock operations. Their exact destination and the remainder of the running program have not yet been inspected, so this is insufficient for a whole-process READ_ONLY_PROVEN writer verdict.",
+  "no_execution_or_writes_to_external_systems": true
+}

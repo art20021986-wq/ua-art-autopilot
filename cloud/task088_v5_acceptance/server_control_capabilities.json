@@ -1,0 +1,72 @@
+{
+  "credentials_exported": false,
+  "crm_processes": [],
+  "current_process": {
+    "GH_TOKEN": false,
+    "GITHUB_TOKEN": false,
+    "MCP_OWNER_APPROVAL_SECRET": false,
+    "PYTHONANYWHERE_API_TOKEN": false
+  },
+  "kind": "READ_ONLY_CONTROL_CAPABILITY_PRESENCE",
+  "known_sources": [
+    {
+      "environment_variable_names": [],
+      "path": "/home/Carix/start_safe.py",
+      "present": true,
+      "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "symlink": false
+    },
+    {
+      "environment_variable_names": [],
+      "path": "/home/Carix/run_all.py",
+      "present": true,
+      "sha256": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+      "symlink": false
+    },
+    {
+      "environment_variable_names": [
+        "OWNER_ID",
+        "TEAM_BOT_TOKEN"
+      ],
+      "path": "/home/Carix/team_bot.py",
+      "present": true,
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af",
+      "symlink": false
+    },
+    {
+      "environment_variable_names": [],
+      "path": "/home/Carix/db.py",
+      "present": true,
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "symlink": false
+    },
+    {
+      "environment_variable_names": [
+        "UAART_BRIDGE_MARKER",
+        "UAART_BRIDGE_REF",
+        "UAART_BRIDGE_REPOSITORY",
+        "UAART_BRIDGE_SECRET"
+      ],
+      "path": "/home/Carix/uaart_bridge_wsgi.py",
+      "present": true,
+      "sha256": "b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150",
+      "symlink": false
+    },
+    {
+      "environment_variable_names": [],
+      "path": "/home/Carix/autopilot_inbox/cloud/approval_gate/claude_owner_approval_mcp.py",
+      "present": true,
+      "sha256": "577fdb7f8c5332ee0884609f78d9e09bd6d1172bf767e92a8ff366155c10c1c4",
+      "symlink": false
+    },
+    {
+      "environment_variable_names": [],
+      "path": "/home/Carix/autopilot_inbox/cloud/approval_gate/pythonanywhere_approval_gate.py",
+      "present": true,
+      "sha256": "554adaa491ab4f0c24cde46c00a4d71ef03f50aefc3c0df09bfbf7b238069850",
+      "symlink": false
+    }
+  ],
+  "network_used": false,
+  "production_written": false
+}

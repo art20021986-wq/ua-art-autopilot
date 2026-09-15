@@ -1,0 +1,125 @@
+{
+  "contract": "TASK088-CANONICAL-READINESS-READONLY-1",
+  "recorded_at": "2026-09-14T15:37:16.284208+00:00",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "main_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "head_sha": "e146c2ea8c28033050b49ccbebb33aa5276c8788",
+  "observation_source": "CONNECTED_GITHUB_APP_READS_AT_EXACT_COMMITS",
+  "main_tree": {
+    "entries": 2090,
+    "truncated": false
+  },
+  "head_tree": {
+    "entries": 2265,
+    "truncated": false
+  },
+  "stage3_canonical_artifacts_main": [],
+  "stage3_canonical_artifacts_head": [],
+  "halt_absent_at_main_commit": true,
+  "stage2": {
+    "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json",
+    "raw_sha256": "d0b731b93a73da0d041a1af6e987f0e6634823001a2461bc882c927a588faae7",
+    "status": "FINISHED",
+    "stage2_status": "PASS",
+    "closed_at": "2026-09-13T05:56:14Z",
+    "stage1_prerequisite": "PASS",
+    "stage3_allowed": true,
+    "independent_price_fields": "PASS",
+    "original_values_restored": true,
+    "cars_ui_preimage_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde"
+  },
+  "transactions": [
+    {
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+      "status": "ROLLED_BACK",
+      "closed_at": "2026-09-11T17:03:36Z"
+    },
+    {
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.34625768264.json",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+      "status": "FINISHED",
+      "closed_at": "2026-09-11T17:09:24Z"
+    },
+    {
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+      "status": "FINISHED",
+      "closed_at": "2026-09-13T05:26:23Z"
+    },
+    {
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+      "task_id": "TASK115-REMOVE-VIN-ADS",
+      "status": "ROLLED_BACK",
+      "closed_at": "2026-09-05T04:04:27Z"
+    },
+    {
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+      "task_id": "TASK115-REMOVE-VIN-ADS",
+      "status": "FINISHED",
+      "closed_at": "2026-09-05T05:11:37Z"
+    },
+    {
+      "path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+      "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+      "status": "FINISHED",
+      "closed_at": "2026-09-07T09:53:03Z"
+    },
+    {
+      "path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+      "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
+      "status": "FINISHED",
+      "closed_at": "2026-09-07T11:45:29Z"
+    },
+    {
+      "path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+      "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
+      "status": "FINISHED",
+      "closed_at": "2026-09-07T12:09:25Z"
+    },
+    {
+      "path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+      "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+      "status": "ROLLED_BACK",
+      "closed_at": "2026-09-07T14:57:16Z"
+    }
+  ],
+  "current_runtime": {
+    "activation_path": "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.json",
+    "activation_sha256": "4567f604bebac3d198e361ee49a3ba239585e6e07cca57e9f4fec8a316e9024c",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "mode_raw_sha256": "11af7c738faa902412d35f0755a0a829df49ec939d32960abf343203f93bb715",
+    "runtime_manifest_raw_sha256": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5",
+    "price_v5_registered": false
+  },
+  "launch": {
+    "separate_commit": true,
+    "exactly_one_added_file": "tasks/launch/AUTO-*.json",
+    "single_parent": true,
+    "maximum_validity_seconds": 7200,
+    "claim_transaction_created_by": "EXISTING_CANONICAL_WORKFLOW"
+  },
+  "freshness_seconds": {
+    "preview": 1800,
+    "gate": 1800,
+    "quota": 1800,
+    "writers": 300,
+    "reader_maximum": 30
+  },
+  "server_state_observed": false,
+  "secret_values_read": false,
+  "github_written": false,
+  "production_written": false,
+  "gate_b_created": false,
+  "claim_created": false,
+  "transaction_created": false,
+  "production_authorized": false,
+  "report_kind": "READINESS_ONLY_NOT_ACCEPTANCE",
+  "remaining": [
+    "full raw Preview evidence and fresh independent server reads",
+    "exact private preflight and all writer fences",
+    "real Stage3 request/manifest/Gate/owner bindings and v5 runtime registration",
+    "verified canonical launch and full backup/install/post-deploy",
+    "private delegation v2/config/anchor, continuous authenticated reader, actual Stage4 acceptance"
+  ]
+}

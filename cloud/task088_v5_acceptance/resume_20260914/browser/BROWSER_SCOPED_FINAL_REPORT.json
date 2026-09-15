@@ -1,0 +1,481 @@
+{
+  "contract": "PR114_BROWSER_SCOPED_QA_FINAL_1",
+  "recorded_at": "2026-09-14T16:16:41.546308+00:00",
+  "full_preview_gate": "NOT_PASSED",
+  "production_authorized": false,
+  "browser_ui_released": true,
+  "css_matrix": {
+    "status": "PASS",
+    "cases": 120,
+    "new_cases": 72,
+    "retained_cases": 48,
+    "assertions": 6744,
+    "failed": 0,
+    "report": "RAW_BROWSER_EVIDENCE_VALIDATION.json"
+  },
+  "real_ui_collection": "Actual native selectOption for harness page/size, actual clicks on every RU/UA/GE button and Observe button. No programmatic language setter or DOM mutation. Top-level catalog RU→UA→GE real clicks saved in top_level_language_switching.json.",
+  "navigation": {
+    "status": "PASS_FOR_18_DETAIL_AND_18_OWN_DIAGNOSTIC_PAGES",
+    "cards": [
+      {
+        "code": "UA-0001",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0002",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0003",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0004",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0005",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0006",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0007",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0008",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0009",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0010",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0011",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0012",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0013",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0014",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0015",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0016",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0017",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      },
+      {
+        "code": "UA-0018",
+        "status": "PASS",
+        "card_url_matches": true,
+        "card_code_present": true,
+        "vin_format_present": true,
+        "additional_specification_entry_present": true,
+        "diagnostic_clicked_is_own": true,
+        "diagnostic_url_matches": true,
+        "diagnostic_body_has_code": true,
+        "expected_cta_href_present": true,
+        "question_cta_href_present": true
+      }
+    ],
+    "raw": "ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+    "limitations": [
+      "CTA hrefs checked; no Telegram/WhatsApp messages, calls, shares, forms or native app launches performed",
+      "VIN format and presence observed; independent VIN identity comparison belongs to source audit"
+    ]
+  },
+  "catalog_filters": [
+    {
+      "label": "В Киеве · 5",
+      "actual_codes": [
+        "UA-0002",
+        "UA-0007",
+        "UA-0008",
+        "UA-0017",
+        "UA-0018"
+      ],
+      "expected_codes": [
+        "UA-0002",
+        "UA-0007",
+        "UA-0008",
+        "UA-0017",
+        "UA-0018"
+      ],
+      "status": "PASS"
+    },
+    {
+      "label": "В Грузии · 5",
+      "actual_codes": [
+        "UA-0001",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012"
+      ],
+      "expected_codes": [
+        "UA-0001",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012"
+      ],
+      "status": "PASS"
+    },
+    {
+      "label": "На пароме · 4",
+      "actual_codes": [
+        "UA-0005",
+        "UA-0006",
+        "UA-0013",
+        "UA-0014"
+      ],
+      "expected_codes": [
+        "UA-0005",
+        "UA-0006",
+        "UA-0013",
+        "UA-0014"
+      ],
+      "status": "PASS"
+    },
+    {
+      "label": "В Корее · 4",
+      "actual_codes": [
+        "UA-0003",
+        "UA-0004",
+        "UA-0015",
+        "UA-0016"
+      ],
+      "expected_codes": [
+        "UA-0003",
+        "UA-0004",
+        "UA-0015",
+        "UA-0016"
+      ],
+      "status": "PASS"
+    },
+    {
+      "label": "Все · 18",
+      "actual_codes": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013",
+        "UA-0014",
+        "UA-0015",
+        "UA-0016",
+        "UA-0017",
+        "UA-0018"
+      ],
+      "expected_codes": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013",
+        "UA-0014",
+        "UA-0015",
+        "UA-0016",
+        "UA-0017",
+        "UA-0018"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "catalog_images": {
+    "total": 18,
+    "decoded": 18,
+    "status": "PASS"
+  },
+  "visual_samples": {
+    "status": "PASS_FOR_PRICE_AND_CATALOG_SAMPLES",
+    "samples": [
+      "UA0015 nullable GE desktop RU",
+      "UA0010 numeric UA/GE desktop RU",
+      "UA0010 numeric UA/GE mobile GE 390x844 CSS",
+      "UA0002 Kyiv UA-only mobile RU 390x844 CSS",
+      "Catalog desktop GE heading/filter and RU price cards"
+    ],
+    "observations": [
+      "Prices and captions readable without clipping",
+      "Mobile Georgian GE amount wraps cleanly onto second line",
+      "Kyiv mobile sample displays only UA price"
+    ],
+    "limitations": [
+      "Chrome CSS viewport, not native iPhone/Safari or touch behavior",
+      "No blanket approval of all photos from sampled screenshots"
+    ]
+  },
+  "additional_specification": {
+    "entries_observed": 18,
+    "sample_expanded": "UA-0015",
+    "sample_parameters": 31
+  },
+  "gallery": {
+    "status": "NOT_PASSED",
+    "first_photo": "UA0015 1/37 visually loaded",
+    "backdrop_close": "PASS",
+    "second_thumbnail_selection": "Counter2/37 and src changed",
+    "second_photo": "complete=true, naturalWidth=0, naturalHeight=0; black screenshots",
+    "direct_probe": "ERR_BLOCKED_BY_CLIENT then explicit Cloud browser URL policy rejection",
+    "no_retry_or_circumvention_after_policy": true,
+    "raw": "gallery_direct_image_failure.json",
+    "touch_swipe": "NOT_TESTED",
+    "keyboard_next": "Not implemented in observed gallery; ArrowRight did not change photo"
+  },
+  "outstanding_for_full_preview": [
+    "Resolve or obtain permitted acceptance for full-size gallery photo coverage; photos criterion remains NOT_PASSED",
+    "Consolidate root source_generation/no_unrelated_diff/independent full DB readback evidence",
+    "Confirm homepage counters against source; this browser run verifies catalog counters and homepage CSS only",
+    "Combine scoped button/link checks with any contract-required native or external action acceptance without sending unrequested messages"
+  ],
+  "screenshots": [
+    {
+      "path": "visual_UA0010_numeric_GE_desktop_RU.jpg",
+      "sha256": "ba5d2c7de3841c6526e304177b319a0f2f9da2515a9926abc452131653deb493",
+      "bytes": 69400
+    },
+    {
+      "path": "visual_catalog_GE_desktop_top.jpg",
+      "sha256": "1dc2de22e44c73b133e5b577e5d692402343bb1e99f7cb9c1be277029c099829",
+      "bytes": 156310
+    },
+    {
+      "path": "visual_catalog_RU_desktop_prices.jpg",
+      "sha256": "db0a7435124773a176fe352239a40daadc2b5112a1238b8d027b1d26b43b7532",
+      "bytes": 174634
+    },
+    {
+      "path": "visual_gallery_UA0015_open.jpg",
+      "sha256": "2b4a08f94131e9bdcd640b99572d20fea4d34176951b331b0ffb1d818b4f6086",
+      "bytes": 172847
+    },
+    {
+      "path": "visual_gallery_UA0015_second.jpg",
+      "sha256": "906986a9534f34dc61537937bab9864b3250e3cd0d5cb7bc9cff15871a42d197",
+      "bytes": 8775
+    },
+    {
+      "path": "visual_gallery_UA0015_second_loaded.jpg",
+      "sha256": "906986a9534f34dc61537937bab9864b3250e3cd0d5cb7bc9cff15871a42d197",
+      "bytes": 8775
+    },
+    {
+      "path": "visual_mobile_UA0002_RU_kyiv_only.jpg",
+      "sha256": "6651158e668c38d148fb31b47cfbd3dfff150c94d76effaf1f0f93a927fccd59",
+      "bytes": 61079
+    },
+    {
+      "path": "visual_mobile_UA0010_GE_numeric.jpg",
+      "sha256": "c61cd6bab3dc1474ad13303e9646d02b5640151d28500280fd0bb39e37ca6e20",
+      "bytes": 63576
+    },
+    {
+      "path": "visual_nullable_ge_UA0015_desktop_RU.jpg",
+      "sha256": "2b708a3a5293d0a69a7dc75f99b16ae5cabb3f7e9cde51368a9e666594f28a7a",
+      "bytes": 72860
+    }
+  ],
+  "aggregate_files": [
+    {
+      "path": "ALL_NEW_RAW_OBSERVATIONS_72.json",
+      "sha256": "81b605845bc302a66b620383f9a9c586f76b2fd3e075599dd374b84ccdb25a7d",
+      "bytes": 371792
+    },
+    {
+      "path": "ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+      "sha256": "afae35660a3a98581bc3b1574dba71f673dc7d65910b623b02dccc6dee8d75f6",
+      "bytes": 147639
+    }
+  ]
+}

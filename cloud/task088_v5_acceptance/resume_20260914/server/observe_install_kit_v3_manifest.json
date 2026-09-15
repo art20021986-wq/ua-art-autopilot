@@ -1,0 +1,58 @@
+{
+  "archive": "observe_install_inputs_20260914_v3.pyz",
+  "archive_bytes": 15480,
+  "archive_sha256": "48502613db498c1c347e62f5ea2d5dadedd1ff0ab6457bd6ebe2781c9560817c",
+  "full_preview": "NOT_PASSED",
+  "members": {
+    "__main__.py": {
+      "bytes": 7493,
+      "sha256": "d96610fcf7ad2f74c3f6a2df9394c1bb3049a0c42015e5051a177c8c2a8cfc99"
+    },
+    "install_package.py": {
+      "bytes": 37425,
+      "sha256": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673"
+    },
+    "observe_install_inputs.py": {
+      "bytes": 4666,
+      "sha256": "626bb2142367b1b1d251fc131ee6365d6285fea6daa0cd08d2b8bc565d56a42f"
+    },
+    "quota_observation.json": {
+      "bytes": 324,
+      "sha256": "e7337930f213783670cd7ff7c74076288e2f204b974cf01f9409d015939c874a"
+    }
+  },
+  "metadata_evidence_sha256": "24759ba72008742d32b1953ee971e450359f5d3d76761863f70164e14fcdb2fe",
+  "metadata_scope": {
+    "complete_observed_hidden_set_required": true,
+    "exact_regular_paths": 17,
+    "gid": 60000,
+    "mode": "0664",
+    "path_resolution": "EXACT_NON_SYMLINK",
+    "sizes": "EXACT_PER_PATH_REVIEWED_BYTES",
+    "uid": 23671234,
+    "uid_must_equal_current_os_uid": true
+  },
+  "metadata_source_server_sha256_status": "VERIFIED_EXACT_BY_ROOT_AUTHENTICATED_UI_SHA256SUM",
+  "production_gate_created": false,
+  "quota_expires_at_utc": "2026-09-14T17:11:42.701000+00:00",
+  "review_tests": {
+    "all_actual_metadata_cases_accepted": 17,
+    "inventory_exclusions": 0,
+    "negative_cases_rejected": [
+      "mode",
+      "owner",
+      "group",
+      "bytes",
+      "symlink",
+      "directory",
+      "unknown_exact_path",
+      "resolved_path_changed"
+    ],
+    "old_preview_binding_pinned": false,
+    "original_observer_and_engine_pins_unchanged": true,
+    "startup_guard_ast_unchanged": true,
+    "startup_or_hidden_file_content_read_by_preparation_agent": false
+  },
+  "server_execution": "NOT_RUN",
+  "upload_mirror": "/workspace/scratch/5f3dba772b24/server_transfer/install_obs_v3_1648.pyz"
+}

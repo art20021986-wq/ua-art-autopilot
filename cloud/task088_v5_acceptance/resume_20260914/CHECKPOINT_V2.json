@@ -1,0 +1,502 @@
+{
+  "kind": "RESUME_CHECKPOINT_V2_NOT_A_GATE",
+  "recorded_at": "2026-09-14T17:19:19.125262+00:00",
+  "authorization": "TЗv1.0 approved; publication already authorized only after real full Preview and canonical controls; no renewed permission requested",
+  "full_preview_gate": "NOT_PASSED",
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "production_written": false,
+  "crm_written": false,
+  "original_reviewed_head": "e146c2ea8c28033050b49ccbebb33aa5276c8788",
+  "last_root_reported_remote_head": "0de18dffe5f7db768aa7e27e3bf96c2a99a9ad8f",
+  "last_root_reported_remote_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "remote_sha_provenance": "Root confirmed these refs around17UTC; root will commit the new checkpoint afterward. This snapshot does not claim its own later commit SHA.",
+  "software": {
+    "report": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix_v2/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+      "bytes": 40630,
+      "sha256": "876ab0b71f80624ec5dc96f764ec5edf99644ed1cf0e334bc8ea2853da78f3d7"
+    },
+    "builder_sha256": "ce6fb512f2b2c5dadb81c6412b1da28a43b8ba0d8b9d325f93c03833d9368cc9",
+    "source_manifest_sha256": "0dae6071812640061367ef54dedb52a4b6a8e155449d526202f2496f52b55f38",
+    "price_tests": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 446,
+      "unexpected_successes": 0
+    },
+    "maintenance_tests": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "tests_run": 183
+    },
+    "finished_at": "2026-09-14T16:37:45.451975+00:00",
+    "scope": "ACTUAL_OFFLINE_V2_NOT_LIVE_ACCEPTANCE"
+  },
+  "browser": {
+    "cases": 120,
+    "assertions": 6744,
+    "detail_routes": 18,
+    "own_diagnostic_routes": 18,
+    "catalog_thumbnails_decoded": 18,
+    "home_and_catalog_stage_counts": [
+      5,
+      5,
+      4,
+      4
+    ],
+    "published_total_observed": 18,
+    "scope": "Retained real observations on prior candidate; unchanged pages/resources bridged by actual V2 server receipt",
+    "report": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+      "bytes": 15090,
+      "sha256": "3798d46b281515c0a50bb2e3c41e8da464abaf1ccc3f3264bd9a772e76ff4906"
+    },
+    "homepage": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+      "bytes": 5692,
+      "sha256": "b8d194e6c92d54694279cd4e5d4e36958bed16349cc93e2dfc7a395c3fc8d3a9"
+    },
+    "photos": "NOT_PASSED",
+    "policy": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/gallery_direct_image_failure.json",
+      "bytes": 989,
+      "sha256": "7c53e5d2746a1aabd99fea2517819861b562db58f16e36ea47f710266fcbf0b0"
+    },
+    "post_reload_home_harness": {
+      "evidence": {
+        "path": "cloud/task088_v5_acceptance/resume_20260914/browser/post_reload_home_harness_1656.json",
+        "bytes": 806,
+        "sha256": "9c8db46dbfc46e332931fec0b1d217ebed01d1fbde955650cda8146e66df8a44"
+      },
+      "status": "OBSERVED_ONLY_NOT_EVALUATED",
+      "observed_at": "2026-09-14T16:56:03.359Z",
+      "page_sha256": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+      "images_total": 10,
+      "images_decoded": 9,
+      "preserved_css_matrix_cases": 120
+    },
+    "home_images_after_scroll": {
+      "report": {
+        "path": "cloud/task088_v5_acceptance/resume_20260914/browser/home_images_before_after_scroll_1702.json",
+        "bytes": 3686,
+        "sha256": "f76e24d5ea0ba2dadee1ddb45cc520f8d26c8b586d9fa549d57c5d72ec18afcf"
+      },
+      "observed_at": "2026-09-14T17:03:03.311Z",
+      "decoded": 10,
+      "total": 10,
+      "scope": "ACTUAL_HOME_DOM_AFTER_NORMAL_CONTROL_END",
+      "gallery_retry": false,
+      "old_harness_9_of_10_preserved": true
+    },
+    "preflight_page_binding": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREFLIGHT_BROWSER_BINDING_V2.json",
+      "bytes": 7120,
+      "sha256": "3320408164e34afbd7781e5594cb5fa6fbbb0a4d2f5e04cf6e52f098fccc5c99"
+    }
+  },
+  "preview_v2": {
+    "receipt": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/gallery_1640.json",
+      "bytes": 19081,
+      "sha256": "e893bdd1ce9a83ceaffc629bb2d5b56cb23dddb7f1d73b4c0cfbe7fc4a95d2da"
+    },
+    "status": "PREVIEW_ONLY_UPDATED_PENDING_RELOAD_AND_BROWSER",
+    "finished_at": "2026-09-14T16:39:48.225328+00:00",
+    "manifest_sha256": "c6febae073064d66c89a553a1d23538c8dc71c40c9737c440d33a3ba457611ca",
+    "config_sha256": "ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee",
+    "wsgi_sha256": "9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555",
+    "work": "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/gallery-preview-j6b3l4hd",
+    "backup": "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/gallery-preview-j6b3l4hd/prior_preview_wsgi.backup.py",
+    "reload_requested": false,
+    "verification": {
+      "pinned_resources": 1221,
+      "private_routes_denied": 9,
+      "scope": "IN_PROCESS_REAL_BUNDLE_NOT_BROWSER_RENDERING",
+      "status": "PASS"
+    },
+    "protected_state_comparison": {
+      "all_db_tables": "MATCH",
+      "all_live_html": "MATCH",
+      "db_schema": "MATCH",
+      "live_sources": "MATCH",
+      "production_static_mappings": "MATCH"
+    },
+    "post_reload_home": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/post_reload_home_1644.json",
+      "bytes": 5910,
+      "sha256": "a202c0f1e431829663071e8b1e1df7e54cba4b3abf11dd673a390b8e4bcb8af7"
+    },
+    "post_reload_scope": "POST_RELOAD_HOME_HTML_ONLY_NO_GALLERY_RETRY",
+    "reload_clicked_at": "2026-09-14T16:43:28.987Z",
+    "post_reload_home_observed_at": "2026-09-14T16:44:51.520Z"
+  },
+  "preservation": {
+    "price_pages": 20,
+    "linked_pages": 20,
+    "offline_pages": 19,
+    "existing_resources": 679,
+    "added_gallery_assets": 542,
+    "captured_gallery_routes": 560,
+    "protected_state_comparison": {
+      "all_db_tables": "MATCH",
+      "all_live_html": "MATCH",
+      "db_schema": "MATCH",
+      "live_sources": "MATCH",
+      "production_static_mappings": "MATCH"
+    }
+  },
+  "retained_failure": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/gallery_fix_v2/first_server_failure.json",
+    "bytes": 559,
+    "sha256": "06aeeae45b7c960b268a09cb58de259a596e572f3a4fda7403d716b6e06f34c4"
+  },
+  "install_observation": {
+    "contract": "TASK088-V5-INSTALL-OBSERVATION-1",
+    "status": "PASS",
+    "report": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/install_1650.json",
+      "bytes": 1282938,
+      "sha256": "7f0bf4c31088350fed169366e46e19f04ef85bca00238f23bd56c8c7342f1806"
+    },
+    "observed_at": "2026-09-14T16:50:36.435375+00:00",
+    "read_only": true,
+    "database": {
+      "audit_sha256": "1674892165b6b42f3a726559a3ac6eac22981a3a83b7371ade8dc4cf9a095171",
+      "cars_sha256": "fb3a161124b7c883e3755ddbc2b84060a6fe91954ac52f6cf7a4b93ae1db4244",
+      "published_codes": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013",
+        "UA-0014",
+        "UA-0015",
+        "UA-0016",
+        "UA-0017",
+        "UA-0018"
+      ],
+      "published_sha256": "746227be9abe97b4e07afd50c8dd393268a2a9a6c576c63ce089d636d6d7658d"
+    },
+    "schema_sha256": "2f11c8573be88b0dc8da1adf12fcdc6c5105844f0a0300797fc907f9544ff8c2",
+    "source_sha256": {
+      "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+      "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb",
+      "yadro.py": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793"
+    },
+    "dependency_sha256": {
+      "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+      "catalog_design_golden.html": "228aaf503ef9728683020e15cb83c66550b77d45c8d7c341cc87f5f5768eb2c7",
+      "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "master_card.py": "27e32420bbec9f1e0a25621e1c20dda20944537daa40c1ccac574689cd6c3f6e",
+      "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "team_bot.py": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "inventory_files": 9625,
+    "full_backup_source_bytes": 986727605,
+    "hidden_public_files_included": 17,
+    "stage_counts": {
+      "georgia": 5,
+      "kiev": 5,
+      "korea": 4,
+      "sea": 4
+    },
+    "observer_payload_sha256": {
+      "install_package.py": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673",
+      "observe_install_inputs.py": "626bb2142367b1b1d251fc131ee6365d6285fea6daa0cd08d2b8bc565d56a42f"
+    },
+    "private_preflight": "ACTUAL_CANDIDATE_PASS_OVERALL_BLOCKED_CANONICAL_BRIDGE_NOT_RUN",
+    "full_preview": "NOT_PASSED"
+  },
+  "reader": {
+    "credential_presence_observation": "Absent in exact16:48:57UTC presence-only server observation",
+    "secret_value_read": false,
+    "required_for": "Stage4 continuous authenticated reader; not Preview evaluation",
+    "presence_report": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/credential_presence_1648.json",
+      "bytes": 1518,
+      "sha256": "f9abdd4804248ae49d2fce0099a3fbc82b0b85d19636de02027e9b6a91897ef3"
+    },
+    "receiver_sha256": "e30b3c66e046b567b6b1be00dc476433c7f36bc08745d05b21b4c35250e0151d",
+    "handoff": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/credential_handoff_1714.json",
+      "bytes": 733,
+      "sha256": "b1cc9b9bc47b0b7e5927f2750b14e3add2dd738608eceebe5a30dbfc5e4f99c3"
+    },
+    "handoff_state": "HIDDEN_TOKEN_PROMPT_WAITING_OWNER",
+    "console_url": "https://www.pythonanywhere.com/user/Carix/consoles/48168693/",
+    "observed_at": "2026-09-14T17:14:45.915Z",
+    "receiver_unchanged": true,
+    "secret_submitted_by_agent": false
+  },
+  "source_of_truth": {
+    "criteria_map": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREVIEW_CRITERIA_MAP.json",
+      "bytes": 69803,
+      "sha256": "7ae93f51824511c80104070352b5594781f329e09957a18c23390ae8059dfd4b"
+    },
+    "canonical_readiness": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/READINESS.md",
+      "bytes": 12814,
+      "sha256": "6e15439b99dc8553287b6ff210bb79101d02c31a6c55353025b1e16182095eea"
+    },
+    "construction_order": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/CONSTRUCTION_ORDER.md",
+      "bytes": 6290,
+      "sha256": "b2b8eaf5468c4fff98b4f7b84fa2ffa760486f52b03f4a82d5caf8009ba8c9bf"
+    },
+    "post_observation_preparation": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/POST_OBSERVATION_PREPARATION_V2.md",
+      "bytes": 6959,
+      "sha256": "751061585003abc2aab3dbde85d4ae3327eb2c924780ad407a5ce34a568d0629"
+    },
+    "preflight_browser_binding": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREFLIGHT_BROWSER_BINDING_V2.json",
+      "bytes": 7120,
+      "sha256": "3320408164e34afbd7781e5594cb5fa6fbbb0a4d2f5e04cf6e52f098fccc5c99"
+    },
+    "current_pr_body": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/PR_BODY_CURRENT_RU.md",
+      "bytes": 6336,
+      "sha256": "0b677cf9088edf9423d4ceb8939791361777fd7b63047d43dbe178957c551d1e"
+    },
+    "published_identity_binding": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PUBLISHED_IDENTITY_BINDING_V2.json",
+      "bytes": 1925,
+      "sha256": "788fb7e1e66d6d1afe97a7195cded051bc85d314b4990a96455cd49e243766da"
+    }
+  },
+  "archive_index": [
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/PR114_GALLERY_FIX_EVIDENCE_20260914.zip",
+      "bytes": 14007,
+      "sha256": "0b048d204cdb04ad66b9c2ad71a592732418f4b1449a24b7e0fdf1230b0e781e"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/PR114_GALLERY_FIX_V2_EVIDENCE_20260914.zip",
+      "bytes": 13049,
+      "sha256": "30d18a9bd5d1094cd029fe3b71f33f24cb45226a699ae302679955c475dc6970"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/PR114_GALLERY_SOFTWARE_AND_CANARY_20260914.zip",
+      "bytes": 65533,
+      "sha256": "391b2836e31d9d8ad57ea7e4c54770ad3edd7da134b3fad638f29c3f399e307a"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/PR114_GALLERY_V2_SOFTWARE_EVIDENCE_20260914.zip",
+      "bytes": 35718,
+      "sha256": "5e392949f94ab5584c93c0083c4b6e05429f09644d7d3a0fa965a62daa766c69"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/PR114_WORKFLOW_FIX_EVIDENCE_20260914.zip",
+      "bytes": 70866,
+      "sha256": "30ba7b8d8334bbf1aa3e460420c6914f2252bdbd2d527953038e78814ab1a374"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser_evidence_120_20260914.zip",
+      "bytes": 130346,
+      "sha256": "b649a7f97f7bd1a84fe9b5c28bd09f00c843f40a0221104c7a3adbf6d3ddb02b"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser_visual_links_20260914.zip",
+      "bytes": 724500,
+      "sha256": "4b1932ec2c7d50a148c0bae21623c3773f23ac87395c563c427256e030291031"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software_evidence_443_20260914.zip",
+      "bytes": 94284,
+      "sha256": "c49b700e2b37df92af6d1b8105acfec038fb961685d16314aaff80e4651ab405"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557_checkpoint.zip",
+      "bytes": 59070,
+      "sha256": "70a626d3c4b1a3705566189666bfcee3502f2a71f1445df638da3581d684afef"
+    }
+  ],
+  "next_actions": [
+    "Owner enters only the approved repository Contents:read token into the actual waiting hidden prompt in console48168693 and presses Enter. Do not rerun the receiver command while the prompt is active; no value in chat/logs/repo. Validate actual authenticated reader through the private route after saved confirmation.",
+    "Owner records permitted full-size gallery display on the exact current Preview, beginning with UA0015 photo2/37 and relevant current-card coverage. Preserve timestamp/URL/result. Respect the explicit browser policy block; no workaround retries.",
+    "On resume read actual main/head/mode/HALT/delegation and current server candidate/source/DB. Verify saved raw/archive hashes. Refresh expired quota and required writer/freshness observations; preserve earlier timestamps and failed attempts.",
+    "Use actual preflight candidateeaceee78 and Preview resource manifestc6febae0 with the saved20-page/679-resource preservation bridges. Evaluate all24 from real evidence; materialize no full Preview PASS while photos is open.",
+    "After genuine full Preview, run dry-run derivation on all seven real inputs, complete canonical manifest/Gate/request/runtime registration and validate normally. Launch only via the separate marker-only commit; canonical workflow creates claim/transaction/nonce.",
+    "Execute canonical Stage3 backup/install/verification/reconciliation and then actual reader/process/live Stage4 acceptance. Current PR is not merged, production unchanged, Stage3/Stage4 remain open."
+  ],
+  "resume_rules": [
+    "Verify raw/archive SHA256 before reuse; preserve original files and failed attempts.",
+    "Re-read remote main/head/control state and actual server Preview configuration; do not assume an imminent commit or pending reload completed.",
+    "quota_1642 expires17:11:42UTC; refresh authenticated quota and other time-bound evidence when needed.",
+    "Dynamic published set is18 only at observed source state; recompute on any source drift.",
+    "Never retry the explicitly blocked photo via workaround; photos remains open until permitted evidence.",
+    "No fabricated PASS/owner authorization/nonce/claim/transaction; canonical workflow creates execution records."
+  ],
+  "last_root_reported_remote_tree": "a2653388cc0feb48afa6d582cde4aaa55ba493e7",
+  "durable_v2_evidence_commit": "0de18dffe5f7db768aa7e27e3bf96c2a99a9ad8f",
+  "quota": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/server/quota_1642.json",
+    "bytes": 324,
+    "sha256": "e7337930f213783670cd7ff7c74076288e2f204b974cf01f9409d015939c874a"
+  },
+  "quota_observed_at": "2026-09-14T16:41:42.701Z",
+  "quota_valid_until": "2026-09-14T17:11:42.701Z",
+  "state": "AUTOMATIC_PREPARATION_COMPLETE_OWNER_TOKEN_PROMPT_ACTIVE_AND_PHOTO_PROOF_MISSING",
+  "private_preflight": {
+    "report": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/preflight_report_1701.json",
+      "bytes": 1306135,
+      "sha256": "03d291f72de1664ed6e389de3b99fec021dab279ef2d01f007370641b6cb120d"
+    },
+    "stdout": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/preflight_1701.json",
+      "bytes": 292,
+      "sha256": "a9f7f3f0c2cc453923ad15942c554a4cedee89e181c3e54472356da50b348ba4"
+    },
+    "status": "BLOCKED",
+    "blockers": [
+      "CANONICAL_CONTROL_BRIDGE_GATE_B_AND_ACTIVATION_NOT_RUN"
+    ],
+    "candidate_verification": "PASS",
+    "offline_schema_test": "PASS_CRM_AND_AUDIT_UNCHANGED",
+    "protected_system_readback": "PASS",
+    "observed_at": "2026-09-14T17:00:36.343045+00:00",
+    "completed_at": "2026-09-14T17:01:04.524693+00:00",
+    "candidate_files": 54,
+    "candidate_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611",
+    "system_inventory_sha256": "b78bf862e08c4b549956b803245a851366085ae93ccc59291fde46656eec4dea",
+    "bundle_sha256": "27234daf72b5e27588a5360ae93b3253228657210e8b9159e23e67fc5d77483f",
+    "database": {
+      "audit_sha256": "1674892165b6b42f3a726559a3ac6eac22981a3a83b7371ade8dc4cf9a095171",
+      "cars_sha256": "fb3a161124b7c883e3755ddbc2b84060a6fe91954ac52f6cf7a4b93ae1db4244",
+      "published_codes": [
+        "UA-0001",
+        "UA-0002",
+        "UA-0003",
+        "UA-0004",
+        "UA-0005",
+        "UA-0006",
+        "UA-0007",
+        "UA-0008",
+        "UA-0009",
+        "UA-0010",
+        "UA-0011",
+        "UA-0012",
+        "UA-0013",
+        "UA-0014",
+        "UA-0015",
+        "UA-0016",
+        "UA-0017",
+        "UA-0018"
+      ],
+      "published_sha256": "746227be9abe97b4e07afd50c8dd393268a2a9a6c576c63ce089d636d6d7658d"
+    },
+    "schema_sha256": "2f11c8573be88b0dc8da1adf12fcdc6c5105844f0a0300797fc907f9544ff8c2",
+    "browser_binding": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREFLIGHT_BROWSER_BINDING_V2.json",
+      "bytes": 7120,
+      "sha256": "3320408164e34afbd7781e5594cb5fa6fbbb0a4d2f5e04cf6e52f098fccc5c99"
+    }
+  },
+  "preparatory_package": {
+    "archive": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/preflight_preparation/actual_package_1650/uaart_price_sync_preflight_27234daf72b5e275.zip",
+      "bytes": 289794,
+      "sha256": "9ed05a24792193ead1af70ad582130c0d02ae4d6115a6ed57bbf7442cf0ff8f1"
+    },
+    "metadata": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/preflight_preparation/ACTUAL_PACKAGE_METADATA.json",
+      "bytes": 1012,
+      "sha256": "17dba5624478ca4df14b27dc4da941e5ad8bb984f7a51682548745f4cc880978"
+    },
+    "independent_readback": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/preflight_preparation/ACTUAL_PACKAGE_READBACK.json",
+      "bytes": 3004,
+      "sha256": "868027c88d3f5c48d38a3de972c61446859a648afc5e16b33a6140c8147ba743"
+    },
+    "runner": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/preflight_preparation/stage_preflight_archive.py",
+      "bytes": 11186,
+      "sha256": "f594fd1d3c166d08984f164c575666b89a2a2e96808de48b5983b61bad55d319"
+    },
+    "review": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/preflight_preparation/STAGER_INDEPENDENT_REVIEW.json",
+      "bytes": 765,
+      "sha256": "73ac6a1885489dae0cd78d152057c51054c502e1bc8083f0f78fbc6accff5302"
+    },
+    "actual_stage_receipt": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/stage_1659.json",
+      "bytes": 2478,
+      "sha256": "2ccdaf98956cb4f31b36117e17546a0ba8e0622463325d4fc96c48880b8a8e6d"
+    },
+    "embedded_in_checkpoint_archive_once": true
+  },
+  "manual_inputs": [
+    {
+      "type": "OWNER_READ_ONLY_GITHUB_CREDENTIAL",
+      "status": "ACTUAL_HIDDEN_PROMPT_WAITING_OWNER",
+      "receiver_sha256": "e30b3c66e046b567b6b1be00dc476433c7f36bc08745d05b21b4c35250e0151d",
+      "command": "python3.10 -I -B /home/Carix/autopilot_inbox/cloud/provision_read_credential.py",
+      "scope": "art20021986-wq/ua-art-autopilot Contents:read; hiddenTTY only; no value in chat/logs/repo",
+      "console_id": "48168693",
+      "console_url": "https://www.pythonanywhere.com/user/Carix/consoles/48168693/",
+      "prompt": "GitHub read-only token (hidden):",
+      "next_action": "Enter only the owner-provided token and press Enter. Do not type a shell command into the active token prompt.",
+      "command_use": "Receiver command is only for a later restart if no token prompt is active; do not rerun while waiting."
+    },
+    {
+      "type": "PERMITTED_FULL_SIZE_GALLERY_OBSERVATION",
+      "status": "MISSING",
+      "current_preview_manifest_sha256": "c6febae073064d66c89a553a1d23538c8dc71c40c9737c440d33a3ba457611ca",
+      "starting_case": "https://carix.pythonanywhere.com/video/UA-0015.html photo2/37",
+      "proof": "Actual timestamp/URL/display/interaction result on current candidate; no policy workaround."
+    }
+  ],
+  "archive_policy": "Compact checkpoint with current raw observations/docs/reviewed kits and exactly one preflight package. Existing large evidence ZIPs are referenced by SHA and are not duplicated inside.",
+  "published_identity_binding": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PUBLISHED_IDENTITY_BINDING_V2.json",
+    "bytes": 1925,
+    "sha256": "788fb7e1e66d6d1afe97a7195cded051bc85d314b4990a96455cd49e243766da"
+  },
+  "credential_setup_mutations": {
+    "home_mode_before": "0775",
+    "home_mode_after": "0755",
+    "only_permission_removed": "GROUP_WRITE",
+    "receipt": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/home_mode_1713.json",
+      "bytes": 367,
+      "sha256": "85e104997671248d6014e243c491603b715c84a6bbe04ee759fd4a2f4d61caf7"
+    },
+    "helper": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/restrict_home_group_write.py",
+      "bytes": 3164,
+      "sha256": "cc6d48f4de1e447eb5771380b267a4ed783ef384f3f27ae4813e4c11f9ea4ad0"
+    },
+    "review": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/HOME_MODE_POST_EXECUTION_REVIEW.json",
+      "bytes": 1398,
+      "sha256": "24e9deff1c4f4f7cd91707394e7c14c74746d15ae448508298be1feea9ce5814"
+    },
+    "original_failure": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/credential_failure_1707_metadata.json",
+      "bytes": 1176,
+      "sha256": "f2c63edd67e850405574c0d9192865f5293d697eb17db827ebe1b784fe3452cc"
+    },
+    "credential_created_by_permission_helper": false
+  },
+  "quota_state_at_final_snapshot": "EXPIRED_AFTER_17:11:42.701UTC_REFRESH_BEFORE_CANONICAL_EXECUTION",
+  "unique_next_owner_action": "Enter only the token at the already waiting hidden prompt in console48168693, then Enter; do not run another command there."
+}

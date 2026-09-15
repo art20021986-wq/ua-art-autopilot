@@ -1,0 +1,20 @@
+{
+  "recorded_at_utc": "2026-09-14T08:50:10.258867+00:00",
+  "reason": "Final inventory detected generated cache from one-time provisioner old location; no source change",
+  "generated_artifacts": [
+    {
+      "path": "cloud/task088_v5_preview/__pycache__/test_provision_preview.cpython-312.pyc",
+      "sha256": "636d9342c304101d93a2c6ed361a30f9b8af1a69132860984754855cce0d20fa",
+      "action": "QUARANTINED_OUTSIDE_REPOSITORY"
+    },
+    {
+      "path": "cloud/task088_v5_preview/__pycache__/provision_preview.cpython-312.pyc",
+      "sha256": "68ee8b182ba1a03bc013d719e8133882f0b9dc22798897d895e9e32374bacf6c",
+      "action": "QUARANTINED_OUTSIDE_REPOSITORY"
+    }
+  ],
+  "source_inventory_after": "MATCHES_425_SOFTWARE_RECEIPT",
+  "source_files": 80,
+  "source_manifest_sha256": "433ef3b58797bc80340bfeef76fe12eb22f577d3c668222af84a79e3d5877a43",
+  "production_written": false
+}

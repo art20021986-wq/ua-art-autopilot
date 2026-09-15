@@ -1,0 +1,22 @@
+{
+  "kind": "SERVER_READ_ONLY_RESUME_OBSERVATION_NOT_GATE",
+  "observed_at": "2026-09-14T17:58:28.697Z",
+  "console_url": "https://www.pythonanywhere.com/user/Carix/consoles/48168693/",
+  "credential": {
+    "path": "/home/Carix/.config/uaart-price-control/github-read.token",
+    "presence": "ABSENT",
+    "value_read": false,
+    "receiver_started": false,
+    "console_state": "SHELL_PROMPT"
+  },
+  "observed_sha256": {
+    "provision_read_credential.py": "e30b3c66e046b567b6b1be00dc476433c7f36bc08745d05b21b4c35250e0151d",
+    "gallery_1640.json": "e893bdd1ce9a83ceaffc629bb2d5b56cb23dddb7f1d73b4c0cfbe7fc4a95d2da",
+    "preflight_1701.json": "a9f7f3f0c2cc453923ad15942c554a4cedee89e181c3e54472356da50b348ba4"
+  },
+  "scope": "Current presence and saved receipt byte hashes only. Receipt hash equality does not refresh their observations, prove unchanged live DB/source or accept the gallery.",
+  "writes_to_production": false,
+  "writes_to_crm": false,
+  "input_timeout_reconciliation": "Long read-only command input timed out before Enter. Visible partial command was read, only its remaining suffix was typed, then Enter was pressed once. Actual output was independently observed. No receiver or installation invoked.",
+  "raw_browser_observation": "{\n  observed_at: '2026-09-14T17:58:28.697Z',\n  url: 'https://www.pythonanywhere.com/user/Carix/consoles/48168693/',\n  terminal: 'n\\n' +\n    '      - generic: 17:04 ~/autopilot_inbox/cloud $ gzip -c /home/Carix/autopilot_inbox/cloud/task088_price_sync_pr114-20260914-1650-27234daf/preflight_outputs/prefligh\\n' +\n    '      - generic: t-pr114-20260914-1650-27234daf/report.json | base64 -w0 > preflight_report_1704_gz.txt\\n' +\n    '      - generic: 17:05 ~/autopilot_inbox/cloud $ python3.10 -IB provision_read_credential.py\\n' +\n    '      - generic: E_HOME_PERMISSIONS\\n' +\n    '      - generic: 17:07 ~/autopilot_inbox/cloud $ ls -ld /home/Carix /home/Carix/.config\\n' +\n    `      - generic: \"ls: cannot access '/home/Carix/.config': No such file or directory\"\\n` +\n    '      - generic: drwxrwxr-x 71 Carix registered_users 98304 Sep 14 17:09 /home/Carix\\n' +\n    '      - generic: 17:09 ~/autopilot_inbox/cloud $ sha256sum home_mode_1711.py\\n' +\n    '      - generic: cc6d48f4de1e447eb5771380b267a4ed783ef384f3f27ae4813e4c11f9ea4ad0 home_mode_1711.py\\n' +\n    '      - generic: 17:12 ~/autopilot_inbox/cloud $ python3.10 -IB home_mode_1711.py > home_mode_1713.json\\n' +\n    '      - generic: 17:13 ~/autopilot_inbox/cloud $ sha256sum home_mode_1713.json\\n' +\n    '      - generic: 85e104997671248d6014e243c491603b715c84a6bbe04ee759fd4a2f4d61caf7 home_mode_1713.json\\n' +\n    '      - generic: 17:14 ~/autopilot_inbox/cloud $ python3.10 -IB provision_read_credential.py\\n' +\n    '      - generic: \"GitHub read-only token (hidden):\"\\n' +\n    '      - generic: E_TOKEN_FORMAT\\n' +\n    '      - generic: 17:36 ~/autopilot_inbox/cloud $\\n' +\n    '      - generic: 17:55 ~/autopilot_inbox/cloud $ date -u\\n' +\n    '      - generic: Mon Sep 14 17:57:02 UTC 2026\\n' +\n    '      - generic: 17:57 ~/autopilot_inbox/cloud $ ls -ld /home/Carix/.config/uaart-price-control/github-read.token; sha256sum provision_read_credential.py gallery_164\\n' +\n    '      - generic: 0.json preflight_1701.json\\n' +\n    `      - generic: \"ls: cannot access '/home/Carix/.config/uaart-price-control/github-read.token': No such file or directory\"\\n` +\n    '      - generic: e30b3c66e046b567b6b1be00dc476433c7f36bc08745d05b21b4c35250e0151d provision_read_credential.py\\n' +\n    '      - generic: e893bdd1ce9a83ceaffc629bb2d5b56cb23dddb7f1d73b4c0cfbe7fc4a95d2da gallery_1640.json\\n' +\n    '      - generic: a9f7f3f0c2cc453923ad15942c554a4cedee89e181c3e54472356da50b348ba4 preflight_1701.json\\n' +\n    '      - generic: 17:58 ~/autopilot_inbox/cloud $\\n' +\n    '      - textbox\\n' +\n    '    - generic \"(32, 47)\"\\n' +\n    '- generic: '\n}"
+}

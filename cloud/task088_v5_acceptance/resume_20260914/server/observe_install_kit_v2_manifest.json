@@ -1,0 +1,67 @@
+{
+  "all_other_hidden_sources_and_public_entries_rejected": true,
+  "archive": "observe_install_inputs_20260914_v2.pyz",
+  "archive_bytes": 14865,
+  "archive_sha256": "a2b690662306d9cc6ccda2ca78bff4d82b0d07887484b9512c42fe918e1a48c3",
+  "full_preview": "NOT_PASSED",
+  "initial_failure_sha256": "83df07867eff431a0decc512886342d7ef82314a2f6389e03c9fe1b695d1f17c",
+  "members": {
+    "__main__.py": {
+      "bytes": 4885,
+      "sha256": "1246e6732523341b21a6af3256ad01635146c0fb3debd64830e3d9b8172695d5"
+    },
+    "install_package.py": {
+      "bytes": 37425,
+      "sha256": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673"
+    },
+    "observe_install_inputs.py": {
+      "bytes": 4666,
+      "sha256": "626bb2142367b1b1d251fc131ee6365d6285fea6daa0cd08d2b8bc565d56a42f"
+    },
+    "quota_observation.json": {
+      "bytes": 324,
+      "sha256": "c3e921e5272db3e08a636b764bae91a62263bdf13f560a9eb680bdaea13080b1"
+    }
+  },
+  "metadata_evidence_sha256": "1f7ecce1148bbcb383fda80f15e8cf66ec8f6f42c7861bcd9ba48557c0696e12",
+  "metadata_only_allowlist": {
+    "bytes": 77,
+    "mode": "0755",
+    "owner": "CURRENT_OS_UID",
+    "path": "/home/Carix/.pythonstartup.py",
+    "type": "REGULAR_FILE_NO_SYMLINK"
+  },
+  "original_engine_unchanged": true,
+  "original_observer_unchanged": true,
+  "production_gate_created": false,
+  "quota_expires_at_utc": "2026-09-14T16:44:37.278000+00:00",
+  "review_cases": [
+    {
+      "case": "observed_metadata",
+      "result": "OK"
+    },
+    {
+      "case": "wrong_mode",
+      "result": "OK"
+    },
+    {
+      "case": "wrong_owner",
+      "result": "OK"
+    },
+    {
+      "case": "wrong_bytes",
+      "result": "OK"
+    },
+    {
+      "case": "symlink",
+      "result": "OK"
+    },
+    {
+      "case": "other_hidden_path_not_inspected",
+      "result": "OK"
+    }
+  ],
+  "server_execution": "NOT_RUN",
+  "source_content_read_by_preparation_agent": false,
+  "upload_mirror": "/workspace/scratch/5f3dba772b24/server_transfer/install_obs_v2_1626.pyz"
+}

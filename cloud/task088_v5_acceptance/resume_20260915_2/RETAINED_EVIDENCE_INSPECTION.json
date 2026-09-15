@@ -1,0 +1,168 @@
+{
+  "kind": "INDEPENDENT_RETAINED_EVIDENCE_INSPECTION_NOT_A_CANONICAL_GATE",
+  "reviewed_head": "3026f7bb11a9aa58b0970694793d9d5100251c44",
+  "status": "RECONCILED",
+  "checks": {
+    "raw_observation_73_input_hashes": {
+      "result": "MATCH",
+      "details": {
+        "files": 73,
+        "mismatches": []
+      }
+    },
+    "actual_raw_120_unique_cases": {
+      "result": "MATCH",
+      "details": {
+        "count": 120,
+        "unique": 120,
+        "pages": 20,
+        "languages": {
+          "RU": 40,
+          "UA": 40,
+          "GE": 40
+        },
+        "widths": {
+          "390": 60,
+          "1280": 60
+        }
+      }
+    },
+    "raw_page_candidate_hashes": {
+      "result": "MATCH",
+      "details": null
+    },
+    "raw_observation_boundary_preserved": {
+      "result": "MATCH",
+      "details": null
+    },
+    "raw_css_locale_dimensions_fonts": {
+      "result": "MATCH",
+      "details": null
+    },
+    "raw_kyiv_ua_only_other_dual_market": {
+      "result": "MATCH",
+      "details": {
+        "kyiv_codes": [
+          "UA-0002",
+          "UA-0007",
+          "UA-0008",
+          "UA-0017",
+          "UA-0018"
+        ],
+        "mismatches": []
+      }
+    },
+    "raw_price_values_consistent_all_locale_size_surfaces": {
+      "result": "MATCH",
+      "details": {
+        "distinct_car_markets": 31,
+        "mismatches": []
+      }
+    },
+    "actual_card_navigation_18_identity": {
+      "result": "MATCH",
+      "details": null
+    },
+    "actual_own_diagnostic_navigation_18_identity": {
+      "result": "MATCH",
+      "details": null
+    },
+    "actual_all18_vin_and_additional_spec_entries": {
+      "result": "MATCH",
+      "details": null
+    },
+    "actual_catalog_filter_counts": {
+      "result": "MATCH",
+      "details": {
+        "В Киеве · 5": 5,
+        "В Грузии · 5": 5,
+        "На пароме · 4": 4,
+        "В Корее · 4": 4,
+        "Все · 18": 18
+      }
+    },
+    "catalog_images_decoded_18": {
+      "result": "MATCH",
+      "details": null
+    },
+    "actual_top_level_languages": {
+      "result": "MATCH",
+      "details": null
+    },
+    "browser_screenshots_exact_pins": {
+      "result": "MATCH",
+      "details": {
+        "count": 9,
+        "mismatches": []
+      }
+    },
+    "browser_navigation_and_matrix_aggregates_exact_pins": {
+      "result": "MATCH",
+      "details": {
+        "mismatches": []
+      }
+    },
+    "completed_preflight_raw_digest": {
+      "result": "MATCH",
+      "details": "f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7"
+    },
+    "observer_raw_digest": {
+      "result": "MATCH",
+      "details": "a53dc0c8b66f9b2ea7ab1d199ea97133e442fd7fa72002fce57819eb4e9218ac"
+    },
+    "completed_preflight_actual_scoped_results": {
+      "result": "MATCH",
+      "details": null
+    },
+    "preflight_original_blocked_boundary": {
+      "result": "MATCH",
+      "details": null
+    },
+    "preflight_no_live_mutation": {
+      "result": "MATCH",
+      "details": null
+    },
+    "installation_candidate_digest": {
+      "result": "MATCH",
+      "details": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611"
+    },
+    "preflight_vs_observer_db_schema_inventory": {
+      "result": "MATCH",
+      "details": {
+        "inventory_files": 9625,
+        "published_count": 18
+      }
+    },
+    "inventory_digest": {
+      "result": "MATCH",
+      "details": "b78bf862e08c4b549956b803245a851366085ae93ccc59291fde46656eec4dea"
+    },
+    "completed_candidate_vs_browser_20_page_hashes": {
+      "result": "MATCH",
+      "details": {
+        "count": 20,
+        "mismatches": []
+      }
+    },
+    "owner_photo_acceptance_pinned_original": {
+      "result": "MATCH",
+      "details": null
+    },
+    "gallery_actual_receipt_integrity_bridge": {
+      "result": "MATCH",
+      "details": null
+    }
+  },
+  "failed_comparisons": [],
+  "historical_tests_rerun": false,
+  "browser_requests": 0,
+  "server_requests": 0,
+  "writes": "THIS_REVIEW_ONLY",
+  "fresh_current_server_binding": "PENDING_ROOT_OBSERVATION",
+  "limits": [
+    "No new rendering is claimed; raw browser snapshots and screenshots are inspected.",
+    "Owner full-screen screenshots remain previously accepted evidence; this inspection verified their accepted observation record, not the original image bytes.",
+    "Price observations are consistent and tied to original source-bound validator; private raw source rows are not loaded by this reviewer.",
+    "The original preflight remains BLOCKED; Preview, canonical Gate B, publication and live synchronization are separate stages."
+  ]
+}

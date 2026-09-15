@@ -1,0 +1,76 @@
+{
+  "canonical_gate_created": false,
+  "contract": "TASK088-V5-REVIEWED-RELEASE-SOURCE-MAP-1",
+  "controller_path": "cloud/task088_v5_install/release/controller.py",
+  "production_written": false,
+  "sources": {
+    "backup_controller.py": {
+      "sha256": "5080826a2a7fa0afef24134e1d69fbb48596cc824d97e939e63c3ef6b25a61a1",
+      "source_path": "cloud/task088_v5_install/backup_controller.py"
+    },
+    "controller.py": {
+      "sha256": "71722965e09f59d0afb9fab86a6571c713efb60111d970a632d80a4f05e3cf9c",
+      "source_path": "cloud/task088_v5_install/controller.py"
+    },
+    "install_package.py": {
+      "sha256": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673",
+      "source_path": "cloud/task088_price_sync/install_package.py"
+    },
+    "outbox.py": {
+      "sha256": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+      "source_path": "cloud/task088_price_sync/outbox.py"
+    },
+    "owner_policy.py": {
+      "sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+      "source_path": "cloud/task088_autopilot_owner_policy/owner_policy.py"
+    },
+    "price_publication.py": {
+      "sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+      "source_path": "cloud/task088_autopilot_owner_policy/price_publication.py"
+    },
+    "remote_adapter.py": {
+      "sha256": "9def8122a4a60c6685197048adf2f9b494b6767a79b3d9c35c6de0b01e2fabeb",
+      "source_path": "cloud/task088_v5_install/remote_adapter.py"
+    },
+    "rollback_controller.py": {
+      "sha256": "a5e21ac45f93bd31f410cffd19649ce7655a1c9eb706f51df894293f403bcd0b",
+      "source_path": "cloud/task088_v5_install/rollback_controller.py"
+    },
+    "test_adapter.py": {
+      "sha256": "5e4b08c67bddc3900b1582a338cf96f8a0839882a66054468e1f9b75efb30aff",
+      "source_path": "cloud/task088_v5_install/test_adapter.py"
+    },
+    "test_install_package.py": {
+      "sha256": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+      "source_path": "cloud/task088_price_sync/test_install_package.py"
+    },
+    "uaart_market_prices.py": {
+      "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+      "source_path": "cloud/task088_stage3_renderer/uaart_market_prices.py"
+    },
+    "uaart_price_control_reader.py": {
+      "sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+      "source_path": "cloud/task088_price_sync/uaart_price_control_reader.py"
+    },
+    "uaart_price_sync_binding.py": {
+      "sha256": "efecb6371e0ecccde75df053d740ec5316bdf1a1a3573171fe7b25de4657348f",
+      "source_path": "cloud/task088_price_sync/uaart_price_sync_binding.py"
+    },
+    "uaart_price_sync_confirmation.py": {
+      "sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+      "source_path": "cloud/task088_price_sync/uaart_price_sync_confirmation.py"
+    },
+    "uaart_price_sync_outbox.py": {
+      "sha256": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+      "source_path": "cloud/task088_price_sync/outbox.py"
+    },
+    "uaart_price_sync_runtime.py": {
+      "sha256": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a",
+      "source_path": "cloud/task088_price_sync/uaart_price_sync_runtime.py"
+    }
+  },
+  "test_paths": [
+    "cloud/task088_v5_install/release/test_install_package.py",
+    "cloud/task088_v5_install/release/test_adapter.py"
+  ]
+}

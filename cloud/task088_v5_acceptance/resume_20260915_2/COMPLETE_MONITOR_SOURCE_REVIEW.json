@@ -1,0 +1,246 @@
+{
+  "contract": "PR114-COMPLETE-MONITOR-SOURCE-REVIEW-1",
+  "status": "COMPLETE_STATIC_SOURCE_REVIEW_PASS_FOR_DIRECT_PROTECTED_WRITE_EXCLUSION",
+  "scope": {
+    "source_read_completely": true,
+    "source_executed": false,
+    "source_imported": false,
+    "network_probes_run": false,
+    "provider_changes": false,
+    "historical_tests_run": false,
+    "loaded_process_identity_proven": false,
+    "all_writers_gate_pass": false
+  },
+  "source": {
+    "path": "/workspace/scratch/PR114_monitor_full_verified_0542.py",
+    "server_path": "/home/Carix/uaart_connection_monitor.py",
+    "expected_bytes": 15183,
+    "expected_sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+    "observed_bytes": 15183,
+    "observed_sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+    "ast_top_level_definitions": [
+      {
+        "name": "Endpoint",
+        "line": 39,
+        "end_line": 42,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "utc_now",
+        "line": 53,
+        "end_line": 54,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "url_identity",
+        "line": 57,
+        "end_line": 59,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "RedirectPolicyError",
+        "line": 62,
+        "end_line": 63,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "MonitorAlreadyRunning",
+        "line": 66,
+        "end_line": 67,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "has_site_title",
+        "line": 70,
+        "end_line": 75,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "SafeRedirectHandler",
+        "line": 78,
+        "end_line": 92,
+        "kind": "ClassDef"
+      },
+      {
+        "name": "result_base",
+        "line": 95,
+        "end_line": 98,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "probe_once",
+        "line": 101,
+        "end_line": 169,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "isolated_probe",
+        "line": 172,
+        "end_line": 191,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "write_evidence",
+        "line": 194,
+        "end_line": 207,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "run_monitor",
+        "line": 210,
+        "end_line": 252,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "monitor_lock",
+        "line": 256,
+        "end_line": 267,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "run_watch",
+        "line": 270,
+        "end_line": 298,
+        "kind": "FunctionDef"
+      },
+      {
+        "name": "main",
+        "line": 301,
+        "end_line": 327,
+        "kind": "FunctionDef"
+      }
+    ],
+    "imports": [
+      "__future__",
+      "argparse",
+      "concurrent",
+      "contextlib",
+      "dataclasses",
+      "datetime",
+      "fcntl",
+      "hashlib",
+      "html",
+      "json",
+      "pathlib",
+      "re",
+      "ssl",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "time",
+      "typing",
+      "urllib",
+      "uuid"
+    ]
+  },
+  "actual_command": {
+    "command": "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+    "status": "Running",
+    "source": "Root authenticated Tasks UI observation at 2026-09-15 05:27 UTC; this review independently read the restored source and metadata, not the UI.",
+    "executable_identity_authenticated_here": false
+  },
+  "metadata": {
+    "path": "/workspace/scratch/PR114_monitor_path_metadata_0544.json",
+    "expected_sha256": "d7dfcdf92af1b4232a5837682e755821c1d232e876d1343dffc1f96a158e44b6",
+    "observed_at": "2026-09-15T05:43:25.874083+00:00",
+    "meaning": "Configured evidence directory and latest.json/last_incident.json/singleton lock exist, are not symlinks, resolve exactly to the configured directory and expected children; file entries are regular and directory entry is a directory.",
+    "snapshot_only": true,
+    "observed_sha256": "d7dfcdf92af1b4232a5837682e755821c1d232e876d1343dffc1f96a158e44b6",
+    "independent_structural_checks": "PASS"
+  },
+  "complete_call_chains": [
+    {
+      "entry": "main",
+      "lines": "301-327",
+      "effect": "The exact --watch command selects run_watch with the supplied evidence path, fixed default ENDPOINTS, up to three attempts per round, 20s probe timeout and 15s retry delay. CLI does not permit endpoint, callback, executable or service-management selection."
+    },
+    {
+      "entry": "run_watch",
+      "lines": "270-298",
+      "effect": "Obtains monitor_lock for the whole watch loop, calls run_monitor, writes last_incident.json for non-healthy reports, prints status and sleeps. No service restart or reload follows failure/recovery."
+    },
+    {
+      "entry": "monitor_lock",
+      "lines": "255-267",
+      "effect": "Creates the evidence parent if absent; opens only its sibling singleton lock and takes flock LOCK_EX|LOCK_NB. This is a monitor singleton lock, not a production publication fence."
+    },
+    {
+      "entry": "run_monitor",
+      "lines": "210-252",
+      "effect": "Writes local status evidence, uses ThreadPoolExecutor to call isolated_probe for fixed ENDPOINTS, performs up to three read attempts, and writes completion evidence on success/error/interruption. Test injectable callbacks are not CLI inputs."
+    },
+    {
+      "entry": "isolated_probe",
+      "lines": "172-191",
+      "effect": "subprocess.run argv is sys.executable, -I, resolved same __file__, --_probe-json containing one Endpoint, --timeout. No shell or arbitrary command. Timeout affects the monitor's own bounded child; no CRM/service restart, kill or provider API path."
+    },
+    {
+      "entry": "main --_probe-json",
+      "lines": "311-313",
+      "effect": "Constructs Endpoint from JSON then calls probe_once, whose membership check rejects any endpoint not equal to one of four fixed ENDPOINTS."
+    },
+    {
+      "entry": "probe_once",
+      "lines": "101-169",
+      "effect": "Builds urllib Request with headers and no data/method override, hence GET; adds cache-busting uaart_probe query. Starts from four fixed public URLs, reads bounded HTML, checks final URL/title/content type, returns sanitized result. No response body is executed or used as source/DB input."
+    },
+    {
+      "entry": "SafeRedirectHandler.redirect_request",
+      "lines": "78-92",
+      "effect": "Follows only HTTPS redirects to uaart.com.ua or www.uaart.com.ua, port443/no URL userinfo; records history. It does not restrict intermediate redirect paths. Final expected URL identity is checked in probe_once after the response."
+    },
+    {
+      "entry": "write_evidence",
+      "lines": "194-207",
+      "effect": "Creates the given path parent, writes JSON to a unique temp file in that same parent, atomically replaces the target and unlinks the temp name. Under the exact supplied command targets are latest.json and sibling last_incident.json only; arbitrary evidence CLI values are outside this review's configured-path claim."
+    },
+    {
+      "entry": "Endpoint,utc_now,url_identity,result_base,has_site_title",
+      "lines": "38-75,95-98",
+      "effect": "In-memory dataclass, timestamps, URL parsing, title recognition and result creation; no protected write side effects."
+    }
+  ],
+  "direct_effect_inventory": {
+    "production_db_writes": [],
+    "production_source_writes": [],
+    "production_html_or_media_writes": [],
+    "provider_or_service_management_calls": [],
+    "crm_imports": [],
+    "dynamic_eval_or_code_loading": [],
+    "network_start_urls": [
+      "https://uaart.com.ua/",
+      "https://www.uaart.com.ua/",
+      "https://www.uaart.com.ua/video/index.html",
+      "https://www.uaart.com.ua/video/katalog.html"
+    ],
+    "network_method": "GET",
+    "intermediate_redirect_scope": "Any path on the two allowed HTTPS hosts, subject to bounded redirect counts and final URL validation.",
+    "file_writes_under_exact_command": [
+      "/home/Carix/uaart-monitor/latest.json",
+      "/home/Carix/uaart-monitor/last_incident.json",
+      "/home/Carix/uaart-monitor/.uaart-monitor.lock",
+      "Unique evidence temp files in /home/Carix/uaart-monitor/"
+    ],
+    "other_effects": [
+      "stdout messages",
+      "Self probe subprocess creation and subprocess timeout cleanup",
+      "Thread creation",
+      "Monitor singleton flock"
+    ]
+  },
+  "verdict": {
+    "direct_source_classification": "READ_ONLY_WITH_RESPECT_TO_PROTECTED_CRM_SOURCE_SITE_AND_MEDIA_FOR_EXACT_COMMAND_AND_OBSERVED_PATHS",
+    "whole_running_process_classification": "OPEN_UNTIL_LOADED_PROCESS_IDENTITY_PROOF",
+    "monitor_pause_required_from_direct_source_effects": false,
+    "reason": "The complete actual hash-matched source has no direct protected publication/CRM/source/media write or CRM restart/reload path. All its explicit filesystem effects are confined by the authenticated command and observed path metadata to its evidence directory outside the protected roots.",
+    "does_not_prove": [
+      "The already-running process loaded these exact source bytes; an on-disk hash and command line do not prove loaded-code identity.",
+      "Public GET responses have no server-side effects. Root/homepage requests may invoke independent WSGI logic; source/drain classification of that logic remains separate.",
+      "All intermediate redirects are among the four starting paths; only hosts/scheme/port/userinfo are restricted before following.",
+      "Future path metadata or provider routing remains unchanged without fresh observation.",
+      "Complete account process membership, absence of other writers, or Stage3 admission."
+    ],
+    "prior_partial_review_resolution": "This completes the previously uninspected monitor main/run_watch/run_monitor/probe_once/import/global bodies. Earlier partial report stays unchanged. The missing loaded-process and independent server-side writer proofs remain open."
+  },
+  "reviewed_at_utc": "2026-09-15T05:46:44.730941Z"
+}

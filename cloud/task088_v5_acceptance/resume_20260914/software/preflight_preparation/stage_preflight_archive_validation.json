@@ -1,0 +1,37 @@
+{
+  "runner": "/workspace/scratch/5f3dba772b24/ua-art-autopilot/cloud/task088_v5_acceptance/resume_20260914/software/preflight_preparation/stage_preflight_archive.py",
+  "sha256": "f594fd1d3c166d08984f164c575666b89a2a2e96808de48b5983b61bad55d319",
+  "bytes": 11186,
+  "compile": "PASS",
+  "negative_probes": [
+    {
+      "probe": "wrong_archive_hash",
+      "result": "PASS_REJECTED",
+      "reason": "ARCHIVE_SHA256_MISMATCH"
+    },
+    {
+      "probe": "missing_members",
+      "result": "PASS_REJECTED",
+      "reason": "EXACT_EIGHTEEN_LEAF_MEMBERS_REQUIRED"
+    },
+    {
+      "probe": "traversal_member",
+      "result": "PASS_REJECTED",
+      "reason": "EXACT_EIGHTEEN_LEAF_MEMBERS_REQUIRED"
+    },
+    {
+      "probe": "symlink_member",
+      "result": "PASS_REJECTED",
+      "reason": "REGULAR_UNENCRYPTED_LEAF_REQUIRED"
+    },
+    {
+      "probe": "archive_symlink",
+      "result": "PASS_REJECTED",
+      "errno": 40
+    }
+  ],
+  "no_live_observation_fabricated": true,
+  "server_called": false,
+  "staging_root_opened": false,
+  "source_or_policy_modified": false
+}

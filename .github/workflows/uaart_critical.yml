@@ -209,6 +209,20 @@ jobs:
           python3 -I automation/execution_contract.py test "$REQUEST_PATH" \
             --expected-class CRITICAL
 
+      - name: UA/GE PRICE PROTECTION software regression
+        env:
+          PRICE_TEST_SOURCE_COMMIT: ${{ steps.workflow.outputs.workflow_source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          price_paths=(cloud/task088_stage3_renderer cloud/task088_price_sync cloud/ua_ge_price_protection cloud/task088_v5_install cloud/task088_v5_preview)
+          [[ "$PRICE_TEST_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          git diff --quiet "$PRICE_TEST_SOURCE_COMMIT" HEAD -- "${price_paths[@]}"
+          git diff --quiet HEAD -- "${price_paths[@]}"
+          test -z "$(git ls-files --others --exclude-standard -- "${price_paths[@]}")"
+          python3 -I -B cloud/ua_ge_price_protection/gate.py \
+            --output "$RUNNER_TEMP/ua-ge-price-protection-validation.json"
+
       - name: Create data-only validation attestation
         id: attestation
         shell: bash
@@ -578,6 +592,17 @@ jobs:
             --run-id "$RUN_ID" --gate-b-evidence /tmp/uaart-critical-gate-b.json
           python3 -I automation/control_plane.py health "$REQUEST_PATH" \
             --run-id "$RUN_ID" --phase pre
+
+      - name: UA/GE PRICE PROTECTION bound Preview before preparation
+        shell: bash
+        run: |
+          set -euo pipefail
+          price_paths=(cloud/task088_stage3_renderer cloud/task088_price_sync cloud/ua_ge_price_protection cloud/task088_v5_install cloud/task088_v5_preview)
+          git diff --quiet "$SOURCE_COMMIT" HEAD -- "${price_paths[@]}"
+          git diff --quiet HEAD -- "${price_paths[@]}"
+          test -z "$(git ls-files --others --exclude-standard -- "${price_paths[@]}")"
+          python3 -I -B cloud/ua_ge_price_protection/verify_preview.py \
+            --request-path "$REQUEST_PATH" --request-sha256 "$REQUEST_SHA256"
 
       - name: Create PREPARING before any Production credential
         id: prepare
@@ -1125,6 +1150,19 @@ jobs:
               raise SystemExit('REMOTE_OPEN_TRANSACTION_MISMATCH')
           PY
           echo 'validated=true' >>"$GITHUB_OUTPUT"
+
+      - name: UA/GE PRICE PROTECTION before Production credential
+        shell: bash
+        run: |
+          set -euo pipefail
+          price_paths=(cloud/task088_stage3_renderer cloud/task088_price_sync cloud/ua_ge_price_protection cloud/task088_v5_install cloud/task088_v5_preview)
+          git diff --quiet "$SOURCE_COMMIT" HEAD -- "${price_paths[@]}"
+          git diff --quiet HEAD -- "${price_paths[@]}"
+          test -z "$(git ls-files --others --exclude-standard -- "${price_paths[@]}")"
+          python3 -I -B cloud/ua_ge_price_protection/gate.py \
+            --output "$RUNNER_TEMP/ua-ge-price-protection-production.json"
+          python3 -I -B cloud/ua_ge_price_protection/verify_preview.py \
+            --request-path "$REQUEST_PATH" --request-sha256 "$REQUEST_SHA256"
 
       - name: Execute authorized CRITICAL Production controller
         if: >-

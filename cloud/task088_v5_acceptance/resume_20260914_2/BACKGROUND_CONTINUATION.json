@@ -1,0 +1,52 @@
+{
+  "kind": "AUTOPILOT_CONTINUATION_ACTIVATION_NOTE_NOT_PRODUCTION_ACTIVATION",
+  "recorded_at": "2026-09-14T18:12:48.848Z",
+  "owner_instruction": "Ты можешь включить автопилот и при малейшем сбое продолжать дальше, так чтобы ничему не вредилось и ты все-таки завершил начатое.",
+  "observed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "observed_execution_mode": {
+    "activated_at": "2026-09-04T17:49:04Z",
+    "allow_replay_existing_launch_markers": false,
+    "automatic_nonproduction": true,
+    "automatic_production": true,
+    "mode": "AUTOMATIC",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "owner_approval_path": "tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json",
+    "owner_approval_sha256": "6e6071e5a06e7d69a20aebc035bd57f74ef903e353cfe5a7e017df947a3eb643",
+    "production_requires_backup": true,
+    "production_requires_exact_launch": true,
+    "production_requires_gate_b": true,
+    "production_requires_live_receipt": true,
+    "production_requires_owner_approval": true,
+    "production_requires_pre_post_health": true,
+    "runtime_activation_path": "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.json",
+    "runtime_activation_sha256": "4567f604bebac3d198e361ee49a3ba239585e6e07cca57e9f4fec8a316e9024c",
+    "runtime_manifest_path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+    "runtime_manifest_sha256": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5",
+    "schema_version": "UA-ART-EXECUTION-MODE-1",
+    "stop_on_safety_failure": true,
+    "task107_receipt_path": "state/receipts/TASK107-R2.json",
+    "task107_receipt_sha256": "bdf5d474d2186b4d37190b7a74f3a31b868b504c7caaad7b8a99d4a6ca120e0c"
+  },
+  "existing_mode_changed": false,
+  "new_background_task": {
+    "title": "Продолжение PR 114",
+    "enabled": true,
+    "schedule": "FREQ=HOURLY",
+    "timezone": "Asia/Ho_Chi_Minh",
+    "provider": "ChatGPT Automations",
+    "scope": "GitHub and isolated local continuation; preserve evidence and continue available approved steps. This task is not a new server reader or substitute for canonical production activation.",
+    "creation_confirmed": true
+  },
+  "error_behavior": {
+    "temporary_read_failure": "One read retry; preserve the reason if it fails.",
+    "unknown_mutation_outcome": "Reconcile same operation/external result before any repetition.",
+    "confirmed_safety_failure": "Stop further dangerous writes; existing verified scoped rollback only, preserving later operator changes.",
+    "unchanged_manual_blocker": "No repeated suites, commits or noisy unchanged reports.",
+    "completed_steps": "Reuse byte-bound evidence; repeat only changed scope, missing evidence or required fresh observation with exact reason."
+  },
+  "current_gate": "NOT_PASSED",
+  "publication_performed": false,
+  "guarantee": "No unconditional zero-failure guarantee. Existing safety gates and validated recovery remain necessary.",
+  "next_action": "Preserve scoped owner screenshots, obtain full-screen/switch/close gallery proof, then complete remaining actual canonical prerequisites; missing server Contentsread credential remains a separate prerequisite.",
+  "persistence": "Keep notices and outcomes in the existing PR branch; raw screenshots retain original persistent attachment IDs and SHA256."
+}

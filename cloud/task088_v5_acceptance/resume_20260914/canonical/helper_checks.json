@@ -1,0 +1,26 @@
+{
+  "contract": "TASK088-LOCAL-CONSTRUCTION-HELPER-CHECKS-1",
+  "helper_sha256": "afa9d4363d7a8ada6014a73af305e948452e260b704827dc3a044114973695b9",
+  "checks": [
+    {
+      "name": "syntax",
+      "exit_code": 0,
+      "output": "SYNTAX_OK\n"
+    },
+    {
+      "name": "help",
+      "exit_code": 0,
+      "output": "usage: derive_candidate_parts.py [-h] --inputs INPUTS\n                                 [--output-directory OUTPUT_DIRECTORY]\n\nDry-run local construction from real inputs; never issue authority or deploy.\nDefault output is a hash/count-only plan on stdout. --output-directory writes\nnon-executable *.parts.json files into a NEW private local directory, never\ninto tasks/ or state/. No network, subprocess, credential access, private\nsource copy, approval, claim, transaction, launch marker, Gate PASS or\ninstallation is created. Input authenticity remains the caller's\nresponsibility; hashes are integrity checks, not independent proof of\nobservations. Missing input is BLOCKED.\n\noptions:\n  -h, --help            show this help message and exit\n  --inputs INPUTS\n  --output-directory OUTPUT_DIRECTORY\n"
+    },
+    {
+      "name": "missing_real_input",
+      "exit_code": 2,
+      "output": "{\"status\": \"BLOCKED\", \"reason\": \"INPUT_FILE_MISSING_OR_UNBOUNDED\", \"canonical_files_written\": false, \"production_written\": false}\n"
+    }
+  ],
+  "actual_input_construction": "NOT_RUN_REQUIRED_REAL_INPUTS_NOT_YET_READY",
+  "acceptance_status": "NOT_AN_ACCEPTANCE_GATE",
+  "canonical_files_created": false,
+  "production_written": false,
+  "synthetic_pass_inputs_created": false
+}
