@@ -1,6 +1,6 @@
 {
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "recorded_at": "2026-09-15T05:00:36.296837+00:00",
+  "recorded_at": "2026-09-15T05:18:38.495505+00:00",
   "repository": "art20021986-wq/ua-art-autopilot",
   "branch": "codex/task088-owner-policy-20260913-0934",
   "prior_audit_head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
@@ -28,7 +28,9 @@
     "Actual retry preflight completed20260915T03:47:13.988456Z. Raw report server/local SHA f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7 matched; candidate PASS, offline schema PASS, protected readback PASS, sole overall BLOCKED canonical bridge/Gate B/activation not run. Independent30comparisons MATCH; no live/source/CRM/public HTML writes.",
     "Current controls read: no active Actions and no pending transactions; last watchdog34912613369 repeats prior RECOVERY_CANARY_RECEIPT_BINDING before canary write. Old read-only blocked claim preserved. Stage3/4 receipts absent.",
     "All 24 exact-candidate Preview criteria independently reviewed with retained raw evidence; 26 archive/hash comparisons MATCH and fresh source/DB/HTML/resource bindings preserved. Genuine final Preview contract PASS at20260915T04:55:50; stage1=8/8, total8/20=40%.",
-    "Fresh observer and binding completed exactly once; browser download transport failed, then original raw bytes recovered losslessly via minimal deltas against immutable base reports. Server/local sizes and SHA256 match; no observer or preflight rerun."
+    "Fresh observer and binding completed exactly once; browser download transport failed, then original raw bytes recovered losslessly via minimal deltas against immutable base reports. Server/local sizes and SHA256 match; no observer or preflight rerun.",
+    "Actual05:06 CRM source/ACL facts obtained;14 private originals independently match. Active media-deletion callback before DB transaction is not fenced by installer locks. Full writer PASS BLOCKED; no canonical launch attempted.",
+    "Actual05:15 existing CRM getMe/getChat confirmed bot and unique active owner private chat. Raw941bytes server/local SHA0027d739... match. No messages sent, updates consumed or token disclosed."
   ],
   "saved_tests": {
     "software": 446,
@@ -59,8 +61,8 @@
     "production_recovery_implemented_or_accepted": false
   },
   "next_action": {
-    "kind": "PREPARE_CANONICAL_INSTALLATION",
-    "detail": "Collect missing authenticated writer and identity facts; prepare real canonical request, manifest, Gate B and activation. Refresh time-bound inputs only when a new canonical launch is otherwise ready. Continue verified backup/install then live Stage4 acceptance."
+    "kind": "RESOLVE_ACTUAL_UNFENCED_WRITERS",
+    "detail": "Prepare lawful complete writer quiescence/remediation for actual running old CRM before any new preflight or canonical launch. Existing supervisor-running contract must not be bypassed. Provision reader credential only through owner hidden input."
   },
   "further_required": [
     "Provision owner-created fine-grained GitHub Contents:read token for only art20021986-wq/ua-art-autopilot using the reviewed hidden-input receiver. First verify actual console/receiver state; never place token in chat, command arguments, repo or a shell prompt. Current receiver is not running.",
@@ -90,7 +92,7 @@
     "stage3_existing_canonical_runner_requires_new_reader_token": false,
     "stage4_continuous_reader_requires_read_credential": true
   },
-  "background_task_state": "DISABLED_PENDING_DURABLE_STAGE1_READBACK_THEN_RESUME_EXISTING",
+  "background_task_state": "ENABLED_PROMPT_READBACK_CONFIRMED_AFTER_STAGE1",
   "progress": {
     "completed": 8,
     "total": 20,

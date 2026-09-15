@@ -1,0 +1,99 @@
+{
+  "contract": "PR114-INDEPENDENT-CURRENT-WRITER-FENCE-REVIEW-NOT-A-GATE-1",
+  "facts_source": "/workspace/scratch/PR114_facts_summary_0508.json",
+  "facts_observed_at": "2026-09-15T05:06:14.577308+00:00",
+  "facts_raw_sha256": "a1353ec082aa3d488ea63f74a2a0875f47bac2fedec6e0cae34cae079b2e7cff",
+  "status": "KNOWN_ACTIVE_WRITER_NOT_FENCED_ADDITIONAL_DEPENDENCIES_PENDING",
+  "writer_gate_pass_allowed": false,
+  "matched_private_originals": 14,
+  "private_original_match_index": "MATCHED_PRIVATE_ORIGINAL_PATHS.json",
+  "production_or_crm_mutation": false,
+  "test_or_server_execution": false,
+  "review_method": "Hash matching first; static AST function/call/control-flow review with all private string literals redacted. No module import or private source execution.",
+  "critical_section": {
+    "publication_lock": "/home/Carix/.ua_art_publish_transaction.lock",
+    "installer": "cloud/task088_v5_install/release/install_package.py:479-480 obtains publication flock then SQLite BEGIN IMMEDIATE before source/inventory/DB validation and backup/install.",
+    "backup_adapter": "cloud/task088_v5_install/release/remote_adapter.py:93-96 uses the same publication flock then SQLite BEGIN IMMEDIATE.",
+    "db_fence_interpretation": "A DB writer need not itself acquire the publication flock to be excluded by SQLite BEGIN IMMEDIATE. The distinct .crm_db.lock is therefore not, alone, a defect. This does not protect filesystem work before DB access or after a committed DB transaction."
+  },
+  "supported_paths": [
+    {
+      "writer": "Normal single/batch publication and rebuild",
+      "files": ["publikaciya.py", "publish_transaction_guard.py"],
+      "call_path": "publikaciya.opublikovat -> publish_one -> publish_batch -> _exclusive_lock -> _publish_locked; obnovit_katalog -> rebuild_catalog -> _exclusive_lock",
+      "assessment": "SAME_PUBLICATION_FLOCK_COVERS_NORMAL_OUTER_PIPELINE"
+    },
+    {
+      "writer": "Stage reconciliation",
+      "files": ["cars_ui.py", "ua_stage_catalog_sync.py"],
+      "call_path": "stage_set and 15-second _ua004_stage_reconcile_job -> reconcile -> pub._exclusive_lock",
+      "assessment": "PUBLICATION_SIDE_FENCED; PRIOR_DB_UPDATES_ARE_SEPARATE_SQLITE_TRANSACTIONS"
+    },
+    {
+      "writer": "Selected UA/GE price DB update",
+      "files": ["cars_ui.py", "db.py"],
+      "call_path": "_task088_apply_selected_price -> db.connect -> BEGIN IMMEDIATE -> exact-row update/audit/readback -> commit",
+      "assessment": "SQLITE_FENCED_DURING_INSTALLER_CRITICAL_SECTION"
+    },
+    {
+      "writer": "Other DB-only CRM update paths",
+      "files": ["db.py", "cars_ui.py", "master_card.py", "start_safe.py"],
+      "call_path": "db.update_card_field/Soedinenie and direct sqlite3 connections ultimately execute writes through SQLite",
+      "assessment": "SQLITE_EXCLUSION_APPLIES_TO_DB_WRITES_ONLY; NOT_TO_ADJACENT_FILE_MUTATIONS"
+    },
+    {
+      "writer": "Analytics WSGI HTML injection",
+      "files": ["analitika_wsgi.py"],
+      "call_path": "_storozh returns when analitika_stop.txt exists",
+      "assessment": "STOP_MARKER_PRESENT_IN_AUTHENTICATED_FACTS; IN_FLIGHT_OR_CROSS_WORKER_ABSENCE_NOT_INDEPENDENTLY_PROVEN"
+    }
+  ],
+  "known_uncovered_writers": [
+    {
+      "id": "CRM_PHOTO_REMOVE_ALL_PRE_DB_FILESYSTEM_MUTATION",
+      "path": "cars_ui.py",
+      "installed_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "active_reachability": "register at line3427 registers CallbackQueryHandler(photo_remove_all); later register wrappers invoke the prior chain.",
+      "call_path": "photo_remove_all(line1027) -> _v142_zapas_foto -> _ubrat_fayly_foto(line3136) -> os.walk/os.remove; only afterward db.update_card_field",
+      "fence_problem": "The registered callback deletes protected photo assets before any SQLite write and without the publication flock. Holding publication flock plus BEGIN IMMEDIATE therefore cannot stop this deletion. This is a concrete filesystem writer, not a lock-keyword mismatch.",
+      "result": "UNFENCED_ACTIVE_PATH"
+    },
+    {
+      "id": "CRM_DIAGNOSTIC_AND_VIDEO_FILE_MUTATION_AFTER_DB_COMMIT",
+      "path": "cars_ui.py",
+      "active_reachability": "register registers diag_clear and video_remove_all directly.",
+      "call_path": "diag_clear(line715)/video_remove_all(line3229) -> db.update_card_field commits -> direct protected asset deletion/cache change -> _peresobrat_stranicy",
+      "fence_problem": "An in-flight callback can complete its DB transaction, then perform unguarded file changes while an installer acquires its DB/publication locks. DB exclusion cannot retroactively cover that subsequent filesystem section.",
+      "result": "UNFENCED_ACTIVE_PATH"
+    },
+    {
+      "id": "CRM_LEGACY_REBUILD_ROLLBACK_DIRECT_HTML_WRITE",
+      "path": "stranica.py",
+      "installed_sha256": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "active_reachability": "registered diagnostic/video/photo cleanup callbacks -> cars_ui._peresobrat_stranicy -> importlib.reload(stranica); stranica.main",
+      "call_path": "main(line2068) -> saved main(line2014) -> baseline main; when old validation fails, the line2014 wrapper writes captured HTML directly with io.open rather than invoking locked zapisat",
+      "fence_problem": "No publication flock encloses this independent legacy main/rollback route. Its direct rollback writes bypass even the ua_spec_permanent.write_lock wrapper on normal per-card writes.",
+      "result": "UNFENCED_ERROR_PATH"
+    }
+  ],
+  "pending_dependencies": [
+    {"name":"ua_spec_permanent.py","sha256":"2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d","bytes":14299,"reason":"Actual per-card write_lock body; repo/local matching file unavailable."},
+    {"name":"ua_additional_spec.py","sha256":"6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672","bytes":36741,"reason":"Registered manual specification updates and publish paths; repo variant does not match current hash."},
+    {"name":"vin_spec_service.py","sha256":"1d4d54a6cd70f03dcdf2c599d4a9c6362bfd842f18c40a231dfd0ecbc965ce4a","bytes":36543,"reason":"cars_ui.register starts background worker; _ua_emergency_enqueue_spec invokes retry_card; repo variants mismatch."},
+    {"name":"lock4_zhurnal.py","sha256":"6461e34b137f55c3bd6df60f859c04b8d00e8ddea5b42e95fc8f9cde7d00cac9","bytes":3429,"reason":"db module initialization imports this patch before connect wrapper; exact effects unreviewed."}
+  ],
+  "minimum_lawful_remediation_design": [
+    "Keep the existing Stage3 controller requirement that CRM task266084 remains Running; stopping the bot is not a valid workaround.",
+    "Add a reviewed, cooperative publication fence to the actual filesystem mutation boundaries for photo/video/diagnostic cleanup and the complete legacy rebuild/rollback path. Do not merely mark their writer report VERIFIED.",
+    "Review exact specification worker dependencies and include all active write paths in the same fence or prove a genuinely enforced maintenance/drain mechanism that preserves the controller contract.",
+    "Preserve lock ordering publication-before-SQLite; do not naively wrap asynchronous callbacks around to_thread publication calls, because the worker may try to acquire the already-held non-reentrant publication lock.",
+    "Use reentrancy only for genuinely same-thread nested writes, and design the fence so no HTML/media mutation can occur before acquisition. Check the targeted contention paths and failure/rollback behavior.",
+    "Changing these source bytes changes candidate/source hashes. Reconcile the exact candidate and only rerun checks impacted by the fence changes; unchanged visual page hashes may retain existing 120-case evidence.",
+    "Current preinstall writer facts remain uncovered until the already-running legacy code is actually fenced; a newly patched after-image alone cannot claim its predecessor was protected during installation. A concrete authorized rollout protocol is required, not a gate bypass."
+  ],
+  "nonclaims": [
+    "This is not a complete inventory of every imported CRM plugin or background task; the known active gap already prevents writer PASS.",
+    "The authenticated API Running requirement is separate from an empty local process observation list; no absence inference is made.",
+    "No private credentials, tokens, or message literals are included. Only hashes, function relationships and lock paths are reported."
+  ]
+}
