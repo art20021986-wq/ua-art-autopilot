@@ -28,7 +28,7 @@
   },
   "next_operation": {
     "id": "install-observe-20260915-0440",
-    "state": "PLANNED_NOT_LAUNCHED",
+    "state": "COMPLETED_RETURN_CODE_0_RAW_SERVER_HASH_AND_FIELDS_MATCH",
     "server_output": "/home/Carix/autopilot_inbox/cloud/install_1509_0440.json",
     "observer_sha256": "48502613db498c1c347e62f5ea2d5dadedd1ff0ab6457bd6ebe2781c9560817c",
     "reason": "Current server/source/DB binding required for actual final Preview; old report timestamps unchanged.",
@@ -39,14 +39,35 @@
       "used_bytes": 7538966528,
       "limit_bytes": 37580963840
     },
-    "recovery": "Before launch or retry inspect actual console/output. Do not launch duplicate observer if result exists or process remains active."
+    "recovery": "Before launch or retry inspect actual console/output. Do not launch duplicate observer if result exists or process remains active.",
+    "observed_at": "2026-09-15T04:40:14.504473+00:00",
+    "raw_sha256": "e5aa42f3e2067e09633c2e5176125f274390a77ac08a03099c842193d4f15a4c",
+    "raw_bytes": 1282773,
+    "exact_matches": [
+      "database",
+      "schema_sha256",
+      "source_sha256",
+      "dependency_sha256",
+      "system_inventory",
+      "stage_counts"
+    ],
+    "inventory_count": 9625,
+    "local_download_pending": true
   },
-  "next_action": "Launch reviewed read-only observer exactly once with newly observed quota, save stdout uniquely, then reconcile and bind current Preview against saved candidate and independent 24-criterion review.",
+  "next_action": "Run existing reviewed preview_binding_1509.py once against install_1509_0440.json SHAe5aa42...; save unique binding_1509_0446.json. Download both raw JSON files through authenticated Files and compare hashes before final Preview contract.",
   "production_written": false,
   "crm_written": false,
   "background_task": {
     "id": "6aa838e44e688191acb636f6597ac587",
     "is_enabled": false,
     "action": "Resume existing task only after actual first-stage closure, with corrected accepted-gallery instructions."
+  },
+  "updated_at": "2026-09-15T04:46:07.717Z",
+  "binding_operation": {
+    "id": "preview-binding-20260915-0446",
+    "state": "PLANNED_NOT_LAUNCHED",
+    "source_sha256": "be59c4e98fb9920461d87adcdaebb60a577fa9dfcb84179e7324df19a2f5069e",
+    "output": "/home/Carix/autopilot_inbox/cloud/binding_1509_0446.json",
+    "production_written": false
   }
 }
