@@ -1,6 +1,6 @@
 {
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "recorded_at": "2026-09-15T03:29:58.659Z",
+  "recorded_at": "2026-09-15T03:41:27.664Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "branch": "codex/task088-owner-policy-20260913-0934",
   "prior_audit_head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
@@ -22,7 +22,9 @@
     "Fresh actual Preview home observation at03:07:29 matched page hash and10/10decoded images; not repeated120-case matrix.",
     "Fresh production web mapping and five routing source hashes matched. Existing analitika_stop.txt present; its existence alone is not a complete writer fence receipt.",
     "Fresh private preflight bundle17/17code-identical staged once; actual preflight finished03:23:57 BLOCKED/FAIL solely because quota expired before private backup. Raw report preserved, exact server/download SHA matched; no DB backup/candidate or live write.",
-    "Fresh account quota observed03:26:07.967Z used7522402304 limit37580963840; saved uniquely. A new V3 observer launched once because canonical builder requires observation freshness; old results/statuses/timestamps retained."
+    "Fresh account quota observed03:26:07.967Z used7522402304 limit37580963840; saved uniquely. A new V3 observer launched once because canonical builder requires observation freshness; old results/statuses/timestamps retained.",
+    "New observer completed PASS at03:33, raw observed_at03:28:52, all DB/source/schema/inventory compared equal. New Preview binding again MATCH_SCOPED_BINDINGS_ONLY; raw SHA991449... independently server/local matched.",
+    "Fresh retry package15d2fd8d built17/17code-identical, ZIPSHA6bba9888 verified at server, staged once in resume1509_0334 with full_readbackPASS. Separate private preflight launched once after readback; current outcome pending."
   ],
   "saved_tests": {
     "software": 446,
@@ -30,8 +32,8 @@
     "browser_css_scenarios": 120,
     "repeat_full_suites": false
   },
-  "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0254.json.gz.b64",
-  "current_credential_state": "ABSENT_CONFIRMED_20260915_0312; console48168693 currently runs read-only observer, NOT hidden token prompt",
+  "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0327.json.gz.b64",
+  "current_credential_state": "ABSENT_CONFIRMED_20260915_0312; console48168693 runs private preflight, NOT hidden token prompt",
   "full_preview_gate": "NOT_PASSED",
   "stage3": "OPEN_NOT_PUBLISHED",
   "stage4": "OPEN_NOT_ACCEPTED",
@@ -53,8 +55,8 @@
     "production_recovery_implemented_or_accepted": false
   },
   "next_action": {
-    "kind": "RECONCILE_ALREADY_RUNNING_FRESH_OBSERVER_THEN_NEW_PREFLIGHT",
-    "detail": "Read actual console48168693 and /home/Carix/autopilot_inbox/cloud/install_1509_0327.json; never replay unknown result. On actual PASS build canonical package immediately from raw result, keep new unique staging/output IDs, use quota expiry03:56:07.967Z as deadline. Previous preflight failed freshness before private backup; raw report remains FAIL."
+    "kind": "RECONCILE_ALREADY_RUNNING_RETRY_PREFLIGHT",
+    "detail": "Read console48168693 and /home/Carix/autopilot_inbox/cloud/preflight_1509_0338.json; inspect existing task088_price_sync_resume1509_0334/preflight_outputs/preflight-resume1509-0334/report.json, preserve rawhash/status. Do not repeat oldstaging/preflightIDs. On valid candidate/protected-systemPASS evaluate actualfull24 and precise installation candidate; then ownerrequested automaticnew-planstages2/3 throughcanonical controls."
   },
   "further_required": [
     "Provision owner-created fine-grained GitHub Contents:read token for only art20021986-wq/ua-art-autopilot using the reviewed hidden-input receiver. First verify actual console/receiver state; never place token in chat, command arguments, repo or a shell prompt. Current receiver is not running.",
@@ -64,7 +66,7 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "persist_policy": "Save code and sanitized evidence in same branch; after any interrupted Git mutation read remote ref/tree before retry. This continuation is not evidence that a server write completed.",
-  "observed_pr_head_before_this_update": "b80e2128f781f2fda985d117de611ff34df484d8",
+  "observed_pr_head_before_this_update": "3f597a8b958d992b173e8252cff84b2b0e679294",
   "owner_screenshots": {
     "path": "cloud/task088_v5_acceptance/resume_20260914_2/OWNER_SCREENSHOTS_REVIEW.json",
     "bytes": 3233,
@@ -97,9 +99,9 @@
   },
   "photos_acceptance": "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json",
   "running_operation": {
-    "kind": "READ_ONLY_OBSERVER_NOT_PUBLICATION",
+    "kind": "PRIVATE_PREFLIGHT_NOT_PUBLICATION",
     "launched_once": true,
-    "command": "python3.10 -IB install_obs_v3_1648.pyz --quota-json quota_1509_0326.json > install_1509_0327.json",
+    "command": "python3.10 -IB /home/Carix/autopilot_inbox/cloud/task088_price_sync_resume1509_0334/preflight.py --output-id preflight-resume1509-0334 --expected-bundle-sha256 15d2fd8dc4f7f24162343cd635f19185376a7ef9f77cb3b7eb7bb11a5c5a46ef > preflight_1509_0338.json",
     "quota_expires": "2026-09-15T03:56:07.967Z",
     "outcome": "PENDING_READBACK"
   }
