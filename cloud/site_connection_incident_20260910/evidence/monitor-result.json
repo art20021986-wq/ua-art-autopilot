@@ -1,0 +1,108 @@
+{
+  "check_id": "00fe0359d5394ab6bab01ae19b0b8ade",
+  "exit_code": 0,
+  "finished_at": "2026-09-10T09:59:18.231+00:00",
+  "rounds": [
+    {
+      "attempt": 1,
+      "finished_at": "2026-09-10T09:59:18.230+00:00",
+      "ok": true,
+      "results": [
+        {
+          "bytes_read": 34488,
+          "category": "healthy",
+          "content_type": "text/html",
+          "elapsed_seconds": 1.013,
+          "endpoint": "apex_root",
+          "expected_final_url": "https://www.uaart.com.ua/video/index.html",
+          "final_url": "https://www.uaart.com.ua/video/index.html?uaart_probe=2157681a5853494290f4a80f268fe797",
+          "finished_at": "2026-09-10T09:59:18.230+00:00",
+          "http_status": 200,
+          "ok": true,
+          "probe_url": "https://uaart.com.ua/?uaart_probe=2157681a5853494290f4a80f268fe797",
+          "redirects": [
+            {
+              "from": "https://uaart.com.ua/?uaart_probe=2157681a5853494290f4a80f268fe797",
+              "status": 301,
+              "to": "https://www.uaart.com.ua/video/index.html?uaart_probe=2157681a5853494290f4a80f268fe797"
+            }
+          ],
+          "requested_url": "https://uaart.com.ua/",
+          "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
+          "started_at": "2026-09-10T09:59:17.274+00:00"
+        },
+        {
+          "bytes_read": 34488,
+          "category": "healthy",
+          "content_type": "text/html",
+          "elapsed_seconds": 0.524,
+          "endpoint": "www_root",
+          "expected_final_url": "https://www.uaart.com.ua/video/index.html",
+          "final_url": "https://www.uaart.com.ua/video/index.html",
+          "finished_at": "2026-09-10T09:59:17.741+00:00",
+          "http_status": 200,
+          "ok": true,
+          "probe_url": "https://www.uaart.com.ua/?uaart_probe=e3c3cdfb39734fcb8a93a4ceedd47e70",
+          "redirects": [
+            {
+              "from": "https://www.uaart.com.ua/?uaart_probe=e3c3cdfb39734fcb8a93a4ceedd47e70",
+              "status": 302,
+              "to": "https://www.uaart.com.ua/video/index.html"
+            }
+          ],
+          "requested_url": "https://www.uaart.com.ua/",
+          "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
+          "started_at": "2026-09-10T09:59:17.274+00:00"
+        },
+        {
+          "bytes_read": 34488,
+          "category": "healthy",
+          "content_type": "text/html",
+          "elapsed_seconds": 0.363,
+          "endpoint": "homepage",
+          "expected_final_url": "https://www.uaart.com.ua/video/index.html",
+          "final_url": "https://www.uaart.com.ua/video/index.html?uaart_probe=2169e58f486a4c11be60f86e29ef11e0",
+          "finished_at": "2026-09-10T09:59:17.580+00:00",
+          "http_status": 200,
+          "ok": true,
+          "probe_url": "https://www.uaart.com.ua/video/index.html?uaart_probe=2169e58f486a4c11be60f86e29ef11e0",
+          "redirects": [],
+          "requested_url": "https://www.uaart.com.ua/video/index.html",
+          "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
+          "started_at": "2026-09-10T09:59:17.274+00:00"
+        },
+        {
+          "bytes_read": 50117,
+          "category": "healthy",
+          "content_type": "text/html",
+          "elapsed_seconds": 0.39,
+          "endpoint": "catalog",
+          "expected_final_url": "https://www.uaart.com.ua/video/katalog.html",
+          "final_url": "https://www.uaart.com.ua/video/katalog.html?uaart_probe=ee19a2332add406fa29fef481e56e07a",
+          "finished_at": "2026-09-10T09:59:17.607+00:00",
+          "http_status": 200,
+          "ok": true,
+          "probe_url": "https://www.uaart.com.ua/video/katalog.html?uaart_probe=ee19a2332add406fa29fef481e56e07a",
+          "redirects": [],
+          "requested_url": "https://www.uaart.com.ua/video/katalog.html",
+          "sha256": "e4c4379118f37c58b7eddfc3d1992f7fa62909205bf6cf063b44c01b22e8bdc8",
+          "started_at": "2026-09-10T09:59:17.274+00:00"
+        }
+      ],
+      "started_at": "2026-09-10T09:59:17.217+00:00"
+    }
+  ],
+  "schema_version": 1,
+  "settings": {
+    "max_attempts": 3,
+    "max_html_bytes": 1048576,
+    "method": "GET",
+    "network_scope": "four_public_https_pages",
+    "probe_timeout_seconds": 20,
+    "read_only": true,
+    "retry_delay_seconds": 15,
+    "tls_verification": true
+  },
+  "started_at": "2026-09-10T09:59:17.216+00:00",
+  "status": "healthy"
+}
