@@ -1,0 +1,107 @@
+name: UA ART CRM Runtime Read-Only Probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/uaart_crm_runtime_readonly_probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uaart-crm-runtime-readonly-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          persist-credentials: false
+      - name: GET-only PythonAnywhere runtime probe
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import ast, hashlib, json, os, pathlib, re, sqlite3, tempfile, time, urllib.parse, urllib.request
+          BASE='https://www.pythonanywhere.com/api/v0/user/Carix/'
+          token=os.environ['PYTHONANYWHERE_API_TOKEN']
+          def get(endpoint, max_bytes=20_000_000):
+              req=urllib.request.Request(BASE+endpoint, method='GET', headers={'Authorization':'Token '+token,'User-Agent':'UA-ART-CRM-readonly-runtime-probe/1'})
+              t=time.perf_counter()
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  data=r.read(max_bytes+1); status=r.status
+              ms=round((time.perf_counter()-t)*1000,2)
+              if len(data)>max_bytes: raise RuntimeError('response too large')
+              return status,data,ms
+          def get_json(ep):
+              s,b,ms=get(ep); return json.loads(b.decode()),ms
+          def file_bytes(path,max_bytes=20_000_000):
+              return get('files/path'+urllib.parse.quote(path,safe='/'),max_bytes)
+          evidence={'contract':'UA-ART-CRM-PERFORMANCE-RECOVERY-001','stage':1,'mode':'READ_ONLY_GET_ONLY','production_write':False,'reload':False,'restart':False,'observed_at_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'api':{},'files':{},'db_local_copy':{},'source_signals':{}}
+          for ep in ('always_on/','schedule/'):
+              try:
+                  obj,ms=get_json(ep); evidence['api'][ep]={'latency_ms':ms,'value':obj}
+              except Exception as e: evidence['api'][ep]={'error':type(e).__name__+':'+str(e)[:300]}
+          candidates=['/home/Carix/db.py','/home/Carix/run_all.py','/home/Carix/start_safe.py','/home/Carix/bot.py','/home/Carix/main.py','/home/Carix/trace_zhurnal.py']
+          sources={}
+          for path in candidates:
+              try:
+                  s,b,ms=file_bytes(path,2_000_000); text=b.decode('utf-8','replace'); sources[path]=text
+                  evidence['files'][path]={'http':s,'read_latency_ms':ms,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+              except Exception as e: evidence['files'][path]={'error':type(e).__name__+':'+str(e)[:300]}
+          joined='\n'.join(sources.values())
+          # Static signals only; never execute/import production source.
+          evidence['source_signals']={
+              'sqlite_connect_calls':len(re.findall(r'(?i)sqlite3\s*\.\s*connect\s*\(',joined)),
+              'http_client_calls':len(re.findall(r'(?i)(requests\.(?:get|post|request)|urllib\.request|urlopen\s*\()',joined)),
+              'sleep_calls':len(re.findall(r'(?i)\b(?:time\.)?sleep\s*\(',joined)),
+              'thread_or_subprocess_mentions':len(re.findall(r'(?i)\b(threading|subprocess|multiprocessing|asyncio)\b',joined)),
+              'busy_timeout_mentions':len(re.findall(r'(?i)busy_timeout',joined)),
+              'wal_mentions':len(re.findall(r'(?i)\bWAL\b',joined)),
+          }
+          dbpath=None
+          dbsrc=sources.get('/home/Carix/db.py','')
+          for pat in [r'(?m)^\s*DB_FILE\s*=\s*[rRuUfFbB]*[\"\']([^\"\']+)',r'(?m)^\s*DB_PATH\s*=\s*[rRuUfFbB]*[\"\']([^\"\']+)']:
+              m=re.search(pat,dbsrc)
+              if m: dbpath=m.group(1); break
+          if dbpath and not dbpath.startswith('/'): dbpath='/home/Carix/'+dbpath.lstrip('./')
+          evidence['db_local_copy']['remote_path_detected']=dbpath
+          if dbpath:
+              try:
+                  s,b,ms=file_bytes(dbpath,100_000_000)
+                  evidence['db_local_copy'].update({'remote_read_latency_ms':ms,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
+                  with tempfile.NamedTemporaryFile(suffix='.sqlite') as f:
+                      f.write(b); f.flush()
+                      uri='file:'+urllib.parse.quote(f.name)+'?mode=ro'
+                      con=sqlite3.connect(uri,uri=True,timeout=0.1)
+                      con.execute('PRAGMA query_only=ON')
+                      t=time.perf_counter(); qc=con.execute('PRAGMA quick_check').fetchall(); evidence['db_local_copy']['quick_check_ms']=round((time.perf_counter()-t)*1000,2); evidence['db_local_copy']['quick_check']=qc[:5]
+                      evidence['db_local_copy']['journal_mode']=con.execute('PRAGMA journal_mode').fetchone()[0]
+                      evidence['db_local_copy']['tables']=[r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")]
+                      con.close()
+              except Exception as e: evidence['db_local_copy']['error']=type(e).__name__+':'+str(e)[:500]
+          pathlib.Path('/tmp/crm-runtime-readonly.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          print(json.dumps({'status':'PASS','mode':evidence['mode'],'production_write':False,'reload':False,'restart':False,'observed_at_utc':evidence['observed_at_utc'],'api_latency_ms':{k:v.get('latency_ms') for k,v in evidence['api'].items()},'db':evidence['db_local_copy'],'source_signals':evidence['source_signals']},ensure_ascii=False,sort_keys=True))
+          PY
+      - name: Enforce no production mutation
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/crm-runtime-readonly.json',encoding='utf-8'))
+          assert d['mode']=='READ_ONLY_GET_ONLY'
+          assert d['production_write'] is False and d['reload'] is False and d['restart'] is False
+          print('UA_ART_CRM_RUNTIME_READONLY_CONTRACT_PASS')
+          PY
+      - name: Upload evidence only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crm-runtime-readonly-${{ github.run_id }}
+          path: /tmp/crm-runtime-readonly.json
+          retention-days: 7
