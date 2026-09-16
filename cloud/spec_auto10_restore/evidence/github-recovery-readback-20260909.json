@@ -1,0 +1,84 @@
+{
+  "scope": "GITHUB_READBACK_ONLY",
+  "checked_at_utc": "2026-09-09T08:21:58.356Z",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "main_sha": "8866d83e52197703a2f148ec882d560090ed62c9",
+  "latest_status_scope": "RECOVERY_ROUTE_CONNECTION_ONLY",
+  "halt": {
+    "halted_at": "2026-09-07T14:48:16Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 34134692609; rollback reserved false; rollback performed false",
+    "request_path": "tasks/requests/TASK120-PUBLISH-UA-0017-UA-0018.json",
+    "request_sha256": "a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442",
+    "run_id": "34134692609",
+    "status": "EMERGENCY_HALT",
+    "task_id": "TASK120-PUBLISH-UA-0017-UA-0018"
+  },
+  "latest_runs": [
+    {
+      "id": 34323968311,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34323968311",
+      "source": "e76daffc9c50fb0a44da019ae2989d0b4578bc27",
+      "title": "Register reviewed TASK120 recovery route; preserve HALT",
+      "event": "push",
+      "conclusion": "success",
+      "updated_at": "2026-09-09T07:28:07Z"
+    },
+    {
+      "id": 34317389182,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34317389182",
+      "source": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "title": "UA ART Production Transaction Watchdog",
+      "event": "schedule",
+      "conclusion": "success",
+      "updated_at": "2026-09-09T06:03:33Z"
+    },
+    {
+      "id": 34312276680,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34312276680",
+      "source": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "title": "UA ART Read-Only Monitor",
+      "event": "schedule",
+      "conclusion": "success",
+      "updated_at": "2026-09-09T04:46:45Z"
+    },
+    {
+      "id": 34308213633,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34308213633",
+      "source": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "title": "UA ART Control-Plane Maintenance",
+      "event": "schedule",
+      "conclusion": "failure",
+      "updated_at": "2026-09-09T03:43:49Z"
+    },
+    {
+      "id": 34298687277,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34298687277",
+      "source": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+      "title": "UA ART Production Transaction Watchdog",
+      "event": "schedule",
+      "conclusion": "success",
+      "updated_at": "2026-09-09T01:19:05Z"
+    }
+  ],
+  "route_receipt": {
+    "run_id": "34323968311",
+    "application_writes": 0,
+    "halt_removed": false,
+    "parent_commit": "e76daffc9c50fb0a44da019ae2989d0b4578bc27"
+  },
+  "production_gate_b": "NOT_COMPLETE",
+  "card_publication": "UA-0017_AND_UA-0018_NOT_PROVEN; see fresh CRM draft readback",
+  "activation_performed": false,
+  "blockers": [
+    "EXTERNAL_WRITER_VERIFICATION_REQUIRED",
+    "SEPARATE_OWNER_EXECUTION_COMMAND_FOR_EXACT_PLAN_REQUIRED"
+  ],
+  "task120_repeated": false,
+  "production_job_created": false,
+  "limitations": [
+    "Current latest_status DONE denotes route canary only.",
+    "Successful canary is not production publication.",
+    "No active site/CRM mutations in this run."
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "schema": "UA-ART-SOURCE10-ACCEPTANCE-1",
+  "scope": "READ_ONLY_SOURCE_ADAPTERS_NO_CRM_NO_PUBLICATION",
+  "runtime_sha256": {
+    "profile_library.py": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+    "source_policy.py": "8f6d010242ab7df297fe0ad2ee35233d80c7f5005ffaef669d8332caba9fffd2"
+  },
+  "limits": {
+    "request_seconds": 8,
+    "total_seconds": 90,
+    "max_response_bytes": 2000000,
+    "max_redirects_per_source": 2,
+    "retries": 0,
+    "max_sources": 10
+  },
+  "sources": [
+    {
+      "domain": "vpic.nhtsa.dot.gov",
+      "url": "https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/kia?format=json",
+      "mode": "api_schema",
+      "control": null,
+      "control_review": null
+    },
+    {
+      "domain": "auto-data.net",
+      "url": "https://www.auto-data.net/en/mercedes-benz-b-class-w246-b-180-1.8-cdi-109hp-7g-dct-18833",
+      "mode": "model_adapter",
+      "control": {
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "year": "2013",
+        "fuel": "diesel",
+        "engine_cc": 1796
+      },
+      "control_review": {
+        "reference": "runtime/source_policy.py:audit_sources existing control definition; current live matching remains mandatory",
+        "sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      }
+    },
+    {
+      "domain": "carwiki.co.kr",
+      "url": "https://www.carwiki.co.kr/model/10032_2018/%EB%8D%94_%EB%89%B4_K5_2%EC%84%B8%EB%8C%80",
+      "mode": "model_adapter",
+      "control": {
+        "brand": "Kia",
+        "model": "K5",
+        "year": "2018",
+        "fuel": "LPI",
+        "engine_cc": 1999
+      },
+      "control_review": {
+        "reference": "runtime/source_policy.py:audit_sources existing control definition; current live matching remains mandatory",
+        "sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      }
+    },
+    {
+      "domain": "auto.danawa.com",
+      "url": "https://auto.danawa.com/auto/?Lineup=42280&Model=3260%2C3151&Tab=spec&Work=model&pcUse=y",
+      "mode": "model_adapter",
+      "control": {
+        "brand": "Kia",
+        "model": "K5",
+        "year": "2018",
+        "fuel": "LPI",
+        "engine_cc": 1999
+      },
+      "control_review": {
+        "reference": "runtime/source_policy.py:audit_sources existing control definition; current live matching remains mandatory",
+        "sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      }
+    },
+    {
+      "domain": "carisyou.com",
+      "url": "https://www.carisyou.com/car/5688/Spec/54625",
+      "mode": "inspect_identity",
+      "control": null,
+      "control_review": null
+    },
+    {
+      "domain": "ultimatespecs.com",
+      "url": "https://www.ultimatespecs.com/car-specs/Mercedes-Benz/24345/Mercedes-Benz-B-Class-%28W245%29-B180-Autotronic.html",
+      "mode": "model_adapter",
+      "control": {
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "year": "2010",
+        "fuel": "gasoline",
+        "engine_cc": 1699
+      },
+      "control_review": {
+        "reference": "runtime/source_policy.py:audit_sources existing control definition; current live matching remains mandatory",
+        "sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      }
+    },
+    {
+      "domain": "automobile-catalog.com",
+      "url": "https://www.automobile-catalog.com/car/2010/1549490/mercedes-benz_b_180_autotronic.html",
+      "mode": "model_adapter",
+      "control": {
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "year": "2010",
+        "fuel": "gasoline",
+        "engine_cc": 1699
+      },
+      "control_review": {
+        "reference": "runtime/source_policy.py:audit_sources existing control definition; current live matching remains mandatory",
+        "sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      }
+    },
+    {
+      "domain": "cars-data.com",
+      "url": "https://cars-data.com/en/mercedes-benz/b-class/w245/b-170-35607--35607/specs",
+      "mode": "model_adapter",
+      "control": {
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "year": "2010",
+        "fuel": "gasoline",
+        "engine_cc": 1699
+      },
+      "control_review": {
+        "reference": "runtime/source_policy.py:audit_sources existing control definition; current live matching remains mandatory",
+        "sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      }
+    },
+    {
+      "domain": "carfolio.com",
+      "url": "https://www.carfolio.com/hyundai-sonata-2.0-lpi-automatic-854447",
+      "mode": "model_adapter",
+      "control": {
+        "brand": "Hyundai",
+        "model": "Sonata",
+        "year": "2018",
+        "fuel": "LPI",
+        "engine_cc": 1999
+      },
+      "control_review": {
+        "reference": "runtime/source_policy.py:audit_sources existing control definition; current live matching remains mandatory",
+        "sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      }
+    },
+    {
+      "domain": "encycarpedia.com",
+      "url": "https://www.encycarpedia.com/mercedes/05-b-170-mpv",
+      "mode": "model_adapter",
+      "control": {
+        "brand": "Mercedes-Benz",
+        "model": "B-Class",
+        "year": "2010",
+        "fuel": "gasoline",
+        "engine_cc": 1699
+      },
+      "control_review": {
+        "reference": "runtime/source_policy.py:audit_sources existing control definition; current live matching remains mandatory",
+        "sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      }
+    }
+  ]
+}

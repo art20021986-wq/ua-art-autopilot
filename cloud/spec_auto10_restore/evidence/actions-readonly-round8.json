@@ -1,0 +1,60 @@
+{
+  "schema": "UA-ART-ROUND8-READONLY-ACTIONS-OBSERVATION-1",
+  "observed_at_utc": "2026-09-09T12:02:00Z",
+  "main_sha": "8866d83e52197703a2f148ec882d560090ed62c9",
+  "monitor": {
+    "run_id": 34345658841,
+    "job_id": 102446518353,
+    "completed_at_utc": "2026-09-09T11:27:48Z",
+    "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34345658841",
+    "result": {
+      "control_plane_files": [
+        "automation/task_orchestrator.py",
+        "automation/execution_contract.py",
+        "automation/critical_adapter.py"
+      ],
+      "production_write": false,
+      "public_checks": [
+        {
+          "bytes": 34488,
+          "http": 200,
+          "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d",
+          "url": "https://www.uaart.com.ua/video/index.html"
+        },
+        {
+          "bytes": 46960,
+          "http": 200,
+          "sha256": "7ae5c9178f873f8f586cd0ea777ba776826c3d40154fce09a52eeb9e9a5ae358",
+          "url": "https://www.uaart.com.ua/video/katalog.html"
+        }
+      ],
+      "status": "PASS"
+    },
+    "limitation": "Only index/catalog HTTP health; does not verify specifications or UA17/18 publication"
+  },
+  "recovery": {
+    "run_id": 34344322495,
+    "job_id": 102442251159,
+    "completed_at_utc": "2026-09-09T11:12:49Z",
+    "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34344322495",
+    "result": {
+      "application_writes": 0,
+      "canary": {
+        "commit": "1bfac9fe6293dd3060def06a23777c7ddb1f84d9",
+        "receipt_sha256": "6e1bd4c94db6ff6a332af64fed2255d7b6716189a8a223e1cf07617537cf32fd",
+        "status": "VERIFIED_IMMUTABLE_GIT_COMMIT"
+      },
+      "changes": [],
+      "operation": "NOOP",
+      "parent_commit": "8866d83e52197703a2f148ec882d560090ed62c9",
+      "parent_tree": "9fce70fed503631e28dbf90ce32f1d683877bd5a",
+      "ready": false,
+      "schema_version": "UA-ART-RECOVERY-ROUTE-PROPOSAL-1",
+      "task_id": "UA-ART-RECOVERY-TASK120-002"
+    },
+    "execution_job": "SKIPPED",
+    "plan_job": "SKIPPED"
+  },
+  "production_changed_by_this_turn": false,
+  "overall_gate_b": "NOT_READY_FOR_PRODUCTION"
+}

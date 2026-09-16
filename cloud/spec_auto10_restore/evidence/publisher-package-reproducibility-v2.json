@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "original_server_tested_zip_sha256": "6ad70d08b429224d38a74acf8407eec2847bcbba597edcf1133e28764267d228",
+  "reproducible_zip_sha256": "2de0281a2d56a5e4f7efa90c598a0b1232cb5957c349afb92c5a7dcf123868f7",
+  "repeated_build_byte_identical": true,
+  "same_eight_member_bytes_as_server_tested_v2": true,
+  "zip_bytes_identical_to_historical": false,
+  "historical_zip_difference": "fixed timestamp, file metadata and compression settings; every extracted member unchanged",
+  "existing_output_refused": true,
+  "existing_output_unchanged": true,
+  "tampered_source_refused": true,
+  "packer_sha256": "dd8049fba5a5ab3f92af3514af69fd16b6e043b757f3fc072a282b23b4370d70",
+  "member_sha256": {
+    "bundle-v2/bundle-manifest.json": "3298b148cde80a47b33bfd054559fc94f7f1d6b5bd2f54f92b92b0b5195bf51a",
+    "bundle-v2/candidate-manifest.json": "ab3824cd9e5d851168769e585a25f9b60563fdde3d3c2d5c9bd18908bb0b4e78",
+    "bundle-v2/current-manifest.json": "3bbc63aee147a0848ba38b6b79b1a047b1bb3a6011892bf246751f5022f646ab",
+    "bundle-v2/full_publisher_rehearsal.py": "8f8597a64c85f8b34ad36bc9855606b0bf8d45de5b3bcce9e5ea2b0d6bcd2f4f",
+    "bundle-v2/publisher_server_gate.py": "faf580a6504f2b24d7b3712e16f04ad44faa9eda6722222d022d38e20f3ef070",
+    "bundle-v2/repair_master_shell.py": "fb01f9de8b17e5b37babb56c1554de3f2cc3067668fc8db63237d9f47aafcac4",
+    "bundle-v2/repair_public_contract.py": "69765b84749f61e97ca6ac99c1a28c9bc9864a98fb38c82a527383b8c063287b",
+    "bundle-v2/tests/test_full_publisher_rehearsal.py": "ba4fe1b5053a95c2a5a72eb9ff04fc127cfe5aa5de97e8130bca5a908f6e48aa"
+  },
+  "runtime_patchers_runner_tests_modified": false,
+  "production_source_included": false
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "UA-ART-OWNER-MANUAL-SEQUENCE-1",
+  "owner_direction": "restore16_then_owner_publishes17_then18",
+  "supersedes_automatic_17_18_publication": true,
+  "phase": "RESTORE_EXISTING_16",
+  "restored_live_cards_verified": 0,
+  "prepared_cards": 16,
+  "prepared_html": 32,
+  "automatic_publication_17_18": false,
+  "publish_17_button_ready": false,
+  "publish_18_button_ready": false,
+  "required_before_owner_17": [
+    "safe_restore16_installed_and_public16_verified",
+    "running_crm_publication_fix_verified",
+    "UA0017_own_data_spec_media_preview_verified"
+  ],
+  "required_before_owner_18": [
+    "owner_pressed_publish17",
+    "UA0017_real_public_url_catalog_spec_and_shell_verified",
+    "UA0018_own_data_spec_media_preview_verified"
+  ],
+  "current_draft_spec_facts": {
+    "UA-0017": 0,
+    "UA-0018": 0
+  },
+  "draft_spec_facts_source": "immutable captured spec DB, 2026-09-09T12:14:16Z",
+  "source10_status": "not required to render preserved16facts; still required for fullenrichment acceptance",
+  "production_changed": false,
+  "support_request_sent": true,
+  "pending_external_action": "technical reply from PythonAnywhere; approved informational request sent once",
+  "support_submission_confirmed_at_utc": "2026-09-09T12:32:50Z"
+}

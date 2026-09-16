@@ -1,0 +1,87 @@
+{
+  "scope": "ISOLATED_ALLOCATOR_ACTUAL_SOURCE_TESTS",
+  "python": "3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]",
+  "status": "PASS",
+  "tests": {
+    "run": 26,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_seconds": 6.6821
+  },
+  "source_before": {
+    "cars_schema.py": {
+      "sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+      "bytes": 24447,
+      "mtime_ns": 1788851002986385081,
+      "inode": 172892129,
+      "device": 52
+    },
+    "db.py": {
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "bytes": 34721,
+      "mtime_ns": 1788050365871021538,
+      "inode": 172977290,
+      "device": 52
+    },
+    "ai_filter.py": {
+      "sha256": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
+      "bytes": 26858,
+      "mtime_ns": 1786235658137707642,
+      "inode": 172933649,
+      "device": 52
+    }
+  },
+  "source_after": {
+    "cars_schema.py": {
+      "sha256": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+      "bytes": 24447,
+      "mtime_ns": 1788851002986385081,
+      "inode": 172892129,
+      "device": 52
+    },
+    "db.py": {
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "bytes": 34721,
+      "mtime_ns": 1788050365871021538,
+      "inode": 172977290,
+      "device": 52
+    },
+    "ai_filter.py": {
+      "sha256": "7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6",
+      "bytes": 26858,
+      "mtime_ns": 1786235658137707642,
+      "inode": 172933649,
+      "device": 52
+    }
+  },
+  "production_sources_bytes_and_mtime_unchanged": true,
+  "guard": {
+    "outside_read": 0,
+    "outside_write": 0,
+    "network": 0,
+    "process_blocked": 0,
+    "process_allowed": 3
+  },
+  "imported_application_modules": [],
+  "package_files": {
+    "cloud/spec_auto10_restore/allocator_integration.py": {
+      "bytes": 4632,
+      "sha256": "580e23865e7a128f6f2aace3d6a1c122881c2b1141d13cc56a838e38a7d6ffa7"
+    },
+    "cloud/spec_auto10_restore/allocator_server_gate.py": {
+      "bytes": 12884,
+      "sha256": "cc98d9089215d1d0a39e507e7dd731fa5cb26b70f4ea98c4076fdb35ea6d8a80"
+    },
+    "cloud/spec_auto10_restore/runtime/car_number_allocator.py": {
+      "bytes": 6463,
+      "sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1"
+    },
+    "cloud/spec_auto10_restore/tests/test_car_number_allocator.py": {
+      "bytes": 19400,
+      "sha256": "7cbc65e9e547e662f633dbda6bf39875f766de9f89b49189d62b957227298ab2"
+    }
+  },
+  "production_changed": false,
+  "live_publication_proven": false
+}

@@ -1,0 +1,298 @@
+{
+  "candidate_files": {
+    "card_lifecycle.py": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+    "card_shell.py": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+    "cars_ui.py": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+    "profile_library.py": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+    "publikaciya.py": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+    "publish_transaction_guard.py": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+    "source_policy.py": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+    "spec_publication.py": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+    "ua_additional_spec.py": "5a03cb99d1f4514539956f32a75e09e119e2e9049a91da6326adb32877518e56",
+    "vin_spec_service.py": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16"
+  },
+  "candidate_root": "/workspace/scratch/2d59224df460/retry-v8-harness-_ty2028o/run-20260909T075303975607Z/cloud/spec_auto10_restore/runtime",
+  "candidate_unchanged_during_test": true,
+  "completed_at_utc": "2026-09-09T07:53:05.401268+00:00",
+  "errors": 0,
+  "failures": 0,
+  "io_guard": {
+    "blocked_network_or_process_actions": 0,
+    "blocked_outside_stage_writes": 0,
+    "blocked_production_reads": 0,
+    "isolated_lock_probe_processes": 0
+  },
+  "live_crm_executed": false,
+  "overall_gate_b": "NOT_EVALUATED",
+  "production_changed": false,
+  "report_path": "/workspace/scratch/2d59224df460/retry-v8-harness-_ty2028o/run-20260909T075303975607Z/retry-gate-result.json",
+  "scenarios": [
+    {
+      "elapsed_seconds": 0.0244,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_atomic_claim_and_expired_token_prevent_double_commit",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0061,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_auto_replacement_audits_values_and_provenance_without_manual_or_empty_loss",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0078,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_canonical_reader_and_actual_reconciler_reject_conflict_without_job_state",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0277,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_concurrent_due_failed_batch_has_one_requeue_and_one_claim",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0133,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_conflicting_vin_replacement_preserves_values_flags_and_blocks_publication",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.004,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_connection_context_commits_and_closes_without_waiting_for_gc",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0043,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_connection_context_rolls_back_and_closes_on_exception",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0036,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_connection_initialization_failure_closes_open_handle",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0133,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_context_edit_requeues_needs_review_but_normal_scan_is_idempotent",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0129,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_drafts_never_call_publisher_then_publication_schedules_sync",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0375,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_due_failed_job_does_not_republish_hidden_or_deleted_card",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.019,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_due_failed_job_with_identity_conflict_remains_blocked",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.1423,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_due_old_card_sync_cannot_starve_new_enrichment",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0237,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_expired_final_sync_claim_gets_cooldown_before_automatic_retry",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0198,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_failed_batch_does_not_steal_nonexpired_sync_ownership",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0408,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_failed_batch_recovers_real_pages_after_cooldown_without_refetch",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0145,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_idle_and_exhausted_queues_wait_without_busy_polling",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.007,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_japanese_chassis_is_queued_but_never_sent_as_standard_vin",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0251,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_legacy_failed_job_without_deadline_gets_one_durable_cooldown",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0118,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_legacy_ready_facts_with_year_conflict_are_blocked_without_changing_flags",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0347,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_manual_and_last_good_facts_survive_empty_and_transient_results",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0102,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_new_conflicting_card_is_reviewed_before_collection_and_stays_blocked",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0171,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_processed_backlog_uses_short_stop_aware_delay",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0467,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_real_renderer_restores_removed_section_from_durable_facts_without_fetch",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0066,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_retained_cursors_are_finalized_before_connection_close",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.011,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_stale_enrichment_after_context_edit_cannot_store_results",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0092,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_startup_failure_records_phase_and_never_launches_thread",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0157,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_successful_page_is_reconciled_again_when_section_disappears",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0198,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_sync_failure_retries_without_source_refetch_and_survives_restart",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0284,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_sync_retries_are_bounded_and_cooldown_not_reset_by_scanning",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0067,
+      "name": "test_worker_recovery.WorkerRecoveryTests.test_worker_records_errors_and_heartbeat",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0297,
+      "name": "test_worker_lifecycle_wiring.WorkerLifecycleWiringTests.test_clean_archive_path_never_imports_production_guard",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0488,
+      "name": "test_worker_lifecycle_wiring.WorkerLifecycleWiringTests.test_completed_delete_tombstone_blocks_recreated_same_uid_vin_and_database_id",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0362,
+      "name": "test_worker_lifecycle_wiring.WorkerLifecycleWiringTests.test_duplicate_uid_is_excluded_and_both_existing_queues_are_retired",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0292,
+      "name": "test_worker_lifecycle_wiring.WorkerLifecycleWiringTests.test_recovery_failure_blocks_cycle_and_startup_before_any_queue_work",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0348,
+      "name": "test_worker_lifecycle_wiring.WorkerLifecycleWiringTests.test_recreated_same_uid_and_vin_with_new_database_id_does_not_inherit_ready_job",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0508,
+      "name": "test_worker_lifecycle_wiring.WorkerLifecycleWiringTests.test_startup_recovers_interrupted_delete_before_thread_launch",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0559,
+      "name": "test_worker_lifecycle_wiring.WorkerLifecycleWiringTests.test_sync_recovers_pending_delete_before_selecting_or_publishing_saved_job",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0259,
+      "name": "test_lifecycle.LifecycleTests.test_delete_after_first_local_write_does_not_restore_deleted_pages",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0137,
+      "name": "test_lifecycle.LifecycleTests.test_delete_after_ready_never_recreates_page_and_retires_collection_too",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0161,
+      "name": "test_lifecycle.LifecycleTests.test_delete_before_collection_retires_both_queues_and_claims",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0132,
+      "name": "test_lifecycle.LifecycleTests.test_delete_during_collection_retires_both_queues_without_storing_results",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0178,
+      "name": "test_lifecycle.LifecycleTests.test_missing_published_page_is_not_created_by_spec_reconciler",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0148,
+      "name": "test_lifecycle.LifecycleTests.test_model_edit_during_collection_enters_review_without_storing_old_facts",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0534,
+      "name": "test_lifecycle.LifecycleTests.test_new_save_automatic_collect_then_normal_publish_and_sync_preserve_shell",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.057,
+      "name": "test_lifecycle.LifecycleTests.test_retry_same_job_does_not_duplicate_section_or_change_shell",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0112,
+      "name": "test_lifecycle.LifecycleTests.test_uid_edit_during_collection_discards_old_job_then_queues_new_uid",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0352,
+      "name": "test_lifecycle.LifecycleTests.test_unpublish_during_public_verify_cannot_report_pass_or_recreate_page",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0169,
+      "name": "test_lifecycle.LifecycleTests.test_unpublish_keeps_collected_facts_and_cancels_page_sync",
+      "status": "PASS"
+    },
+    {
+      "elapsed_seconds": 0.0167,
+      "name": "test_lifecycle.LifecycleTests.test_vin_edit_during_collection_discards_old_job_and_never_publishes_it",
+      "status": "PASS"
+    }
+  ],
+  "scope": "LOCAL_PYTHON312_PATH_REMAPPED_RUNNER_QA_ONLY",
+  "skipped": 0,
+  "source_checks": "NOT_RUN",
+  "started_at_utc": "2026-09-09T07:53:03.976062+00:00",
+  "status": "PASS",
+  "tests_run": 50,
+  "v7_bytes_and_mtimes_unchanged": true,
+  "v7_input": "/workspace/scratch/2d59224df460/private-runtime/candidate-errno22-v7",
+  "v8_service_sha256": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+  "local_harness_path_and_version_checks_remapped": true,
+  "actual_python_version": "3.12.14",
+  "is_server_result": false,
+  "runner_source_changed_in_production_package": false,
+  "limitations": [
+    "Local Python3.12 QA of shadow-copy and IO guard; fixed-stagePython3.10 serverexecution pending.",
+    "Only QA copy paths/version gate and QA reportscope changed; reviewed source and ZIP unchanged."
+  ]
+}

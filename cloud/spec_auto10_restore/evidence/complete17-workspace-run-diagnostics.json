@@ -1,0 +1,43 @@
+{
+  "authoritative_result_sha256": "c2bd4ef738144cad18d53f6692df3dfdbffa7e9e96f1a343181f98700c5c58d8",
+  "limitation": "Earlier shared-workspace fixture restoration was documented in complete15-cycle-review.md. Exact external component remains unidentified. These directories are not accepted execution evidence; authoritative isolated run used /tmp with subsequent parent readback. No application lifecycle source was changed.",
+  "runs": [
+    {
+      "directory": "complete17-cycle-v2-local01",
+      "error": "RuntimeError:NEW_LIFECYCLE_PUBLICATION_FAILED:\u0418\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0435 \u043e\u0442\u043c\u0435\u043d\u0435\u043d\u043e; \u043f\u0440\u0435\u0436\u043d\u0438\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 \u0438 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u044b. LIFECYCLE_PUBLICATION_FAILED:(False, '\u041f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u044f \u043e\u0442\u043c\u0435\u043d\u0435\u043d\u0430: PROTECTED_PAGE_CHANGED. \u0412\u044b\u043f\u043e\u043b\u043d\u0435\u043d \u043f\u043e\u043b\u043d\u044b\u0439 \u043e\u0442\u043a\u0430\u0442.')",
+      "io_guard": {
+        "network": 0,
+        "outside_read": 0,
+        "outside_write": 0,
+        "process": 0
+      },
+      "result_sha256": "d853e0b52dad4d28c54158681ce75e594431784dc07e26d62c58f7efd8f8e31a",
+      "status": "FAIL"
+    },
+    {
+      "directory": "complete17-cycle-v2-local02",
+      "error": "RuntimeError:RETIRED_PAGES_RECREATED:after_next_card_fault_rollback:video/UA-0002.html,video/UA-0002-diag.html,site/UA-0002.html,site/UA-0002-diag.html",
+      "io_guard": {
+        "network": 0,
+        "outside_read": 0,
+        "outside_write": 0,
+        "process": 0
+      },
+      "result_sha256": "a4176f56a9fb3ba7e863eca27221e6496f467df4434b91e715aa7adf7e3f86dc",
+      "status": "FAIL"
+    },
+    {
+      "directory": "complete17-cycle-v2-local03",
+      "error": "RuntimeError:RETIRED_PAGES_RECREATED:after_next_card_fault_rollback:video/UA-0002.html,video/UA-0002-diag.html,site/UA-0002.html,site/UA-0002-diag.html",
+      "io_guard": {
+        "network": 0,
+        "outside_read": 0,
+        "outside_write": 0,
+        "process": 0
+      },
+      "result_sha256": "eab8777557f8ea5061128ca85c6423b926962f12123a60d9842a69257b29f13a",
+      "status": "FAIL"
+    }
+  ],
+  "scope": "NONAUTHORITATIVE_SHARED_WORKSPACE_RUNS"
+}

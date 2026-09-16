@@ -1,0 +1,22 @@
+{
+  "scope": "OFFLINE_SYNTHETIC_SOURCE_ACCEPTANCE_AND_VPIC_RESPONSE_BINDING_ONLY",
+  "started_at": "2026-09-09T10:42:20.680357+00:00",
+  "finished_at": "2026-09-09T10:42:20.702565+00:00",
+  "tests_run": 18,
+  "failures": 0,
+  "errors": 0,
+  "status": "PASS",
+  "network_calls": 0,
+  "production_touched": false,
+  "live_source_acceptance": "NOT_RUN",
+  "gate_b": "NOT_EVALUATED",
+  "file_sha256": {
+    "source_acceptance.py": "c9945c01cf985654f7fc215a9f1d75e633a45cdefd78fde0bfff3d00e5298b0f",
+    "source_acceptance_plan.json": "f99b98f157b70fdd7a68ddf50844df97f853e4f7747ba0005e09513a22852467",
+    "repair_vpic_identity.py": "22829322363c6622fd477c5746b047e73f0c5bc8f36137b58db39f233ce0d654",
+    "tests/test_source_acceptance.py": "1b5f8afd3606e94e92f8b5d78cfadd0265b913a6cdfa0e4c4e2ab0c2a6f8ec51",
+    "tests/test_vpic_identity_binding.py": "a75ba527bb50d7c3828b72df218f2b39fa9fa34f9341b6942f7d2646973f57ae",
+    "SOURCE-ACCEPTANCE-V2.md": "030f296c4b5a7bb51c502341d850c8284faa50180f8985f1a005460ac326a795"
+  },
+  "test_output": "test_429_records_retry_after_without_retry_or_false_pass (test_source_acceptance.AcceptanceTests.test_429_records_retry_after_without_retry_or_false_pass) ... ok\ntest_default_offline_makes_no_requests_and_ten_not_run (test_source_acceptance.AcceptanceTests.test_default_offline_makes_no_requests_and_ten_not_run) ... ok\ntest_exact_vin_and_existing_identity_guards_pass (test_source_acceptance.AcceptanceTests.test_exact_vin_and_existing_identity_guards_pass) ... ok\ntest_exact_vin_approval_hash_required_before_any_request (test_source_acceptance.AcceptanceTests.test_exact_vin_approval_hash_required_before_any_request) ... ok\ntest_first_transport_failure_stops_remaining_sources_without_retry (test_source_acceptance.AcceptanceTests.test_first_transport_failure_stops_remaining_sources_without_retry) ... ok\ntest_foreign_redirect_rejected_before_follow (test_source_acceptance.AcceptanceTests.test_foreign_redirect_rejected_before_follow) ... ok\ntest_limits_domains_and_unreviewed_control_cannot_be_relaxed (test_source_acceptance.AcceptanceTests.test_limits_domains_and_unreviewed_control_cannot_be_relaxed) ... ok\ntest_network_context_missing_refuses_before_calls (test_source_acceptance.AcceptanceTests.test_network_context_missing_refuses_before_calls) ... ok\ntest_oversized_response_and_non_200_are_rejected (test_source_acceptance.AcceptanceTests.test_oversized_response_and_non_200_are_rejected) ... ok\ntest_runtime_drift_is_rejected_without_import (test_source_acceptance.AcceptanceTests.test_runtime_drift_is_rejected_without_import) ... ok\ntest_schema_and_unreviewed_identity_never_adapter_pass (test_source_acceptance.AcceptanceTests.test_schema_and_unreviewed_identity_never_adapter_pass) ... ok\ntest_wrong_vin_same_make_model_year_rejected_and_private_vin_redacted (test_source_acceptance.AcceptanceTests.test_wrong_vin_same_make_model_year_rejected_and_private_vin_redacted) ... ok\ntest_decoder_keeps_actual_returned_identity_and_facts (test_vpic_identity_binding.BindingTest.test_decoder_keeps_actual_returned_identity_and_facts) ... ok\ntest_enrichment_does_not_accept_wrong_vehicle_facts (test_vpic_identity_binding.BindingTest.test_enrichment_does_not_accept_wrong_vehicle_facts) ... ok\ntest_existing_make_model_year_and_error_guards_remain (test_vpic_identity_binding.BindingTest.test_existing_make_model_year_and_error_guards_remain) ... ok\ntest_missing_malformed_frame_or_empty_vin_is_rejected (test_vpic_identity_binding.BindingTest.test_missing_malformed_frame_or_empty_vin_is_rejected) ... ok\ntest_patch_rejects_drift_and_repeat (test_vpic_identity_binding.BindingTest.test_patch_rejects_drift_and_repeat) ... ok\ntest_same_make_model_year_wrong_vin_is_rejected (test_vpic_identity_binding.BindingTest.test_same_make_model_year_wrong_vin_is_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 0.022s\n\nOK\n"
+}

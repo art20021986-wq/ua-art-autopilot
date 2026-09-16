@@ -1,0 +1,58 @@
+{
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "observation": "PythonAnywhere authorized terminal stdout; structured transcription of wrapped JSON",
+  "is_full_report_copy": false,
+  "observed_at_utc": "2026-09-09T05:51:04.014Z",
+  "package_sha256": "d8a548ae44a13d135c2b11711795e68777a9c9c92f34448cbcc7637c352f47bf",
+  "errno22_candidate_compile": "RESOLVED_ON_SERVER",
+  "production_changed": false,
+  "summary": {
+    "status": "FAIL",
+    "scope": "PYTHON310_ISOLATED_TEST_SUBGATE",
+    "overall_gate_b": "NOT_EVALUATED",
+    "tests_run": 178,
+    "failures": 0,
+    "errors": 3,
+    "skipped": 0,
+    "candidate_mode": "manifest_last",
+    "candidate_modules": 10,
+    "candidate_verified": true,
+    "sources_unchanged": true,
+    "io_guard": {
+      "blocked_network_or_process_actions": 0,
+      "blocked_outside_stage_writes": 0,
+      "blocked_production_reads": 0,
+      "isolated_lock_probe_processes": 1
+    },
+    "failed_scenarios": [
+      {
+        "name": "test_verified_specs.VerifiedSpecExportTests.test_hash_mismatch_fails_closed_without_database_writes",
+        "status": "ERROR",
+        "elapsed_seconds": 0.1189,
+        "error_type": "OSError",
+        "error_phase": "isolated_tests",
+        "error_errno": 39
+      },
+      {
+        "name": "test_worker_recovery.WorkerRecoveryTests.test_startup_failure_records_phase_and_never_launches_thread",
+        "status": "ERROR",
+        "elapsed_seconds": 0.5024,
+        "error_type": "OSError",
+        "error_phase": "isolated_tests",
+        "error_errno": 39
+      },
+      {
+        "name": "test_worker_recovery.WorkerRecoveryTests.test_worker_records_errors_and_heartbeat",
+        "status": "ERROR",
+        "elapsed_seconds": 0.5184,
+        "error_type": "OSError",
+        "error_phase": "isolated_tests",
+        "error_errno": 39
+      }
+    ],
+    "failure_code": null,
+    "failure_errno": null,
+    "failure_phase": null,
+    "report": "/home/Carix/spec_gate_b_restore_20260909/run-20260909T054727572367Z/server-gate-result.json"
+  }
+}

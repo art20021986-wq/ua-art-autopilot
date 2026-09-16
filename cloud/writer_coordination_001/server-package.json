@@ -1,0 +1,24 @@
+{
+  "schema": "UA-ART-WRITER-COORDINATION-SERVER-PACKAGE-1",
+  "recorded_at": "2026-09-09T09:25:51.739034+00:00",
+  "archive_name": "writer-coordination-server-v1.zip",
+  "archive_sha256": "372f4af62703482b5a60c748e1f885f9039f4ec9cb87838d1b6a8b09afe2b63b",
+  "archive_bytes": 23469,
+  "server_command": "python3.10 -I -B /home/Carix/writer_coordination_gate_20260909/bundle-v1/coordination_server_gate.py",
+  "source_files": [
+    "coordination_server_gate.py",
+    "package_server_gate.py",
+    "server_fence.py",
+    "test_server_fence.py",
+    "platform_control.py",
+    "tests/test_platform_control.py"
+  ],
+  "local_qa": "coordination-gate-local-qa.json",
+  "local_tests_passed": 55,
+  "server_executed": false,
+  "production_changed": false,
+  "scope": "PACKAGE_AND_LOCAL_QA_ONLY",
+  "production_inputs_read": false,
+  "real_task_api_called": false,
+  "overall_gate_b": "NOT_EVALUATED"
+}
