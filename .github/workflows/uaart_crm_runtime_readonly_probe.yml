@@ -16,7 +16,7 @@ jobs:
         with:
           ref: main
           persist-credentials: false
-      - name: GET-only Probe 2
+      - name: GET-only Probe 2 corrected
         env:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
         run: |
@@ -24,7 +24,7 @@ jobs:
           import json,os,re,time,urllib.request,urllib.parse,pathlib
           B='https://www.pythonanywhere.com/api/v0/user/Carix/'; T=os.environ['PYTHONANYWHERE_API_TOKEN']
           def get(ep,limit=10000000):
-            q=urllib.request.Request(B+ep,method='GET',headers={'Authorization':'Token '+T,'User-Agent':'UAART-readonly-probe2'})
+            q=urllib.request.Request(B+ep,method='GET',headers={'Authorization':'Token '+T,'User-Agent':'UAART-readonly-probe2-corrected'})
             t=time.perf_counter()
             with urllib.request.urlopen(q,timeout=60) as r: b=r.read(limit+1)
             return b,round((time.perf_counter()-t)*1000,2)
@@ -32,9 +32,11 @@ jobs:
           def rf(p): return get('files/path'+urllib.parse.quote(p,safe='/'),3000000)
           out={'mode':'READ_ONLY_GET_ONLY_PROBE2','production_write':False,'reload':False,'restart':False,'always_on':{},'db_candidates':[],'handler_signals':[]}
           ao,ms=js('always_on/'); out['always_on']={'latency_ms':ms,'value':ao}
+          if isinstance(ao,list): vals=ao
+          elif isinstance(ao,dict): vals=ao.get('objects') or ao.get('tasks') or ao.get('results') or []
+          else: vals=[]
           commands=[]
-          vals=ao.get('objects') or ao.get('tasks') or ao.get('results') or ao if isinstance(ao,list) else []
-          for x in vals if isinstance(vals,list) else []:
+          for x in vals:
             if isinstance(x,dict): commands.append(str(x.get('command','')))
           paths={'/home/Carix/db.py','/home/Carix/run_all.py','/home/Carix/start_safe.py','/home/Carix/bot.py','/home/Carix/main.py','/home/Carix/trace_zhurnal.py'}
           for c in commands:
@@ -44,24 +46,21 @@ jobs:
             try: b,x=rf(p); src[p]=b.decode('utf8','replace')
             except Exception: pass
           joined='\n'.join(src.values())
-          # Detect DB paths from source expressions/string literals without executing production code.
           for m in re.finditer(r'(?i)(["\'])([^"\']+\.(?:db|sqlite|sqlite3))\1',joined):
             p=m.group(2)
             if not p.startswith('/'): p='/home/Carix/'+p.lstrip('./')
             if p not in out['db_candidates']: out['db_candidates'].append(p)
-          # Map functions/handlers containing blocking signals.
           for path,text in src.items():
             lines=text.splitlines()
             for i,line in enumerate(lines):
               if re.search(r'(?i)(def |async def |handler|callback|message_handler|callback_query_handler)',line):
-                block='\n'.join(lines[i:min(i+80,len(lines))])
-                sig=[]
+                block='\n'.join(lines[i:min(i+80,len(lines))]); sig=[]
                 if re.search(r'(?i)sqlite|connect\(',block): sig.append('sqlite')
                 if re.search(r'(?i)requests\.|urlopen|urllib\.request',block): sig.append('http')
                 if re.search(r'(?i)\bsleep\s*\(|time\.sleep',block): sig.append('sleep')
                 if sig: out['handler_signals'].append({'file':path,'line':i+1,'header':line.strip()[:180],'signals':sig})
           pathlib.Path('/tmp/probe2.json').write_text(json.dumps(out,ensure_ascii=False,indent=2))
-          print(json.dumps({'status':'PASS','mode':out['mode'],'production_write':False,'reload':False,'restart':False,'always_on_latency_ms':ms,'commands':commands,'db_candidates':out['db_candidates'],'handler_signals':out['handler_signals'][:40]},ensure_ascii=False))
+          print(json.dumps({'status':'PASS','mode':out['mode'],'production_write':False,'reload':False,'restart':False,'always_on_latency_ms':ms,'commands':commands,'db_candidates':out['db_candidates'],'handler_signals':out['handler_signals'][:60]},ensure_ascii=False))
           PY
       - name: Enforce read-only
         run: python3 -c "import json;d=json.load(open('/tmp/probe2.json'));assert d['production_write'] is False and d['reload'] is False and d['restart'] is False;print('PROBE2_READ_ONLY_PASS')"
