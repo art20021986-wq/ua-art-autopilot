@@ -1,0 +1,85 @@
+{
+  "schema": "ua-art.normalized-source.v1",
+  "source_id": "kia_kr",
+  "identity": {
+    "make": "Kia",
+    "model": "K5",
+    "year": 2023,
+    "market": "KR",
+    "fuel": "LPG",
+    "gearbox": "automatic",
+    "engine_cc": 1999
+  },
+  "document": {
+    "url": "https://www.kia.com/kr/vehicles/k5_bak_20231031/specification",
+    "sha256": "98a9ee60e4c440cb5eb97a7c36c54538b018881c850737f9bf04da611d8ea72c",
+    "evidence_kind": "manufacturer_document",
+    "capture_format": "reviewed-text-excerpt-v1"
+  },
+  "facts": [
+    {
+      "key": "length_mm",
+      "value": 4905,
+      "unit": "mm",
+      "label_uk": "Довжина",
+      "label_ru": "Длина",
+      "category": "technical"
+    },
+    {
+      "key": "width_mm",
+      "value": 1860,
+      "unit": "mm",
+      "label_uk": "Ширина",
+      "label_ru": "Ширина",
+      "category": "technical"
+    },
+    {
+      "key": "height_mm",
+      "value": 1445,
+      "unit": "mm",
+      "label_uk": "Висота",
+      "label_ru": "Высота",
+      "category": "technical"
+    },
+    {
+      "key": "wheelbase_mm",
+      "value": 2850,
+      "unit": "mm",
+      "label_uk": "Колісна база",
+      "label_ru": "Колёсная база",
+      "category": "technical"
+    },
+    {
+      "key": "engine_cc",
+      "value": 1999,
+      "unit": "cm³",
+      "label_uk": "Об’єм двигуна",
+      "label_ru": "Объём двигателя",
+      "category": "technical"
+    },
+    {
+      "key": "power_ps",
+      "value": 146,
+      "unit": "PS",
+      "label_uk": "Потужність (метричні к. с.)",
+      "label_ru": "Мощность (метрические л. с.)",
+      "category": "technical"
+    },
+    {
+      "key": "torque_kgfm",
+      "value": 19.5,
+      "unit": "kgf·m",
+      "label_uk": "Крутний момент",
+      "label_ru": "Крутящий момент",
+      "category": "technical"
+    },
+    {
+      "key": "transmission_gears",
+      "value": 6,
+      "unit": "",
+      "label_uk": "Кількість передач АКПП",
+      "label_ru": "Количество передач АКПП",
+      "category": "technical"
+    }
+  ]
+}

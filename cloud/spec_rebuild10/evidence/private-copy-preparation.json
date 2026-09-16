@@ -1,0 +1,863 @@
+{
+  "schema": "UA-ART-SPEC-REBUILD10-SNAPSHOT-1",
+  "task_id": "UA-ART-SPEC-REBUILD-10-001",
+  "status": "PASS_PRIVATE_COPY_PREPARATION",
+  "observed_at_utc": "2026-09-09T14:14:44.969992+00:00",
+  "source_snapshot_observed_at_utc": "2026-09-09T12:14:16.378317+00:00",
+  "input_snapshot_sha256": "76c6f3bea9c2ab625c4c8fa9ceb8b6e5415bf0acecd69a43c5ebcff5db91a4a1",
+  "prior_preparation_payload_sha256": "301e45050ce7a163825e0429d36929d81f4d4fe723c3342af166baf3fc311597",
+  "published_cards_in_snapshot": 16,
+  "candidate_pages": 32,
+  "stored_facts": 557,
+  "visible_facts": 550,
+  "hidden_facts": 7,
+  "protected_drafts": [
+    "UA-0017",
+    "UA-0018"
+  ],
+  "input_files_changed": 0,
+  "network_requests": 0,
+  "fresh_source_verification": false,
+  "production_changed": false,
+  "crm_runtime_installed": false,
+  "canonical_crm_save_retains_migrated_facts": true,
+  "full_gate_b_pass": false,
+  "publication_button_ready": {
+    "UA-0017": false,
+    "UA-0018": false
+  },
+  "pages": [
+    {
+      "path": "video/UA-0001.html",
+      "original_snapshot_sha256": "8dfc760a3bfa24b20cabe71d0a7d12a2000b255c78564b6682a70f1303ac17c3",
+      "prepared_base_sha256": "78369925c53cd9a508a6cd58f0a23e15692d15edf3110b673fa0c7afe6147635",
+      "candidate_sha256": "838b65bb18c7377c905f9896360392d5a6bae81e70af63fda99632c165cba3ff",
+      "rows": 43,
+      "validation": {
+        "status": "PASS",
+        "rows": 43,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "87b5b406a8290e7639dcd662a89eb0f2032cde1451f9040d36bb184686a05025",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "125f59b208fac473d9be01d34d36279e6e7f97517bdd5d24e214eb59873b0cf2",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0001.html",
+      "original_snapshot_sha256": "8dfc760a3bfa24b20cabe71d0a7d12a2000b255c78564b6682a70f1303ac17c3",
+      "prepared_base_sha256": "78369925c53cd9a508a6cd58f0a23e15692d15edf3110b673fa0c7afe6147635",
+      "candidate_sha256": "838b65bb18c7377c905f9896360392d5a6bae81e70af63fda99632c165cba3ff",
+      "rows": 43,
+      "validation": {
+        "status": "PASS",
+        "rows": 43,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "87b5b406a8290e7639dcd662a89eb0f2032cde1451f9040d36bb184686a05025",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "125f59b208fac473d9be01d34d36279e6e7f97517bdd5d24e214eb59873b0cf2",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0002.html",
+      "original_snapshot_sha256": "5d43f81ec763ebc349104375918d27a0a80f295e51cab04569c5ea9d59f5f4eb",
+      "prepared_base_sha256": "6423656c09feea1138e35ee83565a2bf7eef6e5dfba6b4d095f951b45d14ca6e",
+      "candidate_sha256": "cb0e171f3a83b09d376a2fd5bfdf1c4c1d5db4d49fd4efe9a82ed923de1cd2a7",
+      "rows": 47,
+      "validation": {
+        "status": "PASS",
+        "rows": 47,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "f0647f25d8bd2a38d139e7c5d17ff941ec4598bc421ac458fb010c5ef4c9e972",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "29f9055138df798c6c3f890731be43f18b2c32a93b6f41457b8b08d0dc1ffcba",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0002.html",
+      "original_snapshot_sha256": "5d43f81ec763ebc349104375918d27a0a80f295e51cab04569c5ea9d59f5f4eb",
+      "prepared_base_sha256": "6423656c09feea1138e35ee83565a2bf7eef6e5dfba6b4d095f951b45d14ca6e",
+      "candidate_sha256": "cb0e171f3a83b09d376a2fd5bfdf1c4c1d5db4d49fd4efe9a82ed923de1cd2a7",
+      "rows": 47,
+      "validation": {
+        "status": "PASS",
+        "rows": 47,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "f0647f25d8bd2a38d139e7c5d17ff941ec4598bc421ac458fb010c5ef4c9e972",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "29f9055138df798c6c3f890731be43f18b2c32a93b6f41457b8b08d0dc1ffcba",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0003.html",
+      "original_snapshot_sha256": "997b6dfb1628e8811589134e3039892d5cf6dee27000528c214db83c3d94bfed",
+      "prepared_base_sha256": "92cefbfece624620f34753d4a6ebf9cbcf0451150d7aadfe2580c34c7acf92cf",
+      "candidate_sha256": "c74167e8e2cfb39e16a2df57554dde46fdf6c52ef438d89e80e81234ddec112f",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "8c27c8568e87194ffb4cf391f7679457ab8d12e96279ec8a88b42867d47477e5",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0003.html",
+      "original_snapshot_sha256": "997b6dfb1628e8811589134e3039892d5cf6dee27000528c214db83c3d94bfed",
+      "prepared_base_sha256": "92cefbfece624620f34753d4a6ebf9cbcf0451150d7aadfe2580c34c7acf92cf",
+      "candidate_sha256": "c74167e8e2cfb39e16a2df57554dde46fdf6c52ef438d89e80e81234ddec112f",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "8c27c8568e87194ffb4cf391f7679457ab8d12e96279ec8a88b42867d47477e5",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0004.html",
+      "original_snapshot_sha256": "96d130379cf8ff26d8e5f4fc96f457f7302a4c7916b1bbc6d2d878ec7b827c81",
+      "prepared_base_sha256": "5ae476f3a4e064205d87c5e51871804a751e1e0dc2780bd27f6c2a955e2e230e",
+      "candidate_sha256": "12a528180e9e0b3968e7983baf1bd84dd902493332f9617e9cb7ecd4ca10cb33",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "b80d02a4731311fd9185b75d88bfa4862270380d8834497e1af9a610adfb4f2b",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0004.html",
+      "original_snapshot_sha256": "96d130379cf8ff26d8e5f4fc96f457f7302a4c7916b1bbc6d2d878ec7b827c81",
+      "prepared_base_sha256": "5ae476f3a4e064205d87c5e51871804a751e1e0dc2780bd27f6c2a955e2e230e",
+      "candidate_sha256": "12a528180e9e0b3968e7983baf1bd84dd902493332f9617e9cb7ecd4ca10cb33",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "b80d02a4731311fd9185b75d88bfa4862270380d8834497e1af9a610adfb4f2b",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0005.html",
+      "original_snapshot_sha256": "ca2b2494fd06e6b053f55e85ec0ada4ad79b9ee2f8557ef4c19f5ea2c51198d5",
+      "prepared_base_sha256": "fa4b0a18bce80d08849260ac99afa06564be0cbaea59cda00797c89ecf6df421",
+      "candidate_sha256": "4e270c43b78089ca54083778463651292d86593eaef97df34f62733fffd77b34",
+      "rows": 44,
+      "validation": {
+        "status": "PASS",
+        "rows": 44,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "026bb8b78af12ec65026556e262fa87fbd1d7e2d6eb32121488102b3bd0522ca",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "ab28fa2954ed8d296eed9f87dfe8217de0520fa1c21e2563641dd4a489cdde1f",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0005.html",
+      "original_snapshot_sha256": "ca2b2494fd06e6b053f55e85ec0ada4ad79b9ee2f8557ef4c19f5ea2c51198d5",
+      "prepared_base_sha256": "fa4b0a18bce80d08849260ac99afa06564be0cbaea59cda00797c89ecf6df421",
+      "candidate_sha256": "4e270c43b78089ca54083778463651292d86593eaef97df34f62733fffd77b34",
+      "rows": 44,
+      "validation": {
+        "status": "PASS",
+        "rows": 44,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "026bb8b78af12ec65026556e262fa87fbd1d7e2d6eb32121488102b3bd0522ca",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "ab28fa2954ed8d296eed9f87dfe8217de0520fa1c21e2563641dd4a489cdde1f",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0006.html",
+      "original_snapshot_sha256": "6d2051bec22378236a4b0fe48ccb451d4bf79ad9f708c36f7c2a44fc6b1e4169",
+      "prepared_base_sha256": "6045965aba26d0e564b928de35a7cfef691c5e08dd4c103a9dad3ad42d8c155f",
+      "candidate_sha256": "571d2583441c6fb9ba97b51c6c06b5862d6b9e1b015ff08ff8e2fcf928b4e034",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "3e76e843cefdf86539c5d6c297552e3788bf5265741c9b7e95b4e3ab76280709",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0006.html",
+      "original_snapshot_sha256": "6d2051bec22378236a4b0fe48ccb451d4bf79ad9f708c36f7c2a44fc6b1e4169",
+      "prepared_base_sha256": "6045965aba26d0e564b928de35a7cfef691c5e08dd4c103a9dad3ad42d8c155f",
+      "candidate_sha256": "571d2583441c6fb9ba97b51c6c06b5862d6b9e1b015ff08ff8e2fcf928b4e034",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "3e76e843cefdf86539c5d6c297552e3788bf5265741c9b7e95b4e3ab76280709",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0007.html",
+      "original_snapshot_sha256": "a2a5bc0aeae2f85093be55d220d3b8fc3efbc5f54c1327301e50bb84404ad773",
+      "prepared_base_sha256": "500cf6e22b2a1b0943caedb2a15eb7c2e41256bfad8f1d5f3fec0d7889aad0fb",
+      "candidate_sha256": "00c0111a223c92c3e6f4eb7d76a66cc4803adafc0c9ca5f14424d03a606b2ffb",
+      "rows": 47,
+      "validation": {
+        "status": "PASS",
+        "rows": 47,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "f0647f25d8bd2a38d139e7c5d17ff941ec4598bc421ac458fb010c5ef4c9e972",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "d32743cd5fc3b64dcf63bcc59b41721fbcd253ef3f284d01d723c078b0d52543",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0007.html",
+      "original_snapshot_sha256": "a2a5bc0aeae2f85093be55d220d3b8fc3efbc5f54c1327301e50bb84404ad773",
+      "prepared_base_sha256": "500cf6e22b2a1b0943caedb2a15eb7c2e41256bfad8f1d5f3fec0d7889aad0fb",
+      "candidate_sha256": "00c0111a223c92c3e6f4eb7d76a66cc4803adafc0c9ca5f14424d03a606b2ffb",
+      "rows": 47,
+      "validation": {
+        "status": "PASS",
+        "rows": 47,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "f0647f25d8bd2a38d139e7c5d17ff941ec4598bc421ac458fb010c5ef4c9e972",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "d32743cd5fc3b64dcf63bcc59b41721fbcd253ef3f284d01d723c078b0d52543",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0008.html",
+      "original_snapshot_sha256": "15ffd8ae245126d3be9a9c989b50d47e79ee2a325eae3d3507d24dcb08a1486d",
+      "prepared_base_sha256": "7eb99d87b2d5eb90b144baf39b688cf49518caf73ec8f976dc7bf0e0d48ac6aa",
+      "candidate_sha256": "3c39e6f11fe0d0cc56a0fd234fafbc8812905dcd9d2ba8e5e4d2498d23d7aacf",
+      "rows": 47,
+      "validation": {
+        "status": "PASS",
+        "rows": 47,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "f0647f25d8bd2a38d139e7c5d17ff941ec4598bc421ac458fb010c5ef4c9e972",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "246fa1a0316fad3744b969f959823a85184012aab6949a30a418fdaf69076b89",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0008.html",
+      "original_snapshot_sha256": "15ffd8ae245126d3be9a9c989b50d47e79ee2a325eae3d3507d24dcb08a1486d",
+      "prepared_base_sha256": "7eb99d87b2d5eb90b144baf39b688cf49518caf73ec8f976dc7bf0e0d48ac6aa",
+      "candidate_sha256": "3c39e6f11fe0d0cc56a0fd234fafbc8812905dcd9d2ba8e5e4d2498d23d7aacf",
+      "rows": 47,
+      "validation": {
+        "status": "PASS",
+        "rows": 47,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "f0647f25d8bd2a38d139e7c5d17ff941ec4598bc421ac458fb010c5ef4c9e972",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "246fa1a0316fad3744b969f959823a85184012aab6949a30a418fdaf69076b89",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0009.html",
+      "original_snapshot_sha256": "f119f6bc110593bfd9e9a79ab29b615297854f8f2ef5fa57ba43711453eee535",
+      "prepared_base_sha256": "6742af77e7a928a7e76fb76b0f11b4397e87eb9159b55226c2a25e60be4bfd73",
+      "candidate_sha256": "5016c92ed66e361558ad060c5f4717b45f69c2aff8b491959e23ac68a75266cd",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "2187d080e08eeb0c445b3c96584d7d7e2a533793437d70826344392c1ffd73ce",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0009.html",
+      "original_snapshot_sha256": "f119f6bc110593bfd9e9a79ab29b615297854f8f2ef5fa57ba43711453eee535",
+      "prepared_base_sha256": "6742af77e7a928a7e76fb76b0f11b4397e87eb9159b55226c2a25e60be4bfd73",
+      "candidate_sha256": "5016c92ed66e361558ad060c5f4717b45f69c2aff8b491959e23ac68a75266cd",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "2187d080e08eeb0c445b3c96584d7d7e2a533793437d70826344392c1ffd73ce",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0010.html",
+      "original_snapshot_sha256": "9aa05d92bdaa915ff8003ad3a3694a9f2f3b737b694cfc6df428e9e9199bc875",
+      "prepared_base_sha256": "a05c856ba3a77f86cee32e2c6d98bdf9b3f7486ea55df80c1c4c453edb185d32",
+      "candidate_sha256": "91eecb5f7df0b71db0ba460b8a1ba03db39cfe69e870c87c6c4162ade69aedf8",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "fddff616a80cd4c017a67bf3aa978743cc0abd4fd4a62a6ac033e150b8b3f321",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0010.html",
+      "original_snapshot_sha256": "9aa05d92bdaa915ff8003ad3a3694a9f2f3b737b694cfc6df428e9e9199bc875",
+      "prepared_base_sha256": "a05c856ba3a77f86cee32e2c6d98bdf9b3f7486ea55df80c1c4c453edb185d32",
+      "candidate_sha256": "91eecb5f7df0b71db0ba460b8a1ba03db39cfe69e870c87c6c4162ade69aedf8",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "fddff616a80cd4c017a67bf3aa978743cc0abd4fd4a62a6ac033e150b8b3f321",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0011.html",
+      "original_snapshot_sha256": "ab813bd72661feec8ff8030a3f5f97e19f870000aaea65ef5ee6d6fca3cd2e0a",
+      "prepared_base_sha256": "558ef5e7d5c62b7dbc05b10f7b964c6ca8ff863a1fff6e47e64f33580115684c",
+      "candidate_sha256": "89dc542d7f9b761f656d2cb85869555c5a21879524425b96374064a1d6e00c9b",
+      "rows": 29,
+      "validation": {
+        "status": "PASS",
+        "rows": 29,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "e0a4502ed86ee0e8c8d44b932f0918c9afb6b74407b2304ce8bd5a2caa9985d8",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "cab4780137246540594f250246566cb1ba4ac30e56cc38d471410f05fb663974",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0011.html",
+      "original_snapshot_sha256": "ab813bd72661feec8ff8030a3f5f97e19f870000aaea65ef5ee6d6fca3cd2e0a",
+      "prepared_base_sha256": "558ef5e7d5c62b7dbc05b10f7b964c6ca8ff863a1fff6e47e64f33580115684c",
+      "candidate_sha256": "89dc542d7f9b761f656d2cb85869555c5a21879524425b96374064a1d6e00c9b",
+      "rows": 29,
+      "validation": {
+        "status": "PASS",
+        "rows": 29,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "e0a4502ed86ee0e8c8d44b932f0918c9afb6b74407b2304ce8bd5a2caa9985d8",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "cab4780137246540594f250246566cb1ba4ac30e56cc38d471410f05fb663974",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0012.html",
+      "original_snapshot_sha256": "05928b14b768265c804dd9d3533733cf29472444d487eaaab30b8cb342a93667",
+      "prepared_base_sha256": "448c3bc58284b34aaf1bdb963b90f0d099e8fcdf5c3f1ee90395382b089a2800",
+      "candidate_sha256": "f2df73b924ec44749c3456bfd8fe03d79c89a32251fa3015492292b2a5e98f39",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "687d1eafe707d05e090bb5597d8ee315abe9eda2a3fed734822b25109f3abd2c",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0012.html",
+      "original_snapshot_sha256": "05928b14b768265c804dd9d3533733cf29472444d487eaaab30b8cb342a93667",
+      "prepared_base_sha256": "448c3bc58284b34aaf1bdb963b90f0d099e8fcdf5c3f1ee90395382b089a2800",
+      "candidate_sha256": "f2df73b924ec44749c3456bfd8fe03d79c89a32251fa3015492292b2a5e98f39",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "687d1eafe707d05e090bb5597d8ee315abe9eda2a3fed734822b25109f3abd2c",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0013.html",
+      "original_snapshot_sha256": "7fc5ada01922f4d1da4e2d324d7010262c857fc81fef6975248ea198c1af18e2",
+      "prepared_base_sha256": "1fc5e55326d5949fa54ee3bcbe86a37b94f622aa38f443bf27328fa258340b13",
+      "candidate_sha256": "d2484ae57ad4fcd293a3c605a9e94cd22f55d6945ed0362cecf73b3425cbd9a8",
+      "rows": 40,
+      "validation": {
+        "status": "PASS",
+        "rows": 40,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "fbecc27d10a86be01ffba4f566261b20fc6ef3164f81decab8ec7ebc5ebf7108",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "e420a6f2941322cd1cf107ff833f6eb70b3c42289b6cf1278d75ceb2c733d648",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0013.html",
+      "original_snapshot_sha256": "7fc5ada01922f4d1da4e2d324d7010262c857fc81fef6975248ea198c1af18e2",
+      "prepared_base_sha256": "1fc5e55326d5949fa54ee3bcbe86a37b94f622aa38f443bf27328fa258340b13",
+      "candidate_sha256": "d2484ae57ad4fcd293a3c605a9e94cd22f55d6945ed0362cecf73b3425cbd9a8",
+      "rows": 40,
+      "validation": {
+        "status": "PASS",
+        "rows": 40,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "fbecc27d10a86be01ffba4f566261b20fc6ef3164f81decab8ec7ebc5ebf7108",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "e420a6f2941322cd1cf107ff833f6eb70b3c42289b6cf1278d75ceb2c733d648",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0014.html",
+      "original_snapshot_sha256": "f7481d326d35d9f4906a034e63623a369fa4eadf110b5882c161479b77f34cce",
+      "prepared_base_sha256": "9ac4e0c38deea17f6e51fc9d1e7b69f4e386a82d6f34630df3f8a8dce6aa071b",
+      "candidate_sha256": "8c349ecd08536114785f4d081f57f7c54b314b1323a125b48b20fe3c8b1c105f",
+      "rows": 47,
+      "validation": {
+        "status": "PASS",
+        "rows": 47,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "0ee66527cd014595373c4d9b7c6245ece72c7fe1726a6c5e23a1f5629fe5ff97",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "2032c04c9b82015c841bf83c4246c065326f32fcd0a8b0cda12e3bdb5f7c9970",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0014.html",
+      "original_snapshot_sha256": "f7481d326d35d9f4906a034e63623a369fa4eadf110b5882c161479b77f34cce",
+      "prepared_base_sha256": "9ac4e0c38deea17f6e51fc9d1e7b69f4e386a82d6f34630df3f8a8dce6aa071b",
+      "candidate_sha256": "8c349ecd08536114785f4d081f57f7c54b314b1323a125b48b20fe3c8b1c105f",
+      "rows": 47,
+      "validation": {
+        "status": "PASS",
+        "rows": 47,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "0ee66527cd014595373c4d9b7c6245ece72c7fe1726a6c5e23a1f5629fe5ff97",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "2032c04c9b82015c841bf83c4246c065326f32fcd0a8b0cda12e3bdb5f7c9970",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0015.html",
+      "original_snapshot_sha256": "913b8e32d385b7817ac7d75d4df08f182ca1c6a748625cbf1d088447e48314a1",
+      "prepared_base_sha256": "1e69dcdf1beea63e8969b9daf574e833fc947a65cb3a3da0589008fd8438614e",
+      "candidate_sha256": "9be534c9ee54efb9a04cb968fe9812f86a86e222589d3f06e7910460909c33f7",
+      "rows": 31,
+      "validation": {
+        "status": "PASS",
+        "rows": 31,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "a377c783e257a2ad7f3d026a9f9db5edb5519c82f82dd6506f97b4d63464aacb",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "a39c7f016cebd2999f24e6fa14ac8b64b74f6454bac097ee4e1f9c9daf8d63a1",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0015.html",
+      "original_snapshot_sha256": "913b8e32d385b7817ac7d75d4df08f182ca1c6a748625cbf1d088447e48314a1",
+      "prepared_base_sha256": "1e69dcdf1beea63e8969b9daf574e833fc947a65cb3a3da0589008fd8438614e",
+      "candidate_sha256": "9be534c9ee54efb9a04cb968fe9812f86a86e222589d3f06e7910460909c33f7",
+      "rows": 31,
+      "validation": {
+        "status": "PASS",
+        "rows": 31,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "a377c783e257a2ad7f3d026a9f9db5edb5519c82f82dd6506f97b4d63464aacb",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "a39c7f016cebd2999f24e6fa14ac8b64b74f6454bac097ee4e1f9c9daf8d63a1",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "video/UA-0016.html",
+      "original_snapshot_sha256": "abe373b761629b3c35562e4502d66aed6fd20a08083b8443d857562c4a40a82a",
+      "prepared_base_sha256": "3ab6f328e0da863477e2c97b4caf099f965ffe55933b89852e1071b958449d3d",
+      "candidate_sha256": "0c233ea9838482f74d04c5bd76168202b564ce7b91afd53d7441ad3aa942a6f7",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "2b386e15b0ee09dc8c2d4003c4b34757869f5ef97c3c27acfea54ed58a24cd90",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    },
+    {
+      "path": "site/UA-0016.html",
+      "original_snapshot_sha256": "abe373b761629b3c35562e4502d66aed6fd20a08083b8443d857562c4a40a82a",
+      "prepared_base_sha256": "3ab6f328e0da863477e2c97b4caf099f965ffe55933b89852e1071b958449d3d",
+      "candidate_sha256": "0c233ea9838482f74d04c5bd76168202b564ce7b91afd53d7441ad3aa942a6f7",
+      "rows": 25,
+      "validation": {
+        "status": "PASS",
+        "rows": 25,
+        "data_status": "READY",
+        "language": "uk",
+        "version": "bb29ac898ef113be30f62dbb5f09e04aeddb7e2614c7622c1750115cdce16191",
+        "visible_vin_count": 1,
+        "visible_anchor": "#additional-specification",
+        "javascript_required": false,
+        "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+        "shell_delta": {
+          "status": "PASS",
+          "visible_vin_count": 1,
+          "permitted_removals": [],
+          "remaining_shell_sha256": "2b386e15b0ee09dc8c2d4003c4b34757869f5ef97c3c27acfea54ed58a24cd90",
+          "outside_permitted_regions_byte_changes": 0
+        }
+      },
+      "render_idempotent": true
+    }
+  ]
+}

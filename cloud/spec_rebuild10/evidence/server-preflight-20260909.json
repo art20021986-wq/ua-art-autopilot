@@ -1,0 +1,29 @@
+{
+  "schema": "UA-ART-SPEC-REBUILD10-READONLY-PREFLIGHT-1",
+  "observed_at_utc": "2026-09-09T14:56:26.418931+00:00",
+  "status": "REFERENCE_MATCH",
+  "files_checked": 34,
+  "changed_since_reference": [],
+  "changed_during_observation": [],
+  "stable_observation": true,
+  "crm_all_rows_sha256": "53c2a05d58a6a35771062212eceb4faa00517e4033cf92ddc4f6ce0d398748ac",
+  "crm_rows_match_reference": true,
+  "crm_rows": 18,
+  "published_cards": 16,
+  "protected_drafts": [
+    {
+      "uid": "UA-0017",
+      "published": 0
+    },
+    {
+      "uid": "UA-0018",
+      "published": 0
+    }
+  ],
+  "read_only": true,
+  "production_changed": false,
+  "global_atomic_snapshot": false,
+  "external_writers_verified": false,
+  "installation_authorized": false,
+  "observation_channel": "authenticated PythonAnywhere console 48109264; python3.10; terminal readback"
+}
