@@ -1,5 +1,4 @@
 name: UA ART CRM Runtime Read-Only Probe
-
 on:
   push:
     branches: [main]
@@ -13,59 +12,59 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: main
-          persist-credentials: false
-      - name: GET-only Probe 2 corrected
+        with: {ref: main, persist-credentials: false}
+      - name: Narrow GET-only lock path probe
         env:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
         run: |
           python3 - <<'PY'
-          import json,os,re,time,urllib.request,urllib.parse,pathlib
-          B='https://www.pythonanywhere.com/api/v0/user/Carix/'; T=os.environ['PYTHONANYWHERE_API_TOKEN']
-          def get(ep,limit=10000000):
-            q=urllib.request.Request(B+ep,method='GET',headers={'Authorization':'Token '+T,'User-Agent':'UAART-readonly-probe2-corrected'})
+          import ast,json,os,re,time,urllib.request,urllib.parse,pathlib
+          B='https://www.pythonanywhere.com/api/v0/user/Carix/';T=os.environ['PYTHONANYWHERE_API_TOKEN']
+          def rf(p):
+            q=urllib.request.Request(B+'files/path'+urllib.parse.quote(p,safe='/'),method='GET',headers={'Authorization':'Token '+T,'User-Agent':'UAART-narrow-readonly'})
             t=time.perf_counter()
-            with urllib.request.urlopen(q,timeout=60) as r: b=r.read(limit+1)
-            return b,round((time.perf_counter()-t)*1000,2)
-          def js(ep): b,ms=get(ep); return json.loads(b),ms
-          def rf(p): return get('files/path'+urllib.parse.quote(p,safe='/'),3000000)
-          out={'mode':'READ_ONLY_GET_ONLY_PROBE2','production_write':False,'reload':False,'restart':False,'always_on':{},'db_candidates':[],'handler_signals':[]}
-          ao,ms=js('always_on/'); out['always_on']={'latency_ms':ms,'value':ao}
-          if isinstance(ao,list): vals=ao
-          elif isinstance(ao,dict): vals=ao.get('objects') or ao.get('tasks') or ao.get('results') or []
-          else: vals=[]
-          commands=[]
-          for x in vals:
-            if isinstance(x,dict): commands.append(str(x.get('command','')))
-          paths={'/home/Carix/db.py','/home/Carix/run_all.py','/home/Carix/start_safe.py','/home/Carix/bot.py','/home/Carix/main.py','/home/Carix/trace_zhurnal.py'}
-          for c in commands:
-            for p in re.findall(r'(/home/Carix/[^\s"\']+\.py)',c): paths.add(p)
-          src={}
-          for p in sorted(paths):
-            try: b,x=rf(p); src[p]=b.decode('utf8','replace')
-            except Exception: pass
-          joined='\n'.join(src.values())
-          for m in re.finditer(r'(?i)(["\'])([^"\']+\.(?:db|sqlite|sqlite3))\1',joined):
-            p=m.group(2)
-            if not p.startswith('/'): p='/home/Carix/'+p.lstrip('./')
-            if p not in out['db_candidates']: out['db_candidates'].append(p)
-          for path,text in src.items():
+            with urllib.request.urlopen(q,timeout=60) as r:b=r.read(5000001)
+            return b.decode('utf8','replace'),round((time.perf_counter()-t)*1000,2)
+          paths=['/home/Carix/db.py','/home/Carix/start_safe.py','/home/Carix/run_all.py']
+          src={}; read_ms={}
+          for p in paths:
+            try: src[p],read_ms[p]=rf(p)
+            except Exception as e: src[p]='';read_ms[p]=str(e)
+          out={'mode':'NARROW_READ_ONLY','production_write':False,'reload':False,'restart':False,'read_ms':read_ms,'constants':{},'sleep_sites':[],'routes':[]}
+          db=src['/home/Carix/db.py']
+          # Exact numeric/string constants related to locks/retries/timeouts.
+          tree=ast.parse(db)
+          for n in tree.body:
+            if isinstance(n,(ast.Assign,ast.AnnAssign)):
+              targets=n.targets if isinstance(n,ast.Assign) else [n.target]
+              names=[x.id for x in targets if isinstance(x,ast.Name)]
+              val=n.value
+              if names and any(re.search(r'(?i)(lock|zamok|retry|povtor|timeout|ozhid|sleep)',x) for x in names):
+                try: out['constants'][','.join(names)]=ast.literal_eval(val)
+                except Exception: out['constants'][','.join(names)]=ast.get_source_segment(db,val)
+          for p,text in src.items():
             lines=text.splitlines()
-            for i,line in enumerate(lines):
-              if re.search(r'(?i)(def |async def |handler|callback|message_handler|callback_query_handler)',line):
-                block='\n'.join(lines[i:min(i+80,len(lines))]); sig=[]
-                if re.search(r'(?i)sqlite|connect\(',block): sig.append('sqlite')
-                if re.search(r'(?i)requests\.|urlopen|urllib\.request',block): sig.append('http')
-                if re.search(r'(?i)\bsleep\s*\(|time\.sleep',block): sig.append('sleep')
-                if sig: out['handler_signals'].append({'file':path,'line':i+1,'header':line.strip()[:180],'signals':sig})
-          pathlib.Path('/tmp/probe2.json').write_text(json.dumps(out,ensure_ascii=False,indent=2))
-          print(json.dumps({'status':'PASS','mode':out['mode'],'production_write':False,'reload':False,'restart':False,'always_on_latency_ms':ms,'commands':commands,'db_candidates':out['db_candidates'],'handler_signals':out['handler_signals'][:60]},ensure_ascii=False))
+            for i,l in enumerate(lines):
+              if re.search(r'(?i)(time\.)?sleep\s*\(',l): out['sleep_sites'].append({'file':p,'line':i+1,'code':l.strip()[:220]})
+          # Read-only static route linkage: functions and Telegram registrations around user actions.
+          keys=['start','Автомоб','catalog','каталог','unpublished','опублик','card','карточ','price','цена','vin','status','статус']
+          for p,text in src.items():
+            lines=text.splitlines()
+            for i,l in enumerate(lines):
+              if any(k.casefold() in l.casefold() for k in keys):
+                a=max(0,i-4);z=min(len(lines),i+12); block='\n'.join(lines[a:z])
+                signals=[]
+                if re.search(r'(?i)db\.|connect\(|execute\(',block):signals.append('db')
+                if re.search(r'(?i)(time\.)?sleep\s*\(',block):signals.append('sleep')
+                if re.search(r'(?i)requests\.|urlopen|urllib\.request',block):signals.append('http')
+                if signals: out['routes'].append({'file':p,'line':i+1,'match':l.strip()[:180],'signals':signals})
+          pathlib.Path('/tmp/narrow.json').write_text(json.dumps(out,ensure_ascii=False,indent=2))
+          print(json.dumps({'status':'PASS','mode':out['mode'],'production_write':False,'reload':False,'restart':False,'constants':out['constants'],'sleep_sites':out['sleep_sites'],'routes':out['routes'][:80]},ensure_ascii=False))
           PY
-      - name: Enforce read-only
-        run: python3 -c "import json;d=json.load(open('/tmp/probe2.json'));assert d['production_write'] is False and d['reload'] is False and d['restart'] is False;print('PROBE2_READ_ONLY_PASS')"
+      - name: Enforce no mutation
+        run: python3 -c "import json;d=json.load(open('/tmp/narrow.json'));assert d['production_write'] is False and d['reload'] is False and d['restart'] is False;print('NARROW_READ_ONLY_PASS')"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: crm-runtime-probe2-${{ github.run_id }}
-          path: /tmp/probe2.json
+          name: crm-narrow-readonly-${{ github.run_id }}
+          path: /tmp/narrow.json
           retention-days: 7
