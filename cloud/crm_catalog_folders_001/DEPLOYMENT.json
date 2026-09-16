@@ -1,0 +1,96 @@
+{
+  "change_id": "UA-ART-CRM-CATALOG-FOLDERS-001",
+  "status": "INSTALLED_SERVER_VERIFIED",
+  "host": "PythonAnywhere",
+  "account": "Carix",
+  "authorization": {
+    "explicit_user_approval_received": true,
+    "scope": "Run crm_folders_install_20260910.py",
+    "context": "Approval received in the active conversation turn before execution",
+    "previous_execution_blocker": "Resolved by explicit user approval before execution"
+  },
+  "artifacts": {
+    "source": {
+      "path": "/home/Carix/cars_ui.py",
+      "before_sha256": "2c79fffff4cad8a23cb3f8992190ff03c17210655ddd374e9548d6e88563a246",
+      "installed_sha256": "5d3a4972b5605b35c2e19e0021176206c2f18b09e75197edc9a725fcfa481ad6"
+    },
+    "core": {
+      "path": "/home/Carix/ua_crm_catalog_folders.py",
+      "sha256": "63cfe41b4ce4d6e5c1f5615235da8cad50c40fde3278a799a82dfae410daf7b0"
+    },
+    "installer": {
+      "filename": "crm_folders_install_20260910.py",
+      "sha256": "4d39d9ae6ea871e3102f5788df4a987c107a56bebdccbeb4122594e1e0f36e68"
+    },
+    "backup_directory": "/home/Carix/backups/crm_catalog_folders_001/20260910T111025Z"
+  },
+  "preflight": {
+    "status": "PREFLIGHT_OK",
+    "catalog_count": 18,
+    "unpublished_count": 1,
+    "unpublished_numbers": [
+      "UA-0019"
+    ]
+  },
+  "apply": {
+    "status": "INSTALLED",
+    "applied_at": "2026-09-10T11:10:25Z"
+  },
+  "restart": {
+    "task_id": 266084,
+    "attempted_via": "PythonAnywhere UI",
+    "confirmed": true,
+    "state": "Running",
+    "process_start_utc": "2026-09-10T11:19:00Z",
+    "matching_processes": 1,
+    "rechecked_after_1120_utc_same_start": true,
+    "cars_ui_connected_at_utc": "2026-09-10T11:19:05.528Z",
+    "client_bot_started_at_utc": "2026-09-10T11:19:05.914Z",
+    "crm_bot_started_at_utc": "2026-09-10T11:19:06.277Z",
+    "running_bots": 2
+  },
+  "verification_limits": [
+    "Actual Telegram button interactions were not performed",
+    "Real publication/unpublication was not performed",
+    "No errors in the inspected startup excerpt; existing PTB per_message warnings were present"
+  ],
+  "post_install_verification": {
+    "status": "PASS",
+    "checked_at_utc_minute": "2026-09-10T11:16Z",
+    "source_sha_matches_manifest": true,
+    "original_source_prefix_exact": true,
+    "core_sha_matches_manifest": true,
+    "source_and_core_compile": true,
+    "fresh_tasks_ui": {
+      "266084": "Running",
+      "270984": "Running"
+    }
+  },
+  "scope": {
+    "installed_change": "CRM automobile folders and navigation",
+    "publication_performed": false,
+    "homepage_or_homepage_counters_changed": false,
+    "emergency_halt_changed": false
+  },
+  "post_install_integrity": {
+    "source_hash": "PASS",
+    "core_hash": "PASS",
+    "original_prefix_exact": "PASS",
+    "compile": "PASS"
+  },
+  "post_restart_counts": {
+    "verified_at_utc": "2026-09-10T11:20:00Z",
+    "catalog": 18,
+    "unpublished": 1,
+    "unpublished_numbers": [
+      "UA-0019"
+    ],
+    "database_mode": "ro"
+  },
+  "unchanged_monitor": {
+    "task_id": 270984,
+    "state": "Running",
+    "process_start_utc": "2026-09-10T10:09:30Z"
+  }
+}
