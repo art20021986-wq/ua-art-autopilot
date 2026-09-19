@@ -1,0 +1,112 @@
+{
+  "contract": "PR114-CONNECTION-READBACK-AND-RETAINED-SOURCE-RECOVERY-1",
+  "operation_id": "pr114-connection-readback-20260919T1628Z",
+  "recorded_at": "2026-09-19T16:34:15.595Z",
+  "scope": "READ_ONLY; not a writer Gate, current source attestation or production receipt",
+  "git": {
+    "head": "02a10a40b2aea2f3adc9ef5a98fe023cbb7aa248",
+    "main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "complete_main_tree": true,
+    "active_halt_present": false,
+    "transactions": {
+      "count": 9,
+      "FINISHED": 6,
+      "ROLLED_BACK": 3,
+      "nonterminal": 0
+    },
+    "github_runs": {
+      "in_progress": 0,
+      "queued": 0
+    },
+    "blocked_verify_run": {
+      "id": 34733330869,
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    "stage3_stage4_receipts_present": false
+  },
+  "coordination": {
+    "foreground_in_progress": false,
+    "source_checkpoint": "cloud/task088_v5_acceptance/resume_20260919_handoff006/CHECKPOINT.json",
+    "connection_policy_foreground_writer_active": false,
+    "head_recheck_unchanged": true,
+    "no_writer_claim_acquired": true,
+    "production_locks_unchanged": true
+  },
+  "browser": {
+    "initial_console": "Authenticated shell prompt visible, console48168693; no active command visible",
+    "file_manager_initial": "502 Bad Gateway; server closed connection",
+    "retry": {
+      "state": "FILE_MANAGER_502",
+      "observation": "DOM heading 502 Bad Gateway; server closed connection",
+      "action": "one permitted read-only page reload",
+      "attempt": 1,
+      "at": "2026-09-19T16:31:08.265Z"
+    },
+    "file_manager_after_one_reload": "Authenticated Carix file listing visible; exact cars_ui.py/stranica.py/publish_transaction_guard.py download and edit links observed",
+    "download": {
+      "file": "cars_ui.py",
+      "attempts": 1,
+      "error": "Protocol error (Fetch.failRequest): Invalid InterceptionId.",
+      "outcome_reconciliation": "Awaiting the same existing download promise returned the same error; no second download, no returned download path.",
+      "stale_scratch_file": {
+        "path": "/workspace/scratch/cars_ui.py",
+        "bytes": 0,
+        "mtime": "2026-09-07T08:09:03.807834046+03:00",
+        "accepted": false
+      }
+    },
+    "hash_read": {
+      "attempted_command": "sha256sum /home/Carix/cars_ui.py /home/Carix/stranica.py /home/Carix/publish_transaction_guard.py",
+      "interaction": "DOM contenteditable type followed by Enter; no hashes returned; DOM insertion is not proof of shell execution",
+      "raw_observed_screen": "sha256sum /home/Carix/cars_ui.py /home/Carix/stranica.py /home/Carix/publish_transaction_guard.py16:18 ~/autopilot_inbox/cloud $ 16:32 ~/autopilot_inbox/cloud $",
+      "fresh_hash_read_accepted": false
+    },
+    "further_browser_attempts_stopped": true
+  },
+  "retained_sources": {
+    "origin": "Existing private source snapshot, not this failed browser download",
+    "local_directory": "/workspace/scratch/256f936ac1c5/private_v5_current",
+    "snapshot_manifest": "capture_manifest.json",
+    "manifest_sha256": "b25510fa8e59f5414dc30d77716b31cef813d0f1ac80bac773eee9effbeafa15",
+    "files": [
+      {
+        "name": "cars_ui.py",
+        "bytes": 207634,
+        "sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde"
+      },
+      {
+        "name": "stranica.py",
+        "bytes": 202860,
+        "sha256": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+      },
+      {
+        "name": "publish_transaction_guard.py",
+        "sha256": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d"
+      }
+    ],
+    "local_sha256_matches_snapshot_manifest": true,
+    "local_sha256_matches_retained_20260919_1514_server_observation": true,
+    "server_reference": "cloud/task088_v5_acceptance/resume_20260919/SOURCE_READBACK.json",
+    "fresh_server_local_comparison": false,
+    "raw_source_logged": false,
+    "raw_source_added_to_git": false
+  },
+  "automation": {
+    "id": "6aa838e44e688191acb636f6597ac587",
+    "is_enabled": true,
+    "updated_at": "2026-09-19T16:28:22.657685+00:00",
+    "modified_this_run": false
+  },
+  "actions": {
+    "historical_tests_rerun": false,
+    "new_tests_run": false,
+    "new_preflight": false,
+    "launch": false,
+    "installation": false,
+    "production_source_write": false,
+    "crm_write": false,
+    "website_write": false
+  },
+  "next_action": "On the next connection attempt inspect console state and use actual terminal input (not contenteditable DOM insertion) for one read-only SHA256 command. Reuse the three retained private files if fresh server hashes match; do not download them again unnecessarily. Only then proceed to the minimal isolated integration and affected real call-path tests."
+}
