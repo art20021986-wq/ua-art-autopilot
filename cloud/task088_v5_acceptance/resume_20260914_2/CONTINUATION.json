@@ -4,7 +4,7 @@
     "path": "cloud/task088_v5_acceptance/resume_20260914_2/BACKGROUND_CONTINUATION.json",
     "sha256": "3459d77512586d9fb5037930103963751ecc1592523188fc7f4637e579cab7db"
   },
-  "background_task_state": "RE_ENABLE_REQUESTED_BY_OWNER_SETUP_IN_PROGRESS",
+  "background_task_state": "ENABLED_READBACK_CONFIRMED_20260919_CONNECTION_RESUME",
   "branch": "codex/task088-owner-policy-20260913-0934",
   "completed_this_continuation": [
     "Read exact six-page UA-ART-PR114-AUDIT-CONTINUE-002-v1.0.docx and latest AUDIT_CONTINUATION_NOTICE.",
@@ -184,6 +184,12 @@
       "observed_source_hashes": false,
       "production_gate": false
     },
-    "acceptance_percent_unchanged": 40
+    "acceptance_percent_unchanged": 40,
+    "automation_service_update": {
+      "is_enabled": true,
+      "updated_at": "2026-09-19T16:27:06.505131+00:00",
+      "schedule": "BEGIN:VEVENT\nDTSTART:20260914T181248Z\nRRULE:FREQ=HOURLY\nEND:VEVENT",
+      "immediate_run_state": "NOT_REQUESTED_YET_ROOT_WILL_REQUEST_AFTER_CHECKPOINT_READBACK"
+    }
   }
 }
