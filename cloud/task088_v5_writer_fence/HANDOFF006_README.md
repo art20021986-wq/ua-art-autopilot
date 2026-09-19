@@ -37,8 +37,8 @@ fallback writes and the nested spec84 lock keep the required order. The legacy
 transaction guard is rebound to that registry instead of opening a second
 `flock` on the same path.
 
-Ten new isolated integration tests cover the bound-hash fail-closed rule,
-photo/video lock boundaries, rollback, preservation of a changed after-image,
+Eleven new isolated integration tests cover the bound-hash fail-closed rule,
+photo/video/diagnostic lock boundaries, rollback, preservation of a changed after-image,
 async worker delegation, direct `main` placement and shared legacy-guard
 registry. This proves only the
 assembled private candidate. It is not installed, does not exclude old loaded

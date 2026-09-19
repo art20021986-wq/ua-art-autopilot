@@ -171,6 +171,81 @@ def _ua114_video_remove_all_mutation(cid, actor_id):
             }
 
 
+def _ua114_diag_directory(code):
+    return os.path.join("/home/Carix", "video", "diag", code)
+
+
+def _ua114_diag_clear_mutation(cid, pole, actor_id):
+    if pole not in ("condition_photos", "condition_videos"):
+        return {"ok": False, "error": "DIAGNOSTIC_FIELD_REFUSED", "rollback_conflicts": []}
+    with _ua114_publication_fence():
+        card = card_of(cid) or {}
+        if not card:
+            return {"ok": False, "error": "CARD_NOT_FOUND", "rollback_conflicts": []}
+        code = str(card.get("auto_number") or "").strip()
+        if not code:
+            code = "UA-%04d" % int(card["id"])
+        directory = _ua114_diag_directory(code)
+        video = pole == "condition_videos"
+        targets = []
+        try:
+            names = sorted(os.listdir(directory))
+        except FileNotFoundError:
+            names = []
+        for name in names:
+            path = os.path.join(directory, name)
+            if not os.path.isfile(path) or name.endswith(".poster.jpg"):
+                continue
+            try:
+                with open(path, "rb") as handle:
+                    header = handle.read(16)
+            except OSError:
+                continue
+            if (header[4:8] == b"ftyp") == video:
+                targets.append(path)
+                if os.path.isfile(path + ".poster.jpg"):
+                    targets.append(path + ".poster.jpg")
+        backup_dir = _v142_papka(code, "diag_" + pole)
+        backup_count = _v142_kopirovat(targets, backup_dir)
+        before = {pole: card.get(pole)}
+        expected = {pole: "[]"}
+        written = {}
+        removed = 0
+        try:
+            db.update_card_field("cars", int(cid), pole, "[]", actor_id)
+            written[pole] = "[]"
+            for path in targets:
+                os.remove(path)
+                removed += 1
+            if not _peresobrat_stranicy():
+                raise RuntimeError("PAGE_REBUILD_FAILED")
+            return {
+                "ok": True,
+                "removed": removed,
+                "before_count": len(jload(card.get(pole))),
+                "backup_count": backup_count,
+            }
+        except Exception as exc:
+            conflicts = _ua114_restore_fields(
+                int(cid), actor_id,
+                {field: before[field] for field in written}, written)
+            try:
+                _v142_vernut(backup_dir, directory)
+            except Exception:
+                conflicts.append("diagnostic_files")
+            try:
+                if not _peresobrat_stranicy():
+                    conflicts.append("rebuilt_pages")
+            except Exception:
+                conflicts.append("rebuilt_pages")
+            return {
+                "ok": False,
+                "error": type(exc).__name__ + ":" + str(exc),
+                "removed": removed,
+                "rollback_conflicts": sorted(set(conflicts)),
+            }
+
+
 async def photo_remove_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     q = update.callback_query
     await _v168_ack(q,)
@@ -214,6 +289,33 @@ async def video_remove_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Удалено видео: %d. Файлов с сайта убрано: %d.\n"
         "Фото и материалы диагностики не тронуты." % (
             result["before_count"], result["removed"]),
+        reply_markup=back)
+    raise ApplicationHandlerStop
+
+
+async def diag_clear(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q,)
+    try:
+        _, cid, pole = (q.data or "").split(":", 2)
+    except ValueError:
+        raise ApplicationHandlerStop
+    result = await _ua114_asyncio.to_thread(
+        _ua114_diag_clear_mutation, int(cid), pole, q.from_user.id)
+    back = InlineKeyboardMarkup([[InlineKeyboardButton(
+        "← К диагностике", callback_data="car_cond:%s" % cid)]])
+    if not result.get("ok"):
+        suffix = ""
+        if result.get("rollback_conflicts"):
+            suffix = "\nТребуется ручная сверка: " + ", ".join(result["rollback_conflicts"])
+        await q.message.reply_text(
+            "Материалы диагностики не изменены либо выполнен ограниченный откат.%s" % suffix,
+            reply_markup=back)
+        raise ApplicationHandlerStop
+    label = "Фото" if pole == "condition_photos" else "Видео"
+    await q.message.reply_text(
+        "%s проверки убраны: %d.\nСтраница пересобрана." % (
+            label, result["before_count"]),
         reply_markup=back)
     raise ApplicationHandlerStop
 # UA-ART-PR114-PUBLICATION-FENCE-HANDOFF006:END
@@ -287,7 +389,7 @@ def _integrate_cars_text(source: str) -> str:
     if CARS_MARKER in source:
         raise RuntimeError("CARS_ALREADY_INTEGRATED")
     _require_defs(source, "cars_ui.py", {
-        "photo_remove_all", "video_remove_all", "_ubrat_fayly_foto",
+        "photo_remove_all", "video_remove_all", "diag_clear", "_ubrat_fayly_foto",
         "_ubrat_fayly_video", "_ubrat_video_polno", "_peresobrat_stranicy",
         "register",
     })

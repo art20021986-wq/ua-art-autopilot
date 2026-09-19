@@ -1,6 +1,8 @@
 import ast
 import contextlib
 import json
+import os
+import shutil
 import sys
 import tempfile
 import types
@@ -51,6 +53,8 @@ class IntegrationTests(unittest.TestCase):
             "videos": json.dumps([{"file_id": "v1"}]),
             "video_h": "vh",
             "video_v": "vv",
+            "condition_photos": json.dumps([{"file_id": "dp1"}]),
+            "condition_videos": json.dumps([{"file_id": "dv1"}]),
         }
 
         def held(event):
@@ -92,9 +96,14 @@ class IntegrationTests(unittest.TestCase):
             "photos_of": lambda row: json.loads(row.get("photos") or "[]"),
             "videos_of": lambda row: json.loads(row.get("videos") or "[]"),
             "jdump": json.dumps,
+            "jload": lambda value: json.loads(value or "[]"),
+            "os": os,
             "db": DB(),
             "_v142_zapas_foto": lambda _code: ("backup", 1),
             "_v142_vernut_foto": lambda _code, _backup: (held("photo-restore") or 1),
+            "_v142_papka": lambda _code, _kind: "backup",
+            "_v142_kopirovat": lambda paths, _backup: len(paths),
+            "_v142_vernut": lambda _backup, _directory: 0,
         }
         module = types.ModuleType("publication_fence")
         module.publication_fence = lambda **_kwargs: _Fence(events, state)
@@ -150,15 +159,50 @@ class IntegrationTests(unittest.TestCase):
         handlers = {
             node.name: node for node in tree.body
             if isinstance(node, ast.AsyncFunctionDef)
-            and node.name in {"photo_remove_all", "video_remove_all"}
+            and node.name in {"photo_remove_all", "video_remove_all", "diag_clear"}
         }
-        self.assertEqual(set(handlers), {"photo_remove_all", "video_remove_all"})
+        self.assertEqual(set(handlers), {"photo_remove_all", "video_remove_all", "diag_clear"})
         for node in handlers.values():
             calls = [item for item in ast.walk(node) if isinstance(item, ast.Call)]
             self.assertTrue(any(
                 isinstance(call.func, ast.Attribute)
                 and call.func.attr == "to_thread" for call in calls
             ))
+
+    def test_diagnostic_clear_is_inside_fence_through_rebuild(self):
+        ns, card, events, state = self._cars_namespace()
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as backup:
+            source = Path(directory) / "clip.jpg"
+            source.write_bytes(b"xxxxftyp-video")
+
+            def copy(paths, target):
+                self.assertGreater(state["held"], 0)
+                events.append("diag-backup")
+                for path in paths:
+                    shutil.copy2(path, Path(target) / Path(path).name)
+                return len(paths)
+
+            def restore(source_dir, target):
+                self.assertGreater(state["held"], 0)
+                events.append("diag-restore")
+                for path in Path(source_dir).iterdir():
+                    destination = Path(target) / path.name
+                    if not destination.exists():
+                        shutil.copy2(path, destination)
+                return 1
+
+            ns["_ua114_diag_directory"] = lambda _code: directory
+            ns["_v142_papka"] = lambda _code, _kind: backup
+            ns["_v142_kopirovat"] = copy
+            ns["_v142_vernut"] = restore
+            result = ns["_ua114_diag_clear_mutation"](7, "condition_videos", 99)
+            self.assertFalse(source.exists())
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(card["condition_videos"], "[]")
+        self.assertEqual(events[0], "fence-enter")
+        self.assertEqual(events[-1], "fence-exit")
+        self.assertLess(events.index("db:condition_videos"), events.index("rebuild"))
 
     def test_photo_failure_restores_inside_fence(self):
         ns, card, events, _state = self._cars_namespace(photo_error=True)

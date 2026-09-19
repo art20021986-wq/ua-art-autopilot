@@ -17,8 +17,8 @@
   },
   "candidate": {
     "cars_ui.py": {
-      "bytes": 215180,
-      "sha256": "bdfe65f3414099e82455e9cea44f72946314c70a6925b2bb6c2647761310419c"
+      "bytes": 219332,
+      "sha256": "541ba0f7196184be3c300cd31e8a31000c041e43c966f03c2ef8999a9284dd79"
     },
     "stranica.py": {
       "bytes": 203579,
@@ -32,36 +32,37 @@
       "bytes": 9694,
       "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
     },
-    "private_manifest_sha256": "af3a3bdc72c238b8e5169cfdb828e6f677f011616ea64f867c063e647e7344c1",
+    "private_manifest_sha256": "8d76fa12c36bef3e9d6a72488812d8650e104c7fef5bbbd49dd05a2918d5e4e8",
     "private_files_committed": false
   },
   "builder": {
     "path": "cloud/task088_v5_writer_fence/integrate_private_sources.py",
-    "bytes": 15161,
-    "sha256": "e93f7bae639d78d90162f796070d1222b4d08623f4e35b0bf4494bfbcc530d49",
+    "bytes": 19327,
+    "sha256": "0a9163791df5013e498e9933d057707ee45f307d042fbaff37a437df123f5153",
     "input_directory_mutated": false,
     "nonempty_output_refused": true,
     "exact_before_hash_required": true
   },
   "tests": {
     "command": "python3 -B -m unittest -v test_private_source_integration",
-    "passed": 10,
+    "passed": 11,
     "failed": 0,
     "test_source": {
       "path": "cloud/task088_v5_writer_fence/test_private_source_integration.py",
-      "bytes": 9282,
-      "sha256": "f55f71735742d190be049d6da5dae5f3c915b5daa4df21050c30737d0d5bebb3"
+      "bytes": 11344,
+      "sha256": "1c29c7ad4b0397130ff79550cebcf3750546c1686cd521b8e5d683c346a2208f"
     },
     "raw_output": {
       "path": "cloud/task088_v5_writer_fence/handoff006_evidence/PRIVATE_INTEGRATION_TEST_OUTPUT.txt",
-      "bytes": 1577,
-      "sha256": "926d4e367c8ad19012732f150c75607fa1fa80a629b571d42609bc843da3aef5"
+      "bytes": 1743,
+      "sha256": "af4db8915eb9f2d2465648ea2d862f00593aabd2daafe8d975677f6a85a60843"
     }
   },
   "verified_boundaries": [
     "photo remove-all executes filesystem removal, database updates and page rebuild under one synchronous-worker fence",
     "video remove-all executes database updates, media/file removal and page rebuild under one synchronous-worker fence",
-    "both async handlers delegate their mutation phase to asyncio.to_thread",
+    "diagnostic media clear executes database update, content-classified file removal and page rebuild under one synchronous-worker fence",
+    "all three async handlers delegate their mutation phase to asyncio.to_thread",
     "low-level media removal fails closed without current-thread fence ownership",
     "stranica final main wrapper precedes direct __main__ execution and covers validation fallback writes",
     "stranica writes take publication fence before nested spec84 lock",
