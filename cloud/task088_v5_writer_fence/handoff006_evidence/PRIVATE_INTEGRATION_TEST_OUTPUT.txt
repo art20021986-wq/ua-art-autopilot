@@ -1,0 +1,15 @@
+test_async_handlers_delegate_mutation_to_thread (test_private_source_integration.IntegrationTests.test_async_handlers_delegate_mutation_to_thread) ... ok
+test_changed_after_image_is_not_overwritten_by_rollback (test_private_source_integration.IntegrationTests.test_changed_after_image_is_not_overwritten_by_rollback) ... ok
+test_guard_reuses_shared_fence_registry (test_private_source_integration.IntegrationTests.test_guard_reuses_shared_fence_registry) ... ok
+test_low_level_media_remove_fails_without_outer_fence (test_private_source_integration.IntegrationTests.test_low_level_media_remove_fails_without_outer_fence) ... ok
+test_photo_failure_restores_inside_fence (test_private_source_integration.IntegrationTests.test_photo_failure_restores_inside_fence) ... ok
+test_photo_success_holds_one_outer_fence (test_private_source_integration.IntegrationTests.test_photo_success_holds_one_outer_fence) ... ok
+test_private_hash_mismatch_fails_before_output (test_private_source_integration.IntegrationTests.test_private_hash_mismatch_fails_before_output) ... ok
+test_stranica_insertion_precedes_direct_main (test_private_source_integration.IntegrationTests.test_stranica_insertion_precedes_direct_main) ... ok
+test_stranica_nested_write_order (test_private_source_integration.IntegrationTests.test_stranica_nested_write_order) ... ok
+test_video_failure_restores_database_fields (test_private_source_integration.IntegrationTests.test_video_failure_restores_database_fields) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.034s
+
+OK

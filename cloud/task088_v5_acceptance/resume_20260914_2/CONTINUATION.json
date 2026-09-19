@@ -38,7 +38,8 @@
     "September19 isolated permanent publication-fence candidate completed: same-thread reentrant and cross-thread/cross-process exclusive primitive, fork cleanup and fail-closed path checks; new affected suite 11/11 PASS. Not integrated or installed; acceptance remains 8/20 (40%).",
     "Handoff006 resumed by explicit owner command. Current GitHub controls reconciled and actual PR completion automation confirmed disabled. Independent isolated fence review reproduced and fixed fork cleanup and stale inode grant defects; affected 18-test module suite PASS. Exact private source read blocked by managed browser transport failure; no new preflight, production launch or acceptance increment.",
     "Connection-resume attempt recovered authenticated file listing after one reload. Failed download reconciled without retry. Three retained private originals independently SHA256-match the private snapshot manifest and saved server source observation; no fresh server hash assertion, integration, installation or acceptance increment. See latest checkpoint.",
-    "Current-hash read attempt was bounded to two real-keyboard read-only inputs. Authenticated console returned prompts but no digest lines, so no source binding or integration was claimed. Exact failure and single next action saved; production, CRM and site unchanged."
+    "Current-hash read attempt was bounded to two real-keyboard read-only inputs. Authenticated console returned prompts but no digest lines, so no source binding or integration was claimed. Exact failure and single next action saved; production, CRM and site unchanged.",
+    "Connection restored through the authenticated console. Fresh SHA256 for cars_ui.py, stranica.py and publish_transaction_guard.py exactly matched retained originals without a duplicate download. A separate private source candidate was assembled with shared writer-fence integration; 10/10 new integration tests PASS. It is not installed and acceptance remains 8/20 (40%)."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -62,13 +63,13 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260920_handoff006/source_binding_20260919_1838/NOTICE.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260920_handoff006/integration_20260919_1844/NOTICE.json",
   "next_action": {
-    "kind": "ASSEMBLE_ISOLATED_PRIVATE_SOURCE_INTEGRATION",
-    "detail": "Fresh authenticated SHA256 for cars_ui.py, stranica.py and publish_transaction_guard.py exactly match the retained private originals. Reuse those bytes without re-download and assemble the minimal isolated publication-fence integration. Do not start freshness preflight or production launch."
+    "kind": "REVIEW_PRIVATE_CANDIDATE_AND_PREPARE_WRITER_CONTAINMENT",
+    "detail": "Review the exact generated candidate hashes and sanitized integration evidence, then assemble release closure and prove complete writer membership, drain and loaded-source identity. Do not run freshness preflight or production install until containment passes."
   },
   "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
-  "observed_pr_head_before_this_update": "94763fba9da31e247431c69637cb5148ff2095b8",
+  "observed_pr_head_before_this_update": "3c1eda020e21b413ca541680c26dbb18d28f7fc2",
   "owner_current_request": "Включить и запустить PR114 автопилот, автоматически продолжать после восстановления связи.",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
@@ -105,7 +106,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-19T18:38:30Z",
+  "recorded_at": "2026-09-19T18:44:48Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -157,6 +158,10 @@
     "validation_sha256": "4963a9fe55c0ac9a50345e2244a36aad4d9a6d60e7dd14a3bdc9fb4bc7df660d",
     "tests_passed": 18,
     "integrated": false,
+    "private_candidate_assembled": true,
+    "private_candidate_validation": "cloud/task088_v5_writer_fence/PRIVATE_INTEGRATION_VALIDATION.json",
+    "private_candidate_validation_sha256": "dac8effa465f855babbeac71179194528b52522d07c5e1f21ac3938b2369e3ab",
+    "private_candidate_tests_passed": 10,
     "installed": false,
     "writer_gate_pass": false,
     "validation_path": "cloud/task088_v5_writer_fence/HANDOFF006_VALIDATION.json"
@@ -195,14 +200,14 @@
     }
   },
   "connection_recovery_last_attempt": {
-    "operation_id": "pr114-current-hash-read-20260919T1653Z",
+    "operation_id": "pr114-private-integration-20260919T1844Z",
     "evidence": {
-      "path": "cloud/task088_v5_acceptance/resume_20260919_handoff006/hash_read_20260919_1654/READBACK.json",
-      "sha256": "6e4ad4e6fb2a5aa9eb62621ce54f1927a37510218dc00531e3b787ac57f31a0b"
+      "path": "cloud/task088_v5_acceptance/resume_20260920_handoff006/integration_20260919_1844/NOTICE.json",
+      "sha256": "c0768f810ee7037957e5a781ebedb905478c331aea1db163b4f37499158bc2fc"
     },
-    "state": "WAIT_CONNECTION_OR_RELIABLE_CONSOLE_IO",
+    "state": "PASS_CONNECTION_RESTORED_PRIVATE_CANDIDATE_ASSEMBLED",
     "automation_enabled": true,
-    "fresh_source_hashes": false,
+    "fresh_source_hashes": true,
     "production_changed": false
   }
 }

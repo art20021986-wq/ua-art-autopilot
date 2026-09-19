@@ -26,5 +26,14 @@
     "Authenticated after-image readback and loaded-process identity",
     "Complete writer membership/drain observation under the same operation identity",
     "Canonical request, manifest, Gate B, activation and verified backup"
-  ]
+  ],
+  "private_integration_candidate": {
+    "assembled": true,
+    "installed": false,
+    "writer_gate_pass": false,
+    "builder": "cloud/task088_v5_writer_fence/integrate_private_sources.py",
+    "validation": "cloud/task088_v5_writer_fence/PRIVATE_INTEGRATION_VALIDATION.json",
+    "private_candidate_files_committed": false,
+    "tests_passed": 10
+  }
 }

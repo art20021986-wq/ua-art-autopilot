@@ -19,3 +19,27 @@ Obtain and privately retain the exact pinned cars_ui.py and stranica.py sources 
 Inspect the actual call graph and lock ordering, including SQLite and spec84. Existing publish_transaction_guard._exclusive_lock uses a separate flock; nesting it with this registry can self-deadlock. Every nested participant must use the same reviewed registry. All participants must preserve the lock inode: never unlink or replace it. Validation cannot prevent an uncooperative writer replacing the path after a grant.
 
 New source does not contain already-loaded old processes. Complete writer inventory, drain, old/new loaded-source identity, canonical lifecycle recovery, full backup and exact request/manifest/Gate B/activation remain open. Do not run a new freshness preflight or install until integration and containment pass their actual gates.
+
+## Private source integration candidate
+
+`integrate_private_sources.py` now assembles a private candidate only when all
+three authenticated current-source SHA-256 values match their pinned bytes. It
+never edits the input directory and refuses a non-empty output directory. The
+generated private files remain outside Git; only their sizes, hashes and the
+sanitized integration/test evidence are retained here.
+
+The integration moves photo/video remove-all mutations into synchronous
+`asyncio.to_thread` workers that acquire the fence before any database or
+filesystem mutation and hold it through rebuild. Low-level removal helpers
+fail closed unless the same thread owns the fence. `stranica.main`, its final
+writer and etalon writer acquire the same reentrant registry, so validation
+fallback writes and the nested spec84 lock keep the required order. The legacy
+transaction guard is rebound to that registry instead of opening a second
+`flock` on the same path.
+
+Ten new isolated integration tests cover the bound-hash fail-closed rule,
+photo/video lock boundaries, rollback, preservation of a changed after-image,
+async worker delegation, direct `main` placement and shared legacy-guard
+registry. This proves only the
+assembled private candidate. It is not installed, does not exclude old loaded
+processes, and is not a writer Gate or production receipt.
