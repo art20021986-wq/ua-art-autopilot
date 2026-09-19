@@ -4,7 +4,7 @@
     "path": "cloud/task088_v5_acceptance/resume_20260914_2/BACKGROUND_CONTINUATION.json",
     "sha256": "3459d77512586d9fb5037930103963751ecc1592523188fc7f4637e579cab7db"
   },
-  "background_task_state": "DISABLED_READBACK_CONFIRMED_20260919_HANDOFF006",
+  "background_task_state": "RE_ENABLE_REQUESTED_BY_OWNER_SETUP_IN_PROGRESS",
   "branch": "codex/task088-owner-policy-20260913-0934",
   "completed_this_continuation": [
     "Read exact six-page UA-ART-PR114-AUDIT-CONTINUE-002-v1.0.docx and latest AUDIT_CONTINUATION_NOTICE.",
@@ -67,7 +67,7 @@
   },
   "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
   "observed_pr_head_before_this_update": "94763fba9da31e247431c69637cb5148ff2095b8",
-  "owner_current_request": "Запускай — UA-ART-PR114-HANDOFF-006 v1.0",
+  "owner_current_request": "Включить и запустить PR114 автопилот, автоматически продолжать после восстановления связи.",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
     "sha256": "55a970c7b34745232fa132883b5d87344740db93c272eee6bca7da5754d6b623"
@@ -103,7 +103,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-19T16:20:14.638970+00:00",
+  "recorded_at": "2026-09-19T16:26:52.624Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -159,5 +159,31 @@
     "writer_gate_pass": false,
     "validation_path": "cloud/task088_v5_writer_fence/HANDOFF006_VALIDATION.json"
   },
-  "handoff006_checkpoint_scope": "Isolated candidate preparation only; retained Preview and product results remain historical for their exact versions. New candidate is not integrated or installed."
+  "handoff006_checkpoint_scope": "Isolated candidate preparation only; retained Preview and product results remain historical for their exact versions. New candidate is not integrated or installed.",
+  "connection_recovery_policy": {
+    "version": "PR114-CONNECTION-RESUME-001-v1",
+    "recorded_at": "2026-09-19T16:26:52.624Z",
+    "owner_instruction": "При остановке соединения после восстановления продолжать автопилот; включить и запустить сейчас.",
+    "scheduler_id": "6aa838e44e688191acb636f6597ac587",
+    "schedule": "EXISTING_HOURLY",
+    "start_request": "IMMEDIATE_RUN_REQUESTED_AFTER_SETUP",
+    "connection_loss_state": "WAIT_CONNECTION_OR_OUTCOME_UNKNOWN",
+    "transport_read_retry_limit_per_run": 1,
+    "keep_scheduled_task_enabled_on_transport_failure": true,
+    "always_recheck_transport_on_next_scheduled_attempt": true,
+    "reconcile_before_resume": true,
+    "never_repeat_unknown_write": true,
+    "persist_intent_before_mutation": true,
+    "checkpoint_interval_when_observable_minutes": 5,
+    "safety_fail_is_not_transport_retry": true,
+    "single_writer_required": true,
+    "foreground_writer_active": false,
+    "foreground_read_only_browser_observation": {
+      "state": "AUTHENTICATED_CONSOLE_SHELL_PROMPT_VISIBLE",
+      "console_id": "48168693",
+      "observed_source_hashes": false,
+      "production_gate": false
+    },
+    "acceptance_percent_unchanged": 40
+  }
 }
