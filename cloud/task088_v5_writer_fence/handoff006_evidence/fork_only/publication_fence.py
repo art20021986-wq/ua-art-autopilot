@@ -86,7 +86,7 @@ os.register_at_fork(
 )
 
 
-def _validate_parent(path: Path) -> None:
+def _safe_open(path: Path) -> int:
     if not path.is_absolute():
         raise FencePathError("PUBLICATION_FENCE_ABSOLUTE_PATH_REQUIRED")
     try:
@@ -94,23 +94,6 @@ def _validate_parent(path: Path) -> None:
             raise FencePathError("PUBLICATION_FENCE_CANONICAL_PARENT_REQUIRED")
     except OSError as exc:
         raise FencePathError("PUBLICATION_FENCE_PARENT_REQUIRED") from exc
-
-
-def _validate_lock_file(path: Path, fd: int) -> None:
-    _validate_parent(path)
-    try:
-        opened = os.fstat(fd)
-        linked = os.stat(path, follow_symlinks=False)
-    except OSError as exc:
-        raise FencePathError("PUBLICATION_FENCE_PATH_CHANGED") from exc
-    if not stat.S_ISREG(opened.st_mode) or not stat.S_ISREG(linked.st_mode):
-        raise FencePathError("PUBLICATION_FENCE_REGULAR_FILE_REQUIRED")
-    if (opened.st_dev, opened.st_ino) != (linked.st_dev, linked.st_ino):
-        raise FencePathError("PUBLICATION_FENCE_PATH_CHANGED")
-
-
-def _safe_open(path: Path) -> int:
-    _validate_parent(path)
     flags = os.O_RDWR | os.O_CREAT
     flags |= getattr(os, "O_CLOEXEC", 0)
     flags |= getattr(os, "O_NOFOLLOW", 0)
@@ -121,7 +104,12 @@ def _safe_open(path: Path) -> int:
             raise FencePathError("PUBLICATION_FENCE_UNSAFE_PATH") from exc
         raise
     try:
-        _validate_lock_file(path, fd)
+        opened = os.fstat(fd)
+        linked = os.stat(path, follow_symlinks=False)
+        if not stat.S_ISREG(opened.st_mode) or not stat.S_ISREG(linked.st_mode):
+            raise FencePathError("PUBLICATION_FENCE_REGULAR_FILE_REQUIRED")
+        if (opened.st_dev, opened.st_ino) != (linked.st_dev, linked.st_ino):
+            raise FencePathError("PUBLICATION_FENCE_PATH_CHANGED")
         return fd
     except BaseException:
         os.close(fd)
@@ -177,9 +165,6 @@ class PublicationFence:
         with _condition:
             state = _states.setdefault(key, _State())
             if state.owner_thread == thread_id:
-                if state.fd is None:
-                    raise FenceError("PUBLICATION_FENCE_DESCRIPTOR_MISSING")
-                _validate_lock_file(self.path, state.fd)
                 state.depth += 1
                 self._entered = True
                 return self
@@ -200,9 +185,6 @@ class PublicationFence:
                 state = _states[key]
                 if state.acquiring_thread != thread_id or state.owner_thread is not None:
                     raise FenceError("PUBLICATION_FENCE_REGISTRY_DRIFT")
-                # Opening may precede a long flock wait.  Refuse a stale
-                # inode if the lock path changed before granting the lease.
-                _validate_lock_file(self.path, fd)
                 state.acquiring_thread = None
                 state.owner_thread = thread_id
                 state.depth = 1
@@ -267,6 +249,3 @@ def require_publication_fence(*, lock_path: Path | str = DEFAULT_LOCK_PATH) -> N
         state = _states.get(key)
         if state is None or state.owner_thread != threading.get_ident() or state.depth <= 0:
             raise FenceError("PUBLICATION_FENCE_REQUIRED")
-        if state.fd is None:
-            raise FenceError("PUBLICATION_FENCE_DESCRIPTOR_MISSING")
-        _validate_lock_file(Path(lock_path), state.fd)

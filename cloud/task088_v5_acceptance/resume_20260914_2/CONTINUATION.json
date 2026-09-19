@@ -4,7 +4,7 @@
     "path": "cloud/task088_v5_acceptance/resume_20260914_2/BACKGROUND_CONTINUATION.json",
     "sha256": "3459d77512586d9fb5037930103963751ecc1592523188fc7f4637e579cab7db"
   },
-  "background_task_state": "ENABLED_READBACK_CONFIRMED_20260919",
+  "background_task_state": "DISABLED_READBACK_CONFIRMED_20260919_HANDOFF006",
   "branch": "codex/task088-owner-policy-20260913-0934",
   "completed_this_continuation": [
     "Read exact six-page UA-ART-PR114-AUDIT-CONTINUE-002-v1.0.docx and latest AUDIT_CONTINUATION_NOTICE.",
@@ -35,7 +35,8 @@
     "September19 approval005 recorded; installation operation recovery hardened with shared rollback barrier, independently reviewed46/46 and generated release71/71 PASS. Authenticated14-source readback matches. Current main active watchdog HALT diagnosed; no production/CRM writes, no Stage3/4 completion. See new latest checkpoint.",
     "September19 subsequent owner command fulfilled: retired redundant diagnostic workflow and archived resolved watchdog halt in main commit93726ef91ebab538c174db9fee7a3df80a706f0d; normal pinned mode validation PASS, pending production transactions0. PR114 filesystem writer safety and full Stage3/4 remain open.",
     "September19 owner requested automatic Stage3–4 completion. Existing hourly PR114 background continuation re-enabled with current post-HALT context. Live read-only source inspection reconfirmed media deletion and direct rebuild gaps; installation and Stage4 remain unstarted.",
-    "September19 isolated permanent publication-fence candidate completed: same-thread reentrant and cross-thread/cross-process exclusive primitive, fork cleanup and fail-closed path checks; new affected suite 11/11 PASS. Not integrated or installed; acceptance remains 8/20 (40%)."
+    "September19 isolated permanent publication-fence candidate completed: same-thread reentrant and cross-thread/cross-process exclusive primitive, fork cleanup and fail-closed path checks; new affected suite 11/11 PASS. Not integrated or installed; acceptance remains 8/20 (40%).",
+    "Handoff006 resumed by explicit owner command. Current GitHub controls reconciled and actual PR completion automation confirmed disabled. Independent isolated fence review reproduced and fixed fork cleanup and stale inode grant defects; affected 18-test module suite PASS. Exact private source read blocked by managed browser transport failure; no new preflight, production launch or acceptance increment."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -59,14 +60,14 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919/WRITER_FENCE_CANDIDATE_NOTICE.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919_handoff006/CHECKPOINT.json",
   "next_action": {
-    "kind": "INTEGRATE_EXACT_PRIVATE_WRITER_FENCES",
-    "detail": "Obtain the exact pinned private cars_ui.py and stranica.py bytes through the reviewed canonical source-handling route, apply the smallest fence integration at the recorded mutation boundaries, and run only new affected call-path tests. No freshness preflight or production launch until after-image and complete old/new writer containment review PASS."
+    "kind": "RESTORE_AUTHENTICATED_SOURCE_READ_AND_INTEGRATE_EXACT_PRIVATE_WRITERS",
+    "detail": "Restore authenticated managed browser transport; read exact pinned cars_ui.py and stranica.py privately and independently match server/local SHA256, then integrate the reviewed fence at real mutation paths with the existing guard using one registry. No new freshness preflight or production launch until actual integration/containment PASS."
   },
   "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
-  "observed_pr_head_before_this_update": "3b665b8dabe55e54cc51b5e406748c8e75ccf1d0",
-  "owner_current_request": "Давай запускай третий-четвёртый этап, включая автопилот, так чтобы ты завершил.",
+  "observed_pr_head_before_this_update": "94763fba9da31e247431c69637cb5148ff2095b8",
+  "owner_current_request": "Запускай — UA-ART-PR114-HANDOFF-006 v1.0",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
     "sha256": "55a970c7b34745232fa132883b5d87344740db93c272eee6bca7da5754d6b623"
@@ -102,7 +103,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-19T15:52:50.720Z",
+  "recorded_at": "2026-09-19T16:20:14.638970+00:00",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -150,11 +151,13 @@
   "writer_fence_preparation": {
     "path": "cloud/task088_v5_writer_fence",
     "scope": "ISOLATED_CANDIDATE_ONLY_NOT_PRODUCTION_AUTHORITY",
-    "source_sha256": "12b523a15ea53f0359436ebe35429b497133720a8718e64e4bef84504efd8f39",
-    "validation_sha256": "3ac79f3bb0226df94253de149734181a186a03a1d6d06260c1c5cf152b11b266",
-    "tests_passed": 11,
+    "source_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "validation_sha256": "4963a9fe55c0ac9a50345e2244a36aad4d9a6d60e7dd14a3bdc9fb4bc7df660d",
+    "tests_passed": 18,
     "integrated": false,
     "installed": false,
-    "writer_gate_pass": false
-  }
+    "writer_gate_pass": false,
+    "validation_path": "cloud/task088_v5_writer_fence/HANDOFF006_VALIDATION.json"
+  },
+  "handoff006_checkpoint_scope": "Isolated candidate preparation only; retained Preview and product results remain historical for their exact versions. New candidate is not integrated or installed."
 }

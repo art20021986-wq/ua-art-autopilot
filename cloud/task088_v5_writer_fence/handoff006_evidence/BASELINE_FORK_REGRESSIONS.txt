@@ -1,0 +1,49 @@
+test_acquired_but_unpublished_descriptor_is_closed_without_unlocking_parent (test_fork_regressions.ForkRegressionTests.test_acquired_but_unpublished_descriptor_is_closed_without_unlocking_parent) ... FAIL
+test_fork_while_another_thread_holds_condition (test_fork_regressions.ForkRegressionTests.test_fork_while_another_thread_holds_condition) ... FAIL
+test_open_descriptor_window_is_serialized_with_fork (test_fork_regressions.ForkRegressionTests.test_open_descriptor_window_is_serialized_with_fork) ... FAIL
+test_owned_parent_lease_is_not_retained_by_child_without_helper_calls (test_fork_regressions.ForkRegressionTests.test_owned_parent_lease_is_not_retained_by_child_without_helper_calls) ... FAIL
+
+======================================================================
+FAIL: test_acquired_but_unpublished_descriptor_is_closed_without_unlocking_parent (test_fork_regressions.ForkRegressionTests.test_acquired_but_unpublished_descriptor_is_closed_without_unlocking_parent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/7c2011f96a94/review_writer_fence/test_fork_regressions.py", line 178, in test_acquired_but_unpublished_descriptor_is_closed_without_unlocking_parent
+    self.wait_child(pid)
+  File "/workspace/scratch/7c2011f96a94/review_writer_fence/test_fork_regressions.py", line 46, in wait_child
+    self.assertEqual(os.WEXITSTATUS(status), 0)
+AssertionError: 1 != 0
+
+======================================================================
+FAIL: test_fork_while_another_thread_holds_condition (test_fork_regressions.ForkRegressionTests.test_fork_while_another_thread_holds_condition)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/7c2011f96a94/review_writer_fence/test_fork_regressions.py", line 84, in test_fork_while_another_thread_holds_condition
+    self.wait_child(pid)
+  File "/workspace/scratch/7c2011f96a94/review_writer_fence/test_fork_regressions.py", line 51, in wait_child
+    self.fail("child blocked beyond its bounded fence timeout")
+AssertionError: child blocked beyond its bounded fence timeout
+
+======================================================================
+FAIL: test_open_descriptor_window_is_serialized_with_fork (test_fork_regressions.ForkRegressionTests.test_open_descriptor_window_is_serialized_with_fork)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/7c2011f96a94/review_writer_fence/test_fork_regressions.py", line 129, in test_open_descriptor_window_is_serialized_with_fork
+    self.wait_child(pid)
+  File "/workspace/scratch/7c2011f96a94/review_writer_fence/test_fork_regressions.py", line 46, in wait_child
+    self.assertEqual(os.WEXITSTATUS(status), 0)
+AssertionError: 1 != 0
+
+======================================================================
+FAIL: test_owned_parent_lease_is_not_retained_by_child_without_helper_calls (test_fork_regressions.ForkRegressionTests.test_owned_parent_lease_is_not_retained_by_child_without_helper_calls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/7c2011f96a94/review_writer_fence/test_fork_regressions.py", line 199, in test_owned_parent_lease_is_not_retained_by_child_without_helper_calls
+    self.wait_child(pid)
+  File "/workspace/scratch/7c2011f96a94/review_writer_fence/test_fork_regressions.py", line 46, in wait_child
+    self.assertEqual(os.WEXITSTATUS(status), 0)
+AssertionError: 1 != 0
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.069s
+
+FAILED (failures=4)
