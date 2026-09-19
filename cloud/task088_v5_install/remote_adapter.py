@@ -14,6 +14,7 @@ from pathlib import Path
 import shutil
 import sqlite3
 import stat
+import tempfile
 
 import install_package as E
 
@@ -24,8 +25,11 @@ def _phase(operation):
     return "PREPARING" if operation == "backup" else "ROLLING_BACK" if operation == "rollback" else "OPEN"
 
 
-def load_operation(operation_plan, *, test_root=None):
-    payload = json.loads(Path(operation_plan).read_bytes())
+def load_operation(operation_plan, *, test_root=None, expected_payload_sha256=None):
+    raw = E._read(Path(operation_plan))
+    if expected_payload_sha256 is not None and E.sha(raw) != expected_payload_sha256:
+        raise E.InstallError("REMOTE_OPERATION_PLAN_DRIFT")
+    payload = json.loads(raw)
     operation = payload.get("operation")
     if operation not in ("backup", "execute", "verify", "rollback"):
         raise E.InstallError("EXACT_REMOTE_OPERATION_REQUIRED")
@@ -289,8 +293,9 @@ def rollback(plan, files, root, backup_sha):
         _release(lock)
 
 
-def run(operation_plan, *, test_root=None):
-    payload, plan, files, evidence, root = load_operation(operation_plan, test_root=test_root)
+def run(operation_plan, *, test_root=None, expected_payload_sha256=None):
+    payload, plan, files, evidence, root = load_operation(operation_plan, test_root=test_root,
+        expected_payload_sha256=expected_payload_sha256)
     operation = payload["operation"]
     if operation == "backup":
         result = backup(plan, files, evidence, root)
@@ -312,24 +317,174 @@ def run(operation_plan, *, test_root=None):
         "public_acceptance": "NOT_RUN", "telegram_acceptance": "NOT_RUN"}
 
 
+def operation_claim(raw):
+    """Bind the one-shot barrier to immutable input and reviewed executor bytes."""
+    payload = json.loads(raw)
+    operation = payload.get("operation")
+    if operation not in ("backup", "execute", "verify", "rollback"):
+        raise E.InstallError("EXACT_REMOTE_OPERATION_REQUIRED")
+    if any(not isinstance(payload.get(key), str) or not payload[key] for key in BINDINGS):
+        raise E.InstallError("REMOTE_OPERATION_IDENTITY_REQUIRED")
+    adapter_sha = payload.get("remote_package_sha256", {}).get("remote_adapter.py")
+    if adapter_sha != E.sha(E._read(Path(__file__))):
+        raise E.InstallError("REMOTE_EXECUTOR_SOURCE_DRIFT")
+    return {"contract": "TASK088-REMOTE-OPERATION-CLAIM-1",
+        **{key: payload[key] for key in BINDINGS}, "operation": operation,
+        "payload_sha256": E.sha(raw), "adapter_sha256": adapter_sha}
+
+
+def _write_new(path, raw):
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(descriptor, "wb") as handle:
+        handle.write(raw)
+        handle.flush()
+        os.fsync(handle.fileno())
+    E._fsync_dir(path.parent)
+
+
+def _publish_result(path, result):
+    # Never expose a partly written result to the controller. No replacement of
+    # an earlier result is permitted, including a result left by a lost reply.
+    descriptor, temporary = tempfile.mkstemp(prefix=".operation-result-", dir=path.parent)
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(E.encoded(result))
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.link(temporary, path)
+        E._fsync_dir(path.parent)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
+
+
+def _completion(claim):
+    return {"contract": "TASK088-REMOTE-OPERATION-RETURN-1",
+        "payload_sha256": claim["payload_sha256"], "claim_sha256": E.sha(E.encoded(claim)),
+        "adapter_sha256": claim["adapter_sha256"], "operation_returned": True}
+
+
+def _predecessor_terminal(directory, operation, current, backup_sha):
+    """Read a real same-run result; a claim/launch or failure is insufficient."""
+    try:
+        claim = operation_claim(E._read(directory / (operation + "-plan.json")))
+        result = json.loads(E._read(directory / (operation + "-result.json")))
+        actual_claim = E._read(directory / (operation + "-claim.json"))
+    except (OSError, ValueError) as exc:
+        raise E.InstallError("PREDECESSOR_TERMINAL_RECONCILIATION_REQUIRED:" + operation) from exc
+    expected_status = {"backup": "BACKUP_PASS", "execute": "INSTALLED_AWAITING_VERIFICATION",
+                       "verify": "INSTALLATION_VERIFIED"}[operation]
+    if (claim["operation"] != operation or actual_claim != E.encoded(claim)
+            or any(claim[key] != current[key] or result.get(key) != current[key] for key in BINDINGS)
+            or result.get("operation") != operation or result.get("status") != expected_status
+            or result.get("execution") != _completion(claim)
+            or result.get("backup_manifest_sha256") != backup_sha
+            or result.get("live_price_writes") is not False or result.get("stage1_reinstalled") is not False
+            or result.get("stage2_reinstalled") is not False or result.get("public_acceptance") != "NOT_RUN"
+            or result.get("telegram_acceptance") != "NOT_RUN"):
+        raise E.InstallError("PREDECESSOR_TERMINAL_RECONCILIATION_REQUIRED:" + operation)
+
+
+def _admit_operation(directory, claim, payload):
+    """Order effects under one run mutex; rollback permanently closes forward admission."""
+    operation = claim["operation"]
+    if operation != "rollback" and any((directory / ("rollback" + suffix)).exists()
+            for suffix in ("-plan.json", "-launch.json", "-claim.json", "-result.json")):
+        raise E.InstallError("ROLLBACK_BARRIER_FORWARD_EXECUTION_FORBIDDEN")
+    if operation == "backup":
+        if any((directory / (other + suffix)).exists() for other in ("execute", "verify")
+               for suffix in ("-claim.json", "-result.json")):
+            raise E.InstallError("FORWARD_OPERATION_ALREADY_ADMITTED")
+        return
+    backup_sha = payload.get("backup_manifest_sha256")
+    E._hash(backup_sha)
+    _predecessor_terminal(directory, "backup", claim, backup_sha)
+    if operation == "verify":
+        _predecessor_terminal(directory, "execute", claim, backup_sha)
+    elif operation == "rollback":
+        # A queued provider request may not have started yet. Its uploaded plan
+        # or launch intent is already an unresolved predecessor. The rollback
+        # claim was fsynced under our mutex before reaching this check, so a
+        # delayed forward runner cannot execute after this rollback admission.
+        for previous in ("execute", "verify"):
+            if any((directory / (previous + suffix)).exists()
+                   for suffix in ("-plan.json", "-launch.json", "-claim.json", "-result.json")):
+                _predecessor_terminal(directory, previous, claim, backup_sha)
+
+
+def run_once(operation_plan, *, test_root=None):
+    """Serialize every operation in this exact run, including admission/result writes."""
+    path = Path(operation_plan)
+    if any(item.is_symlink() for item in (path, *path.parents)):
+        raise E.InstallError("REMOTE_OPERATION_SYMLINK_FORBIDDEN")
+    descriptor = os.open(path.parent / ".operation-session.lock",
+        os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    try:
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            raise E.InstallError("REGULAR_OPERATION_SESSION_LOCK_REQUIRED")
+        try:
+            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise E.InstallError("REMOTE_OPERATION_IN_FLIGHT_RECONCILIATION_REQUIRED") from exc
+        return _run_once_locked(path, test_root=test_root)
+    finally:
+        os.close(descriptor)
+
+
+def _run_once_locked(path, *, test_root=None):
+    """At most one protected invocation, even after provider automatic restart.
+
+    A durable claim without a result is UNKNOWN, never a retry permit. Claims
+    are not leases and cannot expire. This is separate from canonical admission:
+    run/load_operation still validate all live gates before any protected work.
+    """
+    raw = E._read(path)
+    claim = operation_claim(raw)
+    operation = claim["operation"]
+    if path.name != operation + "-plan.json":
+        raise E.InstallError("EXACT_OPERATION_PLAN_NAME_REQUIRED")
+    output = path.with_name(operation + "-result.json")
+    claim_path = path.with_name(operation + "-claim.json")
+    claim_raw = E.encoded(claim)
+    completion = _completion(claim)
+    try:
+        _write_new(claim_path, claim_raw)
+    except FileExistsError:
+        if E._read(claim_path) != claim_raw:
+            raise E.InstallError("REMOTE_OPERATION_CLAIM_DRIFT")
+        if not output.exists():
+            raise E.InstallError("REMOTE_OPERATION_CLAIMED_RECONCILIATION_REQUIRED")
+        result = json.loads(E._read(output))
+        if (result.get("execution") != completion or result.get("operation") != operation
+                or any(result.get(key) != claim[key] for key in BINDINGS)):
+            raise E.InstallError("REMOTE_TERMINAL_RESULT_RECONCILIATION_REQUIRED")
+        return result  # Readback only; never re-enter an already claimed run.
+    if output.exists():
+        raise E.InstallError("UNCLAIMED_EXISTING_RESULT_RECONCILIATION_REQUIRED")
+    # Detect altered input after the durable barrier, before calling the engine.
+    if E._read(path) != raw:
+        raise E.InstallError("REMOTE_OPERATION_PLAN_DRIFT")
+    try:
+        _admit_operation(path.parent, claim, json.loads(raw))
+        result = run(path, test_root=test_root, expected_payload_sha256=E.sha(raw))
+    except Exception as exc:
+        # Failure is evidence, not terminal/coherent-state authority. In
+        # particular a failed finally block must not authorize runner deletion.
+        result = {**{key: claim[key] for key in BINDINGS}, "operation": operation,
+            "status": "FAIL", "error_type": type(exc).__name__,
+            "error": str(exc) if isinstance(exc, E.InstallError) else type(exc).__name__,
+            "execution": {**completion, "operation_returned": False}}
+    else:
+        result = {**result, "execution": completion}
+    _publish_result(output, result)
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--plan", required=True)
     args = parser.parse_args()
-    path = Path(args.plan)
-    output = path.with_name(path.name.replace("-plan.json", "-result.json"))
-    if output.exists() or output == path:
-        raise E.InstallError("NEW_OPERATION_RESULT_REQUIRED")
-    try:
-        result = run(path)
-    except Exception as exc:
-        result = {"status": "FAIL", "error_type": type(exc).__name__,
-                  "error": str(exc) if isinstance(exc, E.InstallError) else type(exc).__name__}
-    descriptor = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
-    with os.fdopen(descriptor, "wb") as handle:
-        handle.write(E.encoded(result))
-        handle.flush()
-        os.fsync(handle.fileno())
+    result = run_once(args.plan)
+    output = Path(args.plan).with_name(result["operation"] + "-result.json")
     print(json.dumps({"status": result["status"], "output": str(output)}))
     return 0 if result["status"] != "FAIL" else 1
 

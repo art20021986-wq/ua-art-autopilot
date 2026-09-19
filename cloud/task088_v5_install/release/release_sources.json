@@ -9,7 +9,7 @@
       "source_path": "cloud/task088_v5_install/backup_controller.py"
     },
     "controller.py": {
-      "sha256": "71722965e09f59d0afb9fab86a6571c713efb60111d970a632d80a4f05e3cf9c",
+      "sha256": "99c14e3c44517eaa2c1ad1ae7d271310a8f25556a7cf27b096d1c7b686ec3e12",
       "source_path": "cloud/task088_v5_install/controller.py"
     },
     "install_package.py": {
@@ -29,7 +29,7 @@
       "source_path": "cloud/task088_autopilot_owner_policy/price_publication.py"
     },
     "remote_adapter.py": {
-      "sha256": "9def8122a4a60c6685197048adf2f9b494b6767a79b3d9c35c6de0b01e2fabeb",
+      "sha256": "3fb5974eb89a2d10d18455b3f17a45620a1c1a94013ff34fe40a7dcbdc50f3da",
       "source_path": "cloud/task088_v5_install/remote_adapter.py"
     },
     "rollback_controller.py": {
@@ -43,6 +43,10 @@
     "test_install_package.py": {
       "sha256": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
       "source_path": "cloud/task088_price_sync/test_install_package.py"
+    },
+    "test_operation_recovery.py": {
+      "sha256": "302e755ed9145823ec6d3599b74c076b94cedea7de43ea33487dbe4299f3fdc7",
+      "source_path": "cloud/task088_v5_install/test_operation_recovery.py"
     },
     "uaart_market_prices.py": {
       "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
@@ -71,6 +75,7 @@
   },
   "test_paths": [
     "cloud/task088_v5_install/release/test_install_package.py",
-    "cloud/task088_v5_install/release/test_adapter.py"
+    "cloud/task088_v5_install/release/test_adapter.py",
+    "cloud/task088_v5_install/release/test_operation_recovery.py"
   ]
 }

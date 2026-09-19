@@ -1,0 +1,45 @@
+{
+  "canonical_gate_created": false,
+  "contract": "PR114-ADAPTER-RECOVERY-CODE-VALIDATION-NOT-A-GATE-1",
+  "diff_check": {
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  "evidence_kind": "Summary of observed completed tool executions; not a raw unittest transcript",
+  "generated_release_tests": {
+    "command": "python3 -B -m unittest discover -s cloud/task088_v5_install/release -p 'test*.py' -v",
+    "elapsed_seconds": 0.986,
+    "exit_code": 0,
+    "failed": 0,
+    "includes_new_fault_and_concurrency_tests": 23,
+    "passed": 71
+  },
+  "historical_446_183_120_suites_repeated": false,
+  "independent_review": {
+    "remaining_must_fix_findings_in_reviewed_diff": 0,
+    "resolution": "Shared same-run mutex, source-bound predecessor results and durable rollback barrier; delayed executor and concurrent process regression cases passed",
+    "reviewed_initial_finding": "Unknown execute outcomes could race canonical rollback",
+    "status": "PASS_CODE_CHECKPOINT_ONLY"
+  },
+  "limitations": [
+    "UNKNOWN/failed operations remain retained and require reconciliation; no automatic cleanup or blind retry",
+    "Permanent media writer fences and live drain are not implemented by this code",
+    "This package has not been installed or published",
+    "New package bytes require fresh canonical binding before release; historical Preview timestamps are preserved"
+  ],
+  "production_written": false,
+  "recorded_at": "2026-09-19T15:19:28.662668+00:00",
+  "release_source_map_sha256": "d47e3aae8d3fab0c50591d29a674153fc161dcebd1d91522b5ad41e39508739a",
+  "source_sha256": {
+    "cloud/task088_v5_install/build_release.py": "ed8126706b9d828ba54040c5d725f31307da3da5cbe082c17f593d6e0fd8f1ff",
+    "cloud/task088_v5_install/controller.py": "99c14e3c44517eaa2c1ad1ae7d271310a8f25556a7cf27b096d1c7b686ec3e12",
+    "cloud/task088_v5_install/remote_adapter.py": "3fb5974eb89a2d10d18455b3f17a45620a1c1a94013ff34fe40a7dcbdc50f3da",
+    "cloud/task088_v5_install/test_operation_recovery.py": "302e755ed9145823ec6d3599b74c076b94cedea7de43ea33487dbe4299f3fdc7"
+  },
+  "source_tests": {
+    "command": "python3 -B -m unittest discover -s cloud/task088_v5_install -p 'test*.py' -v",
+    "failed": 0,
+    "independent_reviewer_ran_same_scope": true,
+    "passed": 46
+  }
+}

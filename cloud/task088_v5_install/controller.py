@@ -222,7 +222,7 @@ class API:
 
     def file_url(self, name):
         allowed = REMOTE_FILES | {operation + suffix for operation in ("backup", "execute", "verify", "rollback")
-                                 for suffix in ("-plan.json", "-result.json")}
+                                 for suffix in ("-plan.json", "-result.json", "-launch.json")}
         if name not in allowed:
             raise ControllerError("EXACT_RUN_FILE_SCOPE")
         return BASE + "files/path" + urllib.parse.quote(self.remote + "/" + name, safe="/")
@@ -278,7 +278,42 @@ class API:
         return {"domain": "www.uaart.com.ua", "static_mappings": expected, "observed_at": now(),
                 "provider_configuration_written": False}
 
+    def owned_runner(self, command, description):
+        """Discover one exact existing runner after a potentially lost POST."""
+        _, raw = self.request("GET", BASE + "always_on/")
+        listed = json.loads(raw)
+        if not isinstance(listed, list) or any(not isinstance(item, dict) for item in listed):
+            raise ControllerError("SCOPED_RUNNER_LIST_UNCONFIRMED")
+        matched = [item for item in listed
+                   if item.get("command") == command and item.get("description") == description]
+        if len(matched) > 1:
+            raise ControllerError("DUPLICATE_RUNNERS_RECONCILIATION_REQUIRED")
+        if not matched:
+            return None
+        identifier = matched[0].get("id")
+        if type(identifier) is not int or identifier <= 0 or identifier == 266084:
+            raise ControllerError("OWN_RUNNER_IDENTITY_UNCONFIRMED")
+        return identifier
+
+    def cleanup_terminal(self, identifier, command, description):
+        # Only called after a source/payload-bound successful run-return receipt.
+        # Provider state alone never establishes that protected work has ended.
+        if identifier is None:
+            return
+        url = BASE + "always_on/" + str(identifier) + "/"
+        status, raw = self.request("GET", url, allowed=(200, 404))
+        if status == 200:
+            owned = json.loads(raw)
+            if (owned.get("id") != identifier or owned.get("command") != command
+                    or owned.get("description") != description):
+                raise ControllerError("SCOPED_RUNNER_CLEANUP_IDENTITY_MISMATCH")
+            self.request("DELETE", url, allowed=(200, 202, 204, 404))
+            if self.request("GET", url, allowed=(200, 404))[0] != 404:
+                raise ControllerError("SCOPED_RUNNER_CLEANUP_UNCONFIRMED")
+
     def run(self, operation):
+        if operation not in ("backup", "execute", "verify", "rollback"):
+            raise ControllerError("EXACT_REMOTE_OPERATION_REQUIRED")
         before = self.supervisor()
         route_before = self.routing()
         deployment = self.values["DEPLOYMENT"]
@@ -290,43 +325,62 @@ class API:
             "remote_package_sha256": deployment["remote_package_sha256"]}
         if operation != "backup":
             payload["backup_manifest_sha256"] = self.values["BACKUP_SHA"]
-        for name in sorted(REMOTE_FILES):
-            self.upload(name, repo_file(self.values["PACKAGE"] + "/" + name, self.values["ROOT"]).read_bytes())
+        payload_raw = encoded(payload)
         result_name = operation + "-result.json"
-        if self.read(result_name) is not None:
-            raise ControllerError("REMOTE_OPERATION_ALREADY_RECORDED")
-        self.upload(operation + "-plan.json", encoded(payload))
         command = "cd " + shlex.quote(self.remote) + " && python3.10 remote_adapter.py --plan " + operation + "-plan.json"
         description = self.values["UAART_TASK_ID"] + " " + self.values["UAART_RUN_ID"] + " " + operation
-        form = urllib.parse.urlencode({"command": command, "description": description, "enabled": "true"}).encode()
-        _, raw = self.request("POST", BASE + "always_on/", form, {"Content-Type": "application/x-www-form-urlencoded"}, allowed=(200, 201, 202))
-        obj = json.loads(raw)
-        identifier = obj.get("id") if isinstance(obj, dict) else None
-        if type(identifier) is not int or identifier <= 0 or identifier == 266084:
-            raise ControllerError("OWN_RUNNER_IDENTITY_UNCONFIRMED")
-        url = BASE + "always_on/" + str(identifier) + "/"
-        try:
-            deadline = time.monotonic() + 900
-            while time.monotonic() < deadline:
-                result_raw = self.read(result_name)
-                if result_raw is not None:
-                    result = json.loads(result_raw)
-                    result["crm_supervisor_before"] = before
-                    result["crm_supervisor_after"] = self.supervisor()
-                    result["provider_routing_before"] = route_before
-                    result["provider_routing_after"] = self.routing()
-                    return result
-                time.sleep(3)
-            raise ControllerError("SCOPED_REMOTE_OPERATION_TIMEOUT")
-        finally:
-            status, raw = self.request("GET", url, allowed=(200, 404))
-            if status == 200:
-                owned = json.loads(raw)
-                if (owned.get("id") != identifier or owned.get("command") != command or owned.get("description") != description):
-                    raise ControllerError("SCOPED_RUNNER_CLEANUP_IDENTITY_MISMATCH")
-                self.request("DELETE", url, allowed=(200, 202, 204, 404))
-                if self.request("GET", url, allowed=(200, 404))[0] != 404:
-                    raise ControllerError("SCOPED_RUNNER_CLEANUP_UNCONFIRMED")
+        claim = {"contract": "TASK088-REMOTE-OPERATION-CLAIM-1", **self.values["BINDINGS"],
+            "operation": operation, "payload_sha256": sha(payload_raw),
+            "adapter_sha256": payload["remote_package_sha256"]["remote_adapter.py"]}
+        completion = {"contract": "TASK088-REMOTE-OPERATION-RETURN-1",
+            "payload_sha256": sha(payload_raw), "claim_sha256": sha(encoded(claim)),
+            "adapter_sha256": claim["adapter_sha256"], "operation_returned": True}
+        launch = encoded({**claim, "contract": "TASK088-REMOTE-LAUNCH-INTENT-1",
+            "command": command, "description": description})
+        launch_name = operation + "-launch.json"
+        previous = self.read(launch_name)
+        if previous is not None and previous != launch:
+            raise ControllerError("REMOTE_LAUNCH_INTENT_DRIFT")
+        identifier = self.owned_runner(command, description)
+        if previous is None:
+            if identifier is not None or self.read(result_name) is not None:
+                raise ControllerError("UNJOURNALED_OPERATION_RECONCILIATION_REQUIRED")
+            for name in sorted(REMOTE_FILES):
+                self.upload(name, repo_file(self.values["PACKAGE"] + "/" + name, self.values["ROOT"]).read_bytes())
+            self.upload(operation + "-plan.json", payload_raw)
+            # A lost response or interruption after this intent never permits
+            # a second POST. Provider retries are independently barred by the
+            # remote fsynced O_EXCL operation claim before protected work.
+            self.upload(launch_name, launch)
+            form = urllib.parse.urlencode({"command": command, "description": description, "enabled": "true"}).encode()
+            try:
+                self.request("POST", BASE + "always_on/", form,
+                    {"Content-Type": "application/x-www-form-urlencoded"}, allowed=(200, 201, 202))
+            except ControllerError:
+                pass  # Outcome unknown: only existing target/result GETs follow.
+            identifier = self.owned_runner(command, description)
+        elif self.read(operation + "-plan.json") != payload_raw:
+            raise ControllerError("REMOTE_OPERATION_PLAN_DRIFT")
+        deadline = time.monotonic() + 900
+        while True:
+            result_raw = self.read(result_name)
+            if result_raw is not None:
+                result = json.loads(result_raw)
+                if result.get("execution") != completion:
+                    raise ControllerError("REMOTE_TERMINAL_PROOF_REQUIRED")
+                validate_remote(result, self.values, operation)
+                result["crm_supervisor_before"] = before
+                result["crm_supervisor_after"] = self.supervisor()
+                result["provider_routing_before"] = route_before
+                result["provider_routing_after"] = self.routing()
+                self.cleanup_terminal(identifier, command, description)
+                return result
+            if identifier is None:
+                raise ControllerError("REMOTE_LAUNCH_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED")
+            if time.monotonic() >= deadline:
+                # Do not delete a runner that may hold locks or be mid-install.
+                raise ControllerError("SCOPED_REMOTE_OPERATION_TIMEOUT_RECONCILIATION_REQUIRED")
+            time.sleep(3)
 
 
 def validate_remote(result, values, operation):

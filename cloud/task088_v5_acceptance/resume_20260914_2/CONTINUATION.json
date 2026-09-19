@@ -1,11 +1,11 @@
 {
-  "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "recorded_at": "2026-09-15T05:37:39.699867+00:00",
-  "repository": "art20021986-wq/ua-art-autopilot",
+  "background_continuation": {
+    "bytes": 3411,
+    "path": "cloud/task088_v5_acceptance/resume_20260914_2/BACKGROUND_CONTINUATION.json",
+    "sha256": "3459d77512586d9fb5037930103963751ecc1592523188fc7f4637e579cab7db"
+  },
+  "background_task_state": "DISABLED_OBSERVED_20260919_UNCHANGED_THIS_EXECUTION",
   "branch": "codex/task088-owner-policy-20260913-0934",
-  "prior_audit_head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
-  "durable_evidence_commit": "feafae2c51468dbc05b201bf413d4343e041a395",
-  "observed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
   "completed_this_continuation": [
     "Read exact six-page UA-ART-PR114-AUDIT-CONTINUE-002-v1.0.docx and latest AUDIT_CONTINUATION_NOTICE.",
     "Verified remote PR is open/unmerged and head/main match saved state.",
@@ -31,40 +31,20 @@
     "Fresh observer and binding completed exactly once; browser download transport failed, then original raw bytes recovered losslessly via minimal deltas against immutable base reports. Server/local sizes and SHA256 match; no observer or preflight rerun.",
     "Actual05:06 CRM source/ACL facts obtained;14 private originals independently match. Active media-deletion callback before DB transaction is not fenced by installer locks. Full writer PASS BLOCKED; no canonical launch attempted.",
     "Actual05:15 existing CRM getMe/getChat confirmed bot and unique active owner private chat. Raw941bytes server/local SHA0027d739... match. No messages sent, updates consumed or token disclosed.",
-    "New isolated quiescence protocol independently reviewed: final21/21 local synthetic tests PASS; immutable plan, separate before/after source pins and durable intent-before-action journal. Not integrated, no writer/canonical/Stage3/4 PASS."
+    "New isolated quiescence protocol independently reviewed: final21/21 local synthetic tests PASS; immutable plan, separate before/after source pins and durable intent-before-action journal. Not integrated, no writer/canonical/Stage3/4 PASS.",
+    "September19 approval005 recorded; installation operation recovery hardened with shared rollback barrier, independently reviewed46/46 and generated release71/71 PASS. Authenticated14-source readback matches. Current main active watchdog HALT diagnosed; no production/CRM writes, no Stage3/4 completion. See new latest checkpoint."
   ],
-  "saved_tests": {
-    "software": 446,
-    "maintenance": 183,
-    "browser_css_scenarios": 120,
-    "repeat_full_suites": false
+  "credential_boundary": {
+    "preview_evaluation_requires_reader_token": false,
+    "stage3_existing_canonical_runner_requires_new_reader_token": false,
+    "stage4_continuous_reader_requires_read_credential": true
   },
-  "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260915_2/REPORT_RECOVERY.json",
-  "current_credential_state": "ABSENT_OBSERVED_2026-09-15T05:28:02.877826+00:00; receiver SHA matched; console48168693 remains at shell, hidden receiver not started",
-  "full_preview_gate": "PASS_24_OF_24",
-  "stage3": "OPEN_NOT_PUBLISHED",
-  "stage4": "OPEN_NOT_ACCEPTED",
-  "publication_authorization": "Existing owner authorization after genuine full PASS remains valid; no duplicate publication confirmation is required.",
-  "runtime_changes_this_continuation": false,
   "crm_changes_this_continuation": false,
-  "production_changes_this_continuation": false,
-  "resume_support": {
-    "scope": "OFFLINE_ONLY_NOT_INSTALLED_IN_RUNTIME",
-    "isolated_tests": {
-      "passed": 20,
-      "run_again_by_root": false,
-      "reason": "Reuse completed final agent test run; exact final source/test/document hashes independently matched."
-    },
-    "source_sha256": "c6178cb606cde930a27081a1560d0969c60670c1b3fd92359dab92fc186426e8",
-    "git_only_report": "cloud/task088_v5_acceptance/resume_support/checkpoints/pr114-git-only-inspection.ad4bacd463bb2889e1b7b1130477dc8419a8212c2d54af39b8f0ecdc5af3548a.json",
-    "actual_git_only_source_files_matched": 82,
-    "software_report_restored_from_pinned_git_archive": true,
-    "production_recovery_implemented_or_accepted": false
-  },
-  "next_action": {
-    "kind": "INTEGRATE_ACTUAL_WRITER_FENCES_AND_CANONICAL_QUIESCENCE",
-    "detail": "Continue isolated preparation of filesystem fences and exact phase-aware canonical integration. Real complete process/drain evidence remains missing. Owner read credential still absent; no premature freshness-only reruns."
-  },
+  "current_control_read": "cloud/task088_v5_acceptance/resume_20260919/CANONICAL_STATE.json",
+  "current_credential_state": "ABSENT_OBSERVED_2026-09-15T05:28:02.877826+00:00; receiver SHA matched; console48168693 remains at shell, hidden receiver not started",
+  "durable_evidence_commit": "feafae2c51468dbc05b201bf413d4343e041a395",
+  "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260915_2/REPORT_RECOVERY.json",
+  "full_preview_gate": "PASS_24_OF_24",
   "further_required": [
     "Provision owner-created fine-grained GitHub Contents:read token for only art20021986-wq/ua-art-autopilot using the reviewed hidden-input receiver. First verify actual console/receiver state; never place token in chat, command arguments, repo or a shell prompt. Current receiver is not running.",
     "Re-read current server/DB/source/Preview and canonical receipts before further work; reconcile unknown external outcomes first.",
@@ -72,72 +52,93 @@
     "Prepare canonical request/manifest/Gate B/activation from actual eligible inputs. Accepted Preview and this checkpoint do not grant production authority.",
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
-  "persist_policy": "Save code and sanitized evidence in same branch; after any interrupted Git mutation read remote ref/tree before retry. This continuation is not evidence that a server write completed.",
-  "observed_pr_head_before_this_update": "e669e2d874be195e1d3fe8d0276c5ec7459ecd24",
-  "owner_screenshots": {
-    "path": "cloud/task088_v5_acceptance/resume_20260914_2/OWNER_SCREENSHOTS_REVIEW.json",
-    "bytes": 3233,
-    "sha256": "eea1cc3f6f306cad1166299f7658651ce8b59ea5e4e1b512a40ddd0e71068643"
+  "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919/EXECUTION_NOTICE.json",
+  "next_action": {
+    "detail": "Matched 14 source pins. Recovery adapter code checkpoint independently reviewed and release71/71 tested. Permanent filesystem fences and actual drain remain open; separate active main HALT must be resolved through reviewed canonical recovery before production admission.",
+    "kind": "COMPLETE_PERMANENT_WRITER_FENCES_AND_CANONICAL_QUIESCENCE"
   },
-  "background_continuation": {
-    "path": "cloud/task088_v5_acceptance/resume_20260914_2/BACKGROUND_CONTINUATION.json",
-    "bytes": 3411,
-    "sha256": "3459d77512586d9fb5037930103963751ecc1592523188fc7f4637e579cab7db"
-  },
+  "observed_main": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+  "observed_pr_head_before_this_update": "77732241009586729e24e4425e3df541da5cf792",
+  "owner_current_request": "УТВЕРЖДАЮ UA-ART-PR114-AUDIT-005 v1.0",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
     "sha256": "55a970c7b34745232fa132883b5d87344740db93c272eee6bca7da5754d6b623"
   },
-  "credential_boundary": {
-    "preview_evaluation_requires_reader_token": false,
-    "stage3_existing_canonical_runner_requires_new_reader_token": false,
-    "stage4_continuous_reader_requires_read_credential": true
+  "owner_screenshots": {
+    "bytes": 3233,
+    "path": "cloud/task088_v5_acceptance/resume_20260914_2/OWNER_SCREENSHOTS_REVIEW.json",
+    "sha256": "eea1cc3f6f306cad1166299f7658651ce8b59ea5e4e1b512a40ddd0e71068643"
   },
-  "background_task_state": "ENABLED_PROMPT_READBACK_CONFIRMED_AFTER_STAGE1",
+  "persist_policy": "Save code and sanitized evidence in same branch; after any interrupted Git mutation read remote ref/tree before retry. This continuation is not evidence that a server write completed.",
+  "photos_acceptance": "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json",
+  "preview_gate": {
+    "evaluated_at": "2026-09-15T04:55:50.289644+00:00",
+    "path": "cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_GATE.json",
+    "sha256": "3ed070183d19de801348aef5a521d30781c6528aa585441c6593ab34ae7f864a"
+  },
+  "prior_audit_head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
+  "production_changes_this_continuation": false,
   "progress": {
     "completed": 8,
-    "total": 20,
     "percent": 40,
     "stage1": {
       "completed": 8,
-      "total": 8,
-      "percent": 100
-    }
+      "percent": 100,
+      "total": 8
+    },
+    "total": 20
   },
-  "photos_acceptance": "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json",
+  "publication_authorization": "Existing owner authorization after genuine full PASS remains valid; no duplicate publication confirmation is required.",
+  "quiescence_preparation": {
+    "integrated": false,
+    "path": "cloud/task088_v5_quiescence",
+    "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
+    "tests_passed": 21
+  },
+  "recorded_at": "2026-09-19T15:19:28.662668+00:00",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "resume_support": {
+    "actual_git_only_source_files_matched": 82,
+    "git_only_report": "cloud/task088_v5_acceptance/resume_support/checkpoints/pr114-git-only-inspection.ad4bacd463bb2889e1b7b1130477dc8419a8212c2d54af39b8f0ecdc5af3548a.json",
+    "isolated_tests": {
+      "passed": 20,
+      "reason": "Reuse completed final agent test run; exact final source/test/document hashes independently matched.",
+      "run_again_by_root": false
+    },
+    "production_recovery_implemented_or_accepted": false,
+    "scope": "OFFLINE_ONLY_NOT_INSTALLED_IN_RUNTIME",
+    "software_report_restored_from_pinned_git_archive": true,
+    "source_sha256": "c6178cb606cde930a27081a1560d0969c60670c1b3fd92359dab92fc186426e8"
+  },
   "running_operation": {
-    "kind": "PRIVATE_PREFLIGHT_NOT_PUBLICATION",
-    "launched_once": true,
-    "outcome": "COMPLETED_RECONCILED_DO_NOT_RELAUNCH",
-    "output_id": "preflight-resume1509-0334",
-    "observed_at": "2026-09-15T03:39:41.680759+00:00",
-    "completed_at": "2026-09-15T03:47:13.988456+00:00",
-    "status": "BLOCKED",
-    "candidate_verification": "PASS",
     "blockers": [
       "CANONICAL_CONTROL_BRIDGE_GATE_B_AND_ACTIVATION_NOT_RUN"
     ],
-    "report": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+    "candidate_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611",
+    "candidate_verification": "PASS",
+    "completed_at": "2026-09-15T03:47:13.988456+00:00",
+    "gzip_sha256": "c7659699b0948c1822ccbeaa1a9be73638e45f7c15ffe421699fc8506da22dea",
+    "independent_verification": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/PREFLIGHT_COMPLETION_VERIFICATION.json",
+    "kind": "PRIVATE_PREFLIGHT_NOT_PUBLICATION",
+    "launched_once": true,
+    "observed_at": "2026-09-15T03:39:41.680759+00:00",
+    "outcome": "COMPLETED_RECONCILED_DO_NOT_RELAUNCH",
+    "output_id": "preflight-resume1509-0334",
+    "production_authority": false,
+    "quota_expires": "2026-09-15T03:56:07.967Z",
     "raw_bytes": 1306122,
     "raw_sha256": "f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7",
-    "gzip_sha256": "c7659699b0948c1822ccbeaa1a9be73638e45f7c15ffe421699fc8506da22dea",
-    "candidate_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611",
-    "independent_verification": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/PREFLIGHT_COMPLETION_VERIFICATION.json",
-    "quota_expires": "2026-09-15T03:56:07.967Z",
-    "production_authority": false
+    "report": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+    "status": "BLOCKED"
   },
-  "owner_current_request": "Действуй, нужен полный PASS. Preserve progress across interrupted message streams.",
-  "current_control_read": "cloud/task088_v5_acceptance/resume_20260915/CURRENT_CONTROL_READ_1509.json",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260915_2/EXECUTION_NOTICE.json",
-  "preview_gate": {
-    "path": "cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_GATE.json",
-    "sha256": "3ed070183d19de801348aef5a521d30781c6528aa585441c6593ab34ae7f864a",
-    "evaluated_at": "2026-09-15T04:55:50.289644+00:00"
+  "runtime_changes_this_continuation": false,
+  "saved_tests": {
+    "browser_css_scenarios": 120,
+    "maintenance": 183,
+    "repeat_full_suites": false,
+    "software": 446
   },
-  "quiescence_preparation": {
-    "path": "cloud/task088_v5_quiescence",
-    "tests_passed": 21,
-    "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
-    "integrated": false
-  }
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED"
 }

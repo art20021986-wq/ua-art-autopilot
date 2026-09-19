@@ -1,0 +1,30 @@
+{
+  "contract": "PR114-LIVE-SOURCE-READBACK-NOT-A-GATE-1",
+  "observed_date": "2026-09-19",
+  "command_completed_server_utc": "15:14",
+  "account": "Carix",
+  "console_id": "48168693",
+  "method": "Authenticated PythonAnywhere console; sha256sum, read-only; shell prompt returned",
+  "source_sha256": {
+    "/home/Carix/cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "/home/Carix/stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+    "/home/Carix/start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+    "/home/Carix/db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+    "/home/Carix/cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+    "/home/Carix/publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+    "/home/Carix/master_card.py": "27e32420bbec9f1e0a25621e1c20dda20944537daa40c1ccac574689cd6c3f6e",
+    "/home/Carix/publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+    "/home/Carix/run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+    "/home/Carix/yadro.py": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793",
+    "/home/Carix/ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb",
+    "/home/Carix/catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "/home/Carix/analitika_wsgi.py": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+    "/home/Carix/uaart_bridge_wsgi.py": "b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150"
+  },
+  "compared_to": "cloud/task088_v5_acceptance/resume_20260915_2/IDENTITY_OBSERVATIONS_SUMMARY.json",
+  "all_14_source_hashes_match": true,
+  "scope": "On-disk source identities only; loaded-process identity, database, media closure and writer drain NOT established",
+  "production_written": false,
+  "crm_written": false,
+  "writer_exclusion": "NOT_PROVEN"
+}

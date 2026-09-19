@@ -20,7 +20,7 @@ def sources():
     sync = ROOT / "cloud/task088_price_sync"
     renderer = ROOT / "cloud/task088_stage3_renderer"
     policy = ROOT / "cloud/task088_autopilot_owner_policy"
-    result = {name: HERE / name for name in ("controller.py", "backup_controller.py", "rollback_controller.py", "remote_adapter.py", "test_adapter.py")}
+    result = {name: HERE / name for name in ("controller.py", "backup_controller.py", "rollback_controller.py", "remote_adapter.py", "test_adapter.py", "test_operation_recovery.py")}
     result.update({"install_package.py": sync / "install_package.py",
         "test_install_package.py": sync / "test_install_package.py",
         "uaart_price_sync_outbox.py": sync / "outbox.py", "outbox.py": sync / "outbox.py",
@@ -65,7 +65,7 @@ def build(*, refresh=False):
     receipt = {"contract": "TASK088-V5-REVIEWED-RELEASE-SOURCE-MAP-1", "sources": provenance,
         "production_written": False, "canonical_gate_created": False,
         "controller_path": (destination / "controller.py").relative_to(ROOT).as_posix(),
-        "test_paths": [(destination / name).relative_to(ROOT).as_posix() for name in ("test_install_package.py", "test_adapter.py")]}
+        "test_paths": [(destination / name).relative_to(ROOT).as_posix() for name in ("test_install_package.py", "test_adapter.py", "test_operation_recovery.py")]}
     (destination / "release_sources.json").write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n")
     print(json.dumps({"status": "LOCAL_RELEASE_CODE_BUILT", "directory": str(destination), "python_files": len(mapping), "production_written": False}))
     return receipt
