@@ -1,0 +1,41 @@
+{
+  "kind": "PR114_HANDOFF006_FRESH_PRIVATE_SOURCE_BINDING",
+  "operation_id": "pr114-source-binding-20260919T1838Z",
+  "recorded_at": "2026-09-19T18:38:30Z",
+  "status": "PASS",
+  "scope": "Read-only authenticated SHA256 observation; no private source bytes stored in Git",
+  "browser_console": "48168693",
+  "observed": {
+    "/home/Carix/cars_ui.py": {
+      "sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "matches_retained_private_original": true
+    },
+    "/home/Carix/stranica.py": {
+      "sha256": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "matches_retained_private_original": true
+    },
+    "/home/Carix/publish_transaction_guard.py": {
+      "sha256": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "matches_retained_private_original": true
+    }
+  },
+  "recovery": {
+    "prior_console_state": "UNFINISHED_SINGLE_QUOTE_PROMPT_FROM_BOUNDED_READ_ATTEMPT",
+    "reconciled_without_server_mutation": true,
+    "fresh_prompt_observed_after_reconciliation": true,
+    "duplicate_download_performed": false
+  },
+  "mutations": {
+    "production": false,
+    "crm": false,
+    "website": false,
+    "private_source": false,
+    "workflow_launch": false
+  },
+  "progress": {
+    "accepted": 8,
+    "total": 20,
+    "percent": 40
+  },
+  "next_action": "Using only the now-bound retained private originals, assemble and test a minimal isolated integration of the reviewed publication fence across media remove-all, rebuild/main including validation fallback, and the existing publish transaction guard. Do not run freshness preflight or production install."
+}

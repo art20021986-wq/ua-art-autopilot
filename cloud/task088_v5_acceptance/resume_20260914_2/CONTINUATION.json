@@ -62,10 +62,10 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919_handoff006/hash_read_20260919_1654/NOTICE.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260920_handoff006/source_binding_20260919_1838/NOTICE.json",
   "next_action": {
-    "kind": "RESTORE_RELIABLE_CONSOLE_IO_AND_CONFIRM_CURRENT_HASHES",
-    "detail": "On the next scheduled attempt first read the console state. Use one supported reliable terminal interaction or the reviewed private source route to obtain fresh SHA256 only. If all three current hashes exactly match retained originals, reuse them without re-download and begin the minimal isolated integration; otherwise stop and preserve both versions. Do not start freshness preflight or production launch."
+    "kind": "ASSEMBLE_ISOLATED_PRIVATE_SOURCE_INTEGRATION",
+    "detail": "Fresh authenticated SHA256 for cars_ui.py, stranica.py and publish_transaction_guard.py exactly match the retained private originals. Reuse those bytes without re-download and assemble the minimal isolated publication-fence integration. Do not start freshness preflight or production launch."
   },
   "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
   "observed_pr_head_before_this_update": "94763fba9da31e247431c69637cb5148ff2095b8",
@@ -105,7 +105,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-19T16:55:21.458Z",
+  "recorded_at": "2026-09-19T18:38:30Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
