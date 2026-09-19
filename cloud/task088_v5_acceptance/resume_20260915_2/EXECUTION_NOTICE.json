@@ -1,0 +1,91 @@
+{
+  "contract": "PR114-RESUME-EXECUTION-NOTICE-NOT-A-GATE-1",
+  "updated_at": "2026-09-15T05:47:44.897034+00:00",
+  "specification": "UA-ART-PR114-COMPLETION-004 v1.0",
+  "user_direction": "Действуй, нужен полный PASS. Preserve progress across interrupted message streams.",
+  "observed_head": "4219b77fd5142ff0d11d7381694fc09d75f3b066",
+  "observed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "progress": {
+    "accepted": 8,
+    "total": 20,
+    "percent": 40,
+    "stage1": "8/8 PASS",
+    "full_preview": "24/24 PASS"
+  },
+  "preview": {
+    "path": "cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_GATE.json",
+    "sha256": "3ed070183d19de801348aef5a521d30781c6528aa585441c6593ab34ae7f864a",
+    "evaluated_at": "2026-09-15T04:55:50.289644+00:00"
+  },
+  "completed_operations": {
+    "install-observe-20260915-0440": "COMPLETED_RECONCILED_DO_NOT_REPEAT",
+    "preview-binding-20260915-0446": "COMPLETED_RECONCILED_DO_NOT_REPEAT",
+    "preflight-resume1509-0334": "COMPLETED_BLOCKED_CANONICAL_CONTROLS_NOT_RUN_DO_NOT_REPEAT",
+    "writer-identity-facts-0508": "COMPLETED_RC0_RAW_RETAINED_SERVER; summary recovered; no repeat",
+    "bot-identity-facts-0516": "COMPLETED_RC0_GETME_GETCHAT_MATCH; raw server/local SHA matched; no messaging or update consumption"
+  },
+  "raw_recovery": "cloud/task088_v5_acceptance/resume_20260915_2/REPORT_RECOVERY.json",
+  "historical_suites_repeated": false,
+  "console": {
+    "id": "48168693",
+    "state": "SHELL_PROMPT",
+    "credential_prompt_open": false
+  },
+  "next_action": "Integrate permanent filesystem writer fences and map reviewed canonical phase-aware installation pause. Isolated prototype is not deployment authority; no new preflight until real blockers resolved. Reader credential remains owner hidden-input prerequisite for Stage4.",
+  "foreground_in_progress": true,
+  "foreground_owner": "current root conversation; only Git writer",
+  "continuation_coordination": "Background continuation must re-read current PR/head/checkpoint and abstain from Git or server mutations while foreground heartbeat is less than 15 minutes old. This coordination notice is not a production lock or authority. Existing canonical locks always apply.",
+  "background_task": {
+    "id": "6aa838e44e688191acb636f6597ac587",
+    "is_enabled": true,
+    "action": "Existing task resumed after actual8/8 stage1 and durable readback; no competing writes while foreground active.",
+    "prompt_readback_match": true
+  },
+  "production_written": false,
+  "crm_written": false,
+  "runtime_activation": "NOT_RUN",
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "writer_fence": "BLOCKED_ACTIVE_MEDIA_DELETION_OUTSIDE_PUBLICATION_AND_SQLITE_LOCKS",
+  "identity_summary": "cloud/task088_v5_acceptance/resume_20260915_2/IDENTITY_OBSERVATIONS_SUMMARY.json",
+  "quiescence_preparation": {
+    "status": "INDEPENDENTLY_ACCEPTED_ISOLATED_PROTOTYPE_ONLY",
+    "path": "cloud/task088_v5_quiescence",
+    "production_integrated": false,
+    "tests": {
+      "passed": 21,
+      "historical_suites_repeated": false,
+      "validation_sha256": "03e7d23b8e766a6f80a8281c337cf46bd3630a5b7bf688ffae29b51762eb8e73"
+    },
+    "independent_review": "cloud/task088_v5_quiescence/INDEPENDENT_REVIEW.json",
+    "open": [
+      "Complete authenticated graceful drain/process closure",
+      "Partial provider request recovery",
+      "Canonical authority and phase-aware adapter integration",
+      "Permanent filesystem writer fences",
+      "Fresh observation rebinding after long backup"
+    ],
+    "durable_commit": "4219b77fd5142ff0d11d7381694fc09d75f3b066",
+    "git_readback": "13/13 exact"
+  },
+  "integration_map": {
+    "path": "cloud/task088_v5_acceptance/resume_20260915_2/QUIESCENCE_INTEGRATION_MAP.json",
+    "root_source_readback": "14/14 Git blobs matched commit4219b77fd5142ff0d11d7381694fc09d75f3b066",
+    "integrated": false
+  },
+  "monitor_review": {
+    "path": "cloud/task088_v5_acceptance/resume_20260915_2/COMPLETE_MONITOR_SOURCE_REVIEW.json",
+    "source_sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+    "status": "FULL_STATIC_DIRECT_EFFECT_REVIEW_PASS_ONLY",
+    "limits": [
+      "Loaded-process code identity not observed",
+      "WSGI effects of public GET remain separate writer scope"
+    ],
+    "source_retained": "cloud/task088_v5_acceptance/resume_20260915_2/observed_monitor_source_0542.py.txt"
+  },
+  "writer_fence_preparation": {
+    "path": "cloud/task088_v5_writer_fence",
+    "status": "IN_PROGRESS_ISOLATED_CANDIDATE_AND_CONCURRENCY_TESTS",
+    "integrated": false
+  }
+}

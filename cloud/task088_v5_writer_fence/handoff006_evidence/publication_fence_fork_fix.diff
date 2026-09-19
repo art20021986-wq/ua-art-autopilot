@@ -1,0 +1,160 @@
+--- before/publication_fence.py
++++ after/publication_fence.py
+@@ -1,7 +1,8 @@
+ """Cooperative publication fence for filesystem-mutating CRM helpers.
+ 
+-This module is an isolated release candidate.  Importing it has no side
+-effects.  Production integration must bind the exact reviewed source hashes
++This module is an isolated release candidate.  Importing it registers fork
++cleanup but does not open the lock or mutate production files.  Production
++integration must bind the exact reviewed source hashes
+ and call the fence *inside* the synchronous worker that performs a mutation.
+ """
+ from __future__ import annotations
+@@ -46,7 +47,7 @@
+ 
+ 
+ def _reset_after_fork_if_needed() -> None:
+-    global _registry_pid
++    global _condition, _registry_pid
+     pid = os.getpid()
+     if pid != _registry_pid:
+         # File descriptors inherited across fork must never be treated as a
+@@ -57,6 +58,32 @@
+                     os.close(state.fd)
+         _states.clear()
+         _registry_pid = pid
++        # The inherited condition may be owned by a thread absent in the
++        # child.  Recreate it before any child-side attempt to acquire it.
++        _condition = threading.Condition(threading.RLock())
++
++
++def _before_fork() -> None:
++    # Opening/registering and closing/unregistering descriptors occur under
++    # this condition, so the child inherits a complete descriptor registry.
++    _condition.acquire()
++
++
++def _after_fork_parent() -> None:
++    _condition.release()
++
++
++def _after_fork_child() -> None:
++    # Only close descriptors: LOCK_UN would also revoke the parent's lease
++    # because flock state belongs to the inherited open-file description.
++    _reset_after_fork_if_needed()
++
++
++os.register_at_fork(
++    before=_before_fork,
++    after_in_parent=_after_fork_parent,
++    after_in_child=_after_fork_child,
++)
+ 
+ 
+ def _safe_open(path: Path) -> int:
+@@ -128,6 +155,7 @@
+         self._entered = False
+ 
+     def __enter__(self) -> "PublicationFence":
++        _reset_after_fork_if_needed()
+         if self._entered:
+             raise FenceError("FENCE_INSTANCE_ALREADY_ENTERED")
+         deadline = time.monotonic() + self.timeout
+@@ -135,7 +163,6 @@
+         key = os.fspath(self.path)
+ 
+         with _condition:
+-            _reset_after_fork_if_needed()
+             state = _states.setdefault(key, _State())
+             if state.owner_thread == thread_id:
+                 state.depth += 1
+@@ -150,7 +177,9 @@
+ 
+         fd: int | None = None
+         try:
+-            fd = _safe_open(self.path)
++            with _condition:
++                fd = _safe_open(self.path)
++                state.fd = fd
+             _lock_fd(fd, deadline, self.poll_interval)
+             with _condition:
+                 state = _states[key]
+@@ -163,25 +192,28 @@
+                 self._entered = True
+             return self
+         except BaseException:
+-            if fd is not None:
+-                with contextlib.suppress(OSError):
+-                    fcntl.flock(fd, fcntl.LOCK_UN)
+-                os.close(fd)
+             with _condition:
+                 state = _states.get(key)
+-                if state is not None and state.acquiring_thread == thread_id:
+-                    state.acquiring_thread = None
+-                    _condition.notify_all()
++                try:
++                    if fd is not None:
++                        with contextlib.suppress(OSError):
++                            fcntl.flock(fd, fcntl.LOCK_UN)
++                        os.close(fd)
++                finally:
++                    if state is not None and state.acquiring_thread == thread_id:
++                        state.fd = None
++                        state.acquiring_thread = None
++                        _condition.notify_all()
+             raise
+ 
+     def __exit__(self, exc_type, exc, traceback) -> bool:
++        _reset_after_fork_if_needed()
+         if not self._entered:
+             raise FenceError("FENCE_INSTANCE_NOT_ENTERED")
+         key = os.fspath(self.path)
+         thread_id = threading.get_ident()
+         fd: int | None = None
+         with _condition:
+-            _reset_after_fork_if_needed()
+             state = _states.get(key)
+             if state is None or state.owner_thread != thread_id or state.depth <= 0:
+                 raise FenceError("PUBLICATION_FENCE_NOT_OWNED_BY_THREAD")
+@@ -190,17 +222,18 @@
+             if state.depth:
+                 return False
+             fd = state.fd
+-            state.fd = None
+-            state.owner_thread = None
+-        try:
+-            if fd is None:
+-                raise FenceError("PUBLICATION_FENCE_DESCRIPTOR_MISSING")
+-            fcntl.flock(fd, fcntl.LOCK_UN)
+-        finally:
+-            if fd is not None:
+-                os.close(fd)
+-            with _condition:
+-                _condition.notify_all()
++            try:
++                if fd is None:
++                    raise FenceError("PUBLICATION_FENCE_DESCRIPTOR_MISSING")
++                fcntl.flock(fd, fcntl.LOCK_UN)
++            finally:
++                try:
++                    if fd is not None:
++                        os.close(fd)
++                finally:
++                    state.fd = None
++                    state.owner_thread = None
++                    _condition.notify_all()
+         return False
+ 
+ 
+@@ -210,9 +243,9 @@
+ 
+ def require_publication_fence(*, lock_path: Path | str = DEFAULT_LOCK_PATH) -> None:
+     """Fail unless the current thread owns the cooperative fence."""
++    _reset_after_fork_if_needed()
+     key = os.fspath(Path(lock_path))
+     with _condition:
+-        _reset_after_fork_if_needed()
+         state = _states.get(key)
+         if state is None or state.owner_thread != threading.get_ident() or state.depth <= 0:
+             raise FenceError("PUBLICATION_FENCE_REQUIRED")

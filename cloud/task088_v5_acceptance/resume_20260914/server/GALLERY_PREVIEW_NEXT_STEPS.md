@@ -1,0 +1,12 @@
+# Dedicated Preview gallery refresh — frozen preparation
+
+Delivery: `/workspace/scratch/5f3dba772b24/server_transfer/gallery_fix_1614.pyz`, 11,500 bytes, SHA256 `3c83ca418d9a10667867ccb4ab1efaf9566d5b5864844055c679d831b268b63e`. Repository mirror: `refresh_gallery_preview_20260914.pyz`. Runner SHA256 `f3f8a5c6d9b47d193c1d9903fffc43328986f3540dded3a41d9d0fc4755fb7ee`; builder SHA256 `0137d0077ef485679feea238b579b629f8c281542ca28a7277b769d5a7b8fa02`.
+
+1. Complete the independent runner/source review. Obtain a new authenticated account quota observation; the earlier15:43 evidence expires16:13:25UTC and must not be restamped.
+2. Upload the single frozen kit and fresh quota JSON into the existing private task parent. Verify both server hashes against exact local bytes. Run `python3.10 -I -B /home/Carix/autopilot_inbox/cloud/gallery_fix_1614.pyz --quota-json ACTUAL_ABSOLUTE_FRESH_QUOTA_PATH`; preserve stdout with umask077/no-clobber in a unique private receipt file.
+3. Confirm success `PREVIEW_ONLY_UPDATED_PENDING_RELOAD_AND_BROWSER`, 542 added JPEG assets from independently bound560 gallery routes, every679 existing resource unchanged, 20 price pages /20 linked pages /19 offline pages unchanged, and protected-state MATCH. Verify raw receipt SHA and retain the newwork/manifest/config/WSGI/backup paths and hashes. A failure never authorizes a reload; retain its detailed outcome.
+4. Reload only `Carix.pythonanywhere.com` through the authenticated hosting UI. Perform actual normal gallery UI acceptance and bind observations to the new manifest. No browser-policy-blocked URL fetch or alternate image exposure is part of this work.
+
+The script writes a new private work directory and only the dedicated Preview WSGI. It does not reload apps, change production source/site/CRM or hosting mappings, create a Gate, or send image HTTP requests. In-process resource validation checks every new manifest entry, with no fixed679 limit. The WSGI write compares exact bytes under an advisory flock and retains rollback bytes; this is not a fence against unrelated writers ignoring that lock, so preserve one Preview WSGI writer for the operation. Unknown partial/foreign write states are reported as unverified rather than silently treated as unchanged.
+
+`full_preview: NOT_PASSED` until actual browser and remaining Gate evidence is complete. No server execution was performed by the preparation agent.

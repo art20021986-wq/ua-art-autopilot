@@ -1,0 +1,46 @@
+{
+  "contract": "PR114-HANDOFF006-EXECUTION-CHECKPOINT-NOT-A-GATE-1",
+  "recorded_at": "2026-09-19T16:20:14.638970+00:00",
+  "owner_instruction": "Запускай",
+  "specification": "UA-ART-PR114-HANDOFF-006 v1.0",
+  "operation_id": "pr114-handoff006-isolated-fence-review",
+  "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+  "observed_pr_head_before_checkpoint": "94763fba9da31e247431c69637cb5148ff2095b8",
+  "foreground_in_progress": false,
+  "status": "BLOCKED_SOURCE_RETRIEVAL_WITH_ISOLATED_FIX_SAVED",
+  "accepted_progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "new_criteria_accepted": []
+  },
+  "completed": [
+    "Reconciled actual main, PR head, claims/transactions, external run outcomes and paused automation. No production launch was in progress in the observed GitHub state.",
+    "Independently reproduced and corrected fork Condition/descriptor cleanup and stale lock inode grants in the isolated candidate.",
+    "Affected final module suite 18/18 PASS; exact test bytes and input/output SHA256 independently checked. Historical product and Preview suites not rerun."
+  ],
+  "candidate_validation": "cloud/task088_v5_writer_fence/HANDOFF006_VALIDATION.json",
+  "candidate_source_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+  "control_evidence": "cloud/task088_v5_acceptance/resume_20260919_handoff006/CONTROL_AUDIT.json",
+  "source_retrieval_evidence": "cloud/task088_v5_acceptance/resume_20260919_handoff006/BROWSER_SOURCE_RETRIEVAL.json",
+  "browser_blocker": "CDP operation refresh tabs timed out after 20000ms after browser recovery errors. Exact private source copy was not obtained. This is not evidence of a production site outage.",
+  "other_remaining_requirements": [
+    "Exact real writer call-path integration and shared registry with legacy publication guard",
+    "Complete old/new writer containment and phase-aware canonical recovery",
+    "Fresh actual candidate bindings, canonical authority, verified backup and Stage3 installation/receipt",
+    "Credential readback, permanent reader, agreed real CRM changes/publication, device/network observations and Stage4/final Gate"
+  ],
+  "automation": {
+    "id": "6aa838e44e688191acb636f6597ac587",
+    "is_enabled": false,
+    "changed_this_execution": false,
+    "not_a_runtime_reader": true
+  },
+  "preflight": "NOT_RUN",
+  "canonical_launch": "NOT_RUN",
+  "installed": false,
+  "production_changed": false,
+  "crm_changed": false,
+  "website_changed": false,
+  "next_action": "Restore authenticated managed browser transport; read exact pinned cars_ui.py and stranica.py privately and independently match server/local SHA256, then integrate the reviewed fence at real mutation paths with the existing guard using one registry. No new freshness preflight or production launch until actual integration/containment PASS."
+}

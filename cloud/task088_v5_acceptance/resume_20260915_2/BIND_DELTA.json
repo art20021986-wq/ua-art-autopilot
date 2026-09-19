@@ -1,0 +1,47 @@
+{
+  "base_sha256": "991449ee7199c4c65534dfd3d9b459b47ae3699a0452249b5b1d883ce9d00018",
+  "changed": {
+    "finished_at": "2026-09-15T04:46:15.173258+00:00",
+    "observer": {
+      "actual_section_sha256": {
+        "database": "eeea65926b83bea0ca2647e3f08ed044148545a6ec5f69355e2785604f6c411b",
+        "dependency_sha256": "051028a95bd3a366e5823059332b5596d007f17d36f7e7113ecde6ff354dd948",
+        "full_backup_source_bytes": "2bda91432e0d520bb4eff1830a66ab0e28ea4654b14e1dcba69949e4a494f62b",
+        "hidden_public_files_included_in_complete_inventory": "4523540f1504cd17100c4835e85b7eefd49911580f8efff0599a8f283be6b9e3",
+        "observer_payload_sha256": "cf6a1d7dc747c5af8db2e65d36b147b33c6eaca0288c207feb435e8490165afe",
+        "schema_sha256": "e3445398947f0fdede13ae5feba142424e77e0b1ab097bc390d3bc75ada21aff",
+        "source_sha256": "fc19323785b6e4e3c76019bdab31ae4994cdff0c8a9bff7dfb5c8c197dcc1a13",
+        "stage_counts": "bbbcff480b3cf4ad930237a1c8449994aadc378547e9777cc5b393734633dd9b",
+        "system_inventory_count": "30314a2d88dac51908732171757e1eb023064339eee1daee551f5d2498d0f7f9",
+        "system_inventory_sha256": "9c6de7bde8cedab523954b32c558b842fce072637ba559a14635a080a69cc8b7"
+      },
+      "age_seconds_at_comparison": 359.972,
+      "baseline_observed_at": "2026-09-14T16:50:36.435375+00:00",
+      "comparison": {
+        "database": "MATCH",
+        "dependency_sha256": "MATCH",
+        "full_backup_source_bytes": "MATCH",
+        "hidden_public_files_included_in_complete_inventory": "MATCH",
+        "observer_payload_sha256": "MATCH",
+        "schema_sha256": "MATCH",
+        "source_sha256": "MATCH",
+        "stage_counts": "MATCH",
+        "system_inventory_count": "MATCH",
+        "system_inventory_sha256": "MATCH"
+      },
+      "dependency_files_count": 7,
+      "no_new_db_observation_by_this_script": true,
+      "observed_at": "2026-09-15T04:40:14.504473+00:00",
+      "quota_result": "SEPARATE_ACTUAL_QUOTA_REVIEW_REQUIRED",
+      "report_sha256": "e5aa42f3e2067e09633c2e5176125f274390a77ac08a03099c842193d4f15a4c",
+      "source_files_count": 6,
+      "status": "MATCH",
+      "system_inventory_count": 9625,
+      "system_inventory_sha256": "b78bf862e08c4b549956b803245a851366085ae93ccc59291fde46656eec4dea"
+    },
+    "started_at": "2026-09-15T04:46:12.177004+00:00"
+  },
+  "raw_bytes": 7552,
+  "raw_sha256": "45ddb2f78e9bb195bab6ffeb43ddd926ee96e1e2e4f0abd5b0a481b54ca79ea5",
+  "removed": []
+}

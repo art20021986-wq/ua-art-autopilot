@@ -1,0 +1,144 @@
+{
+  "contract": "PR114-CRITERION7-PHOTOS-ACCEPTANCE-NOT-A-FULL-PREVIEW-GATE-1",
+  "recorded_at": "2026-09-15T03:13:25.835435+00:00",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "branch": "codex/task088-owner-policy-20260913-0934",
+  "observed_pr_head": "a1b4f9ba691c8a4aff1db6b38adec5c457ce9fac",
+  "observed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "milestone": "UA-ART-PR114-3-STAGES-AUTOPILOT-003 v1.0 criterion7",
+  "criterion_status": "COMPLETED",
+  "photos_evidence_status": "SUPPORTED_CURRENT_PHOTOS_WITH_OWNER_VISUAL_ACCEPTANCE",
+  "decision": "The requested full-screen gallery regression acceptance is complete using genuine owner observations plus exact current bindings and preserved whole-set integrity evidence.",
+  "accepted_visual_scope": {
+    "car": "UA-0015",
+    "car_association": "Specific preceding UA-0015 link and task context; screenshot address bar shows host only.",
+    "fullscreen_photo2": "OWNER_SCREENSHOT_IMG_8990_2_OF_37",
+    "fullscreen_photo3": "OWNER_SCREENSHOT_IMG_8991_3_OF_37",
+    "switching": "OWNER_CONFIRMED_WITH_TWO_DISTINCT_FULLSCREEN_FRAMES",
+    "closing": "OWNER_CONFIRMED_NOT_SHOWN_IN_STILL_FRAME",
+    "owner_statement": "Сработало продолжай",
+    "owner_action_repeat_required": false
+  },
+  "accepted_current_set_integrity_scope": {
+    "preview_resource_manifest_sha256": "c6febae073064d66c89a553a1d23538c8dc71c40c9737c440d33a3ba457611ca",
+    "preview_config_sha256": "ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee",
+    "preview_wsgi_sha256": "9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555",
+    "runtime_file_pins": "All five exact reviewed on-disk runtime source files match.",
+    "bundle_html_files_matched": 41,
+    "published_cards_matched": 18,
+    "gallery_routes_matched": 560,
+    "gallery_routes_sha256": "457df9c40064e7e5c5510d339e264e549ddfc4b1a2ae2bd2380c0501b46c2c74",
+    "resource_metadata_entries": 1221,
+    "system_inventory_files_matched": 9625,
+    "system_inventory_sha256": "b78bf862e08c4b549956b803245a851366085ae93ccc59291fde46656eec4dea",
+    "database_sources_dependencies_schema_stage_counts": "MATCH_HISTORICAL_OBSERVER",
+    "retained_prior_real_resource_verification": "1221 resources checked in-process in original actual V2 receipt; 679 earlier resources preserved and 542 expected gallery assets added.",
+    "new_image_bytes_read_by_binding_helper": 0,
+    "new_image_http_requests": 0
+  },
+  "coverage_assessment": [
+    "The specific previously failing full-size photo2 case now has direct owner-device visual proof, followed by photo3 and confirmed close.",
+    "The full current card/gallery route set and protected file inventory are unchanged and match the previously validated V2 candidate.",
+    "This closes the existing targeted visual gap with complete set-integrity coverage. It does not assert that every one of560 photographs was newly rendered in a browser.",
+    "No additional owner matrix of all18cars or all37UA-0015photos is specified by the existing canonical criteria map; no such requirement is introduced."
+  ],
+  "evidence": {
+    "owner": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
+      "bytes": 2487,
+      "sha256": "55a970c7b34745232fa132883b5d87344740db93c272eee6bca7da5754d6b623",
+      "commit": "a1b4f9ba691c8a4aff1db6b38adec5c457ce9fac"
+    },
+    "fresh_install_observer": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0254.json.gz.b64",
+      "encoding": "base64(gzip(raw UTF8 JSON))",
+      "raw_bytes": 1282773,
+      "raw_sha256": "758c8862b4005dd4fc1d30eb0faf793f60693b9c1155667e610477623255b247",
+      "gzip_sha256": "443ac3626db955a670fc664b1183499393af53f2bcd7132a69ea458bd9bbca40",
+      "observed_at": "2026-09-15T02:54:36.396354+00:00"
+    },
+    "fresh_preview_binding": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/server/binding_1509_0304.json",
+      "bytes": 7552,
+      "sha256": "c54945bfd66d56b8ff0ca1ac50277cf539b0d5869a8ef97b85620f3f013cda08"
+    },
+    "fresh_home_browser_observation": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915/browser/PREVIEW_HOME_OBSERVATION.json",
+      "bytes": 932,
+      "sha256": "bbf5f3432ed4362da52e478fb8bd7b46e8b72b03bf68763c3a4c44f3bdafafbf"
+    },
+    "historical_actual_gallery_receipt": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/gallery_1640.json",
+      "bytes": 19081,
+      "sha256": "e893bdd1ce9a83ceaffc629bb2d5b56cb23dddb7f1d73b4c0cfbe7fc4a95d2da"
+    },
+    "historical_page_preservation_bridge": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREFLIGHT_BROWSER_BINDING_V2.json",
+      "bytes": 7120,
+      "sha256": "3320408164e34afbd7781e5594cb5fa6fbbb0a4d2f5e04cf6e52f098fccc5c99"
+    },
+    "historical_browser_report": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+      "bytes": 15090,
+      "sha256": "3798d46b281515c0a50bb2e3c41e8da464abaf1ccc3f3264bd9a772e76ff4906"
+    },
+    "canonical_criteria_map": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREVIEW_CRITERIA_MAP.json",
+      "bytes": 69803,
+      "sha256": "7ae93f51824511c80104070352b5594781f329e09957a18c23390ae8059dfd4b",
+      "commit": "2e8f30fe54c8ecd86acf888de86d9ca62ba01706"
+    }
+  },
+  "fresh_home_scope": "Separate actual home HTML observation at03:07:29 with matching page hash,390x844CSS and10/10decoded images. This is home availability/layout evidence, not gallery rendering or all-worker inspection.",
+  "reuse_policy": {
+    "historical_results_repeated": false,
+    "preserved_results": {
+      "software": 446,
+      "maintenance": 183,
+      "browser_css_cases": 120
+    },
+    "reason_reuse_is_valid": "Fresh observed source/dependency/database/schema/inventory equality and exact Preview HTML/runtime/config/manifest equality preserve the prior input bytes and their evidence bindings.",
+    "reason_new_checks_were_needed": "New owner visual evidence had to be associated with the actual current Preview; mandatory current-state/freshness bindings could not be inferred from historical timestamps.",
+    "historical_raw_statuses_and_timestamps_rewritten": false,
+    "time_bound_execution_gate_inputs": "Must be observed and validated again when required at actual execution; this milestone does not extend their validity."
+  },
+  "progress": {
+    "model": "20 equal completion criteria,5percentage points each; completed DB/CRM baseline excluded from denominator",
+    "previous_completed_criteria": 6,
+    "completed_criteria": 7,
+    "total_criteria": 20,
+    "percent": 35,
+    "newly_completed_criterion": 7,
+    "stage1": {
+      "completed": 7,
+      "total": 8,
+      "percent": 87.5
+    },
+    "stage2": {
+      "completed": 0,
+      "total": 6,
+      "percent": 0
+    },
+    "stage3": {
+      "completed": 0,
+      "total": 6,
+      "percent": 0
+    },
+    "scope": "Completion criteria of the new three-stage plan; not elapsed work/time or whole historic project"
+  },
+  "full_preview": "NOT_PASSED_PENDING_ACTUAL_FINAL24_EVALUATION_AND_EXACT_CONTRACT",
+  "plan_criterion8": "OPEN",
+  "canonical_gate_created": false,
+  "production_stage3": "OPEN_NOT_PUBLISHED",
+  "production_stage4": "OPEN_NOT_ACCEPTED",
+  "production_written": false,
+  "crm_written": false,
+  "blocked_fullsize_url_retried": false,
+  "limitations": [
+    "Screenshots show local clock only and do not establish captureUTC or browser-engine identity.",
+    "On-disk bindings do not independently prove every runningWSGIworker.",
+    "The helper checks JSON/HTML/metadata and consumes a separately produced real observer; it creates no new browser rendering or DB observation.",
+    "This acceptance record is not a TASK088-FINAL-V5-PREVIEW-GATE-1 document and grants no execution authority."
+  ],
+  "next_action": "Complete fresh private preflight/current canonical input bindings, then evaluate every one of24 existing Preview criteria into the actual exact-candidate contract; preserve this accepted visual evidence and do not ask the owner to repeat the completed gallery actions."
+}

@@ -1,0 +1,53 @@
+{
+  "contract": "PR114_HOME_DISPLAYED_COUNTERS_OBSERVATION_REVIEW_1",
+  "recorded_at": "2026-09-14T16:23:23.793577+00:00",
+  "observed_at": "2026-09-14T16:21:06.878Z",
+  "scope": "Retained actual homepage DOM counts and destination hrefs; analysis only, not a full Preview Gate",
+  "raw": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+    "sha256": "b8d194e6c92d54694279cd4e5d4e36958bed16349cc93e2dfc7a395c3fc8d3a9",
+    "bytes": 5692
+  },
+  "url": "https://carix.pythonanywhere.com/video/index.html",
+  "navigation_provenance": "Root reports actual click of own-card homepage link after closing the preexisting overlay; raw confirms final homepage URL and DOM. No additional link clicks are inferred.",
+  "counter_comparison": [
+    {
+      "stage": "kiev",
+      "displayed_count": 5,
+      "expected_source_count": 5,
+      "href": "katalog.html?f=kiev&stage=kiev",
+      "matches": true
+    },
+    {
+      "stage": "georgia",
+      "displayed_count": 5,
+      "expected_source_count": 5,
+      "href": "katalog.html?f=georgia&stage=georgia",
+      "matches": true
+    },
+    {
+      "stage": "sea",
+      "displayed_count": 4,
+      "expected_source_count": 4,
+      "href": "katalog.html?f=sea&stage=sea",
+      "matches": true
+    },
+    {
+      "stage": "korea",
+      "displayed_count": 4,
+      "expected_source_count": 4,
+      "href": "katalog.html?f=korea&stage=korea",
+      "matches": true
+    }
+  ],
+  "all_count": {
+    "displayed": 18,
+    "expected": 18,
+    "href": "katalog.html",
+    "matches": true
+  },
+  "expected_source": "BROWSER_SCOPED_FINAL_REPORT.json catalog_filters expected_codes derived from captured row stage groups; current/capture row digest MATCH in retained15:57 readback",
+  "status": "SUPPORTED_DISPLAYED_COUNTS_AND_HREFS",
+  "excluded_evidence": "homepage_counters_raw_1618.txt was a failed navigation with card content and is not homepage evidence",
+  "full_preview_gate": "NOT_PASSED"
+}

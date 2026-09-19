@@ -1,0 +1,20 @@
+{
+  "scope": "ISOLATED_FORK_FIX_ONLY",
+  "before_expected_sha256": "12b523a15ea53f0359436ebe35429b497133720a8718e64e4bef84504efd8f39",
+  "before_observed_sha256": "12b523a15ea53f0359436ebe35429b497133720a8718e64e4bef84504efd8f39",
+  "targeted_tests_passed": 4,
+  "targeted_baseline_failed": 4,
+  "compile": "PASS",
+  "historical_suites_repeated": false,
+  "production_authority": false,
+  "installed": false,
+  "writer_gate_pass": false,
+  "private_source_integration_completed": false,
+  "sha256": {
+    "publication_fence.py": "b9450a817c397b8a48b8388652d6aee6955108fbaadc4072f069297f228d1913",
+    "test_fork_regressions.py": "0a08a5c93a7ca9f53a250cbdb9853935443a315bb91b9b82795411fe03547c84",
+    "FORK_REGRESSION_OUTPUT.txt": "d4f9dca606cd3db51c4a7d099ba8ff740563d40c97256856bbdc08d753b2cb1b",
+    "BASELINE_FORK_REGRESSIONS.txt": "21203dad612b48f3c8c7c2f3b434bf6170a693bccafc9a4b7bda770c14e87c7f"
+  },
+  "baseline_source_transport_note": "Initial local before copy had one extra terminal newline from apply_patch; exact bytes restored and verified. Python behavior and baseline test results are unchanged."
+}

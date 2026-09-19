@@ -1,0 +1,109 @@
+{
+  "approval": {
+    "canonical_gate_or_activation": false,
+    "document_sha256": "4590e4db2d6dafe3cac95f96da808ca05831de3ce45097d8235970913ba62ba1",
+    "identifier": "UA-ART-PR114-AUDIT-005 v1.0",
+    "recorded_on": "2026-09-19",
+    "scope": "Continue original Stage3 under actual canonical gates and verified backup, then Stage4 acceptance; preserve Stage1/2 and approved design",
+    "user_statement": "УТВЕРЖДАЮ UA-ART-PR114-AUDIT-005 v1.0"
+  },
+  "background_task": {
+    "id": "6aa838e44e688191acb636f6597ac587",
+    "is_enabled": true,
+    "updated_at": "2026-09-19T15:44:33.517461+00:00",
+    "schedule": "HOURLY",
+    "purpose": "Continue PR114 code preparation and canonical rollout only when actual existing gates pass; this is not the installed server reader"
+  },
+  "canonical_launch": "NOT_RUN",
+  "canonical_state": {
+    "main_commit": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "recovery_evidence": "cloud/pr114_halt_recovery_20260919/RECOVERY_EVIDENCE.json",
+    "halt": "ABSENT_VERIFIED",
+    "mode": "AUTOMATIC",
+    "pinned_mode_validation": "PASS"
+  },
+  "completed": [
+    "Reviewed and tested crash/timeout/lost-response protection in the installation adapter",
+    "Closed independently identified delayed execute versus canonical rollback race",
+    "Rebuilt exact generated release with the new fault/concurrency suite and ran 71 tests successfully",
+    "Authenticated server UI readback: existing CRM and monitor Running; 14 on-disk source hashes match earlier source pins",
+    "Read current canonical main, active HALT, all claims and transactions; diagnosed unexpected workflow root cause",
+    "Owner-authorized main recovery committed: redundant diagnostic workflow retired with exact bytes archived; resolved SYSTEM-WATCHDOG halt archived. Unchanged normal verify-mode and assert-clear PASS; all changed paths and main ref read back."
+  ],
+  "completed_old_operations": "Retain September15 completed observer, binding and preflight evidence; no relaunch performed",
+  "contract": "PR114-RESUME-EXECUTION-NOTICE-NOT-A-GATE-1",
+  "crm_written": false,
+  "foreground_in_progress": false,
+  "historical_suites_repeated": false,
+  "main_observation_correction": "Use current main ref; PR metadata base_sha still reports historical 0c85a6561d80c4d8789b3a482ae41cdaf9d0f667 and is not the current main tip",
+  "next_action": "Implement and validate permanent fencing for actual cars_ui media deletion and direct stranica rebuild, with reentrant lock ordering and canonical phase-aware installation. No fresh preflight or production launch until actual old/new writer containment is proven. Then use exact Gate B, full verified backup, publication and Stage4 live acceptance.",
+  "no_background_execution_claim": true,
+  "observed_head_before_checkpoint": "7f07f6fe6e43d2307a58405b89f5c13963598860",
+  "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+  "original_stages": {
+    "stage1": "PREVIOUSLY_ACCEPTED",
+    "stage2": "PREVIOUSLY_ACCEPTED",
+    "stage3": "OPEN_NOT_PUBLISHED",
+    "stage4": "OPEN_NOT_ACCEPTED"
+  },
+  "preview": {
+    "evaluated_at": "2026-09-15T04:55:50.289644+00:00",
+    "freshness_reset": false,
+    "historical_result": "24/24 PASS",
+    "path": "cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_GATE.json",
+    "sha256": "3ed070183d19de801348aef5a521d30781c6528aa585441c6593ab34ae7f864a"
+  },
+  "production_written": false,
+  "progress": {
+    "accepted": 8,
+    "percent": 40,
+    "scope": "COMPLETION-004 acceptance criteria, not total site readiness",
+    "total": 20
+  },
+  "remaining_blockers": [
+    "Permanent media-deletion/file writer fences and actual complete quiescence remain unintegrated",
+    "Fresh exact candidate request/manifest/Gate B/activation, full verified backup and canonical Stage3 installation are absent",
+    "Continuous reader access was last observed absent September15; not revalidated today; Stage4 live acceptance remains open"
+  ],
+  "runtime_activation": "NOT_RUN",
+  "server_observations": "cloud/task088_v5_acceptance/resume_20260919/SERVER_OBSERVATIONS.json",
+  "specification": "UA-ART-PR114-AUDIT-005 v1.0",
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "updated_at": "2026-09-19T15:47:55.594Z",
+  "validation": "cloud/task088_v5_acceptance/resume_20260919/VALIDATION.json",
+  "previous_checkpoint": "cloud/task088_v5_acceptance/resume_20260919/POST_HALT_RECOVERY_NOTICE.json",
+  "followup_user_statement": "Давай запускай третий-четвёртый этап, включая автопилот, так чтобы ты завершил.",
+  "resolved_blocker": {
+    "kind": "SYSTEM_WATCHDOG_HALT",
+    "status": "RESOLVED",
+    "main_commit": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "source": "cloud/pr114_halt_recovery_20260919/RECOVERY_EVIDENCE.json",
+    "halt_absent_in_main": true,
+    "unregistered_active_workflow_absent": true,
+    "archive_blob_hashes_match": true,
+    "normal_verify_mode": "PASS_WITHOUT_ALLOW_HALT_FLAG",
+    "production_transactions_pending": 0
+  },
+  "canonical_state_historical": "cloud/task088_v5_acceptance/resume_20260919/CANONICAL_STATE.json",
+  "repository_control_state_changed": true,
+  "site_or_crm_written": false,
+  "handoff": "Primary foreground prepares this durable checkpoint before requesting exactly one immediate execution of the existing background task. Reconcile the automation service result; do not create another scheduled task or replay installation.",
+  "latest_source_observation": {
+    "observed_on": "2026-09-19",
+    "server_console": "48168693",
+    "read_only": true,
+    "cars_ui_photo_helper": {
+      "line": 3136,
+      "function": "_ubrat_fayly_foto",
+      "effect": "walks /home/Carix/video/foto/<car>; calls os.remove, catches errors; no publication lock in helper"
+    },
+    "cars_ui_rebuild_helper": {
+      "line": 3188,
+      "function": "_peresobrat_stranicy",
+      "effect": "reloads stranica and calls main directly; no publication lock in helper"
+    },
+    "supervisor_effect": "start_safe invokes run_all with runpy inside the same long-lived process; supervisor Running is not independent child-drain proof",
+    "writer_exclusion": "NOT_PROVEN"
+  }
+}

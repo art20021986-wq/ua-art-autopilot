@@ -1,0 +1,43 @@
+{
+  "recorded_at_utc": "2026-09-14T10:58:24.932144+00:00",
+  "task": "OWNER_KYIV_PRICE_VISIBILITY_CHANGE",
+  "status": "PASS",
+  "browser_cases": 48,
+  "failed_cases": [],
+  "source_checks": {
+    "public": 348,
+    "private": 95,
+    "total": 443,
+    "status": "PASS"
+  },
+  "preview_manifest_sha256": "7c5335f921487734c5af8a94df49d1ba04ba6f5bf97492d346ab619b7205fb28",
+  "source_manifest_sha256": "18fc3c2ffb16df204cdd7318f550fbffa0a2169da3be57ff0d2bc88b1855b5c7",
+  "preview_url": "https://carix.pythonanywhere.com/video/katalog.html",
+  "kyiv_cars": [
+    "UA-0002",
+    "UA-0007",
+    "UA-0008",
+    "UA-0017",
+    "UA-0018"
+  ],
+  "changed_surface_scope": "Five Kyiv cards and catalog, plus protected offline mirrors; price blocks only",
+  "checked": [
+    "RU/UA/GE",
+    "390x844 CSS viewport",
+    "1280x900 CSS viewport",
+    "No GE block for Kyiv cars",
+    "GE numeric and nullable labels retained for other stages",
+    "Both DB prices unchanged",
+    "Delivery captions and readable fonts",
+    "No horizontal document overflow"
+  ],
+  "live_preview_reload_confirmed": true,
+  "stored_georgia_prices_preserved": true,
+  "production_written": false,
+  "remaining_stage3_gate": "NOT_PASSED",
+  "stage4_closed": false,
+  "limitations": [
+    "Current browser CSS measurements; native iPhone Safari not emulated",
+    "Complete Stage 3 browser/link/photo gate and actual Stage 4 control cycle still pending"
+  ]
+}

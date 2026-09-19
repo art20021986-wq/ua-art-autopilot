@@ -1,0 +1,37 @@
+{
+  "contract": "PR114_PUBLISHED_IDENTITY_HASH_BINDING_V2",
+  "recorded_at": "2026-09-14T17:13:01.852346+00:00",
+  "scope": "Hash/count-only evaluation of actual retained capture using the existing installation engine encoded/sha functions and exact database_snapshot identity expression",
+  "engine_sha256": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673",
+  "identity_fields": [
+    "id",
+    "auto_number",
+    "published",
+    "status",
+    "price_uah",
+    "price_georgia"
+  ],
+  "captured_rows_file_sha256": "e57ce6c38ee14cffe0be0be9d4895427713b9678a8d82926e8a43b4e9976409a",
+  "captured_row_count": 18,
+  "captured_identity_sha256": "746227be9abe97b4e07afd50c8dd393268a2a9a6c576c63ce089d636d6d7658d",
+  "captured_sorted_codes_sha256": "993cd24b5b177b3c702412e18371549e67ac4dd15e3e93c4d4ec4d216eea9933",
+  "preflight_report_sha256": "03d291f72de1664ed6e389de3b99fec021dab279ef2d01f007370641b6cb120d",
+  "preflight_published_sha256": "746227be9abe97b4e07afd50c8dd393268a2a9a6c576c63ce089d636d6d7658d",
+  "preflight_published_count": 18,
+  "observer_published_sha256": "746227be9abe97b4e07afd50c8dd393268a2a9a6c576c63ce089d636d6d7658d",
+  "old_readback_report_sha256": "1ef3d1e3f346268da4a4cb110f1382d7768f9ea19226d9fc9b3bf67f636fe95f",
+  "old_readback_captured_rows_sha256": "746227be9abe97b4e07afd50c8dd393268a2a9a6c576c63ce089d636d6d7658d",
+  "old_readback_current_rows_sha256": "746227be9abe97b4e07afd50c8dd393268a2a9a6c576c63ce089d636d6d7658d",
+  "comparisons": {
+    "capture_identity_to_actual_preflight": true,
+    "capture_codes_to_actual_preflight": true,
+    "capture_identity_to_actual_observer": true,
+    "capture_identity_to_old_readback_captured": true,
+    "capture_identity_to_old_readback_current": true
+  },
+  "row_values_exported": false,
+  "full_preview": "NOT_PASSED",
+  "new_browser_run": false,
+  "status": "MATCH",
+  "private_python_source_or_credential_values_read": false
+}

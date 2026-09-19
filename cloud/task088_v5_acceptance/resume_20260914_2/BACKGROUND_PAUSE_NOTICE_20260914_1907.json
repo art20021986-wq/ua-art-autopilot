@@ -1,0 +1,64 @@
+{
+  "kind": "PR114_BACKGROUND_PAUSE_NOTICE_NOT_A_GATE",
+  "recorded_at": "2026-09-14T19:07:15.741971+00:00",
+  "observed_head": "160ea7fa7652031d89df332f07562ef5ad825bce",
+  "observed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "reason_for_new_record": "New external watchdog outcome inspected and background continuation explicitly paused because next permitted execution requires owner-only inputs. No repeated test or unchanged-blocker-only commit.",
+  "readback": {
+    "pr": "OPEN_DRAFT_UNMERGED",
+    "new_owner_gallery_proof": false,
+    "new_stage3_or_stage4_request_claim_transaction_receipt_in_pr_tree": false,
+    "stage2_claim": "FINISHED",
+    "stage2_transaction": "FINISHED",
+    "stage2_parent_receipt": "FINISHED_STAGE2_PASS",
+    "historical_stage1_stage2_replayed": false,
+    "prior_test_suites_repeated": false
+  },
+  "external_outcome": {
+    "run_id": 34881423575,
+    "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34881423575",
+    "created_at": "2026-09-14T18:32:30Z",
+    "workflow": "UA ART Production Transaction Watchdog",
+    "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+    "conclusion": "failure",
+    "job": "recovery_canary",
+    "job_id": 104101424775,
+    "failed_step": "Validate TASK120 identity and prepare fixed data only",
+    "error": "RECOVERY_CANARY_RECEIPT_BINDING",
+    "stopped_before_commit": true,
+    "recovery_execute": "skipped",
+    "rollback_open": "skipped",
+    "artifact": {
+      "id": 10362952554,
+      "bytes": 2940,
+      "sha256_reported_by_github_upload": "edc36fd437ead87159287c40d4e6751370c31b920d13f581a451d7a40ebdf2a7",
+      "independently_downloaded": false
+    },
+    "excerpt_path": "cloud/task088_v5_acceptance/resume_20260914_2/WATCHDOG_34881423575_EXCERPT.txt",
+    "excerpt_sha256": "c34652a598fa91e37c5a975cdf486f57fae0714ab16c1bec0dc645184d1b18d8",
+    "interpretation": "New observed failed run, not a new code regression claim; no watchdog repair/retry or removal of receipt-binding checks was performed."
+  },
+  "background_continuation": {
+    "status": "PAUSED_CONFIRMED_BY_UPDATE_RESPONSE",
+    "supersedes_enabled_state_in": "BACKGROUND_CONTINUATION.json",
+    "reason": "No further safe execution step available without required owner gallery proof and protected read credential setup. Resume only after missing input and actual state reconciliation.",
+    "server_reader_or_github_watchdog_disabled": false
+  },
+  "remaining_blockers": [
+    "Owner full-screen photo display plus actual gallery switch and close with exact candidate binding and remaining required coverage",
+    "Protected repository-only Contents:read credential setup and verified actual reader; absence is retained from last authorized server observation, not freshly probed during this run",
+    "Full 24-criterion Preview and fresh canonical Gate/backup/activation before publication"
+  ],
+  "next_action": {
+    "kind": "OBTAIN_MISSING_OWNER_GALLERY_OBSERVATION",
+    "detail": "On current Preview UA-0015, open photo2 fullscreen, switch once and close; retain screenshot and actual action confirmation. Do not retry policy-blocked URL through alternate routes."
+  },
+  "authorization": "Existing publication authorization remains valid conditional on real full PASS and canonical controls; no duplicate permission requested.",
+  "full_preview": "NOT_PASSED",
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "production_or_crm_write": false,
+  "gate_or_halt_or_lock_weakened": false,
+  "launch_marker_created": false,
+  "progress": "No acceptance criterion completed by this diagnostic; proposed three-stage plan remains 6/20 (30%)."
+}

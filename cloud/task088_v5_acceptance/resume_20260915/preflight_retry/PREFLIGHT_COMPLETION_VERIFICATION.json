@@ -1,0 +1,258 @@
+{
+  "contract": "PR114-PRIVATE-PREFLIGHT-COMPLETION-VERIFICATION-NOT-A-PREVIEW-GATE-1",
+  "verified_at": "2026-09-15T04:05:43.228733+00:00",
+  "status": "VERIFIED_COMPLETED_PRIVATE_PREFLIGHT_WITH_CANONICAL_GATE_OPEN",
+  "verification_scope": "Independent local comparison of actual completed report bytes, exact prepared archive and saved current/historical bindings. No server, Git, application or test execution.",
+  "actual_preflight": {
+    "raw_local_source": "/workspace/scratch/report (1).json",
+    "raw_bytes": 1306122,
+    "raw_sha256": "f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7",
+    "server_sha256_confirmation": "Same digest independently observed by root in server console; this reviewer made no server request.",
+    "output_id": "preflight-resume1509-0334",
+    "observed_at": "2026-09-15T03:39:41.680759+00:00",
+    "completed_at": "2026-09-15T03:47:13.988456+00:00",
+    "status": "BLOCKED",
+    "blockers": [
+      "CANONICAL_CONTROL_BRIDGE_GATE_B_AND_ACTIVATION_NOT_RUN"
+    ],
+    "candidate_verification": "PASS",
+    "offline_schema_test": "PASS_CRM_AND_AUDIT_UNCHANGED",
+    "protected_system_readback": "PASS",
+    "gate_b": "NOT_CREATED",
+    "candidate_file_count": 54,
+    "candidate_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611",
+    "candidate_schema_sha256": "39ba2901e3bc21c80ac4becf1d2bdd91eab89a08539e8af144c44681b4e45ffb",
+    "mutation_flags": {
+      "bot_imported": false,
+      "bot_restarted": false,
+      "crm_source_written": false,
+      "production_source_written": false,
+      "public_html_written": false
+    }
+  },
+  "input_evidence": {
+    "observer": {
+      "local_path": "/workspace/scratch/install_1509_0327.json",
+      "raw_sha256": "a53dc0c8b66f9b2ea7ab1d199ea97133e442fd7fa72002fce57819eb4e9218ac",
+      "observed_at": "2026-09-15T03:28:52.984601+00:00"
+    },
+    "preview_binding": {
+      "local_path": "/workspace/scratch/78da0a28953d/binding_1509_0334.json",
+      "sha256": "991449ee7199c4c65534dfd3d9b459b47ae3699a0452249b5b1d883ce9d00018",
+      "finished_at": "2026-09-15T03:35:33.775948+00:00"
+    },
+    "historical_preflight": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/preflight_report_1701.json",
+      "sha256": "03d291f72de1664ed6e389de3b99fec021dab279ef2d01f007370641b6cb120d",
+      "status": "BLOCKED"
+    },
+    "prepared_archive": {
+      "local_path": "/workspace/scratch/78da0a28953d/preflight_1509_retry/uaart_price_sync_preflight_15d2fd8dc4f7f241.zip",
+      "sha256": "6bba9888aac1894775ea447477e8ad8f1ed8ae659836f6dbf3e574740bc99023",
+      "bundle_manifest_sha256": "15d2fd8dc4f7f24162343cd635f19185376a7ef9f77cb3b7eb7bb11a5c5a46ef",
+      "code_files_pinned": 17
+    },
+    "preparation_record": {
+      "local_path": "/workspace/scratch/78da0a28953d/preflight_1509_retry/PREPARATION.json",
+      "sha256": "f73aac142617b07273b97b7005e90a2e641e1a53d25cc3ad1d0a9725604ccfe6"
+    },
+    "evaluator_input_plan": {
+      "local_path": "/workspace/scratch/78da0a28953d/final_preview_evaluator_inputs.json",
+      "sha256": "03fca42a1309d2b12030585fb80e5515161f0ce22ca5e5cbbac31de087750622"
+    }
+  },
+  "comparisons": {
+    "expected_readonly_contract": {
+      "result": "MATCH"
+    },
+    "actual_scoped_results": {
+      "result": "MATCH"
+    },
+    "original_blocked_boundary": {
+      "result": "MATCH"
+    },
+    "actual_no_live_mutation_flags": {
+      "result": "MATCH",
+      "detail": {
+        "bot_imported": false,
+        "bot_restarted": false,
+        "crm_source_written": false,
+        "production_source_written": false,
+        "public_html_written": false
+      }
+    },
+    "exact_new_bundle_and_output_identity": {
+      "result": "MATCH"
+    },
+    "archive_code_pins": {
+      "result": "MATCH",
+      "detail": {
+        "files": 17,
+        "mismatches": []
+      }
+    },
+    "candidate_manifest_digest": {
+      "result": "MATCH"
+    },
+    "candidate_exact_historical_set": {
+      "result": "MATCH",
+      "detail": {
+        "candidate_files": 54,
+        "actual_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611"
+      }
+    },
+    "candidate_schema": {
+      "result": "MATCH"
+    },
+    "source_preimages_match_observer": {
+      "result": "MATCH"
+    },
+    "source_after_images_compile_and_candidate": {
+      "result": "MATCH"
+    },
+    "source_report_exact_historical": {
+      "result": "MATCH"
+    },
+    "dependencies_match_observer_and_historical": {
+      "result": "MATCH"
+    },
+    "database_tuple_match": {
+      "result": "MATCH"
+    },
+    "schema_match": {
+      "result": "MATCH"
+    },
+    "complete_inventory_match": {
+      "result": "MATCH",
+      "detail": {
+        "file_count": 9625
+      }
+    },
+    "inventory_digest": {
+      "result": "MATCH"
+    },
+    "published_identity_counts_stages": {
+      "result": "MATCH"
+    },
+    "all_served_page_hashes_match_preview": {
+      "result": "MATCH",
+      "detail": {
+        "page_count": 20,
+        "mismatches": []
+      }
+    },
+    "all_protected_html_acceptance": {
+      "result": "MATCH"
+    },
+    "html_exact_historical_report": {
+      "result": "MATCH"
+    },
+    "protected_home_policy": {
+      "result": "MATCH"
+    },
+    "stage2_normalized_receipt_digest": {
+      "result": "MATCH"
+    },
+    "stage2_original_raw_pin": {
+      "result": "MATCH"
+    },
+    "quota_actual_bundle_digest": {
+      "result": "MATCH"
+    },
+    "routing_actual_bundle_pin": {
+      "result": "MATCH"
+    },
+    "bundle_observer_binding": {
+      "result": "MATCH"
+    },
+    "actual_chronology": {
+      "result": "MATCH",
+      "detail": {
+        "duration_seconds": 452.307697,
+        "observer_age_at_preflight_start_seconds": 648.696158,
+        "quota_age_at_completion_seconds": 1266.021456
+      }
+    },
+    "quota_was_within_limit_at_completed_run": {
+      "result": "MATCH"
+    },
+    "retained_source_inventory_reconciliation": {
+      "result": "MATCH"
+    }
+  },
+  "failed_comparisons": [],
+  "confirmed_result": {
+    "candidate_files": 54,
+    "served_preview_price_surfaces_matched": 20,
+    "protected_html_surfaces": 40,
+    "complete_protected_inventory_files": 9625,
+    "published_codes": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016",
+      "UA-0017",
+      "UA-0018"
+    ],
+    "database_and_sources_and_schema": "UNCHANGED",
+    "preview_resource_manifest_sha256": "c6febae073064d66c89a553a1d23538c8dc71c40c9737c440d33a3ba457611ca",
+    "installation_candidate_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611",
+    "these_manifests_are_different_contracts": true
+  },
+  "hash_semantics": {
+    "stage2_raw_original_receipt_sha256": "d0b731b93a73da0d041a1af6e987f0e6634823001a2461bc882c927a588faae7",
+    "stage2_normalized_embedded_receipt_sha256": "2b8136092450c6fe75a1ad70c30ed7820db6f13e8d18eb0241bf063daa7185eb",
+    "explanation": "The preflight report records SHA256 of compact ASCII JSON of embedded stage2_receipt, without a newline. It is intentionally distinct from the immutable raw canonical receipt hash; both pins are checked.",
+    "candidate_and_inventory": "Compact sorted ASCII JSON with no trailing newline.",
+    "software_source_manifest": "Existing gate.encoded uses compact sorted UTF8 JSON with a trailing newline; the prior current82-source reconciliation is preserved, no suite rerun."
+  },
+  "freshness_at_this_review": {
+    "review_is_a_retrospective_completion_verification": true,
+    "preflight_observed_age_seconds": 1561.548,
+    "preflight_completed_age_seconds": 1109.24,
+    "quota_observed_age_seconds": 2375.262,
+    "preflight_observation_expires_at": "2026-09-15T04:09:41.680759+00:00",
+    "quota_expires_at": "2026-09-15T03:56:07.967000+00:00",
+    "fresh_preflight_for_execution_now": true,
+    "fresh_quota_for_execution_now": false,
+    "rule": "Historical completion remains evidence. It does not extend freshness for later publication; refresh only required observations at actual execution, not to manufacture a fresh timestamp for this specification."
+  },
+  "formal_preview_status": "NOT_PASSED_FORMAL_24_CRITERION_CONTRACT_NOT_ISSUED",
+  "progress": {
+    "completed_criteria": 7,
+    "total_criteria": 20,
+    "percent": 35,
+    "stage1_completed": 7,
+    "stage1_total": 8,
+    "stage1_percent": 87.5,
+    "criterion7": "COMPLETED",
+    "criterion8": "OPEN"
+  },
+  "publication_status": "NOT_PERFORMED",
+  "live_price_sync_status": "NOT_ACCEPTED",
+  "reader_setup_status": "SEPARATE_UNFINISHED_REQUIREMENT",
+  "next_action": {
+    "kind": "UPDATE_COMPLETION_SPEC_AND_CHECKPOINT_FROM_RECONCILED_RESULT",
+    "detail": "Record the completed successful private candidate/DB/protected-readback verification in the revised approval specification and saved continuation. The already finished output must not be rerun as if pending. The first remaining execution milestone is a genuine explicit evaluation and exact report for all24Preview criteria; no new request/task/nonce or fullPreviewPASS is created during this documentation task."
+  },
+  "historical_statuses_modified": false,
+  "tests_run": false,
+  "server_commands_run": false,
+  "git_writes": false,
+  "production_written": false,
+  "crm_written": false,
+  "preview_pass_created": false,
+  "request_task_nonce_created": false
+}

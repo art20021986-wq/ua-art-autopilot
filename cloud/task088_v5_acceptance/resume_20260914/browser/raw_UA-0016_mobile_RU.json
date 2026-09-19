@@ -1,0 +1,151 @@
+{
+  "status": "OBSERVED_ONLY",
+  "acceptance": "NOT_EVALUATED",
+  "observed_at": "2026-09-14T15:37:57.256Z",
+  "path": "/video/UA-0016.html",
+  "candidate_sha256": "ca8f057de628172abce71e53186e085e5e280dacd85e2c1e665ee0ededca4326",
+  "language": "ru",
+  "requested_css_viewport": {
+    "height": 844,
+    "width": 390
+  },
+  "actual_css_viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "exact_dimensions": true,
+  "viewport_media_match": true,
+  "document_width": 375,
+  "document_scroll_width": 375,
+  "ready_state": "complete",
+  "device_pixel_ratio": 1,
+  "images_total": 32,
+  "images_decoded": 3,
+  "fonts_status": "loaded",
+  "prices": [
+    {
+      "car": "UA-0016",
+      "box": {
+        "x": 32,
+        "y": 1309.21875,
+        "width": 311,
+        "height": 206.625
+      },
+      "rows": [
+        {
+          "market": "ukraine",
+          "value": "10500",
+          "text": "🇺🇦 Украина — 10 500 $\nЦена с доставкой в Киев с растаможкой и сертификацией",
+          "box": {
+            "x": 32,
+            "y": 1309.21875,
+            "width": 311,
+            "height": 76.9375
+          },
+          "text_sizes": [
+            {
+              "text": "🇺🇦 Украина — 10 500 $",
+              "font_size": "25px",
+              "box": {
+                "x": 32,
+                "y": 1309.21875,
+                "width": 311,
+                "height": 33.75
+              }
+            },
+            {
+              "text": "Украина",
+              "font_size": "25px",
+              "box": {
+                "x": 70.140625,
+                "y": 1311.21875,
+                "width": 100.671875,
+                "height": 28
+              }
+            },
+            {
+              "text": "10 500 $",
+              "font_size": "25px",
+              "box": {
+                "x": 209.71875,
+                "y": 1311.21875,
+                "width": 97.328125,
+                "height": 28
+              }
+            },
+            {
+              "text": "Цена с доставкой в Киев с растаможкой и сертификацией",
+              "font_size": "14px",
+              "box": {
+                "x": 32,
+                "y": 1346.96875,
+                "width": 311,
+                "height": 39.1875
+              }
+            }
+          ]
+        },
+        {
+          "market": "georgia",
+          "value": "",
+          "text": "🇬🇪 Грузия — Цена уточняется\nЦена автомобиля с доставкой до авторынка Рустави 🅿️ №16",
+          "box": {
+            "x": 32,
+            "y": 1395.15625,
+            "width": 311,
+            "height": 120.6875
+          },
+          "text_sizes": [
+            {
+              "text": "🇬🇪 Грузия — Цена уточняется",
+              "font_size": "25px",
+              "box": {
+                "x": 32,
+                "y": 1405.15625,
+                "width": 311,
+                "height": 67.5
+              }
+            },
+            {
+              "text": "Грузия",
+              "font_size": "25px",
+              "box": {
+                "x": 70.140625,
+                "y": 1407.15625,
+                "width": 84.125,
+                "height": 28
+              }
+            },
+            {
+              "text": "Цена уточняется",
+              "font_size": "25px",
+              "box": {
+                "x": 32,
+                "y": 1407.15625,
+                "width": 222.65625,
+                "height": 61.75
+              }
+            },
+            {
+              "text": "Цена автомобиля с доставкой до авторынка Рустави 🅿️ №16",
+              "font_size": "14px",
+              "box": {
+                "x": 32,
+                "y": 1476.65625,
+                "width": 311,
+                "height": 39.1875
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Current browser CSS layout only; no mobile OS, Safari or touch emulation",
+    "Scoped HTTP sandbox restricts navigation, popups, forms and native actions",
+    "No acceptance verdict; use separate screenshots, comparisons and top-level link checks"
+  ],
+  "requested_language": "RU",
+  "collection_run": "PR114_RESUME_20260914"
+}

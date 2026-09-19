@@ -1,0 +1,30 @@
+{
+  "contract": "PR114-ISOLATED-PERMANENT-WRITER-FENCE-CANDIDATE-1",
+  "production_authority": false,
+  "installed": false,
+  "writer_gate_pass": false,
+  "lock_path": "/home/Carix/.ua_art_publish_transaction.lock",
+  "lock_order": [
+    "publication_fence",
+    "sqlite_begin_immediate",
+    "spec84_lock_only_if_required_by_existing_reviewed_path"
+  ],
+  "before_source_sha256": {
+    "/home/Carix/cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "/home/Carix/stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+  },
+  "required_boundaries": [
+    "cars_ui._ubrat_fayly_foto: before first media deletion through related DB/page rebuild",
+    "cars_ui photo/video remove-all callbacks: before DB mutation through deletion/cache/rebuild",
+    "cars_ui._peresobrat_stranicy and stranica reload/main: complete direct and fallback HTML write path"
+  ],
+  "async_rule": "Acquire inside the synchronous mutation worker; never acquire in event-loop thread and then reacquire through to_thread.",
+  "acceptance_needed": [
+    "Exact private before-source bytes and independently reviewed minimal patch",
+    "Candidate source SHA-256 and complete generated release closure",
+    "Tests against realistic extracted call paths including rollback and validation-fallback writes",
+    "Authenticated after-image readback and loaded-process identity",
+    "Complete writer membership/drain observation under the same operation identity",
+    "Canonical request, manifest, Gate B, activation and verified backup"
+  ]
+}

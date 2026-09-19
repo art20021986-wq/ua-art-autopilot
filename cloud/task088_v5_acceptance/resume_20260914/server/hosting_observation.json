@@ -1,0 +1,44 @@
+{
+  "always_on": [
+    {
+      "enabled": true,
+      "id": 266084,
+      "is_crm": true,
+      "running": null,
+      "state": "Running",
+      "status": null
+    },
+    {
+      "enabled": true,
+      "id": 270984,
+      "is_crm": false,
+      "running": null,
+      "state": "Running",
+      "status": null
+    }
+  ],
+  "existing_api_token_present": true,
+  "kind": "READ_ONLY_HOSTING_API_OBSERVATION",
+  "observed_at_utc": "2026-09-14T15:37:43.583198+00:00",
+  "production_written": false,
+  "static_mappings": [
+    {
+      "id": 2185199,
+      "path": "/home/Carix/video/",
+      "url": "/video/"
+    }
+  ],
+  "webapps": [
+    {
+      "domain_name": "www.uaart.com.ua",
+      "enabled": true,
+      "python_version": "3.10"
+    },
+    {
+      "domain_name": "Carix.pythonanywhere.com",
+      "enabled": true,
+      "python_version": "3.10"
+    }
+  ]
+}
+

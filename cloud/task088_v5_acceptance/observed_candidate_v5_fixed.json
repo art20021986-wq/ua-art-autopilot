@@ -1,0 +1,216 @@
+{
+  "contract": "UA-ART-GE-UA-MARKET-PRICE-001 FINAL v5.0",
+  "report_kind": "OFFLINE_CANDIDATE_DIAGNOSTICS",
+  "observed_at_utc": "2026-09-14T07:19:47.125796+00:00",
+  "production_tested": false,
+  "production_touched": false,
+  "telegram_delivery": "FAKE_BOT_ONLY",
+  "public_reads": "LOCAL_FIXTURE_ONLY",
+  "source_hashes": {
+    "cloud/task088_price_sync/outbox.py": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+    "cloud/task088_price_sync/patch_cars_ui.py": "6a695ae16e6710516383f472d454e96d813893c80d4f39cf96bd2df687f2388c",
+    "cloud/task088_price_sync/uaart_price_sync_runtime.py": "8321585cd2d17dfae8b934a06db13cb5e402bbfa6144d5eca049ee51b71f6174",
+    "cloud/task088_price_sync/uaart_price_sync_binding.py": "efecb6371e0ecccde75df053d740ec5316bdf1a1a3573171fe7b25de4657348f",
+    "cloud/task088_price_sync/uaart_price_sync_confirmation.py": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+    "cloud/task088_price_sync/test_cars_ui_hook.py": "07f48c4348252214ccc867d1b593ad3d06229967d14a99407ceb6bc2ab46e0b6",
+    "cloud/task088_price_sync/test_runtime.py": "69a4d6d9fe77f49e04d01a5c4f238ed0921cf40a9a17f492538c49dcbbcbd473",
+    "cloud/task088_price_sync/test_v5_runtime.py": "79b99567091c29bf4ab5990d3c2668f5473f66cf2d73f7b67edf76b424943588",
+    "cloud/task088_stage3_renderer/uaart_market_prices.py": "b6811ed64e1714dfed659b7cf04aa45ad181d8a48a4d7661d648a25fee363aab",
+    "cloud/task088_autopilot_owner_policy/owner_policy.py": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+    "cloud/task088_autopilot_owner_policy/price_publication.py": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+    "private_cars_ui_source": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde"
+  },
+  "checks": [
+    {
+      "id": "conscious_inputs_not_superseded",
+      "v5_clauses": [
+        11,
+        16
+      ],
+      "status": "PASS",
+      "expected": {
+        "accepted": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "states_before_worker": [
+          "QUEUED",
+          "QUEUED",
+          "QUEUED",
+          "QUEUED"
+        ],
+        "unique_operation_count": 4,
+        "stored_ua": 10000,
+        "stored_ge": 8000,
+        "rule": "Every conscious input remains eligible for its own verified pipeline."
+      },
+      "observed": {
+        "accepted": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "sequences": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "states_before_worker": [
+          "QUEUED",
+          "QUEUED",
+          "QUEUED",
+          "QUEUED"
+        ],
+        "submitted_values": [
+          "18000.00",
+          "18500.00",
+          "18300.00",
+          "18900.00"
+        ],
+        "unique_operation_count": 4,
+        "stored_ua": 10000,
+        "stored_ge": 8000
+      }
+    },
+    {
+      "id": "anomaly_245_requires_confirmation",
+      "v5_clauses": [
+        12
+      ],
+      "status": "PASS",
+      "expected": {
+        "write_accepted": false,
+        "whole_car_unchanged": true,
+        "outbox_event_count": 0,
+        "confirmation_signal": true,
+        "rule": "Display the actual suspicious amount and request confirmation before saving."
+      },
+      "observed": {
+        "input_usd": 245,
+        "write_accepted": false,
+        "reply": "Цена Грузии — 245 $. Сумма выглядит необычной. Подтвердите именно эту сумму перед сохранением.",
+        "stored_ge_before": 8000,
+        "stored_ge_after": 8000,
+        "whole_car_unchanged": true,
+        "outbox_event_count": 0,
+        "confirmation_signal": true
+      }
+    },
+    {
+      "id": "anomaly_245000_requires_confirmation",
+      "v5_clauses": [
+        12
+      ],
+      "status": "PASS",
+      "expected": {
+        "write_accepted": false,
+        "whole_car_unchanged": true,
+        "outbox_event_count": 0,
+        "confirmation_signal": true,
+        "rule": "Display the actual suspicious amount and request confirmation before saving."
+      },
+      "observed": {
+        "input_usd": 245000,
+        "write_accepted": false,
+        "reply": "Цена Грузии — 245 000 $. Сумма выглядит необычной. Подтвердите именно эту сумму перед сохранением.",
+        "stored_ge_before": 8000,
+        "stored_ge_after": 8000,
+        "whole_car_unchanged": true,
+        "outbox_event_count": 0,
+        "confirmation_signal": true
+      }
+    },
+    {
+      "id": "restart_resumes_committed_operation",
+      "v5_clauses": [
+        17,
+        27
+      ],
+      "status": "PASS",
+      "expected": {
+        "state": "COMPLETED",
+        "publication_receipt_present": true,
+        "operator_reentry": false,
+        "rule": "Automatically finish a confirmed operation after ordinary restart."
+      },
+      "observed": {
+        "checkpoint": "CLAIM_COMMITTED_BEFORE_EXECUTE",
+        "worker_recreated": true,
+        "ticks": [
+          {
+            "processed": [
+              {
+                "event_key": "e5cbed601e3c18d21348224b59672b63844000f27dbf4306a8da0df7621a8204",
+                "state": "COMPLETED"
+              }
+            ]
+          },
+          {
+            "processed": []
+          }
+        ],
+        "state": "COMPLETED",
+        "reason": null,
+        "publication_receipt_present": true,
+        "operator_reentry": false,
+        "manual_recovery_called": false
+      }
+    },
+    {
+      "id": "verified_success_receipt_to_operator",
+      "v5_clauses": [
+        15,
+        24,
+        27
+      ],
+      "status": "PASS",
+      "expected": {
+        "event_state": "COMPLETED",
+        "success_receipt_count": 1,
+        "recipient_chat_id": 700,
+        "receipt_contains": [
+          "✅ Завершено",
+          "Грузии",
+          "UA-0001",
+          "18 900"
+        ],
+        "rule": "Only after verification, send completion to the editing operator."
+      },
+      "observed": {
+        "pipeline_result": {
+          "processed": [
+            {
+              "event_key": "e5cbed601e3c18d21348224b59672b63844000f27dbf4306a8da0df7621a8204",
+              "state": "COMPLETED"
+            }
+          ]
+        },
+        "event_state": "COMPLETED",
+        "initiating_operator_chat_id": 700,
+        "configured_owner_chat_id": 123,
+        "queued_notice_kinds": [
+          "SUCCESS"
+        ],
+        "fake_telegram_calls": [
+          {
+            "chat_id": 700,
+            "text": "✅ Завершено. Цена Грузии UA-0001: 18 900 $. Сайт синхронизирован.",
+            "disable_web_page_preview": true
+          }
+        ],
+        "success_receipt_count": 1
+      }
+    }
+  ],
+  "summary": {
+    "pass": 5,
+    "fail": 0,
+    "error": 0
+  },
+  "status": "PASS",
+  "gate_implication": "These offline checks cannot authorize Production or close Stage 4; any FAIL or ERROR blocks an overall v5 PASS claim."
+}

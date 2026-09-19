@@ -1,0 +1,642 @@
+{
+  "capture_unchanged_after": true,
+  "current_gate_evidence": "workflow/actual_price_gate.json",
+  "current_gate_status": "PASS_SEPARATE_UNMODIFIED_GATE",
+  "evaluation_correction": {
+    "corrected_expected_counts": {
+      "test_captured_pages.py": 6,
+      "test_private_source.py": 11
+    },
+    "initial_report": "historical_443_results.json",
+    "initial_report_sha256": "eabf3fd4018ce4a54b21999127d38527733b5d2818b8563ffea9faf831e90148",
+    "reason": "Coordinator transposed expected per-file counts for test_private_source.py (11) and test_captured_pages.py (6). Both actual runs passed, combined count 17 correct. Historical private receipt lists unnamed directory results, so expected mapping was initially inferred incorrectly. No source or tests changed, no failed actual tests excluded, no test rerun required.",
+    "recorded_at": "2026-09-14T15:35:48.715093+00:00"
+  },
+  "finished_at": "2026-09-14T15:35:19.818197+00:00",
+  "historical_test_counts_exact": true,
+  "kind": "REPRODUCED_HISTORICAL_SOFTWARE_AND_CAPTURE_TESTS",
+  "live_preview_tested": false,
+  "production_written": false,
+  "real_crm_cycle_tested": false,
+  "scope": "443_UNIQUE_OFFLINE_TESTS_ONLY; NOT_LIVE_PREVIEW_OR_PRODUCTION_GATE",
+  "source_manifest_sha256": "18fc3c2ffb16df204cdd7318f550fbffa0a2169da3be57ff0d2bc88b1855b5c7",
+  "sources_unchanged_after": true,
+  "started_at": "2026-09-14T15:35:00.688427+00:00",
+  "status": "PASS",
+  "suites": [
+    {
+      "directory": "automation",
+      "exit_code": 0,
+      "expected_historical_count": 21,
+      "file": "test_task088_stage3_activation.py",
+      "finished_at": "2026-09-14T15:35:03.659549+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 21,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:00.689120+00:00",
+      "stderr_sha256": "998d6fc86406c6e36df517f0bac8dcb8f3572c3cccaf30178673f54412fe95ab",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "canonical_activation",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_stage3_renderer",
+      "exit_code": 0,
+      "expected_historical_count": 4,
+      "file": "test_home_prices.py",
+      "finished_at": "2026-09-14T15:35:03.709208+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 4,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:03.659788+00:00",
+      "stderr_sha256": "56e03afda220e7ba78bbcecf9a2e53a0149cfc3e311fa10bbd01b25e8e5ba671",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "renderer",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_stage3_renderer",
+      "exit_code": 0,
+      "expected_historical_count": 11,
+      "file": "test_initial_html_prices.py",
+      "finished_at": "2026-09-14T15:35:03.761991+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 11,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:03.709409+00:00",
+      "stderr_sha256": "a403b031ca53505b1068c5c1262f30475f8ef294ae83636c47835f0a12e632af",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "renderer",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_stage3_renderer",
+      "exit_code": 0,
+      "expected_historical_count": 17,
+      "file": "test_market_prices.py",
+      "finished_at": "2026-09-14T15:35:03.817331+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 17,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:03.762262+00:00",
+      "stderr_sha256": "5300be4d76a19a89ba13180c9823bf33fb05a639d4155d08af8630be905734de",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "renderer",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 41,
+      "file": "test_binding.py",
+      "finished_at": "2026-09-14T15:35:04.382959+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 41,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:03.817534+00:00",
+      "stderr_sha256": "cc7492c63c9fb04e810243864e759a4fb6f7bb1a7c8732a0a397c755b0004bee",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 7,
+      "file": "test_confirmation.py",
+      "finished_at": "2026-09-14T15:35:04.427464+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 7,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:04.383197+00:00",
+      "stderr_sha256": "670a39115e7523a8984e4842e16547cb2094b03fad392b037b4b9dc8b2656e62",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 24,
+      "file": "test_control_reader.py",
+      "finished_at": "2026-09-14T15:35:05.669090+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 24,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:04.427681+00:00",
+      "stderr_sha256": "629369ac8b1c8946d00673a38d432e9f1cfc2a6440e9dd8eecb97ed4fca540fc",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 8,
+      "file": "test_crm_intent_contract.py",
+      "finished_at": "2026-09-14T15:35:05.786787+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 8,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:05.669301+00:00",
+      "stderr_sha256": "d2c6a9bc981a90f83741abca5675fff24e991855bfffa05d538f02e5aa9ee5cc",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 25,
+      "file": "test_install_package.py",
+      "finished_at": "2026-09-14T15:35:06.288103+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 25,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:05.786989+00:00",
+      "stderr_sha256": "d7b539c7fc00200b7de913dbcbbb7ea1f2e7d7abc476a71d6fc093e5bb728a9f",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 27,
+      "file": "test_outbox.py",
+      "finished_at": "2026-09-14T15:35:06.379296+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 27,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:06.288317+00:00",
+      "stderr_sha256": "f2e7c7ac3bc7831504577c80e763737dcd565d9230747ed4321db78e402e87fe",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 6,
+      "file": "test_public_guard_contract.py",
+      "finished_at": "2026-09-14T15:35:06.621723+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 6,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:06.379488+00:00",
+      "stderr_sha256": "676568be0902219f7369f4c2eee57e53b280ca0cca74872b9b64061832644dd1",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 37,
+      "file": "test_runtime.py",
+      "finished_at": "2026-09-14T15:35:06.982298+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 37,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:06.621928+00:00",
+      "stderr_sha256": "b1767c78c20c8a985c80468426dc5430131d94c48417cfdc644cfeca04552b06",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 8,
+      "file": "test_v5_install_preparation.py",
+      "finished_at": "2026-09-14T15:35:07.166160+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 8,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:06.982504+00:00",
+      "stderr_sha256": "434d706ab9f7284e039ba604faa1b5ee081555a7c89ca10a8ab97bdaa757b2e1",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 5,
+      "file": "test_v5_outbox.py",
+      "finished_at": "2026-09-14T15:35:07.215826+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 5,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:07.166418+00:00",
+      "stderr_sha256": "2d014bb427120fb1a5014d7499096989061fd0fdf40acb471c2e2667de60e71e",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 26,
+      "file": "test_v5_runtime.py",
+      "finished_at": "2026-09-14T15:35:08.341615+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 26,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:07.216099+00:00",
+      "stderr_sha256": "1012556be18222d613afa4e88966cbdbd2771af83df57e684ac77a1776f91cca",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "pipeline",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_v5_install",
+      "exit_code": 0,
+      "expected_historical_count": 23,
+      "file": "test_adapter.py",
+      "finished_at": "2026-09-14T15:35:09.055288+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 23,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:08.341856+00:00",
+      "stderr_sha256": "3224bd9a7974f5df48b2e4ebd04840dd994b24a7601f2afdb5564d87890ed573",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "installer",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_v5_preview",
+      "exit_code": 0,
+      "expected_historical_count": 37,
+      "file": "test_preview.py",
+      "finished_at": "2026-09-14T15:35:09.894039+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 37,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:09.055535+00:00",
+      "stderr_sha256": "f92552ac4e458330e3fe9a07e32dfc16cb30c100e78930fea0c6141031955b87",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "preview_boundary",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/ua_ge_price_protection",
+      "exit_code": 0,
+      "expected_historical_count": 9,
+      "file": "test_gate.py",
+      "finished_at": "2026-09-14T15:35:09.966570+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 9,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:09.894272+00:00",
+      "stderr_sha256": "25660486d75d5f4b9efa5b4fdd11e9e694dfc634802c6601b239be93e2d13722",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "gate",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/ua_ge_price_protection",
+      "exit_code": 0,
+      "expected_historical_count": 4,
+      "file": "test_guard_helper.py",
+      "finished_at": "2026-09-14T15:35:10.061671+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 4,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:09.966811+00:00",
+      "stderr_sha256": "0292b91377e3f5de5fc72b83a91ddacbecbc2c226b761793f9b4babe85f7ad63",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "gate",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/ua_ge_price_protection",
+      "exit_code": 0,
+      "expected_historical_count": 8,
+      "file": "test_preview.py",
+      "finished_at": "2026-09-14T15:35:10.814151+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 8,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:10.061893+00:00",
+      "stderr_sha256": "06d13365f72b44f3f5cea55689067b342f385e639e09f18078f60d8e000fa8b4",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "gate",
+      "visibility": "public"
+    },
+    {
+      "directory": "cloud/task088_stage3_renderer",
+      "exit_code": 0,
+      "expected_historical_count": 11,
+      "file": "test_private_source.py",
+      "finished_at": "2026-09-14T15:35:11.345635+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 11,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:10.814396+00:00",
+      "stderr_sha256": "567ea1522c55ce7af4ede2f581b0acfc02708fbc5006736cad01b1a7d128fd61",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "captured_source",
+      "visibility": "private"
+    },
+    {
+      "directory": "cloud/task088_stage3_renderer",
+      "exit_code": 0,
+      "expected_historical_count": 6,
+      "file": "test_captured_pages.py",
+      "finished_at": "2026-09-14T15:35:11.804378+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 6,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:11.345908+00:00",
+      "stderr_sha256": "2d86b4d29429925d2fc9676e76985ca0f8bb2bf05a272dbf6e940caf29c63e20",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "captured_source",
+      "visibility": "private"
+    },
+    {
+      "directory": "cloud/task088_stage3_renderer",
+      "exit_code": 0,
+      "expected_historical_count": 2,
+      "file": "test_private_catalog_guard.py",
+      "finished_at": "2026-09-14T15:35:11.947948+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 2,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:11.804646+00:00",
+      "stderr_sha256": "79653f6bd6a50bf3c34fe777bae92cca36c726e8a6695c1cd5e576f85a032d8f",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "captured_source",
+      "visibility": "private"
+    },
+    {
+      "directory": "cloud/task088_stage3_renderer",
+      "exit_code": 0,
+      "expected_historical_count": 2,
+      "file": "test_private_master_chain.py",
+      "finished_at": "2026-09-14T15:35:12.604566+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 2,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:11.948218+00:00",
+      "stderr_sha256": "08edd94c379e00b6b119d2bb6e5921f125f03b91cbf3d873d5c6ce076c0eec55",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "captured_source",
+      "visibility": "private"
+    },
+    {
+      "directory": "cloud/task088_stage3_renderer",
+      "exit_code": 0,
+      "expected_historical_count": 7,
+      "file": "test_private_stage_catalog_sync.py",
+      "finished_at": "2026-09-14T15:35:12.694951+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 7,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:12.604866+00:00",
+      "stderr_sha256": "4784c448796f80cab2b7625b9fd54f88cd35bbe61c44536e88108801b85243f3",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "captured_source",
+      "visibility": "private"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 37,
+      "file": "test_cars_ui_hook.py",
+      "finished_at": "2026-09-14T15:35:15.119112+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 37,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:12.695233+00:00",
+      "stderr_sha256": "eebffbd5fda763845059d3fe013ffd34f735a7a11447ef99f59d19aacc578932",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "captured_source",
+      "visibility": "private"
+    },
+    {
+      "directory": "cloud/task088_price_sync",
+      "exit_code": 0,
+      "expected_historical_count": 24,
+      "file": "test_guard_fence.py",
+      "finished_at": "2026-09-14T15:35:15.514841+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 24,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:15.119370+00:00",
+      "stderr_sha256": "1b0a8eebf31dea02ac30d0063e38e2b8a54bdaf431fb1d866403ca42c4c91e39",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "captured_source",
+      "visibility": "private"
+    },
+    {
+      "directory": "cloud/task088_v5_preview",
+      "exit_code": 0,
+      "expected_historical_count": 6,
+      "file": "test_private_preview_capture.py",
+      "finished_at": "2026-09-14T15:35:19.804903+00:00",
+      "logs": "RAW_PRESERVED",
+      "result": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests_run": 6,
+        "unexpected_successes": 0
+      },
+      "started_at": "2026-09-14T15:35:15.515129+00:00",
+      "stderr_sha256": "4d1aca8e361d11938cdc704c68509f3c7691d31864cac30ead2cf4e531108beb",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "suite": "captured_source",
+      "visibility": "private"
+    }
+  ],
+  "totals": {
+    "combined": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 443,
+      "unexpected_successes": 0
+    },
+    "private": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 95,
+      "unexpected_successes": 0
+    },
+    "public": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 348,
+      "unexpected_successes": 0
+    }
+  }
+}

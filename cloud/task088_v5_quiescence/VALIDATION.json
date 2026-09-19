@@ -1,0 +1,63 @@
+{
+  "contract": "TASK088-QUIESCENCE-PROTOTYPE-LOCAL-VALIDATION-1",
+  "status": "PASS",
+  "scope": "ISOLATED_STATE_MACHINE_ONLY_NOT_PRODUCTION_OR_CANONICAL_ADMISSION",
+  "command": [
+    "python3",
+    "-I",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "cloud/task088_v5_quiescence",
+    "-p",
+    "test_state_machine.py",
+    "-v"
+  ],
+  "working_directory": "/workspace/scratch/a740e84d2a41/ua-art-autopilot",
+  "started_at": "2026-09-15T05:31:10.511592+00:00",
+  "finished_at": "2026-09-15T05:31:10.995749+00:00",
+  "exit_code": 0,
+  "tests_run": 21,
+  "reported_duration_seconds": 0.059,
+  "run_reason": "Final retained execution after immutable-plan and phase-specific before/after writer pin fixes. Earlier 20-test output preceded these changes. No historical software suites rerun.",
+  "files": {
+    "state_machine.py": {
+      "sha256": "55c47c2bfbdd870662e4760918edab9c3f838edc0286895c976e214c8ae7c1b5",
+      "bytes": 13373
+    },
+    "test_state_machine.py": {
+      "sha256": "cb3525d6987c4df858a7c1d39b43bca9a056abc7ba9073728c1ad09e288e6ea2",
+      "bytes": 14893
+    },
+    "README.md": {
+      "sha256": "4d878a9c4f74d543e564ff0dc138b3fae63a1cac084b71e55bdaa697e3befbf8",
+      "bytes": 8495
+    },
+    "test_stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "test_stderr.txt": {
+      "sha256": "6810215bf0d4ce1ca6ba4eee0f1b0d365ef1c3f0fe4ccbc614534f7000cceb4f",
+      "bytes": 3715
+    }
+  },
+  "readiness": "NOT_INTEGRATED_BLOCKED_REAL_DRAIN_AND_CANONICAL_PROTOCOL",
+  "production_changed": false,
+  "crm_changed": false,
+  "reader_key_provisioned": false,
+  "writer_gate_pass": false,
+  "stage3_complete": false,
+  "stage4_complete": false,
+  "open_items": [
+    "Complete authenticated writer/process closure and real graceful drain",
+    "Partial multi-supervisor provider-request reconciliation and bounded recovery",
+    "Reviewed canonical maintenance authorization and source/control pin integration",
+    "Fresh evidence after long backup without restamping old observations",
+    "Permanent filesystem writer fences for live synchronization",
+    "Separate reader credential and real Stage3/4 acceptance"
+  ],
+  "independent_review": "Provided by preview_evaluation; separate retained review artifact required before root commit"
+}

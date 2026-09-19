@@ -1,0 +1,73 @@
+{
+  "contract": "PR114-CURRENT-HASH-READ-ATTEMPT-NOT-A-GATE-1",
+  "operation_id": "pr114-current-hash-read-20260919T1653Z",
+  "recorded_at": "2026-09-19T16:55:21.458Z",
+  "observed": {
+    "pr_head": "c029a0cb78aca3815e4846559f5f60966ad4ced9",
+    "main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "pr_open": true,
+    "pr_merged": false,
+    "github_runs": {
+      "in_progress": 0,
+      "queued": 0
+    },
+    "foreground_in_progress": false,
+    "background_in_progress": false
+  },
+  "prior_checkpoint": "cloud/task088_v5_acceptance/resume_20260919_handoff006/connection_20260919_1633/NOTICE.json",
+  "browser": {
+    "account": "Carix",
+    "console_id": "48168693",
+    "authenticated_shell_prompt": true,
+    "initial_visible_prompt_time": "16:32",
+    "attempts": [
+      {
+        "index": 1,
+        "command_shape": "sha256sum absolute paths for cars_ui.py, stranica.py, publish_transaction_guard.py",
+        "input_method": "real CUA keyboard",
+        "observed": "prompt returned at 16:53; no digest line obtained; command history appeared concatenated",
+        "accepted": false
+      },
+      {
+        "index": 2,
+        "command_shape": "sha256sum home-shortened paths for same three files",
+        "input_method": "real CUA keyboard",
+        "reason_for_retry": "First real-keyboard attempt returned a prompt but no accepted digest; screen shows concatenated command history, so outcome is invalid for source binding.",
+        "observed": "prompt returned at 16:54; no digest line obtained; command history still appeared concatenated",
+        "accepted": false
+      }
+    ],
+    "retry_limit_reached": true,
+    "transport_status": "BROWSER_CONNECTED_BUT_TERMINAL_INPUT_OR_OUTPUT_NOT_RELIABLY_OBSERVED",
+    "fresh_server_hashes": false,
+    "no_write_command_submitted": true
+  },
+  "retained_private_sources": {
+    "path": "/workspace/scratch/256f936ac1c5/private_v5_current",
+    "previously_verified_manifest_sha256": "b25510fa8e59f5414dc30d77716b31cef813d0f1ac80bac773eee9effbeafa15",
+    "expected_sha256": {
+      "cars_ui_py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "stranica_py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "publish_transaction_guard_py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d"
+    },
+    "reuse_blocked_until_fresh_server_match": true,
+    "private_bytes_not_committed": true
+  },
+  "outcome": {
+    "status": "WAIT_CONNECTION_OR_RELIABLE_CONSOLE_IO",
+    "accepted_progress": {
+      "completed": 8,
+      "total": 20,
+      "percent": 40,
+      "new_criteria": []
+    },
+    "integration_started": false,
+    "tests_rerun": false,
+    "preflight_started": false,
+    "canonical_launch_started": false,
+    "production_changed": false,
+    "crm_changed": false,
+    "website_changed": false
+  },
+  "next_action": "On the next scheduled attempt first read the console state. Use one supported reliable terminal interaction or the reviewed private source route to obtain fresh SHA256 only. If all three current hashes exactly match retained originals, reuse them without re-download and begin the minimal isolated integration; otherwise stop and preserve both versions. Do not start freshness preflight or production launch."
+}

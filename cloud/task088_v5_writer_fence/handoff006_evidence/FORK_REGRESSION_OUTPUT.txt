@@ -1,0 +1,9 @@
+test_acquired_but_unpublished_descriptor_is_closed_without_unlocking_parent (test_fork_regressions.ForkRegressionTests.test_acquired_but_unpublished_descriptor_is_closed_without_unlocking_parent) ... ok
+test_fork_while_another_thread_holds_condition (test_fork_regressions.ForkRegressionTests.test_fork_while_another_thread_holds_condition) ... ok
+test_open_descriptor_window_is_serialized_with_fork (test_fork_regressions.ForkRegressionTests.test_open_descriptor_window_is_serialized_with_fork) ... ok
+test_owned_parent_lease_is_not_retained_by_child_without_helper_calls (test_fork_regressions.ForkRegressionTests.test_owned_parent_lease_is_not_retained_by_child_without_helper_calls) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.177s
+
+OK

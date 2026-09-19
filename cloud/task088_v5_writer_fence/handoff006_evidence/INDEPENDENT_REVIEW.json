@@ -1,0 +1,53 @@
+{
+  "contract": "PR114-INDEPENDENT-FORK-INODE-REVIEW-1",
+  "reviewed_at_utc": "2026-09-19T16:19:06.990997+00:00",
+  "reviewer": "/root/review_fork_fix",
+  "result": "PASS_FOR_ISOLATED_CANDIDATE_SCOPE_ONLY",
+  "scope": "Independent source review of fork descriptor lifecycle and narrow lock-path identity validation. No production or remote mutation by reviewer.",
+  "reviewed_sha256": {
+    "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "test_fork_regressions.py": "0a08a5c93a7ca9f53a250cbdb9853935443a315bb91b9b82795411fe03547c84",
+    "test_inode_regressions.py": "336f843621dc1e09f0b7e4cd9001f32035f82685ae633b90a49dae43e9eac51b",
+    "before/publication_fence.py": "12b523a15ea53f0359436ebe35429b497133720a8718e64e4bef84504efd8f39",
+    "test_publication_fence.py": "1b49551beae6697628d91cea716489c1982222ad6a4ac3c7652644ccad6dc4c5",
+    "AFFECTED_18_TEST_OUTPUT.txt": "2661a20ba778409e0f233a0d100ce1f279f67ae264ac01a22b61e2b1032c1e50",
+    "AFFECTED_18_VALIDATION.json": "a026b9e0001d37a87c828bf0b63a2f8db18e33c3717eb59cb55bbc4f053b7423"
+  },
+  "findings": [
+    "Before-fork serialization covers open/register and close/unregister; acquiring descriptors are registered before the flock wait.",
+    "Child callback eagerly closes inherited registered descriptors without LOCK_UN, clears inherited ownership, and recreates Condition before child-side use.",
+    "Parent callback releases only its fork barrier; parent lease remains held independently of child cleanup.",
+    "Acquisition failures release/close the descriptor and clear the acquiring state under the Condition; outermost release clears ownership only after lock/descriptor cleanup.",
+    "A concrete pre-existing stale-inode grant after replacement during flock wait was independently reproduced on fork-only source b9450a817c397b8a48b8388652d6aee6955108fbaadc4072f069297f228d1913.",
+    "Final source revalidates canonical parent, regular-file type, and dev/inode identity after flock before first grant, before reentrant depth increment, and in require_publication_fence. Initial validation failures use the existing cleanup path."
+  ],
+  "evidence": {
+    "final_suite": {
+      "observed_from": "AFFECTED_18_TEST_OUTPUT.txt",
+      "result": "18/18 PASS",
+      "independently_rerun_by_reviewer": false,
+      "manifest_hashes_verified_by_reviewer": true
+    },
+    "independent_new_probes_on_fork_only_source": [
+      {
+        "probe": "Replacement while waiting with new inode separately locked",
+        "result_before_inode_fix": "DEFECT_REPRODUCED: stale old-inode lease granted while current path was locked"
+      },
+      {
+        "probe": "Injected acquisition failure before flock and immediately after successful flock",
+        "result": "Both cases: descriptor EBADF, owner/acquiring/fd cleared, depth zero, subsequent acquisition PASS"
+      }
+    ],
+    "historical_product_suites_rerun_by_reviewer": false
+  },
+  "blockers_in_reviewed_narrow_change": [],
+  "limitations_and_unresolved_integration": [
+    "All cooperating processes must preserve the shared lock inode; arbitrary unlink/replacement after a successful validation cannot be prevented by these advisory path checks.",
+    "Distinct existing flock contexts opening the same file independently are not made reentrant by this candidate. Nested legacy users must join the same shared module registry; call-site integration remains unresolved.",
+    "Complete runtime writer coverage, lock ordering with existing locks, installation against exact private-source hashes, and live CRM-to-site behavior remain unverified.",
+    "This review does not establish production writer-gate PASS or authorize a deployment."
+  ],
+  "production_writer_gate_pass": false,
+  "runtime_integration_complete": false,
+  "installed": false
+}

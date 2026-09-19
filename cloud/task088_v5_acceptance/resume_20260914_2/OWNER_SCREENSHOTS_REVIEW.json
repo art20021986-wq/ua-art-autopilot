@@ -1,0 +1,60 @@
+{
+  "kind": "OWNER_SUPPLIED_PREVIEW_SCREENSHOTS_SCOPED_REVIEW_NOT_A_GATE",
+  "reviewed_at": "2026-09-14T18:12:48.848Z",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "observed_pr_head": "429bca235efae8aa25e8d6b228fd8e8ec4636d43",
+  "source": "Owner supplied two original screenshots in the current conversation. Original files are already persistent user attachments; repository stores exact file identities, hashes and scoped visual observations.",
+  "attachments": [
+    {
+      "name": "IMG_8989.png",
+      "library_file_id": "libfile_ef5eed6163a081918a659d6dbc9eabdd",
+      "sha256": "a05dfe5db8c853390f70159d22b2e7450c1bc029f07753dee5077b201462090c",
+      "bytes": 779655,
+      "observations": [
+        "Visible host carix.pythonanywhere.com; full URL path not shown.",
+        "Visible UA-0015 Hyundai SONATA 2018.",
+        "Ukrainian price label: Україна — 10 000 $.",
+        "Georgia label: Грузія — Ціна уточнюється; Rustavi parking №16 caption visible.",
+        "iPhone-style browser UI displays 5G and clock01:08; no browser-engine identification is inferred."
+      ]
+    },
+    {
+      "name": "IMG_8988.jpeg",
+      "library_file_id": "libfile_e1be7cb9bec48191b27f43e1a67b1754",
+      "sha256": "33943fee889b03ab1ed852492f225101c67f58bc812a9ba40ee0a2b37ddb057e",
+      "bytes": 283283,
+      "observations": [
+        "Visible host carix.pythonanywhere.com; full URL path/car identifier not shown in this crop.",
+        "Inline carousel shows an underbody vehicle image and label ФОТО 2.",
+        "Text states37 photos, sideways scrolling and touch to open full-screen.",
+        "The page remains in inline layout with Video section below; no full-screen gallery overlay shown.",
+        "Static screenshot does not prove a switch, swipe, close action or video playback."
+      ]
+    }
+  ],
+  "association": {
+    "car": "UA-0015",
+    "basis": "First image shows car ID; second image was supplied as the owner's response to the requested UA-0015 photo2 check. Second crop alone does not independently display that ID.",
+    "shown_clock": "01:08",
+    "capture_date_or_utc_not_embedded_in_visible_screenshot": true,
+    "preview_manifest_not_bound_by_screenshot": true
+  },
+  "confirmed_scope": [
+    "Owner-device inline photo2 display",
+    "Owner-device UA-0015 Ukrainian price block display"
+  ],
+  "still_unobserved": [
+    "Full-screen photo2 display",
+    "Successful gallery switching and closing",
+    "Required other-card gallery coverage",
+    "Fresh exact Preview/candidate/source/DB binding",
+    "Server reader credential and actual Stage4 synchronization"
+  ],
+  "photos_criterion": "PARTIAL_ADDITIONAL_EVIDENCE_NOT_FULL_PASS",
+  "full_preview_gate": "NOT_PASSED",
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "next_owner_action": "Tap photo2 to open it full-screen, then switch once and close. Provide one full-screen screenshot and a concise confirmation of these actual actions.",
+  "browser_policy": "The recorded explicit blocked full-size browser URL must not be retried through alternate tools/routes/proxies. Owner's own screenshot observation is the permitted alternative.",
+  "production_or_crm_written": false
+}
