@@ -32,7 +32,8 @@
     "Actual05:06 CRM source/ACL facts obtained;14 private originals independently match. Active media-deletion callback before DB transaction is not fenced by installer locks. Full writer PASS BLOCKED; no canonical launch attempted.",
     "Actual05:15 existing CRM getMe/getChat confirmed bot and unique active owner private chat. Raw941bytes server/local SHA0027d739... match. No messages sent, updates consumed or token disclosed.",
     "New isolated quiescence protocol independently reviewed: final21/21 local synthetic tests PASS; immutable plan, separate before/after source pins and durable intent-before-action journal. Not integrated, no writer/canonical/Stage3/4 PASS.",
-    "September19 approval005 recorded; installation operation recovery hardened with shared rollback barrier, independently reviewed46/46 and generated release71/71 PASS. Authenticated14-source readback matches. Current main active watchdog HALT diagnosed; no production/CRM writes, no Stage3/4 completion. See new latest checkpoint."
+    "September19 approval005 recorded; installation operation recovery hardened with shared rollback barrier, independently reviewed46/46 and generated release71/71 PASS. Authenticated14-source readback matches. Current main active watchdog HALT diagnosed; no production/CRM writes, no Stage3/4 completion. See new latest checkpoint.",
+    "September19 subsequent owner command fulfilled: retired redundant diagnostic workflow and archived resolved watchdog halt in main commit93726ef91ebab538c174db9fee7a3df80a706f0d; normal pinned mode validation PASS, pending production transactions0. PR114 filesystem writer safety and full Stage3/4 remain open."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -40,7 +41,10 @@
     "stage4_continuous_reader_requires_read_credential": true
   },
   "crm_changes_this_continuation": false,
-  "current_control_read": "cloud/task088_v5_acceptance/resume_20260919/CANONICAL_STATE.json",
+  "current_control_read": {
+    "main_commit": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "path": "cloud/pr114_halt_recovery_20260919/RECOVERY_EVIDENCE.json"
+  },
   "current_credential_state": "ABSENT_OBSERVED_2026-09-15T05:28:02.877826+00:00; receiver SHA matched; console48168693 remains at shell, hidden receiver not started",
   "durable_evidence_commit": "feafae2c51468dbc05b201bf413d4343e041a395",
   "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260915_2/REPORT_RECOVERY.json",
@@ -53,14 +57,14 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919/EXECUTION_NOTICE.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919/POST_HALT_RECOVERY_NOTICE.json",
   "next_action": {
-    "detail": "Matched 14 source pins. Recovery adapter code checkpoint independently reviewed and release71/71 tested. Permanent filesystem fences and actual drain remain open; separate active main HALT must be resolved through reviewed canonical recovery before production admission.",
-    "kind": "COMPLETE_PERMANENT_WRITER_FENCES_AND_CANONICAL_QUIESCENCE"
+    "kind": "COMPLETE_PERMANENT_WRITER_FENCES_AND_CANONICAL_QUIESCENCE",
+    "detail": "Continue isolated permanent media/file writer fences and canonical quiescence integration; current main HALT is resolved. Do not remove publication/SQLite/file protections or run preflight before actual writer isolation is ready."
   },
-  "observed_main": "aadf60b6f2b6acb0fba598792895fb93564b0451",
-  "observed_pr_head_before_this_update": "77732241009586729e24e4425e3df541da5cf792",
-  "owner_current_request": "УТВЕРЖДАЮ UA-ART-PR114-AUDIT-005 v1.0",
+  "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+  "observed_pr_head_before_this_update": "3b665b8dabe55e54cc51b5e406748c8e75ccf1d0",
+  "owner_current_request": "Ну удали эти блокировки, если они бесполезны и мешают работать.",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
     "sha256": "55a970c7b34745232fa132883b5d87344740db93c272eee6bca7da5754d6b623"
@@ -96,7 +100,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-19T15:19:28.662668+00:00",
+  "recorded_at": "2026-09-19T15:40:55.114Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
