@@ -259,6 +259,50 @@ class IntegrationTests(unittest.TestCase):
         self.assertLess(events.index("db:videos"), events.index("video-remove-full"))
         self.assertLess(events.index("video-remove-full"), events.index("fence-exit"))
 
+    def test_restore_refuses_corrupt_backup_without_publishing_it(self):
+        ns, *_ = self._cars_namespace()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original, backup = root / "photo.jpg", root / "backup.jpg"
+            backup.write_bytes(b"corrupted")
+            expected = integration.hashlib.sha256(b"old").hexdigest()
+            result = ns["_ua114_restore_exact"]([
+                (str(original), str(backup), expected, "photo.jpg")])
+            self.assertEqual(result, ["media:photo.jpg"])
+            self.assertFalse(original.exists())
+
+    def test_restore_preserves_operator_file_created_during_copy(self):
+        ns, *_ = self._cars_namespace()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original, backup = root / "photo.jpg", root / "backup.jpg"
+            backup.write_bytes(b"old")
+            expected = integration.hashlib.sha256(b"old").hexdigest()
+
+            def racing_copy(source, destination):
+                original.write_bytes(b"new operator bytes")
+                return shutil.copy2(source, destination)
+
+            ns["_ua114_shutil"] = types.SimpleNamespace(copy2=racing_copy)
+            result = ns["_ua114_restore_exact"]([
+                (str(original), str(backup), expected, "photo.jpg")])
+            self.assertEqual(original.read_bytes(), b"new operator bytes")
+            self.assertEqual(result, ["media:photo.jpg"])
+            self.assertEqual(sorted(p.name for p in root.iterdir()), ["backup.jpg", "photo.jpg"])
+
+    def test_restore_publishes_verified_missing_file(self):
+        ns, *_ = self._cars_namespace()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original, backup = root / "photo.jpg", root / "backup.jpg"
+            backup.write_bytes(b"old")
+            expected = integration.hashlib.sha256(b"old").hexdigest()
+            result = ns["_ua114_restore_exact"]([
+                (str(original), str(backup), expected, "photo.jpg")])
+            self.assertEqual(result, [])
+            self.assertEqual(original.read_bytes(), b"old")
+            self.assertEqual(sorted(p.name for p in root.iterdir()), ["backup.jpg", "photo.jpg"])
+
     def test_changed_after_image_is_not_overwritten_by_rollback(self):
         ns, card, _events, _state = self._cars_namespace(rebuild=False)
         base_rebuild = ns["_ua114_rebuild_pages_base"]

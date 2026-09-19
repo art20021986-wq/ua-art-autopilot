@@ -36,6 +36,7 @@ CARS_BLOCK = r'''
 import asyncio as _ua114_asyncio
 import hashlib as _ua114_hashlib
 import shutil as _ua114_shutil
+import tempfile as _ua114_tempfile
 from publication_fence import publication_fence as _ua114_publication_fence
 from publication_fence import require_publication_fence as _ua114_require_fence
 
@@ -118,17 +119,31 @@ def _ua114_restore_exact(entries):
     """Restore only missing originals; never overwrite a newer after-image."""
     conflicts = []
     for destination, backup, before_sha256, relative in entries:
+        staged = None
         try:
-            if os.path.exists(destination):
-                if _ua114_file_sha256(destination) != before_sha256:
+            if os.path.lexists(destination):
+                if os.path.islink(destination) or _ua114_file_sha256(destination) != before_sha256:
                     conflicts.append("media:" + relative)
                 continue
             os.makedirs(os.path.dirname(destination), exist_ok=True)
-            _ua114_shutil.copy2(backup, destination)
-            if _ua114_file_sha256(destination) != before_sha256:
-                conflicts.append("media:" + relative)
+            descriptor, staged = _ua114_tempfile.mkstemp(
+                prefix=".ua114-restore-", dir=os.path.dirname(destination))
+            os.close(descriptor)
+            _ua114_shutil.copy2(backup, staged)
+            if _ua114_file_sha256(staged) != before_sha256:
+                raise RuntimeError("MEDIA_RESTORE_BACKUP_SHA256_MISMATCH")
+            # link is atomic and refuses an existing destination, including
+            # a file created after the initial check. Never replace it.
+            os.link(staged, destination)
         except Exception:
             conflicts.append("media:" + relative)
+        finally:
+            if staged is not None:
+                try:
+                    os.unlink(staged)
+                except OSError:
+                    if "media:" + relative not in conflicts:
+                        conflicts.append("media:" + relative)
     return conflicts
 
 
