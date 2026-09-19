@@ -1,0 +1,129 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Retire redundant diagnostic workflow and archive the now-resolved SYSTEM-WATCHDOG halt; preserve protection policies, required Gate B, backup and operator data",
+  "base_main": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+  "before_clear_mode_validation": {
+    "allow_halt_for_recovery": true,
+    "status": "PASS"
+  },
+  "before_error": "ACTIVE_WORKFLOW_SET_MISMATCH:missing=-:unexpected=.github/workflows/uaart_crm_runtime_readonly_probe.yml",
+  "claims_count": 29,
+  "complete_transactions_count": 9,
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/SYSTEM-WATCHDOG-20260916-35064800624/halt.json",
+  "halt_sha256": "14565708cea8d98800f30791fcdb8ff16f59fbe0eb699394908ac5a07dd3162a",
+  "historical_halt": {
+    "halted_at": "2026-09-16T06:40:56Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "Production watchdog discovery failed in run 35064800624",
+    "request_path": "",
+    "request_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "run_id": "35064800624",
+    "status": "EMERGENCY_HALT",
+    "task_id": "SYSTEM-WATCHDOG"
+  },
+  "nonterminal_claims_preserved": [
+    {
+      "conflicts_with_global_production": false,
+      "identity": {
+        "run_id": "34733330869",
+        "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY",
+        "task_sha256": "1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827"
+      },
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827.34733330869.json",
+      "production_required": false,
+      "resource_locks": [
+        "READ_ONLY:5b74afb8a929e83a"
+      ],
+      "status": "BLOCKED_ROOT_CAUSE"
+    }
+  ],
+  "owner_statement": "Ну удали эти блокировки, если они бесполезны и мешают работать.",
+  "post_retirement_workflow_policy": {
+    "active_workflows": [
+      ".github/workflows/uaart_autostart.yml",
+      ".github/workflows/uaart_backup.yml",
+      ".github/workflows/uaart_critical.yml",
+      ".github/workflows/uaart_fast.yml",
+      ".github/workflows/uaart_maintenance.yml",
+      ".github/workflows/uaart_monitor.yml",
+      ".github/workflows/uaart_orchestrator.yml",
+      ".github/workflows/uaart_standard.yml",
+      ".github/workflows/uaart_transaction_watchdog.yml"
+    ],
+    "allowlist": [
+      ".github/workflows/uaart_critical.yml",
+      ".github/workflows/uaart_transaction_watchdog.yml"
+    ],
+    "consumers": [
+      ".github/workflows/uaart_critical.yml",
+      ".github/workflows/uaart_transaction_watchdog.yml"
+    ],
+    "events": {
+      ".github/workflows/uaart_autostart.yml": [
+        "push"
+      ],
+      ".github/workflows/uaart_backup.yml": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      ".github/workflows/uaart_critical.yml": [
+        "workflow_call"
+      ],
+      ".github/workflows/uaart_fast.yml": [
+        "workflow_call"
+      ],
+      ".github/workflows/uaart_maintenance.yml": [
+        "schedule",
+        "workflow_dispatch"
+      ],
+      ".github/workflows/uaart_monitor.yml": [
+        "schedule",
+        "workflow_dispatch"
+      ],
+      ".github/workflows/uaart_orchestrator.yml": [
+        "workflow_call"
+      ],
+      ".github/workflows/uaart_standard.yml": [
+        "workflow_call"
+      ],
+      ".github/workflows/uaart_transaction_watchdog.yml": [
+        "push",
+        "schedule",
+        "workflow_dispatch"
+      ]
+    },
+    "secrets_inherit": [
+      ".github/workflows/uaart_autostart.yml",
+      ".github/workflows/uaart_orchestrator.yml"
+    ],
+    "status": "PASS"
+  },
+  "production_launch_created": false,
+  "production_transaction_validation": {
+    "has_pending": false,
+    "pending_count": 0,
+    "status": "PASS",
+    "transaction_status": "NONE"
+  },
+  "reason": "Resolved watchdog discovery failure by retiring the unregistered diagnostic workflow; no pending production transaction or conflicting production claim remains.",
+  "recorded_at": "2026-09-19T15:38:10.789408+00:00",
+  "remaining_pr114_blocker": "Permanent media/file writer fences and actual quiescence are incomplete; fresh per-candidate installation gates and live acceptance still required.",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "runtime_manifest_bytes_changed": false,
+  "site_or_crm_written": false,
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "validation_scope": "Local execution of unchanged pinned validators against exact main source/state and the proposed two archive moves; remote publication/readback to be recorded in the resulting commit response",
+  "workflow_archive": ".github/legacy-workflows/PR114-AUDIT005-20260919/uaart_crm_runtime_readonly_probe.yml",
+  "workflow_before": ".github/workflows/uaart_crm_runtime_readonly_probe.yml",
+  "workflow_sha256": "39c06b30fec060ff03028b948f006c07d4cb45dcd71665df5c5f955337deb569"
+}
