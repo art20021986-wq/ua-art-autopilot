@@ -37,7 +37,8 @@
     "September19 owner requested automatic Stage3–4 completion. Existing hourly PR114 background continuation re-enabled with current post-HALT context. Live read-only source inspection reconfirmed media deletion and direct rebuild gaps; installation and Stage4 remain unstarted.",
     "September19 isolated permanent publication-fence candidate completed: same-thread reentrant and cross-thread/cross-process exclusive primitive, fork cleanup and fail-closed path checks; new affected suite 11/11 PASS. Not integrated or installed; acceptance remains 8/20 (40%).",
     "Handoff006 resumed by explicit owner command. Current GitHub controls reconciled and actual PR completion automation confirmed disabled. Independent isolated fence review reproduced and fixed fork cleanup and stale inode grant defects; affected 18-test module suite PASS. Exact private source read blocked by managed browser transport failure; no new preflight, production launch or acceptance increment.",
-    "Connection-resume attempt recovered authenticated file listing after one reload. Failed download reconciled without retry. Three retained private originals independently SHA256-match the private snapshot manifest and saved server source observation; no fresh server hash assertion, integration, installation or acceptance increment. See latest checkpoint."
+    "Connection-resume attempt recovered authenticated file listing after one reload. Failed download reconciled without retry. Three retained private originals independently SHA256-match the private snapshot manifest and saved server source observation; no fresh server hash assertion, integration, installation or acceptance increment. See latest checkpoint.",
+    "Current-hash read attempt was bounded to two real-keyboard read-only inputs. Authenticated console returned prompts but no digest lines, so no source binding or integration was claimed. Exact failure and single next action saved; production, CRM and site unchanged."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -61,10 +62,10 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919_handoff006/connection_20260919_1633/NOTICE.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919_handoff006/hash_read_20260919_1654/NOTICE.json",
   "next_action": {
-    "kind": "CONFIRM_CURRENT_HASHES_THEN_REUSE_RETAINED_PRIVATE_SOURCES",
-    "detail": "Inspect current console and use real terminal keyboard input for a read-only SHA256 check of cars_ui.py, stranica.py and publish_transaction_guard.py. Reuse the retained private snapshot on exact match; no repeat download is needed then. Integrate the reviewed fence in isolation only after fresh source binding, preserving the legacy shared lock registry and inode; retain old results."
+    "kind": "RESTORE_RELIABLE_CONSOLE_IO_AND_CONFIRM_CURRENT_HASHES",
+    "detail": "On the next scheduled attempt first read the console state. Use one supported reliable terminal interaction or the reviewed private source route to obtain fresh SHA256 only. If all three current hashes exactly match retained originals, reuse them without re-download and begin the minimal isolated integration; otherwise stop and preserve both versions. Do not start freshness preflight or production launch."
   },
   "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
   "observed_pr_head_before_this_update": "94763fba9da31e247431c69637cb5148ff2095b8",
@@ -104,7 +105,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-19T16:34:48.333Z",
+  "recorded_at": "2026-09-19T16:55:21.458Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -194,12 +195,12 @@
     }
   },
   "connection_recovery_last_attempt": {
-    "operation_id": "pr114-connection-readback-20260919T1628Z",
+    "operation_id": "pr114-current-hash-read-20260919T1653Z",
     "evidence": {
-      "path": "cloud/task088_v5_acceptance/resume_20260919_handoff006/connection_20260919_1633/READBACK.json",
-      "sha256": "ef404dd13d54fc17e4508011f955d16e0ef66d5b0c2c2f61e7c770fd927f2066"
+      "path": "cloud/task088_v5_acceptance/resume_20260919_handoff006/hash_read_20260919_1654/READBACK.json",
+      "sha256": "6e4ad4e6fb2a5aa9eb62621ce54f1927a37510218dc00531e3b787ac57f31a0b"
     },
-    "state": "WAIT_CONNECTION_FOR_CONFIRMED_SOURCE_HASH_READ",
+    "state": "WAIT_CONNECTION_OR_RELIABLE_CONSOLE_IO",
     "automation_enabled": true,
     "fresh_source_hashes": false,
     "production_changed": false
