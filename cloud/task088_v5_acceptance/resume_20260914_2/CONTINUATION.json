@@ -34,7 +34,8 @@
     "New isolated quiescence protocol independently reviewed: final21/21 local synthetic tests PASS; immutable plan, separate before/after source pins and durable intent-before-action journal. Not integrated, no writer/canonical/Stage3/4 PASS.",
     "September19 approval005 recorded; installation operation recovery hardened with shared rollback barrier, independently reviewed46/46 and generated release71/71 PASS. Authenticated14-source readback matches. Current main active watchdog HALT diagnosed; no production/CRM writes, no Stage3/4 completion. See new latest checkpoint.",
     "September19 subsequent owner command fulfilled: retired redundant diagnostic workflow and archived resolved watchdog halt in main commit93726ef91ebab538c174db9fee7a3df80a706f0d; normal pinned mode validation PASS, pending production transactions0. PR114 filesystem writer safety and full Stage3/4 remain open.",
-    "September19 owner requested automatic Stage3–4 completion. Existing hourly PR114 background continuation re-enabled with current post-HALT context. Live read-only source inspection reconfirmed media deletion and direct rebuild gaps; installation and Stage4 remain unstarted."
+    "September19 owner requested automatic Stage3–4 completion. Existing hourly PR114 background continuation re-enabled with current post-HALT context. Live read-only source inspection reconfirmed media deletion and direct rebuild gaps; installation and Stage4 remain unstarted.",
+    "September19 isolated permanent publication-fence candidate completed: same-thread reentrant and cross-thread/cross-process exclusive primitive, fork cleanup and fail-closed path checks; new affected suite 11/11 PASS. Not integrated or installed; acceptance remains 8/20 (40%)."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -58,10 +59,10 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919/AUTOPILOT_CONTINUATION_NOTICE.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919/WRITER_FENCE_CANDIDATE_NOTICE.json",
   "next_action": {
-    "kind": "COMPLETE_WRITER_FENCES_THEN_CANONICAL_STAGE3_STAGE4",
-    "detail": "Implement and validate permanent fencing for actual cars_ui media deletion and direct stranica rebuild, with reentrant lock ordering and canonical phase-aware installation. No fresh preflight or production launch until actual old/new writer containment is proven. Then use exact Gate B, full verified backup, publication and Stage4 live acceptance."
+    "kind": "INTEGRATE_EXACT_PRIVATE_WRITER_FENCES",
+    "detail": "Obtain the exact pinned private cars_ui.py and stranica.py bytes through the reviewed canonical source-handling route, apply the smallest fence integration at the recorded mutation boundaries, and run only new affected call-path tests. No freshness preflight or production launch until after-image and complete old/new writer containment review PASS."
   },
   "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
   "observed_pr_head_before_this_update": "3b665b8dabe55e54cc51b5e406748c8e75ccf1d0",
@@ -101,7 +102,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-19T15:47:55.594Z",
+  "recorded_at": "2026-09-19T15:52:50.720Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -145,5 +146,15 @@
     "software": 446
   },
   "stage3": "OPEN_NOT_PUBLISHED",
-  "stage4": "OPEN_NOT_ACCEPTED"
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "writer_fence_preparation": {
+    "path": "cloud/task088_v5_writer_fence",
+    "scope": "ISOLATED_CANDIDATE_ONLY_NOT_PRODUCTION_AUTHORITY",
+    "source_sha256": "12b523a15ea53f0359436ebe35429b497133720a8718e64e4bef84504efd8f39",
+    "validation_sha256": "3ac79f3bb0226df94253de149734181a186a03a1d6d06260c1c5cf152b11b266",
+    "tests_passed": 11,
+    "integrated": false,
+    "installed": false,
+    "writer_gate_pass": false
+  }
 }
