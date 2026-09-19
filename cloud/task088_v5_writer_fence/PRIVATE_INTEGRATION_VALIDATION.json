@@ -1,6 +1,6 @@
 {
   "contract": "PR114-HANDOFF006-PRIVATE-INTEGRATION-VALIDATION-1",
-  "recorded_at": "2026-09-19T18:44:48Z",
+  "recorded_at": "2026-09-19T19:10:45Z",
   "status": "PASS_ISOLATED_PRIVATE_CANDIDATE",
   "production_authority": false,
   "installed": false,
@@ -17,8 +17,8 @@
   },
   "candidate": {
     "cars_ui.py": {
-      "bytes": 219332,
-      "sha256": "541ba0f7196184be3c300cd31e8a31000c041e43c966f03c2ef8999a9284dd79"
+      "bytes": 225410,
+      "sha256": "9b6c210d54f2736276896ed30d32827e1ae2b057533155afa6964eab49a4aa4c"
     },
     "stranica.py": {
       "bytes": 203579,
@@ -32,31 +32,35 @@
       "bytes": 9694,
       "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
     },
-    "private_manifest_sha256": "8d76fa12c36bef3e9d6a72488812d8650e104c7fef5bbbd49dd05a2918d5e4e8",
+    "private_manifest_sha256": "9f58228f4ef4f0c59c2956743f60d8ed7d5019d1a9d85dd27ca33b9506f849f2",
     "private_files_committed": false
   },
   "builder": {
     "path": "cloud/task088_v5_writer_fence/integrate_private_sources.py",
-    "bytes": 19327,
-    "sha256": "0a9163791df5013e498e9933d057707ee45f307d042fbaff37a437df123f5153",
+    "bytes": 25405,
+    "sha256": "8997ca684aaff9013958ccb73ed642bbcba3bfd17c5f2385e54781c3c7641ffd",
     "input_directory_mutated": false,
     "nonempty_output_refused": true,
     "exact_before_hash_required": true
   },
   "tests": {
     "command": "python3 -B -m unittest -v test_private_source_integration",
-    "passed": 11,
+    "passed": 13,
     "failed": 0,
     "test_source": {
       "path": "cloud/task088_v5_writer_fence/test_private_source_integration.py",
-      "bytes": 11344,
-      "sha256": "1c29c7ad4b0397130ff79550cebcf3750546c1686cd521b8e5d683c346a2208f"
+      "bytes": 13137,
+      "sha256": "e4e58203cceb3ac2bf3ab5aaeed480455c0addfefb1a72f7d90228f1450ee7dd"
     },
     "raw_output": {
       "path": "cloud/task088_v5_writer_fence/handoff006_evidence/PRIVATE_INTEGRATION_TEST_OUTPUT.txt",
-      "bytes": 1743,
-      "sha256": "af4db8915eb9f2d2465648ea2d862f00593aabd2daafe8d975677f6a85a60843"
+      "bytes": 2075,
+      "sha256": "663c396d48dcfe6e2ce7d3a56b2581a013fd372155f65e160d0eba1117d4ab60"
     }
+  },
+  "independent_review": {
+    "path": "cloud/task088_v5_writer_fence/handoff006_evidence/PRIVATE_INTEGRATION_INDEPENDENT_REVIEW.json",
+    "status": "PASS_ISOLATED_CANDIDATE_ONLY"
   },
   "verified_boundaries": [
     "photo remove-all executes filesystem removal, database updates and page rebuild under one synchronous-worker fence",
@@ -67,7 +71,10 @@
     "stranica final main wrapper precedes direct __main__ execution and covers validation fallback writes",
     "stranica writes take publication fence before nested spec84 lock",
     "publish_transaction_guard._exclusive_lock reuses the shared reentrant registry and lock inode",
-    "rollback restores only fields still equal to this operation's after-image"
+    "rollback restores only fields still equal to this operation's after-image",
+    "every destructive media target is copied and SHA256-verified before mutation",
+    "photo and video deletion verify that all pre-enumerated targets are absent before committing success",
+    "rollback restores only missing media files and reports conflicts instead of overwriting newer operator files"
   ],
   "not_repeated": {
     "software_446": true,
@@ -78,7 +85,7 @@
     "reason": "Those retained results bind unchanged inputs; only the new private integration layer received new tests."
   },
   "still_open": [
-    "independent review of generated candidate and release closure",
+    "release closure for all private runtime dependencies",
     "complete writer membership and drain observation",
     "old/new loaded-process source identity",
     "fresh quota and canonical preflight only after containment is ready",

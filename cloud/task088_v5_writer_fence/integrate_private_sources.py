@@ -34,6 +34,8 @@ CARS_BLOCK = r'''
 
 # UA-ART-PR114-PUBLICATION-FENCE-HANDOFF006:START
 import asyncio as _ua114_asyncio
+import hashlib as _ua114_hashlib
+import shutil as _ua114_shutil
 from publication_fence import publication_fence as _ua114_publication_fence
 from publication_fence import require_publication_fence as _ua114_require_fence
 
@@ -61,6 +63,73 @@ def _ubrat_video_polno(nomer):
 def _peresobrat_stranicy():
     with _ua114_publication_fence():
         return _ua114_rebuild_pages_base()
+
+
+def _ua114_file_sha256(path):
+    digest = _ua114_hashlib.sha256()
+    with open(path, "rb") as handle:
+        while True:
+            chunk = handle.read(1024 * 1024)
+            if not chunk:
+                break
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _ua114_regular_files(root):
+    """Return exact regular-file members and refuse symlinked content."""
+    if not os.path.isdir(root):
+        return []
+    result = []
+    for current, directories, files in os.walk(root, followlinks=False):
+        for name in directories:
+            if os.path.islink(os.path.join(current, name)):
+                raise RuntimeError("MEDIA_BACKUP_SYMLINK_REFUSED")
+        for name in files:
+            path = os.path.join(current, name)
+            if os.path.islink(path) or not os.path.isfile(path):
+                raise RuntimeError("MEDIA_BACKUP_NONREGULAR_REFUSED")
+            result.append(path)
+    return sorted(result)
+
+
+def _ua114_backup_exact(paths, root, backup_dir):
+    """Copy every destructive target and verify byte hashes before mutation."""
+    root = os.path.realpath(root)
+    entries = []
+    for source in sorted(set(paths)):
+        source = os.path.realpath(source)
+        if os.path.commonpath((root, source)) != root:
+            raise RuntimeError("MEDIA_BACKUP_PATH_ESCAPE")
+        relative = os.path.relpath(source, root)
+        destination = os.path.join(backup_dir, "exact", relative)
+        os.makedirs(os.path.dirname(destination), exist_ok=True)
+        before_sha256 = _ua114_file_sha256(source)
+        _ua114_shutil.copy2(source, destination)
+        if _ua114_file_sha256(destination) != before_sha256:
+            raise RuntimeError("MEDIA_BACKUP_SHA256_MISMATCH:" + relative)
+        entries.append((source, destination, before_sha256, relative))
+    if len(entries) != len(set(paths)):
+        raise RuntimeError("MEDIA_BACKUP_MEMBER_COUNT_MISMATCH")
+    return entries
+
+
+def _ua114_restore_exact(entries):
+    """Restore only missing originals; never overwrite a newer after-image."""
+    conflicts = []
+    for destination, backup, before_sha256, relative in entries:
+        try:
+            if os.path.exists(destination):
+                if _ua114_file_sha256(destination) != before_sha256:
+                    conflicts.append("media:" + relative)
+                continue
+            os.makedirs(os.path.dirname(destination), exist_ok=True)
+            _ua114_shutil.copy2(backup, destination)
+            if _ua114_file_sha256(destination) != before_sha256:
+                conflicts.append("media:" + relative)
+        except Exception:
+            conflicts.append("media:" + relative)
+    return conflicts
 
 
 def _ua114_restore_fields(cid, actor_id, before, expected):
@@ -92,11 +161,25 @@ def _ua114_photo_remove_all_mutation(cid, actor_id):
         if "hidden_photos" in card:
             before["hidden_photos"] = card.get("hidden_photos")
             expected["hidden_photos"] = jdump([])
-        backup_dir, backup_count = _v142_zapas_foto(code)
+        photo_root = os.path.join("/home/Carix", "video", "foto", code)
+        try:
+            targets = _ua114_regular_files(photo_root)
+            backup_dir = _v142_papka(code, "foto_exact")
+            backup_entries = _ua114_backup_exact(targets, photo_root, backup_dir)
+        except Exception as exc:
+            return {
+                "ok": False,
+                "error": type(exc).__name__ + ":" + str(exc),
+                "rollback_conflicts": [],
+            }
+        backup_count = len(backup_entries)
         removed = 0
         written = {}
         try:
             removed = _ubrat_fayly_foto(code)
+            remaining = [path for path in targets if os.path.exists(path)]
+            if remaining:
+                raise RuntimeError("PHOTO_REMOVE_INCOMPLETE:%d" % len(remaining))
             for field, value in expected.items():
                 db.update_card_field("cars", cid, field, value, actor_id)
                 written[field] = value
@@ -112,11 +195,9 @@ def _ua114_photo_remove_all_mutation(cid, actor_id):
             conflicts = _ua114_restore_fields(
                 cid, actor_id,
                 {field: before[field] for field in written}, written)
-            restored = 0
-            try:
-                restored = _v142_vernut_foto(code, backup_dir)
-            except Exception:
-                conflicts.append("photo_files")
+            file_conflicts = _ua114_restore_exact(backup_entries)
+            conflicts.extend(file_conflicts)
+            restored = len(backup_entries) - len(file_conflicts)
             try:
                 if not _peresobrat_stranicy():
                     conflicts.append("rebuilt_pages")
@@ -138,16 +219,65 @@ def _ua114_video_remove_all_mutation(cid, actor_id):
             return {"ok": False, "error": "CARD_NOT_FOUND", "rollback_conflicts": []}
         before = {name: card.get(name) for name in ("videos", "video_h", "video_v")}
         expected = {"videos": jdump([]), "video_h": None, "video_v": None}
+        code = str(card.get("auto_number") or "").upper()
+        video_root = os.path.join("/home/Carix", "video")
+        try:
+            names = sorted(os.listdir(video_root))
+        except FileNotFoundError:
+            names = []
+        except OSError as exc:
+            return {
+                "ok": False,
+                "error": type(exc).__name__ + ":" + str(exc),
+                "rollback_conflicts": [],
+            }
+        targets = []
+        for name in names:
+            primary = name == code + ".mp4" or (
+                name.startswith(code + "-") and name.endswith(".mp4"))
+            if not primary:
+                continue
+            path = os.path.join(video_root, name)
+            if os.path.islink(path) or not os.path.isfile(path):
+                return {
+                    "ok": False,
+                    "error": "MEDIA_BACKUP_NONREGULAR_REFUSED",
+                    "rollback_conflicts": [],
+                }
+            targets.append(path)
+            poster = path + ".poster.jpg"
+            if os.path.isfile(poster):
+                if os.path.islink(poster):
+                    return {
+                        "ok": False,
+                        "error": "MEDIA_BACKUP_SYMLINK_REFUSED",
+                        "rollback_conflicts": [],
+                    }
+                targets.append(poster)
+        try:
+            backup_dir = _v142_papka(code, "video_exact")
+            backup_entries = _ua114_backup_exact(targets, video_root, backup_dir)
+        except Exception as exc:
+            return {
+                "ok": False,
+                "error": type(exc).__name__ + ":" + str(exc),
+                "rollback_conflicts": [],
+            }
         written = {}
         try:
             for field, value in expected.items():
                 db.update_card_field("cars", cid, field, value, actor_id)
                 written[field] = value
             removed, failures = _ubrat_video_polno(card.get("auto_number"))
+            remaining = [path for path in targets if os.path.exists(path)]
+            if remaining:
+                failures = list(failures) + [
+                    "VIDEO_REMOVE_INCOMPLETE:%d" % len(remaining)]
             if failures:
                 conflicts = _ua114_restore_fields(
                     cid, actor_id,
                     {field: before[field] for field in written}, written)
+                conflicts.extend(_ua114_restore_exact(backup_entries))
                 return {
                     "ok": False,
                     "error": "VIDEO_REMOVE_FAILED:" + "; ".join(failures),
@@ -163,6 +293,7 @@ def _ua114_video_remove_all_mutation(cid, actor_id):
             conflicts = _ua114_restore_fields(
                 cid, actor_id,
                 {field: before[field] for field in written}, written)
+            conflicts.extend(_ua114_restore_exact(backup_entries))
             return {
                 "ok": False,
                 "error": type(exc).__name__ + ":" + str(exc),
@@ -192,10 +323,22 @@ def _ua114_diag_clear_mutation(cid, pole, actor_id):
             names = sorted(os.listdir(directory))
         except FileNotFoundError:
             names = []
+        except OSError as exc:
+            return {
+                "ok": False,
+                "error": type(exc).__name__ + ":" + str(exc),
+                "rollback_conflicts": [],
+            }
         for name in names:
             path = os.path.join(directory, name)
-            if not os.path.isfile(path) or name.endswith(".poster.jpg"):
+            if name.endswith(".poster.jpg"):
                 continue
+            if os.path.islink(path) or not os.path.isfile(path):
+                return {
+                    "ok": False,
+                    "error": "MEDIA_BACKUP_NONREGULAR_REFUSED",
+                    "rollback_conflicts": [],
+                }
             try:
                 with open(path, "rb") as handle:
                     header = handle.read(16)
@@ -205,8 +348,16 @@ def _ua114_diag_clear_mutation(cid, pole, actor_id):
                 targets.append(path)
                 if os.path.isfile(path + ".poster.jpg"):
                     targets.append(path + ".poster.jpg")
-        backup_dir = _v142_papka(code, "diag_" + pole)
-        backup_count = _v142_kopirovat(targets, backup_dir)
+        try:
+            backup_dir = _v142_papka(code, "diag_" + pole)
+            backup_entries = _ua114_backup_exact(targets, directory, backup_dir)
+        except Exception as exc:
+            return {
+                "ok": False,
+                "error": type(exc).__name__ + ":" + str(exc),
+                "rollback_conflicts": [],
+            }
+        backup_count = len(backup_entries)
         before = {pole: card.get(pole)}
         expected = {pole: "[]"}
         written = {}
@@ -229,10 +380,7 @@ def _ua114_diag_clear_mutation(cid, pole, actor_id):
             conflicts = _ua114_restore_fields(
                 int(cid), actor_id,
                 {field: before[field] for field in written}, written)
-            try:
-                _v142_vernut(backup_dir, directory)
-            except Exception:
-                conflicts.append("diagnostic_files")
+            conflicts.extend(_ua114_restore_exact(backup_entries))
             try:
                 if not _peresobrat_stranicy():
                     conflicts.append("rebuilt_pages")

@@ -206,6 +206,11 @@ class IntegrationTests(unittest.TestCase):
 
     def test_photo_failure_restores_inside_fence(self):
         ns, card, events, _state = self._cars_namespace(photo_error=True)
+        ns["_ua114_regular_files"] = lambda _root: ["/tmp/original-photo.jpg"]
+        ns["_ua114_backup_exact"] = lambda *_args: [
+            ("/tmp/original-photo.jpg", "/tmp/backup-photo.jpg", "sha", "original-photo.jpg")]
+        ns["_ua114_restore_exact"] = lambda _entries: (
+            events.append("photo-restore") or [])
         before = dict(card)
         result = ns["_ua114_photo_remove_all_mutation"](7, 99)
         self.assertFalse(result["ok"])
@@ -214,6 +219,36 @@ class IntegrationTests(unittest.TestCase):
         self.assertIn("photo-restore", events)
         self.assertLess(events.index("fence-enter"), events.index("photo-restore"))
         self.assertLess(events.index("photo-restore"), events.index("fence-exit"))
+
+    def test_incomplete_backup_fails_before_destructive_photo_action(self):
+        ns, card, events, _state = self._cars_namespace()
+        ns["_ua114_regular_files"] = lambda _root: ["/tmp/original-photo.jpg"]
+
+        def fail_backup(*_args):
+            raise RuntimeError("MEDIA_BACKUP_SHA256_MISMATCH:original-photo.jpg")
+
+        ns["_ua114_backup_exact"] = fail_backup
+        before = dict(card)
+        result = ns["_ua114_photo_remove_all_mutation"](7, 99)
+        self.assertFalse(result["ok"])
+        self.assertIn("MEDIA_BACKUP_SHA256_MISMATCH", result["error"])
+        self.assertEqual(card, before)
+        self.assertNotIn("photo-remove", events)
+        self.assertFalse(any(event.startswith("db:") for event in events))
+
+    def test_exact_restore_preserves_new_operator_file(self):
+        ns, _card, _events, _state = self._cars_namespace()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original = root / "original.jpg"
+            backup = root / "backup.jpg"
+            original.write_bytes(b"operator-new")
+            backup.write_bytes(b"old")
+            old_sha = integration.hashlib.sha256(b"old").hexdigest()
+            conflicts = ns["_ua114_restore_exact"]([
+                (str(original), str(backup), old_sha, "original.jpg")])
+            self.assertEqual(original.read_bytes(), b"operator-new")
+            self.assertEqual(conflicts, ["media:original.jpg"])
 
     def test_video_failure_restores_database_fields(self):
         ns, card, events, _state = self._cars_namespace(video_failures=["simulated"])
