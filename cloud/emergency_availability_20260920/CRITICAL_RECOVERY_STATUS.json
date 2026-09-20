@@ -1,49 +1,57 @@
 {
-  "contract": "UAART-CRITICAL-RECOVERY-20260920-2",
-  "recorded_at": "2026-09-20T07:34:08.628Z",
-  "status": "RECOVERY_REQUEST_ACTIVE_EXECUTION_BLOCKED",
+  "contract": "UAART-CRITICAL-RECOVERY-20260920-3",
+  "recorded_at": "2026-09-20T08:19:30Z",
+  "status": "AVAILABILITY_RESTORED_CONTROL_PLANE_RECONCILIATION_PENDING",
   "owner_request": "У меня не работает сайт до сих пор. Запусти немедленное восстановление.",
-  "owner_failure_accepted_as_unresolved": true,
+  "owner_failure_treated_as_authoritative": true,
   "production_restart_executed": false,
-  "production_files_changed": false,
-  "authorization": "Owner has already authorized emergency restoration; no repeat general approval requested",
-  "verified_execution_blocker": {
+  "production_files_changed_by_recovery": false,
+  "authorization": "Owner already authorized emergency restoration; no repeat general approval requested.",
+  "live_recovery_result": {
+    "evidence": "cloud/emergency_availability_20260920/RECOVERY_READBACK_20260920T0818Z.json",
+    "managed_browser_apex_and_www_rendered": true,
+    "apex_redirected_to_www": true,
+    "home_http_status": 200,
+    "catalog_http_status": 200,
+    "ua0022_card_http_status": 200,
+    "ua0022_diagnostic_http_status": 200,
+    "public_bytes_match_server_files": true,
+    "continuous_monitor_status": "healthy",
+    "monitor_finished_at": "2026-09-20T08:17:58.807Z",
+    "owner_specific_network_verified": false
+  },
+  "ua0022_reconciliation": {
     "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
     "transaction_id": "tx-35490449348-334c361c22ebee11",
     "task": "UA-ART-UA0022-PUBLISH-REPAIR-003",
-    "status": "ROLLING_BACK",
-    "halt": "EMERGENCY_HALT",
-    "old_recovery_task": "TASK119-EMERGENCY-SITE-RECOVERY-R2 consumed; approval expired",
-    "normal_workflow_precondition": "assert-clear rejects pending production transaction"
+    "installed_runtime_matches_manifest": true,
+    "install_verify_receipt": "PASS",
+    "publication_result": "PASS",
+    "rollback_performed": false,
+    "current_status": "ROLLING_BACK / BLOCKED_ROOT_CAUSE / EMERGENCY_HALT",
+    "historical_controller_failure": "PUBLIC_BYTES_MISMATCH",
+    "historical_rollback_preflight_failure": "AUTOSTART_NONCE_RESERVATION_MISSING / TRANSACTION_LEDGER_INVALID",
+    "old_recovery_task": "TASK119-EMERGENCY-SITE-RECOVERY-R2 consumed; approval expired"
   },
-  "additional_concurrent_activity": {
-    "source": "Actual visible authenticated console48233154",
-    "not_executed_by_this_foreground_turn": true,
-    "observed_command_at": "2026-09-20T07:29Z",
-    "operation": "Preview stage point4-53544a27-20260920v2",
-    "last_visible_outcome": "ValueError: INPUT_SHA256_MISMATCH:summary.json, shell prompt returned07:30",
-    "writer_or_stage_outcome_fully_reconciled": false,
-    "no_command_replayed": true
+  "preview_reconciliation": {
+    "operation": "point4-53544a27-20260920v2r2",
+    "outcome": "OLD_PRESENT",
+    "writes_performed": false,
+    "switch_intent": false,
+    "switch_receipt": false,
+    "reload_observed": false,
+    "failure": "UNSERVED_PUBLIC_ASSET_ROUTE:ua/a.js",
+    "repeated": false
   },
-  "checks": {
-    "webapp_enabled": true,
-    "official_reload_button_present": true,
-    "exact_webapp": "www.uaart.com.ua",
-    "source_editor_scope": "Partial visible lines only; full current WSGI hash NOT established",
-    "local_dns_probe": "All three hosts failed in local tool environment; NOT classified as site DNS failure"
-  },
-  "actions_completed": {
-    "existing_continuation_priority_updated": true,
-    "automation_id": "6aa838e44e688191acb636f6597ac587",
-    "new_instruction": "Defer new Preview/PR114 writes, reconcile existing outcome and prioritize eligible emergency recovery",
-    "automation_schedule_unchanged": true,
-    "automation_enabled": true,
-    "currently_running_task_cancelled": false,
-    "new_parallel_worker_started": false,
+  "safeguards": {
+    "direct_reload_used_to_bypass_guard": false,
     "halt_removed": false,
     "expired_launch_replayed": false,
-    "direct_reload_used_to_bypass_guard": false
+    "transaction_reset_to_open": false,
+    "rollback_retried": false,
+    "new_preview_or_pr114_installation": false
   },
-  "next_required": "Reconcile actual UA0022 installation/rollback and current external writer state through the canonical recovery procedure; obtain a genuinely eligible narrow reload-only execution. Unknown writes must not be repeated. Continue production availability diagnosis; cloud success is not owner-network recovery.",
-  "full_recovery_confirmed": false
+  "next_required": "Implement and independently review an incident-specific forward reconciliation route for the proven successful UA0022 installation; terminalize the transaction without falsely claiming rollback, then release HALT through that reviewed route. PR114 production work remains held until this control-plane reconciliation.",
+  "full_recovery_confirmed_for_public_availability": true,
+  "full_control_plane_recovery_confirmed": false
 }
