@@ -1,0 +1,226 @@
+{
+  "contract": "UA-ART-EMERGENCY-AVAILABILITY-READONLY-CONTROL-20260920",
+  "observed_at": "2026-09-20T07:23:42.847Z",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "main": {
+    "sha": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "commit_at": "2026-09-20T05:28:34Z"
+  },
+  "pr114": {
+    "head": "d1ddb28860d570ebf34d5e94d907d7ed2a87389a",
+    "base": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+    "draft": true,
+    "state": "open",
+    "updated_at": "2026-09-20T07:20:10Z"
+  },
+  "active_workflows": {
+    "in_progress": {
+      "total_count": 0,
+      "run_ids": []
+    },
+    "queued": {
+      "total_count": 0,
+      "run_ids": []
+    },
+    "waiting": {
+      "total_count": 0,
+      "run_ids": []
+    },
+    "pending": {
+      "total_count": 0,
+      "run_ids": []
+    },
+    "requested": {
+      "total_count": 0,
+      "run_ids": []
+    }
+  },
+  "latest_runs": [
+    {
+      "id": 35493278483,
+      "name": "UA ART Production Transaction Watchdog",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-09-20T06:04:25Z",
+      "updated_at": "2026-09-20T06:04:42Z"
+    },
+    {
+      "id": 35490449348,
+      "name": "UA ART Global Production Autostart",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-09-20T04:57:52Z",
+      "updated_at": "2026-09-20T05:28:41Z"
+    },
+    {
+      "id": 35490419530,
+      "name": "UA ART Read-Only Monitor",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-20T04:57:06Z",
+      "updated_at": "2026-09-20T04:57:17Z"
+    },
+    {
+      "id": 35489521032,
+      "name": "UA ART Global Production Autostart",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-09-20T04:35:19Z",
+      "updated_at": "2026-09-20T04:49:38Z"
+    },
+    {
+      "id": 35489064155,
+      "name": "UA ART Global Production Autostart",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-09-20T04:24:31Z",
+      "updated_at": "2026-09-20T04:26:36Z"
+    }
+  ],
+  "current_availability_cause": "UNKNOWN_FROM_GITHUB_CONTROL_DATA_REQUIRES_FRESH_HTTP_DNS_TLS_SERVER_OBSERVATION",
+  "runtime_quiescence": "NOT_PROVEN",
+  "current_halt": {
+    "halted_at": "2026-09-20T05:28:34Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 35490449348; rollback reserved true; rollback performed false",
+    "request_path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+    "request_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba",
+    "run_id": "35490449348",
+    "status": "EMERGENCY_HALT",
+    "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003"
+  },
+  "ua0022": {
+    "transaction_status": "ROLLING_BACK",
+    "transaction_id": "tx-35490449348-334c361c22ebee11",
+    "expires_at": "2026-09-20T06:45:00Z",
+    "canonical_receipts_present": [
+      "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json"
+    ],
+    "installation_or_rollback_completion_not_established_by_canonical_receipts": true,
+    "receipt_absence_basis": "Complete nontruncated immutable main tree with2166entries",
+    "repeat_install_or_rollback_performed": false
+  },
+  "canonical_emergency_channel": {
+    "exists": true,
+    "task": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
+    "controller_path": "cloud/task119_emergency_site_recovery_r2/controller.py",
+    "controller_sha256": "61458d865f288dfca8202dc11c513893de4c03d35ca8b9c816ac7f9e9a12470c",
+    "operation": "PYTHONANYWHERE_WEBAPP_RELOAD_ONLY",
+    "exact_webapp": "www.uaart.com.ua",
+    "steps": [
+      "GET https://www.pythonanywhere.com/api/v0/user/Carix/webapps/; require exactly one www.uaart.com.ua webapp.",
+      "POST https://www.pythonanywhere.com/api/v0/user/Carix/webapps/www.uaart.com.ua/reload/ with empty body, using protected existing API credential.",
+      "GET exact webapp state and require three consecutive HTTP200 HTML rounds,15seconds apart, across five exact www pages plus apex redirect to https://www.uaart.com.ua/video/index.html."
+    ],
+    "protected_scope": [
+      "No persistent server file writes",
+      "No CRM/DB/card/price/media changes",
+      "No DNS/TLS configuration changes",
+      "No UA0022 or PR114 installer execution"
+    ],
+    "known_success": {
+      "run_id": "34119998399",
+      "finished_at": "2026-09-07T12:09:09Z",
+      "status": "FINISHED",
+      "production": "PASS",
+      "live_verify": "PASS",
+      "consecutive_health_passes": 3,
+      "scope": "HISTORICAL_SEPTEMBER7_NOT_CURRENT_RECOVERY"
+    },
+    "old_launch_replay_allowed": false,
+    "old_launch_status": "CONSUMED",
+    "old_authorization_expires_at": "2026-09-07T13:24:00Z",
+    "current_canonical_execution_ready": false,
+    "blocking_facts": [
+      "Old task119 one-shot ledger is CONSUMED and its authorization expired2026-09-07T13:24:00Z.",
+      "Critical workflow explicitly calls automation/transaction_watchdog.py assert-clear; unresolved UA0022 ROLLING_BACK produces PENDING_PRODUCTION_TRANSACTION.",
+      "No reviewed emergency reload exemption from this gate found in inspected active workflow/controller."
+    ],
+    "safe_next": "Use the existing narrow reload-only implementation through genuinely current authorized emergency bindings and applicable reconciliation/gates; do not reset old nonce, forge receipt, delete HALT or invoke old task as a replay. A reload is a candidate remedy, not a diagnosis or proven restoration."
+  },
+  "evidence": {
+    "cloud/task119_emergency_site_recovery_r2/controller.py": {
+      "sha256": "61458d865f288dfca8202dc11c513893de4c03d35ca8b9c816ac7f9e9a12470c",
+      "git_blob_sha": "9d0924548eead925a3d74bd0f2e61dc86951d847",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "cloud/task119_emergency_site_recovery_r2/backup_controller.py": {
+      "sha256": "9076b17baa50a768755ab945711b8cc3c9d41b66b9e04fc92d95ec21c9fe850a",
+      "git_blob_sha": "b55bf4f8dda7f44f1e88dec2610b14085cc60981",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "cloud/task119_emergency_site_recovery_r2/rollback_controller.py": {
+      "sha256": "2514cc7f3bf50f2d8718a68b7a44551b9bb7932647f9e204883336cfa9a9eef5",
+      "git_blob_sha": "5c4006a67abe91cf9ae0317a330df025eeda7547",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "tasks/requests/TASK119-EMERGENCY-SITE-RECOVERY-R2.json": {
+      "sha256": "0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7",
+      "git_blob_sha": "a14221acfe4c2352edf089b49bed825e49d41e8e",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "tasks/manifests/TASK119-EMERGENCY-SITE-RECOVERY-R2.json": {
+      "sha256": "a4f56722d1fff845cfc6ab90db465ab9224e0e6a456a181a583dd200d2ffcedc",
+      "git_blob_sha": "9e6eaccc6a3de237f52f7746a7a8828a790c748f",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2.json": {
+      "sha256": "cc8a9f7e283cbd0aef55d8ad2c2be56850fd32d073ee80d68db25a372c5afb54",
+      "git_blob_sha": "dfce8f05e49b61bdf707db0a6cd796326732697d",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "state/autostart_consumed/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.json": {
+      "sha256": "a5dd43c07317325a3c0cb7ed18ab7ecd7b0fe25dcb5649270b4c5ead4a2e7ba0",
+      "git_blob_sha": "2ceb86c07aecb6e1f6e4e8d0d8f7286b01ba18b8",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "tasks/approvals/TASK119-EMERGENCY-SITE-RECOVERY-R2.production.json": {
+      "sha256": "39d1715856407ff84837df66f48b971647f605c72bed1d47e2039a9cb504c84e",
+      "git_blob_sha": "4e1b3df2a3be9eecdcaeb88af24d64f8235ef98d",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "state/AUTOPILOT_HALT.json": {
+      "sha256": "3e4b804fbc76ae0fc330db8a0add69fae3bb6d0d9a846d0a91cb41e4ff94e3a9",
+      "git_blob_sha": "7982f47958d4e656b0edbb64d8a40bcdd3836183",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": {
+      "sha256": "c9123be192ff44ad89605c52e4fbad5b75504dd5e54ba4f172541e3575ddf7b3",
+      "git_blob_sha": "cfccccb058abac735639bb41debdf8486808a742",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    ".github/workflows/uaart_critical.yml": {
+      "sha256": "6f13c864a5d7b400474f3c9a1fe15e0d2d4dfca5d25dd195a628a3225d33e65a",
+      "git_blob_sha": "4f324c40c54aff58cdf8587a6c7257b4b69979ab",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    "automation/transaction_watchdog.py": {
+      "sha256": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395",
+      "git_blob_sha": "7bb5b1a5d3a50cb4cab2df2473640637fe46b42e",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    }
+  },
+  "actions_performed": [
+    "GitHub GET reads",
+    "Local sanitized audit-file creation"
+  ],
+  "remote_writes": [],
+  "workflow_dispatches": 0,
+  "workflow_cancellations": 0,
+  "api_comments": 0,
+  "browser_actions": 0,
+  "production_reloaded": false,
+  "production_restored": false
+}

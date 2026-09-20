@@ -1,0 +1,63 @@
+{
+  "contract": "UAART-EMERGENCY-AVAILABILITY-20260920-1",
+  "recorded_at": "2026-09-20T07:27:16.836Z",
+  "status": "PUBLIC_PAGES_REACHABLE_FROM_CLOUD_OWNER_FAILURE_NOT_YET_LOCALIZED",
+  "owner_request": "Critical restoration of website opening in Chrome and Safari",
+  "scope": "Availability incident takes priority over PR114 feature acceptance",
+  "current_public_observations": {
+    "browser": "Cloud Chrome, not owner iPhone",
+    "root_www": "Redirected to https://www.uaart.com.ua/video/index.html and rendered; initial navigation timeout reconciled by actual DOM",
+    "root_apex": "https://uaart.com.ua/ redirected successfully to https://www.uaart.com.ua/video/index.html",
+    "home_count": 22,
+    "catalog": {
+      "url": "https://www.uaart.com.ua/video/katalog.html",
+      "visible_records": 22,
+      "stage_counts": {
+        "kyiv": 6,
+        "georgia": 7,
+        "ferry": 4,
+        "korea": 5
+      },
+      "failed_requested_images_observed": 0
+    },
+    "card": {
+      "url": "https://www.uaart.com.ua/video/UA-0022.html",
+      "heading": "Kia K5 2020",
+      "price_usd": 19000,
+      "photo_labels": 30
+    },
+    "diagnostics": {
+      "url": "https://www.uaart.com.ua/video/UA-0022-diag.html",
+      "heading": "Kia K5 2020",
+      "content": "Матеріали діагностики ще не додані."
+    }
+  },
+  "hosting": {
+    "app": "www.uaart.com.ua",
+    "enabled_ui": true,
+    "https": "Auto-renewing Let's Encrypt; force HTTPS enabled",
+    "static_mapping": "/video/ -> /home/Carix/video/",
+    "python": "3.10",
+    "read_error_log": "Direct link navigation was blocked by client (net::ERR_BLOCKED_BY_CLIENT); not treated as a server outage or circumvented",
+    "reload_clicked": false
+  },
+  "controls": {
+    "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "pr114_head_before_incident_checkpoint": "d1ddb28860d570ebf34d5e94d907d7ed2a87389a",
+    "active_workflows": 0,
+    "ua0022": "Unresolved ROLLING_BACK / EMERGENCY_HALT; no canonical install/rollback receipt",
+    "recovery_route": "TASK119 R2 reload-only is historical and consumed/expired. No old launch replay or safeguard bypass."
+  },
+  "diagnosis": "General outage was not reproduced on the final cloud-browser observations. The owner's iPhone/network-specific failure is still unverified. Successful checks do not disprove the reported intermittent or local failure.",
+  "owner_input_needed": "Exact failing URL and screenshot with browser error, plus whether Wi-Fi or mobile data. Needed to distinguish DNS/TLS/redirect/site response/connection failure; no credentials requested.",
+  "actions_taken": "Read-only availability and current-control checks. No restart, installation, rollback, DNS/TLS/config change, CRM, DB, media or HTML write.",
+  "restoration_performed": false,
+  "full_recovery_confirmed": false,
+  "pr114_progress_unchanged": {
+    "accepted": 8,
+    "total": 20
+  },
+  "browser_connection_now_available": true,
+  "point4_current_preview_gate": "Still pending; these production availability observations are not the42 candidate Preview cases.",
+  "next_action": "If owner supplies failure evidence, diagnose that exact route/network and use an eligible narrow recovery. Reconcile existing writes first. Do not repeat UA0022 installation or remove HALT. Preserve reviewed PR114 candidate and all historical credit."
+}
