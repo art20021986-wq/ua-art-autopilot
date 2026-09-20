@@ -1,0 +1,79 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/runtime/cars_ui.py",
+    "production/runtime/stranica.py",
+    "production/runtime/publish_transaction_guard.py",
+    "production/runtime/publication_fence.py",
+    "production/card-publication/UA-0022",
+    "production/card-media/UA-0022"
+  ],
+  "complexity": 4,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": true,
+    "gate_a_path": "tasks/gates/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+    "gate_a_sha256": "a9fc636109ef803c73127e16f5d74d374158374374b6b7a782662067bfae0768",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+    "manifest_sha256": "9ecac3e6c12813eefb125e3475dba0edfad59fdc8dd8fdff047f4cbcb406e315",
+    "owner_approval_path": "tasks/approvals/UA-ART-UA0022-PUBLISH-REPAIR-003.production.json",
+    "owner_approval_sha256": "a02c28f91f5b6c248b11be7e5f7722c53e47f2bbc48737ed7df14e466019cc30"
+  },
+  "description": "Не смог разместить объявление 22. Выяснить по какой причине и исправь, размести объявление и в дальнейшем чтобы таких ошибок не было. Exact approved scope: source-pinned reentrant shared publication fence around existing CRM rebuild and final renderer; preserve all legacy validators and foreign-card protection; publish only existing id32 UA-0022 through existing publisher. Briefly pause exact CRM supervisor and hold existing start_safe singleton inode, then resume same task; backup must pass exact readback and SQLite integrity. No PR114 price change, no price writes, no whole-database rollback. Every target source/row/page preimage is revalidated after backup. Reconcile interruption from durable worker receipts; no workflow/core changes.",
+  "execution": {
+    "backup_controller_path": "cloud/ua0022_publication_fix/backup_controller.py",
+    "backup_controller_sha256": "54fa40cc3abe38002fe1c85fddccba4a0c6cf3482c5c16c93e7d060348fa1b7d",
+    "backup_receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json",
+    "controller_path": "cloud/ua0022_publication_fix/controller.py",
+    "controller_sha256": "4b8dc0f7c7462297a8021694d4acc90fbc599e05789d873395b328e1710c1096",
+    "dependency_paths": [
+      "cloud/ua0022_publication_fix/build_candidate.py",
+      "cloud/ua0022_publication_fix/publication_fence.py",
+      "cloud/ua0022_publication_fix/remote_installer.py",
+      "cloud/ua0022_publication_fix/remote_lifecycle.py",
+      "cloud/ua0022_publication_fix/safe_function_fixtures.py"
+    ],
+    "evidence_paths": [
+      "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+      "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json",
+      "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-ROLLBACK.json"
+    ],
+    "file_sha256": {
+      "cloud/ua0022_publication_fix/build_candidate.py": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
+      "cloud/ua0022_publication_fix/publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+      "cloud/ua0022_publication_fix/remote_installer.py": "510bb2bdb0d2be4cd199f118d0a3fd04155214f34f84f9dbeca6a0518fea5162",
+      "cloud/ua0022_publication_fix/remote_lifecycle.py": "21f17e5cf5d5c41c09861e7da7cbd5f16b449cd57899d72c6594805deb922a18",
+      "cloud/ua0022_publication_fix/safe_function_fixtures.py": "b37ed59bc7a819210a97b98582e2605a451d1813b3ff10be4fe90ec554300f49",
+      "cloud/ua0022_publication_fix/test_lifecycle.py": "1c6effd2de93aea1f1259ca9a76b3821c179554c88d33bd1258fe18d6182e8e9",
+      "cloud/ua0022_publication_fix/test_narrow_fix.py": "bffc259adeb148a5b148f41645c8d72c860541eeafda9bcfcfa376ee50488ce6",
+      "cloud/ua0022_publication_fix/test_remote_installer.py": "7f97cbe86bc2cf674e75c8658830bf50ff8564d62919fa6dfa9b82fac98f436d"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+    "rollback_controller_path": "cloud/ua0022_publication_fix/rollback_controller.py",
+    "rollback_controller_sha256": "578aa46e3053ab099c0660ab832430afecd5ea48657d32a2b049f9e5b861ca61",
+    "rollback_receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-ROLLBACK.json",
+    "test_paths": [
+      "cloud/ua0022_publication_fix/test_lifecycle.py",
+      "cloud/ua0022_publication_fix/test_remote_installer.py",
+      "cloud/ua0022_publication_fix/test_narrow_fix.py"
+    ],
+    "timeout_seconds": 1800
+  },
+  "health_checks": [
+    "https://www.uaart.com.ua/",
+    "https://www.uaart.com.ua/video/katalog.html"
+  ],
+  "production_required": true,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_probe": {
+    "evidence_path": "state/storage/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+    "evidence_sha256": "9193fdc265067f0b9d6e867d24e02bfd2c1942aeaa3a2f89038eafd0f2423b3d"
+  },
+  "storage_required_bytes": 2147483648,
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+  "title": "Fix publication/rebuild race and publish only UA-0022"
+}
+
