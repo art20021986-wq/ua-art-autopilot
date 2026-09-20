@@ -48,7 +48,8 @@
     "Owner publication-status requirement recorded: data guarantees apply to all CRM records, public visibility only to published records, current inventory is dynamic. Independent static review identified OPEN PS-01 (draft edits conflict with old public price receipt) and PS-02 (unpublish strands pending V5 operation). Saved design and ten transition acceptance scenarios; no runtime changes, tests rerun, live operations or criterion increment.",
     "September20 point4: fresh core double-read completed18s;102 exported artifact checksums verified and22 published records observed. Implemented all-record price/visibility protections with reviewed native lifecycle, publisher authority, counters and startup handling. Final68-file candidatev2 independently bound to current observation;67 files retained exactly fromv1. Changed-code checks and independent review PASS; generated public release20/20 verified. Old full suites not repeated. Exact public-only Preview ZIP and42-case affected matrix saved; current Preview remains OPEN after bounded browser transport failure,0/42 new browser cases. No production/CRM/Preview switch, no Stage3/4 receipt and no acceptance increase.",
     "September20 critical availability request: authenticated browser connection restored; actual apex andwww home,22-card catalog,UA0022 card anddiagnostics rendered in cloudChrome. Initial navigationtimeout reconciled toloadedpage. No production write/reload; owner iPhone/network-specific failure not yet reproduced and fullrecovery NOTclaimed. Current Git controls unchanged; oldTASK119 approval expired/launch consumed. See emergency_availability_20260920.",
-    "Owner repeated active website outage. Emergency recovery execution is blocked by actual unresolved UA0022 transaction; no restart performed. Observed separate Preview stage in sharedconsole07:29 stopping INPUT_SHA256_MISMATCH before a verified final outcome. Existing continuation instructions now prioritize emergency recovery and defer new Preview writes. Existing scheduler remains enabled; no claim that its currently running turn was cancelled."
+    "Owner repeated active website outage. Emergency recovery execution is blocked by actual unresolved UA0022 transaction; no restart performed. Observed separate Preview stage in sharedconsole07:29 stopping INPUT_SHA256_MISMATCH before a verified final outcome. Existing continuation instructions now prioritize emergency recovery and defer new Preview writes. Existing scheduler remains enabled; no claim that its currently running turn was cancelled.",
+    "September20 emergency availability reconciliation completed read-only: UA0022 installation receipt and publisher result PASS; four installed runtime hashes match manifest. Apex and www rendered, home/catalog/UA0022 card/diagnostic returned HTTP200, public card/diagnostic hashes match server files, and fresh continuous monitor finished healthy. No reload, Preview stage, PR114 install, HALT removal or rollback replay. Public availability restored; UA0022 control-plane finalization remains ROLLING_BACK/EMERGENCY_HALT."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -75,13 +76,13 @@
     "Set up protected server reader credential only when required, using hidden-input receiver; never ask for a secret in chat. Finish live UA/GE synchronization, recovery, Stage4 receipt and final20/20 gate."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/point4_status_completion_20260920/POINT4_RESULT.json",
+  "latest_checkpoint": "cloud/emergency_availability_20260920/RECOVERY_READBACK_20260920T0818Z.json",
   "next_action": {
-    "kind": "CRITICAL_RECOVERY_RECONCILE_EXISTING_OPERATION_FIRST",
-    "detail": "Reconcile actual UA0022 installation/rollback and current external writer state through the canonical recovery procedure; obtain a genuinely eligible narrow reload-only execution. Unknown writes must not be repeated. Continue production availability diagnosis; cloud success is not owner-network recovery. New Preview stage/switch/reload and PR114 installation are deferred during this active critical incident. See critical recovery status and updated existing automation prompt."
+    "kind": "UA0022_FORWARD_RECONCILIATION_BEFORE_PR114",
+    "detail": "Implement and independently review an incident-specific forward reconciliation route for the proven successful UA0022 installation. Terminalize without falsely claiming rollback or resetting OPEN; release HALT only through that reviewed route. Then resume the saved PR114 from current candidate/Preview point. No direct reload or replay."
   },
   "observed_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
-  "observed_pr_head_before_this_update": "6bb045fdd9614affee47d1b5a104cc3df27982ed",
+  "observed_pr_head_before_this_update": "59e44740a0b037cfe1c5edbeb57897dd57c0643d",
   "owner_current_request": "У меня не работает сайт до сих пор. Запусти немедленное восстановление.",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
@@ -118,7 +119,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-20T07:34:08.628Z",
+  "recorded_at": "2026-09-20T08:20:00Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -231,12 +232,13 @@
     }
   },
   "connection_recovery_last_attempt": {
-    "operation_id": "uaart-emergency-availability-20260920T0720Z",
-    "state": "BROWSER_TRANSPORT_RESTORED_PUBLIC_SITE_RENDERED",
+    "operation_id": "uaart-emergency-readback-20260920T0818Z",
+    "state": "PUBLIC_AVAILABILITY_RESTORED_READBACK",
     "evidence": {
-      "path": "cloud/emergency_availability_20260920/LIVE_BROWSER_OBSERVATION.json"
+      "path": "cloud/emergency_availability_20260920/RECOVERY_READBACK_20260920T0818Z.json"
     },
     "production_changed": false,
+    "direct_reload": false,
     "owner_network_verified": false
   },
   "foreground_in_progress": false,
@@ -290,17 +292,20 @@
     "new_schedule_created": false
   },
   "current_emergency_availability": {
-    "status": "RECOVERY_REQUEST_ACTIVE_EXECUTION_BLOCKED",
+    "status": "AVAILABILITY_RESTORED_CONTROL_PLANE_RECONCILIATION_PENDING",
     "evidence": "cloud/emergency_availability_20260920/CRITICAL_RECOVERY_STATUS.json",
-    "observed_at": "2026-09-20T07:34:08.628Z",
-    "owner_failure_unresolved": true,
+    "observed_at": "2026-09-20T08:17:58.807Z",
+    "owner_failure_unresolved": false,
+    "owner_specific_network_verified": false,
     "production_restart_executed": false,
-    "concurrent_browser_activity_unreconciled": true
+    "concurrent_browser_activity_unreconciled": false
   },
   "emergency_priority": {
-    "active": true,
+    "active": false,
+    "availability_restored": true,
     "hold_new_preview_writes": true,
     "hold_new_pr114_installation": true,
+    "hold_reason": "UA0022 transaction remains ROLLING_BACK under EMERGENCY_HALT; incident-specific forward reconciliation required.",
     "owner_authorized_recovery": true,
     "canonical_safety_gates_still_required": true
   }
