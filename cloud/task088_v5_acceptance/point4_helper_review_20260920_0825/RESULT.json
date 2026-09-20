@@ -1,0 +1,57 @@
+{
+  "contract": "PR114-POINT4-RESUME-RESULT-20260920-1",
+  "observed_at": "2026-09-20T08:28:48.629379+00:00",
+  "status": "OPEN_LIVE_PREVIEW_REQUIRED_HELPER_FIX_PREPARED",
+  "point4_accepted": false,
+  "candidate_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+  "candidate_files_independently_sha256_verified": 68,
+  "point2_missing_source_hash_matches": 4,
+  "point3_historical_scoped_tests_passed": 41,
+  "unchanged_test_suites_rerun": false,
+  "preview_prior_server_operation": {
+    "id": "point4-53544a27-20260920v2r2",
+    "failure": "UNSERVED_PUBLIC_ASSET_ROUTE:ua/a.js",
+    "subsequent_inspect_at": "2026-09-20T07:35:14.806712+00:00",
+    "actual_outcome": "OLD_PRESENT",
+    "switch_intent_exists": false,
+    "switch_receipt_exists": false,
+    "source": "Authenticated visible console48233154 read during this session"
+  },
+  "preview_browser": {
+    "url": "https://carix.pythonanywhere.com/__uaart_preview__/viewport.html",
+    "visible_state": "502 Bad Gateway / server closed connection",
+    "one_recovery_attempt": "Page reload timed out and tool kernel reset",
+    "reload_outcome": "UNKNOWN_PAGE_NAVIGATION_ONLY",
+    "new_candidate_cases_passed": 0,
+    "new_candidate_cases_required": 42,
+    "server_reload_executed": false
+  },
+  "helper_fix": {
+    "sha256": "88a2f80e29afb34964e035c08a9df44342ea92f0c06d1f1777ca9f9263eaac3d",
+    "targeted_tests_passed": 15,
+    "targeted_tests_failed": 0,
+    "independent_review_file": "independent_review.json",
+    "server_deployed": false,
+    "fresh_analytics_observation_available": false,
+    "independent_review_sha256": "e23691c5b44a0d20c52a9ca761e3e7ee6e8f723333a99898904028d2ed1e31bc",
+    "independent_review_status": "SCOPED_CODE_PASS_CURRENT_LIVE_BINDING_PENDING"
+  },
+  "control_observations": {
+    "pr_branch_head": "fa86769aea7339935ab033ef5a8f6965abf11e90",
+    "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "another_executor_changed_branch_during_session": true,
+    "last_background_run_observed": "2026-09-20T08:20:50.949073+00:00",
+    "foreground_exclusive_ownership_claimed": false,
+    "ua0022_status": "ROLLING_BACK / EMERGENCY_HALT; saved forward reconciliation pending",
+    "running_github_actions_observed": 0,
+    "queued_github_actions_observed": 0
+  },
+  "production_mutations_this_session": false,
+  "main_mutations_this_session": false,
+  "canonical_pr114_branch_mutations_this_session": false,
+  "persistence_scope": "Separate review material branch; canonical candidate and installation path are not changed. No parallel installer created.",
+  "accepted_criteria": 8,
+  "total_criteria": 20,
+  "progress_percent": 40,
+  "next_action": "After exclusive writer and UA0022 outcome reconciliation, verify current Preview inputs and analytics response, stage reviewed helper once with new operation id, inspect result, then perform dedicated Preview switch/reload and42 affected browser cases. Retain unchanged historical evidence."
+}

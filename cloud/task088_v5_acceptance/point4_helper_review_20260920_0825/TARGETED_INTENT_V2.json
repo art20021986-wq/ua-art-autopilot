@@ -1,0 +1,23 @@
+{
+  "created_at_utc": "2026-09-20T08:25:41.725335+00:00",
+  "status": "RECORDED_BEFORE_TARGETED_TEST",
+  "failure": "UNSERVED_PUBLIC_ASSET_ROUTE:ua/a.js",
+  "scope": "Retain exact previously served manifest-pinned public JS only; no runtime/public root changes",
+  "source_helper_sha256": "dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb",
+  "candidate_helper_sha256": "88a2f80e29afb34964e035c08a9df44342ea92f0c06d1f1777ca9f9263eaac3d",
+  "package_helper_unchanged": true,
+  "planned_command": "python -I -B check_analytics_stage.py",
+  "test_sha256": "ca0e9511cf3f6e94ccf5db8c7e2e1d78bf33a07d74e0a03ef617dff1d8f1f59d",
+  "planned_checks": [
+    "exact analytics asset and original HTML bytes",
+    "runtime GET only and private endpoints denied",
+    "changed/missing/invalid/symlink prior capture rejected",
+    "private and traversal dependencies rejected",
+    "self/package immutable guards",
+    "repeated operation blocked",
+    "independently supplied pinned current GET analytics response must match captured SHA and be at most 15 minutes old; missing/drift/stale evidence fails closed"
+  ],
+  "no_server_or_git_writes": true,
+  "prior_full_suites_will_not_be_rerun": true,
+  "supersedes": "TARGETED_INTENT.json; no tests executed under earlier patch"
+}

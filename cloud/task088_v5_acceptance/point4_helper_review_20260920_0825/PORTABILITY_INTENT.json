@@ -1,0 +1,8 @@
+{
+  "recorded_at_utc": "2026-09-20T08:27:14.621399+00:00",
+  "status": "BEFORE_PATH_ONLY_EDIT",
+  "old_test_sha256": "ca0e9511cf3f6e94ccf5db8c7e2e1d78bf33a07d74e0a03ef617dff1d8f1f59d",
+  "scope": "Replace hardcoded dependency location with PR114_TEST_RUNTIME_ROOT env override and repository-relative fallback HERE.parents[1]/task088_v5_preview",
+  "validation": "Compile final test, import with explicit runtime env, verify all 5 unchanged runtime file SHA pins; do not rerun behavioral tests because behavior unchanged",
+  "behavioral_result_retained": "TARGETED_RESULT.json refers to pre-portability test SHA and remains unchanged"
+}

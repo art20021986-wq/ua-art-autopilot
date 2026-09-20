@@ -1,0 +1,16 @@
+{
+  "contract": "PR114-POINT4-RESUME-INTENT-20260920-1",
+  "recorded_at": "2026-09-20T08:25:32.027990+00:00",
+  "request": "Установи четвертый пункт",
+  "scope": "Point4 acceptance and independent review; isolated preparation only until current Preview verified",
+  "input_pr_head": "fa86769aea7339935ab033ef5a8f6965abf11e90",
+  "input_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "candidate_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+  "new_finding": "Server stage v2r2 failed UNSERVED_PUBLIC_ASSET_ROUTE:ua/a.js; existing Preview WSGI/config remained original, no switch intent/receipt observed",
+  "action": "Prepare minimum public Preview helper correction, targeted checks and independent review; preserve canonical candidate and accepted historical evidence",
+  "persistence": "Isolated review branch only; no current PR114 branch ref update while another executor is active. No second installation, launch or workflow dispatch.",
+  "production_write": false,
+  "preview_write": false,
+  "acceptance_increment": false,
+  "historical_suites_rerun": false
+}

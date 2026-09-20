@@ -1,0 +1,17 @@
+{
+  "recorded_at_utc": "2026-09-20T08:27:16.261379+00:00",
+  "status": "PASS_PORTABILITY_COMPILE_IMPORT_AND_FIVE_RUNTIME_PINS",
+  "old_behavioral_test_sha256": "ca0e9511cf3f6e94ccf5db8c7e2e1d78bf33a07d74e0a03ef617dff1d8f1f59d",
+  "final_test_sha256": "354cc2d74f40c8b9f522056e3ea6e8ad5afa893c9a3929015b26368a0d6e2ff6",
+  "helper_unchanged_sha256": "88a2f80e29afb34964e035c08a9df44342ea92f0c06d1f1777ca9f9263eaac3d",
+  "runtime_pins": {
+    "common.py": "cb30a2b61d28438a9844e79b1bc8550f92885dab8b6dc0d76c2789827c9893fa",
+    "routing_proof.py": "fd483b95d5b0a2bc92146d1c137decb9e368706248b7469c9c1243a3fd622c5d",
+    "viewport_harness.py": "3b6830eff2d35ed94688707018e606b0d404a00bcb4dce80fa0dadab89b0bae1",
+    "wsgi_entry.py": "7b7b9056b55c41a5031e430cf470b10ae66fd812f792a3cd65cb931c1ced02e7",
+    "wsgi_preview.py": "191989bd07d0eea55782671778b8bb2dd1b531eda88a561bbc4b229afcd7d289"
+  },
+  "behavioral_tests_rerun": false,
+  "behavioral_result_retained": "15/15 PASS in TARGETED_RESULT.json before path-only edit",
+  "reproduction": "PR114_TEST_RUNTIME_ROOT=<checkout>/cloud/task088_v5_preview python -I -B check_analytics_stage.py; env optional in saved repo location"
+}

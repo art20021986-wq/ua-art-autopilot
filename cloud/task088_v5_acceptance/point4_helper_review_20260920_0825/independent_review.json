@@ -1,0 +1,98 @@
+{
+  "contract": "PR114-POINT4-ANALYTICS-STAGE-INDEPENDENT-REVIEW-1",
+  "reviewed_at_utc": "2026-09-20T08:28:48.569219+00:00",
+  "reviewer": "/root/evidence_audit",
+  "status": "SCOPED_CODE_PASS_CURRENT_LIVE_BINDING_PENDING",
+  "scope": "Exact isolated staging-helper delta for one previously served public analytics script; not a deployment or current Preview acceptance.",
+  "files_sha256": {
+    "stage_exact_preview.py": "88a2f80e29afb34964e035c08a9df44342ea92f0c06d1f1777ca9f9263eaac3d",
+    "check_analytics_stage.py": "354cc2d74f40c8b9f522056e3ea6e8ad5afa893c9a3929015b26368a0d6e2ff6",
+    "TARGETED_RESULT.json": "8199f1c6135a079baf7f54657311c570e1032375bea49271c11c4cee8c607029",
+    "TARGETED_INTENT_V2.json": "8d5e3c40e7c7b2db313fc055a69a4b4eee4e65569129404764556b68ec77e5b1",
+    "targeted_tests.log": "f38e052800671aa7ca4b598fe96a8ff222643e5def8ad55162a8c18326e300e2",
+    "package_exact_preview.py": "152a54243aa787012b112cc4a728d3077e03475749d94118515c5f3e3675ceef",
+    "PORTABILITY_RESULT.json": "713ab9daba70089bbff3237ea9f066d6f24fe8ec4db9048d5d941f7112b8b94b"
+  },
+  "baseline_helper_sha256": "dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb",
+  "changes": {
+    "added_functions": [
+      "retained_analytics_asset"
+    ],
+    "changed_functions": [
+      "main",
+      "stage"
+    ],
+    "unchanged_functions": [
+      "References",
+      "cssrefs",
+      "encoded",
+      "event",
+      "inspect",
+      "load_runtime",
+      "makeparent",
+      "now",
+      "oldstate",
+      "publicroute",
+      "read",
+      "relative",
+      "require",
+      "sha",
+      "switch",
+      "syncdir",
+      "verify_bundle",
+      "write"
+    ],
+    "package_helper_unchanged": true,
+    "runtime_modules_changed": false
+  },
+  "reviewed_safeguards": [
+    "Only normalized exact /ua/a.js route can enter the new branch; other non-video assets retain the existing fail-closed guard.",
+    "Old WSGI and private config are caller-pinned; config binds prior manifest hash and private bundle root. Exact five-field bundled item must have canonical public/ua/a.js mapping, JavaScript MIME, SHA and length.",
+    "Existing bounded no-symlink stable-file read verifies the prior asset before a byte-identical copy into unique private candidate work.",
+    "Current response observation is separately SHA-pinned, bound to the exact core observer, production URL/final URL, HTTP200, allowed JavaScript MIME, exact retained SHA/length and timezone-aware time no older than900seconds and not in the future.",
+    "New provenance distinguishes historical captured bytes matched to a current response and records both prior manifest and response observation SHA.",
+    "No new public root, network operation, analytics module import, service reload, production write, or endpoint implementation.",
+    "Package input pin, runtime pins, fixed public member closure, prior access policy, deny routes, unique journal, inspect-before-repeat and separate exact-receipt switch remain unchanged.",
+    "Runtime remains GET/HEAD-only; /ua/a/e, unrelated /ua resources, private files and unserved /site resources are not exposed."
+  ],
+  "meaningful_targeted_validation": {
+    "author_result_status": "PASS_TARGETED_ANALYTICS_STAGE",
+    "author_test_methods": 15,
+    "reviewer_tests_executed": 0,
+    "unchanged_suites_rerun": false,
+    "basis": "Reviewed exact15test methods and log; hash-confirmed helper against result. The fixture calls actual stage and unchanged Preview runtime, rather than replacing the added path with a mock.",
+    "covered": "Exact JS and HTML preservation, stage leaves both WSGI files unchanged, runtime public GET and denial of event/private/other-UA paths, POST denial, SHA/length/missing/path/symlink checks, current-response mismatch/missing/pin/staleness checks, traversal rejection, self/package pins and duplicate operation rejection.",
+    "fixture_limit": "All host paths, observer and HTTP response observation are explicitly synthetic temporary fixtures; no live HTTP evidence was created.",
+    "test_portability_followup": {
+      "final_test_sha256": "354cc2d74f40c8b9f522056e3ea6e8ad5afa893c9a3929015b26368a0d6e2ff6",
+      "behaviorally_executed_test_sha256": "ca0e9511cf3f6e94ccf5db8c7e2e1d78bf33a07d74e0a03ef617dff1d8f1f59d",
+      "exact_inverse_recovers_behavioral_test_hash": true,
+      "scope": "Only import os and runtime-root environment/repo-relative path selection changed. All15test bodies byte-identical; no repeat suite needed. Author compile/import/fivepins evidence retained."
+    }
+  },
+  "actual_route_provenance": {
+    "historical_capture_receipt": "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_acceptance/SERVER_PRIVATE_BUILD_0836.json",
+    "historical_observed_at_utc": "2026-09-14T08:36:38.456089+00:00",
+    "historical_response_sha256": "52b3188b25a5e01cc5fc494fb8aebd76f6b2fc0ccbb21dccfb40bdc88cea070b",
+    "historical_response_bytes": 4282,
+    "wrapper_sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+    "wrapper_ast_finding": "Exact /ua/a.js branch returns ya.SKRIPT.encode; ya imports analitika_yadro. The wrapper hash alone cannot establish current script content.",
+    "source_execution_performed": false,
+    "current_actual_response_evidence_present": false,
+    "current_source_binding_refresh_required_before_stage": true
+  },
+  "blocking_code_findings": [],
+  "remaining_execution_prerequisites": [
+    "Obtain authentic current GET /ua/a.js exact response SHA/length/MIME/URL/time evidence, without calling the event endpoint, and bind it to the reconciled current core observer. Do not relabel the fixture or historical capture as current.",
+    "If current script hash differs from retained old manifest, stop and review the changed asset; this helper deliberately refuses replacement by arbitrary new bytes.",
+    "Reconcile prior stage outcome and active emergency operation; fresh dedicated WSGI/config, source/current core and hosting mapping prerequisites remain mandatory.",
+    "Any later switch must use its real completed stage receipt and separate single-writer procedure; no current Preview gate or browser credit follows from these unit tests."
+  ],
+  "server_stage_executed": false,
+  "switch_executed": false,
+  "reload_executed": false,
+  "production_mutations": false,
+  "preview_gate": "NOT_PASSED",
+  "point4_complete": false,
+  "report_storage_scope": "Internal isolated helper directory only; no private source bytes included."
+}

@@ -1,0 +1,82 @@
+--- previous/stage_exact_preview.py
++++ candidate/stage_exact_preview.py
+@@ -168,6 +168,36 @@
+     name = unquote(url.path).lstrip('/')
+     relative(name)
+     return name
++
++
++def retained_analytics_asset(config, manifest, args, observer_sha256):
++    # The existing reviewed Preview serves this one captured public script.
++    # Retain its pinned bytes; never import Production analytics or widen roots.
++    item = manifest.get('files',{}).get('/ua/a.js')
++    require(type(item) is dict and set(item) == {'storage','path','sha256','bytes','content_type'} and
++            item.get('storage') == 'bundle' and item.get('path') == 'public/ua/a.js' and
++            item.get('content_type') == 'application/javascript; charset=utf-8' and
++            type(item.get('sha256')) is str and re.fullmatch(r'[0-9a-f]{64}',item['sha256']) and
++            type(item.get('bytes')) is int and 0 <= item['bytes'] <= LIMIT,
++            'EXACT_EXISTING_ANALYTICS_CAPTURE_REQUIRED')
++    raw = read(Path(config['bundle_root'])/item['path'],item['sha256'])
++    require(len(raw) == item['bytes'], 'EXISTING_ANALYTICS_CAPTURE_LENGTH_MISMATCH')
++    # The routing wrapper delegates to analitika_yadro.SKRIPT: its own source
++    # pin cannot prove the historical capture still equals the current response.
++    observed_raw = read(args.analytics_observation,args.analytics_observation_sha256)
++    observed = json.loads(observed_raw)
++    require(observed.get('contract') == 'PR114-CURRENT-PUBLIC-ANALYTICS-OBSERVATION-1' and
++            observed.get('core_observer_sha256') == observer_sha256 and
++            observed.get('url') == observed.get('final_url') == PRODUCTION_ORIGIN+'/ua/a.js' and
++            observed.get('http_status') == 200 and
++            observed.get('content_type') in ('application/javascript','application/javascript; charset=utf-8') and
++            observed.get('sha256') == item['sha256'] and observed.get('bytes') == len(raw),
++            'CURRENT_PUBLIC_ANALYTICS_RESPONSE_BINDING_REQUIRED')
++    observed_at = datetime.fromisoformat(observed['observed_at_utc'])
++    require(observed_at.tzinfo is not None and
++            0 <= (datetime.now(timezone.utc)-observed_at).total_seconds() <= 900,
++            'FRESH_PUBLIC_ANALYTICS_OBSERVATION_REQUIRED')
++    return dict(item), raw, sha(observed_raw)
+ 
+ 
+ def oldstate(config_path, wsgi_pin, config_pin):
+@@ -292,6 +322,7 @@
+     metadata = importlib.util.module_from_spec(spec)
+     spec.loader.exec_module(metadata)
+     files, html, linked, dependencies, external = {}, {}, [], {}, set()
++    retained_assets = {}
+     def add_html(name, raw, protection=None):
+         target = work/'candidate'/'public'/name
+         makeparent(target.parent,work)
+@@ -335,6 +366,16 @@
+             continue
+         if target in seen: continue
+         seen.add(target)
++        if target == 'ua/a.js':
++            item, raw, observation_pin = retained_analytics_asset(oldconfig,oldmanifest,args,sha(obs_raw))
++            output = work/'candidate'/item['path']
++            makeparent(output.parent,work)
++            write(output,raw)
++            files['/'+target] = item
++            retained_assets[target] = {'sha256':sha(raw),'source_manifest_sha256':oldconfig['manifest_sha256'],
++                'capture_type':'HISTORICAL_CAPTURE_MATCHED_TO_CURRENT_RESPONSE',
++                'current_response_observation_sha256':observation_pin}
++            continue
+         require(target.startswith('video/'), 'UNSERVED_PUBLIC_ASSET_ROUTE:'+target)
+         ext = Path(target).suffix.lower()
+         require(ext in metadata.ASSET_TYPES, 'UNSUPPORTED_ASSET_TYPE:'+target)
+@@ -357,6 +398,7 @@
+         'canonical_candidate_manifest_sha256':package['canonical_candidate_manifest_sha256'],
+         'published_count':len(codes),'exact_candidate_html_sha256':package['candidate_html_sha256'],
+         'linked_public_html':linked,'external_references':sorted(external),'missing_assets':[], 'missing_linked_html':[],
++        'retained_public_asset_captures':retained_assets,
+         'preview_gate':'NOT_PASSED','browser_run':False,'production_written':False,'activated':False,
+         'routing_scope':'Unchanged retained source proof; fresh hosting map observations remain separately required.'}
+     manifest = {'contract':CONTRACT,'source_origin':PRODUCTION_ORIGIN,'asset_roots':{'video':str(PUBLIC)},
+@@ -455,7 +497,8 @@
+     parser.add_argument('--self-sha256',required=True)
+     sub = parser.add_subparsers(dest='action',required=True)
+     stageparser = sub.add_parser('stage')
+-    for name in ('operation-id','package','package-sha256','observer','observer-sha256','existing-config','expected-wsgi-sha256','expected-config-sha256'):
++    for name in ('operation-id','package','package-sha256','observer','observer-sha256','existing-config','expected-wsgi-sha256','expected-config-sha256',
++                 'analytics-observation','analytics-observation-sha256'):
+         stageparser.add_argument('--'+name,required=True)
+     stageparser.add_argument('--max-seconds',type=int,default=180)
+     for action in ('switch','inspect'):

@@ -1,0 +1,49 @@
+{
+  "recorded_at_utc": "2026-09-20T08:26:38.688992+00:00",
+  "status": "OFFLINE_TARGETED_PASS_PENDING_INDEPENDENT_REVIEW_AND_REAL_INPUTS",
+  "cause": "Existing public /ua/a.js was wrongly rejected by video-only asset prefix restriction.",
+  "fix": "Retain only exact /ua/a.js bundle capture already in pinned old manifest, requiring independently acquired fresh current public GET response hash match. Preview runtime and served roots unchanged.",
+  "current_response_input_contract": {
+    "contract": "PR114-CURRENT-PUBLIC-ANALYTICS-OBSERVATION-1",
+    "core_observer_sha256": "exact selected current observer SHA-256",
+    "url": "https://www.uaart.com.ua/ua/a.js",
+    "final_url": "https://www.uaart.com.ua/ua/a.js",
+    "http_status": 200,
+    "content_type": "application/javascript OR application/javascript; charset=utf-8",
+    "sha256": "actual fetched script SHA-256 matching pinned old capture",
+    "bytes": "actual integer body length",
+    "observed_at_utc": "timezone-aware actual observation time, age 0..900 seconds"
+  },
+  "new_stage_cli_inputs": [
+    "--analytics-observation PATH",
+    "--analytics-observation-sha256 SHA256"
+  ],
+  "pending": [
+    "Independent final review",
+    "Fresh current public analytics GET response observation bound to selected observer; none acquired in this offline task",
+    "Live server old bundle exact item/hash presence readback",
+    "Upstream current observer/package/config/WSGI pins and writer coordination",
+    "Separate fresh server stage operation, later switch and actual Preview acceptance"
+  ],
+  "preserved_guards": [
+    "immutable helper SHA and package SHA",
+    "exact manifest access policy and runtime pins",
+    "regular bounded non-symlink stable reads",
+    "unknown/repeated operation refusal",
+    "private/event endpoints denied",
+    "production WSGI unchanged"
+  ],
+  "no_server_or_git_writes": true,
+  "preview_24_of_24_claimed": false,
+  "full_unchanged_suites_rerun": false,
+  "files_sha256": {
+    "stage_exact_preview.patch": "fadfd00d4aa8784796973465669f39e1d75d3441110a814650361c1a7153d334",
+    "stage_exact_preview.py": "88a2f80e29afb34964e035c08a9df44342ea92f0c06d1f1777ca9f9263eaac3d",
+    "TARGETED_INTENT_V2.json": "8d5e3c40e7c7b2db313fc055a69a4b4eee4e65569129404764556b68ec77e5b1",
+    "package_exact_preview.py": "152a54243aa787012b112cc4a728d3077e03475749d94118515c5f3e3675ceef",
+    "targeted_tests.log": "f38e052800671aa7ca4b598fe96a8ff222643e5def8ad55162a8c18326e300e2",
+    "check_analytics_stage.py": "ca0e9511cf3f6e94ccf5db8c7e2e1d78bf33a07d74e0a03ef617dff1d8f1f59d",
+    "TARGETED_INTENT.json": "d1b02986470c1e09bed14c5318a93247f1183b589e7c7a755c5eab8514aa4cd2",
+    "TARGETED_RESULT.json": "8199f1c6135a079baf7f54657311c570e1032375bea49271c11c4cee8c607029"
+  }
+}

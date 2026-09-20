@@ -1,0 +1,30 @@
+{
+  "status": "PASS_TARGETED_ANALYTICS_STAGE",
+  "tests_run": 15,
+  "failures": 0,
+  "errors": 0,
+  "tests": [
+    "__main__.AnalyticsStageTests.test_capture_length_mismatch_rejected",
+    "__main__.AnalyticsStageTests.test_capture_sha_drift_rejected",
+    "__main__.AnalyticsStageTests.test_cli_self_pin_still_required",
+    "__main__.AnalyticsStageTests.test_current_response_mismatch_rejected",
+    "__main__.AnalyticsStageTests.test_current_response_pin_mismatch_rejected",
+    "__main__.AnalyticsStageTests.test_encoded_traversal_not_admitted",
+    "__main__.AnalyticsStageTests.test_existing_script_retained_exactly_and_private_routes_remain_denied",
+    "__main__.AnalyticsStageTests.test_missing_current_response_rejected",
+    "__main__.AnalyticsStageTests.test_missing_existing_capture_is_not_synthesized",
+    "__main__.AnalyticsStageTests.test_other_ua_script_not_admitted",
+    "__main__.AnalyticsStageTests.test_package_pin_still_required_before_private_work_created",
+    "__main__.AnalyticsStageTests.test_private_capture_path_rejected",
+    "__main__.AnalyticsStageTests.test_private_route_not_admitted",
+    "__main__.AnalyticsStageTests.test_stale_current_response_rejected",
+    "__main__.AnalyticsStageTests.test_symlink_capture_rejected"
+  ],
+  "stage_helper_sha256": "88a2f80e29afb34964e035c08a9df44342ea92f0c06d1f1777ca9f9263eaac3d",
+  "test_sha256": "ca0e9511cf3f6e94ccf5db8c7e2e1d78bf33a07d74e0a03ef617dff1d8f1f59d",
+  "limitations": [
+    "isolated temporary filesystem fixture",
+    "no server writes, switch, reload or browser",
+    "existing full suites and Preview 24/24 were not rerun"
+  ]
+}

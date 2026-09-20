@@ -1,0 +1,21 @@
+{
+  "created_at_utc": "2026-09-20T08:24:15.192628+00:00",
+  "status": "RECORDED_BEFORE_TARGETED_TEST",
+  "failure": "UNSERVED_PUBLIC_ASSET_ROUTE:ua/a.js",
+  "scope": "Retain exact previously served manifest-pinned public JS only; no runtime/public root changes",
+  "source_helper_sha256": "dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb",
+  "candidate_helper_sha256": "5621cebe6cc89d6619719afe0e138a3cdbbfdd301aa5940301143574b0ae9d06",
+  "package_helper_unchanged": true,
+  "planned_command": "python -I -B check_analytics_stage.py",
+  "test_sha256": "4d49af02893a48b91f051be86a44c0ea6b60acdeaa275497c1bd3e5018c723ee",
+  "planned_checks": [
+    "exact analytics asset and original HTML bytes",
+    "runtime GET only and private endpoints denied",
+    "changed/missing/invalid/symlink prior capture rejected",
+    "private and traversal dependencies rejected",
+    "self/package immutable guards",
+    "repeated operation blocked"
+  ],
+  "no_server_or_git_writes": true,
+  "prior_full_suites_will_not_be_rerun": true
+}
