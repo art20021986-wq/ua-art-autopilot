@@ -53,7 +53,8 @@ class CarsHookTests(unittest.TestCase):
         confirmations.install(self.db)
         self.db.commit()
         self.modules = patch.dict(sys.modules, {"uaart_price_sync_outbox": outbox,
-            "uaart_price_sync_confirmation": confirmations})
+            "uaart_price_sync_confirmation": confirmations,
+            "uaart_price_sync_runtime": types.SimpleNamespace(require_crm_price_ready=lambda: None)})
         self.modules.start()
         self.addCleanup(self.modules.stop)
         names = {"_task088_ge_number", "_task088_apply_selected_price", "_v168_empty",
@@ -127,7 +128,7 @@ class CarsHookTests(unittest.TestCase):
             if name not in allowed:
                 self.assertEqual(original[name], modified[name], name)
         self.assertEqual(self.patched.count("uaart_price_sync_runtime.register(app)"), 1)
-        self.assertEqual(self.patched.count("uaart_price_sync_binding.bootstrap(app,"), 1)
+        self.assertEqual(self.patched.count("uaart_price_sync_binding.bootstrap_if_configured("), 1)
         self.assertEqual(self.patched.count("run_repeating(_ua004_stage_reconcile_job, interval=15"), 1)
         self.assertIn('pattern=r"^price5:(?:yes|no):[0-9a-f]{32}$"', self.patched)
 

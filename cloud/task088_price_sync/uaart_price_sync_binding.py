@@ -762,14 +762,46 @@ class Provider:
         self.running_bot_verified = True
 
 
+def bootstrap_if_configured(app, *, anchor_path, expected_anchor_sha256=None, test_root=None):
+    """Allow a first Stage3 CRM start without inventing runtime authority.
+
+    Only a genuinely absent anchor selects NOT_CONFIGURED. A broken symlink,
+    nonregular or malformed existing anchor still follows strict validation
+    and raises. No file, token, delegation, queue or job is created here.
+    """
+    runtime.begin_crm_registration(app)
+    root = LIVE_ROOT if test_root is None else Path(test_root)
+    path = Path(anchor_path)
+    if not root.is_absolute() or root.is_symlink() or not path.is_absolute():
+        raise BindingError("EXPLICIT_ABSOLUTE_ANCHOR_REQUIRED")
+    try:
+        relative = str(path.relative_to(root))
+    except ValueError as exc:
+        raise BindingError("ANCHOR_OUTSIDE_ROOT") from exc
+    path = _path(root, relative)
+    try:
+        path.lstat()
+    except FileNotFoundError:
+        if expected_anchor_sha256 is not None:
+            raise
+        if app.bot_data.get(runtime.BINDING_KEY) is not None:
+            raise BindingError("EXISTING_RUNTIME_BINDING_CANNOT_BE_DOWNGRADED")
+        runtime.mark_crm_unconfigured(app)
+        return None
+    return bootstrap(app, anchor_path=path, expected_anchor_sha256=expected_anchor_sha256,
+                     test_root=test_root)
+
+
 def bootstrap(app, *, anchor_path, expected_anchor_sha256=None, test_root=None):
     """Populate the existing app before runtime.register; never create another bot.
 
     The explicit anchor must be written by the verified installer only after a
-    real deployment receipt. Missing recipient proof or immutable artifacts stop
-    startup; operational controls stop only price publication. This function
-    does not register jobs or report deployment success.
+    real deployment receipt. Existing malformed recipient proof or immutable
+    artifacts stop startup; the explicit bootstrap_if_configured wrapper alone
+    permits a genuinely absent first-install anchor. Operational controls stop
+    mutations. This strict function registers no jobs or deployment success.
     """
+    runtime.begin_crm_registration(app)
     provider = Provider(anchor_path=anchor_path, expected_anchor_sha256=expected_anchor_sha256,
                         test_root=test_root)
     binding = provider.binding()
@@ -782,6 +814,7 @@ def bootstrap(app, *, anchor_path, expected_anchor_sha256=None, test_root=None):
         if prior_post_init is not None:
             await prior_post_init(application)
         provider.verify_running_bot(application.bot)
+        runtime.mark_crm_active(application)
 
     # PTB calls post_init after Bot.initialize, before polling starts. Directly
     # constructed test/custom lifecycle applications must run this hook too;

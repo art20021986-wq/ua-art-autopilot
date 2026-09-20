@@ -545,18 +545,23 @@ def submit(conn, *, event_key, car_id, field, value, actor_id, chat_id, now_ms,
         raise OutboxError('V5_CAR_MISSING')
     row = dict(zip((item[0] for item in cursor.description), row))
     observed_code, observed_vin = str(row.get('auto_number') or ''), str(row.get('vin') or '')
-    if row.get('published') != 1 or re.fullmatch(r'UA-[0-9]{4}', observed_code) is None:
-        raise OutboxError('V5_PUBLISHED_CAR_REQUIRED')
-    if car_code is not None and car_code != observed_code or vin is not None and vin != observed_vin:
-        raise OutboxError('V5_CAR_IDENTITY_MISMATCH')
+    if row.get('published') not in (None, 0, 1):
+        raise OutboxError('V5_INVALID_VISIBILITY')
+    if row.get('published') == 1 and re.fullmatch(r'UA-[0-9]{4}', observed_code) is None:
+        raise OutboxError('V5_PUBLIC_CAR_CODE_REQUIRED')
     identity = dict(car_id=car_id, car_code=observed_code, vin=observed_vin, field=field,
                     value=canonical_value, actor_id=actor_id, chat_id=chat_id,
                     provenance_json=provenance_json, expected_old_json=expected_json)
     old = get_operation(conn, event_key)
     if old:
-        if any(old[key] != val for key, val in identity.items()):
+        replay_fields = set(identity) - {'car_code', 'vin'}
+        if (any(old[key] != identity[key] for key in replay_fields)
+                or (car_code is not None and car_code != old['car_code'])
+                or (vin is not None and vin != old['vin'])):
             raise OutboxError('V5_EVENT_ID_PAYLOAD_CONFLICT')
         return old
+    if car_code is not None and car_code != observed_code or vin is not None and vin != observed_vin:
+        raise OutboxError('V5_CAR_IDENTITY_MISMATCH')
     sequence = conn.execute(f'SELECT COALESCE(MAX(sequence),0)+1 FROM {V5_TABLE} WHERE car_id=?', (car_id,)).fetchone()[0]
     columns = list(identity) + ['event_key','sequence','created_ms','state']
     values = list(identity.values()) + [event_key, sequence, now_ms, 'QUEUED']
@@ -630,3 +635,35 @@ def queue_operation_notice(conn, *, event_key, kind, body, now_ms):
     conn.execute(f"INSERT INTO {V5_NOTICES}(notice_key,event_key,chat_id,kind,body,created_ms,state) VALUES(?,?,?,?,?,?,'PENDING')",
                  (key,event_key,event['chat_id'],kind,body,now_ms))
     return key
+
+
+def complete_data_operation(conn, *, event_key, nonce, receipt, receipt_sha256, now_ms):
+    """Record verified hidden data outcome without claiming SITE_PUBLISHED.
+
+    Runtime verifies independent committed-data readback and canonical absence
+    proof under the publication/DB fence. Existing audits are never replaced.
+    """
+    _transaction(conn)
+    _hash(nonce, 'CLAIM_NONCE')
+    _hash(receipt_sha256, 'DATA_RECEIPT')
+    _integer(now_ms, 'NOW_MS')
+    event = require_head(conn, event_key)
+    if (event['claim_nonce'] != nonce or event['state'] not in ('DB_COMMITTED','SITE_PUBLISHED','VERIFIED')
+            or now_ms < event['db_committed_ms']):
+        raise OutboxError('V5_DATA_COMPLETION_CHECKPOINT_REQUIRED')
+    required = dict(operation_id=event_key, claim_nonce=nonce, car_id=event['car_id'],
+                    new_value=event['value'], public_projection='NOT_APPLICABLE',
+                    site_verification='NOT_APPLICABLE', separate_connection=True,
+                    db_readback='PASS', protected_data='PASS', verification='PASS', verified_ms=now_ms)
+    if (type(receipt) is not dict or any(receipt.get(key) != value for key,value in required.items())
+            or hashlib.sha256(v5_json(receipt).encode()).hexdigest() != receipt_sha256):
+        raise OutboxError('V5_BOUND_DATA_COMPLETION_RECEIPT_REQUIRED')
+    if event['blocked']:
+        audit_operation(conn,event_key,'HIDDEN_RECOVERY_VERIFIED',
+            {'prior_reason':event['last_error'],'claim_nonce':nonce,'receipt_sha256':receipt_sha256},now_ms)
+    audit_operation(conn, event_key, 'DATA_VERIFIED', receipt, now_ms)
+    audit_operation(conn, event_key, 'COMPLETED', {'receipt_sha256':receipt_sha256,
+        'operator_chat_id':event['chat_id'], 'public_projection':'NOT_APPLICABLE'}, now_ms)
+    conn.execute(f"UPDATE {V5_TABLE} SET state='COMPLETED',verified_ms=?,completed_ms=?,receipt_sha256=?,blocked=0,last_error=NULL,next_attempt_ms=0 WHERE event_key=?",
+                 (now_ms,now_ms,receipt_sha256,event_key))
+    return get_operation(conn, event_key)

@@ -359,6 +359,7 @@ class Worker:
 
     def record_runtime_failure(self, error):
         """Independent durable STOP/notification path, including unavailable CRM DB."""
+        require_crm_publication_ready()
         reason = str(error) if isinstance(error, (SyncError, outbox.OutboxError)) else (
             "SQLITE_RUNTIME_FAILURE" if isinstance(error, sqlite3.Error) else "PRICE_SYNC_RUNTIME_IO_FAILURE")
         if not re.fullmatch(r"[A-Z][A-Z0-9_]{0,99}", reason):
@@ -450,6 +451,7 @@ class Worker:
 
     @contextmanager
     def connection(self):
+        require_crm_publication_ready()
         # Never create an absent production database by a typo in configuration.
         descriptor = sqlite3.connect(self.binding.db_path.as_uri() + "?mode=rw", uri=True, timeout=2)
         try:
@@ -459,6 +461,7 @@ class Worker:
 
     @contextmanager
     def lock(self, path=None):
+        require_crm_publication_ready()
         descriptor = os.open(path or self.binding.publication_lock, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
         try:
             fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -727,6 +730,7 @@ class Worker:
 
     def queue_daily_unavailable(self):
         """The daily reminder remains possible while the CRM database is down."""
+        require_crm_publication_ready()
         today = datetime.fromtimestamp(self._wall_clock() / 1000, ZoneInfo("Asia/Ho_Chi_Minh")).date().isoformat()
         folder = self.binding.journal_root / "runtime_failures"
         folder.mkdir(mode=0o700, exist_ok=True)
@@ -1000,6 +1004,54 @@ class Worker:
 
 
 BINDING_KEY = "uaart_price_sync_verified_binding_v1"
+REGISTRATION_KEY = "uaart_price_sync_registration_v1"
+_crm_activation = None
+
+
+def activation_available():
+    """Process-local readiness, never a replacement for operation authority.
+
+    None identifies a separate process that has not registered this CRM app;
+    its canonical installer/publisher must enforce its own real gates. A fork
+    never inherits an active CRM credential or readiness grant.
+    """
+    if _crm_activation is None:
+        return None
+    pid, ready = _crm_activation
+    return ready if pid == os.getpid() else False
+
+
+def begin_crm_registration(app):
+    global _crm_activation
+    _crm_activation = (os.getpid(), False)
+    app.bot_data[REGISTRATION_KEY] = {"state":"PENDING_VERIFIED_ACTIVATION", "worker_jobs_registered":False}
+
+
+def mark_crm_unconfigured(app):
+    begin_crm_registration(app)
+    app.bot_data[REGISTRATION_KEY] = {"state":"NOT_CONFIGURED", "reason":"INSTALLER_ANCHOR_ABSENT",
+                                    "worker_jobs_registered":False}
+
+
+def mark_crm_active(app):
+    global _crm_activation
+    if not isinstance(app.bot_data.get(BINDING_KEY), Binding):
+        raise SyncError("PRICE_SYNC_NOT_INSTALLED_WITH_VERIFIED_BINDING")
+    _crm_activation = (os.getpid(), True)
+    jobs_registered = app.bot_data.get(REGISTRATION_KEY, {}).get("worker_jobs_registered") is True
+    app.bot_data[REGISTRATION_KEY] = {"state":"VERIFIED_RUNNING_BOT", "worker_jobs_registered":jobs_registered}
+
+
+def require_crm_price_ready():
+    if activation_available() is not True:
+        raise SyncError("PRICE_SYNC_RUNTIME_NOT_CONFIGURED")
+
+
+def require_crm_publication_ready():
+    # Only the explicit unconfigured CRM process is restricted here. This is
+    # not a substitute for real canonical authority in installer processes.
+    if activation_available() is False:
+        raise SyncError("PRICE_SYNC_RUNTIME_NOT_CONFIGURED")
 
 
 def register(app):
@@ -1012,12 +1064,16 @@ def register(app):
     worker = V5Worker(binding)
 
     async def tick(context):
+        if activation_available() is False:
+            return
         try:
             await asyncio.to_thread(worker.tick)
         finally:
             await worker.deliver_notices(context.bot)
 
     async def daily(context):
+        if activation_available() is False:
+            return
         try:
             await asyncio.to_thread(worker.queue_daily)
         except (sqlite3.Error, OSError, SyncError, outbox.OutboxError) as error:
@@ -1032,6 +1088,7 @@ def register(app):
     if not app.job_queue.get_jobs_by_name("uaart-price-sync-daily-v1"):
         app.job_queue.run_daily(daily, time=wall_time(10, 0, tzinfo=ZoneInfo("Asia/Ho_Chi_Minh")),
                                 name="uaart-price-sync-daily-v1", job_kwargs={"max_instances": 1, "coalesce": True})
+    app.bot_data.setdefault(REGISTRATION_KEY, {})["worker_jobs_registered"] = True
     return worker
 
 
@@ -1057,6 +1114,7 @@ class V5Worker(Worker):
 
     @contextmanager
     def _shared_lock(self):
+        require_crm_publication_ready()
         # Brief admission only: no HTTP, Telegram or long-lived DB transaction.
         deadline = time.monotonic() + 2
         descriptor = os.open(self.binding.publication_lock, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
@@ -1748,6 +1806,7 @@ class V5Worker(Worker):
         This never clears blocked flags to replay a price write. It may only
         verify and finish the original durable DB-committed operation.
         """
+        require_crm_publication_ready()
         event = self._operation(key)
         with self.lock(self.binding.journal_root / ('car_%d.lock' % event['car_id'])):
             event = self._operation(key)
@@ -1771,6 +1830,7 @@ class V5Worker(Worker):
                 return {'event_key':key, 'state':event['state'], 'reconciliation_required':reason}
 
     def process_operation(self,key):
+        require_crm_publication_ready()
         event=self._operation(key)
         car_lock=self.binding.journal_root/('car_%d.lock'%event['car_id'])
         try:
@@ -1804,6 +1864,7 @@ class V5Worker(Worker):
             return {'event_key':key,'state':self._operation(key)['state'],'error':type(error).__name__}
 
     def tick(self):
+        require_crm_publication_ready()
         from concurrent.futures import ThreadPoolExecutor
         with self.connection() as conn:
             rows=conn.execute(f"SELECT pending.event_key FROM {outbox.V5_TABLE} pending WHERE pending.state!='COMPLETED' "
@@ -1818,6 +1879,7 @@ class V5Worker(Worker):
 
     def queue_daily(self):
         """Report the active v5 ledger, including unresolved delivery ambiguity."""
+        require_crm_publication_ready()
         date=datetime.fromtimestamp(self.clock()/1000,ZoneInfo('Asia/Ho_Chi_Minh')).date().isoformat()
         with self.connection() as conn:
             conn.execute('BEGIN IMMEDIATE')
@@ -1833,6 +1895,7 @@ class V5Worker(Worker):
             conn.commit()
 
     async def deliver_notices(self,bot):
+        require_crm_publication_ready()
         # Retain existing owner incident/daily delivery without using it as a
         # success route. The new queue always uses the initiating operator chat.
         await super().deliver_notices(bot)

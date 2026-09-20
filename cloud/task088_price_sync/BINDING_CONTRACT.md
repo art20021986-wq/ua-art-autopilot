@@ -6,22 +6,36 @@ configuration, anchor, Telegram message or public mutation has been produced.
 
 ## Startup and trust chain
 
-The verified installer writes a private anchor **last**, after a real installation
-receipt. The existing CRM registration calls:
+Runtime activation requires a private anchor bound to a real installation
+receipt. The Stage 3 installer does not create Stage 4 credentials or fabricate
+that anchor. The existing CRM registration calls:
 
 ```python
 from pathlib import Path
 import uaart_price_sync_binding
-uaart_price_sync_binding.bootstrap(
+configured = uaart_price_sync_binding.bootstrap_if_configured(
     app, anchor_path=Path('/home/Carix/.uaart_price_sync_anchor.json'))
+if configured is not None:
+    uaart_price_sync_runtime.register(app)
 ```
 
-`bootstrap` populates the existing application's runtime binding; it does not
-register jobs, create another bot or claim acceptance. The runtime is registered
-afterward. Bot identity is verified by a wrapper preserving the existing
+Only a genuinely absent anchor allows ordinary CRM startup in `NOT_CONFIGURED`.
+The base CRM handlers remain available; price inputs, confirmations, V5 worker
+effects, native visibility transitions, protected publication, stage jobs and
+media jobs remain closed. No V5 binding, jobs, token or authority is synthesized.
+An existing malformed anchor, nonregular path or broken symlink still fails
+startup. Supplying an expected anchor SHA also makes absence a hard failure.
+
+The strict `bootstrap` populates the existing application's runtime binding; it
+does not register jobs, create another bot or claim acceptance. Process readiness
+is false before existing handler registration. Bot identity is verified by a
+wrapper preserving the existing
 `app.post_init`, after Telegram initializes the bot and before polling starts.
 Publication cannot be authorized before that identity check. Custom application
 lifecycle code must execute `post_init`; otherwise authorization stays closed.
+Readiness is PID-bound, so a fork cannot inherit an active CRM grant. A separate
+canonical installer that never registered this CRM remains subject to its own
+installer gates; the readiness signal grants it no price-event authority.
 
 The anchor has contract `UA-ART-PRICE-EVENT-ANCHOR-1`, an explicit root-relative
 `config_path`, and `config_sha256`. An optional externally supplied

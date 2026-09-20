@@ -30,12 +30,12 @@ CURRENT_BEFORE_SHA256 = {
     "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
 }
 PRICE_BEFORE_SHA256 = {
-    "cars_ui.py": "4e84055e5a855ddc6fa8fbf714a342422d084f956e4bedc580ab47bcae0257a1",
+    "cars_ui.py": "e1d39da7856bc2c3e4888d2ec121f2d530451a7910317aed9ea2090ba323c2c6",
     "publish_transaction_guard.py": "4fdb015226f7ac473e33e0a0d9bef7da2b14744de1798e0c1202a814640af36a",
     "stranica.py": "ccec8321dbf4e90b972efd12ba34f73221d1a547aba0b2955d4cea0b7e8c72b2",
 }
 CURRENT_PRICE_BEFORE_SHA256 = {
-    "cars_ui.py": "0b13b9e931aa02112f81f3a844ed4774aced29fd42e520e94578638f42442d1c",
+    "cars_ui.py": "ba456447aca4e42b4595b92311956c2f4f033a0ed6c607981283b8a78579af26",
     "publish_transaction_guard.py": "17fa5c601a22835fe610382d042997722afe2b77ac120b566aa355579e4ce6ae",
     "stranica.py": "b15642fad2526ce4b16b95a3a5d992f7e94972a4c035ccd07b270957a070d094",
 }
@@ -75,6 +75,12 @@ def _ua114_visibility_request(update, context, cid, actor_id, sold=False):
 async def _ua114_visibility_handler(update, context, sold=False):
     q, staff = await _ua099_require_staff(update)
     cid = int(q.data.split(":")[-1])
+    import uaart_price_sync_runtime as runtime
+    if (runtime.activation_available() is False or not isinstance(
+            context.application.bot_data.get(runtime.BINDING_KEY), runtime.Binding)):
+        await q.message.reply_text("Изменение видимости пока недоступно. Ничего не изменено.",
+                                   reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
     try:
         result = await _ua114_asyncio.to_thread(
             _ua114_visibility_request, update, context, cid, q.from_user.id, sold)
@@ -94,7 +100,7 @@ async def _ua114_visibility_handler(update, context, sold=False):
             text = "Объявление скрыто. Данные и исходные медиа сохранены."
     except Exception as exc:
         log.exception("Native visibility operation pending for car %s", cid)
-        text = "Изменение видимости не завершено: %s. Исход сохранён для проверки; повторная запись не выполняется." % type(exc).__name__
+        text = "Изменение видимости не завершено. Автоматический повтор публикации не выполняется."
     await q.message.reply_text(text, reply_markup=_ua099_back(cid))
     raise ApplicationHandlerStop
 
@@ -106,6 +112,90 @@ async def toggle_publish(update, context):
 async def mark_sold_ok(update, context):
     return await _ua114_visibility_handler(update, context, sold=True)
 # UA-ART-PR114-NATIVE-VISIBILITY-1:END
+'''
+
+ACTIVATION_BLOCK = r'''
+
+# UA-ART-PR114-CRM-ACTIVATION-GATES-1:START
+import functools as _ua114_functools
+
+
+def _ua114_optional_photo_hide_allowed(app):
+    from pathlib import Path
+    anchor = Path("/home/Carix/.uaart_price_sync_anchor.json")
+    # Distinguish the one genuine missing filename from inaccessible paths,
+    # absent/aliased roots, and a present but malformed or broken-link anchor.
+    if anchor.parent.resolve(strict=True) != anchor.parent:
+        raise RuntimeError("CRM_ANCHOR_PARENT_NOT_CANONICAL")
+    try:
+        anchor.lstat()
+    except FileNotFoundError:
+        return False
+    app.bot_data["ua114_optional_media_anchor_seen"] = True
+    return True
+
+
+def _ua114_activation_sync(original):
+    @_ua114_functools.wraps(original)
+    def checked(*args, **kwargs):
+        from uaart_price_sync_runtime import require_crm_publication_ready
+        require_crm_publication_ready()
+        return original(*args, **kwargs)
+    return checked
+
+
+def _ua114_activation_async(original, background=False):
+    @_ua114_functools.wraps(original)
+    async def checked(*args, **kwargs):
+        from uaart_price_sync_runtime import activation_available, require_crm_publication_ready
+        if activation_available() is False:
+            if background:
+                return {"status": "SKIPPED_UNCONFIGURED_CRM"}
+            update = args[0] if args else kwargs["update"]
+            query = update.callback_query
+            await _v168_ack(query)
+            await query.message.reply_text("Изменение пока недоступно. Ничего не изменено.")
+            raise ApplicationHandlerStop
+        require_crm_publication_ready()
+        return await original(*args, **kwargs)
+    return checked
+
+
+# Gate before the first spool-file/media-DB effect, including the worker job
+# installed by team_bot *after* this module's register has returned.
+for _ua114_entry in ("save_media", "_v165_spool_enqueue", "_v165_spool_remove",
+                     "_v165_spool_drain", "_v166_drain_owned"):
+    globals()[_ua114_entry] = _ua114_activation_sync(globals()[_ua114_entry])
+for _ua114_entry in ("photo_remove", "photo_remove_all", "video_remove_all", "diag_clear", "delete_ok"):
+    globals()[_ua114_entry] = _ua114_activation_async(globals()[_ua114_entry])
+for _ua114_entry in ("media_spool_worker_job", "_ua004_stage_reconcile_job"):
+    globals()[_ua114_entry] = _ua114_activation_async(globals()[_ua114_entry], background=True)
+
+_ua114_stage_sync_configured = _ua004_sync_current_stage
+
+
+async def _ua004_sync_current_stage(card):
+    from uaart_price_sync_runtime import activation_available
+    if activation_available() is False:
+        return "Этап сохранён в CRM. Обновление сайта ожидает запуска."
+    return await _ua114_stage_sync_configured(card)
+# UA-ART-PR114-CRM-ACTIVATION-GATES-1:END
+'''
+
+REGISTRATION_BOUNDARY_BLOCK = r'''
+
+# UA-ART-PR114-OPTIONAL-MEDIA-BOOTSTRAP-BOUNDARY-1:START
+_ua114_registration_base = register
+
+
+def register(app):
+    result = _ua114_registration_base(app)
+    if app.bot_data.get("ua114_optional_media_anchor_seen"):
+        from uaart_price_sync_runtime import BINDING_KEY, Binding
+        if not isinstance(app.bot_data.get(BINDING_KEY), Binding):
+            raise RuntimeError("OPTIONAL_MEDIA_ANCHOR_DISAPPEARED_BEFORE_BOOTSTRAP")
+    return result
+# UA-ART-PR114-OPTIONAL-MEDIA-BOOTSTRAP-BOUNDARY-1:END
 '''
 
 RECOVERY_BLOCK = r'''
@@ -962,7 +1052,41 @@ def _integrate_cars_text(source: str) -> str:
         "register",
     })
     source = _instrument_media_status(source)
-    return source.rstrip() + CARS_BLOCK + RECOVERY_BLOCK + VISIBILITY_BLOCK + "\n"
+    source = _gate_optional_photo_hide(source)
+    return (source.rstrip() + CARS_BLOCK + RECOVERY_BLOCK + VISIBILITY_BLOCK
+            + ACTIVATION_BLOCK + REGISTRATION_BOUNDARY_BLOCK + "\n")
+
+
+def _gate_optional_photo_hide(source: str) -> str:
+    """Retain optional media registration only when the exact anchor exists.
+
+    The unknown private extension is never imported during absent-anchor CRM
+    startup. A present anchor keeps the original optional registration and
+    remains subject to the later strict configured bootstrap.
+    """
+    targets = []
+    for function in ast.parse(source).body:
+        if not isinstance(function, ast.FunctionDef) or function.name != "register":
+            continue
+        for node in function.body:
+            if not isinstance(node, ast.Try) or len(node.body) != 2:
+                continue
+            first, second = node.body
+            if (isinstance(first, ast.Import) and len(first.names) == 1
+                    and first.names[0].name == "photo_hide" and first.names[0].asname is None
+                    and isinstance(second, ast.Expr) and isinstance(second.value, ast.Call)
+                    and ast.unparse(second.value) == "photo_hide.register(app)"):
+                targets.append(node)
+    if len(targets) != 1:
+        raise RuntimeError("EXACT_OPTIONAL_PHOTO_HIDE_REGISTRATION_REQUIRED")
+    node = targets[0]
+    lines = source.splitlines(keepends=True)
+    original = lines[node.lineno - 1:node.end_lineno]
+    lines[node.lineno - 1:node.end_lineno] = [
+        "    if _ua114_optional_photo_hide_allowed(app):\n", *["    " + line for line in original]]
+    result = "".join(lines)
+    compile(result, "cars_ui.py", "exec")
+    return result
 
 
 def _integrate_stranica_text(source: str) -> str:

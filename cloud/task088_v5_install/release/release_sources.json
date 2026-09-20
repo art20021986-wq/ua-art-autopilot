@@ -9,11 +9,11 @@
       "source_path": "cloud/task088_v5_install/backup_controller.py"
     },
     "controller.py": {
-      "sha256": "0801407ceeb4edf4533e5df5ade2c23d56cbeb46562ce40ab117f491f17c2eca",
+      "sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
       "source_path": "cloud/task088_v5_install/controller.py"
     },
     "install_package.py": {
-      "sha256": "04dcd630ff5cd58e133083cb58c34cb0a45b8b1b51f381d7c93a086079aa82e0",
+      "sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
       "source_path": "cloud/task088_price_sync/install_package.py"
     },
     "mutation_recovery.py": {
@@ -21,7 +21,7 @@
       "source_path": "cloud/task088_v5_writer_fence/mutation_recovery.py"
     },
     "outbox.py": {
-      "sha256": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+      "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
       "source_path": "cloud/task088_price_sync/outbox.py"
     },
     "owner_policy.py": {
@@ -33,7 +33,7 @@
       "source_path": "cloud/task088_autopilot_owner_policy/price_publication.py"
     },
     "publication_fence.py": {
-      "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+      "sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
       "source_path": "cloud/task088_v5_writer_fence/publication_fence.py"
     },
     "remote_adapter.py": {
@@ -65,7 +65,7 @@
       "source_path": "cloud/task088_price_sync/uaart_price_control_reader.py"
     },
     "uaart_price_sync_binding.py": {
-      "sha256": "71c36f59d7100faeaede17c580b391349f7dab081099d0de21975f926fb7d174",
+      "sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
       "source_path": "cloud/task088_price_sync/uaart_price_sync_binding.py"
     },
     "uaart_price_sync_confirmation.py": {
@@ -73,12 +73,16 @@
       "source_path": "cloud/task088_price_sync/uaart_price_sync_confirmation.py"
     },
     "uaart_price_sync_outbox.py": {
-      "sha256": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+      "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
       "source_path": "cloud/task088_price_sync/outbox.py"
     },
     "uaart_price_sync_runtime.py": {
-      "sha256": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a",
+      "sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
       "source_path": "cloud/task088_price_sync/uaart_price_sync_runtime.py"
+    },
+    "visibility_lifecycle.py": {
+      "sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+      "source_path": "cloud/task088_v5_writer_fence/visibility_lifecycle.py"
     }
   },
   "test_paths": [

@@ -327,6 +327,44 @@ class PreviewBoundaryTest(unittest.TestCase):
             self.assertEqual(self.call(app,route,QUERY_STRING=FRAME_QUERY,HTTP_HOST='production.example')['status'],'421 Misdirected Request')
         self.assertEqual(self.call(app,'/private.json',QUERY_STRING=FRAME_QUERY)['status'],'404 Not Found')
 
+    def counter_catalogue(self):
+        for name in ('katalog','UA-0001'):
+            raw=('<html><body>'+name+'</body></html>').encode()
+            path='/video/'+name+'.html'
+            write_new(self.bundle,'public'+path,raw)
+            self.manifest['files'][path]={'storage':'bundle','path':'public'+path,
+                'sha256':sha(raw),'bytes':len(raw),'content_type':'text/html; charset=utf-8'}
+        self.add_viewport()
+
+    def test_counter_csp_allows_only_exact_catalogue_on_two_counter_surfaces(self):
+        self.counter_catalogue()
+        app=self.app()
+        for query in ('',FRAME_QUERY):
+            for path in ('/video/index.html','/video/katalog.html','/video/UA-0001.html',HARNESS_ROUTE):
+                result=self.call(app,path,QUERY_STRING=query)
+                self.assertEqual(result['status'],'200 OK')
+                policy={part.strip().split(' ',1)[0]:part.strip().split(' ',1)[1]
+                        for part in result['headers']['Content-Security-Policy'].split(';')}
+                expected='https://preview.example/video/katalog.html' if path in ('/video/index.html','/video/katalog.html') else "'none'"
+                self.assertEqual(policy['connect-src'],expected)
+                self.assertEqual(policy['form-action'],"'none'")
+        self.assertEqual(self.call(app,'/video/katalog.html',auth=False)['status'],'401 Unauthorized')
+        for method in ('POST','PUT','PATCH','DELETE'):
+            self.assertEqual(self.call(app,'/video/katalog.html',REQUEST_METHOD=method)['status'],'405 Method Not Allowed')
+        self.assertEqual(self.call(app,'/uaart-bridge')['status'],'404 Not Found')
+
+    def test_public_counter_catalogue_still_enforces_pinned_bytes_and_no_fallback(self):
+        self.counter_catalogue()
+        app=self.public_app()
+        self.assertEqual(self.call(app,'/video/katalog.html',auth=False,QUERY_STRING='v=123')['status'],'200 OK')
+        self.assertEqual(self.call(app,'/video/katalog.html',auth=False,HTTP_HOST='production.example')['status'],'421 Misdirected Request')
+        self.assertEqual(self.call(app,'/video/katalog.html',auth=False,REQUEST_METHOD='POST')['status'],'405 Method Not Allowed')
+        (self.bundle/'public/video/katalog.html').write_bytes(b'Unreviewed catalogue')
+        result=self.call(app,'/video/katalog.html',auth=False)
+        self.assertEqual(result['status'],'503 Service Unavailable')
+        self.assertNotIn(b'Unreviewed catalogue',result['body'])
+        self.assertEqual(self.call(app,'/cars.db',auth=False)['status'],'404 Not Found')
+
     def test_viewport_changes_only_opted_in_headers_and_preserves_candidate_bytes(self):
         self.add_viewport()
         app=self.app()

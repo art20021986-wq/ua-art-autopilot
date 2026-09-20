@@ -12,6 +12,7 @@ import errno
 import fcntl
 import os
 import stat
+import sys
 import threading
 import time
 from dataclasses import dataclass
@@ -19,6 +20,16 @@ from pathlib import Path
 
 
 DEFAULT_LOCK_PATH = Path("/home/Carix/.ua_art_publish_transaction.lock")
+
+
+def _require_crm_activation() -> None:
+    # Only an explicitly registered, unconfigured CRM is held. Importing the
+    # fence in the separately authorised installer never manufactures a bot
+    # binding or changes that process's existing canonical admission rules.
+    runtime = sys.modules.get("uaart_price_sync_runtime")
+    check = getattr(runtime, "require_crm_publication_ready", None)
+    if callable(check):
+        check()
 
 
 class FenceError(RuntimeError):
@@ -167,6 +178,7 @@ class PublicationFence:
         self._entered = False
 
     def __enter__(self) -> "PublicationFence":
+        _require_crm_activation()
         _reset_after_fork_if_needed()
         if self._entered:
             raise FenceError("FENCE_INSTANCE_ALREADY_ENTERED")
@@ -261,6 +273,7 @@ def publication_fence(*, timeout: float = 30.0) -> PublicationFence:
 
 def require_publication_fence(*, lock_path: Path | str = DEFAULT_LOCK_PATH) -> None:
     """Fail unless the current thread owns the cooperative fence."""
+    _require_crm_activation()
     _reset_after_fork_if_needed()
     key = os.fspath(Path(lock_path))
     with _condition:

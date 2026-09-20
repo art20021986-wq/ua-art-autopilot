@@ -90,6 +90,8 @@ def _task088_sync_prepare(conn, before, field, value, actor_id, sync_identity,
     import time
     import uaart_price_sync_outbox as outbox
     import uaart_price_sync_confirmation as confirmations
+    import uaart_price_sync_runtime as _task088_runtime
+    _task088_runtime.require_crm_price_ready()
     _task088_sync_authorize(conn, actor_id, before)
     if before.get("published") not in (None, 0, 1):
         raise RuntimeError("TASK088_PUBLISHED_FLAG_INVALID")
@@ -173,6 +175,8 @@ async def _task088_price_confirmation(update: Update, context: ContextTypes.DEFA
     answer = "Подтверждение не выполнено. Откройте карточку и проверьте цену."
     conn = None
     try:
+        import uaart_price_sync_runtime as _task088_runtime
+        _task088_runtime.require_crm_price_ready()
         _, decision, token = query.data.split(":")
         if decision not in ("yes", "no"):
             raise RuntimeError("INVALID_PRICE_CONFIRMATION_ACTION")
@@ -423,14 +427,17 @@ def patch_source(source):
 _TASK088_PRICE_SYNC_BASE_REGISTER = register
 
 def register(app):
+    import uaart_price_sync_runtime
+    uaart_price_sync_runtime.begin_crm_registration(app)
     _TASK088_PRICE_SYNC_BASE_REGISTER(app)
     app.add_handler(CallbackQueryHandler(_task088_price_confirmation,
         pattern=r"^price5:(?:yes|no):[0-9a-f]{32}$"), group=-2)
     from pathlib import Path as _task088_Path
     import uaart_price_sync_binding
-    uaart_price_sync_binding.bootstrap(app, anchor_path=_task088_Path("/home/Carix/.uaart_price_sync_anchor.json"))
-    import uaart_price_sync_runtime
-    uaart_price_sync_runtime.register(app)
+    configured = uaart_price_sync_binding.bootstrap_if_configured(
+        app, anchor_path=_task088_Path("/home/Carix/.uaart_price_sync_anchor.json"))
+    if configured is not None:
+        uaart_price_sync_runtime.register(app)
 '''
     ast.parse(source)
     return source

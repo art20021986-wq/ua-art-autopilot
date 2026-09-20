@@ -35,7 +35,11 @@ REQUIRED_CODE = frozenset({"cars_ui.py", "yadro.py", "stranica.py", "catalog_des
     "db.py", "cars_schema.py"})
 ARTIFACTS = frozenset({"manifest", "request", "owner_approval", "gate_b", "deployment_receipt",
                       "writer_fences", "owner_private_chat", "owner_policy"})
-V5_REQUIRED_CODE = frozenset({"team_bot.py", "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py",
+VISIBILITY_DELEGATION = {"operation":"EXISTING_CRM_PUBLISH_UNPUBLISH_SOLD",
+    "permission":"EXISTING_CRM_EDIT_CAR_ACL", "fields":["published","publish_pending","status"],
+    "public_files":"CURRENT_CAR_VIEWS_AND_SHARED_INVENTORY", "source_data_media":"PRESERVE",
+    "actual_outcome_before_replay":True}
+V5_REQUIRED_CODE = frozenset({"ua_site_counters.py", "visibility_lifecycle.py", "team_bot.py", "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py",
     "publication_fence.py", "mutation_recovery.py", "ua_spec_permanent.py", "ua_additional_spec.py",
     "vin_spec_service.py", "lock4_zhurnal.py"})
 # These exact sources can reach protected page/specification writes. Their
@@ -182,7 +186,7 @@ class Provider:
         _same(d.get("root"), str(self.root), "ROOT_BINDING_MISMATCH")
         if re.fullmatch(r"TASK088-GE-PRICE-SITE-STAGE3-[A-Za-z0-9-]+", d.get("task_id", "")) is None:
             raise BindingError("FRESH_STAGE3_IDENTITY_REQUIRED")
-        operation = ("UPDATE_PUBLISHED_CAR_HOME_CATALOG_PRICES" if self.dynamic_identities
+        operation = ("UPDATE_CAR_DATA_AND_VISIBLE_PRICE_PROJECTIONS" if self.dynamic_identities
                      else "UPDATE_EXISTING_CARD_AND_CATALOG_PRICES")
         _same(d.get("operation"), operation, "PRICE_ONLY_DELEGATION_REQUIRED")
         _same(d.get("initial_publication"), "OWNER_MANUAL", "MANUAL_FIRST_PUBLICATION_REQUIRED")
@@ -209,7 +213,8 @@ class Provider:
                 or {pair[1] for pair in identities} != {f"UA-{i:04d}" for i in range(1, 19)}):
             raise BindingError("EXACT_18_CAR_REGISTRY_REQUIRED")
         if self.dynamic_identities:
-            _same(d.get("identity_policy"), "AUTHENTICATED_CRM_PUBLISHED_CARS", "DYNAMIC_CRM_IDENTITY_DELEGATION_REQUIRED")
+            _same(d.get("visibility_delegation"), VISIBILITY_DELEGATION, "EXPLICIT_NATIVE_VISIBILITY_DELEGATION_REQUIRED")
+            _same(d.get("identity_policy"), "AUTHENTICATED_CRM_ALL_CARS_PUBLIC_VISIBILITY_ONLY", "DYNAMIC_CRM_IDENTITY_DELEGATION_REQUIRED")
             policy = d.get("operator_policy")
             if (type(policy) is not dict or set(policy) != {"source", "permission", "chat_types", "roles"}
                     or policy.get("source") != "AUTHENTICATED_TELEGRAM_UPDATE"
@@ -278,7 +283,7 @@ class Provider:
                 self.resolve_surfaces(code)
 
     def resolve_identity(self, car_id):
-        """Read a unique, currently published identity from the pinned CRM DB.
+        """Read a stable CRM identity; public path readiness is checked separately.
 
         The policy admitting future identities is explicitly manifest-bound.
         The supplied identifier never becomes a path without this DB check.
@@ -290,18 +295,20 @@ class Provider:
         with sqlite3.connect(self.db_path.as_uri() + "?mode=ro", uri=True, timeout=1) as conn:
             _same(schema_sha256(conn), self.delegation["schema_sha256"], "LIVE_SCHEMA_DRIFT")
             row = conn.execute("SELECT id,auto_number,vin,published FROM cars WHERE id=?", (car_id,)).fetchone()
-            if (row is None or type(row[1]) is not str or re.fullmatch(r"UA-[0-9]{4}", row[1]) is None
-                    or type(row[2]) is not str or not row[2].strip() or row[2] != row[2].strip()
-                    or type(row[3]) is not int or row[3] != 1):
+            if row is None or row[3] not in (None, 0, 1):
+                raise BindingError("CRM_IDENTITY_REQUIRED")
+            if row[3] == 1 and (type(row[1]) is not str or re.fullmatch(r"UA-[0-9]{4}", row[1]) is None
+                    or type(row[2]) is not str or not row[2].strip() or row[2] != row[2].strip()):
                 raise BindingError("PUBLISHED_CRM_IDENTITY_REQUIRED")
-            matching = conn.execute("SELECT id,auto_number FROM cars WHERE id=? OR auto_number=?", (car_id, row[1])).fetchall()
-            if matching != [(car_id, row[1])]:
-                raise BindingError("AMBIGUOUS_CRM_IDENTITY")
+            if row[1]:
+                matching = conn.execute("SELECT id,auto_number FROM cars WHERE id=? OR auto_number=?", (car_id, row[1])).fetchall()
+                if matching != [(car_id, row[1])]:
+                    raise BindingError("AMBIGUOUS_CRM_IDENTITY")
         initial_code = dict(self.identities).get(car_id)
         initial_id = {code: identifier for identifier, code in self.identities}.get(row[1])
         if (initial_code is not None and initial_code != row[1]) or (initial_id is not None and initial_id != car_id):
             raise BindingError("LIVE_CAR_REGISTRY_DRIFT")
-        return {"id": row[0], "auto_number": row[1], "vin": row[2]}
+        return {"id": row[0], "auto_number": row[1], "vin": row[2], "published": row[3]}
 
     def _resolve_template_surfaces(self, code):
         raw = self.delegation.get("surface_templates")
@@ -330,7 +337,8 @@ class Provider:
         if self.dynamic_identities:
             with sqlite3.connect(self.db_path.as_uri() + "?mode=ro", uri=True, timeout=1) as conn:
                 rows = conn.execute("SELECT id FROM cars WHERE auto_number=?", (code,)).fetchall()
-            if len(rows) != 1 or self.resolve_identity(rows[0][0])["auto_number"] != code:
+            identity = self.resolve_identity(rows[0][0]) if len(rows) == 1 else {}
+            if identity.get("auto_number") != code or identity.get("published") != 1:
                 raise BindingError("PUBLISHED_CRM_IDENTITY_REQUIRED")
             return self._resolve_template_surfaces(code)
         raw = self.delegation["surfaces"].get(code)
@@ -640,11 +648,15 @@ class Provider:
         if self.dynamic_identities:
             identity = self.resolve_identity(event.get("car_id"))
             code = identity["auto_number"]
-            _same(event.get("car_code"), code, "EVENT_CRM_CAR_CODE_MISMATCH")
-            _same(event.get("vin"), identity["vin"], "EVENT_CRM_VIN_MISMATCH")
+            if event.get("car_code"):
+                _same(event.get("car_code"), code, "EVENT_CRM_CAR_CODE_MISMATCH")
+            if event.get("vin"):
+                _same(event.get("vin"), identity["vin"], "EVENT_CRM_VIN_MISMATCH")
+            expected_surfaces = self.resolve_surfaces(code) if identity["published"] == 1 else ()
         else:
             code = dict(self.identities).get(event.get("car_id"))
-        if code is None or tuple(surfaces) != self.resolve_surfaces(code):
+            expected_surfaces = self.resolve_surfaces(code) if code is not None else None
+        if expected_surfaces is None or tuple(surfaces) != tuple(expected_surfaces):
             raise BindingError("EVENT_SURFACE_SCOPE_MISMATCH")
         # The runtime owns BEGIN IMMEDIATE and the shared publication lock.
         # This independent read observes its already committed durable claim.
@@ -685,9 +697,61 @@ class Provider:
         path, record_hash = self._write_authorization(record)
         return dict(record, authorization_record_path=path, authorization_record_sha256=record_hash)
 
+    def resolve_visibility_surfaces(self, code):
+        if not self.dynamic_identities or type(code) is not str or re.fullmatch(r"UA-[0-9]{4}", code) is None:
+            raise BindingError("EXACT_VISIBILITY_CAR_CODE_REQUIRED")
+        with sqlite3.connect(self.db_path.as_uri() + "?mode=ro", uri=True, timeout=1) as conn:
+            rows = conn.execute("SELECT id FROM cars WHERE auto_number=?", (code,)).fetchall()
+        if len(rows) != 1 or self.resolve_identity(rows[0][0])["auto_number"] != code:
+            raise BindingError("EXACT_VISIBILITY_CAR_IDENTITY_REQUIRED")
+        return self._resolve_template_surfaces(code)
+
+    def authorize_visibility(self, car_id, actor_id):
+        if not self.dynamic_identities or not self.running_bot_verified:
+            raise BindingError("RUNNING_CRM_BOT_NOT_YET_VERIFIED")
+        _same(self.delegation.get("visibility_delegation"), VISIBILITY_DELEGATION,
+              "EXPLICIT_NATIVE_VISIBILITY_DELEGATION_REQUIRED")
+        hashes, receipt, controls, now, expiry = self._verify_live()
+        identity = self.resolve_identity(car_id)
+        if type(actor_id) is not int or actor_id <= 0:
+            raise BindingError("CURRENT_CRM_EDIT_PERMISSION_REQUIRED")
+        with sqlite3.connect(self.db_path.as_uri() + "?mode=ro", uri=True, timeout=1) as conn:
+            staff = conn.execute("SELECT active,role FROM staff WHERE user_id=?", (actor_id,)).fetchall()
+        if len(staff) != 1 or staff[0][0] != 1 or staff[0][1] not in self.delegation["operator_policy"]["roles"]:
+            raise BindingError("CURRENT_CRM_EDIT_PERMISSION_REQUIRED")
+        return {"car_id":car_id, "actor_id":actor_id, "permission":"EDIT_CAR", "identity":identity,
+                "delegation_sha256":self.delegation_sha, "artifact_sha256":hashes,
+                "canonical_task_id":self.delegation["task_id"], "controls":controls,
+                "gate_b_receipt_sha256":hashes["gate_b"], "deployment_transaction_id":receipt["transaction_id"],
+                "writer_fence_verified":True, "observed_ms":now, "expires_ms":expiry}
+
+    def verify_hidden(self, event, row):
+        # Source hash is part of V5_REQUIRED_CODE and the installed manifest.
+        code = row.get("auto_number")
+        if not code:
+            # No path is guessed for an incomplete draft. A prior public
+            # identity is evidence that this row needs canonical retirement.
+            if dict(self.identities).get(row["id"]):
+                raise BindingError("DRAFT_PRIOR_PUBLIC_IDENTITY_REQUIRES_RETIREMENT")
+            with sqlite3.connect(self.db_path.as_uri() + "?mode=ro", uri=True, timeout=1) as conn:
+                _same(schema_sha256(conn), self.delegation["schema_sha256"], "LIVE_SCHEMA_DRIFT")
+                previous = conn.execute(f"SELECT 1 FROM {outbox.V5_TABLE} WHERE car_id=? AND car_code!='' LIMIT 1",
+                                        (row["id"],)).fetchone()
+                current = conn.execute("SELECT auto_number,published FROM cars WHERE id=?", (row["id"],)).fetchone()
+            if previous is not None or current is None or current[0] or current[1] == 1:
+                raise BindingError("DRAFT_PRIOR_PUBLIC_IDENTITY_REQUIRES_RETIREMENT")
+            facts = dict(car_id=row["id"], published=0, row_sha256=sha(encoded(row)),
+                public_projection="NOT_APPLICABLE", retired_public_views_verified=True,
+                verification_scope="NO_PUBLIC_IDENTITY_OR_PRIOR_V5_PUBLIC_OPERATION",
+                delegation_sha256=self.delegation_sha)
+            return dict(facts, visibility_receipt_sha256=sha(encoded(facts)))
+        import visibility_lifecycle
+        return visibility_lifecycle.verify_hidden(self.binding(), row, event)
+
     def binding(self):
         detail = self.delegation["detail_url"]
-        extras = {"resolve_identity": self.resolve_identity} if self.dynamic_identities else {}
+        extras = {"resolve_identity": self.resolve_identity, "verify_hidden": self.verify_hidden,
+                  "resolve_visibility_surfaces": self.resolve_visibility_surfaces, "authorize_visibility": self.authorize_visibility} if self.dynamic_identities else {}
         return runtime.Binding(db_path=self.db_path, publication_lock=self.lock_path,
             journal_root=self.journal_root, resolve_surfaces=self.resolve_surfaces, authorize=self.authorize,
             owner_chat_id=self.delegation["owner_chat_id"], detail_url=detail,
@@ -698,14 +762,46 @@ class Provider:
         self.running_bot_verified = True
 
 
+def bootstrap_if_configured(app, *, anchor_path, expected_anchor_sha256=None, test_root=None):
+    """Allow a first Stage3 CRM start without inventing runtime authority.
+
+    Only a genuinely absent anchor selects NOT_CONFIGURED. A broken symlink,
+    nonregular or malformed existing anchor still follows strict validation
+    and raises. No file, token, delegation, queue or job is created here.
+    """
+    runtime.begin_crm_registration(app)
+    root = LIVE_ROOT if test_root is None else Path(test_root)
+    path = Path(anchor_path)
+    if not root.is_absolute() or root.is_symlink() or not path.is_absolute():
+        raise BindingError("EXPLICIT_ABSOLUTE_ANCHOR_REQUIRED")
+    try:
+        relative = str(path.relative_to(root))
+    except ValueError as exc:
+        raise BindingError("ANCHOR_OUTSIDE_ROOT") from exc
+    path = _path(root, relative)
+    try:
+        path.lstat()
+    except FileNotFoundError:
+        if expected_anchor_sha256 is not None:
+            raise
+        if app.bot_data.get(runtime.BINDING_KEY) is not None:
+            raise BindingError("EXISTING_RUNTIME_BINDING_CANNOT_BE_DOWNGRADED")
+        runtime.mark_crm_unconfigured(app)
+        return None
+    return bootstrap(app, anchor_path=path, expected_anchor_sha256=expected_anchor_sha256,
+                     test_root=test_root)
+
+
 def bootstrap(app, *, anchor_path, expected_anchor_sha256=None, test_root=None):
     """Populate the existing app before runtime.register; never create another bot.
 
     The explicit anchor must be written by the verified installer only after a
-    real deployment receipt. Missing recipient proof or immutable artifacts stop
-    startup; operational controls stop only price publication. This function
-    does not register jobs or report deployment success.
+    real deployment receipt. Existing malformed recipient proof or immutable
+    artifacts stop startup; the explicit bootstrap_if_configured wrapper alone
+    permits a genuinely absent first-install anchor. Operational controls stop
+    mutations. This strict function registers no jobs or deployment success.
     """
+    runtime.begin_crm_registration(app)
     provider = Provider(anchor_path=anchor_path, expected_anchor_sha256=expected_anchor_sha256,
                         test_root=test_root)
     binding = provider.binding()
@@ -718,6 +814,7 @@ def bootstrap(app, *, anchor_path, expected_anchor_sha256=None, test_root=None):
         if prior_post_init is not None:
             await prior_post_init(application)
         provider.verify_running_bot(application.bot)
+        runtime.mark_crm_active(application)
 
     # PTB calls post_init after Bot.initialize, before polling starts. Directly
     # constructed test/custom lifecycle applications must run this hook too;

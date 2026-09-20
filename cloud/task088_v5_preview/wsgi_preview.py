@@ -173,10 +173,16 @@ class Preview:
 
     def __call__(self,environ,start_response):
         common = [('Cache-Control','private, no-store'),('X-Content-Type-Options','nosniff'),
-                  ('X-Robots-Tag','noindex, nofollow, noarchive'),('Referrer-Policy','no-referrer')]
+                   ('X-Robots-Tag','noindex, nofollow, noarchive'),('Referrer-Policy','no-referrer')]
+        # Only the two counter surfaces may read the exact pinned catalogue.
+        # No API, Production origin, arbitrary same-origin path or write method
+        # is added; all requests still pass the manifest/auth/GET-HEAD boundary.
+        counter_read = (self.origin.geturl() + '/video/katalog.html'
+                        if environ.get('PATH_INFO') in ('/video/index.html', '/video/katalog.html')
+                        and '/video/katalog.html' in self.files else "'none'")
         normal_policy = ("default-src 'self'; script-src 'self' 'unsafe-inline'; "
                    "style-src 'self' 'unsafe-inline'; img-src 'self' data: " + self.public_origin +
-                   "; media-src 'self' " + self.public_origin + "; font-src 'self' data:; connect-src 'none'; "
+                   "; media-src 'self' " + self.public_origin + "; font-src 'self' data:; connect-src " + counter_read + "; "
                    "object-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'")
         def response(status,body=b'',extra=(),mime='text/plain; charset=utf-8',policy=None):
             start_response(status,common+[('Content-Security-Policy',policy or normal_policy),

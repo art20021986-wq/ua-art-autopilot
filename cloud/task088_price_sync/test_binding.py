@@ -19,6 +19,10 @@ binding = load("uaart_price_sync_binding", HERE / "uaart_price_sync_binding.py")
 
 class BindingTests(unittest.TestCase):
     def setUp(self):
+        # This fixture constructs separate isolated CRM applications in one
+        # interpreter; do not leak their process-local readiness to later tests.
+        previous_activation = runtime._crm_activation
+        self.addCleanup(setattr, runtime, "_crm_activation", previous_activation)
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)
         self.now = 1000000

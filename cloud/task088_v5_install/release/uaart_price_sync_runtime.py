@@ -218,8 +218,16 @@ class Binding:
     clock: object = None
     resolve_identity: object = None
     worker_count: int = 4
+    verify_hidden: object = None
+    resolve_visibility_surfaces: object = None
+    authorize_visibility: object = None
 
     def __post_init__(self):
+        for hook in (self.resolve_visibility_surfaces, self.authorize_visibility):
+            if hook is not None and not callable(hook):
+                raise SyncError("VISIBILITY_BINDING_HOOK_MUST_BE_CALLABLE")
+        if self.verify_hidden is not None and not callable(self.verify_hidden):
+            raise SyncError("HIDDEN_VIEW_VERIFIER_MUST_BE_CALLABLE")
         if self.resolve_identity is not None and not callable(self.resolve_identity):
             raise SyncError("IDENTITY_RESOLVER_MUST_BE_CALLABLE")
         if type(self.worker_count) is not int or not 1 <= self.worker_count <= 8:
@@ -291,7 +299,7 @@ def _safe_bytes(path):
         os.close(descriptor)
 
 
-def _atomic_write(path, content, mode=0o600):
+def _atomic_write(path, content, mode=0o600, *, before_replace=None):
     descriptor, name = tempfile.mkstemp(prefix=".ua-price-sync-", dir=path.parent)
     temporary = Path(name)
     try:
@@ -300,6 +308,11 @@ def _atomic_write(path, content, mode=0o600):
             handle.write(content)
             handle.flush()
             os.fsync(handle.fileno())
+        # Forward public writes may expire during render/flush/fsync. Invoke
+        # the caller's authority check at the actual replace boundary. Journal
+        # and recovery writes omit this optional hook deliberately.
+        if before_replace is not None:
+            before_replace()
         os.replace(temporary, path)
         _fsync_directory(path.parent)
     finally:
@@ -346,6 +359,7 @@ class Worker:
 
     def record_runtime_failure(self, error):
         """Independent durable STOP/notification path, including unavailable CRM DB."""
+        require_crm_publication_ready()
         reason = str(error) if isinstance(error, (SyncError, outbox.OutboxError)) else (
             "SQLITE_RUNTIME_FAILURE" if isinstance(error, sqlite3.Error) else "PRICE_SYNC_RUNTIME_IO_FAILURE")
         if not re.fullmatch(r"[A-Z][A-Z0-9_]{0,99}", reason):
@@ -437,6 +451,7 @@ class Worker:
 
     @contextmanager
     def connection(self):
+        require_crm_publication_ready()
         # Never create an absent production database by a typo in configuration.
         descriptor = sqlite3.connect(self.binding.db_path.as_uri() + "?mode=rw", uri=True, timeout=2)
         try:
@@ -446,6 +461,7 @@ class Worker:
 
     @contextmanager
     def lock(self, path=None):
+        require_crm_publication_ready()
         descriptor = os.open(path or self.binding.publication_lock, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
         try:
             fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -714,6 +730,7 @@ class Worker:
 
     def queue_daily_unavailable(self):
         """The daily reminder remains possible while the CRM database is down."""
+        require_crm_publication_ready()
         today = datetime.fromtimestamp(self._wall_clock() / 1000, ZoneInfo("Asia/Ho_Chi_Minh")).date().isoformat()
         folder = self.binding.journal_root / "runtime_failures"
         folder.mkdir(mode=0o700, exist_ok=True)
@@ -987,6 +1004,54 @@ class Worker:
 
 
 BINDING_KEY = "uaart_price_sync_verified_binding_v1"
+REGISTRATION_KEY = "uaart_price_sync_registration_v1"
+_crm_activation = None
+
+
+def activation_available():
+    """Process-local readiness, never a replacement for operation authority.
+
+    None identifies a separate process that has not registered this CRM app;
+    its canonical installer/publisher must enforce its own real gates. A fork
+    never inherits an active CRM credential or readiness grant.
+    """
+    if _crm_activation is None:
+        return None
+    pid, ready = _crm_activation
+    return ready if pid == os.getpid() else False
+
+
+def begin_crm_registration(app):
+    global _crm_activation
+    _crm_activation = (os.getpid(), False)
+    app.bot_data[REGISTRATION_KEY] = {"state":"PENDING_VERIFIED_ACTIVATION", "worker_jobs_registered":False}
+
+
+def mark_crm_unconfigured(app):
+    begin_crm_registration(app)
+    app.bot_data[REGISTRATION_KEY] = {"state":"NOT_CONFIGURED", "reason":"INSTALLER_ANCHOR_ABSENT",
+                                    "worker_jobs_registered":False}
+
+
+def mark_crm_active(app):
+    global _crm_activation
+    if not isinstance(app.bot_data.get(BINDING_KEY), Binding):
+        raise SyncError("PRICE_SYNC_NOT_INSTALLED_WITH_VERIFIED_BINDING")
+    _crm_activation = (os.getpid(), True)
+    jobs_registered = app.bot_data.get(REGISTRATION_KEY, {}).get("worker_jobs_registered") is True
+    app.bot_data[REGISTRATION_KEY] = {"state":"VERIFIED_RUNNING_BOT", "worker_jobs_registered":jobs_registered}
+
+
+def require_crm_price_ready():
+    if activation_available() is not True:
+        raise SyncError("PRICE_SYNC_RUNTIME_NOT_CONFIGURED")
+
+
+def require_crm_publication_ready():
+    # Only the explicit unconfigured CRM process is restricted here. This is
+    # not a substitute for real canonical authority in installer processes.
+    if activation_available() is False:
+        raise SyncError("PRICE_SYNC_RUNTIME_NOT_CONFIGURED")
 
 
 def register(app):
@@ -999,12 +1064,16 @@ def register(app):
     worker = V5Worker(binding)
 
     async def tick(context):
+        if activation_available() is False:
+            return
         try:
             await asyncio.to_thread(worker.tick)
         finally:
             await worker.deliver_notices(context.bot)
 
     async def daily(context):
+        if activation_available() is False:
+            return
         try:
             await asyncio.to_thread(worker.queue_daily)
         except (sqlite3.Error, OSError, SyncError, outbox.OutboxError) as error:
@@ -1019,6 +1088,7 @@ def register(app):
     if not app.job_queue.get_jobs_by_name("uaart-price-sync-daily-v1"):
         app.job_queue.run_daily(daily, time=wall_time(10, 0, tzinfo=ZoneInfo("Asia/Ho_Chi_Minh")),
                                 name="uaart-price-sync-daily-v1", job_kwargs={"max_instances": 1, "coalesce": True})
+    app.bot_data.setdefault(REGISTRATION_KEY, {})["worker_jobs_registered"] = True
     return worker
 
 
@@ -1044,6 +1114,7 @@ class V5Worker(Worker):
 
     @contextmanager
     def _shared_lock(self):
+        require_crm_publication_ready()
         # Brief admission only: no HTTP, Telegram or long-lived DB transaction.
         deadline = time.monotonic() + 2
         descriptor = os.open(self.binding.publication_lock, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
@@ -1078,10 +1149,12 @@ class V5Worker(Worker):
         if values is None:
             raise SyncError('V5_CAR_MISSING')
         row = dict(zip((item[0] for item in cursor.description), values))
-        if (row.get('published') != 1 or str(row.get('auto_number') or '') != event['car_code']
-                or str(row.get('vin') or '') != event['vin']):
+        if row.get('published') not in (None, 0, 1):
+            raise SyncError('V5_INVALID_VISIBILITY')
+        if ((event['car_code'] and str(row.get('auto_number') or '') != event['car_code'])
+                or (event['vin'] and str(row.get('vin') or '') != event['vin'])):
             raise SyncError('V5_CAR_IDENTITY_CHANGED')
-        if conn.execute('SELECT COUNT(*) FROM cars WHERE auto_number=?', (event['car_code'],)).fetchone()[0] != 1:
+        if event['car_code'] and conn.execute('SELECT COUNT(*) FROM cars WHERE auto_number=?', (event['car_code'],)).fetchone()[0] != 1:
             raise SyncError('V5_DUPLICATE_CAR_CODE')
         return row
 
@@ -1092,12 +1165,18 @@ class V5Worker(Worker):
         else:
             actual = self.binding.resolve_identity(event['car_id'])
             if (type(actual) is not dict or actual.get('id') != event['car_id']
-                    or actual.get('auto_number') != event['car_code']
-                    or str(actual.get('vin') or '') != event['vin']):
+                    or (event['car_code'] and actual.get('auto_number') != event['car_code'])
+                    or (event['vin'] and str(actual.get('vin') or '') != event['vin'])):
                 raise SyncError('V5_AUTHENTICATED_CAR_IDENTITY_MISMATCH')
 
     def _v5_surfaces(self, event):
         self._verified_identity(event)
+        with self.connection() as conn:
+            row = self._full_row(conn, event)
+        if row.get('published') != 1:
+            return ()
+        if not re.fullmatch(r'UA-[0-9]{4}', event['car_code']):
+            raise SyncError('V5_PUBLICATION_BEFORE_DRAFT_INTENT_SETTLED')
         surfaces = tuple(self.binding.resolve_surfaces(event['car_code']))
         kinds = {s.kind for s in surfaces}
         if not {'CARD', 'CATALOG', 'HOME'} <= kinds or not kinds <= {'CARD', 'CATALOG', 'HOME'}:
@@ -1172,6 +1251,8 @@ class V5Worker(Worker):
                 if current['state'] != 'CLAIMED' or current['claim_nonce'] != event['claim_nonce']:
                     raise SyncError('V5_DB_CHECKPOINT_CHANGED')
                 before = self._full_row(conn, current)
+                if bool(surfaces) != (before.get('published') == 1):
+                    raise SyncError('V5_VISIBILITY_CHANGED')
                 schema_version = self._schema_version(conn)
                 before_all = {r[0]: r for r in conn.execute('SELECT * FROM cars').fetchall()}
                 if current['expected_old_json'] is not None:
@@ -1194,13 +1275,17 @@ class V5Worker(Worker):
                 # effect. The same short shared lock protects capture and commit.
                 prepared = dict(current, before_json=json_bytes(before).decode(),
                                 after_json=json_bytes(expected).decode(),
-                                ukraine_usd=canonical(expected['price_uah']),
+                                ukraine_usd=self._price_pair(expected)[0],
                                 georgia_usd=canonical(expected['price_georgia'],georgia=True))
-                _, baseline = self._journal(prepared,surfaces)
-                if baseline['db_before'] != before:
-                    raise SyncError('V5_PRECOMMIT_RECOVERY_BASELINE_CHANGED')
-                for surface,item in zip(surfaces,baseline['files']):
-                    self._check_surface(_safe_bytes(surface.path),surface,prepared,item,require_desired=False)
+                if surfaces:
+                    _, baseline = self._journal(prepared,surfaces)
+                    if baseline['db_before'] != before:
+                        raise SyncError('V5_PRECOMMIT_RECOVERY_BASELINE_CHANGED')
+                    for surface,item in zip(surfaces,baseline['files']):
+                        self._check_surface(_safe_bytes(surface.path),surface,prepared,item,require_desired=False)
+                else:
+                    folder = self._data_folder(current)
+                    _atomic_write(folder / ('data_before_' + digest(json_bytes(before)) + '.json'), json_bytes(before))
                 if self.clock() >= authority['expires_ms']:
                     raise SyncError('V5_AUTHORITY_EXPIRED_BEFORE_DB_COMMIT')
                 conn.execute('UPDATE cars SET ' + ','.join(name + '=?' for name in assignments) + ' WHERE id=?',
@@ -1230,8 +1315,8 @@ class V5Worker(Worker):
                     raise SyncError('V5_OTHER_CAR_CHANGED')
                 event = outbox.transition_operation(conn,event_key=current['event_key'],nonce=current['claim_nonce'],
                     expected_state='CLAIMED',new_state='DB_COMMITTED',now_ms=now,
-                    old_value=canonical(before[current['field']],georgia=current['field']=='price_georgia'),
-                    ukraine_usd=canonical(after['price_uah']),georgia_usd=canonical(after['price_georgia'],georgia=True),
+                    old_value=(None if before[current['field']] is None else canonical(before[current['field']],georgia=current['field']=='price_georgia')),
+                    ukraine_usd=self._price_pair(after)[0],georgia_usd=self._price_pair(after)[1],
                     before_json=json_bytes(before).decode(),after_json=json_bytes(after).decode(),db_committed_ms=now)
                 outbox.audit_operation(conn,event['event_key'],'DB_COMMITTED',
                     {'old_value':before[current['field']],'new_value':stored,'before':before,'after':after,
@@ -1248,8 +1333,117 @@ class V5Worker(Worker):
                 conn.rollback()
                 raise
         # This helper opens an independent connection after commit/close.
-        self._db_readback(event, record=True)
+        if surfaces:
+            self._db_readback(event, record=True)
+        else:
+            self._data_readback(event)
         return self._operation(event['event_key'])
+
+    @staticmethod
+    def _price_pair(row):
+        # A draft may not have UA yet. Its missing value is preserved, not
+        # silently converted to a synthetic zero for a public renderer.
+        return (None if row.get('price_uah') is None else canonical(row['price_uah']),
+                canonical(row.get('price_georgia'), georgia=True))
+
+    def _data_folder(self, event):
+        folder = self.binding.journal_root / ('v5_' + event['event_key'])
+        folder.mkdir(mode=0o700, exist_ok=True)
+        if folder.is_symlink() or stat.S_IMODE(folder.stat().st_mode) & 0o077:
+            raise SyncError('V5_PRIVATE_JOURNAL_REQUIRED')
+        return folder
+
+    def _data_readback(self, event):
+        # Reconcile the actual committed operation on a separate connection.
+        # Visibility/description changes are preserved; a newer price is never
+        # overwritten to make an old operation appear successful.
+        with self.connection() as conn:
+            actual_event = outbox.get_operation(conn, event['event_key'])
+            row = self._full_row(conn, event)
+            schema = self._schema_version(conn)
+            item = conn.execute(f"SELECT payload_json FROM {outbox.V5_AUDIT} WHERE event_key=? AND fact='DB_COMMITTED'",
+                                (event['event_key'],)).fetchone()
+        if item is None or actual_event['claim_nonce'] != event['claim_nonce']:
+            raise SyncError('V5_DB_COMMIT_AUDIT_MISSING')
+        recorded = json.loads(item[0])
+        details = recorded.get('details', {})
+        after = json.loads(event['after_json'])
+        if (recorded.get('operation_id') != event['event_key']
+                or recorded.get('car_id') != event['car_id']
+                or details.get('schema_sha256') != schema
+                or details.get('operation_sequence') != event['sequence']
+                or details.get('after') != after
+                or details.get('record_version_after') != digest(json_bytes(after))):
+            raise SyncError('V5_DATA_COMMIT_PROVENANCE_MISMATCH')
+        pair = self._price_pair(row)
+        if (self._price_pair(after) != pair or pair != (event['ukraine_usd'], event['georgia_usd'])
+                or pair[0 if event['field'] == 'price_uah' else 1] != event['value']):
+            raise SyncError('V5_NEWER_PRICE_PRESERVED_RECONCILIATION_REQUIRED')
+        return row, schema
+
+    def _complete_hidden(self, event):
+        if not callable(self.binding.verify_hidden):
+            raise SyncError('V5_BOUND_HIDDEN_VIEW_VERIFIER_REQUIRED')
+        row, schema = self._data_readback(event)
+        if row.get('published') == 1:
+            raise SyncError('V5_VISIBILITY_CHANGED')
+        # The canonical lifecycle verifier inspects all manifest-bound served
+        # paths. It is separate from a price receipt and must not invent an
+        # HTTP/site PASS from the CRM flag alone.
+        visibility = self.binding.verify_hidden(event, row)
+        required = dict(car_id=event['car_id'], published=0,
+                        row_sha256=digest(json_bytes(row)), public_projection='NOT_APPLICABLE',
+                        retired_public_views_verified=True)
+        if (type(visibility) is not dict or any(visibility.get(k) != v for k, v in required.items())
+                or not re.fullmatch(r'[0-9a-f]{64}', str(visibility.get('visibility_receipt_sha256', '')))):
+            raise SyncError('V5_VERIFIED_HIDDEN_VIEW_RECEIPT_REQUIRED')
+        with self._shared_lock(), self.connection() as conn:
+            authority = self._proof(event, ())
+            conn.execute('BEGIN IMMEDIATE')
+            try:
+                if self._full_row(conn, event) != row or self._schema_version(conn) != schema:
+                    raise SyncError('V5_DATA_COMPLETION_CURRENT_ROW_CHANGED')
+                # Revalidate local visibility under the same fence as the DB
+                # checkpoint. No network is permitted by this callback contract.
+                current_visibility = self.binding.verify_hidden(event, row)
+                if current_visibility != visibility:
+                    raise SyncError('V5_HIDDEN_VIEW_CHANGED_BEFORE_COMPLETION')
+                now = self.clock()
+                receipt = {'operation_id':event['event_key'], 'claim_nonce':event['claim_nonce'],
+                    'car_id':event['car_id'], 'car_code':event['car_code'], 'vin':event['vin'],
+                    'actor_id':event['actor_id'], 'chat_id':event['chat_id'], 'market':event['field'],
+                    'old_value':event['old_value'], 'new_value':event['value'],
+                    'ua':event['ukraine_usd'], 'ge':event['georgia_usd'],
+                    'db_readback':'PASS', 'protected_data':'PASS', 'verification':'PASS',
+                    'public_projection':'NOT_APPLICABLE', 'site_verification':'NOT_APPLICABLE',
+                    'separate_connection':True, 'current_row_sha256':digest(json_bytes(row)),
+                    'committed_row_sha256':digest(event['after_json'].encode()),
+                    'schema_sha256':schema, 'visibility':visibility, 'authority':authority,
+                    'verified_ms':now}
+                encoded = json_bytes(receipt)
+                receipt_path = self._data_folder(event) / ('data_receipt_' + digest(encoded) + '.json')
+                if receipt_path.exists():
+                    if _safe_bytes(receipt_path) != encoded:
+                        raise SyncError('V5_DATA_RECEIPT_CONTENT_MISMATCH')
+                else:
+                    _atomic_write(receipt_path, encoded)
+                if self.clock() >= authority['expires_ms']:
+                    raise SyncError('V5_AUTHORITY_EXPIRED_BEFORE_DB_COMMIT')
+                event = outbox.complete_data_operation(conn, event_key=event['event_key'],
+                    nonce=event['claim_nonce'], receipt=receipt, receipt_sha256=digest(encoded), now_ms=now)
+                label = event['car_code'] or ('CRM #' + str(event['car_id']))
+                outbox.queue_operation_notice(conn, event_key=event['event_key'], kind='SUCCESS',
+                    body=f'✅ Сохранено и проверено: {label}. Объявление не опубликовано; данные сохранены.', now_ms=now)
+                if self.clock() >= authority['expires_ms']:
+                    raise SyncError('V5_AUTHORITY_EXPIRED_BEFORE_DB_COMMIT')
+                conn.commit()
+            except Exception:
+                conn.rollback()
+                raise
+        completed = self._operation(event['event_key'])
+        if completed['state'] != 'COMPLETED' or completed['receipt_sha256'] != digest(encoded):
+            raise SyncError('V5_DATA_COMPLETION_LEDGER_READBACK_MISMATCH')
+        return completed
 
     def _db_readback(self, event, *, record=False):
         with self.connection() as conn:
@@ -1443,31 +1637,49 @@ class V5Worker(Worker):
 
     def _publish(self,event,surfaces):
         self._db_readback(event,record=True)
-        with self._shared_lock():
+        with self._shared_lock(), self.connection() as conn:
             authority=self._proof(event,surfaces)
-            folder,manifest=self._journal(event,surfaces)
-            # Prove all current local preimages before any change. A crash after
-            # a subset of replaces resumes only known before/after fragments.
-            for surface,item in zip(surfaces,manifest['files']):
-                self._check_surface(_safe_bytes(surface.path),surface,event,item,require_desired=False)
-            for surface,item in zip(surfaces,manifest['files']):
-                if not surface.price_applicable:
-                    continue
-                current=_safe_bytes(surface.path);text=current.decode()
-                left,right=self._span(text,surface,event['car_code'])
-                desired=self._desired(event,surface)
-                after=(text[:left]+desired+text[right:]).encode()
-                self._check_surface(after,surface,event,item,require_desired=True)
-                if after != current:
-                    _atomic_write(surface.path,after,stat.S_IMODE(surface.path.stat().st_mode))
-            # No network and no DB transaction while switching local files.
-        with self.connection() as conn:
+            def require_fresh_authority():
+                if self.clock() >= authority['expires_ms']:
+                    raise SyncError('V5_AUTHORITY_EXPIRED_BEFORE_DB_COMMIT')
             conn.execute('BEGIN IMMEDIATE')
-            event=outbox.transition_operation(conn,event_key=event['event_key'],nonce=event['claim_nonce'],
-                expected_state='DB_COMMITTED',new_state='SITE_PUBLISHED',now_ms=self.clock())
-            outbox.audit_operation(conn,event['event_key'],'SITE_PUBLISHED',
-                {'manifest_sha256':digest(json_bytes(manifest)),'authority':authority},self.clock())
-            conn.commit()
+            try:
+                # The flag and entire rendered row stay fixed until the last
+                # local file and its checkpoint are committed. A DB writer
+                # cannot unpublish between authorization and an atomic replace.
+                row = self._full_row(conn,event)
+                if row.get('published') != 1:
+                    raise SyncError('V5_VISIBILITY_CHANGED')
+                if row != json.loads(event['after_json']):
+                    raise SyncError('V5_PUBLIC_SWITCH_CURRENT_ROW_CHANGED')
+                current = outbox.require_head(conn,event['event_key'])
+                if current['state'] != 'DB_COMMITTED' or current['claim_nonce'] != event['claim_nonce']:
+                    raise SyncError('V5_DB_CHECKPOINT_CHANGED')
+                folder,manifest=self._journal(event,surfaces)
+                for surface,item in zip(surfaces,manifest['files']):
+                    self._check_surface(_safe_bytes(surface.path),surface,event,item,require_desired=False)
+                for surface,item in zip(surfaces,manifest['files']):
+                    if not surface.price_applicable:
+                        continue
+                    if self.clock() >= authority['expires_ms']:
+                        raise SyncError('V5_AUTHORITY_EXPIRED_BEFORE_DB_COMMIT')
+                    current=_safe_bytes(surface.path);text=current.decode()
+                    left,right=self._span(text,surface,event['car_code'])
+                    after=(text[:left]+self._desired(event,surface)+text[right:]).encode()
+                    self._check_surface(after,surface,event,item,require_desired=True)
+                    if after != current:
+                        _atomic_write(surface.path,after,stat.S_IMODE(surface.path.stat().st_mode),
+                                      before_replace=require_fresh_authority)
+                require_fresh_authority()
+                event=outbox.transition_operation(conn,event_key=event['event_key'],nonce=event['claim_nonce'],
+                    expected_state='DB_COMMITTED',new_state='SITE_PUBLISHED',now_ms=self.clock())
+                outbox.audit_operation(conn,event['event_key'],'SITE_PUBLISHED',
+                    {'manifest_sha256':digest(json_bytes(manifest)),'authority':authority},self.clock())
+                require_fresh_authority()
+                conn.commit()
+            except BaseException:
+                conn.rollback()
+                raise
         return self._operation(event['event_key'])
 
     def _verify(self,event,surfaces):
@@ -1570,7 +1782,7 @@ class V5Worker(Worker):
         reason=re.sub(r'[^A-Z0-9_]','_',reason.upper())[:100] or 'V5_OPERATION_FAILED'
         operational_controls={'ACTIVE_OR_UNRECONCILED_HALT_FILE','CONTROL_BLOCKS_PRICE_PUBLICATION',
                               'CONTROL_CACHE_STALE_OR_WRONG_SOURCE','RUNNING_CRM_BOT_NOT_YET_VERIFIED',
-                              'V5_AUTHORITY_EXPIRED_BEFORE_DB_COMMIT','V5_PUBLIC_PRICE_NOT_CONVERGED'}
+                              'V5_AUTHORITY_EXPIRED_BEFORE_DB_COMMIT','V5_PUBLIC_PRICE_NOT_CONVERGED','V5_VISIBILITY_CHANGED'}
         retryable=((isinstance(error,(OSError,sqlite3.OperationalError)) and not isinstance(error,SyncError))
                    or reason in operational_controls)
         with self.connection() as conn:
@@ -1588,11 +1800,44 @@ class V5Worker(Worker):
                 body=f"🔴 Изменение цены {event['car_code']} не завершено. Операция сохранена; требуется проверка восстановления.",now_ms=now)
             conn.commit()
 
+    def reconcile_hidden_operation(self, key):
+        """One explicit actual-outcome check after canonical view retirement.
+
+        This never clears blocked flags to replay a price write. It may only
+        verify and finish the original durable DB-committed operation.
+        """
+        require_crm_publication_ready()
+        event = self._operation(key)
+        with self.lock(self.binding.journal_root / ('car_%d.lock' % event['car_id'])):
+            event = self._operation(key)
+            if event['state'] == 'COMPLETED':
+                return {'event_key':key, 'state':'COMPLETED', 'replay':True}
+            if event['state'] not in ('DB_COMMITTED','SITE_PUBLISHED','VERIFIED'):
+                raise SyncError('V5_HIDDEN_RECONCILIATION_REQUIRES_DURABLE_COMMIT')
+            try:
+                event = self._complete_hidden(event)
+                return {'event_key':key, 'state':event['state'], 'public_projection':'NOT_APPLICABLE'}
+            except Exception as error:
+                reason = str(error) if isinstance(error,(SyncError,outbox.OutboxError)) else type(error).__name__
+                reason = re.sub(r'[^A-Z0-9_]','_',reason.upper())[:100]
+                # Content-bound diagnostic facts are idempotent; a second
+                # bounded observation cannot mutate the first failed attempt.
+                facts = {'reason':reason, 'checkpoint':event['state'], 'claim_nonce':event['claim_nonce']}
+                with self.connection() as conn:
+                    conn.execute('BEGIN IMMEDIATE')
+                    outbox.audit_operation(conn,key,'HIDDEN_RECONCILIATION_' + digest(json_bytes(facts))[:32],facts,self.clock())
+                    conn.commit()
+                return {'event_key':key, 'state':event['state'], 'reconciliation_required':reason}
+
     def process_operation(self,key):
+        require_crm_publication_ready()
         event=self._operation(key)
         car_lock=self.binding.journal_root/('car_%d.lock'%event['car_id'])
         try:
             with self.lock(car_lock):
+                event=self._operation(key)
+                if event['blocked']:
+                    return {'event_key':key,'state':event['state'],'blocked':True,'reconciliation_required':event['last_error']}
                 with self.connection() as conn:
                     conn.execute('BEGIN IMMEDIATE')
                     event=outbox.claim_operation(conn,event_key=key,nonce=secrets.token_hex(32),now_ms=self.clock())
@@ -1602,6 +1847,9 @@ class V5Worker(Worker):
                 surfaces=self._v5_surfaces(event)
                 if event['state']=='CLAIMED':
                     event=self._commit_selected_price(event,surfaces)
+                if not surfaces:
+                    event=self._complete_hidden(event)
+                    return {'event_key':key,'state':event['state'],'public_projection':'NOT_APPLICABLE'}
                 if event['state']=='DB_COMMITTED':
                     event=self._publish(event,surfaces)
                 if event['state']=='SITE_PUBLISHED':
@@ -1616,6 +1864,7 @@ class V5Worker(Worker):
             return {'event_key':key,'state':self._operation(key)['state'],'error':type(error).__name__}
 
     def tick(self):
+        require_crm_publication_ready()
         from concurrent.futures import ThreadPoolExecutor
         with self.connection() as conn:
             rows=conn.execute(f"SELECT pending.event_key FROM {outbox.V5_TABLE} pending WHERE pending.state!='COMPLETED' "
@@ -1630,6 +1879,7 @@ class V5Worker(Worker):
 
     def queue_daily(self):
         """Report the active v5 ledger, including unresolved delivery ambiguity."""
+        require_crm_publication_ready()
         date=datetime.fromtimestamp(self.clock()/1000,ZoneInfo('Asia/Ho_Chi_Minh')).date().isoformat()
         with self.connection() as conn:
             conn.execute('BEGIN IMMEDIATE')
@@ -1645,6 +1895,7 @@ class V5Worker(Worker):
             conn.commit()
 
     async def deliver_notices(self,bot):
+        require_crm_publication_ready()
         # Retain existing owner incident/daily delivery without using it as a
         # success route. The new queue always uses the initiating operator chat.
         await super().deliver_notices(bot)
