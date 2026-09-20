@@ -1,7 +1,7 @@
 {
   "contract": "UAART-CRITICAL-RECOVERY-20260920-3",
-  "recorded_at": "2026-09-20T10:13:38Z",
-  "status": "AVAILABILITY_RESTORED_CONTROL_PLANE_RECONCILIATION_PENDING",
+  "recorded_at": "2026-09-20T11:50:00Z",
+  "status": "AVAILABILITY_AND_CONTROL_PLANE_RECOVERED",
   "owner_request": "У меня не работает сайт до сих пор. Запусти немедленное восстановление.",
   "owner_failure_treated_as_authoritative": true,
   "production_restart_executed": false,
@@ -21,14 +21,14 @@
     "owner_specific_network_verified": false
   },
   "ua0022_reconciliation": {
-    "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "main": "b9c985ac924739b351e4d5535499bb6516917daf",
     "transaction_id": "tx-35490449348-334c361c22ebee11",
     "task": "UA-ART-UA0022-PUBLISH-REPAIR-003",
     "installed_runtime_matches_manifest": true,
     "install_verify_receipt": "PASS",
     "publication_result": "PASS",
     "rollback_performed": false,
-    "current_status": "ROLLING_BACK / BLOCKED_ROOT_CAUSE / EMERGENCY_HALT",
+    "current_status": "FINISHED / FINISHED / HALT_REMOVED",
     "historical_controller_failure": "PUBLIC_BYTES_MISMATCH",
     "historical_rollback_preflight_failure": "AUTOSTART_NONCE_RESERVATION_MISSING / TRANSACTION_LEDGER_INVALID",
     "old_recovery_task": "TASK119-EMERGENCY-SITE-RECOVERY-R2 consumed; approval expired"
@@ -45,29 +45,30 @@
   },
   "safeguards": {
     "direct_reload_used_to_bypass_guard": false,
-    "halt_removed": false,
+    "halt_removed": true,
     "expired_launch_replayed": false,
     "transaction_reset_to_open": false,
     "rollback_retried": false,
     "new_preview_or_pr114_installation": false
   },
-  "next_required": "Rebuild the UA0022 data-only forward-reconciliation candidate from exact immutable main blob bytes; hash-bind fresh health and actual install evidence; add fail-closed negative tests; obtain a new independent PASS. Main/HALT and PR114 production remain held.",
+  "next_required": "Resume PR114 from its saved candidate. Reconcile the known ua/a.js Preview route defect against the new main before any new Preview stage; do not repeat accepted Stage 1-2 evidence.",
   "full_recovery_confirmed_for_public_availability": true,
-  "full_control_plane_recovery_confirmed": false,
+  "full_control_plane_recovery_confirmed": true,
   "forward_reconciliation_candidate": {
-    "operation_id": "ua0022-forward-reconcile-prep-20260920T0857Z",
-    "branch_commit": "99d1b5669bd2fedd7dabe2bdf60363b4c47a730a",
-    "path": "cloud/emergency_availability_20260920/forward_reconciliation_candidate",
-    "status": "BLOCKED_REBUILD_REQUIRED",
+    "operation_id": "ua0022-forward-reconcile-apply-20260920T1146Z",
+    "branch_commit": "a10f8874979908a5a2f5641dbe6333fb7061f805",
+    "path": "cloud/emergency_availability_20260920/forward_reconciliation_candidate_v2",
+    "status": "APPLIED_PASS",
     "exact_parent_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
-    "plan_sha256": "46db899ae5f4c58e4d6339ee6b9d1c74de56fdca128f63b8b30846446aee193f",
+    "plan_sha256": "a4f5b2586a3ee431cc7b018c003ecd26b7df8d1e6a0a65bfc2748596d216dd64",
     "tests": {
-      "passed": 5,
+      "passed": 12,
       "failed": 0
     },
-    "independent_review": "BLOCKED",
+    "independent_review": "PASS",
     "production_changes": false,
-    "halt_removed": false,
-    "independent_review_path": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/INDEPENDENT_REVIEW.json"
+    "halt_removed": true,
+    "main_commit": "b9c985ac924739b351e4d5535499bb6516917daf",
+    "outcome_path": "cloud/emergency_availability_20260920/UA0022_FORWARD_APPLY_OUTCOME.json"
   }
 }

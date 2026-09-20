@@ -1,0 +1,30 @@
+{
+  "schema_version": "UAART-CONNECTION-RESILIENT-OPERATION-OUTCOME-1",
+  "operation_id": "ua0022-forward-reconcile-apply-20260920T1146Z",
+  "status": "PASS",
+  "finished_at": "2026-09-20T11:50:00Z",
+  "intent_commit": "8aa642dd089a75de3d1bc0ebf98e81de6c562e78",
+  "candidate_commit": "a10f8874979908a5a2f5641dbe6333fb7061f805",
+  "independent_review": "PASS",
+  "main_before": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "main_after": "b9c985ac924739b351e4d5535499bb6516917daf",
+  "main_tree": "1de7f78c90f81d83b8d8b8f6b5c87ec3c559d4c0",
+  "force_used": false,
+  "receipt": {
+    "transaction": "FINISHED",
+    "claim": "FINISHED",
+    "present_blob_readback": "7/7 PASS",
+    "halt_readback": "404 NOT_FOUND",
+    "active_control_plane_validate_receipt": "PASS",
+    "postapply_health": "5/5 HTTP 200 WITH EXACT FINAL URLS",
+    "postapply_active_actions": 0
+  },
+  "raw_report_path": "cloud/emergency_availability_20260920/UA0022_FORWARD_APPLY_REPORT.txt",
+  "raw_report_sha256": "90941312d930a8a43d9c3c7060e901605303d97ca2d7691b7114154b297a87b1",
+  "package_position": "main:b9c985ac924739b351e4d5535499bb6516917daf",
+  "production_runtime_changed": false,
+  "site_reloaded": false,
+  "preview_changed": false,
+  "rollback_performed": false,
+  "next_action": "Resume PR114 from its saved candidate; first reconcile the known ua/a.js Preview route defect against new main, without repeating accepted Stage 1-2 evidence."
+}
