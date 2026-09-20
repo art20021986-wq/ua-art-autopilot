@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/UA-ART-UA0002-DELETE-PROBE-001.83c6b13093c35b219f7b9404e6ce50048d37281bb454d5c8c98773edb03449df.json",
+  "autostart_ledger_sha256": "c46a2738039ca15ce92535de6cc9eb2b7cd4edc826cac679b10f0e97ee610f87",
+  "autostart_source_commit": "82fe75feb76e66853f5c50848780fa5695605cd4",
+  "created_at": "2026-09-20T17:01:18Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "35524475591",
+    "task_id": "UA-ART-UA0002-DELETE-PROBE-001",
+    "task_sha256": "83c6b13093c35b219f7b9404e6ce50048d37281bb454d5c8c98773edb03449df"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-fb5b062300184380-41d6d33e3314df3b",
+  "request_path": "tasks/requests/UA-ART-UA0002-DELETE-PROBE-001.json",
+  "resource_locks": [
+    "READ_ONLY:fb5b062300184380"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
