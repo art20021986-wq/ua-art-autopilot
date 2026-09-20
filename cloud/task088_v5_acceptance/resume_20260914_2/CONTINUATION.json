@@ -71,8 +71,8 @@
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
   "latest_checkpoint": "cloud/task088_v5_acceptance/point4_review_20260920/RESULT.json",
   "next_action": {
-    "kind": "RECONCILE_CONTROL_AND_FIX_STATUS_TRANSITIONS_THEN_CURRENT_PREVIEW_BINDING",
-    "detail": "Read current controls and actual outcome of existing UA0022 task003 without relaunch or replay. Apply owner publication-status policy to isolated candidate: close PS-01/PS-02 with affected transition tests and independent review, then obtain current complete source/DB/schema/HTML binding. Reuse unchanged exact evidence only within matching dependencies. Existing conditional publication authorization remains; required gates and writer exclusions still apply."
+    "kind": "FOREGROUND_POINT4_ACTIVE",
+    "detail": "Root resolving publication-status candidate and read-only current facts. Do not duplicate worker, observer or unknown production write; honor foreground ownership."
   },
   "observed_main": "501e9cc08862f5994d20b852c4e83f2b7bddaed8",
   "observed_pr_head_before_this_update": "e0c62b342bcf1156f010c2af4e9e29d858486689",
@@ -231,7 +231,7 @@
     "fresh_server_hashes": false,
     "production_changed": false
   },
-  "foreground_in_progress": false,
+  "foreground_in_progress": true,
   "current_preview_gate": "NOT_ISSUED_CURRENT_BINDING_OPEN",
   "publication_status_policy": {
     "path": "cloud/task088_v5_acceptance/publication_status_policy_20260920/PUBLICATION_STATUS_POLICY.json",
@@ -244,5 +244,7 @@
     ],
     "preserve_historical_credit": true
   },
-  "current_candidate_acceptance": "OPEN_NEW_PUBLICATION_STATUS_TRANSITION_FINDINGS"
+  "current_candidate_acceptance": "OPEN_NEW_PUBLICATION_STATUS_TRANSITION_FINDINGS",
+  "foreground_operation_id": "pr114-point4-status-20260920T054458Z",
+  "foreground_intent": "cloud/task088_v5_acceptance/point4_status_completion_20260920/INTENT.json"
 }

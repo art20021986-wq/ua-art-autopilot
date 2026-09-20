@@ -1,0 +1,15 @@
+{
+  "operation_id": "pr114-point4-status-20260920T054458Z",
+  "recorded_at": "2026-09-20T05:44:58.556Z",
+  "input_head": "48f54dcc860ffc6bfa4912022d9ba2fd7fc26f50",
+  "scope": "ISOLATED_STATUS_TRANSITION_FIX_AND_READONLY_CURRENT_BINDING",
+  "owner_request": "Заверши пункт четыре.",
+  "production_write": false,
+  "unknown_write_replay": false,
+  "prior_tests_reuse": "MATCHING_INPUT_DEPENDENCIES_ONLY",
+  "findings_to_close": [
+    "PS-01",
+    "PS-02"
+  ],
+  "required": "Exact candidate affected checks + independent review + actual applicable Preview24/24"
+}
