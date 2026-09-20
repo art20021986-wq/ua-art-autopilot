@@ -1,0 +1,42 @@
+{
+  "status": "TECHNICAL_GO_READY_FOR_SINGLE_AUTHORIZED_EXECUTION",
+  "scope": "READ_ONLY_POINT4_CORE_INPUTS_NOT_GATE_B",
+  "observer_sha256": "8fe6380652bab23c3329088690d551f1cad82905de822b8f94aef16b87a62935",
+  "observer_bytes": 30142,
+  "command": "python3 -I /home/Carix/autopilot_inbox/cloud/pr114_point4_read_20260920_054458/observe_point4_core.py --output /home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260920_054458 --self-sha256 8fe6380652bab23c3329088690d551f1cad82905de822b8f94aef16b87a62935 --seconds 180 --part-max-bytes 819200",
+  "expected_files": {
+    "summary.json": "Final one-lineJSON; statusPASS_CORE_DOUBLE_READ_STABLE_OBSERVATION andexport_completed true required.",
+    "observation_outcome.json": "Pre-export observation; insufficient alone to accept retrieval.",
+    "export_manifest.json": "Exact artifacthash/bytecounts andpartmanifest; singlelineJSON.",
+    "public_inputs_NNN.json": "Numbered one-lineJSON,each<=819200 bytes; concatenaterecord.text byindex/name/offset_chars; validateartifacthashes.",
+    "public_html/": "Normal exactcapturedpublicHTML site/video roots;48core+44diagnostic+upto4supporting files.",
+    "partial_export_outcome.json": "Presentwhenlargerexport/timeoutfails; noPASS acceptance."
+  },
+  "binding_fields": [
+    "database",
+    "schema_sha256",
+    "published_rows",
+    "sources_dependencies_extra",
+    "routing_sources",
+    "runtime_modules",
+    "core_html",
+    "diagnostic_html",
+    "supporting_html",
+    "media_reference_metadata",
+    "stability"
+  ],
+  "negative_scope": [
+    "No recursiveinventory",
+    "No globalinventorySHA",
+    "No mediacontenthash claim",
+    "No protectedruntimequiescence claim",
+    "No GateB",
+    "No backup",
+    "No productionwrites",
+    "No remoteexecution yet"
+  ],
+  "local_validation": "9scopedfixturechecks retained; narrowpost-alarmfix validatedwith2additionaltargetedchecksPASS.",
+  "deadline_fix": "Beforecapturessave andeachcapturewrite, reject expiredtotaldeadline; onlytinybest-effortpartialoutcomeafteralarm.",
+  "independent_review": "CORE_OBSERVER_INDEPENDENT_REVIEW.json",
+  "acceptance_requirement": "Final summary.json must show PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION and export_completed true; validate export_manifest and each part/artifact hash. Pre-export observation outcome alone is insufficient."
+}

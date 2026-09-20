@@ -1,0 +1,37 @@
+{
+  "status": "SCOPED_TECHNICAL_GO",
+  "contract": "PR114-BOUNDED-CORE-OBSERVER-INDEPENDENT-SAFETY-1",
+  "reviewed_utc": "2026-09-20T06:37:01.337314+00:00",
+  "observer_sha256": "8fe6380652bab23c3329088690d551f1cad82905de822b8f94aef16b87a62935",
+  "scope": "One bounded read-only business-state observation and new private report/publicHTML capture output. Not Gate, Preview, writer exclusion or full inventory.",
+  "reviewed_boundaries": [
+    "Only stdlib imports; no private app imports, network, subprocess or service changes.",
+    "Business files read via nofollow descriptors with metadata pre/post/name checks; directory components nofollow.",
+    "SQLite URI mode=ro, query_only, short read transactions, progress deadline; normal reader locking/shared-memory semantics acknowledged.",
+    "Explicit sources/dependencies/routing11runtime and2N+4coreHTML; published diagnostic targets plus optional landing pages; newcar media stat only, no inventory traversal.",
+    "Output must be NEW direct child of existing private inbox; directory0700, files0600 O_EXCL/NOFOLLOW, no overwrite retry.",
+    "180second SIGALRM and160second collection budget; deadline checked before capture save and each capture; after hardexpiry only best-effort partial outcome.",
+    "Private source bytes and full DBrows not exported; captured publicHTML +sixpubliccarfields +digests only.",
+    "Drift, missingrequiredfiles, symlink, timeout, partialexport remain PARTIAL_NOT_ACCEPTED."
+  ],
+  "finding_resolved": {
+    "id": "OBSERVER-DEADLINE-1",
+    "before_sha256": "ce40ab0004f9c38e34796f0c0aa2e64cdcdade7538cfb7335313e1ffced523f0",
+    "finding": "Hardalarm caught internally could continue64MiB capture write after timer consumed.",
+    "fix": "Totaldeadline guard before entering save and eachcapture; outer terminal partial path.",
+    "targeted_regressions": 2
+  },
+  "author_tests_reviewed": {
+    "CORE_OBSERVER_FIXTURE_VALIDATION.json": "a0e5d08c69a0ed39de2fd608d0d7216d58a292e249004ac4d99105be017a7a74",
+    "CORE_OBSERVER_DEADLINE_FIX_VALIDATION.json": "b0ddc14d7c318a78d3a2ccb008795af2fd68573671eb819bf0bfbd050dc89f5a"
+  },
+  "unchanged_suites_repeated": false,
+  "reviewer_production_or_network_operations": false,
+  "limitations": [
+    "Endpoint agreement is not global writer exclusion.",
+    "Current static hosting mappings and HTTP behavior not established.",
+    "Only explicitly named input surface observed; metadata-only media is not full resource content validation.",
+    "Terminal final summary/exportmanifest required to reuse capture; an earlier embedded observation summary alone cannot prove completed transfer.",
+    "A blocked filesystem syscall and tiny best-effort terminal status persistence cannot provide hard real-time OS guarantees."
+  ]
+}
