@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-09-20T05:49:33.223Z",
+  "source": "AUTHENTICATED_PYTHONANYWHERE_FILE_EDITOR",
+  "path": "/home/Carix/autopilot_inbox/cloud/ua0022_publication_fix/35490449348/install_verify-result.json",
+  "receipt": {
+    "crm_resume": {
+      "enabled": true,
+      "id": 266084,
+      "state": "Running"
+    },
+    "installer": {
+      "backup_manifest_sha256": "a4d4bbc5b2776ff02b4c6be8fbb242d0027e21a65d4e7ea98048e7f953b3ff2c",
+      "contract": "UA-ART-UA0022-REBUILD-SERIALIZATION-001-v1.0",
+      "integrity_pass": true,
+      "nonce": "ua0022-20260920t045500z-44b23189de",
+      "operation": "install_verify",
+      "other_rows_unchanged": true,
+      "plan_sha256": "929a0ca68350b210a919552bbe6042557209af4349e56d6d0f3bbe568c41c6b8",
+      "post_check_pass": true,
+      "protected_pages_count": 890,
+      "protected_pages_unchanged": true,
+      "public_http_sha256": {
+        "https://www.uaart.com.ua/video/UA-0022-diag.html": "79e8841525985e14d240d4e706668498250d63394af4a8ace1eeacdf261619ad",
+        "https://www.uaart.com.ua/video/UA-0022.html": "2504c9689aed2b564d04b6c0906a858f3eaa86e5345d56f40bf2a5286645d153",
+        "https://www.uaart.com.ua/video/index.html": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628",
+        "https://www.uaart.com.ua/video/katalog.html": "0f53dba42a8ddc3fb99f333b16eee6ce796218b0da07ee750684c9cb4e0d5454"
+      },
+      "public_url": "https://www.uaart.com.ua/video/UA-0022.html",
+      "publication_pass": true,
+      "source_after_sha256": {
+        "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+        "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+        "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+        "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687"
+      },
+      "status": "PASS",
+      "target": "UA-0022",
+      "target_media_derivatives_added": 0,
+      "target_media_unchanged": true,
+      "target_new_media_derivatives_only": true,
+      "target_original_media_unchanged": true,
+      "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+      "timestamp": 1789881825,
+      "ua_ge_prices_unchanged": true
+    },
+    "operation": "install_verify",
+    "plan_sha256": "929a0ca68350b210a919552bbe6042557209af4349e56d6d0f3bbe568c41c6b8",
+    "safe_to_stop": true,
+    "status": "PASS"
+  },
+  "current_hash_assertion": false
+}
+
