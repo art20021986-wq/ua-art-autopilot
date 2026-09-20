@@ -1,0 +1,43 @@
+{
+  "contract": "UA-ART-UA0002-CRITICAL-DELETE-001-v1.0",
+  "status": "LOCAL_COMPONENT_TESTS_PASS_NOT_READY_TO_INSTALL",
+  "stage_b_complete": false,
+  "production_write_performed": false,
+  "observed_at": "2026-09-20T17:18:38.766723+00:00",
+  "live_source_probe_runs": [
+    "35524475591",
+    "35525152538"
+  ],
+  "test_command": "python -m unittest -v test_deletion_state.py test_public_write_guard.py",
+  "test_result": {
+    "passed": 35,
+    "failed": 0,
+    "transactional_core": 25,
+    "public_write_guard": 10
+  },
+  "files_sha256": {
+    "deletion_state.py": "35dd94313de833515afb611e41c620190e244f5fc91ffdb786d8dd5fcf4af31e",
+    "public_write_guard.py": "79248e9a172e491b51797d7786429be8ead0927e1b767ce4635e8184fa39330f",
+    "test_deletion_state.py": "b3d755be8514e11ba6b339d18814def4a04dc6ba6168861abf57c027981a847a",
+    "test_public_write_guard.py": "67defe2805d2e1a763fe239b5002995e1544bb39185b57d9a9557012495f89be",
+    "README.md": "92eb304aa513f35742952fbcf6c6d65352bc61339e00a11adc24b68ef20107dd"
+  },
+  "excluded": [
+    "Full private production source modules",
+    "CRM database/client values",
+    "Earlier file-only deletion_tombstone experiment"
+  ],
+  "remaining": [
+    "Current live DB schema/trigger/FK and approved backup",
+    "Legacy callback/resume coordinator integration",
+    "Exact route/media retirement and independent fresh HTTP proof adapter",
+    "Safe spec writer lock integration; raw WRITER_LOCKS order not yet bound",
+    "Complete delayed writer and restore coverage",
+    "Release installer, runtime end-to-end verification and final notification"
+  ],
+  "notes": [
+    "No V5 migration: V5 runtime modules absent in fresh probe",
+    "Spec raw flock lease must not be blindly nested with publication_fence registry",
+    "No network I/O inside ImmediateTransaction or publication fence"
+  ]
+}

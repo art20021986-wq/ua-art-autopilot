@@ -1,0 +1,26 @@
+{
+  "visibility_lifecycle.py": {
+    "source": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920_v2/visibility_lifecycle.py",
+    "source_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+    "modification": "Stage A-only: bound LEGACY_TILES or MODERN_COUNTERS home mode; unknown home modes fail.",
+    "candidate_sha256": "b77424a8e8dbd84f688a65a66dfdcd914276315fe67f1d4c6cb0247929d7b037"
+  },
+  "publication_fence.py": {
+    "source": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920_v2/publication_fence.py",
+    "source_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+    "modification": "none"
+  },
+  "ua_site_counters.py": {
+    "source": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920_v2/ua_site_counters.py",
+    "source_sha256": "0636a7ecea3813af5461290464017e54094bebedc7dd6c4c9c3551582b966fb4",
+    "modification": "Stage A-only: patch_home preserves existing script instead of inject_script(result).",
+    "candidate_sha256": "dce224697edc280ef5ed1685e94f36f1210689b6ea7c71164446952fc898cd88"
+  },
+  "uaart_price_sync_runtime.py": {
+    "source": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920_v2/uaart_price_sync_runtime.py",
+    "source_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+    "extracted_symbol": "_Anchors",
+    "symbol_sha256": "45ebd0b3886345e459fd2b761e0ce42300ac048941b83c76db15e06a8a9d0048",
+    "modification": "Exact parser class extraction; no runtime imports"
+  }
+}
