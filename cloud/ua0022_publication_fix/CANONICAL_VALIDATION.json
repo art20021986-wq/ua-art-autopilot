@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "scope": "LOCAL_CANONICAL_ADMISSION_ONLY",
+  "production_touched": false,
+  "base_main_commit": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+  "request_sha256": "c8bd386d328ff4d1476db20a70e72c37e5b0311f7fa4832a2c011aa0213ac0f7",
+  "manifest_sha256": "87abdf6e4a2c984698452adb97053d70cd9f56707c1c52158f9fc19b9e0ea154",
+  "dependency_sha256": "fd026916d4bde622e894b5c2194f9b013f477f4c6ed8ff683a8f26093bb85678",
+  "verify_execution_mode": "AUTOMATIC_PASS",
+  "execution_contract_validate": "PASS",
+  "execution_contract_isolated_tests": {"status": "PASS", "lifecycle_controller": 14, "installer": 14, "narrow_race": 11, "total": 39},
+  "autostart_intake_validate_only": "PASS_INCLUDING_GATE_B_BINDINGS_NO_LEDGER_PERSISTED",
+  "emitted_request_manifest_loader": "PASS_NO_NETWORK",
+  "runtime_patch_publication_live_acceptance": "PENDING_CANONICAL_PRODUCTION_EXECUTION",
+  "storage_evidence_valid_until": "2026-09-20T04:44:58Z",
+  "marker_source": "PENDING_MARKER.json",
+  "marker_target_path": "tasks/launch/AUTO-UA-ART-UA0022-PUBLISH-REPAIR-001-20260920T042141Z.json",
+  "marker_must_be_separate_commit": true
+}

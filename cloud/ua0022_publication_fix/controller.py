@@ -18,7 +18,7 @@ import urllib.request
 import uuid
 
 BASE="https://www.pythonanywhere.com/api/v0/user/Carix/"
-TASK_ID="UA-ART-UA0022-PUBLISH-REPAIR-001"
+TASK_ID="UA-ART-UA0022-PUBLISH-REPAIR-002"
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
 PACKAGE="cloud/ua0022_publication_fix"

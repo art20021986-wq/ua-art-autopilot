@@ -29,6 +29,23 @@ FIXTURE = Path(__file__).with_name("safe_function_fixtures.py")
 FIXTURE_SHA256 = "b37ed59bc7a819210a97b98582e2605a451d1813b3ff10be4fe90ec554300f49"
 
 
+def fixture_ast_sha256(node):
+    """Use the fixture's Python 3.12 AST schema on Python 3.11 as well.
+
+    Python 3.12 appended type_params to function/class nodes. Python 3.11
+    represents the same non-generic source by omitting that field. Add only
+    that absent field as an empty list; retain every existing field/value,
+    including any nonempty type parameters. Source bytes remain separately
+    checked against their exact extraction hash and the pinned fixture file.
+    """
+    for item in ast.walk(node):
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            if "type_params" not in item._fields:
+                item._fields = (*item._fields, "type_params")
+                item.type_params = []
+    return build.sha(ast.dump(node, include_attributes=False).encode())
+
+
 def fixture_sources():
     raw = FIXTURE.read_bytes()
     if build.sha(raw) != FIXTURE_SHA256:
@@ -45,7 +62,7 @@ def fixture_sources():
             if build.sha(piece.encode()) != record["extracted_sha256"]:
                 raise RuntimeError("EXTRACTED_FUNCTION_SHA256_MISMATCH")
             node = ast.parse(piece).body[0]
-            if build.sha(ast.dump(node, include_attributes=False).encode()) != record["ast_sha256"]:
+            if fixture_ast_sha256(node) != record["ast_sha256"]:
                 raise RuntimeError("EXTRACTED_FUNCTION_AST_MISMATCH")
             parts.append(piece)
         sources[name] = "\n".join(parts)
@@ -368,6 +385,29 @@ class NarrowFixTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "SOURCE_SHA256_MISMATCH:cars_ui.py"):
                 build.build(sources, Path(fence.__file__), output)
         self.assertFalse(output.exists())
+
+    def test_fixture_ast_hash_matches_python311_and_python312_shapes(self):
+        from safe_function_fixtures import FIXTURES
+        for entry in FIXTURES["sources"].values():
+            for record in entry["functions"]:
+                node = ast.parse(record["source"]).body[0]
+                self.assertEqual(fixture_ast_sha256(node), record["ast_sha256"])
+                # Reproduce Python 3.11's documented absent field without
+                # changing any executable syntax or source/extraction hashes.
+                for item in ast.walk(node):
+                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                        self.assertFalse(item.type_params)
+                        item._fields = tuple(field for field in item._fields if field != "type_params")
+                        del item.type_params
+                self.assertEqual(fixture_ast_sha256(node), record["ast_sha256"])
+
+    def test_ast_normalization_preserves_nonempty_type_parameters(self):
+        node = ast.parse("def example():\n    return 1\n").body[0]
+        fixture_ast_sha256(node)
+        empty_hash = fixture_ast_sha256(node)
+        node.type_params = [ast.Name(id="UNEXPECTED_PARAMETER", ctx=ast.Load())]
+        self.assertNotEqual(fixture_ast_sha256(node), empty_hash)
+        self.assertEqual(node.type_params[0].id, "UNEXPECTED_PARAMETER")
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ The incident log records a non-target-card change at 2026-09-16 08:33:21. The le
 
 The candidate replaces the publisher lock with the previously reviewed shared reentrant helper and takes that same lock around the complete legacy `main` and CRM's reload/rebuild helper. It preserves all other original source bytes, including the foreign-card check, pricing code, page generation and rollback behavior. The CRM rebuild helper retains its Boolean failure contract. Both new rebuild waits are bounded at 90 seconds.
 
-`build_candidate.py` rejects source or helper hash drift before producing an output. `manifest.json` is the final candidate runtime manifest. The CRITICAL deployment manifest is separately stored under `tasks/manifests/UA-ART-UA0022-PUBLISH-REPAIR-001.json`.
+`build_candidate.py` rejects source or helper hash drift before producing an output. `manifest.json` is the final candidate runtime manifest. The current CRITICAL deployment manifest is `tasks/manifests/UA-ART-UA0022-PUBLISH-REPAIR-002.json`. Attempt 001 stopped during CI before production because Python 3.11 lacks the empty AST `type_params` field present in Python 3.12. The corrected test normalizes that absent field while preserving fixture/source hashes and nonempty fields; 41 local tests pass. The original failed request, consumed nonce and terminalized claim remain in history. Actual Python 3.11 CI and production acceptance remain required.
 
 Public review/package files: the builder, `publication_fence.py`, `test_narrow_fix.py`, `safe_function_fixtures.py`, this README, `VALIDATION.json`, and the final manifest/additive diff. **Never commit `private_runtime/`: those generated files contain complete private server sources.**
 
