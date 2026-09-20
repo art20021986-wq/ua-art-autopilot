@@ -1,0 +1,98 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.json",
+  "autostart_ledger_sha256": "61bf4311bbf9238b9c274fbb0f67c424389985f5c910d0b5f9399ee1748b6eaf",
+  "autostart_source_commit": "ed7cff522dd36353c9a0cc911108bedee921cbfe",
+  "created_at": "2026-09-20T04:58:42Z",
+  "critical_gate_evidence_sha256": "67ea8bd6223a407f7a4471050bdf1f7c63c087d48da9e82f345abd2f9bc13a35",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-20T05:28:33Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 35490449348",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "b62198b63ab649d2"
+    }
+  ],
+  "heartbeat_at": "2026-09-20T05:11:06Z",
+  "heartbeat_sequence": 7,
+  "identity": {
+    "run_id": "35490449348",
+    "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "task_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 425.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 143.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-35490449348-334c361c22ebee11",
+  "production_transaction_path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
+  "production_transaction_status": "ROLLING_BACK",
+  "queue_key": "card-ua-0022-3454fd479bb37b60",
+  "receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+  "request_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba",
+  "resource_locks": [
+    "CARD:UA-0022"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "81d85c0096e9aa37fe7f5597556fdb842987e511",
+  "storage_preflight": {
+    "age_seconds": 455.4,
+    "allowed": true,
+    "evidence_path": "state/storage/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+    "evidence_sha256": "9193fdc265067f0b9d6e867d24e02bfd2c1942aeaa3a2f89038eafd0f2423b3d",
+    "free_bytes": 29855219712,
+    "heavy": true,
+    "measured_at": "2026-09-20T04:52:10Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 2147483648,
+    "status": "PASS",
+    "usage_percent": 20.557599748883927
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "trusted_package": {
+    "controller_sha256": "4b8dc0f7c7462297a8021694d4acc90fbc599e05789d873395b328e1710c1096",
+    "file_sha256": {
+      "cloud/ua0022_publication_fix/build_candidate.py": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
+      "cloud/ua0022_publication_fix/publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+      "cloud/ua0022_publication_fix/remote_installer.py": "510bb2bdb0d2be4cd199f118d0a3fd04155214f34f84f9dbeca6a0518fea5162",
+      "cloud/ua0022_publication_fix/remote_lifecycle.py": "21f17e5cf5d5c41c09861e7da7cbd5f16b449cd57899d72c6594805deb922a18",
+      "cloud/ua0022_publication_fix/safe_function_fixtures.py": "b37ed59bc7a819210a97b98582e2605a451d1813b3ff10be4fe90ec554300f49",
+      "cloud/ua0022_publication_fix/test_lifecycle.py": "1c6effd2de93aea1f1259ca9a76b3821c179554c88d33bd1258fe18d6182e8e9",
+      "cloud/ua0022_publication_fix/test_narrow_fix.py": "bffc259adeb148a5b148f41645c8d72c860541eeafda9bcfcfa376ee50488ce6",
+      "cloud/ua0022_publication_fix/test_remote_installer.py": "7f97cbe86bc2cf674e75c8658830bf50ff8564d62919fa6dfa9b82fac98f436d"
+    }
+  },
+  "updated_at": "2026-09-20T05:28:33Z"
+}

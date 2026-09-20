@@ -1,0 +1,77 @@
+{
+  "schema_version": "UA-ART-UA0022-FORWARD-RECONCILIATION-PLAN-2",
+  "operation_id": "ua0022-forward-reconcile-v2-20260920T1109Z",
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+  "run_id": "35490449348",
+  "transaction_id": "tx-35490449348-334c361c22ebee11",
+  "expected_parent": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "ready": false,
+  "review_required": true,
+  "changes": [
+    {
+      "operation": "replace",
+      "path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
+      "expected_sha256": "c9123be192ff44ad89605c52e4fbad5b75504dd5e54ba4f172541e3575ddf7b3",
+      "expected_blob": "cfccccb058abac735639bb41debdf8486808a742",
+      "content_sha256": "98ac38f5eac76e55dbc1f01b4fa10c34da876e1eb78727781e84009f7f8c894b"
+    },
+    {
+      "operation": "replace",
+      "path": "state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
+      "expected_sha256": "59920fe94343f94373f4d93da1c2785ddfbd36101890baf2e6b7133cabbefa9c",
+      "expected_blob": "3f34ca885bcb09b04d6c3561e8d63c79bb9bb776",
+      "content_sha256": "ecb3cf70496e862ad1813dad1b5b752a2f7ef177082365434555fc258f0cf899"
+    },
+    {
+      "operation": "delete",
+      "path": "state/AUTOPILOT_HALT.json",
+      "expected_sha256": "3e4b804fbc76ae0fc330db8a0add69fae3bb6d0d9a846d0a91cb41e4ff94e3a9",
+      "expected_blob": "7982f47958d4e656b0edbb64d8a40bcdd3836183"
+    },
+    {
+      "operation": "add",
+      "path": "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348/halt.json",
+      "must_not_exist": true,
+      "content_sha256": "3e4b804fbc76ae0fc330db8a0add69fae3bb6d0d9a846d0a91cb41e4ff94e3a9"
+    },
+    {
+      "operation": "add",
+      "path": "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348/receipt.json",
+      "must_not_exist": true,
+      "content_sha256": "df93e90af0162d3630524857bb9cef3054a47c0b54bb6e41e7b006c0e288b189"
+    },
+    {
+      "operation": "add",
+      "path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+      "must_not_exist": true,
+      "content_sha256": "bf02ded80f254d81f706ce596c2ef552bf4ca5cbfd713d5b2b5ffdd1485b63fc"
+    },
+    {
+      "operation": "add",
+      "path": "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348.availability-evidence.json",
+      "must_not_exist": true,
+      "content_sha256": "86169dc86758d4e0b5e13c5013fa903d6bf01596240c24fba7ba2c7bd990d035"
+    },
+    {
+      "operation": "add",
+      "path": "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348.forward-reconciliation.json",
+      "must_not_exist": true,
+      "content_sha256": "9a0e4d6cac58347d333dfe4bd6a437ff6abf5abde191264648cb2ec1bac29810"
+    }
+  ],
+  "application_writes": 0,
+  "production_runtime_writes": 0,
+  "one_atomic_commit_required": true,
+  "force_allowed": false,
+  "github_application_protocol": "create blobs -> one tree from exact parent -> one commit -> non-force ref update; fail if ref moved",
+  "next_action": "Independent exact-candidate review, fresh ref/actions/health check, then one non-force exact-parent commit",
+  "output_sha256": {
+    "state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": "ecb3cf70496e862ad1813dad1b5b752a2f7ef177082365434555fc258f0cf899",
+    "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348/halt.json": "3e4b804fbc76ae0fc330db8a0add69fae3bb6d0d9a846d0a91cb41e4ff94e3a9",
+    "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348/receipt.json": "df93e90af0162d3630524857bb9cef3054a47c0b54bb6e41e7b006c0e288b189",
+    "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003.json": "bf02ded80f254d81f706ce596c2ef552bf4ca5cbfd713d5b2b5ffdd1485b63fc",
+    "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348.availability-evidence.json": "86169dc86758d4e0b5e13c5013fa903d6bf01596240c24fba7ba2c7bd990d035",
+    "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348.forward-reconciliation.json": "9a0e4d6cac58347d333dfe4bd6a437ff6abf5abde191264648cb2ec1bac29810",
+    "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": "98ac38f5eac76e55dbc1f01b4fa10c34da876e1eb78727781e84009f7f8c894b"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": "UAART-UA0022-FRESH-HEALTH-1",
+  "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "started_at": "2026-09-20T11:15:24.783514Z",
+  "finished_at": "2026-09-20T11:15:55.449844Z",
+  "status": "healthy",
+  "exit_code": 0,
+  "production_write_performed": false,
+  "routes": {
+    "apex_home": {"http_status": 200, "final_url": "https://www.uaart.com.ua/video/index.html", "sha256": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628", "bytes": 43131},
+    "www_home": {"http_status": 200, "final_url": "https://www.uaart.com.ua/video/index.html", "sha256": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628", "bytes": 43131},
+    "catalog": {"http_status": 200, "final_url": "https://www.uaart.com.ua/video/katalog.html", "sha256": "0f53dba42a8ddc3fb99f333b16eee6ce796218b0da07ee750684c9cb4e0d5454", "bytes": 57709},
+    "ua0022_card": {"http_status": 200, "final_url": "https://www.uaart.com.ua/video/UA-0022.html", "sha256": "64b374c8404233670fa2441292bca5bf48fb28cacc73e84186562f8cf5084209", "bytes": 43324},
+    "ua0022_diagnostic": {"http_status": 200, "final_url": "https://www.uaart.com.ua/video/UA-0022-diag.html", "sha256": "8beb044c306a16ecb04c621d562b9440f62508e84145707d0d5e55a3870348cb", "bytes": 17729}
+  },
+  "public_bytes_changed_after_install_observation": ["ua0022_card", "ua0022_diagnostic"],
+  "interpretation": "Current availability is healthy. The changed card/diagnostic bytes are recorded, not silently treated as the original install bytes; reconciliation binds the historical installation receipt and current availability separately."
+}

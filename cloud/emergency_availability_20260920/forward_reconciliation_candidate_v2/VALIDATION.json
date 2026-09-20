@@ -1,0 +1,44 @@
+{
+  "schema_version": "UAART-UA0022-FORWARD-RECONCILIATION-VALIDATION-2",
+  "operation_id": "ua0022-forward-reconcile-v2-20260920T1109Z",
+  "recorded_at": "2026-09-20T11:18:00Z",
+  "input_heads": {
+    "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "pr": "f61a5b35617025e133cbbef57965536ce80ec8ae"
+  },
+  "status": "READY_FOR_INDEPENDENT_REVIEW_NOT_EXECUTED",
+  "tests": {
+    "passed": 8,
+    "failed": 0,
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v test_forward_reconcile_v2.py"
+  },
+  "hashes": {
+    "builder_sha256": "39c6baafd9eb5b0e11b23be4e35a3d7e2604f34bf5098f100a9c2b619f8424d4",
+    "tests_sha256": "3a8ad46e11d905338051a943fa8ba623afaba6a330ddc5a31ae01ff21559ec72",
+    "input_manifest_sha256": "6930b2f87a6112f8a22c9d0af1eab064108309a99a732e0d53abab8a45323899",
+    "health_sha256": "29c86557518848b7be03a127b39dcaa2e8fa8d7afb7af6a5e2bf4b36fc778f75",
+    "install_evidence_sha256": "018a99891750cb13ff43407342ecefeb084cedfb5bc75b41cb557acfa086250a"
+  },
+  "corrections": [
+    "All five repository inputs now match exact main SHA256 and blob OIDs.",
+    "HALT archive bytes exactly equal main HALT.",
+    "Fresh health requires exact five-route keyset, HTTP 200, SHA256, healthy, exit_code 0 and <=3600 seconds.",
+    "Actual authenticated install receipt is hash-bound and validates integrity, post-check, protected pages, other rows, media, UA/GE values and CRM resume.",
+    "Receipt no longer claims tests PASS or unexpected_changes=0; rollback readiness is split into backup_available=true and canonical_rollback_execution_ready=false.",
+    "Negative tests cover input drift, empty routes, failed monitor, stale health, runtime keyset and pre-existing additions."
+  ],
+  "current_live_readback": {
+    "status": "healthy",
+    "finished_at": "2026-09-20T11:15:55.449844Z",
+    "http_200_routes": 5,
+    "public_bytes_changed_after_install_observation": [
+      "ua0022_card",
+      "ua0022_diagnostic"
+    ]
+  },
+  "production_changes": false,
+  "halt_removed": false,
+  "main_commit_created": false,
+  "independent_review": "PENDING",
+  "next_action": "Independent exact-candidate review; if PASS, fresh main/actions/health read and one non-force exact-parent atomic state commit with post-readback."
+}

@@ -1,0 +1,57 @@
+{
+  "health_evidence_sha256": "29c86557518848b7be03a127b39dcaa2e8fa8d7afb7af6a5e2bf4b36fc778f75",
+  "install_evidence_sha256": "018a99891750cb13ff43407342ecefeb084cedfb5bc75b41cb557acfa086250a",
+  "installation_verify": "PASS",
+  "installed_runtime_sha256": {
+    "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+    "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+    "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687"
+  },
+  "observed_window_utc": {
+    "finished_at": "2026-09-20T11:15:55.449844Z",
+    "started_at": "2026-09-20T11:15:24.783514Z"
+  },
+  "production_write_by_reconciliation": false,
+  "public_bytes_changed_after_install_observation": [
+    "ua0022_card",
+    "ua0022_diagnostic"
+  ],
+  "rollback_performed": false,
+  "routes": {
+    "apex_home": {
+      "bytes": 43131,
+      "final_url": "https://www.uaart.com.ua/video/index.html",
+      "http_status": 200,
+      "sha256": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628"
+    },
+    "catalog": {
+      "bytes": 57709,
+      "final_url": "https://www.uaart.com.ua/video/katalog.html",
+      "http_status": 200,
+      "sha256": "0f53dba42a8ddc3fb99f333b16eee6ce796218b0da07ee750684c9cb4e0d5454"
+    },
+    "ua0022_card": {
+      "bytes": 43324,
+      "final_url": "https://www.uaart.com.ua/video/UA-0022.html",
+      "http_status": 200,
+      "sha256": "64b374c8404233670fa2441292bca5bf48fb28cacc73e84186562f8cf5084209"
+    },
+    "ua0022_diagnostic": {
+      "bytes": 17729,
+      "final_url": "https://www.uaart.com.ua/video/UA-0022-diag.html",
+      "http_status": 200,
+      "sha256": "8beb044c306a16ecb04c621d562b9440f62508e84145707d0d5e55a3870348cb"
+    },
+    "www_home": {
+      "bytes": 43131,
+      "final_url": "https://www.uaart.com.ua/video/index.html",
+      "http_status": 200,
+      "sha256": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628"
+    }
+  },
+  "run_id": "35490449348",
+  "schema_version": "UA-ART-UA0022-AVAILABILITY-EVIDENCE-2",
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+  "transaction_id": "tx-35490449348-334c361c22ebee11"
+}
