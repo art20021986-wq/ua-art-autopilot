@@ -19,8 +19,9 @@
       "signature": "b62198b63ab649d2"
     }
   ],
-  "heartbeat_at": "2026-09-20T05:11:06Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-20T11:30:00Z",
+  "heartbeat_at": "2026-09-20T11:30:00Z",
+  "heartbeat_sequence": 8,
   "identity": {
     "run_id": "35490449348",
     "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
@@ -28,7 +29,39 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checked_at": "2026-09-20T11:15:55.449844Z",
+    "checks": [
+      {
+        "http_status": 200,
+        "name": "apex_home",
+        "status": "PASS"
+      },
+      {
+        "http_status": 200,
+        "name": "catalog",
+        "status": "PASS"
+      },
+      {
+        "http_status": 200,
+        "name": "ua0022_card",
+        "status": "PASS"
+      },
+      {
+        "http_status": 200,
+        "name": "ua0022_diagnostic",
+        "status": "PASS"
+      },
+      {
+        "http_status": 200,
+        "name": "www_home",
+        "status": "PASS"
+      }
+    ],
+    "evidence_path": "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348.availability-evidence.json",
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -54,10 +87,12 @@
   "production_required": true,
   "production_transaction_id": "tx-35490449348-334c361c22ebee11",
   "production_transaction_path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0022-3454fd479bb37b60",
   "receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "fecca97ed6d0ff37ed86e1f3f49b467c187c7984413607f67dfe474a447e7169",
+  "receipt_validation_status": "PASS",
+  "reconciliation_path": "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348.forward-reconciliation.json",
   "request_path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
   "request_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba",
   "resource_locks": [
@@ -80,7 +115,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "4b8dc0f7c7462297a8021694d4acc90fbc599e05789d873395b328e1710c1096",
     "file_sha256": {
@@ -94,5 +129,5 @@
       "cloud/ua0022_publication_fix/test_remote_installer.py": "7f97cbe86bc2cf674e75c8658830bf50ff8564d62919fa6dfa9b82fac98f436d"
     }
   },
-  "updated_at": "2026-09-20T05:28:33Z"
+  "updated_at": "2026-09-20T11:30:00Z"
 }
