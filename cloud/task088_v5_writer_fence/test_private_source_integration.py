@@ -326,7 +326,7 @@ class IntegrationTests(unittest.TestCase):
         state = {"held": 0}
         module = types.ModuleType("publication_fence")
         module.publication_fence = lambda **_kwargs: _Fence(events, state)
-        ns = {"WAIT_SECONDS": 90}
+        ns = {"WAIT_SECONDS": 90, "Snapshot": type("Snapshot", (), {"restore": lambda self: None})}
         with _module("publication_fence", module):
             exec(integration.GUARD_BLOCK, ns)
         with ns["_exclusive_lock"]():

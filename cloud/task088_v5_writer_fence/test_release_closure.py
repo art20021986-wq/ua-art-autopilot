@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -38,8 +39,9 @@ def load(name):
 release = load("build_release")
 controller = load("controller")
 remote = load("remote_adapter")
-NEW_MODULES = {"publication_fence.py", "mutation_recovery.py"}
+NEW_MODULES = {"publication_fence.py", "mutation_recovery.py", "visibility_lifecycle.py"}
 NEW_DEPENDENCIES = {"lock4_zhurnal.py", "ua_additional_spec.py", "vin_spec_service.py"}
+NEW_SOURCES = {"ua_spec_permanent.py", "ua_site_counters.py", "publikaciya.py"}
 
 
 class ReleaseClosureTests(unittest.TestCase):
@@ -53,7 +55,7 @@ class ReleaseClosureTests(unittest.TestCase):
         self.assertEqual(engine.SOURCES, preflight.SOURCES)
         self.assertEqual(engine.MODULES, preflight.MODULES)
         self.assertEqual(engine.DEPENDENCIES, preflight.DEPENDENCIES)
-        self.assertIn("ua_spec_permanent.py", engine.SOURCES)
+        self.assertTrue(NEW_SOURCES <= engine.SOURCES)
         self.assertTrue(NEW_MODULES <= engine.MODULES)
         self.assertTrue(NEW_DEPENDENCIES <= engine.DEPENDENCIES)
         self.assertEqual(controller.REMOTE_FILES, engine.MODULES | {"remote_adapter.py", "install_package.py"})
@@ -74,6 +76,13 @@ class ReleaseClosureTests(unittest.TestCase):
         with self.assertRaisesRegex(engine.InstallError, "SOURCE_DEPENDENCY_SET"):
             engine.build_source_candidates(originals, dict(dependencies, unknown=b"unreviewed"))
 
+    def test_pure_builder_refuses_missing_promoted_counter_source(self):
+        dependencies = {name: b"# TEST untrusted dependency" for name in engine.DEPENDENCIES}
+        for missing in ("ua_site_counters.py", "publikaciya.py"):
+            sources = {name: b"# TEST untrusted source" for name in engine.SOURCES if name != missing}
+            with self.subTest(missing=missing), self.assertRaisesRegex(engine.InstallError, "SOURCE_DEPENDENCY_SET"):
+                engine.build_source_candidates(sources, dependencies)
+
     def test_complete_builder_refuses_missing_helper_before_source_processing(self):
         for missing in NEW_MODULES:
             modules = {name: b"# TEST module" for name in engine.MODULES if name != missing}
@@ -81,7 +90,7 @@ class ReleaseClosureTests(unittest.TestCase):
                 engine.build_candidates({}, {}, [], modules, dependency_files={})
 
     def test_rebound_partial_manifest_is_rejected_before_preparing_backup(self):
-        for missing in NEW_MODULES | {"ua_spec_permanent.py"}:
+        for missing in NEW_MODULES | NEW_SOURCES:
             with self.subTest(missing=missing):
                 value = self.fixture()
                 value.files.pop(missing)
@@ -108,10 +117,10 @@ class ReleaseClosureTests(unittest.TestCase):
         before = engine.system_inventory(value.root)
         backup = remote.backup(value.plan, value.files, value.evidence, value.root)
         full = Path(backup["backup_directory"]) / "full"
-        for name in NEW_DEPENDENCIES | {"ua_spec_permanent.py"}:
+        for name in NEW_DEPENDENCIES | NEW_SOURCES:
             self.assertEqual(engine.sha((full / name).read_bytes()), before[name]["sha256"])
         receipt = value.call()
-        for name in NEW_MODULES | {"ua_spec_permanent.py"}:
+        for name in NEW_MODULES | NEW_SOURCES:
             self.assertEqual(receipt["installed_files_sha256"][name], engine.sha(value.files[name]))
         self.assertEqual(remote.verify(value.plan, value.files, value.root)["status"], "INSTALLATION_VERIFIED")
         value.db.execute("UPDATE cars SET price_georgia=8500 WHERE id=7")
@@ -130,6 +139,40 @@ class ReleaseClosureTests(unittest.TestCase):
             value.call()
         self.assertEqual(changed.read_bytes(), b"# TEST newer operator dependency\n")
         value.assert_no_candidate_files()
+
+
+class CounterClientCandidateTests(unittest.TestCase):
+    def test_composed_empty_inventory_updates_served_client_and_preserves_legacy_home(self):
+        from patch_site_counters import patch_source, _client_literal
+        before_counter = Path(os.environ["UA114_COUNTER_SOURCE"]).read_text()
+        after_counter = patch_source(before_counter)  # Exact source pin enforced by reviewed patcher.
+        before_client, after_client = (_client_literal(value).strip() for value in (before_counter, after_counter))
+        script = '<script id="ua-site-counters-123">\n' + before_client + '\n</script>'
+        home = '<html><body>' + ''.join('<a class="stage-card" data-stage="' + stage +
+            '" href="katalog.html?f=' + stage + '">0</a>' for stage in ('kiev', 'georgia', 'sea', 'korea')) + \
+            '<a class="outline-cta" href="katalog.html">Catalog</a>' + script + '</body></html>'
+        catalog = '<html><body><main class="catalog-grid"></main>' + script + '</body></html>'
+        pages = {root + '/' + name: value.encode() for root in ('site', 'video')
+                 for name, value in (('index.html', home), ('katalog.html', catalog))}
+        sources = {name: b'# TEST source composition is independently verified\n' for name in engine.SOURCES}
+        sources['ua_site_counters.py'] = before_counter.encode()
+        composed = dict(sources, **{'ua_site_counters.py': after_counter.encode()})
+        modules = {name: b'# TEST module bytes only\n' for name in engine.MODULES}
+        routing = {'report_kind':'READ_ONLY_OBSERVED_ROUTING',
+            'source_server_paths': {'observed_wsgi_config.py':'/var/www/www_uaart_com_ua_wsgi.py',
+                'analitika_wsgi.py':'/home/Carix/analitika_wsgi.py', 'uaart_bridge_wsgi.py':'/home/Carix/uaart_bridge_wsgi.py',
+                'video/index.html':'/home/Carix/video/index.html', 'site/index.html':'/home/Carix/site/index.html'},
+            'static_mappings':[{'url':'/video/','directory':'/home/Carix/video/'}],
+            'conclusion':{'served_home':'video/index.html','site/index.html':'UNSERVED_LEGACY_PRESERVE_EXACT_BYTES'}}
+        routing['source_sha256'] = {name:'a' * 64 for name in routing['source_server_paths']}
+        routing['source_sha256']['site/index.html'] = engine.sha(pages['site/index.html'])
+        with patch.object(engine, 'build_source_candidates', return_value=composed):
+            result = engine.build_candidates(sources, pages, [], modules, dependency_files={},
+                homepage_policy={'site/index.html':'PROTECTED_LEGACY_NOT_SERVED'}, routing=routing)
+        self.assertEqual(set(result), engine.SOURCES | engine.MODULES | set(pages))
+        for name, original in pages.items():
+            expected = original if name == 'site/index.html' else original.replace(before_client.encode(), after_client.encode())
+            self.assertTrue(result[name] == expected, name)  # No private bytes in assertion output.
 
 
 class ExactPrivateCompositionTests(unittest.TestCase):
@@ -218,12 +261,14 @@ class StagingAndV5AdmissionTests(unittest.TestCase):
         value.provider()
 
     def test_v5_rejects_new_helper_missing_from_code_pins(self):
-        value, binding = self.fixture(v5=True)
-        self.complete_v5_writer_evidence(value, binding)
-        value.code.pop("mutation_recovery.py")
-        value.rebuild_chain()
-        with self.assertRaisesRegex(binding.BindingError, "ALL_INSTALLED_WRITERS_AND_MODULES"):
-            value.provider()
+        for missing in ("mutation_recovery.py", "visibility_lifecycle.py"):
+            with self.subTest(missing=missing):
+                value, binding = self.fixture(v5=True)
+                self.complete_v5_writer_evidence(value, binding)
+                value.code.pop(missing)
+                value.rebuild_chain()
+                with self.assertRaisesRegex(binding.BindingError, "ALL_INSTALLED_WRITERS_AND_MODULES"):
+                    value.provider()
 
     def test_v5_rejects_legacy_writer_list_even_with_all_code_pins(self):
         value, binding = self.fixture(v5=True)

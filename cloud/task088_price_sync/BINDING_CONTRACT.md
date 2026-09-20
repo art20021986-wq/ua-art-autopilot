@@ -220,3 +220,36 @@ checks, widen operator ACLs, alter the current delegation schema, or authorize
 automatic first publication. A reviewed compatible implementation and exact
 candidate acceptance are required before those transition guarantees can be
 claimed. Historical evidence retains its original scope.
+
+
+## Publication status independence (PR114 point 4, 2026-09-20)
+
+The revised V5 candidate requires a fresh, manifest-bound delegation with
+`operation=UPDATE_CAR_DATA_AND_VISIBLE_PRICE_PROJECTIONS` and
+`identity_policy=AUTHENTICATED_CRM_ALL_CARS_PUBLIC_VISIBILITY_ONLY`.
+The old published-only delegation does not authorize this candidate. The exact
+`visibility_delegation` object is defined by `VISIBILITY_DELEGATION` in
+`uaart_price_sync_binding.py`: existing CRM publish/unpublish/sold actions,
+current CRM edit ACL, `published/publish_pending/status` fields, the current
+car's public views and shared inventory, preservation of source data/media,
+and actual-outcome reconciliation before replay. `non_price_changes=FORBIDDEN`
+continues to constrain the price event path.
+
+`visibility_lifecycle.py` and the installed `ua_site_counters.py` are mandatory
+source pins. No constant count of 18 applies to V5 dynamic identities. Current
+source, schema, writer controls, real Gate B and installation receipt must bind
+the new delegation; this contract document grants no production authority.
+
+New draft and published price edits share the immutable V5 FIFO journal. Draft
+completion has `DATA_VERIFIED`, `public_projection=NOT_APPLICABLE` and
+`site_verification=NOT_APPLICABLE`; it does not fabricate `SITE_PUBLISHED` or a
+public verification result. Its canonical verifier observes exact local files
+through the installed route policy. Real HTTP closure and the <=60 second SLA
+remain deployment/live-acceptance evidence, not unit-test claims.
+
+A retired operation that was already DB committed can be reconciled explicitly
+by `V5Worker.reconcile_hidden_operation(event_key)`. It verifies the original
+claim, current committed prices, actual retired views and fresh authority,
+then completes that same operation. It never resets a blocked queue to replay a
+price write. Untracked newer prices are preserved and produce a bounded,
+reconciliation-required diagnosis. Old receipts remain immutable.

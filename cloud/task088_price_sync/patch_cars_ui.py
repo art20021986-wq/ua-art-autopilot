@@ -4,6 +4,7 @@ import hashlib
 
 SOURCE_SHA256 = "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde"
 
+CURRENT_SOURCE_SHA256 = "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837"
 
 HELPERS = '''# TASK088_PRICE_SYNC_HOOK_V5: durable operator intents precede price mutations.
 def _task088_sync_identity(update):
@@ -129,8 +130,6 @@ def _task088_sync_prepare(conn, before, field, value, actor_id, sync_identity,
             return "duplicate", proposal
         return "proposal", proposal
     existing = outbox.get_operation(conn, key)
-    if existing is not None and before.get("published") != 1:
-        raise RuntimeError("TASK088_REPLAY_CAR_PUBLICATION_CHANGED")
     if expected_price is not None and existing is None:
         if type(expected_price) is not tuple or len(expected_price) != 1:
             raise RuntimeError("TASK088_EXPECTED_PRICE_REQUIRED")
@@ -138,17 +137,6 @@ def _task088_sync_prepare(conn, before, field, value, actor_id, sync_identity,
             return "reply", (False, "conflict")
         if only_if_empty and not _v168_empty(before[field]):
             return "reply", (False, "filled")
-    if before.get("published") != 1:
-        # Retain the existing Stage 2 write/audit routine, with a durable dedupe
-        # marker so technical replay cannot apply an unpublished edit twice.
-        proposal = confirmations.propose(conn, event_key=key, payload=payload, now_ms=now_ms)
-        if _task088_sync_snapshot(conn) != snapshot:
-            raise RuntimeError("TASK088_DRAFT_INTENT_CROSS_WRITE")
-        if proposal["state"] == "CONFIRMED":
-            return "duplicate", proposal
-        if proposal["state"] == "CANCELLED":
-            return "reply", (False, _task088_sync_proposal_reply(proposal, "Цена"))
-        return "legacy", proposal
     worker_expected = expected_price
     if existing is not None:
         import json
@@ -298,7 +286,7 @@ def _price_helper(source):
         "            _task088_sync_readback(conn, result)\n"
         "            if confirmation_token and confirmations.get(conn, confirmation_token)['state'] != 'CONFIRMED':\n"
         "                raise RuntimeError('TASK088_CONFIRMATION_READBACK_MISMATCH')\n"
-        "            return True, confirmations.PriceReply('%s принята: %s $. Ожидайте проверку сайта.'\n"
+        "            return True, confirmations.PriceReply('%s принята: %s $. Ожидайте проверку сохранения и доступного отображения.'\n"
         "                % (label, format(value, ',').replace(',', ' ') if value is not None else 'Цена уточняется'), queued=True)\n"
         "        if kind == 'legacy':\n"
         "            confirmation_token = result['token']\n"
@@ -324,7 +312,7 @@ def _price_helper(source):
 
 
 def patch_source(source):
-    if type(source) is not str or hashlib.sha256(source.encode()).hexdigest() != SOURCE_SHA256:
+    if type(source) is not str or hashlib.sha256(source.encode()).hexdigest() not in (SOURCE_SHA256, CURRENT_SOURCE_SHA256):
         raise ValueError("CURRENT_CARS_UI_SOURCE_SHA256_MISMATCH")
     source = _function(source, "_task088_apply_selected_price", _price_helper)
     source = _once(source, "def _task088_apply_selected_price(", HELPERS + "def _task088_apply_selected_price(")

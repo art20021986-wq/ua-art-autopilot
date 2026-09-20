@@ -16,7 +16,7 @@ from unittest.mock import AsyncMock, patch
 
 import outbox
 import uaart_price_sync_confirmation as confirmations
-from patch_cars_ui import SOURCE_SHA256, patch_source
+from patch_cars_ui import SOURCE_SHA256, CURRENT_SOURCE_SHA256, patch_source
 
 
 class HandlerStop(Exception):
@@ -112,7 +112,7 @@ class CarsHookTests(unittest.TestCase):
         return message.reply_text.call_args.args[0]
 
     def test_pin_rejects_source_drift(self):
-        self.assertEqual(hashlib.sha256(self.source.encode()).hexdigest(), SOURCE_SHA256)
+        self.assertIn(hashlib.sha256(self.source.encode()).hexdigest(), (SOURCE_SHA256, CURRENT_SOURCE_SHA256))
         with self.assertRaisesRegex(ValueError, "SOURCE_SHA256"):
             patch_source(self.source + "\n")
 
@@ -212,12 +212,13 @@ class CarsHookTests(unittest.TestCase):
         self.assertEqual(self.events(), [])
         self.assertEqual(self.db.execute("SELECT COUNT(*) FROM audit").fetchone()[0], 0)
 
-    def test_unpublished_legacy_commit_audit_and_readback_preserved(self):
+    def test_unpublished_intent_uses_same_fifo_without_early_price_write(self):
         self.assertTrue(self.edit(cid=29)[0])
         self.assertEqual(self.card(29)["published"], 0)
-        self.assertEqual(self.card(29)["price_georgia"], 8200)
-        self.assertEqual(self.events(), [])
-        self.assertEqual(self.db.execute("SELECT field FROM audit").fetchone()[0], "price_georgia")
+        self.assertIsNone(self.card(29)["price_georgia"])
+        self.assertEqual(len(self.events()), 1)
+        self.assertEqual(self.events()[0]["state"], "QUEUED")
+        self.assertEqual(self.db.execute("SELECT count(*) FROM audit").fetchone()[0], 0)
 
     def test_no_identity_or_provenance_cannot_mutate(self):
         before = self.card()
@@ -303,14 +304,14 @@ class CarsHookTests(unittest.TestCase):
         self.db.rollback()
         self.assertEqual(confirmations.get(self.db, answer.confirmation)["state"], "PENDING")
 
-    def test_draft_anomaly_confirmation_keeps_stage2_transaction(self):
+    def test_draft_anomaly_confirmation_submits_same_fifo_transaction(self):
         _, answer = self.edit(cid=29, value="245")
         self.callback(answer)
-        self.assertEqual(self.card(29)["price_georgia"], 245)
-        self.assertEqual(self.events(), [])
+        self.assertIsNone(self.card(29)["price_georgia"])
+        self.assertEqual(len(self.events()), 1)
         self.assertEqual(confirmations.get(self.db, answer.confirmation)["state"], "CONFIRMED")
         self.callback(answer)
-        self.assertEqual(self.db.execute("SELECT count(*) FROM audit").fetchone()[0], 1)
+        self.assertEqual(self.db.execute("SELECT count(*) FROM audit").fetchone()[0], 0)
 
     def test_voice_cas_and_nullable_undo_have_queue_guards(self):
         cas = self.ns["_v168_cas_write"]
@@ -360,9 +361,9 @@ class CarsHookTests(unittest.TestCase):
     def test_draft_technical_replay_does_not_duplicate_audit(self):
         self.assertTrue(self.edit(cid=29)[0])
         self.assertTrue(self.edit(cid=29)[0])
-        self.assertEqual(self.db.execute("SELECT COUNT(*) FROM audit").fetchone()[0], 1)
+        self.assertEqual(len(self.events()), 1)
         self.assertTrue(self.edit(cid=29, identity=(700, 51, 901))[0])
-        self.assertEqual(self.db.execute("SELECT COUNT(*) FROM audit").fetchone()[0], 2)
+        self.assertEqual(len(self.events()), 2)
 
     def test_anomaly_proposal_trigger_cannot_corrupt_other_car(self):
         self.db.execute(f"CREATE TRIGGER bad_proposal AFTER INSERT ON {confirmations.TABLE} "
@@ -387,7 +388,7 @@ class CarsHookTests(unittest.TestCase):
     def test_draft_confirmation_trigger_audit_corruption_rolls_back_everything(self):
         _, answer = self.edit(cid=29, value="245")
         self.db.execute(f"CREATE TRIGGER bad_confirm AFTER UPDATE ON {confirmations.TABLE} "
-                        "BEGIN UPDATE audit SET new_value='Corrupted'; END")
+                        "BEGIN INSERT INTO audit(actor_id,field) VALUES(700,'Corrupted'); END")
         self.db.commit()
         before = self.card(29)
         self.callback(answer)
@@ -486,13 +487,13 @@ class CarsHookTests(unittest.TestCase):
         self.db.commit()
         self.assertTrue(self.edit(cid=29)[0])
         self.assertEqual(self.card(29)["price_georgia"],9000)
-        self.assertEqual(self.events(),[])
-        self.assertEqual(self.db.execute("SELECT count(*) FROM audit").fetchone()[0],1)
+        self.assertEqual(len(self.events()),1)
+        self.assertEqual(self.db.execute("SELECT count(*) FROM audit").fetchone()[0],0)
 
     def test_old_published_message_replay_after_unpublication_cannot_run_stage2_again(self):
         self.assertTrue(self.edit()[0])
         self.db.execute("UPDATE cars SET published=0 WHERE id=10");self.db.commit()
-        self.assertFalse(self.edit()[0])
+        self.assertTrue(self.edit()[0])
         self.assertEqual(self.card()["price_georgia"],8000)
         self.assertEqual(self.db.execute("SELECT count(*) FROM audit").fetchone()[0],0)
 

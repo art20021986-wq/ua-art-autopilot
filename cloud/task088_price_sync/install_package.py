@@ -27,11 +27,11 @@ MAX_FILE = 8 * 1024 * 1024
 MODULES = frozenset({"uaart_market_prices.py", "uaart_price_sync_outbox.py",
     "uaart_price_sync_runtime.py", "uaart_price_sync_binding.py", "owner_policy.py",
     "price_publication.py", "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py",
-    "publication_fence.py", "mutation_recovery.py"})
+    "publication_fence.py", "mutation_recovery.py", "visibility_lifecycle.py"})
 SOURCES = frozenset({"cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py",
-                     "publish_transaction_guard.py", "ua_stage_catalog_sync.py", "ua_spec_permanent.py"})
+                     "publish_transaction_guard.py", "ua_stage_catalog_sync.py", "ua_spec_permanent.py", "ua_site_counters.py", "publikaciya.py"})
 DEPENDENCIES = frozenset({"db.py", "cars_schema.py", "start_safe.py",
-                         "master_card.py", "publikaciya.py", "team_bot.py",
+                         "master_card.py", "team_bot.py",
                          "catalog_design_golden.html", "lock4_zhurnal.py",
                          "ua_additional_spec.py", "vin_spec_service.py"})
 EVIDENCE_NAMES = ("request", "claim", "transaction", "gate_b", "stage2", "quota", "writers", "manifest", "owner_approval", "preview_gate")
@@ -286,6 +286,8 @@ def build_source_candidates(source_files, dependency_files):
     from patch_catalog_design_guard import patch_catalog_design_guard
     from patch_stage_catalog_sync import patch_stage_catalog_sync
     from patch_guard import patch_source as patch_guard
+    from patch_site_counters import patch_source as patch_site_counters
+    from patch_publikaciya import patch_publikaciya
     from integrate_private_sources import compose_price_candidate
     if set(source_files) != SOURCES or set(dependency_files) != DEPENDENCIES:
         raise InstallError("EXACT_REVIEWED_SOURCE_DEPENDENCY_SET_REQUIRED")
@@ -293,6 +295,8 @@ def build_source_candidates(source_files, dependency_files):
         raise InstallError("EXACT_SOURCE_DEPENDENCY_BYTES_REQUIRED")
     result = {"cars_ui.py": patch_source(source_files["cars_ui.py"].decode()).encode()}
     result["publish_transaction_guard.py"] = patch_guard(source_files["publish_transaction_guard.py"].decode()).encode()
+    result["ua_site_counters.py"] = patch_site_counters(source_files["ua_site_counters.py"].decode()).encode()
+    result["publikaciya.py"] = patch_publikaciya(source_files["publikaciya.py"])[0]
     for name, patcher in (("yadro.py", patch_yadro), ("stranica.py", patch_stranica),
                           ("catalog_design_guard.py", patch_catalog_design_guard),
                           ("ua_stage_catalog_sync.py", patch_stage_catalog_sync)):
@@ -334,10 +338,24 @@ def build_candidates(source_files, html_files, rows, modules, *, dependency_file
             value, _ = migrate_catalog(text, list(by_code.values()))
         else:
             value, _ = migrate_card(text, by_code[code])
+        value, _ = migrate_counter_client_candidate(name, value,
+            source_files["ua_site_counters.py"], result["ua_site_counters.py"], homepage_policy or {})
         result[name] = value.encode("utf-8") if isinstance(value, str) else value
     for name in SOURCES | MODULES:
         ast.parse(result[name].decode("utf-8"))
     return result
+
+
+def migrate_counter_client_candidate(name, source, before_counter, after_counter, homepage_policy):
+    """Update the known counter script while preserving the unserved legacy home."""
+    if homepage_policy.get(name) == "PROTECTED_LEGACY_NOT_SERVED":
+        if name != "site/index.html":
+            raise InstallError("EXACT_PROTECTED_LEGACY_HOME_REQUIRED")
+        source_hash = sha(source.encode("utf-8"))
+        return source, {"status": "PROTECTED_LEGACY_UNCHANGED", "before_sha256": source_hash,
+                        "after_sha256": source_hash, "unrelated_markup_preserved": True}
+    from patch_site_counters import patch_html_client
+    return patch_html_client(source, before_counter.decode("utf-8"), after_counter.decode("utf-8"))
 
 
 def _validate(plan, files, evidence, now, root, *, testing, phase="OPEN"):

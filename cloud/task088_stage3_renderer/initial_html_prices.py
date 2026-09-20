@@ -181,8 +181,8 @@ def migrate_catalog(source, rows):
         if code in row_map:
             raise ValueError("INITIAL_CATALOG_DUPLICATE_CRM_ID")
         row_map[code] = row
-    if not row_map:
-        raise ValueError("INITIAL_CATALOG_EMPTY_CRM")
+    if not row_map and HomeInventory(source).car_price_surface:
+        raise ValueError("INITIAL_EMPTY_CATALOG_CAR_SURFACE")
     structure = Structure(source)
     articles = [node for node in structure.elements if node.tag == "article" and "catalog-card" in _classes(node)]
     seen, replacements = set(), []
@@ -259,8 +259,6 @@ def migrate_home(source, rows):
         if code in codes:
             raise ValueError("INITIAL_HOME_DUPLICATE_CRM_ID")
         codes.add(code)
-    if not codes:
-        raise ValueError("INITIAL_HOME_EMPTY_CRM")
     if START in source or END in source:
         raise ValueError("INITIAL_HOME_MARKED_PRICE_SURFACE_REQUIRES_MIGRATION")
     inventory = HomeInventory(source)

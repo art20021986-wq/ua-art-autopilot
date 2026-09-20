@@ -6,13 +6,14 @@ import hashlib
 from patch_yadro import IMPORT, _node_text, _range, _single
 
 EXPECTED_SHA256 = "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+CURRENT_SHA256 = "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687"
 
 
 def patch_stranica(source_bytes):
     if type(source_bytes) is not bytes:
         raise ValueError("SOURCE_BYTES_REQUIRED")
     before = hashlib.sha256(source_bytes).hexdigest()
-    if before != EXPECTED_SHA256:
+    if before not in (EXPECTED_SHA256, CURRENT_SHA256):
         raise ValueError("STRANICA_SOURCE_HASH_MISMATCH")
     source = source_bytes.decode("utf-8")
     tree = ast.parse(source, filename="stranica.py")

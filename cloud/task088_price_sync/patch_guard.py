@@ -10,6 +10,7 @@ import textwrap
 
 SOURCE_SHA256 = "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d"
 
+CURRENT_SOURCE_SHA256 = "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159"
 
 HELPER = '''# TASK088_PRICE_PUBLICATION_FENCE_V5
 @contextlib.contextmanager
@@ -65,11 +66,14 @@ def _task088_price_quiescence():
         for (event_key,) in completed:
             event = _task088_outbox.get_operation(connection, event_key)
             v5_car_ids.add(event["car_id"])
+            records = {fact: _task088_json.loads(payload) for fact, payload in connection.execute(
+                "SELECT fact,payload_json FROM " + _task088_outbox.V5_AUDIT + " WHERE event_key=?", (event_key,))}
+            data_only = "DATA_VERIFIED" in records
             cursor = connection.execute("SELECT * FROM cars WHERE id=?", (event["car_id"],))
             raw_row = cursor.fetchone()
             row = dict(zip((item[0] for item in cursor.description), raw_row)) if raw_row is not None else None
-            if (row is None or row.get("auto_number") != event["car_code"]
-                    or str(row.get("vin") or "") != event["vin"]):
+            if (row is None or (not data_only and (row.get("auto_number") != event["car_code"]
+                    or str(row.get("vin") or "") != event["vin"]))):
                 raise PublishError("TASK088_V5_VERIFIED_CAR_IDENTITY_REQUIRED")
             def _canonical_price(value, nullable=False):
                 if value is None and nullable:
@@ -77,7 +81,7 @@ def _task088_price_quiescence():
                 if type(value) is not int or not 0 <= value < 2**63:
                     raise PublishError("TASK088_CURRENT_CRM_PRICE_FORMAT_INVALID")
                 return "%d.00" % value
-            actual_pair = (_canonical_price(row.get("price_uah")),
+            actual_pair = (_canonical_price(row.get("price_uah"), data_only),
                            _canonical_price(row.get("price_georgia"), True))
             expected_pair = (event["ukraine_usd"], event["georgia_usd"])
             if actual_pair != expected_pair:
@@ -90,13 +94,14 @@ def _task088_price_quiescence():
                 raise PublishError("TASK088_V5_COMPLETION_CHECKPOINTS_REQUIRED")
             try:
                 after = _task088_json.loads(event["after_json"])
-                if (after["id"] != event["car_id"] or after["auto_number"] != event["car_code"]
-                        or str(after.get("vin") or "") != event["vin"]
-                        or (_canonical_price(after["price_uah"]), _canonical_price(after["price_georgia"], True)) != expected_pair):
+                if (after["id"] != event["car_id"] or (event["car_code"] and str(after.get("auto_number") or "") != event["car_code"])
+                        or (event["vin"] and str(after.get("vin") or "") != event["vin"])
+                        or (_canonical_price(after["price_uah"], data_only), _canonical_price(after["price_georgia"], True)) != expected_pair):
                     raise PublishError("TASK088_V5_COMMITTED_PRICE_SNAPSHOT_REQUIRED")
                 records = {fact: _task088_json.loads(payload) for fact, payload in connection.execute(
                     "SELECT fact,payload_json FROM " + _task088_outbox.V5_AUDIT + " WHERE event_key=?", (event_key,))}
-                required = {"ACCEPTED", "DB_COMMITTED", "DB_READBACK", "VERIFIED", "COMPLETED"}
+                required = ({"ACCEPTED", "DB_COMMITTED", "DATA_VERIFIED", "COMPLETED"} if data_only else
+                            {"ACCEPTED", "DB_COMMITTED", "DB_READBACK", "VERIFIED", "COMPLETED"})
                 if not required <= records.keys():
                     raise PublishError("TASK088_V5_COMPLETION_AUDIT_REQUIRED")
                 for fact in required:
@@ -105,7 +110,7 @@ def _task088_price_quiescence():
                             or item["actor_id"] != event["actor_id"] or item["chat_id"] != event["chat_id"]
                             or item["field"] != event["field"] or item["requested_value"] != event["value"]):
                         raise PublishError("TASK088_V5_COMPLETION_AUDIT_IDENTITY_MISMATCH")
-                proof = records["VERIFIED"]["details"]
+                proof = records["DATA_VERIFIED" if data_only else "VERIFIED"]["details"]
                 encoded = _task088_json.dumps(proof, sort_keys=True, ensure_ascii=True, separators=(",", ":")).encode()
                 if (_task088_hashlib.sha256(encoded).hexdigest() != event["receipt_sha256"]
                         or proof["operation_id"] != event_key or proof["claim_nonce"] != event["claim_nonce"]
@@ -115,9 +120,25 @@ def _task088_price_quiescence():
                         or proof["new_value"] != event["value"] or (proof["ua"], proof["ge"]) != expected_pair
                         or proof["verified_ms"] != event["verified_ms"]
                         or any(proof[key] != "PASS" for key in ("db_readback", "protected_data", "verification"))
-                        or records["DB_READBACK"]["details"]["separate_connection"] is not True
+                        or (not data_only and records["DB_READBACK"]["details"]["separate_connection"] is not True)
                         or records["COMPLETED"]["details"]["receipt_sha256"] != event["receipt_sha256"]):
                     raise PublishError("TASK088_V5_COMPLETION_PROOF_MISMATCH")
+                if data_only:
+                    visibility = proof["visibility"]
+                    committed = records["DB_COMMITTED"]["details"]
+                    after_hash = _task088_hashlib.sha256(event["after_json"].encode()).hexdigest()
+                    if (proof["public_projection"] != "NOT_APPLICABLE" or proof["site_verification"] != "NOT_APPLICABLE"
+                            or proof["separate_connection"] is not True
+                            or proof["committed_row_sha256"] != after_hash
+                            or committed["record_version_after"] != after_hash
+                            or committed["after"] != after
+                            or visibility["row_sha256"] != proof["current_row_sha256"]
+                            or visibility["car_id"] != event["car_id"] or visibility["published"] != 0
+                            or visibility["retired_public_views_verified"] is not True
+                            or visibility["public_projection"] != "NOT_APPLICABLE"
+                            or not isinstance(visibility["visibility_receipt_sha256"], str)
+                            or len(visibility["visibility_receipt_sha256"]) != 64):
+                        raise PublishError("TASK088_V5_DATA_ONLY_PROOF_MISMATCH")
             except (KeyError, TypeError, ValueError) as exc:
                 raise PublishError("TASK088_V5_COMPLETION_PROOF_INVALID") from exc
         table = _task088_outbox.TABLE
@@ -197,7 +218,7 @@ def _fence_catalog(source):
 
 
 def patch_source(source):
-    if type(source) is not str or hashlib.sha256(source.encode("utf-8")).hexdigest() != SOURCE_SHA256:
+    if type(source) is not str or hashlib.sha256(source.encode("utf-8")).hexdigest() not in (SOURCE_SHA256, CURRENT_SOURCE_SHA256):
         raise ValueError("CURRENT_PUBLISH_TRANSACTION_GUARD_SOURCE_SHA256_MISMATCH")
     result = _function(source, "_publish_locked", _fence_body)
     result = _function(result, "rebuild_catalog", _fence_catalog)

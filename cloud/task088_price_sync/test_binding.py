@@ -383,8 +383,9 @@ class BindingV5Tests(unittest.TestCase):
             conn.commit()
             self.schema = binding.schema_sha256(conn)
         self.delegation.update(contract=binding.CONTRACT_V5,
-            operation="UPDATE_PUBLISHED_CAR_HOME_CATALOG_PRICES",
-            identity_policy="AUTHENTICATED_CRM_PUBLISHED_CARS", schema_sha256=self.schema,
+            operation="UPDATE_CAR_DATA_AND_VISIBLE_PRICE_PROJECTIONS",
+            identity_policy="AUTHENTICATED_CRM_ALL_CARS_PUBLIC_VISIBILITY_ONLY", schema_sha256=self.schema,
+            visibility_delegation=dict(binding.VISIBILITY_DELEGATION),
             operator_policy={"source":"AUTHENTICATED_TELEGRAM_UPDATE",
                              "permission":"EXISTING_CRM_EDIT_CAR_ACL", "chat_types":["private"],
                              "roles":["owner","admin","manager"]},
@@ -400,6 +401,47 @@ class BindingV5Tests(unittest.TestCase):
         return dict({"source":"SYNTHETIC_TEST", "actor_id":700, "chat_id":700,
                      "message_id":80, "update_id":900, "chat_type":"private", "bot_id":123,
                      "authorized_car_id":car_id, "permission":"EDIT_CAR"}, **changes)
+
+    def test_draft_without_public_identity_has_data_authority_and_no_public_paths(self):
+        provider = self.provider()
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("INSERT INTO cars VALUES (19,NULL,0,NULL,NULL,NULL)")
+        event = self.new_operation(car_id=19,key="e"*64)
+        descriptor = os.open(self.lock,os.O_RDWR)
+        try:
+            fcntl.flock(descriptor,fcntl.LOCK_EX)
+            proof = provider.authorize(event,())
+        finally: os.close(descriptor)
+        self.assertEqual(proof["allowed_paths"],[])
+        self.assertEqual(provider.resolve_identity(19)["published"],0)
+        with sqlite3.connect(self.db) as conn:
+            conn.row_factory=sqlite3.Row
+            row=dict(conn.execute("SELECT * FROM cars WHERE id=19").fetchone())
+        hidden=provider.verify_hidden(event,row)
+        self.assertEqual(hidden["public_projection"],"NOT_APPLICABLE")
+        self.assertEqual(hidden["verification_scope"],"NO_PUBLIC_IDENTITY_OR_PRIOR_V5_PUBLIC_OPERATION")
+
+    def test_old_price_only_scope_cannot_authorize_new_visibility_actions(self):
+        del self.delegation["visibility_delegation"]
+        self.rebuild_chain()
+        with self.assertRaisesRegex(binding.BindingError,"EXPLICIT_NATIVE_VISIBILITY_DELEGATION_REQUIRED"):
+            self.provider()
+
+    def test_current_acl_and_controls_still_fence_visibility_transitions(self):
+        provider=self.provider()
+        proof=provider.authorize_visibility(1,700)
+        self.assertEqual((proof["car_id"],proof["actor_id"],proof["permission"]),(1,700,"EDIT_CAR"))
+        self.assertTrue(proof["writer_fence_verified"])
+        with sqlite3.connect(self.db) as conn: conn.execute("UPDATE staff SET active=0 WHERE user_id=700")
+        with self.assertRaisesRegex(binding.BindingError,"CURRENT_CRM_EDIT_PERMISSION_REQUIRED"):
+            provider.authorize_visibility(1,700)
+
+    def test_hidden_surface_inventory_requires_same_unique_identity(self):
+        provider=self.provider()
+        with sqlite3.connect(self.db) as conn: conn.execute("UPDATE cars SET published=0 WHERE id=1")
+        self.assertEqual(len(provider.resolve_visibility_surfaces("UA-0001")),3)
+        with self.assertRaisesRegex(binding.BindingError,"PUBLISHED_CRM_IDENTITY_REQUIRED"):
+            provider.resolve_surfaces("UA-0001")
 
     def test_missing_installed_reader_pin_refuses_v5_binding(self):
         self.code.pop("uaart_price_control_reader.py")

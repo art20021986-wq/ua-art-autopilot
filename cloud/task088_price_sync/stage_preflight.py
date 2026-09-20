@@ -19,7 +19,7 @@ REPO = 'https://raw.githubusercontent.com/art20021986-wq/ua-art-autopilot/'
 def package_mapping():
     """Exact public paths accepted by the hash-bound staging route."""
     mapping = {}
-    for name in ('preflight.py', 'install_package.py', 'patch_cars_ui.py', 'patch_guard.py',
+    for name in ('preflight.py', 'install_package.py', 'patch_cars_ui.py', 'patch_guard.py', 'patch_site_counters.py', 'patch_publikaciya.py',
                  'uaart_price_sync_runtime.py', 'uaart_price_sync_binding.py', 'uaart_price_sync_confirmation.py',
                  'uaart_price_control_reader.py'):
         mapping[name] = 'cloud/task088_price_sync/' + name
@@ -29,7 +29,7 @@ def package_mapping():
         mapping[name] = 'cloud/task088_stage3_renderer/' + name
     for name in ('owner_policy.py', 'price_publication.py'):
         mapping[name] = 'cloud/task088_autopilot_owner_policy/' + name
-    for name in ('integrate_private_sources.py', 'publication_fence.py', 'mutation_recovery.py'):
+    for name in ('integrate_private_sources.py', 'publication_fence.py', 'mutation_recovery.py', 'visibility_lifecycle.py'):
         mapping[name] = 'cloud/task088_v5_writer_fence/' + name
     return mapping
 

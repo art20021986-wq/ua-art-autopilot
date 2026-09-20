@@ -24,14 +24,14 @@ def package_mapping(repository):
     mapping = {"uaart_market_prices.py": renderer / "uaart_market_prices.py",
         "uaart_price_sync_outbox.py": sync / "outbox.py"}
     for name in ("uaart_price_sync_runtime.py", "uaart_price_sync_binding.py", "uaart_price_sync_confirmation.py",
-                 "uaart_price_control_reader.py", "preflight.py", "install_package.py", "patch_cars_ui.py", "patch_guard.py"):
+                 "uaart_price_control_reader.py", "preflight.py", "install_package.py", "patch_cars_ui.py", "patch_guard.py", "patch_site_counters.py", "patch_publikaciya.py"):
         mapping[name] = sync / name
     for name in ("patch_yadro.py", "patch_stranica.py", "patch_catalog_design_guard.py",
                  "patch_stage_catalog_sync.py", "initial_html_prices.py"):
         mapping[name] = renderer / name
     for name in ("owner_policy.py", "price_publication.py"):
         mapping[name] = policy / name
-    for name in ("integrate_private_sources.py", "publication_fence.py", "mutation_recovery.py"):
+    for name in ("integrate_private_sources.py", "publication_fence.py", "mutation_recovery.py", "visibility_lifecycle.py"):
         mapping[name] = cloud / "task088_v5_writer_fence" / name
     return mapping
 

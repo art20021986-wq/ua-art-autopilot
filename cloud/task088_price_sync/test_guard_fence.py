@@ -76,6 +76,16 @@ class GuardFenceTests(unittest.TestCase):
                        _build_catalog=self.build_catalog, _validate_catalog=lambda source, rows: {},
                        _install_catalog=self.install_catalog, _verify_bundle=lambda codes: {"status": "PASS"},
                        _append_log=lambda message: None)
+        # The current pinned guard delegates to the installed reentrant fence.
+        # Exercise that same public implementation on an isolated lock inode.
+        import importlib.util
+        fence_path = pathlib.Path(__file__).resolve().parents[1] / "task088_v5_writer_fence" / "publication_fence.py"
+        spec = importlib.util.spec_from_file_location("_test_current_publication_fence", fence_path)
+        fence = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = fence
+        spec.loader.exec_module(fence)
+        self.ns["_ua0022_publication_fence"] = lambda timeout: fence.PublicationFence(
+            lock_path=self.root / "publish.lock", timeout=timeout, _test_only_path=True)
         exec(compile(ast.Module(body=nodes, type_ignores=[]), "<actual-patched-guard>", "exec"), self.ns)
         self.module_patch = patch.dict(sys.modules, {"uaart_price_sync_outbox": O})
         self.module_patch.start()

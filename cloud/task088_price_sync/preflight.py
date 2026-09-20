@@ -25,13 +25,13 @@ CONTRACT = "TASK088-PRICE-SYNC-READONLY-PREFLIGHT-5"
 MODULES = {"uaart_market_prices.py", "uaart_price_sync_outbox.py", "uaart_price_sync_runtime.py",
            "uaart_price_sync_binding.py", "owner_policy.py", "price_publication.py",
            "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py",
-           "publication_fence.py", "mutation_recovery.py"}
+           "publication_fence.py", "mutation_recovery.py", "visibility_lifecycle.py"}
 TOOLS = {"preflight.py", "install_package.py", "patch_cars_ui.py", "patch_yadro.py", "patch_stranica.py",
          "patch_catalog_design_guard.py", "patch_stage_catalog_sync.py", "patch_guard.py", "initial_html_prices.py",
-         "integrate_private_sources.py"}
+         "integrate_private_sources.py", "patch_site_counters.py", "patch_publikaciya.py"}
 SOURCES = {"cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py", "publish_transaction_guard.py",
-           "ua_stage_catalog_sync.py", "ua_spec_permanent.py"}
-DEPENDENCIES = {"db.py", "cars_schema.py", "start_safe.py", "master_card.py", "publikaciya.py",
+           "ua_stage_catalog_sync.py", "ua_spec_permanent.py", "ua_site_counters.py", "publikaciya.py"}
+DEPENDENCIES = {"db.py", "cars_schema.py", "start_safe.py", "master_card.py",
                 "catalog_design_golden.html", "team_bot.py", "lock4_zhurnal.py",
                 "ua_additional_spec.py", "vin_spec_service.py"}
 MAX_FILE = 8 * 1024 * 1024
@@ -252,6 +252,14 @@ def run(output_id, expected_bundle_sha256, *, test_root=None, package_relative=P
                             candidate, proof = migrator.migrate_catalog(text, published)
                         else:
                             candidate, proof = migrator.migrate_card(text, by_code[code])
+                        candidate, client_proof = engine.migrate_counter_client_candidate(name, candidate,
+                            source_files["ua_site_counters.py"], candidates["ua_site_counters.py"], homepage_policy)
+                        proof = dict(proof, price_only_after_sha256=proof["after_sha256"],
+                            after_sha256=client_proof["after_sha256"], counter_client=client_proof,
+                            outside_price_and_counter_client_unchanged=(proof.get("outside_price_unchanged") is True
+                                and client_proof["unrelated_markup_preserved"] is True))
+                        if client_proof["status"] == "PATCHED_EXACT_SCRIPT":
+                            proof["outside_price_unchanged"] = False
                         candidates[name] = candidate.encode("utf-8")
                         report["html"][name] = dict(proof, status="PASS")
                     except Exception as exc:

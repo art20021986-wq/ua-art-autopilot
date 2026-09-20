@@ -24,10 +24,20 @@ BEFORE_SHA256 = {
     "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
     "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
 }
+CURRENT_BEFORE_SHA256 = {
+    "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+    "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+    "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+}
 PRICE_BEFORE_SHA256 = {
-    "cars_ui.py": "d46e487c836cd9ba941c483bc6103166d4340fe3d3d02c7632d12c7ed19806dd",
-    "publish_transaction_guard.py": "5b1e82d29e83b75d86946b1cb9068a57ef6a099facb44cb15b31836b9a4dd436",
+    "cars_ui.py": "4e84055e5a855ddc6fa8fbf714a342422d084f956e4bedc580ab47bcae0257a1",
+    "publish_transaction_guard.py": "4fdb015226f7ac473e33e0a0d9bef7da2b14744de1798e0c1202a814640af36a",
     "stranica.py": "ccec8321dbf4e90b972efd12ba34f73221d1a547aba0b2955d4cea0b7e8c72b2",
+}
+CURRENT_PRICE_BEFORE_SHA256 = {
+    "cars_ui.py": "0b13b9e931aa02112f81f3a844ed4774aced29fd42e520e94578638f42442d1c",
+    "publish_transaction_guard.py": "17fa5c601a22835fe610382d042997722afe2b77ac120b566aa355579e4ce6ae",
+    "stranica.py": "b15642fad2526ce4b16b95a3a5d992f7e94972a4c035ccd07b270957a070d094",
 }
 
 CARS_MARKER = "# UA-ART-PR114-PUBLICATION-FENCE-HANDOFF006:START"
@@ -39,6 +49,64 @@ DEPENDENCY_SHA256 = {
     "ua_additional_spec.py": "6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672",
     "vin_spec_service.py": "1d4d54a6cd70f03dcdf2c599d4a9c6362bfd842f18c40a231dfd0ecbc965ce4a",
 }
+
+VISIBILITY_BLOCK = r'''
+
+# UA-ART-PR114-NATIVE-VISIBILITY-1:START
+def _ua114_visibility_request(update, context, cid, actor_id, sold=False):
+    import visibility_lifecycle as visibility
+    import uaart_price_sync_runtime as runtime
+    binding = context.application.bot_data.get(runtime.BINDING_KEY)
+    if not isinstance(binding, runtime.Binding):
+        raise RuntimeError("VERIFIED_VISIBILITY_BINDING_REQUIRED")
+    lifecycle = visibility.native(binding, S.missing_required)
+    key = visibility.digest(visibility.encoded({"kind": "NATIVE_VISIBILITY", "update_id": update.update_id,
+        "callback_id": update.callback_query.id, "actor_id": actor_id, "car_id": cid}))
+    intent = lifecycle.intent(key)
+    card = visibility.current_row(binding, cid)
+    target = intent["target"] if intent else (0 if sold or card.get("published") else 1)
+    if (not intent and not sold and update.callback_query.data.startswith("car_ad:")
+            and card.get("published")):
+        return {"state": "ALREADY_PUBLISHED", "target": 1}
+    return lifecycle.transition(key=key, car_id=cid, actor_id=actor_id, target=target,
+                                status="sold" if sold else None)
+
+
+async def _ua114_visibility_handler(update, context, sold=False):
+    q, staff = await _ua099_require_staff(update)
+    cid = int(q.data.split(":")[-1])
+    try:
+        result = await _ua114_asyncio.to_thread(
+            _ua114_visibility_request, update, context, cid, q.from_user.id, sold)
+        if result["state"] == "ALREADY_PUBLISHED":
+            text = "Объявление уже опубликовано."
+        elif result["target"]:
+            text = ("Объявление опубликовано из последних подтверждённых данных.\n"
+                    "https://www.uaart.com.ua/video/%s.html" % result["car_code"])
+            try:
+                import visibility_lifecycle as visibility
+                import uaart_price_sync_runtime as runtime
+                visibility.handoff_spec_once(context.application.bot_data[runtime.BINDING_KEY],
+                                             result, _ua_emergency_schedule_spec)
+            except Exception:
+                log.exception("Existing specification queue handoff incomplete for car %s", cid)
+        else:
+            text = "Объявление скрыто. Данные и исходные медиа сохранены."
+    except Exception as exc:
+        log.exception("Native visibility operation pending for car %s", cid)
+        text = "Изменение видимости не завершено: %s. Исход сохранён для проверки; повторная запись не выполняется." % type(exc).__name__
+    await q.message.reply_text(text, reply_markup=_ua099_back(cid))
+    raise ApplicationHandlerStop
+
+
+async def toggle_publish(update, context):
+    return await _ua114_visibility_handler(update, context)
+
+
+async def mark_sold_ok(update, context):
+    return await _ua114_visibility_handler(update, context, sold=True)
+# UA-ART-PR114-NATIVE-VISIBILITY-1:END
+'''
 
 RECOVERY_BLOCK = r'''
 
@@ -718,6 +786,17 @@ import threading as _ua114_threading
 _ua114_price_base = globals().get("_task088_price_quiescence")
 _ua114_price_tls = globals().get("_ua114_price_tls", _ua114_threading.local())
 _ua114_price_pid = globals().get("_ua114_price_pid", _ua114_os.getpid())
+from visibility_lifecycle import require_active_authority as _ua114_check_visibility_authority
+from visibility_lifecycle import recovery_scope as _ua114_visibility_recovery
+_ua114_snapshot_restore = Snapshot.restore
+
+
+def _ua114_restore_visibility_snapshot(self):
+    with _ua114_visibility_recovery():
+        return _ua114_snapshot_restore(self)
+
+
+Snapshot.restore = _ua114_restore_visibility_snapshot
 
 
 def _ua114_price_binding():
@@ -883,7 +962,7 @@ def _integrate_cars_text(source: str) -> str:
         "register",
     })
     source = _instrument_media_status(source)
-    return source.rstrip() + CARS_BLOCK + RECOVERY_BLOCK + "\n"
+    return source.rstrip() + CARS_BLOCK + RECOVERY_BLOCK + VISIBILITY_BLOCK + "\n"
 
 
 def _integrate_stranica_text(source: str) -> str:
@@ -929,6 +1008,33 @@ def _integrate_guard_text(source: str) -> str:
         "_exclusive_lock", "publish_batch", "publish_one", "rebuild_catalog",
         "verify_bundle", "rollback_backup",
     })
+    # Native visibility authority expires at a concrete wall-clock deadline.
+    # Check at the actual atomic public switch, after rendering/temp writes.
+    # Compensating Snapshot.restore uses its separately fenced recovery scope.
+    atomic_nodes = [node for node in ast.parse(source).body
+                    if isinstance(node, ast.FunctionDef) and node.name == "_atomic"]
+    if len(atomic_nodes) != 1:
+        raise RuntimeError("EXACT_GUARD_ATOMIC_WRITER_REQUIRED")
+    class CheckSwitch(ast.NodeTransformer):
+        replacements = 0
+        def visit_Expr(self, node):
+            self.generic_visit(node)
+            call = node.value
+            if (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
+                    and isinstance(call.func.value, ast.Name) and call.func.value.id == "os"
+                    and call.func.attr == "replace"):
+                self.replacements += 1
+                return [ast.parse("_ua114_check_visibility_authority()").body[0], node]
+            return node
+    transform = CheckSwitch()
+    original = atomic_nodes[0]
+    changed = transform.visit(original)
+    if transform.replacements != 1:
+        raise RuntimeError("EXACT_GUARD_ATOMIC_SWITCH_REQUIRED")
+    ast.fix_missing_locations(changed)
+    lines = source.splitlines(keepends=True)
+    lines[original.lineno - 1:original.end_lineno] = [ast.unparse(changed) + "\n"]
+    source = "".join(lines)
     # The exact-pinned price helper owns and validates the outer RESERVED
     # transaction. Expose only that live connection to the shared lease; keep
     # every existing queue/audit/price check and finally block unchanged.
@@ -967,8 +1073,11 @@ def _atomic_write(path: Path, data: bytes, mode: int) -> None:
 def compose_price_candidate(price_sources: dict[str, bytes],
                             dependency_sources: dict[str, bytes]) -> dict[str, bytes]:
     """Pure composition after the exact accepted price patchers; no private I/O."""
+    actual_price = {name: _sha(data) for name, data in price_sources.items()}
+    if actual_price not in (PRICE_BEFORE_SHA256, CURRENT_PRICE_BEFORE_SHA256):
+        raise RuntimeError("COMPOSE_PRICE_SHA256_MISMATCH")
     for values, pins, label in (
-        (price_sources, PRICE_BEFORE_SHA256, "PRICE"),
+        (price_sources, actual_price, "PRICE"),
         (dependency_sources, DEPENDENCY_SHA256, "DEPENDENCY"),
     ):
         if set(values) != set(pins):
@@ -999,7 +1108,10 @@ def build(source_dir: Path, output_dir: Path, fence_source: Path,
         raise RuntimeError("NONEMPTY_OUTPUT_DIR_FORBIDDEN")
 
     original: dict[str, bytes] = {}
-    for name, expected in BEFORE_SHA256.items():
+    observed = {name: _sha((source_dir / name).read_bytes()) for name in BEFORE_SHA256}
+    if observed not in (BEFORE_SHA256, CURRENT_BEFORE_SHA256):
+        raise RuntimeError("PRIVATE_SOURCE_SHA256_MISMATCH")
+    for name, expected in observed.items():
         data = (source_dir / name).read_bytes()
         if _sha(data) != expected:
             raise RuntimeError("PRIVATE_SOURCE_SHA256_MISMATCH:" + name)
@@ -1042,6 +1154,10 @@ def build(source_dir: Path, output_dir: Path, fence_source: Path,
     compile(_decode(recovery_data, "mutation_recovery.py"), "mutation_recovery.py", "exec")
     _atomic_write(output_dir / "mutation_recovery.py", recovery_data, 0o600)
     after["mutation_recovery.py"] = {"sha256": _sha(recovery_data), "bytes": len(recovery_data)}
+    visibility_data = Path(__file__).with_name("visibility_lifecycle.py").read_bytes()
+    compile(_decode(visibility_data, "visibility_lifecycle.py"), "visibility_lifecycle.py", "exec")
+    _atomic_write(output_dir / "visibility_lifecycle.py", visibility_data, 0o600)
+    after["visibility_lifecycle.py"] = {"sha256": _sha(visibility_data), "bytes": len(visibility_data)}
 
     manifest: dict[str, object] = {
         "contract": CONTRACT,
@@ -1049,7 +1165,7 @@ def build(source_dir: Path, output_dir: Path, fence_source: Path,
         "installed": False,
         "writer_gate_pass": False,
         "private_sources_committed": False,
-        "before_sha256": BEFORE_SHA256,
+        "before_sha256": observed,
         "dependency_before_sha256": DEPENDENCY_SHA256,
         "candidate": after,
         "lock_path": "/home/Carix/.ua_art_publish_transaction.lock",

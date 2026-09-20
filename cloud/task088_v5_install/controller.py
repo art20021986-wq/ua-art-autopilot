@@ -30,7 +30,7 @@ BINDINGS = ("task_id", "request_sha256", "run_id", "transaction_id", "manifest_s
 REMOTE_FILES = frozenset({"remote_adapter.py", "install_package.py", "uaart_market_prices.py",
     "uaart_price_sync_outbox.py", "uaart_price_sync_runtime.py", "uaart_price_sync_binding.py",
     "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py", "owner_policy.py", "price_publication.py",
-    "publication_fence.py", "mutation_recovery.py"})
+    "publication_fence.py", "mutation_recovery.py", "visibility_lifecycle.py"})
 
 
 class ControllerError(RuntimeError):

@@ -53,7 +53,8 @@ class DirectRebuildQuiescenceTests(unittest.TestCase):
         self.patch(fence, 'require_publication_fence', lambda: real_require(lock_path=self.lock))
         self.guard = types.ModuleType('publish_transaction_guard')
         self.guard.__dict__.update(contextlib=contextlib, sqlite3=sqlite3,
-            DB=self.fixture.path, PublishError=type('PublishError', (RuntimeError,), {}), WAIT_SECONDS=1)
+            DB=self.fixture.path, PublishError=type('PublishError', (RuntimeError,), {}), WAIT_SECONDS=1,
+            Snapshot=type('Snapshot', (), {'restore': lambda self: None}))
         # Execute the exact composed legacy helper and appended guard block;
         # exclude unrelated private publisher imports with production defaults.
         helper = [node for node in ast.parse(self.composed['publish_transaction_guard.py']).body
@@ -241,7 +242,8 @@ class DirectRebuildQuiescenceTests(unittest.TestCase):
 
     def test_writer_only_missing_price_helper_fails_explicitly(self):
         guard = types.ModuleType('writer_only_guard')
-        guard.__dict__.update(PublishError=RuntimeError, WAIT_SECONDS=1, DB=self.fixture.path)
+        guard.__dict__.update(PublishError=RuntimeError, WAIT_SECONDS=1, DB=self.fixture.path,
+                             Snapshot=type('Snapshot', (), {'restore': lambda self: None}))
         exec(integration.GUARD_BLOCK, guard.__dict__)
         with guard._exclusive_lock():
             with self.assertRaisesRegex(RuntimeError, 'COMPOSED_CANDIDATE_REQUIRED'):
