@@ -1,0 +1,53 @@
+{
+  "schema_version": "PR114-ANALYTICS-ROUTE-FIX-INDEPENDENT-REVIEW-2",
+  "reviewed_commit": "68c713b5ce1063d7e4a1cc8e5fd91971d605c287",
+  "reviewed_at": "2026-09-20T12:23:48Z",
+  "status": "PASS",
+  "prior_blocking_exploits": {
+    "missing_captured_at_utc": "REJECTED_EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED",
+    "extra_receipt_field": "REJECTED_EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED",
+    "captured_at_utc_Z": "REJECTED_PINNED_SAFE_ANALYTICS_CAPTURE_REQUIRED"
+  },
+  "shared_validator": {
+    "exact_keys": true,
+    "parsed_utc_timestamp": true,
+    "generator": true,
+    "upgrader": true,
+    "stage_before_work_directory": true
+  },
+  "tests": {
+    "unit": "10/10 PASS",
+    "unsafe_stage_variants": "8/8 REJECTED",
+    "targeted_fixture": "PASS",
+    "ast": "5/5 PASS",
+    "diff_check": "PASS"
+  },
+  "package": {
+    "source_sha256": "d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb",
+    "source_members": 54,
+    "output_sha256": "77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088",
+    "output_members": 56,
+    "byte_identical_reproduction": true,
+    "added_members": [
+      "evidence/ua-a-js.json",
+      "public/ua/a.js"
+    ],
+    "shared_payload_drift": 0,
+    "html_maps_and_bytes_unchanged": "48/48",
+    "runtime_maps_and_bytes_unchanged": "5/5",
+    "event_endpoint_packaged": false
+  },
+  "safety": {
+    "only_packaged_ua_route": "/ua/a.js",
+    "ua_a_e_denied": true,
+    "other_ua_routes_denied": true,
+    "stage_switch_reload_weakened": false,
+    "production_policy_weakened": false,
+    "access_policy_weakened": false,
+    "private_source_db_secret_added": false
+  },
+  "preview_stage_authorized_by_review": true,
+  "preview_started_by_review": false,
+  "production_written": false,
+  "next_action": "After fresh single-writer, current server pin and unchanged-input checks, perform at most one new Preview Stage under a new operation_id."
+}
