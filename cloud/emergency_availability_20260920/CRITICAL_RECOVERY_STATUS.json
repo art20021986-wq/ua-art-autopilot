@@ -1,0 +1,49 @@
+{
+  "contract": "UAART-CRITICAL-RECOVERY-20260920-2",
+  "recorded_at": "2026-09-20T07:34:08.628Z",
+  "status": "RECOVERY_REQUEST_ACTIVE_EXECUTION_BLOCKED",
+  "owner_request": "У меня не работает сайт до сих пор. Запусти немедленное восстановление.",
+  "owner_failure_accepted_as_unresolved": true,
+  "production_restart_executed": false,
+  "production_files_changed": false,
+  "authorization": "Owner has already authorized emergency restoration; no repeat general approval requested",
+  "verified_execution_blocker": {
+    "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "transaction_id": "tx-35490449348-334c361c22ebee11",
+    "task": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "status": "ROLLING_BACK",
+    "halt": "EMERGENCY_HALT",
+    "old_recovery_task": "TASK119-EMERGENCY-SITE-RECOVERY-R2 consumed; approval expired",
+    "normal_workflow_precondition": "assert-clear rejects pending production transaction"
+  },
+  "additional_concurrent_activity": {
+    "source": "Actual visible authenticated console48233154",
+    "not_executed_by_this_foreground_turn": true,
+    "observed_command_at": "2026-09-20T07:29Z",
+    "operation": "Preview stage point4-53544a27-20260920v2",
+    "last_visible_outcome": "ValueError: INPUT_SHA256_MISMATCH:summary.json, shell prompt returned07:30",
+    "writer_or_stage_outcome_fully_reconciled": false,
+    "no_command_replayed": true
+  },
+  "checks": {
+    "webapp_enabled": true,
+    "official_reload_button_present": true,
+    "exact_webapp": "www.uaart.com.ua",
+    "source_editor_scope": "Partial visible lines only; full current WSGI hash NOT established",
+    "local_dns_probe": "All three hosts failed in local tool environment; NOT classified as site DNS failure"
+  },
+  "actions_completed": {
+    "existing_continuation_priority_updated": true,
+    "automation_id": "6aa838e44e688191acb636f6597ac587",
+    "new_instruction": "Defer new Preview/PR114 writes, reconcile existing outcome and prioritize eligible emergency recovery",
+    "automation_schedule_unchanged": true,
+    "automation_enabled": true,
+    "currently_running_task_cancelled": false,
+    "new_parallel_worker_started": false,
+    "halt_removed": false,
+    "expired_launch_replayed": false,
+    "direct_reload_used_to_bypass_guard": false
+  },
+  "next_required": "Reconcile actual UA0022 installation/rollback and current external writer state through the canonical recovery procedure; obtain a genuinely eligible narrow reload-only execution. Unknown writes must not be repeated. Continue production availability diagnosis; cloud success is not owner-network recovery.",
+  "full_recovery_confirmed": false
+}
