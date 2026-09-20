@@ -1,0 +1,42 @@
+{
+  "contract": "PR114-PREVIEW-STAGE-PACKAGE-BINDING-1",
+  "recorded_at": "2026-09-20T07:34:00Z",
+  "branch_head_before_notice": "2f25eda14a0d3e5aed007d16caa3fe7c96d6d778",
+  "prior_notice": "cloud/task088_v5_acceptance/point4_status_completion_20260920/PREVIEW_STAGE_INPUT_NORMALIZATION_NOTICE.json",
+  "failed_operation": {
+    "operation_id": "point4-53544a27-20260920v2r1",
+    "outcome": "FAILED_BEFORE_WORKDIR_PACKAGE_CURRENT_OBSERVER_BINDING_REQUIRED",
+    "supplied_observer_sha256": "0969b56b15040fe7f75f41e21380f451274272e2758ac6d7e96acfe27384823b",
+    "package_bound_observer_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "work_directory_created": false,
+    "wsgi_sha256_after": "9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555",
+    "config_sha256_after": "ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee",
+    "production_changed": false,
+    "preview_switched": false,
+    "preview_reloaded": false
+  },
+  "corrected_intent": {
+    "preparation_operation_id": "point4-observer-lf-copy-20260920v2r2",
+    "stage_operation_id": "point4-53544a27-20260920v2r2",
+    "source_path": "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260920_054458/summary.json",
+    "source_required_sha256": "0969b56b15040fe7f75f41e21380f451274272e2758ac6d7e96acfe27384823b",
+    "destination_path": "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260920_054458/summary.with-lf.json",
+    "destination_required_absent": true,
+    "transformation": "append exactly one LF byte",
+    "destination_expected_bytes": 86387,
+    "destination_expected_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "write_method": "exclusive create, fsync, chmod 0400, readback SHA256",
+    "original_server_file_must_remain_unchanged": true,
+    "expected_stage_result": "ISOLATED_STAGE_RECEIPT_ONLY",
+    "stage_readback": "inspect new v2r2 work directory and hash 01-stage-receipt.json",
+    "backup_required": false,
+    "reason_no_backup": "Destination and Stage work directory are both new and verified absent; original summary, WSGI, config and production remain unchanged.",
+    "switch_allowed": false,
+    "production_allowed": false
+  },
+  "acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40
+  }
+}
