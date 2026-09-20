@@ -1,0 +1,15 @@
+# UA-0022 publication and legacy rebuild serialization
+
+The incident log records a non-target-card change at 2026-09-16 08:33:21. The legacy whole-site renderer records its validation failure at 08:33:28. The bound renderer loops over all published cars, rewriting their primary pages, aliases and diagnostics. Its original path lacks the publication lock. This supports the overlapping rebuild mechanism; the exact initiating callback or process remains unconfirmed.
+
+The candidate replaces the publisher lock with the previously reviewed shared reentrant helper and takes that same lock around the complete legacy `main` and CRM's reload/rebuild helper. It preserves all other original source bytes, including the foreign-card check, pricing code, page generation and rollback behavior. The CRM rebuild helper retains its Boolean failure contract. Both new rebuild waits are bounded at 90 seconds.
+
+`build_candidate.py` rejects source or helper hash drift before producing an output. `manifest.json` is the final candidate runtime manifest. The CRITICAL deployment manifest is separately stored under `tasks/manifests/UA-ART-UA0022-PUBLISH-REPAIR-001.json`.
+
+Public review/package files: the builder, `publication_fence.py`, `test_narrow_fix.py`, `safe_function_fixtures.py`, this README, `VALIDATION.json`, and the final manifest/additive diff. **Never commit `private_runtime/`: those generated files contain complete private server sources.**
+
+Tests execute only selected original function ASTs with controlled render/DB stubs and isolated temporary filesystem roots. They reproduce the original failure and prevent the same overlap with the patch. They also cover reload exclusion, nested acquisition, reload-safe closure binding, retained foreign-page refusal, target rollback, timeout failure handling and source-drift refusal. Eleven narrow tests and eighteen existing helper tests passed.
+
+Place the four public Python files together under `cloud/ua0022_publication_fix`. CI defaults to the package-local fixture and needs no private source path. The fixture contains nine exact, reviewed function excerpts as inert data, original whole-source hashes, and per-function text/AST hashes. Its complete file hash is pinned in the test. Selected modules load through the standard import machinery from temporary files; there are no `exec`/`eval` calls. A clean temporary package passed all eleven tests under the canonical isolated `-I -B` bootstrap. Optional `UA0022_TEST_SOURCE_DIR` enables the separately verified private-original test mode, which also passed eleven tests. The scratch JSON fixture precursor is not a package dependency.
+
+This is an isolated candidate, not an installation receipt or proof of publication. Installation must exclude in-flight old unfenced writers, verify backups, preserve current operator data, and ensure active processes load the after-image. Unknown independent writers, specification-only updates, and media/DB mutations outside these boundaries remain outside this patch. The server CPU quota issue is separate.

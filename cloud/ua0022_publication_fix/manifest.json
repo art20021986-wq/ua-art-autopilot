@@ -1,0 +1,42 @@
+{
+  "contract": "UA-ART-UA0022-REBUILD-SERIALIZATION-001-v1.0",
+  "status": "ISOLATED_CANDIDATE_NOT_INSTALLED",
+  "source_sha256": {
+    "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+    "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+    "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72"
+  },
+  "changes": {
+    "cars_ui.py": {
+      "before_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "after_sha256": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837"
+    },
+    "stranica.py": {
+      "before_sha256": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "after_sha256": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687"
+    },
+    "publish_transaction_guard.py": {
+      "before_sha256": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "after_sha256": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159"
+    },
+    "publication_fence.py": {
+      "before_sha256": null,
+      "after_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+    }
+  },
+  "additive_patch_sha256": "02c8071cb614ec4c963119bc0020e9b961e0a05b6862c72c55b0e384d20a94ca",
+  "unchanged_foreign_guard": "publikaciya.py",
+  "effect_scope": [
+    "serialize legacy main with normal publication",
+    "serialize reload with legacy main"
+  ],
+  "limitations": [
+    "No production installation or publication is performed by this builder.",
+    "Other independent writers, including spec-only refresh, require separate source verification.",
+    "Media deletion and DB callbacks outside legacy main are outside this narrow change.",
+    "Existing processes must load the bound candidate before runtime behavior changes.",
+    "The original legacy rebuild behavior, validator and rollback semantics remain unchanged.",
+    "Production lock root is the verified /home/Carix; isolated tests inject a temporary fence."
+  ]
+}

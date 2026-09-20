@@ -1,0 +1,55 @@
+--- a/cars_ui.py
++++ b/cars_ui.py
+@@ -4369 +4369,19 @@
+ # UA-ART-STAGE-SYNC-004:END
++
++
++# UA-ART-UA0022-REBUILD-SERIALIZATION-V1:CARS:START
++from publication_fence import publication_fence as _ua0022_publication_fence
++
++def _ua0022_wrap_rebuild(original):
++    def guarded():
++        # Keep reload and the entire rebuild in one publication interval.
++        try:
++            with _ua0022_publication_fence(timeout=90.0):
++                return original()
++        except Exception as exc:
++            log.warning("Пересборка страниц: %s", exc)
++            return False
++    return guarded
++
++_peresobrat_stranicy = _ua0022_wrap_rebuild(_peresobrat_stranicy)
++# UA-ART-UA0022-REBUILD-SERIALIZATION-V1:CARS:END
+--- a/stranica.py
++++ b/stranica.py
+@@ -4027,2 +4027,17 @@
+ 
++
++
++# UA-ART-UA0022-REBUILD-SERIALIZATION-V1:STRANICA:START
++from publication_fence import publication_fence as _ua0022_publication_fence
++
++def _ua0022_wrap_main(original):
++    def guarded(*args, **kwargs):
++        # Include rendering, page writes, validation and legacy restoration.
++        with _ua0022_publication_fence(timeout=90.0):
++            return original(*args, **kwargs)
++    return guarded
++
++main = _ua0022_wrap_main(main)
++# UA-ART-UA0022-REBUILD-SERIALIZATION-V1:STRANICA:END
++
+ if __name__ == "__main__":
+--- a/publish_transaction_guard.py
++++ b/publish_transaction_guard.py
+@@ -796 +796,10 @@
+ # UA-SITE-COUNTERS-123:END
++
++
++# UA-ART-UA0022-REBUILD-SERIALIZATION-V1:GUARD:START
++from publication_fence import publication_fence as _ua0022_publication_fence
++
++def _exclusive_lock():
++    # Same inode as legacy publishers; one registry makes nesting reentrant.
++    return _ua0022_publication_fence(timeout=WAIT_SECONDS)
++# UA-ART-UA0022-REBUILD-SERIALIZATION-V1:GUARD:END

@@ -1,0 +1,55 @@
+{
+  "blocking_code_findings": [],
+  "deployment_or_live_acceptance": false,
+  "emitted_request_check": {
+    "controller_load_manifest_deployment": "PASS",
+    "current_hash_drift_requires_regeneration": [],
+    "declared_python_closure": "PASS",
+    "request_sha256": "c8bd386d328ff4d1476db20a70e72c37e5b0311f7fa4832a2c011aa0213ac0f7",
+    "target_identity": "UA-0022 / id 32"
+  },
+  "known_limits": [
+    "Local tests/review are not evidence that installation/publication/CRM resume or public HTTP verification has occurred.",
+    "A process death during publication before attributable postimages are durable fails closed and requires reconciliation.",
+    "The patch serializes the inspected legacy rebuild/publication paths; unrelated independent writer paths are outside its narrow repair scope.",
+    "Final emitted request and authorization hashes must match these exact package bytes before launch."
+  ],
+  "package_python_sha256": {
+    "backup_controller.py": "54fa40cc3abe38002fe1c85fddccba4a0c6cf3482c5c16c93e7d060348fa1b7d",
+    "build_candidate.py": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
+    "controller.py": "24b47b1db599b4108c44e75f3143cf35939d44d048ec3111b5386004356b60c2",
+    "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "remote_installer.py": "cec2b11c35289f520b190354fbe5b8c9ac420f02c517c0ea88cafde9ee10d55c",
+    "remote_lifecycle.py": "21f17e5cf5d5c41c09861e7da7cbd5f16b449cd57899d72c6594805deb922a18",
+    "rollback_controller.py": "578aa46e3053ab099c0660ab832430afecd5ea48657d32a2b049f9e5b861ca61",
+    "safe_function_fixtures.py": "b37ed59bc7a819210a97b98582e2605a451d1813b3ff10be4fe90ec554300f49",
+    "test_lifecycle.py": "1c6effd2de93aea1f1259ca9a76b3821c179554c88d33bd1258fe18d6182e8e9",
+    "test_narrow_fix.py": "efb1684a05cab6757ea5da39e1aec63593ac3b1e259dda398b69e60095239c50",
+    "test_remote_installer.py": "27526e00ef159d330ec3b417e6e8cd2408d19516bd15bbedc0a21a9d672c2182"
+  },
+  "prepare_request_sha256": "9e8c3ab61b87d02e8ecffd18a23e7da0107734aa4577e6ba19085b1b41c76d60",
+  "production_execution_performed": false,
+  "reviewed_at_utc": "2026-09-20T04:22:42.522022+00:00",
+  "reviewer": "/root/independent_review",
+  "schema": "UA0022-INDEPENDENT-RELEASE-REVIEW-1",
+  "status": "LOCAL_CODE_AND_TEST_REVIEW_PASS",
+  "tests": {
+    "command": "python -B -m unittest -v test_lifecycle test_remote_installer test_narrow_fix",
+    "failed": 0,
+    "passed": 39,
+    "provider_API_and_publisher_dependencies": "mocked/controlled fixture in tests",
+    "runtime": "Python 3.12 isolated scratch"
+  },
+  "verified": [
+    "Four runtime pre/post SHA values recomputed from source-pinned originals and actual builder/helper.",
+    "Existing unchanged critical adapter accepts emitted manifest/Gate A/structured owner authorization; dynamic logical entries follow TASK120 precedent and explicitly declare production writes.",
+    "Durable child completion precedes resume; retry resumes only; uncertain paused recovery and failed rollback do not resume CRM.",
+    "Stale prewrite admission performs no-op rollback preserving operator changes; no whole-database restore exists.",
+    "Target published flag uses exact full-row CAS; other rows/prices/schema/media digests and protected pages are checked.",
+    "Only new video/foto/UA-0022/m-or-s/exact-backed-original-basename JPG derivatives allowed; original media fixed; additions journaled and removed by scoped rollback.",
+    "Native video selection count below two enforced before writes, preventing unbacked dedup moves.",
+    "Provider API token excluded from child environment/command; private publisher output stays inside private backup.",
+    "Current emitted request loads through verified manifest.deployment; exact Python inventory covered by request dependency/controller declarations.",
+    "Canonical live PASS requires HTTP exact-byte SHA readback after CRM restart."
+  ]
+}

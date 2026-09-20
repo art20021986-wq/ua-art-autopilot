@@ -1,0 +1,74 @@
+{
+  "contract": "UA-ART-UA0022-REBUILD-SERIALIZATION-001-v1.0",
+  "report_created_at_utc": "2026-09-20T04:10:08.814325+00:00",
+  "status": "ISOLATED_TEST_PASS_NOT_INSTALLED",
+  "source_hashes_verified": true,
+  "narrow_regressions": {
+    "command": "python -m unittest -v test_narrow_fix",
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "original_failure_reproduced": true,
+    "candidate_prevents_same_overlap": true,
+    "foreign_invariant_still_fails_closed": true,
+    "target_rollback_preserves_foreign_change": true,
+    "original_runtime_modules_imported": false,
+    "private_selected_function_AST_only": true,
+    "temporary_root_for_all_IO": true,
+    "actual_final_main_validation_restore_under_fence": true,
+    "direct_main_entry_branch_tested": true
+  },
+  "reused_helper_regressions": {
+    "command": "python -m unittest -v test_publication_fence test_fork_regressions test_inode_regressions",
+    "tests": 18,
+    "passed": 18,
+    "failed": 0,
+    "helper_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "source_directory": "/workspace/scratch/7c2011f96a94/review_writer_fence",
+    "coverage": [
+      "cross-process",
+      "cross-thread",
+      "reentrancy",
+      "timeouts",
+      "failure release",
+      "fork descriptors",
+      "inode replacement"
+    ]
+  },
+  "files_sha256": {
+    "build_candidate.py": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
+    "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "test_narrow_fix.py": "efb1684a05cab6757ea5da39e1aec63593ac3b1e259dda398b69e60095239c50",
+    "candidate_v2/manifest.json": "0fe48b2b30b065314da0131b95aeebc1dc38168725618195a4ade99c57fa510f",
+    "candidate_v2/narrow_runtime_changes.diff": "02c8071cb614ec4c963119bc0020e9b961e0a05b6862c72c55b0e384d20a94ca",
+    "safe_function_fixtures.py": "b37ed59bc7a819210a97b98582e2605a451d1813b3ff10be4fe90ec554300f49"
+  },
+  "production_mutated": false,
+  "limitations": [
+    "Other independent writer paths are not thereby covered.",
+    "Existing processes must load after-image and old unfenced writers must drain before installation.",
+    "Actual triggering callback/process is not yet identified by logs.",
+    "CPU quota issue is outside this patch."
+  ],
+  "portable_ci": {
+    "status": "PASS",
+    "package_path": "cloud/ua0022_publication_fix",
+    "python_files": [
+      "build_candidate.py",
+      "publication_fence.py",
+      "test_narrow_fix.py",
+      "safe_function_fixtures.py"
+    ],
+    "tests": 11,
+    "passed": 11,
+    "no_absolute_private_source_default": true,
+    "clean_temp_package_I_B_runpy_bootstrap": true,
+    "fixture_sha256": "b37ed59bc7a819210a97b98582e2605a451d1813b3ff10be4fe90ec554300f49",
+    "fixture_top_level": "docstring and literal dictionary assignment only",
+    "fixture_exact_function_count": 9,
+    "fixture_whole_source_provenance_verified": true,
+    "fixture_per_function_text_and_AST_hashes_verified": true,
+    "private_original_mode_tests_passed": 11,
+    "denied_name_calls_exec_eval": false
+  }
+}

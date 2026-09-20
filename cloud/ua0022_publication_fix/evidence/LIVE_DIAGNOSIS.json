@@ -1,0 +1,93 @@
+{
+  "contract": "UA0022-LIVE-DIAGNOSIS-1",
+  "production_changed": false,
+  "observations": {
+    "publish_log": {
+      "timestamp_server_utc": "2026-09-16T08:33:21Z",
+      "status": "FAIL",
+      "code": "BASE_PUBLISH_FAILED:UA-0022",
+      "rollback_reported": "PASS",
+      "foreign_changed": [
+        "video/UA-0015-8d6c4f80.html",
+        "video/UA-0016-diag.html",
+        "video/UA-0016.html",
+        "video/UA-0015.html",
+        "video/UA-0016-d9c506f8.html",
+        "video/UA-0015-diag.html",
+        "site/UA-0016-diag.html",
+        "site/UA-0016.html",
+        "site/UA-0015.html",
+        "site/UA-0015-diag.html"
+      ]
+    },
+    "legacy_rebuild_log": {
+      "timestamp_server_utc": "2026-09-16T08:33:28Z",
+      "status": "FAIL",
+      "signature": "stranica._v135_proverka counts/structure failures; expected 21 cars"
+    },
+    "target_readback": {
+      "observed_server_utc": "2026-09-20T03:56:00Z",
+      "id": 32,
+      "auto_number": "UA-0022",
+      "published": 0,
+      "status": "kr_bought",
+      "video_target_files": []
+    },
+    "source_sha256": {
+      "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+      "team_bot.py": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "supervisor": {
+      "id": 266084,
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "state": "Running",
+      "observed_server_utc": "2026-09-20T03:58:00Z"
+    },
+    "existing_singleton_lock": true,
+    "analytics_stop_present": true,
+    "cpu_quota": {
+      "used_seconds": 6473.7,
+      "limit_seconds": 5000,
+      "causal_link_to_publish_error": "NOT_ESTABLISHED"
+    },
+    "main_sha": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "main_mode_verify": "PASS_AUTOMATIC",
+    "active_halt": false,
+    "all_nine_transactions_terminal": true
+  },
+  "inference": "Overlapping legacy whole-site rebuild is supported by source paths and correlated logs; initiating callback/process not identified.",
+  "acceptance": "NOT_INSTALLED_NOT_PUBLISHED",
+  "prelaunch_readback": {
+    "observed_at": "2026-09-20T04:14:58Z",
+    "source": "Authenticated PythonAnywhere console and Files page DOM",
+    "target": {
+      "id": 32,
+      "auto_number": "UA-0022",
+      "published": 0,
+      "status": "kr_bought",
+      "publish_pending": 0,
+      "full_row_canonical_sha256": "b148c0971d5c5d481d772e0bb54d7ad3cf492260e40402b4e7c4242a24aedce0"
+    },
+    "media": {
+      "video/foto/UA-0022": {
+        "direct_files": 30,
+        "subdirectories": []
+      },
+      "video/diag/UA-0022": {
+        "exists": false
+      }
+    },
+    "storage": {
+      "used_bytes": 7720280064,
+      "quota_bytes": 37580963840,
+      "free_bytes": 29860683776,
+      "measurement": "id_disk_used and id_disk_quota title attributes after page navigation"
+    },
+    "active_github_runs": 0
+  }
+}

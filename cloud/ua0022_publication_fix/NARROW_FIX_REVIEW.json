@@ -1,0 +1,30 @@
+{
+  "contract": "UA-ART-UA0022-REBUILD-SERIALIZATION-001-v1.0",
+  "reviewer": "/root/publication_diagnosis/review_narrow_candidate",
+  "report_created_at_utc": "2026-09-20T04:03:21.280911+00:00",
+  "status": "CODE_REVIEW_PASS_NARROW_SCOPE",
+  "candidate_manifest_sha256": "0fe48b2b30b065314da0131b95aeebc1dc38168725618195a4ade99c57fa510f",
+  "blocking_issues": [],
+  "confirmed": [
+    "Boolean rebuild failure contract preserved",
+    "90-second waits match existing publisher",
+    "Closure captures survive module reload",
+    "Guard replacement uses shared helper instead of nested legacy flock",
+    "Reload and complete legacy main are serialized",
+    "Foreign-card invariant remains unchanged"
+  ],
+  "test_qualification": [
+    "Selected actual function ASTs execute under controlled isolated IO",
+    "Complete final runtime wrapper chain is not executed",
+    "Rollback test covers base _otkat, not outer Snapshot.restore"
+  ],
+  "deployment_or_live_acceptance": false,
+  "addendum": {
+    "recorded_at_utc": "2026-09-20T04:04:46.431905+00:00",
+    "reviewer": "/root/independent_review",
+    "narrow_tests_passed": 11,
+    "final_main_addition": "Actual selected _v135/_v157 main wrapper ASTs now execute in a focused test; validation and direct restoration require the shared fence, invoked via __main__ branch. Full production module import/rendering remains untested.",
+    "supplemental_checks": "Independent reviewer reports old flock/new helper mutual exclusion both directions, same inode after release and KeyboardInterrupt cleanup PASS.",
+    "status": "NO_BLOCKER_FOUND"
+  }
+}

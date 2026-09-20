@@ -1,0 +1,42 @@
+{
+  "backup_plan_ready": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "evaluated_at": "2026-09-20T04:21:41Z",
+  "live_installation_acceptance": "PENDING_RUNTIME_EXECUTION",
+  "local_tests": 39,
+  "local_validation_path": "cloud/ua0022_publication_fix/LOCAL_VALIDATION.json",
+  "manifest_sha256": "87abdf6e4a2c984698452adb97053d70cd9f56707c1c52158f9fc19b9e0ea154",
+  "package_sha256": {
+    "cloud/ua0022_publication_fix/backup_controller.py": "54fa40cc3abe38002fe1c85fddccba4a0c6cf3482c5c16c93e7d060348fa1b7d",
+    "cloud/ua0022_publication_fix/build_candidate.py": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
+    "cloud/ua0022_publication_fix/controller.py": "24b47b1db599b4108c44e75f3143cf35939d44d048ec3111b5386004356b60c2",
+    "cloud/ua0022_publication_fix/publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "cloud/ua0022_publication_fix/remote_installer.py": "cec2b11c35289f520b190354fbe5b8c9ac420f02c517c0ea88cafde9ee10d55c",
+    "cloud/ua0022_publication_fix/remote_lifecycle.py": "21f17e5cf5d5c41c09861e7da7cbd5f16b449cd57899d72c6594805deb922a18",
+    "cloud/ua0022_publication_fix/rollback_controller.py": "578aa46e3053ab099c0660ab832430afecd5ea48657d32a2b049f9e5b861ca61",
+    "cloud/ua0022_publication_fix/safe_function_fixtures.py": "b37ed59bc7a819210a97b98582e2605a451d1813b3ff10be4fe90ec554300f49",
+    "cloud/ua0022_publication_fix/test_lifecycle.py": "1c6effd2de93aea1f1259ca9a76b3821c179554c88d33bd1258fe18d6182e8e9",
+    "cloud/ua0022_publication_fix/test_narrow_fix.py": "efb1684a05cab6757ea5da39e1aec63593ac3b1e259dda398b69e60095239c50",
+    "cloud/ua0022_publication_fix/test_remote_installer.py": "27526e00ef159d330ec3b417e6e8cd2408d19516bd15bbedc0a21a9d672c2182"
+  },
+  "production_write": false,
+  "protected_snapshot": {
+    "entrypoint_sha256": {
+      "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+      "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+    },
+    "live_source_sha256": {
+      "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+    },
+    "source": "authenticated read-only PythonAnywhere probes",
+    "target_row_sha256": "b148c0971d5c5d481d772e0bb54d7ad3cf492260e40402b4e7c4242a24aedce0"
+  },
+  "rollback_plan_ready": true,
+  "status": "PASS",
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-001",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
