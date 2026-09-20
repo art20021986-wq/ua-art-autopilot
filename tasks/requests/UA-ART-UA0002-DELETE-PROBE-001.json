@@ -1,0 +1,35 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/ua0002_delete_probe/evidence.json",
+    "cloud/ua0002_delete_probe/sanitized_sources.txt"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Fixed GET requests only to current source files, exact public page paths and provider task metadata. No remote writes, upload, code execution, database download, CRM mutation, restart or website changes. Individual unavailable paths remain explicit; completion is diagnosis only.",
+  "execution": {
+    "controller_path": "cloud/ua0002_delete_probe/controller.py",
+    "controller_sha256": "f43d488892e676e57659580972eba9583b80b30408a7e226d68cb1d96164d844",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/ua0002_delete_probe/evidence.json",
+      "cloud/ua0002_delete_probe/sanitized_sources.txt",
+      "state/receipts/UA-ART-UA0002-DELETE-PROBE-001.json"
+    ],
+    "file_sha256": {
+      "cloud/ua0002_delete_probe/test_contract.py": "192dc9d8127b1e034ec751bbafb1052b4d66e9b641f129722bc86ac6359bf287"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/UA-ART-UA0002-DELETE-PROBE-001.json",
+    "test_paths": [
+      "cloud/ua0002_delete_probe/test_contract.py"
+    ],
+    "timeout_seconds": 120
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "UA-ART-UA0002-DELETE-PROBE-001",
+  "title": "Read-only UA0002 deletion source and public-file probe"
+}
