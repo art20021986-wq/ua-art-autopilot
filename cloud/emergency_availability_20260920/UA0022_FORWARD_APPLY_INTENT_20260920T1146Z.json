@@ -1,0 +1,49 @@
+{
+  "schema_version": "UAART-CONNECTION-RESILIENT-OPERATION-INTENT-1",
+  "operation_id": "ua0022-forward-reconcile-apply-20260920T1146Z",
+  "recorded_at": "2026-09-20T11:46:00Z",
+  "environment": "GitHub main repository-state reconciliation only; no production runtime, Preview, reload, publication or rollback execution",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "candidate_commit": "a10f8874979908a5a2f5641dbe6333fb7061f805",
+  "independent_review": "PASS",
+  "expected_main_parent": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "expected_inputs": {
+    "transaction_blob": "cfccccb058abac735639bb41debdf8486808a742",
+    "claim_blob": "3f34ca885bcb09b04d6c3561e8d63c79bb9bb776",
+    "halt_blob": "7982f47958d4e656b0edbb64d8a40bcdd3836183",
+    "backup_receipt_blob": "403b505032d36bb0d7f99dede4610ad34c5434b7",
+    "request_blob": "13e8e49dcc223753a186b4a2854ffa2323938cf7"
+  },
+  "writer_exclusion": {
+    "foreground_in_progress": false,
+    "active_actions_in_progress": 0,
+    "active_actions_queued": 0,
+    "active_actions_waiting": 0,
+    "active_actions_requested": 0,
+    "claim_status": "BLOCKED_ROOT_CAUSE",
+    "transaction_status": "ROLLING_BACK"
+  },
+  "fresh_health": {
+    "started_at": "2026-09-20T11:45:09Z",
+    "finished_at": "2026-09-20T11:45:42Z",
+    "status": "PASS",
+    "http_200_routes": 5,
+    "exact_final_urls": true,
+    "sha256": {
+      "apex_home": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628",
+      "www_home": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628",
+      "catalog": "0f53dba42a8ddc3fb99f333b16eee6ce796218b0da07ee750684c9cb4e0d5454",
+      "ua0022_card": "64b374c8404233670fa2441292bca5bf48fb28cacc73e84186562f8cf5084209",
+      "ua0022_diagnostic": "8beb044c306a16ecb04c621d562b9440f62508e84145707d0d5e55a3870348cb"
+    }
+  },
+  "intent": "Create the eight reviewed state mutations as one commit from the exact main parent, then update main once without force only if the ref is unchanged.",
+  "expected_result": "UA0022 transaction and claim become FINISHED, exact HALT is archived and removed, canonical receipt and reconciliation evidence are added; production runtime remains unchanged.",
+  "readback": "Read main ref/tree and all eight paths from the resulting commit; require exact proposed blob SHA, HALT absence, canonical receipt validation and five-route HTTP 200.",
+  "required_backup": {
+    "immutable_parent": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "backup_receipt_sha256": "381aa9633b8119abf7e52ad9a00c813f51e5e8056d33e449d112ff0af4665d7a",
+    "halt_archive_content_sha256": "3e4b804fbc76ae0fc330db8a0add69fae3bb6d0d9a846d0a91cb41e4ff94e3a9"
+  },
+  "next_action": "Persist this intent on the PR branch, read it back, then perform exactly one non-force main ref update."
+}
