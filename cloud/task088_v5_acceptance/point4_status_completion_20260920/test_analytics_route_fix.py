@@ -11,6 +11,7 @@ sys.path.insert(0,str(HERE))
 
 import stage_exact_preview as stage
 import upgrade_preview_package_analytics as upgrade
+import package_exact_preview as package
 
 
 SOURCE=HERE/'exact_preview_current_53544a27_20260920_v2.zip'
@@ -71,6 +72,23 @@ class AnalyticsRouteFixTests(unittest.TestCase):
             new.writestr('public/ua/evil.js',b'evil')
         with self.assertRaisesRegex(ValueError,'EXACT_SOURCE_PACKAGE_CLOSURE_REQUIRED'):
             upgrade.upgrade(src.getvalue(),self.raw,self.encoded())
+
+    def test_missing_capture_time_fails(self):
+        item=copy.deepcopy(self.receipt);item.pop('captured_at_utc')
+        with self.assertRaisesRegex(ValueError,'EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED'):
+            upgrade.upgrade(self.source,self.raw,self.encoded(item))
+
+    def test_extra_capture_field_fails(self):
+        item=copy.deepcopy(self.receipt);item['unexpected']='unsafe'
+        with self.assertRaisesRegex(ValueError,'EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED'):
+            upgrade.upgrade(self.source,self.raw,self.encoded(item))
+
+    def test_invalid_capture_time_fails_in_upgrader_and_generator_validator(self):
+        item=copy.deepcopy(self.receipt);item['captured_at_utc']='Z';raw=self.encoded(item)
+        with self.assertRaisesRegex(ValueError,'PINNED_SAFE_ANALYTICS_CAPTURE_REQUIRED'):
+            upgrade.upgrade(self.source,self.raw,raw)
+        with self.assertRaisesRegex(ValueError,'PINNED_SAFE_ANALYTICS_CAPTURE_REQUIRED'):
+            package.validate_public_analytics_capture(self.raw,raw)
 
 
 if __name__=='__main__':unittest.main()

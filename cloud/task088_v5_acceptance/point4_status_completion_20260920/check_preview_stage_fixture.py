@@ -110,9 +110,24 @@ def run():
         event_evidence=copy.deepcopy(analytics_evidence);event_evidence['event_endpoint_called']=True
         event_raw=m.encoded(event_evidence);event_package=copy.deepcopy(package)
         event_package['public_wrapper_asset']['capture_evidence_sha256']=m.sha(event_raw)
-        rejected('event-endpoint','SAFE_PUBLIC_ANALYTICS_CAPTURE_EVIDENCE_REQUIRED',manifest=event_package,evidence=event_raw)
+        rejected('event-endpoint','PINNED_SAFE_ANALYTICS_CAPTURE_REQUIRED',manifest=event_package,evidence=event_raw)
         source_package=copy.deepcopy(package);source_package['public_wrapper_asset']['source_wrapper_sha256']='0'*64
         rejected('source-drift','EXACT_PUBLIC_ANALYTICS_ASSET_BINDING_REQUIRED',manifest=source_package)
+        missing_time=copy.deepcopy(analytics_evidence);missing_time.pop('captured_at_utc')
+        missing_time_raw=m.encoded(missing_time);missing_time_package=copy.deepcopy(package)
+        missing_time_package['public_wrapper_asset']['capture_evidence_sha256']=m.sha(missing_time_raw)
+        rejected('missing-capture-time','EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED',
+            manifest=missing_time_package,evidence=missing_time_raw)
+        extra_field=copy.deepcopy(analytics_evidence);extra_field['unexpected']='unsafe'
+        extra_field_raw=m.encoded(extra_field);extra_field_package=copy.deepcopy(package)
+        extra_field_package['public_wrapper_asset']['capture_evidence_sha256']=m.sha(extra_field_raw)
+        rejected('extra-capture-field','EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED',
+            manifest=extra_field_package,evidence=extra_field_raw)
+        invalid_time=copy.deepcopy(analytics_evidence);invalid_time['captured_at_utc']='Z'
+        invalid_time_raw=m.encoded(invalid_time);invalid_time_package=copy.deepcopy(package)
+        invalid_time_package['public_wrapper_asset']['capture_evidence_sha256']=m.sha(invalid_time_raw)
+        rejected('invalid-capture-time','PINNED_SAFE_ANALYTICS_CAPTURE_REQUIRED',
+            manifest=invalid_time_package,evidence=invalid_time_raw)
         zip_path = root/'public.zip';make_package(zip_path)
         args = arguments(zip_path,'fixture-op-001')
         with contextlib.redirect_stdout(io.StringIO()):m.stage(args)
@@ -151,7 +166,7 @@ def run():
         assert m.TARGET.read_bytes() == b'# unknown foreign change\n'
         assert not any(p.suffix in ('.db','.sqlite') for p in work.rglob('*'))
         assert (work/'config.json').stat().st_mode & 0o777 == 0o600
-        return {'status':'PASS_TARGETED_LOCAL_FIXTURE','checks':['five unsafe analytics package variants fail closed',
+        return {'status':'PASS_TARGETED_LOCAL_FIXTURE','checks':['eight unsafe analytics package variants fail closed',
             'stage preserves dedicated and production WSGI',
             'pinned public runtime validates scoped bundle and nine denied private routes','separate durable switch intent and observed receipt',
             'unknown or repeated switch never replaces again','foreign bytes inspection preserved','private config mode and no DB export'],

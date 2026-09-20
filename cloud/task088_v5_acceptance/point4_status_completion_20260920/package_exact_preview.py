@@ -16,8 +16,9 @@ _helper = Path(__file__).resolve().parent/'stage_exact_preview.py'
 _spec = importlib.util.spec_from_file_location('exact_preview_package_helpers',_helper)
 _module = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_module)
-RUNTIME, SOURCE_ROUTING, read, encoded, require, sha = [_module.__dict__[key] for key in
-    ('RUNTIME','SOURCE_ROUTING','read','encoded','require','sha')]
+RUNTIME, SOURCE_ROUTING, read, encoded, require, sha, validate_public_analytics_capture = [
+    _module.__dict__[key] for key in
+    ('RUNTIME','SOURCE_ROUTING','read','encoded','require','sha','validate_public_analytics_capture')]
 ANALYTICS_PATH = 'ua/a.js'
 ANALYTICS_URL = 'https://www.uaart.com.ua/ua/a.js'
 ANALYTICS_MIME = {'application/javascript','text/javascript'}
@@ -57,22 +58,8 @@ def main():
     runtime = Path(args.repository).resolve(strict=True)/'cloud/task088_v5_preview'
     payload.update({'runtime/'+name:read(runtime/name,pin) for name,pin in RUNTIME.items()})
     analytics_receipt_raw = read(args.analytics_receipt)
-    analytics_receipt = json.loads(analytics_receipt_raw)
-    required_capture = {'schema_version','url','final_url','method','status','content_type','bytes','sha256',
-        'source_wrapper_sha256','redirect_followed','event_endpoint_called','captured_at_utc'}
-    require(type(analytics_receipt) is dict and set(analytics_receipt) == required_capture,
-            'EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED')
-    require(analytics_receipt['schema_version'] == 'PR114-PUBLIC-ANALYTICS-CAPTURE-1' and
-            analytics_receipt['url'] == ANALYTICS_URL and analytics_receipt['final_url'] == ANALYTICS_URL and
-            analytics_receipt['method'] == 'GET' and analytics_receipt['status'] == 200 and
-            analytics_receipt['content_type'] in ANALYTICS_MIME and analytics_receipt['redirect_followed'] is False and
-            analytics_receipt['event_endpoint_called'] is False and
-            analytics_receipt['source_wrapper_sha256'] == SOURCE_ROUTING['analitika_wsgi.py'] and
-            type(analytics_receipt['bytes']) is int and 0 < analytics_receipt['bytes'] <= 1024*1024 and
-            type(analytics_receipt['captured_at_utc']) is str and analytics_receipt['captured_at_utc'].endswith('Z'),
-            'PINNED_SAFE_ANALYTICS_CAPTURE_REQUIRED')
-    analytics_raw = read(args.analytics_capture,analytics_receipt['sha256'],1024*1024)
-    require(len(analytics_raw) == analytics_receipt['bytes'],'ANALYTICS_CAPTURE_LENGTH_MISMATCH')
+    analytics_raw = read(args.analytics_capture,limit=1024*1024)
+    analytics_receipt = validate_public_analytics_capture(analytics_raw,analytics_receipt_raw)
     payload['public/'+ANALYTICS_PATH] = analytics_raw
     payload['evidence/ua-a-js.json'] = analytics_receipt_raw
     package = {'contract':'PR114-EXACT-PUBLIC-PREVIEW-PACKAGE-2','observer_sha256':sha(obs_raw),

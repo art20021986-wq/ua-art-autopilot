@@ -48,6 +48,9 @@ ANALYTICS_PATH = 'ua/a.js'
 ANALYTICS_URL = 'https://www.uaart.com.ua/ua/a.js'
 ANALYTICS_MIME = {'application/javascript','text/javascript'}
 PREVIEW_ANALYTICS_MIME = 'application/javascript; charset=utf-8'
+CAPTURE_CONTRACT = 'PR114-PUBLIC-ANALYTICS-CAPTURE-1'
+CAPTURE_KEYS = {'schema_version','url','final_url','method','status','content_type','bytes','sha256',
+    'source_wrapper_sha256','redirect_followed','event_endpoint_called','captured_at_utc'}
 
 
 def require(ok, code):
@@ -65,6 +68,30 @@ def encoded(obj):
 
 def now():
     return datetime.now(timezone.utc).isoformat()
+
+
+def validate_public_analytics_capture(raw, receipt_raw):
+    try:
+        receipt = json.loads(receipt_raw)
+    except (UnicodeDecodeError,json.JSONDecodeError):
+        require(False,'EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED')
+    require(type(receipt) is dict and set(receipt) == CAPTURE_KEYS,
+            'EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED')
+    captured = receipt['captured_at_utc']
+    try:
+        stamp = datetime.fromisoformat(captured[:-1]+'+00:00') if type(captured) is str and captured.endswith('Z') else None
+    except ValueError:
+        stamp = None
+    require(receipt['schema_version'] == CAPTURE_CONTRACT and receipt['url'] == ANALYTICS_URL and
+            receipt['final_url'] == ANALYTICS_URL and receipt['method'] == 'GET' and receipt['status'] == 200 and
+            receipt['content_type'] in ANALYTICS_MIME and
+            receipt['source_wrapper_sha256'] == SOURCE_ROUTING['analitika_wsgi.py'] and
+            receipt['redirect_followed'] is False and receipt['event_endpoint_called'] is False and
+            type(receipt['bytes']) is int and 0 < receipt['bytes'] <= 1024*1024 and
+            receipt['bytes'] == len(raw) and receipt['sha256'] == sha(raw) and stamp is not None and
+            stamp.tzinfo is not None and stamp.utcoffset() is not None and stamp.utcoffset().total_seconds() == 0,
+            'PINNED_SAFE_ANALYTICS_CAPTURE_REQUIRED')
+    return receipt
 
 
 def read(path, expected=None, limit=LIMIT):
@@ -295,14 +322,8 @@ def stage(args):
     evidence_raw = blobs['evidence/ua-a-js.json']
     require(sha(analytics) == wrapper['sha256'] and len(analytics) == wrapper['bytes'] and
             sha(evidence_raw) == wrapper['capture_evidence_sha256'], 'PUBLIC_ANALYTICS_PACKAGE_BYTES_MISMATCH')
-    evidence = json.loads(evidence_raw)
-    require(type(evidence) is dict and evidence.get('schema_version') == 'PR114-PUBLIC-ANALYTICS-CAPTURE-1' and
-            evidence.get('url') == ANALYTICS_URL and evidence.get('final_url') == ANALYTICS_URL and
-            evidence.get('method') == 'GET' and evidence.get('status') == 200 and
-            evidence.get('content_type') == wrapper['source_content_type'] and evidence.get('bytes') == len(analytics) and
-            evidence.get('sha256') == sha(analytics) and evidence.get('redirect_followed') is False and
-            evidence.get('event_endpoint_called') is False and
-            evidence.get('source_wrapper_sha256') == SOURCE_ROUTING['analitika_wsgi.py'],
+    evidence = validate_public_analytics_capture(analytics,evidence_raw)
+    require(evidence['content_type'] == wrapper['source_content_type'],
             'SAFE_PUBLIC_ANALYTICS_CAPTURE_EVIDENCE_REQUIRED')
     work.mkdir(mode=0o700)
     syncdir(PARENT)

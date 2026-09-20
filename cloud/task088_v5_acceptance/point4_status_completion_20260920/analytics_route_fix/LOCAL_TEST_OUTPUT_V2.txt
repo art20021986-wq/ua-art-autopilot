@@ -1,0 +1,32 @@
+2026-09-20T12:19:56Z
+
+$ python3 -I -B cloud/task088_v5_acceptance/point4_status_completion_20260920/test_analytics_route_fix.py
+..........
+----------------------------------------------------------------------
+Ran 10 tests
+
+OK
+
+$ python3 -I -B cloud/task088_v5_acceptance/point4_status_completion_20260920/check_preview_stage_fixture.py
+PASS_TARGETED_LOCAL_FIXTURE
+- eight unsafe analytics package variants fail closed
+- includes direct Stage negatives for missing timestamp, extra field and invalid timestamp
+- stage preserves dedicated and production WSGI
+- pinned public runtime validates scoped bundle and nine denied private routes
+- separate durable switch intent and observed receipt
+- unknown or repeated switch never replaces again
+- foreign bytes inspection preserved
+- private config mode and no DB export
+
+$ AST parse: package_exact_preview.py stage_exact_preview.py check_preview_stage_fixture.py upgrade_preview_package_analytics.py test_analytics_route_fix.py
+5/5 PASS
+
+$ strict upgrader reproduction
+expected package SHA256 77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088
+actual package SHA256   77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088
+BYTE_IDENTICAL
+
+$ git diff --check
+PASS
+
+No browser, network mutation, Preview stage, switch, reload, production write, CRM write, rollback or repeated historical suite.

@@ -10,7 +10,6 @@ import io
 import json
 import os
 from pathlib import Path
-import re
 import stat
 import zipfile
 
@@ -29,19 +28,7 @@ PREVIEW_MIME = 'application/javascript; charset=utf-8'
 
 
 def validate_capture(raw, receipt_raw):
-    receipt = json.loads(receipt_raw)
-    required = {'schema_version','url','final_url','method','status','content_type','bytes','sha256',
-        'source_wrapper_sha256','redirect_followed','event_endpoint_called','captured_at_utc'}
-    stage.require(type(receipt) is dict and set(receipt) == required,'EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED')
-    stage.require(receipt['schema_version'] == CAPTURE_CONTRACT and receipt['url'] == ANALYTICS_URL and
-        receipt['final_url'] == ANALYTICS_URL and receipt['method'] == 'GET' and receipt['status'] == 200 and
-        receipt['content_type'] in SOURCE_MIME and receipt['source_wrapper_sha256'] == stage.SOURCE_ROUTING['analitika_wsgi.py'] and
-        receipt['redirect_followed'] is False and receipt['event_endpoint_called'] is False and
-        type(receipt['bytes']) is int and 0 < receipt['bytes'] <= 1024*1024 and receipt['bytes'] == len(raw) and
-        receipt['sha256'] == stage.sha(raw) and type(receipt['captured_at_utc']) is str and
-        re.fullmatch(r'20[0-9]{2}-[0-9]{2}-[0-9]{2}T[0-9:.]+Z',receipt['captured_at_utc']) is not None,
-        'PINNED_SAFE_ANALYTICS_CAPTURE_REQUIRED')
-    return receipt
+    return stage.validate_public_analytics_capture(raw,receipt_raw)
 
 
 def upgrade(source_raw, capture_raw, receipt_raw):
