@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-35490449348-334c361c22ebee11",
   "production_transaction_path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "card-ua-0022-3454fd479bb37b60",
   "receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
   "receipt_validation_status": "PENDING",
@@ -83,5 +83,5 @@
       "cloud/ua0022_publication_fix/test_remote_installer.py": "7f97cbe86bc2cf674e75c8658830bf50ff8564d62919fa6dfa9b82fac98f436d"
     }
   },
-  "updated_at": "2026-09-20T05:11:06Z"
+  "updated_at": "2026-09-20T05:28:14Z"
 }
