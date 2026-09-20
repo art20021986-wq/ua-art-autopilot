@@ -36,7 +36,27 @@ REPO_INPUTS = {TX_REL, CLAIM_REL, HALT_REL, BACKUP_REL, REQUEST_REL}
 ADDITIONS = {RECEIPT_REL, RECON_REL, EVIDENCE_REL, HISTORY_HALT_REL, HISTORY_RECEIPT_REL}
 HTTP_KEYS = {"apex_home", "www_home", "catalog", "ua0022_card", "ua0022_diagnostic"}
 RUNTIME_KEYS = {"cars_ui.py", "stranica.py", "publish_transaction_guard.py", "publication_fence.py"}
+EXPECTED_URLS = {
+    "apex_home": "https://www.uaart.com.ua/video/index.html",
+    "www_home": "https://www.uaart.com.ua/video/index.html",
+    "catalog": "https://www.uaart.com.ua/video/katalog.html",
+    "ua0022_card": "https://www.uaart.com.ua/video/UA-0022.html",
+    "ua0022_diagnostic": "https://www.uaart.com.ua/video/UA-0022-diag.html",
+}
+INSTALL_EVIDENCE_PATH = (
+    "cloud/task088_v5_acceptance/point4_status_completion_20260920/"
+    "UA0022_ACTUAL_INSTALL_RECEIPT_OBSERVED.json"
+)
+INSTALL_EVIDENCE_BLOB = "cf7d980bf1b21b35614e7149151622b38161963c"
+INSTALL_EVIDENCE_COMMIT = "528e64f083d9aacb85f75337cca281c5134d2ab0"
+HEALTH_EVIDENCE_PATH = (
+    "cloud/emergency_availability_20260920/forward_reconciliation_candidate_v2/"
+    "FRESH_HEALTH.json"
+)
+HEALTH_EVIDENCE_BLOB = "7bb5ee152a6debccc9f0ebb4cac13f2a38d04b2c"
+HEALTH_EVIDENCE_COMMIT = "7a306b25b12432a0bf10325102956578fd512553"
 SHA_RE = re.compile(r"[0-9a-f]{64}")
+GIT_SHA_RE = re.compile(r"[0-9a-f]{40}")
 
 
 class ReconcileError(RuntimeError):
@@ -63,14 +83,13 @@ def utc(value: str) -> dt.datetime:
     return parsed
 
 
-def exact_json(path: pathlib.Path, expected: str) -> tuple[bytes, dict]:
+def stable_json(path: pathlib.Path) -> tuple[bytes, dict]:
     fail(path.is_file() and not path.is_symlink(), "INPUT_NOT_REGULAR:" + str(path))
     before = path.stat()
     raw = path.read_bytes()
     after = path.stat()
     fail((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
          (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns), "INPUT_CHANGED")
-    fail(sha(raw) == expected, "INPUT_SHA256:" + str(path))
     try:
         value = json.loads(raw)
     except (UnicodeError, ValueError) as exc:
@@ -79,16 +98,41 @@ def exact_json(path: pathlib.Path, expected: str) -> tuple[bytes, dict]:
     return raw, value
 
 
+def exact_json(path: pathlib.Path, expected: str) -> tuple[bytes, dict]:
+    raw, value = stable_json(path)
+    fail(sha(raw) == expected, "INPUT_SHA256:" + str(path))
+    return raw, value
+
+
 def build(root: pathlib.Path, manifest_path: pathlib.Path, install_path: pathlib.Path,
           health_path: pathlib.Path, reconciled_at: str) -> tuple[dict, dict[str, bytes]]:
     reconciled = utc(reconciled_at)
-    manifest = json.loads(manifest_path.read_text())
+    manifest_raw, manifest = stable_json(manifest_path)
+    fail(manifest.get("schema_version") == "UAART-UA0022-FORWARD-INPUT-MANIFEST-2",
+         "MANIFEST_SCHEMA")
     fail(manifest.get("main") == MAIN, "MANIFEST_MAIN")
     repo_manifest = manifest.get("repo_inputs", {})
     fail(set(repo_manifest) == REPO_INPUTS, "MANIFEST_REPO_KEYS")
     fail(set(manifest.get("must_not_exist", [])) == ADDITIONS, "MANIFEST_ABSENCE_KEYS")
     external = manifest.get("external", {})
     fail(set(external) == {"install", "health"}, "MANIFEST_EXTERNAL_KEYS")
+    install_entry = external["install"]
+    health_entry = external["health"]
+    fail(install_entry.get("path") == INSTALL_EVIDENCE_PATH, "INSTALL_PROVENANCE_PATH")
+    fail(install_entry.get("blob_sha") == INSTALL_EVIDENCE_BLOB, "INSTALL_PROVENANCE_BLOB")
+    fail(install_entry.get("source_commit") == INSTALL_EVIDENCE_COMMIT,
+         "INSTALL_PROVENANCE_COMMIT")
+    fail(health_entry.get("path") == HEALTH_EVIDENCE_PATH, "HEALTH_PROVENANCE_PATH")
+    fail(health_entry.get("blob_sha") == HEALTH_EVIDENCE_BLOB, "HEALTH_PROVENANCE_BLOB")
+    fail(health_entry.get("source_commit") == HEALTH_EVIDENCE_COMMIT,
+         "HEALTH_PROVENANCE_COMMIT")
+    for name, entry in external.items():
+        fail(SHA_RE.fullmatch(entry.get("sha256", "")) is not None,
+             "EXTERNAL_SHA:" + name)
+        fail(GIT_SHA_RE.fullmatch(entry.get("blob_sha", "")) is not None,
+             "EXTERNAL_BLOB:" + name)
+        fail(GIT_SHA_RE.fullmatch(entry.get("source_commit", "")) is not None,
+             "EXTERNAL_COMMIT:" + name)
 
     raw: dict[str, bytes] = {}
     values: dict[str, dict] = {}
@@ -99,8 +143,8 @@ def build(root: pathlib.Path, manifest_path: pathlib.Path, install_path: pathlib
     for rel in ADDITIONS:
         fail(not (root / rel).exists(), "ADDITION_EXISTS:" + rel)
 
-    install_raw, install = exact_json(install_path, external["install"]["sha256"])
-    health_raw, health = exact_json(health_path, external["health"]["sha256"])
+    install_raw, install = exact_json(install_path, install_entry["sha256"])
+    health_raw, health = exact_json(health_path, health_entry["sha256"])
     tx = copy.deepcopy(values[TX_REL])
     claim = copy.deepcopy(values[CLAIM_REL])
     halt, backup, request = values[HALT_REL], values[BACKUP_REL], values[REQUEST_REL]
@@ -137,6 +181,10 @@ def build(root: pathlib.Path, manifest_path: pathlib.Path, install_path: pathlib
     runtime = installer.get("source_after_sha256", {})
     fail(set(runtime) == RUNTIME_KEYS, "RUNTIME_KEYSET")
     fail(all(SHA_RE.fullmatch(value or "") for value in runtime.values()), "RUNTIME_SHA")
+    install_public = installer.get("public_http_sha256", {})
+    fail(set(install_public) == set(EXPECTED_URLS.values()),
+         "INSTALL_PUBLIC_KEYSET")
+    fail(all(SHA_RE.fullmatch(value or "") for value in install_public.values()), "INSTALL_PUBLIC_SHA")
 
     fail(health.get("schema_version") == "UAART-UA0022-FRESH-HEALTH-1", "HEALTH_SCHEMA")
     fail(health.get("main") == MAIN and health.get("production_write_performed") is False,
@@ -151,20 +199,34 @@ def build(root: pathlib.Path, manifest_path: pathlib.Path, install_path: pathlib
     for name, item in routes.items():
         fail(item.get("http_status") == 200, "HEALTH_HTTP:" + name)
         fail(SHA_RE.fullmatch(item.get("sha256", "")) is not None, "HEALTH_SHA:" + name)
-        fail(isinstance(item.get("final_url"), str) and item["final_url"].startswith("https://www.uaart.com.ua/"),
-             "HEALTH_URL:" + name)
+        fail(item.get("final_url") == EXPECTED_URLS[name], "HEALTH_URL:" + name)
+    changed = sorted(name for name in ("ua0022_card", "ua0022_diagnostic")
+                     if routes[name]["sha256"] != install_public[EXPECTED_URLS[name]])
+    fail(health.get("public_bytes_changed_after_install_observation") == changed,
+         "HEALTH_CHANGED_BYTES_BINDING")
 
     receipt = {
         "schema_version": "UA-ART-MANUAL-FORWARD-RECEIPT-2",
         "task_id": TASK, "run_id": RUN, "request_sha256": REQ_SHA,
         "transaction_id": TXID, "status": "FINISHED", "task_class": "CRITICAL",
         "target_environment": "production", "production_required": True,
+        "tests": "PASS", "tests_scope": "HASH_BOUND_INSTALL_POST_CHECK_AND_CURRENT_FIVE_ROUTE_HEALTH",
+        "unexpected_changes": 0,
+        "unexpected_changes_scope": "INSTALL_EVIDENCE_PROTECTED_PAGES_OTHER_ROWS_MEDIA_AND_UA_GE_VALUES",
+        "production": "PASS", "live_verify": "PASS",
         "installation_verify": "PASS", "live_availability": "PASS", "backup": "PASS",
-        "rollback": "NOT_PERFORMED", "backup_available": True,
+        "rollback": "NOT_PERFORMED", "rollback_ready": True, "backup_available": True,
         "canonical_rollback_execution_ready": False,
         "canonical_rollback_blocker": "AUTOSTART_NONCE_RESERVATION_MISSING / TRANSACTION_LEDGER_INVALID",
         "backup_manifest_sha256": backup["backup_manifest_sha256"],
-        "install_evidence_sha256": sha(install_raw), "health_evidence_sha256": sha(health_raw),
+        "install_evidence_sha256": sha(install_raw),
+        "install_evidence_path": INSTALL_EVIDENCE_PATH,
+        "install_evidence_blob_sha": INSTALL_EVIDENCE_BLOB,
+        "install_evidence_source_commit": INSTALL_EVIDENCE_COMMIT,
+        "health_evidence_sha256": sha(health_raw),
+        "health_evidence_path": HEALTH_EVIDENCE_PATH,
+        "health_evidence_blob_sha": HEALTH_EVIDENCE_BLOB,
+        "health_evidence_source_commit": HEALTH_EVIDENCE_COMMIT,
         "persistence": "MANUAL_FORWARD_RECONCILIATION", "reconciled_at": reconciled_at,
         "reconciliation_path": RECON_REL, "availability_evidence_path": EVIDENCE_REL,
     }
@@ -188,7 +250,14 @@ def build(root: pathlib.Path, manifest_path: pathlib.Path, install_path: pathlib
     evidence = {
         "schema_version": "UA-ART-UA0022-AVAILABILITY-EVIDENCE-2",
         "task_id": TASK, "run_id": RUN, "transaction_id": TXID,
-        "install_evidence_sha256": sha(install_raw), "health_evidence_sha256": sha(health_raw),
+        "install_evidence_sha256": sha(install_raw),
+        "install_evidence_path": INSTALL_EVIDENCE_PATH,
+        "install_evidence_blob_sha": INSTALL_EVIDENCE_BLOB,
+        "install_evidence_source_commit": INSTALL_EVIDENCE_COMMIT,
+        "health_evidence_sha256": sha(health_raw),
+        "health_evidence_path": HEALTH_EVIDENCE_PATH,
+        "health_evidence_blob_sha": HEALTH_EVIDENCE_BLOB,
+        "health_evidence_source_commit": HEALTH_EVIDENCE_COMMIT,
         "observed_window_utc": {"started_at": health["started_at"], "finished_at": health["finished_at"]},
         "routes": routes, "installed_runtime_sha256": runtime,
         "installation_verify": "PASS", "rollback_performed": False,
@@ -206,7 +275,7 @@ def build(root: pathlib.Path, manifest_path: pathlib.Path, install_path: pathlib
         "production_runtime_changed": False, "site_reloaded": False, "preview_changed": False,
         "receipt_path": RECEIPT_REL, "receipt_sha256": sha(receipt_bytes),
         "availability_evidence_path": EVIDENCE_REL, "availability_evidence_sha256": sha(evidence_bytes),
-        "input_manifest_sha256": sha(manifest_path.read_bytes()), "expected_parent": MAIN,
+        "input_manifest_sha256": sha(manifest_raw), "expected_parent": MAIN,
     }
     result_bytes = canonical(result)
     history_receipt = {**result, "reconciliation_payload_sha256": sha(result_bytes)}
