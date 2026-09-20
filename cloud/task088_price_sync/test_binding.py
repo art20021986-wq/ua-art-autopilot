@@ -366,6 +366,12 @@ class BindingV5Tests(unittest.TestCase):
             content=("# isolated TEST source "+name+"\n").encode()
             (self.root/name).write_bytes(content)
             self.code[name]=binding.sha(content)
+        # Synthetic TEST evidence for the additional v5 source closure only.
+        # The historical v1 fixture above remains unchanged.
+        for name in binding.V5_REQUIRED_WRITERS:
+            self.writers["writers"].append({"path": name, "installed_sha256": self.code[name], "fence": "VERIFIED"})
+        self.artifacts["writer_fences"] = self.put("evidence/writers.json", self.writers)
+        self.delegation["writer_fence_report_sha256"] = self.artifacts["writer_fences"]["sha256"]
         with sqlite3.connect(self.db) as conn:
             conn.execute("ALTER TABLE cars ADD COLUMN vin TEXT")
             conn.execute("UPDATE cars SET vin='TESTVIN' || printf('%010d',id)")

@@ -35,7 +35,12 @@ REQUIRED_CODE = frozenset({"cars_ui.py", "yadro.py", "stranica.py", "catalog_des
     "db.py", "cars_schema.py"})
 ARTIFACTS = frozenset({"manifest", "request", "owner_approval", "gate_b", "deployment_receipt",
                       "writer_fences", "owner_private_chat", "owner_policy"})
-V5_REQUIRED_CODE = frozenset({"team_bot.py", "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py"})
+V5_REQUIRED_CODE = frozenset({"team_bot.py", "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py",
+    "publication_fence.py", "mutation_recovery.py", "ua_spec_permanent.py", "ua_additional_spec.py",
+    "vin_spec_service.py", "lock4_zhurnal.py"})
+# These exact sources can reach protected page/specification writes. Their
+# presence is not a fencing fact; authenticated runtime evidence remains required.
+V5_REQUIRED_WRITERS = frozenset({"stranica.py", "ua_spec_permanent.py", "ua_additional_spec.py", "vin_spec_service.py"})
 
 
 class BindingError(runtime.SyncError):
@@ -411,6 +416,8 @@ class Provider:
             raise BindingError("VERIFIED_INSTALLED_WRITER_CONTRACTS_REQUIRED")
         required_writers = {"cars_ui.py", "ua_stage_catalog_sync.py", "publish_transaction_guard.py",
                             "master_card.py", "publikaciya.py", "uaart_price_sync_runtime.py"}
+        if self.dynamic_identities:
+            required_writers |= V5_REQUIRED_WRITERS
         if not required_writers <= {item["path"] for item in listed}:
             raise BindingError("ALL_PRICE_AND_CATALOG_WRITERS_REQUIRED")
         _same(policy, d["owner_policy"], "EXACT_OWNER_POLICY_ARTIFACT_REQUIRED")

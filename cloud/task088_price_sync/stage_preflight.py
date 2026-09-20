@@ -16,6 +16,24 @@ ROOT = Path('/home/Carix/autopilot_inbox/cloud')
 REPO = 'https://raw.githubusercontent.com/art20021986-wq/ua-art-autopilot/'
 
 
+def package_mapping():
+    """Exact public paths accepted by the hash-bound staging route."""
+    mapping = {}
+    for name in ('preflight.py', 'install_package.py', 'patch_cars_ui.py', 'patch_guard.py',
+                 'uaart_price_sync_runtime.py', 'uaart_price_sync_binding.py', 'uaart_price_sync_confirmation.py',
+                 'uaart_price_control_reader.py'):
+        mapping[name] = 'cloud/task088_price_sync/' + name
+    mapping['uaart_price_sync_outbox.py'] = 'cloud/task088_price_sync/outbox.py'
+    for name in ('uaart_market_prices.py', 'patch_yadro.py', 'patch_stranica.py',
+                 'patch_catalog_design_guard.py', 'patch_stage_catalog_sync.py', 'initial_html_prices.py'):
+        mapping[name] = 'cloud/task088_stage3_renderer/' + name
+    for name in ('owner_policy.py', 'price_publication.py'):
+        mapping[name] = 'cloud/task088_autopilot_owner_policy/' + name
+    for name in ('integrate_private_sources.py', 'publication_fence.py', 'mutation_recovery.py'):
+        mapping[name] = 'cloud/task088_v5_writer_fence/' + name
+    return mapping
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('commit')
@@ -44,17 +62,7 @@ def main():
     bundle = json.loads(raw)
     if bundle['contract'] != 'TASK088-PRICE-SYNC-READONLY-PREFLIGHT-5':
         raise ValueError('WRONG_CONTRACT')
-    mapping = {}
-    for name in ('preflight.py', 'install_package.py', 'patch_cars_ui.py', 'patch_guard.py',
-                 'uaart_price_sync_runtime.py', 'uaart_price_sync_binding.py', 'uaart_price_sync_confirmation.py',
-                 'uaart_price_control_reader.py'):
-        mapping[name] = 'cloud/task088_price_sync/' + name
-    mapping['uaart_price_sync_outbox.py'] = 'cloud/task088_price_sync/outbox.py'
-    for name in ('uaart_market_prices.py', 'patch_yadro.py', 'patch_stranica.py',
-                 'patch_catalog_design_guard.py', 'patch_stage_catalog_sync.py', 'initial_html_prices.py'):
-        mapping[name] = 'cloud/task088_stage3_renderer/' + name
-    for name in ('owner_policy.py', 'price_publication.py'):
-        mapping[name] = 'cloud/task088_autopilot_owner_policy/' + name
+    mapping = package_mapping()
     if set(mapping) != set(bundle['package_sha256']):
         raise ValueError('EXACT_PACKAGE_PIN_SET_REQUIRED')
     payload = {'preflight_bundle.json': raw}

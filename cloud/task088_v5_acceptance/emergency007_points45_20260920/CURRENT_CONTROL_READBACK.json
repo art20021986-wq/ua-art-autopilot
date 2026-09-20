@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-09-20T04:59:18.989Z",
+  "main": "ed7cff522dd36353c9a0cc911108bedee921cbfe",
+  "halt_present": false,
+  "active_run": {
+    "id": 35490449348,
+    "task": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "status": "in_progress",
+    "head": "ed7cff522dd36353c9a0cc911108bedee921cbfe"
+  },
+  "prior_run": {
+    "id": 35489521032,
+    "conclusion": "failure",
+    "claim": "BLOCKED_ROOT_CAUSE",
+    "halt_at": "2026-09-20T04:49:24Z",
+    "transaction_now": "ROLLED_BACK"
+  },
+  "scope": "GitHub facts only; no claim of live process state"
+}

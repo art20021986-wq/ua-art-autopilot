@@ -30,6 +30,8 @@ def sources():
         result[name] = sync / name
     for name in ("owner_policy.py", "price_publication.py"):
         result[name] = policy / name
+    for name in ("publication_fence.py", "mutation_recovery.py"):
+        result[name] = ROOT / "cloud/task088_v5_writer_fence" / name
     return result
 
 

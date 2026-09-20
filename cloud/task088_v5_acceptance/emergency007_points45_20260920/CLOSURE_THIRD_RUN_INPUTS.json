@@ -1,0 +1,26 @@
+{
+  "at": "2026-09-20T04:52:57.484856+00:00",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "test_release_closure.StagingAndV5AdmissionTests",
+    "test_binding.BindingV5Tests.test_missing_installed_reader_pin_refuses_v5_binding",
+    "test_binding.BindingV5Tests.test_verified_operator_claim_binds_actor_origin_and_actual_vin",
+    "test_binding.BindingV5Tests.test_synthetic_provenance_cannot_be_used_by_production_verifier",
+    "-v"
+  ],
+  "reason": "Changed V5 synthetic fixture and corresponding fail-closed admission checks; only affected eight checks",
+  "input_sha256": {
+    "cloud/task088_price_sync/install_package.py": "04dcd630ff5cd58e133083cb58c34cb0a45b8b1b51f381d7c93a086079aa82e0",
+    "cloud/task088_price_sync/preflight.py": "6e3a85fd088c0b8d087fe98f2f24ed709228e16e0d99acb77c01eb590d00104b",
+    "cloud/task088_price_sync/build_preflight_bundle.py": "f393a85b4051b35c3e03a9a6908ce2a391983824660e98ce7dc522dfccfdc34b",
+    "cloud/task088_price_sync/stage_preflight.py": "65010a2a599f5ef7daee871420f2165e7e7a2fda495a31568040dfa3cde9c72e",
+    "cloud/task088_price_sync/uaart_price_sync_binding.py": "71c36f59d7100faeaede17c580b391349f7dab081099d0de21975f926fb7d174",
+    "cloud/task088_price_sync/test_binding.py": "e50707adb44ec33b36be3b3f986347fd37fb31eba1ca3d42483d3692dc0ea627",
+    "cloud/task088_v5_install/build_release.py": "981e1d91560a2003ed63b6ddac25c27ca8f744655806df7001bc2bece758e695",
+    "cloud/task088_v5_install/controller.py": "0801407ceeb4edf4533e5df5ade2c23d56cbeb46562ce40ab117f491f17c2eca",
+    "cloud/task088_v5_writer_fence/test_release_closure.py": "32295d98cb665e914f0358b43ce027bfb4f928e7c695c0a04ca4a5778abecec6"
+  }
+}

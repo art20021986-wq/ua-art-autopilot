@@ -1,0 +1,13 @@
+{
+  "finding": "P4-SAFETY-001",
+  "recorded_at": "2026-09-20T04:47:51.522625+00:00",
+  "exception_propagated": true,
+  "write_transaction_still_locked": false,
+  "media_before_state_preserved": true,
+  "scope": "independent repeat of initially failing hypothesis on newly instrumented exact helper; isolated SQLite fixture only",
+  "pass": true,
+  "input_sha256": {
+    "integrate_private_sources.py": "a9970515d4a42707f1b8273fef4648bb62a02a050068070b033adfe33af49fa0",
+    "mutation_recovery.py": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9"
+  }
+}

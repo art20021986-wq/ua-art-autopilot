@@ -31,6 +31,8 @@ def package_mapping(repository):
         mapping[name] = renderer / name
     for name in ("owner_policy.py", "price_publication.py"):
         mapping[name] = policy / name
+    for name in ("integrate_private_sources.py", "publication_fence.py", "mutation_recovery.py"):
+        mapping[name] = cloud / "task088_v5_writer_fence" / name
     return mapping
 
 

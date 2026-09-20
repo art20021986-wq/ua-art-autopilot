@@ -26,12 +26,14 @@ LIVE_ROOT = Path("/home/Carix")
 MAX_FILE = 8 * 1024 * 1024
 MODULES = frozenset({"uaart_market_prices.py", "uaart_price_sync_outbox.py",
     "uaart_price_sync_runtime.py", "uaart_price_sync_binding.py", "owner_policy.py",
-    "price_publication.py", "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py"})
+    "price_publication.py", "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py",
+    "publication_fence.py", "mutation_recovery.py"})
 SOURCES = frozenset({"cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py",
-                     "publish_transaction_guard.py", "ua_stage_catalog_sync.py"})
+                     "publish_transaction_guard.py", "ua_stage_catalog_sync.py", "ua_spec_permanent.py"})
 DEPENDENCIES = frozenset({"db.py", "cars_schema.py", "start_safe.py",
                          "master_card.py", "publikaciya.py", "team_bot.py",
-                         "catalog_design_golden.html"})
+                         "catalog_design_golden.html", "lock4_zhurnal.py",
+                         "ua_additional_spec.py", "vin_spec_service.py"})
 EVIDENCE_NAMES = ("request", "claim", "transaction", "gate_b", "stage2", "quota", "writers", "manifest", "owner_approval", "preview_gate")
 PREVIEW_CHECKS = frozenset({"all_published_cars", "homepage", "catalog", "full_cards",
     "ru", "ua", "ge", "language_switching", "ua_price", "ge_price", "missing_ge",
@@ -271,23 +273,52 @@ def migrate_home_candidate(name, source, rows, policy, routing):
         "public_serving": "NOT_SERVED_BY_VERIFIED_CONFIGURATION"}
 
 
-def build_candidates(source_files, html_files, rows, modules, *, homepage_policy=None, routing=None):
-    """Pure compilation with reviewed, source-pinned patchers; no live imports."""
+def build_source_candidates(source_files, dependency_files):
+    """Compose pinned price patches and writer protection, without live imports.
+
+    All private bytes are supplied explicitly. The public composition helper
+    independently checks the exact price after-images and specification inputs.
+    No existing integrated source or arbitrary local file is used as a fallback.
+    """
     from patch_cars_ui import patch_source
     from patch_yadro import patch_yadro
     from patch_stranica import patch_stranica
     from patch_catalog_design_guard import patch_catalog_design_guard
     from patch_stage_catalog_sync import patch_stage_catalog_sync
     from patch_guard import patch_source as patch_guard
-    from initial_html_prices import migrate_card, migrate_catalog, migrate_home
-    if set(source_files) != SOURCES or set(modules) != MODULES:
-        raise InstallError("EXACT_REVIEWED_SOURCE_MODULE_SET_REQUIRED")
+    from integrate_private_sources import compose_price_candidate
+    if set(source_files) != SOURCES or set(dependency_files) != DEPENDENCIES:
+        raise InstallError("EXACT_REVIEWED_SOURCE_DEPENDENCY_SET_REQUIRED")
+    if any(type(value) is not bytes for value in (*source_files.values(), *dependency_files.values())):
+        raise InstallError("EXACT_SOURCE_DEPENDENCY_BYTES_REQUIRED")
     result = {"cars_ui.py": patch_source(source_files["cars_ui.py"].decode()).encode()}
     result["publish_transaction_guard.py"] = patch_guard(source_files["publish_transaction_guard.py"].decode()).encode()
     for name, patcher in (("yadro.py", patch_yadro), ("stranica.py", patch_stranica),
                           ("catalog_design_guard.py", patch_catalog_design_guard),
                           ("ua_stage_catalog_sync.py", patch_stage_catalog_sync)):
         result[name] = patcher(source_files[name])[0]
+    composed = compose_price_candidate(
+        {name: result[name] for name in ("cars_ui.py", "publish_transaction_guard.py", "stranica.py")},
+        {"ua_spec_permanent.py": source_files["ua_spec_permanent.py"],
+         **{name: dependency_files[name] for name in
+            ("lock4_zhurnal.py", "ua_additional_spec.py", "vin_spec_service.py")}})
+    if set(composed) != {"cars_ui.py", "publish_transaction_guard.py", "stranica.py", "ua_spec_permanent.py"}:
+        raise InstallError("EXACT_COMPOSED_WRITER_SOURCE_SET_REQUIRED")
+    result.update(composed)
+    for name in SOURCES:
+        if type(result[name]) is not bytes:
+            raise InstallError("COMPOSED_SOURCE_BYTES_REQUIRED")
+        ast.parse(result[name].decode("utf-8"))
+    return result
+
+
+def build_candidates(source_files, html_files, rows, modules, *, dependency_files,
+                     homepage_policy=None, routing=None):
+    """Pure complete candidate construction, including the reviewed writer closure."""
+    from initial_html_prices import migrate_card, migrate_catalog, migrate_home
+    if set(modules) != MODULES:
+        raise InstallError("EXACT_REVIEWED_SOURCE_MODULE_SET_REQUIRED")
+    result = build_source_candidates(source_files, dependency_files)
     result.update(modules)
     by_code = {row["auto_number"]: row for row in rows if row["published"] == 1}
     expected = {f"{root}/{code}.html" for root in ("video", "site") for code in by_code}
@@ -327,6 +358,16 @@ def _validate(plan, files, evidence, now, root, *, testing, phase="OPEN"):
     manifest = candidate_manifest(files, {name: item["before_sha256"] for name, item in plan["files"].items()})
     if manifest != plan["files"] or sha(encoded(manifest)) != plan.get("manifest_sha256"):
         raise InstallError("CANDIDATE_MANIFEST_MISMATCH")
+    codes = plan.get("database", {}).get("published_codes")
+    if (type(codes) is not list or any(type(code) is not str or not re.fullmatch(r"UA-[0-9]{4}", code) for code in codes)
+            or codes != sorted(set(codes)) or len(codes) != plan.get("published_count")):
+        raise InstallError("APPROVED_PUBLISHED_CAR_COUNT_REQUIRED")
+    expected_html = {f"{directory}/{code}.html" for directory in ("video", "site") for code in codes}
+    expected_html |= {"video/katalog.html", "site/katalog.html", "video/index.html", "site/index.html"}
+    if set(files) != SOURCES | MODULES | expected_html:
+        raise InstallError("EXACT_BOUNDED_INSTALL_FILE_SET_REQUIRED")
+    if set(plan.get("dependencies_sha256", {})) != DEPENDENCIES:
+        raise InstallError("COMPLETE_CURRENT_DEPENDENCY_HASHES_REQUIRED")
     expected_evidence = set(EVIDENCE_NAMES)
     if plan.get("homepage_policy"):
         if plan["homepage_policy"] != {"site/index.html": "PROTECTED_LEGACY_NOT_SERVED"}:

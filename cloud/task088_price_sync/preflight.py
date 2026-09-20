@@ -24,13 +24,16 @@ PACKAGE_RELATIVE = "autopilot_inbox/cloud/task088_price_sync_current"
 CONTRACT = "TASK088-PRICE-SYNC-READONLY-PREFLIGHT-5"
 MODULES = {"uaart_market_prices.py", "uaart_price_sync_outbox.py", "uaart_price_sync_runtime.py",
            "uaart_price_sync_binding.py", "owner_policy.py", "price_publication.py",
-           "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py"}
+           "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py",
+           "publication_fence.py", "mutation_recovery.py"}
 TOOLS = {"preflight.py", "install_package.py", "patch_cars_ui.py", "patch_yadro.py", "patch_stranica.py",
-         "patch_catalog_design_guard.py", "patch_stage_catalog_sync.py", "patch_guard.py", "initial_html_prices.py"}
+         "patch_catalog_design_guard.py", "patch_stage_catalog_sync.py", "patch_guard.py", "initial_html_prices.py",
+         "integrate_private_sources.py"}
 SOURCES = {"cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py", "publish_transaction_guard.py",
-           "ua_stage_catalog_sync.py"}
+           "ua_stage_catalog_sync.py", "ua_spec_permanent.py"}
 DEPENDENCIES = {"db.py", "cars_schema.py", "start_safe.py", "master_card.py", "publikaciya.py",
-                "catalog_design_golden.html", "team_bot.py"}
+                "catalog_design_golden.html", "team_bot.py", "lock4_zhurnal.py",
+                "ua_additional_spec.py", "vin_spec_service.py"}
 MAX_FILE = 8 * 1024 * 1024
 
 
@@ -144,6 +147,8 @@ def run(output_id, expected_bundle_sha256, *, test_root=None, package_relative=P
         sys.path.insert(0, str(package))
         try:
             engine = importlib.import_module("install_package")
+            if engine.SOURCES != SOURCES or engine.MODULES != MODULES or engine.DEPENDENCIES != DEPENDENCIES:
+                raise ValueError("PREFLIGHT_ENGINE_CLOSURE_MISMATCH")
             migrator = importlib.import_module("initial_html_prices")
             routing = bundle.get("routing")
             homepage_policy = bundle.get("homepage_policy", {})
@@ -151,30 +156,27 @@ def run(output_id, expected_bundle_sha256, *, test_root=None, package_relative=P
                 engine.verify_routing_sources(routing, root=root)
                 report["homepage_policy"] = homepage_policy
                 report["routing_evidence_sha256"] = bundle["routing_evidence_sha256"]
-            patches = {"cars_ui.py": ("patch_cars_ui", "patch_source", False),
-                "publish_transaction_guard.py": ("patch_guard", "patch_source", False),
-                "yadro.py": ("patch_yadro", "patch_yadro", True),
-                "stranica.py": ("patch_stranica", "patch_stranica", True),
-                "catalog_design_guard.py": ("patch_catalog_design_guard", "patch_catalog_design_guard", True),
-                "ua_stage_catalog_sync.py": ("patch_stage_catalog_sync", "patch_stage_catalog_sync", True)}
             if set(bundle.get("source_sha256", {})) != SOURCES:
                 raise ValueError("EXACT_LIVE_SOURCE_PINS_REQUIRED")
-            for name, (module_name, function_name, byte_api) in patches.items():
+            source_files, dependency_files = {}, {}
+            for name in sorted(SOURCES):
                 data = _read(_safe(root, name))
                 before[name] = _sha(data)
                 if before[name] != bundle["source_sha256"][name]:
                     raise ValueError("CURRENT_SOURCE_PIN_MISMATCH:" + name)
-                result = getattr(importlib.import_module(module_name), function_name)(data if byte_api else data.decode("utf-8"))
-                candidate = result[0] if byte_api else result.encode("utf-8")
-                ast.parse(candidate.decode("utf-8"))
-                candidates[name] = candidate
-                report["sources"][name] = {"before_sha256": before[name], "after_sha256": _sha(candidate), "compile": "PASS"}
+                source_files[name] = data
+            if set(bundle.get("dependency_sha256", {})) != DEPENDENCIES:
+                raise ValueError("EXACT_LIVE_DEPENDENCY_PINS_REQUIRED")
             for name in sorted(DEPENDENCIES):
                 data = _read(_safe(root, name))
                 actual = _sha(data)
                 report["dependencies"][name] = actual
                 if bundle.get("dependency_sha256", {}).get(name) != actual:
-                    report["blockers"].append("DEPENDENCY_PIN_MISSING_OR_DRIFT:" + name)
+                    raise ValueError("DEPENDENCY_PIN_MISSING_OR_DRIFT:" + name)
+                dependency_files[name] = data
+            candidates.update(engine.build_source_candidates(source_files, dependency_files))
+            for name, candidate in candidates.items():
+                report["sources"][name] = {"before_sha256": before[name], "after_sha256": _sha(candidate), "compile": "PASS"}
             inventory = engine.system_inventory(root)
             if inventory != bundle.get("system_inventory"):
                 raise ValueError("FULL_REVIEWED_SYSTEM_INVENTORY_REQUIRED")
