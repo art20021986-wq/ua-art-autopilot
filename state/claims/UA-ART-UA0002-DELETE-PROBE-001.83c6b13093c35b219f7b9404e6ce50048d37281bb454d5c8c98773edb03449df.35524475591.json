@@ -7,21 +7,23 @@
   "created_at": "2026-09-20T17:01:18Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-20T17:01:18Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-20T17:02:10Z",
+  "heartbeat_at": "2026-09-20T17:02:10Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "35524475591",
     "task_id": "UA-ART-UA0002-DELETE-PROBE-001",
     "task_sha256": "83c6b13093c35b219f7b9404e6ce50048d37281bb454d5c8c98773edb03449df"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-fb5b062300184380-41d6d33e3314df3b",
   "receipt_path": "state/receipts/UA-ART-UA0002-DELETE-PROBE-001.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "c578291b9637c90d9dab372e136e0b450f965394f6fb8c49203008d8cead23e4",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/UA-ART-UA0002-DELETE-PROBE-001.json",
   "request_sha256": "83c6b13093c35b219f7b9404e6ce50048d37281bb454d5c8c98773edb03449df",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ca477111f06552d41f744974acfbb11f036ce7e8",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92209819648,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 16777216,
+    "status": "PASS",
+    "usage_percent": 40.458
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-20T17:01:18Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "f43d488892e676e57659580972eba9583b80b30408a7e226d68cb1d96164d844",
+    "file_sha256": {
+      "cloud/ua0002_delete_probe/test_contract.py": "192dc9d8127b1e034ec751bbafb1052b4d66e9b641f129722bc86ac6359bf287"
+    }
+  },
+  "updated_at": "2026-09-20T17:02:10Z"
 }

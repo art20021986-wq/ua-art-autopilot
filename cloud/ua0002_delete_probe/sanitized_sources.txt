@@ -1,0 +1,901 @@
+# /home/Carix/cars_ui.py:235 original_sha256=c429b70785ff398842f940358c819b8d7e25b35f4ef5aac0b0b36e1a5991a1e7
+def card_of(card_id):
+    card = db.get_card('cars', int(card_id))
+    if not card:
+        return None
+    for old, new in LEGACY.items():
+        if not card.get(new) and card.get(old):
+            card[new] = card[old]
+    return card
+
+# /home/Carix/cars_ui.py:1645 original_sha256=e84fa97d435143231e7055b8dfcd75c349fd766631130b04145e2d9fa79a22cc
+async def toggle_publish(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    novoe = 0 if card.get('published') else 1
+    if novoe:
+        miss = S.missing_required(card)
+        if miss:
+            await q.message.reply_text('Для показа клиентам не хватает: %s' % ', '.join(miss), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Дозаполнить', callback_data='car_edit:%d' % cid)], [InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]]))
+            raise ApplicationHandlerStop
+    db.update_card_field('cars', cid, 'published', novoe, q.from_user.id)
+    if novoe:
+        try:
+            import asyncio as _aio_rem2
+            import publikaciya as _pub_rem2
+            _ok_rem2, _txt_rem2 = await _aio_rem2.to_thread(_pub_rem2.opublikovat, card.get('auto_number'))
+            await q.message.reply_text(_txt_rem2)
+        except Exception as _e:
+            log.warning('Страница при публикации: %s', _e)
+    await q.message.reply_text('Машина видна клиентам в каталоге.' if novoe else 'Машина скрыта от клиентов.', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1713 original_sha256=902c7b81571c24d003140057933b668f62af30bde0109d989d83bcac385dcda2
+async def delete_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    name = '%s %s' % (card.get('auto_number') or '', ' '.join((str(x) for x in (card.get('brand'), card.get('model')) if x)))
+    await q.message.reply_text('Удалить карточку %s?\nВернуть её будет нельзя. Фото, видео и история пропадут вместе с ней.' % name.strip(), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Да, удалить', callback_data='car_delok:%d' % cid)], [InlineKeyboardButton('← Отмена', callback_data='car_open:%d' % cid)]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1730 original_sha256=e86958d72b882ccef78168092a2bce75822099d59a1976f52ef7a289bc992106
+async def delete_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    nomer = card.get('auto_number') if card else '#%d' % cid
+    try:
+        with db.connect() as c:
+            c.execute('DELETE FROM cars WHERE id=?', (cid,))
+        db.log_action(q.from_user.id, 'card_delete', 'cars', cid, 'auto_number', nomer, None)
+    except Exception as e:
+        log.warning('Не удалил карточку: %s', e)
+        await q.message.reply_text('Не получилось удалить: %s' % e)
+        raise ApplicationHandlerStop
+    context.user_data.pop('car_last', None)
+    await q.message.reply_text('Карточка %s удалена.' % nomer, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Все автомобили', callback_data='cards_cars')]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:3188 original_sha256=19ec0c4e8136870410e2bb1693fa22abf3d616202468afa7e40fbf3e9d34bc0d
+def _peresobrat_stranicy():
+    """Страницы сайта после удаления — иначе там останется старое."""
+    try:
+        import sys as _s
+        if '/home/Carix' not in _s.path:
+            _s.path.insert(0, '/home/Carix')
+        import importlib as _i
+        import stranica as _st
+        _i.reload(_st)
+        if hasattr(_st, 'main'):
+            _st.main()
+            return True
+    except Exception as e:
+        log.warning('Пересборка страниц: %s', e)
+    return False
+
+# /home/Carix/cars_ui.py:3785 original_sha256=6df8bd4afc62ce51d912cdf3c7575a736d5dcb9d0025b2eb3a8ff60b1a37b71c
+async def toggle_publish(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q, staff = await _ua099_require_staff(update)
+    cid = int(q.data.split(':')[-1])
+    card = _ua099_card(cid)
+    if q.data.startswith('car_ad:') and card.get('published'):
+        await q.message.reply_text('Объявление уже опубликовано.', reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
+    actor_id = q.from_user.id
+    preimage = _ua083_publish_preimage(card)
+    novoe = 0 if card.get('published') else 1
+    back = InlineKeyboardMarkup([[InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]])
+    if novoe:
+        miss = S.missing_required(card)
+        if miss:
+            await q.message.reply_text('Для показа клиентам не хватает: %s' % ', '.join(miss), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Дозаполнить', callback_data='car_edit:%d' % cid)], [InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]]))
+            raise ApplicationHandlerStop
+    try:
+        import asyncio as _ua083_asyncio
+        import publikaciya as _ua083_publisher
+        db.update_card_field('cars', cid, 'published', novoe, actor_id)
+        if novoe:
+            ok, detail = await _ua083_asyncio.to_thread(_ua083_publisher.opublikovat, card.get('auto_number'))
+            success_text = 'Машина видна клиентам в каталоге.\nhttps://www.uaart.com.ua/video/%s.html' % _ua099_uid(card)
+        else:
+            ok, detail = await _ua083_asyncio.to_thread(_ua083_publisher.obnovit_katalog)
+            success_text = 'Машина скрыта от клиентов.'
+        if ok is not True:
+            restored = _ua083_restore_publish_preimage(cid, preimage, actor_id)
+            text = str(detail or 'Публикация не прошла проверку.')
+            if not restored:
+                text += ' КРИТИЧНО: состояние CRM не удалось восстановить автоматически.'
+            await q.message.reply_text(text, reply_markup=back)
+            raise ApplicationHandlerStop
+        if novoe:
+            try:
+                _ua_emergency_schedule_spec(card.get('auto_number'))
+            except Exception:
+                log.exception('Не удалось запланировать автоматический сбор спецификации %s', card.get('auto_number'))
+        await q.message.reply_text(success_text, reply_markup=back)
+        raise ApplicationHandlerStop
+    except ApplicationHandlerStop:
+        raise
+    except Exception as exc:
+        restored = _ua083_restore_publish_preimage(cid, preimage, actor_id)
+        log.exception('TASK083 publication exception for car %s', cid)
+        text = 'Публикация отменена: %s. Выполнен откат.' % exc
+        if not restored:
+            text += ' КРИТИЧНО: состояние CRM не удалось восстановить автоматически.'
+        await q.message.reply_text(text, reply_markup=back)
+        raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:4158 original_sha256=211038f35cf33f05ad58a598923ea318cded1e9df97a5dd0fb1a3a186e19d640
+async def _ua_emergency_enqueue_spec(uid):
+    import asyncio as _ua_emergency_asyncio
+    try:
+        queued = await _ua_emergency_asyncio.to_thread(_ua110_vin_service.retry_card, uid)
+        if not queued:
+            log.warning('Автоматический сбор спецификации не поставлен в очередь: %s', uid)
+    except Exception:
+        log.exception('Автоматический сбор спецификации не запущен: %s', uid)
+
+# /home/Carix/cars_ui.py:4168 original_sha256=665dd8c43c91a3edfa563a92b773d7bd765beb003e5b3a27a372614d00953704
+def _ua_emergency_schedule_spec(uid):
+    import asyncio as _ua_emergency_asyncio
+    coro = _ua_emergency_enqueue_spec(uid)
+    try:
+        task = _ua_emergency_asyncio.create_task(coro)
+    except BaseException:
+        coro.close()
+        raise
+    _ua_emergency_spec_tasks.add(task)
+    task.add_done_callback(_ua_emergency_spec_tasks.discard)
+
+# /home/Carix/cars_ui.py:4179 original_sha256=cdbbfef08bdd15160216422eed009cbd6c53ecc9701ee57e29455d8ea99c31a6
+async def _ua_emergency_spec_status(update, context):
+    q, staff = await _ua099_require_staff(update)
+    cid = int(q.data.split(':')[-1])
+    card = _ua099_card(cid)
+    uid = _ua099_uid(card)
+    await q.message.reply_text(_ua099_spec.crm_summary(uid), reply_markup=_ua099_back(cid), disable_web_page_preview=True)
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:4375 original_sha256=a16c2914c2280a4ea9ce22ba980f72c48f3598885a9776cf4a060078d66b8607
+def _ua0022_wrap_rebuild(original):
+
+    def guarded():
+        try:
+            with _ua0022_publication_fence(timeout=90.0):
+                return original()
+        except Exception as exc:
+            log.warning('Пересборка страниц: %s', exc)
+            return False
+    return guarded
+
+
+
+
+# /home/Carix/stranica.py:1200 original_sha256=69f55be7b729462c41fe506fb4c726ec5b4e1742bdab0cf26ab8cd276bdfa1e5
+def sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru=None):
+    c = []
+    c.append("<!doctype html><html lang='ru'><head><meta charset='utf-8'>")
+    c.append("<meta name='viewport' content='width=device-width,initial-scale=1'>")
+    c.append("<script src='https://telegram.org/js/telegram-web-app.js'></script>")
+    c.append('<title>UA ART COMPANY — авто из Кореи</title><style>%s</style></head><body>' % STIL)
+    c.append(shapka())
+    c.append("<div class='zagolovok'>Авто в наличии и в пути</div>")
+    c.append("<div class='schet'>%d в подборке · цены под ключ в Киеве</div>" % len(spisok))
+    if not spisok:
+        c.append("<div class='blok'>Сейчас витрина пуста — привезём под заказ из Кореи за 45–60 дней с фиксированной ценой в договоре.</div>")
+    for m in spisok:
+        nom = nomer(m)
+        kadry = kadry_po_nomeru.get(nom) or []
+        sredn, mal = (legkie_po_nomeru or {}).get(nom) or (kadry, kadry)
+        video_est = os.path.exists(os.path.join(PAPKA_VID, nom + '.mp4'))
+        c.append("<a class='plitka' href='%s.html?v=%d'>" % (nom, int(time.time())))
+        if kadry and sredn:
+            c.append("<div class='ramka'><img src='%s' decoding='async' alt=''>" % sredn[0])
+            if video_est:
+                c.append("<div class='znak_video'><b>▶</b> видео</div>")
+            c.append('</div>')
+            if len(mal) > 1:
+                c.append("<div class='mini_lenta'>")
+                for k in mal[1:4]:
+                    c.append("<img src='%s' loading='lazy' decoding='async' alt=''>" % k)
+                if len(mal) > 4:
+                    c.append("<div class='eshche'>+%d</div>" % (len(mal) - 4))
+                c.append('</div>')
+        c.append("<div class='telo'><div class='stroka'>")
+        c.append("<div class='nazv'>%s</div>" % ekran(' '.join((str(x) for x in [m.get('brand'), m.get('model'), m.get('year')] if x))))
+        c.append("<div class='cn'>%s</div></div>" % cena(m))
+        c.append("<div class='niz'>%s · %s · %d фото%s</div></div></a>" % (ekran(etap_korotko(m)), ekran(nom), len(kadry), ' · видео' if video_est else ''))
+    c.append("<a class='vtoraya' href='podbor.html?v=%d'>Нужно другое — подберём под заказ</a>" % int(time.time()))
+    c.append("<a class='vtoraya' href='index.html?v=%d'>← На главную</a>" % int(time.time()))
+    c.append("<div class='blok'><div class='zag'>Как мы работаем</div><div class='tihо' style='line-height:1.9'>1 · Подбираем варианты под бюджет<br>2 · Заключаем официальный договор. Предоплата — %d $, она входит в общую стоимость автомобиля. Цена фиксируется в договоре по курсу НБУ на дату его заключения.<br>3 · Проверяем историю и отчёт аукциона перед покупкой<br>4 · Стоянка в Корее, ждём погрузку<br>5 · Паром: Корея → Грузия<br>6 · Поти/Батуми: оформление<br>7 · Киев: растаможка, сертификат, выдача</div></div>" % BRON_USD)
+    c.append(podval())
+    c.append(CHAT_KNOPKA)
+    c.append(SKRIPT_TG)
+    c.append('</body></html>')
+    return ''.join(c)
+
+# /home/Carix/stranica.py:1836 original_sha256=8633f52c3c4cdb5ef5a4ee9d487dbb64e4b2281201e3013273526e3a09b0fa2b
+def main():
+    print('СБОРКА СТРАНИЦ UA ART — %s' % time.strftime('%d.%m.%Y %H:%M'))
+    print()
+    staroe = otklyuchit_staroe()
+    if staroe:
+        print('выключено: %s' % ', '.join(staroe))
+        print()
+    try:
+        spisok = mashiny()
+    except Exception:
+        print('Не читается база:')
+        print(traceback.format_exc(limit=2))
+        return
+    try:
+        from PIL import Image
+        szhatie = True
+    except Exception:
+        szhatie = False
+        print('ВНИМАНИЕ: библиотека Pillow недоступна — фото пойдут в полном размере,')
+        print('страницы будут грузиться медленно. Поставьте её один раз в консоли:')
+        print('  pip3.10 install --user Pillow')
+        print()
+    kadry_po_nomeru = {}
+    legkie_po_nomeru = {}
+    bylo_vsego = stalo_vsego = 0
+    for m in spisok:
+        nom = nomer(m)
+        kadry = kadry_mashiny(m)
+        kadry_po_nomeru[nom] = kadry
+        if kadry:
+            sredn, mal = legkie(kadry)
+            legkie_po_nomeru[nom] = (sredn, mal)
+            bylo_vsego += ves(kadry)
+            stalo_vsego += ves(sredn)
+        else:
+            sredn = []
+            print('  %s — без фотографий, страница собрана с одним текстом' % nom)
+        html = sobrat_kartochku(m, kadry, sredn)
+        skolko = zapisat(nom, html)
+        v_zamke = obnovit_etalon(nom, html)
+        if est_diagnostika(m):
+            diag = sobrat_diagnostiku(m)
+            zapisat(nom + '-diag', diag)
+            obnovit_etalon(nom + '-diag', diag)
+            df, dv = kadry_diagnostiki(m)
+            print('  %s — диагностика: фото %d · видео %d · отчёт %s' % (nom, len(df), len(dv), 'есть' if (m.get('diag_link') or '').strip() else 'нет'))
+        video = 'есть' if os.path.exists(os.path.join(PAPKA_VID, nom + '.mp4')) else 'нет'
+        print('  %s — %s · фото %d · видео %s · %s · копий %d%s' % (nom, cena(m), len(kadry), video, etap_korotko(m), skolko, ' · в замке %d' % v_zamke if v_zamke else ''))
+    katalog = sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru)
+    skolko = zapisat('katalog', katalog)
+    obnovit_etalon('katalog', katalog)
+    print('  каталог — машин %d · копий %d' % (len(spisok), skolko))
+    glavnaya = sobrat_glavnuyu(spisok, kadry_po_nomeru, legkie_po_nomeru)
+    zapisat('index', glavnaya)
+    obnovit_etalon('index', glavnaya)
+    print('  главная — собрана')
+    for imya, sbor in (('podbor', sobrat_podbor), ('info', sobrat_info)):
+        stranica = sbor()
+        zapisat(imya, stranica)
+        obnovit_etalon(imya, stranica)
+    print('  подбор и условия — собраны')
+    if bylo_vsego and szhatie:
+        print()
+        print('  фото облегчены: %d МБ → %d МБ (в %.0f раз легче)' % (bylo_vsego // 1048576, max(stalo_vsego // 1048576, 1), bylo_vsego / max(stalo_vsego, 1)))
+    print()
+    print('ССЫЛКИ')
+    metka = int(time.time())
+    print('  ГЛАВНАЯ:  %s/index.html?v=%d' % (sajt(), metka))
+    print('  каталог:  %s/katalog.html?v=%d' % (sajt(), metka))
+    print('  подбор:   %s/podbor.html?v=%d' % (sajt(), metka))
+    print('  условия:  %s/info.html?v=%d' % (sajt(), metka))
+    for m in spisok:
+        print('  карточка: %s/%s.html?v=%d' % (sajt(), nomer(m), metka))
+    print()
+    print('Готово. Перезапускать бота не нужно — страницы уже обновлены.')
+
+# /home/Carix/stranica.py:2014 original_sha256=cda9b3021f97b85c4c166e0d37f7a32dfbdb8955cb1816e67efa1cee38d06aec
+def main(*a, **k):
+    _snimok = _v135_snimok()
+    _itog = _v135_main_ishodnyy(*a, **k)
+    _horosho, _slovo = _v135_proverka()
+    try:
+        with io.open(os.path.join(BAZA_DIR, 'publikaciya_log.txt'), 'a', encoding='utf-8') as _f:
+            _f.write('%s  %s  %s\n' % (time.strftime('%Y-%m-%d %H:%M:%S'), 'PASS' if _horosho else 'FAIL', _slovo))
+    except Exception:
+        pass
+    if _horosho:
+        print('  публикация проверена: %s' % _slovo)
+    else:
+        print('  ПУБЛИКАЦИЯ ОТМЕНЕНА: %s' % _slovo)
+        for _put, _tekst in _snimok.items():
+            try:
+                with io.open(_put, 'w', encoding='utf-8') as _f:
+                    _f.write(_tekst)
+            except Exception:
+                pass
+        if _snimok:
+            print('  рабочие страницы возвращены в прежний вид')
+    return _itog
+
+# /home/Carix/stranica.py:2068 original_sha256=25417047c32ed9468cea6258aa5352a5ce5f511357229696bc7c0063e2a43dab
+def main(*a, **k):
+    _bedy = _v157_net_fajlov()
+    if _bedy:
+        _stroka = '%s  ОТМЕНА СБОРКИ  нет файлов для записей ready: %d · %s' % (time.strftime('%Y-%m-%d %H:%M:%S'), len(_bedy), '; '.join(_bedy[:5]))
+        try:
+            with io.open(os.path.join(BAZA_DIR, 'publikaciya_log.txt'), 'a', encoding='utf-8') as _f:
+                _f.write(_stroka + '\n')
+        except Exception:
+            pass
+        print('  СБОРКА ОТМЕНЕНА: не хватает файлов — %d' % len(_bedy))
+        for _s in _bedy[:10]:
+            print('     ' + _s)
+        print('  рабочие страницы оставлены как есть, запустите v155.py для восстановления')
+        return None
+    return _v157_main_do(*a, **k)
+
+# /home/Carix/stranica.py:3114 original_sha256=42202ac8b237f8aee92fa674140b440e27366318770103a75c8c6b705972d9ac
+def sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru):
+    return _ua_seo068_normalize(_ua_seo068_original_sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru), 'katalog.html')
+
+# /home/Carix/stranica.py:3975 original_sha256=dbd82a0ec6c30225840bffcf6b690cb0bf022b3f7af598270037081704716949
+def sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru=None):
+    html = _ua068_stranica_catalog_original(spisok, kadry_po_nomeru, legkie_po_nomeru)
+    counts = {}
+    for row in spisok:
+        vin = str(row.get('vin') or '').strip().upper()
+        counts[vin] = counts.get(vin, 0) + 1
+    rows = {}
+    for item in spisok:
+        row = dict(item or {})
+        row['_ua068_vin_duplicates'] = counts.get(str(row.get('vin') or '').strip().upper(), 1)
+        rows[str(nomer(row)).upper()] = row
+    return _ua068_ensure_catalog(html, rows)
+
+
+# /home/Carix/db.py:315 original_sha256=da9b6d2d26eaa1ebc82cecf6036a276c8951da8f2314156519705ba5d67ed374
+def connect():
+    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)
+    conn.row_factory = sqlite3.Row
+    try:
+        sqlite3.Connection.execute(conn, 'PRAGMA journal_mode=DELETE')
+    except Exception:
+        pass
+    sqlite3.Connection.execute(conn, 'PRAGMA busy_timeout=%d' % (ZAMOK_OZHIDANIE * 1000))
+    sqlite3.Connection.execute(conn, 'PRAGMA foreign_keys=ON')
+    return conn
+
+# /home/Carix/db.py:486 original_sha256=fa2828c1dda20f5dace0f8b4118bfd7efd8978f9b513317b6fefdfb333803b73
+def log_action(actor_id, action, entity_type=None, entity_id=None, field=None, old_value=None, new_value=None):
+    """Пишем каждое значимое действие. Историю задним числом не восстановить,
+    поэтому журнал ведётся с первого дня."""
+    with connect() as c:
+        c.execute('INSERT INTO audit (actor_id, action, entity_type, entity_id, field, old_value, new_value, created_at) VALUES (?,?,?,?,?,?,?,?)', (actor_id, action, entity_type, entity_id, field, str(old_value) if old_value is not None else None, str(new_value) if new_value is not None else None, now()))
+
+
+# /home/Carix/publication_fence.py:99 original_sha256=433c9b2f2a38af9c697d7f82c00985e34e1471ffb10af295982fe5ad7b8f5191
+def _validate_lock_file(path: Path, fd: int) -> None:
+    _validate_parent(path)
+    try:
+        opened = os.fstat(fd)
+        linked = os.stat(path, follow_symlinks=False)
+    except OSError as exc:
+        raise FencePathError('PUBLICATION_FENCE_PATH_CHANGED') from exc
+    if not stat.S_ISREG(opened.st_mode) or not stat.S_ISREG(linked.st_mode):
+        raise FencePathError('PUBLICATION_FENCE_REGULAR_FILE_REQUIRED')
+    if (opened.st_dev, opened.st_ino) != (linked.st_dev, linked.st_ino):
+        raise FencePathError('PUBLICATION_FENCE_PATH_CHANGED')
+
+# /home/Carix/publication_fence.py:131 original_sha256=0969ab00e593905da36f3d517d7cdd4195af992831f64eda63b9023bd9cd69f8
+def _lock_fd(fd: int, deadline: float, poll_interval: float) -> None:
+    while True:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return
+        except BlockingIOError as exc:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise FenceTimeout('PUBLICATION_FENCE_TIMEOUT') from exc
+            time.sleep(min(poll_interval, remaining))
+
+# /home/Carix/publication_fence.py:258 original_sha256=827bfb4c29a0665d19769894b9b73ef6c0fcf64ad2404dd07c8f8434fd745547
+def publication_fence(*, timeout: float=30.0) -> PublicationFence:
+    return PublicationFence(timeout=timeout)
+
+# /home/Carix/publication_fence.py:262 original_sha256=e253a30af68c5c382895e8dc1c7ad91288bcfa8d64aaa19469b1a91f52db4860
+def require_publication_fence(*, lock_path: Path | str=DEFAULT_LOCK_PATH) -> None:
+    """Fail unless the current thread owns the cooperative fence."""
+    _reset_after_fork_if_needed()
+    key = os.fspath(Path(lock_path))
+    with _condition:
+        state = _states.get(key)
+        if state is None or state.owner_thread != threading.get_ident() or state.depth <= 0:
+            raise FenceError('PUBLICATION_FENCE_REQUIRED')
+        if state.fd is None:
+            raise FenceError('PUBLICATION_FENCE_DESCRIPTOR_MISSING')
+        _validate_lock_file(Path(lock_path), state.fd)
+
+
+# /home/Carix/publish_transaction_guard.py:109 original_sha256=23faab592c582be0c8d35d42d944e4bb643f7ee376188879ae7af02e46933750
+def _rows() -> tuple[list[dict[str, Any]], str]:
+    connection = sqlite3.connect('file:%s?mode=ro' % DB, uri=True, timeout=30)
+    connection.row_factory = sqlite3.Row
+    try:
+        connection.execute('PRAGMA query_only=ON')
+        quick = str(connection.execute('PRAGMA quick_check').fetchone()[0])
+        rows = [dict(row) for row in connection.execute('SELECT * FROM cars WHERE published=1 ORDER BY auto_number, id').fetchall()]
+    finally:
+        connection.close()
+    if quick != 'ok':
+        raise PublishError('CRM_QUICK_CHECK:' + quick)
+    normalized = json.dumps(rows, ensure_ascii=False, sort_keys=True, default=str).encode()
+    return (rows, _sha(normalized))
+
+# /home/Carix/publish_transaction_guard.py:126 original_sha256=c8cb2429640b3759021b55d0e2c3f22da417c3253009eec0a866266e00c59c4b
+def _row_map() -> tuple[dict[str, dict[str, Any]], str]:
+    rows, digest = _rows()
+    return ({str(row.get('auto_number') or '').upper(): row for row in rows}, digest)
+
+# /home/Carix/publish_transaction_guard.py:143 original_sha256=af11036210af2f2a8c5e5d4b1c166396d2a8899678abed355a69f85fbe7d8c67
+def _matching_paths(codes: set[str]) -> set[pathlib.Path]:
+    paths: set[pathlib.Path] = {root / 'katalog.html' for root in ROOTS}
+    for code in codes:
+        for root in ROOTS:
+            paths.add(root / (code + '.html'))
+            paths.add(root / (code + '-diag.html'))
+            if root.is_dir():
+                paths.update((path for path in root.glob(code + '*') if path.is_file()))
+            for folder in (root / 'foto' / code, root / 'diag' / code):
+                if folder.is_dir():
+                    paths.update((path for path in folder.rglob('*') if path.is_file()))
+        archive = ROOT / 'archive' / 'video_dubli'
+        if archive.is_dir():
+            paths.update((path for path in archive.glob(code + '*') if path.is_file()))
+    return paths
+
+# /home/Carix/publish_transaction_guard.py:210 original_sha256=6a6d3b92c2190ba7fa31b400b620e604534babc756db016624d635ba3175b6d0
+@contextlib.contextmanager
+def _exclusive_lock():
+    LOCK.parent.mkdir(parents=True, exist_ok=True)
+    handle = open(LOCK, 'a+')
+    deadline = time.monotonic() + WAIT_SECONDS
+    try:
+        while True:
+            try:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise PublishError('PUBLISH_LOCK_TIMEOUT')
+                time.sleep(0.25)
+        yield
+    finally:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        finally:
+            handle.close()
+
+# /home/Carix/publish_transaction_guard.py:304 original_sha256=674310175a677d969914cafe8631caff3337662a05591c4a2e8d2a0ddd30cf04
+def _validate_catalog(source: str, rows: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    if len(source.encode('utf-8')) < 5000 or '</html>' not in source.lower():
+        raise PublishError('CATALOG_HTML_INVALID')
+    counts = _href_counts(source)
+    expected = set(rows)
+    wrong = {code: counts.get(code, 0) for code in sorted(expected) if counts.get(code, 0) != 1}
+    unexpected = sorted(set(counts) - expected)
+    if wrong:
+        raise PublishError('CATALOG_CARD_COUNT:' + json.dumps(wrong, sort_keys=True))
+    if unexpected:
+        raise PublishError('CATALOG_UNEXPECTED_IDS:' + ','.join(unexpected))
+    cards: dict[str, Any] = {}
+    for code, row in rows.items():
+        stage = _stage(row)
+        category = _category(stage)
+        window = _catalog_card_window(source, code)
+        tokens = ('data-ua-stage="%d"' % stage, "data-ua-stage='%d'" % stage, 'data-ua-stage-tile="%d"' % stage, "data-ua-stage-tile='%d'" % stage, 'data-stage="%d"' % stage, "data-stage='%d'" % stage)
+        if not window or not any((token in window for token in tokens)):
+            raise PublishError('CATALOG_STAGE_MISMATCH:%s:%d' % (code, stage))
+        cards[code] = {'href_count': 1, 'stage': stage, 'category': category, 'category_token': bool(re.search('(?:data-(?:category|filter)|[?&](?:f|etap|stage)=)[\'\\"]?' + re.escape(category), window, re.I))}
+    return {'count': len(expected), 'cards': cards, 'ids': sorted(expected)}
+
+# /home/Carix/publish_transaction_guard.py:371 original_sha256=8a3f8a2898df92d921f7802f6b921c2370f4af650c6e9dc143b8eb9e603aeda9
+def _build_catalog() -> tuple[str, list[dict[str, Any]]]:
+    import publikaciya as publisher
+    if not hasattr(publisher, '_ua9_sobrat_katalog'):
+        raise PublishError('CATALOG_MASTER_MISSING')
+    value, rows = publisher._ua9_sobrat_katalog()
+    if isinstance(value, bytes):
+        value = value.decode('utf-8', 'replace')
+    return (str(value or ''), list(rows or []))
+
+# /home/Carix/publish_transaction_guard.py:382 original_sha256=e2a1c5bac6ba1b9c721f8194cac48f1e2ae6acfc4ee665d94ddb7c813b1ee5c7
+def _install_catalog(source: str, target: str | None) -> dict[str, Any]:
+    row_map, _ = _row_map()
+    before = _validate_catalog(source, row_map)
+    try:
+        import catalog_stage_guard_core as stage_guard
+    except ModuleNotFoundError as exc:
+        raise PublishError('CATALOG_STAGE_GUARD_MISSING') from exc
+    photos: dict[str, str] = {}
+    for code in sorted(row_map):
+        primary_path = VIDEO / (code + '.html')
+        if not primary_path.is_file():
+            raise PublishError('CATALOG_PRIMARY_NOT_READY:' + code)
+        primary = _read(primary_path).decode('utf-8', 'replace')
+        photos[code] = stage_guard.extract_main_photo(primary, 'https://www.uaart.com.ua/video/%s.html' % code, code)
+        if not photos[code]:
+            raise PublishError('CATALOG_MAIN_PHOTO_NOT_READY:' + code)
+    try:
+        normalized = stage_guard.enforce_catalog(source, list(row_map.values()), photos)
+        stage_audit = stage_guard.audit_catalog(normalized, list(row_map.values()))
+    except Exception as exc:
+        raise PublishError('CATALOG_STAGE_GUARD_FAIL:' + str(exc)) from exc
+    if not isinstance(stage_audit, dict) or stage_audit.get('status') != 'PASS':
+        raise PublishError('CATALOG_STAGE_AUDIT_FAIL')
+    data = normalized.encode('utf-8')
+    for root in ROOTS:
+        path = root / 'katalog.html'
+        _atomic(path, data, path.stat().st_mode & 511 if path.exists() else 420)
+        if _read(path) != data:
+            raise PublishError('CATALOG_READBACK_MISMATCH:' + str(path))
+    after: dict[str, Any] = {}
+    for root in ROOTS:
+        path = root / 'katalog.html'
+        after[str(path)] = {'sha256': _sha(_read(path)), 'audit': _validate_catalog(_read(path).decode('utf-8', 'replace'), row_map)}
+    return {'candidate': before, 'stage_guard': stage_audit, 'target': target, 'installed': after}
+
+# /home/Carix/publish_transaction_guard.py:475 original_sha256=af5dbbd6839e3c0cf0b58e4b53af7dcaeec6f12e4a5f354a95006b19b8bac48d
+def _publish_locked(base_publish: Callable[..., Any], codes: list[str], proba: bool=False) -> tuple[bool, str, dict[str, Any]]:
+    codes = [_code(value) for value in codes]
+    if not codes or len(codes) != len(set(codes)):
+        raise PublishError('TARGET_SET_INVALID')
+    snapshot = Snapshot(codes)
+    before_rows, before_db = _row_map()
+    missing = [code for code in codes if code not in before_rows]
+    if missing:
+        raise PublishError('TARGETS_NOT_PUBLISHED:' + ','.join(missing))
+    protected = _protected_pages(set(codes))
+    evidence: dict[str, Any] = {'contract_id': CONTRACT_ID, 'codes': codes, 'mode': 'PROBE' if proba else 'INSTALL', 'backup_root': str(snapshot.root), 'published_rows_sha256_before': before_db, 'staged_diagnostics': {}, 'base_results': {}, 'catalog': None, 'verification': None, 'rollback': None}
+    try:
+        evidence['staged_diagnostics'] = _stage_diags(codes)
+        for code in codes:
+            ok, message = _call_base(base_publish, code, proba)
+            evidence['base_results'][code] = {'ok': ok, 'message': message[:2000]}
+            if not ok:
+                raise PublishError('BASE_PUBLISH_FAILED:%s:%s' % (code, message[:500]))
+        catalog_source, catalog_rows = _build_catalog()
+        generated_ids = {str(row.get('auto_number') or '').upper() for row in catalog_rows}
+        if generated_ids != set(before_rows):
+            raise PublishError('CATALOG_ROW_SET_MISMATCH')
+        _validate_catalog(catalog_source, before_rows)
+        if proba:
+            evidence['rollback'] = snapshot.restore()
+            evidence['status'] = 'PASS'
+            return (True, 'Проба публикации прошла; production-файлы не изменены.', evidence)
+        evidence['catalog'] = _install_catalog(catalog_source, codes[-1])
+        after_rows, after_db = _row_map()
+        if before_db != after_db or set(before_rows) != set(after_rows):
+            raise PublishError('CRM_ROWS_CHANGED_DURING_PUBLICATION')
+        if _protected_pages(set(codes)) != protected:
+            raise PublishError('PROTECTED_PAGE_CHANGED')
+        evidence['verification'] = _verify_bundle(codes)
+        evidence['published_rows_sha256_after'] = after_db
+        evidence['status'] = 'PASS'
+        _append_log('PASS %s backup=%s' % (','.join(codes), snapshot.root))
+        return (True, 'Страницы, диагностика и оба каталога опубликованы одним проверенным пакетом: ' + ', '.join(codes), evidence)
+    except Exception as exc:
+        try:
+            evidence['rollback'] = snapshot.restore()
+        except Exception as rollback_exc:
+            evidence['rollback_error'] = type(rollback_exc).__name__ + ':' + str(rollback_exc)
+            _append_log('CRITICAL ROLLBACK FAIL %s %s' % (','.join(codes), rollback_exc))
+            raise
+        evidence['status'] = 'FAIL'
+        evidence['error'] = type(exc).__name__ + ':' + str(exc)
+        _append_log('FAIL %s %s rollback=PASS' % (','.join(codes), evidence['error']))
+        return (False, 'Публикация отменена: %s. Выполнен полный откат.' % str(exc), evidence)
+
+# /home/Carix/publish_transaction_guard.py:545 original_sha256=c3c2b0ef9a8d7408bfbb05796b4290bf92d3a0f5fe297aff09dbfc00f553a2ab
+def publish_batch(base_publish: Callable[..., Any], codes: Iterable[str], proba: bool=False) -> tuple[bool, str, dict[str, Any]]:
+    with _exclusive_lock():
+        return _publish_locked(base_publish, list(codes), proba=proba)
+
+# /home/Carix/publish_transaction_guard.py:552 original_sha256=3b548b2c5ed84f37ad85b004f08a345aefce8f7765484e8e6256286e10130a58
+def publish_one(base_publish: Callable[..., Any], code: str, proba: bool=False) -> tuple[bool, str]:
+    ok, message, _ = publish_batch(base_publish, [code], proba=proba)
+    return (ok, message)
+
+# /home/Carix/publish_transaction_guard.py:559 original_sha256=5c7b5eb2b27359156a14297e6f78e22d28b448e71576423633436aedf6c5fa97
+def rebuild_catalog() -> tuple[bool, str]:
+    with _exclusive_lock():
+        snapshot = Snapshot([])
+        before_rows, before_db = _row_map()
+        protected = _protected_pages(set())
+        try:
+            source, generated_rows = _build_catalog()
+            generated_ids = {str(row.get('auto_number') or '').upper() for row in generated_rows}
+            if generated_ids != set(before_rows):
+                raise PublishError('CATALOG_ROW_SET_MISMATCH')
+            _install_catalog(source, None)
+            _, after_db = _row_map()
+            if after_db != before_db:
+                raise PublishError('CRM_ROWS_CHANGED_DURING_CATALOG_REBUILD')
+            if _protected_pages(set()) != protected:
+                raise PublishError('PROTECTED_PAGE_CHANGED')
+            return (True, 'Каталог обновлён.')
+        except Exception as exc:
+            snapshot.restore()
+            return (False, 'Каталог не обновлён: %s. Выполнен откат.' % str(exc))
+
+# /home/Carix/publish_transaction_guard.py:618 original_sha256=4e8d8e9f798813e1b71ba3557f917f448f6abe0d77be051456405fd5b4425485
+def _validate_catalog(source, rows):
+    import catalog_design_guard as _ua090_design
+    _golden = _ua090_design.GOLDEN_PATH.read_text(encoding='utf-8')
+    _audit = _ua090_design.audit_catalog(source, rows.values(), _golden)
+    if _audit.get('status') != 'PASS':
+        raise PublishError('TASK090_CATALOG_CONTRACT:' + ','.join(_audit.get('errors') or []))
+    return _audit
+
+# /home/Carix/publish_transaction_guard.py:627 original_sha256=8b11153957b40f5bb324bb645a2c748fc6f9a208388510fd1684b694f3ebde8c
+def _install_catalog(source, target):
+    import catalog_design_guard as _ua090_design
+    _rows_map, _rows_digest = _row_map()
+    _photos = {}
+    for _identifier in sorted(_rows_map):
+        _primary_path = VIDEO / (_identifier + '.html')
+        if not _primary_path.is_file():
+            raise PublishError('TASK090_PRIMARY_NOT_READY:' + _identifier)
+        _primary = _read(_primary_path).decode('utf-8', 'replace')
+        _photos[_identifier] = _ua090_design.extract_main_photo(_primary, _identifier)
+    _normalized = _ua090_design.build_from_golden_path(_rows_map.values(), _photos)
+    from site_ge_inject import inject_html as _ua_site_ge_inject_html
+    _normalized = _ua_site_ge_inject_html(_normalized)
+    _before = _validate_catalog(_normalized, _rows_map)
+    _data = _normalized.encode('utf-8')
+    for _root in ROOTS:
+        _path = _root / 'katalog.html'
+        _atomic(_path, _data, _path.stat().st_mode & 511 if _path.exists() else 420)
+        if _read(_path) != _data:
+            raise PublishError('TASK090_CATALOG_READBACK:' + str(_path))
+    _installed = {}
+    for _root in ROOTS:
+        _path = _root / 'katalog.html'
+        _text = _read(_path).decode('utf-8', 'replace')
+        _installed[str(_path)] = {'sha256': _sha(_read(_path)), 'audit': _validate_catalog(_text, _rows_map)}
+    return {'candidate': _before, 'design_guard': _before, 'target': target, 'published_rows_sha256': _rows_digest, 'installed': _installed}
+
+# /home/Carix/publish_transaction_guard.py:675 original_sha256=2b733a909ef31034b64e6acae11bf0f396ab98990eda9619a1058b607150a482
+def _matching_paths(codes):
+    normalized = {_code(value) for value in codes}
+    paths = {root / 'katalog.html' for root in ROOTS}
+    for code in normalized:
+        for root in ROOTS:
+            paths.add(root / (code + '.html'))
+            paths.add(root / (code + '-diag.html'))
+            if root.is_dir():
+                paths.update((path for path in root.glob(code + '*.html') if path.is_file()))
+    return paths
+
+# /home/Carix/publish_transaction_guard.py:778 original_sha256=9a67d9b48f7afbd240afa9cd02199ddb06dafbc6dc78b9fcdc3021878df7c17a
+def _install_catalog(source, target):
+    result = _UA123_BASE_INSTALL(source, target)
+    updates, counts = _ua123_prepare_updates(ROOTS)
+    for path, before, after in updates:
+        if _read(path) != before:
+            raise PublishError('COUNTER_SOURCE_CHANGED:' + str(path))
+        if after != before:
+            _atomic(path, after, path.stat().st_mode & 511)
+        if _read(path) != after:
+            raise PublishError('COUNTER_READBACK:' + str(path))
+    result['site_counters'] = counts
+    rows, _ = _row_map()
+    for path_string, evidence in result.get('installed', {}).items():
+        path = pathlib.Path(path_string)
+        evidence['sha256'] = _sha(_read(path))
+        evidence['audit'] = _validate_catalog(_read(path).decode('utf-8'), rows)
+    return result
+
+# /home/Carix/publish_transaction_guard.py:802 original_sha256=5f1b4ee120b8c4c076850ed2286d58726224244366696db11ff81b8ee510a93c
+def _exclusive_lock():
+    return _ua0022_publication_fence(timeout=WAIT_SECONDS)
+
+
+# /home/Carix/publikaciya.py:149 original_sha256=27f3422fc4025ff1baadd177e82f0a5a52e20cbd533cc8c667a1ef476730e4c9
+def opublikovat(kod, proba=False):
+    """Единственная разрешённая публикация карточки. (ok, текст для владельца)"""
+    kod = (kod or '').strip().upper()
+    if not re.match('^UA-\\d{3,5}$', kod):
+        return (False, 'Публикация отменена: непонятный номер машины.')
+    do = _kartochki(krome=kod)
+    try:
+        html, diag, m = _master(kod)
+    except Exception as e:
+        _zhurnal(['%s FAIL сборка мастером: %s' % (kod, e)])
+        return (False, 'Публикация отменена: сборщик не смог собрать %s (%s). Старая страница цела.' % (kod, e))
+    if not html:
+        _zhurnal(['%s FAIL машина не найдена в CRM' % kod])
+        return (False, 'Публикация отменена: %s не найдена среди машин CRM.' % kod)
+    prichiny = proverit(html, kod)
+    if prichiny:
+        _zhurnal(['%s FAIL валидация: %s' % (kod, '; '.join(prichiny))])
+        return (False, 'Публикация отменена, страница не прошла проверку:\n· %s\nПрежняя страница на сайте не тронута.' % '\n· '.join(prichiny))
+    if proba:
+        return (True, 'Проба: страница %s собрана и проверена, ничего не записано.' % kod)
+    papka_rez = os.path.join(REZERV_KORE, '%s_%s' % (kod, time.strftime('%Y%m%d_%H%M%S')))
+    celi = []
+    for papka in (VIDEO, SITE):
+        if not os.path.isdir(papka):
+            continue
+        celi.append(os.path.join(papka, kod + '.html'))
+        for imya in os.listdir(papka):
+            if re.match('^%s-[0-9a-f]{6,10}\\.html$' % kod, imya):
+                celi.append(os.path.join(papka, imya))
+        if diag:
+            celi.append(os.path.join(papka, kod + '-diag.html'))
+    try:
+        os.makedirs(papka_rez, exist_ok=True)
+        for put in celi:
+            if os.path.exists(put):
+                shutil.copy2(put, os.path.join(papka_rez, put.replace(BASE + '/', '').replace('/', '__')))
+    except Exception as e:
+        _zhurnal(['%s FAIL резерв: %s' % (kod, e)])
+        return (False, 'Публикация отменена: не удалось сделать резерв (%s).' % e)
+    bylo = dict(((put, _sha(put)) for put in celi))
+    try:
+        for put in celi:
+            _zapisat_atomarno(put, diag if put.endswith('-diag.html') else html)
+    except Exception as e:
+        _otkat(papka_rez, celi)
+        _zhurnal(['%s FAIL запись: %s — выполнен откат' % (kod, e)])
+        return (False, 'Публикация отменена при записи (%s). Выполнен откат.' % e)
+    posle = _kartochki(krome=kod)
+    izmenilis = [k for k in do if do.get(k) != posle.get(k)]
+    if izmenilis:
+        _otkat(papka_rez, celi)
+        _zhurnal(['%s FAIL регрессия: изменились %s — откат' % (kod, ', '.join(izmenilis))])
+        return (False, 'Публикация отменена: изменились чужие карточки (%s). Выполнен откат.' % ', '.join((os.path.basename(x) for x in izmenilis)))
+    stalo = dict(((put, _sha(put)) for put in celi))
+    _zhurnal(['%s PASS публикация · мастер stranica.sobrat_kartochku · файлов %d' % (kod, len(celi))] + ['    %s  %s -> %s' % (os.path.basename(k), (bylo.get(k) or '-')[:12], (stalo.get(k) or '-')[:12]) for k in celi])
+    hvost = '' if diag else '\nМатериалов диагностики в CRM нет — страница диагностики не трогалась.'
+    return (True, 'Страница %s обновлена на сайте по утверждённому шаблону.%s\nhttps://www.uaart.com.ua/video/%s.html?v=%d' % (kod, hvost, kod, int(time.time())))
+
+# /home/Carix/publikaciya.py:507 original_sha256=731f9b93d404847d3d1a5b9f674876916823f52265e55a67f9a846b36665fbe5
+def opublikovat(kod, proba=False):
+    from publish_transaction_guard import publish_one as _ua083_publish_one
+    return _ua083_publish_one(_UA083_BASE_PUBLISH, kod, proba=proba)
+
+
+# /home/Carix/ua_site_counters.py:161 original_sha256=1d4936ec786577bdc633e3235f836008727a759d13b9d11f4041587cfcdbcb17
+def catalog_snapshot(source):
+    if not re.search('<html\\b', source, re.I) or not re.search('</html\\s*>\\s*$', source, re.I):
+        raise HomeCounterError('INCOMPLETE_CATALOG')
+    parser = CatalogParser()
+    parser.feed(source)
+    parser.close()
+    if not parser.grid or parser.current is not None:
+        raise HomeCounterError('INVALID_CATALOG')
+    counts = {'all': len(parser.records), **{stage: 0 for stage in STAGES}}
+    for stage in parser.records.values():
+        if stage:
+            counts[stage] += 1
+    return (parser.records, counts)
+
+# /home/Carix/ua_site_counters.py:195 original_sha256=55bff29bb8305fe066b8cdf58bbab88a7c1b4cddc0f43872a366245e80757c2d
+def patch_home(source, counts):
+    found = {}
+    uk = ukrainian(source)
+
+    def stage_replace(match):
+        block = match.group()
+        stage = _stage_of(block)
+        found[stage] = found.get(stage, 0) + 1
+        block = _patch_stage(block, stage, counts[stage])
+        if uk:
+            block = re.sub('(<em\\b[^>]*>).*?(</em\\s*>)', lambda m: m[1] + _uk(counts[stage]) + m[2], block, flags=re.S)
+        return block
+    result = CARD_RE.sub(stage_replace, source)
+    if found != {stage: 1 for stage in STAGES}:
+        raise HomeCounterError('HOME_STAGE_SET:' + repr(found))
+    result = _patch_cta(result, counts['all'])
+    if uk:
+        result = CTA_RE.sub(lambda m: re.sub('(?<=>)[^<]*(?=</i)', 'Відкрити всі автомобілі · ' + str(counts['all']), m.group()), result)
+    return inject_script(result)
+
+# /home/Carix/ua_site_counters.py:215 original_sha256=13c8577f68866470a3da0a3005191ebb1b09943088f249f0c5be6b2e899df688
+def patch_catalog(source, counts):
+    labels = {'all': ('Все', 'Усі'), 'kiev': ('В Киеве', 'У Києві'), 'georgia': ('В Грузии', 'У Грузії'), 'sea': ('На пароме', 'На поромі'), 'korea': ('В Корее', 'У Кореї')}
+    found = {}
+
+    def replace(match):
+        block = match.group()
+        opening = re.match('<button\\b[^>]*>', block, re.I).group()
+        key = re.search('\\bdata-f=["\\\']([^"\\\']+)["\\\']', opening, re.I)[1]
+        if key not in labels:
+            return block
+        found[key] = found.get(key, 0) + 1
+        ru, uk = (label + ' · ' + str(counts[key]) for label in labels[key])
+        tag = _set_attr(_set_attr(opening, 'data-ru', ru), 'data-uk', uk)
+        return tag + html.escape(uk if ukrainian(source) else ru) + '</button>'
+    result = re.sub('<button\\b(?=[^>]*\\bdata-f=["\\\'])[^>]*>.*?</button\\s*>', replace, source, flags=re.S | re.I)
+    if found != {key: 1 for key in labels}:
+        raise HomeCounterError('CATALOG_FILTER_SET:' + repr(found))
+    return result
+
+
+
+
+
+
+# /home/Carix/start_safe.py:658 original_sha256=07960db53997aa2b2fefd7e9815e48ada31ccb7bcd057e01f0b3b311122c0a64
+def _rows(query, params=()):
+    db = os.path.join(BASE, 'crm.db')
+    con = sqlite3.connect(db)
+    con.row_factory = sqlite3.Row
+    try:
+        return [dict(r) for r in con.execute(query, params).fetchall()]
+    finally:
+        con.close()
+
+# /home/Carix/start_safe.py:1408 original_sha256=e41e01862a3b03d175d50662ebef62de253942853125a9386f22fc42dbf2bf40
+def main():
+    import fcntl as _v184_fcntl
+    _v184_singleton = open(os.path.join(BASE, '.start_safe.singleton.lock'), 'a+', encoding='utf-8')
+    try:
+        _v184_fcntl.flock(_v184_singleton.fileno(), _v184_fcntl.LOCK_EX | _v184_fcntl.LOCK_NB)
+    except BlockingIOError:
+        log.warning('start_safe.py уже запущен; второй экземпляр остановлен')
+        return
+    if not os.path.exists(TARGET):
+        log.error('не найден %s — проверь имя файла', TARGET)
+        raise SystemExit(1)
+    os.chdir(BASE)
+    if BASE not in sys.path:
+        sys.path.insert(0, BASE)
+    novye = pochinit_imena()
+    ubrat_musor()
+    if novye:
+        log.warning('обновились файлы: %s — если что-то ведёт себя странно, нажми Restart ещё раз', ', '.join(novye))
+    apply_all()
+    db_clean_split()
+    klient = _token_iz('bot_token.txt')
+    krm = _token_iz('team_token.txt')
+    ok_klient = _zhivoy_token(klient)
+    ok_krm = _zhivoy_token(krm)
+    if ok_krm is False and ok_klient is not False:
+        avariynyy_rezhim(klient, 'team_token.txt')
+        return
+    if ok_klient is False and ok_krm is not False:
+        avariynyy_rezhim(krm, 'bot_token.txt')
+        return
+    if ok_klient is False and ok_krm is False:
+        log.error('оба токена негодны — впиши их в bot_token.txt и team_token.txt')
+    log.info('защита включена, запускаю run_all.py')
+    while True:
+        try:
+            runpy.run_path(TARGET, run_name='__main__')
+            log.warning('run_all.py завершился сам, перезапуск через 10 c')
+        except SystemExit:
+            raise
+        except KeyboardInterrupt:
+            raise
+        except Exception as e:
+            tekst = '%r' % e
+            if 'InvalidToken' in tekst or 'Unauthorized' in tekst:
+                klient = _token_iz('bot_token.txt')
+                krm = _token_iz('team_token.txt')
+                if klient and klient in tekst and krm and (krm not in tekst):
+                    avariynyy_rezhim(krm, 'bot_token.txt')
+                    return
+                if krm and krm in tekst and klient and (klient not in tekst):
+                    avariynyy_rezhim(klient, 'team_token.txt')
+                    return
+                log.error('Оба токена не приняты. Впиши действующие в bot_token.txt и team_token.txt через редактор.')
+                time.sleep(60)
+                continue
+            log.exception('run_all.py упал: %r — перезапуск через 10 c', e)
+        time.sleep(10)
+
+

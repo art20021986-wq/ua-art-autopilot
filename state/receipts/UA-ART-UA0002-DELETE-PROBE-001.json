@@ -1,0 +1,26 @@
+{
+  "deletion_performed": false,
+  "evidence_path": "cloud/ua0002_delete_probe/evidence.json",
+  "finished_at": "2026-09-20T17:01:47Z",
+  "live_source_environment": "production",
+  "production_required": false,
+  "raw_private_sources_persisted": false,
+  "request_sha256": "83c6b13093c35b219f7b9404e6ce50048d37281bb454d5c8c98773edb03449df",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_REMOTE_WRITES",
+  "run_id": "35524475591",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "UA-ART-UA0002-DELETE-PROBE-001",
+  "tests": "PASS",
+  "tests_scope": "FIXED_GET_SCOPE_AND_SAFE_EVIDENCE_ONLY",
+  "unavailable_or_unparsed_paths": [
+    "files/path/home/Carix/visibility_lifecycle.py",
+    "files/path/home/Carix/uaart_price_sync_binding.py",
+    "files/path/home/Carix/uaart_price_sync_runtime.py",
+    "files/path/home/Carix/uaart_price_sync_outbox.py",
+    "files/path/home/Carix/ua_spec84_schedule.py"
+  ],
+  "unexpected_changes": 0
+}
