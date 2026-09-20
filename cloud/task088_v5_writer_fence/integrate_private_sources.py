@@ -24,6 +24,11 @@ BEFORE_SHA256 = {
     "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
     "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
 }
+PRICE_BEFORE_SHA256 = {
+    "cars_ui.py": "d46e487c836cd9ba941c483bc6103166d4340fe3d3d02c7632d12c7ed19806dd",
+    "publish_transaction_guard.py": "5b1e82d29e83b75d86946b1cb9068a57ef6a099facb44cb15b31836b9a4dd436",
+    "stranica.py": "ccec8321dbf4e90b972efd12ba34f73221d1a547aba0b2955d4cea0b7e8c72b2",
+}
 
 CARS_MARKER = "# UA-ART-PR114-PUBLICATION-FENCE-HANDOFF006:START"
 STRANICA_MARKER = "# UA-ART-PR114-STRANICA-FENCE-HANDOFF006:START"
@@ -756,7 +761,38 @@ def _instrument_media_status(source: str) -> str:
     candidate = transform.visit(original)
     if (transform.begins, transform.commits) != (1, 1):
         raise RuntimeError("MEDIA_STATUS_TRANSACTION_SHAPE")
-    candidate.body.insert(0, ast.parse("_ua114_require_fence()").body[0])
+    outer = [n for n in candidate.body if isinstance(n, ast.Try)]
+    if len(outer) != 1 or len(outer[0].handlers) != 1 or outer[0].finalbody:
+        raise RuntimeError("MEDIA_STATUS_EXCEPTION_SHAPE")
+    # The legacy helper logs and swallows failures. Recovery must observe them.
+    outer[0].handlers[0].body.append(ast.Raise())
+    early = [n for statement in outer[0].body for n in ast.walk(statement)
+             if isinstance(n, ast.Return)]
+    if len(early) != 1:
+        raise RuntimeError("MEDIA_STATUS_EARLY_EXIT_SHAPE")
+    class RejectEarlyExit(ast.NodeTransformer):
+        def visit_Return(self, node):
+            return ast.copy_location(ast.parse(
+                'raise RuntimeError("MEDIA_STATUS_ROW_NOT_FOUND")').body[0], node)
+    outer[0].body = [RejectEarlyExit().visit(n) for n in outer[0].body]
+    # Remove the old success-only close; every exit uses the same finally.
+    closes = [n for n in outer[0].body if isinstance(n, ast.Expr)
+              and isinstance(n.value, ast.Call) and isinstance(n.value.func, ast.Attribute)
+              and isinstance(n.value.func.value, ast.Name)
+              and n.value.func.value.id == "con" and n.value.func.attr == "close"]
+    if len(closes) != 1:
+        raise RuntimeError("MEDIA_STATUS_CLOSE_SHAPE")
+    outer[0].body.remove(closes[0])
+    cleanup = ast.parse('''
+if con is not None:
+    try:
+        if con.in_transaction:
+            con.rollback()
+    finally:
+        con.close()
+''').body
+    candidate.body = ast.parse("_ua114_require_fence()\ncon = None").body + [
+        ast.Try(body=candidate.body, handlers=[], orelse=[], finalbody=cleanup)]
     ast.fix_missing_locations(candidate)
     lines = source.splitlines(keepends=True)
     return "".join(lines[:original.lineno - 1]) + ast.unparse(candidate) + "\n" + "".join(lines[original.end_lineno:])
@@ -835,6 +871,31 @@ def _atomic_write(path: Path, data: bytes, mode: int) -> None:
         temp.unlink(missing_ok=True)
 
 
+def compose_price_candidate(price_sources: dict[str, bytes],
+                            dependency_sources: dict[str, bytes]) -> dict[str, bytes]:
+    """Pure composition after the exact accepted price patchers; no private I/O."""
+    for values, pins, label in (
+        (price_sources, PRICE_BEFORE_SHA256, "PRICE"),
+        (dependency_sources, DEPENDENCY_SHA256, "DEPENDENCY"),
+    ):
+        if set(values) != set(pins):
+            raise RuntimeError("COMPOSE_" + label + "_MEMBERSHIP")
+        for name, expected in pins.items():
+            if _sha(values[name]) != expected:
+                raise RuntimeError("COMPOSE_" + label + "_SHA256_MISMATCH:" + name)
+    output = {
+        "cars_ui.py": _integrate_cars_text(_decode(price_sources["cars_ui.py"], "cars_ui.py")),
+        "stranica.py": _integrate_stranica_text(_decode(price_sources["stranica.py"], "stranica.py")),
+        "publish_transaction_guard.py": _integrate_guard_text(
+            _decode(price_sources["publish_transaction_guard.py"], "publish_transaction_guard.py")),
+        "ua_spec_permanent.py": _decode(dependency_sources["ua_spec_permanent.py"],
+            "ua_spec_permanent.py").rstrip() + SPEC_BLOCK + "\n",
+    }
+    for name, source in output.items():
+        compile(source, name, "exec")
+    return {name: source.encode("utf-8") for name, source in output.items()}
+
+
 def build(source_dir: Path, output_dir: Path, fence_source: Path,
           dependency_dir: Path | None = None) -> dict[str, object]:
     source_dir = source_dir.resolve()
@@ -902,7 +963,7 @@ def build(source_dir: Path, output_dir: Path, fence_source: Path,
         "lock_order": {
             "mutation": ["publication_fence", "SQLite write transaction", "commit and close", "rebuild/spec84"],
             "render": ["publication_fence", "spec84", "spec SQLite read"],
-            "rule": "No outstanding SQLite write transaction when entering spec84; direct spec84 entry acquires publication fence first.",
+            "rule": "Media helper commits or rolls back and closes before rebuild; direct spec84 entry acquires publication fence first. Price-quiescence nesting requires separate composed-candidate review.",
         },
     }
     manifest_data = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode()

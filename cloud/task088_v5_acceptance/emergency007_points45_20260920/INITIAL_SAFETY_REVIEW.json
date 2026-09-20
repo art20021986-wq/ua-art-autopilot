@@ -1,0 +1,44 @@
+{
+  "reviewer_role": "independent reviewer; not candidate author",
+  "candidate_commit": "e01af749e3da3704bad88282bbd9ca3d393b1965",
+  "recorded_at": "2026-09-20T04:41:22.596654+00:00",
+  "verdict": "FAIL_REQUIRES_FIX",
+  "verified": {
+    "original_sources_hashes": "7/7",
+    "candidate_hashes": "6/6",
+    "public_sources_hashes": "6/6",
+    "saved_evidence_hashes": "5/5",
+    "saved_41_tests": "Applicable to exact hashes; not rerun",
+    "primitive_18_tests": "Unchanged primitive; not rerun"
+  },
+  "findings": [
+    {
+      "id": "P4-SAFETY-001",
+      "severity": "blocking",
+      "component": "integrate_private_sources.py::_instrument_media_status -> candidate _v163_status",
+      "condition": "OSError while writing media journal intent before SQLite commit",
+      "observed": "Helper swallows error and returns with SQLite write transaction still open; subsequent independent BEGIN IMMEDIATE reports database locked",
+      "risk": "Subsequent file/cache mutations and rebuild can proceed after the helper silently failed; rollback can fail waiting for the leaked write lock; violates commit/close before rebuild/spec84",
+      "required_fix": "All exits from instrumented SQLite helper must close connection; failure must rollback if possible and propagate to outer mutation recovery. Include car-not-found early return and evidence/commit exceptions."
+    }
+  ],
+  "focused_reproductions": [
+    {
+      "path": "repro_exception_transaction.py",
+      "sha256": "5b5c4e7e666c833897f9a2871925c3a854abae51e30cb1125f2c59a6b9dd4249"
+    },
+    {
+      "path": "exception_transaction_report.json",
+      "sha256": "db99850e1ae34a2ef7bf81db25d478e2a138e12037174dec8c5d5e7cfbf894df"
+    }
+  ],
+  "remaining_scope_limits": [
+    "No real production writer exclusion tested",
+    "No loaded old-process containment proven",
+    "No production crash/restart acceptance performed",
+    "No production Stage3/Stage4 receipts",
+    "Private source bytes and DB records not emitted"
+  ],
+  "repo_modified": false,
+  "production_modified": false
+}

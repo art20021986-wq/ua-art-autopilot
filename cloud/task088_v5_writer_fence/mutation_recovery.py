@@ -300,14 +300,11 @@ class MediaJournal:
 
 
 def begin_media(con):
+    # The instrumented caller owns rollback/close in its unconditional finally.
     journal = getattr(_local, "journal", None)
     if journal is None:
         raise RuntimeError("MEDIA_JOURNAL_REQUIRED")
-    try:
-        journal.begin(con)
-    except Exception:
-        con.close()
-        raise
+    journal.begin(con)
 
 
 def commit_media(con):

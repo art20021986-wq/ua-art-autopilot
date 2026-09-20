@@ -1,0 +1,38 @@
+{
+  "operation_id": "pr114-emergency007-points45-20260920",
+  "recorded_at": "2026-09-20T04:40:16.888Z",
+  "updated_at": "2026-09-20T04:48:41.965Z",
+  "foreground_in_progress": true,
+  "status": "MEDIA_TRANSACTION_CLEANUP_FIXED_PENDING_INDEPENDENT_REVIEW",
+  "input_head": "e01af749e3da3704bad88282bbd9ca3d393b1965",
+  "input_manifest_sha256": "3a4843722a7c8c4186d3c6eef3e17f09e8cf87affe5f4d303183b9d15560acc4",
+  "scope": "Point4 independent review and required fixes; point5 read-only preparation while conflicting production operation is active.",
+  "findings": [
+    "Real media helper swallows precommit journal failure and leaks a SQLite write transaction",
+    "Candidate integration and new modules missing from canonical preflight/install/release closure"
+  ],
+  "test_reason": "Independently reproduced new failure plus changed package membership; only affected regressions and closure checks required.",
+  "backup": "Original private inputs and candidate v3 remain immutable; new isolated candidate only.",
+  "expected_result": "Defects corrected and re-reviewed independently; exact candidate closure and Preview applicability assessed before writer exclusion.",
+  "readback": "Saved code/report hashes and commit files compared by reading; private originals and generated candidates remain outside Git.",
+  "concurrent_production": {
+    "main": "2600a81a7bea10c78732ab522329239d0de32d2e",
+    "run": 35489521032,
+    "status": "RUNNING_PREPARING",
+    "task": "UA-ART-UA0022-PUBLISH-REPAIR-002",
+    "action": "Observe only; no service pause, preflight, launch or server write."
+  },
+  "next_action": "Complete and independently review composed price+fence release closure.",
+  "production_changed": false,
+  "candidate_manifest": "cloud/task088_v5_acceptance/emergency007_points45_20260920/CANDIDATE_V4_MANIFEST.json",
+  "targeted_tests": {
+    "passed": 7,
+    "total": 7,
+    "report": "cloud/task088_v5_acceptance/emergency007_points45_20260920/CLEANUP_TARGETED_RUN.txt",
+    "fixture_error_preserved": "cloud/task088_v5_acceptance/emergency007_points45_20260920/TEST_FIXTURE_INITIAL_ERROR.json"
+  },
+  "accepted_criteria": 8,
+  "total_criteria": 20,
+  "point4": "OPEN_CLOSURE_AND_INDEPENDENT_REVIEW_PENDING",
+  "point5": "OPEN_CONCURRENT_PRODUCTION_AND_QUIESCENCE_ADAPTER_MISSING"
+}
