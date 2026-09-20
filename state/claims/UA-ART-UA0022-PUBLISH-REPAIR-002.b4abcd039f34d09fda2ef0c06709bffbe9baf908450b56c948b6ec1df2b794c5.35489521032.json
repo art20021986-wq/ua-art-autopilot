@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "3d942b6ad44f14670927c7392197fa52502e21f4f69bd08bb86dcbfc8903427c",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-20T04:49:24Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 35489521032",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "1fa18a72fae5e7ab"
+    }
+  ],
   "heartbeat_at": "2026-09-20T04:37:07Z",
   "heartbeat_sequence": 6,
   "identity": {
@@ -69,7 +80,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "91e962199fe46a192e314fb4ab9b7ef24a14da3b77723de1fde5731832d461df",
     "file_sha256": {
@@ -83,5 +94,5 @@
       "cloud/ua0022_publication_fix/test_remote_installer.py": "27526e00ef159d330ec3b417e6e8cd2408d19516bd15bbedc0a21a9d672c2182"
     }
   },
-  "updated_at": "2026-09-20T04:37:07Z"
+  "updated_at": "2026-09-20T04:49:24Z"
 }
