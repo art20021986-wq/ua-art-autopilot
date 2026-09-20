@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.json",
+  "autostart_ledger_sha256": "61bf4311bbf9238b9c274fbb0f67c424389985f5c910d0b5f9399ee1748b6eaf",
+  "autostart_source_commit": "ed7cff522dd36353c9a0cc911108bedee921cbfe",
+  "created_at": "2026-09-20T04:58:42Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "35490449348",
+    "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "task_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "card-ua-0022-3454fd479bb37b60",
+  "request_path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+  "resource_locks": [
+    "CARD:UA-0022"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
