@@ -17,15 +17,6 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "1fa18a72fae5e7ab"
-    },
-    {
-      "action": "STOP_FAIL_CLOSED_TERMINAL",
-      "at": "2026-09-20T04:54:27Z",
-      "class": "TRANSIENT",
-      "message": "LOGICAL drain timeout: backup singleton admission failed before backup phase or source/DB/card writes; owned CRM supervisor pause/resume completed and resumed Running; exact authenticated reconciliation state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032.no-card-or-runtime-write.json",
-      "retries_remaining": 0,
-      "retry_allowed": false,
-      "signature": "184fcb916e1c35c6"
     }
   ],
   "heartbeat_at": "2026-09-20T04:37:07Z",
@@ -63,7 +54,7 @@
   "production_required": true,
   "production_transaction_id": "tx-35489521032-b4abcd039f34d09f",
   "production_transaction_path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-002.b4abcd039f34d09fda2ef0c06709bffbe9baf908450b56c948b6ec1df2b794c5.35489521032.json",
-  "production_transaction_status": "ROLLED_BACK",
+  "production_transaction_status": "PREPARING",
   "queue_key": "card-ua-0022-3454fd479bb37b60",
   "receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-002.json",
   "receipt_validation_status": "PENDING",
@@ -89,7 +80,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "FAILED",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "91e962199fe46a192e314fb4ab9b7ef24a14da3b77723de1fde5731832d461df",
     "file_sha256": {
@@ -103,5 +94,5 @@
       "cloud/ua0022_publication_fix/test_remote_installer.py": "27526e00ef159d330ec3b417e6e8cd2408d19516bd15bbedc0a21a9d672c2182"
     }
   },
-  "updated_at": "2026-09-20T04:54:27Z"
+  "updated_at": "2026-09-20T04:49:24Z"
 }

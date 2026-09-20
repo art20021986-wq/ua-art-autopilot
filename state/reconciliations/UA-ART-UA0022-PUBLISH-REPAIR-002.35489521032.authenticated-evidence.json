@@ -1,0 +1,66 @@
+{
+  "actual_side_effects": [
+    "bounded transport-package uploads",
+    "worker journal/result writes",
+    "temporary owned worker creation and deletion",
+    "owned CRM supervisor pause and resume"
+  ],
+  "admission_order": "Installer initialization completed, then required existing singleton acquisition failed. backup_phase, install_phase and rollback_phase were never entered.",
+  "backup_or_rollback_pass_claimed": false,
+  "backup_snapshot_created": false,
+  "github_backup_failure_at": "2026-09-20T04:49:00Z",
+  "github_backup_failure_job": 106022127075,
+  "github_install_controller_job": "SKIPPED",
+  "github_open_job": "SKIPPED",
+  "github_recover_job": {
+    "conclusion": "success",
+    "id": 106023451169
+  },
+  "github_rollback_execute_job": "SKIPPED",
+  "github_run_id": "35489521032",
+  "runtime_source_database_card_or_media_writes_performed": false,
+  "runtime_source_observed_at": "2026-09-20T04:48:00Z",
+  "runtime_source_sha256": {
+    "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+    "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+    "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+  },
+  "runtime_source_timestamp_precision": "minute",
+  "runtime_source_unchanged": true,
+  "service_lifecycle": {
+    "client_bot_started_log_at": "2026-09-20T04:48:33Z",
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "internal_bot_started_log_at": "2026-09-20T04:48:35Z",
+    "owned_crm_supervisor": 266084,
+    "pause_and_resume_performed": true,
+    "startup_log_total_applications": 2,
+    "terminal_enabled": true,
+    "terminal_state": "Running"
+  },
+  "source": "Authenticated PythonAnywhere console/task UI probes by root agent in the current owner-authorized session, plus authenticated GitHub Actions jobs/logs",
+  "target": {
+    "auto_number": "UA-0022",
+    "id": 32,
+    "publish_pending": 0,
+    "published": 0,
+    "status": "kr_bought"
+  },
+  "target_row_observed_at": "2026-09-20T04:51:00Z",
+  "target_row_sha256": "b148c0971d5c5d481d772e0bb54d7ad3cf492260e40402b4e7c4242a24aedce0",
+  "target_row_timestamp_precision": "minute",
+  "worker_result": {
+    "crm_resume": {
+      "enabled": true,
+      "id": 266084,
+      "state": "Running"
+    },
+    "error": "RuntimeError:INSTALLER_PHASE_FAILED:CRM_SINGLETON_STILL_RUNNING",
+    "operation": "backup",
+    "plan_sha256": "07098255effca4e81148fd5926cb7c7cef3f62cd64907c15a24cfedbbaeda5b0",
+    "safe_to_stop": true,
+    "status": "FAIL"
+  },
+  "worker_result_observed_at": "2026-09-20T04:49:00Z",
+  "worker_result_path": "/home/Carix/autopilot_inbox/cloud/ua0022_publication_fix/35489521032/backup-result.json"
+}

@@ -1,0 +1,22 @@
+{
+  "archived_halt_path": "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032/halt.json",
+  "archived_halt_sha256": "b623c0b0ef74580ed69669ab936980f9ac1b31eba0c61f6ad2fd2df927988537",
+  "backup_pass_claimed": false,
+  "decision": "ARCHIVE_EXACT_RESOLVED_ATTEMPT_HALT_AFTER_PROVEN_CRM_RESUME",
+  "execution_mode_changed": false,
+  "expected_removed_halt_git_blob": "404d8c1f08d0b5c80558da630013c14d2ce6f098",
+  "fresh_successor_gate_b_required": true,
+  "halt_removed": true,
+  "reconciled_at": "2026-09-20T04:54:27Z",
+  "reconciliation_path": "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032.no-card-or-runtime-write.json",
+  "reconciliation_sha256": "4c580257db50ce44908de5718bebf9470aed43aac0888a0a602865f364374be1",
+  "request_sha256": "b4abcd039f34d09fda2ef0c06709bffbe9baf908450b56c948b6ec1df2b794c5",
+  "rollback_performed": false,
+  "run_id": "35489521032",
+  "schema_version": "UA-ART-MANUAL-RECONCILIATION-1",
+  "scope": "REPOSITORY_STATE_RECONCILIATION_ONLY",
+  "semantic_outcome": "ABORTED_NO_CARD_OR_RUNTIME_FILE_WRITE",
+  "service_pause_resume_performed": true,
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-002",
+  "transaction_id": "tx-35489521032-b4abcd039f34d09f"
+}

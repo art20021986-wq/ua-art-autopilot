@@ -1,0 +1,59 @@
+{
+  "anti_replay": {
+    "consumed_ledger_path": "state/autostart_consumed/UA-ART-UA0022-PUBLISH-REPAIR-002.b4abcd039f34d09fda2ef0c06709bffbe9baf908450b56c948b6ec1df2b794c5.json",
+    "consumed_ledger_sha256": "24d01f38fbe6d978e85978edb9d0510a8de0b591828c77d3d0fb76606cc8e1c3",
+    "nonce_path": "state/autostart_nonces/ua0022-20260920t043143z-eaea5629e2.json",
+    "nonce_sha256": "7150c80bd4960999c41f7284897d252ffd6454c78ce57cb1ae384ac37c29925e",
+    "old_request_ledger_nonce_marker_unchanged": true,
+    "old_request_path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-002.json",
+    "old_request_sha256": "b4abcd039f34d09fda2ef0c06709bffbe9baf908450b56c948b6ec1df2b794c5",
+    "rerun_old_workflow_allowed": false
+  },
+  "backup_manifest_sha256": null,
+  "backup_phase_entered": false,
+  "backup_receipt_sha256": null,
+  "backup_snapshot_created": false,
+  "base_main_commit": "8baa648bf28ed6f91a126375e4c6b552f45b7538",
+  "card_pages_written": false,
+  "claim_snapshot": {
+    "path": "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032/claim.before.json",
+    "sha256": "4b4510c86cf49b8ff5e5d5ac063407a6270bce4f9f834e92653a1a569ce07bce"
+  },
+  "core_workflows_schemas_execution_mode_and_gates_changed": false,
+  "crm_resumed_enabled_running": true,
+  "crm_supervisor_pause_resume_performed": true,
+  "evidence_path": "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032.authenticated-evidence.json",
+  "evidence_sha256": "1389766a82dbb9ea611a606037e4a258e7297eea0efc58206171a1d5977d1c22",
+  "halt_snapshot": {
+    "path": "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032/halt.json",
+    "sha256": "b623c0b0ef74580ed69669ab936980f9ac1b31eba0c61f6ad2fd2df927988537"
+  },
+  "installer_initialized": true,
+  "metadata_terminal_status": "ROLLED_BACK",
+  "metadata_terminal_status_meaning": "Closed aborted PREPARING record using existing TASK120/TASK115 reconciliation convention; no production rollback ran and no rollback PASS is claimed.",
+  "opened_at": null,
+  "original_run_id": "35489521032",
+  "owner_instruction_basis": "Existing owner instruction explicitly requests fixing and publishing UA-0022. This reconciliation only closes the proven aborted attempt; any corrected attempt requires a new immutable request/nonce and every existing admission gate.",
+  "production_install_controller_executed": false,
+  "production_rollback_executed": false,
+  "reconciled_at": "2026-09-20T04:54:27Z",
+  "request_sha256": "b4abcd039f34d09fda2ef0c06709bffbe9baf908450b56c948b6ec1df2b794c5",
+  "runtime_source_files_written": false,
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+  "semantic_outcome": "ABORTED_NO_CARD_OR_RUNTIME_FILE_WRITE",
+  "state_anchors": {
+    "terminal_claim_sha256": "07b843b0a5c99b6f33873a867af2f2ba5e687d0cb22cdfd29cc2d1e9f6d5df7b",
+    "terminal_transaction_sha256": "1d20757fabd7c738c0fe14e6037c08e4b1d8b06e40064e97673116d650d4a8da"
+  },
+  "successor_installation_authorized_by_this_record": false,
+  "successor_task": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+  "target_database_row_written": false,
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-002",
+  "transaction_before": "PREPARING",
+  "transaction_id": "tx-35489521032-b4abcd039f34d09f",
+  "transaction_snapshot": {
+    "path": "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032/transaction.before.json",
+    "sha256": "5b48c781d09ade8c495ee9342e66960a999f946d03653bf13cd55adb8599c4ae"
+  },
+  "transport_uploads_and_worker_lifecycle_writes_performed": true
+}
