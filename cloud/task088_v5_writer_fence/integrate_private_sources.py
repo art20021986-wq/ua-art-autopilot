@@ -675,19 +675,25 @@ _ua114_main_base = main
 
 
 def zapisat(*args, **kwargs):
+    from publish_transaction_guard import _task088_price_quiescence
     with _ua114_publication_fence():
-        return _ua114_zapisat_base(*args, **kwargs)
+        with _task088_price_quiescence():
+            return _ua114_zapisat_base(*args, **kwargs)
 
 
 def obnovit_etalon(*args, **kwargs):
+    from publish_transaction_guard import _task088_price_quiescence
     with _ua114_publication_fence():
-        return _ua114_obnovit_etalon_base(*args, **kwargs)
+        with _task088_price_quiescence():
+            return _ua114_obnovit_etalon_base(*args, **kwargs)
 
 
 def main(*args, **kwargs):
     # Covers generation, spec84 nested writes, validation and fallback restore.
+    from publish_transaction_guard import _task088_price_quiescence
     with _ua114_publication_fence():
-        return _ua114_main_base(*args, **kwargs)
+        with _task088_price_quiescence():
+            return _ua114_main_base(*args, **kwargs)
 # UA-ART-PR114-STRANICA-FENCE-HANDOFF006:END
 '''
 
@@ -701,6 +707,76 @@ from publication_fence import publication_fence as _ua114_publication_fence
 def _exclusive_lock():
     """Use the shared reentrant registry; never open a second flock inode."""
     return _ua114_publication_fence(timeout=WAIT_SECONDS)
+
+
+# Only stranica is reloaded by the existing callers. The canonical guard module
+# owns the one thread-local lease, shared by its callers and direct stranica.
+import contextlib as _ua114_contextlib
+import os as _ua114_os
+import sys as _ua114_sys
+import threading as _ua114_threading
+_ua114_price_base = globals().get("_task088_price_quiescence")
+_ua114_price_tls = globals().get("_ua114_price_tls", _ua114_threading.local())
+_ua114_price_pid = globals().get("_ua114_price_pid", _ua114_os.getpid())
+
+
+def _ua114_price_binding():
+    if DB.is_symlink() or not DB.is_file() or DB.resolve(strict=True) != DB:
+        raise PublishError("TASK088_CRM_DATABASE_FILE_REQUIRED")
+    info = DB.stat()
+    return (str(DB), info.st_dev, info.st_ino)
+
+
+def _ua114_validate_price_lease(state):
+    # Validate before touching a possibly inherited SQLite connection.
+    if state["pid"] != _ua114_os.getpid():
+        raise PublishError("TASK088_PRICE_QUIESCENCE_FORK_REQUIRES_EXEC")
+    if (state["thread"] != _ua114_threading.get_ident() or state["depth"] < 1
+            or state["binding"] != _ua114_price_binding()):
+        raise PublishError("TASK088_PRICE_QUIESCENCE_LEASE_CHANGED")
+    connection = state["connection"]
+    if (not connection.in_transaction
+            or connection.execute("PRAGMA query_only").fetchone() != (1,)
+            or [row[2] for row in connection.execute("PRAGMA database_list")
+                if row[1] == "main"] != [state["binding"][0]]):
+        raise PublishError("TASK088_PRICE_QUIESCENCE_TRANSACTION_REQUIRED")
+
+
+@_ua114_contextlib.contextmanager
+def _task088_price_quiescence():
+    from publication_fence import require_publication_fence
+    require_publication_fence()
+    if _ua114_os.getpid() != _ua114_price_pid:
+        raise PublishError("TASK088_PRICE_QUIESCENCE_FORK_REQUIRES_EXEC")
+    state = getattr(_ua114_price_tls, "state", None)
+    if state is not None:
+        _ua114_validate_price_lease(state)
+        state["depth"] += 1
+        try:
+            yield
+        finally:
+            if _ua114_os.getpid() != state["pid"]:
+                # Retain the inherited base context on TLS: never run its
+                # SQLite rollback/close from a forked child, including GC.
+                raise PublishError("TASK088_PRICE_QUIESCENCE_FORK_REQUIRES_EXEC")
+            state["depth"] -= 1
+        return
+    if _ua114_price_base is None:
+        raise PublishError("TASK088_PRICE_QUIESCENCE_COMPOSED_CANDIDATE_REQUIRED")
+    binding = _ua114_price_binding()
+    base = _ua114_price_base()
+    connection = base.__enter__()
+    state = {"pid": _ua114_os.getpid(), "thread": _ua114_threading.get_ident(),
+             "depth": 1, "binding": binding, "connection": connection, "base": base}
+    _ua114_price_tls.state = state
+    try:
+        _ua114_validate_price_lease(state)
+        yield
+    finally:
+        if _ua114_os.getpid() != state["pid"]:
+            raise PublishError("TASK088_PRICE_QUIESCENCE_FORK_REQUIRES_EXEC")
+        _ua114_price_tls.state = None
+        base.__exit__(*_ua114_sys.exc_info())
 # UA-ART-PR114-SHARED-FENCE-HANDOFF006:END
 '''
 
@@ -853,6 +929,23 @@ def _integrate_guard_text(source: str) -> str:
         "_exclusive_lock", "publish_batch", "publish_one", "rebuild_catalog",
         "verify_bundle", "rollback_backup",
     })
+    # The exact-pinned price helper owns and validates the outer RESERVED
+    # transaction. Expose only that live connection to the shared lease; keep
+    # every existing queue/audit/price check and finally block unchanged.
+    helpers = [node for node in ast.parse(source).body
+               if isinstance(node, ast.FunctionDef) and node.name == "_task088_price_quiescence"]
+    if helpers:
+        if len(helpers) != 1:
+            raise RuntimeError("PRICE_QUIESCENCE_EXACT_HELPER_REQUIRED")
+        yields = [node for node in ast.walk(helpers[0]) if isinstance(node, (ast.Yield, ast.YieldFrom))]
+        if len(yields) != 1 or not isinstance(yields[0], ast.Yield) or yields[0].value is not None:
+            raise RuntimeError("PRICE_QUIESCENCE_EXACT_YIELD_REQUIRED")
+        lines = source.splitlines(keepends=True)
+        index = yields[0].lineno - 1
+        if lines[index] != "        yield\n":
+            raise RuntimeError("PRICE_QUIESCENCE_YIELD_ANCHOR_REQUIRED")
+        lines[index] = "        yield connection\n"
+        source = "".join(lines)
     return source.rstrip() + GUARD_BLOCK + "\n"
 
 
@@ -962,8 +1055,8 @@ def build(source_dir: Path, output_dir: Path, fence_source: Path,
         "lock_path": "/home/Carix/.ua_art_publish_transaction.lock",
         "lock_order": {
             "mutation": ["publication_fence", "SQLite write transaction", "commit and close", "rebuild/spec84"],
-            "render": ["publication_fence", "spec84", "spec SQLite read"],
-            "rule": "Media helper commits or rolls back and closes before rebuild; direct spec84 entry acquires publication fence first. Price-quiescence nesting requires separate composed-candidate review.",
+            "render": ["publication_fence", "shared price quiescence SQLite RESERVED", "spec84", "spec SQLite read"],
+            "rule": "Media helper commits or rolls back and closes before rebuild. Complete composed candidate shares one validated same-thread price lease across guard/main/zapisat/etalon; writer-only candidate refuses price-dependent rendering until composition. Direct spec84 entry acquires publication fence first.",
         },
     }
     manifest_data = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode()

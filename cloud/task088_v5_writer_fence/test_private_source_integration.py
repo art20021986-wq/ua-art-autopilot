@@ -343,18 +343,29 @@ class IntegrationTests(unittest.TestCase):
             self.assertGreater(state["held"], 0, name)
             events.append(name)
 
+        @contextlib.contextmanager
+        def price_quiescence():
+            self.assertGreater(state["held"], 0)
+            events.append("price-enter")
+            yield
+            events.append("price-exit")
+
+        guard = types.ModuleType("publish_transaction_guard")
+        guard._task088_price_quiescence = price_quiescence
+
         ns = {
             "zapisat": lambda *_a, **_k: require_held("write"),
             "obnovit_etalon": lambda *_a, **_k: require_held("etalon"),
             "main": lambda *_a, **_k: require_held("main"),
         }
-        with _module("publication_fence", module):
+        with _module("publication_fence", module), _module("publish_transaction_guard", guard):
             exec(integration.STRANICA_BLOCK, ns)
-        ns["main"]()
-        ns["zapisat"]("x", "y")
-        ns["obnovit_etalon"]("x", "y")
+            ns["main"]()
+            ns["zapisat"]("x", "y")
+            ns["obnovit_etalon"]("x", "y")
         self.assertEqual(state["held"], 0)
         self.assertEqual(events.count("fence-enter"), 3)
+        self.assertEqual(events.count("price-enter"), 3)
 
 
 if __name__ == "__main__":

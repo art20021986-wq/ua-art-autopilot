@@ -43,7 +43,8 @@
     "Two defects reproduced against the previous builder: check/copy restore overwrote a concurrent operator file, and corrupt backup bytes became visible at the original path. Restore now stages and SHA256-verifies bytes then atomically links without replacing an existing destination. Three targeted checks PASS. Prior integration self-review authority corrected; independent acceptance remains required. No installation or acceptance increment.",
     "Emergency007 point1 GitHub reconciliation accepted; exact visible-editor recovery of lock4_zhurnal.py3429bytes matched retained server SHA256; remaining3 dependencies open. Product8/20 unchanged.",
     "Emergency007 points1/2 completed: controls reconciled without re-running prior tests; four missing private dependencies recovered from complete visible authenticated editor rows, sizes andSHA256 match pinned server inventory. Independent4/4 dependency and3/3 retained-original matches. No new server digest command/runtime gate, tests, installation or product criterion claimed.",
-    "Emergency007 point3 completed in isolation: exact private candidate integrates media/CRM/cache recovery, actual helper transaction journal, shared spec84 lock order and failure propagation for HTML fallback;41/41 affected tests PASS (25new+16changed-scope). Seven originals and six generated hashes/compilation verified. No installation, independent review or product-criterion increment."
+    "Emergency007 point3 completed in isolation: exact private candidate integrates media/CRM/cache recovery, actual helper transaction journal, shared spec84 lock order and failure propagation for HTML fallback;41/41 affected tests PASS (25new+16changed-scope). Seven originals and six generated hashes/compilation verified. No installation, independent review or product-criterion increment.",
+    "Point4 review continuation: independently verified retained point1-3 evidence and recovered complete historical private source/dependency/HTML inputs locally. Built full57-file candidate, reproduced direct-rebuild unfinished-price gap, fixed canonical reentrant price quiescence,14unique affected checksPASS and independent exact-candidate reviewPASS.17Python outputs compile;40/40HTML equal historical Preview. Current full Preview applicability remainsOPEN: foreignUA0022 task003 observedOPEN/controller active and bounded authenticated current-read attempt did not complete. No production writes or criterion increment;8/20=40%."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -67,12 +68,12 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/point4_review_20260920/CHECKPOINT_01.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/point4_review_20260920/RESULT.json",
   "next_action": {
-    "kind": "POINT4_SAFETY_FIX_IN_PROGRESS",
-    "detail": "Fix direct rebuild price-quiescence integration and independently verify only affected cases."
+    "kind": "RECONCILE_FOREIGN_WRITER_THEN_CURRENT_PREVIEW_BINDING",
+    "detail": "Read actual outcome of existing UA0022 task003 without relaunch; if terminal and resource admissible obtain bounded complete current read-only binding, reusing exact candidate checks unless inputs changed. Do not restart prior preflight or replay unknown writes."
   },
-  "observed_main": "6c735ef544284e01834114fcb67fe082f467dbba",
+  "observed_main": "501e9cc08862f5994d20b852c4e83f2b7bddaed8",
   "observed_pr_head_before_this_update": "e0c62b342bcf1156f010c2af4e9e29d858486689",
   "owner_current_request": "Включить и запустить PR114 автопилот, автоматически продолжать после восстановления связи.",
   "owner_fullscreen_observation": {
@@ -110,7 +111,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-20T05:16:57Z",
+  "recorded_at": "2026-09-20T05:24:23.686445+00:00",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -168,13 +169,23 @@
     "private_candidate_tests_passed": 41,
     "private_candidate_independent_review": "cloud/task088_v5_writer_fence/handoff006_evidence/PRIVATE_INTEGRATION_INDEPENDENT_REVIEW.json",
     "private_candidate_independent_review_sha256": "a42e4fe610f4f26814be3a8812fa6133ecf87b81c9553b67a02d32b9ce945f5b",
-    "private_candidate_independent_review_status": "PENDING_POINT4",
+    "private_candidate_independent_review_status": "SCOPED_CODE_PASS_CURRENT_BINDING_OPEN",
     "installed": false,
     "writer_gate_pass": false,
     "validation_path": "cloud/task088_v5_writer_fence/HANDOFF006_VALIDATION.json",
-    "current_candidate_result": "cloud/task088_v5_acceptance/emergency007_point3_20260920/RESULT.json",
+    "current_candidate_result": "cloud/task088_v5_acceptance/point4_review_20260920/RESULT.json",
     "private_candidate_validation_scope": "Isolated point3 boundaries and fixtures only; no product/runtime gate",
-    "integrated_in_private_candidate": true
+    "integrated_in_private_candidate": true,
+    "final_composed_candidate": {
+      "manifest_sha256": "382bde9611f1a2d9f0dfe48bef226ba2eaa94bf388b4c02874ca5e74bc09ca29",
+      "manifest_path": "cloud/task088_v5_acceptance/point4_review_20260920/final_candidate/COMBINED_CANDIDATE_MANIFEST.json",
+      "independent_review": "cloud/task088_v5_acceptance/point4_review_20260920/composed_safety_independent_review.json",
+      "independent_review_status": "SCOPED_CODE_PASS_CURRENT_BINDING_OPEN",
+      "affected_unique_tests_passed": 14,
+      "python_compilation_passed": 17,
+      "historical_html_matches": 40,
+      "installed": false
+    }
   },
   "handoff006_checkpoint_scope": "Isolated candidate preparation only; retained Preview and product results remain historical for their exact versions. New candidate is not integrated or installed.",
   "connection_recovery_policy": {
@@ -219,5 +230,6 @@
     "fresh_server_hashes": false,
     "production_changed": false
   },
-  "foreground_in_progress": true
+  "foreground_in_progress": false,
+  "current_preview_gate": "NOT_ISSUED_CURRENT_BINDING_OPEN"
 }

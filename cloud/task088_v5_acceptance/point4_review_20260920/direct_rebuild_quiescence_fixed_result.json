@@ -1,0 +1,18 @@
+{
+  "scope": "SYNTHETIC_ISOLATED_REVIEW_NOT_PRODUCTION",
+  "reason": "Verify only newly fixed R1 and nested renderer/guard boundary.",
+  "candidate_sha256": {
+    "cars_ui.py": "c312c10d4ea78be783d1dc25968ca19c66e2c9c6c1c00c66d4a5a95f406ece2a",
+    "stranica.py": "86d460d9f4ada7a69cd6bb096202d675e71ee43b2120edb0c6d3195c2d5bf023",
+    "publish_transaction_guard.py": "6b6559862fe42b2d02adff60eb5a0e92b576d280f03aaf5871cf16f91a0c5d16",
+    "ua_spec_permanent.py": "59135f68b2f4b2c5a677e4da700cdce502dbde8a147e7fd4eb4026e3b6f9902a"
+  },
+  "unchanged_test_suites_rerun": false,
+  "checks": [
+    "QUEUED_DIRECT_MAIN_WRITE_TEMPLATE_BLOCKED_BEFORE_EFFECT",
+    "DB_COMMITTED_DIRECT_MAIN_WRITE_TEMPLATE_BLOCKED_BEFORE_EFFECT",
+    "GUARDED_PUBLICATION_MAIN_WRITE_TEMPLATE_REENTRANT",
+    "RENDER_FAILURE_RELEASES_DB_AND_TLS_FOR_NEXT_CALL"
+  ],
+  "status": "PASS"
+}

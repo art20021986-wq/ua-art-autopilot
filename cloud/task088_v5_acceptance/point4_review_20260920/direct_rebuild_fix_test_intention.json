@@ -1,0 +1,22 @@
+{
+  "scope": "ISOLATED_SYNTHETIC_ONLY",
+  "reason": "Confirmed direct main/zapisat/etalon paths bypass price quiescence at real V5 DB_COMMITTED checkpoint; exact composition now supplies reentrant guard lease. Revalidate changed shared wrappers and release-composition contract only.",
+  "planned_tests": [
+    "test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests",
+    "test_private_source_integration.IntegrationTests.test_guard_reuses_shared_fence_registry",
+    "test_private_source_integration.IntegrationTests.test_stranica_nested_write_order",
+    "test_release_closure.ExactPrivateCompositionTests"
+  ],
+  "historic_suites_not_rerun": [
+    "446",
+    "183",
+    "120"
+  ],
+  "unaffected_media_checks": "Retained previous scoped evidence; old whole41 result not asserted for changed wrappers.",
+  "input_sha256": {
+    "integrate_private_sources.py": "5a1807d739190011fca565fca9604a8d7dbceb2f75462f30ed8016fb9cb4f3ed",
+    "test_direct_rebuild_quiescence.py": "89ae6adfbbdf091ee97706a91bca4f19f9360f450ef90fc740a1c81df6f20b41",
+    "test_private_source_integration.py": "0015d67cf78eeb414d1a81e2e919b68e82a87ace8650364168f03d80d9ca838c",
+    "test_release_closure.py": "ef8c5124a0f213d93d4b7f62e2035e3cf59bf476c4bb1d73873596526820a175"
+  }
+}

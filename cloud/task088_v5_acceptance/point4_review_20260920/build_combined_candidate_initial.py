@@ -58,7 +58,6 @@ def main():
     parser.add_argument("--dependency-inputs", type=Path, required=True)
     parser.add_argument("--evidence", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--reason", default="Point4 lacks an actual full candidate composed from exact retained private inputs using the current canonical build_candidates. This scoped generation closes that evidence gap; historical suites are not repeated.")
     args = parser.parse_args()
     repo, evidence, output = (value.resolve() for value in (args.repository, args.evidence, args.output))
     if output.exists():
@@ -71,7 +70,7 @@ def main():
     record(evidence / "COMBINED_BUILD_INTENT.json", {
         "contract": "PR114-POINT4-OFFLINE-FULL-CANDIDATE-INTENT-1",
         "recorded_at_utc": datetime.now(timezone.utc).isoformat(),
-        "reason": args.reason,
+        "reason": "Point4 lacks an actual full candidate composed from exact retained private inputs using the current canonical build_candidates. This scoped generation closes that evidence gap; historical suites are not repeated.",
         "application_code_modified_by_this_script": False,
         "private_output": str(output),
         "historical_inputs_only": True,

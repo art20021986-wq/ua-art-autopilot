@@ -1,0 +1,4 @@
+{
+  "reason": "First targeted run exposed test harness issues, not execution defects: full private guard module imported unrelated unavailable counters dependency; preservation assertion expected a nonempty helper map after intentionally separating changed helper. Execute exact composed helper plus appended shared wrapper and keep original AST/yield semantic check.",
+  "rerun": "Eight new safety regressions and one affected composition-preservation assertion only; prior five passing unchanged tests retained."
+}

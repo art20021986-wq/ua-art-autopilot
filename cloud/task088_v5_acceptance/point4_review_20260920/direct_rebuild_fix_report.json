@@ -1,0 +1,42 @@
+{
+  "status": "TARGETED_PASS",
+  "scope": "LOCAL_COMPOSED_CANDIDATE_ONLY_NOT_PRODUCTION",
+  "changed_files_sha256": {
+    "integrate_private_sources.py": "5a1807d739190011fca565fca9604a8d7dbceb2f75462f30ed8016fb9cb4f3ed",
+    "test_direct_rebuild_quiescence.py": "0c4e43dea02a4da15fb81300356d393b6649bf2f645af5eec9b4327c53771f9b",
+    "test_private_source_integration.py": "0015d67cf78eeb414d1a81e2e919b68e82a87ace8650364168f03d80d9ca838c",
+    "test_release_closure.py": "198a3f46fe5116d733e50796713d818bd001e040df0aba4f3591c2c3cdff9359"
+  },
+  "candidate_sha256": {
+    "cars_ui.py": "c312c10d4ea78be783d1dc25968ca19c66e2c9c6c1c00c66d4a5a95f406ece2a",
+    "stranica.py": "86d460d9f4ada7a69cd6bb096202d675e71ee43b2120edb0c6d3195c2d5bf023",
+    "publish_transaction_guard.py": "6b6559862fe42b2d02adff60eb5a0e92b576d280f03aaf5871cf16f91a0c5d16",
+    "ua_spec_permanent.py": "59135f68b2f4b2c5a677e4da700cdce502dbde8a147e7fd4eb4026e3b6f9902a"
+  },
+  "production_writes": false,
+  "unchanged_pins": [
+    "all source input SHA256",
+    "PRICE_BEFORE_SHA256",
+    "DEPENDENCY_SHA256"
+  ],
+  "unchanged_code": [
+    "patch_guard.py",
+    "publication_fence.py"
+  ],
+  "targeted_unique_tests": 14,
+  "new_safety_tests_passed": 8,
+  "affected_wrapper_tests_passed": 2,
+  "composition_tests_passed": 4,
+  "first_run": "5 PASS; 8 fixture import errors and 1 preservation-fixture assertion failed. Evidence retained. No safety implementation assertion failed.",
+  "limited_retry": "Only 9 previously errored/failed tests rerun; 9 PASS.",
+  "evidence": [
+    "direct_rebuild_fix_test_intention.json",
+    "direct_rebuild_fix_targeted_tests.log",
+    "direct_rebuild_fix_test_retry_intention.json",
+    "direct_rebuild_fix_targeted_retry.log",
+    "direct_rebuild_quiescence_fixed_result.json"
+  ],
+  "historic_checks": "446/183/120 not rerun. Prior media/fence evidence retained where code unchanged. Whole old41 not reasserted for changed direct wrappers.",
+  "intentional_writer_only_behavior": "Imports and compiles, refuses price-dependent rebuild without exact price helper. Complete composed candidate is deployment candidate.",
+  "private_sources_committed": false
+}

@@ -1,0 +1,82 @@
+{
+  "status": "SCOPED_PASS_AFTER_R1_FIX",
+  "scope": "Independent point4 composed code review; no production mutation or certification",
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "area": "composed direct full rebuild",
+      "evidence": "direct_rebuild_quiescence_result.json",
+      "description": "Media/direct stranica main enters generation at unfinished DB_COMMITTED; legacy guarded publication correctly rejects same state.",
+      "required_resolution": "One canonical reentrant price quiescence shared by guard publication and direct full rebuild paths.",
+      "status": "RESOLVED",
+      "resolution_evidence": "direct_rebuild_quiescence_fixed_result.json",
+      "resolution": "Canonical guard owns validated reentrant SQLite lease; all three direct renderer entry boundaries join it after publication fence."
+    }
+  ],
+  "review_passes": [
+    "Exact composition checks pinned price and dependency byte sets before integrating.",
+    "Media entry worker acquires shared publication fence before backup or writes.",
+    "Media SQL journal uses BEGIN IMMEDIATE and commits/closes before renderer entry.",
+    "Rollback DB uses conditional expected values; file recovery uses no-replace link; cache recovery changes only one vehicle member.",
+    "Publication fence fork reset closes inherited descriptor without unlocking parent lease.",
+    "Known publication paths use canonical publish_transaction_guard; only stranica is explicitly reloaded.",
+    "Direct main/zapisat/obnovit_etalon reject QUEUED and DB_COMMITTED before effect.",
+    "Existing publication guard -> main -> file/template wrappers reenter one SQLite lease without self-deadlock.",
+    "Renderer exception releases SQLite transaction and TLS; fresh following call succeeds.",
+    "Nested lease verifies publication ownership, process/thread, canonical DB inode, active query-only transaction.",
+    "Forked child rejected before inherited SQLite context use."
+  ],
+  "remaining_scope_limits": [
+    "All forward writes require separate production writer gate to exclude uncooperative/old loaded writers.",
+    "Forward photo deletion re-enumerates under cooperative fence; no claim of arbitrary uncooperative writer safety.",
+    "Live Stage3/Stage4 and Preview24 applicability belong to other review scopes."
+  ],
+  "reused_without_rerun": [
+    "Unchanged fence primitive historical tests",
+    "Existing broad 446/183/120 suites"
+  ],
+  "new_validation": [
+    "Exact composed main wrapper against isolated actual outbox DB at DB_COMMITTED; guard comparison",
+    "QUEUED_DIRECT_MAIN_WRITE_TEMPLATE_BLOCKED_BEFORE_EFFECT",
+    "DB_COMMITTED_DIRECT_MAIN_WRITE_TEMPLATE_BLOCKED_BEFORE_EFFECT",
+    "GUARDED_PUBLICATION_MAIN_WRITE_TEMPLATE_REENTRANT",
+    "RENDER_FAILURE_RELEASES_DB_AND_TLS_FOR_NEXT_CALL"
+  ],
+  "initial_reviewed_files_sha256": {
+    "cloud/task088_price_sync/install_package.py": "04dcd630ff5cd58e133083cb58c34cb0a45b8b1b51f381d7c93a086079aa82e0",
+    "cloud/task088_v5_writer_fence/integrate_private_sources.py": "a9970515d4a42707f1b8273fef4648bb62a02a050068070b033adfe33af49fa0",
+    "cloud/task088_v5_writer_fence/publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "cloud/task088_v5_writer_fence/mutation_recovery.py": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9",
+    "cloud/task088_price_sync/patch_guard.py": "fb36683ff114f82f10696e16eca17676507f52461b8929243e877af0efb7e08b",
+    "cloud/task088_price_sync/uaart_price_sync_runtime.py": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a"
+  },
+  "reviewed_files_sha256": {
+    "cloud/task088_price_sync/install_package.py": "04dcd630ff5cd58e133083cb58c34cb0a45b8b1b51f381d7c93a086079aa82e0",
+    "cloud/task088_v5_writer_fence/integrate_private_sources.py": "5a1807d739190011fca565fca9604a8d7dbceb2f75462f30ed8016fb9cb4f3ed",
+    "cloud/task088_v5_writer_fence/publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "cloud/task088_v5_writer_fence/mutation_recovery.py": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9",
+    "cloud/task088_price_sync/patch_guard.py": "fb36683ff114f82f10696e16eca17676507f52461b8929243e877af0efb7e08b",
+    "cloud/task088_price_sync/uaart_price_sync_runtime.py": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a"
+  },
+  "reviewed_composed_candidate_sha256": {
+    "cars_ui.py": "c312c10d4ea78be783d1dc25968ca19c66e2c9c6c1c00c66d4a5a95f406ece2a",
+    "stranica.py": "86d460d9f4ada7a69cd6bb096202d675e71ee43b2120edb0c6d3195c2d5bf023",
+    "publish_transaction_guard.py": "6b6559862fe42b2d02adff60eb5a0e92b576d280f03aaf5871cf16f91a0c5d16",
+    "ua_spec_permanent.py": "59135f68b2f4b2c5a677e4da700cdce502dbde8a147e7fd4eb4026e3b6f9902a"
+  },
+  "remaining_unresolved_findings": [],
+  "acceptance_condition": "Final saved candidate files must exactly match reviewed_composed_candidate_sha256; no production PASS implied.",
+  "final_candidate_binding": {
+    "path": "/workspace/scratch/cc71e1c55fba/private_combined_candidate_v2",
+    "exact_reviewed_candidate_files_match": {
+      "cars_ui.py": true,
+      "stranica.py": true,
+      "publish_transaction_guard.py": true,
+      "ua_spec_permanent.py": true
+    },
+    "status": "PASS",
+    "candidate_files_manifest_sha256": "382bde9611f1a2d9f0dfe48bef226ba2eaa94bf388b4c02874ca5e74bc09ca29",
+    "candidate_manifest_file_sha256": "098b5bd5412ad9b72e059b762bf732f7e11ca45f1d6762c8ec3c05c73e4b5fa1"
+  }
+}
