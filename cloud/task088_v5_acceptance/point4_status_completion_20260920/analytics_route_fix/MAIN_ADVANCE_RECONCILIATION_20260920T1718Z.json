@@ -1,0 +1,54 @@
+{
+  "schema_version": "PR114-MAIN-ADVANCE-RECONCILIATION-1",
+  "operation_id": "point4-53544a27-20260920v3a1",
+  "recorded_at": "2026-09-20T17:18:09Z",
+  "status": "RECONCILED_UNRELATED_READ_ONLY_MAIN_ADVANCE_WAIT_CONNECTION",
+  "git": {
+    "pr_head": "822793636873974d6da2610bdd3b1cff253b2c23",
+    "prior_main_head": "b9c985ac924739b351e4d5535499bb6516917daf",
+    "current_main_head": "9c5111989dc76f4cd35ae5a1d4251aa50e7f23cb",
+    "main_advance_scope": "UA0002 deletion diagnosis controllers, tests, sanitized evidence, requests, launch markers, nonces, plans, claims and receipts only",
+    "pr_candidate_bytes_changed": false
+  },
+  "parallel_operation_reconciliation": {
+    "task_id": "UA-ART-UA0002-DELETE-PROBE-002",
+    "receipt_status": "FINISHED",
+    "claim_status": "FINISHED",
+    "deletion_performed": false,
+    "production_required": false,
+    "unexpected_changes": 0,
+    "active_server_processes": []
+  },
+  "server_readback": {
+    "checked_at": "2026-09-20T17:18:09Z",
+    "stage_script_present": false,
+    "package_present": false,
+    "stage_receipt_present": false,
+    "preview_wsgi_sha256": "9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555",
+    "preview_config_sha256": "ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee",
+    "production_wsgi_sha256": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+    "active_stage_package_or_ua0002_processes": []
+  },
+  "transport": {
+    "authorized_route": "PythonAnywhere Files UI",
+    "status": "WAIT_CONNECTION",
+    "observed_error": "502 Bad Gateway: [Errno 111] Connection refused",
+    "single_safe_reload_performed": true,
+    "alternate_route_used": false
+  },
+  "outcome": {
+    "upload_applied": false,
+    "stage_started": false,
+    "switch_performed": false,
+    "reload_performed": false,
+    "production_written": false,
+    "preview_changed": false
+  },
+  "pr114_acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "incremented": false
+  },
+  "single_next_action": "On the next run, fetch both heads and reconcile any newer UA0002 outcome first. If no writer is active, the three exclusive target paths remain absent, the pinned server SHA256 values remain exact, and the same authorized Files route has recovered, resume only the first unfinished upload for point4-53544a27-20260920v3a1; do not repeat Stage or use an alternate route."
+}
