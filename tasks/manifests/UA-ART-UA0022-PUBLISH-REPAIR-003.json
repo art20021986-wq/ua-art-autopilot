@@ -1,0 +1,157 @@
+{
+  "backup_required": true,
+  "backup_scope": [
+    "production/runtime/cars_ui.py",
+    "production/runtime/stranica.py",
+    "production/runtime/publish_transaction_guard.py",
+    "production/runtime/publication_fence.py",
+    "production/card-publication/UA-0022",
+    "production/card-media/UA-0022"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "deployment": {
+    "alwayson_id": 266084,
+    "backup_dir": "/home/Carix/rezerv_publikacii/UA-ART-UA0022-PUBLISH-REPAIR-003-ua0022-20260920t045500z-44b23189de",
+    "contract": "UA-ART-UA0022-REBUILD-SERIALIZATION-001-v1.0",
+    "helper_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "nonce": "ua0022-20260920t045500z-44b23189de",
+    "package_sha256": {
+      "build_candidate.py": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
+      "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+      "remote_installer.py": "510bb2bdb0d2be4cd199f118d0a3fd04155214f34f84f9dbeca6a0518fea5162"
+    },
+    "receipt_dir": "/home/Carix/rezerv_publikacii/UA-ART-UA0022-PUBLISH-REPAIR-003-ua0022-20260920t045500z-44b23189de",
+    "root": "/home/Carix",
+    "runtime_entrypoint_sha256": {
+      "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+      "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+    },
+    "source_sha256": {
+      "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+    },
+    "target": {
+      "auto_number": "UA-0022",
+      "expected_row_sha256": "b148c0971d5c5d481d772e0bb54d7ad3cf492260e40402b4e7c4242a24aedce0",
+      "id": 32,
+      "publish_pending": 0,
+      "published": 0,
+      "status": "kr_bought"
+    },
+    "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "version": 1
+  },
+  "dynamic_operation_contract": {
+    "dynamic_after_sha256": "Recorded from actual protected execution; no invented future HTML byte hashes.",
+    "meaning": "The canonical adapter's logical-artifact noop record supplies scope and postconditions to a hash-pinned task controller; it is not a claim that the controller performs no production writes. Production-write authorization, backup, target preimage CAS, native publisher verification, recorded exact postimage hashes and live HTTP checks remain mandatory.",
+    "precedent": "tasks/manifests/TASK120-PUBLISH-UA-0017-UA-0018.json",
+    "precedent_operations": [
+      "production/card-publication/UA-0017",
+      "production/card-media/UA-0017"
+    ]
+  },
+  "explicit_crm_vehicle_approval": true,
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "replace",
+      "expected_after_sha256": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+      "expected_before_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "path": "production/runtime/cars_ui.py"
+    },
+    {
+      "action": "replace",
+      "expected_after_sha256": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+      "expected_before_sha256": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "path": "production/runtime/stranica.py"
+    },
+    {
+      "action": "replace",
+      "expected_after_sha256": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+      "expected_before_sha256": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "path": "production/runtime/publish_transaction_guard.py"
+    },
+    {
+      "action": "create",
+      "expected_after_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+      "expected_before_sha256": null,
+      "path": "production/runtime/publication_fence.py"
+    },
+    {
+      "action": "noop",
+      "operation_kind": "EXISTING_PUBLISHER_ROUTINE_WITH_EXPLICIT_PRODUCTION_MUTATION",
+      "path": "production/card-publication/UA-0022",
+      "postcondition": {
+        "auto_number": "UA-0022",
+        "exact_id": 32,
+        "html_write_scope": [
+          "site/UA-0022*.html",
+          "video/UA-0022*.html",
+          "site/katalog.html",
+          "video/katalog.html",
+          "site/index.html",
+          "video/index.html"
+        ],
+        "native_guard_and_catalog_validation_required": true,
+        "only_owned_published_flag_changes": true,
+        "prices_and_original_media_preserved": true,
+        "public_http_exact_sha256_required": true,
+        "publish_pending": 0,
+        "published": 1
+      }
+    },
+    {
+      "action": "noop",
+      "operation_kind": "EXISTING_RENDERER_DERIVATIVES_WITH_EXPLICIT_PRODUCTION_MUTATION",
+      "path": "production/card-media/UA-0022",
+      "postcondition": {
+        "allowed_new_paths": "video/foto/UA-0022/{m,s}/<basename of one backed-up direct original JPEG>",
+        "original_files": "exact bytes, paths and modes unchanged",
+        "other_media_additions_deletions_or_changes": "FORBIDDEN",
+        "rollback": "remove only own SHA-bound derivative postimages"
+      }
+    }
+  ],
+  "owner_instruction": "Не смог разместить объявление 22. Выяснить по какой причине и исправь, размести объявление и в дальнейшем чтобы таких ошибок не было.",
+  "preservation": {
+    "CRM_other_rows_prices_media": "exact semantic digest; publication changes only target published",
+    "foreign_cards": "SHA256 exact",
+    "log": "append-only, never truncate",
+    "private_sources": "remain server-local in checksum-verified backup",
+    "whole_database_restore": "FORBIDDEN"
+  },
+  "production_write": true,
+  "protected_paths": [
+    "production/prices",
+    "production/non-target-cards",
+    "production/runtime/publikaciya.py",
+    "production/runtime/start_safe.py",
+    "production/runtime/run_all.py"
+  ],
+  "recovery": {
+    "GitHub_disconnect": "worker finishes independently",
+    "prewrite_drift": "no mutation, no-op rollback, resume CRM",
+    "resume_failure": "retry only resume from CHILD_DONE receipt",
+    "unsafe_rollback": "keep CRM paused and report exact blocker"
+  },
+  "rollback_required": true,
+  "rollback_scope": [
+    "production/runtime/cars_ui.py",
+    "production/runtime/stranica.py",
+    "production/runtime/publish_transaction_guard.py",
+    "production/runtime/publication_fence.py",
+    "production/card-publication/UA-0022",
+    "production/card-media/UA-0022"
+  ],
+  "runtime_pause": {
+    "command": "python3.10 /home/Carix/start_safe.py",
+    "drain": "existing singleton same-inode exclusive lock",
+    "id": 266084,
+    "only_enabled_field_temporarily_changes": true,
+    "required_resume": "same supervisor identity enabled and Running; post-restart native source hashes pinned"
+  },
+  "task_class": "CRITICAL",
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003"
+}

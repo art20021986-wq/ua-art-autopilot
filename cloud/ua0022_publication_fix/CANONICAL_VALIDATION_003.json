@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "scope": "LOCAL_CANONICAL_ADMISSION_ONLY",
+  "production_touched": false,
+  "canonical_core_base_main_commit": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+  "intake_source_commit": "9f258bfea2c3f3384665ced6a77d2dd93b93f6b5",
+  "request_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba",
+  "manifest_sha256": "9ecac3e6c12813eefb125e3475dba0edfad59fdc8dd8fdff047f4cbcb406e315",
+  "dependency_sha256": "08dd3e53e8b2fba99e56144af5a796e58c439ee76fef83118d09338a691afc3d",
+  "execution_contract_validate": "PASS",
+  "execution_contract_compile": "PASS",
+  "execution_contract_isolated_tests": {
+    "status": "PASS",
+    "lifecycle_controller": 14,
+    "installer": 16,
+    "narrow_race_and_portability": 13,
+    "total": 43,
+    "executed_python": "3.12.14"
+  },
+  "python311_portable_fixture_confirmation": {
+    "prior_run_id": "35489521032",
+    "test_narrow_fix_unchanged": true,
+    "actual_ci_narrow_tests": 13,
+    "status": "PASS"
+  },
+  "autostart_intake_validate_only": "PASS_INCLUDING_GATE_B_BINDINGS_NO_LEDGER_PERSISTED",
+  "emitted_request_manifest_loader": "PASS_NO_NETWORK",
+  "runtime_patch_publication_live_acceptance": "PENDING_CANONICAL_PRODUCTION_EXECUTION",
+  "storage_evidence_valid_until": "2026-09-20T05:22:10Z",
+  "marker_target_path": "tasks/launch/AUTO-UA-ART-UA0022-PUBLISH-REPAIR-003-20260920T045500Z.json",
+  "marker_must_be_separate_commit": true,
+  "prior_attempt": {
+    "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-002",
+    "run_id": "35489521032",
+    "outcome": "ABORTED_NO_CARD_OR_RUNTIME_FILE_WRITE",
+    "owned_supervisor_pause_resume_did_occur": true,
+    "crm_resumed_enabled_running": true,
+    "reconciliation_commit": "9f258bfea2c3f3384665ced6a77d2dd93b93f6b5",
+    "root_reported_post_commit_verify_mode": "AUTOMATIC_PASS",
+    "request_ledger_nonce_marker": "PRESERVED"
+  }
+}

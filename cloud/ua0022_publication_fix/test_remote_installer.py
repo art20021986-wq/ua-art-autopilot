@@ -9,6 +9,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('ua0022_installer_under_test', HERE / 'remote_installer.py')
@@ -115,6 +116,45 @@ def opublikovat(code, proba=False):
         with runtime.singleton(timeout=0):
             self.assertEqual(path.stat().st_ino, original[0])
         self.assertEqual((path.stat().st_ino, path.read_bytes()), original)
+
+    def test_singleton_default_waits_past_fifteen_seconds_for_delayed_release(self):
+        path = self.root / '.start_safe.singleton.lock'
+        original = (path.stat().st_ino, path.read_bytes())
+        clock = [0.0]
+        def fake_sleep(seconds):
+            clock[0] += seconds
+        def delayed_flock(fd, flags):
+            self.assertEqual(os.fstat(fd).st_ino, original[0])
+            if flags == runtime.fcntl.LOCK_EX | runtime.fcntl.LOCK_NB and clock[0] < 20:
+                raise BlockingIOError('supervisor has not stopped CRM yet')
+        with mock.patch.object(runtime.time, 'monotonic', side_effect=lambda: clock[0]), \
+                mock.patch.object(runtime.time, 'sleep', side_effect=fake_sleep), \
+                mock.patch.object(runtime.fcntl, 'flock', side_effect=delayed_flock):
+            with runtime.singleton():
+                self.assertGreaterEqual(clock[0], 20)
+                self.assertLess(clock[0], 21)
+        self.assertEqual((path.stat().st_ino, path.read_bytes()), original)
+
+    def test_singleton_default_stops_at_six_hundred_seconds_without_mutation(self):
+        path = self.root / '.start_safe.singleton.lock'
+        original = (path.stat().st_ino, path.read_bytes())
+        before_row = runtime.db_state()['target_row']
+        clock = [0.0]
+        def fake_sleep(seconds):
+            clock[0] += seconds
+        def held_flock(fd, flags):
+            if flags == runtime.fcntl.LOCK_EX | runtime.fcntl.LOCK_NB:
+                raise BlockingIOError('CRM still owns singleton')
+        with mock.patch.object(runtime.time, 'monotonic', side_effect=lambda: clock[0]), \
+                mock.patch.object(runtime.time, 'sleep', side_effect=fake_sleep), \
+                mock.patch.object(runtime.fcntl, 'flock', side_effect=held_flock):
+            with self.assertRaisesRegex(runtime.Stop, 'CRM_SINGLETON_STILL_RUNNING'):
+                with runtime.singleton():
+                    self.fail('held singleton must not be admitted')
+        self.assertGreaterEqual(clock[0], 600)
+        self.assertLess(clock[0], 601)
+        self.assertEqual((path.stat().st_ino, path.read_bytes()), original)
+        self.assertEqual(runtime.db_state()['target_row'], before_row)
 
     def test_exact_row_cas_rejects_operator_change(self):
         before = runtime.db_state()['target_row']

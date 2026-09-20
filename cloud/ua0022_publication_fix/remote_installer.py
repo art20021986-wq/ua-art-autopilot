@@ -123,7 +123,7 @@ def json_write(path, value):
 
 
 @contextlib.contextmanager
-def singleton(timeout=15):
+def singleton(timeout=600):
     """Open only the pre-existing start_safe inode; never create or replace it."""
     path = ROOT / '.start_safe.singleton.lock'
     info = regular(path)

@@ -1,4 +1,11 @@
 {
+  "backup_plan_ready": true,
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "evaluated_at": "2026-09-20T04:55:00Z",
+  "live_installation_acceptance": "PENDING_RUNTIME_EXECUTION",
+  "local_tests": 43,
+  "local_validation_path": "cloud/ua0022_publication_fix/LOCAL_VALIDATION.json",
+  "manifest_sha256": "9ecac3e6c12813eefb125e3475dba0edfad59fdc8dd8fdff047f4cbcb406e315",
   "package_sha256": {
     "cloud/ua0022_publication_fix/backup_controller.py": "54fa40cc3abe38002fe1c85fddccba4a0c6cf3482c5c16c93e7d060348fa1b7d",
     "cloud/ua0022_publication_fix/build_candidate.py": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
@@ -12,10 +19,24 @@
     "cloud/ua0022_publication_fix/test_narrow_fix.py": "bffc259adeb148a5b148f41645c8d72c860541eeafda9bcfcfa376ee50488ce6",
     "cloud/ua0022_publication_fix/test_remote_installer.py": "7f97cbe86bc2cf674e75c8658830bf50ff8564d62919fa6dfa9b82fac98f436d"
   },
-  "production_touched": false,
-  "review_scope": "narrow race regression, source/DB CAS, safe rollback and lifecycle failure recovery",
+  "production_write": false,
+  "protected_snapshot": {
+    "entrypoint_sha256": {
+      "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+      "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+    },
+    "live_source_sha256": {
+      "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+    },
+    "source": "authenticated read-only PythonAnywhere probes",
+    "target_row_sha256": "b148c0971d5c5d481d772e0bb54d7ad3cf492260e40402b4e7c4242a24aedce0"
+  },
+  "rollback_plan_ready": true,
   "status": "PASS",
-  "test_output": "----------------------------------------------------------------------\nRan 43 tests in 2.108s\n\nOK\n",
-  "tested_at": "2026-09-20T04:55:00Z",
-  "tests_passed": 43
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+  "tests": "PASS",
+  "unexpected_changes": 0
 }
