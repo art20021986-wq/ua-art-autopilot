@@ -67,13 +67,13 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/emergency007_points45_20260920/RESULT.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/point4_review_20260920/INTENT.json",
   "next_action": {
-    "kind": "POINT4_INDEPENDENT_FIXES_IN_PROGRESS",
-    "detail": "Fix journal exception transaction cleanup in isolated candidate and reconcile package closure."
+    "kind": "POINT4_EXACT_COMPOSED_REVIEW",
+    "detail": "Verify retained full inputs, build exact isolated composed candidate and independently review affected paths."
   },
-  "observed_main": "e4d4ecd21071592bc715b56060869d25428dc577",
-  "observed_pr_head_before_this_update": "8cc33403fc97faa4e99f7fb85569f3ff4630f66d",
+  "observed_main": "6c735ef544284e01834114fcb67fe082f467dbba",
+  "observed_pr_head_before_this_update": "e0c62b342bcf1156f010c2af4e9e29d858486689",
   "owner_current_request": "Включить и запустить PR114 автопилот, автоматически продолжать после восстановления связи.",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
@@ -110,7 +110,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-20T04:40:16.888Z",
+  "recorded_at": "2026-09-20T05:11:19Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
