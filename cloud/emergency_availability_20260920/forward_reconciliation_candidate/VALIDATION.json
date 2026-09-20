@@ -1,12 +1,12 @@
 {
   "schema_version": "UAART-UA0022-FORWARD-RECONCILIATION-VALIDATION-1",
   "operation_id": "ua0022-forward-reconcile-prep-20260920T0857Z",
-  "recorded_at": "2026-09-20T08:59:30Z",
+  "recorded_at": "2026-09-20T10:13:38Z",
   "input_heads": {
     "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
     "pr": "341c11ea732d976a7c1d21f63fa56a9feb2a8d3f"
   },
-  "status": "READY_FOR_INDEPENDENT_REVIEW_NOT_EXECUTED",
+  "status": "BLOCKED_REBUILD_REQUIRED",
   "tests": {
     "passed": 5,
     "failed": 0,
@@ -34,6 +34,13 @@
   "production_changes": false,
   "halt_removed": false,
   "main_commit_created": false,
-  "independent_review": "PENDING",
-  "next_action": "Independent review of exact candidate; if PASS, re-read main/actions/live health and apply one exact-parent atomic state commit with post-readback."
+  "independent_review": "BLOCKED",
+  "next_action": "Rebuild from exact main blob bytes, hash-bind fresh health and actual install evidence, add fail-closed negative tests, then obtain a new independent review. Do not apply main or remove HALT.",
+  "independent_review_path": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/INDEPENDENT_REVIEW.json",
+  "independent_review_findings": [
+    "Five repository fixture SHA256 values do not match immutable main bytes; read_exact cannot apply the candidate.",
+    "Proposed HALT archive is not byte-for-byte equal to main.",
+    "Live gate accepts an empty public byte-match map and does not require monitor healthy/exit_code 0/freshness.",
+    "Fresh 08:52 validation observation and actual install receipt are not hash-bound to generated outputs."
+  ]
 }
