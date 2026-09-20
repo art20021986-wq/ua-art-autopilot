@@ -1,6 +1,6 @@
 {
   "contract": "UAART-CRITICAL-RECOVERY-20260920-3",
-  "recorded_at": "2026-09-20T09:03:35Z",
+  "recorded_at": "2026-09-20T10:13:38Z",
   "status": "AVAILABILITY_RESTORED_CONTROL_PLANE_RECONCILIATION_PENDING",
   "owner_request": "У меня не работает сайт до сих пор. Запусти немедленное восстановление.",
   "owner_failure_treated_as_authoritative": true,
@@ -51,22 +51,23 @@
     "rollback_retried": false,
     "new_preview_or_pr114_installation": false
   },
-  "next_required": "Independently review the exact data-only UA0022 forward-reconciliation candidate. If PASS, freshly re-read main/actions/live health and apply its single exact-parent atomic state commit; archive HALT byte-for-byte and remove it only inside that commit. Then resume PR114.",
+  "next_required": "Rebuild the UA0022 data-only forward-reconciliation candidate from exact immutable main blob bytes; hash-bind fresh health and actual install evidence; add fail-closed negative tests; obtain a new independent PASS. Main/HALT and PR114 production remain held.",
   "full_recovery_confirmed_for_public_availability": true,
   "full_control_plane_recovery_confirmed": false,
   "forward_reconciliation_candidate": {
     "operation_id": "ua0022-forward-reconcile-prep-20260920T0857Z",
     "branch_commit": "99d1b5669bd2fedd7dabe2bdf60363b4c47a730a",
     "path": "cloud/emergency_availability_20260920/forward_reconciliation_candidate",
-    "status": "READY_FOR_INDEPENDENT_REVIEW_NOT_EXECUTED",
+    "status": "BLOCKED_REBUILD_REQUIRED",
     "exact_parent_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
     "plan_sha256": "46db899ae5f4c58e4d6339ee6b9d1c74de56fdca128f63b8b30846446aee193f",
     "tests": {
       "passed": 5,
       "failed": 0
     },
-    "independent_review": "PENDING",
+    "independent_review": "BLOCKED",
     "production_changes": false,
-    "halt_removed": false
+    "halt_removed": false,
+    "independent_review_path": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/INDEPENDENT_REVIEW.json"
   }
 }
