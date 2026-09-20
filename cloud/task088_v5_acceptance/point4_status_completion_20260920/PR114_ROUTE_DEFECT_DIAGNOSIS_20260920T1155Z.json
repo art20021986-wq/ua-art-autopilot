@@ -1,0 +1,41 @@
+{
+  "schema_version": "PR114-POINT4-ROUTE-DEFECT-DIAGNOSIS-1",
+  "recorded_at": "2026-09-20T11:55:00Z",
+  "status": "ROOT_CAUSE_CONFIRMED_NO_PREVIEW_WRITE",
+  "main": "b9c985ac924739b351e4d5535499bb6516917daf",
+  "failure": "UNSERVED_PUBLIC_ASSET_ROUTE:ua/a.js",
+  "root_cause": {
+    "stage_helper": "cloud/task088_v5_acceptance/point4_status_completion_20260920/stage_exact_preview.py",
+    "asset_rule": "Every same-origin asset is currently required to start with video/.",
+    "package_rule": "The exact package closure currently permits candidate HTML and reviewed runtime only.",
+    "observed_route": "/ua/a.js is an explicitly reviewed analytics wrapper route and is referenced by served HTML.",
+    "gap": "The exact public JavaScript response is not present in the point4 package, so the stage cannot hash-bind or serve it and correctly fails closed."
+  },
+  "existing_safe_capture_reference": {
+    "path": "cloud/task088_v5_acceptance/run_private_server_build.py",
+    "function": "capture_public_analytics",
+    "method": "GET https://www.uaart.com.ua/ua/a.js with redirects forbidden",
+    "requirements": [
+      "HTTP 200",
+      "exact final URL",
+      "JavaScript MIME",
+      "bounded non-empty bytes",
+      "sha256 binding",
+      "analitika_wsgi.py source pin",
+      "never call /ua/a/e"
+    ]
+  },
+  "minimal_fix": [
+    "Add only the exact captured ua/a.js bytes and receipt to the package contract.",
+    "Bind the capture to the current observer, package manifest, wrapper source SHA256 and candidate operation.",
+    "Allow only ua/a.js as the reviewed non-video public asset and serve it as hash-bound bundle JavaScript.",
+    "Keep /ua/a/e and every other wrapper/API/write route denied in Preview.",
+    "Add negative tests for missing bytes, wrong MIME, redirect, response drift, wrapper-source drift and any additional ua/ route."
+  ],
+  "writes_performed": false,
+  "preview_started": false,
+  "switch_performed": false,
+  "reload_performed": false,
+  "accepted_evidence_repeated": false,
+  "next_action": "Implement and independently review this bounded package/stage correction, rebuild the exact candidate against main b9c985ac, then run one new Stage under a new operation_id."
+}
