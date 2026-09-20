@@ -1,0 +1,35 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/ua0002_delete_probe2/evidence.json",
+    "cloud/ua0002_delete_probe2/sanitized_sources.txt"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Seven fixed GET requests: five source files and provider always-on/schedule metadata. Export only selected AST definitions with recursive credential-literal exclusion; class exports are name and filename whitelisted. Commands remain hashes except three exact pre-reviewed scheduled commands. No remote writes, upload, code execution, database download, CRM mutation, restart or website changes. Completion is diagnosis only.",
+  "execution": {
+    "controller_path": "cloud/ua0002_delete_probe2/controller.py",
+    "controller_sha256": "53fe145aea0a26908df8605f6d502bb6d30e10b59cbb812b3f9735334081be1e",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/ua0002_delete_probe2/evidence.json",
+      "cloud/ua0002_delete_probe2/sanitized_sources.txt",
+      "state/receipts/UA-ART-UA0002-DELETE-PROBE-002.json"
+    ],
+    "file_sha256": {
+      "cloud/ua0002_delete_probe2/test_contract.py": "2df18c94d29f28ef7530e6fb5ab990a0f26b4f7f84935c8288a4f98c77a4d243"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/UA-ART-UA0002-DELETE-PROBE-002.json",
+    "test_paths": [
+      "cloud/ua0002_delete_probe2/test_contract.py"
+    ],
+    "timeout_seconds": 120
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "UA-ART-UA0002-DELETE-PROBE-002",
+  "title": "Read-only UA0002 missing safe source definitions and schedule probe"
+}
