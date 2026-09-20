@@ -1,0 +1,18 @@
+{
+  "status": "PASS_TARGETED_LOCAL_FIXTURE",
+  "checks": [
+    "stage preserves dedicated and production WSGI",
+    "pinned public runtime validates scoped bundle and nine denied private routes",
+    "separate durable switch intent and observed receipt",
+    "unknown or repeated switch never replaces again",
+    "foreign bytes inspection preserved",
+    "private config mode and no DB export"
+  ],
+  "limitations": [
+    "temporary fixture constants replace real server locations and production source hash",
+    "no browser, network, current production binding, service reload or Preview acceptance"
+  ],
+  "stage_helper_sha256": "e7b444676dc3098662b5110ca2bd59473637ee34f5e6fdf601c6e0d5ebb03e66",
+  "sha_after_cli_self_pin_addition": "9814d4dd32dcb12bf91da8ece09d83cf9f4704f7c885e9c609b03befa4abfe27",
+  "cli_self_pin_addition": "Compile-checked; stage/switch fixture result predates CLI-only self-pin check"
+}

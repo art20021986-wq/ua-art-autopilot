@@ -1,0 +1,72 @@
+{
+  "scope": "ISOLATED_CANDIDATE_CODE_ONLY",
+  "status": "AFFECTED_TESTS_PASS_INDEPENDENT_PRICE_BOUNDARY_REVIEW_PASS",
+  "production_mutations": false,
+  "schema_ddl_changed": false,
+  "base_sources": "UA0022 task003 exact receipt-bound reconstructed sources; actual current live observation owned by root",
+  "findings": {
+    "PS-01": "UNIFIED_DRAFT_FIFO_AND_DATA_PROOF_GUARD",
+    "PS-02": "DATA_ONLY_SAME_CLAIM_RECOVERY_AFTER_VERIFIED_NATIVE_RETIREMENT"
+  },
+  "tests": {
+    "unique_pass": 152,
+    "initial_run": {
+      "total": 134,
+      "pass": 103,
+      "fail": 7,
+      "error": 24,
+      "reason": "One new module staging error; old draft expectations and exact-current guard fixture required update"
+    },
+    "targeted_retry": {
+      "pass": 38,
+      "includes_new": 8,
+      "failed_only_retry": 30
+    },
+    "binding_scope_run": {
+      "pass": 22,
+      "new": 3,
+      "reason": "Manifest-bound all-record scope and new provider hooks"
+    },
+    "recovery_scope_run": {
+      "pass": 31,
+      "new": 2,
+      "reason": "Independent review required explicit native scope and blocked-hidden reconciliation"
+    },
+    "hidden_expiry_review_fix": {
+      "pass": 3,
+      "new": 1,
+      "reason": "Fresh authority must remain valid through hidden completion commit"
+    },
+    "price_replace_boundary_review_fix": {
+      "new": 3,
+      "pass": 8,
+      "two_additional_legacy_compensation_checks_pass": true,
+      "reason": "Independent boundary repro proved previous early authority check insufficient across render/fsync. Supersede prior runtime hash on changed publication boundary only; immutable old evidence retained."
+    }
+  },
+  "limits": [
+    "No live HTTP/site/SLA PASS asserted",
+    "Native visibility module/integration and final package closure owned by other agents",
+    "Fresh current Preview binding must still be independently established"
+  ],
+  "files": {
+    "outbox.py": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+    "uaart_price_sync_runtime.py": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
+    "uaart_price_sync_binding.py": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
+    "patch_cars_ui.py": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
+    "patch_guard.py": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
+    "test_visibility_price_lifecycle.py": "d0a014077274def9cadf5ccb2e5199648363d4f25eb01a2f790c6ca55e9ee829",
+    "test_binding.py": "ba2e4cfb46efb401856f6a75f3783ab223fa141409238441b5004960090b1ef2",
+    "test_cars_ui_hook.py": "1ccef2055cb1947d509158b7a0bcc19dc68ff7df8e24ac6ab72278f6b451c97d",
+    "test_guard_fence.py": "7944efaf7af24286a1cd3dc6b02a86b6a82f578b71afb8a5385117f28d257a23",
+    "BINDING_CONTRACT.md": "59ce990c8d81165b2ec910d21829097e36d997d356ff74c4f231e75e4ed4eb1d"
+  },
+  "next": "Independent final code review and exact candidate rebuild",
+  "independent_boundary_review": {
+    "path": "PRICE_SWITCH_EXPIRY_PROBE_AFTER.json",
+    "sha256": "dcf9efc5787edf167627e07e5c89b99253129e23d41939b0237325bd2639d37f",
+    "result": "PASS_NO_EXPIRED_WRITE",
+    "reviewer": "/root/review_composed_safety",
+    "before_evidence_preserved": true
+  }
+}

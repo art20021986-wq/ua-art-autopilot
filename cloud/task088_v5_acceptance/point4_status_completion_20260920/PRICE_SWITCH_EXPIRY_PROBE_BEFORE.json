@@ -1,0 +1,15 @@
+{
+  "status": "BLOCKER_REPRODUCED",
+  "scope": "ISOLATED_SYNTHETIC_AUTHORITY_NO_LIVE_PASS",
+  "reason": "Time can expire between _publish early check and atomic public switch.",
+  "switches": [
+    {
+      "time_ms": 1040000,
+      "deadline_ms": 1030000
+    }
+  ],
+  "checkpoint": "DB_COMMITTED",
+  "error": "V5_AUTHORITY_EXPIRED_BEFORE_DB_COMMIT",
+  "runtime_sha256": "9cc84fb9af71ba8f93eeff8d416838c270f47302c8a1e33fb20b385f57ad9037",
+  "unchanged_suites_rerun": false
+}

@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "scope": "SAVED_REAL_HTML_ISOLATED_COPY_NO_LIVE_PASS",
+  "reason": "Persisted retirement pre/postimage CAS after partial write and newer pending-file edit.",
+  "checks": [
+    "ONE_PARTIAL_SWITCH_RECORDED",
+    "NEWER_OPERATOR_BYTES_PRESERVED_NO_REPLAY_WRITES",
+    "EXACT_SAVED_PLAN_RESUMES_WHEN_PREIMAGES_MATCH"
+  ],
+  "lifecycle_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+  "counter_sha256": "0636a7ecea3813af5461290464017e54094bebedc7dd6c4c9c3551582b966fb4",
+  "unchanged_suites_rerun": false
+}

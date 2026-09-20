@@ -1,0 +1,16 @@
+{
+  "status": "PASS_NO_EXPIRED_WRITE",
+  "scope": "ISOLATED_SYNTHETIC_AUTHORITY_NO_LIVE_PASS",
+  "reason": "Time can expire between _publish early check and atomic public switch.",
+  "atomic_write_attempts": [
+    {
+      "time_ms": 1040000,
+      "deadline_ms": 1030000
+    }
+  ],
+  "public_bytes_changed": false,
+  "checkpoint": "DB_COMMITTED",
+  "error": "V5_AUTHORITY_EXPIRED_BEFORE_DB_COMMIT",
+  "runtime_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
+  "unchanged_suites_rerun": false
+}

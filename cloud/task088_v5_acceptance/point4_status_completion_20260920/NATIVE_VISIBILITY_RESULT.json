@@ -1,0 +1,41 @@
+{
+  "contract": "PR114-STATUS-NATIVE-VISIBILITY-CANDIDATE-1",
+  "utc": "2026-09-20T06:16:37.700599+00:00",
+  "production_mutations": false,
+  "source_sha256": {
+    "task088_v5_writer_fence/visibility_lifecycle.py": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+    "task088_v5_writer_fence/integrate_private_sources.py": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
+    "task088_v5_writer_fence/test_visibility_lifecycle.py": "11ba702923b1d4db3b45a86084ef773e558a959d35ed1913ad9621f74102a37c",
+    "task088_v5_writer_fence/test_private_source_integration.py": "7c36b45f704f0887c0d45cfe8a85f525cfbd16feca86bb093897835bb3e8cf03",
+    "task088_v5_writer_fence/test_direct_rebuild_quiescence.py": "fc92061f4cfe505df707adb7645151ad43264e943505448760147c487a7053a0",
+    "task088_stage3_renderer/patch_stranica.py": "8ed2aea9f18d3955931496485199d6bb91f9fdc5d5e57e410c1deab69f35dfe7"
+  },
+  "output_sha256": {
+    "cars_ui.py": "9999169f82cdc700d8e32fdd30dfc29b4ffcc938c5f31225011056cece40708c",
+    "stranica.py": "56abe3a0f569702c6d1830ac910571ccb222e7636023acdd6458043663b07bc5",
+    "publish_transaction_guard.py": "beb4d9ffc872317432ba806b98b3c1c6afcb437e4027b383c1777bae4b9ece16",
+    "ua_spec_permanent.py": "59135f68b2f4b2c5a677e4da700cdce502dbde8a147e7fd4eb4026e3b6f9902a"
+  },
+  "ua0022_markers_preserved": true,
+  "targeted_test_methods": {
+    "native_visibility": 14,
+    "changed_guard_quiescence": 8,
+    "guard_block_fixture": 1
+  },
+  "tests": "PASS",
+  "public_HTTP_retirement": "NOT_RUN_POINT4_LOCAL_SCOPE_ONLY",
+  "private_module_execution": false,
+  "recovery_scope": "cooperative HTML writers excluded/serialized by production point5; media untouched; no arbitrary uncooperative HTML-CAS guarantee",
+  "historical_suites_rerun": false,
+  "spec_handoff": "existing async enqueue preserved via separate durable one-shot handoff ledger; no spec completion asserted",
+  "independent_local_probes": {
+    "REAL_PAGE_RETIREMENT_PROBE.json": {
+      "sha256": "a589be42aaca10d5116d798dbd7175c4c0e35336521ec5d49079edef91f937b0",
+      "result": "PASS"
+    },
+    "RETIREMENT_PLAN_RECOVERY_PROBE.json": {
+      "sha256": "0fce86f5f0eda5501e25e0af7d5c6a18802022e3812b6467e3fe21cda4f1e5da",
+      "result": "PASS"
+    }
+  }
+}
