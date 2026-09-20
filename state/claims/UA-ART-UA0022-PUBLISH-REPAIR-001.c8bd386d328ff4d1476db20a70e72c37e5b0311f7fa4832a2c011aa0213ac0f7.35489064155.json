@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/UA-ART-UA0022-PUBLISH-REPAIR-001.c8bd386d328ff4d1476db20a70e72c37e5b0311f7fa4832a2c011aa0213ac0f7.json",
+  "autostart_ledger_sha256": "99e707def4901981299a4546d5ea656f11c3977290db45167de9b05216119bf5",
+  "autostart_source_commit": "f24cac6dc1231a2dad399bd1cb36cd560fb8f415",
+  "created_at": "2026-09-20T04:25:17Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-20T04:25:17Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "35489064155",
+    "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-001",
+    "task_sha256": "c8bd386d328ff4d1476db20a70e72c37e5b0311f7fa4832a2c011aa0213ac0f7"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "card-ua-0022-3454fd479bb37b60",
+  "receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-001.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-001.json",
+  "request_sha256": "c8bd386d328ff4d1476db20a70e72c37e5b0311f7fa4832a2c011aa0213ac0f7",
+  "resource_locks": [
+    "CARD:UA-0022"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "8ac4afa356ccd6b20606040425f9a6eec9ad99ef",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-20T04:25:17Z"
+}
