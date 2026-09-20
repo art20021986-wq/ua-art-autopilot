@@ -200,3 +200,23 @@ The resulting authority record binds the operation sequence, event hash,
 operator evidence hash and originating operator/chat alongside the unchanged
 canonical deployment chain. Local tests do not create any live anchor, receipt,
 operator permission evidence or continuous control bridge.
+
+
+## Owner clarification: publication-independent data guarantees (2026-09-20)
+
+The owner requires the same data preservation, recovery and operator-change
+protection for published and unpublished CRM records. Public visibility remains
+controlled by publication status. The fixed-18 table above describes the legacy
+v1 contract; current V5 uses a dynamic published set.
+
+The normative clarification and required transition acceptance cases are in
+[STATUS_INDEPENDENT_DATA_POLICY_RU.md](../task088_v5_acceptance/publication_status_policy_20260920/STATUS_INDEPENDENT_DATA_POLICY_RU.md).
+Its implementation status is **OPEN**: the draft Stage 2 path, V5 operation
+ledger and whole-page generation guard are not yet compatible across every
+publication-status transition. See PS-01 and PS-02 in the linked policy.
+
+This clarification does not remove existing published-only public-surface
+checks, widen operator ACLs, alter the current delegation schema, or authorize
+automatic first publication. A reviewed compatible implementation and exact
+candidate acceptance are required before those transition guarantees can be
+claimed. Historical evidence retains its original scope.
