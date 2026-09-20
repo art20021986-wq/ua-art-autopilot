@@ -50,7 +50,8 @@
     "September20 critical availability request: authenticated browser connection restored; actual apex andwww home,22-card catalog,UA0022 card anddiagnostics rendered in cloudChrome. Initial navigationtimeout reconciled toloadedpage. No production write/reload; owner iPhone/network-specific failure not yet reproduced and fullrecovery NOTclaimed. Current Git controls unchanged; oldTASK119 approval expired/launch consumed. See emergency_availability_20260920.",
     "Owner repeated active website outage. Emergency recovery execution is blocked by actual unresolved UA0022 transaction; no restart performed. Observed separate Preview stage in sharedconsole07:29 stopping INPUT_SHA256_MISMATCH before a verified final outcome. Existing continuation instructions now prioritize emergency recovery and defer new Preview writes. Existing scheduler remains enabled; no claim that its currently running turn was cancelled.",
     "September20 emergency availability reconciliation completed read-only: UA0022 installation receipt and publisher result PASS; four installed runtime hashes match manifest. Apex and www rendered, home/catalog/UA0022 card/diagnostic returned HTTP200, public card/diagnostic hashes match server files, and fresh continuous monitor finished healthy. No reload, Preview stage, PR114 install, HALT removal or rollback replay. Public availability restored; UA0022 control-plane finalization remains ROLLING_BACK/EMERGENCY_HALT.",
-    "September20 UA0022 forward-reconciliation preparation completed without production writes: exact transaction/claim/HALT/backup/request/live-evidence hashes pinned; data-only atomic exact-parent candidate built and read back at commit99d1b566; isolated tests5/5 PASS. Independent review remains pending; main and HALT unchanged."
+    "September20 UA0022 forward-reconciliation preparation completed without production writes: exact transaction/claim/HALT/backup/request/live-evidence hashes pinned; data-only atomic exact-parent candidate built and read back at commit99d1b566; isolated tests5/5 PASS. Independent review remains pending; main and HALT unchanged.",
+    "September20 UA0022 independent read-only review BLOCKED the first forward-reconciliation candidate. Exact main bytes disagree with all five repository fixtures, HALT archive is not byte-identical, and the live gate is fail-open for empty byte-match/failed monitor. Review and exact main hashes saved; main/HALT/runtime unchanged; PR114 remains held at8/20."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -77,13 +78,13 @@
     "Set up protected server reader credential only when required, using hidden-input receiver; never ask for a secret in chat. Finish live UA/GE synchronization, recovery, Stage4 receipt and final20/20 gate."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/VALIDATION.json",
+  "latest_checkpoint": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/INDEPENDENT_REVIEW.json",
   "next_action": {
-    "kind": "UA0022_FORWARD_RECONCILIATION_INDEPENDENT_REVIEW",
-    "detail": "Independently review exact candidate at commit99d1b566. If PASS, freshly re-read main/actions/live health and apply one exact-parent atomic state commit with post-readback. Do not reload, replay rollback, reset OPEN, or remove HALT outside that reviewed commit."
+    "kind": "UA0022_FORWARD_RECONCILIATION_REBUILD",
+    "detail": "Reacquire exact raw blobs from pinned main, regenerate the full data-only candidate, hash-bind fresh health and actual install evidence, require exact public match keys plus healthy/exit-0/freshness, add immutable-main and negative tests, then obtain a new independent review. No main/HALT/runtime write before PASS."
   },
   "observed_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
-  "observed_pr_head_before_this_update": "f2f10c223f37a4106a6d3e690792182ee24d5495",
+  "observed_pr_head_before_this_update": "47fc6cf4c1f33a122c5dcb34aff595b7bcaeeb9c",
   "owner_current_request": "У меня не работает сайт до сих пор. Запусти немедленное восстановление.",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
@@ -120,7 +121,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-20T09:03:35Z",
+  "recorded_at": "2026-09-20T10:13:38Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -303,9 +304,8 @@
     "forward_reconciliation_candidate": {
       "branch_commit": "99d1b5669bd2fedd7dabe2bdf60363b4c47a730a",
       "validation": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/VALIDATION.json",
-      "status": "READY_FOR_INDEPENDENT_REVIEW_NOT_EXECUTED",
-      "plan_sha256": "46db899ae5f4c58e4d6339ee6b9d1c74de56fdca128f63b8b30846446aee193f",
-      "tests_passed": 5,
+      "independent_review": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/INDEPENDENT_REVIEW.json",
+      "status": "BLOCKED_REBUILD_REQUIRED",
       "production_changes": false,
       "halt_removed": false
     }
@@ -315,7 +315,7 @@
     "availability_restored": true,
     "hold_new_preview_writes": true,
     "hold_new_pr114_installation": true,
-    "hold_reason": "Public availability is healthy; UA0022 exact forward-reconciliation candidate exists but independent review is pending. Main remains ROLLING_BACK under EMERGENCY_HALT.",
+    "hold_reason": "Public availability is healthy, but independent review blocked the UA0022 control-plane candidate: exact main-byte mismatch and fail-open live gate. Main remains ROLLING_BACK under EMERGENCY_HALT.",
     "owner_authorized_recovery": true,
     "canonical_safety_gates_still_required": true
   }
