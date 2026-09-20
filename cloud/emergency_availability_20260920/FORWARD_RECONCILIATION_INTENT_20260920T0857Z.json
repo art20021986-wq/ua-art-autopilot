@@ -1,0 +1,26 @@
+{
+  "contract": "UAART-UA0022-FORWARD-RECONCILIATION-INTENT-1",
+  "operation_id": "ua0022-forward-reconcile-prep-20260920T0857Z",
+  "recorded_at": "2026-09-20T08:57:00Z",
+  "input_heads": {
+    "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "pr": "fa86769aea7339935ab033ef5a8f6965abf11e90"
+  },
+  "input_state": {
+    "transaction_blob": "cfccccb058abac735639bb41debdf8486808a742",
+    "claim_blob": "3f34ca885bcb09b04d6c3561e8d63c79bb9bb776",
+    "halt_sha256": "7982f47958d4e656b0edbb64d8a40bcdd3836183",
+    "availability_evidence_blob": "7138e6e76374b0643174bcda3a0937cdedc8db43",
+    "continuation_blob": "0bdf3f8ffaf0e43deae9671ff633d31a3a38a7f1"
+  },
+  "control_read": {
+    "github_actions_active_or_waiting": 0,
+    "site_monitor_status": "healthy",
+    "site_monitor_finished_at": "2026-09-20T08:52:23.611Z",
+    "foreground_in_progress": false
+  },
+  "intent": "Prepare and test a data-only, incident-specific forward reconciliation candidate for the proven successful UA0022 installation. It may propose one atomic repository state commit but must not apply it in this preparation step.",
+  "expected_result": "Fail-closed plan, exact output hashes and tests on the PR branch. No production file write, reload, Preview action, transaction change or HALT removal.",
+  "readback": "Read every created artifact from the branch and compare exact blob/content hashes.",
+  "required_backup": "Exact main parent plus original transaction, claim and HALT hashes; any eventual execution must archive HALT and use one compare-and-swap commit."
+}
