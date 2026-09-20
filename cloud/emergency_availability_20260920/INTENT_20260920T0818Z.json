@@ -1,0 +1,17 @@
+{
+  "contract": "UAART-CRITICAL-RECOVERY-INTENT-1",
+  "operation_id": "uaart-emergency-readback-20260920T0818Z",
+  "recorded_at": "2026-09-20T08:18:30Z",
+  "branch": "codex/task088-owner-policy-20260913-0934",
+  "input_branch_head": "0a040381941a20538cf766dd5378fd7f9b406fbe",
+  "input_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "input_blobs": {
+    "cloud/emergency_availability_20260920/CRITICAL_RECOVERY_STATUS.json": "b32645df92dce5b504951e67a14b4f64188ed6a1",
+    "cloud/task088_v5_acceptance/resume_20260914_2/CONTINUATION.json": "24042dd27adf6d96360fd3cd5b9e811e5206d08b"
+  },
+  "environment": "Authenticated managed PythonAnywhere browser plus GitHub branch evidence; read-only production reconciliation",
+  "intent": "Persist sanitized factual reconciliation showing live availability restored while UA0022 control-plane transaction remains unresolved. Update only PR114 evidence pointers; do not reload, switch Preview, install PR114, modify production files, or clear HALT.",
+  "expected_result": "New evidence file plus status/continuation updates on the existing PR branch; PR114 remains 8/20 (40%).",
+  "readback": "Fetch every written file from the branch, compare exact content and returned blob SHA; re-read branch status after writes.",
+  "required_backup": "Git preserves previous blobs above; production backup directory and receipt remain untouched."
+}
