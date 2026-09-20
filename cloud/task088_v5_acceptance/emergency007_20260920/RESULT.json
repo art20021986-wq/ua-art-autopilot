@@ -1,0 +1,142 @@
+{
+  "operation_id": "pr114-emergency007-points12-20260920T0347Z",
+  "recorded_at": "2026-09-20T04:06:35.716Z",
+  "status": "POINTS_1_AND_2_ACCEPTED_SCOPED",
+  "foreground_in_progress": false,
+  "updated_at": "2026-09-20T04:06:35.716Z",
+  "executor": "root-emergency007-points12",
+  "predecessor": "cloud/task088_v5_writer_fence/handoff006_evidence/restore_atomic_20260919/RESULT.json",
+  "step1": {
+    "accepted": true,
+    "scope": "GitHub continuation and saved evidence reconciliation; not production writer gate",
+    "head": "9fde76a2b9d947e49ccd8d8e427079ef3b5592b0",
+    "main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "tree_entries": {
+      "pr": 2545,
+      "main": 2096
+    },
+    "trees_truncated": false,
+    "local_dirty_files_matched_remote": 7,
+    "historical_notices_matched": 11,
+    "control_json_blobs_matched": 98,
+    "claims": {
+      "FINISHED": 18,
+      "FAILED": 10,
+      "BLOCKED_ROOT_CAUSE": 1
+    },
+    "transactions": {
+      "FINISHED": 6,
+      "ROLLED_BACK": 3,
+      "pending": 0
+    },
+    "receipts": 31,
+    "stage3_stage4_receipts_present": false,
+    "active_actions": 0,
+    "queued_actions": 0,
+    "active_main_halt": false,
+    "subtrees": {
+      "claims": "6190750d3d3c8470513fdea92dcd1d606ec9d0cf",
+      "transactions": "02a8f6da802c53faf1888be171c7d90f6ed070cb",
+      "receipts": "afc9a41ec01699d5ba3366fd943e8f46775d15d5",
+      "requests": "a8e74b9aaf10a311f4f85bbd8f3e7a4a0661cb22"
+    },
+    "watchdog": {
+      "run_id": 35480255397,
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-09-20T01:01:04Z",
+      "reason": "RECOVERY_CANARY_RECEIPT_BINDING",
+      "mutation_steps": "skipped"
+    },
+    "historical_blocked_verify": {
+      "run_id": 34733330869,
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-09-13T02:35:20Z",
+      "claim_unchanged": true
+    },
+    "read_only_monitor": {
+      "run_id": 35468278770,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-09-19T20:44:35Z"
+    },
+    "reviewer": "read-only agent accept_step1_readonly"
+  },
+  "step2": {
+    "accepted": true,
+    "scope": "Recovery and exact-byte verification of missing private inputs; not runtime freshness or a production gate",
+    "validation_path": "cloud/task088_v5_acceptance/emergency007_20260920/SOURCE_RECOVERY_VALIDATION.json",
+    "validation_sha256": "5dc998e274af88b26011c45460619bdf1e006014e171867fe006e9889129d519",
+    "files": [
+      {
+        "name": "lock4_zhurnal.py",
+        "bytes": 3429,
+        "sha256": "6461e34b137f55c3bd6df60f859c04b8d00e8ddea5b42e95fc8f9cde7d00cac9",
+        "editor_rows": 97
+      },
+      {
+        "name": "ua_spec_permanent.py",
+        "bytes": 14299,
+        "sha256": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
+        "editor_rows": 304
+      },
+      {
+        "name": "ua_additional_spec.py",
+        "bytes": 36741,
+        "sha256": "6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672",
+        "editor_rows": 857
+      },
+      {
+        "name": "vin_spec_service.py",
+        "bytes": 36543,
+        "sha256": "1d4d54a6cd70f03dcdf2c599d4a9c6362bfd842f18c40a231dfd0ecbc965ce4a",
+        "editor_rows": 864
+      }
+    ],
+    "total_bytes": 91012,
+    "independent_local_match": "4/4 dependencies plus3/3 retained originals",
+    "baseline": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/server/install_1650.json",
+      "sha256": "7f0bf4c31088350fed169366e46e19f04ef85bca00238f23bd56c8c7342f1806",
+      "observed_at": "2026-09-14T16:50:36.435375+00:00",
+      "pins_at": "system_inventory/<filename>",
+      "current_read_does_not_retimestamp_historical_report": true
+    },
+    "private_local_recovery_directory": "/workspace/scratch/eb425df3a207/private_dependencies_20260920",
+    "private_retained_originals_directory": "/workspace/scratch/eb425df3a207/private_v5_sources_recovered",
+    "pending": [],
+    "private_source_committed": false,
+    "fresh_server_digest_command": false,
+    "method": {
+      "transport": "Authenticated PythonAnywhere native editor visible DOM",
+      "source_access": "Only rendered source lines and corresponding visible gutter numbers; no hidden app/editor state or direct network fetch",
+      "capture": "Sequential overlapping viewport blocks; zero missing rows and zero conflicting overlaps. UI line count includes trailing empty line.",
+      "save_or_run_clicked": false,
+      "server_mutation": false,
+      "private_source_in_git": false
+    },
+    "limitations": [
+      "Recovered source bytes match exact pinned server inventory; active loaded process versions are not proven.",
+      "New server digest command, fresh Gate B/quota/Preview/writer exclusion and production release remain separate future requirements."
+    ]
+  },
+  "progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "new_product_criteria": []
+  },
+  "production_changed": false,
+  "tests_rerun": false,
+  "next_action": "Emergency007 point3: finish real-path writer protection and database/media/cache restore integration in an isolated candidate using all seven exact private inputs.",
+  "previous_checkpoint_commit": "5c7ec9fd91635ec756637d06a7bc1a691453294a",
+  "final_control_read": {
+    "main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "pr_head_before_save": "5c7ec9fd91635ec756637d06a7bc1a691453294a",
+    "active_actions": 0,
+    "queued_actions": 0,
+    "read_at": "2026-09-20T04:04:25Z",
+    "scope": "Git control reconciliation, not server writer exclusion"
+  }
+}

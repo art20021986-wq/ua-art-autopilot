@@ -1,0 +1,69 @@
+{
+  "kind": "READ_ONLY_PRIVATE_SOURCE_RECOVERY",
+  "operation_id": "pr114-emergency007-points12-20260920T0347Z",
+  "observed_at": "2026-09-20T04:05:33.330Z",
+  "method": {
+    "transport": "Authenticated PythonAnywhere native editor visible DOM",
+    "source_access": "Only rendered source lines and corresponding visible gutter numbers; no hidden app/editor state or direct network fetch",
+    "capture": "Sequential overlapping viewport blocks; zero missing rows and zero conflicting overlaps. UI line count includes trailing empty line.",
+    "save_or_run_clicked": false,
+    "server_mutation": false,
+    "private_source_in_git": false
+  },
+  "sources": [
+    {
+      "name": "lock4_zhurnal.py",
+      "bytes": 3429,
+      "sha256": "6461e34b137f55c3bd6df60f859c04b8d00e8ddea5b42e95fc8f9cde7d00cac9",
+      "editor_rows": 97
+    },
+    {
+      "name": "ua_spec_permanent.py",
+      "bytes": 14299,
+      "sha256": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
+      "editor_rows": 304
+    },
+    {
+      "name": "ua_additional_spec.py",
+      "bytes": 36741,
+      "sha256": "6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672",
+      "editor_rows": 857
+    },
+    {
+      "name": "vin_spec_service.py",
+      "bytes": 36543,
+      "sha256": "1d4d54a6cd70f03dcdf2c599d4a9c6362bfd842f18c40a231dfd0ecbc965ce4a",
+      "editor_rows": 864
+    }
+  ],
+  "baseline": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/server/install_1650.json",
+    "sha256": "7f0bf4c31088350fed169366e46e19f04ef85bca00238f23bd56c8c7342f1806",
+    "observed_at": "2026-09-14T16:50:36.435375+00:00",
+    "pins_at": "system_inventory/<filename>",
+    "current_read_does_not_retimestamp_historical_report": true
+  },
+  "independent_verification": {
+    "reviewer": "accept_step1_readonly",
+    "observed_at": "2026-09-20T04:04:26.514290+00:00",
+    "dependencies_matched": 4,
+    "dependencies_total": 4,
+    "dependency_bytes": 91012,
+    "retained_originals_matched": 3,
+    "retained_originals_total": 3,
+    "retained_original_bytes": 442261,
+    "all_seven_bytes": 533273,
+    "symlinks": 0,
+    "tests_run": false,
+    "writes_performed": false
+  },
+  "acceptance": "POINT2_EXACT_SOURCE_RECOVERY_ACCEPTED",
+  "fresh_server_digest_command": false,
+  "runtime_gate": false,
+  "production_authority": false,
+  "limitations": [
+    "Recovered source bytes match exact pinned server inventory; active loaded process versions are not proven.",
+    "New server digest command, fresh Gate B/quota/Preview/writer exclusion and production release remain separate future requirements."
+  ],
+  "next_action": "Use these exact private inputs to finish integration and real database/media/cache restore review in isolation."
+}

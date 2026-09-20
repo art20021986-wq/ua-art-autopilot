@@ -1,113 +1,15 @@
 {
   "operation_id": "pr114-emergency007-points12-20260920T0347Z",
-  "recorded_at": "2026-09-20T03:58:20Z",
-  "status": "STEP1_ACCEPTED_STEP2_PARTIAL",
-  "foreground_in_progress": true,
-  "updated_at": "2026-09-20T03:58:20Z",
-  "executor": "root-emergency007-points12",
-  "predecessor": "cloud/task088_v5_writer_fence/handoff006_evidence/restore_atomic_20260919/RESULT.json",
-  "step1": {
-    "accepted": true,
-    "scope": "GitHub continuation and saved evidence reconciliation; not production writer gate",
-    "head": "9fde76a2b9d947e49ccd8d8e427079ef3b5592b0",
-    "main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
-    "tree_entries": {
-      "pr": 2545,
-      "main": 2096
-    },
-    "trees_truncated": false,
-    "local_dirty_files_matched_remote": 7,
-    "historical_notices_matched": 11,
-    "control_json_blobs_matched": 98,
-    "claims": {
-      "FINISHED": 18,
-      "FAILED": 10,
-      "BLOCKED_ROOT_CAUSE": 1
-    },
-    "transactions": {
-      "FINISHED": 6,
-      "ROLLED_BACK": 3,
-      "pending": 0
-    },
-    "receipts": 31,
-    "stage3_stage4_receipts_present": false,
-    "active_actions": 0,
-    "queued_actions": 0,
-    "active_main_halt": false,
-    "subtrees": {
-      "claims": "6190750d3d3c8470513fdea92dcd1d606ec9d0cf",
-      "transactions": "02a8f6da802c53faf1888be171c7d90f6ed070cb",
-      "receipts": "afc9a41ec01699d5ba3366fd943e8f46775d15d5",
-      "requests": "a8e74b9aaf10a311f4f85bbd8f3e7a4a0661cb22"
-    },
-    "watchdog": {
-      "run_id": 35480255397,
-      "status": "completed",
-      "conclusion": "failure",
-      "completed_at": "2026-09-20T01:01:04Z",
-      "reason": "RECOVERY_CANARY_RECEIPT_BINDING",
-      "mutation_steps": "skipped"
-    },
-    "historical_blocked_verify": {
-      "run_id": 34733330869,
-      "status": "completed",
-      "conclusion": "failure",
-      "completed_at": "2026-09-13T02:35:20Z",
-      "claim_unchanged": true
-    },
-    "read_only_monitor": {
-      "run_id": 35468278770,
-      "status": "completed",
-      "conclusion": "success",
-      "completed_at": "2026-09-19T20:44:35Z"
-    },
-    "reviewer": "read-only agent accept_step1_readonly"
-  },
-  "step2": {
-    "accepted": false,
-    "method": "Read complete visible editor DOM lines with visible line numbers; no hidden editor/application state; no Save/Run.",
-    "files": [
-      {
-        "name": "lock4_zhurnal.py",
-        "bytes": 3429,
-        "sha256": "6461e34b137f55c3bd6df60f859c04b8d00e8ddea5b42e95fc8f9cde7d00cac9",
-        "lines": 97,
-        "missing_lines": 0,
-        "overlap_conflicts": 0,
-        "local_readback_sha256_matched": true,
-        "matches_retained_server_digest": true,
-        "fresh_server_digest_command": false
-      },
-      {
-        "name": "ua_spec_permanent.py",
-        "bytes": 14299,
-        "sha256": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
-        "lines": 304,
-        "missing_lines": 0,
-        "overlap_conflicts": 0,
-        "local_readback_sha256_matched": true,
-        "matches_retained_server_digest": true,
-        "fresh_server_digest_command": false
-      }
-    ],
-    "pending": [
-      "ua_additional_spec.py",
-      "vin_spec_service.py"
-    ],
-    "private_source_committed": false,
-    "current_partial": {
-      "name": "ua_additional_spec.py",
-      "complete_lines_locally_saved": 471,
-      "accepted": false
-    }
-  },
+  "recorded_at": "2026-09-20T04:06:35.716Z",
+  "updated_at": "2026-09-20T04:06:35.716Z",
+  "foreground_in_progress": false,
+  "status": "POINTS_1_AND_2_ACCEPTED_SCOPED",
+  "result_path": "cloud/task088_v5_acceptance/emergency007_20260920/RESULT.json",
+  "next_action": "Emergency007 point3: finish real-path writer protection and database/media/cache restore integration in an isolated candidate using all seven exact private inputs.",
   "progress": {
     "completed": 8,
     "total": 20,
     "percent": 40,
     "new_product_criteria": []
-  },
-  "production_changed": false,
-  "tests_rerun": false,
-  "next_action": "Continue exact visible-editor recovery of ua_additional_spec.py from saved line471, then vin_spec_service.py."
+  }
 }
