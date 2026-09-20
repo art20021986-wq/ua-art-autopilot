@@ -1,0 +1,51 @@
+{
+  "schema_version": "PR114-EXACT-PREVIEW-STAGE-WAIT-CONNECTION-1",
+  "operation_id": "point4-53544a27-20260920v3a1",
+  "recorded_at": "2026-09-20T12:29:00Z",
+  "status": "WAIT_CONNECTION_UPLOAD_NOT_APPLIED_STAGE_NOT_STARTED",
+  "intended_action": "Upload the exact reviewed Stage script and contract-2 package to new exclusive PythonAnywhere paths, verify SHA256, then execute Stage once without switch or reload.",
+  "transport_failure": {
+    "surface": "Authorized PythonAnywhere Files upload form in the managed browser",
+    "first_attempt": "file chooser timed out; tab navigated to chrome-error; server readback showed the target script absent",
+    "single_safe_retry": "after documented absence and reconnection, file chooser timed out again",
+    "retry_limit_reached": true,
+    "alternate_route_used": false
+  },
+  "last_confirmed_server_state": {
+    "checked_at": "2026-09-20T12:29:00Z",
+    "active_stage_or_package_processes": 0,
+    "stage_script_path": "/home/Carix/autopilot_inbox/cloud/stage_exact_preview_20260920_v3a1.py",
+    "stage_script_present": false,
+    "package_path": "/home/Carix/autopilot_inbox/cloud/exact_preview_current_53544a27_20260920_v3_analytics.zip",
+    "package_present": false,
+    "work_receipt_path": "/home/Carix/autopilot_inbox/cloud/pr114-preview-point4-53544a27-20260920v3a1/01-stage-receipt.json",
+    "work_receipt_present": false,
+    "current_preview_wsgi_sha256": "9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555",
+    "current_preview_config_sha256": "ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee",
+    "production_wsgi_sha256": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+    "observer_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "prior_source_package_sha256": "d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb"
+  },
+  "outcome": {
+    "upload_applied": false,
+    "stage_started": false,
+    "stage_receipt_created": false,
+    "switch_performed": false,
+    "reload_performed": false,
+    "production_written": false,
+    "preview_wsgi_changed": false,
+    "preview_config_changed": false
+  },
+  "inputs_retained": {
+    "stage_script_sha256": "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437",
+    "package_sha256": "77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088",
+    "independent_review": "PASS"
+  },
+  "pr114_acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "incremented": false
+  },
+  "single_next_action": "On the next run, recheck the authorized browser connection, exact Git heads, active processes and the three exclusive target paths. If they remain absent and pins remain exact, resume the first unfinished upload through the same authorized Files route; do not repeat any Stage or use an alternate bypass route."
+}
