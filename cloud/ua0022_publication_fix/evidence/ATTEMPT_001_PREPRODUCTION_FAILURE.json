@@ -1,0 +1,33 @@
+{
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-001",
+  "run_id": "35489064155",
+  "launch_commit": "f24cac6dc1231a2dad399bd1cb36cd560fb8f415",
+  "package_commit": "f4d582a24ea375583e881954ba7ec1609828e25d",
+  "request_sha256": "c8bd386d328ff4d1476db20a70e72c37e5b0311f7fa4832a2c011aa0213ac0f7",
+  "status": "FAILED_BEFORE_PRODUCTION",
+  "run_completed_at": "2026-09-20T04:26:36Z",
+  "failed_job": "106020858798",
+  "error": "EXTRACTED_FUNCTION_AST_MISMATCH",
+  "cause": "Python 3.11 AST omitted the empty type_params field included by the local Python 3.12 fixture hash.",
+  "passed_tests": 28,
+  "narrow_tests_started": 0,
+  "production_jobs": {
+    "prepare": "skipped",
+    "backup": "skipped",
+    "open": "skipped",
+    "controller_production": "skipped"
+  },
+  "production_execution": false,
+  "claim_reconciliation": {
+    "method": "unchanged automation/control_plane.py fail --terminal",
+    "status": "FAILED",
+    "at": "2026-09-20T04:31:26Z",
+    "old_launch_and_consumed_ledger_preserved": true
+  },
+  "halt": {
+    "exists": false,
+    "evidence": "main read returned404; recover job106020886379 stopped at CONTRACT_VALIDATED=false before any write."
+  },
+  "followup": "Corrected task requires a new immutable request and unique launch nonce through the same unchanged gates."
+}
+
