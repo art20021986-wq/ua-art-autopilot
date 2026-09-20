@@ -1,0 +1,73 @@
+{
+  "contract": "UAART-CRITICAL-RECOVERY-READBACK-1",
+  "operation_id": "uaart-emergency-readback-20260920T0818Z",
+  "recorded_at": "2026-09-20T08:19:00Z",
+  "source_branch_head_after_intent": "d8a2f55bb67c8e68d57151ae05e14c6a3895aa6b",
+  "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "production_write_performed_by_this_operation": false,
+  "direct_reload_performed": false,
+  "preview_stage_repeated": false,
+  "old_consumed_task119_replayed": false,
+  "ua0022_actual_installation": {
+    "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "transaction_id": "tx-35490449348-334c361c22ebee11",
+    "backup_receipt": "PASS",
+    "install_verify_receipt": "PASS",
+    "publisher_result": true,
+    "installed_runtime_sha256": {
+      "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+      "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+      "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+      "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+    },
+    "controller_failure": "PUBLIC_BYTES_MISMATCH on UA-0022 diagnostic during the historical controller verification",
+    "rollback_execution": "NOT_PERFORMED",
+    "rollback_preflight_failure": "AUTOSTART_NONCE_RESERVATION_MISSING / TRANSACTION_LEDGER_INVALID",
+    "control_plane_status": "ROLLING_BACK / BLOCKED_ROOT_CAUSE / EMERGENCY_HALT"
+  },
+  "live_availability": {
+    "observed_window_utc": "2026-09-20T08:15Z..08:17:58Z",
+    "managed_browser_apex_redirect": "https://uaart.com.ua/ -> https://www.uaart.com.ua/video/index.html",
+    "browser_rendered": true,
+    "http": {
+      "apex_home": 200,
+      "www_home": 200,
+      "catalog": 200,
+      "ua0022_card": 200,
+      "ua0022_diagnostic": 200
+    },
+    "public_local_sha256_matches": {
+      "ua0022_card": true,
+      "ua0022_diagnostic": true
+    },
+    "sha256": {
+      "ua0022_card": "16d060665a699deb13207e5354c73c847e9c5157540b20a3f77bc289e0c95459",
+      "ua0022_diagnostic": "3651fa5a2f4444f6e4c4af14db7df8b88e259d094fcae76cd2cacbf7ae1fb79e"
+    },
+    "recent_web_error_log": "No current application error; only historical OSError entries from 2026-08-30 and 2026-09-10",
+    "connection_monitor": {
+      "status": "healthy",
+      "started_at": "2026-09-20T08:17:43.271Z",
+      "finished_at": "2026-09-20T08:17:58.807Z",
+      "exit_code": 0,
+      "checked_routes": 4,
+      "all_http_status": 200
+    },
+    "availability_outcome": "RESTORED_OBSERVED_FROM_MANAGED_BROWSER_AND_SERVER",
+    "owner_specific_network_verified": false
+  },
+  "reconciliation": {
+    "factual_outcome": "INSTALLATION_SUCCEEDED_AND_PUBLIC_BYTES_NOW_MATCH; CONTROL_PLANE_FINALIZATION_FAILED",
+    "halt_removed": false,
+    "transaction_changed": false,
+    "reason_no_direct_reload": "Direct reload is forbidden while UA0022 transaction/HALT is unresolved; live availability did not require a reload.",
+    "next_action": "Implement and independently review an incident-specific forward reconciliation route that preserves actual successful installation, terminalizes UA0022 without claiming rollback, and only then releases HALT. Do not reset to OPEN or replay rollback."
+  },
+  "pr114": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "availability_diagnosis_counted_as_criterion": false,
+    "installation_deferred_until_control_plane_reconciled": true
+  }
+}
