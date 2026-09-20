@@ -44,6 +44,10 @@ SOURCE_ROUTING = {
  'analitika_wsgi.py':'a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94',
  'uaart_bridge_wsgi.py':'b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150'}
 LIMIT = 32*1024*1024
+ANALYTICS_PATH = 'ua/a.js'
+ANALYTICS_URL = 'https://www.uaart.com.ua/ua/a.js'
+ANALYTICS_MIME = {'application/javascript','text/javascript'}
+PREVIEW_ANALYTICS_MIME = 'application/javascript; charset=utf-8'
 
 
 def require(ok, code):
@@ -261,7 +265,7 @@ def stage(args):
             require(info.file_size <= LIMIT and not info.is_dir() and not stat.S_ISLNK(info.external_attr >> 16), 'BOUNDED_REGULAR_ZIP_MEMBER_REQUIRED')
         require(sum(info.file_size for info in packed.infolist()) <= 16*1024*1024, 'BOUNDED_TOTAL_ZIP_EXPANSION_REQUIRED')
         package = json.loads(packed.read('package_manifest.json'))
-        require(package.get('contract') == 'PR114-EXACT-PUBLIC-PREVIEW-PACKAGE-1' and package.get('observer_sha256') == sha(obs_raw),
+        require(package.get('contract') == 'PR114-EXACT-PUBLIC-PREVIEW-PACKAGE-2' and package.get('observer_sha256') == sha(obs_raw),
                 'PACKAGE_CURRENT_OBSERVER_BINDING_REQUIRED')
         codes = obs['database']['published_codes']
         require(package.get('published_codes') == codes and len(codes) == len(set(codes)) and
@@ -269,7 +273,8 @@ def stage(args):
         expected_html = {f'{folder}/{code}.html' for folder in ('site','video') for code in ['index','katalog',*codes]}
         require(set(package['candidate_html_sha256']) == expected_html and package['runtime_sha256'] == RUNTIME,
                 'EXACT_PACKAGE_HTML_RUNTIME_CLOSURE_REQUIRED')
-        require(set(names) == {'package_manifest.json',*('candidate/'+n for n in expected_html),*('runtime/'+n for n in RUNTIME)},
+        require(set(names) == {'package_manifest.json','public/'+ANALYTICS_PATH,'evidence/ua-a-js.json',
+                *('candidate/'+n for n in expected_html),*('runtime/'+n for n in RUNTIME)},
                 'ONLY_PUBLIC_HTML_AND_REVIEWED_RUNTIME_ALLOWED')
         blobs = {name:packed.read(name) for name in names}
     require(sha(read(args.package)) == sha(package_raw), 'PACKAGE_CHANGED_DURING_READ')
@@ -277,6 +282,28 @@ def stage(args):
         require(sha(blobs['candidate/'+name]) == pin, 'CANDIDATE_PAGE_PIN_MISMATCH')
     for name,pin in RUNTIME.items():
         require(sha(blobs['runtime/'+name]) == pin, 'UNCHANGED_REVIEWED_RUNTIME_REQUIRED')
+    wrapper = package.get('public_wrapper_asset')
+    require(type(wrapper) is dict and set(wrapper) == {'path','url','sha256','bytes','source_content_type','content_type',
+            'source_wrapper_sha256','capture_evidence_path','capture_evidence_sha256'} and
+            wrapper['path'] == ANALYTICS_PATH and wrapper['url'] == ANALYTICS_URL and
+            wrapper['source_content_type'] in ANALYTICS_MIME and wrapper['content_type'] == PREVIEW_ANALYTICS_MIME and
+            wrapper['source_wrapper_sha256'] == SOURCE_ROUTING['analitika_wsgi.py'] and
+            wrapper['capture_evidence_path'] == 'evidence/ua-a-js.json' and
+            type(wrapper['bytes']) is int and 0 < wrapper['bytes'] <= 1024*1024,
+            'EXACT_PUBLIC_ANALYTICS_ASSET_BINDING_REQUIRED')
+    analytics = blobs['public/'+ANALYTICS_PATH]
+    evidence_raw = blobs['evidence/ua-a-js.json']
+    require(sha(analytics) == wrapper['sha256'] and len(analytics) == wrapper['bytes'] and
+            sha(evidence_raw) == wrapper['capture_evidence_sha256'], 'PUBLIC_ANALYTICS_PACKAGE_BYTES_MISMATCH')
+    evidence = json.loads(evidence_raw)
+    require(type(evidence) is dict and evidence.get('schema_version') == 'PR114-PUBLIC-ANALYTICS-CAPTURE-1' and
+            evidence.get('url') == ANALYTICS_URL and evidence.get('final_url') == ANALYTICS_URL and
+            evidence.get('method') == 'GET' and evidence.get('status') == 200 and
+            evidence.get('content_type') == wrapper['source_content_type'] and evidence.get('bytes') == len(analytics) and
+            evidence.get('sha256') == sha(analytics) and evidence.get('redirect_followed') is False and
+            evidence.get('event_endpoint_called') is False and
+            evidence.get('source_wrapper_sha256') == SOURCE_ROUTING['analitika_wsgi.py'],
+            'SAFE_PUBLIC_ANALYTICS_CAPTURE_EVIDENCE_REQUIRED')
     work.mkdir(mode=0o700)
     syncdir(PARENT)
     event(work,'00-stage-intent.json',{'operation_id':args.operation_id,'started_at':now(),'self_sha256':sha(read(__file__)),
@@ -309,6 +336,14 @@ def stage(args):
             target = work/'candidate'/'offline'/name
             makeparent(target.parent,work)
             write(target,raw)
+    analytics_target = work/'candidate'/'public'/ANALYTICS_PATH
+    makeparent(analytics_target.parent,work)
+    write(analytics_target,analytics)
+    files['/'+ANALYTICS_PATH] = {'storage':'bundle','path':'public/'+ANALYTICS_PATH,
+        'sha256':sha(analytics),'bytes':len(analytics),'content_type':wrapper['content_type'],
+        'protection':'HASH_BOUND_PUBLIC_WRAPPER_CAPTURE','source_binding':{
+            'type':'PUBLIC_GET_CAPTURE','url':ANALYTICS_URL,'evidence_sha256':sha(evidence_raw),
+            'source_wrapper_sha256':SOURCE_ROUTING['analitika_wsgi.py']}}
     allowed = {'video/info.html','video/podbor.html',*('video/'+c+'-diag.html' for c in codes)}
     pending, seen = list(html), set()
     while pending:
@@ -335,6 +370,10 @@ def stage(args):
             continue
         if target in seen: continue
         seen.add(target)
+        if target == ANALYTICS_PATH:
+            require('/'+target in files,'PUBLIC_ANALYTICS_CAPTURE_REQUIRED')
+            dependencies[target] = sha(analytics)
+            continue
         require(target.startswith('video/'), 'UNSERVED_PUBLIC_ASSET_ROUTE:'+target)
         ext = Path(target).suffix.lower()
         require(ext in metadata.ASSET_TYPES, 'UNSUPPORTED_ASSET_TYPE:'+target)

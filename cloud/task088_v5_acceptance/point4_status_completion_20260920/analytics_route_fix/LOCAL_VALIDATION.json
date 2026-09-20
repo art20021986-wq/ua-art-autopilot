@@ -1,0 +1,71 @@
+{
+  "schema_version": "PR114-ANALYTICS-ROUTE-FIX-LOCAL-VALIDATION-1",
+  "operation_id": "pr114-analytics-route-fix-20260920T1208Z",
+  "validated_at": "2026-09-20T12:08:20Z",
+  "status": "PASS_LOCAL_NOT_STAGED",
+  "source_parent": "b5211db7b2639a7b1033e4c8c002689d9cba34e4",
+  "main_observed": "b9c985ac924739b351e4d5535499bb6516917daf",
+  "tests": {
+    "analytics_route_fix_unittest": {
+      "passed": 7,
+      "failed": 0
+    },
+    "targeted_stage_fixture": {
+      "status": "PASS_TARGETED_LOCAL_FIXTURE",
+      "unsafe_analytics_variants_failed_closed": 5
+    },
+    "python_ast_parse": {
+      "passed": 5,
+      "failed": 0
+    },
+    "git_diff_check": "PASS"
+  },
+  "source_package": {
+    "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/exact_preview_current_53544a27_20260920_v2.zip",
+    "sha256": "d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb",
+    "members": 54
+  },
+  "output_package": {
+    "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/exact_preview_current_53544a27_20260920_v3_analytics.zip",
+    "sha256": "77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088",
+    "bytes": 655049,
+    "contract": "PR114-EXACT-PUBLIC-PREVIEW-PACKAGE-2",
+    "members": 56,
+    "added_members": [
+      "evidence/ua-a-js.json",
+      "public/ua/a.js"
+    ],
+    "removed_members": [],
+    "shared_payload_drift": [],
+    "candidate_html_sha256_map_unchanged": true,
+    "runtime_sha256_map_unchanged": true,
+    "event_endpoint_member_present": false
+  },
+  "public_asset": {
+    "path": "ua/a.js",
+    "method": "GET",
+    "sha256": "52b3188b25a5e01cc5fc494fb8aebd76f6b2fc0ccbb21dccfb40bdc88cea070b",
+    "bytes": 4282,
+    "capture_receipt_sha256": "1e6e6635e53d029fd65436becbf0e59eb90e81c727f0bea05846274970b7c650",
+    "redirect_followed": false,
+    "event_endpoint_called": false,
+    "event_endpoint_packaged": false
+  },
+  "changed_file_sha256": {
+    "check_preview_stage_fixture.py": "a3f8a1aea82dadbd40859a1d7de845d0ac78b69a0d7b8f260fe339202aa1c7b4",
+    "package_exact_preview.py": "f1f5f0d5a574bc9f6020dfc574740279125393ac13ef0ef09ab491899f92f7ca",
+    "stage_exact_preview.py": "86fc84764a699c19ed977a8c0b92e9e88f2151090e24e472ebf2446b7de0c681",
+    "test_analytics_route_fix.py": "2b62f09628ca09371ded42af102041a5844a17aa096412adf519dffa3af0e256",
+    "upgrade_preview_package_analytics.py": "16dfdc2de105012e2eb278856ed31905700b7859ef43ecf9feabf45319700c4c"
+  },
+  "production_written": false,
+  "preview_started": false,
+  "switch_performed": false,
+  "reload_performed": false,
+  "accepted_historical_suites_repeated": false,
+  "limitations": [
+    "No browser, server binding, service reload or Preview acceptance was performed.",
+    "Independent review is required before a new Stage operation."
+  ],
+  "next_action": "Persist exact bytes to the PR branch, verify GitHub readback, and obtain independent review before any Preview stage."
+}

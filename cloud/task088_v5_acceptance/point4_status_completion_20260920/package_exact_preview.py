@@ -16,12 +16,17 @@ _helper = Path(__file__).resolve().parent/'stage_exact_preview.py'
 _spec = importlib.util.spec_from_file_location('exact_preview_package_helpers',_helper)
 _module = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_module)
-RUNTIME, read, encoded, require, sha = [_module.__dict__[key] for key in ('RUNTIME','read','encoded','require','sha')]
+RUNTIME, SOURCE_ROUTING, read, encoded, require, sha = [_module.__dict__[key] for key in
+    ('RUNTIME','SOURCE_ROUTING','read','encoded','require','sha')]
+ANALYTICS_PATH = 'ua/a.js'
+ANALYTICS_URL = 'https://www.uaart.com.ua/ua/a.js'
+ANALYTICS_MIME = {'application/javascript','text/javascript'}
+PREVIEW_ANALYTICS_MIME = 'application/javascript; charset=utf-8'
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ('candidate','candidate-manifest','observer','repository','output'):
+    for name in ('candidate','candidate-manifest','observer','repository','analytics-capture','analytics-receipt','output'):
         parser.add_argument('--'+name,required=True)
     args = parser.parse_args()
     root = Path(args.candidate).resolve(strict=True)
@@ -51,10 +56,35 @@ def main():
     payload = {'candidate/'+name:read(root/name,files[name]['after_sha256']) for name in html}
     runtime = Path(args.repository).resolve(strict=True)/'cloud/task088_v5_preview'
     payload.update({'runtime/'+name:read(runtime/name,pin) for name,pin in RUNTIME.items()})
-    package = {'contract':'PR114-EXACT-PUBLIC-PREVIEW-PACKAGE-1','observer_sha256':sha(obs_raw),
+    analytics_receipt_raw = read(args.analytics_receipt)
+    analytics_receipt = json.loads(analytics_receipt_raw)
+    required_capture = {'schema_version','url','final_url','method','status','content_type','bytes','sha256',
+        'source_wrapper_sha256','redirect_followed','event_endpoint_called','captured_at_utc'}
+    require(type(analytics_receipt) is dict and set(analytics_receipt) == required_capture,
+            'EXACT_ANALYTICS_CAPTURE_RECEIPT_REQUIRED')
+    require(analytics_receipt['schema_version'] == 'PR114-PUBLIC-ANALYTICS-CAPTURE-1' and
+            analytics_receipt['url'] == ANALYTICS_URL and analytics_receipt['final_url'] == ANALYTICS_URL and
+            analytics_receipt['method'] == 'GET' and analytics_receipt['status'] == 200 and
+            analytics_receipt['content_type'] in ANALYTICS_MIME and analytics_receipt['redirect_followed'] is False and
+            analytics_receipt['event_endpoint_called'] is False and
+            analytics_receipt['source_wrapper_sha256'] == SOURCE_ROUTING['analitika_wsgi.py'] and
+            type(analytics_receipt['bytes']) is int and 0 < analytics_receipt['bytes'] <= 1024*1024 and
+            type(analytics_receipt['captured_at_utc']) is str and analytics_receipt['captured_at_utc'].endswith('Z'),
+            'PINNED_SAFE_ANALYTICS_CAPTURE_REQUIRED')
+    analytics_raw = read(args.analytics_capture,analytics_receipt['sha256'],1024*1024)
+    require(len(analytics_raw) == analytics_receipt['bytes'],'ANALYTICS_CAPTURE_LENGTH_MISMATCH')
+    payload['public/'+ANALYTICS_PATH] = analytics_raw
+    payload['evidence/ua-a-js.json'] = analytics_receipt_raw
+    package = {'contract':'PR114-EXACT-PUBLIC-PREVIEW-PACKAGE-2','observer_sha256':sha(obs_raw),
         'published_codes':codes,'candidate_html_sha256':{name:files[name]['after_sha256'] for name in html},
         'runtime_sha256':RUNTIME,'canonical_candidate_manifest_sha256':canonical_sha,
-        'candidate_manifest_evidence_sha256':sha(evidence_raw),'private_sources_included':False,
+        'candidate_manifest_evidence_sha256':sha(evidence_raw),
+        'public_wrapper_asset':{'path':ANALYTICS_PATH,'url':ANALYTICS_URL,'sha256':sha(analytics_raw),
+            'bytes':len(analytics_raw),'source_content_type':analytics_receipt['content_type'],
+            'content_type':PREVIEW_ANALYTICS_MIME,
+            'source_wrapper_sha256':SOURCE_ROUTING['analitika_wsgi.py'],
+            'capture_evidence_path':'evidence/ua-a-js.json','capture_evidence_sha256':sha(analytics_receipt_raw)},
+        'private_sources_included':False,
         'browser_run':False,'preview_gate':'NOT_PASSED'}
     payload['package_manifest.json'] = encoded(package)
     fd = os.open(args.output,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
@@ -68,7 +98,7 @@ def main():
         output.flush(); os.fsync(output.fileno())
     raw = read(args.output)
     print(json.dumps({'status':'EXACT_PUBLIC_PREVIEW_PACKAGE_PREPARED_NOT_STAGED','path':args.output,
-                      'sha256':sha(raw),'bytes':len(raw),'members':len(payload),'html':len(html),
+                      'sha256':sha(raw),'bytes':len(raw),'members':len(payload),'html':len(html),'wrapper_assets':1,
                       'canonical_candidate_manifest_sha256':canonical_sha,'private_sources_included':False}))
 
 

@@ -3,6 +3,7 @@
 import sys
 sys.dont_write_bytecode = True
 import contextlib
+import copy
 import importlib.util
 import io
 import json
@@ -15,7 +16,7 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('preview_stage_fixture_target',HERE/'stage_exact_preview.py')
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
-repo = HERE.parent/'pr114_review'
+repo = HERE.parents[2]
 runtime = repo/'cloud/task088_v5_preview'
 
 
@@ -67,21 +68,60 @@ def run():
         m.write(root/'observer.json',m.encoded(obs))
         html = {f'{folder}/{name}.html':b'<!doctype html><html><body>Fixture public bytes</body></html>'
                 for folder in ('site','video') for name in ('index','katalog','UA-0001')}
-        package = {'contract':'PR114-EXACT-PUBLIC-PREVIEW-PACKAGE-1','observer_sha256':m.sha(m.encoded(obs)),
+        analytics = b'(()=>{"use strict"})();\n'
+        analytics_evidence = {'schema_version':'PR114-PUBLIC-ANALYTICS-CAPTURE-1',
+            'url':m.ANALYTICS_URL,'final_url':m.ANALYTICS_URL,'method':'GET','status':200,
+            'content_type':'application/javascript','bytes':len(analytics),'sha256':m.sha(analytics),
+            'source_wrapper_sha256':m.SOURCE_ROUTING['analitika_wsgi.py'],'redirect_followed':False,
+            'event_endpoint_called':False,'captured_at_utc':'2026-09-20T12:00:00Z'}
+        analytics_evidence_raw = m.encoded(analytics_evidence)
+        package = {'contract':'PR114-EXACT-PUBLIC-PREVIEW-PACKAGE-2','observer_sha256':m.sha(m.encoded(obs)),
             'published_codes':['UA-0001'],'runtime_sha256':m.RUNTIME,'canonical_candidate_manifest_sha256':'3'*64,
-            'candidate_html_sha256':{n:m.sha(raw) for n,raw in html.items()}}
-        zip_path = root/'public.zip'
-        with zipfile.ZipFile(zip_path,'w',zipfile.ZIP_DEFLATED) as packed:
-            packed.writestr('package_manifest.json',m.encoded(package))
+            'candidate_html_sha256':{n:m.sha(raw) for n,raw in html.items()},
+            'public_wrapper_asset':{'path':m.ANALYTICS_PATH,'url':m.ANALYTICS_URL,'sha256':m.sha(analytics),
+                'bytes':len(analytics),'source_content_type':'application/javascript',
+                'content_type':m.PREVIEW_ANALYTICS_MIME,
+                'source_wrapper_sha256':m.SOURCE_ROUTING['analitika_wsgi.py'],
+                'capture_evidence_path':'evidence/ua-a-js.json',
+                'capture_evidence_sha256':m.sha(analytics_evidence_raw)}}
+        def make_package(path, manifest=package, asset=analytics, evidence=analytics_evidence_raw,
+                         include_asset=True, include_evidence=True, extras=None):
+          with zipfile.ZipFile(path,'w',zipfile.ZIP_DEFLATED) as packed:
+            packed.writestr('package_manifest.json',m.encoded(manifest))
             for n,raw in html.items():packed.writestr('candidate/'+n,raw)
             for n in m.RUNTIME:packed.writestr('runtime/'+n,(runtime/n).read_bytes())
-        args = SimpleNamespace(operation_id='fixture-op-001',package=str(zip_path),package_sha256=m.sha(zip_path.read_bytes()),
-            observer=str(root/'observer.json'),observer_sha256=m.sha(m.encoded(obs)),existing_config=str(old/'config.json'),
-            expected_wsgi_sha256=m.sha(old_wsgi),expected_config_sha256=m.sha(m.encoded(config)),max_seconds=30)
+            if include_asset: packed.writestr('public/'+m.ANALYTICS_PATH,asset)
+            if include_evidence: packed.writestr('evidence/ua-a-js.json',evidence)
+            for name,raw in (extras or {}).items(): packed.writestr(name,raw)
+        def arguments(path, operation):
+            return SimpleNamespace(operation_id=operation,package=str(path),package_sha256=m.sha(path.read_bytes()),
+                observer=str(root/'observer.json'),observer_sha256=m.sha(m.encoded(obs)),existing_config=str(old/'config.json'),
+                expected_wsgi_sha256=m.sha(old_wsgi),expected_config_sha256=m.sha(m.encoded(config)),max_seconds=30)
+        def rejected(name, code, **kwargs):
+            path=root/(name+'.zip'); make_package(path,**kwargs)
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):m.stage(arguments(path,'fixture-'+name))
+            except (ValueError,KeyError) as error:
+                assert code in str(error),(name,str(error))
+            else: raise AssertionError('Unsafe analytics package accepted: '+name)
+        rejected('missing-asset','ONLY_PUBLIC_HTML_AND_REVIEWED_RUNTIME_ALLOWED',include_asset=False)
+        rejected('extra-route','ONLY_PUBLIC_HTML_AND_REVIEWED_RUNTIME_ALLOWED',extras={'public/ua/evil.js':b'evil'})
+        rejected('asset-drift','PUBLIC_ANALYTICS_PACKAGE_BYTES_MISMATCH',asset=analytics+b'drift')
+        event_evidence=copy.deepcopy(analytics_evidence);event_evidence['event_endpoint_called']=True
+        event_raw=m.encoded(event_evidence);event_package=copy.deepcopy(package)
+        event_package['public_wrapper_asset']['capture_evidence_sha256']=m.sha(event_raw)
+        rejected('event-endpoint','SAFE_PUBLIC_ANALYTICS_CAPTURE_EVIDENCE_REQUIRED',manifest=event_package,evidence=event_raw)
+        source_package=copy.deepcopy(package);source_package['public_wrapper_asset']['source_wrapper_sha256']='0'*64
+        rejected('source-drift','EXACT_PUBLIC_ANALYTICS_ASSET_BINDING_REQUIRED',manifest=source_package)
+        zip_path = root/'public.zip';make_package(zip_path)
+        args = arguments(zip_path,'fixture-op-001')
         with contextlib.redirect_stdout(io.StringIO()):m.stage(args)
         work = m.PARENT/'pr114-preview-fixture-op-001'
         receipt_raw = (work/'01-stage-receipt.json').read_bytes()
         receipt = json.loads(receipt_raw)
+        staged_manifest = json.loads((work/'candidate/manifest.json').read_bytes())
+        assert staged_manifest['files']['/ua/a.js']['sha256'] == m.sha(analytics)
+        assert '/ua/a/e' not in staged_manifest['files']
         assert m.TARGET.read_bytes() == old_wsgi and m.PRODUCTION.read_bytes() == production
         assert receipt['validation']['private_routes_denied'] == 9
         assert not (work/'02-switch-intent.json').exists()
@@ -111,7 +151,8 @@ def run():
         assert m.TARGET.read_bytes() == b'# unknown foreign change\n'
         assert not any(p.suffix in ('.db','.sqlite') for p in work.rglob('*'))
         assert (work/'config.json').stat().st_mode & 0o777 == 0o600
-        return {'status':'PASS_TARGETED_LOCAL_FIXTURE','checks':['stage preserves dedicated and production WSGI',
+        return {'status':'PASS_TARGETED_LOCAL_FIXTURE','checks':['five unsafe analytics package variants fail closed',
+            'stage preserves dedicated and production WSGI',
             'pinned public runtime validates scoped bundle and nine denied private routes','separate durable switch intent and observed receipt',
             'unknown or repeated switch never replaces again','foreign bytes inspection preserved','private config mode and no DB export'],
             'limitations':['temporary fixture constants replace real server locations and production source hash',
