@@ -1,0 +1,757 @@
+# /home/Carix/db.py:108 original_sha256=f942bba9c81b7360bc6ab4c9092cdb884aa6f2c1ba7437fdab013b653deb81b9
+def _ua_sql_pishet(sql):
+    """Conservatively classify SQL; unknown statements enter the write queue."""
+    try:
+        text = str(sql).lstrip()
+        while text.startswith('--'):
+            text = text.split('\n', 1)[1].lstrip()
+        slovo = text.split(None, 1)[0].upper().rstrip(';') if text else ''
+    except Exception:
+        return True
+    return slovo not in ('', 'SELECT', 'PRAGMA', 'EXPLAIN')
+
+# /home/Carix/db.py:120 original_sha256=c91b84376892ea87dee2d80b3a12a05c85cb6b85625186ffe0498e050cd11b57
+def _ua_fayl_zahvatit(timeout):
+    """Re-entrant per-thread registration over one cross-process flock."""
+    import fcntl as _ua_fcntl
+    import time as _ua_time
+    depth = int(getattr(_UA_FAYL_SOSTOYANIE, 'depth', 0) or 0)
+    if depth:
+        _UA_FAYL_SOSTOYANIE.depth = depth + 1
+        return
+    handle = open(os.path.join(BASE_DIR, '.crm_db.lock'), 'a+')
+    deadline = _ua_time.monotonic() + float(timeout)
+    while True:
+        try:
+            _ua_fcntl.flock(handle.fileno(), _ua_fcntl.LOCK_EX | _ua_fcntl.LOCK_NB)
+            _UA_FAYL_SOSTOYANIE.handle = handle
+            _UA_FAYL_SOSTOYANIE.depth = 1
+            return
+        except BlockingIOError:
+            if _ua_time.monotonic() >= deadline:
+                handle.close()
+                raise sqlite3.OperationalError('CRM database queue timeout')
+            _ua_time.sleep(0.05)
+
+# /home/Carix/db.py:145 original_sha256=d865201157ef1b599f4cf3483e01e2d316cba55b02b4c27859eb8a13222f5493
+def _ua_fayl_otpustit():
+    import fcntl as _ua_fcntl
+    depth = int(getattr(_UA_FAYL_SOSTOYANIE, 'depth', 0) or 0)
+    if depth <= 0:
+        return
+    if depth > 1:
+        _UA_FAYL_SOSTOYANIE.depth = depth - 1
+        return
+    handle = getattr(_UA_FAYL_SOSTOYANIE, 'handle', None)
+    _UA_FAYL_SOSTOYANIE.depth = 0
+    _UA_FAYL_SOSTOYANIE.handle = None
+    if handle is None:
+        return
+    try:
+        _ua_fcntl.flock(handle.fileno(), _ua_fcntl.LOCK_UN)
+    finally:
+        handle.close()
+
+# /home/Carix/db.py:166 original_sha256=81602c9d3ba7e8bf4d596417e2f9861dfe9ed3e028da68cc267c62b01c774a47
+class _UaKursor(sqlite3.Cursor):
+    """Cursor path cannot bypass the transaction queue."""
+
+    def _vypolnit(self, method, sql, *args):
+        conn = self.connection
+        novaya = conn._pered_zapisyu(sql)
+        try:
+            return method(self, sql, *args)
+        except Exception:
+            if novaya and (not conn.in_transaction):
+                conn._otpustit()
+            raise
+
+    def execute(self, sql, parameters=()):
+        return self._vypolnit(sqlite3.Cursor.execute, sql, parameters)
+
+    def executemany(self, sql, seq_of_parameters):
+        return self._vypolnit(sqlite3.Cursor.executemany, sql, seq_of_parameters)
+
+    def executescript(self, sql_script):
+        return self._vypolnit(sqlite3.Cursor.executescript, sql_script)
+
+# /home/Carix/db.py:189 original_sha256=edfd3fd7709aaaee60d013f266481a2cfc7cd03d0d318683f8e245f4aa816b66
+class Soedinenie(sqlite3.Connection):
+    """Own the process queue only while a write transaction is active."""
+
+    def _pered_zapisyu(self, sql):
+        if not _ua_sql_pishet(sql) or getattr(self, '_ua_zapis_v_ocheredi', False):
+            return False
+        vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)
+        if not vzyata:
+            raise sqlite3.OperationalError('CRM thread queue timeout')
+        self._ochered_vzyata = True
+        try:
+            _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)
+            self._fayl_zaregistrirovan = True
+            self._ua_zapis_v_ocheredi = True
+            return True
+        except Exception:
+            self._ochered_vzyata = False
+            try:
+                ZAMOK.release()
+            except Exception:
+                pass
+            raise
+
+    def _otpustit(self):
+        self._ua_zapis_v_ocheredi = False
+        if getattr(self, '_fayl_zaregistrirovan', False):
+            self._fayl_zaregistrirovan = False
+            try:
+                _ua_fayl_otpustit()
+            except Exception:
+                pass
+        if getattr(self, '_ochered_vzyata', False):
+            self._ochered_vzyata = False
+            try:
+                ZAMOK.release()
+            except Exception:
+                pass
+
+    def cursor(self, factory=None):
+        return sqlite3.Connection.cursor(self, factory or _UaKursor)
+
+    def execute(self, sql, parameters=()):
+        novaya = self._pered_zapisyu(sql)
+        try:
+            return sqlite3.Connection.execute(self, sql, parameters)
+        except Exception:
+            if novaya and (not self.in_transaction):
+                self._otpustit()
+            raise
+
+    def executemany(self, sql, seq_of_parameters):
+        novaya = self._pered_zapisyu(sql)
+        try:
+            return sqlite3.Connection.executemany(self, sql, seq_of_parameters)
+        except Exception:
+            if novaya and (not self.in_transaction):
+                self._otpustit()
+            raise
+
+    def executescript(self, sql_script):
+        novaya = self._pered_zapisyu(sql_script)
+        try:
+            return sqlite3.Connection.executescript(self, sql_script)
+        except Exception:
+            if novaya and (not self.in_transaction):
+                self._otpustit()
+            raise
+
+    def _commit_s_povtorom(self):
+        import time as _ua_time
+        for attempt in range(5):
+            try:
+                sqlite3.Connection.commit(self)
+                return
+            except sqlite3.OperationalError as exc:
+                text = str(exc).casefold()
+                if 'locked' not in text and 'busy' not in text:
+                    raise
+                if attempt == 4:
+                    raise
+                _ua_time.sleep(0.15 * 2 ** attempt)
+
+    def commit(self):
+        try:
+            self._commit_s_povtorom()
+        except Exception:
+            try:
+                sqlite3.Connection.rollback(self)
+            finally:
+                self._otpustit()
+            raise
+        self._otpustit()
+
+    def rollback(self):
+        try:
+            return sqlite3.Connection.rollback(self)
+        finally:
+            self._otpustit()
+
+    def close(self):
+        try:
+            if self.in_transaction:
+                sqlite3.Connection.rollback(self)
+            sqlite3.Connection.close(self)
+        finally:
+            self._otpustit()
+
+    def __exit__(self, tip, znachenie, sled):
+        try:
+            if tip is None:
+                self.commit()
+            else:
+                self.rollback()
+        finally:
+            try:
+                self.close()
+            except Exception:
+                self._otpustit()
+        return False
+
+    def __del__(self):
+        self._otpustit()
+
+# /home/Carix/db.py:315 original_sha256=da9b6d2d26eaa1ebc82cecf6036a276c8951da8f2314156519705ba5d67ed374
+def connect():
+    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)
+    conn.row_factory = sqlite3.Row
+    try:
+        sqlite3.Connection.execute(conn, 'PRAGMA journal_mode=DELETE')
+    except Exception:
+        pass
+    sqlite3.Connection.execute(conn, 'PRAGMA busy_timeout=%d' % (ZAMOK_OZHIDANIE * 1000))
+    sqlite3.Connection.execute(conn, 'PRAGMA foreign_keys=ON')
+    return conn
+
+# /home/Carix/db.py:331 original_sha256=28ff5c3414e7d1c8166e17f76884c0b794fb3154c815312dab2531dcde842afa
+def init_db():
+    """Создаёт таблицы, если их ещё нет. Безопасно вызывать при каждом запуске."""
+    with connect() as c:
+        c.executescript('\n        CREATE TABLE IF NOT EXISTS staff (\n            user_id     INTEGER PRIMARY KEY,\n            full_name   TEXT,\n            username    TEXT,\n            role        TEXT NOT NULL,\n            active      INTEGER NOT NULL DEFAULT 1,\n            added_by    INTEGER,\n            added_at    TEXT NOT NULL,\n            note        TEXT\n        );\n\n        CREATE TABLE IF NOT EXISTS invites (\n            code        TEXT PRIMARY KEY,\n            role        TEXT NOT NULL,\n            created_by  INTEGER NOT NULL,\n            created_at  TEXT NOT NULL,\n            used_by     INTEGER,\n            used_at     TEXT\n        );\n\n        -- Входящая информация от владельца в свободной форме\n        CREATE TABLE IF NOT EXISTS inbox (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            from_user_id  INTEGER NOT NULL,\n            kind          TEXT NOT NULL,      -- text/photo/video/voice/document/contact/other\n            text          TEXT,\n            file_id       TEXT,\n            media_group   TEXT,               -- альбом: несколько файлов одним сообщением\n            tg_chat_id    INTEGER,\n            tg_message_id INTEGER,\n            status        TEXT NOT NULL,\n            assigned_to   INTEGER,\n            card_type     TEXT,               -- car/client, если из записи создали карточку\n            card_id       INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        );\n\n        CREATE TABLE IF NOT EXISTS cars (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            brand         TEXT,\n            model         TEXT,\n            year          TEXT,\n            vin           TEXT,\n            fuel          TEXT,\n            engine        TEXT,\n            color         TEXT,\n            mileage       TEXT,\n            trim          TEXT,\n            condition     TEXT,\n            accidents     TEXT,\n            auction_link  TEXT,\n            price_buy     TEXT,\n            price_extra   TEXT,\n            price_ship    TEXT,\n            price_customs TEXT,\n            price_total   TEXT,\n            stage         TEXT,               -- этап доставки\n            photos        TEXT,               -- JSON-список file_id\n            videos        TEXT,\n            docs          TEXT,\n            responsible   INTEGER,\n            review_status TEXT NOT NULL,      -- статус согласования\n            published     INTEGER NOT NULL DEFAULT 0,  -- виден ли в клиентском боте\n            created_by    INTEGER,\n            approved_by   INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        );\n\n        CREATE TABLE IF NOT EXISTS clients (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            name          TEXT,\n            phone         TEXT,\n            telegram      TEXT,\n            whatsapp      TEXT,\n            car_interest  TEXT,\n            budget        TEXT,\n            wishes        TEXT,\n            source        TEXT,\n            prepayment    TEXT,\n            stage         TEXT,\n            responsible   INTEGER,\n            next_contact  TEXT,\n            tg_user_id    INTEGER,\n            review_status TEXT NOT NULL,\n            created_by    INTEGER,\n            approved_by   INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        );\n\n        CREATE TABLE IF NOT EXISTS comments (\n            id           INTEGER PRIMARY KEY AUTOINCREMENT,\n            entity_type  TEXT NOT NULL,       -- inbox/car/client\n            entity_id    INTEGER NOT NULL,\n            author_id    INTEGER NOT NULL,\n            text         TEXT,\n            file_id      TEXT,\n            created_at   TEXT NOT NULL\n        );\n\n        -- Журнал действий: кто, что, когда, было -> стало\n        CREATE TABLE IF NOT EXISTS audit (\n            id           INTEGER PRIMARY KEY AUTOINCREMENT,\n            actor_id     INTEGER,\n            action       TEXT NOT NULL,\n            entity_type  TEXT,\n            entity_id    INTEGER,\n            field        TEXT,\n            old_value    TEXT,\n            new_value    TEXT,\n            created_at   TEXT NOT NULL\n        );\n\n        CREATE INDEX IF NOT EXISTS idx_inbox_status ON inbox(status);\n        CREATE INDEX IF NOT EXISTS idx_cars_review ON cars(review_status);\n        CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit(entity_type, entity_id);\n        CREATE INDEX IF NOT EXISTS idx_cars_vin ON cars(vin);\n        CREATE INDEX IF NOT EXISTS idx_clients_phone ON clients(phone);\n        ')
+    migrate()
+    logging.info(f'База готова: {DB_FILE}')
+
+# /home/Carix/db.py:460 original_sha256=f2ce0022d9d4e8ff2b226bd8b140fbcb659a9fb053d5dd517b68ff6ffcfa4514
+def migrate():
+    """Добавляет колонки, появившиеся после создания базы.
+    CREATE TABLE IF NOT EXISTS существующую таблицу не меняет."""
+    novye = [('clients', 'tg_user_id', 'INTEGER'), ('cars', 'client_id', 'INTEGER'), ('cars', 'publish_pending', 'INTEGER DEFAULT 0')]
+    with connect() as c:
+        for tablica, kolonka, tip in novye:
+            est = {r['name'] for r in c.execute(f'PRAGMA table_info({tablica})').fetchall()}
+            if kolonka not in est:
+                try:
+                    c.execute(f'ALTER TABLE {tablica} ADD COLUMN {kolonka} {tip}')
+                    logging.info(f'Добавлена колонка {tablica}.{kolonka}')
+                except sqlite3.OperationalError as e:
+                    logging.warning(f'Не добавил {tablica}.{kolonka}: {e}')
+
+# /home/Carix/db.py:479 original_sha256=08c460137950477a288ce91ad002f0a9d0b5797c7ff8a484cded7def346d4bd3
+def now() -> str:
+    return datetime.now().isoformat(timespec='seconds')
+
+# /home/Carix/db.py:486 original_sha256=fa2828c1dda20f5dace0f8b4118bfd7efd8978f9b513317b6fefdfb333803b73
+def log_action(actor_id, action, entity_type=None, entity_id=None, field=None, old_value=None, new_value=None):
+    """Пишем каждое значимое действие. Историю задним числом не восстановить,
+    поэтому журнал ведётся с первого дня."""
+    with connect() as c:
+        c.execute('INSERT INTO audit (actor_id, action, entity_type, entity_id, field, old_value, new_value, created_at) VALUES (?,?,?,?,?,?,?,?)', (actor_id, action, entity_type, entity_id, field, str(old_value) if old_value is not None else None, str(new_value) if new_value is not None else None, now()))
+
+# /home/Carix/db.py:701 original_sha256=b0c91f589d7aaecadfbdfd19140c7adc14bd43e2b8c3e853e336fa00779d7c3a
+def create_card(table: str, data: dict, created_by: int) -> int:
+    fields = CAR_FIELDS if table == 'cars' else CLIENT_FIELDS
+    data = {k: v for k, v in data.items() if k in fields}
+    cols = list(data.keys()) + ['review_status', 'created_by', 'created_at']
+    vals = list(data.values()) + [ST_ON_REVIEW, created_by, now()]
+    with connect() as c:
+        cur = c.execute(f"INSERT INTO {table} ({','.join(cols)}) VALUES ({','.join('?' * len(cols))})", vals)
+        card_id = cur.lastrowid
+    log_action(created_by, 'card_create', table, card_id, 'review_status', None, ST_ON_REVIEW)
+    return card_id
+
+# /home/Carix/db.py:735 original_sha256=65033f6dbbb341d69f7b9918e0e4fc69b4746596b7db6320f0d4ead6ec63dab0
+def update_card_field(table: str, card_id: int, field: str, value, actor_id: int):
+    """Каждая правка поля попадает в журнал со старым и новым значением."""
+    old = get_card(table, card_id)
+    old_value = old.get(field) if old else None
+    with connect() as c:
+        c.execute(f'UPDATE {table} SET {field}=?, updated_at=? WHERE id=?', (value, now(), card_id))
+    log_action(actor_id, 'card_edit', table, card_id, field, old_value, value)
+
+
+# /home/Carix/ua_spec84_runtime.py:45 original_sha256=970266e0882617615f3ece7009c2630f3fb85eff8a1d3f60704d0e1fac663734
+def _cards():
+    service = _legacy()
+    result = []
+    with service.connect_main() as db:
+        rows = [dict(row) for row in db.execute('SELECT rowid AS __rowid__,* FROM cars ORDER BY rowid')]
+    for row in rows:
+        card = service._card_from_row(row)
+        if card is None:
+            uid = service.canonical_uid(service._pick(row, 'auto_number', 'car_uid', 'uid', 'code'))
+            raw = str(service._pick(row, 'vin', 'vin_code') or '').strip().upper()
+            card = {'car_uid': uid, 'vin': raw, 'published': service._published(row), 'car_id': row.get('id'), 'brand': row.get('brand'), 'model': row.get('model'), 'year': row.get('year'), 'engine_cc': service._engine_cc(row)}
+            if identity(dict(card, published=True)) is None:
+                continue
+        result.append(card)
+    return result
+
+# /home/Carix/ua_spec84_runtime.py:66 original_sha256=8571da29ce633eedb00faebc8ed9b3441e9873614465363427becbe4a9e36332
+def _card(uid):
+    return next((row for row in _cards() if row['car_uid'] == uid), None)
+
+# /home/Carix/ua_spec84_runtime.py:70 original_sha256=c0ac38fca3a436ecb1f706e156b8d496a1674dcd898aa28d8ddb02d297bfd348
+@contextlib.contextmanager
+def _writer_guard(uid):
+    """Same preexisting inodes and ordering as installation; bounded waits."""
+    deadline = time.monotonic() + 2.0
+    handles = []
+    try:
+        while True:
+            if (ROOT / '.uaart_writer_coordination' / 'active-intent.json').exists():
+                raise RuntimeDeferred('COORDINATED_WRITER_ACTIVE')
+            try:
+                for name in WRITER_LOCKS:
+                    path = ROOT / name
+                    if path.is_symlink() or not path.is_file():
+                        raise RuntimeDeferred('EXISTING_WRITER_LOCK_MISSING')
+                    fd = os.open(str(path), os.O_RDWR | getattr(os, 'O_NOFOLLOW', 0))
+                    handles.append(fd)
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                for fd in reversed(handles):
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+                    os.close(fd)
+                handles = []
+                if time.monotonic() >= deadline:
+                    raise RuntimeDeferred('WRITER_BUSY')
+                _stop.wait(0.05)
+        if (ROOT / '.uaart_writer_coordination' / 'active-intent.json').exists():
+            raise RuntimeDeferred('COORDINATED_WRITER_ACTIVE')
+        import ua_spec_permanent
+        with ua_spec_permanent.write_lock(ROOT, timeout=2.0):
+            yield
+    finally:
+        for fd in reversed(handles):
+            fcntl.flock(fd, fcntl.LOCK_UN)
+            os.close(fd)
+
+# /home/Carix/ua_spec84_runtime.py:131 original_sha256=2335bea164cee6d86ade0c5e2f075b6a9233a8a94aa55f946c19114b1712c3a7
+def _spec_transaction():
+    return _legacy().connect_spec(False)
+
+# /home/Carix/ua_spec84_runtime.py:148 original_sha256=cbbbac3a5239e846e4158a708cf55bb619873c4a9647306f3c697ed7a508cb39
+def _request_sync(db, schema, card, generation, now):
+    db.execute("INSERT INTO %sspec84_sync(uid,vin,generation,requested_at,state,next_try)\n        VALUES(?,?,?,?,'PENDING',0) ON CONFLICT(uid) DO UPDATE SET\n        vin=excluded.vin,generation=excluded.generation,requested_at=excluded.requested_at,\n        state='PENDING',next_try=0,result_json=NULL" % schema, (card['car_uid'], card['vin'], generation, now))
+
+# /home/Carix/ua_spec84_runtime.py:161 original_sha256=ec96829a358c77ca220b7270cc6f9ab1b8e1bccd4af990ad8ede9322638d0720
+def _enqueue(uid, reason):
+    queue = _init_queue()
+    with _writer_guard(uid):
+        card = _card(uid)
+        if identity(card) is None:
+            return False
+        import spec84_collector
+        with _spec_transaction() as db:
+            _attached(db)
+            db.execute('BEGIN IMMEDIATE')
+            cycle = queue.ensure_cycle_transaction(db, card, reason=reason, schema='schedule.')
+            generation = cycle['generation']
+            spec84_collector.ensure_identity_schema(db)
+            spec84_collector.ensure_binding(db, card, generation, legacy_vin=_legacy_vin(db, uid))
+            existing = db.execute('SELECT vin,generation FROM schedule.spec84_sync WHERE uid=?', (uid,)).fetchone()
+            if existing is None or tuple(existing) != (card['vin'], generation):
+                _request_sync(db, 'schedule.', card, generation, time.time())
+            db.commit()
+    return True
+
+# /home/Carix/ua_spec84_runtime.py:224 original_sha256=62e35d378e504c4f84a1d119b7a9b41bfe24de3507b33662f0c25cf69bd92678
+class _IntegratedRuntime(Runtime):
+
+    def execute(self, job):
+        card = _card(job['uid'])
+        if identity(card) != (job['uid'], job['vin']):
+            self.queue.pause(job)
+            return 'STALE_OR_UNPUBLISHED'
+        result = None
+        try:
+            result = collect_bounded(card, 'spec84_collector:collect_scheduled', tuple(DOMAIN_TO_SOURCE.values()), seconds=18, request_timeout=4)
+            if set(result['sources']) != set(APPROVED_SOURCES):
+                raise RuntimeError('EXACT_TEN_SOURCE_OUTCOMES_REQUIRED')
+            if _stop.is_set():
+                return 'INTERRUPTED_SAME_SLOT'
+            with _writer_guard(job['uid']):
+                current = _card(job['uid'])
+                if identity(current) != (job['uid'], job['vin']):
+                    self.queue.pause(job, result['sources'])
+                    return 'STALE_OR_UNPUBLISHED'
+                import spec84_collector
+                with _spec_transaction() as db:
+                    _attached(db)
+                    db.execute('BEGIN IMMEDIATE')
+                    counts = spec84_collector.merge_in_transaction(db, current, result['facts'], guard=lambda conn, c: _lease_guard(conn, job, c))
+                    now = time.time()
+                    _request_sync(db, 'schedule.', current, job['generation'], now)
+                    receipt = {'merge': counts, 'delay_seconds': job['delay_seconds'], 'collection_error': result['collection_error'], 'site_sync': 'PENDING'}
+                    for sid, outcome in result['sources'].items():
+                        db.execute('INSERT OR REPLACE INTO schedule.spec84_sources VALUES(?,?,?,?)', (job['cycle_id'], job['slot'], sid, json.dumps(outcome, ensure_ascii=False)))
+                    _lease_guard(db, job, current)
+                    db.execute("UPDATE schedule.spec84_slots SET state='DONE',finished_at=?,token=NULL,\n                        lease_until=NULL,result_json=? WHERE cycle_id=? AND slot=? AND token=?", (now, json.dumps(receipt, ensure_ascii=False), job['cycle_id'], job['slot'], job['token']))
+                    if not db.execute("SELECT 1 FROM schedule.spec84_slots WHERE cycle_id=? AND state IN ('PENDING','RUNNING','PAUSED')", (job['cycle_id'],)).fetchone():
+                        db.execute("UPDATE schedule.spec84_cycles SET state='COMPLETE' WHERE id=?", (job['cycle_id'],))
+                    db.commit()
+            return 'DONE_SYNC_PENDING'
+        except RuntimeDeferred:
+            return 'DEFERRED_SAME_SLOT'
+        except Exception as exc:
+            LOG.warning('spec84 collection/merge %s failed (%s)', job['uid'], type(exc).__name__)
+            outcomes = result['sources'] if result else blank_outcomes(DOMAIN_TO_SOURCE.values(), 'ERROR')
+            self.queue.finish(job, outcomes, {'error': type(exc).__name__}, state='FAILED')
+            return 'FAILED'
+
+# /home/Carix/ua_spec84_runtime.py:276 original_sha256=106a07e57821706c249d502237271bca5fd1af88610bfdbd858c85f5709f59fd
+def _atomic_existing(path, before, after):
+    if path.is_symlink() or not path.is_file() or path.read_bytes() != before:
+        raise RuntimeDeferred('PAGE_CHANGED_BEFORE_REPLACE')
+    info = path.stat()
+    fd, name = tempfile.mkstemp(prefix='.' + path.name + '.spec84-', dir=str(path.parent))
+    temporary = pathlib.Path(name)
+    try:
+        with os.fdopen(fd, 'wb') as handle:
+            handle.write(after)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary, info.st_mode & 511)
+        if path.is_symlink() or path.read_bytes() != before:
+            raise RuntimeDeferred('PAGE_CHANGED_BEFORE_REPLACE')
+        os.replace(temporary, path)
+        dirfd = os.open(str(path.parent), os.O_RDONLY)
+        try:
+            os.fsync(dirfd)
+        finally:
+            os.close(dirfd)
+        if path.read_bytes() != after:
+            raise RuntimeDeferred('PAGE_READBACK_CHANGED')
+    finally:
+        temporary.unlink(missing_ok=True)
+
+# /home/Carix/ua_spec84_runtime.py:302 original_sha256=a03b2f3375d4dfe538511bd347d9f4cbaafe2e93891fd7d6e7df12ee619b36ee
+def _sync_one(row):
+    uid = row['uid']
+    with _writer_guard(uid):
+        current = _card(uid)
+        if identity(current) != (uid, row['vin']) or not fact_binding_matches(uid):
+            return {'state': 'STALE', 'pages': []}
+        with _queue.connect() as db:
+            generation = db.execute('SELECT generation FROM spec84_generations WHERE uid=?', (uid,)).fetchone()
+            if generation is None or generation[0] != row['generation']:
+                return {'state': 'STALE', 'pages': []}
+        import ua_spec_permanent
+        prepared = []
+        for folder in ('video', 'site'):
+            path = ROOT / folder / (uid + '.html')
+            if path.is_symlink() or not path.is_file():
+                raise RuntimeDeferred('EXISTING_PUBLIC_PAGE_MISSING')
+            before = path.read_bytes()
+            if len(before) > MAX_HTML:
+                raise RuntimeDeferred('PAGE_TOO_LARGE')
+            after = ua_spec_permanent.ensure_html(before.decode('utf-8'), uid).encode('utf-8')
+            prepared.append((path, before, after))
+        if _stop.is_set() or identity(_card(uid)) != (uid, row['vin']):
+            raise RuntimeDeferred('CARD_CHANGED_OR_STOPPED')
+        changed = []
+        try:
+            for path, before, after in prepared:
+                if after != before:
+                    _atomic_existing(path, before, after)
+                    changed.append((path, before, after))
+        except Exception:
+            for path, before, after in reversed(changed):
+                if path.is_file() and (not path.is_symlink()) and (path.read_bytes() == after):
+                    _atomic_existing(path, after, before)
+            raise
+        return {'state': 'DONE', 'pages': [{'path': str(p), 'sha256': hashlib.sha256(a).hexdigest(), 'changed': b != a} for p, b, a in prepared]}
+
+# /home/Carix/ua_spec84_runtime.py:342 original_sha256=7b6a78a0ec40805a286c4cde07646f9aaae264f546f0076a8cd353cbd3aa6e67
+def _sync_pending(limit=18):
+    with _queue.connect() as db:
+        rows = [dict(r) for r in db.execute("SELECT * FROM spec84_sync WHERE state='PENDING' AND next_try<=? ORDER BY requested_at LIMIT ?", (time.time(), limit))]
+    for row in rows:
+        if _stop.is_set():
+            break
+        try:
+            result = _sync_one(row)
+            state, next_try = (result['state'], 0)
+        except Exception as exc:
+            result = {'error': type(exc).__name__}
+            state, next_try = ('PENDING', time.time() + min(60, 5 * (1 + row['attempts'])))
+        with _queue.connect() as db:
+            db.execute('UPDATE spec84_sync SET state=?,attempts=attempts+1,next_try=?,result_json=?\n                WHERE uid=? AND vin=? AND generation=? AND requested_at=?', (state, next_try, json.dumps(result), row['uid'], row['vin'], row['generation'], row['requested_at']))
+
+
+# /home/Carix/start_safe.py:658 original_sha256=07960db53997aa2b2fefd7e9815e48ada31ccb7bcd057e01f0b3b311122c0a64
+def _rows(query, params=()):
+    db = os.path.join(BASE, 'crm.db')
+    con = sqlite3.connect(db)
+    con.row_factory = sqlite3.Row
+    try:
+        return [dict(r) for r in con.execute(query, params).fetchall()]
+    finally:
+        con.close()
+
+# /home/Carix/start_safe.py:1337 original_sha256=35ec647d0c75b8ef4d40b2dc8c8a824dee07b11ee61b07af02298120f6a7de11
+def apply_all():
+    ok = True
+    for func in (patch_request_timeouts, patch_bot_methods, patch_error_handlers, patch_register_hook, patch_card_html_budget, patch_download_cache):
+        try:
+            func()
+        except Exception as e:
+            ok = False
+            log.warning('не удалось применить %s: %r', func.__name__, e)
+    return ok
+
+# /home/Carix/start_safe.py:1408 original_sha256=e41e01862a3b03d175d50662ebef62de253942853125a9386f22fc42dbf2bf40
+def main():
+    import fcntl as _v184_fcntl
+    _v184_singleton = open(os.path.join(BASE, '.start_safe.singleton.lock'), 'a+', encoding='utf-8')
+    try:
+        _v184_fcntl.flock(_v184_singleton.fileno(), _v184_fcntl.LOCK_EX | _v184_fcntl.LOCK_NB)
+    except BlockingIOError:
+        log.warning('start_safe.py уже запущен; второй экземпляр остановлен')
+        return
+    if not os.path.exists(TARGET):
+        log.error('не найден %s — проверь имя файла', TARGET)
+        raise SystemExit(1)
+    os.chdir(BASE)
+    if BASE not in sys.path:
+        sys.path.insert(0, BASE)
+    novye = pochinit_imena()
+    ubrat_musor()
+    if novye:
+        log.warning('обновились файлы: %s — если что-то ведёт себя странно, нажми Restart ещё раз', ', '.join(novye))
+    apply_all()
+    db_clean_split()
+    klient = _token_iz('bot_token.txt')
+    krm = _token_iz('team_token.txt')
+    ok_klient = _zhivoy_token(klient)
+    ok_krm = _zhivoy_token(krm)
+    if ok_krm is False and ok_klient is not False:
+        avariynyy_rezhim(klient, 'team_token.txt')
+        return
+    if ok_klient is False and ok_krm is not False:
+        avariynyy_rezhim(krm, 'bot_token.txt')
+        return
+    if ok_klient is False and ok_krm is False:
+        log.error('оба токена негодны — впиши их в bot_token.txt и team_token.txt')
+    log.info('защита включена, запускаю run_all.py')
+    while True:
+        try:
+            runpy.run_path(TARGET, run_name='__main__')
+            log.warning('run_all.py завершился сам, перезапуск через 10 c')
+        except SystemExit:
+            raise
+        except KeyboardInterrupt:
+            raise
+        except Exception as e:
+            tekst = '%r' % e
+            if 'InvalidToken' in tekst or 'Unauthorized' in tekst:
+                klient = _token_iz('bot_token.txt')
+                krm = _token_iz('team_token.txt')
+                if klient and klient in tekst and krm and (krm not in tekst):
+                    avariynyy_rezhim(krm, 'bot_token.txt')
+                    return
+                if krm and krm in tekst and klient and (klient not in tekst):
+                    avariynyy_rezhim(klient, 'team_token.txt')
+                    return
+                log.error('Оба токена не приняты. Впиши действующие в bot_token.txt и team_token.txt через редактор.')
+                time.sleep(60)
+                continue
+            log.exception('run_all.py упал: %r — перезапуск через 10 c', e)
+        time.sleep(10)
+
+
+# /home/Carix/uaart_connection_monitor.py:301 original_sha256=916e9eb646d1636d828e642a0e4ffe5440c107cd2510c2c4c021e3c1ebc39dd2
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--evidence', type=Path, default=Path('artifacts/uaart-connection-monitor.json'))
+    parser.add_argument('--attempts', type=int, choices=range(1, 4), default=3)
+    parser.add_argument('--timeout', type=float, default=20)
+    parser.add_argument('--retry-delay', type=float, default=15)
+    parser.add_argument('--watch', action='store_true', help='Keep checking public pages; no server reloads or notifications')
+    parser.add_argument('--interval', type=float, default=300, help='Seconds to wait after each watch cycle (default: 300)')
+    parser.add_argument('--_probe-json', help=argparse.SUPPRESS)
+    args = parser.parse_args()
+    if args._probe_json is not None:
+        print(json.dumps(probe_once(Endpoint(**json.loads(args._probe_json)), args.timeout)))
+        return 0
+    if args.watch:
+        try:
+            return run_watch(args.evidence, interval=args.interval, attempts=args.attempts, timeout=args.timeout, retry_delay=args.retry_delay)
+        except MonitorAlreadyRunning as exc:
+            print(f'ALREADY_RUNNING: {exc}', flush=True)
+            return 4
+    report = run_monitor(args.evidence, attempts=args.attempts, timeout=args.timeout, retry_delay=args.retry_delay)
+    print(f"{report['status'].upper()}: {len(report['rounds'])} round(s); evidence: {args.evidence}")
+    for round_result in report['rounds']:
+        for result in round_result['results']:
+            if not result['ok']:
+                print(f"Attempt {round_result['attempt']}: {result['endpoint']}: {result['category']}")
+    return report['exit_code']
+
+
+# /home/Carix/ua_site_counters.py:48 original_sha256=4209072d561b54691815c4cc8c2d35327da4bee4cb6970e8c42d33faef16ba17
+def _stage_of(block: str) -> str:
+    opening = re.match('<a\\b[^>]*>', block, re.I | re.S)
+    if not opening:
+        raise HomeCounterError('STAGE_OPENING_MISSING')
+    match = re.search('\\bdata-stage\\s*=\\s*["\\\'](kiev|georgia|sea|korea)["\\\']', opening.group(0), re.I)
+    if not match:
+        raise HomeCounterError('STAGE_ATTRIBUTE_MISSING')
+    return match.group(1).casefold()
+
+# /home/Carix/ua_site_counters.py:61 original_sha256=bff7f279d3364db9eaa8dc35d323df6834a60446baf915fc77092803733358cb
+def _patch_stage(block: str, stage: str, count: int) -> str:
+    opening = re.match('<a\\b[^>]*>', block, re.I | re.S)
+    if not opening:
+        raise HomeCounterError('STAGE_OPENING_MISSING:' + stage)
+    tag = _set_attr(opening.group(0), 'data-count', str(count))
+    value = tag + block[opening.end():]
+    em_matches = list(re.finditer('<em\\b[^>]*>.*?</em\\s*>', value, re.I | re.S))
+    if len(em_matches) != 1:
+        raise HomeCounterError('STAGE_COUNT_LABELS:%s:%d' % (stage, len(em_matches)))
+    match = em_matches[0]
+    old = match.group(0)
+    em_open = re.match('<em\\b[^>]*>', old, re.I | re.S)
+    if not em_open:
+        raise HomeCounterError('STAGE_EM_OPENING:' + stage)
+    em_tag = _set_attr(_set_attr(em_open.group(0), 'data-ru', _ru(count)), 'data-uk', _uk(count))
+    replacement = em_tag + html.escape(_ru(count)) + '</em>'
+    return value[:match.start()] + replacement + value[match.end():]
+
+# /home/Carix/ua_site_counters.py:79 original_sha256=4cc7da3c29e03f87e65593921913e5cdc97aec0dbd2e8ea35b6e1bea8e04a81b
+def _patch_cta(source: str, total: int) -> str:
+    matches = list(CTA_RE.finditer(source))
+    if len(matches) != 1:
+        raise HomeCounterError('TOTAL_CTA_COUNT:%d' % len(matches))
+    match = matches[0]
+    block = match.group(0)
+    opening = re.match('<i\\b[^>]*>', block, re.I | re.S)
+    if not opening:
+        raise HomeCounterError('TOTAL_CTA_OPENING')
+    ru = 'Открыть все автомобили · %d' % total
+    uk = 'Відкрити всі автомобілі · %d' % total
+    tag = _set_attr(_set_attr(opening.group(0), 'data-ru', ru), 'data-uk', uk)
+    replacement = tag + html.escape(ru) + '</i>'
+    return source[:match.start()] + replacement + source[match.end():]
+
+# /home/Carix/ua_site_counters.py:106 original_sha256=3d0cc6ab83c9f61ced68dec716ba568e90a22d7fc5513c1c501560bc8ad54ebd
+class CatalogParser(HTMLParser):
+    VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'}
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.stack, self.current, self.records, self.grid = ([], None, {}, False)
+
+    def handle_starttag(self, tag, pairs):
+        attrs = dict(pairs)
+        classes = (attrs.get('class') or '').split()
+        self.grid |= 'catalog-grid' in classes
+        if self.current is None and (tag == 'article' and 'catalog-card' in classes or (tag == 'a' and 'data-ua-card' in attrs)):
+            self.current = {'depth': len(self.stack), 'ids': set(), 'href_ids': set(), 'stages': set()}
+        if self.current is not None:
+            for key in ('data-ua-card', 'data-ua'):
+                value = (attrs.get(key) or '').strip().upper()
+                if value:
+                    if not re.fullmatch('UA-[0-9]{4,}', value):
+                        raise HomeCounterError('INVALID_ID')
+                    self.current['ids'].add(value)
+            for key in ('data-category', 'data-stage', 'data-etap', 'data-ua-card-stage'):
+                stage = ALIASES.get((attrs.get(key) or '').strip().lower())
+                if stage:
+                    self.current['stages'].add(stage)
+            href = attrs.get('href') or ''
+            if tag == 'a' and (not re.match('^(?:https?:)?//', href, re.I)):
+                match = re.search('(?:^|/)(UA-[0-9]{4,})\\.html(?:[?#].*)?$', href, re.I)
+                if match:
+                    self.current['href_ids'].add(match[1].upper())
+        if tag not in self.VOID:
+            self.stack.append(tag)
+
+    def handle_endtag(self, tag):
+        if tag not in self.stack:
+            return
+        index = len(self.stack) - 1 - self.stack[::-1].index(tag)
+        del self.stack[index:]
+        if self.current is not None and len(self.stack) <= self.current['depth']:
+            ids = self.current['ids'] or self.current['href_ids']
+            stages = self.current['stages']
+            if len(ids) != 1 or len(stages) > 1:
+                raise HomeCounterError('AMBIGUOUS_CARD')
+            identifier = next(iter(ids))
+            stage = next(iter(stages), None)
+            if identifier in self.records and self.records[identifier] != stage:
+                raise HomeCounterError('CONFLICTING_DUPLICATE')
+            self.records[identifier] = stage
+            self.current = None
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        if tag not in self.VOID:
+            self.handle_endtag(tag)
+
+# /home/Carix/ua_site_counters.py:161 original_sha256=1d4936ec786577bdc633e3235f836008727a759d13b9d11f4041587cfcdbcb17
+def catalog_snapshot(source):
+    if not re.search('<html\\b', source, re.I) or not re.search('</html\\s*>\\s*$', source, re.I):
+        raise HomeCounterError('INCOMPLETE_CATALOG')
+    parser = CatalogParser()
+    parser.feed(source)
+    parser.close()
+    if not parser.grid or parser.current is not None:
+        raise HomeCounterError('INVALID_CATALOG')
+    counts = {'all': len(parser.records), **{stage: 0 for stage in STAGES}}
+    for stage in parser.records.values():
+        if stage:
+            counts[stage] += 1
+    return (parser.records, counts)
+
+# /home/Carix/ua_site_counters.py:176 original_sha256=61258943eb65bbd11d1bf073a4090a7793d0046dd521981ed3f04947e16015f0
+def inject_script(source):
+    patterns = [re.escape(START) + '.*?' + re.escape(END), '<!-- UA-HOME-STAGE-COUNTER-SYNC-093:START -->.*?<!-- UA-HOME-STAGE-COUNTER-SYNC-093:END -->', '<script\\b[^>]*>\\s*/\\* UA-CIFRY-V1 \\*/.*?</script\\s*>']
+    for pattern in patterns:
+        source, n = re.subn(pattern + '(?:\\r?\\n)?', '', source, flags=re.S)
+        if n > 1:
+            raise HomeCounterError('DUPLICATE_COUNTER_SCRIPT')
+    if len(re.findall('</body\\s*>', source, re.I)) != 1:
+        raise HomeCounterError('BODY_END')
+    block = START + '\n<script id="ua-site-counters-123">\n' + CLIENT_SCRIPT + '\n</script>\n' + END
+    return re.sub('</body\\s*>', lambda m: block + '\n' + m.group(), source, count=1, flags=re.I)
+
+# /home/Carix/ua_site_counters.py:195 original_sha256=55bff29bb8305fe066b8cdf58bbab88a7c1b4cddc0f43872a366245e80757c2d
+def patch_home(source, counts):
+    found = {}
+    uk = ukrainian(source)
+
+    def stage_replace(match):
+        block = match.group()
+        stage = _stage_of(block)
+        found[stage] = found.get(stage, 0) + 1
+        block = _patch_stage(block, stage, counts[stage])
+        if uk:
+            block = re.sub('(<em\\b[^>]*>).*?(</em\\s*>)', lambda m: m[1] + _uk(counts[stage]) + m[2], block, flags=re.S)
+        return block
+    result = CARD_RE.sub(stage_replace, source)
+    if found != {stage: 1 for stage in STAGES}:
+        raise HomeCounterError('HOME_STAGE_SET:' + repr(found))
+    result = _patch_cta(result, counts['all'])
+    if uk:
+        result = CTA_RE.sub(lambda m: re.sub('(?<=>)[^<]*(?=</i)', 'Відкрити всі автомобілі · ' + str(counts['all']), m.group()), result)
+    return inject_script(result)
+
+# /home/Carix/ua_site_counters.py:215 original_sha256=13c8577f68866470a3da0a3005191ebb1b09943088f249f0c5be6b2e899df688
+def patch_catalog(source, counts):
+    labels = {'all': ('Все', 'Усі'), 'kiev': ('В Киеве', 'У Києві'), 'georgia': ('В Грузии', 'У Грузії'), 'sea': ('На пароме', 'На поромі'), 'korea': ('В Корее', 'У Кореї')}
+    found = {}
+
+    def replace(match):
+        block = match.group()
+        opening = re.match('<button\\b[^>]*>', block, re.I).group()
+        key = re.search('\\bdata-f=["\\\']([^"\\\']+)["\\\']', opening, re.I)[1]
+        if key not in labels:
+            return block
+        found[key] = found.get(key, 0) + 1
+        ru, uk = (label + ' · ' + str(counts[key]) for label in labels[key])
+        tag = _set_attr(_set_attr(opening, 'data-ru', ru), 'data-uk', uk)
+        return tag + html.escape(uk if ukrainian(source) else ru) + '</button>'
+    result = re.sub('<button\\b(?=[^>]*\\bdata-f=["\\\'])[^>]*>.*?</button\\s*>', replace, source, flags=re.S | re.I)
+    if found != {key: 1 for key in labels}:
+        raise HomeCounterError('CATALOG_FILTER_SET:' + repr(found))
+    return result

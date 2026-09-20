@@ -1,0 +1,1320 @@
+{
+  "always_on": {
+    "os_processes_verified": false,
+    "provider_metadata_only": true,
+    "tasks": [
+      {
+        "autopilot_inbox_reference": false,
+        "command_sha256": "bb7491b6a7cbf510aefe675ed052bf3c1b64fe0cff47edebcccfd8b6848ff240",
+        "enabled": true,
+        "id": 266084,
+        "known_modules": [
+          "start_safe.py"
+        ],
+        "state": "Running"
+      },
+      {
+        "autopilot_inbox_reference": false,
+        "command_sha256": "6f49012cb3bc5a3a1a765aec4963f8e7fe19e4088f5c09f0d4270efcc7aa4af4",
+        "enabled": true,
+        "id": 270984,
+        "known_modules": [
+          "uaart_connection_monitor.py"
+        ],
+        "state": "Running"
+      }
+    ]
+  },
+  "card_delete_audit_verified": false,
+  "completion_meaning": "READ_ONLY_DIAGNOSIS_ONLY_NO_DELETION_OR_INSTALLATION",
+  "database_downloaded": false,
+  "database_row_verified": false,
+  "finished_at": "2026-09-20T17:14:20Z",
+  "http_methods": [
+    "GET"
+  ],
+  "os_writers_verified": false,
+  "page_facts": {},
+  "path_status": {
+    "always_on/": {
+      "bytes": 794,
+      "sha256": "f2657e129621dc42428755e4d07a24c31205bb6a36e3fc8bd8277b1bdeee988a",
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/db.py": {
+      "bytes": 34721,
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/start_safe.py": {
+      "bytes": 60667,
+      "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/ua_site_counters.py": {
+      "bytes": 17143,
+      "sha256": "500ca67145faa38ca9f72ac6da85e2a7d1c351f8f2fcca4a2edeb34c22734c23",
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/ua_spec84_runtime.py": {
+      "bytes": 20437,
+      "sha256": "938b8dd68f6eafa8b3022ef1dd1f03aa44fd27ec9979bef0819c36941fe022be",
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/uaart_connection_monitor.py": {
+      "bytes": 15183,
+      "sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+      "status": "RECEIVED"
+    },
+    "schedule/": {
+      "bytes": 1408,
+      "sha256": "3b0deff638d0fc209ed46261bacecdd736a24ee8eaa582cbb53e899b893fbacd",
+      "status": "RECEIVED"
+    }
+  },
+  "production_write_performed": false,
+  "raw_private_sources_persisted": false,
+  "remote_write_count": 0,
+  "request_sha256": "eaf0ab069c76bb5788657a3ca7779f8fd66b032f5068ef189b12d50eebff9e85",
+  "run_id": "35525152538",
+  "sanitized_source_excerpts_path": "cloud/ua0002_delete_probe2/sanitized_sources.txt",
+  "schedule": {
+    "os_processes_verified": false,
+    "provider_metadata_only": true,
+    "tasks": [
+      {
+        "command": "cd /home/Carix/autopilot_inbox/cloud/seo_rehab_guard_068 && python3.10 seo_rehab_guard_068_repair.py --dry-run",
+        "command_sha256": "cda6feb1b3554593a00d80ed5437605bffdbf41d9c91ef2c960e861780898aea",
+        "hour": 21,
+        "id": 1502215,
+        "interval": "daily",
+        "known_command": true,
+        "minute": 28
+      },
+      {
+        "command": "cd /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup && python3.10 installer.py install",
+        "command_sha256": "af062b55672da06ae709fcfe5aa3c566c3a6e13c38756de452aab7f34ef8b606",
+        "hour": 8,
+        "id": 1502679,
+        "interval": "daily",
+        "known_command": true,
+        "minute": 2
+      },
+      {
+        "command": "set -e; mkdir -p '/home/Carix/autopilot_inbox/cloud/task_096_tech_spec_ai_crm/data_enrichment'",
+        "command_sha256": "b95db3d655dfdd272e8729ecc3a1977d47b69b3520e6eebafebf51a98d071337",
+        "hour": 19,
+        "id": 1505035,
+        "interval": "daily",
+        "known_command": true,
+        "minute": 0
+      }
+    ]
+  },
+  "snapshot_consistency": "SINGLE_READ_PER_PATH_NOT_ATOMIC",
+  "source_facts": {
+    "/home/Carix/db.py": {
+      "bytes": 34721,
+      "definitions": [
+        {
+          "end_line": 117,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 108,
+          "name": "_ua_sql_pishet",
+          "sha256": "f942bba9c81b7360bc6ab4c9092cdb884aa6f2c1ba7437fdab013b653deb81b9"
+        },
+        {
+          "end_line": 142,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 120,
+          "name": "_ua_fayl_zahvatit",
+          "sha256": "c91b84376892ea87dee2d80b3a12a05c85cb6b85625186ffe0498e050cd11b57"
+        },
+        {
+          "end_line": 163,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 145,
+          "name": "_ua_fayl_otpustit",
+          "sha256": "d865201157ef1b599f4cf3483e01e2d316cba55b02b4c27859eb8a13222f5493"
+        },
+        {
+          "end_line": 186,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "ClassDef",
+          "line": 166,
+          "name": "_UaKursor",
+          "sha256": "81602c9d3ba7e8bf4d596417e2f9861dfe9ed3e028da68cc267c62b01c774a47"
+        },
+        {
+          "end_line": 311,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "ClassDef",
+          "line": 189,
+          "name": "Soedinenie",
+          "sha256": "edfd3fd7709aaaee60d013f266481a2cfc7cd03d0d318683f8e245f4aa816b66"
+        },
+        {
+          "end_line": 327,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 315,
+          "name": "connect",
+          "sha256": "da9b6d2d26eaa1ebc82cecf6036a276c8951da8f2314156519705ba5d67ed374"
+        },
+        {
+          "end_line": 457,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 331,
+          "name": "init_db",
+          "sha256": "28ff5c3414e7d1c8166e17f76884c0b794fb3154c815312dab2531dcde842afa"
+        },
+        {
+          "end_line": 476,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 460,
+          "name": "migrate",
+          "sha256": "f2ce0022d9d4e8ff2b226bd8b140fbcb659a9fb053d5dd517b68ff6ffcfa4514"
+        },
+        {
+          "end_line": 480,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 479,
+          "name": "now",
+          "sha256": "08c460137950477a288ce91ad002f0a9d0b5797c7ff8a484cded7def346d4bd3"
+        },
+        {
+          "end_line": 497,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 486,
+          "name": "log_action",
+          "sha256": "fa2828c1dda20f5dace0f8b4118bfd7efd8978f9b513317b6fefdfb333803b73"
+        },
+        {
+          "end_line": 512,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 500,
+          "name": "get_audit",
+          "sha256": "6ee3482942e81aa0ecce97e33c348fa973a1f225da08485482e4406da3fb499f"
+        },
+        {
+          "end_line": 531,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 518,
+          "name": "ensure_owner",
+          "sha256": "b6f87412178efbcec11f0ac44ba69b282aabae48256e6420f7e70001ab3ffd62"
+        },
+        {
+          "end_line": 537,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 534,
+          "name": "get_staff",
+          "sha256": "6e2f908da4b3bd357800547fdeda12af354e1416ea3be135fe01844e4739dc7f"
+        },
+        {
+          "end_line": 546,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 540,
+          "name": "list_staff",
+          "sha256": "3b2cc17beab3faebf861ecfef63f7b227daab1fcf5cbed0e61cf1c439df10268"
+        },
+        {
+          "end_line": 553,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 549,
+          "name": "staff_ids_by_role",
+          "sha256": "9df85fdc26aad698a39cf13874378decc71f14afae0697ccaf2e87f00109d6ac"
+        },
+        {
+          "end_line": 561,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 556,
+          "name": "set_staff_active",
+          "sha256": "0e79ddae182231fe86726f58861d5649100de95bc60478d0f403eb488fe65efe"
+        },
+        {
+          "end_line": 569,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 564,
+          "name": "set_staff_role",
+          "sha256": "a197fefbe91fef70bf7d8129b17bc0e1182f38769b2fd7d0c20456ef723f43f3"
+        },
+        {
+          "end_line": 585,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 575,
+          "name": "create_invite",
+          "sha256": "e00d3a19b66f0ad93c1157303cfa58ebb43b0db152d21036309a1ec1336bc48b"
+        },
+        {
+          "end_line": 608,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 588,
+          "name": "use_invite",
+          "sha256": "a827fc4d63a6c5934e6c127cd6c3cb4191467d4006673dc22870f7859de0ffe8"
+        },
+        {
+          "end_line": 615,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 611,
+          "name": "list_open_invites",
+          "sha256": "bdf089d3e294ba613d36464a0059b513ed9f0f7b18b60b4034ea99800989ebed"
+        },
+        {
+          "end_line": 633,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 621,
+          "name": "add_inbox",
+          "sha256": "af19a1493b0a44d49c3261f9b5d04bfd6a26d10f05cb2a4093c640d27eb8a58b"
+        },
+        {
+          "end_line": 639,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 636,
+          "name": "get_inbox",
+          "sha256": "773f6f605054b7267e4c8d7530f9713ab9a76fcfb8e955917cf4275b5237b248"
+        },
+        {
+          "end_line": 655,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 642,
+          "name": "list_inbox",
+          "sha256": "d1b233a702b94a69658fd73707714e6aa7bec353735b143260b6f855a3a9afd8"
+        },
+        {
+          "end_line": 665,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 658,
+          "name": "count_inbox",
+          "sha256": "d8ad9f64f5bc1726fd38444f7c652373acb033d912a3419ac995d4f93338b4fb"
+        },
+        {
+          "end_line": 678,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 668,
+          "name": "set_inbox_status",
+          "sha256": "eee8867bf13df67a53eb59f5feb2fde1a232c85fae775913732bdee3f8ce3533"
+        },
+        {
+          "end_line": 686,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 681,
+          "name": "link_inbox_card",
+          "sha256": "bb292d8a5262a96ea2c21dd9827b0b6ecb08d958ef648e35688a24f41f57d488"
+        },
+        {
+          "end_line": 713,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 701,
+          "name": "create_card",
+          "sha256": "b0c91f589d7aaecadfbdfd19140c7adc14bd43e2b8c3e853e336fa00779d7c3a"
+        },
+        {
+          "end_line": 719,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 716,
+          "name": "get_card",
+          "sha256": "f64a89b44bd7ea5c56c45fd301bf7f19834c30b17abb6090348cd327e5d034ea"
+        },
+        {
+          "end_line": 732,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 722,
+          "name": "list_cards",
+          "sha256": "77b838047ab1b80308c1b720930b27400905c38ac263804e572907badd598ab2"
+        },
+        {
+          "end_line": 742,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 735,
+          "name": "update_card_field",
+          "sha256": "65033f6dbbb341d69f7b9918e0e4fc69b4746596b7db6320f0d4ead6ec63dab0"
+        },
+        {
+          "end_line": 756,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 745,
+          "name": "set_card_review",
+          "sha256": "118569a5727602a3779ea56648df8cbb909149d2d82bdd0a1408ea79036311c1"
+        },
+        {
+          "end_line": 766,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 759,
+          "name": "card_title",
+          "sha256": "baa0a71e9d943af67a8a9cf806410c35fcc7fb442eb0be0817d82134403c4399"
+        },
+        {
+          "end_line": 781,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 772,
+          "name": "add_comment",
+          "sha256": "3c166d821d719d7158045ad5d8cede93ce4ed0e3dacc49ad781e2742fe0d4671"
+        },
+        {
+          "end_line": 789,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 784,
+          "name": "list_comments",
+          "sha256": "1f3245f7da0b52ce27b4dd13b8a2cd65933fb0ccccc203be2a168165a4260033"
+        },
+        {
+          "end_line": 810,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 795,
+          "name": "search",
+          "sha256": "4b49cd9ef41adb99a9393269556a367f31130545679c095802df8d2c50a307d9"
+        },
+        {
+          "end_line": 829,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 816,
+          "name": "stats_summary",
+          "sha256": "f0a7720fdfb1141d79d5f588d035e118c84d8d766e44573702c5dd8f15add96d"
+        },
+        {
+          "end_line": 837,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 832,
+          "name": "published_cars",
+          "sha256": "2cdd4cab4f17053827aedc0526b93922d83adbc6b524ef85e20798d8c858ac28"
+        },
+        {
+          "end_line": 880,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 847,
+          "name": "make_backup",
+          "sha256": "bad0bf9ed377defe88d051858a4b40beea0bdaf7eed43d5b4078255ff61e7730"
+        },
+        {
+          "end_line": 889,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 883,
+          "name": "backup_info",
+          "sha256": "b149bf4c529c2c54fdd3cbbe5517880f2440adf2537f8dc392c3c9e740574334"
+        }
+      ],
+      "exported_excerpt_bytes": 14583,
+      "global_constant_values_exported": false,
+      "imports": [
+        "import os",
+        "import json",
+        "import sqlite3",
+        "import secrets",
+        "import logging",
+        "from datetime import datetime",
+        "import threading as _potoki",
+        "import sqlite3 as _ua_sqlite3"
+      ],
+      "path": "/home/Carix/db.py",
+      "sha256": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "sql_structure": [
+        {
+          "statement": "CREATE_TABLE",
+          "table": "IF"
+        },
+        {
+          "statement": "CREATE_TABLE",
+          "table": "staff"
+        },
+        {
+          "statement": "CREATE_TABLE",
+          "table": "invites"
+        },
+        {
+          "statement": "CREATE_TABLE",
+          "table": "inbox"
+        },
+        {
+          "statement": "CREATE_TABLE",
+          "table": "cars"
+        },
+        {
+          "statement": "CREATE_TABLE",
+          "table": "clients"
+        },
+        {
+          "statement": "CREATE_TABLE",
+          "table": "comments"
+        },
+        {
+          "statement": "CREATE_TABLE",
+          "table": "audit"
+        }
+      ],
+      "syntax": "PASS",
+      "top_level_calls": []
+    },
+    "/home/Carix/start_safe.py": {
+      "bytes": 60667,
+      "definitions": [
+        {
+          "end_line": 81,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 74,
+          "name": "_bump",
+          "sha256": "c0141c773a086e0658a02252c76e6eb96f53887c99097dca709ff3aba5fd9b73"
+        },
+        {
+          "end_line": 120,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 84,
+          "name": "patch_request_timeouts",
+          "sha256": "05b18cff8bd5867904b129725477d00cbcf2f4ac7a608745d1749bed32c937f1"
+        },
+        {
+          "end_line": 189,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 123,
+          "name": "_wrap_send",
+          "sha256": "57bdcaf931123e6c28f5133ab81650d544b43f549daa3709e026a6f23834c1e3"
+        },
+        {
+          "end_line": 231,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "AsyncFunctionDef",
+          "line": 192,
+          "name": "_videos_after_html",
+          "sha256": "2dec20ec6d99f4a48f983858747a87846a5f828a364a3db641151f3e8c25e76a"
+        },
+        {
+          "end_line": 243,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 241,
+          "name": "_cache_path",
+          "sha256": "b8336aaf1580ff107693052d8af65bef54284ec3dabab78d7734456dbc8ed07a"
+        },
+        {
+          "end_line": 254,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 246,
+          "name": "_cache_get",
+          "sha256": "3b2db5aca9bde8c22d5ec4b4353f343b8053da356e05d327f8a30ce73d08bdac"
+        },
+        {
+          "end_line": 263,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 257,
+          "name": "_cache_put",
+          "sha256": "df41b4901cbe236ebd4a05d7e9221b2644396d6c4717aacd6b5936c2cff17bf7"
+        },
+        {
+          "end_line": 306,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 266,
+          "name": "patch_download_cache",
+          "sha256": "f6e4fb0c64c8922ad4d46961b9b30d2d39a6970fbcca254ce65a1042f34719c1"
+        },
+        {
+          "end_line": 316,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 309,
+          "name": "_doc_bytes",
+          "sha256": "d9c11e76571ccb02ecf0bf171c6cb89fa72239914d88d63dbf4f102cd8f0558d"
+        },
+        {
+          "end_line": 358,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 331,
+          "name": "_karty",
+          "sha256": "cacc9806228e16c24816a18af3a440d0f8ccab2c6e128529628d49c3ebe1556a"
+        },
+        {
+          "end_line": 404,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 361,
+          "name": "_dopisat_video",
+          "sha256": "6de121cb7cc5270f7bef1f08f3ddf6a185a7b52bf15a505e7ed18adf7ad62e0f"
+        },
+        {
+          "end_line": 430,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 407,
+          "name": "_wrap_silent",
+          "sha256": "a77f04f42f9a9d68ac7e9dff42a34b3815dff4cfd1de31a8a889309e28fac793"
+        },
+        {
+          "end_line": 458,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 436,
+          "name": "patch_card_html_budget",
+          "sha256": "e021b5baadb73eaa97a7b994d38549e27a731cfb7c10c7fc308f200627df9b43"
+        },
+        {
+          "end_line": 495,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 461,
+          "name": "patch_bot_methods",
+          "sha256": "b2021fd04e4f0fa3ab49f53b62f648a7cbfac12c4854db626b641f90b66a10c0"
+        },
+        {
+          "end_line": 530,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 498,
+          "name": "patch_error_handlers",
+          "sha256": "591b7157e43a16ccd4fa492c2ce5db18230a8c328d71f35b7ec5706a62d49c9b"
+        },
+        {
+          "end_line": 566,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 552,
+          "name": "clean_split",
+          "sha256": "60b93e23f704b25884b3d6540c49a1a0a2a4a8d8101c97b94e908c928f598e53"
+        },
+        {
+          "end_line": 583,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 569,
+          "name": "fix_split_text",
+          "sha256": "7e40b14657469f296dc19462deeace197f92228285a1299f9258691320c5a07c"
+        },
+        {
+          "end_line": 632,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 586,
+          "name": "db_clean_split",
+          "sha256": "7a5dfdd6968c0ce8d4ab7dc2ee978623474901d17a1ec6f1d6ea0f3ed2cecf85"
+        },
+        {
+          "end_line": 665,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 658,
+          "name": "_rows",
+          "sha256": "07960db53997aa2b2fefd7e9815e48ada31ccb7bcd057e01f0b3b311122c0a64"
+        },
+        {
+          "end_line": 674,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 668,
+          "name": "_car_columns",
+          "sha256": "82a9d95f5996bbe1d62518250d36be1aa6cfd15782b930e2cb111e6b81e74164"
+        },
+        {
+          "end_line": 703,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 677,
+          "name": "_ids",
+          "sha256": "88fb4607b2c3eac70555548f1388e3a28dd5b3051edd560f4797d0c62a98b977"
+        },
+        {
+          "end_line": 711,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 706,
+          "name": "_money",
+          "sha256": "d7809ddb58e18b5f008a3085d8caaebbf9a9cb860b15cf2627d47b21d69254cc"
+        },
+        {
+          "end_line": 716,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 714,
+          "name": "_dash",
+          "sha256": "f337261f7560166ad88f71918aa7674606106364d8086ae60d2755d0222085fe"
+        },
+        {
+          "end_line": 763,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 719,
+          "name": "client_text",
+          "sha256": "fa5537a7a6b606ac302c0d72292e3c012c244b9f59f3c1597bc2440b7d6ded47"
+        },
+        {
+          "end_line": 794,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "AsyncFunctionDef",
+          "line": 766,
+          "name": "_send_client_card",
+          "sha256": "b61bae6d5fffe177f1b5921b4ef979b9f39d5b8a42e3cbbb8e428f176bd83b8e"
+        },
+        {
+          "end_line": 1101,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 797,
+          "name": "register_pokaz",
+          "sha256": "656c62d35c37bfb743ddaf586bd5c69aa12e1b44b15d2b5a27a7920e9540be3a"
+        },
+        {
+          "end_line": 1211,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 1104,
+          "name": "register_token",
+          "sha256": "22f98d14eeadf74832053f57ff6b6ec876aeffdea920ebc194f8451526e3a410"
+        },
+        {
+          "end_line": 1244,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 1214,
+          "name": "patch_register_hook",
+          "sha256": "81ec67ef8573abbb3c2e77d8cab8c1310ebd286c61ee28571f0b540666851be6"
+        },
+        {
+          "end_line": 1280,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 1268,
+          "name": "_v_arhiv",
+          "sha256": "05d5053b5bc88b41cd7dac2c391bea862d4179f1761c369bf937a8268ffd06bb"
+        },
+        {
+          "end_line": 1313,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 1283,
+          "name": "pochinit_imena",
+          "sha256": "9c9f0c0cb80f7251ec330ac1732afbe55fae75bd56f3067a3e034db3fce237bb"
+        },
+        {
+          "end_line": 1334,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 1316,
+          "name": "ubrat_musor",
+          "sha256": "0c1577048e9ed7ccf3aa12025f3b2c360a87684aeb0754fbd37668b86ff862a3"
+        },
+        {
+          "end_line": 1352,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 1337,
+          "name": "apply_all",
+          "sha256": "35ec647d0c75b8ef4d40b2dc8c8a824dee07b11ee61b07af02298120f6a7de11"
+        },
+        {
+          "end_line": 1369,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 1357,
+          "name": "_zhivoy_token",
+          "sha256": "12dfb08ca00e61bb17d2c521743dfb5a207cab6f80fb7657ed27ead52970540d"
+        },
+        {
+          "end_line": 1377,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 1372,
+          "name": "_token_iz",
+          "sha256": "3d367f6ed5da240152c0d83251a5577c323a76cda7c6a661fd452fc49aca97c4"
+        },
+        {
+          "end_line": 1405,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 1380,
+          "name": "avariynyy_rezhim",
+          "sha256": "54c0aaa52aeeb0ccb47b0a3dd39f13acf2b9da589588582010e7bf779cf63526"
+        },
+        {
+          "end_line": 1478,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 1408,
+          "name": "main",
+          "sha256": "e41e01862a3b03d175d50662ebef62de253942853125a9386f22fc42dbf2bf40"
+        }
+      ],
+      "exported_excerpt_bytes": 3324,
+      "global_constant_values_exported": false,
+      "imports": [
+        "import os",
+        "import sys",
+        "import time",
+        "import asyncio",
+        "import functools",
+        "import logging",
+        "import runpy",
+        "import shutil",
+        "import hashlib",
+        "import re",
+        "import sqlite3",
+        "import shutil",
+        "import json"
+      ],
+      "path": "/home/Carix/start_safe.py",
+      "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "sql_structure": [],
+      "syntax": "PASS",
+      "top_level_calls": [
+        "logging.basicConfig"
+      ]
+    },
+    "/home/Carix/ua_site_counters.py": {
+      "bytes": 17143,
+      "definitions": [
+        {
+          "end_line": 18,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "ClassDef",
+          "line": 17,
+          "methods": [],
+          "name": "HomeCounterError",
+          "sha256": "679c6b2fc3f1394ad88f5a3cc00f89e84c9c241f6e5f1b5e0b18e22d59514cc7"
+        },
+        {
+          "end_line": 27,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 20,
+          "name": "_ru",
+          "sha256": "0afc0f93dc825723a41b26037d9247e8c73b383066af5f864b14cde8eee33a86"
+        },
+        {
+          "end_line": 36,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 29,
+          "name": "_uk",
+          "sha256": "883b67d25b8b4c6307335c93e4dd1a7c856f758f827dd27cb5465a0cdb410a36"
+        },
+        {
+          "end_line": 46,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 38,
+          "name": "_set_attr",
+          "sha256": "a7b14f128fd00668e1d02e32183a87b692bfc91bd40a74412faf2c3d42f4c1fe"
+        },
+        {
+          "end_line": 59,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 48,
+          "name": "_stage_of",
+          "sha256": "4209072d561b54691815c4cc8c2d35327da4bee4cb6970e8c42d33faef16ba17"
+        },
+        {
+          "end_line": 77,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 61,
+          "name": "_patch_stage",
+          "sha256": "bff7f279d3364db9eaa8dc35d323df6834a60446baf915fc77092803733358cb"
+        },
+        {
+          "end_line": 92,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 79,
+          "name": "_patch_cta",
+          "sha256": "4cc7da3c29e03f87e65593921913e5cdc97aec0dbd2e8ea35b6e1bea8e04a81b"
+        },
+        {
+          "end_line": 158,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "ClassDef",
+          "line": 106,
+          "name": "CatalogParser",
+          "sha256": "3d0cc6ab83c9f61ced68dec716ba568e90a22d7fc5513c1c501560bc8ad54ebd"
+        },
+        {
+          "end_line": 173,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 161,
+          "name": "catalog_snapshot",
+          "sha256": "1d4936ec786577bdc633e3235f836008727a759d13b9d11f4041587cfcdbcb17"
+        },
+        {
+          "end_line": 188,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 176,
+          "name": "inject_script",
+          "sha256": "61258943eb65bbd11d1bf073a4090a7793d0046dd521981ed3f04947e16015f0"
+        },
+        {
+          "end_line": 192,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 191,
+          "name": "ukrainian",
+          "sha256": "4b13b8165c7cd935d3fb0dc97434bfb3c34f08c0113ba55d0c8f51addb2849ba"
+        },
+        {
+          "end_line": 212,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 195,
+          "name": "patch_home",
+          "sha256": "55bff29bb8305fe066b8cdf58bbab88a7c1b4cddc0f43872a366245e80757c2d"
+        },
+        {
+          "end_line": 235,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 215,
+          "name": "patch_catalog",
+          "sha256": "13c8577f68866470a3da0a3005191ebb1b09943088f249f0c5be6b2e899df688"
+        },
+        {
+          "end_line": 258,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 238,
+          "name": "prepare_updates",
+          "sha256": "d95af64bcd9d8b782da5639ddc560058cf5e55fda6443c2165e7941f392eb0f5"
+        }
+      ],
+      "exported_excerpt_bytes": 7852,
+      "global_constant_values_exported": false,
+      "imports": [
+        "import html",
+        "import re",
+        "from html.parser import HTMLParser",
+        "from pathlib import Path"
+      ],
+      "path": "/home/Carix/ua_site_counters.py",
+      "sha256": "500ca67145faa38ca9f72ac6da85e2a7d1c351f8f2fcca4a2edeb34c22734c23",
+      "sql_structure": [],
+      "syntax": "PASS",
+      "top_level_calls": []
+    },
+    "/home/Carix/ua_spec84_runtime.py": {
+      "bytes": 20437,
+      "definitions": [
+        {
+          "end_line": 37,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "ClassDef",
+          "line": 36,
+          "methods": [],
+          "name": "RuntimeDeferred",
+          "sha256": "fddcfb62295720423cfa712b950b0aa3e9b235dc46a5859cb40c2d0faecbe99d"
+        },
+        {
+          "end_line": 42,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 40,
+          "name": "_legacy",
+          "sha256": "b182e3c2c37cf1d2c46ae9d27c887ade7bb3c08d62aa7f789362c68cdfb68a45"
+        },
+        {
+          "end_line": 63,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 45,
+          "name": "_cards",
+          "sha256": "970266e0882617615f3ece7009c2630f3fb85eff8a1d3f60704d0e1fac663734"
+        },
+        {
+          "end_line": 67,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 66,
+          "name": "_card",
+          "sha256": "8571da29ce633eedb00faebc8ed9b3441e9873614465363427becbe4a9e36332"
+        },
+        {
+          "end_line": 104,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 70,
+          "name": "_writer_guard",
+          "sha256": "c0ac38fca3a436ecb1f706e156b8d496a1674dcd898aa28d8ddb02d297bfd348"
+        },
+        {
+          "end_line": 120,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 107,
+          "name": "_init_queue",
+          "sha256": "b22b6b43ef816b3f5debbda3b5c693456f689773f954c573ee0f64c61738d25c"
+        },
+        {
+          "end_line": 128,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 123,
+          "name": "_heartbeat",
+          "sha256": "78ddf0e1b6159df86d20334789eaade3688d7c106db798aa202509a082f3962b"
+        },
+        {
+          "end_line": 132,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 131,
+          "name": "_spec_transaction",
+          "sha256": "2335bea164cee6d86ade0c5e2f075b6a9233a8a94aa55f946c19114b1712c3a7"
+        },
+        {
+          "end_line": 145,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 135,
+          "name": "_attached",
+          "sha256": "3a8191f1dd80ec8ca50e33564c9c3e43b31a3a4b90a29391d9ef401718c8858d"
+        },
+        {
+          "end_line": 153,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 148,
+          "name": "_request_sync",
+          "sha256": "cbbbac3a5239e846e4158a708cf55bb619873c4a9647306f3c697ed7a508cb39"
+        },
+        {
+          "end_line": 158,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 156,
+          "name": "_legacy_vin",
+          "sha256": "a2ae1da21032443c36bfbfda009d8c2db7ff429dfeec411c59e967a8a51a6d0c"
+        },
+        {
+          "end_line": 179,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 161,
+          "name": "_enqueue",
+          "sha256": "ec96829a358c77ca220b7270cc6f9ab1b8e1bccd4af990ad8ede9322638d0720"
+        },
+        {
+          "end_line": 204,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 182,
+          "name": "fact_binding_matches",
+          "sha256": "16a193949a874de5cddfd160d81d583bb84829eaa13578855b822196b32e9dac"
+        },
+        {
+          "end_line": 221,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 207,
+          "name": "_lease_guard",
+          "sha256": "7849de6a6f6f2c644fa3c0f974dc3f2ca383db4d5a6722e10b87eb4829ad00ac"
+        },
+        {
+          "end_line": 273,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "ClassDef",
+          "line": 224,
+          "name": "_IntegratedRuntime",
+          "sha256": "62e35d378e504c4f84a1d119b7a9b41bfe24de3507b33662f0c25cf69bd92678"
+        },
+        {
+          "end_line": 299,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 276,
+          "name": "_atomic_existing",
+          "sha256": "106a07e57821706c249d502237271bca5fd1af88610bfdbd858c85f5709f59fd"
+        },
+        {
+          "end_line": 339,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 302,
+          "name": "_sync_one",
+          "sha256": "a03b2f3375d4dfe538511bd347d9f4cbaafe2e93891fd7d6e7df12ee619b36ee"
+        },
+        {
+          "end_line": 358,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 342,
+          "name": "_sync_pending",
+          "sha256": "7b6a78a0ec40805a286c4cde07646f9aaae264f546f0076a8cd353cbd3aa6e67"
+        },
+        {
+          "end_line": 413,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 361,
+          "name": "_loop",
+          "sha256": "0fb02079fc2bc3e12d24e2701b540a1b26edab7455ec9e8013915d3debc0b10f"
+        },
+        {
+          "end_line": 424,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 416,
+          "name": "start_worker",
+          "sha256": "dca45a6dbf5ce2ec49a781b82e065e5bf715697880c031b10c32d95aac1ea2f5"
+        },
+        {
+          "end_line": 431,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 427,
+          "name": "stop_worker",
+          "sha256": "e07ac9eedc04562e3d6cd7dff4d37750f91930b3c5576ad56913161fba85bdff"
+        },
+        {
+          "end_line": 438,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 434,
+          "name": "retry_card",
+          "sha256": "75fb01acdaf1543ed9929be8801e7881636576132f19d0ac2fbbfb630b3ff0f1"
+        },
+        {
+          "end_line": 453,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 441,
+          "name": "card_state",
+          "sha256": "7c50e38307f255c1d81b3635e624bcd6231706090815578cebf5a41c250a9083"
+        }
+      ],
+      "exported_excerpt_bytes": 10430,
+      "global_constant_values_exported": false,
+      "imports": [
+        "from __future__ import annotations",
+        "import contextlib",
+        "import fcntl",
+        "import hashlib",
+        "import json",
+        "import logging",
+        "import os",
+        "import pathlib",
+        "import sqlite3",
+        "import tempfile",
+        "import threading",
+        "import time",
+        "from spec_retry84 import APPROVED_SOURCES, DOMAIN_TO_SOURCE, Queue, Runtime, blank_outcomes, collect_bounded, identity"
+      ],
+      "path": "/home/Carix/ua_spec84_runtime.py",
+      "sha256": "938b8dd68f6eafa8b3022ef1dd1f03aa44fd27ec9979bef0819c36941fe022be",
+      "sql_structure": [],
+      "syntax": "PASS",
+      "top_level_calls": []
+    },
+    "/home/Carix/uaart_connection_monitor.py": {
+      "bytes": 15183,
+      "definitions": [
+        {
+          "end_line": 42,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "ClassDef",
+          "line": 38,
+          "methods": [],
+          "name": "Endpoint",
+          "sha256": "6cae5d9fa26b925ae648a6b4cf882f2118f2203803862e2961f4acd1eaae6edd"
+        },
+        {
+          "end_line": 54,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 53,
+          "name": "utc_now",
+          "sha256": "f3bd490732f893e2d6324db413b941b456c141f936292400de179487b7b1bcf9"
+        },
+        {
+          "end_line": 59,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 57,
+          "name": "url_identity",
+          "sha256": "efc2d062282d2d2dbb45aa17cb6f9ba0304ed368f89bb1060acf3c7f21f30860"
+        },
+        {
+          "end_line": 63,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "ClassDef",
+          "line": 62,
+          "methods": [],
+          "name": "RedirectPolicyError",
+          "sha256": "e6d0d2211126521636c5c27807baf934d917b73c358fde75c2bff5c5122c029c"
+        },
+        {
+          "end_line": 67,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "ClassDef",
+          "line": 66,
+          "methods": [],
+          "name": "MonitorAlreadyRunning",
+          "sha256": "30bac006865d1384c88029acfb295e9a8f2297d0aaa8e90912c458ace0a1d77d"
+        },
+        {
+          "end_line": 75,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 70,
+          "name": "has_site_title",
+          "sha256": "10a15acaaab4e5e32ce0ecd1dbe62284b0e9a337aa7119b614ebaad40b5e1461"
+        },
+        {
+          "end_line": 92,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "ClassDef",
+          "line": 78,
+          "methods": [
+            {
+              "end_line": 84,
+              "line": 82,
+              "name": "__init__"
+            },
+            {
+              "end_line": 92,
+              "line": 86,
+              "name": "redirect_request"
+            }
+          ],
+          "name": "SafeRedirectHandler",
+          "sha256": "6811fa9587d995711e336e0fb07e0cf5db818aad3ad61552364cb8b83ba40b36"
+        },
+        {
+          "end_line": 98,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 95,
+          "name": "result_base",
+          "sha256": "806404df085ea5ad3b26dd02a8efe336fc820de0bda10c8041b5fe442335f71e"
+        },
+        {
+          "end_line": 169,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 101,
+          "name": "probe_once",
+          "sha256": "7fa9fb1159901112e611c2705201b284c4d952df2738a2c8f04074ff587a3578"
+        },
+        {
+          "end_line": 191,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 172,
+          "name": "isolated_probe",
+          "sha256": "6af29764045b14e6d3b2561627151f3434687db35ff4cfedbe5322d5158e13f6"
+        },
+        {
+          "end_line": 207,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 194,
+          "name": "write_evidence",
+          "sha256": "da5f8c7d8c84be7e1c704c5bb8b497f56e680f822dcd6c07f7c6934f55b810f5"
+        },
+        {
+          "end_line": 252,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 210,
+          "name": "run_monitor",
+          "sha256": "ea4c43995699b6952d98811fbf15378ab8ccd625b0b15f74919d1a4726c79973"
+        },
+        {
+          "end_line": 267,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 255,
+          "name": "monitor_lock",
+          "sha256": "0f7bb1d3ea1f9b1b847832deefb94ff26545d7e8b2f1ac1af5da5f029f8739d1"
+        },
+        {
+          "end_line": 298,
+          "excerpt": "OMITTED_NOT_SELECTED",
+          "kind": "FunctionDef",
+          "line": 270,
+          "name": "run_watch",
+          "sha256": "a7d16a577994fbfe407384a60605f338bba16717e57d4ec322a651b8473347f2"
+        },
+        {
+          "end_line": 327,
+          "excerpt": "SANITIZED_AST_RENDERING",
+          "kind": "FunctionDef",
+          "line": 301,
+          "name": "main",
+          "sha256": "916e9eb646d1636d828e642a0e4ffe5440c107cd2510c2c4c021e3c1ebc39dd2"
+        }
+      ],
+      "exported_excerpt_bytes": 1659,
+      "global_constant_values_exported": false,
+      "imports": [
+        "from __future__ import annotations",
+        "import argparse",
+        "from concurrent.futures import ThreadPoolExecutor",
+        "from contextlib import contextmanager",
+        "from dataclasses import asdict, dataclass",
+        "from datetime import datetime, timezone",
+        "import fcntl",
+        "import hashlib",
+        "import html",
+        "import json",
+        "from pathlib import Path",
+        "import re",
+        "import ssl",
+        "import subprocess",
+        "import sys",
+        "import tempfile",
+        "import time",
+        "from typing import Callable",
+        "from urllib.error import HTTPError, URLError",
+        "from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit",
+        "from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener",
+        "import uuid"
+      ],
+      "path": "/home/Carix/uaart_connection_monitor.py",
+      "sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+      "sql_structure": [],
+      "syntax": "PASS",
+      "top_level_calls": []
+    }
+  },
+  "source_imports_executed": false,
+  "started_at": "2026-09-20T17:14:18Z",
+  "status": "PROBE_COMPLETED",
+  "task_id": "UA-ART-UA0002-DELETE-PROBE-002",
+  "unavailable_or_unparsed_paths": []
+}
