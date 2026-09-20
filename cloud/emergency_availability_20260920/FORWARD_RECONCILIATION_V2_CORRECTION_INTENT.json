@@ -1,0 +1,28 @@
+{
+  "schema_version": "UAART-CONNECTION-RESILIENT-OPERATION-INTENT-1",
+  "operation_id": "ua0022-forward-v2-corrections-upload-20260920T1133Z",
+  "recorded_at": "2026-09-20T11:33:00Z",
+  "environment": "GitHub branch-only candidate preparation; no production, runtime, Preview, reload, rollback, main or HALT write",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "branch": "codex/task088-owner-policy-20260913-0934",
+  "expected_branch_parent": "7a306b25b12432a0bf10325102956578fd512553",
+  "observed_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "foreground_in_progress": false,
+  "pr_triggered_workflow_runs_for_parent": 0,
+  "inputs": {
+    "builder_sha256": "a288b7b5131c43f997f4d0cf23c6005db3f3d2aeb2b561905afb2ab2b84e8f53",
+    "tests_sha256": "7190d8e747dbae0297ae2269040ebf10e7d0887b1029ec2123171f1793d408b4",
+    "manifest_sha256": "1b4b9db80c69945be841da6ca16e55411116e773f0d4e45fd0861d6635960fa7",
+    "install_evidence_sha256": "018a99891750cb13ff43407342ecefeb084cedfb5bc75b41cb557acfa086250a",
+    "health_evidence_sha256": "29c86557518848b7be03a127b39dcaa2e8fa8d7afb7af6a5e2bf4b36fc778f75",
+    "plan_sha256": "a4f5b2586a3ee431cc7b018c003ecd26b7df8d1e6a0a65bfc2748596d216dd64"
+  },
+  "intent": "First persist this intent, then publish the corrected data-only v2 candidate as one fast-forward branch commit for independent review.",
+  "expected_result": "The PR branch contains the provenance-bound, route-bound and canonical-receipt-valid candidate; main and production remain unchanged.",
+  "readback": "Read the remote branch ref, every changed Git blob and candidate SHA256; rerun 12 affected tests, 7/7 reproduction and active control_plane.validate_receipt.",
+  "required_backup": {
+    "type": "immutable prior branch commit",
+    "commit": "7a306b25b12432a0bf10325102956578fd512553"
+  },
+  "next_action": "Commit and push this intent only with a non-force fast-forward update."
+}
