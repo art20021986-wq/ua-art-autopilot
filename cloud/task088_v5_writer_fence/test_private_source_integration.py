@@ -128,7 +128,8 @@ class IntegrationTests(unittest.TestCase):
         source = (
             "def zapisat(*a, **k): pass\n"
             "def obnovit_etalon(*a, **k): pass\n"
-            "def main(): pass\n"
+            "def main():\n    _horosho = True\n    if _horosho: pass\n    else: pass\n"
+            "def main():\n    _bedy = []\n    if _bedy: return\n"
             "if __name__ == \"__main__\":\n    main()\n"
         )
         candidate = integration._integrate_stranica_text(source)

@@ -1,0 +1,60 @@
+{
+  "scope": "Exact isolated candidate entry points; not all runtime writers or production gate",
+  "photo": [
+    "photo_remove_all -> worker thread -> publication fence -> verified media backup -> deletion -> fields -> rebuild",
+    "Failure: conditional SQLite field recovery + no-replace file recovery + rebuild"
+  ],
+  "video": [
+    "video_remove_all -> worker thread -> publication fence -> backups/intent -> field API",
+    "Exact _v163_status helper: publication fence -> BEGIN IMMEDIATE -> cars/media snapshots -> original SQL -> after-image journal -> commit -> close",
+    "Verified media deletion -> per-vehicle JSON cache removal -> rebuild -> DB postcheck",
+    "Failure: reverse media row after-images -> conditional fields -> files -> cache member -> rebuild",
+    "Direct _ubrat_video_polno joins same worker; unused _ubrat_fayly_video fails before writes"
+  ],
+  "diagnostic": [
+    "diag_clear -> worker thread -> publication fence -> verified backup -> fields -> anchored file deletion -> rebuild"
+  ],
+  "html": [
+    "_peresobrat_stranicy holds publication fence across import/reload/main",
+    "stranica.main/zapisat/obnovit_etalon use same registry",
+    "Actual HTML validation fallback restores previous content then signals failure",
+    "Actual missing-media early exit now signals failure"
+  ],
+  "lock_order": {
+    "mutation": [
+      "publication_fence",
+      "SQLite write transaction",
+      "commit and close",
+      "rebuild/spec84"
+    ],
+    "render": [
+      "publication_fence",
+      "spec84",
+      "spec SQLite read"
+    ],
+    "rule": "No outstanding SQLite write transaction when entering spec84; direct spec84 entry acquires publication fence first."
+  },
+  "spec84": [
+    "ua_spec_permanent.write_lock now acquires publication fence before original spec84 RLock/flock",
+    "Actual ensure_html renderer reads specification SQLite beneath spec84; no blanket SQLite-before-spec84 ordering claimed",
+    "Media-helper SQLite transaction is committed/closed before rebuild enters spec84"
+  ],
+  "dependency_scope": {
+    "lock4_zhurnal.py": "Inspected existing SQLite connection subclass/commit logging shim; journal uses original connection rather than replacing SQLite factory.",
+    "ua_additional_spec.py": "Inspected read path: renderer queries sidecar SQLite under spec84; source unchanged.",
+    "vin_spec_service.py": "Inspected legacy publication callback ordering and delegation to ua_spec84_runtime; source unchanged. Loaded worker lifecycle remains runtime containment work."
+  },
+  "test_limits": [
+    "Real private media SQL helper, reload helper, fallback wrappers and spec84 lock extracted and run against isolated fixtures.",
+    "db.update_card_field is represented by committed SQLite fixture writes, including a lost acknowledgement; full bot module/production DB are not imported.",
+    "Shared-lock participants are serialized. Uncooperative/old loaded writers must be excluded by the separate production writer gate.",
+    "Point4 independent review is not performed by the implementing assistant.",
+    "Crash/restart production acceptance and canonical Stage3/Stage4 receipts remain later gates."
+  ],
+  "historical_reuse": {
+    "primitive_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "primitive_18_tests": "historical unchanged primitive; not rerun",
+    "446_183_120": "not rerun",
+    "Preview24": "historical applicability review remains point4"
+  }
+}

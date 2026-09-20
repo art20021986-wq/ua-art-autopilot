@@ -28,6 +28,179 @@ BEFORE_SHA256 = {
 CARS_MARKER = "# UA-ART-PR114-PUBLICATION-FENCE-HANDOFF006:START"
 STRANICA_MARKER = "# UA-ART-PR114-STRANICA-FENCE-HANDOFF006:START"
 GUARD_MARKER = "# UA-ART-PR114-SHARED-FENCE-HANDOFF006:START"
+DEPENDENCY_SHA256 = {
+    "lock4_zhurnal.py": "6461e34b137f55c3bd6df60f859c04b8d00e8ddea5b42e95fc8f9cde7d00cac9",
+    "ua_spec_permanent.py": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
+    "ua_additional_spec.py": "6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672",
+    "vin_spec_service.py": "1d4d54a6cd70f03dcdf2c599d4a9c6362bfd842f18c40a231dfd0ecbc965ce4a",
+}
+
+RECOVERY_BLOCK = r'''
+
+# UA-ART-PR114-SCOPED-RECOVERY-007:START
+import mutation_recovery as _ua114_recovery
+import sqlite3 as _ua114_sqlite
+_ua114_database = "/home/Carix/crm.db"
+_ua114_cache = "/home/Carix/.video_sinhron.json"
+_ua114_regular_files = _ua114_recovery.regular_files
+_ua114_backup_exact = _ua114_recovery.backup_exact
+_ua114_restore_exact = _ua114_recovery.restore_exact
+
+
+def _ua114_restore_fields(cid, actor_id, before, expected):
+    _ua114_require_fence()
+    try:
+        return _ua114_recovery.restore_fields(_ua114_database, cid, before, expected)
+    except Exception:
+        # A DB outage must not prevent independent file recovery attempts.
+        return ["crm_database"] + sorted(before)
+
+
+def _ubrat_fayly_foto(nomer):
+    _ua114_require_fence()
+    code = _ua114_recovery.vehicle_code(nomer)
+    paths = _ua114_regular_files(os.path.join("/home/Carix/video/foto", code))
+    for path in paths:
+        _ua114_recovery.remove_regular(path)
+    return len(paths)
+
+
+def _ua114_video_remove_all_mutation(cid, actor_id):
+    with _ua114_publication_fence():
+        card = card_of(cid) or {}
+        if not card:
+            return {"ok": False, "error": "CARD_NOT_FOUND", "rollback_conflicts": []}
+        code = _ua114_recovery.vehicle_code(card.get("auto_number"))
+        before = {name: card.get(name) for name in ("videos", "video_h", "video_v")}
+        expected = {"videos": jdump([]), "video_h": None, "video_v": None}
+        root = "/home/Carix/video"
+        entries, written = [], {}
+        journal = _ua114_recovery.MediaJournal(_ua114_database, code)
+        cache = None
+        removed = 0
+        try:
+            targets = []
+            # Refuse a symlinked video root before listing it.
+            with _ua114_recovery.parent_fd(os.path.join(root, ".probe")):
+                pass
+            for name in sorted(os.listdir(root)):
+                if name == code + ".mp4" or (name.startswith(code + "-") and name.endswith(".mp4")):
+                    path = os.path.join(root, name)
+                    targets.append(path)
+                    if os.path.lexists(path + ".poster.jpg"):
+                        targets.append(path + ".poster.jpg")
+            backup = _v142_papka(code, "video_exact")
+            entries = _ua114_backup_exact(targets, root, backup)
+            cache = _ua114_recovery.CacheEntry(_ua114_cache, code)
+            if cache.original is not None:
+                _ua114_recovery.write_private_new(os.path.join(backup, "cache-before.json"), cache.original)
+            # Keep before/expected private evidence before the first mutation.
+            _ua114_recovery.write_private_new(os.path.join(backup, "fields-before.json"),
+                json.dumps({"id": cid, "before": before, "expected": expected}, ensure_ascii=False).encode())
+            journal.evidence_directory = backup
+        except Exception as exc:
+            return {"ok": False, "error": type(exc).__name__ + ":" + str(exc), "rollback_conflicts": []}
+        try:
+            for field, value in expected.items():
+                written[field] = value
+                db.update_card_field("cars", cid, field, value, actor_id)
+            with journal.active():
+                _v163_status(code, "rejected", "ready")
+            for entry in entries:
+                path, _backup, _sha, _relative = entry[:4]
+                if _ua114_recovery.file_digest(path) != _sha:
+                    raise RuntimeError("MEDIA_CHANGED_SINCE_BACKUP")
+                _ua114_recovery.remove_regular(path)
+                removed += 1
+            cache.remove()
+            if not _peresobrat_stranicy():
+                raise RuntimeError("PAGE_REBUILD_FAILED")
+            con = _ua114_sqlite.connect(_ua114_database)
+            try:
+                count = con.execute("SELECT COUNT(*) FROM media WHERE car_id=? AND vid='video' AND status='ready'", (cid,)).fetchone()[0]
+            finally:
+                con.close()
+            if count or any((card_of(cid) or {}).get(k) != v for k, v in expected.items()):
+                raise RuntimeError("VIDEO_POSTCHECK_FAILED")
+            return {"ok": True, "removed": removed, "before_count": len(videos_of(card))}
+        except Exception as exc:
+            conflicts = []
+            # Reverse actual helper effects before reversing the explicit fields.
+            for label, restore in (
+                ("media_database", journal.restore),
+                ("crm_fields", lambda: _ua114_restore_fields(cid, actor_id,
+                    {k: before[k] for k in written}, written)),
+                ("media_files", lambda: _ua114_restore_exact(entries)),
+                ("video_cache", cache.restore),
+            ):
+                try:
+                    conflicts.extend(restore())
+                except Exception:
+                    conflicts.append(label)
+            try:
+                if not _peresobrat_stranicy():
+                    conflicts.append("rebuilt_pages")
+            except Exception:
+                conflicts.append("rebuilt_pages")
+            return {"ok": False, "error": type(exc).__name__ + ":" + str(exc),
+                    "removed": removed, "rollback_conflicts": sorted(set(conflicts))}
+
+
+def _ubrat_fayly_video(nomer):
+    # The old unjournaled primitive has no remaining direct caller in the exact
+    # input graph. Fail before any write if an old alias tries to call it.
+    _ua114_require_fence()
+    raise RuntimeError("USE_TRANSACTIONAL_VIDEO_MUTATION")
+
+
+def _ubrat_video_polno(nomer):
+    _ua114_require_fence()
+    code = _ua114_recovery.vehicle_code(nomer)
+    con = _ua114_sqlite.connect(_ua114_database)
+    try:
+        row = con.execute("SELECT id FROM cars WHERE auto_number=?", (code,)).fetchone()
+    finally:
+        con.close()
+    if row is None:
+        return 0, ["CARD_NOT_FOUND"]
+    # The direct legacy entry follows the same recovery boundary; it cannot
+    # enter the old helper chain with its best-effort restores.
+    result = _ua114_video_remove_all_mutation(row[0], None)
+    return result.get("removed", 0), ([] if result.get("ok") else
+        [result.get("error", "VIDEO_REMOVE_FAILED")] + result.get("rollback_conflicts", []))
+
+
+_ua114_photo_mutation_unchecked = _ua114_photo_remove_all_mutation
+_ua114_diag_mutation_unchecked = _ua114_diag_clear_mutation
+
+
+def _ua114_photo_remove_all_mutation(cid, actor_id):
+    with _ua114_publication_fence():
+        _ua114_recovery.vehicle_code((card_of(cid) or {}).get("auto_number"))
+        return _ua114_photo_mutation_unchecked(cid, actor_id)
+
+
+def _ua114_diag_clear_mutation(cid, pole, actor_id):
+    with _ua114_publication_fence():
+        _ua114_recovery.vehicle_code((card_of(cid) or {}).get("auto_number"))
+        return _ua114_diag_mutation_unchecked(cid, pole, actor_id)
+# UA-ART-PR114-SCOPED-RECOVERY-007:END
+'''
+
+SPEC_BLOCK = r'''
+
+# UA-ART-PR114-SPEC-LOCK-ORDER-007:START
+from contextlib import contextmanager as _ua114_contextmanager
+from publication_fence import publication_fence as _ua114_publication_fence
+_ua114_spec_write_lock_base = write_lock
+
+@_ua114_contextmanager
+def write_lock(*args, **kwargs):
+    with _ua114_publication_fence():
+        with _ua114_spec_write_lock_base(*args, **kwargs):
+            yield
+# UA-ART-PR114-SPEC-LOCK-ORDER-007:END
+'''
 
 
 CARS_BLOCK = r'''
@@ -37,6 +210,7 @@ import asyncio as _ua114_asyncio
 import hashlib as _ua114_hashlib
 import shutil as _ua114_shutil
 import tempfile as _ua114_tempfile
+import mutation_recovery as _ua114_recovery
 from publication_fence import publication_fence as _ua114_publication_fence
 from publication_fence import require_publication_fence as _ua114_require_fence
 
@@ -196,8 +370,8 @@ def _ua114_photo_remove_all_mutation(cid, actor_id):
             if remaining:
                 raise RuntimeError("PHOTO_REMOVE_INCOMPLETE:%d" % len(remaining))
             for field, value in expected.items():
-                db.update_card_field("cars", cid, field, value, actor_id)
                 written[field] = value
+                db.update_card_field("cars", cid, field, value, actor_id)
             if not _peresobrat_stranicy():
                 raise RuntimeError("PAGE_REBUILD_FAILED")
             return {
@@ -281,8 +455,8 @@ def _ua114_video_remove_all_mutation(cid, actor_id):
         written = {}
         try:
             for field, value in expected.items():
-                db.update_card_field("cars", cid, field, value, actor_id)
                 written[field] = value
+                db.update_card_field("cars", cid, field, value, actor_id)
             removed, failures = _ubrat_video_polno(card.get("auto_number"))
             remaining = [path for path in targets if os.path.exists(path)]
             if remaining:
@@ -378,10 +552,10 @@ def _ua114_diag_clear_mutation(cid, pole, actor_id):
         written = {}
         removed = 0
         try:
-            db.update_card_field("cars", int(cid), pole, "[]", actor_id)
             written[pole] = "[]"
+            db.update_card_field("cars", int(cid), pole, "[]", actor_id)
             for path in targets:
-                os.remove(path)
+                _ua114_recovery.remove_regular(path)
                 removed += 1
             if not _peresobrat_stranicy():
                 raise RuntimeError("PAGE_REBUILD_FAILED")
@@ -548,6 +722,46 @@ def _require_defs(source: str, name: str, required: set[str]) -> None:
         raise RuntimeError("PRIVATE_SOURCE_SHAPE_MISMATCH:%s:%s" % (name, ",".join(missing)))
 
 
+def _instrument_media_status(source: str) -> str:
+    """Instrument exact private helper without copying its source into Git."""
+    tree = ast.parse(source)
+    nodes = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "_v163_status"]
+    if len(nodes) != 1:
+        raise RuntimeError("MEDIA_STATUS_HELPER_SHAPE")
+
+    class JournalCalls(ast.NodeTransformer):
+        begins = 0
+        commits = 0
+
+        def visit_Assign(self, node):
+            self.generic_visit(node)
+            if (len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
+                    and node.targets[0].id == "con" and isinstance(node.value, ast.Call)
+                    and isinstance(node.value.func, ast.Attribute)
+                    and node.value.func.attr == "connect"):
+                self.begins += 1
+                return [node, ast.parse("_ua114_recovery.begin_media(con)").body[0]]
+            return node
+
+        def visit_Call(self, node):
+            self.generic_visit(node)
+            if (isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name)
+                    and node.func.value.id == "con" and node.func.attr == "commit"):
+                self.commits += 1
+                return ast.copy_location(ast.parse("_ua114_recovery.commit_media(con)").body[0].value, node)
+            return node
+
+    transform = JournalCalls()
+    original = nodes[0]
+    candidate = transform.visit(original)
+    if (transform.begins, transform.commits) != (1, 1):
+        raise RuntimeError("MEDIA_STATUS_TRANSACTION_SHAPE")
+    candidate.body.insert(0, ast.parse("_ua114_require_fence()").body[0])
+    ast.fix_missing_locations(candidate)
+    lines = source.splitlines(keepends=True)
+    return "".join(lines[:original.lineno - 1]) + ast.unparse(candidate) + "\n" + "".join(lines[original.end_lineno:])
+
+
 def _integrate_cars_text(source: str) -> str:
     if CARS_MARKER in source:
         raise RuntimeError("CARS_ALREADY_INTEGRATED")
@@ -556,13 +770,40 @@ def _integrate_cars_text(source: str) -> str:
         "_ubrat_fayly_video", "_ubrat_video_polno", "_peresobrat_stranicy",
         "register",
     })
-    return source.rstrip() + CARS_BLOCK + "\n"
+    source = _instrument_media_status(source)
+    return source.rstrip() + CARS_BLOCK + RECOVERY_BLOCK + "\n"
 
 
 def _integrate_stranica_text(source: str) -> str:
     if STRANICA_MARKER in source:
         raise RuntimeError("STRANICA_ALREADY_INTEGRATED")
     _require_defs(source, "stranica.py", {"zapisat", "obnovit_etalon", "main"})
+    # The exact existing fallback restores HTML but returns normally. A caller
+    # must not report a failed/reverted rebuild as a successful media mutation.
+    lines = source.splitlines(keepends=True)
+    edits = []
+    for node in ast.parse(source).body:
+        if not isinstance(node, ast.FunctionDef) or node.name != "main":
+            continue
+        changed = False
+        for item in ast.walk(node):
+            if isinstance(item, ast.If) and isinstance(item.test, ast.Name):
+                if item.test.id == "_horosho" and item.orelse:
+                    item.orelse.append(ast.parse('raise RuntimeError("HTML_VALIDATION_FALLBACK")').body[0])
+                    changed = True
+                elif item.test.id == "_bedy":
+                    for index, statement in enumerate(item.body):
+                        if isinstance(statement, ast.Return):
+                            item.body[index] = ast.parse('raise RuntimeError("HTML_MISSING_MEDIA_ABORT")').body[0]
+                            changed = True
+        if changed:
+            ast.fix_missing_locations(node)
+            edits.append((node.lineno - 1, node.end_lineno, ast.unparse(node) + "\n"))
+    if len(edits) != 2:
+        raise RuntimeError("STRANICA_FALLBACK_SHAPE_MISMATCH")
+    for start, end, replacement in reversed(edits):
+        lines[start:end] = [replacement]
+    source = "".join(lines)
     anchor = 'if __name__ == "__main__":\n    main()'
     if source.count(anchor) != 1:
         raise RuntimeError("STRANICA_MAIN_ANCHOR_MISMATCH")
@@ -594,7 +835,8 @@ def _atomic_write(path: Path, data: bytes, mode: int) -> None:
         temp.unlink(missing_ok=True)
 
 
-def build(source_dir: Path, output_dir: Path, fence_source: Path) -> dict[str, object]:
+def build(source_dir: Path, output_dir: Path, fence_source: Path,
+          dependency_dir: Path | None = None) -> dict[str, object]:
     source_dir = source_dir.resolve()
     output_dir = output_dir.resolve()
     if source_dir == output_dir:
@@ -609,12 +851,24 @@ def build(source_dir: Path, output_dir: Path, fence_source: Path) -> dict[str, o
             raise RuntimeError("PRIVATE_SOURCE_SHA256_MISMATCH:" + name)
         original[name] = data
 
+    if dependency_dir is None:
+        raise RuntimeError("EXACT_DEPENDENCY_DIRECTORY_REQUIRED")
+    for name, expected in DEPENDENCY_SHA256.items():
+        path = dependency_dir / name
+        if path.is_symlink():
+            raise RuntimeError("PRIVATE_DEPENDENCY_SYMLINK")
+        data = path.read_bytes()
+        if _sha(data) != expected:
+            raise RuntimeError("PRIVATE_DEPENDENCY_SHA256_MISMATCH:" + name)
+        original[name] = data
+
     integrated = {
         "cars_ui.py": _integrate_cars_text(_decode(original["cars_ui.py"], "cars_ui.py")),
         "stranica.py": _integrate_stranica_text(
             _decode(original["stranica.py"], "stranica.py")),
         "publish_transaction_guard.py": _integrate_guard_text(
             _decode(original["publish_transaction_guard.py"], "publish_transaction_guard.py")),
+        "ua_spec_permanent.py": _decode(original["ua_spec_permanent.py"], "ua_spec_permanent.py").rstrip() + SPEC_BLOCK + "\n",
     }
     for name, source in integrated.items():
         compile(source, name, "exec")
@@ -623,13 +877,17 @@ def build(source_dir: Path, output_dir: Path, fence_source: Path) -> dict[str, o
     after: dict[str, dict[str, object]] = {}
     for name, source in integrated.items():
         data = source.encode("utf-8")
-        _atomic_write(output_dir / name, data, (source_dir / name).stat().st_mode & 0o777)
+        _atomic_write(output_dir / name, data, 0o600)
         after[name] = {"sha256": _sha(data), "bytes": len(data)}
 
     fence_data = fence_source.read_bytes()
     compile(_decode(fence_data, "publication_fence.py"), "publication_fence.py", "exec")
     _atomic_write(output_dir / "publication_fence.py", fence_data, 0o644)
     after["publication_fence.py"] = {"sha256": _sha(fence_data), "bytes": len(fence_data)}
+    recovery_data = Path(__file__).with_name("mutation_recovery.py").read_bytes()
+    compile(_decode(recovery_data, "mutation_recovery.py"), "mutation_recovery.py", "exec")
+    _atomic_write(output_dir / "mutation_recovery.py", recovery_data, 0o600)
+    after["mutation_recovery.py"] = {"sha256": _sha(recovery_data), "bytes": len(recovery_data)}
 
     manifest: dict[str, object] = {
         "contract": CONTRACT,
@@ -638,9 +896,14 @@ def build(source_dir: Path, output_dir: Path, fence_source: Path) -> dict[str, o
         "writer_gate_pass": False,
         "private_sources_committed": False,
         "before_sha256": BEFORE_SHA256,
+        "dependency_before_sha256": DEPENDENCY_SHA256,
         "candidate": after,
         "lock_path": "/home/Carix/.ua_art_publish_transaction.lock",
-        "lock_order": ["publication_fence", "sqlite", "spec84"],
+        "lock_order": {
+            "mutation": ["publication_fence", "SQLite write transaction", "commit and close", "rebuild/spec84"],
+            "render": ["publication_fence", "spec84", "spec SQLite read"],
+            "rule": "No outstanding SQLite write transaction when entering spec84; direct spec84 entry acquires publication fence first.",
+        },
     }
     manifest_data = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode()
     _atomic_write(output_dir / "PRIVATE_CANDIDATE_MANIFEST.json", manifest_data, 0o600)
@@ -651,12 +914,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--dependency-dir", type=Path, required=True)
     parser.add_argument(
         "--fence-source", type=Path,
         default=Path(__file__).with_name("publication_fence.py"),
     )
     args = parser.parse_args()
-    manifest = build(args.source_dir, args.output_dir, args.fence_source)
+    manifest = build(args.source_dir, args.output_dir, args.fence_source, args.dependency_dir)
     print(json.dumps({
         "contract": manifest["contract"],
         "status": "PASS",

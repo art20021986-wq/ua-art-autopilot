@@ -42,7 +42,8 @@
     "Connection restored through the authenticated console. Fresh SHA256 for cars_ui.py, stranica.py and publish_transaction_guard.py exactly matched retained originals without a duplicate download. A separate private source candidate was assembled with shared writer-fence integration across photo, video, diagnostic and page-rebuild paths. Independent review found and closed an incomplete media-backup boundary; exact pre-mutation SHA256 copies, deletion-completeness checks and conflict-preserving restore are now enforced. Final affected suite 13/13 PASS and isolated review PASS. It is not installed and acceptance remains 8/20 (40%).",
     "Two defects reproduced against the previous builder: check/copy restore overwrote a concurrent operator file, and corrupt backup bytes became visible at the original path. Restore now stages and SHA256-verifies bytes then atomically links without replacing an existing destination. Three targeted checks PASS. Prior integration self-review authority corrected; independent acceptance remains required. No installation or acceptance increment.",
     "Emergency007 point1 GitHub reconciliation accepted; exact visible-editor recovery of lock4_zhurnal.py3429bytes matched retained server SHA256; remaining3 dependencies open. Product8/20 unchanged.",
-    "Emergency007 points1/2 completed: controls reconciled without re-running prior tests; four missing private dependencies recovered from complete visible authenticated editor rows, sizes andSHA256 match pinned server inventory. Independent4/4 dependency and3/3 retained-original matches. No new server digest command/runtime gate, tests, installation or product criterion claimed."
+    "Emergency007 points1/2 completed: controls reconciled without re-running prior tests; four missing private dependencies recovered from complete visible authenticated editor rows, sizes andSHA256 match pinned server inventory. Independent4/4 dependency and3/3 retained-original matches. No new server digest command/runtime gate, tests, installation or product criterion claimed.",
+    "Emergency007 point3 completed in isolation: exact private candidate integrates media/CRM/cache recovery, actual helper transaction journal, shared spec84 lock order and failure propagation for HTML fallback;41/41 affected tests PASS (25new+16changed-scope). Seven originals and six generated hashes/compilation verified. No installation, independent review or product-criterion increment."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -66,13 +67,13 @@
     "Verified full backup and canonical Stage3 install/independent production receipt, followed by configured reader and real Stage4 CRM/card/catalog, timing and restart/recovery acceptance."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/emergency007_point3_20260920/NOTICE.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/emergency007_point3_20260920/RESULT.json",
   "next_action": {
-    "kind": "EMERGENCY007_POINT3_IN_PROGRESS",
-    "detail": "Run new scoped rollback and real-source SQLite/spec84 call-path checks; no publication."
+    "kind": "EMERGENCY007_POINT4_INDEPENDENT_REVIEW",
+    "detail": "Emergency007 point4: independently review exact candidate and release closure; accept criterion10 only with genuine independent evidence."
   },
-  "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
-  "observed_pr_head_before_this_update": "f77f02ad639b932809567de53f761909e663ec09",
+  "observed_main": "e4d4ecd21071592bc715b56060869d25428dc577",
+  "observed_pr_head_before_this_update": "8cc33403fc97faa4e99f7fb85569f3ff4630f66d",
   "owner_current_request": "Включить и запустить PR114 автопилот, автоматически продолжать после восстановления связи.",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
@@ -109,7 +110,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-20T04:20:49.797Z",
+  "recorded_at": "2026-09-20T04:35:13.347Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -162,18 +163,18 @@
     "tests_passed": 18,
     "integrated": false,
     "private_candidate_assembled": true,
-    "private_candidate_validation": "cloud/task088_v5_writer_fence/PRIVATE_INTEGRATION_VALIDATION.json",
-    "private_candidate_validation_sha256": "0f1311aedd40be6d04b1893bcd2b6eb6712be21b52a05c5cbeeaff8fde7dd380",
-    "private_candidate_tests_passed": 13,
+    "private_candidate_validation": "cloud/task088_v5_writer_fence/handoff006_evidence/emergency007_point3/VALIDATION.json",
+    "private_candidate_validation_sha256": "8dfba5b91e6fd066f8a5661bb38771212aaace00d748d6b2ac20b5fa2b9b1d5e",
+    "private_candidate_tests_passed": 41,
     "private_candidate_independent_review": "cloud/task088_v5_writer_fence/handoff006_evidence/PRIVATE_INTEGRATION_INDEPENDENT_REVIEW.json",
     "private_candidate_independent_review_sha256": "a42e4fe610f4f26814be3a8812fa6133ecf87b81c9553b67a02d32b9ce945f5b",
-    "private_candidate_independent_review_status": "INDEPENDENCE_NOT_ESTABLISHED_REVIEW_REQUIRED",
+    "private_candidate_independent_review_status": "PENDING_POINT4",
     "installed": false,
     "writer_gate_pass": false,
     "validation_path": "cloud/task088_v5_writer_fence/HANDOFF006_VALIDATION.json",
-    "current_candidate_result": "cloud/task088_v5_writer_fence/handoff006_evidence/restore_atomic_20260919/RESULT.json",
-    "current_candidate_result_sha256": "9c35b4b71461ca65564a6fb3a59ab6209564029dec09d952e33406b8a2e93456",
-    "private_candidate_validation_scope": "Historical 13-test v4 validation retained; current v5 has three targeted regression checks, not full integration acceptance."
+    "current_candidate_result": "cloud/task088_v5_acceptance/emergency007_point3_20260920/RESULT.json",
+    "private_candidate_validation_scope": "Isolated point3 boundaries and fixtures only; no product/runtime gate",
+    "integrated_in_private_candidate": true
   },
   "handoff006_checkpoint_scope": "Isolated candidate preparation only; retained Preview and product results remain historical for their exact versions. New candidate is not integrated or installed.",
   "connection_recovery_policy": {
@@ -218,5 +219,5 @@
     "fresh_server_hashes": false,
     "production_changed": false
   },
-  "foreground_in_progress": true
+  "foreground_in_progress": false
 }

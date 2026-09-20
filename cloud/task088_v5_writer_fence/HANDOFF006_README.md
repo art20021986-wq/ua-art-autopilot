@@ -45,3 +45,31 @@ registry. Independent review found and closed the earlier best-effort backup
 gap before accepting these isolated boundaries. This proves only the
 assembled private candidate. It is not installed, does not exclude old loaded
 processes, and is not a writer Gate or production receipt.
+
+
+## Emergency007 point3 — current isolated candidate
+
+The current source-bound manifest, boundary report and 41-test output are in
+`handoff006_evidence/emergency007_point3/`. Build with `--dependency-dir` pointing
+to the four exact private dependencies recovered in point2. All seven original
+input hashes are checked. Private inputs and generated private source files
+remain outside Git; this repository holds only the builder and sanitized evidence.
+
+The candidate restores CRM fields using SQLite compare-and-swap, records the
+actual media helper changes inside its write transaction, and reverses only
+matching after-images. Video recovery includes media rows and the vehicle cache
+member. Other vehicles, changed operator values and newly created media files
+are preserved. Backups/restores use bounded 1 MiB reads, no-follow directory
+handles, hash checks, original permissions and atomic no-replace restoration.
+
+The real HTML fallback and missing-media abort now signal failure rather than
+letting the caller report a successful rebuild. Direct spec84 entry obtains
+the publication fence first; renderer SQLite reads can occur under spec84.
+Media write transactions finish before entering rebuild/spec84. The legacy
+publication guard uses the same reentrant registry and preserves the lock inode.
+
+The earlier integration self-review is not independent acceptance. Point4 must
+review this candidate independently, including the documented fixture limits
+and full release closure. Old loaded writers, canonical backup/Gate/install and
+production recovery remain separate work. No installation or product criterion
+is accepted by these isolated checks.

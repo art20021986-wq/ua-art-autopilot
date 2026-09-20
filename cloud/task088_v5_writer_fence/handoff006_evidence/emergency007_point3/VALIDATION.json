@@ -1,0 +1,50 @@
+{
+  "operation_id": "pr114-emergency007-point3-20260920",
+  "recorded_at": "2026-09-20T04:33:15.705755+00:00",
+  "status": "PASS_41_ISOLATED_POINT3_CHECKS",
+  "tests": {
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0,
+    "new_scoped_tests": 25,
+    "affected_existing_integration_tests": 16,
+    "historical_product_suites_rerun": false,
+    "rerun_reason": "Affected integration test compatibility: helper import added and synthetic fallback fixture updated to newly enforced source contract. Rerun affected integration modules only; no primitive18 or446/183/120."
+  },
+  "input_originals_matched": 7,
+  "candidate_files_hash_and_compile_matched": 6,
+  "source_sha256": {
+    "integrate_private_sources.py": "2c1548310fb3b27c944ee52076a45babc3c3f101b74c174286ca21a6448d659b",
+    "mutation_recovery.py": "86e61e3483341fd87138948fc77855149a7a9f09071c63ca0b5106bb1155e9b5",
+    "test_scoped_recovery.py": "35377ea4a9aa8218b699d7e6d79a4cee847090238bde2c6b5dc3d1edefaff400",
+    "test_private_source_integration.py": "323fc3ba8aee7b1b67ed208a439f758a437b8d1a4a0d1288c72dc14f73e594e1",
+    "INTEGRATION_CONTRACT.json": "19afd85d5143f91162b9c372c833b48c3e937ff7095bb37691ab08a274fb5303",
+    "HANDOFF006_README.md": "d6ab4beb50da55aaee1d1dc6b866bf8dc663afdae1ccc09a0af8006d5038662c"
+  },
+  "evidence_sha256": {
+    "TEST_INPUTS.json": "98ec85acb93fd04103fee1ffd20d20adc5b4952766599894f8475214dac54210",
+    "FINAL_RUN.txt": "97e6d610633fd866be1080f2ffa5d34e547d7eebe4a8cf2396711e5fcc83bd49",
+    "CANDIDATE_MANIFEST.json": "3a4843722a7c8c4186d3c6eef3e17f09e8cf87affe5f4d303183b9d15560acc4",
+    "BOUNDARIES.json": "2be1bef4fe93e74dc58700b49e62ff43993e5ad35ca8103b367ea480188403e7",
+    "RUN_INDEX.json": "a8134596e410e97faf432454fba2d4f2188adf33bd357465a249baed848e517c"
+  },
+  "private_candidate_directory": "/workspace/scratch/eb425df3a207/private_v5_candidate_emergency007_v3",
+  "installed": false,
+  "production_authority": false,
+  "independent_review": "PENDING_POINT4",
+  "full_runtime_writer_coverage": false,
+  "test_limits": [
+    "Real private media SQL helper, reload helper, fallback wrappers and spec84 lock extracted and run against isolated fixtures.",
+    "db.update_card_field is represented by committed SQLite fixture writes, including a lost acknowledgement; full bot module/production DB are not imported.",
+    "Shared-lock participants are serialized. Uncooperative/old loaded writers must be excluded by the separate production writer gate.",
+    "Point4 independent review is not performed by the implementing assistant.",
+    "Crash/restart production acceptance and canonical Stage3/Stage4 receipts remain later gates."
+  ],
+  "progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "new_product_criteria": []
+  },
+  "next_action": "Emergency007 point4: independently review exact candidate and release closure; accept criterion10 only with genuine independent evidence."
+}
