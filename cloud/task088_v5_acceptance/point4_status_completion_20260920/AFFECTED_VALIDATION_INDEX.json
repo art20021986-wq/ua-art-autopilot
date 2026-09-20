@@ -1,8 +1,8 @@
 {
   "contract": "PR114-POINT4-AFFECTED-VALIDATION-INDEX-1",
-  "recorded_at": "2026-09-20T06:38:13.563952+00:00",
-  "scope": "Evidence inventory and current file hash reconciliation only. No tests re-executed, no Git/production mutation, no private source bytes copied.",
-  "status": "RECORDED_SCOPED_VALIDATIONS_INDEXED_FINAL_CANDIDATE_PARENT_OWNED",
+  "recorded_at": "2026-09-20T07:15:49.719088+00:00",
+  "scope": "Evidence index refreshed for exact v2 cars-only delta; no tests rerun, no Git or production mutation, no private source bytes copied.",
+  "status": "FROZEN_V2_AFFECTED_VALIDATIONS_AND_INDEPENDENT_CODE_REVIEW_PREVIEW_PENDING",
   "counting_policy": {
     "overall_sum": null,
     "reason": "Do not add overlapping suite runs, retries, independent probes, or historical credit into a fabricated combined PASS count. Unique counts below are local to named groups; closure/zero overlap explicitly removed.",
@@ -12,7 +12,6 @@
   "groups": {
     "price": {
       "scope": "Unified all-record FIFO, immutable data-only proofs, draft/public transitions, ACL/delegation, quiescence, visibility+expiry boundary and recovery",
-      "unique_current_test_ids": 152,
       "per_module_distinct_counts": {
         "test_visibility_price_lifecycle": 13,
         "test_v5_runtime": 26,
@@ -189,18 +188,18 @@
         },
         "cloud/task088_price_sync/uaart_price_sync_runtime.py": {
           "evidence_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
-          "current_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
-          "current_match": true
+          "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+          "current_match": false
         },
         "cloud/task088_price_sync/uaart_price_sync_binding.py": {
           "evidence_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
-          "current_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
-          "current_match": true
+          "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_match": false
         },
         "cloud/task088_price_sync/patch_cars_ui.py": {
           "evidence_sha256": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
-          "current_sha256": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
-          "current_match": true
+          "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_match": false
         },
         "cloud/task088_price_sync/patch_guard.py": {
           "evidence_sha256": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
@@ -214,13 +213,13 @@
         },
         "cloud/task088_price_sync/test_binding.py": {
           "evidence_sha256": "ba2e4cfb46efb401856f6a75f3783ab223fa141409238441b5004960090b1ef2",
-          "current_sha256": "ba2e4cfb46efb401856f6a75f3783ab223fa141409238441b5004960090b1ef2",
-          "current_match": true
+          "current_sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+          "current_match": false
         },
         "cloud/task088_price_sync/test_cars_ui_hook.py": {
           "evidence_sha256": "1ccef2055cb1947d509158b7a0bcc19dc68ff7df8e24ac6ab72278f6b451c97d",
-          "current_sha256": "1ccef2055cb1947d509158b7a0bcc19dc68ff7df8e24ac6ab72278f6b451c97d",
-          "current_match": true
+          "current_sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+          "current_match": false
         },
         "cloud/task088_price_sync/test_guard_fence.py": {
           "evidence_sha256": "7944efaf7af24286a1cd3dc6b02a86b6a82f578b71afb8a5385117f28d257a23",
@@ -229,8 +228,8 @@
         },
         "cloud/task088_price_sync/BINDING_CONTRACT.md": {
           "evidence_sha256": "59ce990c8d81165b2ec910d21829097e36d997d356ff74c4f231e75e4ed4eb1d",
-          "current_sha256": "59ce990c8d81165b2ec910d21829097e36d997d356ff74c4f231e75e4ed4eb1d",
-          "current_match": true
+          "current_sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+          "current_match": false
         }
       },
       "runs": [
@@ -319,7 +318,9 @@
           "passed_named_test_ids": []
         }
       ],
-      "reuse_reason": "Earlier unaffected tests retained by implementation report dependency reasoning. Late authority replace-boundary fix specifically validated by3new tests,5affected/compensation checks and independent after-probe; earlier147 label alone did not cover that failure."
+      "reuse_reason": "Earlier unaffected tests retained by implementation report dependency reasoning. Late authority replace-boundary fix specifically validated by3new tests,5affected/compensation checks and independent after-probe; earlier147 label alone did not cover that failure.",
+      "unique_recorded_test_ids": 152,
+      "pin_scope": "Earlier exact implementation pins retained. Startup/worker-entry changes are superseded only in their changed scope by absent_anchor_startup; 152 unchanged checks were not rerun."
     },
     "native_visibility": {
       "scope": "Local native publish/unpublish/sold ordering, same-id recovery, exact owned HTML retirement, preserved media/new edits, shared fence/quiescence",
@@ -405,8 +406,8 @@
         },
         "cloud/task088_v5_writer_fence/integrate_private_sources.py": {
           "evidence_sha256": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
-          "current_sha256": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
-          "current_match": true
+          "current_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+          "current_match": false
         },
         "cloud/task088_v5_writer_fence/test_visibility_lifecycle.py": {
           "evidence_sha256": "11ba702923b1d4db3b45a86084ef773e558a959d35ed1913ad9621f74102a37c",
@@ -534,8 +535,8 @@
         },
         "cloud/task088_v5_writer_fence/publication_fence.py": {
           "evidence_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
-          "current_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
-          "current_match": true
+          "current_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+          "current_match": false
         }
       },
       "unaccepted_scope": "Requires active operation/journal ownership and cooperative publication fence; does not prove arbitrary external HTML conflict exclusion"
@@ -598,7 +599,7 @@
             },
             "cloud/task088_price_sync/uaart_price_sync_binding.py": {
               "evidence_sha256": "ec2aa3a41d5c3ca8680228089f85ade641f153505f3e460bc9e76c0721594a2a",
-              "current_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
+              "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
               "current_match": false
             },
             "cloud/task088_v5_install/build_release.py": {
@@ -724,8 +725,8 @@
             },
             "cloud/task088_price_sync/uaart_price_sync_binding.py": {
               "evidence_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
-              "current_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
-              "current_match": true
+              "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+              "current_match": false
             },
             "cloud/task088_stage3_renderer/initial_html_prices.py": {
               "evidence_sha256": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
@@ -902,15 +903,217 @@
       ],
       "zero_plus_closure_distinct_recorded_ids": 16,
       "note": "Current composed empty case rerun in later counterclosure; initial standalone raw-result5 remains separate historical source scope."
+    },
+    "absent_anchor_startup": {
+      "scope": "Stage3 ordinary CRM startup before Stage4 authority, exact absent-anchor classification, actual post_init, PID-bound readiness, fail-closed price/worker mutation and truthful job registration",
+      "report": {
+        "path": "ABSENT_ANCHOR_PRICE_STARTUP_FINAL.json",
+        "sha256": "c24403780c9c0ecb297b614331f8cee54180327c6ffaec4ea6c65bda88ce7e0e",
+        "bytes": 4885
+      },
+      "new_test_ids": 8,
+      "selected_existing_startup_checks": 4,
+      "selected_existing_worker_compatibility_checks": 6,
+      "distinct_targeted_test_ids": 18,
+      "validation": [
+        {
+          "path": "unconfigured_startup_final_tests.log",
+          "sha256": "e14284e55d2782f3600eaa1ed7be6c86c3697f7d8c6f18bb77f9e4e57d4feba9",
+          "passed": 12,
+          "test_ids": [
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_absent_anchor_preserves_existing_application_without_binding_or_jobs",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_actual_generated_register_keeps_base_handlers_but_skips_new_worker_jobs",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_direct_or_inherited_worker_cannot_mutate_claims_files_or_send_until_ready",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_existing_invalid_or_broken_symlink_anchor_still_hard_fails",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_price_and_confirmation_cannot_write_queue_or_data_until_configured",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_readiness_is_pid_bound_and_unregistered_installer_gets_no_runtime_grant",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_real_validated_binding_becomes_ready_only_after_verified_post_init",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_registered_callbacks_wait_for_real_bot_post_init",
+            "test_binding.BindingTests.test_bootstrap_preserves_post_init_and_does_not_read_uninitialized_bot",
+            "test_binding.BindingTests.test_ordinary_halt_keeps_crm_bootstrap_available_but_blocks_prices",
+            "test_cars_ui_hook.CarsHookTests.test_nonprice_handlers_and_stage_job_remain_unchanged",
+            "test_cars_ui_hook.CarsHookTests.test_each_authorized_operator_can_submit_both_markets"
+          ]
+        },
+        {
+          "path": "unconfigured_worker_compatibility_tests.log",
+          "sha256": "c667e8e4e981a2d820d0f709e3f0bcb343444a75e314c3f72a6ebe43e3b79d44",
+          "passed": 6,
+          "test_ids": [
+            "test_v5_runtime.V5RuntimeTests.test_four_conscious_changes_fully_complete_fifo_and_preserve_ua",
+            "test_v5_runtime.V5RuntimeTests.test_success_receipt_sent_once_to_initiating_operator",
+            "test_runtime.RuntimeTests.test_register_requires_verified_binding_and_uses_vietnam_10am",
+            "test_runtime.RuntimeTests.test_runtime_failure_notifies_without_working_crm_database",
+            "test_runtime.RuntimeTests.test_daily_fallback_survives_database_outage_without_repeating_same_day",
+            "test_visibility_price_lifecycle.VisibilityPriceTests.test_blocked_old_public_view_reconciles_same_operation_after_actual_retirement"
+          ]
+        }
+      ],
+      "current_pins": {
+        "cloud/task088_price_sync/uaart_price_sync_runtime.py": {
+          "evidence_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+          "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+          "evidence_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/patch_cars_ui.py": {
+          "evidence_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_unconfigured_startup.py": {
+          "evidence_sha256": "43c8c28935557a7a8b1cae94946089a8d626fb1d3a5cfa13ca9cc54939ba3714",
+          "current_sha256": "43c8c28935557a7a8b1cae94946089a8d626fb1d3a5cfa13ca9cc54939ba3714",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_binding.py": {
+          "evidence_sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+          "current_sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_cars_ui_hook.py": {
+          "evidence_sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+          "current_sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/BINDING_CONTRACT.md": {
+          "evidence_sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+          "current_sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+          "current_match": true
+        }
+      },
+      "not_added_to_price_152": true,
+      "independent_review": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING"
+    },
+    "absent_anchor_native_gates": {
+      "scope": "Stage/media background and manual protected mutation gates plus central publication fence",
+      "report": {
+        "path": "ABSENT_ANCHOR_NATIVE_GATES_FINAL.json",
+        "sha256": "a3ad44a6df3bec0e252c3324d1c1e7b11487d3b7849e66685085e8e618d9752d",
+        "bytes": 2298
+      },
+      "new_targeted_test_methods": 6,
+      "recorded_result": "PASS",
+      "current_pins": {
+        "cloud/task088_v5_writer_fence/integrate_private_sources.py": {
+          "evidence_sha256": "32fe8299bd6acab0b8201f10d9a186e3c80069340e31e0df71cae5fd25d4e08f",
+          "current_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+          "current_match": false
+        },
+        "cloud/task088_v5_writer_fence/publication_fence.py": {
+          "evidence_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+          "current_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+          "current_match": true
+        },
+        "cloud/task088_v5_writer_fence/test_activation_gates.py": {
+          "evidence_sha256": "af3f323fefb89d10989799ab7e6e3d4037f62db37fa2315207adfcfbb36d985e",
+          "current_sha256": "af3f323fefb89d10989799ab7e6e3d4037f62db37fa2315207adfcfbb36d985e",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/patch_cars_ui.py": {
+          "evidence_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/uaart_price_sync_runtime.py": {
+          "evidence_sha256": "d92ed1c613c0b08c4c382c47e51125d85efa3853a16d0154368ea4e14f97ae5b",
+          "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+          "current_match": false
+        },
+        "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+          "evidence_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_match": true
+        }
+      },
+      "runtime_pin_note": "Recorded runtime d92ed1c6 is intermediate; final da28632f keeps identical native tri-state APIs and adds stricter worker-entry guards. Native source and generated composition unchanged; separate startup final tests bind final runtime."
+    },
+    "optional_photo_hide_startup_gate": {
+      "report": {
+        "path": "OPTIONAL_PHOTO_HIDE_GATE_RESULT.json",
+        "sha256": "51c9ff419011d0a3fe7e513663213086ed9bafb510d640a28aeeb98afe731a88",
+        "bytes": 1953
+      },
+      "scope": "Only optional registration during exact CRM startup: genuine missing anchor skips import/register. Presence retains prior registration even while readiness=False; strict bootstrap validation remains unchanged. If anchor disappears after optional registration, final invariant forbids a downgrade to unconfigured startup. No claim of universal readonly media.",
+      "distinct_new_test_methods": 3,
+      "test_ids": [
+        "test_optional_photo_hide_gate.OptionalPhotoHideGate.test_absent_anchor_never_imports_or_registers_optional_media_extension",
+        "test_optional_photo_hide_gate.OptionalPhotoHideGate.test_anchor_removed_after_registration_cannot_downgrade_to_unconfigured",
+        "test_optional_photo_hide_gate.OptionalPhotoHideGate.test_present_anchor_keeps_original_optional_registration_while_readiness_false"
+      ],
+      "runs": [
+        {
+          "path": "optional_photo_hide_gate_tests.log",
+          "sha256": "2b693ac032d17bda837d7587ba221c6a9ec59ca416aece34d5b1d1a7b49e82c1",
+          "bytes": 520
+        },
+        {
+          "path": "optional_photo_hide_gate_final_tests.log",
+          "sha256": "e84c66e83a532bc67c2580cd92a5d127d7b186cad4e19bddef9e77a53d613503",
+          "bytes": 725
+        }
+      ],
+      "counting_note": "Initial2 plus final3 overlap; only3 distinct methods, never5.",
+      "current_pins": {
+        "cloud/task088_v5_writer_fence/integrate_private_sources.py": {
+          "evidence_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+          "current_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+          "current_match": true
+        },
+        "cloud/task088_v5_writer_fence/test_optional_photo_hide_gate.py": {
+          "evidence_sha256": "7b5020997751c33df22a737566d0e2f6323556567f930d53ab4196422ecfae86",
+          "current_sha256": "7b5020997751c33df22a737566d0e2f6323556567f930d53ab4196422ecfae86",
+          "current_match": true
+        }
+      },
+      "generated_cars_ui_sha256": "c2be2af7720a8361665fed872256760264ffc735b68a197763f5f3af1dad62e2",
+      "private_extension_body_known": false,
+      "independent_review": {
+        "path": "FINAL_CANDIDATE_BINDING_INDEPENDENT_V2.json",
+        "sha256": "8270b5485b984f57544da2f2a1635216091b5b39d06c95238e795cd42465c78d",
+        "bytes": 2454
+      }
+    },
+    "preview_counter_csp": {
+      "report": {
+        "path": "PREVIEW_COUNTER_CSP_VALIDATION.json",
+        "sha256": "a1f1cede274c3babb786dec7721538b34bed3e579fc2042bd48e45ae531c857b",
+        "bytes": 1038
+      },
+      "scope": "Only dedicated Preview CSP: home and catalog may connect to exact same-origin /video/katalog.html if pinned in manifest; runtime retains authentication, host, GET/HEAD and byte-pin enforcement. Card and harness connect policies unchanged.",
+      "distinct_targeted_test_methods": 2,
+      "test_names": [
+        "test_counter_csp_allows_only_exact_catalogue_on_two_counter_surfaces",
+        "test_public_counter_catalogue_still_enforces_pinned_bytes_and_no_fallback"
+      ],
+      "current_pins": {
+        "cloud/task088_v5_preview/wsgi_preview.py": {
+          "evidence_sha256": "191989bd07d0eea55782671778b8bb2dd1b531eda88a561bbc4b229afcd7d289",
+          "current_sha256": "191989bd07d0eea55782671778b8bb2dd1b531eda88a561bbc4b229afcd7d289",
+          "current_match": true
+        },
+        "cloud/task088_v5_preview/test_preview.py": {
+          "evidence_sha256": "2e28d0c5b4e5ff1e9daf012d7b829744c5bf1ff9a7ccb66342411ccacb6d9710",
+          "current_sha256": "2e28d0c5b4e5ff1e9daf012d7b829744c5bf1ff9a7ccb66342411ccacb6d9710",
+          "current_match": true
+        }
+      },
+      "browser_run": false,
+      "preview_gate": "NOT_PASSED",
+      "not_added_to_historical24": true
     }
   },
   "independent_review": {
     "evidence": {
       "path": "STATUS_LIFECYCLE_INDEPENDENT_REVIEW.json",
-      "sha256": "1bc34eb8155359994837aa0ddb96d3d6498f6d2cff21833d38f82aeef621ab07",
-      "bytes": 15314
+      "sha256": "17147e41e1c73a6d17a2470fa0e83a6f2737ac1bcc82ef8ff9b2a20f8cc445da",
+      "bytes": 26415
     },
-    "status": "SCOPED_CODE_PASS_FINAL_CANDIDATE_BINDING_PENDING",
+    "status": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING",
     "current_pins": {
       "cloud/task088_price_sync/outbox.py": {
         "evidence_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
@@ -918,18 +1121,18 @@
         "current_match": true
       },
       "cloud/task088_price_sync/uaart_price_sync_runtime.py": {
-        "evidence_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
-        "current_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
+        "evidence_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+        "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
         "current_match": true
       },
       "cloud/task088_price_sync/uaart_price_sync_binding.py": {
-        "evidence_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
-        "current_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
+        "evidence_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+        "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
         "current_match": true
       },
       "cloud/task088_price_sync/patch_cars_ui.py": {
-        "evidence_sha256": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
-        "current_sha256": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
+        "evidence_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+        "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
         "current_match": true
       },
       "cloud/task088_price_sync/patch_guard.py": {
@@ -953,13 +1156,13 @@
         "current_match": true
       },
       "cloud/task088_v5_writer_fence/integrate_private_sources.py": {
-        "evidence_sha256": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
-        "current_sha256": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
+        "evidence_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+        "current_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
         "current_match": true
       },
       "cloud/task088_v5_writer_fence/publication_fence.py": {
-        "evidence_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
-        "current_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+        "evidence_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+        "current_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
         "current_match": true
       }
     },
@@ -1054,7 +1257,35 @@
       }
     ],
     "final_candidate_binding": {
-      "status": "PENDING_PARENT_FULL_COMPOSITE"
+      "status": "PASS_EXACT_CURRENT_V2_68_FILES",
+      "path": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920_v2",
+      "canonical_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+      "raw_manifest_sha256": "b99db44a534483e6db573e2847238b9791f93d03d77f7409c3fc9e7374ef4c8e",
+      "independent_report": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/FINAL_CANDIDATE_BINDING_INDEPENDENT_V2.json",
+      "independent_report_sha256": "8270b5485b984f57544da2f2a1635216091b5b39d06c95238e795cd42465c78d",
+      "v1_independent_evidence_preserved": true,
+      "changed_from_v1": [
+        "cars_ui.py"
+      ],
+      "unchanged_files": 67,
+      "beforehashes_bound_to_current_observation": 68,
+      "code_and_module_files": 20,
+      "core_html_files": 48
+    },
+    "final_candidate_v2_evidence": {
+      "path": "FINAL_CANDIDATE_BINDING_INDEPENDENT_V2.json",
+      "sha256": "8270b5485b984f57544da2f2a1635216091b5b39d06c95238e795cd42465c78d",
+      "bytes": 2454
+    },
+    "previous_main_review": {
+      "path": "STATUS_LIFECYCLE_INDEPENDENT_REVIEW_PRE_FINAL_BINDING.json",
+      "sha256": "1bc34eb8155359994837aa0ddb96d3d6498f6d2cff21833d38f82aeef621ab07",
+      "bytes": 15314
+    },
+    "previous_v1_binding": {
+      "path": "FINAL_CANDIDATE_BINDING_INDEPENDENT.json",
+      "sha256": "b8e75947a7006595cb50daa72cea59befbd86a2f9db407dbf867ddbaa65428ae",
+      "bytes": 2582
     }
   },
   "historical_unchanged_not_rerun": {
@@ -1069,11 +1300,11 @@
   },
   "release_readback": {
     "evidence": {
-      "path": "final_generated_release/RESULT.json",
-      "sha256": "1f81b1aca310eda5e14128be424c2d7ea4559a6c66044bffe4f82b4ea71b89fb",
-      "bytes": 2241
+      "path": "startup_final_generated_release/RESULT.json",
+      "sha256": "6c6ce657249048e69dee846d63daf27afde5696e9f0a86d65a5f1d199eebd891",
+      "bytes": 2297
     },
-    "recorded_status": "PASS_PUBLIC_RELEASE_READBACK",
+    "recorded_status": "PASS_PUBLIC_RELEASE_AND_CANDIDATE_MODULE_READBACK",
     "recorded_files": 20,
     "current_release_pin_checks": {
       "backup_controller.py": {
@@ -1112,8 +1343,8 @@
         "match": true
       },
       "publication_fence.py": {
-        "evidence_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
-        "current_release_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+        "evidence_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+        "current_release_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
         "match": true
       },
       "remote_adapter.py": {
@@ -1152,8 +1383,8 @@
         "match": true
       },
       "uaart_price_sync_binding.py": {
-        "evidence_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
-        "current_release_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
+        "evidence_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+        "current_release_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
         "match": true
       },
       "uaart_price_sync_confirmation.py": {
@@ -1167,8 +1398,8 @@
         "match": true
       },
       "uaart_price_sync_runtime.py": {
-        "evidence_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
-        "current_release_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
+        "evidence_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+        "current_release_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
         "match": true
       },
       "visibility_lifecycle.py": {
@@ -1177,11 +1408,27 @@
         "match": true
       }
     },
-    "pending_source_promotion": "RESOLVED: final release regenerated after publisher promotion;20/20 current public file hashes read back; old release receipt retained as historical.",
-    "historical_receipt": {
-      "path": "generated_release/RESULT.json",
-      "sha256": "4f7bff2c50bf74ec3d237bb228ab218e2bd7e71bacc9e10375e378a7c4007c68",
-      "bytes": 2254
+    "provenance_sha256": "d416d967300b4363a56a3ffa3f99f58ab8f2ac2e4721813f4e7134cc78c32b17",
+    "pending_source_promotion": "RESOLVED_FINAL_STARTUP_RELEASE_EXACT20_READBACK",
+    "previous_receipts": [
+      {
+        "path": "final_generated_release/RESULT.json",
+        "sha256": "1f81b1aca310eda5e14128be424c2d7ea4559a6c66044bffe4f82b4ea71b89fb",
+        "bytes": 2241
+      },
+      {
+        "path": "generated_release/RESULT.json",
+        "sha256": "4f7bff2c50bf74ec3d237bb228ab218e2bd7e71bacc9e10375e378a7c4007c68",
+        "bytes": 2254
+      }
+    ],
+    "pin_scope": "Latest frozen startup runtime da28632f, binding e6605725 and publication fence00305780; all20 generated public module bytes independently rehashed by index author.",
+    "v2_unchanged_binding": {
+      "result_sha256": "02ff0314dcc9bc1fbc718a530614fd74a1b4ec053b64c0fee1489306eaa7887f",
+      "unchanged_public_files": 20,
+      "unchanged_runtime_modules": 11,
+      "refresh_required": false,
+      "provenance_sha256": "d416d967300b4363a56a3ffa3f99f58ab8f2ac2e4721813f4e7134cc78c32b17"
     }
   },
   "privacy": {
@@ -1201,7 +1448,23 @@
       "compiled __pycache__ artifacts"
     ],
     "source_exclusion_reason": "Observed private WSGI code must not enter public evidence upload; expose only hash/sanitized route facts. Public patch/build scripts are repository-backed implementations and may contain narrowly scoped transformation anchors. No actual full private production source is intended for public upload.",
-    "upload_status": "No Git upload performed by index author; final parent allowlist must enforce exclusions."
+    "upload_status": "No Git upload performed by index author; final parent allowlist must enforce exclusions.",
+    "startup_delta_scan": {
+      "path": "STARTUP_PRIVACY_DELTA.json",
+      "sha256": "d6ef89e5a5e9fcc39cdb9dde3be4941afec86c6ecd39dfab8b75bb8a1347392b",
+      "files": 13,
+      "literal_credential_findings": 0
+    },
+    "log_allowlist": {
+      "path": "PUBLIC_LOG_ALLOWLIST.json",
+      "sha256": "9cae23fd78c486b0f5e5a40f53d9ce44b45f4f23675eac17d1481f815b9158bc",
+      "bytes": 15404
+    },
+    "traceback_log_exclusions": [
+      "native_guard_quiescence.log",
+      "native_visibility_tests.log",
+      "price_affected_tests.log"
+    ]
   },
   "pending_public_map_snapshot": {
     "evidence": {
@@ -1213,8 +1476,8 @@
       {
         "path": "cloud/task088_v5_writer_fence/integrate_private_sources.py",
         "snapshot_sha256": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
-        "current_sha256": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
-        "snapshot_current_match": true
+        "current_sha256": "32fe8299bd6acab0b8201f10d9a186e3c80069340e31e0df71cae5fd25d4e08f",
+        "snapshot_current_match": false
       },
       {
         "path": "cloud/task088_v5_writer_fence/visibility_lifecycle.py",
@@ -1249,8 +1512,8 @@
       {
         "path": "cloud/task088_price_sync/BINDING_CONTRACT.md",
         "snapshot_sha256": "59ce990c8d81165b2ec910d21829097e36d997d356ff74c4f231e75e4ed4eb1d",
-        "current_sha256": "59ce990c8d81165b2ec910d21829097e36d997d356ff74c4f231e75e4ed4eb1d",
-        "snapshot_current_match": true
+        "current_sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+        "snapshot_current_match": false
       },
       {
         "path": "cloud/task088_price_sync/test_guard_fence.py",
@@ -1261,20 +1524,20 @@
       {
         "path": "cloud/task088_price_sync/uaart_price_sync_runtime.py",
         "snapshot_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
-        "current_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
-        "snapshot_current_match": true
+        "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+        "snapshot_current_match": false
       },
       {
         "path": "cloud/task088_price_sync/test_cars_ui_hook.py",
         "snapshot_sha256": "1ccef2055cb1947d509158b7a0bcc19dc68ff7df8e24ac6ab72278f6b451c97d",
-        "current_sha256": "1ccef2055cb1947d509158b7a0bcc19dc68ff7df8e24ac6ab72278f6b451c97d",
-        "snapshot_current_match": true
+        "current_sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+        "snapshot_current_match": false
       },
       {
         "path": "cloud/task088_price_sync/patch_cars_ui.py",
         "snapshot_sha256": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
-        "current_sha256": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
-        "snapshot_current_match": true
+        "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+        "snapshot_current_match": false
       },
       {
         "path": "cloud/task088_price_sync/test_site_counters_patch.py",
@@ -1339,14 +1602,14 @@
       {
         "path": "cloud/task088_price_sync/uaart_price_sync_binding.py",
         "snapshot_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
-        "current_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
-        "snapshot_current_match": true
+        "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+        "snapshot_current_match": false
       },
       {
         "path": "cloud/task088_price_sync/test_binding.py",
         "snapshot_sha256": "ba2e4cfb46efb401856f6a75f3783ab223fa141409238441b5004960090b1ef2",
-        "current_sha256": "ba2e4cfb46efb401856f6a75f3783ab223fa141409238441b5004960090b1ef2",
-        "snapshot_current_match": true
+        "current_sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+        "snapshot_current_match": false
       },
       {
         "path": "cloud/task088_price_sync/preflight.py",
@@ -1451,7 +1714,8 @@
         "snapshot_current_match": true
       }
     ],
-    "note": "Snapshot is a staging breadcrumb, not final release manifest; current differences recorded rather than overwritten."
+    "note": "Snapshot is a staging breadcrumb, not final release manifest; current differences recorded rather than overwritten.",
+    "scope": "Pre-startup pending public map retained as historical snapshot; parent final allowlist must include new startup and activation-gate test files and latest source bytes."
   },
   "flags": [
     {
@@ -1461,8 +1725,91 @@
     {
       "severity": "PRIVATE_SOURCE_EXCLUSION",
       "finding": "Exclude CURRENT_PREVIEW_WSGI_OBSERVED.py from public upload; hashes/sanitized observations suffice."
+    },
+    {
+      "severity": "STARTUP_DELTA",
+      "finding": "Earlier 152 price tests and native14+8+1 retain exact historical pins; final startup behavior separately checked by 8 new plus10 selected existing tests and native6 new checks. Do not sum overlap or describe earlier full suite as executed on latest bytes."
     }
   ],
   "production_mutations": false,
-  "Git_writes": false
+  "Git_writes": false,
+  "previous_candidate_composition": {
+    "evidence": {
+      "path": "current_final_candidate/RESULT.json",
+      "sha256": "1fdd4621a5c1b9281e43e1d59922df7d51b151c979c1c7031cf6704d80e75a01",
+      "bytes": 17532
+    },
+    "recorded_status": "PASS_SCOPED_CURRENT_CORE_COMPOSITION",
+    "candidate_files": 68,
+    "canonical_files_manifest_sha256": "2881e87087bcecc6d8e3e9e15cf02903b3c430eb69f3d7279708ba5b75ef1305",
+    "compile_without_execution_count": 20,
+    "current_core_html": 48,
+    "approved_html_delta_proofs": 48,
+    "published_count": 22,
+    "runtime_module_count": 11,
+    "public_code_pin_readback": {
+      "count": 68,
+      "mismatches": [],
+      "status": "PASS_CURRENT_SOURCE_PIN_READBACK"
+    },
+    "no_stage3_or_stage4_receipt": true,
+    "preview_gate": "NOT_ISSUED_CURRENT_RENDERING_REVIEW_SEPARATE",
+    "writer_exclusion": false
+  },
+  "final_candidate_composition": {
+    "evidence": {
+      "path": "current_final_candidate_v2/RESULT.json",
+      "sha256": "02ff0314dcc9bc1fbc718a530614fd74a1b4ec053b64c0fee1489306eaa7887f",
+      "bytes": 18394
+    },
+    "execution_evidence": {
+      "path": "CURRENT_FINAL_BUILD_V2_EXECUTION.json",
+      "sha256": "3b50c125f8f1d65b5f0119e878f04ca8c1c873c55857a18fac531af035ca8dbc",
+      "bytes": 1819
+    },
+    "recorded_status": "PASS_EXACT_ONE_SOURCE_DELTA_67_UNCHANGED",
+    "candidate_files": 68,
+    "canonical_files_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+    "raw_manifest": {
+      "path": "current_final_candidate_v2/CANDIDATE_MANIFEST.json",
+      "sha256": "b99db44a534483e6db573e2847238b9791f93d03d77f7409c3fc9e7374ef4c8e",
+      "bytes": 16059
+    },
+    "changed_files": {
+      "cars_ui.py": {
+        "after_sha256": "c2be2af7720a8361665fed872256760264ffc735b68a197763f5f3af1dad62e2",
+        "before_sha256": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+        "bytes": 259248,
+        "previous_after_sha256": "d8079bd829d618fa3beeefab0d9eba70e9ee33b8b8d5e45e61ee5db326cca27f"
+      }
+    },
+    "unchanged_files_count": 67,
+    "html_bytes_unchanged": 48,
+    "runtime_modules_unchanged": 11,
+    "compile_count_this_delta": 1,
+    "unchanged_python_compile_credits_retained": 19,
+    "public_code_pin_readback": {
+      "count": 68,
+      "mismatches": [],
+      "status": "PASS_CURRENT_SOURCE_PIN_READBACK"
+    },
+    "historical_suites_rerun": false,
+    "preview_gate": "NOT_ISSUED_CURRENT_RENDERING_REVIEW_SEPARATE",
+    "no_stage3_or_stage4_receipt": true,
+    "writer_exclusion": false
+  },
+  "public_code_save_manifest": {
+    "path": "PUBLIC_CODE_SAVE_MANIFEST.json",
+    "sha256": "e67a408eb0140f7907ea4bcd3f766f859b3ce2f554745752a5767bf299c97bec",
+    "bytes": 31672
+  },
+  "public_code_save_counts": {
+    "repository_files": 95,
+    "public_evidence_helpers": 19,
+    "stale_acceptance_continuation_policy_included": false
+  },
+  "root_code_checkpoint_observation": {
+    "commit": "c424a8428b20b44753ddc083cee5dff9e08979ba",
+    "source": "Parent reports22 code files saved/readback; index author performed no external/Git write."
+  }
 }

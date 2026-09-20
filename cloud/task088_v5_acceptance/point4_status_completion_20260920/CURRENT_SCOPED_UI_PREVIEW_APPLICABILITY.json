@@ -1,0 +1,1337 @@
+{
+  "contract": "PR114-CURRENT-PREVIEW-APPLICABILITY-CHECK-1",
+  "status": "OFFLINE_CORE_CHECKS_PASS_BROWSER_AND_RESOURCE_BINDING_PENDING",
+  "evaluated_at": "2026-09-20T06:54:20.259107+00:00",
+  "historical_gate": {
+    "path": "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_GATE.json",
+    "sha256": "3ed070183d19de801348aef5a521d30781c6528aa585441c6593ab34ae7f864a",
+    "evaluated_at": "2026-09-15T04:55:50.289644+00:00",
+    "status_preserved": "PASS",
+    "criteria": [
+      "all_published_cars",
+      "homepage",
+      "catalog",
+      "full_cards",
+      "ru",
+      "ua",
+      "ge",
+      "language_switching",
+      "ua_price",
+      "ge_price",
+      "missing_ge",
+      "desktop",
+      "mobile",
+      "links",
+      "buttons",
+      "vin",
+      "photos",
+      "specifications",
+      "additional_specification",
+      "stages",
+      "counters",
+      "no_unrelated_diff",
+      "source_generation",
+      "independent_db_readback"
+    ]
+  },
+  "observer": {
+    "path": "/workspace/scratch/cc71e1c55fba/current_core_capture/summary.json",
+    "sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "status": "PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION",
+    "finished_at": "2026-09-20T06:39:20.995451+00:00",
+    "full_inventory_observed": false
+  },
+  "published_count": 22,
+  "published_codes": [
+    "UA-0001",
+    "UA-0002",
+    "UA-0003",
+    "UA-0004",
+    "UA-0005",
+    "UA-0006",
+    "UA-0007",
+    "UA-0008",
+    "UA-0009",
+    "UA-0010",
+    "UA-0011",
+    "UA-0012",
+    "UA-0013",
+    "UA-0014",
+    "UA-0015",
+    "UA-0016",
+    "UA-0017",
+    "UA-0018",
+    "UA-0019",
+    "UA-0020",
+    "UA-0021",
+    "UA-0022"
+  ],
+  "database": {
+    "audit_sha256": "5fc2159884e692e5bca3f1491f6951686dea6092523861bb690843f2bcb520a9",
+    "cars_sha256": "b4755620063e96aadc61318909713d75094481c26e3e6385c56a806520f448be",
+    "published_codes": [
+      "UA-0001",
+      "UA-0002",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016",
+      "UA-0017",
+      "UA-0018",
+      "UA-0019",
+      "UA-0020",
+      "UA-0021",
+      "UA-0022"
+    ],
+    "published_sha256": "67d18c3dce04d2e320fe14e298ecf3ec2ea99a8ad1f4726f08e3c1bd6e02fb13"
+  },
+  "schema_sha256": "2f11c8573be88b0dc8da1adf12fcdc6c5105844f0a0300797fc907f9544ff8c2",
+  "public_pure_patcher_sha256": {
+    "cloud/task088_stage3_renderer/initial_html_prices.py": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+    "cloud/task088_stage3_renderer/uaart_market_prices.py": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+    "cloud/task088_price_sync/patch_site_counters.py": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305"
+  },
+  "stage_codes": {
+    "ge_waiting": [
+      "UA-0001",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0017",
+      "UA-0021"
+    ],
+    "kr_bought": [
+      "UA-0003",
+      "UA-0004",
+      "UA-0015",
+      "UA-0016",
+      "UA-0022"
+    ],
+    "sea_loaded": [
+      "UA-0005",
+      "UA-0006",
+      "UA-0013",
+      "UA-0014"
+    ],
+    "ua_arrived": [
+      "UA-0002",
+      "UA-0007",
+      "UA-0008",
+      "UA-0018",
+      "UA-0019",
+      "UA-0020"
+    ]
+  },
+  "core_pages": [
+    {
+      "path": "/site/UA-0001.html",
+      "before_sha256": "1681cc2be00c736e0ec56a58a813538a49e249bd5d63f9c6d1d58a5f63cc450c",
+      "after_sha256": "532e37b3336696e8a278480bd7ad419e429154dd3db2321d4aced3a528db980d",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0002.html",
+      "before_sha256": "bc2eb036a560b52eeaa0204355b80d7c092d70668dca9a86312dfa2be70f935f",
+      "after_sha256": "48cb719eda43bb16d990cafc1b80467497dd11d97d05cf2963e61b7d46fd1231",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0003.html",
+      "before_sha256": "4fe7a92b15e3b1ca39d2cf010e99d724b2fd5a31cc3df00a4f05fc6e0c32ef6c",
+      "after_sha256": "a881c0d16221e2588f0ae570d94dfd1f947dd0a5e2731eb109a1f9819f3204fa",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0004.html",
+      "before_sha256": "e0b2059164bb430a2f305660c3513514779f443807793da34981a7f1638dc9ca",
+      "after_sha256": "ba8be9c2efe58166039b60396ffd7249c05e945f43a9ecf691298ea0c137e741",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0005.html",
+      "before_sha256": "7a4e284a29dc2c865b5b9b393014bf69c214beb397afc4e1ca4871b63b8a001a",
+      "after_sha256": "f82d8f658790b71a43f1157dea6e941363d0ef0d7882165fd394a9910361f3d7",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0006.html",
+      "before_sha256": "9c9718c36b2b1ee248429595c072717644943135a4a0381e5414b5c000657060",
+      "after_sha256": "8cd77add3465839bbe430a8f64a3d8b93c66722f13ff547c74d404fb3e259b8a",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0007.html",
+      "before_sha256": "8a7394ef7fb7cebdb88e84952514e2f3857ca615610003e76be03b45ae1f6aa0",
+      "after_sha256": "2538b5a3b288c5490be4f11cd348b30d8699b6ce638f7e8afa8fda02fc987c49",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0008.html",
+      "before_sha256": "fe87f390904983b71aa7db0ac6ff1f20e521b25ffb57973db0c912315df878bd",
+      "after_sha256": "4eb47222358de29194be1996745e11eb54c5624f441b3f2a15239a9784bd3d6b",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0009.html",
+      "before_sha256": "d1942bfb26645bb06a7dd46dbd391007b6767b6571605b76b99164cf2609b033",
+      "after_sha256": "8dd038b29889ad813f829bb4694e70b115aa333e8adbb29521120fe24bc56451",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0010.html",
+      "before_sha256": "c79ca3795e2d81d4d97f01e24d23e30660549fb65b0dc00da65f7530604e8511",
+      "after_sha256": "21ce03ddfac2617d3efd553c3c0733327c6ac396294d512f46a4b69802029aaa",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0011.html",
+      "before_sha256": "3d346235509c33ef386797fa6588f6b55a0c6cf622add82f2d00eba13df8e85e",
+      "after_sha256": "db3f55a08065cbf5771abc84021362c73f51d56ab7517dd09be49df1cc5ef5ac",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0012.html",
+      "before_sha256": "385d787c16bc059a818ba6fa9e489124254ea16e5be2c173802c7c1e74a914fb",
+      "after_sha256": "6ea49537f0847f65b98092ce0e96a80a45ff6bb468cd73069615a8b9f4e5e51e",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0013.html",
+      "before_sha256": "7fd7bf44f3634488fee264b781a960788cd1722752d7f0e14b62535c35af77a0",
+      "after_sha256": "c3fb6d3ac3071c81d05db38fa22249a5f5f054b11bce8ee9dcde2ceb82fd8c11",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0014.html",
+      "before_sha256": "0e4d8bcdf01307394eed2f8193025df9f9205af32ccfefc14bac03475e96d3ed",
+      "after_sha256": "17fa23df13fe43147c17b8d0fe4f8c6081c5c8bde7cc1893a1b167728ec0d678",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0015.html",
+      "before_sha256": "265e3028ab63383b94f29140dc1c04394a5c5c00758b792333faba99bd3225d9",
+      "after_sha256": "a503f7e4e6554c93a6a85faf22de68f2dc6cc9f27d4cbc619d7acda0c00bbe88",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0016.html",
+      "before_sha256": "969aaecc9ff1955b71f8fbf29c1d0fd9a84372dc01b5ec1642a0f0974661497e",
+      "after_sha256": "7776c123f0f6eafdc22529b12a60ead6275d885f69093e2f139c5dfba9a706a5",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0017.html",
+      "before_sha256": "612bdd746f6b9372fea0e2ee855e7932e8c3e3e19bd985b9137a0ff6e4046a11",
+      "after_sha256": "5d0d965a7e8995876dd8de6fc89d984d29eb5f6a0ef3e9678d24ed23ad438585",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0018.html",
+      "before_sha256": "89c68f56baceba0ce7afb5f3ef948232bbde4f33c168ab3ff377039dd040a1f5",
+      "after_sha256": "442f5591467d7eca1fe852a7a442a764ed121f30702eb10d7874c479f68063f9",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0019.html",
+      "before_sha256": "5e85004e592da036478ee08e4498d1a6ba99d2bc55c314c964cb71d0c0d2fa3c",
+      "after_sha256": "b5f18edc56680fed13d3ef6712b2816361983e26954cd579faf2f33bcab0c0ca",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0020.html",
+      "before_sha256": "e7684394963587b16f7fd7af542f4759b70f477c83687110b245ac5664da76cb",
+      "after_sha256": "d179e464006a5277d75545d90c34bfa748679beea72c8ff1082a688bce50a240",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0021.html",
+      "before_sha256": "c927f85d3d0c6bb8a62aed7ed7d8227eb0ab16a718a3cd5ac05ebbc26827f2bd",
+      "after_sha256": "672b174f348010b272d5abe70cd5d2ddbc8c1606fa699fa70ba69147c4708b6a",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/UA-0022.html",
+      "before_sha256": "16d060665a699deb13207e5354c73c847e9c5157540b20a3f77bc289e0c95459",
+      "after_sha256": "b0ea2210551b09fb42ca9982c67137ada62b4649b0e67e7b87039fa7b273aa2e",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/index.html",
+      "before_sha256": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69",
+      "after_sha256": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69",
+      "counter_client": "UNSERVED_LEGACY_PRESERVED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/site/katalog.html",
+      "before_sha256": "0f53dba42a8ddc3fb99f333b16eee6ce796218b0da07ee750684c9cb4e0d5454",
+      "after_sha256": "c40a102d11526228768ac95e4acefe0fa0b5e9ed7d97ee63fd1daf41e80a0e9b",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/UA-0001.html",
+      "before_sha256": "1681cc2be00c736e0ec56a58a813538a49e249bd5d63f9c6d1d58a5f63cc450c",
+      "after_sha256": "532e37b3336696e8a278480bd7ad419e429154dd3db2321d4aced3a528db980d",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "bc1e1d25887fdd738e2753de36b475dca610ec9fa9c4ae3a7bebae3cefddfa70",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281133",
+            "current": "1789882049"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          }
+        },
+        "normalized_sha256": "cebf88a54286e491c64f50e5b1eecee8bb33d8429b64cf73413b0716ab1ac478",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0002.html",
+      "before_sha256": "bc2eb036a560b52eeaa0204355b80d7c092d70668dca9a86312dfa2be70f935f",
+      "after_sha256": "48cb719eda43bb16d990cafc1b80467497dd11d97d05cf2963e61b7d46fd1231",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "79795ea5e121e9664d1995932d5fa5809574387fe985ab64efd7b673199bd277",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281133",
+            "current": "1789882050"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          }
+        },
+        "normalized_sha256": "7d43e5099717480b91466eb4a339fc5c5b2d5023fe3567ee2cea90a199a3083a",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0003.html",
+      "before_sha256": "4fe7a92b15e3b1ca39d2cf010e99d724b2fd5a31cc3df00a4f05fc6e0c32ef6c",
+      "after_sha256": "a881c0d16221e2588f0ae570d94dfd1f947dd0a5e2731eb109a1f9819f3204fa",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "0c2d3fffe05084b18cb2bdbdfe5136ab6e8dbfc83e8ff6f767e9f009c4a823f8",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281133",
+            "current": "1789882050"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          }
+        },
+        "normalized_sha256": "49c90a72e405b1520716ea2f3fb50c6b7f8b3f9695302df87a183a3559d65e44",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0004.html",
+      "before_sha256": "e0b2059164bb430a2f305660c3513514779f443807793da34981a7f1638dc9ca",
+      "after_sha256": "ba8be9c2efe58166039b60396ffd7249c05e945f43a9ecf691298ea0c137e741",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "ce610cbcfd57e73f64446edf65449d6991d0bd25524c395f639231e169d68052",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281133",
+            "current": "1789882051"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          }
+        },
+        "normalized_sha256": "165c3e64eadd1dadbd4029dc1bc77f8b4b766fd35105f06c339b0a9dbb769825",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0005.html",
+      "before_sha256": "7a4e284a29dc2c865b5b9b393014bf69c214beb397afc4e1ca4871b63b8a001a",
+      "after_sha256": "f82d8f658790b71a43f1157dea6e941363d0ef0d7882165fd394a9910361f3d7",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "2e5749fded31d5297c48fd59253374dff1dd5c3a3f3ae2a07c7bda681858b02c",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281134",
+            "current": "1789882051"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          },
+          "current_countdown_preserved_not_historically_accepted": {
+            "before": "90 дней",
+            "current": "83 дня"
+          }
+        },
+        "normalized_sha256": "5980a1d41e02454ebf20923ba192f0b8eedff4c04c676a396da0feccf65487d8",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0006.html",
+      "before_sha256": "9c9718c36b2b1ee248429595c072717644943135a4a0381e5414b5c000657060",
+      "after_sha256": "8cd77add3465839bbe430a8f64a3d8b93c66722f13ff547c74d404fb3e259b8a",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "4ae569af26b4e7f842b79f72eed426831f09eed04d27d761c81fa8d82fd49002",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281134",
+            "current": "1789882052"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          },
+          "current_countdown_preserved_not_historically_accepted": {
+            "before": "86 дней",
+            "current": "79 дней"
+          }
+        },
+        "normalized_sha256": "5dc2761cfd3ac80654f45152c3bb02d4ceceff78809760de9455dc46bd7cca1a",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0007.html",
+      "before_sha256": "8a7394ef7fb7cebdb88e84952514e2f3857ca615610003e76be03b45ae1f6aa0",
+      "after_sha256": "2538b5a3b288c5490be4f11cd348b30d8699b6ce638f7e8afa8fda02fc987c49",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "d767548c6a3eacbf08572b1f214228c442236ea17be2719065a5296866cf520c",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281134",
+            "current": "1789882052"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          }
+        },
+        "normalized_sha256": "ef31e7a7079a775ce097589ba076d636408ac884e5a2e038bfabdb47c21371cc",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0008.html",
+      "before_sha256": "fe87f390904983b71aa7db0ac6ff1f20e521b25ffb57973db0c912315df878bd",
+      "after_sha256": "4eb47222358de29194be1996745e11eb54c5624f441b3f2a15239a9784bd3d6b",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "84b3376e6d77df178c4ee4d8f150ef45522f43e849d2c379d5ca1daace2af3dc",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281134",
+            "current": "1789882052"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          }
+        },
+        "normalized_sha256": "bc0e8d489a09480b1644fbd7cecb92cc1ba5d69543c350f985a77c115587c376",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0009.html",
+      "before_sha256": "d1942bfb26645bb06a7dd46dbd391007b6767b6571605b76b99164cf2609b033",
+      "after_sha256": "8dd038b29889ad813f829bb4694e70b115aa333e8adbb29521120fe24bc56451",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "ce3c676f6062aa5a6963759434c3f24ccc27670e5c86e6c9841008bfac979c9a",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/UA-0010.html",
+      "before_sha256": "c79ca3795e2d81d4d97f01e24d23e30660549fb65b0dc00da65f7530604e8511",
+      "after_sha256": "21ce03ddfac2617d3efd553c3c0733327c6ac396294d512f46a4b69802029aaa",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "7dadbd648e44ff3a6e656fccce7cf5f354dba66255a5e8f4fa28c6839ccf09fd",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/UA-0011.html",
+      "before_sha256": "3d346235509c33ef386797fa6588f6b55a0c6cf622add82f2d00eba13df8e85e",
+      "after_sha256": "db3f55a08065cbf5771abc84021362c73f51d56ab7517dd09be49df1cc5ef5ac",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "2c7002a6899b8eec769468fd1e675ab2dbc09202dbcf6d4fdc4088fe017524b2",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/UA-0012.html",
+      "before_sha256": "385d787c16bc059a818ba6fa9e489124254ea16e5be2c173802c7c1e74a914fb",
+      "after_sha256": "6ea49537f0847f65b98092ce0e96a80a45ff6bb468cd73069615a8b9f4e5e51e",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "4669918d729faf2a18f9f7efd7c259f9ef3c843525077cb6fb7bab2ca826f5a4",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/UA-0013.html",
+      "before_sha256": "7fd7bf44f3634488fee264b781a960788cd1722752d7f0e14b62535c35af77a0",
+      "after_sha256": "c3fb6d3ac3071c81d05db38fa22249a5f5f054b11bce8ee9dcde2ceb82fd8c11",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "45c1d0e7f7d87964b332da2b7b9025681f823e00bbb25b6c50132d40666c4652",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281136",
+            "current": "1789882054"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          },
+          "current_countdown_preserved_not_historically_accepted": {
+            "before": "90 дней",
+            "current": "83 дня"
+          }
+        },
+        "normalized_sha256": "a968d688818cf5e5a0cd3dff08efb9c3bf4db1637ee9f4ac491958912e634bee",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0014.html",
+      "before_sha256": "0e4d8bcdf01307394eed2f8193025df9f9205af32ccfefc14bac03475e96d3ed",
+      "after_sha256": "17fa23df13fe43147c17b8d0fe4f8c6081c5c8bde7cc1893a1b167728ec0d678",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "d391988be0609f0bcb38b4c6421513c87935f7324a9ab2dd8474ddeee5a5ceba",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281136",
+            "current": "1789882054"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          },
+          "current_countdown_preserved_not_historically_accepted": {
+            "before": "90 дней",
+            "current": "83 дня"
+          }
+        },
+        "normalized_sha256": "d8753d4ecd6dbbad91c157a6eac9f4c1e85c8149f13b5cc7f06f6e9a857bde17",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0015.html",
+      "before_sha256": "265e3028ab63383b94f29140dc1c04394a5c5c00758b792333faba99bd3225d9",
+      "after_sha256": "a503f7e4e6554c93a6a85faf22de68f2dc6cc9f27d4cbc619d7acda0c00bbe88",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "a2070094da3d88e87c158bf871c3984b9012b346c2bab0a79e843787dd42f718",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281136",
+            "current": "1789882055"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          }
+        },
+        "normalized_sha256": "020daf321e328f41bdea191cc09cb91c69d1e05c32a140ae33357d7d2dcc76bf",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0016.html",
+      "before_sha256": "969aaecc9ff1955b71f8fbf29c1d0fd9a84372dc01b5ec1642a0f0974661497e",
+      "after_sha256": "7776c123f0f6eafdc22529b12a60ead6275d885f69093e2f139c5dfba9a706a5",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "ca8f057de628172abce71e53186e085e5e280dacd85e2c1e665ee0ededca4326",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281136",
+            "current": "1789882056"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          }
+        },
+        "normalized_sha256": "b7ceb4b74a39a4db9aeb01b7fea90ca78acc17c68603f8d6a287fe02c2412e0d",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0017.html",
+      "before_sha256": "612bdd746f6b9372fea0e2ee855e7932e8c3e3e19bd985b9137a0ff6e4046a11",
+      "after_sha256": "5d0d965a7e8995876dd8de6fc89d984d29eb5f6a0ef3e9678d24ed23ad438585",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "364947abbd6b2a164ab62ddb0c7e3f18cf399de30c9be8f31167d64de8496575",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/UA-0018.html",
+      "before_sha256": "89c68f56baceba0ce7afb5f3ef948232bbde4f33c168ab3ff377039dd040a1f5",
+      "after_sha256": "442f5591467d7eca1fe852a7a442a764ed121f30702eb10d7874c479f68063f9",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "89776645896add5b9fcc2fd551e40d8142bd8c09f4e367fb88a155757b367e7c",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": {
+        "status": "UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED",
+        "changes": {
+          "catalog_cache_buster": {
+            "before": "1789281137",
+            "current": "1789882056"
+          },
+          "footer_timestamp": {
+            "before": "13.09.2026 06:32",
+            "current": "20.09.2026 05:27"
+          }
+        },
+        "normalized_sha256": "dff04b8d0ca61a1d7de6fe4277d908cdd997d480b63c87d2ed134f8b2e281f7f",
+        "css_inline_scripts_market_vin_spec_gallery_unchanged": true,
+        "countdown_business_correctness_reestablished": false
+      }
+    },
+    {
+      "path": "/video/UA-0019.html",
+      "before_sha256": "5e85004e592da036478ee08e4498d1a6ba99d2bc55c314c964cb71d0c0d2fa3c",
+      "after_sha256": "b5f18edc56680fed13d3ef6712b2816361983e26954cd579faf2f33bcab0c0ca",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/UA-0020.html",
+      "before_sha256": "e7684394963587b16f7fd7af542f4759b70f477c83687110b245ac5664da76cb",
+      "after_sha256": "d179e464006a5277d75545d90c34bfa748679beea72c8ff1082a688bce50a240",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/UA-0021.html",
+      "before_sha256": "c927f85d3d0c6bb8a62aed7ed7d8227eb0ab16a718a3cd5ac05ebbc26827f2bd",
+      "after_sha256": "672b174f348010b272d5abe70cd5d2ddbc8c1606fa699fa70ba69147c4708b6a",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/UA-0022.html",
+      "before_sha256": "16d060665a699deb13207e5354c73c847e9c5157540b20a3f77bc289e0c95459",
+      "after_sha256": "b0ea2210551b09fb42ca9982c67137ada62b4649b0e67e7b87039fa7b273aa2e",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": null,
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/index.html",
+      "before_sha256": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628",
+      "after_sha256": "4d0a1bee991c5bef388d738cf6c9637ce7c859fef20a2c04a1374d377d3be653",
+      "counter_client": "PATCHED_EXACT_SCRIPT",
+      "historical_harness_sha256": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    },
+    {
+      "path": "/video/katalog.html",
+      "before_sha256": "0f53dba42a8ddc3fb99f333b16eee6ce796218b0da07ee750684c9cb4e0d5454",
+      "after_sha256": "c40a102d11526228768ac95e4acefe0fa0b5e9ed7d97ee63fd1daf41e80a0e9b",
+      "counter_client": "ABSENT_UNCHANGED",
+      "historical_harness_sha256": "27001794768a827678715b859f5e2e9b32e740c2330d30ad7e44ae94df2620c2",
+      "all_unrelated_markup_preserved": true,
+      "historical_page_bytes_equal": false,
+      "historical_render_equivalent_inert_counter_literal_only": false,
+      "bounded_current_metadata_delta": null
+    }
+  ],
+  "eligible_historical_page_retention_pending_resource_runtime_binding": [],
+  "eligible_unchanged_ui_retention_with_current_metadata_preserved": [
+    "/video/UA-0001.html",
+    "/video/UA-0002.html",
+    "/video/UA-0003.html",
+    "/video/UA-0004.html",
+    "/video/UA-0005.html",
+    "/video/UA-0006.html",
+    "/video/UA-0007.html",
+    "/video/UA-0008.html",
+    "/video/UA-0013.html",
+    "/video/UA-0014.html",
+    "/video/UA-0015.html",
+    "/video/UA-0016.html",
+    "/video/UA-0018.html"
+  ],
+  "current_metadata_retention_scope": "Unchanged CSS/scripts/market/VIN/spec/gallery only, conditioned on referenced-resource binding. Current timestamps/cachebusters/countdown values are preserved current observations and are not re-labelled historical PASS.",
+  "counter_literal_only_pages_pending_independent_reachability_proof": [],
+  "counter_literal_only_scope_requirement": "Exact inverse restores historical page SHA. Before omitting these browser cases, independently prove decoded DOM and bound external/inline scripts cannot reach catalog-grid or outline-cta entrypoints. Raw token absence alone is not that proof.",
+  "mandatory_affected_browser_pages": [
+    "/video/UA-0009.html",
+    "/video/UA-0010.html",
+    "/video/UA-0011.html",
+    "/video/UA-0012.html",
+    "/video/UA-0017.html",
+    "/video/UA-0019.html",
+    "/video/UA-0020.html",
+    "/video/UA-0021.html",
+    "/video/UA-0022.html",
+    "/video/index.html",
+    "/video/katalog.html"
+  ],
+  "mandatory_affected_browser_matrix": [
+    {
+      "path": "/video/UA-0009.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0009.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0009.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0009.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0009.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0009.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0010.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0010.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0010.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0010.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0010.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0010.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0011.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0011.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0011.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0011.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0011.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0011.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0012.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0012.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0012.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0012.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0012.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0012.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0017.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0017.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0017.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0017.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0017.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0017.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0019.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0019.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0019.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0019.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0019.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0019.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0020.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0020.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0020.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0020.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0020.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0020.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0021.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0021.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0021.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0021.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0021.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0021.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0022.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0022.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0022.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0022.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0022.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/UA-0022.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/index.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/index.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/index.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/index.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/index.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/index.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/katalog.html",
+      "language": "RU",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/katalog.html",
+      "language": "RU",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/katalog.html",
+      "language": "UA",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/katalog.html",
+      "language": "UA",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/katalog.html",
+      "language": "GE",
+      "viewport": "desktop",
+      "status": "NOT_RUN"
+    },
+    {
+      "path": "/video/katalog.html",
+      "language": "GE",
+      "viewport": "mobile",
+      "status": "NOT_RUN"
+    }
+  ],
+  "conditional_browser_matrix_unless_counter_scope_proved": [],
+  "offline_assertions": [
+    "actual capture hashes match independent observer",
+    "all current rows match independent DB identity",
+    "all dynamic 2N+4 core HTML match exact price migration plus bounded counter client patch",
+    "unrelated HTML preserved relative to current operator data",
+    "legacy site/index bytes preserved"
+  ],
+  "not_asserted": [
+    "full inventory equality",
+    "browser rendering",
+    "resource decoding",
+    "current hosting mappings",
+    "runtime worker binding",
+    "writer exclusion",
+    "publication",
+    "Stage3",
+    "Stage4",
+    "Preview24/24"
+  ],
+  "blockers": [
+    "CURRENT_PREVIEW_RUNTIME_AND_REFERENCED_RESOURCES_BINDING_REQUIRED",
+    "AFFECTED_REAL_BROWSER_EVIDENCE_REQUIRED",
+    "CHANGED_SOURCE_GENERATION_AND_INDEPENDENT_REVIEW_REQUIRED"
+  ],
+  "preview_gate": "NOT_PASSED",
+  "browser_run": false,
+  "production_written": false,
+  "historical_tests_rerun": false,
+  "script_sha256": "3407bcdd01191e8ae7416a232d2a7dcdb74cb5e7d2c633b343482e069c14faba"
+}

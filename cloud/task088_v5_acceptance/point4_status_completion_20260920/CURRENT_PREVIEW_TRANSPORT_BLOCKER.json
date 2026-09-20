@@ -1,0 +1,30 @@
+{
+  "contract": "PR114-POINT4-PREVIEW-TRANSPORT-BLOCKER-1",
+  "status": "BLOCKED_REAL_BROWSER_ACCEPTANCE",
+  "operation_id": "pr114-point4-status-20260920T054458Z",
+  "last_successful_business_observation": {
+    "status": "PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION",
+    "started_at": "2026-09-20T06:39:03.085246+00:00",
+    "finished_at": "2026-09-20T06:39:20.995451+00:00",
+    "terminal_summary_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "transfer": "All 5 parts and 102 artifacts recovered and independently checksum-verified before browser failure."
+  },
+  "failed_read": "Open the pre-existing dedicated Preview viewport UI; no test result obtained.",
+  "errors_in_order": [
+    "Page.navigate timed out. Increase the 'protocolTimeout' setting in launch/connect calls for a higher timeout if needed.",
+    "js execution timed out; kernel reset, rerun your request",
+    "CDP operation refresh tabs timed out after 20000ms",
+    "Known previously authenticated Files tab availability check: js execution timed out; kernel reset, rerun your request"
+  ],
+  "diagnosis": "Browser-control transport unavailable after a read-only Preview navigation. No rendered site response established the cause. Not evidence that production is down, not an authentication denial, and not a confirmed bot-detection block.",
+  "bounded_recovery": "Read documented troubleshooting; recovered runtime once, checked tab discovery and an already known Files tab. Stopped further browser retries after continued transport timeouts.",
+  "new_preview_stage_executed": false,
+  "new_preview_wsgi_switched": false,
+  "preview_reload_requested": false,
+  "production_business_mutation_executed": false,
+  "new_browser_cases_passed": 0,
+  "historical_preview_24_of_24": "Retained for its original input and scope; not relabeled as current acceptance of 22 cars.",
+  "required_resume": "Read actual dedicated Preview WSGI/config and any operation journal first; stage only the final exact public candidate through the reviewed helper, inspect the actual receipt, switch only the dedicated Preview, reload that app, and collect the affected real browser evidence. Do not replay an unknown write.",
+  "offline_work_continues": true,
+  "point4_complete": false
+}

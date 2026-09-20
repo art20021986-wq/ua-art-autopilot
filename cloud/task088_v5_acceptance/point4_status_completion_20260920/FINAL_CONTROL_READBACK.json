@@ -1,0 +1,296 @@
+{
+  "contract": "PR114-POINT4-FINAL-READONLY-CONTROL-AUDIT-1",
+  "observed_at": "2026-09-20T06:57:48.454Z",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "read_only": true,
+  "remote_actions_performed": [],
+  "production_install_performed": false,
+  "main": {
+    "sha": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "commit_date": "2026-09-20T05:28:34Z",
+    "message": "uaart critical: HALT UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "git_tree_sha": "ecd3aca378c15756d1aa9309b164a2a87bcd8723"
+  },
+  "main_endpoint_agreement": [
+    {
+      "key": "main",
+      "sha": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    {
+      "key": "mainref",
+      "sha": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    {
+      "key": "mainrefs",
+      "sha": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    },
+    {
+      "key": "commitmain",
+      "sha": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7"
+    }
+  ],
+  "pr": {
+    "number": 114,
+    "head": "23f35967ec2b3ed737bc44b99b5110271186265f",
+    "base": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+    "draft": true,
+    "state": "open",
+    "merged": false,
+    "updated_at": "2026-09-20T06:49:36Z"
+  },
+  "corrected_main_successor_assumption": {
+    "reported_successor": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+    "actual_commit": {
+      "sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "date": "2026-09-13T05:59:54Z",
+      "message": "TASK088: remove reconciled stale emergency halt"
+    },
+    "finding": "Old 2026-09-13 commit exposed as PR base; not evidence that main advanced after watchdog. Four current main-ref endpoints agree on 6e3eb6.",
+    "watchdog_failure_does_not_establish_main_mutation": true
+  },
+  "active_workflows": {
+    "in_progress": {
+      "total_count": 0,
+      "returned_count": 0,
+      "per_page": 100,
+      "page": 1,
+      "runs": []
+    },
+    "queued": {
+      "total_count": 0,
+      "returned_count": 0,
+      "per_page": 100,
+      "page": 1,
+      "runs": []
+    },
+    "waiting": {
+      "total_count": 0,
+      "returned_count": 0,
+      "per_page": 100,
+      "page": 1,
+      "runs": []
+    },
+    "pending": {
+      "total_count": 0,
+      "returned_count": 0,
+      "per_page": 100,
+      "page": 1,
+      "runs": []
+    },
+    "requested": {
+      "total_count": 0,
+      "returned_count": 0,
+      "per_page": 100,
+      "page": 1,
+      "runs": []
+    }
+  },
+  "all_five_active_status_counts_zero": true,
+  "workflow_observation_scope": "Repository Actions query results at this observation; zero Actions does not establish remote worker or CRM quiescence.",
+  "watchdog": {
+    "id": 35493278483,
+    "name": "UA ART Production Transaction Watchdog",
+    "head_sha": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-09-20T06:04:25Z",
+    "updated_at": "2026-09-20T06:04:42Z",
+    "html_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35493278483",
+    "jobs": [
+      {
+        "id": 106031754799,
+        "name": "discover",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 106031755176,
+        "name": "recovery_plan",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 106031755458,
+        "name": "recovery_execute",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 106031775986,
+        "name": "report_safety_stop",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          {
+            "name": "Report watchdog intervention as a safety stop",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "id": 106031776445,
+        "name": "halt_discovery_failure",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 106031776496,
+        "name": "mark_rollback",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 106031776634,
+        "name": "halt_preparing",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 106031776692,
+        "name": "halt_rolling_back",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 106031776964,
+        "name": "recovery_canary",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 106031777153,
+        "name": "finalize_rollback",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 106031777182,
+        "name": "rollback_open",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 106031777349,
+        "name": "halt_recovery_failure",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      }
+    ],
+    "observation": "Recovery, rollback and HALT mutation jobs were skipped; report_safety_stop failed. No recovery success is inferred."
+  },
+  "canonical_ua0022": {
+    "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "run_id": "35490449348",
+    "transaction_id": "tx-35490449348-334c361c22ebee11",
+    "transaction_status": "ROLLING_BACK",
+    "claim_status": "BLOCKED_ROOT_CAUSE",
+    "receipt_validation_status": "PENDING",
+    "retry_allowed": false,
+    "expires_at": "2026-09-20T06:45:00Z",
+    "expired_at_observation": true,
+    "autostart_status": "CONSUMED",
+    "backup_receipt_status": "PASS",
+    "backup_manifest_sha256": "a4d4bbc5b2776ff02b4c6be8fbb242d0027e21a65d4e7ea98048e7f953b3ff2c",
+    "backup_receipt_binding_verified": true,
+    "install_receipt_present": false,
+    "canonical_receipts_present": [
+      "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json"
+    ],
+    "canonical_rollback_receipt_present": false,
+    "absence_basis": "Complete nontruncated immutable main tree,2166entries",
+    "halt": {
+      "halted_at": "2026-09-20T05:28:34Z",
+      "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+      "reason": "CRITICAL Production pipeline failed; GitHub Actions run 35490449348; rollback reserved true; rollback performed false",
+      "request_path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+      "request_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba",
+      "run_id": "35490449348",
+      "status": "EMERGENCY_HALT",
+      "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003"
+    },
+    "canonical_reconciled": false,
+    "replay_permitted": false
+  },
+  "runtime_quiescence": "NOT_PROVEN",
+  "runtime_writer_exclusion": "NOT_PERFORMED",
+  "source_successor_canonical_admission": "OPEN_NOT_ACCEPTED",
+  "required_next_authority_evidence": [
+    "Reconcile actual UA0022 installed outcome with its failed public verification, canonical ROLLING_BACK transaction and HALT; do not replay install or rollback blindly.",
+    "Preserve original Stage2 receipt and validate authentic hash-bound successor chain to current UA0022 after-image; do not substitute original source pin or fabricate final receipt.",
+    "Bind new candidate and visibility delegation through reviewed canonical successor validation and required later gates."
+  ],
+  "source_successor_requirement": {
+    "path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/CANONICAL_SOURCE_SUCCESSOR_REQUIREMENT.md",
+    "sha256": "0438433c7bb5f847de6ce03616b5009fff7130d6b8ddcc45bd3f4e1561fb786b"
+  },
+  "current_server_observation_preserved": {
+    "source_file": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/CURRENT_CORE_TRANSFER_RESULT.json",
+    "sha256": "2509d2dd9cf20166210f1d771ef06c63e0c5269a96fb7276d0ecbe08d4f3b26c",
+    "status": "PASS_EXACT_CORE_EXPORT_RECONSTRUCTION",
+    "published_count": 22,
+    "observed_from": "2026-09-20T06:39:03.085246+00:00",
+    "observed_through": "2026-09-20T06:39:20.995451+00:00",
+    "scope": "core_only double-read candidate inputs; not full inventory, backup, Gate B or writer exclusion.",
+    "note": "Retained authenticated server core capture, not a new server read by this GitHub-only audit; no global inventory, backup or writer-exclusion claim."
+  },
+  "evidence": {
+    "state/AUTOPILOT_HALT.json": {
+      "sha256": "3e4b804fbc76ae0fc330db8a0add69fae3bb6d0d9a846d0a91cb41e4ff94e3a9",
+      "bytes": 500,
+      "git_blob_sha": "7982f47958d4e656b0edbb64d8a40bcdd3836183",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/state/AUTOPILOT_HALT.json"
+    },
+    "state/autostart_consumed/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.json": {
+      "sha256": "61bf4311bbf9238b9c274fbb0f67c424389985f5c910d0b5f9399ee1748b6eaf",
+      "bytes": 1331,
+      "git_blob_sha": "06b70c7e0a69d077b63d8e1a0c4885c7c3246dfb",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/state/autostart_consumed/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.json"
+    },
+    "state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": {
+      "sha256": "59920fe94343f94373f4d93da1c2785ddfbd36101890baf2e6b7133cabbefa9c",
+      "bytes": 4530,
+      "git_blob_sha": "3f34ca885bcb09b04d6c3561e8d63c79bb9bb776",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json"
+    },
+    "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json": {
+      "sha256": "381aa9633b8119abf7e52ad9a00c813f51e5e8056d33e449d112ff0af4665d7a",
+      "bytes": 512,
+      "git_blob_sha": "403b505032d36bb0d7f99dede4610ad34c5434b7",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json"
+    },
+    "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": {
+      "sha256": "c9123be192ff44ad89605c52e4fbad5b75504dd5e54ba4f172541e3575ddf7b3",
+      "bytes": 993,
+      "git_blob_sha": "cfccccb058abac735639bb41debdf8486808a742",
+      "git_blob_verified": true,
+      "ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json"
+    }
+  },
+  "immutable_tree": {
+    "commit_ref": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "entry_count": 2166,
+    "truncated": false
+  },
+  "acceptance_limit": "Point4 candidate code review only. This control readback does not publish PR114, remove HALT, grant GateB, establish production exclusivity, or close Stage3/Stage4."
+}

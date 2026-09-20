@@ -1,0 +1,20 @@
+{
+  "scanned_files": 134,
+  "literal_credential_signature_findings": [],
+  "assignment_candidates": [
+    {
+      "file": "pr114_review/cloud/task088_v5_acceptance/resume_20260914_2/CONTINUATION.json",
+      "line": 108,
+      "length": 118,
+      "placeholder": false,
+      "value_printed": false,
+      "manual_classification": "FALSE_POSITIVE_OWNER_PUBLICATION_AUTHORIZATION_SENTENCE_NOT_CREDENTIAL"
+    }
+  ],
+  "excluded_private_source_recommendations": [
+    "CURRENT_PREVIEW_WSGI_OBSERVED.py"
+  ],
+  "scope": "Current pending public source map + status evidence only; excludes private_source_candidate and private_inputs dirs; regex/static scan is not general exfiltration proof",
+  "actual_credential_findings": 0,
+  "status": "PASS_LITERAL_CREDENTIAL_SCAN_WITH_MANDATORY_PRIVATE_SOURCE_EXCLUSION"
+}

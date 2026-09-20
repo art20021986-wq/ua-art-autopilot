@@ -1,0 +1,9 @@
+test_inline_script_migration_preserves_all_other_html_and_is_idempotent (test_site_counters_patch.SiteCounterPatchTests.test_inline_script_migration_preserves_all_other_html_and_is_idempotent) ... ok
+test_absent_inline_script_does_not_inject_or_change_layout (test_site_counters_patch.SiteCounterPatchTests.test_absent_inline_script_does_not_inject_or_change_layout) ... ok
+test_unknown_duplicate_or_broken_inline_counter_script_fails_closed (test_site_counters_patch.SiteCounterPatchTests.test_unknown_duplicate_or_broken_inline_counter_script_fails_closed) ... ok
+test_inline_migration_rejects_source_and_candidate_drift (test_site_counters_patch.SiteCounterPatchTests.test_inline_migration_rejects_source_and_candidate_drift) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.177s
+
+OK

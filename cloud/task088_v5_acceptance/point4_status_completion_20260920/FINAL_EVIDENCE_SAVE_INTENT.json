@@ -1,0 +1,16 @@
+{
+  "operation_id": "pr114-point4-status-20260920T054458Z",
+  "kind": "SAVE_SANITIZED_POINT4_REVIEW_EVIDENCE_AND_PUBLIC_PREVIEW_ONLY",
+  "recorded_at": "2026-09-20T07:16:27.860598+00:00",
+  "expected_parent": "c424a8428b20b44753ddc083cee5dff9e08979ba",
+  "expected_manifest_sha256": "eea973af087941f9c3029e728df6905873f9db314694ed8d415043b1b41a42fb",
+  "public_text_files_before_this_intent": 143,
+  "public_preview_zip": {
+    "path": "exact_preview_current_53544a27_20260920_v2.zip",
+    "sha256": "d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb",
+    "git_blob_sha1": "920e2adf5f5a76f03764772ade4f5e80e514a239"
+  },
+  "readback": "Nonforce ref update then exact tree blob comparison for every saved path; inspect ref/tree before any retry",
+  "private_source_upload": false,
+  "production_write": false
+}

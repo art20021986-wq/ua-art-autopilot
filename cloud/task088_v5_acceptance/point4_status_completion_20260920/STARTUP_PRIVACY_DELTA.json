@@ -1,0 +1,61 @@
+{
+  "scope": "Only new startup/public-native source deltas and sanitized reports; literal signatures/static review, not comprehensive credential proof",
+  "files": [
+    {
+      "path": "pr114_review/cloud/task088_price_sync/uaart_price_sync_runtime.py",
+      "sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591"
+    },
+    {
+      "path": "pr114_review/cloud/task088_price_sync/uaart_price_sync_binding.py",
+      "sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1"
+    },
+    {
+      "path": "pr114_review/cloud/task088_price_sync/patch_cars_ui.py",
+      "sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4"
+    },
+    {
+      "path": "pr114_review/cloud/task088_price_sync/test_unconfigured_startup.py",
+      "sha256": "43c8c28935557a7a8b1cae94946089a8d626fb1d3a5cfa13ca9cc54939ba3714"
+    },
+    {
+      "path": "pr114_review/cloud/task088_price_sync/test_binding.py",
+      "sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177"
+    },
+    {
+      "path": "pr114_review/cloud/task088_price_sync/test_cars_ui_hook.py",
+      "sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96"
+    },
+    {
+      "path": "pr114_review/cloud/task088_v5_writer_fence/test_activation_gates.py",
+      "sha256": "af3f323fefb89d10989799ab7e6e3d4037f62db37fa2315207adfcfbb36d985e"
+    },
+    {
+      "path": "pr114_review/cloud/task088_v5_writer_fence/integrate_private_sources.py",
+      "sha256": "32fe8299bd6acab0b8201f10d9a186e3c80069340e31e0df71cae5fd25d4e08f"
+    },
+    {
+      "path": "pr114_review/cloud/task088_v5_writer_fence/publication_fence.py",
+      "sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f"
+    },
+    {
+      "path": "status_point4_evidence/ABSENT_ANCHOR_PRICE_STARTUP_FINAL.json",
+      "sha256": "c24403780c9c0ecb297b614331f8cee54180327c6ffaec4ea6c65bda88ce7e0e"
+    },
+    {
+      "path": "status_point4_evidence/ABSENT_ANCHOR_NATIVE_GATES_FINAL.json",
+      "sha256": "a3ad44a6df3bec0e252c3324d1c1e7b11487d3b7849e66685085e8e618d9752d"
+    },
+    {
+      "path": "status_point4_evidence/unconfigured_startup_final_tests.log",
+      "sha256": "e14284e55d2782f3600eaa1ed7be6c86c3697f7d8c6f18bb77f9e4e57d4feba9"
+    },
+    {
+      "path": "status_point4_evidence/unconfigured_worker_compatibility_tests.log",
+      "sha256": "c667e8e4e981a2d820d0f709e3f0bcb343444a75e314c3f72a6ebe43e3b79d44"
+    }
+  ],
+  "literal_credential_findings": [],
+  "actual_full_private_source_copied": false,
+  "mandatory_exclusion": "CURRENT_PREVIEW_WSGI_OBSERVED.py and all private input/candidate trees",
+  "status": "PASS_SCOPED_LITERAL_SCAN"
+}

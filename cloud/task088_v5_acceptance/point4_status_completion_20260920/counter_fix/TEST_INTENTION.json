@@ -1,0 +1,13 @@
+{
+  "scope": "ISOLATED_LOCAL_SYNTHETIC_AND_SAVED_HTML_ONLY",
+  "reason": "Actual composed dual-price HTML contains data-ua translation captions rejected as vehicle IDs by server/client counter parser. Test exact-source correction, strict explicit IDs, valid legacy IDs, duplicate/ambiguity behavior, zero/newcars, unrelated layout preservation, saved18cardHTML and Node client parity.",
+  "tests": [
+    "test_site_counters_patch.SiteCounterPatchTests"
+  ],
+  "inputs_sha256": {
+    "patch_site_counters.py": "6130b8477c9280b133d2aeb1f34261100a6a4d9afca4c171d5aaf835b9bbd0ee",
+    "test_site_counters_patch.py": "092ee05369d151a7da9f60d0a94ebe13d83b49969165f9aed367debdeaa0ab93"
+  },
+  "historical_broad_suites_rerun": false,
+  "production_writes": false
+}

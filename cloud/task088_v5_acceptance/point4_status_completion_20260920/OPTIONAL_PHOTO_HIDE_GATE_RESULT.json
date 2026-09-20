@@ -1,0 +1,29 @@
+{
+  "contract": "PR114-OPTIONAL-PHOTO-HIDE-ABSENT-ANCHOR-BOUNDARY-1",
+  "utc": "2026-09-20T07:10:48.365745+00:00",
+  "production_mutations": false,
+  "private_extension_body_known": false,
+  "scope": "Only optional registration during exact CRM startup: genuine missing anchor skips import/register. Presence retains prior registration even while readiness=False; strict bootstrap validation remains unchanged. If anchor disappears after optional registration, final invariant forbids a downgrade to unconfigured startup. No claim of universal readonly media.",
+  "source_sha256": {
+    "task088_v5_writer_fence/integrate_private_sources.py": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+    "task088_v5_writer_fence/test_optional_photo_hide_gate.py": "7b5020997751c33df22a737566d0e2f6323556567f930d53ab4196422ecfae86"
+  },
+  "generated_sources_sha256": {
+    "cars_ui.py": "c2be2af7720a8361665fed872256760264ffc735b68a197763f5f3af1dad62e2",
+    "stranica.py": "56abe3a0f569702c6d1830ac910571ccb222e7636023acdd6458043663b07bc5",
+    "publish_transaction_guard.py": "beb4d9ffc872317432ba806b98b3c1c6afcb437e4027b383c1777bae4b9ece16",
+    "ua_spec_permanent.py": "59135f68b2f4b2c5a677e4da700cdce502dbde8a147e7fd4eb4026e3b6f9902a"
+  },
+  "changed_composed_source_files": [
+    "cars_ui.py"
+  ],
+  "all_other_composed_sources_unchanged": true,
+  "targeted_test_methods": 3,
+  "tests": "PASS",
+  "test_log": "optional_photo_hide_gate_final_tests.log",
+  "test_log_sha256": "e84c66e83a532bc67c2580cd92a5d127d7b186cad4e19bddef9e77a53d613503",
+  "counter_HTML_generation_repeated": false,
+  "unchanged_native_lifecycle_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+  "final_runtime_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+  "previous_candidate_preserved": "Root/package owner retain current68 v1; v2 replacement is canonical source composition changing cars_ui only."
+}

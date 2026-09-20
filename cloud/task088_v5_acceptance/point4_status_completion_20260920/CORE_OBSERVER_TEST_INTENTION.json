@@ -1,0 +1,15 @@
+{
+  "reason": "Full observer exhausted180s full inventory. New scoped observer reads only known current inputs and exports bounded one-lineJSON parts; verify output/provenance/security without another remote run.",
+  "scope": "Synthetic22car privateDB/sourcefixtures,48core+44diagnostic+4supportingHTML. No production/network.",
+  "checks": [
+    "no recursive scan or media byte reads",
+    "exact splitpart bounds/roundtrip",
+    "private values never exported",
+    "output nooverwrite",
+    "two-readsource/DB drift",
+    "partial capture retention",
+    "total alarm partial outcome",
+    "symlink refusal"
+  ],
+  "observer_sha256": "bfa56ffe7fa1ba093d025f40fa79d774bba356494fa810f6711892635fa1474f"
+}

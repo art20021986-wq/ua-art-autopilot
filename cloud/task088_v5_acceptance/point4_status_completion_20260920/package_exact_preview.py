@@ -27,7 +27,7 @@ def main():
     root = Path(args.candidate).resolve(strict=True)
     evidence_raw = read(args.candidate_manifest)
     evidence = json.loads(evidence_raw)
-    files = evidence.get('candidate_files',evidence)
+    files = evidence.get('candidate_files',evidence.get('files',evidence))
     require(type(files) is dict and files and all(type(v) is dict and 'after_sha256' in v for v in files.values()),
             'EXACT_CANONICAL_CANDIDATE_FILE_MAP_REQUIRED')
     canonical_sha = sha(json.dumps(files,ensure_ascii=True,sort_keys=True,separators=(',',':'),allow_nan=False).encode())
@@ -39,6 +39,8 @@ def main():
         read(root/name,item['after_sha256'])
     obs_raw = read(args.observer)
     obs = json.loads(obs_raw)
+    if 'current_core_observation_sha256' in evidence:
+        require(evidence['current_core_observation_sha256'] == sha(obs_raw),'CANDIDATE_CURRENT_OBSERVER_BINDING_MISMATCH')
     require(obs.get('status') == 'PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION' and obs.get('export_completed') is True,
             'FINAL_COMPLETED_CURRENT_OBSERVER_REQUIRED')
     codes = obs['database']['published_codes']

@@ -1,0 +1,17 @@
+{
+  "status": "PASS_SIX_TARGETED_DELTA_SCOPE_ASSERTIONS",
+  "checks": [
+    "actual countdown/timestamp/cache-only current change eligible",
+    "VIN change rejected",
+    "script edit rejected",
+    "countdown unrelated to elapsed days rejected",
+    "new catalog destination rejected",
+    "unexpected footer markup rejected"
+  ],
+  "checker_sha256": "6544b6c8386fc27bc2900605ee925511848e326b92781c3aae3939eb256fd15e",
+  "actual_current_old_pin": "7dadbd648e44ff3a6e656fccce7cf5f354dba66255a5e8f4fa28c6839ccf09fd",
+  "actual_current_new_pin": "21ce03ddfac2617d3efd553c3c0733327c6ac396294d512f46a4b69802029aaa",
+  "browser_run": false,
+  "production_written": false,
+  "scope": "Retention limited to unchanged UI regions; current elapsed countdown is not historical value acceptance."
+}

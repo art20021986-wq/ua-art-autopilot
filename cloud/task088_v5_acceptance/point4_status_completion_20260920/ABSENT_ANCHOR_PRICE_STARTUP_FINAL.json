@@ -1,0 +1,65 @@
+{
+  "status": "PASS_TARGETED_PENDING_INDEPENDENT_STARTUP_REVIEW",
+  "scope": "Local candidate Stage3 CRM resume before Stage4 anchor; no production effects",
+  "changed_source_sha256": {
+    "cloud/task088_price_sync/uaart_price_sync_runtime.py": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+    "cloud/task088_price_sync/uaart_price_sync_binding.py": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+    "cloud/task088_price_sync/patch_cars_ui.py": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+    "cloud/task088_price_sync/test_unconfigured_startup.py": "43c8c28935557a7a8b1cae94946089a8d626fb1d3a5cfa13ca9cc54939ba3714",
+    "cloud/task088_price_sync/test_binding.py": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+    "cloud/task088_price_sync/test_cars_ui_hook.py": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+    "cloud/task088_price_sync/BINDING_CONTRACT.md": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea"
+  },
+  "validation": [
+    {
+      "path": "unconfigured_startup_final_tests.log",
+      "sha256": "e14284e55d2782f3600eaa1ed7be6c86c3697f7d8c6f18bb77f9e4e57d4feba9",
+      "passed": 12,
+      "test_ids": [
+        "test_unconfigured_startup.UnconfiguredStartupTests.test_absent_anchor_preserves_existing_application_without_binding_or_jobs",
+        "test_unconfigured_startup.UnconfiguredStartupTests.test_actual_generated_register_keeps_base_handlers_but_skips_new_worker_jobs",
+        "test_unconfigured_startup.UnconfiguredStartupTests.test_direct_or_inherited_worker_cannot_mutate_claims_files_or_send_until_ready",
+        "test_unconfigured_startup.UnconfiguredStartupTests.test_existing_invalid_or_broken_symlink_anchor_still_hard_fails",
+        "test_unconfigured_startup.UnconfiguredStartupTests.test_price_and_confirmation_cannot_write_queue_or_data_until_configured",
+        "test_unconfigured_startup.UnconfiguredStartupTests.test_readiness_is_pid_bound_and_unregistered_installer_gets_no_runtime_grant",
+        "test_unconfigured_startup.UnconfiguredStartupTests.test_real_validated_binding_becomes_ready_only_after_verified_post_init",
+        "test_unconfigured_startup.UnconfiguredStartupTests.test_registered_callbacks_wait_for_real_bot_post_init",
+        "test_binding.BindingTests.test_bootstrap_preserves_post_init_and_does_not_read_uninitialized_bot",
+        "test_binding.BindingTests.test_ordinary_halt_keeps_crm_bootstrap_available_but_blocks_prices",
+        "test_cars_ui_hook.CarsHookTests.test_nonprice_handlers_and_stage_job_remain_unchanged",
+        "test_cars_ui_hook.CarsHookTests.test_each_authorized_operator_can_submit_both_markets"
+      ]
+    },
+    {
+      "path": "unconfigured_worker_compatibility_tests.log",
+      "sha256": "c667e8e4e981a2d820d0f709e3f0bcb343444a75e314c3f72a6ebe43e3b79d44",
+      "passed": 6,
+      "test_ids": [
+        "test_v5_runtime.V5RuntimeTests.test_four_conscious_changes_fully_complete_fifo_and_preserve_ua",
+        "test_v5_runtime.V5RuntimeTests.test_success_receipt_sent_once_to_initiating_operator",
+        "test_runtime.RuntimeTests.test_register_requires_verified_binding_and_uses_vietnam_10am",
+        "test_runtime.RuntimeTests.test_runtime_failure_notifies_without_working_crm_database",
+        "test_runtime.RuntimeTests.test_daily_fallback_survives_database_outage_without_repeating_same_day",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_blocked_old_public_view_reconciles_same_operation_after_actual_retirement"
+      ]
+    }
+  ],
+  "distinct_targeted_tests": 18,
+  "new_tests": 8,
+  "affected_existing_tests": 10,
+  "semantics": [
+    "Only lstat-confirmed genuinely absent anchor permits NOT_CONFIGURED CRM startup; broken symlink, malformed or nonregular existing anchor remains hard failure.",
+    "Base CRM registration preserved; no new V5 binding/jobs or synthetic authority for absent anchor.",
+    "False PID-bound process readiness precedes base registration; genuine Provider and actual running-bot post_init are required to become ready.",
+    "Price inputs/confirmations and direct/inherited V5 worker entrypoints cannot mutate data, claims, audit, journal files or notices while false.",
+    "Ready marker distinguishes actual worker-job registration; scheduled callbacks skip false readiness.",
+    "Never-registered canonical installer remains separately gated; None is not V5 authority.",
+    "Native stage/media/full-publication gates tested and reviewed separately by native integration owner."
+  ],
+  "historical_credit": {
+    "price152": "Retained at earlier exact source pins; no wholesale rerun. Changed startup/worker entry behavior is revalidated by these targeted tests.",
+    "preview24": "Not claimed or run by this report."
+  },
+  "production_writes": false,
+  "credentials_created": false
+}

@@ -1,0 +1,921 @@
+{
+  "contract": "PR114-FINAL-PUBLIC-CODE-SAVE-MANIFEST-1",
+  "recorded_at": "2026-09-20T07:12:29.374136+00:00",
+  "status": "FROZEN_PUBLIC_SOURCE_HASH_LIST_NO_EXTERNAL_WRITE",
+  "repository_root": "/workspace/scratch/cc71e1c55fba/pr114_review",
+  "repository_files": [
+    {
+      "path": "cloud/task088_autopilot_owner_policy/owner_policy.py",
+      "sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+      "bytes": 15018,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_autopilot_owner_policy/price_captions.py",
+      "sha256": "75343c3ce936ca54bcbee84103dec7f987875bd9840a78c7ad7a999562fb310f",
+      "bytes": 1564,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_autopilot_owner_policy/price_publication.py",
+      "sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+      "bytes": 5660,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_autopilot_owner_policy/test_owner_policy.py",
+      "sha256": "082b6581390bbcb748bfc3787e83f5cd54492c88486a8ab06fa8e64f66f511c3",
+      "bytes": 12081,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_autopilot_owner_policy/test_price_captions.py",
+      "sha256": "4be1826ad0856ca3a1bb7247890ac1c8949e2f90ebe6d15f75273382e7ceb055",
+      "bytes": 4033,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_autopilot_owner_policy/test_price_publication.py",
+      "sha256": "5652d0b44b0f5df402c8caa3af06580b4cf72f7447cd2f0558354ac65d72c06a",
+      "bytes": 5619,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_autopilot_owner_policy/test_start_delay.py",
+      "sha256": "1275753262fb1824bbeebc4249150af5f489cf12c5c9e58182aa7e4fc4f84494",
+      "bytes": 5084,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/BINDING_CONTRACT.md",
+      "sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+      "bytes": 15426,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/build_preflight_bundle.py",
+      "sha256": "91b2672cd75253167e81c5bf1784ae2f2b91eef56d5c27105eaf389ea8d2e98d",
+      "bytes": 6271,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/install_package.py",
+      "sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+      "bytes": 41319,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/outbox.py",
+      "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+      "bytes": 32633,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/patch_cars_ui.py",
+      "sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+      "bytes": 27728,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/patch_guard.py",
+      "sha256": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
+      "bytes": 14084,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/patch_publikaciya.py",
+      "sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+      "bytes": 3504,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/patch_site_counters.py",
+      "sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+      "bytes": 6320,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/preflight.py",
+      "sha256": "a483c2dad6cb9125fca662d84ae1ca858af1386f54e00883226bd89c1e2f8555",
+      "bytes": 20949,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/probe_control_capabilities.py",
+      "sha256": "4de11964be94e16eedeca520a402b4a58dd150e0ce3ff7d64ff9fe1af8115ad4",
+      "bytes": 4604,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/stage_preflight.py",
+      "sha256": "4783e756776192f811fd6fe406ebccb4396f2935947fd1e36c8b8b53cc45fcbc",
+      "bytes": 4260,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_binding.py",
+      "sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+      "bytes": 34127,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_cars_ui_hook.py",
+      "sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+      "bytes": 27086,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_confirmation.py",
+      "sha256": "d1b80cbaf67e8c98f7ef6e6d59bdac9d52854c42a2f3492bbdf64c42a874b91f",
+      "bytes": 3110,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_control_reader.py",
+      "sha256": "a47d91fdccc7b7104d18fb6118fbd853a0c77b6e4317745730211eef57b58a56",
+      "bytes": 18734,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_crm_intent_contract.py",
+      "sha256": "32864ab25d7426392811f52340dc8e34c20b00c40aadff4b628a3c605811d41b",
+      "bytes": 5324,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_guard_fence.py",
+      "sha256": "7944efaf7af24286a1cd3dc6b02a86b6a82f578b71afb8a5385117f28d257a23",
+      "bytes": 18826,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_install_package.py",
+      "sha256": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+      "bytes": 20557,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_outbox.py",
+      "sha256": "dfbe12f544013397f5ed70c419ed67c9717bb7474c827b9f384a0f05103b3d61",
+      "bytes": 20945,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_public_guard_contract.py",
+      "sha256": "41c073005f99d13a7b410432204494ed03052daa669fd39b343954e282b06799",
+      "bytes": 2601,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_publikaciya_authority.py",
+      "sha256": "4295588b3f3a4dfbbd2cc38db8e611a48a053948a87fd2e09558e1d86a533e64",
+      "bytes": 7453,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_runtime.py",
+      "sha256": "6d9068cd590f9d5bfbec9fab30f2bafec98efbfb1a23a7dc3b6782079b8965e7",
+      "bytes": 30073,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_site_counters_patch.py",
+      "sha256": "e012334152ffd75d5863f6e6363a0b1b3175506e5e3ca5a2918a407a77de2ba3",
+      "bytes": 12033,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_unconfigured_startup.py",
+      "sha256": "43c8c28935557a7a8b1cae94946089a8d626fb1d3a5cfa13ca9cc54939ba3714",
+      "bytes": 9797,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "final_startup_optional_gate_or_preview_delta"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_v5_install_preparation.py",
+      "sha256": "3e1c77a2a0f215b3babd009a7f414dc96baaa3c193ca28ff597b4bb6618485fc",
+      "bytes": 6481,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_v5_outbox.py",
+      "sha256": "4dfee3def65939a70c2650286f1bcceb0f31ba9592eba7e2fdf73c7042531673",
+      "bytes": 3667,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_v5_runtime.py",
+      "sha256": "39f4122f2509be336cacb3a1d2185fc0874b7e5d85da48ed2bc921219de19302",
+      "bytes": 27999,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/test_visibility_price_lifecycle.py",
+      "sha256": "d0a014077274def9cadf5ccb2e5199648363d4f25eb01a2f790c6ca55e9ee829",
+      "bytes": 15171,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/uaart_price_control_reader.py",
+      "sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+      "bytes": 18422,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/uaart_price_sync_binding.py",
+      "sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+      "bytes": 52170,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/uaart_price_sync_confirmation.py",
+      "sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+      "bytes": 5691,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_price_sync/uaart_price_sync_runtime.py",
+      "sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+      "bytes": 110952,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/audit_snapshot.py",
+      "sha256": "c89c71d40925ae60516e7fc27f5eb1fc392411254d908d605cc3da483ff16886",
+      "bytes": 11570,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/initial_html_prices.py",
+      "sha256": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+      "bytes": 13017,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/patch_catalog_design_guard.py",
+      "sha256": "a251b3e6c036645701ae8473f3c0020f8589c04815509b533cf0a531656c024f",
+      "bytes": 3319,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/patch_stage_catalog_sync.py",
+      "sha256": "2c59fea132f1bff9b55a8c4ab911035509078836f2ebdb5f5e388787b7e109be",
+      "bytes": 3489,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/patch_stranica.py",
+      "sha256": "8ed2aea9f18d3955931496485199d6bb91f9fdc5d5e57e410c1deab69f35dfe7",
+      "bytes": 4846,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/patch_yadro.py",
+      "sha256": "873fbfcd05d0d740810cb898302090f75239ca7c1d115992e524c3290f2b7fb1",
+      "bytes": 4370,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/test_captured_pages.py",
+      "sha256": "25a3f90633f44c3e1f7cba28ee116b118b4f535cd1649526798dacca5b62287a",
+      "bytes": 7480,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/test_empty_candidate_composition.py",
+      "sha256": "0a4f42bdc7adaff20ff36ff5ad65d270221ac16dc8ca287a340329e66d9052ae",
+      "bytes": 3690,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/test_home_prices.py",
+      "sha256": "d2430a6c2d29c5feead29b88c2cdaac70fb05e716591601e561693c1aa6389fc",
+      "bytes": 2741,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/test_initial_html_prices.py",
+      "sha256": "818f058f4fbaed37030fc5c698c478dc290771a61b6446675a751aee6fa1b11a",
+      "bytes": 5421,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/test_market_prices.py",
+      "sha256": "0da3b1fd3ec09e13967cf1cc4383a7f74b4bb70ab33f706b8d38bcc6c1680951",
+      "bytes": 11691,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/test_private_catalog_guard.py",
+      "sha256": "3ec241ba797337cbac7b910bfe962a76756c0f8883a3e60dde4e788a2b439500",
+      "bytes": 5033,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/test_private_master_chain.py",
+      "sha256": "28b9d41b66d2d3931ea72bb296944dc00e7ffadcc7f72242b348f98e1c3ca3a4",
+      "bytes": 6308,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/test_private_source.py",
+      "sha256": "04889623b0efa9a957487f92d2a5f36d2cc0b8f29ee3e16da31dc74b01ea8e37",
+      "bytes": 11193,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/test_private_stage_catalog_sync.py",
+      "sha256": "42e57f3316a4d1206a3433acdb9ab474cb05906b26caf2a56c0e40a08592db6b",
+      "bytes": 6763,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_stage3_renderer/uaart_market_prices.py",
+      "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+      "bytes": 9608,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/build_release.py",
+      "sha256": "1744ab8daf29564fb6b228ca65cc06749bb11854f060380cb22c827bc49ea734",
+      "bytes": 4042,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/controller.py",
+      "sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+      "bytes": 26837,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/backup_controller.py",
+      "sha256": "5080826a2a7fa0afef24134e1d69fbb48596cc824d97e939e63c3ef6b25a61a1",
+      "bytes": 93,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/controller.py",
+      "sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+      "bytes": 26837,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/install_package.py",
+      "sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+      "bytes": 41319,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/mutation_recovery.py",
+      "sha256": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9",
+      "bytes": 14114,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/outbox.py",
+      "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+      "bytes": 32633,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/owner_policy.py",
+      "sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+      "bytes": 15018,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/price_publication.py",
+      "sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+      "bytes": 5660,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/publication_fence.py",
+      "sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+      "bytes": 10205,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/release_sources.json",
+      "sha256": "d416d967300b4363a56a3ffa3f99f58ab8f2ac2e4721813f4e7134cc78c32b17",
+      "bytes": 4301,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/remote_adapter.py",
+      "sha256": "3fb5974eb89a2d10d18455b3f17a45620a1c1a94013ff34fe40a7dcbdc50f3da",
+      "bytes": 26039,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/rollback_controller.py",
+      "sha256": "a5e21ac45f93bd31f410cffd19649ce7655a1c9eb706f51df894293f403bcd0b",
+      "bytes": 95,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/test_adapter.py",
+      "sha256": "5e4b08c67bddc3900b1582a338cf96f8a0839882a66054468e1f9b75efb30aff",
+      "bytes": 13944,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/test_install_package.py",
+      "sha256": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+      "bytes": 20557,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/test_operation_recovery.py",
+      "sha256": "302e755ed9145823ec6d3599b74c076b94cedea7de43ea33487dbe4299f3fdc7",
+      "bytes": 20698,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/uaart_market_prices.py",
+      "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+      "bytes": 9608,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/uaart_price_control_reader.py",
+      "sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+      "bytes": 18422,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/uaart_price_sync_binding.py",
+      "sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+      "bytes": 52170,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/uaart_price_sync_confirmation.py",
+      "sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+      "bytes": 5691,
+      "reasons": [
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/uaart_price_sync_outbox.py",
+      "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+      "bytes": 32633,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/uaart_price_sync_runtime.py",
+      "sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+      "bytes": 110952,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_install/release/visibility_lifecycle.py",
+      "sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+      "bytes": 27871,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_preview/test_preview.py",
+      "sha256": "2e28d0c5b4e5ff1e9daf012d7b829744c5bf1ff9a7ccb66342411ccacb6d9710",
+      "bytes": 32970,
+      "reasons": [
+        "final_startup_optional_gate_or_preview_delta"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_preview/wsgi_preview.py",
+      "sha256": "191989bd07d0eea55782671778b8bb2dd1b531eda88a561bbc4b229afcd7d289",
+      "bytes": 14973,
+      "reasons": [
+        "final_startup_optional_gate_or_preview_delta"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/integrate_private_sources.py",
+      "sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+      "bytes": 58331,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/mutation_recovery.py",
+      "sha256": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9",
+      "bytes": 14114,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/publication_fence.py",
+      "sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+      "bytes": 10205,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "final_startup_optional_gate_or_preview_delta"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_activation_gates.py",
+      "sha256": "af3f323fefb89d10989799ab7e6e3d4037f62db37fa2315207adfcfbb36d985e",
+      "bytes": 5768,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "final_startup_optional_gate_or_preview_delta"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py",
+      "sha256": "fc92061f4cfe505df707adb7645151ad43264e943505448760147c487a7053a0",
+      "bytes": 12349,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_fork_regressions.py",
+      "sha256": "0a08a5c93a7ca9f53a250cbdb9853935443a315bb91b9b82795411fe03547c84",
+      "bytes": 6806,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_inode_regressions.py",
+      "sha256": "336f843621dc1e09f0b7e4cd9001f32035f82685ae633b90a49dae43e9eac51b",
+      "bytes": 3914,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_media_exception_cleanup.py",
+      "sha256": "39317bc031c9bdf4e5187c916275d19bc86182d0bde3c4acdc9e6e833f4782b1",
+      "bytes": 5228,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_optional_photo_hide_gate.py",
+      "sha256": "7b5020997751c33df22a737566d0e2f6323556567f930d53ab4196422ecfae86",
+      "bytes": 3773,
+      "reasons": [
+        "final_startup_optional_gate_or_preview_delta"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_private_source_integration.py",
+      "sha256": "7c36b45f704f0887c0d45cfe8a85f525cfbd16feca86bb093897835bb3e8cf03",
+      "bytes": 16066,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_publication_fence.py",
+      "sha256": "1b49551beae6697628d91cea716489c1982222ad6a4ac3c7652644ccad6dc4c5",
+      "bytes": 5346,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_release_closure.py",
+      "sha256": "f271b6427a07bdec0730efb1b3476510e283e59e600a385f23062a0a927139df",
+      "bytes": 16827,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_scoped_recovery.py",
+      "sha256": "35377ea4a9aa8218b699d7e6d79a4cee847090238bde2c6b5dc3d1edefaff400",
+      "bytes": 21891,
+      "reasons": [
+        "candidate_public_builder_or_test_closure"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_visibility_lifecycle.py",
+      "sha256": "11ba702923b1d4db3b45a86084ef773e558a959d35ed1913ad9621f74102a37c",
+      "bytes": 12005,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/visibility_lifecycle.py",
+      "sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+      "bytes": 27871,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ]
+    }
+  ],
+  "repository_file_count": 95,
+  "evidence_public_helpers": [
+    {
+      "path": "UA0022_build_candidate.py",
+      "sha256": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
+      "bytes": 6935
+    },
+    {
+      "path": "build_current_candidate_source_delta.py",
+      "sha256": "0cb66da8915f1be193841bb9edcb74c4ff86ef6142fa503ab121f6054ff47db4",
+      "bytes": 11965
+    },
+    {
+      "path": "build_current_core_candidate.py",
+      "sha256": "a3084ccd3554e0364e22d8e56ac42111e48b2389418b911456816dc9a279c365",
+      "bytes": 15850
+    },
+    {
+      "path": "build_status_source_candidate.py",
+      "sha256": "b682f37180a8c74287feaaafc1f82afb00c8eb8ddce6ebd9c78727e9a20cfa9f",
+      "bytes": 6206
+    },
+    {
+      "path": "build_visibility_candidate.py",
+      "sha256": "68c51f6fc56f23242c65c6114d8d1ed393460488492777187af369db2d5b8ff4",
+      "bytes": 13243
+    },
+    {
+      "path": "check_core_observer_deadline.py",
+      "sha256": "964bfc9868993fa4e90fc4e9634fc5bd33c8c0d5a343fc1af6acd2bc4db470a9",
+      "bytes": 2480
+    },
+    {
+      "path": "check_core_observer_fixture.py",
+      "sha256": "4fea3b9e3e531a17d76e08ca54e50658f0203926b4935bc98d2ba565d8d7486a",
+      "bytes": 9259
+    },
+    {
+      "path": "check_current_preview.py",
+      "sha256": "6544b6c8386fc27bc2900605ee925511848e326b92781c3aae3939eb256fd15e",
+      "bytes": 16414
+    },
+    {
+      "path": "check_observer_fixture.py",
+      "sha256": "261569d2265f00c203d5659e1d88d662994b75db05a7c9d27541647d3d4012f4",
+      "bytes": 6366
+    },
+    {
+      "path": "check_preview_stage_fixture.py",
+      "sha256": "50092c9f8866ba4e67253926d8d8d16a772c2f448e27a2ead1812c572d866609",
+      "bytes": 8047
+    },
+    {
+      "path": "observe_current_point4.py",
+      "sha256": "1c983d514dabbbe88b06a0c3d77e2d1b7b84da866a3ea0ace933c370b38374ae",
+      "bytes": 22712
+    },
+    {
+      "path": "observe_point4_core.py",
+      "sha256": "8fe6380652bab23c3329088690d551f1cad82905de822b8f94aef16b87a62935",
+      "bytes": 30142
+    },
+    {
+      "path": "package_exact_preview.py",
+      "sha256": "152a54243aa787012b112cc4a728d3077e03475749d94118515c5f3e3675ceef",
+      "bytes": 4374
+    },
+    {
+      "path": "probe_native_recovery_ownership.py",
+      "sha256": "b1eebce11bdac700ec00ec295d5e46abb9ec2831e5b634c75aff1f788c48a79c",
+      "bytes": 3176
+    },
+    {
+      "path": "probe_price_switch_expiry.py",
+      "sha256": "3b29cd26fcd87da7b6769eba92ccc761b1ba3ea08951f457dfa4902a7af4ed5d",
+      "bytes": 1858
+    },
+    {
+      "path": "probe_real_page_retirement.py",
+      "sha256": "4a9268cf8c2f78c9c36e40e9ac8273a2dc3fe3b1c3d21d039863aff3cfbce7ac",
+      "bytes": 4674
+    },
+    {
+      "path": "probe_retirement_plan_recovery.py",
+      "sha256": "48b074bc0337d9aa3952d22e5c96269a7ccc5e1c8d2eddbbe896dbb2c7e7fa10",
+      "bytes": 3568
+    },
+    {
+      "path": "stage_exact_preview.py",
+      "sha256": "dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb",
+      "bytes": 26992
+    },
+    {
+      "path": "update_independent_review.py",
+      "sha256": "233427aa1b07e7082a7b1dcb65b0b4285c3c95ea4cfcaae54ec74eedbe8fb977",
+      "bytes": 7456
+    }
+  ],
+  "evidence_public_helper_count": 19,
+  "root_save_policy": "Save only actual diff against root current tree 3309a521; this union is the full source allowlist, not an instruction to overwrite matching files.",
+  "mandatory_exclusions": [
+    "cloud/task088_v5_acceptance/ continuation and policy local snapshots: parent updates fresh separately",
+    "CURRENT_PREVIEW_WSGI_OBSERVED.py: actual observed private code",
+    "current_html_candidate and all private input/candidate directories",
+    "zip/pyz/pyc binaries and caches",
+    "three traceback logs identified by PUBLIC_LOG_ALLOWLIST.json"
+  ],
+  "frozen_implementation": [
+    "runtime da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+    "binding e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+    "publication_fence 00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+    "integrator 93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+    "Preview WSGI 191989bd07d0eea55782671778b8bb2dd1b531eda88a561bbc4b229afcd7d289"
+  ],
+  "production_writes": false,
+  "external_writes": false
+}

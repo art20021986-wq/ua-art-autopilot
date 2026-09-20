@@ -1,0 +1,10 @@
+{
+  "criterion": "PS-A08",
+  "reason": "Initial HTML migration rejected zero published cars although canonical candidate sets permit it. Verify zero inventory is accepted only with no stale car projections and exact homepage topology.",
+  "source_sha256": {
+    "cloud/task088_stage3_renderer/initial_html_prices.py": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+    "cloud/task088_stage3_renderer/test_empty_candidate_composition.py": "a095fd1f9f0977f3a459e782ff795b2fa1b22335c7ca0877b4e90b2bfbc6c9be",
+    "cloud/task088_price_sync/install_package.py": "11c62a3f2e9a17ebf712fba6e3f2b7830e3ce19289ead0fa96578053721feff9"
+  },
+  "scope": "5 synthetic isolated HTML composition tests; production source generation explicitly stubbed."
+}

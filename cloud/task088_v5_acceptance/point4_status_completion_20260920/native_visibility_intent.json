@@ -1,0 +1,11 @@
+{
+  "task": "PR114-point4-native-visibility",
+  "intent": "Implement exact-pinned native publish/unpublish/sold lifecycle in isolated candidate. Preserve all source records/media; never replay unknown publication; local retirement scope distinguished from live URL acceptance.",
+  "utc": "2026-09-20T05:49:32.656306+00:00",
+  "production_write": false,
+  "owned_files": [
+    "cloud/task088_v5_writer_fence/integrate_private_sources.py",
+    "cloud/task088_v5_writer_fence/visibility_lifecycle.py",
+    "cloud/task088_v5_writer_fence/test_visibility_lifecycle.py"
+  ]
+}

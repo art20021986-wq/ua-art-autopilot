@@ -1,0 +1,102 @@
+{
+  "contract": "PR114-POINT4-PREVIEW-AUDIT-PREPARED-RESULT-1",
+  "status": "OFFLINE_CURRENT_CANDIDATE_AND_PREVIEW_PACKAGE_VERIFIED_LIVE_PREVIEW_PENDING",
+  "current_candidate_manifest_sha256": "2881e87087bcecc6d8e3e9e15cf02903b3c430eb69f3d7279708ba5b75ef1305",
+  "current_observer_terminal_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+  "historical_raw_input_hashes_matched": 73,
+  "historical_browser_cases_preserved": 120,
+  "historical_browser_tests_rerun": false,
+  "current_independent_html_output_matches": 48,
+  "current_core_published_cars": 22,
+  "eligible_old_unchanged_ui_pages": 17,
+  "retention_scope": "Exact current timestamps/cachebusters/countdowns preserved; otherwise CSS/scripts/market/VIN/spec/gallery bytes match retained historical harness. Conditioned on current referencedresources and servingruntime binding.",
+  "new_required_browser_cases": 42,
+  "new_browser_observations": 0,
+  "preview_counter_csp_tests_passed": 2,
+  "delta_retention_negative_and_positive_assertions_passed": 6,
+  "isolated_stage_fixture_assertions_passed": 6,
+  "private_application_code_or_db_in_public_zip": false,
+  "remote_stage_switch_reload_executed": false,
+  "preview24of24_current": "NOT_ACCEPTED",
+  "live_remaining_blocker": "Root reports authenticated browser CDP/known Files handle timeouts after bounded recovery; exact candidate has not been staged/reloaded or observed in browser.",
+  "required_next_actions": [
+    "Reconcile actual dedicatedPreview WSGI/config and operation directory before any upload/stage.",
+    "Stage prepared public-only package once; verify actual stage receipt, transitive publicresources and old/new binding.",
+    "Switch dedicatedPreview WSGI once under savedintent and actualreceipt; inspect any unknown outcome before retry consideration.",
+    "Reload dedicatedapp normally; bind currentrunningworker/page/resource bytes.",
+    "Run42affectedCSS/locale cases plus actualfilters/counters/newlinks/gallery interactions; retain17unchangedUI scopes only after dependencybinding.",
+    "Evaluate explicit24criteria from actual accumulatedevidence; no Stage3/Stage4 authority follows from this audit."
+  ],
+  "artifacts": {
+    "FINAL_CURRENT_HTML_INDEPENDENT_MATCH.json": {
+      "sha256": "c88cecc090fb836ee5bfff56ceb19918af6b1118859bae6d3dae4f6d569a906e",
+      "bytes": 12455
+    },
+    "FINAL_CURRENT_PREVIEW_APPLICABILITY.json": {
+      "sha256": "a317826cc87ec077eb53eddc6680c006ae12ccdfe4729e839dff1c4eed2b4cfe",
+      "bytes": 49009
+    },
+    "HISTORICAL_PREVIEW_RAW_INTEGRITY.json": {
+      "sha256": "0c7becac8b55e40ce6690261820629d25d8d15e54008ab227f31001aa16bf056",
+      "bytes": 12102
+    },
+    "CURRENT_METADATA_RETENTION_VALIDATION.json": {
+      "sha256": "c3c9a3d56c38c8920c2c488dc2480944be027d1e16afdf197dd45c29524ba28b",
+      "bytes": 788
+    },
+    "CURRENT_AFFECTED_CARD_STATIC_READINESS.json": {
+      "sha256": "137f51518ee80eb0683578c34a60975863d722b27161b45bd94d4a2b1a527462",
+      "bytes": 3893
+    },
+    "PREVIEW_COUNTER_CSP_VALIDATION.json": {
+      "sha256": "a1f1cede274c3babb786dec7721538b34bed3e579fc2042bd48e45ae531c857b",
+      "bytes": 1038
+    },
+    "PREVIEW_STAGE_FIXTURE_VALIDATION.json": {
+      "sha256": "40294f028f361a5f2557895c1f6a068508cf9f1bd8a04f08a210ef265eefbb94",
+      "bytes": 915
+    },
+    "AFFECTED_BROWSER_MATRIX_42.json": {
+      "sha256": "b04af78aadf428c7581affd87c8867b66a7388d26b24bd617b1442cd539beec5",
+      "bytes": 6994
+    },
+    "EXACT_PREVIEW_DELIVERY_PREPARED.json": {
+      "sha256": "dd0ea3b6aa87091e9ddc0ec088d6c3b0fe660a84242d28d282d0743b9226262c",
+      "bytes": 4870
+    },
+    "exact_preview_current_2881e870_20260920.zip": {
+      "sha256": "f5288c761844c08a466290e0645731ecdc6cd492afaa9eceec62bd2eb0cfcf3a",
+      "bytes": 652587
+    },
+    "check_current_preview.py": {
+      "sha256": "6544b6c8386fc27bc2900605ee925511848e326b92781c3aae3939eb256fd15e",
+      "bytes": 16414
+    },
+    "stage_exact_preview.py": {
+      "sha256": "dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb",
+      "bytes": 26992
+    },
+    "package_exact_preview.py": {
+      "sha256": "152a54243aa787012b112cc4a728d3077e03475749d94118515c5f3e3675ceef",
+      "bytes": 4374
+    },
+    "PREVIEW_APPLICABILITY_AUDIT.md": {
+      "sha256": "729fcfdc85e3198d88dbfa6a1d1dde287e4c1709926d104ccbe9003c77f096a4",
+      "bytes": 12383
+    },
+    "PREVIEW_STAGING_README.md": {
+      "sha256": "b51a7d9f3ca2ed3fb21f9bb20d279efb8b3595a61005bf7a483c7bf4202d3331",
+      "bytes": 6725
+    }
+  },
+  "historical_results_modified": false,
+  "production_written": false,
+  "gate_created": false,
+  "stage3_receipt_created": false,
+  "stage4_receipt_created": false,
+  "independent_helper_review": {
+    "path": "PREVIEW_HELPERS_INDEPENDENT_REVIEW.json",
+    "sha256": "29a6a66a95ca1a2a7df8f72eb8e82e1625337136dc2855f2a8a51c770f58e0fe",
+    "status": "SCOPED_TECHNICAL_GO_CURRENT_BROWSER_AND_RESOURCES_PENDING"
+  }
+}

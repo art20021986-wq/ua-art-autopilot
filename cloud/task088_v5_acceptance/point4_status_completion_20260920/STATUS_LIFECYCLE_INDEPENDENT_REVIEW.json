@@ -1,12 +1,12 @@
 {
   "contract": "PR114-STATUS-LIFECYCLE-INDEPENDENT-REVIEW-1",
-  "status": "SCOPED_CODE_PASS_FINAL_CANDIDATE_BINDING_PENDING",
-  "scope": "Independent review of exact saved private native call graph, current composed source outputs, changed public price/native/publisher/counter code, and isolated targeted probes. Full final installer candidate binding and current Preview/live/runtime acceptance remain separate.",
+  "status": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING",
+  "scope": "Independent review of exact saved native call graph, changed public price/native/publisher/counter/startup code, bounded isolated probes, and all 68 files of the final v2 candidate bound to the authenticated 22-car current core observation. Current protected Preview resource/runtime binding and 42 real browser cases remain open; no production acceptance is implied.",
   "policy_sha256": "0311b5569b588ffe26fda5e50a855024ed2f7c9ef42352dc128174bbb57f875a",
   "reviewed_private_source_sha256": {
-    "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
-    "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
-    "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+    "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+    "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+    "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687"
   },
   "reviewed_private_dependency_sha256": {
     "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
@@ -85,7 +85,7 @@
   ],
   "unchanged_suites_rerun": false,
   "production_mutations": false,
-  "current_actual_source_pass": false,
+  "current_actual_source_pass": true,
   "current_served_closure_pass": false,
   "review_feedback_during_implementation": [
     {
@@ -159,13 +159,31 @@
       "topic": "existing_spec_handoff",
       "finding": "Replacement native handler initially omitted existing best-effort async spec scheduling.",
       "status": "RESOLVED_DURABLE_ONCE_HANDOFF_UNKNOWN_ENQUEUE_NOT_REPEATED_SPEC_COMPLETION_NOT_CLAIMED"
+    },
+    {
+      "id": "S13",
+      "topic": "stage3_crm_resume_before_stage4_anchor",
+      "finding": "Unconditional bootstrap required an absent Stage4 anchor and stopped Stage3 CRM resume.",
+      "status": "RESOLVED_GENUINELY_ABSENT_ANCHOR_PERMITS_UNCONFIGURED_STARTUP_PROTECTED_WRITES_BLOCKED"
+    },
+    {
+      "id": "S14",
+      "topic": "direct_and_inherited_worker_readiness",
+      "finding": "Direct V5 worker entry could claim or record failures before readiness was checked by a publication boundary.",
+      "status": "RESOLVED_PID_BOUND_READINESS_BEFORE_ENTRY_CLAIM_ERROR_AUDIT_JOURNAL_OR_NOTICE"
+    },
+    {
+      "id": "S15",
+      "topic": "optional_media_registration_without_anchor",
+      "finding": "Actual base register imports unknown photo_hide extension. Missing-anchor startup must not admit that unreviewed registration; later anchor disappearance must not downgrade an already-admitted registration.",
+      "status": "RESOLVED_EXACT_OPTIONAL_REGISTRATION_GATE_AND_FINAL_BINDING_INVARIANT"
     }
   ],
   "actual_home_inputs_sha256": {
-    "video/index.html": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+    "video/index.html": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628",
     "site/index.html": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69"
   },
-  "updated_utc": "2026-09-20T06:21:20.908368+00:00",
+  "updated_utc": "2026-09-20T07:14:51.564460+00:00",
   "open_scoped_code_blockers": [],
   "historical_failure_evidence": {
     "real_html_counter_before": {
@@ -176,15 +194,15 @@
   },
   "reviewed_implementation_sha256": {
     "task088_price_sync/outbox.py": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
-    "task088_price_sync/uaart_price_sync_runtime.py": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
-    "task088_price_sync/uaart_price_sync_binding.py": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
-    "task088_price_sync/patch_cars_ui.py": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
+    "task088_price_sync/uaart_price_sync_runtime.py": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+    "task088_price_sync/uaart_price_sync_binding.py": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+    "task088_price_sync/patch_cars_ui.py": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
     "task088_price_sync/patch_guard.py": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
     "task088_price_sync/patch_publikaciya.py": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
     "task088_price_sync/patch_site_counters.py": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
     "task088_v5_writer_fence/visibility_lifecycle.py": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
-    "task088_v5_writer_fence/integrate_private_sources.py": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
-    "task088_v5_writer_fence/publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+    "task088_v5_writer_fence/integrate_private_sources.py": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+    "task088_v5_writer_fence/publication_fence.py": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f"
   },
   "implementer_reports_reviewed": {
     "PRICE_LIFECYCLE_IMPLEMENTATION_RESULT.json": {
@@ -202,29 +220,106 @@
     "counter_fix/RESULT.json": {
       "sha256": "35b3ec4ed0e2fdb5e909afe5c7e0dc56a635ffd62f6e4418019b9de977f47588",
       "independent_suites_repeated": false
+    },
+    "ABSENT_ANCHOR_PRICE_STARTUP_FINAL.json": {
+      "sha256": "c24403780c9c0ecb297b614331f8cee54180327c6ffaec4ea6c65bda88ce7e0e",
+      "independent_suites_repeated": false
+    },
+    "ABSENT_ANCHOR_NATIVE_GATES_FINAL.json": {
+      "sha256": "a3ad44a6df3bec0e252c3324d1c1e7b11487d3b7849e66685085e8e618d9752d",
+      "independent_suites_repeated": false
+    },
+    "OPTIONAL_PHOTO_HIDE_GATE_RESULT.json": {
+      "sha256": "51c9ff419011d0a3fe7e513663213086ed9bafb510d640a28aeeb98afe731a88",
+      "independent_suites_repeated": false
     }
   },
   "native_composed_candidate_binding": {
-    "path": "/workspace/scratch/cc71e1c55fba/private_source_candidate_status",
+    "path": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920_v2",
     "files": {
       "cars_ui.py": {
-        "sha256": "9999169f82cdc700d8e32fdd30dfc29b4ffcc938c5f31225011056cece40708c",
-        "matches_frozen_report": true
+        "sha256": "c2be2af7720a8361665fed872256760264ffc735b68a197763f5f3af1dad62e2",
+        "matches_final_manifest": true
       },
-      "stranica.py": {
-        "sha256": "56abe3a0f569702c6d1830ac910571ccb222e7636023acdd6458043663b07bc5",
-        "matches_frozen_report": true
+      "catalog_design_guard.py": {
+        "sha256": "4fc4539bb3b3ccebfbdfa3589c5964ee42a782805c0ab7b8084302c0c0497404",
+        "matches_final_manifest": true
+      },
+      "mutation_recovery.py": {
+        "sha256": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9",
+        "matches_final_manifest": true
+      },
+      "owner_policy.py": {
+        "sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+        "matches_final_manifest": true
+      },
+      "price_publication.py": {
+        "sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+        "matches_final_manifest": true
+      },
+      "publication_fence.py": {
+        "sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+        "matches_final_manifest": true
+      },
+      "publikaciya.py": {
+        "sha256": "0159e67a3dcd595887ebbeedee8d13e70795c4f3b9895444532241d5cfc32633",
+        "matches_final_manifest": true
       },
       "publish_transaction_guard.py": {
         "sha256": "beb4d9ffc872317432ba806b98b3c1c6afcb437e4027b383c1777bae4b9ece16",
-        "matches_frozen_report": true
+        "matches_final_manifest": true
+      },
+      "stranica.py": {
+        "sha256": "56abe3a0f569702c6d1830ac910571ccb222e7636023acdd6458043663b07bc5",
+        "matches_final_manifest": true
+      },
+      "ua_site_counters.py": {
+        "sha256": "0636a7ecea3813af5461290464017e54094bebedc7dd6c4c9c3551582b966fb4",
+        "matches_final_manifest": true
       },
       "ua_spec_permanent.py": {
         "sha256": "59135f68b2f4b2c5a677e4da700cdce502dbde8a147e7fd4eb4026e3b6f9902a",
-        "matches_frozen_report": true
+        "matches_final_manifest": true
+      },
+      "ua_stage_catalog_sync.py": {
+        "sha256": "8de552319fa020ef9e13ca38f3c701a04b692ed94e6959c7f43d55dcc4e3f85e",
+        "matches_final_manifest": true
+      },
+      "uaart_market_prices.py": {
+        "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+        "matches_final_manifest": true
+      },
+      "uaart_price_control_reader.py": {
+        "sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+        "matches_final_manifest": true
+      },
+      "uaart_price_sync_binding.py": {
+        "sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+        "matches_final_manifest": true
+      },
+      "uaart_price_sync_confirmation.py": {
+        "sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+        "matches_final_manifest": true
+      },
+      "uaart_price_sync_outbox.py": {
+        "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "matches_final_manifest": true
+      },
+      "uaart_price_sync_runtime.py": {
+        "sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+        "matches_final_manifest": true
+      },
+      "visibility_lifecycle.py": {
+        "sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+        "matches_final_manifest": true
+      },
+      "yadro.py": {
+        "sha256": "2d409f6046e8bdd12c26108bd1edd97b161fb1e3b7fecb9fc4543937eee54add",
+        "matches_final_manifest": true
       }
     },
-    "full_installer_candidate": false
+    "full_installer_candidate": true,
+    "installation_executed": false
   },
   "current_four_source_input_observation": {
     "source": "Root-owned authenticated console observation, not independently fetched in this subtask",
@@ -240,27 +335,103 @@
     "Unknown projection is inspected before retry; persisted withdrawal plans use exact pre/postimage CAS and refuse newer unrelated public bytes.",
     "Native authority expiry guards DB and forward switches; compensation requires real fence ownership, PID/thread, latest journal revision and same full projection row.",
     "Price forward replace callback runs after tempfile fsync; final SITE_PUBLISHED checkpoint refuses expired authority.",
-    "Counter correction distinguishes explicit vehicle identifiers from language captions on server/client and pure migration preserves unrelated markup."
+    "Counter correction distinguishes explicit vehicle identifiers from language captions on server/client and pure migration preserves unrelated markup.",
+    "Genuinely absent immutable anchor permits CRM registration and ordinary data/stage editing without fake credentials, binding or new V5 jobs. Existing malformed or broken-link anchor still fails strict bootstrap.",
+    "PID-bound pending readiness is installed before base handlers. Protected price inputs, confirmations, worker claims/error paths/notices, media primitives, media/stage jobs and canonical publication entry are blocked until actual Provider and running-bot post_init verification.",
+    "Optional photo_hide import/register is skipped only for a genuinely absent exact anchor. Present-anchor registration retains baseline behavior; an observed-present marker requires a real final Binding and rejects disappearance before bootstrap. Unknown active extension body is not claimed reviewed."
   ],
   "credential_boundary": {
     "stage3_requires_new_reader_token": false,
-    "stage3_installs_code_only_no_reader_provision_or_restart": true,
+    "stage3_provisions_fake_anchor_or_token": false,
+    "crm_startup_before_stage4": "Allowed only for a genuinely absent anchor; no new V5 jobs or verified runtime binding are fabricated. Protected actions fail closed with truthful pending/not-changed replies. Normal unrelated CRM data editing remains available.",
+    "existing_invalid_anchor_effect": "Hard startup failure; cannot silently downgrade to unconfigured.",
     "runtime_requires_verified_anchor_delegation_running_bot_fresh_reader": true,
-    "absent_immutable_anchor_effect": "Existing bootstrap stops CRM startup; never pretend runtime active.",
-    "stale_control_effect": "Operational price/native mutations fail closed.",
-    "missing_handler_binding_error": "VERIFIED_VISIBILITY_BINDING_REQUIRED",
+    "runtime_readiness_pid_bound": true,
+    "separate_canonical_installer": "Never-registered runtime readiness=None preserves separately gated canonical execution; None grants no V5 credentials.",
+    "stage3_crm_resume_executed": false,
     "live_activation_proven": false
   },
   "limitations": [
-    "Full final installer candidate file/manifest binding is pending; this report alone does not close point4.",
-    "Current Preview24/24 applicability and complete current DB/source/HTML/routing evidence are owned by root and not fabricated from isolated tests.",
+    "Full point4 remains NOT_PASS until the 42 affected real browser cases and protected Preview resource/runtime binding pass. Historical24/24 is preserved but is not a fresh current gate.",
+    "Current source/DB/HTML binding is a stable point-in-time authenticated observation, not writer exclusion or a full system inventory.",
     "No production mutations, real public-URL retirement, running reader/queue, live SLA, Stage3/4 receipts or final20/20 are asserted.",
     "HTML compensation relies on point5 cooperative-writer exclusion; arbitrary uncooperative HTML writes are not covered by a new CAS guarantee.",
+    "Unknown optional photo_hide body is not part of the reviewed private closure. Its absent-anchor import is prevented; its normal active behavior and any external writers require the separate inventory/exclusion scope. Universal media readonly is not claimed.",
     "Code-less incomplete records support data-only price operations; native hide/sold/publication fail closed without canonical public identity.",
-    "Spec handoff means existing event-loop task scheduled once; supplier work/queue completion is not asserted.",
-    "18-car saved HTML parser evidence is historical grammar evidence; current live inventory may differ."
+    "Spec handoff means the existing event-loop task was scheduled once; supplier work/queue completion is not asserted.",
+    "Historical 18-car parser probes retain grammar/regression credit. Current 22-car exact HTML composition is separately bound; live rendering remains pending."
   ],
   "final_candidate_binding": {
-    "status": "PENDING_PARENT_FULL_COMPOSITE"
-  }
+    "status": "PASS_EXACT_CURRENT_V2_68_FILES",
+    "path": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920_v2",
+    "canonical_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+    "raw_manifest_sha256": "b99db44a534483e6db573e2847238b9791f93d03d77f7409c3fc9e7374ef4c8e",
+    "independent_report": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/FINAL_CANDIDATE_BINDING_INDEPENDENT_V2.json",
+    "independent_report_sha256": "8270b5485b984f57544da2f2a1635216091b5b39d06c95238e795cd42465c78d",
+    "v1_independent_evidence_preserved": true,
+    "changed_from_v1": [
+      "cars_ui.py"
+    ],
+    "unchanged_files": 67,
+    "beforehashes_bound_to_current_observation": 68,
+    "code_and_module_files": 20,
+    "core_html_files": 48
+  },
+  "prior_report_preserved": {
+    "path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/STATUS_LIFECYCLE_INDEPENDENT_REVIEW_PRE_FINAL_BINDING.json",
+    "sha256": "1bc34eb8155359994837aa0ddb96d3d6498f6d2cff21833d38f82aeef621ab07"
+  },
+  "historical_private_source_review_inputs": {
+    "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+    "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+  },
+  "actual_paths_scope": "These are the original causal paths and defects, preserved as historical review findings; corrected final architecture is recorded in resolved_architecture.",
+  "historical_saved_18_car_home_inputs_sha256": {
+    "video/index.html": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+    "site/index.html": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69"
+  },
+  "implementer_report_pin_supersession": {
+    "ABSENT_ANCHOR_NATIVE_GATES_FINAL.json": "Its intermediate runtime pin d92ed1c is superseded by final da28632f in the price startup report. Its integrator and cars_ui pins are superseded by OPTIONAL_PHOTO_HIDE_GATE_RESULT.json; lifecycle and fence behavior otherwise unchanged."
+  },
+  "current_core_input_observation": {
+    "path": "/workspace/scratch/cc71e1c55fba/current_core_capture/summary.json",
+    "sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "provenance": "Parent-owned authenticated console observation; reviewer checked local bytes and every candidate beforehash bridge. No independent production fetch by reviewer.",
+    "scope": "Point-in-time 19 source/dependency hashes, 11 module existence/hash records, 22 published DB rows and DB/schema digest, 48 core HTML,44 diagnostic HTML,4 supporting HTML; ten stability flags and two DB/schema observations matched.",
+    "full_system_inventory": false,
+    "media_bytes_verified": false
+  },
+  "current_actual_source_pass_scope": "Exact point-in-time source input and candidate binding only, supported by actual authenticated source hashes rather than synthetic fixtures. This does not mean production source execution or live operational PASS.",
+  "targeted_startup_review": {
+    "price_targeted_tests": 18,
+    "price_new_tests": 8,
+    "price_affected_existing_tests": 10,
+    "native_targeted_tests": 6,
+    "optional_registration_targeted_tests": 3,
+    "author_logs_reviewed": true,
+    "reviewer_duplicate_suite_runs": false,
+    "final_runtime_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+    "final_integrator_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+    "pid_fork_scope": "Readiness PID mismatch exercised locally; not a live production fork/recovery acceptance.",
+    "actual_private_registration_graph": "team_bot calls final cars_ui.register before polling; base stage job and subsequent team_bot media job resolve gated callbacks. Actual optional photo_hide import/register site is wrapped without importing its unavailable body."
+  },
+  "evidence_reuse": [
+    "Unchanged lifecycle module 0203e1fa retains prior real saved HTML retirement and owned recovery evidence; added startup gate paths have separate affected tests.",
+    "The final runtime da28632f retains the reviewed forward-write expiry callback and commit guards from b6425b69; only startup/readiness dispatch changed and was specifically checked.",
+    "All67 files except cars_ui exactly match verified current candidate v1; all48 HTML and11 runtime modules retain their checks. Exact inverse of the three optional gate additions recovers the v1 cars_ui bytes.",
+    "No unchanged historical suite, old Preview browser matrix or full parser/runtime suite was repeated."
+  ],
+  "preview_acceptance": {
+    "historical24of24_preserved": true,
+    "current_preview_gate": "NOT_PASSED",
+    "new_browser_cases": 42,
+    "new_browser_status": "NOT_RUN_BROWSER_TRANSPORT_BLOCKED",
+    "conditional_unchanged_ui_regions_pages": 17,
+    "resource_runtime_binding_pending": true,
+    "current_countdown_values_not_relabelled_historical_pass": true,
+    "helpers_independent_report_sha256": "29a6a66a95ca1a2a7df8f72eb8e82e1625337136dc2855f2a8a51c770f58e0fe",
+    "preview_stage_switch_or_reload_executed": false
+  },
+  "point4_full_pass": false
 }

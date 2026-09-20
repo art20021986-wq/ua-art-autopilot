@@ -1,0 +1,96 @@
+{
+  "contract": "PR114-EXACT-PREVIEW-DELIVERY-PREPARED-1",
+  "status": "PREPARED_NOT_UPLOADED_NOT_STAGED_NOT_SWITCHED_NOT_RELOADED",
+  "canonical_candidate_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+  "observer_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+  "package": {
+    "path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/exact_preview_current_53544a27_20260920_v2.zip",
+    "sha256": "d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb",
+    "bytes": 652588,
+    "members": 54,
+    "public_html_members": 48,
+    "public_runtime_members": 5,
+    "private_application_sources_included": false
+  },
+  "helper": {
+    "path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/stage_exact_preview.py",
+    "sha256": "dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb"
+  },
+  "planned_server_operation_id": "point4-53544a27-20260920v2",
+  "planned_stage_argv": [
+    "python3.10",
+    "-I",
+    "-B",
+    "/home/Carix/autopilot_inbox/cloud/stage_exact_preview_20260920.py",
+    "--self-sha256",
+    "dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb",
+    "stage",
+    "--operation-id",
+    "point4-53544a27-20260920v2",
+    "--package",
+    "/home/Carix/autopilot_inbox/cloud/exact_preview_current_53544a27_20260920_v2.zip",
+    "--package-sha256",
+    "d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb",
+    "--observer",
+    "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260920_054458/summary.json",
+    "--observer-sha256",
+    "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "--existing-config",
+    "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/gallery-preview-j6b3l4hd/config.json",
+    "--expected-wsgi-sha256",
+    "9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555",
+    "--expected-config-sha256",
+    "ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee",
+    "--max-seconds",
+    "180"
+  ],
+  "planned_stage_command": "python3.10 -I -B /home/Carix/autopilot_inbox/cloud/stage_exact_preview_20260920.py --self-sha256 dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb stage --operation-id point4-53544a27-20260920v2 --package /home/Carix/autopilot_inbox/cloud/exact_preview_current_53544a27_20260920_v2.zip --package-sha256 d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb --observer /home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260920_054458/summary.json --observer-sha256 bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228 --existing-config /home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/gallery-preview-j6b3l4hd/config.json --expected-wsgi-sha256 9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555 --expected-config-sha256 ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee --max-seconds 180",
+  "planned_inspect_command": "python3.10 -I -B /home/Carix/autopilot_inbox/cloud/stage_exact_preview_20260920.py --self-sha256 dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb inspect --work /home/Carix/autopilot_inbox/cloud/pr114-preview-point4-53544a27-20260920v2",
+  "switch_argv_template": [
+    "python3.10",
+    "-I",
+    "-B",
+    "/home/Carix/autopilot_inbox/cloud/stage_exact_preview_20260920.py",
+    "--self-sha256",
+    "dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb",
+    "switch",
+    "--work",
+    "/home/Carix/autopilot_inbox/cloud/pr114-preview-point4-53544a27-20260920v2",
+    "--stage-receipt-sha256",
+    "ACTUAL_STAGE_RECEIPT_SHA256_REQUIRED"
+  ],
+  "stage_before_execute_requirements": [
+    "Restore authorized browser/console transport; no unknown prior write may be retried.",
+    "Freshly read actual dedicated WSGI/config and hosting properties; if drift do not reuse these pins or switch.",
+    "Check this planned work does not already exist; if it does inspect actual outcome first.",
+    "Verify delivered helper/ZIP hashes and terminal observer hash before stage.",
+    "Reconcile current published/source/core snapshot if resumption changes current inputs."
+  ],
+  "switch_before_execute_requirements": [
+    "Read actual01-stage-receipt.json, inspect scoped validation/resourcepins and calculate its actualSHA.",
+    "Independent review actual stage outcome, then only one switch invocation.",
+    "If02-switch-intent exists useinspect; do not repeat replacement."
+  ],
+  "browser_plan": {
+    "new_required_cases": 42,
+    "eligible_unchanged_ui_page_retention": 17,
+    "retention_requires_current_resource_runtime_binding": true,
+    "current_countdown_values_not_historical_pass": true
+  },
+  "production_written": false,
+  "remote_commands_executed": false,
+  "preview_gate": "NOT_PASSED",
+  "stage3_receipt_created": false,
+  "stage4_receipt_created": false,
+  "prepared_at": "2026-09-20T07:13:40.118028+00:00",
+  "v1_preserved": {
+    "zip": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/exact_preview_current_2881e870_20260920.zip",
+    "sha256": "f5288c761844c08a466290e0645731ecdc6cd492afaa9eceec62bd2eb0cfcf3a",
+    "delivery_receipt_sha256": "dd0ea3b6aa87091e9ddc0ec088d6c3b0fe660a84242d28d282d0743b9226262c"
+  },
+  "v2_comparison_sha256": "55b559dc8aaab12278c419f971258319a1615cc02822fab600b06242b97b3195",
+  "browser_transport_blocker": {
+    "path": "CURRENT_PREVIEW_TRANSPORT_BLOCKER.json",
+    "sha256": "0394f1072e616988e72eceeffc2c26881954821fb94492843ce4bcf1d24c9088"
+  }
+}

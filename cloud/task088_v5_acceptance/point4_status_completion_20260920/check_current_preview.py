@@ -65,6 +65,51 @@ def inert_counter_equivalence(after, before_script, after_script, historical_sha
     return sha(inverse.encode()) == historical_sha
 
 
+def current_metadata_only(old, new, code):
+    """Bounded current operator metadata, never a historical value acceptance.
+
+    Return-link cachebuster and footer timestamp are presentation metadata.
+    A naturally elapsed one/two-digit countdown/plural remains current input;
+    only unchanged UI regions can inherit old acceptance, not its new value.
+    """
+    patterns = {
+        'catalog_cache_buster':r"(?<=<a class='vtoraya' href='katalog.html\?v=)\d+(?='>← Все машины</a>)",
+        'footer_timestamp':r'(?<=UA ART COMPANY LLC · '+re.escape(code)+r"<br>обновлено )\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}(?=<div class='avtor'>)",
+    }
+    changes = {}
+    left, right = old.decode(), new.decode()
+    for key,pattern in patterns.items():
+        a,b = re.findall(pattern,left),re.findall(pattern,right)
+        if len(a) != 1 or len(b) != 1:
+            return None
+        changes[key] = {'before':a[0],'current':b[0]}
+        left,right = re.sub(pattern,'<' + key + '>',left),re.sub(pattern,'<' + key + '>',right)
+    day = r'(?<=<span class="ua-stage-v1-days">)[0-9]{1,2}(?=</span>)'
+    plural = r'(?<=<span class="ua-stage-v1-days-copy">)д(?:ень|ня|ней)(?= до выдачи<br>в Киеве</span>)'
+    a,b = re.findall(day,left),re.findall(day,right)
+    if a or b:
+        pa,pb = re.findall(plural,left),re.findall(plural,right)
+        if len(a) != 1 or len(b) != 1 or len(pa) != 1 or len(pb) != 1:
+            return None
+        if int(b[0]) > int(a[0]):
+            return None
+        stamps = changes['footer_timestamp']
+        elapsed = (datetime.strptime(stamps['current'],'%d.%m.%Y %H:%M').date() -
+                   datetime.strptime(stamps['before'],'%d.%m.%Y %H:%M').date()).days
+        def day_word(n):
+            return 'день' if n % 10 == 1 and n % 100 != 11 else 'дня' if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14 else 'дней'
+        if int(a[0])-int(b[0]) != elapsed or pa[0] != day_word(int(a[0])) or pb[0] != day_word(int(b[0])):
+            return None
+        changes['current_countdown_preserved_not_historically_accepted'] = {'before':a[0]+' '+pa[0],'current':b[0]+' '+pb[0]}
+        left,right = re.sub(day,'<countdown>',left),re.sub(day,'<countdown>',right)
+        left,right = re.sub(plural,'<countdown_plural>',left),re.sub(plural,'<countdown_plural>',right)
+    if left != right or 'ua-site-counters-123' in left:
+        return None
+    return {'status':'UNCHANGED_UI_REGIONS_ONLY_CURRENT_METADATA_PRESERVED','changes':changes,
+            'normalized_sha256':sha(left.encode()),'css_inline_scripts_market_vin_spec_gallery_unchanged':True,
+            'countdown_business_correctness_reestablished':False}
+
+
 def evaluate(args):
     repo, capture, candidate = [Path(v).resolve(strict=True) for v in (args.repository, args.capture, args.candidate)]
     oldroot = repo / 'cloud/task088_v5_acceptance'
@@ -112,7 +157,7 @@ def evaluate(args):
     before_script, after_script = _client_literal(counter_before), _client_literal(counter_after)
     oldhashes = {e['path']: e['retained_harness_sha256'] for e in binding['served_pages_compared'] if e['matches']}
     rowby = {r['auto_number']:r for r in rows}
-    pages, affected, retained, counter_provisional = [], [], [], []
+    pages, affected, retained, counter_provisional, metadata_retained = [], [], [], [], []
     for name in names:
         before = read(located(capture, name, ('','public_html')))
         if sha(before) != obs['core_html'][name]['sha256'] or len(before) != obs['core_html'][name]['bytes']:
@@ -140,13 +185,20 @@ def evaluate(args):
             raise ValueError('EXACT_SCOPED_CANDIDATE_HTML_MISMATCH:' + name)
         old = oldhashes.get('/'+name)
         inert = bool(old and basename in rowby and inert_counter_equivalence(after,before_script,after_script,old))
+        metadata = None
+        if old and basename in rowby and args.historical_candidate:
+            historic = read(located(Path(args.historical_candidate).resolve(strict=True),name,('','public')))
+            if sha(historic) != old:
+                raise ValueError('HISTORICAL_CANDIDATE_BYTES_NOT_BOUND_TO_RETAINED_HARNESS:'+name)
+            metadata = current_metadata_only(historic,after,basename)
         item = {'path':'/'+name, 'before_sha256':sha(before), 'after_sha256':sha(after),
                 'counter_client':counter['status'], 'historical_harness_sha256':old,
                 'all_unrelated_markup_preserved':True, 'historical_page_bytes_equal':old == sha(after),
-                'historical_render_equivalent_inert_counter_literal_only':inert}
+                'historical_render_equivalent_inert_counter_literal_only':inert,
+                'bounded_current_metadata_delta':metadata}
         pages.append(item)
         if name.startswith('video/'):
-            (retained if old == sha(after) else counter_provisional if inert else affected).append('/'+name)
+            (retained if old == sha(after) else metadata_retained if metadata else counter_provisional if inert else affected).append('/'+name)
     stable = obs.get('status') in ('PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION', 'PASS_DOUBLE_READ_STABLE_OBSERVATION')
     blockers = []
     if not stable:
@@ -170,6 +222,8 @@ def evaluate(args):
         'stage_codes':{s:[r['auto_number'] for r in rows if r['status']==s] for s in sorted({r['status'] for r in rows})},
         'core_pages':pages,
         'eligible_historical_page_retention_pending_resource_runtime_binding':retained,
+        'eligible_unchanged_ui_retention_with_current_metadata_preserved':metadata_retained,
+        'current_metadata_retention_scope':'Unchanged CSS/scripts/market/VIN/spec/gallery only, conditioned on referenced-resource binding. Current timestamps/cachebusters/countdown values are preserved current observations and are not re-labelled historical PASS.',
         'counter_literal_only_pages_pending_independent_reachability_proof':counter_provisional,
         'counter_literal_only_scope_requirement':'Exact inverse restores historical page SHA. Before omitting these browser cases, independently prove decoded DOM and bound external/inline scripts cannot reach catalog-grid or outline-cta entrypoints. Raw token absence alone is not that proof.',
         'mandatory_affected_browser_pages':affected,
@@ -190,6 +244,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('repository','observer','capture','candidate','before-counter-source','output'):
         parser.add_argument('--'+name, required=True)
+    parser.add_argument('--historical-candidate')
     args = parser.parse_args()
     result = evaluate(args)
     with open(args.output, 'x', encoding='utf8') as stream:

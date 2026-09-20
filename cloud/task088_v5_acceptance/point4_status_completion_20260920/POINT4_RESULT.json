@@ -1,0 +1,121 @@
+{
+  "contract": "PR114-POINT4-FINAL-CHECKPOINT-20260920-1",
+  "recorded_at": "2026-09-20T07:16:04.820681+00:00",
+  "operation_id": "pr114-point4-status-20260920T054458Z",
+  "status": "OPEN_PREVIEW_TRANSPORT_BLOCKED",
+  "point4_complete": false,
+  "owner_instruction": "Continue point4 and then subsequent authorized plan steps. Do not infer a request to replay UA0022 publication.",
+  "current_candidate": {
+    "status": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING",
+    "canonical_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+    "files": 68,
+    "sources": 9,
+    "runtime_modules": 11,
+    "html": 48,
+    "manifest": {
+      "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/current_final_candidate_v2/CANDIDATE_MANIFEST.json",
+      "sha256": "b99db44a534483e6db573e2847238b9791f93d03d77f7409c3fc9e7374ef4c8e",
+      "bytes": 16059
+    },
+    "composition": {
+      "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/current_final_candidate_v2/RESULT.json",
+      "sha256": "02ff0314dcc9bc1fbc718a530614fd74a1b4ec053b64c0fee1489306eaa7887f",
+      "bytes": 18394
+    },
+    "v2_changes": [
+      "cars_ui.py"
+    ],
+    "unchanged_v1_files": 67,
+    "private_sources_public_upload": false
+  },
+  "validation": {
+    "index": {
+      "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/AFFECTED_VALIDATION_INDEX.json",
+      "sha256": "607612dcd34bf63ade486f04faf71501135295a2f6592e1f9b4a6f9bd82f57c5",
+      "bytes": 102951
+    },
+    "independent_review": {
+      "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/STATUS_LIFECYCLE_INDEPENDENT_REVIEW.json",
+      "sha256": "17147e41e1c73a6d17a2470fa0e83a6f2737ac1bcc82ef8ff9b2a20f8cc445da",
+      "bytes": 26415
+    },
+    "independent_review_status": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING",
+    "unchanged_full_suites_rerun": false,
+    "overlapping_test_counts_not_added": true
+  },
+  "current_capture": {
+    "status": "PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION",
+    "finished_at": "2026-09-20T06:39:20.995451+00:00",
+    "terminal_summary_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "published_records": 22,
+    "checksum_verified_transfer_artifacts": 102,
+    "full_media_inventory": false,
+    "writer_exclusion": false,
+    "snapshot_freshness_must_be_rechecked_before_stage_or_install": true
+  },
+  "publication_status_policy": {
+    "status": "IMPLEMENTED_IN_REVIEWED_CANDIDATE_NOT_DEPLOYED",
+    "data_scope": "All authorized CRM records, including drafts with no public code",
+    "visibility_scope": "Published records only; no automatic draft publication",
+    "closed_code_findings": [
+      "PS-01",
+      "PS-02"
+    ],
+    "newer_operator_changes_preserved": true,
+    "optional_extension_body_not_audited": true
+  },
+  "preview": {
+    "status": "NOT_ISSUED_CURRENT_42_BROWSER_CASES_PENDING",
+    "historical_24_of_24_preserved_for_original_scope": true,
+    "new_browser_cases_passed": 0,
+    "affected_cases_required": 42,
+    "matrix": {
+      "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/AFFECTED_BROWSER_MATRIX_42_V2.json",
+      "sha256": "4611e7e6d0627ecf15287b6413d6a04d4f7e8d1bb7bb3f8ca44713fa5a4b4864",
+      "bytes": 7163
+    },
+    "transport_blocker": {
+      "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/CURRENT_PREVIEW_TRANSPORT_BLOCKER.json",
+      "sha256": "0394f1072e616988e72eceeffc2c26881954821fb94492843ce4bcf1d24c9088",
+      "bytes": 2272
+    },
+    "prepared_delivery": {
+      "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/EXACT_PREVIEW_DELIVERY_PREPARED_V2.json",
+      "sha256": "991c0c7156ca13684c8a4eac20138b9cb5a46a7810b4ec1a88211cb86e5b19e1",
+      "bytes": 5522
+    },
+    "new_bundle_staged": false,
+    "new_wsgi_switched": false,
+    "new_app_reload": false,
+    "retained_17_card_ui_scopes": "Conditional on current shared resource and runtime hash bridge; not a current full Preview gate"
+  },
+  "external_operation": {
+    "control_evidence": {
+      "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/FINAL_CONTROL_READBACK.json",
+      "sha256": "a9b18e88caafd51fc84e525eada26a10592555cc53e6e60f1e5c1c8a5895ad84",
+      "bytes": 11741
+    },
+    "ua0022_state": "ROLLING_BACK / BLOCKED_ROOT_CAUSE / EMERGENCY_HALT",
+    "actual_installer_report": "PASS observed, then controller public diagnostic page byte mismatch; canonical rollback/install acceptance receipts absent",
+    "unknown_write_replayed": false,
+    "canonical_source_successor": "Still required; strict before-image source pins were not bypassed"
+  },
+  "production_business_mutations_by_this_operation": false,
+  "stage3": "OPEN_NOT_ACCEPTED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "progress": {
+    "accepted": 8,
+    "total": 20,
+    "percent": 40
+  },
+  "continuation": {
+    "authorization": "Existing conditional publication permission remains valid",
+    "scheduled_task_id": "6aa838e44e688191acb636f6597ac587",
+    "scheduled_task_enabled_last_readback": true,
+    "first_action": "Reconcile actual outcomes and current controls, then check browser availability within the bounded retry policy",
+    "after_connection": "Verify current source/DB/HTML and Preview WSGI/config against saved pins; regenerate only genuinely changed inputs. Stage the reviewed exact public Preview through its prepared operation, reconcile receipt, switch only dedicated Preview, reload and run affected 42 real cases. Issue current Preview24/24 only after all applicable criteria have evidence.",
+    "after_point4": "Continue points5-10 with single-writer proof, verified backup and canonical gates; reconcile UA0022 and source-successor facts before any installation; never replay an unknown write",
+    "no_duplicate_approval_required": true
+  },
+  "not_a_gate": true
+}

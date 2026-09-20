@@ -1,0 +1,224 @@
+{
+  "status": "PASS_EXACT_PUBLIC_CODE_BLOB_READBACK",
+  "commit": "c424a8428b20b44753ddc083cee5dff9e08979ba",
+  "tree": "4d93635521c12a14d6ff54dd07037440fb21347a",
+  "checked_files": 22,
+  "checks": [
+    {
+      "path": "cloud/task088_price_sync/BINDING_CONTRACT.md",
+      "sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+      "bytes": 15426,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes"
+      ],
+      "git_blob_sha1": "5a383850291d599b4daa104fc504732d70cc85c6"
+    },
+    {
+      "path": "cloud/task088_price_sync/patch_cars_ui.py",
+      "sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+      "bytes": 27728,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ],
+      "git_blob_sha1": "e252bb3b0ab77039db206c9b6c1d458c7be8e9a2"
+    },
+    {
+      "path": "cloud/task088_price_sync/test_binding.py",
+      "sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+      "bytes": 34127,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ],
+      "git_blob_sha1": "28e798a5263b5e081bd723c144110fc7c458c7b2"
+    },
+    {
+      "path": "cloud/task088_price_sync/test_cars_ui_hook.py",
+      "sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+      "bytes": 27086,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ],
+      "git_blob_sha1": "711f2b5684932d88cd6e2ee2fa03f282e6f6d881"
+    },
+    {
+      "path": "cloud/task088_price_sync/test_unconfigured_startup.py",
+      "sha256": "43c8c28935557a7a8b1cae94946089a8d626fb1d3a5cfa13ca9cc54939ba3714",
+      "bytes": 9797,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "final_startup_optional_gate_or_preview_delta"
+      ],
+      "git_blob_sha1": "5a37fa8d886f896089d0ae1f13968bcf17ddddc4"
+    },
+    {
+      "path": "cloud/task088_price_sync/uaart_price_sync_binding.py",
+      "sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+      "bytes": 52170,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ],
+      "git_blob_sha1": "da58e5f6b2f1a1d11a729ff6d6301e0bb530b88d"
+    },
+    {
+      "path": "cloud/task088_price_sync/uaart_price_sync_runtime.py",
+      "sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+      "bytes": 110952,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ],
+      "git_blob_sha1": "8f87743ca361471e65b8b052a8758dcad2a12a9e"
+    },
+    {
+      "path": "cloud/task088_v5_install/release/controller.py",
+      "sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+      "bytes": 26837,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ],
+      "git_blob_sha1": "582fdda3380f66ede3a14faafb24e2fc8a64e4e9"
+    },
+    {
+      "path": "cloud/task088_v5_install/release/install_package.py",
+      "sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+      "bytes": 41319,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ],
+      "git_blob_sha1": "82ac2b97f4e0dc5944049ecadf1f6d4bb8280228"
+    },
+    {
+      "path": "cloud/task088_v5_install/release/outbox.py",
+      "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+      "bytes": 32633,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ],
+      "git_blob_sha1": "be6d4d9831156ca68fd201efab2c71789beb6089"
+    },
+    {
+      "path": "cloud/task088_v5_install/release/publication_fence.py",
+      "sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+      "bytes": 10205,
+      "reasons": [
+        "final_frozen_public_release"
+      ],
+      "git_blob_sha1": "90784c5c4778781c9df0bd2101555a25f9a079e2"
+    },
+    {
+      "path": "cloud/task088_v5_install/release/release_sources.json",
+      "sha256": "d416d967300b4363a56a3ffa3f99f58ab8f2ac2e4721813f4e7134cc78c32b17",
+      "bytes": 4301,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ],
+      "git_blob_sha1": "fc1a62eb41e5cd82dd07de32b893969defd97f71"
+    },
+    {
+      "path": "cloud/task088_v5_install/release/uaart_price_sync_binding.py",
+      "sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+      "bytes": 52170,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ],
+      "git_blob_sha1": "da58e5f6b2f1a1d11a729ff6d6301e0bb530b88d"
+    },
+    {
+      "path": "cloud/task088_v5_install/release/uaart_price_sync_outbox.py",
+      "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+      "bytes": 32633,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ],
+      "git_blob_sha1": "be6d4d9831156ca68fd201efab2c71789beb6089"
+    },
+    {
+      "path": "cloud/task088_v5_install/release/uaart_price_sync_runtime.py",
+      "sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+      "bytes": 110952,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ],
+      "git_blob_sha1": "8f87743ca361471e65b8b052a8758dcad2a12a9e"
+    },
+    {
+      "path": "cloud/task088_v5_install/release/visibility_lifecycle.py",
+      "sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+      "bytes": 27871,
+      "reasons": [
+        "existing_pending_code_snapshot_current_bytes",
+        "final_frozen_public_release"
+      ],
+      "git_blob_sha1": "bd5fd2d9756fdf7b5f745fad97cf0213a4a16acc"
+    },
+    {
+      "path": "cloud/task088_v5_preview/test_preview.py",
+      "sha256": "2e28d0c5b4e5ff1e9daf012d7b829744c5bf1ff9a7ccb66342411ccacb6d9710",
+      "bytes": 32970,
+      "reasons": [
+        "final_startup_optional_gate_or_preview_delta"
+      ],
+      "git_blob_sha1": "3d1b13986eedcce674659db1dc30227bb8c6e46b"
+    },
+    {
+      "path": "cloud/task088_v5_preview/wsgi_preview.py",
+      "sha256": "191989bd07d0eea55782671778b8bb2dd1b531eda88a561bbc4b229afcd7d289",
+      "bytes": 14973,
+      "reasons": [
+        "final_startup_optional_gate_or_preview_delta"
+      ],
+      "git_blob_sha1": "bcfabda5f865a7419c6292540d7d9a5c7b7be076"
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/integrate_private_sources.py",
+      "sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+      "bytes": 58331,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "existing_pending_code_snapshot_current_bytes"
+      ],
+      "git_blob_sha1": "6c67c9dda38284fe6fc691b053adbb63efcc7c9c"
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/publication_fence.py",
+      "sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+      "bytes": 10205,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "final_startup_optional_gate_or_preview_delta"
+      ],
+      "git_blob_sha1": "90784c5c4778781c9df0bd2101555a25f9a079e2"
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_activation_gates.py",
+      "sha256": "af3f323fefb89d10989799ab7e6e3d4037f62db37fa2315207adfcfbb36d985e",
+      "bytes": 5768,
+      "reasons": [
+        "candidate_public_builder_or_test_closure",
+        "final_startup_optional_gate_or_preview_delta"
+      ],
+      "git_blob_sha1": "3653b30b0de9a0ed98c40f43044c227f265d3445"
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/test_optional_photo_hide_gate.py",
+      "sha256": "7b5020997751c33df22a737566d0e2f6323556567f930d53ab4196422ecfae86",
+      "bytes": 3773,
+      "reasons": [
+        "final_startup_optional_gate_or_preview_delta"
+      ],
+      "git_blob_sha1": "f17620b73c74605e9523ab7be5dbb72daf4f2723"
+    }
+  ],
+  "production_mutation": false
+}

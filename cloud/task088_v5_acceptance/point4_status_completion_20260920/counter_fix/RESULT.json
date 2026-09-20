@@ -1,0 +1,40 @@
+{
+  "status": "TARGETED_PASS",
+  "scope": "LOCAL_EXACT_PINNED_COUNTER_CANDIDATE_AND_SYNTHETIC_CLIENT_PARITY",
+  "source_sha256": "500ca67145faa38ca9f72ac6da85e2a7d1c351f8f2fcca4a2edeb34c22734c23",
+  "candidate_sha256": "0636a7ecea3813af5461290464017e54094bebedc7dd6c4c9c3551582b966fb4",
+  "changed_files_sha256": {
+    "patch_site_counters.py": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+    "test_site_counters_patch.py": "e012334152ffd75d5863f6e6363a0b1b3175506e5e3ca5a2918a407a77de2ba3"
+  },
+  "tests": {
+    "counter_exact_source_and_server_client": 9,
+    "inline_html_migration": 4,
+    "total_unique_pass": 13,
+    "initial_failures": 0
+  },
+  "client_test_scope": "Actual complete CLIENT_SCRIPT executes in Node using generic DOM fixture adapter; no live browser PASS claimed.",
+  "retained_real_html_scope": "Saved dual-price catalog18cards parsed successfully; source bytes unchanged.",
+  "policy": {
+    "data-ua-card": "Strict canonical ID on attribute presence; malformed/empty never falls back.",
+    "data-ua": "Contributes only full valid legacy ID; translation captions ignored.",
+    "ambiguity": "Valid conflicting IDs or stages rejected; historical href fallback precedence preserved.",
+    "counts": "Computed dynamically; empty and additional cars covered.",
+    "inline": "Exact known script only; absent/current unchanged; unknown/duplicate refused; unrelated HTML exact preserved."
+  },
+  "production_writes": false,
+  "private_source_committed": false,
+  "broad_historical_suites_rerun": false,
+  "evidence_sanitized": true,
+  "evidence_files": [
+    "TEST_INTENTION.json",
+    "targeted_tests.log",
+    "INLINE_TEST_INTENTION.json",
+    "inline_targeted_tests.log"
+  ],
+  "independent_review": {
+    "status": "PASS",
+    "evidence": "../REAL_PAGE_RETIREMENT_PROBE.json",
+    "scope": "Saved actual18tile dual-price HTML: first withdrawal preserves other17 tiles bytewise, stage images, unserved legacy; repeated18\u21920 yields consistent counters."
+  }
+}
