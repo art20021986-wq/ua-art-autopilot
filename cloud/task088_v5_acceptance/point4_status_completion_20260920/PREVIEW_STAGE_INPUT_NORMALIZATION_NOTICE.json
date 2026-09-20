@@ -1,0 +1,46 @@
+{
+  "contract": "PR114-PREVIEW-STAGE-INPUT-NORMALIZATION-1",
+  "recorded_at": "2026-09-20T07:32:00Z",
+  "branch_head_before_notice": "6f1404980b248cf26564450e9358f8dec61f5ab1",
+  "failed_operation": {
+    "operation_id": "point4-53544a27-20260920v2",
+    "outcome": "FAILED_BEFORE_WORKDIR_INPUT_SHA256_MISMATCH",
+    "helper_sha256": "dad2b41e7132a0c3f93429cda2b9d5d5b0ac55b57733c8343160780c7503afdb",
+    "package_sha256": "d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb",
+    "expected_observer_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "actual_observer_sha256": "0969b56b15040fe7f75f41e21380f451274272e2758ac6d7e96acfe27384823b",
+    "work_directory_created": false,
+    "wsgi_sha256_after": "9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555",
+    "config_sha256_after": "ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee",
+    "production_changed": false,
+    "preview_switched": false,
+    "preview_reloaded": false
+  },
+  "reconciliation": {
+    "cause": "Repository evidence adds one trailing LF; the server summary has identical JSON bytes without the trailing LF.",
+    "server_bytes": 86386,
+    "server_ends_with_lf": false,
+    "sha256_server_raw": "0969b56b15040fe7f75f41e21380f451274272e2758ac6d7e96acfe27384823b",
+    "sha256_server_raw_plus_lf": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "semantic_status": "PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION",
+    "original_server_file_mtime": "2026-09-20T06:39:24.131071424Z",
+    "original_server_file_unchanged": true
+  },
+  "corrected_intent": {
+    "operation_id": "point4-53544a27-20260920v2r1",
+    "observer_path": "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260920_054458/summary.json",
+    "observer_sha256": "0969b56b15040fe7f75f41e21380f451274272e2758ac6d7e96acfe27384823b",
+    "expected_result": "ISOLATED_STAGE_RECEIPT_ONLY",
+    "readback": "inspect work directory and SHA256 of 01-stage-receipt.json",
+    "backup_required": false,
+    "reason_no_backup": "No existing target work directory; operation writes only a new isolated Preview staging directory.",
+    "switch_allowed": false,
+    "production_allowed": false,
+    "retry_policy": "This is a new corrected intent after confirmed pre-write failure, not replay of an unknown write."
+  },
+  "acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40
+  }
+}
