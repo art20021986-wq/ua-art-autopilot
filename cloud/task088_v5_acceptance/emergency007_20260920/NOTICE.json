@@ -1,9 +1,9 @@
 {
   "operation_id": "pr114-emergency007-points12-20260920T0347Z",
-  "recorded_at": "2026-09-20T03:51:43Z",
+  "recorded_at": "2026-09-20T03:58:20Z",
   "status": "STEP1_ACCEPTED_STEP2_PARTIAL",
   "foreground_in_progress": true,
-  "updated_at": "2026-09-20T03:51:43Z",
+  "updated_at": "2026-09-20T03:58:20Z",
   "executor": "root-emergency007-points12",
   "predecessor": "cloud/task088_v5_writer_fence/handoff006_evidence/restore_atomic_20260919/RESULT.json",
   "step1": {
@@ -77,14 +77,29 @@
         "local_readback_sha256_matched": true,
         "matches_retained_server_digest": true,
         "fresh_server_digest_command": false
+      },
+      {
+        "name": "ua_spec_permanent.py",
+        "bytes": 14299,
+        "sha256": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
+        "lines": 304,
+        "missing_lines": 0,
+        "overlap_conflicts": 0,
+        "local_readback_sha256_matched": true,
+        "matches_retained_server_digest": true,
+        "fresh_server_digest_command": false
       }
     ],
     "pending": [
-      "ua_spec_permanent.py",
       "ua_additional_spec.py",
       "vin_spec_service.py"
     ],
-    "private_source_committed": false
+    "private_source_committed": false,
+    "current_partial": {
+      "name": "ua_additional_spec.py",
+      "complete_lines_locally_saved": 471,
+      "accepted": false
+    }
   },
   "progress": {
     "completed": 8,
@@ -94,5 +109,5 @@
   },
   "production_changed": false,
   "tests_rerun": false,
-  "next_action": "Recover remaining three private dependencies by the same permitted visible-editor read."
+  "next_action": "Continue exact visible-editor recovery of ua_additional_spec.py from saved line471, then vin_spec_service.py."
 }
