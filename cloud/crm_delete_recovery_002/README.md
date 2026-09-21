@@ -17,20 +17,36 @@ while preparing this candidate. Private source-readback files were staged for
 inspection only. Test receipts describe isolated execution, not Telegram or
 production acceptance.
 
+The final isolated suite passed **342/342 tests**, with no failures or skips.
+All 32 materialized source snapshots matched their canonical files, and code
+and recipe data remained unchanged during validation. See
+`evidence/offline_validation.json` and `evidence/build_receipt.json` for exact
+hashes. The generated inner release manifest is
+`b2d20d8059fa9f363c48e384a4f673c4b1d30640722e2741ead6b55ca5442b5c`.
+
 The approved specification, section 6.5, requires Gate B and a separate owner
-installation command. In addition, the observed repository main contains an
+installation command. The owner's command was received at 07:01:57 UTC on
+21 September 2026 and verified against the original conversation; no repeat
+permission is needed. Its exact instruction record is preserved in
+`evidence/OWNER_INSTALL_INSTRUCTION_20260921.json`. The observed repository main contains an
 unrelated `AUTOPILOT_HALT.json` from
 `SEO-DAILY-PODBOR-CANONICAL-20260921` / run `35552076762`. This package does not
 clear it or route around the normal production authority. Its resolution is
 outside this change.
 
-The current production launcher supplies an environment contract, while the
-new local lifecycle accepts a pinned plan. A compatible backup/execute/rollback
-adapter, its strict receipts and reviewed dependency closure are still required.
-The existing AST policy also rejects dynamic `exec` in six fixture test modules
-if the whole subtree is declared as an executable package. No check was
-disabled, no dependency was concealed, and no admission was fabricated.
-See `admission/README.md` for the exact current-main compatibility findings.
+`deploy/` implements the existing launcher's environment contract for separate
+backup, execute and rollback operations. It declares the complete executable
+dependency closure, reconstructs private payloads from exact source hashes,
+and checks remote evidence before producing a workflow receipt. The original
+backup is reused; data or source drift prevents installation. Detailed source
+extraction tests remain outside the runtime package; their two hash-only QA
+snapshots are never executed by the builder. Shared admission checks remain
+unchanged. See `admission/README.md` for the exact compatibility evidence.
+
+Platform acceptance is still pending. The authenticated console could not see
+the running CRM process in its own `/proc`. The future task must prove process
+and singleton-lock visibility before requesting a CRM pause; unsupported
+placement must stop without changing the service.
 
 ## Resulting behavior
 
@@ -56,7 +72,8 @@ the builder does not invent a routine deletion intent for an already absent row.
 - `writer_patch/`: publication/restore/media guards and source-bound recipes.
 - `route_patch/`: exact WSGI transform and deletion-aware routes/sitemap filtering.
 - `install/`: read-only package validation and isolated installation/lifecycle mechanics.
-- `admission/`: current-main workflow compatibility review and remaining Gate B work.
+- `deploy/`: environment entrypoints, bounded transport, strict receipts and exact runtime snapshots.
+- `admission/`: workflow compatibility review, snapshot materializer and non-authorizing installation draft builder.
 - `evidence/`: hashes and authenticated observations; no private source bodies.
 - `build_release.py`: compose one isolated package from the reviewed private sources.
 - `test_release.py`: exercise the assembled package with the current schema,
@@ -104,9 +121,10 @@ Telegram interaction, and production restart acceptance remain unexecuted.
 
 ## Production acceptance still required
 
-Before installation: review the complete lifecycle candidate, satisfy the
-existing production admission, obtain the separate installation command, and
-repeat provider/process/source checks. The actual installation must own CRM
+Before installation: satisfy the
+existing production admission, reconcile the unrelated incident through its
+authorized route, and repeat provider/process/source checks. The owner's
+installation instruction is already received. The actual installation must own CRM
 pause and recovery, verify backup and WSGI reload, replace old processes, and
 read back runtime/job startup. Afterwards, exercise the real Telegram flow and
 verify direct HTTP 404/410 plus absence from current CRM/catalog/home/sitemaps.

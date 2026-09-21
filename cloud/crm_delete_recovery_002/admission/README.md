@@ -1,70 +1,104 @@
-# Independent production-route compatibility review
+# Production-route integration and admission status
 
-Status: **integration incomplete; production Gate B readiness is not established**.
-This directory contains review evidence, not a request, an authorization, an
-installer, or an alternative production route. No provider operation was made.
-The user's approval of specification v1.0 does not supply the separate
-installation command required by section 6.5.
+The installation adapter is prepared as source and verified offline: **86/86**
+deployment tests pass, including actual producer-to-consumer receipt checks. Production
+Gate B and runtime admission remain open; this is not an installation receipt.
+No production mutation was made by this review or its tests.
 
-The review inspected the automation sources and the uncommitted recovery package.
-The parent task verified, through the GitHub connector, that the inspected
-`execution_contract.py`, `control_plane.py`, `critical_adapter.py`, and
-`uaart_critical.yml` have the same Git blob IDs at remote main
-`79c6aaccbfdc2decf7bf39d26738a2c38bde91f4`, containing an unrelated active
-`state/AUTOPILOT_HALT.json`. Their observed hashes and Git blob IDs are in
-`review_evidence.json`; comparison against the eventual installation revision is
-required before admission. The unrelated halt must remain intact and must be
-resolved through its own authorized process.
+The owner separately instructed “Установио.” on 2026-09-21 at 07:01:57 UTC for
+PR 116. The parent task verified the original conversation and preserved the
+exact external evidence in `../evidence/OWNER_INSTALL_INSTRUCTION_20260921.json`.
+Section 6.5's separate installation command is therefore **received**. It must not
+be requested again. Structured admission still requires the established exact
+request, Gate A, manifest, current authority and transaction checks.
 
-## Concrete gaps
+The parent task verified that the inspected `execution_contract.py`,
+`control_plane.py`, `critical_adapter.py`, and `uaart_critical.yml` have the same
+Git blob IDs at remote main `79c6aaccbfdc2decf7bf39d26738a2c38bde91f4`.
+`review_evidence.json` records those bindings and the initial findings. The
+unrelated SEO `AUTOPILOT_HALT` is preserved; this package supplies no exception
+for it and does not clear it.
 
-| Finding | Evidence and implication | Required integration |
-|---|---|---|
-| Launcher mismatch | `execution_contract.run_controller`, `run_backup`, and `run_rollback` invoke an isolated Python script with **no application arguments**. Operation identity is passed in `UAART_*` environment variables. `lifecycle_controller._bootstrap_cli_sources` requires `--plan` before `main` runs. A harmless no-argument invocation exits 1 with `Missing hash-bound lifecycle argument: --plan`. | Add a task-scoped outer controller that consumes and validates the existing immutable environment/request envelope. Do not point the request's controller path directly at the lifecycle CLI. |
-| Different execution hosts | `uaart_critical.yml` runs the controller on `ubuntu-latest`. `InstallWorker` uses `/home/Carix`, `/var/www`, local `/proc`, and local production lock files. Provider API methods only inventory/pause/resume/reload; they do not transfer or execute the worker. | Implement and test the transport/staging/read-back boundary through the existing authorized controller route. A missing production checkout or a runner-local `/proc` cannot be treated as production evidence. |
-| Controller identity mismatch | `RepositoryAdmission.check` requires the compiled claim's `trusted_package.controller_sha256` to equal the remote lifecycle source hash. A correctly declared outer controller necessarily has a different hash. | Bind the outer controller as controller and lifecycle/worker/watchdog as exact declared dependencies. Verify both identities transitively, without weakening the trusted package check. |
-| Lifecycle policy is not authority-bound | The supplied plan hash protects file integrity, but the caller chooses that hash. The installation approval is checked only against `package_manifest_sha256`. Provider allowlists, HTTP checks, and authority fields are outside that manifest. `mark_compiled` stores Python-file hashes, not an arbitrary plan policy. | Bind immutable policy through the exact request/approved package, and validate runtime identity from the authoritative workflow. Avoid a hash cycle: the current plan already embeds request and approval hashes, so putting its whole hash back into those documents is not a valid design. Split static policy from the run-specific envelope. |
-| Eligibility is not an OPEN transaction | `_production_transaction_context` validates claim eligibility, storage/health/Gate B, request identity, transaction-ID format, and ledger expiry. It returns a transaction path without loading the persisted transaction or requiring OPEN. The workflow separately performs this check with `transaction_watchdog.discover`. | Before any new installation mutation, bind and verify the exact persisted OPEN transaction, backup receipt, request/run/transaction identity, and current authoritative revision. PREPARING, absent, expired, closed, or another task's transaction must fail. |
-| Backup and rollback contracts are absent | The execution contract requires distinct backup/rollback entrypoints and strict receipts. The lifecycle currently calls `backup_and_apply` during its execute phase and emits a lifecycle result, not these contract receipts. Workflow OPEN happens only after the separate backup receipt passes. | Supply independently callable backup and rollback controllers. Bind every operation to one verified remote backup manifest. Reconcile interruption between workflow jobs. Never fabricate a backup PASS from an unexecuted plan or restore an old CRM database. |
-| Final receipt contract differs | A lifecycle result containing `COMPLETE` and `live_telegram_action_verified: false` is not the task orchestrator's full, identity-bound production receipt. The workflow revalidates and persists the latter. | Translate only proven outcomes into the existing exact receipt schemas. Preserve `live_telegram_action_verified: false` until actual Telegram acceptance. Installation verification must not claim completion of that acceptance. |
-| Whole-source package fails AST admission | The existing execution contract rejects direct `exec`/`eval` calls in all declared test/dependency modules and requires a complete Python inventory under the controller directory. Six fixture test modules use `exec` to exercise extracted current production code. Those useful offline tests are not directly admissible as the whole production package. | Use an explicitly reviewed deployment package closure and compatible admission tests; keep detailed offline regression evidence separately. Do not weaken the shared AST policy or hide undeclared executable dependencies. |
-| Required authority does not yet exist | No separate owner installation command has been supplied. No task-specific production request, manifest, approval binding, intake reservation, claim, OPEN transaction, or proven production-route receipt has been prepared by this review. | Complete the code integration and its isolated review first. Then obtain the separate exact-package installation command and use normal admission after the unrelated halt is legitimately resolved. Do not create an incident-console exception. |
+## Implemented integration
 
-## Source-only integration work remaining
+- `deploy/controller.py`, `backup_controller.py`, and `rollback_controller.py`
+  accept the existing dispatcher’s environment-only protocol. The actual
+  `validate_execution` accepts their complete declared Python closure. The actual
+  isolated launcher requires no lifecycle CLI arguments and refuses an active
+  halt before staging.
+- `materialize_deploy.py` copies exact runtime and build recipe sources into
+  `deploy/`, recording canonical-source and destination hashes in `source_map.json`.
+  Detailed source-extraction tests remain offline evidence. Two QA files used
+  only for hashes are inert `.py.txt` data; they are never imported or executed.
+- `deploy/release_bundle.py` retrieves only explicit hash-bound original sources,
+  builds candidate code in a private temporary directory with the actual recipe,
+  and requires the expected inner package hash. Full production source is not
+  committed. Execute and rollback reconstruct the same candidate from the
+  immutable original code backup; they never download or restore the CRM database.
+- `deploy/transport.py` uses a fixed source-bound always-on trigger, private
+  staging, upload/read-back equality, bounded polling, and authenticated API
+  pacing. It has no incident-console or schedule fallback. A terminal receipt is
+  paired with its exact context hash; uncertainty preserves the owner/watchdog.
+  Real remote-worker receipt bytes, including blocked outcomes, are tested through
+  the transport parser.
+- The remote phase runner obtains a fresh public-origin authority checkout,
+  checks the exact task transaction, observes provider inventory, establishes an
+  independent watchdog, and owns each bounded pause. Backup resumes CRM;
+  execute uses that same backup and refuses source/data drift. Rollback changes
+  only code under CAS and refuses removing deletion guards after an intent.
+- Static lifecycle policy is bound through the request and critical manifest.
+  The existing exact owner-approval schema binds the complete request through
+  `request_subject_sha256`; no shared approval/control-plane policy was relaxed.
+- Pinned rollback code is kept separate from fresh current authority. Tests
+  create a real Git worktree, reproduce the existing workflow’s five durable
+  overlays, and verify both equality and rejection of a changed transaction.
+- Successful receipts finish only `UA-ART-CRM-DELETE-RECOVERY-002-INSTALL`, with
+  scope `INSTALLATION_AND_RUNTIME_HTTP_VERIFY`. The parent remains
+  `PENDING_LIVE_TELEGRAM_ACCEPTANCE`; no fixture claims a Telegram action.
 
-The narrow implementation scope is a new task package, with normal
-`controller.py`, `backup_controller.py`, `rollback_controller.py`, a bounded
-transport module, and admission-compatible tests. Changes to the shared
-workflow/control-plane policy are not justified by the findings above.
+The provider documents native `API_TOKEN` availability in new tasks. The parent
+observed only its presence, never its value. Credentials are not uploaded,
+written into the package, or embedded in task commands. Missing credentials
+refuse before pause. Reference: [official API documentation](https://help.pythonanywhere.com/pages/API/).
 
-1. Implement the three environment-driven entrypoints using the existing
-   `execution_contract.production_operation_environment` contract. Validate
-   request bytes, operation, class, receipt target, run/transaction IDs, manifest,
-   backup identity, and every executable source before any network mutation.
-2. Define an acyclic static policy binding for release payloads, lifecycle
-   sources, provider command inventory, public acceptance URLs, and source/schema
-   pins. Derive run-specific fields from the admitted workflow and exact remote
-   OPEN state. Recheck the authoritative halt before installation.
-3. Separate verified backup preparation from applying that **same** backup-bound
-   release. The lifecycle cannot silently produce a new backup unrelated to the
-   receipt that opened the outer transaction. Preserve durable pause/recovery
-   ownership across retries and process/runner loss.
-4. Stage only hash-bound code and data in a private task directory, prove remote
-   read-back, then invoke the remote lifecycle with a bounded watchdog. Carry
-   production host observations back as data-only evidence. Existing UA-0002
-   console overrides are not reusable authority.
-5. Emit the exact backup, final, and rollback receipts consumed by the existing
-   workflow. Keep rollback code-only and CAS guarded; once a deletion intent
-   exists, an older unguarded runtime must not be restored. An unproven rollback
-   must remain failed rather than claiming `crm_unchanged` or `live_verify` PASS.
-6. Test the actual `validate_execution` and isolated launcher with the complete
-   deployment package, then an isolated three-operation workflow simulation.
-   Include missing/changed plan policy, wrong controller/dependency hash, active
-   HALT, PREPARING/closed/foreign transaction, remote source drift, lost runner,
-   pause/resume uncertainty, and wrong/stale receipt rejection.
-7. Independently review the assembled route and record the authoritative source
-   revision. Only that evidence can establish production-package readiness.
+## Remaining admission and platform checks
 
-The current component regression results remain useful. They do not prove that
-the existing production dispatcher can admit, transport, execute, recover, and
-accept this package end to end.
+1. The final assembled package passed **342/342** tests, zero failures or skips,
+   with equality of all 32 canonical runtime/recipe snapshots. The bound results
+   are in `../evidence/offline_validation.json` and `../evidence/build_receipt.json`.
+   Production admission and the remaining platform checks below are separate.
+2. Resolve the unrelated halt through its existing authorized process. A new
+   installer must not use an incident override to bypass that state.
+3. Establish fresh provider capacity and exact inventory. The UI permits adding
+   a task but does not prove remaining always-on quota. Creation failure before
+   pause is safe and tested; capacity has not been asserted.
+4. Verify process namespace and lock reachability from the actual proposed
+   always-on worker. The authenticated UI showed CRM Running while a read-only
+   console observed zero exact CRM processes at 07:09 UTC. That console result
+   does not establish the placement of a future worker. The strict process/lock
+   checks remain intact and may safely block installation.
+5. Bind fresh source/schema/storage/health and public HTTP observations, then use
+   the existing immutable request and launch intake with the received owner
+   instruction. An additive SQLite migration needs explicitly scoped schema
+   digests and actual schema verification; a SQL-text hash must never be labelled
+   a raw `crm.db` after-image.
+6. Perform real installation/runtime/HTTP read-back and subsequently the parent
+   Telegram acceptance. Offline regression success is not evidence of either.
+
+## Reviewable draft inputs
+
+`build_installation_draft.py` reads a local release manifest and private source
+mirror, then writes hashes, observed provider commands, exact public checks, and
+prospective policy. It writes no request under `tasks/`, no authority under
+`state/`, and no approval. Its output is **DRAFT_NOT_AUTHORIZED**, records the
+owner command as received, and identifies the remaining admission checks.
+
+```sh
+python -I -B cloud/crm_delete_recovery_002/admission/materialize_deploy.py
+python -I -B cloud/crm_delete_recovery_002/admission/build_installation_draft.py --sources /private/source-mirror --manifest /private/release/manifest.json --output cloud/crm_delete_recovery_002/admission/installation_input.draft.json
+```
+
+Provider observations and HTTP fixture hashes in the draft are review inputs;
+they must be checked freshly before any admitted pause. The actual request must
+use the existing approval schema and must not turn this draft into authority by
+renaming it.

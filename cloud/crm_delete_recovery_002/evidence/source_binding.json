@@ -77,5 +77,34 @@
       }
     ],
     "installation_admission": false
+  },
+  "native_provider_credential_presence": {
+    "observed_at": "2026-09-21T06:57Z",
+    "present": true,
+    "value_read": false,
+    "method": "authenticated console boolean environment presence check",
+    "official_reference": "https://help.pythonanywhere.com/pages/API/"
+  },
+  "historical_plan_readback": {
+    "observed_at": "2026-09-21T07:02Z",
+    "path": "/home/Carix/uploads/ua0002_job/plan.json",
+    "sha256": "891dbad7211277f1613655da9cbcb2ea19f80937c375bc2575767858c2aa6442"
+  },
+  "process_visibility_observation": {
+    "observed_at": "2026-09-21T07:09Z",
+    "method": "authenticated Bash console read-only /proc scan for same-uid exact two-argument start_safe command",
+    "visible_exact_crm_processes": 0,
+    "provider_running_observation": "Tasks UI showed supervisor266084 Running",
+    "future_always_on_namespace_verified": false,
+    "interpretation": "Console process visibility cannot prove the future remote worker namespace; production pre-pause platform gate remains required."
+  },
+  "separate_installation_command": {
+    "status": "RECEIVED",
+    "user_message_at": "2026-09-21T07:01:57Z",
+    "verbatim": "Установио.",
+    "context": "PR116 installation of approved CRM deletion recovery specification",
+    "verified_by": "personal-context retrieval of original user message; same instruction recorded in PR116 commit5a984195098ce6d7e492edcaa33697915a34d9ce",
+    "reconfirmation_required": false,
+    "not_a_gate_b_pass": true
   }
 }

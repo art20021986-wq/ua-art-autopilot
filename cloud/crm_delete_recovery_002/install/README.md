@@ -4,10 +4,11 @@
 dependency order. It imports no production code, opens no provider connection,
 does not pause/restart CRM, and has no `--apply` or `--quiescent` CLI switch.
 The fixture transaction explicitly rejects the actual `/home/Carix` root.
-`lifecycle_controller.py`, `lifecycle_worker.py`, and `watchdog.py` implement the
-local installation lifecycle. The lifecycle CLI also defaults to read-only
-inspection; explicit execution requires existing authority and a separate owner
-command. This component is not yet registered through the production workflow.
+`remote_worker.py`, `lifecycle_controller.py`, `lifecycle_worker.py`, and
+`watchdog.py` implement the local installation lifecycle. The remote worker
+defaults to read-only inspection; mutation is confined to admitted workflow
+phases. The legacy one-shot lifecycle CLI refuses mutation. Production
+registration and admission are separate from offline candidate validation.
 The output status is **OFFLINE_VALIDATED**, never production READY. No production
 installation, provider mutation, process signal, or live Telegram action was
 performed while preparing and testing this candidate.
@@ -15,8 +16,10 @@ performed while preparing and testing this candidate.
 ## Current concrete production gates
 
 The approved UA-ART-CRM-DELETE-RECOVERY-002 v1.0 section 6.5 requires a separate
-installation command. Approval of the specification does not replace that
-command.
+installation command. The parent agent verified the owner's separate instruction
+at 07:01:57 UTC on 2026-09-21 and preserved its instruction record. That prerequisite
+is satisfied; it must not be requested again. The existing structured Gate B
+authorization must bind the reviewed request/package and instruction.
 
 At the latest parent-agent repository observation, remote main was
 `79c6aaccbfdc2decf7bf39d26738a2c38bde91f4`. Its
@@ -34,37 +37,61 @@ and adds a retirement-specific watchdog. They must not be copied, monkeypatched,
 or relabelled as this code installer. Their hashes are recorded only as inspected
 references in `observed_bindings.json`.
 
-The remaining preparation boundary is the existing critical workflow's
-installation adapter and registration. Its `execution_contract.run_controller`
-passes `UAART_*` environment fields without CLI arguments and runs on
-`ubuntu-latest`; this candidate expects a bound `--plan` and local production
-files/locks. A dedicated transport/operation adapter must bind the remote
-component and implement the workflow's backup, execute and rollback operations
-and receipt contract. Registering this task also requires the real request,
-trusted package manifest, Gate A evidence and structured owner approval. None
-has been fabricated here.
+The environment-driven controllers and authenticated transport in `../deploy/`
+connect the existing critical workflow to this component's backup, execute and
+rollback phases. The workflow runs on `ubuntu-latest`; the hash-bound remote
+worker observes actual production files/processes. Candidate source files do not
+register or admit themselves: the real request, trusted package manifest, Gate A
+evidence and structured owner authorization must pass the existing workflow.
+No production claim, receipt or authorization has been fabricated here.
 
-The admission review also requires persisted OPEN transaction-state verification,
-approval binding of provider/HTTP/authority plan contents, and a source-binding
-contract between the outer trusted controller and this remote lifecycle. The
-current equality check against the lifecycle's own SHA cannot identify a distinct
-outer adapter. These are preparation blockers, not values to fill with guessed
-claims. The candidate must not be launched as a direct-console workaround.
+The local admission now verifies the actual persisted transaction and its claim:
+OPEN for execute, PREPARING only for the explicit backup operation, and the
+already-consumed ROLLING_BACK state for rollback. OPEN additionally verifies the
+original strict backup receipt and ledger expiry. Default admission never treats
+PREPARING as authorization to install. Recovery uses the existing control-plane
+recovery loader and grants no new installation capability.
+
+An acyclic `installation_policy_sha256` binds the task, scope, package/source
+digests, package path, provider inventory, HTTP checks, time budget, control-plane
+sources and outer controller SHA. The exact request contains this digest. The
+existing structured owner approval binds the complete request through
+`request_subject_sha256`, using the existing zero-sentinel rule for the approval
+SHA. No new keys are added to the exact approval schema. The request also binds
+the approval's path and SHA.
+Dynamic repository root, main commit, request/run/transaction identities and
+approval hashes form a separate envelope; those are checked against actual
+authority without creating policy/approval/commit hash cycles. The outer trusted
+controller and each remote executable have distinct source bindings.
+
+Rollback separates pinned executable sources from fresh authority. The source
+commit must match both the claim and autostart ledger and be an ancestor of the
+current main commit. Exactly five durable documents—claim, transaction, request,
+ledger and backup receipt—must match byte for byte between fresh authority and
+the pinned source worktree. A current HEAD check is never silently waived.
 
 After that integration is reviewed, actual execution still requires: the
-unrelated HALT to be handled by its authorized process; the separate section 6.5
-installation command; a current immutable main/claim; a private staged package
+unrelated HALT to be handled by its authorized process; binding of the received
+installation instruction; a current immutable main/claim; a private staged package
 and plan with exact source hashes; and fresh provider, process, HTTP and runtime
 evidence. Historical observations and offline tests cannot satisfy these gates.
 
 ## Implemented local lifecycle
 
-The candidate checks the actual repository HALT before importing control-plane
-code, binds the current remote main and control-plane/workflow sources, and calls
+New backup and execute operations check the actual repository HALT before
+importing control-plane code, bind current remote main and control-plane/workflow
+sources, and call
 `verify_execution_mode(..., required_mode='AUTOMATIC',
 allow_halt_for_recovery=False)`. It never clears a halt. Fresh authenticated
 provider inventories must match the bound plan; enabled schedules must have a
 quiet window covering installation, watchdog recovery and a buffer.
+
+Before any pause, the remote host must observe the exact CRM process and its
+singleton FLOCK in the same process namespace, including PID/start ticks and
+device/inode ownership. Provider `Running` alone is insufficient. An observed
+console without the CRM PID cannot establish always-on placement; unsupported
+placement refuses before disabling CRM. Only the exact context-bound temporary
+worker trigger is excluded from the complete provider inventory comparison.
 
 Before pausing supervisor 266084 it verifies an independent durable watchdog
 READY receipt. The watchdog binds owner PID/start ticks/session, package, plan
@@ -81,6 +108,25 @@ proof includes the actual PID/start ticks, current adapter/config digests and
 registered recovery job; it explicitly does not certify a live Telegram action.
 Interrupted terminal-result persistence is repaired idempotently. Unconfirmed
 recovery reports BLOCKED and makes no claim that CRM resumed.
+
+The workflow-facing worker supports separate bounded phases. Backup pauses CRM,
+creates one verified composite backup, and resumes the baseline. Execute pauses
+again and uses that exact original digest; it refuses source or logical database
+drift instead of taking a replacement snapshot. The composite manifest links the
+SQLite/source backup manifest and exact WSGI preimage/mode. Transaction-specific
+journal namespaces prevent one attempt from consuming another attempt's backup.
+Rollback restores code only and refuses any already-durable deletion intent.
+Successful installation reports code-restore readiness from actual backup,
+file/WSGI and deletion-intent checks under the held lease; it does not claim that
+an actual rollback was performed. The exact three additive table DDL statements
+are queried from `sqlite_master` and reported as a canonical schema projection,
+without inventing a stable after-hash for the live SQLite file.
+
+The distinct outer task is `UA-ART-CRM-DELETE-RECOVERY-002-INSTALL`, with acceptance
+scope `INSTALLATION_AND_RUNTIME_HTTP_VERIFY`. The package task remains
+`UA-ART-CRM-DELETE-RECOVERY-002-v1.0`. The parent task remains
+`PENDING_LIVE_TELEGRAM_ACCEPTANCE`; startup/HTTP proof does not certify the full
+live deletion/recovery acceptance scenario.
 
 ## Staged manifest
 
@@ -165,7 +211,7 @@ part of installation. The precise WSGI route patch and reload are a separately
 journalled step after the required installation command.
 
 All staged directories must have mode 0700 and files mode 0600. A package root
-containing the manifest/payloads and future plan/context may contain the four
+containing the manifest/payloads and future plan/context may contain the five
 executable modules under `install/`; nested descendants are supported by the
 watchdog's path binding. A plan/context from another directory cannot silently
 borrow a package or recovery executable outside its bound root.

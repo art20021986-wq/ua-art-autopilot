@@ -1,0 +1,54 @@
+{
+  "task": "UA-ART-CRM-DELETE-RECOVERY-002-v1.0",
+  "status": "OFFLINE_READY_PRODUCTION_BLOCKED",
+  "specification_approved": true,
+  "separate_installation_instruction_received": true,
+  "reconfirmation_required": false,
+  "offline_validation": {
+    "status": "OFFLINE_SUITE_PASS",
+    "tests": 342,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "code_and_recipe_stable": true,
+    "python": "3.12.14",
+    "python_310_syntax": "PASS",
+    "materialized_source_closure_files": 32
+  },
+  "release_manifest_sha256": "b2d20d8059fa9f363c48e384a4f673c4b1d30640722e2741ead6b55ca5442b5c",
+  "runtime_config_sha256": "27df32f30043560e3df028e1c6b29699143a1340ac8a10f30fcba642a85bc3ca",
+  "independent_review": {
+    "status": "NO_MATERIAL_FINDINGS_IN_REVIEWED_OFFLINE_PATHS",
+    "reviewer": "transport adapter author independently reviewed canonical installation phase modules",
+    "scope": [
+      "bounded pause and independent watchdog readiness",
+      "original backup and source/data compare-and-swap under held lease",
+      "code-only rollback and retained configuration ownership",
+      "pinned source versus fresh transaction authority",
+      "exact producer-to-transport terminal receipts and restart behavior",
+      "pre-pause process and singleton-lock visibility refusal"
+    ],
+    "limits": [
+      "No live provider capacity, process placement, restart, HTTP or Telegram acceptance was performed."
+    ]
+  },
+  "gate_b": "OPEN",
+  "production_installed": false,
+  "production_merged": false,
+  "production_mutations_this_work": false,
+  "production_launch_performed": false,
+  "live_telegram_acceptance": false,
+  "remaining": [
+    "Reconcile the unrelated SEO EMERGENCY_HALT through its authorized incident process; current backup outcome is not proven.",
+    "Establish actual remote worker capacity and process/lock visibility before any CRM pause.",
+    "Bind fresh source, schema, storage, HTTP and normal exact task authority to the received installation instruction.",
+    "Run the admitted installation and prove CRM/runtime/HTTP recovery; then perform live Telegram acceptance."
+  ],
+  "evidence_sha256": {
+    "evidence/offline_validation.json": "e21c4ffa256b79f1faf6363f623e11c96b0cd89cf86ed03fb041af26d2e527d4",
+    "evidence/build_receipt.json": "3244b80b8d1a441ff27c81c2814e159a35ad5000032712b081ca33d3aae30d91",
+    "evidence/OWNER_INSTALL_INSTRUCTION_20260921.json": "037315045ecdd5d113b3fdd8dd9081d390e5afa178548672d4870b6d876ac071",
+    "evidence/halt_readonly_followup.json": "b43c6c29746253310e4d95b0b096ec47bd06aaf447b1b19eb9c7b5b9e72b858a",
+    "admission/installation_input.draft.json": "1ce39801e3086e032ba326ae1d6c912b61ef5044e61ae6c66915ea96ef3511da"
+  }
+}

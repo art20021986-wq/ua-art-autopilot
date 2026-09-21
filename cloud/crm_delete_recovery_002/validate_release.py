@@ -22,7 +22,27 @@ raise SystemExit(0 if result.wasSuccessful() and not result.skipped else 1)
 def hashes():
     return {str(path.relative_to(HERE)): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in sorted(HERE.rglob('*')) if path.is_file()
-            and path.suffix in ('.py', '.txt') and '__pycache__' not in path.parts}
+            and (path.suffix in ('.py', '.txt') or
+                 path == HERE / 'writer_patch/offline_validation.json' or
+                 path == HERE / 'deploy/source_map.json' or
+                 (path.suffix == '.json' and path.is_relative_to(HERE / 'deploy/recipe')))
+            and '__pycache__' not in path.parts}
+
+
+def verify_source_closure():
+    """The admitted runtime snapshots must equal their reviewed source files."""
+    receipt = json.loads((HERE / 'deploy/source_map.json').read_bytes())
+    if receipt.get('status') != 'SOURCE_CLOSURE_MATERIALIZED' or not receipt.get('files'):
+        raise ValueError('MATERIALIZED_SOURCE_CLOSURE_REQUIRED')
+    for item in receipt['files']:
+        paths = [HERE / item[key] for key in ('destination', 'source')]
+        if any(path.is_symlink() or path.resolve(strict=True) != path or
+               not path.is_relative_to(HERE) for path in paths):
+            raise ValueError('MATERIALIZED_SOURCE_SCOPE')
+        expected = item['sha256']
+        if any(hashlib.sha256(path.read_bytes()).hexdigest() != expected for path in paths):
+            raise ValueError('MATERIALIZED_SOURCE_DRIFT:' + item['destination'])
+    return len(receipt['files'])
 
 
 def validate(sources, receipt):
@@ -40,12 +60,14 @@ def validate(sources, receipt):
         UA_TEST_CARS_SOURCE=str(sources / 'cars_ui.py'),
         UA_TEST_KADRY_SOURCE=str(sources / 'kadry_diagnostiki.py'),
         UA_TEST_PRIVATE_ROOT=str(sources))
+    closure_count = verify_source_closure()
     before = hashes()
     for name in before:
         if name.endswith('.py'):
             ast.parse((HERE / name).read_bytes(), filename=name, feature_version=(3, 10))
     results = {}
-    for folder in ('list_patch', 'deletion_core', 'writer_patch', 'route_patch', 'bot_patch', 'install', '.'):
+    for folder in ('list_patch', 'deletion_core', 'writer_patch', 'route_patch', 'bot_patch',
+                   'install', 'deploy', '.'):
         pattern = 'test_release.py' if folder == '.' else 'test_*.py'
         proc = subprocess.run([sys.executable, '-B', '-c', CHILD, str(HERE / folder), pattern],
             env=env, capture_output=True, text=True, timeout=180)
@@ -64,6 +86,7 @@ def validate(sources, receipt):
     value = {'task': 'UA-ART-CRM-DELETE-RECOVERY-002-v1.0',
              'status': 'OFFLINE_SUITE_PASS' if passed else 'OFFLINE_SUITE_FAILED',
              'observed_epoch': time.time(), 'source_stable_during_validation': stable,
+             'materialized_source_closure_files': closure_count,
              'test_python': sys.version.split()[0], 'python_310_syntax': 'PASS',
              'suites': results, 'tests': sum(item['tests'] for item in results.values()),
              'code_sha256': before, 'production_installed': False,
