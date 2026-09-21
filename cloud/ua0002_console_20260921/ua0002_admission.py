@@ -120,7 +120,7 @@ def main():
   if (root/'sitemap.xml').exists():
    rel=f'{folder}/sitemap.xml'; sitemaps.append(rel); public[rel]=worker.fingerprint(root/'sitemap.xml')
  writers=provider()
- watchdog_argv=['python3.10','-B',str(runner),'--watchdog',str(package/'console-context.json')]
+ watchdog_argv=['python3.10','-I','-B',str(runner),'--watchdog',str(package/'console-context.json')]
  writers['allowed_python_cmdline_sha256'].append(sha(enc(watchdog_argv)))
  plan={'contract':worker.CONTRACT,'version':1,'root':str(ROOT),'alwayson_id':266084,
   'target':{'id':8,'auto_number':'UA-0002','vin':worker.VIN},'nonce':args.nonce,
