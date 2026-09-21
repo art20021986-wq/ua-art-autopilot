@@ -1,0 +1,61 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "production/video/podbor.html"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "critical": {
+    "allow_crm_vehicle_data": false,
+    "gate_a_path": "tasks/gates/SEO-DAILY-PODBOR-CANONICAL-20260921.json",
+    "gate_a_sha256": "02771b3bdc52c295c380a387b8f571eba88692231e4cf8bf284a1d35c8e188f1",
+    "gate_b_authorized": true,
+    "manifest_path": "tasks/manifests/SEO-DAILY-PODBOR-CANONICAL-20260921.json",
+    "manifest_sha256": "687c1ddbe456431a5961511d17a1faea16e07c13c61b5f54b6213744d89cc1bd",
+    "owner_approval_path": "tasks/approvals/SEO-DAILY-PODBOR-CANONICAL-20260921.production.json",
+    "owner_approval_sha256": "f00806b2729bc94f2632cf7e6a3e9ba3e835c559e2505157acd0e9a73ac5d820"
+  },
+  "description": "Owner-approved SEO-KOREA-KYIV-001 daily repair: normalize only the canonical link of /home/Carix/video/podbor.html to the clean public URL. Preserve every byte outside the canonical link, vehicle data, CRM, VINs, prices, stages, media and business logic. Require exact backup/readback, sandbox candidate validation, preimage revalidation, production write only after PASS, live verification on clean and parameterized URLs, and rollback on any failure.",
+  "execution": {
+    "backup_controller_path": "cloud/seo_daily_podbor_canonical_20260921/backup_controller.py",
+    "backup_controller_sha256": "10c07de7c492ed65453c915b27bdb09ac928531a049061b1328de4cabfb93fd9",
+    "backup_receipt_path": "state/receipts/SEO-DAILY-PODBOR-CANONICAL-20260921-BACKUP.json",
+    "controller_path": "cloud/seo_daily_podbor_canonical_20260921/controller.py",
+    "controller_sha256": "631c8acb22d8700e6e8f1b1613d5a966adc948843a2277ac2028a71ced45241a",
+    "dependency_paths": [
+      "cloud/seo_daily_podbor_canonical_20260921/remote_installer.py"
+    ],
+    "evidence_paths": [
+      "cloud/seo_daily_podbor_canonical_20260921/evidence.json",
+      "state/receipts/SEO-DAILY-PODBOR-CANONICAL-20260921-BACKUP.json",
+      "state/receipts/SEO-DAILY-PODBOR-CANONICAL-20260921-ROLLBACK.json",
+      "state/receipts/SEO-DAILY-PODBOR-CANONICAL-20260921.json"
+    ],
+    "file_sha256": {
+      "cloud/seo_daily_podbor_canonical_20260921/remote_installer.py": "1b05410d8e3edd875b6987474f532f8aa7390f7cdb3534de7c20032a5c693da4",
+      "cloud/seo_daily_podbor_canonical_20260921/test_contract.py": "31709af6c582055588ba0bea2fcc2db40d2230f7d928f5c1009110b96881cbf7"
+    },
+    "production_required": true,
+    "receipt_path": "state/receipts/SEO-DAILY-PODBOR-CANONICAL-20260921.json",
+    "rollback_controller_path": "cloud/seo_daily_podbor_canonical_20260921/rollback_controller.py",
+    "rollback_controller_sha256": "064c4abcc87d463c9bbb2aa024fa62fba66058cfd3d608fdca10ed534afa5ea0",
+    "rollback_receipt_path": "state/receipts/SEO-DAILY-PODBOR-CANONICAL-20260921-ROLLBACK.json",
+    "test_paths": [
+      "cloud/seo_daily_podbor_canonical_20260921/test_contract.py"
+    ],
+    "timeout_seconds": 1200
+  },
+  "health_checks": [
+    "https://www.uaart.com.ua/video/podbor.html"
+  ],
+  "production_required": true,
+  "read_only": false,
+  "requested_min_class": "CRITICAL",
+  "storage_probe": {
+    "evidence_path": "state/storage/SEO-DAILY-PODBOR-CANONICAL-20260921.json",
+    "evidence_sha256": "2ffbe7a5fca8811c6bd676df1d39914d624f8959df593cb07a6300e8f53d0f4b"
+  },
+  "storage_required_bytes": 67108864,
+  "task_id": "SEO-DAILY-PODBOR-CANONICAL-20260921",
+  "title": "Normalize podbor canonical without touching business data"
+}
