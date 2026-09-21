@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "4af19db20ae4891ae3e176aa0f36c3c06b0475279aaaffc6af7c2f1c68359c70",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-21T01:53:07Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 35552076762",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "1790acb4a7300fa7"
+    }
+  ],
   "heartbeat_at": "2026-09-21T01:50:07Z",
   "heartbeat_sequence": 6,
   "identity": {
@@ -61,7 +72,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "247835dac22203ba094a2ef6e998a0c119d96c1361973a4e601771bf9fd5a408",
     "file_sha256": {
@@ -69,5 +80,5 @@
       "cloud/seo_daily_podbor_canonical_20260921/test_contract.py": "f0829e6f9795bb52d2061f64c17d26b1e68b20193d5c22894680b53bfbf0b6d4"
     }
   },
-  "updated_at": "2026-09-21T01:50:07Z"
+  "updated_at": "2026-09-21T01:53:07Z"
 }
