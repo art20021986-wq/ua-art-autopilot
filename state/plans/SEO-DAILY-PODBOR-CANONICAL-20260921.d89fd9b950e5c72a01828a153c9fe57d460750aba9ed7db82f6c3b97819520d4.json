@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.json",
+  "autostart_ledger_sha256": "6b5ff700077029d0e89f1a131a9eff5d6628ebed008506d334e83ec531a130be",
+  "autostart_source_commit": "20dfab5007a99cc5efa4a2bbbd3e0372a25960b1",
+  "created_at": "2026-09-21T01:49:07Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "35552076762",
+    "task_id": "SEO-DAILY-PODBOR-CANONICAL-20260921",
+    "task_sha256": "d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-e6603209db939f31-d86ff7db2179ab3a",
+  "request_path": "tasks/requests/SEO-DAILY-PODBOR-CANONICAL-20260921.json",
+  "resource_locks": [
+    "PATH_SCOPE:e6603209db939f31"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
