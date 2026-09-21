@@ -37,7 +37,7 @@ def load(plan_path,plan_sha):
  require(route.get('runner_sha256')==sha(pathlib.Path(__file__).read_bytes()),'RUNNER_SHA')
  require(plan['writers'].get('reviewed') is True,'INDEPENDENT_PLAN_REVIEW_REQUIRED')
  require(type(route.get('max_seconds')) is int and 60<=route['max_seconds']<=1500,'DURATION_SCOPE')
- require(route.get('watchdog_argv')==['python3.10','-B',str(pathlib.Path(__file__).resolve()),'--watchdog',str(HERE/'console-context.json')],'WATCHDOG_ARGV_SCOPE')
+ require(route.get('watchdog_argv')==['python3.10','-I','-B',str(pathlib.Path(__file__).resolve()),'--watchdog',str(HERE/'console-context.json')],'WATCHDOG_ARGV_SCOPE')
  expected=plan.get('package_sha256',{}).get('remote_lifecycle.py')
  require(sha((HERE/'remote_lifecycle.py').read_bytes())==expected,'LIFECYCLE_SHA')
  if str(HERE) not in sys.path: sys.path.insert(0,str(HERE))
@@ -84,7 +84,7 @@ def provider_admission(api,plan,operation,plan_path,plan_sha,result_path,*,resum
  return {'route':'REVIEWED_DIRECT_CONSOLE_WITH_WATCHDOG','observed_epoch':int(time.time()),'provider_snapshot_sha256':writers['provider_snapshot_sha256']}
 def worker(operation,plan_path,plan_sha):
  env=dict(os.environ); env.pop('API_TOKEN',None); env['PYTHONDONTWRITEBYTECODE']='1'
- r=subprocess.run([sys.executable,'-B',str(HERE/'remote_stage_a.py'),'--operation',operation,'--plan',str(plan_path),'--plan-sha256',plan_sha],
+ r=subprocess.run([sys.executable,'-I','-B',str(HERE/'remote_stage_a.py'),'--operation',operation,'--plan',str(plan_path),'--plan-sha256',plan_sha],
   stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=600,env=env,check=False)
  try:v=json.loads(r.stdout.decode().strip())
  except Exception:raise RuntimeError('WORKER_RECEIPT_INVALID')
