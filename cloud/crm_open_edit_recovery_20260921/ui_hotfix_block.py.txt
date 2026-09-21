@@ -1,0 +1,242 @@
+# UA-ART-CRM-OPEN-EDIT-HOTFIX-20260921:BEGIN
+import asyncio as _ua_ui_asyncio
+import html as _ua_ui_html
+from telegram.error import BadRequest as _ua_ui_BadRequest
+
+_ua_ui_media_slots = {}
+
+
+def _ua_ui_clip(value, limit):
+    text = str(value or '')
+    units = 0
+    result = []
+    for char in text:
+        units += 2 if ord(char) > 0xffff else 1
+        if units > limit:
+            return ''.join(result) + '…'
+        result.append(char)
+    return text
+
+
+def _ua_ui_back():
+    return InlineKeyboardMarkup([[
+        InlineKeyboardButton('← Все автомобили', callback_data='cards_cars')]])
+
+
+def _ua_ui_clear_active(context):
+    context.user_data.pop('car_last', None)
+    context.user_data.pop('car_voice_active', None)
+
+
+def _ua_ui_minimal_keyboard(card):
+    cid = int(card['id'])
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton('Редактировать данные', callback_data='car_edit:%d' % cid)],
+        [InlineKeyboardButton('Фото и видео', callback_data='car_media:%d' % cid)],
+        [InlineKeyboardButton('← Все автомобили', callback_data='cards_cars')]])
+
+
+def _ua_ui_fallback(card):
+    title = ' '.join(str(card.get(key) or '') for key in
+                     ('auto_number', 'brand', 'model', 'year')).strip()
+    return ('Карточка #%d\n%s\n\nПодробное отображение временно недоступно. '
+            'Данные сохранены; выберите «Редактировать данные».' %
+            (int(card['id']), _ua_ui_clip(title, 300)))
+
+
+def _ua_ui_cancel_media(user_id):
+    slot = _ua_ui_media_slots.get(user_id)
+    if slot is not None:
+        slot['pending'] = None
+        if not slot['task'].done():
+            slot['task'].cancel()
+
+
+async def _ua_ui_deliver_media(message, card):
+    for sender, timeout, label in ((CR.send_photos, 9.0, 'photos'),
+                                   (CR.send_videos, 6.0, 'videos')):
+        try:
+            await _ua_ui_asyncio.wait_for(sender(message, card), timeout=timeout)
+        except _ua_ui_asyncio.TimeoutError:
+            log.warning('CRM %s opening timeout card=%s', label, card['id'])
+        except Exception as exc:
+            log.warning('CRM %s opening failed card=%s type=%s',
+                        label, card['id'], type(exc).__name__)
+
+
+def _ua_ui_schedule_media(context, update, message, card, user_id):
+    # One task and at most one latest request per user. A replacement starts
+    # only after cancellation of the preceding task has actually completed.
+    request = (context, update, message, card, user_id)
+    old = _ua_ui_media_slots.get(user_id)
+    if old is not None and not old['task'].done():
+        old['pending'] = request
+        old['task'].cancel()
+        return
+    coro = _ua_ui_deliver_media(message, card)
+    try:
+        task = context.application.create_task(coro, update=update)
+    except Exception:
+        coro.close()
+        log.exception('CRM media task unavailable card=%s', card['id'])
+        return
+    slot = {'task': task, 'pending': None}
+    _ua_ui_media_slots[user_id] = slot
+
+    def completed(done):
+        # PTB wraps the supplied coroutine. If that wrapper was cancelled before
+        # its first step, explicitly close the still-unstarted media coroutine.
+        coro.close()
+        if not done.cancelled():
+            # Retrieve any exception even when a test/application adapter does
+            # not implement PTB's error-processing task wrapper.
+            try:
+                done.exception()
+            except Exception:
+                pass
+        if _ua_ui_media_slots.get(user_id) is not slot:
+            return
+        del _ua_ui_media_slots[user_id]
+        pending = slot['pending']
+        if pending is not None and getattr(pending[0].application, 'running', False):
+            _ua_ui_schedule_media(*pending)
+
+    task.add_done_callback(completed)
+
+
+async def open_card(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    drop_wait(context)
+    _ua_ui_clear_active(context)
+    _ua_ui_cancel_media(q.from_user.id)
+    await _v168_ack(q,)
+    try:
+        staff = db.get_staff(q.from_user.id)
+        cid = int(q.data.split(':')[-1])
+        card = card_of(cid)
+    except Exception:
+        log.exception('CRM card read failed')
+        await q.message.reply_text('Не удалось прочитать карточку. Повторите открытие.',
+                                   reply_markup=_ua_ui_back())
+        raise ApplicationHandlerStop
+    if not card:
+        await q.message.reply_text('Карточка не найдена.', reply_markup=_ua_ui_back())
+        raise ApplicationHandlerStop
+    try:
+        markup = card_kb(card, staff)
+    except Exception:
+        log.exception('CRM card keyboard fallback card=%s', cid)
+        markup = _ua_ui_minimal_keyboard(card)
+    try:
+        text = render(card, staff)
+        # Conservative bound also covers non-BMP Telegram characters. This is
+        # display-only; the stored description remains complete.
+        if len(text.encode('utf-16-le')) // 2 > 3800:
+            raise ValueError('Card display exceeds message budget')
+    except Exception:
+        log.exception('CRM card display fallback card=%s', cid)
+        text = None
+    if text is not None:
+        try:
+            await q.message.reply_text(text, parse_mode='HTML', reply_markup=markup,
+                                       disable_web_page_preview=True)
+        except _ua_ui_BadRequest:
+            log.exception('CRM card HTML fallback card=%s', cid)
+            text = None
+    if text is None:
+        await q.message.reply_text(_ua_ui_fallback(card), parse_mode=None,
+                                   reply_markup=markup, disable_web_page_preview=True)
+    context.user_data['car_last'] = cid
+    context.user_data['car_voice_active'] = cid
+    _ua_ui_schedule_media(context, update, q.message, card, q.from_user.id)
+    raise ApplicationHandlerStop
+
+
+async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    _ua_ui_cancel_media(q.from_user.id)
+    drop_wait(context)
+    _ua_ui_clear_active(context)
+    await _v168_ack(q,)
+    try:
+        cid = int(q.data.split(':')[-1])
+        card = card_of(cid)
+    except Exception:
+        log.exception('CRM edit menu read failed')
+        await q.message.reply_text('Не удалось прочитать карточку. Повторите открытие.',
+                                   reply_markup=_ua_ui_back())
+        raise ApplicationHandlerStop
+    if not card:
+        await q.message.reply_text('Карточка не найдена.', reply_markup=_ua_ui_back())
+        raise ApplicationHandlerStop
+    rows, buf = [], []
+    for key, label in EDITABLE:
+        buf.append(InlineKeyboardButton(label, callback_data='car_setf:%d:%s' % (cid, key)))
+        if len(buf) == 2:
+            rows.append(buf)
+            buf = []
+    if buf:
+        rows.append(buf)
+    rows.append([InlineKeyboardButton('← К карточке', callback_data='car_open:%d' % cid)])
+    try:
+        title = card.get('auto_number') or db.card_title('cars', card)
+    except Exception:
+        title = 'Карточка #%d' % cid
+    await q.message.reply_text('Что меняем?\n%s' % _ua_ui_clip(title, 300),
+                               parse_mode=None, reply_markup=InlineKeyboardMarkup(rows))
+    context.user_data['car_last'] = cid
+    context.user_data['car_voice_active'] = cid
+    raise ApplicationHandlerStop
+
+
+async def edit_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    _ua_ui_cancel_media(q.from_user.id)
+    drop_wait(context)
+    _ua_ui_clear_active(context)
+    await _v168_ack(q,)
+    try:
+        _, cid, field = q.data.split(':')
+        cid = int(cid)
+        card = card_of(cid)
+    except Exception:
+        log.exception('CRM field editor read failed')
+        await q.message.reply_text('Не удалось прочитать карточку. Повторите открытие.',
+                                   reply_markup=_ua_ui_back())
+        raise ApplicationHandlerStop
+    if not card:
+        await q.message.reply_text('Карточка не найдена.', reply_markup=_ua_ui_back())
+        raise ApplicationHandlerStop
+    label = dict(EDITABLE).get(field, field)
+    now = card.get(field)
+    hint = ''
+    if field == 'engine_cc':
+        hint = '\nВ кубических сантиметрах, например 1598.'
+    elif field in ('price_uah', 'price_georgia'):
+        hint = '\nТолько число, в долларах.'
+        if field == 'price_georgia':
+            hint += '\nПоле необязательное: если цены для Грузии нет, ничего не вводите.'
+    elif field == 'condition_text':
+        hint = ('\n\nЧтобы изменить — пришлите новый текст. '
+                'Он полностью заменит нынешний. Каждый пункт с новой строки.')
+    elif field == 'vin':
+        hint = '\n17 знаков.'
+    elif field == 'eta_days':
+        hint = ('\nСколько дней осталось до прибытия в Киев. '
+                'Дата пересчитается сама, дальше счётчик пойдёт вниз каждый день.')
+    display = _ua_ui_clip(now if now else '—', 2600)
+    await q.message.reply_text(
+        '<b>%s</b>\nСейчас: %s%s\n\nПришлите новое значение текстом или голосом.'
+        % (_ua_ui_html.escape(_ua_ui_clip(label, 100)),
+           _ua_ui_html.escape(display), _ua_ui_html.escape(hint)),
+        parse_mode='HTML',
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton('← Отмена', callback_data='car_open:%s' % cid)]
+            + ([InlineKeyboardButton('Очистить', callback_data='car_clr:%s:%s' % (cid, field))]
+               if field == 'condition_text' and now else [])]))
+    # An editor is active only once its prompt was actually accepted.
+    context.user_data['car_wait'] = {'card_id': cid, 'field': field}
+    context.user_data['car_last'] = cid
+    context.user_data['car_voice_active'] = cid
+    raise ApplicationHandlerStop
+# UA-ART-CRM-OPEN-EDIT-HOTFIX-20260921:END

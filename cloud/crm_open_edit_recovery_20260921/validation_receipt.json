@@ -1,0 +1,34 @@
+{
+  "task": "UA-ART-CRM-OPEN-EDIT-HOTFIX-20260921",
+  "created_at": "2026-09-21T08:50:40.314731+00:00",
+  "status": "LOCAL_CANDIDATE_VALIDATED_NOT_INSTALLED",
+  "source_sha256": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+  "candidate_sha256": "33f8acdbf20fea00b3f35af52e11472734f9f549077737de7550b9d537506b86",
+  "checks": {
+    "tests": 19,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": "python -W error::RuntimeWarning test_ui_hotfix.py -v",
+    "runtime_seconds": 2.649,
+    "python_310_syntax": "PASS",
+    "surrounding_ast_unchanged": "PASS",
+    "slow_media_baseline_regression": "REPRODUCED",
+    "coalesced_media_max_active": 1,
+    "test_model": "Actual extracted candidate functions; Telegram and application transports simulated",
+    "stale_context_transition_and_send_failure": "PASS",
+    "context_cleared_before_first_await": "PASS"
+  },
+  "production_installed": false,
+  "backup_created": false,
+  "live_telegram_acceptance": false,
+  "db_changed": false,
+  "file_sha256": {
+    "build_ui_hotfix.py": "9f11ddc57b786dc1088e309ee2c5fc4a382c68713a410956e1e76024a96659d2",
+    "ui_hotfix_block.py.txt": "423f2e0ca8b228e0744ee190ef5a484a08a2f3e8e520b05830a10e383eeb5790",
+    "test_ui_hotfix.py": "43028be6e6cf7ff64e5a13ad91033a019c5afdf111f4f504e1516976cf18478e",
+    "README.md": "7fe8cc60fa309eeabb2c2f6f1e34f1abf01edb45ab490ee4f3f0b42a2ba29a63",
+    "cars_ui.candidate.py": "33f8acdbf20fea00b3f35af52e11472734f9f549077737de7550b9d537506b86",
+    "cars_ui.hotfix.diff": "877fea5916984bd4888f7b88ccf05dcdc587e473b3f9d8f1ae867afb310e6fe2"
+  }
+}
