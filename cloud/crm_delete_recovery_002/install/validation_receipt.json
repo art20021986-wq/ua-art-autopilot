@@ -1,0 +1,20 @@
+{
+  "excluded_from_claim": [
+    "production lifecycle",
+    "live provider quiescence",
+    "actual source installation",
+    "WSGI reload",
+    "CRM restart"
+  ],
+  "files_sha256": {
+    "README.md": "50c9ce710210ffec8007e4ee955712a1cbc0a551f6ff5fa8553fb68b143b733d",
+    "observed_bindings.json": "bdfa847ddae4e325e2826acad841402b12ff991ba2b1bfa16251938878d48169",
+    "package_install.py": "7ec1e1c4b38a14f01dac0915da5435312de262adb30b2105937a670258572650",
+    "test_package_install.py": "e7773d6fa0ba70c35270dfdfba4c4ad3da7403dd13d8ca7a1716dd0cb004d444"
+  },
+  "production_operations_executed": [],
+  "production_ready": false,
+  "status": "OFFLINE_MECHANICS_PASS",
+  "tests_failed": 0,
+  "tests_passed": 16
+}

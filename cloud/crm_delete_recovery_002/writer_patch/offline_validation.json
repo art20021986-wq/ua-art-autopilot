@@ -1,0 +1,140 @@
+{
+  "status": "NOT_READY_FOR_PRODUCTION",
+  "guard_unit_tests": {
+    "passed": 36,
+    "failed": 0,
+    "skipped": 0,
+    "writer_and_lock_tests": 26,
+    "publication_worker_tests": 10
+  },
+  "source_candidates": {
+    "cars_ui.py": {
+      "status": "COMPILE_PASS",
+      "source_sha256": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+      "candidate_sha256": "d564d0b8808b6f7e4088d749b5d0648191c301a7b2fe3442ba66b0d14e5a6e02"
+    },
+    "publikaciya.py": {
+      "status": "COMPILE_PASS",
+      "source_sha256": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "candidate_sha256": "079fb14665c97cf3eb659ba436cda89e87a06530e8bc05781fb4d479a8919bbd"
+    },
+    "publish_transaction_guard.py": {
+      "status": "COMPILE_PASS",
+      "source_sha256": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+      "candidate_sha256": "d7268ebc5e2ceeb3ff676f702be8483b672d8f0b558f53c14300ac9eb26de8c7"
+    },
+    "stranica.py": {
+      "status": "COMPILE_PASS",
+      "source_sha256": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+      "candidate_sha256": "758e9175afdd51f35b38af9a80d16395c9200d3c7612fa17a831bbc1c0dbbde1"
+    },
+    "ua_spec84_runtime.py": {
+      "status": "COMPILE_PASS",
+      "source_sha256": "938b8dd68f6eafa8b3022ef1dd1f03aa44fd27ec9979bef0819c36941fe022be",
+      "candidate_sha256": "0e20bc7a3bdf676d9b72bc41c64dc216f93a1826502fea8cadb72e1e26b7d38b"
+    },
+    "ua_spec_permanent.py": {
+      "status": "COMPILE_PASS",
+      "source_sha256": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
+      "candidate_sha256": "92595657d5df4c0ff566049ef65dcc365a0d9463c4b061ebd2b299f821d75699"
+    },
+    "yadro.py": {
+      "status": "COMPILE_PASS",
+      "source_sha256": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793",
+      "candidate_sha256": "0db7e82994a91fac7db57d046c015f6b87a30be13de03af5e4ba451ce63385ce"
+    },
+    "kadry_diagnostiki.py": {
+      "status": "COMPILE_PASS",
+      "source_sha256": "696a3b73af8e47a79d3352c6ead3a2364dd357b140a9cf7320fc4cad3d3106c0",
+      "candidate_sha256": "6a64eff8d2f34a404b67f2be7181a51fbf14a3ea0ee7f83b6b98049932af0a6e"
+    }
+  },
+  "missing_full_sources": [],
+  "uncovered_paths": [
+    "legacy manual rollback_backup lacks current CAS evidence (must not be used by deletion coordinator)",
+    "proof that old unpatched worker processes exited",
+    "future/manual SEO install/rollback modes are outside currently enabled task inventory"
+  ],
+  "baseline_recheck": {
+    "verified_by": "parent live PythonAnywhere console",
+    "utc": "2026-09-21T05:52:00Z",
+    "all_twelve_baselines_unchanged": true
+  },
+  "independent_review": {
+    "mapped_html_commit_points": "NO_NEW_DEFINITE_FLAW_FOUND",
+    "production_ready": false,
+    "urgent_bypass_fix": "CONFIRMED_BY_RESILIENT_LIST_AGENT",
+    "publication_worker_cas": "CONFIRMED_BY_RESILIENT_LIST_AGENT: exact raw row pre/postimage CAS; reproduced sale/hide race closed; 10/10 worker tests independently PASS",
+    "diagnostic_media_final_mutations": "CONFIRMED_BY_REVIEW_EXISTING_PATCH: exact cleanup unlink and three final media replace sites close retained-media deletion/overwrite/move gaps. Temp preparation and optional empty neverno directory remain outside fence."
+  },
+  "closed_writer_paths": {
+    "ua0009_urgent_publish": "fence+active admission+guarded CAS rollback; actual transformed regression PASS",
+    "ua_stage_catalog_sync.py": {
+      "sha256": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb",
+      "patch_required": false,
+      "reason": "holds publisher lock, all writes through guarded pub._atomic, existing rollback CAS retained",
+      "actual_reconcile_regression": "PASS"
+    },
+    "ua_additional_spec.py": {
+      "sha256": "6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672",
+      "patch_required": false,
+      "reason": "no public file writes; metadata-only mutators intentionally unchanged to avoid new synchronous publication-lock waits"
+    },
+    "cars_ui.toggle_publish": "One sync worker owns admission through publication/DB rollback; initial update and rollback use raw full-row CAS in BEGIN IMMEDIATE. Concurrent sale/unpublish preserved. Telegram awaits after release; late tombstone rollback refused.",
+    "kadry_diagnostiki.py": {
+      "sha256": "696a3b73af8e47a79d3352c6ead3a2364dd357b140a9cf7320fc4cad3d3106c0",
+      "patch_required": true,
+      "reason": "Existing cleanup unlink, download final replacement and both media relocation sites recheck current nonretired identity under short publication fence. Retired/absent/historical retained bytes preserved; normal current-car refresh remains. Network/temp preparation outside lease.",
+      "actual_captured_row_regression": "PASS: cleanup active/intent/absent/history; retirement during actual download; both relocation branches",
+      "temporary_download_limit": "A retired target may leave a prepared .vremenno file; no existing retained final media is replaced/moved/deleted."
+    },
+    "seo_rehab_guard_068_repair.py": {
+      "sha256": "88922c6774bec9ea624b381f06f76167f768b2ffe57ad302f2e0fb5f3697d6f3",
+      "patch_required": false,
+      "active_command_mode": "--dry-run",
+      "reason": "Exact source dry-run reads/builds/validates in memory, writes private receipt and locks only; no public HTML/sitemap writes",
+      "independent_review": "CONFIRMED_BY_REVIEW_EXISTING_PATCH"
+    },
+    "uaart_connection_monitor.py": {
+      "sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+      "patch_required": false,
+      "reason": "Only GET probes, subprocess probe isolation, and local JSON evidence writes; no publication"
+    }
+  },
+  "spec_lock_order": [
+    ".task082_catalog_stage_repair.lock",
+    ".task082_catalog_stage_guard.lock",
+    ".task083_catalog_dedup.lock",
+    ".ua_art_publish_transaction.lock (shared reentrant registry)",
+    ".crm_db.lock",
+    "spec write lock"
+  ],
+  "parser_limit": "Mapped current generators emit literal HTML page links and explicit vehicle attributes; exact sitemap.xml parses XML loc. Arbitrary dynamic JavaScript payloads remain outside audited generator coverage.",
+  "composition_api": "build_writer_patch.apply_cars_ui_to_candidate(candidate_bytes) -> bytes; exact publication-block SHA558db6d61e7976cb34f7a0054c27cb9dda76c300cce50449cbba556108f963ec",
+  "recipe_sha256": {
+    "build_writer_patch.py": "338707eabce2cd5552fa62a3d9e414589ffd4374ac009e31d18043a185c1db2a",
+    "cars_publication_patch.py": "a32f3b839aba04b1f8839f97949463afdc79013614d3c53db6ebdf779d9fdadc",
+    "ua_delete_public_guard.py": "0a309c8740aa1d87ab1d3bc44ded2976ec67504610184c85ad2ffdd848dc32f0",
+    "test_writer_guard.py": "b6be0ed00a45cb89328241772d0a4929ecd962e4a27ace98921165d7616c9744",
+    "test_publication_worker.py": "df417f7979003e0cf739a26c62e371a27d51ec1097e1dcd34808151c2df5dde0"
+  },
+  "historical_reservation": {
+    "code": "UA-0002",
+    "car_id": 8,
+    "vin_sha256": "1b481c41af415946e8721037281b9ccabf09d0f8ddaa5c9739dfbaf8f9746c87",
+    "plan_sha256": "891dbad7211277f1613655da9cbcb2ea19f80937c375bc2575767858c2aa6442",
+    "receipt_sha256": "e12933ef0d154c6a33a76b17b5de90f637e8694aeffda6f7c662a3265d83981d",
+    "backup_manifest_sha256": "c3af42bf4c401352ee666cbb3610634795bec5b7fc1ef16da2ed817f81837148"
+  },
+  "sitemap_inventory": {
+    "verified_by": "parent authenticated PythonAnywhere Tasks and console",
+    "utc": "2026-09-21T06:28:00Z",
+    "task_1502215": "enabled daily21:28 exact seo_rehab_guard_068_repair.py --dry-run",
+    "task_1502679": "disabled task083 installer",
+    "task_1505035": "enabled daily19:00 mkdir only",
+    "alwayson_266084": "start_safe/run_all; mapped source patches and diagnostic cleanup hook",
+    "alwayson_270984": "read-only connection monitor",
+    "dynamic_wsgi": "separate route patch filters sitemap using routine tombstones and exact historical URLs",
+    "other_manual_scripts": "not included; must not run unchecked after deletion"
+  }
+}

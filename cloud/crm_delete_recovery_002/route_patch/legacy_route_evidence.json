@@ -1,0 +1,33 @@
+{
+  "incident_contract": "UA-ART-UA0002-CRITICAL-DELETE-001-v1.0",
+  "incident_plan_sha256": "891dbad7211277f1613655da9cbcb2ea19f80937c375bc2575767858c2aa6442",
+  "local_mirror_http_routes": [],
+  "local_mirror_prefix": "site/",
+  "observed_static_mapping": {
+    "directory": "/home/Carix/video/",
+    "url_prefix": "/video/"
+  },
+  "routes": {
+    "/video/UA-0002-a6f9d391.html": {
+      "bytes": 50165,
+      "exists": true,
+      "mode": 436,
+      "relative_file": "video/UA-0002-a6f9d391.html",
+      "sha256": "bc2eb036a560b52eeaa0204355b80d7c092d70668dca9a86312dfa2be70f935f"
+    },
+    "/video/UA-0002-diag.html": {
+      "bytes": 18602,
+      "exists": true,
+      "mode": 436,
+      "relative_file": "video/UA-0002-diag.html",
+      "sha256": "7b37be58254eca225da1ec43e16a4845a37b34d5a6ac94199649058a99ad9e45"
+    },
+    "/video/UA-0002.html": {
+      "bytes": 50165,
+      "exists": true,
+      "mode": 436,
+      "relative_file": "video/UA-0002.html",
+      "sha256": "bc2eb036a560b52eeaa0204355b80d7c092d70668dca9a86312dfa2be70f935f"
+    }
+  }
+}

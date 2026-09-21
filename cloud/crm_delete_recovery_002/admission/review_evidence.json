@@ -1,0 +1,108 @@
+{
+  "review_type": "independent_source_and_launcher_compatibility",
+  "task_id": "UA-ART-CRM-DELETE-RECOVERY-002",
+  "observed_at": "2026-09-21T06:48:41.648649+00:00",
+  "remote_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "production_ready": false,
+  "production_touched": false,
+  "gate_b": "OPEN",
+  "separate_installation_command_supplied": false,
+  "existing_unrelated_halt_preserved": true,
+  "authoritative_sources": [
+    {
+      "path": "automation/execution_contract.py",
+      "sha256": "22d167dbfd8b75881d60316a23cbd69da44b84b8ba6ea9c36322413b0b436985",
+      "git_blob_oid": "157ebe30c2a24d1a0ff946d9c5b34e4ca0735f87",
+      "remote_main_equality_verified_by_parent": true
+    },
+    {
+      "path": "automation/control_plane.py",
+      "sha256": "168ce50bd7ee432573832a888f220fe02205ee4e05192db455c6af144170d74b",
+      "git_blob_oid": "eb54309ecb046d2208bce753eec8e6cee145df1a",
+      "remote_main_equality_verified_by_parent": true
+    },
+    {
+      "path": "automation/critical_adapter.py",
+      "sha256": "94935cbb5331306bf37ee8a386aa0bc27a55cdbdf8ba82778fa99fa726dccd47",
+      "git_blob_oid": "89d247cea29714ffad809136251407a174288926",
+      "remote_main_equality_verified_by_parent": true
+    },
+    {
+      "path": ".github/workflows/uaart_critical.yml",
+      "sha256": "6f13c864a5d7b400474f3c9a1fe15e0d2d4dfca5d25dd195a628a3225d33e65a",
+      "git_blob_oid": "4f324c40c54aff58cdf8587a6c7257b4b69979ab",
+      "remote_main_equality_verified_by_parent": true
+    }
+  ],
+  "no_arguments_invocation": {
+    "program": "cloud/crm_delete_recovery_002/install/lifecycle_controller.py",
+    "interpreter_flags": [
+      "-I",
+      "-B"
+    ],
+    "exit_code": 1,
+    "message": "Missing hash-bound lifecycle argument: --plan",
+    "provider_requests": 0
+  },
+  "fixture_test_modules_requiring_separate_admission_closure": [
+    {
+      "path": "cloud/crm_delete_recovery_002/bot_patch/test_bot_adapter.py",
+      "denied_call_lines": [
+        190
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/deletion_core/test_runtime_current.py",
+      "denied_call_lines": [
+        73
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/list_patch/test_resilient_list.py",
+      "denied_call_lines": [
+        139
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/route_patch/test_deleted_routes.py",
+      "denied_call_lines": [
+        69
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/writer_patch/test_publication_worker.py",
+      "denied_call_lines": [
+        69,
+        70
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/writer_patch/test_writer_guard.py",
+      "denied_call_lines": [
+        198,
+        244,
+        279,
+        347,
+        348,
+        369,
+        371,
+        396,
+        414,
+        481,
+        527,
+        556,
+        568
+      ]
+    }
+  ],
+  "admission_local_findings_status": "PENDING_LOCAL_FIX_REVIEW",
+  "unresolved_integration": [
+    "environment_driven_outer_controller",
+    "remote_execution_transport_and_authority_closure",
+    "controller_dependency_identity_binding",
+    "separate_backup_and_rollback_operations",
+    "workflow_compatible_proven_receipts",
+    "complete_admission_compatible_python_closure",
+    "isolated_full_route_simulation"
+  ]
+}
