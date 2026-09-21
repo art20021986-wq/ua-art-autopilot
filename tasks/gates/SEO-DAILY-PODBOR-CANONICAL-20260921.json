@@ -1,0 +1,47 @@
+{
+  "backup_plan_ready": true,
+  "backup_scope_verified": [
+    "production/video/podbor.html"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "evaluated_at": "2026-09-21T01:39:19Z",
+  "manifest_sha256": "687c1ddbe456431a5961511d17a1faea16e07c13c61b5f54b6213744d89cc1bd",
+  "package_sha256": {
+    "cloud/seo_daily_podbor_canonical_20260921/backup_controller.py": "10c07de7c492ed65453c915b27bdb09ac928531a049061b1328de4cabfb93fd9",
+    "cloud/seo_daily_podbor_canonical_20260921/controller.py": "631c8acb22d8700e6e8f1b1613d5a966adc948843a2277ac2028a71ced45241a",
+    "cloud/seo_daily_podbor_canonical_20260921/remote_installer.py": "1b05410d8e3edd875b6987474f532f8aa7390f7cdb3534de7c20032a5c693da4",
+    "cloud/seo_daily_podbor_canonical_20260921/rollback_controller.py": "064c4abcc87d463c9bbb2aa024fa62fba66058cfd3d608fdca10ed534afa5ea0",
+    "cloud/seo_daily_podbor_canonical_20260921/test_contract.py": "31709af6c582055588ba0bea2fcc2db40d2230f7d928f5c1009110b96881cbf7"
+  },
+  "production_write": false,
+  "protected_snapshot": {
+    "crm.db": {
+      "access": "NOT_OPENED",
+      "write_permitted": false
+    },
+    "media": {
+      "access": "NOT_WRITTEN",
+      "write_permitted": false
+    },
+    "prices": {
+      "access": "NOT_WRITTEN",
+      "write_permitted": false
+    },
+    "stages": {
+      "access": "NOT_WRITTEN",
+      "write_permitted": false
+    },
+    "vehicle_data": {
+      "access": "NOT_WRITTEN",
+      "write_permitted": false
+    }
+  },
+  "rollback_plan_ready": true,
+  "rollback_scope_verified": [
+    "production/video/podbor.html"
+  ],
+  "status": "PASS",
+  "task_id": "SEO-DAILY-PODBOR-CANONICAL-20260921",
+  "tests": "PASS",
+  "unexpected_changes": 0
+}
