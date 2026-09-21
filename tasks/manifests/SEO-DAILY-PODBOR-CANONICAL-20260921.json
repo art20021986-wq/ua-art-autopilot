@@ -1,0 +1,34 @@
+{
+  "backup_required": true,
+  "backup_scope": [
+    "production/video/podbor.html"
+  ],
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "live_verify_required": true,
+  "operations": [
+    {
+      "action": "noop",
+      "path": "production/video/podbor.html",
+      "postcondition": {
+        "body_and_business_content": "byte_preserved_outside_canonical_link",
+        "canonical": "https://www.uaart.com.ua/video/podbor.html",
+        "canonical_count": 1
+      }
+    }
+  ],
+  "production_write": true,
+  "protected_paths": [
+    "crm.db",
+    "production/vehicle-data",
+    "production/prices",
+    "production/media",
+    "production/stages",
+    "production/card-business-logic"
+  ],
+  "rollback_required": true,
+  "rollback_scope": [
+    "production/video/podbor.html"
+  ],
+  "task_class": "CRITICAL",
+  "task_id": "SEO-DAILY-PODBOR-CANONICAL-20260921"
+}
