@@ -5,20 +5,37 @@
   "autostart_ledger_sha256": "6b5ff700077029d0e89f1a131a9eff5d6628ebed008506d334e83ec531a130be",
   "autostart_source_commit": "20dfab5007a99cc5efa4a2bbbd3e0372a25960b1",
   "created_at": "2026-09-21T01:49:07Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "4af19db20ae4891ae3e176aa0f36c3c06b0475279aaaffc6af7c2f1c68359c70",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-21T01:49:07Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-09-21T01:50:07Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "35552076762",
     "task_id": "SEO-DAILY-PODBOR-CANONICAL-20260921",
     "task_sha256": "d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 160.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-35552076762-d89fd9b950e5c72a",
+  "production_transaction_path": "state/transactions/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-e6603209db939f31-d86ff7db2179ab3a",
   "receipt_path": "state/receipts/SEO-DAILY-PODBOR-CANONICAL-20260921.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +46,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "0bf3b694b084800eda25e7cfca679d05d81abf3f",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 1530.642,
+    "allowed": true,
+    "evidence_path": "state/storage/SEO-DAILY-PODBOR-CANONICAL-20260921.json",
+    "evidence_sha256": "2ffbe7a5fca8811c6bd676df1d39914d624f8959df593cb07a6300e8f53d0f4b",
+    "free_bytes": 29829685248,
+    "heavy": true,
+    "measured_at": "2026-09-21T01:24:34.585346Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 20.625544956752233
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-21T01:49:07Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "247835dac22203ba094a2ef6e998a0c119d96c1361973a4e601771bf9fd5a408",
+    "file_sha256": {
+      "cloud/seo_daily_podbor_canonical_20260921/remote_installer.py": "6d3ea6e4ab11eb69a9a28884b3ea56e2f5b49beb0aad3e8ea0274652e48088be",
+      "cloud/seo_daily_podbor_canonical_20260921/test_contract.py": "f0829e6f9795bb52d2061f64c17d26b1e68b20193d5c22894680b53bfbf0b6d4"
+    }
+  },
+  "updated_at": "2026-09-21T01:50:07Z"
 }
