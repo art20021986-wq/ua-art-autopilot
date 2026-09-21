@@ -1,0 +1,36 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/seo_daily_storage_probe2_20260921/evidence.json"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Bounded storage-gate preparation only: upload one temporary read-only du probe under /home/Carix/uploads, run it through a temporary PythonAnywhere always-on/schedule trigger, read its receipt, then delete trigger/script/receipt. No website, CRM, database, vehicle data, media, WSGI or production application file is modified.",
+  "execution": {
+    "controller_path": "cloud/seo_daily_storage_probe2_20260921/controller.py",
+    "controller_sha256": "0d49bd137262198e55fcca727632ce18730c77d5356cf1bf5aa940ddfda41b80",
+    "dependency_paths": [
+      "cloud/seo_daily_storage_probe2_20260921/remote_probe.py"
+    ],
+    "evidence_paths": [
+      "cloud/seo_daily_storage_probe2_20260921/evidence.json",
+      "state/receipts/SEO-DAILY-STORAGE-PROBE2-20260921.json"
+    ],
+    "file_sha256": {
+      "cloud/seo_daily_storage_probe2_20260921/remote_probe.py": "02099167e19ff35c5ea055e8519a08a52ad2aff2dd4fb483f9a09348673d986d",
+      "cloud/seo_daily_storage_probe2_20260921/test_contract.py": "55d54aa3a663da0b5979cf2e1c5e8ee945a1e6020f6813a032a1f1d469d05b14"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/SEO-DAILY-STORAGE-PROBE2-20260921.json",
+    "test_paths": [
+      "cloud/seo_daily_storage_probe2_20260921/test_contract.py"
+    ],
+    "timeout_seconds": 420
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 0,
+  "task_id": "SEO-DAILY-STORAGE-PROBE2-20260921",
+  "title": "Fresh target-side storage measurement for daily SEO production gate"
+}
