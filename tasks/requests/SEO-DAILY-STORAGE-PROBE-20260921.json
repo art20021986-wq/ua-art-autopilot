@@ -1,0 +1,33 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/seo_daily_storage_probe_20260921/evidence.json"
+  ],
+  "complexity": 1,
+  "control_plane_version": "TASK107-R2",
+  "description": "GET-only authenticated PythonAnywhere Files dashboard quota probe for a fresh production storage measurement. No remote write, upload, task execution, restart, CRM/site/database mutation, or production change.",
+  "execution": {
+    "controller_path": "cloud/seo_daily_storage_probe_20260921/controller.py",
+    "controller_sha256": "fbd4037dd41da633444c85fe518cf3945c3913f5798cbe0de458705057f04b96",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/seo_daily_storage_probe_20260921/evidence.json",
+      "state/receipts/SEO-DAILY-STORAGE-PROBE-20260921.json"
+    ],
+    "file_sha256": {
+      "cloud/seo_daily_storage_probe_20260921/test_contract.py": "872916cd0423637218bf47ab07c7639aa1405777b36d80467584913d2a6f2637"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/SEO-DAILY-STORAGE-PROBE-20260921.json",
+    "test_paths": [
+      "cloud/seo_daily_storage_probe_20260921/test_contract.py"
+    ],
+    "timeout_seconds": 120
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 0,
+  "task_id": "SEO-DAILY-STORAGE-PROBE-20260921",
+  "title": "Fresh read-only storage probe for daily SEO production gate"
+}
