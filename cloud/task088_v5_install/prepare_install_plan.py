@@ -33,6 +33,8 @@ def prepare(engine, *, preflight_report, candidate_root, evidence_directory, out
     root = Path(test_root) if test_root else engine.LIVE_ROOT
     evidence_root = Path(evidence_directory)
     evidence_names = set(engine.EVIDENCE_NAMES) | ({"routing"} if report.get("homepage_policy") else set())
+    if "source_successor" in report:
+        evidence_names.add("source_successor")
     evidence = {name: engine._read(engine._path(evidence_root, name + ".json")) for name in evidence_names}
     request = json.loads(evidence["request"])
     transaction = json.loads(evidence["transaction"])
@@ -53,6 +55,8 @@ def prepare(engine, *, preflight_report, candidate_root, evidence_directory, out
         "evidence_sha256": {name: engine.sha(raw) for name, raw in evidence.items()}}
     if report.get("homepage_policy"):
         plan.update({"homepage_policy": report["homepage_policy"], "routing_evidence_sha256": report["routing_evidence_sha256"]})
+    if "source_successor" in report:
+        plan["source_successor"] = report["source_successor"]
     # Bind actual canonical documents without creating or replacing any of them.
     engine._validate(plan, files, evidence, observed_now, root, testing=test_root is not None)
     output = Path(output_directory)

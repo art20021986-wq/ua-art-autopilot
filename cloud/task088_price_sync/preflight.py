@@ -26,7 +26,7 @@ MODULES = {"uaart_market_prices.py", "uaart_price_sync_outbox.py", "uaart_price_
            "uaart_price_sync_binding.py", "owner_policy.py", "price_publication.py",
            "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py",
            "publication_fence.py", "mutation_recovery.py", "visibility_lifecycle.py"}
-TOOLS = {"preflight.py", "install_package.py", "patch_cars_ui.py", "patch_yadro.py", "patch_stranica.py",
+TOOLS = {"preflight.py", "install_package.py", "source_successor.py", "patch_cars_ui.py", "patch_yadro.py", "patch_stranica.py",
          "patch_catalog_design_guard.py", "patch_stage_catalog_sync.py", "patch_guard.py", "initial_html_prices.py",
          "integrate_private_sources.py", "patch_site_counters.py", "patch_publikaciya.py"}
 SOURCES = {"cars_ui.py", "yadro.py", "stranica.py", "catalog_design_guard.py", "publish_transaction_guard.py",
@@ -372,7 +372,16 @@ def run(output_id, expected_bundle_sha256, *, test_root=None, package_relative=P
         stage2 = bundle.get("stage2_receipt", {})
         if (stage2.get("task_id") != "TASK088-GE-PRICE-CRM-STAGE2" or stage2.get("status") != "FINISHED"
                 or stage2.get("stage2_status") != "PASS" or stage2.get("stage3_allowed") is not True
-                or stage2.get("installed_source_sha256") != before.get("cars_ui.py")):
+                or stage2.get("stage1_prerequisite") != "PASS"):
+            report["blockers"].append("CANONICAL_STAGE2_PREREQUISITE_REQUIRED")
+        if "source_successor" in bundle:
+            from source_successor import SOURCE_SUCCESSOR_BINDING, validate_source_successor
+            if bundle["source_successor"] != SOURCE_SUCCESSOR_BINDING:
+                raise ValueError("EXACT_SOURCE_SUCCESSOR_BINDING_REQUIRED")
+            chain_raw = _read(_safe(package, SOURCE_SUCCESSOR_BINDING["file"]))
+            validate_source_successor(stage2, before.get("cars_ui.py"), chain_raw)
+            report["source_successor"] = dict(SOURCE_SUCCESSOR_BINDING)
+        elif stage2.get("installed_source_sha256") != before.get("cars_ui.py"):
             report["blockers"].append("CANONICAL_STAGE2_PREREQUISITE_REQUIRED")
         report["stage2_receipt_sha256"] = _sha(_json(stage2)) if stage2 else None
         report["blockers"].append("CANONICAL_CONTROL_BRIDGE_GATE_B_AND_ACTIVATION_NOT_RUN")

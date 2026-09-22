@@ -27,7 +27,7 @@ REMOTE_BASE = "/home/Carix/autopilot_inbox/cloud/task088_v5_install/runs"
 MAX_BYTES = 8 * 1024 * 1024
 SCOPE = "STAGE3_INSTALLATION_AND_SOURCE_SCHEMA_HTML_READBACK"
 BINDINGS = ("task_id", "request_sha256", "run_id", "transaction_id", "manifest_sha256")
-REMOTE_FILES = frozenset({"remote_adapter.py", "install_package.py", "uaart_market_prices.py",
+REMOTE_FILES = frozenset({"remote_adapter.py", "install_package.py", "source_successor.py", "uaart_market_prices.py",
     "uaart_price_sync_outbox.py", "uaart_price_sync_runtime.py", "uaart_price_sync_binding.py",
     "uaart_price_sync_confirmation.py", "uaart_price_control_reader.py", "owner_policy.py", "price_publication.py",
     "publication_fence.py", "mutation_recovery.py", "visibility_lifecycle.py"})
@@ -154,6 +154,8 @@ def required(environment, operation, *, root=ROOT, package=PACKAGE):
     claim_path, transaction_path = "state/claims/" + identity_suffix, "state/transactions/" + identity_suffix
     evidence_paths = deployment.get("evidence_paths", {})
     expected_evidence = {"gate_b", "quota", "writers", "preview_gate"} | ({"routing"} if blueprint.get("homepage_policy") else set())
+    if "source_successor" in blueprint:
+        expected_evidence.add("source_successor")
     if set(evidence_paths) != expected_evidence:
         raise ControllerError("REAL_CANONICAL_EVIDENCE_PATHS_REQUIRED")
     mapped = {"request": values["UAART_REQUEST_PATH"], "manifest": critical["manifest_path"],

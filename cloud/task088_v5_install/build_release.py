@@ -22,6 +22,7 @@ def sources():
     policy = ROOT / "cloud/task088_autopilot_owner_policy"
     result = {name: HERE / name for name in ("controller.py", "backup_controller.py", "rollback_controller.py", "remote_adapter.py", "test_adapter.py", "test_operation_recovery.py")}
     result.update({"install_package.py": sync / "install_package.py",
+        "source_successor.py": sync / "source_successor.py",
         "test_install_package.py": sync / "test_install_package.py",
         "uaart_price_sync_outbox.py": sync / "outbox.py", "outbox.py": sync / "outbox.py",
         "uaart_market_prices.py": renderer / "uaart_market_prices.py"})

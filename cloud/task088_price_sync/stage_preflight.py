@@ -19,12 +19,18 @@ CATALOG_RECONCILIATION = {
     'observer_file': 'catalog_reconciliation_observer_20260922.json',
     'observer_sha256': '07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454',
 }
+SOURCE_SUCCESSOR_BINDING = {
+    'contract': 'TASK088-CANONICAL-SOURCE-SUCCESSOR-1',
+    'file': 'source_successor_20260920.json',
+    'sha256': '3c8fe00c8f0ca37bd98d159f7c5acc8eb3bed5ebbd3f10d9af59841a286fd63d',
+    'canonical_commit': 'd6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb',
+}
 
 
 def package_mapping(*, catalog_reconciliation=False):
     """Exact public paths accepted by the hash-bound staging route."""
     mapping = {}
-    for name in ('preflight.py', 'install_package.py', 'patch_cars_ui.py', 'patch_guard.py', 'patch_site_counters.py', 'patch_publikaciya.py',
+    for name in ('preflight.py', 'install_package.py', 'source_successor.py', 'patch_cars_ui.py', 'patch_guard.py', 'patch_site_counters.py', 'patch_publikaciya.py',
                  'uaart_price_sync_runtime.py', 'uaart_price_sync_binding.py', 'uaart_price_sync_confirmation.py',
                  'uaart_price_control_reader.py'):
         mapping[name] = 'cloud/task088_price_sync/' + name
@@ -87,6 +93,16 @@ def main():
         if hashlib.sha256(data).hexdigest() != binding['observer_sha256']:
             raise ValueError('CATALOG_RECONCILIATION_OBSERVER_HASH_MISMATCH')
         payload[binding['observer_file']] = data
+    if 'source_successor' in bundle:
+        # Compare the complete fixed binding; paths from the bundle are never
+        # trusted as arbitrary download/write targets.
+        successor = bundle['source_successor']
+        if successor != SOURCE_SUCCESSOR_BINDING:
+            raise ValueError('EXACT_SOURCE_SUCCESSOR_BINDING_REQUIRED')
+        data = read('cloud/task088_price_sync/' + SOURCE_SUCCESSOR_BINDING['file'])
+        if hashlib.sha256(data).hexdigest() != SOURCE_SUCCESSOR_BINDING['sha256']:
+            raise ValueError('SOURCE_SUCCESSOR_CHAIN_HASH_MISMATCH')
+        payload[SOURCE_SUCCESSOR_BINDING['file']] = data
     DEST.mkdir(mode=0o700)
     for name, data in sorted(payload.items()):
         fd = os.open(DEST / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)

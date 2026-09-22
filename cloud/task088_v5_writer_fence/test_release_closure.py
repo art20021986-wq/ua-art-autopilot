@@ -58,10 +58,12 @@ class ReleaseClosureTests(unittest.TestCase):
         self.assertTrue(NEW_SOURCES <= engine.SOURCES)
         self.assertTrue(NEW_MODULES <= engine.MODULES)
         self.assertTrue(NEW_DEPENDENCIES <= engine.DEPENDENCIES)
-        self.assertEqual(controller.REMOTE_FILES, engine.MODULES | {"remote_adapter.py", "install_package.py"})
+        self.assertEqual(controller.REMOTE_FILES, engine.MODULES | {"remote_adapter.py", "install_package.py", "source_successor.py"})
         mapping = build_preflight_bundle.package_mapping(ROOT)
         self.assertEqual(set(mapping), preflight.MODULES | preflight.TOOLS)
         self.assertIn("integrate_private_sources.py", mapping)
+        self.assertIn("source_successor.py", mapping)
+        self.assertEqual(mapping["source_successor.py"].read_bytes(), release.sources()["source_successor.py"].read_bytes())
         self.assertTrue(engine.MODULES <= set(release.sources()))
         for name in engine.MODULES:
             self.assertEqual(hashlib.sha256(mapping[name].read_bytes()).digest(),

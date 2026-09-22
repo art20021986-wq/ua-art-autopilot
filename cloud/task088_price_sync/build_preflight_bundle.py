@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import zipfile
+from source_successor import SOURCE_SUCCESSOR_BINDING, validate_source_successor
 
 CATALOG_RECONCILIATION = {
     "contract": "PR114-EXACT-CATALOG-RECONCILIATION-INPUT-1",
@@ -30,7 +31,7 @@ def package_mapping(repository, *, catalog_reconciliation=False):
     mapping = {"uaart_market_prices.py": renderer / "uaart_market_prices.py",
         "uaart_price_sync_outbox.py": sync / "outbox.py"}
     for name in ("uaart_price_sync_runtime.py", "uaart_price_sync_binding.py", "uaart_price_sync_confirmation.py",
-                 "uaart_price_control_reader.py", "preflight.py", "install_package.py", "patch_cars_ui.py", "patch_guard.py", "patch_site_counters.py", "patch_publikaciya.py"):
+                 "uaart_price_control_reader.py", "preflight.py", "install_package.py", "source_successor.py", "patch_cars_ui.py", "patch_guard.py", "patch_site_counters.py", "patch_publikaciya.py"):
         mapping[name] = sync / name
     for name in ("patch_yadro.py", "patch_stranica.py", "patch_catalog_design_guard.py",
                  "patch_stage_catalog_sync.py", "initial_html_prices.py"):
@@ -45,7 +46,7 @@ def package_mapping(repository, *, catalog_reconciliation=False):
 
 
 def build(repository, *, observation, stage2_receipt, output_directory, routing_evidence=None,
-          catalog_reconciliation_observer=None):
+          catalog_reconciliation_observer=None, source_successor_chain=None):
     repository = Path(repository).resolve()
     observed_raw = Path(observation).read_bytes()
     observed = json.loads(observed_raw)
@@ -68,8 +69,13 @@ def build(repository, *, observation, stage2_receipt, output_directory, routing_
     stage2 = json.loads(stage2_bytes)
     if (stage2.get("task_id") != "TASK088-GE-PRICE-CRM-STAGE2" or stage2.get("status") != "FINISHED"
             or stage2.get("stage1_prerequisite") != "PASS" or stage2.get("stage2_status") != "PASS"
-            or stage2.get("stage3_allowed") is not True
-            or stage2.get("installed_source_sha256") != observed["source_sha256"]["cars_ui.py"]):
+            or stage2.get("stage3_allowed") is not True):
+        raise ValueError("EXACT_STAGE1_STAGE2_PREREQUISITES_REQUIRED")
+    successor_bytes = None
+    if source_successor_chain is not None:
+        successor_bytes = Path(source_successor_chain).read_bytes()
+        validate_source_successor(stage2, observed["source_sha256"]["cars_ui.py"], successor_bytes)
+    elif stage2.get("installed_source_sha256") != observed["source_sha256"]["cars_ui.py"]:
         raise ValueError("EXACT_STAGE1_STAGE2_PREREQUISITES_REQUIRED")
     bundle = {"contract": "TASK088-PRICE-SYNC-READONLY-PREFLIGHT-5",
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -82,6 +88,9 @@ def build(repository, *, observation, stage2_receipt, output_directory, routing_
         "quota_evidence": observed["quota_evidence"], "stage2_receipt": stage2,
         "canonical_stage2_raw_file_sha256": sha(stage2_bytes),
         "authority_status": "READONLY_PREFLIGHT_NOT_A_PRODUCTION_GATE"}
+    if successor_bytes is not None:
+        bundle["source_successor"] = dict(SOURCE_SUCCESSOR_BINDING)
+        files[SOURCE_SUCCESSOR_BINDING["file"]] = successor_bytes
     if catalog_reconciliation_observer is not None:
         observer_bytes = Path(catalog_reconciliation_observer).read_bytes()
         if sha(observer_bytes) != CATALOG_RECONCILIATION["observer_sha256"]:
@@ -126,7 +135,9 @@ if __name__ == "__main__":
     parser.add_argument("--output-directory", required=True)
     parser.add_argument("--routing-evidence")
     parser.add_argument("--catalog-reconciliation-observer")
+    parser.add_argument("--source-successor-chain")
     args = parser.parse_args()
     build(args.repository, observation=args.observation,
           stage2_receipt=args.stage2_receipt, output_directory=args.output_directory, routing_evidence=args.routing_evidence,
-          catalog_reconciliation_observer=args.catalog_reconciliation_observer)
+          catalog_reconciliation_observer=args.catalog_reconciliation_observer,
+          source_successor_chain=args.source_successor_chain)
