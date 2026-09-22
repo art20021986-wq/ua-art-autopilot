@@ -1,0 +1,7 @@
+
+# UA-ART-PUBLIC-PRICES-V1: preserve every existing route.
+import sys as _ua_prices_sys
+if '/home/Carix' not in _ua_prices_sys.path:
+    _ua_prices_sys.path.insert(0, '/home/Carix')
+from uaart_public_prices_v1 import wrap as _ua_prices_wrap
+application = _ua_prices_wrap(application)
