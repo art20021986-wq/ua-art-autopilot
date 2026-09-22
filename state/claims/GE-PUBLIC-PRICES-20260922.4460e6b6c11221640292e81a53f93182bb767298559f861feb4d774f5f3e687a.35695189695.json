@@ -5,20 +5,37 @@
   "autostart_ledger_sha256": "da9038fd8a8115b13514d1eded7aaa99814c044f26d6ff68979cf26817753769",
   "autostart_source_commit": "f0f9789945350c673ec2cb17268d6e3f00b9eda3",
   "created_at": "2026-09-22T06:31:53Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "42db68bb17d48d5464985105d561bc7479351505c5a21b83a1ac38512f38c798",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-22T06:31:53Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-09-22T06:32:54Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "35695189695",
     "task_id": "GE-PUBLIC-PRICES-20260922",
     "task_sha256": "4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 105.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-35695189695-4460e6b6c1122164",
+  "production_transaction_path": "state/transactions/GE-PUBLIC-PRICES-20260922.4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a.35695189695.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-f4cb5230e23068d2-43bbedd73c553d26",
   "receipt_path": "state/receipts/GE-PUBLIC-PRICES-20260922.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +46,30 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "679a1e695d069c4a1bd861559991ee7b95dfb517",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 600.603,
+    "allowed": true,
+    "evidence_path": "state/storage/GE-PUBLIC-PRICES-20260922.json",
+    "evidence_sha256": "f608fd19c117f1632d7ca07cdac28ac5d6d458564c18f753d549f95956eaeafb",
+    "free_bytes": 29801730048,
+    "heavy": true,
+    "measured_at": "2026-09-22T06:22:51.294867Z",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 20.69993155343192
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-22T06:31:53Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "44267892ccd8102b327bb4d4343fc3e9b7126ee3184c20d7000eda8544a047a7",
+    "file_sha256": {
+      "cloud/ge_public_prices_20260922/remote_installer.py": "166ad792f3cb541bd75ac70c11c088717a127a45b7e9049ac70f9326652ffb47",
+      "cloud/ge_public_prices_20260922/test_contract.py": "0880c0dc8c31043a2cfafe01e2dd8595831ece57e734616a8533260634e6bf42",
+      "cloud/ge_public_prices_20260922/uaart_public_prices_v1.py": "002a973f83e54f51d8747e58270250e40b4f672bf1c872690f4bd34c8722ed3c",
+      "cloud/ge_public_prices_20260922/uaart_public_renderer_v1.py": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed"
+    }
+  },
+  "updated_at": "2026-09-22T06:32:54Z"
 }
