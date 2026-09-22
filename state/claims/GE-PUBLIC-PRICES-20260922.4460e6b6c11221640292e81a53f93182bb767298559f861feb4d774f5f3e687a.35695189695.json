@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "42db68bb17d48d5464985105d561bc7479351505c5a21b83a1ac38512f38c798",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-22T06:37:28Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 35695189695",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "a6abbfb0a03a866f"
+    }
+  ],
   "heartbeat_at": "2026-09-22T06:35:04Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -61,7 +72,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "44267892ccd8102b327bb4d4343fc3e9b7126ee3184c20d7000eda8544a047a7",
     "file_sha256": {
@@ -71,5 +82,5 @@
       "cloud/ge_public_prices_20260922/uaart_public_renderer_v1.py": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed"
     }
   },
-  "updated_at": "2026-09-22T06:36:59Z"
+  "updated_at": "2026-09-22T06:37:28Z"
 }
