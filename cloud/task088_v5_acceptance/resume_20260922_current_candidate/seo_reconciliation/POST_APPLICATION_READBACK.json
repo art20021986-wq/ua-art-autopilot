@@ -1,0 +1,164 @@
+{
+  "active_halt_absent_proved_by_complete_tree": true,
+  "all_transactions": [
+    {
+      "git_blob": "e92a3924463a69ee9a6ea920fa9d580c5dafa321",
+      "path": "state/transactions/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json",
+      "run_id": "35552076762",
+      "status": "ROLLED_BACK",
+      "task_id": "SEO-DAILY-PODBOR-CANONICAL-20260921"
+    },
+    {
+      "git_blob": "3669e62e69b33e4cb528026fae74ecec9e4925fb",
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+      "run_id": "34608152298",
+      "status": "ROLLED_BACK",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    },
+    {
+      "git_blob": "6e57b1e7deb33e97c5fc67186d6e32480e06fd76",
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.34625768264.json",
+      "run_id": "34625768264",
+      "status": "FINISHED",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    },
+    {
+      "git_blob": "fedb02442400a87ba009117f66ef035b4de3730d",
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
+      "run_id": "34734575941",
+      "status": "FINISHED",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL"
+    },
+    {
+      "git_blob": "773f24003e84d0f73b45549d9c372c8dd2fa090f",
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+      "run_id": "33942536609",
+      "status": "ROLLED_BACK",
+      "task_id": "TASK115-REMOVE-VIN-ADS"
+    },
+    {
+      "git_blob": "2da59f669a85cabdc2f31b13b8d22504a33fb407",
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+      "run_id": "33945882409",
+      "status": "FINISHED",
+      "task_id": "TASK115-REMOVE-VIN-ADS"
+    },
+    {
+      "git_blob": "922a7d8a5b2b49b2a2992f03733652517ea78755",
+      "path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+      "run_id": "34107568301",
+      "status": "FINISHED",
+      "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS"
+    },
+    {
+      "git_blob": "927d1059e48836d08691c19c1510c1be17d088e9",
+      "path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+      "run_id": "34117903252",
+      "status": "FINISHED",
+      "task_id": "TASK118-EMERGENCY-SITE-RECOVERY"
+    },
+    {
+      "git_blob": "295b395ed49e885c30a63aea70e32c5ccbf4da36",
+      "path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+      "run_id": "34119998399",
+      "status": "FINISHED",
+      "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2"
+    },
+    {
+      "git_blob": "47237c2abaf7ad1a186b7264938b675d86a44a92",
+      "path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+      "run_id": "34134692609",
+      "status": "ROLLED_BACK",
+      "task_id": "TASK120-PUBLISH-UA-0017-UA-0018"
+    },
+    {
+      "git_blob": "19cb2cff102b5ec960e8e86dd7025f827c91197d",
+      "path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-002.b4abcd039f34d09fda2ef0c06709bffbe9baf908450b56c948b6ec1df2b794c5.35489521032.json",
+      "run_id": "35489521032",
+      "status": "ROLLED_BACK",
+      "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-002"
+    },
+    {
+      "git_blob": "1d3e10325599c7b789601d721888607895b5a461",
+      "path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
+      "run_id": "35490449348",
+      "status": "FINISHED",
+      "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003"
+    }
+  ],
+  "anti_replay_approvals_workflows_mode_runtime_manifest_unchanged": true,
+  "application_server_writes_by_this_review": false,
+  "archived_halt_exact_original_bytes": true,
+  "contract": "SEO-35552076762-INDEPENDENT-POST-APPLICATION-READBACK-1",
+  "exact_changed_paths": [
+    "state/AUTOPILOT_HALT.json",
+    "state/claims/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json",
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/claim.before.json",
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/halt.json",
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/receipt.json",
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/transaction.before.json",
+    "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.aborted-before-production.json",
+    "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.authenticated-evidence.json",
+    "state/transactions/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json"
+  ],
+  "file_readback": {
+    "state/claims/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json": {
+      "exact_proposed_bytes": true,
+      "git_blob": "763f50eb73d4cfea65e7419ca27425c89fb10b8b",
+      "sha256": "77581960ca0953a779ee589f278db1ea1546c86271d8409c4a0c2ded46c103cc"
+    },
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/claim.before.json": {
+      "exact_proposed_bytes": true,
+      "git_blob": "14295915beec3c65ea27f50eca489022e58912cb",
+      "sha256": "59f12a568c9132085f59284a85f1df93401444161f187307fc73b6f34a98dd1e"
+    },
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/halt.json": {
+      "exact_proposed_bytes": true,
+      "git_blob": "fd4f2591aa99533c4b62211af6f36ecfd460e539",
+      "sha256": "81114d5160ed5223ded65bcb1f29ea6c44ade21bc587d16f5db13db3935cade5"
+    },
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/receipt.json": {
+      "exact_proposed_bytes": true,
+      "git_blob": "4d175ddcbcd4f72987d0bacc0478fe64de00d24a",
+      "sha256": "65319fbea19fb8ac2a2a138c871040d163946ffe0a3f33071f6eb64ef92936a8"
+    },
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/transaction.before.json": {
+      "exact_proposed_bytes": true,
+      "git_blob": "1d11fe25ac6ed0b42367693d47f68217589e7b5d",
+      "sha256": "2d197318d5cf77a11382c3fa56e3036e5b44a4c1fd78a12cb5e16da78b3cf46d"
+    },
+    "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.aborted-before-production.json": {
+      "exact_proposed_bytes": true,
+      "git_blob": "bc569b57a9a3986e10da29629bb22e87c8a07a7f",
+      "sha256": "b462492e4a453b23e5166146a12c283dc4ad9f6874681c9b18bfcbca75df8985"
+    },
+    "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.authenticated-evidence.json": {
+      "exact_proposed_bytes": true,
+      "git_blob": "1eea7ccc26b4f086cf9eae8658b040e734250db2",
+      "sha256": "894548c46299c86ee854f4a47608621170405485933c3d19a1144e9f3585094b"
+    },
+    "state/transactions/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json": {
+      "exact_proposed_bytes": true,
+      "git_blob": "e92a3924463a69ee9a6ea920fa9d580c5dafa321",
+      "sha256": "a9cb2f24c78dcf1670f455a2d63b6e09f04a59361d49a0b9623a76e1103c79f5"
+    }
+  },
+  "github_writes_by_this_review": false,
+  "local_state_validation_sha256": "f28b5fc9d8780524c453c318bfaa9c35a48d42b56224fa395017654ea029e590",
+  "main_commit": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
+  "new_commit_workflow_runs": 0,
+  "normal_pinned_validator_result": "PASS carried from full local proposed state whose exact changes and all inherited blobs match actual committed tree",
+  "observed_at_utc": "2026-09-22T03:26:22.680Z",
+  "old_run_replayed": false,
+  "original_run_attempt": 1,
+  "parent_commit": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "pending_transaction_count": 0,
+  "plan_sha256": "489da7b99d25f0b988601a369f4154a1b277e2e7d6de8e260b9b8cd49d3a5f23",
+  "production_prices_published_claimed": false,
+  "raw_readback_sha256": "b1643c5b5175f691e7086b0707dad2f8032b35f496b4fa5ed29de401b5aa5823",
+  "reviewed_at_utc": "2026-09-22T03:27:21.736830+00:00",
+  "stage3_complete_claimed": false,
+  "status": "PASS_ACTUAL_GITHUB_RECOVERY_READBACK",
+  "unchanged_protected_blob_count": 152,
+  "unexpected_changed_paths": []
+}
