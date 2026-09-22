@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GE-PUBLIC-PRICES-20260922.4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a.json",
+  "autostart_ledger_sha256": "da9038fd8a8115b13514d1eded7aaa99814c044f26d6ff68979cf26817753769",
+  "autostart_source_commit": "f0f9789945350c673ec2cb17268d6e3f00b9eda3",
+  "created_at": "2026-09-22T06:31:53Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "35695189695",
+    "task_id": "GE-PUBLIC-PRICES-20260922",
+    "task_sha256": "4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-f4cb5230e23068d2-43bbedd73c553d26",
+  "request_path": "tasks/requests/GE-PUBLIC-PRICES-20260922.json",
+  "resource_locks": [
+    "PATH_SCOPE:f4cb5230e23068d2"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
