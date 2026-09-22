@@ -19,9 +19,8 @@
       "signature": "a6abbfb0a03a866f"
     }
   ],
-  "finished_at": "2026-09-22T06:48:08.490995+00:00",
-  "heartbeat_at": "2026-09-22T06:48:08.490995+00:00",
-  "heartbeat_sequence": 8,
+  "heartbeat_at": "2026-09-22T06:35:04Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "35695189695",
     "task_id": "GE-PUBLIC-PRICES-20260922",
@@ -29,20 +28,7 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health": {
-    "checked_at": "2026-09-22T06:46:52.251761+00:00",
-    "checks": [
-      {
-        "final_url": "https://www.uaart.com.ua/video/katalog.html",
-        "http_status": 200,
-        "latency_ms": 11317.8,
-        "status": "PASS",
-        "url": "https://www.uaart.com.ua/video/katalog.html"
-      }
-    ],
-    "status": "PASS"
-  },
-  "post_health_status": "PASS",
+  "post_health_status": "REQUIRED",
   "pre_health": {
     "checks": [
       {
@@ -60,12 +46,10 @@
   "production_required": true,
   "production_transaction_id": "tx-35695189695-4460e6b6c1122164",
   "production_transaction_path": "state/transactions/GE-PUBLIC-PRICES-20260922.4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a.35695189695.json",
-  "production_transaction_status": "FINISHED",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "path_scope-f4cb5230e23068d2-43bbedd73c553d26",
   "receipt_path": "state/receipts/GE-PUBLIC-PRICES-20260922.json",
-  "receipt_sha256": "2b59f3a3ec3850d4a1be665270b10386a9ea49cd7c4478efce64faf925141f53",
-  "receipt_validation_status": "PASS",
-  "reconciliation_path": "state/reconciliations/GE-PUBLIC-PRICES-20260922.35695189695.forward-reconciliation.json",
+  "receipt_validation_status": "PENDING",
   "request_path": "tasks/requests/GE-PUBLIC-PRICES-20260922.json",
   "request_sha256": "4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a",
   "resource_locks": [
@@ -88,7 +72,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "FINISHED",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "44267892ccd8102b327bb4d4343fc3e9b7126ee3184c20d7000eda8544a047a7",
     "file_sha256": {
@@ -98,5 +82,5 @@
       "cloud/ge_public_prices_20260922/uaart_public_renderer_v1.py": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed"
     }
   },
-  "updated_at": "2026-09-22T06:48:08.490995+00:00"
+  "updated_at": "2026-09-22T06:37:28Z"
 }

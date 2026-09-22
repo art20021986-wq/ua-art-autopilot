@@ -3,17 +3,15 @@
   "backup_manifest_sha256": "c411f6e1f443314a95df4dfa787ed3c06380339d58523844fc405d126dd4b00c",
   "backup_receipt_path": "state/receipts/GE-PUBLIC-PRICES-20260922-BACKUP.json",
   "backup_receipt_sha256": "c7738e3c39f4a940c0fb26998ff180082ab28de5f89bf5a656652b59eec38f3e",
-  "closed_at": "2026-09-22T06:48:08.490995+00:00",
   "expires_at": "2026-09-22T07:59:48Z",
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "opened_at": "2026-09-22T06:35:04Z",
   "prepared_at": "2026-09-22T06:32:54Z",
-  "reconciliation_path": "state/reconciliations/GE-PUBLIC-PRICES-20260922.35695189695.forward-reconciliation.json",
   "request_path": "tasks/requests/GE-PUBLIC-PRICES-20260922.json",
   "request_sha256": "4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a",
   "run_id": "35695189695",
   "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
-  "status": "FINISHED",
+  "status": "ROLLING_BACK",
   "task_id": "GE-PUBLIC-PRICES-20260922",
   "transaction_id": "tx-35695189695-4460e6b6c1122164"
 }

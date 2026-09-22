@@ -1,0 +1,39 @@
+{
+  "backup": "PASS",
+  "backup_manifest_sha256": "c411f6e1f443314a95df4dfa787ed3c06380339d58523844fc405d126dd4b00c",
+  "browser_acceptance": "PENDING_CACHE_REFRESH_VERIFICATION",
+  "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+  "crm_unchanged": true,
+  "live": {
+    "javascript_sha256": "f3cfcd38b3874e10905c20162b992ffd04afe0294999db9bfa4624cddfb1d645",
+    "page_sha256": {
+      "UA-0007.html": "1f1628f89a79d5876a9d459dec713cb413c687bf42ec0a958f2fd36929ec38dc",
+      "UA-0010.html": "33714f62c5cd1b7f7bea9037032ff03572e9be06cbd348f73f69ef23c3eea274",
+      "katalog.html": "279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01"
+    },
+    "prices_sha256": "619e88a911ec81b05669f961003311e8dac565e85b73b7b5c89875bf5ed795ad",
+    "published_count": 21
+  },
+  "live_verify": "PASS",
+  "live_verify_scope": "TARGET_FILE_READBACK_AND_PUBLIC_HTTP_ENDPOINT_AND_JAVASCRIPT",
+  "manifest_sha256": "08828aa80f5b511a33386541b182cf41d898c0b63e5cf8ceb8bb844e45ef28d1",
+  "persistence": "MANUAL_FORWARD_RECONCILIATION",
+  "production": "PASS",
+  "production_required": true,
+  "production_touched": true,
+  "protected_files_unchanged": true,
+  "reconciled_at": "2026-09-22T06:48:08.490995+00:00",
+  "reconciliation_evidence_path": "state/reconciliations/GE-PUBLIC-PRICES-20260922.35695189695.forward-reconciliation.json",
+  "request_sha256": "4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a",
+  "rollback": "PASS",
+  "rollback_ready": true,
+  "rollback_scope": "BACKUP_AND_RESTORE_READINESS_TESTED; ACTUAL_ROLLBACK_NOT_PERFORMED",
+  "run_id": "35695189695",
+  "status": "FINISHED",
+  "target_environment": "production",
+  "task_class": "CRITICAL",
+  "task_id": "GE-PUBLIC-PRICES-20260922",
+  "tests": "PASS",
+  "transaction_id": "tx-35695189695-4460e6b6c1122164",
+  "unexpected_changes": 0
+}

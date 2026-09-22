@@ -1,0 +1,41 @@
+{
+  "artifact_id": 10679729994,
+  "artifact_zip_sha256": "8493eccd223ead8be47cbd1a50fc21a4cd07f3ac6c0e951003e1d550540aeb0a",
+  "automatic_rollback_retried": false,
+  "browser_acceptance": "PENDING_CACHE_REFRESH_VERIFICATION",
+  "decision": "ACCEPT_VERIFIED_INSTALLED_PRICE_TRANSPORT",
+  "halt_archived": "state/halt_history/GE-PUBLIC-PRICES-20260922.35695189695/halt.json",
+  "halt_removed": true,
+  "installed_files_match_approved_afterimages": true,
+  "original_envelope_sha256": "f75436b8a2915e536a8b6d3275a973a5435e45cf9b1720e3bc89eab91bf584fe",
+  "original_request_approval_nonce_ledger_unchanged": true,
+  "original_workflow_conclusion": "FAILURE_PRESERVED",
+  "owner_instruction": "Устрани проблемы и закрой вопрос",
+  "post_health": {
+    "checked_at": "2026-09-22T06:46:52.251761+00:00",
+    "checks": [
+      {
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 11317.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "reconciled_at": "2026-09-22T06:48:08.490995+00:00",
+  "request_sha256": "4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a",
+  "rollback_performed": false,
+  "root_cause": "Controller receipt omitted request_sha256 and run_id; both copied from authenticated same-run artifact envelope, all other original receipt assertions retained. Automatic rollback stopped before execution because pinned recovery checkout omitted the existing nonce reservation.",
+  "run_id": "35695189695",
+  "runtime_workflows_and_gates_unchanged": true,
+  "schema_version": "UA-ART-MANUAL-FORWARD-RECONCILIATION-1",
+  "scope": "REPOSITORY_STATE_RECONCILIATION_ONLY",
+  "server_backup_manifest_sha256": "c411f6e1f443314a95df4dfa787ed3c06380339d58523844fc405d126dd4b00c",
+  "server_readback_observed_at": "2026-09-22T06:47:00Z",
+  "task_id": "GE-PUBLIC-PRICES-20260922",
+  "transaction_after": "FINISHED",
+  "transaction_before": "ROLLING_BACK",
+  "transaction_id": "tx-35695189695-4460e6b6c1122164"
+}

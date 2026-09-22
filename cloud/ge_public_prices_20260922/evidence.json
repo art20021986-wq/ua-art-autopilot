@@ -1,0 +1,29 @@
+{
+  "business_writes": false,
+  "install": {
+    "after_sha256": {
+      "/home/Carix/uaart_public_prices_v1.py": "002a973f83e54f51d8747e58270250e40b4f672bf1c872690f4bd34c8722ed3c",
+      "/home/Carix/uaart_public_renderer_v1.py": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+      "/home/Carix/video/ua-site-languages.js": "f3cfcd38b3874e10905c20162b992ffd04afe0294999db9bfa4624cddfb1d645",
+      "/var/www/www_uaart_com_ua_wsgi.py": "fc2d1d5b58b34d2dae2d2faf011a9cc7cf45d7940df0f58cc25bbaf3e7293c25"
+    },
+    "backup_manifest_sha256": "c411f6e1f443314a95df4dfa787ed3c06380339d58523844fc405d126dd4b00c",
+    "mode": "install",
+    "production_write": true,
+    "status": "PASS",
+    "task_id": "GE-PUBLIC-PRICES-20260922",
+    "unexpected_changes": 0
+  },
+  "live": {
+    "javascript_sha256": "f3cfcd38b3874e10905c20162b992ffd04afe0294999db9bfa4624cddfb1d645",
+    "page_sha256": {
+      "UA-0007.html": "1f1628f89a79d5876a9d459dec713cb413c687bf42ec0a958f2fd36929ec38dc",
+      "UA-0010.html": "33714f62c5cd1b7f7bea9037032ff03572e9be06cbd348f73f69ef23c3eea274",
+      "katalog.html": "279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01"
+    },
+    "prices_sha256": "619e88a911ec81b05669f961003311e8dac565e85b73b7b5c89875bf5ed795ad",
+    "published_count": 21
+  },
+  "status": "PASS",
+  "task_id": "GE-PUBLIC-PRICES-20260922"
+}
