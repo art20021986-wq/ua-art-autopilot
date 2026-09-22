@@ -78,10 +78,10 @@
     "Set up protected server reader credential only when required, using hidden-input receiver; never ask for a secret in chat. Finish live UA/GE synchronization, recovery, Stage4 receipt and final20/20 gate."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/INDEPENDENT_REVIEW.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260922/CHECKPOINT.json",
   "next_action": {
-    "kind": "UA0022_FORWARD_RECONCILIATION_REBUILD",
-    "detail": "Reacquire exact raw blobs from pinned main, regenerate the full data-only candidate, hash-bind fresh health and actual install evidence, require exact public match keys plus healthy/exit-0/freshness, add immutable-main and negative tests, then obtain a new independent review. No main/HALT/runtime write before PASS."
+    "kind": "WAIT_MANUAL_TRANSFER_BROWSER_SECURITY_POLICY",
+    "detail": "Current owner-authorized attempt was blocked by browser URL security policy at setFiles. No workaround. The exact independently reviewed dynamic observer is saved under resume_20260922; owner/manual operator must deliver it through normal Files UI. Verify target SHA and unique output before one bounded capture. Old22-car static package cannot be published over current21-car data."
   },
   "observed_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
   "observed_pr_head_before_this_update": "47fc6cf4c1f33a122c5dcb34aff595b7bcaeeb9c",
@@ -121,7 +121,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-20T10:13:38Z",
+  "recorded_at": "2026-09-22T02:48:29.190Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -318,5 +318,17 @@
     "hold_reason": "Public availability is healthy, but independent review blocked the UA0022 control-plane candidate: exact main-byte mismatch and fail-open live gate. Main remains ROLLING_BACK under EMERGENCY_HALT.",
     "owner_authorized_recovery": true,
     "canonical_safety_gates_still_required": true
+  },
+  "previous_checkpoint_before_20260922": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/INDEPENDENT_REVIEW.json",
+  "resume_20260922": {
+    "checkpoint": "cloud/task088_v5_acceptance/resume_20260922/CHECKPOINT.json",
+    "prepared_commit": "8b7e9727ca5bac06940656fee402ed39b8fda3d1",
+    "observed_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+    "published_database_rows": 21,
+    "source_sha256": "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d",
+    "status": "BLOCKED_MANUAL_DELIVERY_REQUIRED",
+    "production_write": false,
+    "remote_observer_execution": false,
+    "scope": "Live readonly DB/UI observations and isolated local preparation only"
   }
 }
