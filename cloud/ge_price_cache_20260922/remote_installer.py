@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""Exact, bounded four-file deployment; no CRM writes or bot changes."""
+import base64, datetime as dt, hashlib, json, os, pathlib, re, subprocess, sys, tempfile
+TASK_ID = 'GE-PRICE-CACHE-20260922'
+BACKUP_ROOT = pathlib.Path('/home/Carix/archive/backups/'+TASK_ID)
+RECEIPT = pathlib.Path('/home/Carix/uploads/ge_price_cache_20260922.json')
+# Generated package: source bytes, before hashes and after hashes.
+PAYLOAD = {'/home/Carix/video/katalog.html': {'before': '279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01', 'after': 'e59f826cb73eced51ce6015f62a85b93149fcb5633aef69034a1cb42e163fbcd', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0001.html': {'before': '172a5c941591fbf554db1d19f1d0e35bb77fb79004d34766ee0ae361ab05c569', 'after': 'e7ee86377f88b9fe20253085f527fcb775fbf1aa4dbfed99d318099f1b119ca6', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0003.html': {'before': 'c1b1443402a7f5ca8f546d4a307bcc24ecec215a0c43baac30cc031ff08b8076', 'after': '117680ca8fc1bb7d8613861308615303a6926bb121334fa1e9874c9fcb86575c', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0004.html': {'before': '186c3e253ff080088c145b2ef09997d55284473078a9f0a196b56b3c72f746c1', 'after': '5f1d8696ecff588d9f5d5413dbb75022518a7c8515dfead7145cf26299b5b415', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0005.html': {'before': 'd1e4d530362f12fa64a82ff004a43de05b350d8d4eb8dba9ab3c45d11c3031cd', 'after': '81334781ef6fe1ce9235288c2377f0b215d5891f6886e266168ceb93eedf81a1', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0006.html': {'before': '5dbf51f124363b71c68c4f76daeefd9f00860420a12cdf0576e2a6f4c451318c', 'after': '265342c71bf03c86ab7681e04d7816fa97e0c6da1f4d5ee6c150b531d2db4a9f', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0007.html': {'before': '1f1628f89a79d5876a9d459dec713cb413c687bf42ec0a958f2fd36929ec38dc', 'after': '944c9f2d2ab91325d6783ac27685c22a66dc131f79e2d00b1e8454b2b1c89297', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0008.html': {'before': 'f0d4be30cf5648438e3287d5a32a854e6f932d88ead927dabb37adcafc3adcc3', 'after': '1379e51e7a36e75e469811aee47201301396e3b6cc5a855c49938846c62da80f', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0009.html': {'before': '820aa54be1f448a921771c4ec2b548a7f1bdf6ad6dd2a12334359f181e9ff755', 'after': '815d3a87fbce8b6c5c3e82244682a587b787a935fbb0c0e9c855dce82c3e6c5c', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0010.html': {'before': '33714f62c5cd1b7f7bea9037032ff03572e9be06cbd348f73f69ef23c3eea274', 'after': 'c05deb06d67d6b608ccea49cbe5c26f9ae0f5f3622356646da4edf99fb66a193', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0011.html': {'before': '866a0ecbfc57bf154af5addc3d7ac26d77cf6e247c5c9060bb96e10610f553cd', 'after': '3b07884d3caf671286a4bff71e1079d0f623da8e570b707d4c66de9fc8f68ea8', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0012.html': {'before': '8d5257f988e3e58f57efabd3080016b2b5e8a9d2cb649bda3bb0bf927c5cd5eb', 'after': '418a267ce1ae1a65c1282aa70512caaaf8526ffbe7646d5000218f51eecaf43c', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0013.html': {'before': 'd53d5e3e16ab9ad5a8892a268075c1bb04909df5bb7bfe210788bb0085b46b84', 'after': '893fc0a8f6443c30a7e5d2d39da86599a8e0d0362fe85c6493672f53ac29f6aa', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0014.html': {'before': '03341ebb600813e3e31d4d6da22e1698860e6ca2afa62714fbc4a431e8cf2fda', 'after': '1097f236d0295d735f65a9cc6f3dd83744ed6bafd4c31e4d8db9ba273656aa13', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0015.html': {'before': 'a3b806e5a26ba4dec7d5eb78b05ced619618da1b8be97805ae7b5a4151f9d3c7', 'after': '7319726d32070ab97b8612dbad21777246be87f0484282f367b2dde5de1b3898', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0016.html': {'before': '38c205606ab0f7f12fc48e2898f24f3f5ac4d594d29f182c256cb776a8539b4f', 'after': 'd38f7a84d59d1ab162d74ca641b9a841e6c62630929691f92b2463d1eae29776', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0017.html': {'before': 'a6c5a1fd91ecc3846eec24ce8595cb37d6a4c025ea20678a20d11275229c3253', 'after': '8038a0e87178576264b0e949e8784eb6209fb990fc07f4c4676bc8197a5dff62', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0018.html': {'before': '2516b5e9438e039519f13d427f399ea307357effbd86be3430930652e654f73f', 'after': 'cc97bcd6d33b38bac8ec30981f9072b895db96b464bf1ac71e5c6811388eea02', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0019.html': {'before': '56e2f0ef8b77e987e0b9841f33adcf43b6a2601418aba382e2e07fb8e2927023', 'after': 'e2056f63d572c2c4f98b0e7d2aefb300f35be71ef392d38bc31477a55451f253', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0020.html': {'before': '3efbf4c0bc1748c035a4b1470723e9bc3729ec2b9a12f6bc5eb1929a341feaa3', 'after': 'da4102f67cb63038d1654cd9f4f7d3b0c20e61d0b4fe91d945871ad85e32e3fd', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0021.html': {'before': 'a4fc9de2475785a0b0d010379a0ed35d189a0f4c8e3d62cfbc622a54a154705a', 'after': 'ba185c64c7d0432b542ad05948cc61663f9f4fafcb355259e9f9f7308b5ef071', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}, '/home/Carix/video/UA-0022.html': {'before': 'b70946050288f78e38e4ffc52c5b4fa1e451cec81c37f2078fde16422c9efc04', 'after': '467af7b4299fefeb460688e79fc568c1f79f365d8e3a174fc5a2abf56b11d12c', 'append': False, 'source': '', 'old': '/video/ua-site-languages.js?v=site-ge-002-v1', 'new': '/video/ua-site-languages.js?v=ge-prices-20260922-v1', 'count': 1}} # PACKAGE_DATA
+
+def sha(b): return hashlib.sha256(b).hexdigest()
+def read(path):
+    if path.is_symlink(): raise RuntimeError('SYMLINK:'+str(path))
+    return path.read_bytes() if path.exists() else None
+def digest(b): return sha(b) if b is not None else None
+def atomic(path, content, mode=0o600):
+    path.parent.mkdir(parents=True,exist_ok=True)
+    fd,name=tempfile.mkstemp(prefix='.ge-price-',dir=str(path.parent))
+    try:
+        with os.fdopen(fd,'wb') as f:
+            os.fchmod(f.fileno(),mode); f.write(content); f.flush(); os.fsync(f.fileno())
+        os.replace(name,path)
+    finally:
+        if os.path.exists(name): os.unlink(name)
+def encoded(value): return (json.dumps(value,sort_keys=True,ensure_ascii=False)+'\n').encode()
+def candidates():
+    result={}
+    for name,item in PAYLOAD.items():
+        before=read(pathlib.Path(name))
+        if digest(before)!=item['before']: raise RuntimeError('PREIMAGE_DRIFT:'+name)
+        source=base64.b64decode(item['source'],validate=True)
+        if 'old' in item:
+            old,new=item['old'].encode(),item['new'].encode()
+            if before is None or before.count(old)!=item['count'] or new in before: raise RuntimeError('CACHE_SLOT')
+            after=before.replace(old,new)
+            if after.replace(new,old)!=before:raise RuntimeError('NONCACHE_DRIFT')
+        else:
+            after=(before+source) if item['append'] else source
+        if sha(after)!=item['after']: raise RuntimeError('CANDIDATE_HASH:'+name)
+        if name.endswith('.py'): compile(after.decode(),name,'exec')
+        result[name]=(before,after)
+    return result
+
+def validate_runtime(stage):
+    # This task changes only script URL versions; installed API source is unchanged.
+    return {'public_html_count':len(PAYLOAD),'transform':'exact_script_version_only'}
+
+def backup(run_id):
+    values=candidates()
+    directory=BACKUP_ROOT/run_id
+    directory.mkdir(parents=True,mode=0o700,exist_ok=False)
+    os.chmod(directory,0o700)
+    entries={}
+    for index,(name,(before,after)) in enumerate(values.items()):
+        target=pathlib.Path(name); mode=(target.stat().st_mode&0o777) if before is not None else 0o644
+        backup_file=directory/('%d.before'%index)
+        if before is not None:
+            atomic(backup_file,before)
+            if read(backup_file)!=before: raise RuntimeError('BACKUP_READBACK')
+        entries[name]={'before':digest(before),'after':sha(after),'backup':str(backup_file),'mode':mode}
+    with tempfile.TemporaryDirectory(prefix='ge-price-check-') as d:
+        stage=pathlib.Path(d)
+        for name,(before,after) in values.items():
+            if pathlib.Path(name).name in ('uaart_public_prices_v1.py','uaart_public_renderer_v1.py'):
+                (stage/pathlib.Path(name).name).write_bytes(after)
+        runtime=validate_runtime(stage)
+    # Read all preimages again after validation, before allowing installation.
+    for name,(before,after) in values.items():
+        if read(pathlib.Path(name))!=before: raise RuntimeError('BACKUP_RACE')
+    manifest={'task_id':TASK_ID,'run_id':run_id,'entries':entries,'runtime':runtime,'created_at':dt.datetime.now(dt.timezone.utc).isoformat()}
+    raw=encoded(manifest); atomic(directory/'manifest.json',raw)
+    return {'backup_manifest_sha256':sha(raw),'sandbox_validation':'PASS','runtime':runtime}
+
+def manifest(run_id,expected):
+    raw=read(BACKUP_ROOT/run_id/'manifest.json')
+    if digest(raw)!=expected: raise RuntimeError('BACKUP_MANIFEST_HASH')
+    value=json.loads(raw)
+    if value['task_id']!=TASK_ID or value['run_id']!=run_id or set(value['entries'])!=set(PAYLOAD): raise RuntimeError('BACKUP_IDENTITY')
+    for name,item in value['entries'].items():
+        if item['before']!=PAYLOAD[name]['before'] or item['after']!=PAYLOAD[name]['after']: raise RuntimeError('BACKUP_PACKAGE_MISMATCH')
+        if item['before'] is not None and digest(read(pathlib.Path(item['backup'])))!=item['before']: raise RuntimeError('BACKUP_CORRUPT')
+    return value
+
+def install(run_id,expected):
+    saved=manifest(run_id,expected); values=candidates()
+    for name,(before,after) in values.items():
+        target=pathlib.Path(name)
+        if read(target)!=before: raise RuntimeError('INSTALL_RACE')
+        atomic(target,after,saved['entries'][name]['mode'])
+        if read(target)!=after: raise RuntimeError('INSTALL_READBACK')
+    return {'backup_manifest_sha256':expected,'after_sha256':{n:sha(read(pathlib.Path(n))) for n in values},'production_write':True}
+
+def rollback(run_id,expected):
+    saved=manifest(run_id,expected)
+    for name,item in saved['entries'].items():
+        if digest(read(pathlib.Path(name))) not in (item['before'],item['after']): raise RuntimeError('ROLLBACK_FOREIGN_CHANGE:'+name)
+    for name,item in reversed(list(saved['entries'].items())):
+        target=pathlib.Path(name)
+        if digest(read(target))==item['before']: continue
+        if digest(read(target))!=item['after']: raise RuntimeError('ROLLBACK_RACE')
+        if item['before'] is None: target.unlink()
+        else: atomic(target,read(pathlib.Path(item['backup'])),item['mode'])
+        if digest(read(target))!=item['before']: raise RuntimeError('ROLLBACK_READBACK')
+    return {'backup_manifest_sha256':expected,'restored_exact':True}
+
+def main():
+    mode,run_id=sys.argv[1:3]
+    if not re.fullmatch('[A-Za-z0-9._-]{1,100}',run_id): raise RuntimeError('RUN_ID')
+    import importlib.util
+    fence_file=pathlib.Path('/home/Carix/publication_fence.py')
+    if sha(fence_file.read_bytes())!='c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21':raise RuntimeError('FENCE_SOURCE_DRIFT')
+    spec=importlib.util.spec_from_file_location('price_cache_fence',str(fence_file))
+    fence=importlib.util.module_from_spec(spec);sys.modules[spec.name]=fence;spec.loader.exec_module(fence)
+    with fence.publication_fence(timeout=30):
+        if mode=='backup': value=backup(run_id)
+        elif mode=='install': value=install(run_id,sys.argv[3])
+        elif mode=='rollback': value=rollback(run_id,sys.argv[3])
+        else: raise RuntimeError('MODE')
+    value.update(task_id=TASK_ID,status='PASS',mode=mode,unexpected_changes=0)
+    atomic(RECEIPT,encoded(value))
+if __name__=='__main__':
+    try: main()
+    except Exception as error:
+        atomic(RECEIPT,encoded({'task_id':TASK_ID,'status':'FAIL','error':type(error).__name__+':'+str(error)}))
+        raise
