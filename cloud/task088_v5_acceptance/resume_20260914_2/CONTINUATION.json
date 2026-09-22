@@ -73,8 +73,6 @@
   "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260922/ACTUAL_CAPTURE_GEPRICE01.json",
   "full_preview_gate": "HISTORICAL_PASS_24_OF_24_CURRENT_CANDIDATE_PENDING",
   "further_required": [
-    "Owner deliver exactreviewed ZIP+stagehelper into /home/Carix; browsersecuritypolicy blocked automaticupload. Observeralreadyuploadedandcompleted; do not requestitagain.",
-    "Reconcile freshcurrentinputs/controls/Previewmapping and prioroperationoutcomes; verify exactnewfileSHA then execute oneboundedStage.",
     "Complete48affected currentPreviewbrowsercases plus applicable15retainedcardbindings; historical24/24 appliesonlyoriginalscope.",
     "Complete currentcanonicalpreflight using optionalexactobserverbound catalogue reconciliation, freshfullsource/inventory/quota, singlewriter exclusion and fullverifiedbackup.",
     "Fresh canonicalrequest/manifest/GateB/activation; one tasks/launch/AUTO marker-only install; actualStage3 receipt.",
@@ -83,8 +81,8 @@
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
   "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260922_current_candidate/CHECKPOINT.json",
   "next_action": {
-    "kind": "WAIT_ONLY_MISSING_PREVIEW_ZIP",
-    "detail": "Owner's stage_exact_preview_20260922.py is delivered and SHA verified. Do not request helper or observer again. Only exact_preview_current_95d0b4a1_20260922.zip absent; owner upload needed due retained browser upload security restriction. Then fresh input/control/Preview checks and one bounded Stage per saved delivery plan."
+    "kind": "COMPLETE_CURRENT_PREVIEW_ACCEPTANCE",
+    "detail": "Exact ZIP and helper SHA verified, stage and dedicated Preview switch completed, Preview UI reloaded once. Do not repeat stage/switch/reload. Continue current 48-case affected browser matrix and retained-resource bindings; production unchanged."
   },
   "observed_main": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
   "observed_pr_head_before_this_update": "26d2f08adbeeb8c2bb5db45552d9b4abdd0f896b",
@@ -124,7 +122,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-22T03:39:14.696Z",
+  "recorded_at": "2026-09-22T03:58:50.734Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -246,7 +244,7 @@
     "direct_reload": false,
     "owner_network_verified": false
   },
-  "foreground_in_progress": false,
+  "foreground_in_progress": true,
   "current_preview_gate": "NOT_ISSUED_CURRENT_48_BROWSER_CASES_PENDING",
   "publication_status_policy": {
     "path": "cloud/task088_v5_acceptance/publication_status_policy_20260920/PUBLICATION_STATUS_POLICY.json",
@@ -263,10 +261,10 @@
     "current_preview_pending": true
   },
   "current_candidate_acceptance": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING",
-  "foreground_operation_id": "pr114_point4_core_20260922_geprice01",
+  "foreground_operation_id": "pr114-preview-point4-95d0b4a1-20260922v1",
   "foreground_intent": "cloud/task088_v5_acceptance/resume_20260922/CAPTURE_INTENT_GEPRICE01.json",
   "foreground_completed_at": "2026-09-22T03:29:15.652Z",
-  "foreground_outcome": "REVIEWED_CURRENT_PACKAGE_READY_MANUAL_FILE_DELIVERY_REQUIRED",
+  "foreground_outcome": "ACTUAL_PREVIEW_RUNNING_BROWSER_ACCEPTANCE_IN_PROGRESS",
   "latest_point4_operation": {
     "operation_id": "pr114-point4-status-20260920T054458Z",
     "status": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_TRANSPORT_BLOCKED",
@@ -329,7 +327,7 @@
     "observed_main": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
     "published_database_rows": 21,
     "source_sha256": "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d",
-    "status": "REVIEWED_CURRENT_PACKAGE_READY_MANUAL_FILE_DELIVERY_REQUIRED",
+    "status": "ACTUAL_PREVIEW_RUNNING_BROWSER_ACCEPTANCE_IN_PROGRESS",
     "production_write": false,
     "remote_observer_execution": true,
     "scope": "Actualread-onlycapture; independentlyreviewed currentcandidate/Previewpackage/preflightcode; actualSEOrepositoryreconciliation. No productionbusiness/database/servicewrites.",
@@ -339,18 +337,7 @@
     "capture_evidence_commit": "e4a6a9e12a64197f5b2fdf74f1fcf17bc86b01be",
     "candidate_manifest_sha256": "95d0b4a11b1ada311c384a2cbe213b6b58ae1da540f61b640c5effecf0fb3b8e",
     "preview_delivery": "cloud/task088_v5_acceptance/resume_20260922_current_candidate/CURRENT_PREVIEW_DELIVERY.json",
-    "manual_upload_required": [
-      {
-        "name": "exact_preview_current_95d0b4a1_20260922.zip",
-        "server_target": "/home/Carix/exact_preview_current_95d0b4a1_20260922.zip",
-        "sha256": "f8582d8476c34f74578a5a4b69be5b9d0ca100946c4070ef4cbabd5e80650c9e"
-      },
-      {
-        "name": "stage_exact_preview_20260922.py",
-        "server_target": "/home/Carix/stage_exact_preview_20260922.py",
-        "sha256": "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437"
-      }
-    ],
+    "manual_upload_required": [],
     "upload_readback": {
       "observed_at": "2026-09-22T03:39:14.696Z",
       "status": "HELPER_VERIFIED_ZIP_MISSING",
@@ -369,6 +356,16 @@
       "main_readback": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
       "preview_stage_executed": false,
       "production_written": false
+    },
+    "actual_preview": {
+      "stage_receipt": "cloud/task088_v5_acceptance/resume_20260922_current_candidate/actual_preview/01-stage-receipt.json",
+      "stage_receipt_sha256": "c10c033dc3009e17052efb4f641eb96819559d4cb57246935ed50b7fe7b3d789",
+      "manifest_sha256": "5906280aa12a2494ffbc3e090db11352910e131b3113e5107949703a390e3583",
+      "switch_receipt_sha256": "356fa272acde56199801a98fb1de2dad4bca1dff79ca1cae447f95827206dec8",
+      "dedicated_wsgi_switched": true,
+      "preview_reload_once": true,
+      "production_written": false,
+      "browser_acceptance": "IN_PROGRESS_NOT_PASS"
     }
   }
 }
