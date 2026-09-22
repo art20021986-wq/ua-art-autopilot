@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 import fcntl
 import hashlib
 import inspect
+import importlib.machinery
+import importlib.util
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -22,7 +24,22 @@ import tempfile
 
 
 CONTRACT = "UA-ART-GE-PRICE-STAGE3-INSTALL-5"
+SOURCE_SUCCESSOR_VALIDATOR_SHA256 = "7111488541bbc88aa6426d5de76b223cb8e99ab4ca17c934424025a1c4428d28"
 LIVE_ROOT = Path("/home/Carix")
+
+
+class _PinnedPublicSourceLoader(importlib.machinery.SourceFileLoader):
+    """Load only previously hash-verified public bytes, never a second read."""
+    def __init__(self, name, path, verified_bytes):
+        super().__init__(name, path)
+        self._verified_bytes = verified_bytes
+
+    def get_code(self, fullname):
+        if fullname != self.name:
+            raise ValueError("REVIEWED_PUBLIC_MODULE_IDENTITY_REQUIRED")
+        return compile(self._verified_bytes, self.path, "exec")
+
+
 MAX_FILE = 8 * 1024 * 1024
 MODULES = frozenset({"uaart_market_prices.py", "uaart_price_sync_outbox.py",
     "uaart_price_sync_runtime.py", "uaart_price_sync_binding.py", "owner_policy.py",
@@ -387,6 +404,8 @@ def _validate(plan, files, evidence, now, root, *, testing, phase="OPEN"):
     if set(plan.get("dependencies_sha256", {})) != DEPENDENCIES:
         raise InstallError("COMPLETE_CURRENT_DEPENDENCY_HASHES_REQUIRED")
     expected_evidence = set(EVIDENCE_NAMES)
+    if "source_successor" in plan:
+        expected_evidence.add("source_successor")
     if plan.get("homepage_policy"):
         if plan["homepage_policy"] != {"site/index.html": "PROTECTED_LEGACY_NOT_SERVED"}:
             raise InstallError("EXACT_HOME_POLICY_REQUIRED")
@@ -461,8 +480,31 @@ def _validate(plan, files, evidence, now, root, *, testing, phase="OPEN"):
     if (stage2.get("task_id") != "TASK088-GE-PRICE-CRM-STAGE2" or stage2.get("status") != "FINISHED"
             or stage2.get("stage2_status") != "PASS" or stage2.get("stage3_allowed") is not True
             or stage2.get("stage1_prerequisite") != "PASS"
-            or stage2.get("independent_price_fields") != "PASS" or stage2.get("original_values_restored") is not True
-            or stage2.get("installed_source_sha256") != plan["files"]["cars_ui.py"]["before_sha256"]):
+            or stage2.get("independent_price_fields") != "PASS" or stage2.get("original_values_restored") is not True):
+        raise InstallError("CANONICAL_STAGE2_ACCEPTANCE_REQUIRED")
+    if "source_successor" in plan:
+        # Preparation may load this engine by absolute path from another
+        # directory. Read the exact reviewed sibling; do not search sys.path or
+        # accept an already imported module from a different package/version.
+        helper_path = Path(__file__).resolve().with_name("source_successor.py")
+        helper_raw = _read(helper_path)
+        if sha(helper_raw) != SOURCE_SUCCESSOR_VALIDATOR_SHA256:
+            raise InstallError("EXACT_SOURCE_SUCCESSOR_VALIDATOR_REQUIRED")
+        helper_name = "task088_reviewed_source_successor"
+        loader = _PinnedPublicSourceLoader(helper_name, str(helper_path), helper_raw)
+        spec = importlib.util.spec_from_file_location(helper_name, helper_path, loader=loader)
+        helper = importlib.util.module_from_spec(spec)
+        loader.exec_module(helper)
+        SOURCE_SUCCESSOR_BINDING = helper.SOURCE_SUCCESSOR_BINDING
+        validate_source_successor = helper.validate_source_successor
+        if (plan["source_successor"] != SOURCE_SUCCESSOR_BINDING
+                or approved_manifest.get("deployment_plan", {}).get("source_successor_sha256") != sha(evidence["source_successor"])):
+            raise InstallError("BOUND_CANONICAL_SOURCE_SUCCESSOR_REQUIRED")
+        try:
+            validate_source_successor(stage2, plan["files"]["cars_ui.py"]["before_sha256"], evidence["source_successor"])
+        except (ValueError, KeyError, TypeError) as exc:
+            raise InstallError("CANONICAL_SOURCE_SUCCESSOR_INVALID") from exc
+    elif stage2.get("installed_source_sha256") != plan["files"]["cars_ui.py"]["before_sha256"]:
         raise InstallError("CANONICAL_STAGE2_ACCEPTANCE_REQUIRED")
     if not recovering:
         _fresh(quota.get("observed_at"), now)

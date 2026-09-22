@@ -1,0 +1,17 @@
+{
+  "candidate_manifest_sha256": "95d0b4a11b1ada311c384a2cbe213b6b58ae1da540f61b640c5effecf0fb3b8e",
+  "contract": "PR114-ACTUAL-BROWSER-PRICE-LAYOUT-1",
+  "full_preview_gate": "NOT_ISSUED",
+  "full_result_sha256": "1de1d21dbba8b9528cc7d78a5db68cc6f80603d3d0cdaa14da36b928c8a815df",
+  "limitations": [
+    "CSS viewport in cloud Chrome; no mobile OS or touch emulation",
+    "Lazy images outside view are not asserted decoded",
+    "Full inventory, current canonical preflight, writer exclusion, verified backup and installation authority remain separate gates"
+  ],
+  "pending": [],
+  "preview_resource_manifest_sha256": "5906280aa12a2494ffbc3e090db11352910e131b3113e5107949703a390e3583",
+  "production_written": false,
+  "raw_observations": 53,
+  "raw_sha256": "28e3afac76cc2352ac5444c609729011cd50f69a5885252971827e8b89e4f3ca",
+  "status": "PASS_SCOPED_48_CASES"
+}
