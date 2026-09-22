@@ -1,0 +1,845 @@
+{
+  "active_github_runs": {
+    "in_progress": 0,
+    "pending": 0,
+    "queued": 0,
+    "requested": 0,
+    "waiting": 0
+  },
+  "backup_only_source_sha256": {
+    "cloud/seo_daily_podbor_canonical_20260921/backup_controller.py": "c453c93027a69288090c5bd71be94d8e1ad247ab9eac760d6cce027395034f3b",
+    "cloud/seo_daily_podbor_canonical_20260921/controller.py": "247835dac22203ba094a2ef6e998a0c119d96c1361973a4e601771bf9fd5a408",
+    "cloud/seo_daily_podbor_canonical_20260921/remote_installer.py": "6d3ea6e4ab11eb69a9a28884b3ea56e2f5b49beb0aad3e8ea0274652e48088be"
+  },
+  "canonical_source_commit": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "completed_workflow_jobs": [
+    {
+      "conclusion": "success",
+      "id": 106188546006,
+      "logs_url": null,
+      "name": "context",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Reject non-main or replayed workflow attempts",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 3,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 106188557447,
+      "logs_url": null,
+      "name": "intake",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout exact triggering commit without persisted credential",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python 3.11",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Require exact main automatic runtime",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Require a marker-only commit and discover its exact path",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Validate exact fresh launch marker without repository write access",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Set up Python 3.11",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout exact triggering commit without persisted credential",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 13,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 106188595855,
+      "logs_url": null,
+      "name": "persist",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout fresh trusted main persistence workspace",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python 3.11",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Persist exact anti-replay ledger with a trusted isolated Git tree",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Set up Python 3.11",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout fresh trusted main persistence workspace",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 9,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 106188631913,
+      "logs_url": null,
+      "name": "execute / validate",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout isolated read-only intake state",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python 3.11",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Validate exact request and build an ephemeral claim",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Bind data-only planning and validate trusted execution package",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Create strict data-only intake attestation",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload pinned intake attestation",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Set up Python 3.11",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout isolated read-only intake state",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 15,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 106188665976,
+      "logs_url": null,
+      "name": "execute / plan",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout clean trusted main for intake persistence",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python 3.11",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Download isolated intake attestation",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Strictly validate data-only intake attestation",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Persist only the exact claim and plan with an isolated Git tree",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Set up Python 3.11",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout clean trusted main for intake persistence",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 13,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 106188698715,
+      "logs_url": null,
+      "name": "execute / critical / main_only",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Require the immutable main branch route",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 3,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "skipped",
+      "id": 106188698962,
+      "logs_url": null,
+      "name": "execute / fast",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": null
+    },
+    {
+      "conclusion": "skipped",
+      "id": 106188699058,
+      "logs_url": null,
+      "name": "execute / standard",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": null
+    },
+    {
+      "conclusion": "success",
+      "id": 106188712474,
+      "logs_url": null,
+      "name": "execute / critical / validate",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout clean main without persisted credentials",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python 3.11",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Bind executing CRITICAL workflow to checked runtime",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Validate immutable CRITICAL execution contract",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compile and test package without repository write permission",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Create data-only validation attestation",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload data-only validation attestation",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Set up Python 3.11",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout clean main without persisted credentials",
+          "number": 16,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 17,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 106188739701,
+      "logs_url": null,
+      "name": "execute / critical / prepare",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout clean authoritative main",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python 3.11",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Download validation attestation outside checkout",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Strictly validate data-only test attestation",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Wait in strict Production queue and refresh main",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Rebuild trusted gates on refreshed main",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Bind Gate A, Gate B, and pre-health",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Create PREPARING before any Production credential",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Commit and durably push PREPARING",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Set up Python 3.11",
+          "number": 19,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout clean authoritative main",
+          "number": 20,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "skipped",
+      "id": 106188740364,
+      "logs_url": null,
+      "name": "execute / critical / controller_nonproduction",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": null
+    },
+    {
+      "conclusion": "failure",
+      "id": 106188834586,
+      "logs_url": null,
+      "name": "execute / critical / backup",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout clean authoritative PREPARING state",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python 3.11",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Validate exact remote PREPARING transaction",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Execute exact Production backup",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Validate and package only backup receipt",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload data-only backup receipt",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Post Set up Python 3.11",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout clean authoritative PREPARING state",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 15,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "skipped",
+      "id": 106189198441,
+      "logs_url": null,
+      "name": "execute / critical / open",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": null
+    },
+    {
+      "conclusion": "success",
+      "id": 106189198497,
+      "logs_url": null,
+      "name": "execute / critical / rollback_mark",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout clean authoritative transaction state",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python 3.11",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Reserve one-shot rollback with isolated Git trees",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Set up Python 3.11",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout clean authoritative transaction state",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 9,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "skipped",
+      "id": 106189198735,
+      "logs_url": null,
+      "name": "execute / critical / controller_production",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": null
+    },
+    {
+      "conclusion": "skipped",
+      "id": 106189199064,
+      "logs_url": null,
+      "name": "execute / critical / finalize",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": null
+    },
+    {
+      "conclusion": "success",
+      "id": 106189231859,
+      "logs_url": null,
+      "name": "execute / critical / recover",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout clean authoritative recovery state",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python 3.11",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Download rollback receipt outside checkout",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Strictly validate data-only rollback artifact",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Persist HALT and optional proven rollback with isolated Git trees",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Set up Python 3.11",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout clean authoritative recovery state",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 13,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "skipped",
+      "id": 106189232328,
+      "logs_url": null,
+      "name": "execute / critical / rollback_execute",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": null
+    },
+    {
+      "conclusion": "failure",
+      "id": 106189262895,
+      "logs_url": null,
+      "name": "execute / critical / result",
+      "run_id": 35552076762,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Publish exact reusable workflow outcome",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 3,
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "contract": "SEO-35552076762-AUTHENTICATED-READONLY-EVIDENCE-1",
+  "current_target": {
+    "bytes": 33652,
+    "canonical_values": [
+      "https://www.uaart.com.ua/video/podbor.html"
+    ],
+    "http_bytes": 33652,
+    "http_sha256": "1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6",
+    "http_status": 200,
+    "http_url": "https://www.uaart.com.ua/video/podbor.html",
+    "path": "/home/Carix/video/podbor.html",
+    "sha256": "1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6"
+  },
+  "embedded_proofs": {
+    "current_target_and_http": {
+      "bytes": 3762,
+      "exact_utf8_content": "- navigation:\n  - link:\n    - /url: /\n  - link \"Bash console 48244286\":\n    - /url: \"#\"\n  - button \"Share with others\":\n    - text: Share with others\n  - text: \n  - button \"Toggle navigation\":\n    - generic: Toggle navigation\n- iframe [active] [id=\"id_console\"] [name=\"console\"]:\n  - iframe [active]:\n    - textbox [active]:\n      - generic: \"\\\"final_url\\\": \\\"https://www.uaart.com.ua/video/katalog.html?uaart_probe=f67d0ec7909d44c58aa8db32b9158621\\\",\"\n      - generic: \"\\\"content_type\\\": \\\"text/html\\\",\"\n      - generic: \"\\\"bytes_read\\\": 56125,\"\n      - generic: \"\\\"sha256\\\": \\\"279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01\\\",\"\n      - generic: \"\\\"redirects\\\": [],\"\n      - generic: \"\\\"elapsed_seconds\\\": 15.754,\"\n      - generic: \"\\\"finished_at\\\": \\\"2026-09-22T03:16:34.030+00:00\\\"\"\n      - generic: \"}\"\n      - generic: \"],\"\n      - generic: \"\\\"finished_at\\\": \\\"2026-09-22T03:16:36.132+00:00\\\",\"\n      - generic: \"\\\"ok\\\": true\"\n      - generic: \"}\"\n      - generic: \"],\"\n      - generic: \"\\\"settings\\\": {\"\n      - generic: \"\\\"max_attempts\\\": 3,\"\n      - generic: \"\\\"probe_timeout_seconds\\\": 20,\"\n      - generic: \"\\\"retry_delay_seconds\\\": 15,\"\n      - generic: \"\\\"method\\\": \\\"GET\\\",\"\n      - generic: \"\\\"tls_verification\\\": true,\"\n      - generic: \"\\\"max_html_bytes\\\": 1048576,\"\n      - generic: \"\\\"network_scope\\\": \\\"four_public_https_pages\\\",\"\n      - generic: \"\\\"read_only\\\": true\"\n      - generic: \"},\"\n      - generic: \"\\\"finished_at\\\": \\\"2026-09-22T03:16:36.230+00:00\\\"\"\n      - generic: \"}\"\n      - generic: 03:17 ~ $ python3.10 -I -B - <<'PY'\n      - generic: \"> import os,pathlib,hashlib,json,datetime,urllib.request,re\"\n      - generic: a> a=[]\n      - generic: \"> for p in pathlib.Path('/proc').glob('[0-9]*/cmdline'):\"\n      - generic: \"> try:\"\n      - generic: \"> b=p.read_bytes()\"\n      - generic: \"> if b'seo_daily_podbor_canonical_20260921.py' in b and int(p.parent.name)!=os.getpid(): a.append(int(p.parent.name))\"\n      - generic: \"> except (OSError,ValueError): pass\"\n      - generic: \"> f=pathlib.Path('/home/Carix/video/podbor.html').read_bytes()\"\n      - generic: \"> u='https://www.uaart.com.ua/video/podbor.html'\"\n      - generic: \"> r=urllib.request.urlopen(u,timeout=25)\"\n      - generic: h> h=r.read(1048577)\n      - generic: \"> print(json.dumps({'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'process_matcher':'seo_daily_podbor_canonical_20260921.py','pids':\"\n      - generic: a,'manifest_exists':pathlib.Path('/home/Carix/archive/backups/SEO-DAILY-PODBOR-CANONICAL-20260921/35552076762/manifest.json').exists(),'receipt_exis\n      - generic: ts':pathlib.Path('/home/Carix/uploads/seo_daily_podbor_canonical_20260921.json').exists(),'target_bytes':len(f),'target_sha256':hashlib.sha256(f).he\n      - generic: xdigest(),'canonical_values':re.findall(r'<link rel=\"canonical\" href=\"([^\"]+)\"',f.decode()),'http_status':r.status,'http_url':r.geturl(),'http_bytes\n      - generic: \"':len(h),'http_sha256':hashlib.sha256(h).hexdigest()},sort_keys=True))\"\n      - generic: \"> PY\"\n      - generic: \"{\\\"at\\\": \\\"2026-09-22T03:21:15.753636+00:00\\\", \\\"canonical_values\\\": [\\\"https://www.uaart.com.ua/video/podbor.html\\\"], \\\"http_bytes\\\": 33652, \\\"http_sha256\\\": \\\"\"\n      - generic: \"1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6\\\", \\\"http_status\\\": 200, \\\"http_url\\\": \\\"https://www.uaart.com.ua/video/podbor.html\\\", \\\"ma\"\n      - generic: \"nifest_exists\\\": false, \\\"pids\\\": [], \\\"process_matcher\\\": \\\"seo_daily_podbor_canonical_20260921.py\\\", \\\"receipt_exists\\\": false, \\\"target_bytes\\\": 33652, \\\"tar\"\n      - generic: \"get_sha256\\\": \\\"1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6\\\"}\"\n      - generic: 03:21 ~ $\n      - textbox\n    - generic \"(10, 47)\"\n- generic: ",
+      "observed_at_utc": "2026-09-22T03:21:15.753636Z",
+      "sha256": "02404597a0960ae14d0932f8e42fe005bef736078b8f248e67b685a53ef41147"
+    },
+    "github_active_runs": {
+      "bytes": 6908,
+      "exact_utf8_content": "{\n  \"contract\": \"SEO-35552076762-GITHUB-READONLY-QUEUE-OBSERVATION-1\",\n  \"repository\": \"art20021986-wq/ua-art-autopilot\",\n  \"captured_at_utc\": \"2026-09-22T03:18:46.578Z\",\n  \"capture_started_at_utc\": \"2026-09-22T03:18:45.827Z\",\n  \"transport\": \"Authenticated GitHub connector fetch; GET only\",\n  \"reads\": {\n    \"main\": {\n      \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/branches/main\",\n      \"body\": {\n        \"name\": \"main\",\n        \"commit\": {\n          \"sha\": \"79c6aaccbfdc2decf7bf39d26738a2c38bde91f4\",\n          \"node_id\": \"C_kwDOUD7Y3doAKDc5YzZhYWNjYmZkYzJkZWNmN2JmMzlkMjY3MzhhMmMzOGJkZTkxZjQ\",\n          \"commit\": {\n            \"author\": {\n              \"name\": \"ua-art-critical-fail-closed\",\n              \"email\": \"actions@users.noreply.github.com\",\n              \"date\": \"2026-09-21T01:53:07Z\"\n            },\n            \"committer\": {\n              \"name\": \"ua-art-critical-fail-closed\",\n              \"email\": \"actions@users.noreply.github.com\",\n              \"date\": \"2026-09-21T01:53:07Z\"\n            },\n            \"message\": \"uaart critical: HALT SEO-DAILY-PODBOR-CANONICAL-20260921\",\n            \"tree\": {\n              \"sha\": \"0c70313d535ae1f1090019fac0b791d6700d2b63\",\n              \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/trees/0c70313d535ae1f1090019fac0b791d6700d2b63\"\n            },\n            \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/commits/79c6aaccbfdc2decf7bf39d26738a2c38bde91f4\",\n            \"comment_count\": 0,\n            \"verification\": {\n              \"verified\": false,\n              \"reason\": \"unsigned\",\n              \"signature\": null,\n              \"payload\": null,\n              \"verified_at\": null\n            }\n          },\n          \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/commits/79c6aaccbfdc2decf7bf39d26738a2c38bde91f4\",\n          \"html_url\": \"https://github.com/art20021986-wq/ua-art-autopilot/commit/79c6aaccbfdc2decf7bf39d26738a2c38bde91f4\",\n          \"comments_url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/commits/79c6aaccbfdc2decf7bf39d26738a2c38bde91f4/comments\",\n          \"author\": {\n            \"login\": \"actions\",\n            \"id\": 44036562,\n            \"node_id\": \"MDEyOk9yZ2FuaXphdGlvbjQ0MDM2NTYy\",\n            \"avatar_url\": \"https://avatars.githubusercontent.com/u/44036562?v=4\",\n            \"gravatar_id\": \"\",\n            \"url\": \"https://api.github.com/users/actions\",\n            \"html_url\": \"https://github.com/actions\",\n            \"followers_url\": \"https://api.github.com/users/actions/followers\",\n            \"following_url\": \"https://api.github.com/users/actions/following{/other_user}\",\n            \"gists_url\": \"https://api.github.com/users/actions/gists{/gist_id}\",\n            \"starred_url\": \"https://api.github.com/users/actions/starred{/owner}{/repo}\",\n            \"subscriptions_url\": \"https://api.github.com/users/actions/subscriptions\",\n            \"organizations_url\": \"https://api.github.com/users/actions/orgs\",\n            \"repos_url\": \"https://api.github.com/users/actions/repos\",\n            \"events_url\": \"https://api.github.com/users/actions/events{/privacy}\",\n            \"received_events_url\": \"https://api.github.com/users/actions/received_events\",\n            \"type\": \"Organization\",\n            \"user_view_type\": \"public\",\n            \"site_admin\": false\n          },\n          \"committer\": {\n            \"login\": \"actions\",\n            \"id\": 44036562,\n            \"node_id\": \"MDEyOk9yZ2FuaXphdGlvbjQ0MDM2NTYy\",\n            \"avatar_url\": \"https://avatars.githubusercontent.com/u/44036562?v=4\",\n            \"gravatar_id\": \"\",\n            \"url\": \"https://api.github.com/users/actions\",\n            \"html_url\": \"https://github.com/actions\",\n            \"followers_url\": \"https://api.github.com/users/actions/followers\",\n            \"following_url\": \"https://api.github.com/users/actions/following{/other_user}\",\n            \"gists_url\": \"https://api.github.com/users/actions/gists{/gist_id}\",\n            \"starred_url\": \"https://api.github.com/users/actions/starred{/owner}{/repo}\",\n            \"subscriptions_url\": \"https://api.github.com/users/actions/subscriptions\",\n            \"organizations_url\": \"https://api.github.com/users/actions/orgs\",\n            \"repos_url\": \"https://api.github.com/users/actions/repos\",\n            \"events_url\": \"https://api.github.com/users/actions/events{/privacy}\",\n            \"received_events_url\": \"https://api.github.com/users/actions/received_events\",\n            \"type\": \"Organization\",\n            \"user_view_type\": \"public\",\n            \"site_admin\": false\n          },\n          \"parents\": [\n            {\n              \"sha\": \"1617cb7cb8d6e261207a1428eccadbfaffb91b40\",\n              \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/commits/1617cb7cb8d6e261207a1428eccadbfaffb91b40\",\n              \"html_url\": \"https://github.com/art20021986-wq/ua-art-autopilot/commit/1617cb7cb8d6e261207a1428eccadbfaffb91b40\"\n            }\n          ]\n        },\n        \"_links\": {\n          \"self\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/branches/main\",\n          \"html\": \"https://github.com/art20021986-wq/ua-art-autopilot/tree/main\"\n        },\n        \"protected\": false,\n        \"protection\": {\n          \"enabled\": false,\n          \"required_status_checks\": {\n            \"enforcement_level\": \"off\",\n            \"contexts\": [],\n            \"checks\": []\n          }\n        },\n        \"protection_url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/branches/main/protection\"\n      }\n    },\n    \"queued\": {\n      \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=queued&per_page=100\",\n      \"body\": {\n        \"total_count\": 0,\n        \"workflow_runs\": []\n      }\n    },\n    \"in_progress\": {\n      \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=in_progress&per_page=100\",\n      \"body\": {\n        \"total_count\": 0,\n        \"workflow_runs\": []\n      }\n    },\n    \"pending\": {\n      \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=pending&per_page=100\",\n      \"body\": {\n        \"total_count\": 0,\n        \"workflow_runs\": []\n      }\n    },\n    \"requested\": {\n      \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=requested&per_page=100\",\n      \"body\": {\n        \"total_count\": 0,\n        \"workflow_runs\": []\n      }\n    },\n    \"waiting\": {\n      \"url\": \"https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=waiting&per_page=100\",\n      \"body\": {\n        \"total_count\": 0,\n        \"workflow_runs\": []\n      }\n    }\n  },\n  \"observed_main\": \"79c6aaccbfdc2decf7bf39d26738a2c38bde91f4\",\n  \"active_counts\": {\n    \"queued\": 0,\n    \"in_progress\": 0,\n    \"pending\": 0,\n    \"requested\": 0,\n    \"waiting\": 0\n  }\n}\n",
+      "observed_at_utc": "2026-09-22T03:18:46.578Z",
+      "sha256": "4742525e4c67beda42e7fe3afde34df2ecab9c22ed21c56ba4e73c00073c65ff"
+    },
+    "server_artifact_absence": {
+      "bytes": 3762,
+      "exact_utf8_content": "- navigation:\n  - link:\n    - /url: /\n  - link \"Bash console 48244286\":\n    - /url: \"#\"\n  - button \"Share with others\":\n    - text: Share with others\n  - text: \n  - button \"Toggle navigation\":\n    - generic: Toggle navigation\n- iframe [active] [id=\"id_console\"] [name=\"console\"]:\n  - iframe [active]:\n    - textbox [active]:\n      - generic: \"\\\"final_url\\\": \\\"https://www.uaart.com.ua/video/katalog.html?uaart_probe=f67d0ec7909d44c58aa8db32b9158621\\\",\"\n      - generic: \"\\\"content_type\\\": \\\"text/html\\\",\"\n      - generic: \"\\\"bytes_read\\\": 56125,\"\n      - generic: \"\\\"sha256\\\": \\\"279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01\\\",\"\n      - generic: \"\\\"redirects\\\": [],\"\n      - generic: \"\\\"elapsed_seconds\\\": 15.754,\"\n      - generic: \"\\\"finished_at\\\": \\\"2026-09-22T03:16:34.030+00:00\\\"\"\n      - generic: \"}\"\n      - generic: \"],\"\n      - generic: \"\\\"finished_at\\\": \\\"2026-09-22T03:16:36.132+00:00\\\",\"\n      - generic: \"\\\"ok\\\": true\"\n      - generic: \"}\"\n      - generic: \"],\"\n      - generic: \"\\\"settings\\\": {\"\n      - generic: \"\\\"max_attempts\\\": 3,\"\n      - generic: \"\\\"probe_timeout_seconds\\\": 20,\"\n      - generic: \"\\\"retry_delay_seconds\\\": 15,\"\n      - generic: \"\\\"method\\\": \\\"GET\\\",\"\n      - generic: \"\\\"tls_verification\\\": true,\"\n      - generic: \"\\\"max_html_bytes\\\": 1048576,\"\n      - generic: \"\\\"network_scope\\\": \\\"four_public_https_pages\\\",\"\n      - generic: \"\\\"read_only\\\": true\"\n      - generic: \"},\"\n      - generic: \"\\\"finished_at\\\": \\\"2026-09-22T03:16:36.230+00:00\\\"\"\n      - generic: \"}\"\n      - generic: 03:17 ~ $ python3.10 -I -B - <<'PY'\n      - generic: \"> import os,pathlib,hashlib,json,datetime,urllib.request,re\"\n      - generic: a> a=[]\n      - generic: \"> for p in pathlib.Path('/proc').glob('[0-9]*/cmdline'):\"\n      - generic: \"> try:\"\n      - generic: \"> b=p.read_bytes()\"\n      - generic: \"> if b'seo_daily_podbor_canonical_20260921.py' in b and int(p.parent.name)!=os.getpid(): a.append(int(p.parent.name))\"\n      - generic: \"> except (OSError,ValueError): pass\"\n      - generic: \"> f=pathlib.Path('/home/Carix/video/podbor.html').read_bytes()\"\n      - generic: \"> u='https://www.uaart.com.ua/video/podbor.html'\"\n      - generic: \"> r=urllib.request.urlopen(u,timeout=25)\"\n      - generic: h> h=r.read(1048577)\n      - generic: \"> print(json.dumps({'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'process_matcher':'seo_daily_podbor_canonical_20260921.py','pids':\"\n      - generic: a,'manifest_exists':pathlib.Path('/home/Carix/archive/backups/SEO-DAILY-PODBOR-CANONICAL-20260921/35552076762/manifest.json').exists(),'receipt_exis\n      - generic: ts':pathlib.Path('/home/Carix/uploads/seo_daily_podbor_canonical_20260921.json').exists(),'target_bytes':len(f),'target_sha256':hashlib.sha256(f).he\n      - generic: xdigest(),'canonical_values':re.findall(r'<link rel=\"canonical\" href=\"([^\"]+)\"',f.decode()),'http_status':r.status,'http_url':r.geturl(),'http_bytes\n      - generic: \"':len(h),'http_sha256':hashlib.sha256(h).hexdigest()},sort_keys=True))\"\n      - generic: \"> PY\"\n      - generic: \"{\\\"at\\\": \\\"2026-09-22T03:21:15.753636+00:00\\\", \\\"canonical_values\\\": [\\\"https://www.uaart.com.ua/video/podbor.html\\\"], \\\"http_bytes\\\": 33652, \\\"http_sha256\\\": \\\"\"\n      - generic: \"1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6\\\", \\\"http_status\\\": 200, \\\"http_url\\\": \\\"https://www.uaart.com.ua/video/podbor.html\\\", \\\"ma\"\n      - generic: \"nifest_exists\\\": false, \\\"pids\\\": [], \\\"process_matcher\\\": \\\"seo_daily_podbor_canonical_20260921.py\\\", \\\"receipt_exists\\\": false, \\\"target_bytes\\\": 33652, \\\"tar\"\n      - generic: \"get_sha256\\\": \\\"1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6\\\"}\"\n      - generic: 03:21 ~ $\n      - textbox\n    - generic \"(10, 47)\"\n- generic: ",
+      "observed_at_utc": "2026-09-22T03:21:15.753636Z",
+      "sha256": "02404597a0960ae14d0932f8e42fe005bef736078b8f248e67b685a53ef41147"
+    },
+    "server_processes_and_schedules": {
+      "bytes": 11641,
+      "exact_utf8_content": "{\n  \"contract\": \"SCOPED_AUTHENTICATED_UI_OBSERVATIONS\",\n  \"server_console_id\": \"48244286\",\n  \"server_observed_at\": \"2026-09-22T03:21:15.753636Z\",\n  \"tasks_ui_observed_at\": \"2026-09-22T03:21:26.612Z\",\n  \"server_console_exact_snapshot\": \"- navigation:\\n  - link:\\n    - /url: /\\n  - link \\\"Bash console 48244286\\\":\\n    - /url: \\\"#\\\"\\n  - button \\\"Share with others\\\":\\n    - text: Share with others\\n  - text: \\n  - button \\\"Toggle navigation\\\":\\n    - generic: Toggle navigation\\n- iframe [active] [id=\\\"id_console\\\"] [name=\\\"console\\\"]:\\n  - iframe [active]:\\n    - textbox [active]:\\n      - generic: \\\"\\\\\\\"final_url\\\\\\\": \\\\\\\"https://www.uaart.com.ua/video/katalog.html?uaart_probe=f67d0ec7909d44c58aa8db32b9158621\\\\\\\",\\\"\\n      - generic: \\\"\\\\\\\"content_type\\\\\\\": \\\\\\\"text/html\\\\\\\",\\\"\\n      - generic: \\\"\\\\\\\"bytes_read\\\\\\\": 56125,\\\"\\n      - generic: \\\"\\\\\\\"sha256\\\\\\\": \\\\\\\"279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01\\\\\\\",\\\"\\n      - generic: \\\"\\\\\\\"redirects\\\\\\\": [],\\\"\\n      - generic: \\\"\\\\\\\"elapsed_seconds\\\\\\\": 15.754,\\\"\\n      - generic: \\\"\\\\\\\"finished_at\\\\\\\": \\\\\\\"2026-09-22T03:16:34.030+00:00\\\\\\\"\\\"\\n      - generic: \\\"}\\\"\\n      - generic: \\\"],\\\"\\n      - generic: \\\"\\\\\\\"finished_at\\\\\\\": \\\\\\\"2026-09-22T03:16:36.132+00:00\\\\\\\",\\\"\\n      - generic: \\\"\\\\\\\"ok\\\\\\\": true\\\"\\n      - generic: \\\"}\\\"\\n      - generic: \\\"],\\\"\\n      - generic: \\\"\\\\\\\"settings\\\\\\\": {\\\"\\n      - generic: \\\"\\\\\\\"max_attempts\\\\\\\": 3,\\\"\\n      - generic: \\\"\\\\\\\"probe_timeout_seconds\\\\\\\": 20,\\\"\\n      - generic: \\\"\\\\\\\"retry_delay_seconds\\\\\\\": 15,\\\"\\n      - generic: \\\"\\\\\\\"method\\\\\\\": \\\\\\\"GET\\\\\\\",\\\"\\n      - generic: \\\"\\\\\\\"tls_verification\\\\\\\": true,\\\"\\n      - generic: \\\"\\\\\\\"max_html_bytes\\\\\\\": 1048576,\\\"\\n      - generic: \\\"\\\\\\\"network_scope\\\\\\\": \\\\\\\"four_public_https_pages\\\\\\\",\\\"\\n      - generic: \\\"\\\\\\\"read_only\\\\\\\": true\\\"\\n      - generic: \\\"},\\\"\\n      - generic: \\\"\\\\\\\"finished_at\\\\\\\": \\\\\\\"2026-09-22T03:16:36.230+00:00\\\\\\\"\\\"\\n      - generic: \\\"}\\\"\\n      - generic: 03:17 ~ $ python3.10 -I -B - <<'PY'\\n      - generic: \\\"> import os,pathlib,hashlib,json,datetime,urllib.request,re\\\"\\n      - generic: a> a=[]\\n      - generic: \\\"> for p in pathlib.Path('/proc').glob('[0-9]*/cmdline'):\\\"\\n      - generic: \\\"> try:\\\"\\n      - generic: \\\"> b=p.read_bytes()\\\"\\n      - generic: \\\"> if b'seo_daily_podbor_canonical_20260921.py' in b and int(p.parent.name)!=os.getpid(): a.append(int(p.parent.name))\\\"\\n      - generic: \\\"> except (OSError,ValueError): pass\\\"\\n      - generic: \\\"> f=pathlib.Path('/home/Carix/video/podbor.html').read_bytes()\\\"\\n      - generic: \\\"> u='https://www.uaart.com.ua/video/podbor.html'\\\"\\n      - generic: \\\"> r=urllib.request.urlopen(u,timeout=25)\\\"\\n      - generic: h> h=r.read(1048577)\\n      - generic: \\\"> print(json.dumps({'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'process_matcher':'seo_daily_podbor_canonical_20260921.py','pids':\\\"\\n      - generic: a,'manifest_exists':pathlib.Path('/home/Carix/archive/backups/SEO-DAILY-PODBOR-CANONICAL-20260921/35552076762/manifest.json').exists(),'receipt_exis\\n      - generic: ts':pathlib.Path('/home/Carix/uploads/seo_daily_podbor_canonical_20260921.json').exists(),'target_bytes':len(f),'target_sha256':hashlib.sha256(f).he\\n      - generic: xdigest(),'canonical_values':re.findall(r'<link rel=\\\"canonical\\\" href=\\\"([^\\\"]+)\\\"',f.decode()),'http_status':r.status,'http_url':r.geturl(),'http_bytes\\n      - generic: \\\"':len(h),'http_sha256':hashlib.sha256(h).hexdigest()},sort_keys=True))\\\"\\n      - generic: \\\"> PY\\\"\\n      - generic: \\\"{\\\\\\\"at\\\\\\\": \\\\\\\"2026-09-22T03:21:15.753636+00:00\\\\\\\", \\\\\\\"canonical_values\\\\\\\": [\\\\\\\"https://www.uaart.com.ua/video/podbor.html\\\\\\\"], \\\\\\\"http_bytes\\\\\\\": 33652, \\\\\\\"http_sha256\\\\\\\": \\\\\\\"\\\"\\n      - generic: \\\"1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6\\\\\\\", \\\\\\\"http_status\\\\\\\": 200, \\\\\\\"http_url\\\\\\\": \\\\\\\"https://www.uaart.com.ua/video/podbor.html\\\\\\\", \\\\\\\"ma\\\"\\n      - generic: \\\"nifest_exists\\\\\\\": false, \\\\\\\"pids\\\\\\\": [], \\\\\\\"process_matcher\\\\\\\": \\\\\\\"seo_daily_podbor_canonical_20260921.py\\\\\\\", \\\\\\\"receipt_exists\\\\\\\": false, \\\\\\\"target_bytes\\\\\\\": 33652, \\\\\\\"tar\\\"\\n      - generic: \\\"get_sha256\\\\\\\": \\\\\\\"1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6\\\\\\\"}\\\"\\n      - generic: 03:21 ~ $\\n      - textbox\\n    - generic \\\"(10, 47)\\\"\\n- generic: \",\n  \"tasks_ui_exact_snapshot\": \"- navigation:\\n  - list:\\n    - link \\\"Contact Support\\\":\\n      - /url: \\\"\\\"\\n    - link \\\"Forums\\\":\\n      - /url: /forums/\\n    - link \\\"Help\\\":\\n      - /url: https://help.pythonanywhere.com/\\n    - link \\\"Blog\\\":\\n      - /url: https://blog.pythonanywhere.com/\\n    - link \\\"Account\\\":\\n      - /url: /user/Carix/account/\\n    - button \\\"Log out\\\"\\n- navigation:\\n  - link:\\n    - /url: /\\n  - list:\\n    - link \\\"Dashboard\\\":\\n      - /url: /user/Carix/\\n    - link \\\"Consoles\\\":\\n      - /url: /user/Carix/consoles/\\n    - link \\\"Files\\\":\\n      - /url: /user/Carix/files/home/Carix\\n    - link \\\"Web\\\":\\n      - /url: /user/Carix/webapps/\\n    - link \\\"Tasks\\\":\\n      - /url: /user/Carix/tasks_tab/\\n    - link \\\"Databases\\\":\\n      - /url: /user/Carix/databases/\\n- strong:\\n  - generic: \\\"CPU Usage:\\\"\\n- link \\\"You are in the tarpit.\\\":\\n  - /url: /tarpit/\\n- generic: 100% used – 6571.20s of 5,000s.\\n- generic: Resets in 5 hours, 6 minutes\\n- button \\\"More Info\\\"\\n- heading \\\"Scheduled tasks\\\" [level=3]\\n- paragraph: \\\"Server time: 03:21 UTC\\\"\\n- combobox:\\n  - option \\\"Daily\\\" [selected]\\n  - option \\\"Hourly\\\"\\n- text: at\\n- spinbutton: \\\"4\\\"\\n- text: \\\":\\\"\\n- spinbutton: \\\"46\\\"\\n- text: UTC\\n- textbox \\\"For example, python3.6 /home/yourusername/myfolder/myscript.py\\\"\\n- textbox \\\"Optional description\\\"\\n- button \\\"Create\\\"\\n- table:\\n  - rowgroup:\\n    - row \\\" Frequency  Time  Command  Description  Expiry Actions Refresh task list\\\":\\n      - columnheader \\\" Frequency\\\":\\n        - generic: \\n        - text: Frequency\\n      - columnheader \\\" Time\\\":\\n        - generic: \\n        - text: Time\\n      - columnheader \\\" Command\\\":\\n        - generic: \\n        - text: Command\\n      - columnheader \\\" Description\\\":\\n        - generic: \\n        - text: Description\\n      - columnheader \\\" Expiry\\\":\\n        - generic: \\n        - text: Expiry\\n      - columnheader \\\"Actions\\\"\\n      - columnheader \\\"Refresh task list\\\":\\n        - button \\\"Refresh task list\\\":\\n          - generic: \\n  - rowgroup:\\n    - row \\\"daily 21:28 cd /home/Carix/autopilot_inbox/cloud/seo_rehab_guard_068 && python3.10 seo_rehab_guard_068_repair.py --dry-run seo068 ten-run production dry-run fallback never\\\":\\n      - cell \\\"daily\\\"\\n      - cell \\\"21:28\\\"\\n      - cell \\\"cd /home/Carix/autopilot_inbox/cloud/seo_rehab_guard_068 && python3.10 seo_rehab_guard_068_repair.py --dry-run\\\"\\n      - cell \\\"seo068 ten-run production dry-run fallback\\\"\\n      - cell \\\"never\\\"\\n      - cell:\\n        - link \\\"View task log\\\":\\n          - /url: /user/Carix/files/var/log/schedule-log-1502215.log\\n          - generic: \\n        - button \\\"Edit task\\\":\\n          - generic: \\n        - button \\\"Delete task\\\":\\n          - generic: \\n        - button \\\"Disable task\\\":\\n          - generic: \\n    - row \\\"daily 08:02 cd /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup && python3.10 installer.py install task083 install fallback never\\\":\\n      - cell \\\"daily\\\"\\n      - cell \\\"08:02\\\"\\n      - cell \\\"cd /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup && python3.10 installer.py install\\\"\\n      - cell \\\"task083 install fallback\\\"\\n      - cell \\\"never\\\"\\n      - cell:\\n        - link \\\"View task log\\\":\\n          - /url: /user/Carix/files/var/log/schedule-log-1502679.log\\n          - generic: \\n        - button \\\"Edit task\\\":\\n          - generic: \\n        - button \\\"Delete task\\\":\\n          - generic: \\n        - button \\\"Enable task\\\":\\n          - generic: \\n    - row \\\"daily 19:00 set -e; mkdir -p '/home/Carix/autopilot_inbox/cloud/task_096_tech_spec_ai_crm/data_enrichment' TASK096 v7 1788202686 fallback-1 never\\\":\\n      - cell \\\"daily\\\"\\n      - cell \\\"19:00\\\"\\n      - cell \\\"set -e; mkdir -p '/home/Carix/autopilot_inbox/cloud/task_096_tech_spec_ai_crm/data_enrichment'\\\"\\n      - cell \\\"TASK096 v7 1788202686 fallback-1\\\"\\n      - cell \\\"never\\\"\\n      - cell:\\n        - link \\\"View task log\\\":\\n          - /url: /user/Carix/files/var/log/schedule-log-1505035.log\\n          - generic: \\n        - button \\\"Edit task\\\":\\n          - generic: \\n        - button \\\"Delete task\\\":\\n          - generic: \\n        - button \\\"Disable task\\\":\\n          - generic: \\n- heading \\\"Always-on tasks\\\" [level=3]\\n- paragraph: Always-on tasks are scripts that are kept running all the time, and restarted if they crash.\\n- heading \\\"Add a new always-on task:\\\" [level=4]\\n- text: \\\"Run:\\\"\\n- textbox \\\"For example, python3.6 /home/yourusername/myfolder/myscript.py\\\"\\n- textbox \\\"Optional description\\\"\\n- button \\\"Create\\\"\\n- table:\\n  - rowgroup:\\n    - row \\\" Command  Description  State Actions Refresh task list\\\":\\n      - columnheader \\\" Command\\\":\\n        - generic: \\n        - text: Command\\n      - columnheader \\\" Description\\\":\\n        - generic: \\n        - text: Description\\n      - columnheader \\\" State\\\":\\n        - generic: \\n        - text: State\\n      - columnheader \\\"Actions\\\"\\n      - columnheader \\\"Refresh task list\\\":\\n        - button \\\"Refresh task list\\\":\\n          - generic: \\n  - rowgroup:\\n    - row \\\"python3.10 /home/Carix/start_safe.py Running\\\":\\n      - cell \\\"python3.10 /home/Carix/start_safe.py\\\":\\n        - generic: python3.10 /home/Carix/start_safe.py\\n      - cell\\n      - cell \\\"Running\\\"\\n      - cell:\\n        - link \\\"View task log\\\":\\n          - /url: /user/Carix/files/var/log/alwayson-log-266084.log\\n          - generic: \\n        - button \\\"Edit task\\\":\\n          - generic: \\n        - button \\\"Delete task\\\":\\n          - generic: \\n        - button \\\"Disable task\\\":\\n          - generic: \\n        - button \\\"Restart task\\\":\\n          - generic: \\n    - row \\\"python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json UA ART site connection watch — read-only — 5 min Running\\\":\\n      - cell \\\"python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json\\\":\\n        - generic: python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json\\n      - cell \\\"UA ART site connection watch — read-only — 5 min\\\":\\n        - generic: UA ART site connection watch — read-only — 5 min\\n      - cell \\\"Running\\\"\\n      - cell:\\n        - link \\\"View task log\\\":\\n          - /url: /user/Carix/files/var/log/alwayson-log-270984.log\\n          - generic: \\n        - button \\\"Edit task\\\":\\n          - generic: \\n        - button \\\"Delete task\\\":\\n          - generic: \\n        - button \\\"Disable task\\\":\\n          - generic: \\n        - button \\\"Restart task\\\":\\n          - generic: \\n- heading \\\"Running tasks\\\" [level=3]\\n- button \\\" Fetch process list\\\":\\n  - generic: \\n  - text: Fetch process list\\n- contentinfo:\\n  - paragraph:\\n    - text: Copyright © 2011-2026\\n    - link \\\"PythonAnywhere LLP\\\":\\n      - /url: /about/company_details/\\n    - text: —\\n    - link \\\"Terms\\\":\\n      - /url: /terms/\\n    - text: —\\n    - link \\\"Privacy & Cookies\\\":\\n      - /url: /privacy/\\n- generic: \"\n}\n",
+      "observed_at_utc": "2026-09-22T03:21:15.753636Z",
+      "sha256": "98ff8bf686471d7b2191389b7bb0bdfe917d8e171e864f926af0653acded5908"
+    }
+  },
+  "independently_reviewed_observations": true,
+  "observation_review": "check_pr114 read the exact saved authenticated console and Tasks UI snapshots; observed lowercase script matcher, no matches, absent manifest/receipt and identical current target/public bytes. This is incident-scope observation, not global writer exclusion.",
+  "observed_at_utc": "2026-09-22T03:21:15.753636Z",
+  "observed_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "observer_summary_sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+  "owner_instruction": "Сделай сейчас медленно, чтобы на сайте появлялась грузинская цена. Existing authorized recovery is limited to reconciling the proved aborted attempt; original publication gates remain.",
+  "proof_files": {
+    "current_target_and_http": {
+      "observed_at_utc": "2026-09-22T03:21:15.753636Z",
+      "path": "server_current_combined.txt",
+      "sha256": "02404597a0960ae14d0932f8e42fe005bef736078b8f248e67b685a53ef41147"
+    },
+    "github_active_runs": {
+      "observed_at_utc": "2026-09-22T03:18:46.578Z",
+      "path": "github_queue_fresh.json",
+      "sha256": "4742525e4c67beda42e7fe3afde34df2ecab9c22ed21c56ba4e73c00073c65ff"
+    },
+    "server_artifact_absence": {
+      "observed_at_utc": "2026-09-22T03:21:15.753636Z",
+      "path": "server_current_combined.txt",
+      "sha256": "02404597a0960ae14d0932f8e42fe005bef736078b8f248e67b685a53ef41147"
+    },
+    "server_processes_and_schedules": {
+      "observed_at_utc": "2026-09-22T03:21:15.753636Z",
+      "path": "processes_and_tasks_current.json",
+      "sha256": "98ff8bf686471d7b2191389b7bb0bdfe917d8e171e864f926af0653acded5908"
+    }
+  },
+  "remote_backup_outcome": "UNKNOWN",
+  "run_id": "35552076762",
+  "server": {
+    "account": "Carix",
+    "backup_manifest": "ABSENT",
+    "matching_always_on_task_count": 0,
+    "matching_process_count": 0,
+    "matching_scheduled_task_count": 0,
+    "process_matcher": "seo_daily_podbor_canonical_20260921.py",
+    "read_only": true,
+    "upload_receipt": "ABSENT"
+  },
+  "task_id": "SEO-DAILY-PODBOR-CANONICAL-20260921",
+  "workflow_run_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35552076762"
+}

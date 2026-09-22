@@ -17,15 +17,6 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "1790acb4a7300fa7"
-    },
-    {
-      "action": "MANUAL_RECONCILIATION",
-      "at": "2026-09-22T03:22:33.324526+00:00",
-      "class": "ABORTED_BEFORE_PRODUCTION",
-      "evidence_path": "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.authenticated-evidence.json",
-      "message": "Exact backup-only attempt closed; installation never opened. Remote backup outcome UNKNOWN; no backup/rollback PASS claimed.",
-      "retries_remaining": 0,
-      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-09-21T01:50:07Z",
@@ -55,7 +46,7 @@
   "production_required": true,
   "production_transaction_id": "tx-35552076762-d89fd9b950e5c72a",
   "production_transaction_path": "state/transactions/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json",
-  "production_transaction_status": "ROLLED_BACK",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-e6603209db939f31-d86ff7db2179ab3a",
   "receipt_path": "state/receipts/SEO-DAILY-PODBOR-CANONICAL-20260921.json",
   "receipt_validation_status": "PENDING",
@@ -81,7 +72,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "FAILED",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "247835dac22203ba094a2ef6e998a0c119d96c1361973a4e601771bf9fd5a408",
     "file_sha256": {
@@ -89,5 +80,5 @@
       "cloud/seo_daily_podbor_canonical_20260921/test_contract.py": "f0829e6f9795bb52d2061f64c17d26b1e68b20193d5c22894680b53bfbf0b6d4"
     }
   },
-  "updated_at": "2026-09-22T03:22:33.324526+00:00"
+  "updated_at": "2026-09-21T01:53:07Z"
 }
