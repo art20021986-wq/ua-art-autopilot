@@ -1,0 +1,41 @@
+{
+  "actual_server_preflight": false,
+  "author_file_manifest": {
+    "all_seven_files_bytes_and_sha256_independently_verified": true,
+    "path": "/workspace/scratch/38dfdd094ece/pr114-preflight-integration/FILE_MANIFEST.json",
+    "sha256": "d53b4dd94cb598ffa3be7b6de3eccc9fd4fd9c7a04218b59472005ea672ea5c2"
+  },
+  "author_scoped_integration_result": {
+    "checks": 23,
+    "fixture": "Actual captured HTML/private source before-images; synthetic local SQLite, routing source bytes, quota and Stage2 receipt; no server invocation.",
+    "path": "/workspace/scratch/38dfdd094ece/pr114-preflight-integration/SCOPED_INTEGRATION_RESULT.json",
+    "reviewer_read_test_implementation": true,
+    "reviewer_reran_tests": false,
+    "sha256": "4f11a77749e0b48b09eb8e9231369dc3febdc0259b03cd7e24415ebbfb51a6e1",
+    "status": "PASS_LOCAL_SYNTHETIC_INTEGRATION_ONLY"
+  },
+  "browser_run": false,
+  "candidate_manifest_sha256": "95d0b4a11b1ada311c384a2cbe213b6b58ae1da540f61b640c5effecf0fb3b8e",
+  "contract": "PR114-INDEPENDENT-PREFLIGHT-RECONCILIATION-FINAL-REVIEW-1",
+  "delivery_observer_canonical_file_present_and_exact": true,
+  "final_code_unchanged_since_independent_review": true,
+  "findings": [],
+  "installation_authority": false,
+  "prior_independent_code_and_full_row_review": {
+    "path": "/workspace/scratch/38dfdd094ece/pr114-offline/INDEPENDENT_PREFLIGHT_RECONCILIATION_REVIEW.json",
+    "sha256": "6aab516bc9a80115d42c86a7a7337603cba67e36d130195adfb1d3e85b60024c"
+  },
+  "production_written": false,
+  "reviewed_at": "2026-09-22T03:24:32.061105+00:00",
+  "scope_limits": [
+    "Local fixture integration only; actual server preflight still requires fresh full observation and quota",
+    "Current Preview rendering/resource binding and canonical production gates remain pending"
+  ],
+  "source_sha256": {
+    "bound_catalog_reconciliation.py": "39974670ad14f8bc92b56d213645a59b763dae3eb6af833b5aa41c1412f21424",
+    "build_preflight_bundle.py": "2018c4d84566d6a0b8fb1126f1462d41337ad5971a99dced55f06eb1a0fafedb",
+    "preflight.py": "d9049265641a4539b621d9e897c3d2ddedebe4a7d2583e92f5e2e345f61c3d1a",
+    "stage_preflight.py": "58e6d177ca71ffe2483ce8f63e0ff0d58c30468f27ecccf382625d84d62237a5"
+  },
+  "status": "PASS_SCOPED_OFFLINE_PREFLIGHT_INTEGRATION_REVIEW"
+}

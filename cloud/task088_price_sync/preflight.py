@@ -35,6 +35,12 @@ DEPENDENCIES = {"db.py", "cars_schema.py", "start_safe.py", "master_card.py",
                 "catalog_design_golden.html", "team_bot.py", "lock4_zhurnal.py",
                 "ua_additional_spec.py", "vin_spec_service.py"}
 MAX_FILE = 8 * 1024 * 1024
+CATALOG_RECONCILIATION = {
+    "contract": "PR114-EXACT-CATALOG-RECONCILIATION-INPUT-1",
+    "observer_file": "catalog_reconciliation_observer_20260922.json",
+    "observer_sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+}
+RECONCILIATION_TOOLS = {"bound_catalog_reconciliation.py"}
 
 
 def _sha(value):
@@ -91,6 +97,21 @@ def _database_hash(path):
     return digest.hexdigest()
 
 
+def _prepare_catalog_reconciliation(root, package, binding, rows):
+    """Derive only the reviewed two slots; preserve actual live before-images."""
+    if binding is None:
+        return {}, {}, None
+    if binding != CATALOG_RECONCILIATION:
+        raise ValueError("EXACT_CATALOG_RECONCILIATION_BINDING_REQUIRED")
+    observer = _read(_safe(package, binding["observer_file"]))
+    if _sha(observer) != binding["observer_sha256"]:
+        raise ValueError("CATALOG_RECONCILIATION_OBSERVER_HASH_MISMATCH")
+    adapter = importlib.import_module("bound_catalog_reconciliation")
+    originals = {name: _read(_safe(root, name)) for name in sorted(adapter.TARGETS)}
+    prepared, proof = adapter.reconcile_catalogs(originals, rows, observer)
+    return originals, prepared, proof
+
+
 def _fresh_quota(quota, now):
     try:
         instant = datetime.fromisoformat(quota["observed_at"].replace("Z", "+00:00"))
@@ -135,7 +156,11 @@ def run(output_id, expected_bundle_sha256, *, test_root=None, package_relative=P
     failures, candidates, before = [], {}, {}
     try:
         pins = bundle.get("package_sha256", {})
-        if set(pins) != MODULES | TOOLS:
+        reconciliation_binding = bundle.get("catalog_reconciliation")
+        if "catalog_reconciliation" in bundle and reconciliation_binding != CATALOG_RECONCILIATION:
+            raise ValueError("EXACT_CATALOG_RECONCILIATION_BINDING_REQUIRED")
+        extra_tools = RECONCILIATION_TOOLS if reconciliation_binding is not None else set()
+        if set(pins) != MODULES | TOOLS | extra_tools:
             raise ValueError("EXACT_PACKAGE_PIN_SET_REQUIRED")
         for name in sorted(pins):
             data = _read(_safe(package, name))
@@ -239,13 +264,18 @@ def run(output_id, expected_bundle_sha256, *, test_root=None, package_relative=P
             if bundle.get("expected_stage_counts") != counts:
                 report["blockers"].append("STAGE_COUNTS_DO_NOT_MATCH_REVIEWED_SNAPSHOT")
             by_code = {row["auto_number"]: row for row in published}
+            catalog_originals, catalog_intermediates, reconciliation = _prepare_catalog_reconciliation(
+                root, package, reconciliation_binding, published)
+            if reconciliation is not None:
+                report["catalog_reconciliation"] = reconciliation
             for folder in ("video", "site"):
                 for code in (*sorted(by_code), "katalog", "index"):
                     name = folder + "/" + code + ".html"
                     try:
-                        original = _read(_safe(root, name))
+                        original = catalog_originals[name] if name in catalog_originals else _read(_safe(root, name))
                         before[name] = _sha(original)
-                        text = original.decode("utf-8")
+                        intermediate = catalog_intermediates.get(name, original)
+                        text = intermediate.decode("utf-8")
                         if code == "index":
                             candidate, proof = engine.migrate_home_candidate(name, text, published, homepage_policy, routing)
                         elif code == "katalog":
@@ -260,6 +290,10 @@ def run(output_id, expected_bundle_sha256, *, test_root=None, package_relative=P
                                 and client_proof["unrelated_markup_preserved"] is True))
                         if client_proof["status"] == "PATCHED_EXACT_SCRIPT":
                             proof["outside_price_unchanged"] = False
+                        if name in catalog_intermediates:
+                            proof = dict(proof, before_sha256=before[name],
+                                strict_migration_before_sha256=_sha(intermediate),
+                                catalog_reconciliation=reconciliation["pages"][name])
                         candidates[name] = candidate.encode("utf-8")
                         report["html"][name] = dict(proof, status="PASS")
                     except Exception as exc:

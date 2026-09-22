@@ -1,0 +1,22 @@
+{
+  "status": "PASS_NEW_GENERATOR_SYNTHETIC_ONLY",
+  "checks": {
+    "exact_proposal_changes_and_original_preservation": "PASS",
+    "durable_exact_proof_bytes": "PASS",
+    "main_drift": "REJECTED_MAIN_DRIFT",
+    "stale_evidence": "REJECTED_FRESH_EVIDENCE_REQUIRED",
+    "stale_individual_proof": "REJECTED_FRESH_INDIVIDUAL_PROOF_REQUIRED",
+    "wrong_process_matcher": "REJECTED_EXACT_LOWERCASE_PROCESS_MATCHER_REQUIRED",
+    "active_process": "REJECTED_REMOTE_WRITER_NOT_EXCLUDED",
+    "target_drift": "REJECTED_TARGET_CHANGED_REFRESH_OBSERVER_AND_REVIEW",
+    "bad_proof_hash": "REJECTED_LOCAL_PROOF_HASH",
+    "invented_backup_pass": "REJECTED_DO_NOT_INVENT_BACKUP_OUTCOME"
+  },
+  "planner_sha256": "e6d5dd868f431ea656a9131be2f0db05dc26ad88178856fdcf88b4682110212b",
+  "test_sha256": "3a7850657b63547527cb1d0fd995e67d6aeaf45751350d4f3e4fc1c7e55e8d11",
+  "canonical_inputs_sha256": "7d72329f249bbfd9b2fa47c252f0ac7e877c8ac40e69781a1e8eb855a1c071b4",
+  "production_read": false,
+  "production_write": false,
+  "github_write": false,
+  "real_reconciliation_generated": false
+}

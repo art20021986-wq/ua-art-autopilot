@@ -1,0 +1,42 @@
+{
+  "contract": "PR114-OPTIONAL-BOUND-CATALOG-PREFLIGHT-INTEGRATION-1",
+  "status": "READY_FOR_INDEPENDENT_REVIEW_LOCAL_ONLY",
+  "recorded_at": "2026-09-22T03:22:24.098128+00:00",
+  "files": {
+    "SCOPED_INTEGRATION_RESULT.json": {
+      "sha256": "4f11a77749e0b48b09eb8e9231369dc3febdc0259b03cd7e24415ebbfb51a6e1",
+      "bytes": 1811
+    },
+    "check_reconciliation_preflight.py": {
+      "sha256": "e1a2b943ec7fd387ca0f0d532f16539c38783dc4f5523ce85bcc98b27017c877",
+      "bytes": 11852
+    },
+    "cloud/task088_price_sync/bound_catalog_reconciliation.py": {
+      "sha256": "39974670ad14f8bc92b56d213645a59b763dae3eb6af833b5aa41c1412f21424",
+      "bytes": 5195
+    },
+    "cloud/task088_price_sync/build_preflight_bundle.py": {
+      "sha256": "2018c4d84566d6a0b8fb1126f1462d41337ad5971a99dced55f06eb1a0fafedb",
+      "bytes": 7605
+    },
+    "cloud/task088_price_sync/catalog_reconciliation_observer_20260922.json": {
+      "sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+      "bytes": 85206
+    },
+    "cloud/task088_price_sync/preflight.py": {
+      "sha256": "d9049265641a4539b621d9e897c3d2ddedebe4a7d2583e92f5e2e345f61c3d1a",
+      "bytes": 23117
+    },
+    "cloud/task088_price_sync/stage_preflight.py": {
+      "sha256": "58e6d177ca71ffe2483ce8f63e0ff0d58c30468f27ecccf382625d84d62237a5",
+      "bytes": 5240
+    }
+  },
+  "actual_server_preflight": false,
+  "production_written": false,
+  "strict_migrator_changed": false,
+  "original_before_images_preserved": true,
+  "default_preflight_behavior_unchanged": true,
+  "source_candidate_bytes_equal_reviewed_66_files": true,
+  "next_server_preflight_requires_fresh_full_observation_and_quota": true
+}

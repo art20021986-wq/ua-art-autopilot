@@ -1,0 +1,67 @@
+{
+  "schema_version": "UA-ART-SCOPED-INDEPENDENT-PROPOSAL-REVIEW-1",
+  "reviewer": "/root/check_pr114/recovery_semantics",
+  "status": "PASS_SCOPED_ACTUAL_PROPOSAL_REVIEW_PENDING_APPLICATION_GATES",
+  "scope": "Exact SEO run 35552076762 repository-state reconciliation proposal and embedded captured evidence; no price installation acceptance.",
+  "proposal": {
+    "path": "actual_proposal_20260922/PLAN.json",
+    "sha256": "489da7b99d25f0b988601a369f4154a1b277e2e7d6de8e260b9b8cd49d3a5f23",
+    "created_at": "2026-09-22T03:22:33.324526+00:00",
+    "expected_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+    "writes": 8,
+    "deletes": 1,
+    "generator_sha256": "1d091e4736c8b0649b9837042a18615893d25ae225d0b1484c3a3f039aabc4e6",
+    "canonical_input_sha256": "7d72329f249bbfd9b2fa47c252f0ac7e877c8ac40e69781a1e8eb855a1c071b4",
+    "authenticated_evidence_sha256": "894548c46299c86ee854f4a47608621170405485933c3d19a1144e9f3585094b",
+    "reconciliation_sha256": "b462492e4a453b23e5166146a12c283dc4ad9f6874681c9b18bfcbca75df8985"
+  },
+  "verification": {
+    "actual_output_files_equal_exact_plan_write_set": true,
+    "all_before_and_after_hashes_match": true,
+    "deleted_halt_hash_matches_canonical_bytes": true,
+    "archived_halt_claim_transaction_equal_original_bytes": true,
+    "transaction_changed_keys": ["closed_at", "status"],
+    "claim_changed_keys": ["failure_history", "production_transaction_status", "task_execution_status", "updated_at"],
+    "prior_failure_history_preserved": true,
+    "retry_allowed_false": true,
+    "embedded_proof_bytes_match_original_files_and_hashes": true,
+    "embedded_jobs_equal_pinned_canonical_jobs": true,
+    "three_source_hashes_match_canonical_bytes": true,
+    "receipt_reconciliation_evidence_hash_chain_matches": true,
+    "proof_ages_at_generation_seconds": {
+      "current_target_and_http": 77.57089,
+      "github_active_runs": 226.746526,
+      "server_artifact_absence": 77.57089,
+      "server_processes_and_schedules": 77.57089
+    }
+  },
+  "captured_evidence_findings": [
+    "The saved console snapshot shows exact lowercase script matching over readable /proc command lines, with pids=[] at 2026-09-22T03:21:15.753636Z.",
+    "The exact run backup manifest and upload receipt are reported absent. These observations do not determine the historical remote backup execution result; UNKNOWN remains correct.",
+    "Current local target and public HTTP response both contain 33652 bytes and SHA256 1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6; HTTP status 200 and canonical value correspond to podbor.html.",
+    "The authenticated Carix Tasks snapshot at 03:21:26.612Z lists three unrelated scheduled entries and two unrelated always-on entries, with no entry for this SEO incident.",
+    "The recorded GitHub GET responses at 03:18:46.578Z show expected main and zero runs in queued, in_progress, pending, requested and waiting states.",
+    "Completed workflow jobs record backup failure and skipped open, production controller, rollback execution and finalize. No new backup, rollback or installation PASS is created by this proposal."
+  ],
+  "semantic_findings": [
+    "ROLLED_BACK is explicitly compatibility terminal metadata, with ABORTED_NO_PRODUCTION_WRITE limited to live business files and actual rollback false.",
+    "Original opened_at and backup hashes remain null. Historical unchanged-target proof is expressly not claimed.",
+    "Original request, approval, replay ledger, nonce marker, runtime and gates are outside the exact write set.",
+    "The proposed HALT receipt describes intended post-commit state. Before application, the enclosing PLAN remains explicitly PROPOSED_NOT_APPLIED."
+  ],
+  "blocking_findings": [],
+  "limitations": [
+    "This reviewer inspected saved raw console, Tasks and GitHub response evidence; no new network or authenticated service observation was made by this reviewer.",
+    "Process proof is incident scoped and covers readable command lines. It is not proof that every unrelated process or global writer is stopped.",
+    "Freshness was verified at proposal generation time. These observations are not indefinitely fresh and do not replace immediate pre-commit main and active-writer readback.",
+    "Complete proposed-repository pinned validators are being run separately and are not claimed passed by this review.",
+    "No repository application, HALT removal, live price installation or post-commit readback has been performed by this reviewer."
+  ],
+  "required_before_application": [
+    "Obtain PASS from unchanged pinned validators against the complete proposed repository.",
+    "Recheck actual main and relevant active writers immediately before applying; stop if the pinned parent or scoped conditions drift.",
+    "Apply this exact change set in one atomic commit with expected-parent comparison and no intermediate state.",
+    "Independently read back exact commit and diff, original archived HALT, zero pending transactions and unchanged anti-replay inputs after application."
+  ],
+  "application_or_server_mutations_performed": false
+}

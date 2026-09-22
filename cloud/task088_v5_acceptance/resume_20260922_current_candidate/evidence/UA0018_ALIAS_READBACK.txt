@@ -1,0 +1,34 @@
+'files':{n:({'exists':True,'by"
+      - generic: "tes':pathlib.Path(n).stat().st_size,'sha256':hashlib.sha256(pathlib.Path(n).read_bytes()).hexdigest()} if pathlib.Path(n).is_file() else {'exists':F"
+      - generic: "alse}) for n in paths}},sort_keys=True))"
+      - generic: P> PY
+      - generic: "{\"files\": {\"/home/Carix/archive/backups/SEO-DAILY-PODBOR-CANONICAL-20260921/35552076762/manifest.json\": {\"exists\": false}, \"/home/Carix/uploads/seo_"
+      - generic: "daily_podbor_canonical_20260921.json\": {\"exists\": false}, \"/home/Carix/video/podbor.html\": {\"bytes\": 33652, \"exists\": true, \"sha256\": \"1a8cc3d403151"
+      - generic: "b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6\"}}, \"matching_processes\": [], \"observed_at\": \"2026-09-22T03:12:00.478618+00:00\"}"
+      - generic: 03:12 ~ $ python3.10 -I -B - <<'PY'
+      - generic: i> import os,pathlib,hashlib,json,datetime
+      - generic: "> n=b'seo_daily_podbor_canonical_20260921.py'"
+      - generic: a> a=[]
+      - generic: "f> for p in pathlib.Path('/proc').glob('[0-9]*/cmdline'):"
+      - generic: "> try:"
+      - generic: "> b=p.read_bytes()"
+      - generic: "> if n in b and int(p.parent.name)!=os.getpid(): a.append({'pid':int(p.parent.name),'cmd_sha256':hashlib.sha256(b).hexdigest()})"
+      - generic: "> except (OSError,ValueError): pass"
+      - generic: "p> print(json.dumps({'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'exact_script_matching_processes':a}))"
+      - generic: "> PY"
+      - generic: "{\"at\": \"2026-09-22T03:15:18.280058+00:00\", \"exact_script_matching_processes\": []}"
+      - generic: 03:15 ~ $ python3.10 -I -B - <<'PY'
+      - generic: i> import sqlite3,json,datetime
+      - generic: "> c=sqlite3.connect('file:/home/Carix/crm.db?mode=ro',uri=True,timeout=0.5)"
+      - generic: c> c.execute('PRAGMA query_only=ON')
+      - generic: "c> cols={r[1] for r in c.execute('PRAGMA table_info(cars)')}"
+      - generic: n> names=[n for n in ['id','public_id','price_uah','price_ge','price','price_usd','sale_price','price_final'] if n in cols]
+      - generic: o> rows=c.execute('SELECT '+','.join(names)+' FROM cars WHERE id=28').fetchall()
+      - generic: "p> print(json.dumps({'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'columns':names,'rows':rows},ensure_ascii=False))"
+      - generic: c> c.close()
+      - generic: P> PY
+      - generic: "{\"at\": \"2026-09-22T03:16:50.202888+00:00\", \"columns\": [\"id\", \"price_uah\"], \"rows\": [[28, 22900]]}"
+      - generic: 03:16 ~ $
+      - textbox
+    - generic "(10, 47)"
+- generic: 

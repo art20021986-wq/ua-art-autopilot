@@ -1,0 +1,64 @@
+{
+  "canonical_input_sha256": "7d72329f249bbfd9b2fa47c252f0ac7e877c8ac40e69781a1e8eb855a1c071b4",
+  "contract": "SEO-35552076762-OFFLINE-RECOVERY-PROPOSAL-1",
+  "created_at": "2026-09-22T03:22:33.324526+00:00",
+  "deletes": {
+    "state/AUTOPILOT_HALT.json": "81114d5160ed5223ded65bcb1f29ea6c44ade21bc587d16f5db13db3935cade5"
+  },
+  "expected_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "git_writes": false,
+  "not_authorized": [
+    "re-run old workflow",
+    "create backup/rollback/final PASS receipts",
+    "modify runtime or approvals",
+    "install prices before their own gates"
+  ],
+  "required_after_publish": [
+    "exact main commit/diff/readback",
+    "HALT absence and original archived bytes",
+    "zero pending production transactions",
+    "no old launch replay"
+  ],
+  "required_before_publish": [
+    "independent exact-diff review",
+    "unchanged pinned control-plane validators on complete proposed repository",
+    "fresh actual main and active writers readback",
+    "single atomic commit and non-forced compare of expected parent; no mixed intermediate state"
+  ],
+  "server_writes": false,
+  "status": "PROPOSED_NOT_APPLIED_REQUIRES_INDEPENDENT_REVIEW_AND_EXACT_MAIN_READBACK",
+  "writes": {
+    "state/claims/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json": {
+      "after_sha256": "77581960ca0953a779ee589f278db1ea1546c86271d8409c4a0c2ded46c103cc",
+      "before_sha256": "59f12a568c9132085f59284a85f1df93401444161f187307fc73b6f34a98dd1e"
+    },
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/claim.before.json": {
+      "after_sha256": "59f12a568c9132085f59284a85f1df93401444161f187307fc73b6f34a98dd1e",
+      "before_sha256": null
+    },
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/halt.json": {
+      "after_sha256": "81114d5160ed5223ded65bcb1f29ea6c44ade21bc587d16f5db13db3935cade5",
+      "before_sha256": null
+    },
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/receipt.json": {
+      "after_sha256": "65319fbea19fb8ac2a2a138c871040d163946ffe0a3f33071f6eb64ef92936a8",
+      "before_sha256": null
+    },
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/transaction.before.json": {
+      "after_sha256": "2d197318d5cf77a11382c3fa56e3036e5b44a4c1fd78a12cb5e16da78b3cf46d",
+      "before_sha256": null
+    },
+    "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.aborted-before-production.json": {
+      "after_sha256": "b462492e4a453b23e5166146a12c283dc4ad9f6874681c9b18bfcbca75df8985",
+      "before_sha256": null
+    },
+    "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.authenticated-evidence.json": {
+      "after_sha256": "894548c46299c86ee854f4a47608621170405485933c3d19a1144e9f3585094b",
+      "before_sha256": null
+    },
+    "state/transactions/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json": {
+      "after_sha256": "a9cb2f24c78dcf1670f455a2d63b6e09f04a59361d49a0b9623a76e1103c79f5",
+      "before_sha256": "2d197318d5cf77a11382c3fa56e3036e5b44a4c1fd78a12cb5e16da78b3cf46d"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "browser_run": false,
+  "candidate_manifest_sha256": "95d0b4a11b1ada311c384a2cbe213b6b58ae1da540f61b640c5effecf0fb3b8e",
+  "code_review": [
+    "Exact optional metadata required; unknown/null binding refused before package import",
+    "Only optional exact helper added to hash-bound Python package closure",
+    "Observer JSON kept separate from Python source closure and fixed SHA verified",
+    "Reconciled catalogs retain actual original before hashes in report and manifest",
+    "Strict migration receives complete original CRM rows, not reduced observation rows",
+    "Existing end-of-preflight CRM/source/HTML/protected-inventory rechecks retained",
+    "No installation authority, Gate B, claims or acceptance created"
+  ],
+  "contract": "PR114-INDEPENDENT-PREFLIGHT-RECONCILIATION-REVIEW-1",
+  "delivery_requirement": "Exact observer bytes must exist at cloud/task088_price_sync/catalog_reconciliation_observer_20260922.json in the selected immutable commit for stage_preflight delivery",
+  "findings": [],
+  "independent_executed_probes": [
+    "Full rows with synthetic extra fields unchanged by adapter",
+    "Both catalog results equal independently reviewed candidate bytes",
+    "Conflicting synthetic price_usd alias still rejected by strict migrator",
+    "Original captured HTML bytes unchanged"
+  ],
+  "installation_authority": false,
+  "integration_test_suite_result": "SEPARATE_AUTHOR_SCOPED_RESULT_PENDING",
+  "legacy_alias_live_readback": "Parent independently observed requested legacy alias columns absent; no claim of this agent observing server",
+  "observer_sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+  "production_preflight_run": false,
+  "production_written": false,
+  "reviewed_at": "2026-09-22T03:20:56.373743+00:00",
+  "source_sha256": {
+    "bound_catalog_reconciliation.py": "39974670ad14f8bc92b56d213645a59b763dae3eb6af833b5aa41c1412f21424",
+    "build_preflight_bundle.py": "2018c4d84566d6a0b8fb1126f1462d41337ad5971a99dced55f06eb1a0fafedb",
+    "preflight.py": "d9049265641a4539b621d9e897c3d2ddedebe4a7d2583e92f5e2e345f61c3d1a",
+    "stage_preflight.py": "58e6d177ca71ffe2483ce8f63e0ff0d58c30468f27ecccf382625d84d62237a5"
+  },
+  "status": "PASS_SCOPED_CODE_REVIEW_AND_INDEPENDENT_FULL_ROW_PROBES"
+}

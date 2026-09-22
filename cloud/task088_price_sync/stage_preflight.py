@@ -14,9 +14,14 @@ import urllib.request
 ROOT = Path('/home/Carix/autopilot_inbox/cloud')
 
 REPO = 'https://raw.githubusercontent.com/art20021986-wq/ua-art-autopilot/'
+CATALOG_RECONCILIATION = {
+    'contract': 'PR114-EXACT-CATALOG-RECONCILIATION-INPUT-1',
+    'observer_file': 'catalog_reconciliation_observer_20260922.json',
+    'observer_sha256': '07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454',
+}
 
 
-def package_mapping():
+def package_mapping(*, catalog_reconciliation=False):
     """Exact public paths accepted by the hash-bound staging route."""
     mapping = {}
     for name in ('preflight.py', 'install_package.py', 'patch_cars_ui.py', 'patch_guard.py', 'patch_site_counters.py', 'patch_publikaciya.py',
@@ -31,6 +36,8 @@ def package_mapping():
         mapping[name] = 'cloud/task088_autopilot_owner_policy/' + name
     for name in ('integrate_private_sources.py', 'publication_fence.py', 'mutation_recovery.py', 'visibility_lifecycle.py'):
         mapping[name] = 'cloud/task088_v5_writer_fence/' + name
+    if catalog_reconciliation:
+        mapping['bound_catalog_reconciliation.py'] = 'cloud/task088_price_sync/bound_catalog_reconciliation.py'
     return mapping
 
 
@@ -62,7 +69,10 @@ def main():
     bundle = json.loads(raw)
     if bundle['contract'] != 'TASK088-PRICE-SYNC-READONLY-PREFLIGHT-5':
         raise ValueError('WRONG_CONTRACT')
-    mapping = package_mapping()
+    binding = bundle.get('catalog_reconciliation')
+    if 'catalog_reconciliation' in bundle and binding != CATALOG_RECONCILIATION:
+        raise ValueError('EXACT_CATALOG_RECONCILIATION_BINDING_REQUIRED')
+    mapping = package_mapping(catalog_reconciliation=binding is not None)
     if set(mapping) != set(bundle['package_sha256']):
         raise ValueError('EXACT_PACKAGE_PIN_SET_REQUIRED')
     payload = {'preflight_bundle.json': raw}
@@ -72,6 +82,11 @@ def main():
             raise ValueError('PACKAGE_HASH_MISMATCH:' + name)
         compile(data, name, 'exec')
         payload[name] = data
+    if binding is not None:
+        data = read('cloud/task088_price_sync/' + binding['observer_file'])
+        if hashlib.sha256(data).hexdigest() != binding['observer_sha256']:
+            raise ValueError('CATALOG_RECONCILIATION_OBSERVER_HASH_MISMATCH')
+        payload[binding['observer_file']] = data
     DEST.mkdir(mode=0o700)
     for name, data in sorted(payload.items()):
         fd = os.open(DEST / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)

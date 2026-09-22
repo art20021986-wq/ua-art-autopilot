@@ -12,12 +12,18 @@ from pathlib import Path
 import re
 import zipfile
 
+CATALOG_RECONCILIATION = {
+    "contract": "PR114-EXACT-CATALOG-RECONCILIATION-INPUT-1",
+    "observer_file": "catalog_reconciliation_observer_20260922.json",
+    "observer_sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+}
+
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def package_mapping(repository):
+def package_mapping(repository, *, catalog_reconciliation=False):
     cloud = Path(repository) / "cloud"
     sync, renderer, policy = (cloud / name for name in (
         "task088_price_sync", "task088_stage3_renderer", "task088_autopilot_owner_policy"))
@@ -33,10 +39,13 @@ def package_mapping(repository):
         mapping[name] = policy / name
     for name in ("integrate_private_sources.py", "publication_fence.py", "mutation_recovery.py", "visibility_lifecycle.py"):
         mapping[name] = cloud / "task088_v5_writer_fence" / name
+    if catalog_reconciliation:
+        mapping["bound_catalog_reconciliation.py"] = sync / "bound_catalog_reconciliation.py"
     return mapping
 
 
-def build(repository, *, observation, stage2_receipt, output_directory, routing_evidence=None):
+def build(repository, *, observation, stage2_receipt, output_directory, routing_evidence=None,
+          catalog_reconciliation_observer=None):
     repository = Path(repository).resolve()
     observed_raw = Path(observation).read_bytes()
     observed = json.loads(observed_raw)
@@ -46,7 +55,8 @@ def build(repository, *, observation, stage2_receipt, output_directory, routing_
     instant = datetime.fromisoformat(observed["observed_at"].replace("Z", "+00:00"))
     if instant.tzinfo is None or not 0 <= (datetime.now(timezone.utc) - instant).total_seconds() <= 1800:
         raise ValueError("OBSERVATION_STALE")
-    files = {name: path.read_bytes() for name, path in package_mapping(repository).items()}
+    files = {name: path.read_bytes() for name, path in package_mapping(repository,
+        catalog_reconciliation=catalog_reconciliation_observer is not None).items()}
     for name, data in files.items():
         compile(data, name, "exec")
     from install_package import SOURCES, DEPENDENCIES
@@ -72,6 +82,15 @@ def build(repository, *, observation, stage2_receipt, output_directory, routing_
         "quota_evidence": observed["quota_evidence"], "stage2_receipt": stage2,
         "canonical_stage2_raw_file_sha256": sha(stage2_bytes),
         "authority_status": "READONLY_PREFLIGHT_NOT_A_PRODUCTION_GATE"}
+    if catalog_reconciliation_observer is not None:
+        observer_bytes = Path(catalog_reconciliation_observer).read_bytes()
+        if sha(observer_bytes) != CATALOG_RECONCILIATION["observer_sha256"]:
+            raise ValueError("EXACT_CATALOG_RECONCILIATION_OBSERVER_REQUIRED")
+        observer = json.loads(observer_bytes)
+        if observer["database"]["published_sha256"] != observed["database"]["published_sha256"]:
+            raise ValueError("CURRENT_PUBLISHED_ROWS_RECONCILIATION_BINDING_MISMATCH")
+        bundle["catalog_reconciliation"] = dict(CATALOG_RECONCILIATION)
+        files[CATALOG_RECONCILIATION["observer_file"]] = observer_bytes
     if routing_evidence is not None:
         from install_package import validate_routing
         routing_raw = Path(routing_evidence).read_bytes()
@@ -106,6 +125,8 @@ if __name__ == "__main__":
     parser.add_argument("--stage2-receipt", required=True)
     parser.add_argument("--output-directory", required=True)
     parser.add_argument("--routing-evidence")
+    parser.add_argument("--catalog-reconciliation-observer")
     args = parser.parse_args()
     build(args.repository, observation=args.observation,
-          stage2_receipt=args.stage2_receipt, output_directory=args.output_directory, routing_evidence=args.routing_evidence)
+          stage2_receipt=args.stage2_receipt, output_directory=args.output_directory, routing_evidence=args.routing_evidence,
+          catalog_reconciliation_observer=args.catalog_reconciliation_observer)
