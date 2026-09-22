@@ -51,7 +51,8 @@
     "Owner repeated active website outage. Emergency recovery execution is blocked by actual unresolved UA0022 transaction; no restart performed. Observed separate Preview stage in sharedconsole07:29 stopping INPUT_SHA256_MISMATCH before a verified final outcome. Existing continuation instructions now prioritize emergency recovery and defer new Preview writes. Existing scheduler remains enabled; no claim that its currently running turn was cancelled.",
     "September20 emergency availability reconciliation completed read-only: UA0022 installation receipt and publisher result PASS; four installed runtime hashes match manifest. Apex and www rendered, home/catalog/UA0022 card/diagnostic returned HTTP200, public card/diagnostic hashes match server files, and fresh continuous monitor finished healthy. No reload, Preview stage, PR114 install, HALT removal or rollback replay. Public availability restored; UA0022 control-plane finalization remains ROLLING_BACK/EMERGENCY_HALT.",
     "September20 UA0022 forward-reconciliation preparation completed without production writes: exact transaction/claim/HALT/backup/request/live-evidence hashes pinned; data-only atomic exact-parent candidate built and read back at commit99d1b566; isolated tests5/5 PASS. Independent review remains pending; main and HALT unchanged.",
-    "September20 UA0022 independent read-only review BLOCKED the first forward-reconciliation candidate. Exact main bytes disagree with all five repository fixtures, HALT archive is not byte-identical, and the live gate is fail-open for empty byte-match/failed monitor. Review and exact main hashes saved; main/HALT/runtime unchanged; PR114 remains held at8/20."
+    "September20 UA0022 independent read-only review BLOCKED the first forward-reconciliation candidate. Exact main bytes disagree with all five repository fixtures, HALT archive is not byte-identical, and the live gate is fail-open for empty byte-match/failed monitor. Review and exact main hashes saved; main/HALT/runtime unchanged; PR114 remains held at8/20.",
+    "September22 owner delivered reviewed dynamic observer. ExactSHA verified at rootserverpath; one bounded23second capturePASS with all10stabilityflags,21cars/46coreHTML. Summary+manifest independently matchserverSHA; all5exportparts matchmanifest. No production businesswrites or acceptanceincrement."
   ],
   "credential_boundary": {
     "preview_evaluation_requires_reader_token": false,
@@ -67,7 +68,7 @@
   },
   "current_credential_state": "ABSENT_OBSERVED_2026-09-15T05:28:02.877826+00:00; receiver SHA matched; console48168693 remains at shell, hidden receiver not started",
   "durable_evidence_commit": "6bb045fdd9614affee47d1b5a104cc3df27982ed",
-  "fresh_server_observation": "cloud/task088_v5_acceptance/point4_status_completion_20260920/CURRENT_CORE_OBSERVATION.json",
+  "fresh_server_observation": "cloud/task088_v5_acceptance/resume_20260922/ACTUAL_CAPTURE_GEPRICE01.json",
   "full_preview_gate": "HISTORICAL_PASS_24_OF_24_CURRENT_CANDIDATE_PENDING",
   "further_required": [
     "Reconcile actual current inputs, Preview state and all unknown external operations before resuming; use latest point4 checkpoint and V2 delivery plan.",
@@ -78,14 +79,14 @@
     "Set up protected server reader credential only when required, using hidden-input receiver; never ask for a secret in chat. Finish live UA/GE synchronization, recovery, Stage4 receipt and final20/20 gate."
   ],
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
-  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260922/CHECKPOINT.json",
+  "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260922/ACTUAL_CAPTURE_GEPRICE01.json",
   "next_action": {
-    "kind": "WAIT_MANUAL_TRANSFER_BROWSER_SECURITY_POLICY",
-    "detail": "Current owner-authorized attempt was blocked by browser URL security policy at setFiles. No workaround. The exact independently reviewed dynamic observer is saved under resume_20260922; owner/manual operator must deliver it through normal Files UI. Verify target SHA and unique output before one bounded capture. Old22-car static package cannot be published over current21-car data."
+    "kind": "BUILD_AND_REVIEW_CURRENT_21_CAR_CANDIDATE",
+    "detail": "Owner-delivered observer hash verified and run exactly once; actual stable capture PASS, all5parts received with exact checksums. Build from this capture, preserve deletedUA0002 and CRMUA0018=22900. Both catalogues alone retain old19900; reviewed exact derivation required. Complete actual Preview and existing canonical gates before publication."
   },
   "observed_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
   "observed_pr_head_before_this_update": "47fc6cf4c1f33a122c5dcb34aff595b7bcaeeb9c",
-  "owner_current_request": "У меня не работает сайт до сих пор. Запусти немедленное восстановление.",
+  "owner_current_request": "Сделай сейчас медленно, чтобы на сайте появлялась грузинская цена. Загрузил.",
   "owner_fullscreen_observation": {
     "path": "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
     "sha256": "55a970c7b34745232fa132883b5d87344740db93c272eee6bca7da5754d6b623"
@@ -121,7 +122,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-22T02:48:29.190Z",
+  "recorded_at": "2026-09-22T03:13:35.436Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -243,7 +244,7 @@
     "direct_reload": false,
     "owner_network_verified": false
   },
-  "foreground_in_progress": false,
+  "foreground_in_progress": true,
   "current_preview_gate": "NOT_ISSUED_CURRENT_42_BROWSER_CASES_PENDING",
   "publication_status_policy": {
     "path": "cloud/task088_v5_acceptance/publication_status_policy_20260920/PUBLICATION_STATUS_POLICY.json",
@@ -260,10 +261,10 @@
     "current_preview_pending": true
   },
   "current_candidate_acceptance": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING",
-  "foreground_operation_id": "pr114-point4-status-20260920T054458Z",
+  "foreground_operation_id": "pr114_point4_core_20260922_geprice01",
   "foreground_intent": "cloud/task088_v5_acceptance/point4_status_completion_20260920/INTENT.json",
   "foreground_completed_at": "2026-09-20T07:19:01.255Z",
-  "foreground_outcome": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_TRANSPORT_BLOCKED",
+  "foreground_outcome": "ACTUAL_CAPTURE_PASS_OFFLINE_CANDIDATE_BUILD",
   "latest_point4_operation": {
     "operation_id": "pr114-point4-status-20260920T054458Z",
     "status": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_TRANSPORT_BLOCKED",
@@ -321,14 +322,18 @@
   },
   "previous_checkpoint_before_20260922": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/INDEPENDENT_REVIEW.json",
   "resume_20260922": {
-    "checkpoint": "cloud/task088_v5_acceptance/resume_20260922/CHECKPOINT.json",
+    "checkpoint": "cloud/task088_v5_acceptance/resume_20260922/ACTUAL_CAPTURE_GEPRICE01.json",
     "prepared_commit": "8b7e9727ca5bac06940656fee402ed39b8fda3d1",
     "observed_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
     "published_database_rows": 21,
     "source_sha256": "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d",
-    "status": "BLOCKED_MANUAL_DELIVERY_REQUIRED",
+    "status": "ACTUAL_CAPTURE_PASS_CANDIDATE_BUILD_IN_PROGRESS",
     "production_write": false,
-    "remote_observer_execution": false,
-    "scope": "Live readonly DB/UI observations and isolated local preparation only"
+    "remote_observer_execution": true,
+    "scope": "Actual read-only current capture and isolated candidate preparation; no production business/source/service write.",
+    "observer_launched_once": true,
+    "capture_summary_sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+    "capture_manifest_sha256": "d6785dabc3f3de4aff827675b10be080add16a3b499d91ed05e56a0c5fc7d900",
+    "capture_evidence_commit": "e4a6a9e12a64197f5b2fdf74f1fcf17bc86b01be"
   }
 }
