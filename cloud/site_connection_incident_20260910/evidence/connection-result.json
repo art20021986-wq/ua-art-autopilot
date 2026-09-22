@@ -1,0 +1,278 @@
+{
+  "dns": [
+    {
+      "host": "uaart.com.ua",
+      "records": {
+        "A": {
+          "exit_code": 0,
+          "stderr": "",
+          "stdout": "\n; <<>> DiG 9.18.39-0ubuntu0.24.04.7-Ubuntu <<>> +time=3 +tries=1 uaart.com.ua A\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 44671\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 65494\n;; QUESTION SECTION:\n;uaart.com.ua.\t\t\tIN\tA\n\n;; ANSWER SECTION:\nuaart.com.ua.\t\t300\tIN\tA\t91.194.250.154\n\n;; Query time: 65 msec\n;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)\n;; WHEN: Thu Sep 10 09:50:48 UTC 2026\n;; MSG SIZE  rcvd: 57\n\n"
+        },
+        "AAAA": {
+          "exit_code": 0,
+          "stderr": "",
+          "stdout": "\n; <<>> DiG 9.18.39-0ubuntu0.24.04.7-Ubuntu <<>> +time=3 +tries=1 uaart.com.ua AAAA\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 708\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 65494\n;; QUESTION SECTION:\n;uaart.com.ua.\t\t\tIN\tAAAA\n\n;; AUTHORITY SECTION:\nuaart.com.ua.\t\t300\tIN\tSOA\tns19.rehost.com.ua. hostmaster.redo.com.ua. 2026081301 10000 2400 604800 3600\n\n;; Query time: 273 msec\n;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)\n;; WHEN: Thu Sep 10 09:50:48 UTC 2026\n;; MSG SIZE  rcvd: 105\n\n"
+        },
+        "CNAME": {
+          "exit_code": 0,
+          "stderr": "",
+          "stdout": "\n; <<>> DiG 9.18.39-0ubuntu0.24.04.7-Ubuntu <<>> +time=3 +tries=1 uaart.com.ua CNAME\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 23601\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 65494\n;; QUESTION SECTION:\n;uaart.com.ua.\t\t\tIN\tCNAME\n\n;; AUTHORITY SECTION:\nuaart.com.ua.\t\t299\tIN\tSOA\tns19.rehost.com.ua. hostmaster.redo.com.ua. 2026081301 10000 2400 604800 3600\n\n;; Query time: 261 msec\n;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)\n;; WHEN: Thu Sep 10 09:50:48 UTC 2026\n;; MSG SIZE  rcvd: 105\n\n"
+        }
+      }
+    },
+    {
+      "host": "www.uaart.com.ua",
+      "records": {
+        "A": {
+          "exit_code": 0,
+          "stderr": "",
+          "stdout": "\n; <<>> DiG 9.18.39-0ubuntu0.24.04.7-Ubuntu <<>> +time=3 +tries=1 www.uaart.com.ua A\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 7101\n;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 65494\n;; QUESTION SECTION:\n;www.uaart.com.ua.\t\tIN\tA\n\n;; ANSWER SECTION:\nwww.uaart.com.ua.\t300\tIN\tCNAME\twebapp-3170682.pythonanywhere.com.\nwebapp-3170682.pythonanywhere.com. 300 IN A\t35.173.69.207\n\n;; Query time: 111 msec\n;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)\n;; WHEN: Thu Sep 10 09:50:48 UTC 2026\n;; MSG SIZE  rcvd: 108\n\n"
+        },
+        "AAAA": {
+          "exit_code": 0,
+          "stderr": "",
+          "stdout": "\n; <<>> DiG 9.18.39-0ubuntu0.24.04.7-Ubuntu <<>> +time=3 +tries=1 www.uaart.com.ua AAAA\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 24529\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 65494\n;; QUESTION SECTION:\n;www.uaart.com.ua.\t\tIN\tAAAA\n\n;; ANSWER SECTION:\nwww.uaart.com.ua.\t299\tIN\tCNAME\twebapp-3170682.pythonanywhere.com.\n\n;; AUTHORITY SECTION:\npythonanywhere.com.\t299\tIN\tSOA\tns-1351.awsdns-40.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400\n\n;; ADDITIONAL SECTION:\nwebapp-3170682.pythonanywhere.com. 299 IN A\t35.173.69.207\n\n;; Query time: 35 msec\n;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)\n;; WHEN: Thu Sep 10 09:50:48 UTC 2026\n;; MSG SIZE  rcvd: 190\n\n"
+        },
+        "CNAME": {
+          "exit_code": 0,
+          "stderr": "",
+          "stdout": "\n; <<>> DiG 9.18.39-0ubuntu0.24.04.7-Ubuntu <<>> +time=3 +tries=1 www.uaart.com.ua CNAME\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 6725\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 2\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 65494\n;; QUESTION SECTION:\n;www.uaart.com.ua.\t\tIN\tCNAME\n\n;; ANSWER SECTION:\nwww.uaart.com.ua.\t299\tIN\tCNAME\twebapp-3170682.pythonanywhere.com.\n\n;; ADDITIONAL SECTION:\nwebapp-3170682.pythonanywhere.com. 299 IN A\t35.173.69.207\n\n;; Query time: 0 msec\n;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)\n;; WHEN: Thu Sep 10 09:50:48 UTC 2026\n;; MSG SIZE  rcvd: 108\n\n"
+        }
+      }
+    }
+  ],
+  "finished_at": "2026-09-10T09:50:48.832375+00:00",
+  "http": [
+    {
+      "agent": "default",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/2 301 \ncontent-type: text/html\ncontent-length: 707\ndate: Thu, 10 Sep 2026 09:50:48 GMT\nserver: LiteSpeed/6.0.12 Enterprise\nlocation: https://www.uaart.com.ua/video/index.html?incident_probe=1789033847967032547\nx-turbo-charged-by: LiteSpeed\nx-origin-tag: d069b3e33c2b1f\nstrict-transport-security: max-age=63072000; includeSubdomains;\n\nHTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 34488\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Mon, 31 Aug 2026 09:33:00 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/index.html?incident_probe=1789033847967032547 dns=0.268814 tcp=0.385740 tls=0.545755 ttfb=0.670539 total=0.670687 verify=0\n",
+      "url": "https://uaart.com.ua/"
+    },
+    {
+      "agent": "iphone_chrome",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/2 301 \ncontent-type: text/html\ncontent-length: 707\ndate: Thu, 10 Sep 2026 09:50:48 GMT\nserver: LiteSpeed/6.0.12 Enterprise\nlocation: https://www.uaart.com.ua/video/index.html?incident_probe=1789033847967202181\nx-turbo-charged-by: LiteSpeed\nx-origin-tag: d069b3e33c2b1f\nstrict-transport-security: max-age=63072000; includeSubdomains;\n\nHTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 34488\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Mon, 31 Aug 2026 09:33:00 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/index.html?incident_probe=1789033847967202181 dns=0.268734 tcp=0.385013 tls=0.544738 ttfb=0.678995 total=0.679482 verify=0\n",
+      "url": "https://uaart.com.ua/"
+    },
+    {
+      "agent": "iphone_webview",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/2 301 \ncontent-type: text/html\ncontent-length: 707\ndate: Thu, 10 Sep 2026 09:50:48 GMT\nserver: LiteSpeed/6.0.12 Enterprise\nlocation: https://www.uaart.com.ua/video/index.html?incident_probe=1789033848384846047\nx-turbo-charged-by: LiteSpeed\nx-origin-tag: d069b3e33c2b1f\nstrict-transport-security: max-age=63072000; includeSubdomains;\n\nHTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 34488\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Mon, 31 Aug 2026 09:33:00 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/index.html?incident_probe=1789033848384846047 dns=0.000900 tcp=0.117453 tls=0.262611 ttfb=0.387173 total=0.387332 verify=0\n",
+      "url": "https://uaart.com.ua/"
+    },
+    {
+      "agent": "default",
+      "exit_code": 6,
+      "family": "-6",
+      "stderr": "curl: (6) Could not resolve host: uaart.com.ua\n",
+      "stdout": "\nMETRICS http=000 remote_ip= final=https://uaart.com.ua/?incident_probe=1789033848397086694 dns=0.000000 tcp=0.000000 tls=0.000000 ttfb=0.000000 total=0.127673 verify=0\n",
+      "url": "https://uaart.com.ua/"
+    },
+    {
+      "agent": "default",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/1.1 302 Found\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html; charset=utf-8\nContent-Length: 467\nConnection: keep-alive\nLocation: https://www.uaart.com.ua/video/index.html\nCache-Control: no-store\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\nHTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 34488\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Mon, 31 Aug 2026 09:33:00 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/index.html dns=0.000618 tcp=0.002683 tls=0.030190 ttfb=0.048325 total=0.048513 verify=0\n",
+      "url": "https://www.uaart.com.ua/"
+    },
+    {
+      "agent": "iphone_chrome",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/1.1 302 Found\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html; charset=utf-8\nContent-Length: 467\nConnection: keep-alive\nLocation: https://www.uaart.com.ua/video/index.html\nCache-Control: no-store\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\nHTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 34488\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Mon, 31 Aug 2026 09:33:00 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/index.html dns=0.000972 tcp=0.002876 tls=0.026034 ttfb=0.060303 total=0.060451 verify=0\n",
+      "url": "https://www.uaart.com.ua/"
+    },
+    {
+      "agent": "iphone_webview",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/1.1 302 Found\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html; charset=utf-8\nContent-Length: 467\nConnection: keep-alive\nLocation: https://www.uaart.com.ua/video/index.html\nCache-Control: no-store\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\nHTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 34488\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Mon, 31 Aug 2026 09:33:00 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/index.html dns=0.000560 tcp=0.002173 tls=0.024394 ttfb=0.040235 total=0.040422 verify=0\n",
+      "url": "https://www.uaart.com.ua/"
+    },
+    {
+      "agent": "default",
+      "exit_code": 6,
+      "family": "-6",
+      "stderr": "curl: (6) Could not resolve host: www.uaart.com.ua\n",
+      "stdout": "\nMETRICS http=000 remote_ip= final=https://www.uaart.com.ua/?incident_probe=1789033848619138742 dns=0.000000 tcp=0.000000 tls=0.000000 ttfb=0.000000 total=0.007369 verify=0\n",
+      "url": "https://www.uaart.com.ua/"
+    },
+    {
+      "agent": "default",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 34488\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Mon, 31 Aug 2026 09:33:00 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/index.html?incident_probe=1789033848632562727 dns=0.000816 tcp=0.003024 tls=0.034556 ttfb=0.049112 total=0.049216 verify=0\n",
+      "url": "https://www.uaart.com.ua/video/index.html"
+    },
+    {
+      "agent": "iphone_chrome",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 34488\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Mon, 31 Aug 2026 09:33:00 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/index.html?incident_probe=1789033848633657156 dns=0.000590 tcp=0.002739 tls=0.027097 ttfb=0.042347 total=0.042491 verify=0\n",
+      "url": "https://www.uaart.com.ua/video/index.html"
+    },
+    {
+      "agent": "iphone_webview",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 34488\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Mon, 31 Aug 2026 09:33:00 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/index.html?incident_probe=1789033848652092060 dns=0.000604 tcp=0.003334 tls=0.027004 ttfb=0.042937 total=0.043071 verify=0\n",
+      "url": "https://www.uaart.com.ua/video/index.html"
+    },
+    {
+      "agent": "default",
+      "exit_code": 6,
+      "family": "-6",
+      "stderr": "curl: (6) Could not resolve host: www.uaart.com.ua\n",
+      "stdout": "\nMETRICS http=000 remote_ip= final=https://www.uaart.com.ua/video/index.html?incident_probe=1789033848660804737 dns=0.000000 tcp=0.000000 tls=0.000000 ttfb=0.000000 total=0.031476 verify=0\n",
+      "url": "https://www.uaart.com.ua/video/index.html"
+    },
+    {
+      "agent": "default",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 50117\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Thu, 10 Sep 2026 07:23:45 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/katalog.html?incident_probe=1789033848684434739 dns=0.000549 tcp=0.003223 tls=0.027794 ttfb=0.048722 total=0.051335 verify=0\n",
+      "url": "https://www.uaart.com.ua/video/katalog.html"
+    },
+    {
+      "agent": "iphone_chrome",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 50117\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Thu, 10 Sep 2026 07:23:45 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/katalog.html?incident_probe=1789033848691091750 dns=0.000565 tcp=0.002785 tls=0.026995 ttfb=0.046861 total=0.048908 verify=0\n",
+      "url": "https://www.uaart.com.ua/video/katalog.html"
+    },
+    {
+      "agent": "iphone_webview",
+      "exit_code": 0,
+      "family": "-4",
+      "stderr": "",
+      "stdout": "HTTP/1.1 200 OK\nDate: Thu, 10 Sep 2026 09:50:48 GMT\nContent-Type: text/html\nContent-Length: 50117\nConnection: keep-alive\nVary: Accept-Encoding\nLast-Modified: Thu, 10 Sep 2026 07:23:45 GMT\nX-Clacks-Overhead: GNU Terry Pratchett\nServer: PythonAnywhere\n\n\nMETRICS http=200 remote_ip=35.173.69.207 final=https://www.uaart.com.ua/video/katalog.html?incident_probe=1789033848706000632 dns=0.000747 tcp=0.003437 tls=0.026898 ttfb=0.037520 total=0.040137 verify=0\n",
+      "url": "https://www.uaart.com.ua/video/katalog.html"
+    },
+    {
+      "agent": "default",
+      "exit_code": 6,
+      "family": "-6",
+      "stderr": "curl: (6) Could not resolve host: www.uaart.com.ua\n",
+      "stdout": "\nMETRICS http=000 remote_ip= final=https://www.uaart.com.ua/video/katalog.html?incident_probe=1789033848730735460 dns=0.000000 tcp=0.000000 tls=0.000000 ttfb=0.000000 total=0.007371 verify=0\n",
+      "url": "https://www.uaart.com.ua/video/katalog.html"
+    }
+  ],
+  "limitations": [
+    "HTTP user-agent checks do not reproduce an actual iPhone or TikTok browser.",
+    "IPv6 failure may reflect runner connectivity; compare with DNS AAAA records.",
+    "No blocked server logs accessed."
+  ],
+  "production_write": false,
+  "started_at": "2026-09-10T09:50:47.964363+00:00",
+  "tls": [
+    {
+      "addresses": [
+        {
+          "cipher": [
+            "TLS_AES_256_GCM_SHA384",
+            "TLSv1.3",
+            256
+          ],
+          "family": 2,
+          "ip": "91.194.250.154",
+          "issuer": [
+            [
+              [
+                "countryName",
+                "US"
+              ]
+            ],
+            [
+              [
+                "organizationName",
+                "Let's Encrypt"
+              ]
+            ],
+            [
+              [
+                "commonName",
+                "YE1"
+              ]
+            ]
+          ],
+          "not_after": "Nov 11 11:06:51 2026 GMT",
+          "not_before": "Aug 13 11:06:52 2026 GMT",
+          "seconds": 0.264,
+          "subject_alt_name": [
+            [
+              "DNS",
+              "mail.uaart.com.ua"
+            ],
+            [
+              "DNS",
+              "uaart.com.ua"
+            ]
+          ],
+          "tls_version": "TLSv1.3",
+          "verified": true
+        }
+      ],
+      "host": "uaart.com.ua"
+    },
+    {
+      "addresses": [
+        {
+          "cipher": [
+            "TLS_AES_256_GCM_SHA384",
+            "TLSv1.3",
+            256
+          ],
+          "family": 2,
+          "ip": "35.173.69.207",
+          "issuer": [
+            [
+              [
+                "countryName",
+                "US"
+              ]
+            ],
+            [
+              [
+                "organizationName",
+                "Let's Encrypt"
+              ]
+            ],
+            [
+              [
+                "commonName",
+                "YR2"
+              ]
+            ]
+          ],
+          "not_after": "Nov 11 07:47:50 2026 GMT",
+          "not_before": "Aug 13 07:47:51 2026 GMT",
+          "seconds": 0.049,
+          "subject_alt_name": [
+            [
+              "DNS",
+              "www.uaart.com.ua"
+            ]
+          ],
+          "tls_version": "TLSv1.3",
+          "verified": true
+        }
+      ],
+      "host": "www.uaart.com.ua"
+    }
+  ]
+}
