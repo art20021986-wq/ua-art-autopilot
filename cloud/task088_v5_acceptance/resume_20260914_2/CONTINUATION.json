@@ -83,8 +83,8 @@
   "kind": "PR114_CONTINUATION_20260914_2_NOT_A_GATE",
   "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260922_current_candidate/CHECKPOINT.json",
   "next_action": {
-    "kind": "WAIT_MANUAL_DELIVERY_OF_EXACT_REVIEWED_PREVIEW_PACKAGE",
-    "detail": "After owner upload verify exact2fileSHA, reconcile current controls/writers/inputpins/Previewmapping and unusedoperation before oneboundedStage. Inspectreceipt before Preview switch/reload, then48real affectedbrowsercases and15conditionalretentions; fullcurrent preflight, singlewriter,fullbackup, GateB/activation, canonical marker-onlyinstall andactualStage4 stillrequired."
+    "kind": "WAIT_ONLY_MISSING_PREVIEW_ZIP",
+    "detail": "Owner's stage_exact_preview_20260922.py is delivered and SHA verified. Do not request helper or observer again. Only exact_preview_current_95d0b4a1_20260922.zip absent; owner upload needed due retained browser upload security restriction. Then fresh input/control/Preview checks and one bounded Stage per saved delivery plan."
   },
   "observed_main": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
   "observed_pr_head_before_this_update": "26d2f08adbeeb8c2bb5db45552d9b4abdd0f896b",
@@ -124,7 +124,7 @@
     "scope": "ISOLATED_ONLY_NOT_PRODUCTION_AUTHORITY",
     "tests_passed": 21
   },
-  "recorded_at": "2026-09-22T03:29:15.652Z",
+  "recorded_at": "2026-09-22T03:39:14.696Z",
   "repository": "art20021986-wq/ua-art-autopilot",
   "resume_support": {
     "actual_git_only_source_files_matched": 82,
@@ -350,6 +350,25 @@
         "server_target": "/home/Carix/stage_exact_preview_20260922.py",
         "sha256": "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437"
       }
-    ]
+    ],
+    "upload_readback": {
+      "observed_at": "2026-09-22T03:39:14.696Z",
+      "status": "HELPER_VERIFIED_ZIP_MISSING",
+      "helper": {
+        "path": "/home/Carix/stage_exact_preview_20260922.py",
+        "sha256": "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437",
+        "uploaded_at_ui": "2026-09-22 03:35"
+      },
+      "missing_package": "/home/Carix/exact_preview_current_95d0b4a1_20260922.zip",
+      "checks": [
+        "Exact expected archive path absent by sha256sum",
+        "No matching package name within /home/Carix maxdepth3",
+        "No recently modified ZIP within /home/Carix maxdepth3",
+        "Authenticated rootFiles listing contains helper and no expected archive"
+      ],
+      "main_readback": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
+      "preview_stage_executed": false,
+      "production_written": false
+    }
   }
 }
