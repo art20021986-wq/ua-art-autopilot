@@ -1,0 +1,53 @@
+{
+  "scope": "CAPTURED_TASK083_PURE_GENERATOR_TRANSFORM_ON_FINAL_MASTER",
+  "status": "PASS",
+  "installer_sha256": "13dbcbced164c73bb1767fee6d35ca9597c14b552baaeb31ebbf90cad70b1b46",
+  "master_original_sha256": "f64e0b82b11bfd6089509510e5b131a91b03d40bed97b16075ab2ec60da380ce",
+  "master_final_sha256": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8",
+  "patch_generator_original_byte_identical": true,
+  "patch_generator_final_byte_identical": true,
+  "repeat_byte_identical": true,
+  "six_checks": {
+    "source_marker": true,
+    "previous_marker": true,
+    "style_marker": true,
+    "helper": true,
+    "base": true,
+    "wrapper": true
+  },
+  "negative_controls": {
+    "duplicate_marker": "SOURCE_GUARD_INVALID",
+    "missing_helper": "SOURCE_GUARD_INVALID"
+  },
+  "application_imports": false,
+  "production_writes": false,
+  "installer_executed": false,
+  "full_preflight_evaluated": false,
+  "startup_cleanup15": {
+    "start_safe_sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+    "candidate_names": [
+      "card_lifecycle.py",
+      "card_shell.py",
+      "cars_ui.py",
+      "profile_library.py",
+      "publikaciya.py",
+      "publish_transaction_guard.py",
+      "source_policy.py",
+      "spec_publication.py",
+      "ua_additional_spec.py",
+      "vin_spec_service.py",
+      "master_card.py",
+      "cars_schema.py",
+      "db.py",
+      "ai_filter.py",
+      "car_number_allocator.py"
+    ],
+    "pattern_intersection": [],
+    "scope": "Exact basename cleanup predicates only; no directory inventory or rename execution."
+  },
+  "remaining_limits": [
+    "TASK083 still owns master_card.py and both catalogs; old backups can restore older master.",
+    "Full installer preflight/catalog/core behavior and actual scheduled run not evaluated.",
+    "Startup space-to-underscore rename may replace a candidate from a newer alternate; actual inventory not checked."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "zip": "/workspace/scratch/2d59224df460/publisher-server-gate-v2.zip",
+  "sha256": "6ad70d08b429224d38a74acf8407eec2847bcbba597edcf1133e28764267d228",
+  "bytes": 15768,
+  "files": 8,
+  "tests": 8,
+  "tests_returncode": 0,
+  "frozen": {
+    "current-manifest.json": "3bbc63aee147a0848ba38b6b79b1a047b1bb3a6011892bf246751f5022f646ab",
+    "repair_master_shell.py": "fb01f9de8b17e5b37babb56c1554de3f2cc3067668fc8db63237d9f47aafcac4",
+    "full_publisher_rehearsal.py": "8f8597a64c85f8b34ad36bc9855606b0bf8d45de5b3bcce9e5ea2b0d6bcd2f4f",
+    "repair_public_contract.py": "69765b84749f61e97ca6ac99c1a28c9bc9864a98fb38c82a527383b8c063287b",
+    "publisher_server_gate.py": "faf580a6504f2b24d7b3712e16f04ad44faa9eda6722222d022d38e20f3ef070",
+    "candidate-manifest.json": "ab3824cd9e5d851168769e585a25f9b60563fdde3d3c2d5c9bd18908bb0b4e78",
+    "tests/test_full_publisher_rehearsal.py": "ba4fe1b5053a95c2a5a72eb9ff04fc127cfe5aa5de97e8130bca5a908f6e48aa"
+  },
+  "production_code_changed_by_v2": false,
+  "fix": "os.fsdecode SQLite audit filename before URI startswith/parse; same scope enforcement",
+  "local_result_sha256": "2fb001f6b12fdc7fc86f305569435a5694efeb3da26cd3e6fc494e94a96d29c8"
+}

@@ -1,0 +1,216 @@
+{
+  "schema_version": "UA-ART-SPEC-RUNTIME-ACCESS-1",
+  "task_id": "UA-ART-SPEC-AUTO-10-RESTORE-001",
+  "checked_at_utc": "2026-09-09T03:44:47Z",
+  "read_only": true,
+  "production_touched": false,
+  "workflows_started": false,
+  "secrets_values_accessed": false,
+  "repository": {
+    "full_name": "art20021986-wq/ua-art-autopilot",
+    "private": false,
+    "main_sha": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+    "main_committed_at": "2026-09-08T07:08:52Z",
+    "new_main_commits_since_package_baseline": 0,
+    "tree_sha": "6f9914b2f742ff4fb4001a5046f86408ad4ecc65",
+    "recursive_tree_entries": 1878
+  },
+  "pull_request": {
+    "number": 79,
+    "head_sha": "234b02e17bf0a7281b1c738f9b9b4000d649dc46",
+    "base_sha": "2ce0c3a886f124c5865c564a7073ef1805861f1c",
+    "draft": true,
+    "state": "open",
+    "merged": false,
+    "url": "https://github.com/art20021986-wq/ua-art-autopilot/pull/79"
+  },
+  "new_runtime_evidence": {
+    "status": "NOT_FOUND",
+    "scope": "Pinned main recursive tree, first 15 newest workflow runs, newest watchdog and read-only monitor artifact inventories; no server filesystem access.",
+    "snapshot_available": false,
+    "current_database_bytes_available": false,
+    "current_source_bytes_available": false,
+    "loaded_module_paths_verified": false
+  },
+  "recent_checks": [
+    {
+      "run_id": 34298687277,
+      "created_at": "2026-09-09T01:18:55Z",
+      "name": "UA ART Production Transaction Watchdog",
+      "conclusion": "success",
+      "artifact_count": 0,
+      "proves_runtime_specs": false,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34298687277"
+    },
+    {
+      "run_id": 34263688356,
+      "created_at": "2026-09-08T18:32:56Z",
+      "name": "UA ART Read-Only Monitor",
+      "conclusion": "success",
+      "job_id": 102187641294,
+      "artifact_id": 10070906442,
+      "artifact_name": "uaart-readonly-monitor-34263688356",
+      "proves_runtime_specs": false,
+      "observed_scope": "Public index.html and katalog.html HTTP200/content hashes; local control-plane Python compile only",
+      "public_checks": [
+        {
+          "url": "https://www.uaart.com.ua/video/index.html",
+          "http": 200,
+          "bytes": 34488,
+          "sha256": "3a8869b4da2fe58898a1237c0fea1b09d45dea80f7c61ab855c0d3a1cf739f8d"
+        },
+        {
+          "url": "https://www.uaart.com.ua/video/katalog.html",
+          "http": 200,
+          "bytes": 46960,
+          "sha256": "7ae5c9178f873f8f586cd0ea777ba776826c3d40154fce09a52eeb9e9a5ae358"
+        }
+      ],
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34263688356"
+    }
+  ],
+  "last_spec_removal_writer": {
+    "status": "NOT_PROVEN",
+    "reason": "No current write audit, server log, source snapshot or DB snapshot was added to main. TASK121 receipt explicitly reports website/cards unchanged and changes only three CRM stage-button modules.",
+    "latest_unrelated_receipt": {
+      "task_id": "TASK121-KOREA-BUTTON",
+      "finished_at": "2026-09-08T07:07:42Z",
+      "changed_files": [
+        "/home/Carix/cars_ui.py",
+        "/home/Carix/konteyner.py",
+        "/home/Carix/cars_schema.py"
+      ],
+      "website_unchanged": true,
+      "cards_unchanged": true,
+      "crm_vehicle_data_unchanged": true
+    }
+  },
+  "known_get_route": {
+    "base": "https://www.pythonanywhere.com/api/v0/user/Carix/files/path",
+    "method": "GET",
+    "reference_controller": "cloud/task121_korea_button_probe/controller.py",
+    "current_connector_available": false,
+    "workflow_dispatch_tool_available": false,
+    "configured_nonproduction_secret_name": "UAART_NONPRODUCTION_PYTHONANYWHERE_TOKEN",
+    "nonproduction_secret_presence_or_access_verified": false,
+    "production_secret_name": "PYTHONANYWHERE_API_TOKEN",
+    "production_secret_values_never_read": true
+  },
+  "candidate_paths_not_runtime_bindings": {
+    "root": "/home/Carix",
+    "integration_modules": [
+      "cars_ui.py",
+      "publikaciya.py",
+      "publish_transaction_guard.py",
+      "ua_additional_spec.py"
+    ],
+    "service_modules": [
+      "vin_spec_service.py",
+      "source_policy.py",
+      "profile_library.py"
+    ],
+    "database_candidates": [
+      "crm.db",
+      "vin_specs_task111_v3.db",
+      "vin_specs.db"
+    ],
+    "public_roots": [
+      "/home/Carix/video",
+      "/home/Carix/site"
+    ],
+    "entrypoint_historical": "python3.10 /home/Carix/start_safe.py",
+    "entrypoint_receipt_at": "2026-09-08T07:07:42Z"
+  },
+  "existing_controls": {
+    "halt_status": "EMERGENCY_HALT",
+    "halted_at": "2026-09-07T14:48:16Z",
+    "halt_preserved": true,
+    "standard_pipeline": ".github/workflows/uaart_standard.yml",
+    "standard_execution_branch": "main",
+    "standard_credential": "secrets.UAART_NONPRODUCTION_PYTHONANYWHERE_TOKEN",
+    "public_monitor_production_credentials": false,
+    "control_source": "automation/control_plane.py",
+    "constraints": [
+      {
+        "lines": "1597-1618",
+        "description": "Production-secret workflow policy explicitly treats an unapproved automatic or manual legacy workflow as a bypass even if it claims read-only; exact active workflow set required."
+      },
+      {
+        "lines": "1655-1674",
+        "description": "Production credential reference outside allowlist rejected; secret serialization, actions:write and remote dispatch rejected."
+      },
+      {
+        "lines": "1735-1738",
+        "description": "Existing halt makes ordinary verify_execution_mode fail unless using an established recovery allowance."
+      }
+    ],
+    "new_workflow_or_guard_changes_made": false
+  },
+  "safe_next_steps": [
+    "Use an already authorized authenticated PythonAnywhere read-only interface or an approved least-privilege diagnostic route; do not add a branch workflow that bypasses the existing credential/workflow guards.",
+    "Allowlist integration and service files, candidate DBs and their WAL/journal companions; GET only, deny redirects, do not import application modules or execute server code, bound reads and retain byte hashes.",
+    "Do not treat a raw GET of active SQLite as a consistent snapshot. Reject active WAL/journal or changed repeated hashes; use a coordinated read-only snapshot through the authorized server interface if these checks fail.",
+    "Extract only required car/spec fields and metadata, never contacts or credentials. Repository is public: raw database/source artifacts cannot be assumed private; use a protected owner channel for exact sensitive bytes.",
+    "Validate module bindings and canonical DB separately; file hashes alone do not prove the running process imports those files.",
+    "Build and validate the candidate against the verified snapshot, then prove all current cards, source checks and rollback before admitting Gate B."
+  ],
+  "gate_runtime_status": "NOT_VERIFIED",
+  "sources": [
+    "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/branches/main",
+    "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/pulls/79",
+    "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/trees/6f9914b2f742ff4fb4001a5046f86408ad4ecc65?recursive=1",
+    "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/.github/workflows/uaart_monitor.yml",
+    "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/.github/workflows/uaart_standard.yml",
+    "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/cloud/task121_korea_button_probe/controller.py",
+    "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/automation/control_plane.py",
+    "https://github.com/art20021986-wq/ua-art-autopilot/blob/2ce0c3a886f124c5865c564a7073ef1805861f1c/state/receipts/TASK121-KOREA-BUTTON.json"
+  ],
+  "browser_followup": {
+    "checked_at_utc": "2026-09-09T03:56:01.121158+00:00",
+    "authenticated_account": "Carix",
+    "interface": "PythonAnywhere Files web UI",
+    "read_only_directory_listing_verified": true,
+    "source_file_bytes_acquired": false,
+    "database_bytes_acquired": false,
+    "download_attempt": {
+      "status": "FAILED",
+      "error": "Protocol error (Fetch.failRequest): Invalid InterceptionId.",
+      "downloadMedia_reported_completed_but_no_file_materialized": true,
+      "retries_stopped": true
+    },
+    "editor_read": {
+      "visible_publisher_lines": 59,
+      "full_text_clipboard_bytes": 0,
+      "saved_or_run": false
+    },
+    "database_listing": [
+      {
+        "name": "crm.db",
+        "displayed_modified": "2026-09-08 03:40",
+        "displayed_size": "4.0 MB"
+      },
+      {
+        "name": "vin_specs.db",
+        "displayed_modified": "2026-09-04 07:06",
+        "displayed_size": "96.0 KB"
+      },
+      {
+        "name": "vin_specs_task111_v3.db",
+        "displayed_modified": "2026-09-06 16:46",
+        "displayed_size": "420.0 KB"
+      }
+    ],
+    "wal_or_shm_or_journal_rows_observed": false,
+    "absence_of_rows_is_not_atomic_snapshot_proof": true,
+    "new_isolated_console": {
+      "id": 48108896,
+      "url": "https://www.pythonanywhere.com/user/Carix/consoles/48108896/",
+      "created_via_visible_open_bash_console_link": true,
+      "prompt_observed": "03:55 ~ $",
+      "commands_entered_by_this_agent": false,
+      "existing_crm_consoles_or_always_on_touched": false,
+      "handed_to_root": true
+    },
+    "note": "A normal authenticated server UI is available independently of GitHub workflow credentials. Root can perform reviewed read-only diagnostics in the separate console; this evidence does not yet claim a runtime snapshot."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "UA-ART-CODE-HANDOFF-V3-SERVER-TEST-1",
+  "status": "PASS",
+  "scope": "ISOLATED_SYNTHETIC_17_FILES_REAL_LOCKS_FAKE_AUTHORITY",
+  "python_version": "3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]",
+  "started_at": "2026-09-09T11:02:21.331202+00:00",
+  "finished_at": "2026-09-09T11:03:15.044825+00:00",
+  "tests": 30,
+  "expected_tests": 30,
+  "test_groups": {
+    "test_code_handoff_v3.py": 30
+  },
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "io_guard": {
+    "blocked_network": 0,
+    "blocked_subprocess": 0,
+    "blocked_read": 0,
+    "blocked_write": 0
+  },
+  "bundle_inputs_unchanged": true,
+  "bundle_sha256": "c018cb371efb3cdf95e2de5f55e818ad3f946077b0a331c59339a6951512b19b",
+  "source_sha256": {
+    "code_handoff_v3.py": "200ca169be01cb12bf6cdaa8425acdb2279e1bfc6fd9306d51300148043f9ed1",
+    "handoff_v3_server_gate.py": "2a2d2b5462edb280e134d94598bae12255608ed761033ef725cbde1c658cec85",
+    "server_fence.py": "199a8744b3dd335899adcac92c52e30c462d7b471898d6b94a7ba944b9f05b85",
+    "test_code_handoff_v3.py": "e24b11ae630b976c9cd794893172035ead72510dd8a8b530fc5b317963b208f7"
+  },
+  "production_changed": false,
+  "real_task_api_called": false,
+  "production_lock_files_opened": false,
+  "external_writers_verified": false,
+  "cross_host_lock_verified": false,
+  "overall_gate_b": "NOT_EVALUATED",
+  "guard_limit": "Python audit guard over reviewed code; native temporary multiprocessing IPC is not an application write"
+}

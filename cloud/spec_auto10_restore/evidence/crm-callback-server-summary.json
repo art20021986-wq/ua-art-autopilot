@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "scope": "PYTHON310_ACTUAL_CRM_CALLBACKS_WITH_FAKE_TELEGRAM_TRANSPORT",
+  "gate_b": "NOT_EVALUATED",
+  "production_changed": false,
+  "input_bytes_mtimes_inodes_unchanged": true,
+  "watched_files": 28,
+  "live_dependency_files": 3,
+  "candidate_manifest_sha256": "12afce821b784771a2a8a0415cc289f5e713d53aabedf0ed3e2747a8c4d4e136",
+  "repair_patcher_sha256": "97e1f170301d26403e115962392587f141be40a97b94acae412e3caeec8611f1",
+  "python_version": "3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]",
+  "runs": {
+    "original": {
+      "status": "PASS",
+      "reported_status": "KNOWN_UI_BUG_REPRODUCED",
+      "report": "/home/Carix/spec_crm_callback_gate_20260909/run-20260909T115020873841Z/original/result.json",
+      "report_sha256": "ff2afa4d4eb220ec99e478dffb66b52daa8d30725d179151b2fc5b44e3c1256f",
+      "io_guard": {
+        "network": 0,
+        "outside_read": 0,
+        "outside_write": 0,
+        "process": 0
+      },
+      "error": null
+    },
+    "repaired": {
+      "status": "PASS",
+      "reported_status": "PASS",
+      "report": "/home/Carix/spec_crm_callback_gate_20260909/run-20260909T115020873841Z/repaired/result.json",
+      "report_sha256": "a5d9362d8b388fc16aefbebec92c4253b9c4ee1e02515bd5c9f51cb04e4615ca",
+      "io_guard": {
+        "network": 0,
+        "outside_read": 0,
+        "outside_write": 0,
+        "process": 0
+      },
+      "error": null
+    }
+  },
+  "completed_at_utc": "2026-09-09T11:50:56.475287+00:00"
+}

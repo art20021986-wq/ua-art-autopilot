@@ -1,0 +1,56 @@
+{
+  "checked_at": "2026-09-09T04:29:37.294950+00:00",
+  "method": "temporary PythonAnywhere console, read-only /proc metadata, current UID only",
+  "app_imported": false,
+  "processes_restarted": false,
+  "production_touched": false,
+  "query_filter": "python comm; .py argument containing Carix",
+  "matching_processes": [],
+  "status": "PARTIAL_UI_PROCESS_CONFIRMED",
+  "limitations": [
+    "Console process namespace may differ from the always-on worker namespace.",
+    "Relative script arguments were excluded by the strict initial filter.",
+    "No conclusion that CRM is stopped or uses the wrong database can be drawn.",
+    "Loaded module objects and actual database bindings remain unverified."
+  ],
+  "ui_observation": {
+    "checked_at": "2026-09-09T04:31:41.629344+00:00",
+    "page": "https://www.pythonanywhere.com/user/Carix/tasks_tab/",
+    "always_on_command": "python3.10 /home/Carix/start_safe.py",
+    "always_on_state": "Running",
+    "running_process_start_display": "2026-09-08 at 07:07:30",
+    "ui_actions": [
+      "open Tasks",
+      "Fetch process list"
+    ],
+    "mutation_actions": [],
+    "loaded_modules_and_database_bindings_verified": false
+  },
+  "scheduled_tasks": [
+    {
+      "frequency": "daily",
+      "time_utc": "08:02",
+      "command": "cd /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup && python3.10 installer.py install",
+      "description": "task083 install fallback",
+      "enabled_control_observed": "Disable task"
+    },
+    {
+      "frequency": "daily",
+      "time_utc": "21:28",
+      "command": "cd /home/Carix/autopilot_inbox/cloud/seo_rehab_guard_068 && python3.10 seo_rehab_guard_068_repair.py --dry-run",
+      "description": "seo068 ten-run production dry-run fallback"
+    },
+    {
+      "frequency": "daily",
+      "time_utc": "19:00",
+      "command": "set -e; mkdir -p '/home/Carix/autopilot_inbox/cloud/task_096_tech_spec_ai_crm/data_enrichment'",
+      "description": "TASK096 v7 1788202686 fallback-1"
+    }
+  ],
+  "scheduled_log_access": {
+    "path": "/var/log/schedule-log-1502679.log",
+    "status": "BLOCKED",
+    "browser_error": "net::ERR_BLOCKED_BY_CLIENT",
+    "alternate_access_attempted": false
+  }
+}

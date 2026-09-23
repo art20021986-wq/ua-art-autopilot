@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "scope": "PYTHON310_ISOLATED_FULL_PUBLISHER_SYNTHETIC_DATA",
+  "production_changed": false,
+  "runtime_input_bytes_and_mtime_unchanged": true,
+  "watched_input_files": 14,
+  "python_version": "3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]",
+  "guard_unit_tests": {
+    "returncode": 0,
+    "count": 8
+  },
+  "publisher_report": "/home/Carix/spec_publisher_gate_20260909/run-20260909T081750274827Z/result.json",
+  "io_guard": {
+    "network": 0,
+    "outside_read": 0,
+    "outside_write": 0,
+    "process": 0
+  },
+  "primary_pages_validated": 4,
+  "repeat": {
+    "byte_identical": false,
+    "changed_paths": [
+      "video/UA-0002.html",
+      "video/UA-0002-diag.html",
+      "site/UA-0002.html",
+      "site/UA-0002-diag.html"
+    ],
+    "generation_timestamp_fields": [
+      "URL ?v= epoch",
+      "обновлено date/time"
+    ],
+    "message": "Страницы, диагностика и оба каталога опубликованы одним проверенным пакетом: UA-0002",
+    "ok": true,
+    "only_known_generation_timestamps_changed": true
+  },
+  "nonvacuous_rollback": "PASS",
+  "wrong_page_controls": "PASS",
+  "overall_gate_b": "NOT_EVALUATED",
+  "updated_at_utc": "2026-09-09T08:18:03.970911+00:00"
+}

@@ -1,0 +1,113 @@
+--- candidate-final-v3/vin_spec_service.py
++++ candidate-errno22-v7/vin_spec_service.py
+@@ -23,6 +23,7 @@
+ import threading
+ import time
+ import uuid
++import weakref
+ from typing import Any, Callable, Iterable
+ 
+ import source_policy
+@@ -58,6 +59,61 @@
+     pass
+ 
+ 
++class _ManagedConnection(sqlite3.Connection):
++    """Preserve SQLite transaction semantics and release resources on context exit.
++
++    The stdlib Connection context manager commits/rolls back but does not close.
++    Error tracebacks can retain those open handles; on NFS this also prevents
++    temporary database files from being removed until garbage collection.
++    """
++
++    def __init__(self, *args, **kwargs):
++        super().__init__(*args, **kwargs)
++        self._managed_cursors = weakref.WeakSet()
++        self._managed_closed = False
++
++    def cursor(self, *args, **kwargs):
++        cursor = super().cursor(*args, **kwargs)
++        self._managed_cursors.add(cursor)
++        return cursor
++
++    def _statement(self, method, args, kwargs):
++        cursor = self.cursor()
++        try:
++            return getattr(cursor, method)(*args, **kwargs)
++        except BaseException:
++            cursor.close()
++            raise
++
++    def execute(self, *args, **kwargs):
++        return self._statement("execute", args, kwargs)
++
++    def executemany(self, *args, **kwargs):
++        return self._statement("executemany", args, kwargs)
++
++    def executescript(self, *args, **kwargs):
++        return self._statement("executescript", args, kwargs)
++
++    def close(self):
++        if self._managed_closed:
++            return
++        try:
++            # sqlite3_close_v2 alone leaves a zombie handle while a retained
++            # cursor has an unfinished statement. Finalize those cursors first.
++            for cursor in list(self._managed_cursors):
++                cursor.close()
++        finally:
++            super().close()
++            self._managed_closed = True
++            self._managed_cursors.clear()
++
++    def __exit__(self, exception_type, exception, traceback):
++        try:
++            return super().__exit__(exception_type, exception, traceback)
++        finally:
++            self.close()
++
++
+ def utc_now() -> str:
+     return (
+         dt.datetime.now(dt.timezone.utc)
+@@ -74,20 +130,26 @@
+ 
+ 
+ def _connect(path: pathlib.Path, readonly: bool) -> sqlite3.Connection:
+-    if readonly:
+-        conn = sqlite3.connect("file:" + str(path.resolve()) + "?mode=ro", uri=True, timeout=30)
+-        conn.execute("PRAGMA query_only=ON")
+-    else:
+-        path.parent.mkdir(parents=True, exist_ok=True)
+-        conn = sqlite3.connect(str(path.resolve()), timeout=30)
+-        conn.execute("PRAGMA foreign_keys=ON")
+-        conn.execute("PRAGMA busy_timeout=30000")
+-        # The production home directory is NFS-backed.  SQLite WAL relies on
+-        # shared-memory semantics that are unsafe there; the default rollback
+-        # journal plus FULL sync is slower but robust across CRM processes.
+-        conn.execute("PRAGMA synchronous=FULL")
+-    conn.row_factory = sqlite3.Row
+-    return conn
++    conn = None
++    try:
++        if readonly:
++            conn = sqlite3.connect("file:" + str(path.resolve()) + "?mode=ro", uri=True,
++                                   timeout=30, factory=_ManagedConnection)
++            conn.execute("PRAGMA query_only=ON")
++        else:
++            path.parent.mkdir(parents=True, exist_ok=True)
++            conn = sqlite3.connect(str(path.resolve()), timeout=30, factory=_ManagedConnection)
++            conn.execute("PRAGMA foreign_keys=ON")
++            conn.execute("PRAGMA busy_timeout=30000")
++            # The production home directory is NFS-backed. SQLite WAL relies
++            # on shared memory; rollback journals with FULL sync are retained.
++            conn.execute("PRAGMA synchronous=FULL")
++        conn.row_factory = sqlite3.Row
++        return conn
++    except BaseException:
++        if conn is not None:
++            conn.close()
++        raise
+ 
+ 
+ def connect_main() -> sqlite3.Connection:

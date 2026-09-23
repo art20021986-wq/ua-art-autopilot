@@ -1,0 +1,990 @@
+{
+  "completed_at_utc": "2026-09-09T09:19:55.734722+00:00",
+  "inputs": {
+    "inputs_unchanged_after_preparation": true,
+    "install_module_count": 15,
+    "manifest_sha256": "c4f75a818156e29426c9d601552ab0de56663e965233f2a56c01f5aaa111de07",
+    "modules": {
+      "ai_filter.py": {
+        "before_relocation_sha256": "4b0326b0280e5bf9fdecab0a4f0a931525bd7700b11b6c6c37756895f55d6c89",
+        "literal_relocations": [],
+        "staged_sha256": "4b0326b0280e5bf9fdecab0a4f0a931525bd7700b11b6c6c37756895f55d6c89"
+      },
+      "car_number_allocator.py": {
+        "before_relocation_sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1",
+        "literal_relocations": [],
+        "staged_sha256": "620721125f5e6378ac6287fe1f642a6d68b874516a4b51e7955638fd257097e1"
+      },
+      "card_lifecycle.py": {
+        "before_relocation_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7",
+        "literal_relocations": [],
+        "staged_sha256": "a0f65fedcf91cbe01f0b891ddde31b97186e9c7ae77e51cef905cf29a81b55b7"
+      },
+      "card_shell.py": {
+        "before_relocation_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a",
+        "literal_relocations": [],
+        "staged_sha256": "9d764eae5f73e8b75e8c863abb9c3ae8c3a44f0bd1fa2918a28a80e996556b0a"
+      },
+      "cars_schema.py": {
+        "before_relocation_sha256": "20da4d4e892b363cd57c8819eadf92f0d8d54383a6c3344e37391d00d5d56e8a",
+        "literal_relocations": [
+          {
+            "line": 2,
+            "literal_sha256": "f8b3871923a3edf35406319f43294bc1f89f07a98f3c3468e64450a84e6a096c",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "9a33087ef9e0bbd814be512dcabe1a66311f1224b52810d8ab0bb45c0d96425c"
+      },
+      "cars_ui.py": {
+        "before_relocation_sha256": "32dfec40ca2e6badfab222fd811fa710c52708fc0ff6bad80cbce79c0df5a0ec",
+        "literal_relocations": [
+          {
+            "line": 606,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 2291,
+            "literal_sha256": "bb30d6c71a3622e91f1b28785a9e7dee363fc1e6036152d089c9e82d874a84c5",
+            "occurrences": 1
+          },
+          {
+            "line": 2292,
+            "literal_sha256": "8cf6756071eed2acbeb45350b754d003b53e7e35f8799c8ae1f34becb8acc9ae",
+            "occurrences": 1
+          },
+          {
+            "line": 2293,
+            "literal_sha256": "560c8ca554a2d95c886a16b712991e1cdd6f4efda71563ed90c984c3605d79b8",
+            "occurrences": 1
+          },
+          {
+            "line": 2988,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 3007,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 3022,
+            "literal_sha256": "e979d253005a79597f08135662740aaeb2859564ea5fd06f9b59168962f301f9",
+            "occurrences": 1
+          },
+          {
+            "line": 3037,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 3038,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 3228,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 3245,
+            "literal_sha256": "e979d253005a79597f08135662740aaeb2859564ea5fd06f9b59168962f301f9",
+            "occurrences": 1
+          },
+          {
+            "line": 3352,
+            "literal_sha256": "0adea69004cf365ddab4ff3c888432f50aba1fbaa525f49c16cc90001f89e793",
+            "occurrences": 1
+          },
+          {
+            "line": 3371,
+            "literal_sha256": "276f9e9fb418da090f1a367309f85e365be6ba689597bfc9e401ababa398a0fa",
+            "occurrences": 1
+          },
+          {
+            "line": 3437,
+            "literal_sha256": "dd5132d3578b58ef2367ab82b8f0db05f66841e55a4e79620c13e64b0333fda8",
+            "occurrences": 1
+          },
+          {
+            "line": 3476,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 3485,
+            "literal_sha256": "cb5ff02ae414bec9776b3dbdc6416b5fca733b00ad08a77a7afc5e69b5f13996",
+            "occurrences": 1
+          },
+          {
+            "line": 3491,
+            "literal_sha256": "cb5ff02ae414bec9776b3dbdc6416b5fca733b00ad08a77a7afc5e69b5f13996",
+            "occurrences": 1
+          },
+          {
+            "line": 3503,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 3546,
+            "literal_sha256": "276f9e9fb418da090f1a367309f85e365be6ba689597bfc9e401ababa398a0fa",
+            "occurrences": 1
+          },
+          {
+            "line": 3575,
+            "literal_sha256": "d47f953a8ac8df98f9408dc7e9a9d6aef9984eed311b119d0b0388c5f0050267",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "87cdbb7d05e16aef1e4578b35c2cfaa0b0f0fcb8579e85eeb365c69a65c2d187"
+      },
+      "catalog_design_guard.py": {
+        "before_relocation_sha256": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+        "literal_relocations": [
+          {
+            "line": 22,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "8b284261c21342473fd5cd263e925dc76c95476110955510c4a3d13cd1fb5d54"
+      },
+      "db.py": {
+        "before_relocation_sha256": "1d5073450b353b88f99944930ed34af0735784c3a580801bab694ecafb7f59a2",
+        "literal_relocations": [
+          {
+            "line": 76,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 77,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 905,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 906,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "9aa5a140b3aeca874ec0a6e8f3ae82b2ffd63d2e5178b6357cabe93f9ac39533"
+      },
+      "master_card.py": {
+        "before_relocation_sha256": "1141dbab9d31baca570b6eb9c3470000a6847c9f20e5c67cc0de9ba7b7cfc3c8",
+        "literal_relocations": [
+          {
+            "line": 9,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 1463,
+            "literal_sha256": "8d72e31c80f02bb81c64ab1e66182b6671df09bb14f3a5e651c4cd06facdfb34",
+            "occurrences": 1
+          },
+          {
+            "line": 1463,
+            "literal_sha256": "01b4e8bad30c73d6a577f2d4db1df95e716f9ba28c942f03276e47aa8d89b0cc",
+            "occurrences": 1
+          },
+          {
+            "line": 1840,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 1840,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          },
+          {
+            "line": 2201,
+            "literal_sha256": "bdc5edfffd4ad1b0f81a37a8aa0f2339a64291608610d40e5f0f22f1f4aa89bc",
+            "occurrences": 1
+          },
+          {
+            "line": 2261,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 2261,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          },
+          {
+            "line": 2855,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "18f7e2a758a1b6b2a486b6925a7d3510fcf11d0977727f878e9b286a339d72e5"
+      },
+      "profile_library.py": {
+        "before_relocation_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6",
+        "literal_relocations": [],
+        "staged_sha256": "6784b5641a1bd6f8e094a0bc7ca4769596f91082f46891515463a933d2225eb6"
+      },
+      "publikaciya.py": {
+        "before_relocation_sha256": "224d140151e26ff597962f17f45ec928f0716fb873e139e9686aac0256de87e8",
+        "literal_relocations": [
+          {
+            "line": 10,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 267,
+            "literal_sha256": "93beac4d8d22984bf297edd1983639eec7d680cecdee2448caca9501f30d5fa0",
+            "occurrences": 1
+          },
+          {
+            "line": 587,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "5774ca9f4d6ddde924907ce9753ef33ea74a07fc56463068666b1a545b928cf7"
+      },
+      "publish_transaction_guard.py": {
+        "before_relocation_sha256": "eb8a37c5bba85b74cf3d6ed4c326d20d69a92274dee1e75f80108b5fa9834912",
+        "literal_relocations": [
+          {
+            "line": 31,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "facddee7444d1bf6519f4248dd26e38dff1755e9f8ecf4217d98e8ebb9ab4682"
+      },
+      "source_policy.py": {
+        "before_relocation_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d",
+        "literal_relocations": [],
+        "staged_sha256": "e9590c1630a8c81bcacf05d620e273a341aaf407f39c3a1bd184258c17ce3f0d"
+      },
+      "spec_publication.py": {
+        "before_relocation_sha256": "3e2ed470ebc06a9cbf03357858aeaf63cc6262045384867fca6b7b95bb181718",
+        "literal_relocations": [
+          {
+            "line": 280,
+            "literal_sha256": "c48fdad1e1df62122795fb354451bce6610dff2c7979ee9a8fdb85080058c03a",
+            "occurrences": 1
+          },
+          {
+            "line": 394,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "377f99ad316c8f7b3799f3584e3bed7a0c0bb98a094555f047c8ba8e51bdf2d0"
+      },
+      "stranica.py": {
+        "before_relocation_sha256": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc",
+        "literal_relocations": [
+          {
+            "line": 15,
+            "literal_sha256": "d37df7c70656b081936e5279484922756ceee84cf50bcaec94cd7f684dfe92dc",
+            "occurrences": 1
+          },
+          {
+            "line": 701,
+            "literal_sha256": "84b82f138a5e4633460f5c4c927abf76f90df5e29c82ee2457b72c652ab8f934",
+            "occurrences": 1
+          },
+          {
+            "line": 919,
+            "literal_sha256": "8d72e31c80f02bb81c64ab1e66182b6671df09bb14f3a5e651c4cd06facdfb34",
+            "occurrences": 1
+          },
+          {
+            "line": 919,
+            "literal_sha256": "01b4e8bad30c73d6a577f2d4db1df95e716f9ba28c942f03276e47aa8d89b0cc",
+            "occurrences": 1
+          },
+          {
+            "line": 1721,
+            "literal_sha256": "36f863becdb23d3636622478e3fff9f48ad08f776a42d8a107b1c462473fbbc0",
+            "occurrences": 1
+          },
+          {
+            "line": 2633,
+            "literal_sha256": "4b59c8372e694dffab4384931bd4251483d2c784907b112c7871447c6cd6ea22",
+            "occurrences": 1
+          },
+          {
+            "line": 2682,
+            "literal_sha256": "8d72e31c80f02bb81c64ab1e66182b6671df09bb14f3a5e651c4cd06facdfb34",
+            "occurrences": 1
+          },
+          {
+            "line": 2875,
+            "literal_sha256": "4b59c8372e694dffab4384931bd4251483d2c784907b112c7871447c6cd6ea22",
+            "occurrences": 1
+          },
+          {
+            "line": 2893,
+            "literal_sha256": "7860529380408555ac66d043513d4edd5dc80aceaef0d145ed423ea9fce8de54",
+            "occurrences": 1
+          },
+          {
+            "line": 2894,
+            "literal_sha256": "5bd6a2b716323f986e523b3945458120b7005f5f2c5efc86e6ce6761a5e8cf90",
+            "occurrences": 1
+          },
+          {
+            "line": 3048,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 3048,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          },
+          {
+            "line": 3372,
+            "literal_sha256": "bdc5edfffd4ad1b0f81a37a8aa0f2339a64291608610d40e5f0f22f1f4aa89bc",
+            "occurrences": 1
+          },
+          {
+            "line": 3432,
+            "literal_sha256": "2c20db6f7a230b6a1f25884dfd3094d147ca3f5863cb3314d7fabe6fc2b623e4",
+            "occurrences": 1
+          },
+          {
+            "line": 3432,
+            "literal_sha256": "1951f07ee71ef6b5fdfd6c3c4834b8d2754c7a2709042f31fc4df73d03798140",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "6024264e065239399b1a7d934b97837c9c5b513e693937741e34b4ebe6fb4c7f"
+      },
+      "ua_additional_spec.py": {
+        "before_relocation_sha256": "48a3f8e88bb214d6632513b6ee0b884a0d3bd95cb4bc2e786426fec42e4b2441",
+        "literal_relocations": [
+          {
+            "line": 14,
+            "literal_sha256": "d47f953a8ac8df98f9408dc7e9a9d6aef9984eed311b119d0b0388c5f0050267",
+            "occurrences": 1
+          },
+          {
+            "line": 655,
+            "literal_sha256": "c48fdad1e1df62122795fb354451bce6610dff2c7979ee9a8fdb85080058c03a",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "7c72932757e0b8fab1f7e42e34d5d4d630afc15ba36d690a73e797e715240b1a"
+      },
+      "vin_spec_service.py": {
+        "before_relocation_sha256": "a4468d2de5fd35d0778dea0ee15ad382dcb680ec4aa344da217cfce67f088c16",
+        "literal_relocations": [
+          {
+            "line": 32,
+            "literal_sha256": "d47f953a8ac8df98f9408dc7e9a9d6aef9984eed311b119d0b0388c5f0050267",
+            "occurrences": 1
+          },
+          {
+            "line": 34,
+            "literal_sha256": "c48fdad1e1df62122795fb354451bce6610dff2c7979ee9a8fdb85080058c03a",
+            "occurrences": 1
+          }
+        ],
+        "staged_sha256": "f4ef47a9c1abd87975c6753d4170ea43c39b46a80d15d6c042e803d784affb6d"
+      }
+    },
+    "unchanged_dependencies": {
+      "catalog_design_golden.html": "546d5c642801cd714d81451412cb584f07dbbd58264a09f57c27b0e2d05b2dd3",
+      "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+      "stranica.py": "42aa5fc9db162e59fcf36b7ee9b2002360205827023786a65cf2205ab16066cc"
+    }
+  },
+  "io_guard": {
+    "network": 0,
+    "outside_read": 0,
+    "outside_write": 0,
+    "process": 0
+  },
+  "lifecycle": {
+    "actual_creation_routes": [
+      "db.create_card",
+      "ai_filter.clean/store"
+    ],
+    "after_delete_fault_rollback": {
+      "changed_at_failure": [
+        "video/katalog.html",
+        "video/UA-0003.html",
+        "video/UA-0003-diag.html",
+        "site/UA-0003.html",
+        "site/UA-0003-diag.html"
+      ],
+      "evidence": {
+        "backup_root": "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/rezerv_publikacii/TASK083/20260909T091953Z-3de8bed26763",
+        "base_results": {
+          "UA-0003": {
+            "message": "Страница UA-0003 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0003.html?v=1788945595",
+            "ok": true
+          }
+        },
+        "catalog": null,
+        "codes": [
+          "UA-0003"
+        ],
+        "contract_id": "UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0",
+        "error": "OSError:SYNTHETIC_FINAL15_AFTER_DELETE_CATALOG_FAILURE",
+        "mode": "INSTALL",
+        "published_rows_sha256_before": "c9191d9ea95103595b2753f7b1dd36602f0e4bf295d4d498979801a58c26177a",
+        "rollback": {
+          "backup_root": "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/rezerv_publikacii/TASK083/20260909T091953Z-3de8bed26763",
+          "removed": [],
+          "restored": [
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/site/UA-0003-diag.html",
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/site/UA-0003.html",
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video/UA-0003-diag.html",
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video/UA-0003.html",
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video/katalog.html"
+          ]
+        },
+        "staged_diagnostics": {
+          "UA-0003": "1cb8c7bd8814038411d801beffe990b22721fab52c8ce04b954bacca56d634db"
+        },
+        "status": "FAIL",
+        "verification": null
+      },
+      "exact_html_restored": true,
+      "status": "PASS"
+    },
+    "delete": {
+      "archive": [
+        {
+          "action": "delete",
+          "auto_number": "UA-0002",
+          "state": "COMPLETED"
+        }
+      ],
+      "media_preserved": true,
+      "ok": true,
+      "retired_publication_rejected": true,
+      "sequence_after_delete": 2,
+      "spec_preserved": true
+    },
+    "edited_pages_validated": [
+      "video/UA-0002.html",
+      "site/UA-0002.html"
+    ],
+    "final_catalog_uids": [
+      "UA-0001",
+      "UA-0003"
+    ],
+    "final_primary_checks": [
+      {
+        "audit": {
+          "data_status": "READY",
+          "rows": 1,
+          "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+          "shell_reference": "reviewed_template_pin",
+          "status": "PASS",
+          "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+          "visible_vin_count": 1
+        },
+        "path": "video/UA-0001.html"
+      },
+      {
+        "audit": {
+          "data_status": "READY",
+          "rows": 1,
+          "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+          "shell_reference": "reviewed_template_pin",
+          "status": "PASS",
+          "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+          "visible_vin_count": 1
+        },
+        "path": "video/UA-0003.html"
+      },
+      {
+        "audit": {
+          "data_status": "READY",
+          "rows": 1,
+          "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+          "shell_reference": "reviewed_template_pin",
+          "status": "PASS",
+          "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+          "visible_vin_count": 1
+        },
+        "path": "site/UA-0001.html"
+      },
+      {
+        "audit": {
+          "data_status": "READY",
+          "rows": 1,
+          "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+          "shell_reference": "reviewed_template_pin",
+          "status": "PASS",
+          "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+          "visible_vin_count": 1
+        },
+        "path": "site/UA-0003.html"
+      }
+    ],
+    "manual_fields_preserved_on_recognition": true,
+    "next_created_uid": "UA-0003",
+    "next_publication_ok": true,
+    "next_repeat_ok": true,
+    "recognition_scope": "actual clean/store/find_by_vin/helper AST nodes; no Telegram callbacks or remote AI",
+    "retired_page_absence_checks": [
+      {
+        "phase": "after_stale_publication_rejection",
+        "present": []
+      },
+      {
+        "phase": "after_next_card_publication",
+        "present": []
+      },
+      {
+        "phase": "after_next_card_repeat",
+        "present": []
+      },
+      {
+        "phase": "after_next_card_fault_rollback",
+        "present": []
+      }
+    ],
+    "status": "PASS"
+  },
+  "limitations": [
+    "Synthetic cards only; no UA-0017/UA-0018 publication.",
+    "No Telegram callbacks, live worker, external source requests, service restart or production installation.",
+    "All fifteen modules staged and compiled; cars_ui is not imported; ai_filter uses listed actual AST functions."
+  ],
+  "overall_gate_b": "NOT_EVALUATED",
+  "production_changed": false,
+  "publisher": {
+    "checks": [
+      {
+        "audit": {
+          "data_status": "READY",
+          "rows": 1,
+          "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+          "shell_reference": "reviewed_template_pin",
+          "status": "PASS",
+          "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+          "visible_vin_count": 1
+        },
+        "check": "primary_spec_and_single_vin",
+        "path": "video/UA-0001.html"
+      },
+      {
+        "audit": {
+          "data_status": "READY",
+          "rows": 1,
+          "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+          "shell_reference": "reviewed_template_pin",
+          "status": "PASS",
+          "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+          "visible_vin_count": 1
+        },
+        "check": "primary_spec_and_single_vin",
+        "path": "video/UA-0002.html"
+      },
+      {
+        "check": "catalog_shell",
+        "folder": "video",
+        "same": true
+      },
+      {
+        "audit": {
+          "data_status": "READY",
+          "rows": 1,
+          "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+          "shell_reference": "reviewed_template_pin",
+          "status": "PASS",
+          "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+          "visible_vin_count": 1
+        },
+        "check": "primary_spec_and_single_vin",
+        "path": "site/UA-0001.html"
+      },
+      {
+        "audit": {
+          "data_status": "READY",
+          "rows": 1,
+          "shell_assets_sha256": "a6a0fe686687ca04c00e697a72ee4a07957ac0afa96d37d53a9ff0146b0868ed",
+          "shell_reference": "reviewed_template_pin",
+          "status": "PASS",
+          "version": "8d84fdd247c0f9cda46356c8e8ff7d46c0768668fc13d35a95b49625e140e4e4",
+          "visible_vin_count": 1
+        },
+        "check": "primary_spec_and_single_vin",
+        "path": "site/UA-0002.html"
+      },
+      {
+        "check": "catalog_shell",
+        "folder": "site",
+        "same": true
+      }
+    ],
+    "fault_rollback": {
+      "changed_html_at_failure": [
+        "video/katalog.html",
+        "video/UA-0002.html",
+        "video/UA-0002-diag.html",
+        "site/UA-0002.html",
+        "site/UA-0002-diag.html"
+      ],
+      "evidence": {
+        "backup_root": "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/rezerv_publikacii/TASK083/20260909T091938Z-0dbcad02eb12",
+        "base_results": {
+          "UA-0002": {
+            "message": "Страница UA-0002 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0002.html?v=1788945581",
+            "ok": true
+          }
+        },
+        "catalog": null,
+        "codes": [
+          "UA-0002"
+        ],
+        "contract_id": "UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0",
+        "error": "OSError:SYNTHETIC_ONE_SHOT_SECOND_CATALOG_WRITE_FAILURE",
+        "mode": "INSTALL",
+        "published_rows_sha256_before": "66fdc9948fced275d57e9d9fee3ddcdd2b0cb6333cd45505185a464617028a9f",
+        "rollback": {
+          "backup_root": "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/rezerv_publikacii/TASK083/20260909T091938Z-0dbcad02eb12",
+          "removed": [],
+          "restored": [
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/site/UA-0002-diag.html",
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/site/UA-0002.html",
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video/UA-0002-diag.html",
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video/UA-0002.html",
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video/katalog.html"
+          ]
+        },
+        "staged_diagnostics": {
+          "UA-0002": "d20610b7019b3fa1b90b412f8f49a38815d5dc7eb0bac48234d4c7658e031828"
+        },
+        "status": "FAIL",
+        "verification": null
+      },
+      "exact_all_html_restored": true,
+      "injected": [
+        "site/katalog.html"
+      ],
+      "status": "PASS",
+      "synthetic_change": "UA-0002 price_uah 15000 -> 16000 before publication; restored to 15000 after scenario"
+    },
+    "production_imported": false,
+    "public_contract_negative_controls": {
+      "rejections": {
+        "changed_fact": [
+          "canonical spec/VIN: SPECIFICATION_DIFFERS_FROM_CONFIRMED_DATA"
+        ],
+        "changed_primary_action": [
+          "primary action != 1 exact Задаток 500 $"
+        ],
+        "duplicate_vin": [
+          "canonical spec/VIN: SHELL_VISIBLE_VIN_COUNT_OR_IDENTITY"
+        ],
+        "extra_static_style": [
+          "canonical spec/VIN: UNREVIEWED_NEW_CARD_SHELL_ASSETS"
+        ],
+        "missing_diagnostic_link": [
+          "diagnostics links != 1"
+        ],
+        "missing_spec": [
+          "additional spec blocks != 1",
+          "additional spec element != 1",
+          "canonical spec/VIN: SPECIFICATION_BLOCK_MISSING",
+          "additional spec/stage order"
+        ],
+        "spec_after_stage": [
+          "additional spec/stage order"
+        ],
+        "wrong_single_vin": [
+          "primary VIN differs from operator CRM"
+        ]
+      },
+      "status": "PASS",
+      "valid_page_errors": []
+    },
+    "publish": {
+      "evidence": {
+        "backup_root": "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/rezerv_publikacii/TASK083/20260909T091932Z-77a97934ada8",
+        "base_results": {
+          "UA-0001": {
+            "message": "Страница UA-0001 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0001.html?v=1788945574",
+            "ok": true
+          },
+          "UA-0002": {
+            "message": "Страница UA-0002 обновлена на сайте по утверждённому шаблону.\nhttps://www.uaart.com.ua/video/UA-0002.html?v=1788945575",
+            "ok": true
+          }
+        },
+        "catalog": {
+          "candidate": {
+            "article_cards": 2,
+            "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+            "counts": {
+              "all": 2,
+              "georgia": 0,
+              "kiev": 0,
+              "korea": 0,
+              "sea": 2
+            },
+            "errors": [],
+            "filters": {
+              "all": 1,
+              "georgia": 1,
+              "kiev": 1,
+              "korea": 1,
+              "sea": 1
+            },
+            "ids": [
+              "UA-0002",
+              "UA-0001"
+            ],
+            "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+            "status": "PASS"
+          },
+          "design_guard": {
+            "article_cards": 2,
+            "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+            "counts": {
+              "all": 2,
+              "georgia": 0,
+              "kiev": 0,
+              "korea": 0,
+              "sea": 2
+            },
+            "errors": [],
+            "filters": {
+              "all": 1,
+              "georgia": 1,
+              "kiev": 1,
+              "korea": 1,
+              "sea": 1
+            },
+            "ids": [
+              "UA-0002",
+              "UA-0001"
+            ],
+            "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+            "status": "PASS"
+          },
+          "installed": {
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/site/katalog.html": {
+              "audit": {
+                "article_cards": 2,
+                "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+                "counts": {
+                  "all": 2,
+                  "georgia": 0,
+                  "kiev": 0,
+                  "korea": 0,
+                  "sea": 2
+                },
+                "errors": [],
+                "filters": {
+                  "all": 1,
+                  "georgia": 1,
+                  "kiev": 1,
+                  "korea": 1,
+                  "sea": 1
+                },
+                "ids": [
+                  "UA-0002",
+                  "UA-0001"
+                ],
+                "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+                "status": "PASS"
+              },
+              "sha256": "76a228fad9790a3fbfec5588b1b3137f1a58b6b07bf14890ef968a7081419da7"
+            },
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video/katalog.html": {
+              "audit": {
+                "article_cards": 2,
+                "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+                "counts": {
+                  "all": 2,
+                  "georgia": 0,
+                  "kiev": 0,
+                  "korea": 0,
+                  "sea": 2
+                },
+                "errors": [],
+                "filters": {
+                  "all": 1,
+                  "georgia": 1,
+                  "kiev": 1,
+                  "korea": 1,
+                  "sea": 1
+                },
+                "ids": [
+                  "UA-0002",
+                  "UA-0001"
+                ],
+                "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+                "status": "PASS"
+              },
+              "sha256": "76a228fad9790a3fbfec5588b1b3137f1a58b6b07bf14890ef968a7081419da7"
+            }
+          },
+          "published_rows_sha256": "31cf78908f19336ba9100d6bb393982ce2abf0df2d6e6684ea670efe2142dfba",
+          "target": "UA-0002"
+        },
+        "codes": [
+          "UA-0001",
+          "UA-0002"
+        ],
+        "contract_id": "UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0",
+        "mode": "INSTALL",
+        "published_rows_sha256_after": "31cf78908f19336ba9100d6bb393982ce2abf0df2d6e6684ea670efe2142dfba",
+        "published_rows_sha256_before": "31cf78908f19336ba9100d6bb393982ce2abf0df2d6e6684ea670efe2142dfba",
+        "rollback": null,
+        "staged_diagnostics": {
+          "UA-0001": "073dea900876d6edf49a09ac4f1d12131c70e7723eef54734c6c7757dc088db9",
+          "UA-0002": "011258ddece866a6e245c645f7685dc577e508498e29bd4f3150995f826e2ec9"
+        },
+        "status": "PASS",
+        "verification": {
+          "catalogs": {
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/site/katalog.html": {
+              "article_cards": 2,
+              "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+              "counts": {
+                "all": 2,
+                "georgia": 0,
+                "kiev": 0,
+                "korea": 0,
+                "sea": 2
+              },
+              "errors": [],
+              "filters": {
+                "all": 1,
+                "georgia": 1,
+                "kiev": 1,
+                "korea": 1,
+                "sea": 1
+              },
+              "ids": [
+                "UA-0002",
+                "UA-0001"
+              ],
+              "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+              "status": "PASS"
+            },
+            "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video/katalog.html": {
+              "article_cards": 2,
+              "contract_id": "CATALOG-DESIGN-STAGE-RESTORE-090-V1.0",
+              "counts": {
+                "all": 2,
+                "georgia": 0,
+                "kiev": 0,
+                "korea": 0,
+                "sea": 2
+              },
+              "errors": [],
+              "filters": {
+                "all": 1,
+                "georgia": 1,
+                "kiev": 1,
+                "korea": 1,
+                "sea": 1
+              },
+              "ids": [
+                "UA-0002",
+                "UA-0001"
+              ],
+              "shell_fingerprint": "7e614a35ca3486ebdfc296a8c4719b3d16305c7f1fe3b3fe1f04f2074794a668",
+              "status": "PASS"
+            }
+          },
+          "published_rows_sha256": "31cf78908f19336ba9100d6bb393982ce2abf0df2d6e6684ea670efe2142dfba",
+          "targets": {
+            "UA-0001": {
+              "category": "more",
+              "files": {
+                "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/site": {
+                  "diag_sha256": "0e9c28c6fc8be000d10e0eaaf50b6ed8ad76080d25382b79b94f8cca42ed1fbf",
+                  "primary": {
+                    "bytes": 37448,
+                    "diag_links": 1,
+                    "stage": 2
+                  },
+                  "primary_sha256": "96a1be226fb30fef2cf7a9d82d49fb063f302accaa5384e49834b49d7f37241b"
+                },
+                "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video": {
+                  "diag_sha256": "0e9c28c6fc8be000d10e0eaaf50b6ed8ad76080d25382b79b94f8cca42ed1fbf",
+                  "primary": {
+                    "bytes": 37448,
+                    "diag_links": 1,
+                    "stage": 2
+                  },
+                  "primary_sha256": "96a1be226fb30fef2cf7a9d82d49fb063f302accaa5384e49834b49d7f37241b"
+                }
+              },
+              "stage": 2,
+              "status": "sea_transit"
+            },
+            "UA-0002": {
+              "category": "more",
+              "files": {
+                "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/site": {
+                  "diag_sha256": "dfba17f6bc9b6181fa031e5b2d125d7753a16ee4d320d4484bfe53c8b1d04915",
+                  "primary": {
+                    "bytes": 37451,
+                    "diag_links": 1,
+                    "stage": 2
+                  },
+                  "primary_sha256": "3a25ed8042dce42001ce4480829c911a0182e2edf83ba83e92343cf5b7a6ded1"
+                },
+                "/home/Carix/spec_complete15_cycle_gate_20260909/run-20260909T091927262873Z/runtime/video": {
+                  "diag_sha256": "dfba17f6bc9b6181fa031e5b2d125d7753a16ee4d320d4484bfe53c8b1d04915",
+                  "primary": {
+                    "bytes": 37451,
+                    "diag_links": 1,
+                    "stage": 2
+                  },
+                  "primary_sha256": "3a25ed8042dce42001ce4480829c911a0182e2edf83ba83e92343cf5b7a6ded1"
+                }
+              },
+              "stage": 2,
+              "status": "sea_transit"
+            }
+          }
+        }
+      },
+      "message": "Страницы, диагностика и оба каталога опубликованы одним проверенным пакетом: UA-0001, UA-0002",
+      "ok": true
+    },
+    "repeat": {
+      "byte_identical": false,
+      "changed_paths": [
+        "video/UA-0002.html",
+        "video/UA-0002-diag.html",
+        "site/UA-0002.html",
+        "site/UA-0002-diag.html"
+      ],
+      "generation_timestamp_fields": [
+        "URL ?v= epoch",
+        "обновлено date/time"
+      ],
+      "message": "Страницы, диагностика и оба каталога опубликованы одним проверенным пакетом: UA-0002",
+      "ok": true,
+      "only_known_generation_timestamps_changed": true
+    },
+    "status": "PASS",
+    "synthetic_data": true
+  },
+  "python_version": "3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]",
+  "scope": "ISOLATED_FINAL15_COMBINED_SYNTHETIC_CYCLE",
+  "started_at_utc": "2026-09-09T09:19:29.720490+00:00",
+  "status": "PASS"
+}

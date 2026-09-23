@@ -1,0 +1,343 @@
+{
+  "alive_workers": [
+    {
+      "cores": 1,
+      "master_offset": 5926,
+      "pid": 12,
+      "slot": 1,
+      "spawn_offset": 5999
+    },
+    {
+      "cores": 1,
+      "master_offset": 5926,
+      "pid": 13,
+      "slot": 2,
+      "spawn_offset": 6062
+    },
+    {
+      "cores": 1,
+      "master_offset": 5926,
+      "pid": 18,
+      "slot": 3,
+      "spawn_offset": 6255
+    }
+  ],
+  "capture_snapshot_sha256": "7f4a584a192cf496d5d60ffa6e058793d5fffd2800131c5c1230c3384782e87c",
+  "current_generation_scope_blockers": [
+    "UNSCOPED_CHILD_PROCESSES"
+  ],
+  "current_master": {
+    "mapped_cores": 3,
+    "offset": 5926,
+    "pid": 1,
+    "startup_offset": 3732
+  },
+  "current_master_closed": false,
+  "domain": "www.uaart.com.ua",
+  "events": [
+    {
+      "kind": "STARTUP",
+      "line": 8,
+      "offset": 424,
+      "version": "2.0.28"
+    },
+    {
+      "kind": "MASTER_SPAWN",
+      "line": 41,
+      "master": {
+        "mapped_cores": 3,
+        "offset": 2618,
+        "pid": 1,
+        "startup_offset": 424
+      },
+      "offset": 2618
+    },
+    {
+      "kind": "WORKER_SPAWN",
+      "line": 42,
+      "offset": 2691,
+      "worker": {
+        "cores": 1,
+        "master_offset": 2618,
+        "pid": 12,
+        "slot": 1,
+        "spawn_offset": 2691
+      }
+    },
+    {
+      "kind": "OFFLOAD_THREADS",
+      "line": 43,
+      "offset": 2754,
+      "threads": 2,
+      "worker": {
+        "cores": 1,
+        "master_offset": 2618,
+        "pid": 12,
+        "slot": 1,
+        "spawn_offset": 2691
+      }
+    },
+    {
+      "kind": "WORKER_SPAWN",
+      "line": 44,
+      "offset": 2819,
+      "worker": {
+        "cores": 1,
+        "master_offset": 2618,
+        "pid": 15,
+        "slot": 2,
+        "spawn_offset": 2819
+      }
+    },
+    {
+      "kind": "OFFLOAD_THREADS",
+      "line": 45,
+      "offset": 2882,
+      "threads": 2,
+      "worker": {
+        "cores": 1,
+        "master_offset": 2618,
+        "pid": 15,
+        "slot": 2,
+        "spawn_offset": 2819
+      }
+    },
+    {
+      "kind": "WORKER_SPAWN",
+      "line": 46,
+      "offset": 2947,
+      "worker": {
+        "cores": 1,
+        "master_offset": 2618,
+        "pid": 18,
+        "slot": 3,
+        "spawn_offset": 2947
+      }
+    },
+    {
+      "kind": "OFFLOAD_THREADS",
+      "line": 47,
+      "offset": 3010,
+      "threads": 2,
+      "worker": {
+        "cores": 1,
+        "master_offset": 2618,
+        "pid": 18,
+        "slot": 3,
+        "spawn_offset": 2947
+      }
+    },
+    {
+      "kind": "WORKER_BURIED",
+      "line": 54,
+      "offset": 3452,
+      "worker": {
+        "cores": 1,
+        "master_offset": 2618,
+        "pid": 12,
+        "slot": 1,
+        "spawn_offset": 2691
+      }
+    },
+    {
+      "kind": "WORKER_BURIED",
+      "line": 55,
+      "offset": 3504,
+      "worker": {
+        "cores": 1,
+        "master_offset": 2618,
+        "pid": 15,
+        "slot": 2,
+        "spawn_offset": 2819
+      }
+    },
+    {
+      "kind": "WORKER_BURIED",
+      "line": 56,
+      "offset": 3556,
+      "worker": {
+        "cores": 1,
+        "master_offset": 2618,
+        "pid": 18,
+        "slot": 3,
+        "spawn_offset": 2947
+      }
+    },
+    {
+      "kind": "MASTER_CLOSE",
+      "line": 57,
+      "master": {
+        "mapped_cores": 3,
+        "offset": 2618,
+        "pid": 1,
+        "startup_offset": 424
+      },
+      "offset": 3608
+    },
+    {
+      "kind": "STARTUP",
+      "line": 59,
+      "offset": 3732,
+      "version": "2.0.28"
+    },
+    {
+      "kind": "MASTER_SPAWN",
+      "line": 92,
+      "master": {
+        "mapped_cores": 3,
+        "offset": 5926,
+        "pid": 1,
+        "startup_offset": 3732
+      },
+      "offset": 5926
+    },
+    {
+      "kind": "WORKER_SPAWN",
+      "line": 93,
+      "offset": 5999,
+      "worker": {
+        "cores": 1,
+        "master_offset": 5926,
+        "pid": 12,
+        "slot": 1,
+        "spawn_offset": 5999
+      }
+    },
+    {
+      "kind": "WORKER_SPAWN",
+      "line": 94,
+      "offset": 6062,
+      "worker": {
+        "cores": 1,
+        "master_offset": 5926,
+        "pid": 13,
+        "slot": 2,
+        "spawn_offset": 6062
+      }
+    },
+    {
+      "kind": "OFFLOAD_THREADS",
+      "line": 95,
+      "offset": 6125,
+      "threads": 2,
+      "worker": {
+        "cores": 1,
+        "master_offset": 5926,
+        "pid": 12,
+        "slot": 1,
+        "spawn_offset": 5999
+      }
+    },
+    {
+      "kind": "OFFLOAD_THREADS",
+      "line": 96,
+      "offset": 6190,
+      "threads": 2,
+      "worker": {
+        "cores": 1,
+        "master_offset": 5926,
+        "pid": 13,
+        "slot": 2,
+        "spawn_offset": 6062
+      }
+    },
+    {
+      "kind": "WORKER_SPAWN",
+      "line": 97,
+      "offset": 6255,
+      "worker": {
+        "cores": 1,
+        "master_offset": 5926,
+        "pid": 18,
+        "slot": 3,
+        "spawn_offset": 6255
+      }
+    },
+    {
+      "kind": "OFFLOAD_THREADS",
+      "line": 99,
+      "offset": 6371,
+      "threads": 2,
+      "worker": {
+        "cores": 1,
+        "master_offset": 5926,
+        "pid": 18,
+        "slot": 3,
+        "spawn_offset": 6255
+      }
+    },
+    {
+      "exit_code": 1,
+      "kind": "UNSCOPED_CHILD_EXIT",
+      "line": 103,
+      "master_offset": 5926,
+      "offset": 6616,
+      "pid": 356
+    },
+    {
+      "exit_code": 1,
+      "kind": "UNSCOPED_CHILD_EXIT",
+      "line": 106,
+      "master_offset": 5926,
+      "offset": 7104,
+      "pid": 1034
+    }
+  ],
+  "external_writer_verified": false,
+  "generation_interpretation": "alive_workers means no termination recorded; not an independent live process inventory",
+  "ignored_historical_prefix_bytes": 424,
+  "ignored_historical_prefix_sha256": "c2fe518997e26ba1b6bef8048323b853d7bde1c4f04ee85f3922ccc32e519240",
+  "installation_authorized": false,
+  "line_count": 106,
+  "observed_at": "2026-09-09T11:43:02.114360+00:00",
+  "pending_startup": null,
+  "production_changed": false,
+  "schema": "UA-ART-WSGI-LIFECYCLE-OBSERVATION-1",
+  "scope": "AUTHENTICATED_CAPTURE_BY_ROOT_THEN_LOCAL_DATA_INTERPRETATION",
+  "source_bytes": 7159,
+  "source_module_sha256": "ec6bb9e993bf81ac29ba323961290fb7eb0622c908ac49cf64077e11a40b9256",
+  "source_sha256": "c9e694abf84b6ee242a0b038a2c69fb94b0cccbbecbb148af4d6e8f00eb0d71f",
+  "status": "OBSERVED_NOT_DRAINED",
+  "terminated_workers": [
+    {
+      "cores": 1,
+      "master_offset": 2618,
+      "pid": 12,
+      "slot": 1,
+      "spawn_offset": 2691
+    },
+    {
+      "cores": 1,
+      "master_offset": 2618,
+      "pid": 15,
+      "slot": 2,
+      "spawn_offset": 2819
+    },
+    {
+      "cores": 1,
+      "master_offset": 2618,
+      "pid": 18,
+      "slot": 3,
+      "spawn_offset": 2947
+    }
+  ],
+  "transport_authenticated": false,
+  "unscoped_child_exits": [
+    {
+      "exit_code": 1,
+      "kind": "UNSCOPED_CHILD_EXIT",
+      "line": 103,
+      "master_offset": 5926,
+      "offset": 6616,
+      "pid": 356
+    },
+    {
+      "exit_code": 1,
+      "kind": "UNSCOPED_CHILD_EXIT",
+      "line": 106,
+      "master_offset": 5926,
+      "offset": 7104,
+      "pid": 1034
+    }
+  ]
+}
