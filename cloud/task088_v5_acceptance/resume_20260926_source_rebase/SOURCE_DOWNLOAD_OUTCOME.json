@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "operation_id": "PR114-CURRENT-SOURCE-DOWNLOAD-20260926T1548Z",
+  "recorded_at_utc": "2026-09-26T15:48:35Z",
+  "status": "WAIT_CONNECTION",
+  "outcome": "DOWNLOAD_FAILED_BEFORE_LOCAL_FILE_CREATION",
+  "git": {
+    "branch": "codex/task088-owner-policy-20260913-0934",
+    "input_head": "d9d24f5ce67d3fd4bb0117d5a375015fd38d603e",
+    "observed_main_head": "327668fdf66f78ca5fbb03509a7062660c013a47"
+  },
+  "environment": "authorized PythonAnywhere Files UI via managed browser",
+  "intent": "Use only the permitted authenticated Files route to obtain the exact current private cars_ui.py without exposing its contents in Git or messages.",
+  "expected_result": "A local private file whose SHA256 equals the observed server SHA256 63a926d752d1c0662c8700521db748d1dff98276df168e9ce693bd9e7c2a378b.",
+  "readback": {
+    "directory_listing": "RECOVERED",
+    "editor_page": "OPENED",
+    "download_attempts": 2,
+    "error": "Protocol error (Fetch.failRequest): Invalid InterceptionId",
+    "local_file_created": false,
+    "server_changed": false
+  },
+  "backup": {
+    "kind": "git_parent_commit",
+    "parent_sha": "d9d24f5ce67d3fd4bb0117d5a375015fd38d603e",
+    "destructive_change": false
+  },
+  "main_change_reconciliation": {
+    "commit": "327668fdf66f78ca5fbb03509a7062660c013a47",
+    "message": "Add CRM photo consistency gate and record two hidden-photo count mismatches",
+    "production_changed": false,
+    "findings": [
+      {
+        "car": "UA-0017",
+        "crm_total": 40,
+        "hidden": 1,
+        "expected_public": 39,
+        "site_gallery": 40
+      },
+      {
+        "car": "UA-0019",
+        "crm_total": 32,
+        "hidden": 1,
+        "expected_public": 31,
+        "site_gallery": 32
+      }
+    ],
+    "candidate_status": "NOT_INSTALLED",
+    "gate_b": "NOT_READY"
+  },
+  "controls": {
+    "active_github_workflow_runs": 0,
+    "halt_present": false,
+    "production_write": false,
+    "crm_write": false,
+    "preview_stage": false,
+    "preview_switch": false,
+    "reload": false,
+    "private_source_persisted": false
+  },
+  "acceptance": {
+    "accepted_criteria": 8,
+    "total_criteria": 20,
+    "percent": 40,
+    "increment": 0
+  },
+  "blockers": [
+    "The exact current cars_ui.py bytes were not obtained; the reviewed stale candidate remains forbidden.",
+    "UA-0017 and UA-0019 public galleries include one CRM-hidden image each; full CRM-to-site consistency is not accepted."
+  ],
+  "only_next_action": "On the next connection-resume attempt, first read back the browser download outcome and PR/main heads. If no file exists, make one permitted Files-route download attempt only; after exact SHA match, preserve the current cars_ui.py change and the new hidden-photo requirements in a rebased candidate, then run changed-scope tests and independent review. Do not repeat Stage, switch, reload, or publication."
+}
