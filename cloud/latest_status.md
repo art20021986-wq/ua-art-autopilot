@@ -19,3 +19,9 @@ CHECKPOINT: cloud/crm_site_consistency_001/CHECKPOINT.json
 RESOURCE_EVIDENCE: cloud/crm_site_consistency_001/resource_blocker_20260926.json
 CLAUDE_TAKEOVER: 2026-09-26 16:29 UTC — Claude принял передачу от Codex (владелец: «Запускай»). Локально 55/55 тестов PASS, execution-contract compile PASS. Тяжёлый шаг отложен до сброса CPU; продолжение запланировано на 2026-09-27 08:50 UTC (свежий замер CPU → shadow-прогон). Production не трогался.
 NOTE_PRICE: public_fields.py не сверяет цену; исходная жалоба владельца — цена 21200 в CRM ≠ сайт (кеш скрипта цены, см. cloud/price_mismatch_20260926/diagnosis.md). Не входит в кандидат Codex — предложено отдельно.
+
+DELIVERY_STATUS_TASK: UA-ART-DELIVERY-STATUS-001
+DELIVERY_STATUS_PR: https://github.com/art20021986-wq/ua-art-autopilot/pull/121 (draft, branch codex/delivery-status-safety-20260926)
+DELIVERY_STATUS_CHECKPOINT: 2026-09-26 18:03 UTC — canonical policy, hidden migration candidate, CRM callbacks, empty/filtered catalog and hidden-aware sync queue prepared; 27 local tests PASS with verified source and mocked publishing. Source-pinned candidates compiled in server memory only. No production files, HTML, CRM DB or bot processes changed by this task.
+DELIVERY_STATUS_PENDING: Complete live publication rehearsal, confirm existing HTML/JS filter contract, prepare main Actions installation with backup/rollback/watchdog and writer exclusion, verify public results. Last available CPU measurement 100.464% at 16:16 UTC; not a fresh measurement. Dashboard returned 502 again. Check actual resources before heavy work; do not combine with the consistency task transaction.
+DELIVERY_STATUS_BACKGROUND_RUNNING: NO; no delayed deployment configured for this task. Original authorization is sufficient; do not request repeated permission for the same scope.
