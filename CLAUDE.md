@@ -1,56 +1,47 @@
-# UA ART AUTOPILOT — Cloud/Claude communication protocol
+# UA ART AUTOPILOT — правила проекта
 
-This repository is the communication bridge between ChatGPT, Claude/Cloud, and PythonAnywhere.
+## Кто и как работает
+- Владелец ставит задачи Claude напрямую в сессии Claude Code (с телефона).
+  ChatGPT/Codex в цепочке не обязательны.
+- Claude ведёт проект целиком: записывает задачу в `tasks/`, делает,
+  проверяет, открывает PR, сливает в `main`, запускает автопилот,
+  проверяет результат и отчитывается.
+- Владельца не просить делать что-либо руками. Если без этого никак —
+  одно действие, точные шаги для телефона.
+- Отвечать по-русски, коротко, без технического жаргона.
 
-## Mandatory behavior for every task
+## Принципы работы
+1. **Только то, что попросили.** Улучшения, замеченные по ходу, не делать
+   самостоятельно — предлагать отдельно как вариант.
+2. **Best practice, без костылей.** Решения сверять с актуальной
+   официальной документацией и проверенными источниками в сети.
+3. **Минимализм и эффективность.** Самое простое решение, которое
+   полностью решает задачу. Без лишнего кода и лишних файлов.
+4. **Без сторонних зависимостей, если можно.** Сначала стандартная
+   библиотека и уже имеющиеся средства проекта. Сторонние библиотеки и
+   сервисы — только когда иначе нельзя, с объяснением почему.
+5. **Чистая архитектура.** Маленькие модули, у каждого одна
+   ответственность и понятные границы. Правка одного модуля не должна
+   ломать другие. Правки — минимальные и локальные.
+6. **Проверка перед сдачей.** Тесты и проверки проекта перед каждым
+   слиянием. Не писать «работает/опубликовано/проверено» без доказательства.
 
-1. Read the newest `tasks/task_NNN.md` before doing anything.
-2. Never touch UA ART production directly from Claude/Cloud.
-3. Put all code, patches, and detailed reports under `cloud/`.
-4. Always update `cloud/latest_status.md` before finishing a task.
-5. Always create or replace `cloud/owner_reply.md` with a short owner-facing response in Russian.
-6. Always commit all task outputs to the task branch.
-7. Do not perform CRITICAL actions. Stop and request owner approval through status.
+## Живой сайт, CRM, PythonAnywhere
+- Изменения — только через автопилот GitHub Actions из `main`.
+- Перед любой записью на сайт/в CRM, удалением или массовым изменением
+  карточек — описать владельцу в 1–2 строках, что изменится, и дождаться
+  «да» в чате. После «да» Claude сам создаёт файлы одобрения и запуска.
+- Изменения, которые не пишут на сайт/в CRM (код, отчёты, диагностика,
+  чтение), Claude сливает в `main` сам после успешных проверок.
+- Никогда: отключать бэкап, откат, проверки здоровья и сторож транзакций;
+  переписывать историю `main`; хранить в репозитории пароли, токены,
+  `crm.db` и данные клиентов.
+- Существующие карточки не должны меняться неожиданно — проверять до/после.
+- Если нагрузка PythonAnywhere ≥ 85%, тяжёлые задачи откладывать.
 
-## Required `cloud/latest_status.md` format
-
-```text
-TASK_ID: task_NNN
-ROUND: N
-CLAUDE_STATUS: WORKING | DONE | BLOCKED | WAITING_OWNER
-CURRENT_ACTION: <short sentence>
-FILES_CREATED: <comma-separated paths or NONE>
-PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: YES | NO
-OWNER_QUESTION: <one short question or NONE>
-NEXT_FOR_CHATGPT: <what ChatGPT should inspect or do next>
-UPDATED_AT_UTC: <ISO timestamp>
-```
-
-## Required `cloud/owner_reply.md` format
-
-Write in clear Russian for the owner, without technical jargon:
-
-```text
-# Ответ Claude владельцу
-СТАТУС: PASS | FAIL | ЖДЁТ
-ЗАДАЧА: <what request was received>
-ЧТО СДЕЛАНО: <short factual result>
-СОЗДАННЫЕ ФАЙЛЫ: <paths or NONE>
-ЧТО НУЖНО ОТ ВЛАДЕЛЬЦА: <one action or НИЧЕГО>
-БЕЗОПАСНОСТЬ: production/CRM/PythonAnywhere changed or not
-```
-
-Do not claim that anything was uploaded to PythonAnywhere, executed on a server, published, or visually checked unless the task provides verifiable evidence. The detailed technical evidence remains in the task report under `cloud/`.
-
-## Request route
-
-The owner gives a request to ChatGPT/Codex. Codex writes the durable request as the newest `tasks/task_NNN.md`. GitHub Actions starts the Claude worker. Claude writes the requested deliverables, `cloud/latest_status.md`, and `cloud/owner_reply.md`. ChatGPT/Codex audits those files and relays the verified owner reply.
-
-## Communication rule
-
-Do not rely on ordinary Claude chat attachments as the durable handoff. The durable handoff is always GitHub: the newest task under `tasks/`, `cloud/latest_status.md`, `cloud/owner_reply.md`, and the detailed report under `cloud/`.
-
-## Owner interaction
-
-Ask the owner only when a visual check or CRITICAL approval is genuinely required. Otherwise continue through the GitHub workflow without owner involvement.
+## Память между сессиями
+Память — только этот репозиторий. В начале сессии прочитать
+`cloud/latest_status.md`, проверить `main`, открытые PR и последние
+запуски Actions. В конце задачи обновить `cloud/latest_status.md`:
+что сделано, что менялось на production, что делать дальше.
+Подробные отчёты — в `cloud/`.
