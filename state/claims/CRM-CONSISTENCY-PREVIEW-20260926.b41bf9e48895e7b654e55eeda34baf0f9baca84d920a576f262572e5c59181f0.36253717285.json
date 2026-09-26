@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "f2bc1a5b919bb4ca"
+    },
+    {
+      "action": "STOP_FAIL_CLOSED_TERMINAL",
+      "at": "2026-09-26T16:04:22Z",
+      "class": "LOGICAL",
+      "message": "Regression packaging failure: runtime/ua_public_freshness.py missing in isolated test package. GitHub run completed/failure 15:58:41Z before remote controller. Fixed in d9cd1daa85bfe01ef4f908f4de1cd09baa9e17cd; close failed identity, no production writes.",
+      "retries_remaining": 0,
+      "retry_allowed": false,
+      "signature": "899061695a009017"
     }
   ],
   "heartbeat_at": "2026-09-26T15:58:05Z",
@@ -42,6 +51,6 @@
   "source_commit": "2268ebc58dfc93bbfa5c7b2460adab40bbbcb398",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-09-26T15:58:37Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-09-26T16:04:22Z"
 }

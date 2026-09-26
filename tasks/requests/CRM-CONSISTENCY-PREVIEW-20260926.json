@@ -1,7 +1,7 @@
 {
   "task_id": "CRM-CONSISTENCY-PREVIEW-20260926",
   "title": "Isolated full renderer validation before critical consistency installation",
-  "description": "Owner 2026-09-26 22:35 Asia/Ho_Chi_Minh requests critical production repair. First run the candidate renderer in a private disposable shadow directory on PythonAnywhere. The controller uploads only a preview script and receipt under uploads, creates and removes a private shadow copy, temporarily schedules only that preview, forbids production writes during rendering and compares protected hashes. No production source, website HTML, CRM rows, or original media are modified. This is not production installation or full acceptance.",
+  "description": "Owner 2026-09-26 22:35 Asia/Ho_Chi_Minh requests critical production repair. First run the candidate renderer in a private disposable shadow directory on PythonAnywhere. The controller uploads only a preview script and receipt under uploads, creates and removes a private shadow copy, temporarily schedules only that preview, forbids production writes during rendering and compares protected hashes. No production source, website HTML, CRM rows, or original media are modified. This is not production installation or full acceptance. Clean-package tests pass; the prior missing-private-fixture failure is terminally recorded. Actual private adapter regression now runs inside the isolated host rehearsal.",
   "control_plane_version": "TASK107-R2",
   "requested_min_class": "STANDARD",
   "ai_requested": false,
