@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "f57d2ff4a8307f5f8468e585c561068cee8ef2579d54daa56767ac7da67b1114",
   "autostart_source_commit": "9fd580ca61c67dfb944bc4826fd1f18459ffba0b",
   "created_at": "2026-09-26T20:09:48Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "46cfa0a0ffaa2370bb0c65225fb39f3b19822e2b9165041c55121a2c149b747f",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-26T20:09:48Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-09-26T20:10:51Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "36268504600",
     "task_id": "DELIVERY-STATUS-INSTALL-20260927",
     "task_sha256": "54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 167.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 44.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-36268504600-54c3be3cfc4dd0da",
+  "production_transaction_path": "state/transactions/DELIVERY-STATUS-INSTALL-20260927.54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff.36268504600.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "catalog_renderer-e9376e6e32707c55",
   "receipt_path": "state/receipts/DELIVERY-STATUS-INSTALL-20260927.json",
   "receipt_validation_status": "PENDING",
@@ -31,8 +56,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "4f07d7fc45bbad46a31f56432d749ffe723b6855",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 332.491,
+    "allowed": true,
+    "evidence_path": "state/storage/DELIVERY-STATUS-INSTALL-20260927.json",
+    "evidence_sha256": "0fb1f3505b7121b29116a755ced2509a97578a6b49623a2573b39002be30d4e0",
+    "free_bytes": 1240148738048,
+    "heavy": true,
+    "measured_at": "2026-09-26T20:05:16.766428+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "WARN_70",
+    "usage_percent": 79.538727008061
+  },
+  "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-26T20:09:48Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "19e463824e26656ce1af74bb0cf73d974b96862d0e2e8fcb3997c6ee244fc403",
+    "file_sha256": {
+      "cloud/delivery_status_001/delivery_status.py": "c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0",
+      "cloud/delivery_status_001/deployment_bootstrap.py": "9d396a755260212d64622de4a8ac0bda2aa6cf9e99acf32e7f0aa26c8ec51094",
+      "cloud/delivery_status_001/deployment_remote.py": "b1209cb71286f0de373fd2240afb786f29f484810281805d7149cdd67dc6c8ba",
+      "cloud/delivery_status_001/deployment_transport.py": "233725129299484bb886833c4fda727187f76cb0f76eed0538ce32e6abbeb6d0",
+      "cloud/delivery_status_001/integration_patch.py": "2ee80c933c5090eeeb5ae98f08a9ef3c858804b551a88a979dd815ea40aff07e",
+      "cloud/delivery_status_001/preflight_controller.py": "bc857366515a004888f0c8d1a55965772ea0a129e95e37e22b4fa5cae2f599b8",
+      "cloud/delivery_status_001/status_migration.py": "806fd517042c5c920179d5006f351aca32300cd29a03e01ca506e269943aa74d",
+      "cloud/delivery_status_001/test_delivery_status.py": "4669e4724c06ee37a6aa6e217340384098c071d72882351e38a28ec117dd3297",
+      "cloud/delivery_status_001/test_deployment.py": "518bb242344833799036484c8ea785415750ebf6979890ee2f33ff69cd6c8a0e",
+      "cloud/delivery_status_001/test_status_migration.py": "9c264f3377dcb308df18ee5c108eb3badbf078cc1e58812114dc473ca2f5bb74",
+      "cloud/delivery_status_001/verify_catalog_integration.py": "94dbd6aab9cdb9007ef295b6e90025a96b9071ff4c63c31e699d4008d263797f",
+      "cloud/delivery_status_001/verify_crm_integration.py": "93f58bc5c4a36f111c7f6c0346d3a698bbf0f0cfd4e3da56d393cc31036018aa",
+      "cloud/delivery_status_001/verify_worker_integration.py": "ece3fb278d1fe49606f01904207a1024d7e6becdd9e71efb6c348bc7f515f68a"
+    }
+  },
+  "updated_at": "2026-09-26T20:10:51Z"
 }
